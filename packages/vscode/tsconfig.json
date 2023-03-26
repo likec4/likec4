@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig/node16.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["es2022","webworker"],
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noUncheckedIndexedAccess": false,
+    "importsNotUsedAsValues": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "$/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

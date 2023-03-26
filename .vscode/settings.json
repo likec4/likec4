@@ -1,0 +1,36 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "eslint.packageManager": "yarn",
+  "npm.packageManager": "yarn",
+  "vitest.enable": true,
+  "vitest.showFailMessages": true,
+  "vitest.commandLine": "yarn workspaces foreach -j unlimited -p run 'vitest' --",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "packages/*/dist": true,
+  },
+  "workbench.localHistory.exclude": {
+    "packages/*/.turbo": true,
+    "packages/*/.vscode-test-web": true,
+  },
+  "files.exclude": {
+    "packages/*/.turbo": true,
+    "packages/*/.vscode-test-web": true
+  },
+  "files.watcherExclude": {
+    "packages/*/.turbo": true,
+  },
+  "exportall.config.folderListener": [
+    "/packages/language-server/src/__test__/parser-smoke"
+  ]
+}

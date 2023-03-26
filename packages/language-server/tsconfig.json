@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "verbatimModuleSyntax": false,
+    "importsNotUsedAsValues": "preserve",
+    "outDir": "dist",
+    "ignoreDeprecations": "5.0",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

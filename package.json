@@ -1,0 +1,27 @@
+{
+  "name": "root",
+  "private": true,
+  "packageManager": "yarn@3.4.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "compile": "turbo run compile --filter='./packages/*' --continue",
+    "build": "turbo run build --filter='./packages/*'",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev --filter='./packages/*'",
+    "test": "turbo run test --filter='./packages/*' --continue -- run",
+    "lint": "turbo run lint --filter='./packages/*' --continue"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.6",
+    "eslint": "^8.36.0",
+    "turbo": "^1.8.5",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1",
+    "vitest": "^0.29.7"
+  },
+  "volta": {
+    "node": "18.15.0"
+  }
+}

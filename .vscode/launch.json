@@ -1,0 +1,36 @@
+// A launch configuration that launches the extension inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode/dist/**/*"
+      ],
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        "${workspaceFolder}/examples/bigbank",
+      ],
+      "preLaunchTask": "npm: rebuild - packages/vscode",
+      "autoAttachChildProcesses": true
+    },
+    {
+      "name": "Attach to Language Server",
+      "type": "node",
+      "port": 6009,
+      "request": "attach",
+      "restart": {
+        "delay": 2000,
+        "maxAttempts": 30
+      },
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode/dist/**/*.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@likec4/eslint-config",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint-plugin-unused-imports": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.21.3",
+    "eslint": "^8.36.0"
+  }
+}

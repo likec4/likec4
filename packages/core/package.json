@@ -1,0 +1,33 @@
+{
+  "name": "@likec4/core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts",
+    "./utils": "./src/utils/index.ts"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "compile": "",
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "lint": "eslint src --fix",
+    "test": "vitest run",
+    "vitest": "vitest",
+    "clean": "rm -rf .turbo dist"
+  },
+  "dependencies": {
+    "@mobily/ts-belt": "^3.13.1",
+    "type-fest": "^3.7.0"
+  },
+  "devDependencies": {
+    "@likec4/eslint-config": "workspace:*",
+    "eslint": "^8.36.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1",
+    "vitest": "^0.29.7"
+  }
+}

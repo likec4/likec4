@@ -1,0 +1,29 @@
+specification {
+
+  // element person
+
+  element enterprise
+  element softwaresystem
+  element container
+  element component
+  tag gray
+  element person {
+    style {
+      shape: rectangle
+    }
+  }
+
+  // element database {
+  //   style {
+  //     shape: storage
+  //   }
+  // }
+
+
+  tag lightgray
+  //   style {
+  //     color: gray
+  //   }
+  // }
+
+}

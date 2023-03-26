@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LikeC4ModelBuilder > builds model 1`] = `
+{
+  "elements": {
+    "client": {
+      "id": "client",
+      "kind": "user",
+      "shape": "rectangle",
+      "title": "client",
+    },
+    "system": {
+      "id": "system",
+      "kind": "component",
+      "shape": "rectangle",
+      "title": "system",
+    },
+    "system.backend": {
+      "id": "system.backend",
+      "kind": "component",
+      "shape": "rectangle",
+      "title": "Backend",
+    },
+    "system.frontend": {
+      "id": "system.frontend",
+      "kind": "component",
+      "shape": "rectangle",
+      "tags": [
+        "deprecated",
+      ],
+      "title": "frontend",
+    },
+  },
+  "relations": {
+    "46b9e42890c694d2bba5a0d1ca68e0db22edbe56": {
+      "id": "46b9e42890c694d2bba5a0d1ca68e0db22edbe56",
+      "source": "client",
+      "target": "system.frontend",
+      "title": "",
+    },
+    "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd": {
+      "id": "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd",
+      "source": "system.frontend",
+      "target": "system.backend",
+      "title": "requests",
+    },
+  },
+}
+`;
