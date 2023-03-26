@@ -33,7 +33,9 @@ export interface ParsedAstElement {
   id: c4.Fqn
   kind: c4.ElementKind
   title: string
+  description?: string
   tags?: c4.Tag[]
+  shape?: c4.ElementShape
 }
 
 export interface ParsedAstRelation {
@@ -123,7 +125,7 @@ export function resolveRelationPoints(node: ast.Relation): {
 }
 
 
-export function toElementStyle(props: ast.ElementStyleProperty[]): c4.ElementStyle {
+export function toElementStyle(props: ast.AbstractElementStyleProperty[]): c4.ElementStyle {
   const result: c4.ElementStyle = {}
 
   const shapeProperty = props.find(ast.isElementShapeStyleProperty)

@@ -1,9 +1,8 @@
-ElementStyleProperties:
-  'style' OpenBlock
-    (props+=ElementStyleProperty)*
+ElementStyleProperties: OpenBlock
+    (props+=AbstractElementStyleProperty)*
   CloseBlock;
 
-ElementStyleProperty: (
+AbstractElementStyleProperty: (
   {infer ElementShapeStyleProperty} key='shape' Colon? value=ElementShape
 );
 
@@ -15,6 +14,9 @@ Tag: name=Name;
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'cylinder' | 'storage' | 'queue';
 
 Name returns string: ElementShape | ID;
+
+StringValue returns string:
+  Name | STRING;
 
 // -------------------------
 

@@ -20,3 +20,24 @@ model {
   }
 }
 `
+export const fixture_02_ModelElementProps = `
+specification {
+  element component
+  tag one
+}
+model {
+  component system {
+    #one
+
+    component subsystem {
+      title: 'SubSystem'
+    }
+    component storage {
+      title 'Storage'
+      style {
+        shape: storage
+      }
+    }
+  }
+}
+`

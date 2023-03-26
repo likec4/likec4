@@ -17,11 +17,18 @@ Element:
 
 ElementBody: OpenBlock
   tags=Tags?
+  (props+=ElementProperty)*
+
   elements+=(
     Element |
     Relation
   )*
 CloseBlock;
+
+ElementProperty: (
+  {infer ElementStringProperty} key=('title' | 'description') Colon? value=StringValue |
+  {infer ElementStyleProperty} key='style' value=ElementStyleProperties
+);
 
 ExtendElement:
   'extend' element=StrictElementRef (OpenBlock

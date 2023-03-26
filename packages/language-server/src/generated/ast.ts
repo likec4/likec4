@@ -6,17 +6,27 @@
 /* eslint-disable */
 import { AstNode, AbstractAstReflection, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 
-export type ElementShape = 'browser' | 'cylinder' | 'person' | 'queue' | 'rectangle' | 'storage';
+export type AbstractElementStyleProperty = ElementShapeStyleProperty;
 
-export type ElementStyleProperty = ElementShapeStyleProperty;
+export const AbstractElementStyleProperty = 'AbstractElementStyleProperty';
 
-export const ElementStyleProperty = 'ElementStyleProperty';
-
-export function isElementStyleProperty(item: unknown): item is ElementStyleProperty {
-    return reflection.isInstance(item, ElementStyleProperty);
+export function isAbstractElementStyleProperty(item: unknown): item is AbstractElementStyleProperty {
+    return reflection.isInstance(item, AbstractElementStyleProperty);
 }
 
+export type ElementProperty = ElementStringProperty | ElementStyleProperty;
+
+export const ElementProperty = 'ElementProperty';
+
+export function isElementProperty(item: unknown): item is ElementProperty {
+    return reflection.isInstance(item, ElementProperty);
+}
+
+export type ElementShape = 'browser' | 'cylinder' | 'person' | 'queue' | 'rectangle' | 'storage';
+
 export type Name = ElementShape | string;
+
+export type StringValue = Name | string;
 
 export interface Element extends AstNode {
     readonly $container: ElementBody | ExtendElement | Model;
@@ -37,6 +47,7 @@ export interface ElementBody extends AstNode {
     readonly $container: Element;
     readonly $type: 'ElementBody';
     elements: Array<Element | Relation>
+    props: Array<ElementProperty>
     tags?: Tags
 }
 
@@ -97,16 +108,42 @@ export function isElementShapeStyleProperty(item: unknown): item is ElementShape
     return reflection.isInstance(item, ElementShapeStyleProperty);
 }
 
+export interface ElementStringProperty extends AstNode {
+    readonly $container: ElementBody;
+    readonly $type: 'ElementStringProperty';
+    key: 'description' | 'title'
+    value: StringValue
+}
+
+export const ElementStringProperty = 'ElementStringProperty';
+
+export function isElementStringProperty(item: unknown): item is ElementStringProperty {
+    return reflection.isInstance(item, ElementStringProperty);
+}
+
 export interface ElementStyleProperties extends AstNode {
-    readonly $container: SpecificationElementKind;
+    readonly $container: ElementStyleProperty | SpecificationElementKind;
     readonly $type: 'ElementStyleProperties';
-    props: Array<ElementStyleProperty>
+    props: Array<AbstractElementStyleProperty>
 }
 
 export const ElementStyleProperties = 'ElementStyleProperties';
 
 export function isElementStyleProperties(item: unknown): item is ElementStyleProperties {
     return reflection.isInstance(item, ElementStyleProperties);
+}
+
+export interface ElementStyleProperty extends AstNode {
+    readonly $container: ElementBody;
+    readonly $type: 'ElementStyleProperty';
+    key: 'style'
+    value: ElementStyleProperties
+}
+
+export const ElementStyleProperty = 'ElementStyleProperty';
+
+export function isElementStyleProperty(item: unknown): item is ElementStyleProperty {
+    return reflection.isInstance(item, ElementStyleProperty);
 }
 
 export interface ExtendElement extends AstNode {
@@ -264,12 +301,15 @@ export function isRelationWithSource(item: unknown): item is RelationWithSource 
 }
 
 export interface LikeC4AstType {
+    AbstractElementStyleProperty: AbstractElementStyleProperty
     Element: Element
     ElementBody: ElementBody
     ElementDescendantRef: ElementDescendantRef
     ElementKind: ElementKind
+    ElementProperty: ElementProperty
     ElementRef: ElementRef
     ElementShapeStyleProperty: ElementShapeStyleProperty
+    ElementStringProperty: ElementStringProperty
     ElementStyleProperties: ElementStyleProperties
     ElementStyleProperty: ElementStyleProperty
     ExtendElement: ExtendElement
@@ -289,13 +329,17 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['Element', 'ElementBody', 'ElementDescendantRef', 'ElementKind', 'ElementRef', 'ElementShapeStyleProperty', 'ElementStyleProperties', 'ElementStyleProperty', 'ExtendElement', 'LikeC4Document', 'Model', 'Relation', 'RelationWithSource', 'SpecificationElementKind', 'SpecificationRule', 'SpecificationTag', 'StrictElementChildRef', 'StrictElementRef', 'Tag', 'Tags'];
+        return ['AbstractElementStyleProperty', 'Element', 'ElementBody', 'ElementDescendantRef', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementShapeStyleProperty', 'ElementStringProperty', 'ElementStyleProperties', 'ElementStyleProperty', 'ExtendElement', 'LikeC4Document', 'Model', 'Relation', 'RelationWithSource', 'SpecificationElementKind', 'SpecificationRule', 'SpecificationTag', 'StrictElementChildRef', 'StrictElementRef', 'Tag', 'Tags'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
         switch (subtype) {
             case ElementShapeStyleProperty: {
-                return this.isSubtype(ElementStyleProperty, supertype);
+                return this.isSubtype(AbstractElementStyleProperty, supertype);
+            }
+            case ElementStringProperty:
+            case ElementStyleProperty: {
+                return this.isSubtype(ElementProperty, supertype);
             }
             case RelationWithSource: {
                 return this.isSubtype(Relation, supertype);
@@ -333,7 +377,8 @@ export class LikeC4AstReflection extends AbstractAstReflection {
                 return {
                     name: 'ElementBody',
                     mandatory: [
-                        { name: 'elements', type: 'array' }
+                        { name: 'elements', type: 'array' },
+                        { name: 'props', type: 'array' }
                     ]
                 };
             }

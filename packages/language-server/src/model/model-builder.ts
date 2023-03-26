@@ -7,7 +7,7 @@ import { failExpectedNever } from '../utils'
 import { strictElementRefFqn } from '../elementRef'
 import objectHash from 'object-hash'
 import { logger } from '../logger'
-import { pipe, D, A, O , flow } from '@mobily/ts-belt'
+import { pipe, D, A, O, flow } from '@mobily/ts-belt'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
 
 
@@ -71,8 +71,8 @@ export class LikeC4ModelBuilder {
       const kind = c4Specification.kinds[el.kind]
       if (kind) {
         return {
+          shape: kind.shape,
           ...el,
-          shape: kind.shape
         }
       }
       return null
@@ -104,7 +104,7 @@ export class LikeC4ModelBuilder {
       docs.flatMap(d => d.c4Relations),
       A.filterMap(flow(
         toModelRelation,
-        O.fromPredicate(({source, target}) => source in elements && target in elements)
+        O.fromPredicate(({ source, target }) => source in elements && target in elements)
       )),
       A.reduce({} as c4.LikeC4Model['relations'], (acc, el) => {
         acc[el.id] = el
@@ -156,15 +156,17 @@ export class LikeC4ModelBuilder {
     return prevHash !== doc.c4hash
   }
 
-  private toElement(ast: ast.Element): LikeC4LangiumDocument['c4Elements'][number] {
-    const id = this.resolveFqn(ast)
-    const kind = ast.kind.ref!.name as c4.ElementKind
-    const tags = (ast.definition && this.convertTags(ast.definition)) ?? []
+  private toElement(astNode: ast.Element): LikeC4LangiumDocument['c4Elements'][number] {
+    const id = this.resolveFqn(astNode)
+    const kind = astNode.kind.ref!.name as c4.ElementKind
+    const tags = (astNode.definition && this.convertTags(astNode.definition)) ?? []
+    const shape = astNode.definition?.props.find(ast.isElementStyleProperty)?.value.props.find(ast.isElementShapeStyleProperty)?.value
     return {
       id,
       kind,
-      title: ast.title ?? ast.name,
-      ...(tags.length > 0 ? {tags} : {}),
+      title: astNode.title ?? astNode.name,
+      ...(tags.length > 0 ? { tags } : {}),
+      ...(shape ? { shape } : {}),
     }
   }
 

@@ -10,7 +10,7 @@ SpecificationRule:
 
 SpecificationElementKind:
   'element' kind=ElementKind (OpenBlock
-     style=ElementStyleProperties?
+     ('style' style=ElementStyleProperties)?
   CloseBlock)?;
 
 SpecificationTag:
