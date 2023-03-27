@@ -1,23 +1,19 @@
-import { D } from '@mobily/ts-belt'
 import { expect, test } from 'vitest'
-import { expectError, validationHelper, expectFunction } from 'langium/test'
-import { createTestLanguageServices, testServices } from '../test'
+import { createTestServices } from '../test'
 
-expectFunction((actual, expected, message) => {
-  expect(actual, message).toEqual(expected)
-})
-
-const services = createTestLanguageServices()
-const validate = validationHelper(services)
-
+const { validate } = createTestServices()
 
 test('elementKindChecks', async () => {
-  const result = await validate(`
+  const { diagnostics } = await validate(`
     specification {
       element component
       element user
       element component
     }
   `)
-  expectError(result, "Duplicate element kind 'component'", {} as any)
+  expect(diagnostics).toHaveLength(2)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, `diagnostic severity`).toBe(1)
+    expect(diagnostic.message, `diagnostic message`).toBe("Duplicate element kind 'component'")
+  }
 })

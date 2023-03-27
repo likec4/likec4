@@ -1,18 +1,10 @@
-import { D } from '@mobily/ts-belt'
 import { expect, test } from 'vitest'
-import { expectError, validationHelper, expectFunction } from 'langium/test'
-import { createTestLanguageServices, testServices } from '../test'
+import { createTestServices } from '../test'
 
-expectFunction((actual, expected, message) => {
-  expect(actual, message).toEqual(expected)
-})
+const { validate } = createTestServices()
 
-const services = createTestLanguageServices()
-const validate = validationHelper(services)
-
-
-test.skip('elementChecks', async () => {
-  const result = await validate(`
+test('elementChecks: ', async () => {
+  const { diagnostics } = await validate(`
     specification {
       element component
     }
@@ -21,5 +13,9 @@ test.skip('elementChecks', async () => {
       component c1
     }
   `)
-  expectError(result, "Duplicate element kind 'component'", {} as any)
+  expect(diagnostics).toHaveLength(2)
+  expect(diagnostics[0].severity).toBe(1)
+  expect(diagnostics[0].message).toBe("Duplicate element name c1")
+  expect(diagnostics[1].severity).toBe(1)
+  expect(diagnostics[1].message).toBe("Duplicate element name c1")
 })

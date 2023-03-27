@@ -4,8 +4,7 @@ import { isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '.
 import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 import invariant from 'tiny-invariant'
-
-export class ScopeProvider extends DefaultScopeProvider {
+export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
   private fqnIndex: FqnIndex
 

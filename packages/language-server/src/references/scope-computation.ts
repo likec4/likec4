@@ -6,7 +6,7 @@ import type { LikeC4Services } from '../module'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElement
 
-export class ScopeComputation extends DefaultScopeComputation {
+export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
   constructor(services: LikeC4Services) {
     super(services)

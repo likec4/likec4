@@ -137,15 +137,18 @@ export class LikeC4ModelBuilder {
 
     for (const el of streamElements(doc)) {
       if (ast.isElement(el)) {
-        const element = this.toElement(el)
-        elements.push(element)
+        try {
+          elements.push(this.toElement(el))
+        } catch (e) {
+          logger.warn(e)
+        }
         continue
       }
       if (ast.isRelation(el)) {
         try {
           relations.push(this.toRelation(el))
         } catch (e) {
-          logger.error(e)
+          logger.warn(e)
         }
         continue
       }

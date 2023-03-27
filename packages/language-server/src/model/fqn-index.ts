@@ -1,7 +1,7 @@
 import { DocumentState, DONE_RESULT, MultiMap, StreamImpl } from 'langium'
-import type { AstNodeDescription , AstNodeDescriptionProvider} from 'langium'
+import type { AstNodeDescription, AstNodeDescriptionProvider } from 'langium'
 import type { URI } from 'vscode-uri'
-import { ast, type LikeC4LangiumDocument } from '../ast';
+import { ast, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { logger } from '../logger'
 import { parentFqn } from '@likec4/core/utils'
@@ -19,7 +19,7 @@ export class FqnIndex {
   protected readonly descriptions: AstNodeDescriptionProvider
 
   constructor(private services: LikeC4Services) {
-    this.descriptions = services.workspace.AstNodeDescriptionProvider;
+    this.descriptions = services.workspace.AstNodeDescriptionProvider
     services.shared.workspace.DocumentBuilder.onUpdate((_changed, removed) => {
       for (const uri of [...removed]) {
         this.cleanIndexedElements(uri)
@@ -108,27 +108,35 @@ export class FqnIndex {
   private doIndexElements(doc: LikeC4LangiumDocument) {
 
     const visitElement = (element: ast.Element, parent: Fqn | null = null) => {
-      const name = element.name
-      const fqn = Fqn(name, parent)
-      this.#index.add(fqn, this.descriptions.createDescription(element, name, doc))
-      ;(element as any)[fqnField] = fqn
-      // this.#fqnMap.set(element, fqn)
-      if (element.definition) {
-        for (const nested of element.definition.elements) {
-          if (ast.isElement(nested)) {
-            visitElement(nested, fqn)
+      try {
+        const name = element.name
+        const fqn = Fqn(name, parent)
+        this.#index.add(fqn, this.descriptions.createDescription(element, name, doc))
+          ; (element as any)[fqnField] = fqn
+        // this.#fqnMap.set(element, fqn)
+        if (element.definition) {
+          for (const nested of element.definition.elements) {
+            if (ast.isElement(nested)) {
+              visitElement(nested, fqn)
+            }
           }
         }
+      } catch (e) {
+        logger.warn(e)
       }
     }
 
     const visitExtendElement = (extendElement: ast.ExtendElement) => {
-      const fqn = strictElementRefFqn(extendElement.element)
-      // this.#fqnMap.set(element, fqn)
-      for (const nested of extendElement.elements) {
-        if (ast.isElement(nested)) {
-          visitElement(nested, fqn)
+      try {
+        const fqn = strictElementRefFqn(extendElement.element)
+        // this.#fqnMap.set(element, fqn)
+        for (const nested of extendElement.elements) {
+          if (ast.isElement(nested)) {
+            visitElement(nested, fqn)
+          }
         }
+      } catch (e) {
+        logger.warn(e)
       }
     }
 

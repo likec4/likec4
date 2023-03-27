@@ -9,10 +9,10 @@ import {
 } from 'langium'
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { ScopeComputation, ScopeProvider } from './references'
+import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { FqnIndex, LikeC4ModelBuilder } from './model'
 import { registerValidationChecks } from './validation'
-import { LikeC4DocumentSymbolProvider } from './lsp'
+import { LikeC4DocumentSymbolProvider, LikeC4SemanticTokenProvider } from './lsp'
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -41,14 +41,15 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   },
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
+    SemanticTokenProvider: bind(LikeC4SemanticTokenProvider)
   },
   //   HoverProvider: bind(LikeC4HoverProvider),
   //   // Formatter: bind(LikeC4Formatter),
-  //   SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
+  //
   // },
   references: {
-    ScopeComputation: bind(ScopeComputation),
-    ScopeProvider: bind(ScopeProvider)
+    ScopeComputation: bind(LikeC4ScopeComputation),
+    ScopeProvider: bind(LikeC4ScopeProvider)
   }
 }
 

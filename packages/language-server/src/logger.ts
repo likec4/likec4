@@ -5,7 +5,7 @@ export const logger = {
   info(message: string) {
     console.info(message)
   },
-  warn(message: string) {
+  warn(message: string | Error | unknown) {
     console.warn(message)
   },
   log(message: string) {

@@ -14,7 +14,7 @@ export function isElementRefHead(node: ast.ElementRef | ast.StrictElementRef) {
 }
 
 export function elementRef(node: ast.ElementRef) {
-  invariant(!ast.isElementRef(node.$container), 'Expected head ElementRef')
+  invariant(isElementRefHead(node), 'Expected head ElementRef')
   while (node.next) {
     node = node.next
   }
@@ -23,7 +23,7 @@ export function elementRef(node: ast.ElementRef) {
 
 
 export function strictElementRefFqn(node: ast.StrictElementRef): c4.Fqn {
-  invariant(!ast.isStrictElementRef(node.$container), 'Expected head StrictElementRef')
+  invariant(isElementRefHead(node), 'Expected head StrictElementRef')
   const name = [node.el.$refText]
   let child = node.next
   while (child) {
@@ -34,9 +34,9 @@ export function strictElementRefFqn(node: ast.StrictElementRef): c4.Fqn {
 }
 
 export function parentStrictElementRef(node: ast.StrictElementRef): c4.Fqn {
-  invariant(ast.isStrictElementRef(node.$container), 'Expected next StrictElementRef')
+  invariant(!isElementRefHead(node), 'Expected next StrictElementRef')
   const path = []
-  let parent = node.$container as unknown
+  let parent = node.$container
   while (ast.isStrictElementRef(parent)) {
     path.unshift(parent.el.$refText)
     parent = parent.$container

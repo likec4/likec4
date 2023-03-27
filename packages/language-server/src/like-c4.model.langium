@@ -12,7 +12,7 @@ Model:
 Element:
   (
     kind=[ElementKind:Name] name=Name |
-    name=Name Eq kind=[ElementKind:Name] (title=STRING)?
+    name=Name Eq kind=[ElementKind:Name] (title=StringValue)?
   ) definition=ElementBody?;
 
 ElementBody: OpenBlock
