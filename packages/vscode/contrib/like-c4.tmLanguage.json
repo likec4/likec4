@@ -12,7 +12,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(browser|cylinder|element|extend|it|model|person|queue|rectangle|shape|specification|storage|style|tag|this)\\b"
+      "match": "\\b(browser|cylinder|description|element|extend|it|model|person|queue|rectangle|shape|specification|storage|style|tag|this|title)\\b"
     },
     {
       "name": "string.quoted.double.likec4",

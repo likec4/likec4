@@ -57,19 +57,6 @@ export function isElementBody(item: unknown): item is ElementBody {
     return reflection.isInstance(item, ElementBody);
 }
 
-export interface ElementDescendantRef extends AstNode {
-    readonly $container: ElementDescendantRef | ElementRef;
-    readonly $type: 'ElementDescendantRef';
-    el: Reference<Element>
-    next?: ElementDescendantRef
-}
-
-export const ElementDescendantRef = 'ElementDescendantRef';
-
-export function isElementDescendantRef(item: unknown): item is ElementDescendantRef {
-    return reflection.isInstance(item, ElementDescendantRef);
-}
-
 export interface ElementKind extends AstNode {
     readonly $container: SpecificationElementKind;
     readonly $type: 'ElementKind';
@@ -83,10 +70,10 @@ export function isElementKind(item: unknown): item is ElementKind {
 }
 
 export interface ElementRef extends AstNode {
-    readonly $container: Relation | RelationWithSource;
+    readonly $container: ElementRef | Relation | RelationWithSource;
     readonly $type: 'ElementRef';
     el: Reference<Element>
-    next?: ElementDescendantRef
+    next?: ElementRef
 }
 
 export const ElementRef = 'ElementRef';
@@ -236,24 +223,11 @@ export function isSpecificationTag(item: unknown): item is SpecificationTag {
     return reflection.isInstance(item, SpecificationTag);
 }
 
-export interface StrictElementChildRef extends AstNode {
-    readonly $container: StrictElementChildRef | StrictElementRef;
-    readonly $type: 'StrictElementChildRef';
-    child?: StrictElementChildRef
-    el: Reference<Element>
-}
-
-export const StrictElementChildRef = 'StrictElementChildRef';
-
-export function isStrictElementChildRef(item: unknown): item is StrictElementChildRef {
-    return reflection.isInstance(item, StrictElementChildRef);
-}
-
 export interface StrictElementRef extends AstNode {
-    readonly $container: ExtendElement;
+    readonly $container: ExtendElement | StrictElementRef;
     readonly $type: 'StrictElementRef';
-    child?: StrictElementChildRef
     el: Reference<Element>
+    next?: StrictElementRef
 }
 
 export const StrictElementRef = 'StrictElementRef';
@@ -304,7 +278,6 @@ export interface LikeC4AstType {
     AbstractElementStyleProperty: AbstractElementStyleProperty
     Element: Element
     ElementBody: ElementBody
-    ElementDescendantRef: ElementDescendantRef
     ElementKind: ElementKind
     ElementProperty: ElementProperty
     ElementRef: ElementRef
@@ -320,7 +293,6 @@ export interface LikeC4AstType {
     SpecificationElementKind: SpecificationElementKind
     SpecificationRule: SpecificationRule
     SpecificationTag: SpecificationTag
-    StrictElementChildRef: StrictElementChildRef
     StrictElementRef: StrictElementRef
     Tag: Tag
     Tags: Tags
@@ -329,7 +301,7 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AbstractElementStyleProperty', 'Element', 'ElementBody', 'ElementDescendantRef', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementShapeStyleProperty', 'ElementStringProperty', 'ElementStyleProperties', 'ElementStyleProperty', 'ExtendElement', 'LikeC4Document', 'Model', 'Relation', 'RelationWithSource', 'SpecificationElementKind', 'SpecificationRule', 'SpecificationTag', 'StrictElementChildRef', 'StrictElementRef', 'Tag', 'Tags'];
+        return ['AbstractElementStyleProperty', 'Element', 'ElementBody', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementShapeStyleProperty', 'ElementStringProperty', 'ElementStyleProperties', 'ElementStyleProperty', 'ExtendElement', 'LikeC4Document', 'Model', 'Relation', 'RelationWithSource', 'SpecificationElementKind', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -356,9 +328,7 @@ export class LikeC4AstReflection extends AbstractAstReflection {
             case 'Element:kind': {
                 return ElementKind;
             }
-            case 'ElementDescendantRef:el':
             case 'ElementRef:el':
-            case 'StrictElementChildRef:el':
             case 'StrictElementRef:el': {
                 return Element;
             }

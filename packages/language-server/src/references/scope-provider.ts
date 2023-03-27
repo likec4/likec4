@@ -1,8 +1,9 @@
 import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, AstNode, getDocument, stream } from 'langium'
 import { ast } from '../ast'
-import { parentFqnOfStrictElementChildRef, strictElementRefFqn } from '../elementRef'
+import { isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
 import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
+import invariant from 'tiny-invariant'
 
 export class ScopeProvider extends DefaultScopeProvider {
 
@@ -13,10 +14,15 @@ export class ScopeProvider extends DefaultScopeProvider {
     this.fqnIndex = services.likec4.FqnIndex
   }
 
-  private scopeElementDescedantRef(ref: ast.ElementDescendantRef): Stream<AstNodeDescription> {
+  private scopeElementRef(ref: ast.ElementRef): Stream<AstNodeDescription> {
+    const parentNode = ref.$container
+    if (!ast.isElementRef(parentNode)) {
+      throw new Error('Expected be inside ElementRef')
+    }
     return new StreamImpl(
       () => {
-        const parent = ref.$container.el.ref
+        // if (ast.isElementRef(ref.$container))
+        const parent = parentNode.el.ref
         const fqn = parent && this.fqnIndex.get(parent)
         if (fqn) {
           return this.fqnIndex.uniqueDescedants(fqn).iterator()
@@ -40,14 +46,14 @@ export class ScopeProvider extends DefaultScopeProvider {
       // const path = this.services.workspace.AstNodeLocator.getAstNodePath(node)
       if (referenceType === ast.Element) {
         if (ast.isStrictElementRef(node)) {
-          return this.getGlobalScope(referenceType)
-        }
-        if (ast.isStrictElementChildRef(node)) {
-          const parent = parentFqnOfStrictElementChildRef(node)
+          if (isElementRefHead(node)) {
+            return this.getGlobalScope(referenceType)
+          }
+          const parent = parentStrictElementRef(node)
           return new StreamScope(this.fqnIndex.directChildrenOf(parent))
         }
-        if (ast.isElementDescendantRef(node)) {
-          return new StreamScope(this.scopeElementDescedantRef(node))
+        if (ast.isElementRef(node) && !isElementRefHead(node)) {
+          return new StreamScope(this.scopeElementRef(node))
         }
       }
       return this.computeScope(node, referenceType)

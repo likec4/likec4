@@ -39,16 +39,10 @@ ExtendElement:
   CloseBlock)?;
 
 StrictElementRef:
-  el=[Element:Name] (Dot child=StrictElementChildRef)?;
-
-StrictElementChildRef:
-  el=[Element:Name] (Dot child=StrictElementChildRef)?;
+  el=[Element:Name] (Dot next=StrictElementRef)?;
 
 ElementRef:
-  el=[Element:Name] (Dot next=ElementDescendantRef)?;
-
-ElementDescendantRef:
-  el=[Element:Name] (Dot next=ElementDescendantRef)?;
+  el=[Element:Name] (Dot next=ElementRef)?;
 
 Tags:
   value+=[Tag:TagID];

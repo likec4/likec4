@@ -8,9 +8,11 @@ import { parentFqn } from '@likec4/core/utils'
 import { Fqn } from '@likec4/core/types'
 import { strictElementRefFqn } from '../elementRef'
 
+const fqnField = Symbol('fqn')
+
 export class FqnIndex {
 
-  #fqnMap = new WeakMap<ast.Element, Fqn>()
+  // #fqnMap = new WeakMap<ast.Element, Fqn>()
 
   #index = new MultiMap<Fqn, AstNodeDescription>()
 
@@ -18,8 +20,8 @@ export class FqnIndex {
 
   constructor(private services: LikeC4Services) {
     this.descriptions = services.workspace.AstNodeDescriptionProvider;
-    services.shared.workspace.DocumentBuilder.onUpdate((changed, removed) => {
-      for (const uri of [...changed, ...removed]) {
+    services.shared.workspace.DocumentBuilder.onUpdate((_changed, removed) => {
+      for (const uri of [...removed]) {
         this.cleanIndexedElements(uri)
       }
     })
@@ -33,11 +35,13 @@ export class FqnIndex {
   }
 
   public get(el: ast.Element): Fqn | null {
-    let fqn = this.#fqnMap.get(el) ?? null
+    let fqn = ((el as any)[fqnField] as Fqn | undefined) ?? null
+    // if ()
+    // let fqn = this.#fqnMap.get(el) ?? null
     if (fqn && !this.#index.has(fqn)) {
       const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
       logger.error(`Clean cached FQN ${fqn} at ${path}`)
-      this.#fqnMap.delete(el)
+      // this.#fqnMap.delete(el)
       fqn = null
     }
     return fqn
@@ -107,7 +111,8 @@ export class FqnIndex {
       const name = element.name
       const fqn = Fqn(name, parent)
       this.#index.add(fqn, this.descriptions.createDescription(element, name, doc))
-      this.#fqnMap.set(element, fqn)
+      ;(element as any)[fqnField] = fqn
+      // this.#fqnMap.set(element, fqn)
       if (element.definition) {
         for (const nested of element.definition.elements) {
           if (ast.isElement(nested)) {

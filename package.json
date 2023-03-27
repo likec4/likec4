@@ -10,7 +10,7 @@
     "build": "turbo run build --filter='./packages/*'",
     "clean": "turbo run clean",
     "dev": "turbo run dev --filter='./packages/*'",
-    "test": "turbo run test --filter='./packages/*' --continue -- run",
+    "test": "turbo run test --filter='./packages/*' --continue",
     "lint": "turbo run lint --filter='./packages/*' --continue"
   },
   "devDependencies": {

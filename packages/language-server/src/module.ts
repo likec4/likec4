@@ -10,9 +10,8 @@ import {
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { ScopeComputation, ScopeProvider } from './references'
-import { FqnIndex } from './model/fqn-index'
+import { FqnIndex, LikeC4ModelBuilder } from './model'
 import { registerValidationChecks } from './validation'
-import { LikeC4ModelBuilder } from './model/model-builder'
 import { LikeC4DocumentSymbolProvider } from './lsp'
 
 /**
