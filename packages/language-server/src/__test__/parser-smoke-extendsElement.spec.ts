@@ -34,7 +34,7 @@ test('parser smoke: ExtendsElement Scope', async () => {
   await parse(document2)
   await parse(document3)
 
-  const errors = (await validateAll()).join('\n')
+  const { diagnostics } = await validateAll()
 
-  expect(errors).toEqual('')
+  expect(diagnostics).toEqual([])
 })

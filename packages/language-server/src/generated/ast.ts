@@ -34,7 +34,7 @@ export interface Element extends AstNode {
     definition?: ElementBody
     kind: Reference<ElementKind>
     name: Name
-    title?: StringValue
+    title?: string
 }
 
 export const Element = 'Element';

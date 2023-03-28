@@ -26,13 +26,13 @@ export class LikeC4ModelBuilder {
     //     this.cleanParsedOfDoc(uri)
     //   }
     // })
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Linked, (docs, _cancelToken) => {
-      for (const doc of docs) {
-        if (isLikeC4LangiumDocument(doc)) {
-          cleanParsedModel(doc)
-        }
-      }
-    })
+    // services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Linked, (docs, _cancelToken) => {
+    //   for (const doc of docs) {
+    //     if (isLikeC4LangiumDocument(doc)) {
+    //       cleanParsedModel(doc)
+    //     }
+    //   }
+    // })
     services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (docs, cancelToken) => {
       for (const doc of docs) {
         if (isLikeC4LangiumDocument(doc)) {
@@ -128,9 +128,13 @@ export class LikeC4ModelBuilder {
     const spec = doc.parseResult.value.specification
     if (spec) {
       for (const { kind, style } of spec.elementKinds) {
-        const styleprops = style && toElementStyle(style.props)
-        specification.kinds[kind.name as c4.ElementKind] = {
-          shape: styleprops?.shape ?? 'rectangle'
+        try {
+          const styleprops = style && toElementStyle(style.props)
+          specification.kinds[kind.name as c4.ElementKind] = {
+            shape: styleprops?.shape ?? 'rectangle'
+          }
+        } catch (e) {
+          logger.warn(e)
         }
       }
     }

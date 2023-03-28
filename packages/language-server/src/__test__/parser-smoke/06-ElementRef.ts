@@ -1,4 +1,4 @@
-export const fixture_06_ElementRef = `
+export const valid_06_ElementRef = `
 specification {
   element component
 }
@@ -16,7 +16,7 @@ model {
 }
 `
 
-export const failing_fixture_06_ElementRef = `
+export const invalid_06_ElementRef = `
 specification {
   element component
 }
@@ -30,7 +30,7 @@ model {
   user -> sub2.sub1
 }
 `
-// export const failing_fixture_06_ElementRefScope = `
+// export const invalid_06_ElementRefScope = `
 // specification {
 //   element component
 // }
@@ -45,7 +45,7 @@ model {
 // }
 // `
 
-// export const failing_fixture_06_ElementChildRefScope = `
+// export const invalid_06_ElementChildRefScope = `
 // specification {
 //   element component
 // }

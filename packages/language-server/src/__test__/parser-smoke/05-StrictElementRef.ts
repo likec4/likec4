@@ -1,4 +1,4 @@
-export const fixture_05_StrictElementRef = `
+export const valid_05_StrictElementRef = `
 specification {
   element component
 }
@@ -16,7 +16,7 @@ model {
   }
 }
 `
-export const failing_fixture_05_StrictElementRefScope = `
+export const invalid_05_StrictElementRefScope = `
 specification {
   element component
 }
@@ -31,7 +31,7 @@ model {
 }
 `
 
-export const failing_fixture_05_StrictElementChildRefScope = `
+export const invalid_05_StrictElementChildRefScope = `
 specification {
   element component
 }

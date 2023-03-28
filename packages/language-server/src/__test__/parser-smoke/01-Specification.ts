@@ -1,4 +1,4 @@
-export const fixture_01_Specification = `
+export const valid_01_Specification = `
 specification {
   element container
   element component {

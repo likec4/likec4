@@ -1,4 +1,4 @@
-export const fixture_04_Scope = `
+export const valid_04_Scope = `
 specification {
   element person
   element component
@@ -16,7 +16,7 @@ model {
   }
 }
 `
-export const failing_fixture_04_DuplicateNameInScope = `
+export const invalid_04_DuplicateNameInScope = `
 specification {
   element person
   element component

@@ -8,6 +8,7 @@ export function createTestServices() {
   const metaData = services.LanguageMetaData
   const langiumDocuments = services.shared.workspace.LangiumDocuments
   const documentBuilder = services.shared.workspace.DocumentBuilder
+  const modelBuilder = services.likec4.ModelBuilder
 
   let documentIndex = 1
 
@@ -22,21 +23,27 @@ export function createTestServices() {
   const validate = async (input: string | LikeC4LangiumDocument) => {
     const document = typeof input === 'string' ? await parse(input) : input
     await documentBuilder.build([document], { validationChecks: 'all' })
+    const diagnostics = document.diagnostics ?? []
     return {
       document,
-      diagnostics: document.diagnostics!
+      diagnostics,
+      errorMessages: diagnostics.map(d => d.message).join('\n')
     }
   }
 
   const validateAll = async () => {
     const docs = langiumDocuments.all.toArray()
     await documentBuilder.build(docs, { validationChecks: 'all' })
-    return docs.flatMap(doc => (doc.diagnostics ?? []).filter(e => e.severity === 1)).map(d => d.message)
+    const diagnostics =  docs.flatMap(doc => doc.diagnostics ?? [])
+    return {
+      diagnostics,
+      errorMessages: diagnostics.map(d => d.message).join('\n')
+    }
   }
 
   const buildModel = async () => {
     await validateAll()
-    const model = services.likec4.ModelBuilder.buildModel()
+    const model = modelBuilder.buildModel()
     if (!model) throw new Error('No model found')
     return model
   }
