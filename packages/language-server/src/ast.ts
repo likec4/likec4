@@ -11,12 +11,14 @@ export { ast }
 export function c4hash({
   c4Specification,
   c4Elements,
-  c4Relations
+  c4Relations,
+  c4Views
 }: LikeC4LangiumDocument) {
   return objectHash({
     c4Specification,
     c4Elements,
-    c4Relations
+    c4Relations,
+    c4Views
   }, {
     respectType: false,
   })
@@ -48,11 +50,21 @@ export interface ParsedAstRelation {
   title: string
 }
 
+export interface ParsedAstElementView {
+  id: c4.ViewID
+  astNodePath: string
+  of?: c4.Fqn
+  title?: string
+  description?: string
+  rules: c4.ViewRule[]
+}
+
 export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
   c4hash?: string
   c4Specification: ParsedAstSpecification
   c4Elements: ParsedAstElement[]
   c4Relations: ParsedAstRelation[]
+  c4Views: ParsedAstElementView[]
 }
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
@@ -61,9 +73,11 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   }
   const elements = doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements']
   const relations = doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations']
+  const views = doc.c4Views = [] as LikeC4LangiumDocument['c4Views']
   return {
     elements,
     relations,
+    views,
     specification: doc.c4Specification
   }
 }
@@ -73,7 +87,7 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
 }
 
 export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
-  return isLikeC4LangiumDocument(doc) && 'c4Specification' in doc && 'c4Elements' in doc && 'c4Relations' in doc
+  return isLikeC4LangiumDocument(doc) && ['c4Specification', 'c4Elements', 'c4Relations', 'c4Views'].every(key => key in doc)
 }
 
 export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {

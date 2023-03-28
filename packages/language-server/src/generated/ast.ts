@@ -143,7 +143,7 @@ export function isElementRefExpression(item: unknown): item is ElementRefExpress
 export interface ElementStringProperty extends AstNode {
     readonly $container: ElementBody;
     readonly $type: 'ElementStringProperty';
-    key: 'description' | 'title'
+    key: 'description' | 'technology' | 'title'
     value: string
 }
 
@@ -170,9 +170,9 @@ export interface ElementView extends AstNode {
     readonly $container: ModelViews;
     readonly $type: 'ElementView';
     name?: Name
-    of?: ElementRef
     properties: Array<ViewProperty>
     rules: Array<ViewRule>
+    viewOf?: ElementRef
 }
 
 export const ElementView = 'ElementView';

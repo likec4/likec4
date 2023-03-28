@@ -7,7 +7,7 @@ ModelViews:
   CloseBlock;
 
 View:
-  {infer ElementView} 'view' name=Name? ('of' of=ElementRef)? OpenBlock
+  {infer ElementView} 'view' name=Name? ('of' viewOf=ElementRef)? OpenBlock
     properties+=ViewProperty*
     rules+=ViewRule*
   CloseBlock;

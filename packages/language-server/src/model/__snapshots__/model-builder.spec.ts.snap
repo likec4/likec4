@@ -45,6 +45,7 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
       "title": "requests",
     },
   },
+  "views": {},
 }
 `;
 
@@ -89,6 +90,23 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "source": "client",
       "target": "system.frontend",
       "title": "",
+    },
+  },
+  "views": {
+    "84c657e83cc88042b500b62d70653cb078d06e43": {
+      "id": "84c657e83cc88042b500b62d70653cb078d06e43",
+      "rules": [],
+      "viewOf": "system.frontend",
+    },
+    "index": {
+      "id": "index",
+      "rules": [],
+      "title": "Index",
+    },
+    "v1": {
+      "id": "v1",
+      "rules": [],
+      "viewOf": "system.backend.api",
     },
   },
 }

@@ -37,8 +37,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     )
   }
 
-  private scopeElementView(ref: ast.ElementView): Stream<AstNodeDescription> {
-    const viewOf = ref.of
+  private scopeElementView({ viewOf }: ast.ElementView): Stream<AstNodeDescription> {
     if (!viewOf) {
       return EMPTY_STREAM
     }

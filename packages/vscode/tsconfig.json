@@ -1,19 +1,25 @@
 {
-  "extends": "../tsconfig/node16.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["es2022","webworker"],
-    "target": "es2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noUncheckedIndexedAccess": false,
+    "lib": [
+      "ESNext", "WebWorker"
+    ],
+    "sourceMap": true,
+    "verbatimModuleSyntax": false,
+    "downlevelIteration": true,
     "importsNotUsedAsValues": "preserve",
+    "outDir": "dist",
+    "ignoreDeprecations": "5.0",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
-      "$/*": ["src/*"]
+      "$/*": [
+        "src/*"
+      ]
     }
   },
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ]
 }

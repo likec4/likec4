@@ -84,6 +84,20 @@ describe('LikeC4ModelBuilder', () => {
       system.frontend -> api 'requests'
       client -> system.frontend
     }
+    views {
+      view index {
+        title 'Index'
+        include *
+      }
+
+      view v1 of api {
+        include *
+      }
+
+      view of system.frontend {
+        include *
+      }
+    }
     `)
     const { errors } = await validateAll()
     expect(errors).toEqual([])
@@ -98,6 +112,19 @@ describe('LikeC4ModelBuilder', () => {
       }
     })
     expect(keys(model.relations)).toHaveLength(2)
+
+    expect(keys(model.views)).toHaveLength(3)
+    expect(model.views).toMatchObject({
+      'index': {
+        'id': 'index',
+        'title': 'Index'
+      },
+      'v1': {
+        'id': 'v1',
+        'viewOf': 'system.backend.api',
+      }
+    })
+
     expect(model).toMatchSnapshot()
   })
 

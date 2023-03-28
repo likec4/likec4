@@ -1,15 +1,15 @@
-// import type { likec4 } from '@likec4/core';
+import type { LikeC4Model } from '@likec4/core/types';
 // import type { DocumentUri, Location } from 'vscode-languageserver-protocol';
 // import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
-import { NotificationType } from 'vscode-languageserver-protocol'
+import { NotificationType, RequestType0 } from 'vscode-languageserver-protocol'
 
 //#region From server
-export const onDidChangeC4XModel = new NotificationType('likec4/onDidChangeModel')
+export const onDidChangeLikeC4Model = new NotificationType('likec4/onDidChangeModel')
 //#endregion
 
 
 // //#region To server
-// export const fetchC4XModel = new RequestType0<{state: Model | null}, unknown>('c4x/fetchC4XModel')
+export const fetchLikeC4Model = new RequestType0<{model: LikeC4Model | null}, unknown>('likec4/fetchModel')
 // export const rebuildDocuments = new RequestType<DocumentUri[], void, unknown>('c4x/rebuildDocuments')
 
 // export const locateElement = new RequestType<{element: Fqn, property?: string}, Location | null, unknown>('c4x/locateElement')

@@ -20,3 +20,5 @@ export {
 //   startLangiumLanguageServer(shared)
 //   return likec4
 // }
+
+export * as protocol from './protocol'

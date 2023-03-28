@@ -448,23 +448,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/language-server-protocol@workspace:*, @likec4/language-server-protocol@workspace:packages/language-server-protocol":
-  version: 0.0.0-use.local
-  resolution: "@likec4/language-server-protocol@workspace:packages/language-server-protocol"
-  dependencies:
-    "@likec4/core": "workspace:*"
-    typescript: ^5.0.2
-    vscode-languageserver-protocol: ^3.17.3
-  languageName: unknown
-  linkType: soft
-
 "@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/eslint-config": "workspace:*"
-    "@likec4/language-server-protocol": "workspace:*"
     "@mobily/ts-belt": ^3.13.1
     "@types/node": ^18.15.6
     "@types/object-hash": ^3.0.2
@@ -481,7 +470,7 @@ __metadata:
     typescript: ^5.0.2
     vite: ^4.2.1
     vitest: ^0.29.7
-    vscode-languageserver-protocol: ^3.17.3
+    vscode-languageserver-protocol: 3.17.2
     vscode-uri: ^3.0.7
   languageName: unknown
   linkType: soft
@@ -493,7 +482,6 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/eslint-config": "workspace:*"
     "@likec4/language-server": "workspace:*"
-    "@likec4/language-server-protocol": "workspace:*"
     "@types/node": ^18.15.6
     "@types/vscode": ^1.74.0
     esbuild: ^0.16.17
@@ -510,9 +498,9 @@ __metadata:
     vscode-jsonrpc: 8.0.2
     vscode-languageclient: 8.0.2
     vscode-languageserver: 8.0.2
-    vscode-languageserver-protocol: ^3.17.3
+    vscode-languageserver-protocol: 3.17.2
     vscode-languageserver-textdocument: ^1.0.8
-    vscode-languageserver-types: ^3.17.3
+    vscode-languageserver-types: 3.17.2
     vscode-uri: ^3.0.7
     xstream: ^11.14.0
   languageName: unknown

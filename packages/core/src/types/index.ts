@@ -1,3 +1,5 @@
 export * from './element'
 export * from './relation'
 export * from './model'
+export * from './view'
+export * from './expression'

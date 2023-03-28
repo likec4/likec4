@@ -13,6 +13,7 @@ import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { FqnIndex, LikeC4ModelBuilder } from './model'
 import { registerValidationChecks } from './validation'
 import { LikeC4DocumentSymbolProvider, LikeC4SemanticTokenProvider } from './lsp'
+import { registerProtocolHandlers } from './registerProtocolHandlers'
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -85,6 +86,6 @@ export function createLanguageServices(context: DefaultSharedModuleContext): {
   )
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
-  // registerProtocolHandlers(likec4)
+  registerProtocolHandlers(likec4)
   return { shared, likec4 }
 }
