@@ -8,6 +8,7 @@ import { strictElementRefFqn } from '../elementRef'
 import objectHash from 'object-hash'
 import { logger } from '../logger'
 import { pipe, D, A, O, flow } from '@mobily/ts-belt'
+import { mergeAll} from 'rambdax'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
 
 
@@ -60,7 +61,9 @@ export class LikeC4ModelBuilder {
       A.map(d => d.c4Specification),
       A.uncons,
       O.map(([initialValue, specs]) =>
-        A.reduce(specs, initialValue, D.merge<ParsedAstSpecification, ParsedAstSpecification>)
+        A.reduce(specs, initialValue, (acc, spec) => ({
+          kinds: D.merge(acc.kinds, spec.kinds)
+        }))
       ),
       O.getWithDefault<ParsedAstSpecification>({
         kinds: {}
