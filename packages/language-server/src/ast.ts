@@ -70,6 +70,10 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
+export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
+  return isLikeC4LangiumDocument(doc) && 'c4Specification' in doc && 'c4Elements' in doc && 'c4Relations' in doc
+}
+
 export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {
   if (!isLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc

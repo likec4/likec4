@@ -3,7 +3,7 @@
   "display": "Base Strictest",
   "compilerOptions": {
     "lib": [
-      "es2022"
+      "ESNext"
     ],
     "module": "es2022",
     "target": "es2022",

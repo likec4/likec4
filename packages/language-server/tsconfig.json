@@ -3,6 +3,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "verbatimModuleSyntax": false,
+    "downlevelIteration": true,
     "importsNotUsedAsValues": "preserve",
     "outDir": "dist",
     "ignoreDeprecations": "5.0",

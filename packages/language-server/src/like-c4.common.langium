@@ -15,9 +15,6 @@ ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'cylinder' | '
 
 Name returns string: ElementShape | ID;
 
-StringValue returns string:
-  Name | STRING;
-
 // -------------------------
 
 terminal LArrow: '->';

@@ -2,7 +2,7 @@ import { AstNode, DocumentState, LangiumDocuments, interruptAndCheck } from 'lan
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
 import type * as c4 from '@likec4/core/types'
-import { ast, streamElements, type LikeC4LangiumDocument, ParsedAstElement, c4hash, resolveRelationPoints, toElementStyle, isLikeC4LangiumDocument, cleanParsedModel, isValidDocument, ParsedAstRelation, ParsedAstSpecification } from '../ast'
+import { ast, streamElements, type LikeC4LangiumDocument, ParsedAstElement, c4hash, resolveRelationPoints, toElementStyle, isLikeC4LangiumDocument, cleanParsedModel, isValidDocument, ParsedAstRelation, ParsedAstSpecification, isParsedLikeC4LangiumDocument } from '../ast'
 import { failExpectedNever } from '../utils'
 import { strictElementRefFqn } from '../elementRef'
 import objectHash from 'object-hash'
@@ -36,8 +36,8 @@ export class LikeC4ModelBuilder {
     // })
     services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (docs, cancelToken) => {
       for (const doc of docs) {
-        if (isLikeC4LangiumDocument(doc)) {
-          await interruptAndCheck(cancelToken)
+        await interruptAndCheck(cancelToken)
+        if (isValidDocument(doc)) {
           this.parseDocument(doc)
         }
       }
@@ -53,7 +53,7 @@ export class LikeC4ModelBuilder {
   }
 
   public buildModel(): c4.LikeC4Model | undefined {
-    const docs = this.allDocuments.filter(isValidDocument)
+    const docs = this.allDocuments.filter(isParsedLikeC4LangiumDocument)
     if (docs.length === 0) {
       return
     }

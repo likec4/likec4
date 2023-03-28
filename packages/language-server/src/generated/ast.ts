@@ -26,8 +26,6 @@ export type ElementShape = 'browser' | 'cylinder' | 'person' | 'queue' | 'rectan
 
 export type Name = ElementShape | string;
 
-export type StringValue = Name | string;
-
 export interface Element extends AstNode {
     readonly $container: ElementBody | ExtendElement | Model;
     readonly $type: 'Element';
@@ -99,7 +97,7 @@ export interface ElementStringProperty extends AstNode {
     readonly $container: ElementBody;
     readonly $type: 'ElementStringProperty';
     key: 'description' | 'title'
-    value: StringValue
+    value: string
 }
 
 export const ElementStringProperty = 'ElementStringProperty';

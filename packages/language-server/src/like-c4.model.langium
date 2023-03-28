@@ -26,7 +26,7 @@ ElementBody: OpenBlock
 CloseBlock;
 
 ElementProperty: (
-  {infer ElementStringProperty} key=('title' | 'description') Colon? value=StringValue |
+  {infer ElementStringProperty} key=('title' | 'description') Colon? value=STRING |
   {infer ElementStyleProperty} key='style' value=ElementStyleProperties
 );
 
