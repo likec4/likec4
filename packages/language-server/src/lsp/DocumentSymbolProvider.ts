@@ -16,10 +16,11 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   }
 
   getSymbols(document: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
-    const { specification, model } = document.parseResult.value
+    const { specification, model, views } = document.parseResult.value
     return [
       ...this.getSpecSymbols(specification),
-      ...this.getModelSymbols(model)
+      ...this.getModelSymbols(model),
+      ...this.getModelViewsSymbols(views)
     ]
   }
 
@@ -120,7 +121,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
     const name = astElement.name
     const kind = astElement.kind.$refText
-    const detail = kind + (astElement.title  ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
+    const detail = kind + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
     return [{
       kind: SymbolKind.Constructor,
       name: name,
@@ -128,6 +129,20 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       selectionRange: nameNode.range,
       detail,
       children: astElement.definition?.elements.flatMap(this.getElementsSymbol) ?? []
+    }]
+  }
+
+  protected getModelViewsSymbols = (astViews: ast.ModelViews | undefined): DocumentSymbol[] => {
+    const cst = astViews?.$cstNode
+    if (!cst) return []
+    const nameNode = findNodeForProperty(cst, 'name')
+    if (!nameNode) return []
+    return [{
+      kind: SymbolKind.Class,
+      name: astViews.name,
+      range: cst.range,
+      selectionRange: nameNode.range,
+      children: []
     }]
   }
 }

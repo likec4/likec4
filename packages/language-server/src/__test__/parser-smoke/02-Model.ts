@@ -26,6 +26,20 @@ model {
   user3 = person
 }
 `
+export const valid_02_Model_Element_Style = `
+specification {
+  element person
+}
+model {
+  user1 = person {
+    style {
+      shape person
+      color secondary
+    }
+  }
+  user2 = person
+}
+`
 export const invalid_02_Model = `
 specification {
   element person

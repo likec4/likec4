@@ -1,10 +1,12 @@
 model {
 
-  softwaresystem A
+  softwareSystem A {
+    a -> cc
+  }
 
   person Customer {
 
-    a = container 'A' {
+    a = container A {
       #gray
     }
 
@@ -13,6 +15,16 @@ model {
     }
 
   }
+
+  extend Customer {
+
+      c = component Xomponent {
+        component cc
+      }
+
+  }
+
+  cc -> b.bb 'asks'
 
 //   customer = person "Personal Banking Customer" {
 //     description: "A customer of the bank, with personal bank accounts."

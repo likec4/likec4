@@ -9,8 +9,11 @@ export function Fqn(name: string, parent?: Fqn | null) {
 
 export type ElementKind = Opaque<string, 'ElementKind'>
 
+export type ThemeColor = 'primary' | 'secondary' | 'muted'
 export type ElementShape = 'rectangle' | 'person' | 'browser' | 'cylinder' | 'storage' | 'queue'
 
+export const DefaultThemeColor: ThemeColor = 'primary'
+export const DefaultElementShape: ElementShape = 'rectangle'
 
 export interface ElementStyle {
   shape?: ElementShape
@@ -30,5 +33,6 @@ export interface Element {
   readonly title: string
   readonly description?: string
   readonly tags?: Tag[]
-  readonly shape: ElementShape
+  readonly shape?: ElementShape
+  readonly color?: ThemeColor
 }

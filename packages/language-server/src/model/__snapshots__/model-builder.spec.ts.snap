@@ -6,25 +6,25 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
     "client": {
       "id": "client",
       "kind": "user",
-      "shape": "rectangle",
+      "shape": "person",
       "title": "client",
     },
     "system": {
       "id": "system",
       "kind": "component",
-      "shape": "rectangle",
       "title": "system",
     },
     "system.backend": {
+      "color": "secondary",
       "id": "system.backend",
       "kind": "component",
-      "shape": "rectangle",
       "title": "Backend",
     },
     "system.frontend": {
+      "color": "muted",
       "id": "system.frontend",
       "kind": "component",
-      "shape": "rectangle",
+      "shape": "browser",
       "tags": [
         "deprecated",
       ],
@@ -54,34 +54,26 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "client": {
       "id": "client",
       "kind": "user",
-      "shape": "rectangle",
       "title": "client",
     },
     "system": {
       "id": "system",
       "kind": "component",
-      "shape": "rectangle",
       "title": "system",
     },
     "system.backend": {
       "id": "system.backend",
       "kind": "component",
-      "shape": "rectangle",
-      "title": "Backend",
+      "title": "backend",
     },
     "system.backend.api": {
       "id": "system.backend.api",
       "kind": "component",
-      "shape": "rectangle",
       "title": "api",
     },
     "system.frontend": {
       "id": "system.frontend",
       "kind": "component",
-      "shape": "rectangle",
-      "tags": [
-        "deprecated",
-      ],
       "title": "frontend",
     },
   },
@@ -90,19 +82,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "id": "1ac9195843081750e2aabdb657a4727c1a9c18f3",
       "source": "system.frontend",
       "target": "system.backend.api",
-      "title": "",
+      "title": "requests",
     },
     "243ec225564cf9a9bdc936707f989434385fc862": {
       "id": "243ec225564cf9a9bdc936707f989434385fc862",
       "source": "client",
       "target": "system.frontend",
       "title": "",
-    },
-    "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd": {
-      "id": "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd",
-      "source": "system.frontend",
-      "target": "system.backend",
-      "title": "requests",
     },
   },
 }

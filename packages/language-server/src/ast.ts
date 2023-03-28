@@ -1,5 +1,5 @@
 import * as ast from './generated/ast'
-import { DocumentState, LangiumDocument } from 'langium'
+import { AstNode, DocumentState, LangiumDocument } from 'langium'
 import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
 import objectHash from 'object-hash'
@@ -25,6 +25,7 @@ export function c4hash({
 export interface ParsedAstSpecification {
   kinds: Record<c4.ElementKind, {
     shape: c4.ElementShape
+    color: c4.ThemeColor
   }>
 }
 
@@ -36,6 +37,7 @@ export interface ParsedAstElement {
   description?: string
   tags?: c4.Tag[]
   shape?: c4.ElementShape
+  color?: c4.ThemeColor
 }
 
 export interface ParsedAstRelation {
@@ -129,23 +131,38 @@ export function resolveRelationPoints(node: ast.Relation): {
 }
 
 
-export function toElementStyle(props: ast.AbstractElementStyleProperty[]): c4.ElementStyle {
-  const result: c4.ElementStyle = {}
-
-  const shapeProperty = props.find(ast.isElementShapeStyleProperty)
-  if (shapeProperty) {
-    result.shape = shapeProperty.value
+export function toElementStyle(props?: ast.AStyleProperty[]) {
+  let result: {
+    color?: c4.ThemeColor
+    shape?: c4.ElementShape
+  } = {}
+  const color = props?.find(ast.isColorProperty)?.value
+  if (color) {
+    result.color = color
   }
-
-  // const colorPropValue = props.find(isColorStyleProperty)?.value
-  // if (isElementStyleColor(colorPropValue)) {
-  //   result.color = colorPropValue
-  // }
-
-  // const iconProp = props.find(isIconStyleProperty)
-  // if (iconProp) {
-  //   result.icon = iconProp.value
-  // }
+  const shape = props?.find(ast.isShapeProperty)?.value
+  if (shape) {
+    result.shape = shape
+  }
 
   return result
 }
+//   const result: c4.ElementStyle = {}
+
+//   const shapeProperty = props.find(ast.isElementShapeStyleProperty)
+//   if (shapeProperty) {
+//     result.shape = shapeProperty.value
+//   }
+
+//   // const colorPropValue = props.find(isColorStyleProperty)?.value
+//   // if (isElementStyleColor(colorPropValue)) {
+//   //   result.color = colorPropValue
+//   // }
+
+//   // const iconProp = props.find(isIconStyleProperty)
+//   // if (iconProp) {
+//   //   result.icon = iconProp.value
+//   // }
+
+//   return result
+// }

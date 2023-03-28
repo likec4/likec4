@@ -9,7 +9,11 @@ describe('LikeC4ModelBuilder', () => {
     const { diagnostics } = await validate(`
     specification {
       element component
-      element user
+      element user {
+        style {
+          shape: person
+        }
+      }
       tag deprecated
     }
     model {
@@ -17,9 +21,18 @@ describe('LikeC4ModelBuilder', () => {
         -> frontend
       }
       component system {
-        backend = component 'Backend'
+        backend = component 'Backend' {
+          style {
+            color secondary
+          }
+        }
         component frontend {
           #deprecated
+          style {
+            color: muted
+            shape: browser
+          }
+
           -> backend 'requests'
         }
       }
@@ -28,6 +41,22 @@ describe('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
     expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      'client': {
+        'kind': 'user',
+        'shape': 'person',
+      },
+      'system.backend': {
+        'color': 'secondary',
+      },
+      'system.frontend': {
+        'color': 'muted',
+        'shape': 'browser',
+      }
+    })
+    expect(model.elements.client).not.toHaveProperty('color')
+    expect(model.elements.system).not.toHaveProperty('color')
+    expect(model.elements.system).not.toHaveProperty('shape')
     expect(model).toMatchSnapshot()
   })
 
@@ -42,11 +71,8 @@ describe('LikeC4ModelBuilder', () => {
     model {
       user client
       component system {
-        backend = component 'Backend'
-        component frontend {
-          #deprecated
-          -> backend 'requests'
-        }
+        backend = component
+        component frontend
       }
     }
     `)
@@ -55,12 +81,12 @@ describe('LikeC4ModelBuilder', () => {
       extend system.backend {
         component api
       }
-      system.frontend -> api
+      system.frontend -> api 'requests'
       client -> system.frontend
     }
     `)
-    const { errorMessages } = await validateAll()
-    expect(errorMessages).toEqual('')
+    const { errors } = await validateAll()
+    expect(errors).toEqual([])
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
@@ -71,7 +97,7 @@ describe('LikeC4ModelBuilder', () => {
         'kind': 'component',
       }
     })
-    expect(keys(model.relations)).toHaveLength(3)
+    expect(keys(model.relations)).toHaveLength(2)
     expect(model).toMatchSnapshot()
   })
 

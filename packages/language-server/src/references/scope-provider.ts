@@ -1,6 +1,6 @@
-import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, AstNode, getDocument, stream } from 'langium'
+import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, AstNode, getDocument, stream, EMPTY_STREAM } from 'langium'
 import { ast } from '../ast'
-import { isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
+import { elementRef, isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
 import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 import invariant from 'tiny-invariant'
@@ -23,6 +23,30 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         // if (ast.isElementRef(ref.$container))
         const parent = parentNode.el.ref
         const fqn = parent && this.fqnIndex.get(parent)
+        if (fqn) {
+          return this.fqnIndex.uniqueDescedants(fqn).iterator()
+        }
+        return null
+      },
+      (iterator) => {
+        if (iterator) {
+          return iterator.next()
+        }
+        return DONE_RESULT
+      }
+    )
+  }
+
+  private scopeElementView(ref: ast.ElementView): Stream<AstNodeDescription> {
+    const viewOf = ref.of
+    if (!viewOf) {
+      return EMPTY_STREAM
+    }
+    return new StreamImpl(
+      () => {
+        // if (ast.isElementRef(ref.$container))
+        const target = elementRef(viewOf)
+        const fqn = target && this.fqnIndex.get(target)
         if (fqn) {
           return this.fqnIndex.uniqueDescedants(fqn).iterator()
         }
@@ -82,6 +106,9 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (ast.isExtendElement(currentNode) && currentNode !== container) {
             const extendsOf = strictElementRefFqn(currentNode.element)
             scopes.push(this.fqnIndex.uniqueDescedants(extendsOf))
+          }
+          if (ast.isElementView(currentNode) && currentNode !== container) {
+            scopes.push(this.scopeElementView(currentNode))
           }
         }
         currentNode = currentNode.$container

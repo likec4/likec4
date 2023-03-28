@@ -16,3 +16,18 @@ specification {
   tag lightgray
 }
 `
+export const valid_01_Specification_ElementKindStyle = `
+specification {
+  element frontend {
+    style {
+      shape browser
+      color secondary
+    }
+  }
+  element person {
+    style {
+      shape: person
+    }
+  }
+}
+`

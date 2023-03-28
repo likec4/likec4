@@ -1,4 +1,4 @@
-import { ast } from '../ast'
+import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
 import { elementKindChecks } from './specification'

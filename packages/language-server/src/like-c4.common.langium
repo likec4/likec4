@@ -1,28 +1,33 @@
-ElementStyleProperties: OpenBlock
-    (props+=AbstractElementStyleProperty)*
-  CloseBlock;
+// ElementStyleProperties: 'style' OpenBlock
+//     (props+=AbstractElementStyleProperty)*
+//   CloseBlock;
+// ElementStyleProperties: (props+=ElementStyleProperty)*;
 
-AbstractElementStyleProperty: (
-  {infer ElementShapeStyleProperty} key='shape' Colon? value=ElementShape
-);
+ColorProperty: key='color' Colon? value=ThemeColor;
+ShapeProperty: key='shape' Colon? value=ElementShape;
+
+AStyleProperty: ColorProperty | ShapeProperty;
 
 // -------------------------
 
 ElementKind: name=Name;
 Tag: name=Name;
 
+ThemeColor returns string: 'primary' | 'secondary' | 'muted';
+
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'cylinder' | 'storage' | 'queue';
 
-Name returns string: ElementShape | ID;
+Name returns string: ElementShape | ThemeColor | 'model' | ID;
 
 // -------------------------
 
-terminal LArrow: '->';
 terminal Dot: '.';
 terminal Eq: '=';
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
 terminal Colon: ':';
+terminal Comma: ',';
+terminal Star: '*';
 terminal Semi: ';';
 
 terminal TagID returns string: '#' ID;

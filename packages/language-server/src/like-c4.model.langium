@@ -27,7 +27,11 @@ CloseBlock;
 
 ElementProperty: (
   {infer ElementStringProperty} key=('title' | 'description') Colon? value=STRING |
-  {infer ElementStyleProperty} key='style' value=ElementStyleProperties
+  {infer ElementStyleProperty} key='style' OpenBlock
+    (props+=(
+      ColorProperty | ShapeProperty
+    ))*
+  CloseBlock
 );
 
 ExtendElement:
@@ -55,9 +59,9 @@ fragment RelationFragment:
 ;
 
 RelationWithoutSource infers Relation:
-  ('this' | 'it')? LArrow RelationFragment;
+  ('this' | 'it')? '->' RelationFragment;
 
 RelationWithSource:
-  source=ElementRef LArrow RelationFragment;
+  source=ElementRef '->' RelationFragment;
 
 // RelationWithSource: {infer RelationWithSource2} RelationWithSourceRule;

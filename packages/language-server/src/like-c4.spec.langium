@@ -10,8 +10,14 @@ SpecificationRule:
 
 SpecificationElementKind:
   'element' kind=ElementKind (OpenBlock
-     ('style' style=ElementStyleProperties)?
+    style=SpecificationElementKindStyle?
   CloseBlock)?;
+
+SpecificationElementKindStyle: 'style' OpenBlock
+    (props+=(
+      ColorProperty | ShapeProperty
+    ))*
+  CloseBlock;
 
 SpecificationTag:
   'tag' tag=Tag;

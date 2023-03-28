@@ -5,9 +5,9 @@
       "id": "likec4",
       "grammar": "src/like-c4.langium",
       "fileExtensions": [
-        ".lkc4",
         ".likec4",
-        ".like-c4"
+        ".like-c4",
+        ".c4"
       ],
       "textMate": {
         "out": "contrib/like-c4.tmLanguage.json"

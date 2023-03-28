@@ -13,7 +13,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   }
 
   override computeExports(document: LikeC4LangiumDocument, _cancelToken: CancellationToken): Promise<AstNodeDescription[]> {
-    const { specification, model } = document.parseResult.value
+    const { specification, model, views } = document.parseResult.value
     const docExports: AstNodeDescription[] = []
     if (specification) {
       for (const { kind } of specification.elementKinds) {
@@ -28,6 +28,13 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       for (const elAst of model.elements) {
         if (ast.isElement(elAst)) {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
+        }
+      }
+    }
+    if (views) {
+      for (const viewAst of views.views) {
+        if ('name' in viewAst) {
+          docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
         }
       }
     }

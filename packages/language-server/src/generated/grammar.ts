@@ -39,7 +39,20 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@23"
+                "$ref": "#/rules@27"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "views",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@39"
               },
               "arguments": []
             },
@@ -71,7 +84,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@13"
+              "$ref": "#/rules@15"
             },
             "arguments": []
           },
@@ -97,7 +110,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@3"
+                    "$ref": "#/rules@4"
                   },
                   "arguments": []
                 }
@@ -108,7 +121,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@16"
             },
             "arguments": []
           }
@@ -138,7 +151,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@6"
+                "$ref": "#/rules@8"
               },
               "arguments": []
             }
@@ -149,41 +162,90 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@13"
+                  "$ref": "#/rules@15"
                 },
                 "arguments": []
               },
               {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": "style"
+                "$type": "Assignment",
+                "feature": "style",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@3"
                   },
-                  {
-                    "$type": "Assignment",
-                    "feature": "style",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@4"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ],
+                  "arguments": []
+                },
                 "cardinality": "?"
               },
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@14"
+                  "$ref": "#/rules@16"
                 },
                 "arguments": []
               }
             ],
             "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "SpecificationElementKindStyle",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "style"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "props",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@5"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@6"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
           }
         ]
       },
@@ -211,7 +273,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@7"
+                "$ref": "#/rules@9"
               },
               "arguments": []
             }
@@ -227,36 +289,38 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
     },
     {
       "$type": "ParserRule",
-      "name": "ElementStyleProperties",
+      "name": "ColorProperty",
       "definition": {
         "$type": "Group",
         "elements": [
           {
+            "$type": "Assignment",
+            "feature": "key",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "color"
+            }
+          },
+          {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@13"
+              "$ref": "#/rules@17"
             },
-            "arguments": []
+            "arguments": [],
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",
-            "feature": "props",
-            "operator": "+=",
+            "feature": "value",
+            "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@5"
+                "$ref": "#/rules@10"
               },
               "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@14"
-            },
-            "arguments": []
+            }
           }
         ]
       },
@@ -269,17 +333,10 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
     },
     {
       "$type": "ParserRule",
-      "name": "AbstractElementStyleProperty",
+      "name": "ShapeProperty",
       "definition": {
         "$type": "Group",
         "elements": [
-          {
-            "$type": "Action",
-            "inferredType": {
-              "$type": "InferredType",
-              "name": "ElementShapeStyleProperty"
-            }
-          },
           {
             "$type": "Assignment",
             "feature": "key",
@@ -292,7 +349,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@15"
+              "$ref": "#/rules@17"
             },
             "arguments": [],
             "cardinality": "?"
@@ -304,10 +361,39 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@8"
+                "$ref": "#/rules@11"
               },
               "arguments": []
             }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "AStyleProperty",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@5"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@6"
+            },
+            "arguments": []
           }
         ]
       },
@@ -328,7 +414,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@9"
+            "$ref": "#/rules@12"
           },
           "arguments": []
         }
@@ -350,10 +436,38 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@9"
+            "$ref": "#/rules@12"
           },
           "arguments": []
         }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ThemeColor",
+      "dataType": "string",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "primary"
+          },
+          {
+            "$type": "Keyword",
+            "value": "secondary"
+          },
+          {
+            "$type": "Keyword",
+            "value": "muted"
+          }
+        ]
       },
       "definesHiddenTokens": false,
       "entry": false,
@@ -412,14 +526,25 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@8"
+              "$ref": "#/rules@11"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@19"
+              "$ref": "#/rules@10"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "model"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@23"
             },
             "arguments": []
           }
@@ -431,19 +556,6 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
       "hiddenTokens": [],
       "parameters": [],
       "wildcard": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "LArrow",
-      "definition": {
-        "$type": "CharacterRange",
-        "left": {
-          "$type": "Keyword",
-          "value": "->"
-        }
-      },
-      "fragment": false,
-      "hidden": false
     },
     {
       "$type": "TerminalRule",
@@ -512,6 +624,32 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
     },
     {
       "$type": "TerminalRule",
+      "name": "Comma",
+      "definition": {
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": ","
+        }
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "Star",
+      "definition": {
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": "*"
+        }
+      },
+      "fragment": false,
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
       "name": "Semi",
       "definition": {
         "$type": "CharacterRange",
@@ -543,7 +681,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "TerminalRuleCall",
             "rule": {
-              "$ref": "#/rules@19"
+              "$ref": "#/rules@23"
             }
           }
         ]
@@ -619,7 +757,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@13"
+              "$ref": "#/rules@15"
             },
             "arguments": []
           },
@@ -633,21 +771,21 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@24"
+                    "$ref": "#/rules@28"
                   },
                   "arguments": []
                 },
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@27"
+                    "$ref": "#/rules@31"
                   },
                   "arguments": []
                 },
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@34"
+                    "$ref": "#/rules@38"
                   },
                   "arguments": []
                 }
@@ -658,7 +796,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@16"
             },
             "arguments": []
           }
@@ -690,12 +828,12 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     "terminal": {
                       "$type": "CrossReference",
                       "type": {
-                        "$ref": "#/rules@6"
+                        "$ref": "#/rules@8"
                       },
                       "terminal": {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@9"
+                          "$ref": "#/rules@12"
                         },
                         "arguments": []
                       },
@@ -709,7 +847,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@9"
+                        "$ref": "#/rules@12"
                       },
                       "arguments": []
                     }
@@ -726,7 +864,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@9"
+                        "$ref": "#/rules@12"
                       },
                       "arguments": []
                     }
@@ -734,7 +872,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                   {
                     "$type": "RuleCall",
                     "rule": {
-                      "$ref": "#/rules@12"
+                      "$ref": "#/rules@14"
                     },
                     "arguments": []
                   },
@@ -745,12 +883,12 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     "terminal": {
                       "$type": "CrossReference",
                       "type": {
-                        "$ref": "#/rules@6"
+                        "$ref": "#/rules@8"
                       },
                       "terminal": {
                         "$type": "RuleCall",
                         "rule": {
-                          "$ref": "#/rules@9"
+                          "$ref": "#/rules@12"
                         },
                         "arguments": []
                       },
@@ -764,7 +902,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@18"
+                        "$ref": "#/rules@22"
                       },
                       "arguments": []
                     },
@@ -781,7 +919,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@25"
+                "$ref": "#/rules@29"
               },
               "arguments": []
             },
@@ -805,7 +943,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@13"
+              "$ref": "#/rules@15"
             },
             "arguments": []
           },
@@ -816,7 +954,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@30"
+                "$ref": "#/rules@34"
               },
               "arguments": []
             },
@@ -829,7 +967,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@26"
+                "$ref": "#/rules@30"
               },
               "arguments": []
             },
@@ -845,14 +983,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@24"
+                    "$ref": "#/rules@28"
                   },
                   "arguments": []
                 },
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@31"
+                    "$ref": "#/rules@35"
                   },
                   "arguments": []
                 }
@@ -863,7 +1001,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@14"
+              "$ref": "#/rules@16"
             },
             "arguments": []
           }
@@ -913,7 +1051,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@15"
+                  "$ref": "#/rules@17"
                 },
                 "arguments": [],
                 "cardinality": "?"
@@ -925,7 +1063,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@18"
+                    "$ref": "#/rules@22"
                   },
                   "arguments": []
                 }
@@ -952,16 +1090,43 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 }
               },
               {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@15"
+                },
+                "arguments": []
+              },
+              {
                 "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
+                "feature": "props",
+                "operator": "+=",
                 "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@4"
-                  },
-                  "arguments": []
-                }
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@5"
+                      },
+                      "arguments": []
+                    },
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@6"
+                      },
+                      "arguments": []
+                    }
+                  ]
+                },
+                "cardinality": "*"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@16"
+                },
+                "arguments": []
               }
             ]
           }
@@ -991,7 +1156,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@28"
+                "$ref": "#/rules@32"
               },
               "arguments": []
             }
@@ -1002,7 +1167,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@13"
+                  "$ref": "#/rules@15"
                 },
                 "arguments": []
               },
@@ -1016,14 +1181,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                     {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@24"
+                        "$ref": "#/rules@28"
                       },
                       "arguments": []
                     },
                     {
                       "$type": "RuleCall",
                       "rule": {
-                        "$ref": "#/rules@34"
+                        "$ref": "#/rules@38"
                       },
                       "arguments": []
                     }
@@ -1034,7 +1199,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@14"
+                  "$ref": "#/rules@16"
                 },
                 "arguments": []
               }
@@ -1063,12 +1228,12 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "CrossReference",
               "type": {
-                "$ref": "#/rules@24"
+                "$ref": "#/rules@28"
               },
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@9"
+                  "$ref": "#/rules@12"
                 },
                 "arguments": []
               },
@@ -1081,7 +1246,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@11"
+                  "$ref": "#/rules@13"
                 },
                 "arguments": []
               },
@@ -1092,7 +1257,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@28"
+                    "$ref": "#/rules@32"
                   },
                   "arguments": []
                 }
@@ -1122,12 +1287,12 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "CrossReference",
               "type": {
-                "$ref": "#/rules@24"
+                "$ref": "#/rules@28"
               },
               "terminal": {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@9"
+                  "$ref": "#/rules@12"
                 },
                 "arguments": []
               },
@@ -1140,7 +1305,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@11"
+                  "$ref": "#/rules@13"
                 },
                 "arguments": []
               },
@@ -1151,7 +1316,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@29"
+                    "$ref": "#/rules@33"
                   },
                   "arguments": []
                 }
@@ -1178,12 +1343,12 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "terminal": {
           "$type": "CrossReference",
           "type": {
-            "$ref": "#/rules@7"
+            "$ref": "#/rules@9"
           },
           "terminal": {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@17"
+              "$ref": "#/rules@21"
             },
             "arguments": []
           },
@@ -1206,14 +1371,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@34"
+              "$ref": "#/rules@38"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@33"
+              "$ref": "#/rules@37"
             },
             "arguments": []
           }
@@ -1240,7 +1405,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@29"
+                "$ref": "#/rules@33"
               },
               "arguments": []
             }
@@ -1252,7 +1417,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@18"
+                "$ref": "#/rules@22"
               },
               "arguments": []
             },
@@ -1291,16 +1456,13 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "cardinality": "?"
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@10"
-            },
-            "arguments": []
+            "$type": "Keyword",
+            "value": "->"
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@36"
             },
             "arguments": []
           }
@@ -1326,24 +1488,655 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@29"
+                "$ref": "#/rules@33"
               },
               "arguments": []
             }
           },
           {
+            "$type": "Keyword",
+            "value": "->"
+          },
+          {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@10"
+              "$ref": "#/rules@36"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ModelViews",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "views"
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "views",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@40"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "View",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Action",
+            "inferredType": {
+              "$type": "InferredType",
+              "name": "ElementView"
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "view"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@12"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "of"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "of",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@33"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "properties",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@41"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "rules",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@42"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewProperty",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "key",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "title"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "description"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@17"
+            },
+            "arguments": [],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@22"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRule",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@43"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@32"
+              "$ref": "#/rules@44"
             },
             "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleExpression",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "isInclude",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "include"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "exclude"
+              }
+            ]
+          },
+          {
+            "$type": "Assignment",
+            "feature": "expressions",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@46"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@18"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "expressions",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@46"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleStyle",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "style"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "targets",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@47"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@18"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "targets",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@47"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "style",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@45"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleStyleProps",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "props",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@5"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@6"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Expression",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "IncomingExpression"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "->"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "target",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@47"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "InOutExpression"
+                    },
+                    "feature": "inout",
+                    "operator": "="
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "->"
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@47"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Action",
+                        "inferredType": {
+                          "$type": "InferredType",
+                          "name": "RelationExpression"
+                        },
+                        "feature": "source",
+                        "operator": "="
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "->"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "target",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@47"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Action",
+                        "inferredType": {
+                          "$type": "InferredType",
+                          "name": "OutgoingExpression"
+                        },
+                        "feature": "source",
+                        "operator": "="
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "->"
+                      }
+                    ]
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementExpression",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "WildcardExpression"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "isWildcard",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "*"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@48"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementRefExpression",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "id",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@33"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "isDescedants",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": ".*"
+            },
+            "cardinality": "?"
           }
         ]
       },

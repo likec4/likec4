@@ -1,15 +1,16 @@
-import { AstNode, DocumentState, LangiumDocuments, interruptAndCheck } from 'langium'
-import type { LikeC4Services } from '../module'
-import type { FqnIndex } from './fqn-index'
 import type * as c4 from '@likec4/core/types'
-import { ast, streamElements, type LikeC4LangiumDocument, ParsedAstElement, c4hash, resolveRelationPoints, toElementStyle, isLikeC4LangiumDocument, cleanParsedModel, isValidDocument, ParsedAstRelation, ParsedAstSpecification, isParsedLikeC4LangiumDocument } from '../ast'
-import { failExpectedNever } from '../utils'
-import { strictElementRefFqn } from '../elementRef'
-import objectHash from 'object-hash'
-import { logger } from '../logger'
-import { pipe, D, A, O, flow } from '@mobily/ts-belt'
-import { mergeAll} from 'rambdax'
+import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
+import { A, O, flow, pipe } from '@mobily/ts-belt'
+import { AstNode, DocumentState, LangiumDocuments, interruptAndCheck } from 'langium'
+import objectHash from 'object-hash'
+import { mergeDeepRight } from 'rambdax'
+import { ParsedAstElement, ParsedAstRelation, ParsedAstSpecification, ast, c4hash, cleanParsedModel, isParsedLikeC4LangiumDocument, isValidDocument, resolveRelationPoints, streamElements, type LikeC4LangiumDocument, toElementStyle } from '../ast'
+import { strictElementRefFqn } from '../elementRef'
+import { logger } from '../logger'
+import type { LikeC4Services } from '../module'
+import { failExpectedNever } from '../utils'
+import type { FqnIndex } from './fqn-index'
 
 
 export class LikeC4ModelBuilder {
@@ -57,24 +58,18 @@ export class LikeC4ModelBuilder {
     if (docs.length === 0) {
       return
     }
-    const c4Specification = pipe(docs,
-      A.map(d => d.c4Specification),
-      A.uncons,
-      O.map(([initialValue, specs]) =>
-        A.reduce(specs, initialValue, (acc, spec) => ({
-          kinds: D.merge(acc.kinds, spec.kinds)
-        }))
-      ),
-      O.getWithDefault<ParsedAstSpecification>({
-        kinds: {}
-      })
-    )
+    const c4Specification = docs.reduce((acc, doc) => {
+      return mergeDeepRight(acc, doc.c4Specification)
+    }, <ParsedAstSpecification>{
+      kinds: {}
+    })
 
     const toModelElement = (el: ParsedAstElement): c4.Element | null => {
       const kind = c4Specification.kinds[el.kind]
       if (kind) {
         return {
-          shape: kind.shape,
+          ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
+          ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
           ...el,
         }
       }
@@ -132,9 +127,10 @@ export class LikeC4ModelBuilder {
     if (spec) {
       for (const { kind, style } of spec.elementKinds) {
         try {
-          const styleprops = style && toElementStyle(style.props)
+          const styleProps = toElementStyle(style?.props)
           specification.kinds[kind.name as c4.ElementKind] = {
-            shape: styleprops?.shape ?? 'rectangle'
+            color: styleProps.color ?? DefaultThemeColor,
+            shape: styleProps.shape ?? DefaultElementShape,
           }
         } catch (e) {
           logger.warn(e)
@@ -170,13 +166,20 @@ export class LikeC4ModelBuilder {
     const id = this.resolveFqn(astNode)
     const kind = astNode.kind.ref!.name as c4.ElementKind
     const tags = (astNode.definition && this.convertTags(astNode.definition)) ?? []
-    const shape = astNode.definition?.props.find(ast.isElementStyleProperty)?.value.props.find(ast.isElementShapeStyleProperty)?.value
+    const styleProps = astNode.definition?.props.find(ast.isElementStyleProperty)?.props
+    const {
+      color,
+      shape
+    } = toElementStyle(styleProps)
+    // const color = styleProps.find(ast.isColorProperty)?.value
+    // const shape = styleProps.find(ast.isShapeProperty)?.value
     return {
       id,
       kind,
       title: astNode.title ?? astNode.name,
       ...(tags.length > 0 ? { tags } : {}),
-      ...(shape ? { shape } : {}),
+      ...(shape && shape !== DefaultElementShape ? { shape } : {}),
+      ...(color && color !== DefaultThemeColor ? { color } : {}),
     }
   }
 
