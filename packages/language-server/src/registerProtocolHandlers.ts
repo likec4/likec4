@@ -1,7 +1,7 @@
 import type { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
 import { logger } from './logger'
-import { fetchLikeC4Model } from './protocol'
+import { Rpc } from './protocol'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
@@ -10,7 +10,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   }
   const modelBuilder = services.likec4.ModelBuilder
 
-  connection.onRequest(fetchLikeC4Model, async (_cancelToken) => {
+  connection.onRequest(Rpc.fetchModel, async (_cancelToken) => {
     let model
     try {
       model = modelBuilder.buildModel() ?? null

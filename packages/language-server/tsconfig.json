@@ -11,12 +11,12 @@
     "noUnusedParameters": false
   },
   "include": [
-    "src/**/*.ts"
+    "./src/**/*.ts"
   ],
   "exclude": [
-    "__test__",
-    "src/test/*",
-    "src/**/*.spec.ts",
+    "./src/__test__",
+    "./src/test/*",
+    "./src/**/*.spec.ts",
     "node_modules"
   ]
 }

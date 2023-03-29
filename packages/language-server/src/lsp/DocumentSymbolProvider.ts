@@ -145,4 +145,22 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       children: []
     }]
   }
+
+  // protected getElementViewSymbol = (astView: ast.ElementView): DocumentSymbol[] => {
+  //   const cst = astView?.$cstNode
+  //   if (!cst) return []
+  //   let
+  //   if (astView.name) {
+  //     const nameNode = findNodeForProperty(cst, 'name')
+  //   }
+
+  //   if (!nameNode) return []
+  //   return [{
+  //     kind: SymbolKind.Class,
+  //     name: astView.name,
+  //     range: cst.range,
+  //     selectionRange: nameNode.range,
+  //     children: []
+  //   }]
+  // }
 }

@@ -5,35 +5,26 @@ import type { ElementExpression, Expression } from './expression'
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
 
-export interface ViewRuleInclude {
-  include: Expression[]
+export interface ViewRuleExpression {
+  isInclude: boolean
+  exprs: Expression[]
 }
-export function isViewRuleInclude(rule: ViewRule): rule is ViewRuleInclude {
-  return 'include' in rule
+export function isViewRuleExpression(rule: ViewRule): rule is ViewRuleExpression {
+  return 'exprs' in rule && 'isInclude' in rule
 }
-
-export interface ViewRuleExclude {
-  exclude: Expression[]
-}
-
-export function isViewRuleExclude(rule: ViewRule): rule is ViewRuleExclude {
-  return 'exclude' in rule
-}
-
 
 export interface ViewRuleStyle {
+  targets: ElementExpression[]
   style: {
-    targets: ElementExpression[]
     color?: ThemeColor
     shape?: ElementShape
   }
 }
 export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
-  return 'style' in rule
+  return 'style' in rule && 'targets' in rule
 }
 
-
-export type ViewRule = ViewRuleInclude | ViewRuleExclude | ViewRuleStyle
+export type ViewRule = ViewRuleExpression | ViewRuleStyle
 
 export interface ElementView {
   readonly id: ViewID

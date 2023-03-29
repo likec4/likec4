@@ -429,6 +429,7 @@ __metadata:
     "@likec4/eslint-config": "workspace:*"
     "@mobily/ts-belt": ^3.13.1
     eslint: ^8.36.0
+    rambdax: ^9.0.0
     type-fest: ^3.7.0
     typescript: ^5.0.2
     vite: ^4.2.1

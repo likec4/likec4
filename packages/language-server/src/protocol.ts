@@ -17,3 +17,8 @@ export const fetchLikeC4Model = new RequestType0<{model: LikeC4Model | null}, un
 // export const locateRelation = new RequestType<{id: RelationID}, Location | null, unknown>('c4x/locateRelation')
 // export const locateView = new RequestType<{id: ViewID}, Location | null, unknown>('c4x/locateView')
 // //#endregion
+
+export const Rpc = {
+  onDidChangeModel: onDidChangeLikeC4Model,
+  fetchModel: fetchLikeC4Model
+} as const

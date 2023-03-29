@@ -1,42 +1,73 @@
 import type { Fqn } from './element'
 
-export interface ElementRefExpr {
-  _expr: 'element'
-  element: Fqn
-  isDescedants?: true
+interface BaseExr {
+  element?: never
+  wildcard?: never
+  source?: never
+  target?: never
+  inout?: never
+  incoming?: never
+  outgoing?: never
 }
 
-export interface WildcardExpr {
-  _expr: 'wildcard'
+export interface ElementRefExpr extends Omit<BaseExr, 'element'> {
+  // _expr: 'element'
+  element: Fqn
+  isDescedants: boolean
+}
+export function isElementRef(expr: Expression): expr is ElementRefExpr {
+  return 'element' in expr
+}
+
+export interface WildcardExpr extends Omit<BaseExr, 'wildcard'> {
+  wildcard: true
+}
+export function isWildcard(expr: Expression): expr is WildcardExpr {
+  return 'wildcard' in expr
 }
 
 
 export type ElementExpression = ElementRefExpr | WildcardExpr
+export function isElement(expr: Expression): expr is ElementExpression {
+  return isElementRef(expr) || isWildcard(expr)
+}
 
-export interface BoundRelationExpr {
-  _expr: 'rel'
+export interface RelationExpr extends Omit<BaseExr, 'source' | 'target'> {
   source: ElementExpression
   target: ElementExpression
 }
+export function isRelation(expr: Expression): expr is RelationExpr {
+  return 'source' in expr && 'target' in expr
+}
 
-export interface InOutExpr {
-  _expr: 'inout'
+export interface InOutExpr extends Omit<BaseExr, 'inout'> {
   inout: ElementExpression
 }
-
-export interface IncomingExpr {
-  _expr: 'in'
-  target: ElementExpression
-}
-export interface OutgoingExpr {
-  _expr: 'out'
-  source: ElementExpression
+export function isInOut(expr: Expression): expr is InOutExpr {
+  return 'inout' in expr
 }
 
-export type RelationExpression =
-  BoundRelationExpr |
+export interface IncomingExpr extends Omit<BaseExr, 'incoming'> {
+  incoming: ElementExpression
+}
+export function isIncoming(expr: Expression): expr is IncomingExpr {
+  return 'incoming' in expr
+}
+export interface OutgoingExpr extends Omit<BaseExr, 'outgoing'> {
+  outgoing: ElementExpression
+}
+export function isOutgoing(expr: Expression): expr is OutgoingExpr {
+  return 'outgoing' in expr
+}
+
+export type AnyRelationExpression =
+  RelationExpr |
   InOutExpr |
   IncomingExpr |
   OutgoingExpr
 
-export type Expression = ElementExpression | RelationExpression
+export function isAnyRelation(expr: Expression): expr is AnyRelationExpression {
+  return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)
+}
+
+export type Expression = ElementExpression | AnyRelationExpression

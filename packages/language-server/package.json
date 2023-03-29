@@ -4,9 +4,9 @@
   "scripts": {
     "compile": "",
     "build:langium": "langium generate",
-    "build:ts": "tsc --build",
+    "build:ts": "tsc",
     "watch:langium": "langium generate --watch",
-    "watch:ts": "tsc --build --watch",
+    "watch:ts": "tsc --watch",
     "generate": "langium generate",
     "build": "run-s 'build:langium' 'build:ts'",
     "dev": "run-p 'watch:*'",

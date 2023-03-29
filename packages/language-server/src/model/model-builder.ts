@@ -1,10 +1,11 @@
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
+import { computeViews } from '@likec4/core/compute-view'
 import { A, O, F, flow, pipe } from '@mobily/ts-belt'
 import { AstNode, DocumentState, LangiumDocuments, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
-import { isNil, mergeDeepRight } from 'rambdax'
+import { isNil, mergeDeepRight, clone } from 'rambdax'
 import { ParsedAstElement, ParsedAstRelation, ParsedAstSpecification, ast, c4hash, cleanParsedModel, isParsedLikeC4LangiumDocument, isValidDocument, resolveRelationPoints, streamElements, type LikeC4LangiumDocument, toElementStyle, ParsedAstElementView, isLikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
@@ -12,7 +13,8 @@ import type { LikeC4Services } from '../module'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
 import invariant from 'tiny-invariant'
-import { onDidChangeLikeC4Model } from '../protocol'
+import { Rpc } from '../protocol'
+import type { CancellationToken } from 'vscode-languageserver-protocol'
 
 
 export class LikeC4ModelBuilder {
@@ -20,25 +22,28 @@ export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
   private langiumDocuments: LangiumDocuments
 
-
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (docs, cancelToken) => {
-      let countOfChangedDocs = 0
-      for (const doc of docs) {
-        await interruptAndCheck(cancelToken)
-        try {
-          if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
-            countOfChangedDocs++
+      try {
+        let countOfChangedDocs = 0
+        for (const doc of docs) {
+          await interruptAndCheck(cancelToken)
+          try {
+            if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
+              countOfChangedDocs++
+            }
+          } catch (e) {
+            logger.warn(`Error parsing document ${doc.uri.toString()}`)
           }
-        } catch (e) {
-          logger.error(`Error parsing document ${doc.uri.toString()}`)
         }
-      }
-      if (countOfChangedDocs > 0) {
-        await this.notifyClient()
+        if (countOfChangedDocs > 0) {
+          await this.notifyClient(cancelToken)
+        }
+      } catch (e) {
+        logger.warn(e)
       }
     })
   }
@@ -47,12 +52,12 @@ export class LikeC4ModelBuilder {
     return this.services.shared.lsp.Connection
   }
 
-  private get documents() {
-    return this.langiumDocuments.all.toArray().filter(isLikeC4LangiumDocument)
+  private documents() {
+    return this.langiumDocuments.all.toArray().filter(isParsedLikeC4LangiumDocument)
   }
 
   public buildModel(): c4.LikeC4Model | undefined {
-    const docs = this.documents.filter(isParsedLikeC4LangiumDocument)
+    const docs = this.documents()
     if (docs.length === 0) {
       return
     }
@@ -77,13 +82,14 @@ export class LikeC4ModelBuilder {
 
       const toModelRelation = ({ astNodePath, ...rel }: ParsedAstRelation): c4.Relation => {
         return {
-          ...rel,
+          ...rel
         }
       }
 
-      const toModelView = ({ astNodePath, ...view }: ParsedAstElementView): c4.ElementView => {
+      const toModelView = ({ astNodePath, rules, ...view }: ParsedAstElementView): c4.ElementView => {
         return {
           ...view,
+          rules: clone(rules)
         }
       }
 
@@ -123,19 +129,18 @@ export class LikeC4ModelBuilder {
           toModelView,
           O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
         )),
-        A.reduce({} as c4.LikeC4Model['views'], (acc, v) => {
+        A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
           invariant(!(v.id in acc), 'Duplicate view id: ' + v.id)
           acc[v.id] = v
           return acc
         })
       )
 
-      return {
+      return computeViews({
         elements,
         relations,
         views
-      }
-
+      })
     } catch (e) {
       logger.error(e)
       return
@@ -240,6 +245,71 @@ export class LikeC4ModelBuilder {
     }
   }
 
+  private parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
+    if (ast.isWildcardExpression(astNode)) {
+      return {
+        wildcard: true
+      }
+    }
+    if (ast.isElementRefExpression(astNode)) {
+      const element = elementRef(astNode.id)
+      invariant(element, 'Element not found ' + astNode.id.$cstNode?.text)
+      return {
+        element: this.resolveFqn(element),
+        isDescedants: astNode.isDescedants
+      }
+    }
+    failExpectedNever(astNode)
+  }
+
+  private parseExpression(astNode: ast.Expression): c4.Expression {
+    if (ast.isElementExpression(astNode)) {
+      return this.parseElementExpression(astNode)
+    }
+    if (ast.isIncomingExpression(astNode)) {
+      return {
+        incoming: this.parseElementExpression(astNode.target)
+      }
+    }
+    if (ast.isOutgoingExpression(astNode)) {
+      return {
+        outgoing: this.parseElementExpression(astNode.source)
+      }
+    }
+    if (ast.isInOutExpression(astNode)) {
+      return {
+        inout: this.parseElementExpression(astNode.inout.target)
+      }
+    }
+    if (ast.isRelationExpression(astNode)) {
+      return {
+        source: this.parseElementExpression(astNode.source),
+        target: this.parseElementExpression(astNode.target),
+      }
+    }
+    failExpectedNever(astNode)
+  }
+
+  private parseViewRule(astNode: ast.ViewRule): c4.ViewRule {
+    if (ast.isViewRuleExpression(astNode)) {
+      const exprs = astNode.expressions.map(n => this.parseExpression(n))
+      return {
+        isInclude: astNode.isInclude,
+        exprs
+      }
+    }
+    if (ast.isViewRuleStyle(astNode)) {
+      const styleProps = toElementStyle(astNode.style.props)
+      return {
+        targets: astNode.targets.map(n => this.parseElementExpression(n)),
+        style: {
+          ...styleProps
+        }
+      }
+    }
+    failExpectedNever(astNode)
+  }
+
   private parseElementView(astNode: ast.ElementView): ParsedAstElementView {
     const viewOfEl = astNode.viewOf && elementRef(astNode.viewOf)
     const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
@@ -263,22 +333,8 @@ export class LikeC4ModelBuilder {
       ...(viewOf && { viewOf }),
       ...(title && { title }),
       ...(description && { description }),
-      rules: []
+      rules: astNode.rules.map(n => this.parseViewRule(n))
     }
-    // const coupling = resolveRelationPoints(ast)
-    // const target = this.resolveFqn(coupling.target)
-    // const source = this.resolveFqn(coupling.source)
-    // const hashdata = {
-    //   astNodePath: this.getAstNodePath(ast),
-    //   source,
-    //   target
-    // }
-    // const id = objectHash(hashdata) as c4.RelationID
-    // return {
-    //   id,
-    //   ...hashdata,
-    //   title: ast.title ?? '',
-    // }
   }
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {
@@ -302,12 +358,19 @@ export class LikeC4ModelBuilder {
     ) ?? []
   }
 
-  private async notifyClient() {
+  private async notifyClient(cancelToken: CancellationToken) {
+
     const connection = this.connection
     if (!connection) {
       return
     }
-    logger.debug('Send onDidChangeLikeC4Model')
-    await connection.sendNotification(onDidChangeLikeC4Model, null)
+    const ok = await interruptAndCheck(cancelToken).then(
+      () => true,
+      () => false
+    )
+    if (ok) {
+      logger.debug('Send onDidChangeModel')
+      await connection.sendNotification(Rpc.onDidChangeModel, null)
+    }
   }
 }

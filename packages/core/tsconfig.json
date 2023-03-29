@@ -2,8 +2,14 @@
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "sourceMap": true,
+    "downlevelIteration": true
   },
-  "files": [
-    "src/index.ts"
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "__mocks__"
   ]
 }

@@ -21,4 +21,4 @@ export {
 //   return likec4
 // }
 
-export * as protocol from './protocol'
+export { Rpc } from './protocol'

@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "compile": "turbo run compile --filter='./packages/*' --continue",
+    "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
     "clean": "turbo run clean",
     "dev": "turbo run dev --filter='./packages/*'",

@@ -7,13 +7,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./compute-view": "./src/compute-view/index.ts"
   },
   "sideEffects": false,
   "scripts": {
     "compile": "",
-    "build": "tsc --build",
-    "dev": "tsc --build --watch",
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "eslint src --fix",
     "test": "vitest run",
     "vitest": "vitest",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "@mobily/ts-belt": "^3.13.1",
+    "rambdax": "^9.0.0",
     "type-fest": "^3.7.0"
   },
   "devDependencies": {

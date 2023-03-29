@@ -94,18 +94,135 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   },
   "views": {
     "84c657e83cc88042b500b62d70653cb078d06e43": {
+      "edges": [
+        {
+          "id": "system.frontend:system.backend",
+          "label": "requests",
+          "relations": [
+            "1ac9195843081750e2aabdb657a4727c1a9c18f3",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend",
+        },
+        {
+          "id": "client:system.frontend",
+          "label": null,
+          "relations": [
+            "243ec225564cf9a9bdc936707f989434385fc862",
+          ],
+          "source": "client",
+          "target": "system.frontend",
+        },
+      ],
       "id": "84c657e83cc88042b500b62d70653cb078d06e43",
-      "rules": [],
+      "nodes": [
+        {
+          "children": [],
+          "id": "client",
+          "parent": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "id": "system.backend",
+          "parent": null,
+          "title": "backend",
+        },
+        {
+          "children": [],
+          "id": "system.frontend",
+          "parent": null,
+          "title": "frontend",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
       "viewOf": "system.frontend",
     },
     "index": {
+      "edges": [
+        {
+          "id": "client:system",
+          "label": null,
+          "relations": [
+            "243ec225564cf9a9bdc936707f989434385fc862",
+          ],
+          "source": "client",
+          "target": "system",
+        },
+      ],
       "id": "index",
-      "rules": [],
+      "nodes": [
+        {
+          "children": [],
+          "id": "client",
+          "parent": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "id": "system",
+          "parent": null,
+          "title": "system",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
       "title": "Index",
     },
     "v1": {
+      "edges": [
+        {
+          "id": "system.frontend:system.backend.api",
+          "label": "requests",
+          "relations": [
+            "1ac9195843081750e2aabdb657a4727c1a9c18f3",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend.api",
+        },
+      ],
       "id": "v1",
-      "rules": [],
+      "nodes": [
+        {
+          "children": [],
+          "id": "system.frontend",
+          "parent": null,
+          "title": "frontend",
+        },
+        {
+          "children": [],
+          "id": "system.backend.api",
+          "parent": null,
+          "title": "api",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
       "viewOf": "system.backend.api",
     },
   },
