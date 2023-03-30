@@ -4,23 +4,27 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
 {
   "elements": {
     "client": {
+      "astPath": "/model/elements@0",
       "id": "client",
       "kind": "user",
       "shape": "person",
       "title": "client",
     },
     "system": {
+      "astPath": "/model/elements@1",
       "id": "system",
       "kind": "component",
       "title": "system",
     },
     "system.backend": {
+      "astPath": "/model/elements@1/definition/elements@0",
       "color": "secondary",
       "id": "system.backend",
       "kind": "component",
       "title": "Backend",
     },
     "system.frontend": {
+      "astPath": "/model/elements@1/definition/elements@1",
       "color": "muted",
       "id": "system.frontend",
       "kind": "component",
@@ -32,14 +36,14 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
     },
   },
   "relations": {
-    "46b9e42890c694d2bba5a0d1ca68e0db22edbe56": {
-      "id": "46b9e42890c694d2bba5a0d1ca68e0db22edbe56",
+    "2dc0c7f9bbc24d54946dd5291e4f1f6b43f86657": {
+      "id": "2dc0c7f9bbc24d54946dd5291e4f1f6b43f86657",
       "source": "client",
       "target": "system.frontend",
       "title": "",
     },
-    "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd": {
-      "id": "b11f56fbd6b4b02deb138bf959e35c0dfe061ecd",
+    "ca3a02360ed74e5c11d3ffea13e6b400e2e83534": {
+      "id": "ca3a02360ed74e5c11d3ffea13e6b400e2e83534",
       "source": "system.frontend",
       "target": "system.backend",
       "title": "requests",
@@ -53,53 +57,58 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
   "elements": {
     "client": {
+      "astPath": "/model/elements@0",
       "id": "client",
       "kind": "user",
       "title": "client",
     },
     "system": {
+      "astPath": "/model/elements@1",
       "id": "system",
       "kind": "component",
       "title": "system",
     },
     "system.backend": {
+      "astPath": "/model/elements@1/definition/elements@0",
       "id": "system.backend",
       "kind": "component",
       "title": "backend",
     },
     "system.backend.api": {
+      "astPath": "/model/elements@0/elements@0",
       "id": "system.backend.api",
       "kind": "component",
       "title": "api",
     },
     "system.frontend": {
+      "astPath": "/model/elements@1/definition/elements@1",
       "id": "system.frontend",
       "kind": "component",
       "title": "frontend",
     },
   },
   "relations": {
-    "1ac9195843081750e2aabdb657a4727c1a9c18f3": {
-      "id": "1ac9195843081750e2aabdb657a4727c1a9c18f3",
+    "671e3db5eb605d5f245f247d95925bd0953e0e4c": {
+      "id": "671e3db5eb605d5f245f247d95925bd0953e0e4c",
       "source": "system.frontend",
       "target": "system.backend.api",
       "title": "requests",
     },
-    "243ec225564cf9a9bdc936707f989434385fc862": {
-      "id": "243ec225564cf9a9bdc936707f989434385fc862",
+    "99bffdfd5c78e024393e6223cd9b19225321a5e3": {
+      "id": "99bffdfd5c78e024393e6223cd9b19225321a5e3",
       "source": "client",
       "target": "system.frontend",
       "title": "",
     },
   },
   "views": {
-    "84c657e83cc88042b500b62d70653cb078d06e43": {
+    "896265706157590f12c4b05d2c5402bd8970e23c": {
       "edges": [
         {
           "id": "system.frontend:system.backend",
           "label": "requests",
           "relations": [
-            "1ac9195843081750e2aabdb657a4727c1a9c18f3",
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
           ],
           "source": "system.frontend",
           "target": "system.backend",
@@ -108,13 +117,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "id": "client:system.frontend",
           "label": null,
           "relations": [
-            "243ec225564cf9a9bdc936707f989434385fc862",
+            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],
           "source": "client",
           "target": "system.frontend",
         },
       ],
-      "id": "84c657e83cc88042b500b62d70653cb078d06e43",
+      "id": "896265706157590f12c4b05d2c5402bd8970e23c",
       "nodes": [
         {
           "children": [],
@@ -153,7 +162,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "id": "client:system",
           "label": null,
           "relations": [
-            "243ec225564cf9a9bdc936707f989434385fc862",
+            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],
           "source": "client",
           "target": "system",
@@ -192,7 +201,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "id": "system.frontend:system.backend.api",
           "label": "requests",
           "relations": [
-            "1ac9195843081750e2aabdb657a4727c1a9c18f3",
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
           ],
           "source": "system.frontend",
           "target": "system.backend.api",

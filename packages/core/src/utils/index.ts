@@ -1,3 +1,3 @@
 export * from './fqn'
 export * from './guards'
-export * from './relations'
+export * as Relations from './relations'

@@ -2,7 +2,7 @@
 import { either } from 'rambdax'
 import type { Fqn, Relation } from '../types'
 
-const isBetween = (source: Fqn, target: Fqn = source) => {
+export const isBetween = (source: Fqn, target: Fqn = source) => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {
@@ -10,21 +10,21 @@ const isBetween = (source: Fqn, target: Fqn = source) => {
   }
 }
 
-const isAnyBetween = (source: Fqn, target: Fqn) => {
+export const isAnyBetween = (source: Fqn, target: Fqn) => {
   return either(
     isBetween(source, target),
     isBetween(target, source),
   )
 }
 
-const isIncoming = (target: Fqn) => {
+export const isIncoming = (target: Fqn) => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return !(rel.source + '.').startsWith(targetPrefix) && (rel.target + '.').startsWith(targetPrefix)
   }
 }
 
-const isOutgoing = (source: Fqn) => {
+export const isOutgoing = (source: Fqn) => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
     return (rel.source + '.').startsWith(sourcePrefix) && !(rel.target + '.').startsWith(sourcePrefix)
@@ -32,17 +32,9 @@ const isOutgoing = (source: Fqn) => {
 }
 
 
-const isAnyInOut = (source: Fqn) => {
+export const isAnyInOut = (source: Fqn) => {
   return either(
     isIncoming(source),
     isOutgoing(source)
   )
-}
-
-export const RelationPredicates = {
-  isBetween,
-  isAnyBetween,
-  isIncoming,
-  isOutgoing,
-  isAnyInOut
 }

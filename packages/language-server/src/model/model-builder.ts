@@ -80,13 +80,13 @@ export class LikeC4ModelBuilder {
         return null
       }
 
-      const toModelRelation = ({ astNodePath, ...rel }: ParsedAstRelation): c4.Relation => {
+      const toModelRelation = ({ astPath, ...rel }: ParsedAstRelation): c4.Relation => {
         return {
           ...rel
         }
       }
 
-      const toModelView = ({ astNodePath, rules, ...view }: ParsedAstElementView): c4.ElementView => {
+      const toModelView = ({ astPath, rules, ...view }: ParsedAstElementView): c4.ElementView => {
         return {
           ...view,
           rules: clone(rules)
@@ -216,11 +216,13 @@ export class LikeC4ModelBuilder {
       color,
       shape
     } = toElementStyle(styleProps)
+    const astPath = this.getAstNodePath(astNode)
     // const color = styleProps.find(ast.isColorProperty)?.value
     // const shape = styleProps.find(ast.isShapeProperty)?.value
     return {
       id,
       kind,
+      astPath,
       title: astNode.title ?? astNode.name,
       ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
@@ -233,7 +235,7 @@ export class LikeC4ModelBuilder {
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
     const hashdata = {
-      astNodePath: this.getAstNodePath(astNode),
+      astPath: this.getAstNodePath(astNode),
       source,
       target
     }
@@ -313,13 +315,13 @@ export class LikeC4ModelBuilder {
   private parseElementView(astNode: ast.ElementView): ParsedAstElementView {
     const viewOfEl = astNode.viewOf && elementRef(astNode.viewOf)
     const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-    const astNodePath = this.getAstNodePath(astNode)
+    const astPath = this.getAstNodePath(astNode)
     let id = astNode.name as c4.ViewID | undefined
     if (!id) {
       const doc = getDocument(astNode).uri.toString()
       id = objectHash({
         doc,
-        astNodePath,
+        astPath,
         viewOf: viewOf ?? null,
       }) as c4.ViewID
     }
@@ -329,7 +331,7 @@ export class LikeC4ModelBuilder {
 
     return {
       id,
-      astNodePath,
+      astPath,
       ...(viewOf && { viewOf }),
       ...(title && { title }),
       ...(description && { description }),

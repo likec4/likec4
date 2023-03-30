@@ -1,17 +1,16 @@
 import type { Predicate } from 'rambdax'
 import { anyPass, map, pluck, uniq } from 'rambdax'
 import type { ModelIndex } from '../../model-index'
-import type { Element, Fqn, Relation, Expression as RuleExpression } from '../../types'
-import * as Expression from '../../types/expression'
-import { failExpectedNever,isAncestor, RelationPredicates } from '../../utils'
-import { elementsCartesian } from './elementsCartesian'
-
-const { isBetween, isIncoming, isOutgoing } = RelationPredicates
+import type { Element, Fqn, Relation, Expression } from '../../types'
+import * as Expr from '../../types/expression'
+import { failExpectedNever, isAncestor } from '../../utils'
+import { isBetween, isIncoming, isOutgoing } from '../../utils/relations'
+import { anyPossibleRelations } from './anyPossibleRelations'
 
 const dropNested = (elements: Element[]) => {
   return elements.reduce<Element[]>((acc, current) => {
     if (acc.length === 0) return [current]
-    // current is a child of some in acc
+    // current is a child   of some in acc
     if (acc.some(p => p.id === current.id || isAncestor(p, current))) {
       return acc
     }
@@ -38,7 +37,7 @@ export const keepLeafs = (elements: Element[]) => {
   }, [])
 }
 
-export const evaluateElementExpression = (index: ModelIndex, expr: Expression.ElementExpression, rootElement: Fqn | null = null) => {
+const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpression, rootElement: Fqn | null = null) => {
   let elements = [] as Element[]
   let neighbours = [] as Element[]
   let relations = [] as Relation[]
@@ -52,14 +51,14 @@ export const evaluateElementExpression = (index: ModelIndex, expr: Expression.El
   const allRelationsBetween = (elements: Element[]) => {
     if (elements.length <= 1) return []
     const filters = [] as Predicate<Relation>[]
-    for (const [source, target] of elementsCartesian(elements)) {
-      filters.push(isBetween(source, target))
+    for (const [source, target] of anyPossibleRelations(elements)) {
+      filters.push(isBetween(source.id, target.id))
     }
     return filters.length ? index.filterRelations(anyPass(filters)) : []
   }
 
   // WildcardExpression
-  if (Expression.isWildcard(expr)) {
+  if (Expr.isWildcard(expr)) {
     if (rootElement) {
       elements = [
         index.find(rootElement),
@@ -90,7 +89,7 @@ export const evaluateElementExpression = (index: ModelIndex, expr: Expression.El
 
 
   // Identifier
-  if (Expression.isElementRef(expr)) {
+  if (Expr.isElementRef(expr)) {
     elements = expr.isDescedants ? index.children(expr.element) : [index.find(expr.element)]
     if (expr.isDescedants) {
       relations = index.filterRelations(isBetween(expr.element))
@@ -122,12 +121,12 @@ interface EvaluateViewExpressionResult {
   relations: Relation[]
 }
 
-export const evaluateViewExpression = (index: ModelIndex, expr: RuleExpression, rootElement: Fqn | null): EvaluateViewExpressionResult => {
+export function evaluateExpression(index: ModelIndex, expr: Expression, rootElement: Fqn | null): EvaluateViewExpressionResult {
   const elements = [] as Element[]
   let neighbours = [] as Element[]
   let relations = [] as Relation[]
 
-  if (Expression.isInOut(expr)) {
+  if (Expr.isInOut(expr)) {
     const targets = evaluateElementExpression(index, expr.inout).elements
     for (const target of targets) {
       const incoming = index.filterRelations(isIncoming(target.id))
@@ -153,7 +152,7 @@ export const evaluateViewExpression = (index: ModelIndex, expr: RuleExpression, 
     }
   }
 
-  if (Expression.isIncoming(expr)) {
+  if (Expr.isIncoming(expr)) {
     const targets = evaluateElementExpression(index, expr.incoming).elements
     for (const target of targets) {
       const incoming = index.filterRelations(isIncoming(target.id))
@@ -172,7 +171,7 @@ export const evaluateViewExpression = (index: ModelIndex, expr: RuleExpression, 
     }
   }
 
-  if (Expression.isOutgoing(expr)) {
+  if (Expr.isOutgoing(expr)) {
     const sources = evaluateElementExpression(index, expr.outgoing).elements
     for (const source of sources) {
       const outgoing = index.filterRelations(isOutgoing(source.id))
@@ -191,16 +190,16 @@ export const evaluateViewExpression = (index: ModelIndex, expr: RuleExpression, 
     }
   }
 
-  if (Expression.isRelation(expr)) {
-    const isSourceWildcard = Expression.isWildcard(expr.source)
-    const isTargetWildcard = Expression.isWildcard(expr.target)
+  if (Expr.isRelation(expr)) {
+    const isSourceWildcard = Expr.isWildcard(expr.source)
+    const isTargetWildcard = Expr.isWildcard(expr.target)
     if (isSourceWildcard && !isTargetWildcard) {
-      return evaluateViewExpression(index, {
+      return evaluateExpression(index, {
         incoming: expr.target
       }, rootElement)
     }
     if (!isSourceWildcard && isTargetWildcard) {
-      return evaluateViewExpression(index, {
+      return evaluateExpression(index, {
         outgoing: expr.source
       }, rootElement)
     }

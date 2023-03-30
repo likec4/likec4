@@ -1,21 +1,20 @@
 import { anyPass, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
-import { isViewRuleExpression, isViewRuleStyle, type Element, type ElementView, type Fqn, type Relation, type ViewRuleStyle } from '../types'
+import type { Element, ElementView, Relation, ViewRuleStyle } from '../types'
+import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import * as Expression from '../types/expression'
-import { compareByFqnHierarchically, isSameHierarchy, parentFqn, RelationPredicates } from '../utils'
+import { compareByFqnHierarchically, isSameHierarchy, parentFqn, Relations } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import type { ComputedNode, ComputedView } from './types'
-import { elementsCartesian } from './utils/elementsCartesian'
-import { evaluateViewExpression } from './utils/evaluateViewExpression'
-
-const { isAnyBetween } = RelationPredicates
+import { anyPossibleRelations } from './utils/anyPossibleRelations'
+import { evaluateExpression } from './utils/evaluate-expression'
 
 function updateSetWith<T>(set: Set<T>, elements: T[], addToSet = true): void {
   for (const e of elements) {
     addToSet ? set.add(e) : set.delete(e)
   }
 }
-function toDiagramNodes(elements: Element[]) {
+function computeNodes(elements: Element[]) {
   const ids = new Set(elements.map(e => e.id))
   const nodes = elements.map(({ id, title }): ComputedNode => {
     let parent = parentFqn(id)
@@ -39,7 +38,7 @@ function toDiagramNodes(elements: Element[]) {
 }
 
 
- function applyViewRuleStyles(_rules: ViewRuleStyle[], nodes: ComputedNode[]) {
+function applyViewRuleStyles(_rules: ViewRuleStyle[], nodes: ComputedNode[]) {
   // for (const rule of rules) {
   //   const predicates = [] as Predicate<ComputedNode>[]
   //   // if (keys(rule.style).length === 0) {
@@ -78,14 +77,10 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
   const elements = new Set<Element>()
   const neighbours = new Set<Element>()
 
-  const addElement = (id: Fqn) => {
-    elements.add(index.find(id))
-  }
-
   const rootElement = view.viewOf ?? null
   const rulesInclude = view.rules.filter(isViewRuleExpression)
   if (rootElement && rulesInclude.length == 0) {
-    addElement(rootElement)
+    elements.add(index.find(rootElement))
   }
   for (const { isInclude, exprs } of rulesInclude) {
     for (const expr of exprs) {
@@ -93,7 +88,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
         elements: newElements,
         neighbours: newNeighbours,
         relations: newRelations
-      } = evaluateViewExpression(index, expr, rootElement)
+      } = evaluateExpression(index, expr, rootElement)
 
       if (isInclude) {
         const filters = [] as Predicate<Relation>[]
@@ -102,7 +97,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
           for (const e of elements) {
             for (const newE of newElements) {
               if (!isSameHierarchy(e, newE)) {
-                filters.push(isAnyBetween(e.id, newE.id))
+                filters.push(Relations.isAnyBetween(e.id, newE.id))
               }
             }
           }
@@ -123,7 +118,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
           )
         }
       } else {
-        if (Expression.isRelation(expr)) {
+        if (Expression.isAnyRelation(expr)) {
           // Exclude only relations, but not elements and neighbours
           newNeighbours = []
           newElements = []
@@ -151,18 +146,18 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
   const edgeBuilder = new EdgeBuilder()
   const resolvedRelations = [...relations]
 
-  for (const [source, target] of elementsCartesian([...elements, ...neighbours])) {
-    if (!elementsIds.has(source) && !elementsIds.has(target)) {
+  for (const [source, target] of anyPossibleRelations([...elements, ...neighbours])) {
+    if (!elementsIds.has(source.id) && !elementsIds.has(target.id)) {
       continue
     }
-    const findPredicate = RelationPredicates.isBetween(source, target)
+    const findPredicate = Relations.isBetween(source.id, target.id)
     let idx = resolvedRelations.findIndex(findPredicate)
     while (idx >= 0) {
       const [rel] = resolvedRelations.splice(idx, 1)
       if (rel) {
-        addElement(source)
-        addElement(target)
-        edgeBuilder.add(source, target, rel)
+        elements.add(source)
+        elements.add(target)
+        edgeBuilder.add(source.id, target.id, rel)
       }
       idx = resolvedRelations.findIndex(findPredicate)
     }
@@ -170,7 +165,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
 
   const nodes = applyViewRuleStyles(
     view.rules.filter(isViewRuleStyle),
-    toDiagramNodes([...elements].sort(compareByFqnHierarchically))
+    computeNodes([...elements].sort(compareByFqnHierarchically))
   )
 
   return {

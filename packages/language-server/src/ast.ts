@@ -34,6 +34,7 @@ export interface ParsedAstSpecification {
 
 export interface ParsedAstElement {
   id: c4.Fqn
+  astPath: string
   kind: c4.ElementKind
   title: string
   description?: string
@@ -44,7 +45,7 @@ export interface ParsedAstElement {
 
 export interface ParsedAstRelation {
   id: c4.RelationID
-  astNodePath: string
+  astPath: string
   source: c4.Fqn
   target: c4.Fqn
   title: string
@@ -52,7 +53,7 @@ export interface ParsedAstRelation {
 
 export interface ParsedAstElementView {
   id: c4.ViewID
-  astNodePath: string
+  astPath: string
   of?: c4.Fqn
   title?: string
   description?: string

@@ -1,10 +1,7 @@
-import { keys, pluck } from 'rambdax'
-import type { Fqn, Relation } from '../types';
+import { equals, keys, pluck, reject } from 'rambdax'
+import type { Fqn, Relation } from '../types'
 import { compareFqnHierarchically } from '../utils'
 import type { ComputedEdge, EdgeId } from './types'
-import { pipe, A, O} from '@mobily/ts-belt'
-
-const pluckId: <T extends { id: any }>(list: T[]) => T['id'][] = pluck('id')
 
 interface ResolvedRelationsObj {
   [source: Fqn]: {
@@ -30,9 +27,9 @@ export class EdgeBuilder {
       const targets = this._relationsObj[source] ?? {}
       return keys(targets).sort(compareFqnHierarchically).reverse().map(target => {
         const relations = targets[target] ?? []
-        const titles = pipe(
-          relations,
-          A.filterMap(r => O.fromPredicate(r.title, v => v !== '')),
+        const titles = reject(
+          equals(''),
+          pluck('title', relations)
         )
         const label = titles.length === 1 ? titles[0]! : null
         return {
@@ -40,7 +37,7 @@ export class EdgeBuilder {
           source,
           target,
           label,
-          relations: pluckId(relations)
+          relations: pluck('id', relations)
         } satisfies ComputedEdge
       })
     })

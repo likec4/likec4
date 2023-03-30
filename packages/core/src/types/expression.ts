@@ -2,6 +2,7 @@ import type { Fqn } from './element'
 
 interface BaseExr {
   element?: never
+  isDescedants?: never
   wildcard?: never
   source?: never
   target?: never
@@ -10,13 +11,12 @@ interface BaseExr {
   outgoing?: never
 }
 
-export interface ElementRefExpr extends Omit<BaseExr, 'element'> {
-  // _expr: 'element'
+export interface ElementRefExpr extends Omit<BaseExr, 'element' | 'isDescedants'> {
   element: Fqn
   isDescedants: boolean
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
-  return 'element' in expr
+  return 'element' in expr && 'isDescedants' in expr
 }
 
 export interface WildcardExpr extends Omit<BaseExr, 'wildcard'> {
