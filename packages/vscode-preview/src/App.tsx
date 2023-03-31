@@ -1,10 +1,10 @@
-import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
-import { closePreviewWindow, savePreviewWindowState, getPreviewWindowState, imReady, openView, goToViewSource, goToSource, goToRelation } from './vscode'
-import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
-import { Diagram } from '@likec4/diagrams'
-import type { ExtensionToPanelProtocol } from '../protocol'
-import { useCallback, useEffect, useState } from 'react'
 import type { DiagramEdge, DiagramNode } from '@likec4/core/types'
+import { Diagram } from '@likec4/diagrams'
+import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
+import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
+import { useCallback, useEffect, useState } from 'react'
+import type { ExtensionToPanelProtocol } from '../protocol'
+import { closePreviewWindow, getPreviewWindowState, imReady, notifyEdgeClick, notifyNodeClick, openView, savePreviewWindowState } from './vscode'
 
 const App = () => {
 
@@ -46,17 +46,20 @@ const App = () => {
   const viewId = view?.id ?? null
 
   const onNodeClick = useCallback((node: DiagramNode) => {
-    // if (node.routeToView && node.routeToView !== viewId) {
-    //   goToViewSource(node.routeToView)
-    //   openView(node.routeToView)
-    //   return
-    // }
-    goToSource(node.id)
+    if (node.navigateTo) {
+      openView(node.navigateTo)
+      return
+    }
+    if (viewId) {
+      notifyNodeClick(viewId, node.id)
+    }
   }, [viewId])
 
   const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    // goToRelation(edge.relations[0])
-  }, [])
+    if (viewId) {
+      notifyEdgeClick(viewId, edge.id)
+    }
+  }, [viewId])
 
   if (!view) {
     return <>
@@ -75,7 +78,6 @@ const App = () => {
   return <>
     <Diagram
       interactive
-      id={view.id}
       className={'c4x-diagram'}
       diagram={view}
       width={windowSize.width}

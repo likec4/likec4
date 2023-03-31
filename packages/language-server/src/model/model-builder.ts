@@ -9,7 +9,8 @@ import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type { CancellationToken } from 'vscode-languageserver-protocol'
-import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
+import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast';
+import { ElementViewOps } from '../ast'
 import { ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
@@ -203,7 +204,9 @@ export class LikeC4ModelBuilder {
     if (docviews) {
       for (const view of docviews) {
         try {
-          views.push(this.parseElementView(view))
+          const v = this.parseElementView(view)
+          ElementViewOps.writeId(view, v.id)
+          views.push(v)
         } catch (e) {
           logger.warn(e)
         }

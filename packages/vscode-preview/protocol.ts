@@ -1,4 +1,4 @@
-import type { DiagramView, ViewID, Fqn, RelationID } from '@likec4/core/types'
+import type { DiagramView, ViewID, NodeId, EdgeId } from '@likec4/core/types'
 
 export type ExtensionToPanelProtocol =
   | {
@@ -16,12 +16,11 @@ export type PanelToExtensionProtocol =
   } | {
     kind: 'close'
   } | {
-    kind: 'goToSource'
-    element: Fqn
-  } | {
-    kind: 'goToViewSource'
+    kind: 'onNodeClick'
     viewId: ViewID
+    nodeId: NodeId
   } | {
-    kind: 'goToRelation'
-    relationId: RelationID
+    kind: 'onEdgeClick'
+    viewId: ViewID
+    edgeId: EdgeId
   }

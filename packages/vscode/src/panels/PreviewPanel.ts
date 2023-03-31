@@ -92,10 +92,10 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private close() {
-    this.panel?.dispose()
-    this.panel = null
     this.listener?.dispose()
     this.listener = null
+    this.panel?.dispose()
+    this.panel = null
     this.currentViewId = null
   }
 
@@ -177,16 +177,13 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
         this.open(message.viewId)
         return
       }
-      case 'goToRelation': {
-        void this.goToRelation(message.relationId)
+      case 'onNodeClick': {
+        console.log('onNodeClick', message)
+        // void this.goToRelation(message.relationId)
         return
       }
-      case 'goToSource': {
-        void this.goToSource(message.element)
-        return
-      }
-      case 'goToViewSource': {
-        void this.goToViewSource(message.viewId)
+      case 'onEdgeClick': {
+        console.log('onEdgeClick', message)
         return
       }
     }

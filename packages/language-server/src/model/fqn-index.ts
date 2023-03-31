@@ -1,14 +1,12 @@
 import { DocumentState, DONE_RESULT, MultiMap, StreamImpl } from 'langium'
 import type { AstNodeDescription, AstNodeDescriptionProvider } from 'langium'
 import type { URI } from 'vscode-uri'
-import { ast, type LikeC4LangiumDocument } from '../ast'
+import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { logger } from '../logger'
 import { parentFqn } from '@likec4/core/utils'
 import { Fqn } from '@likec4/core/types'
 import { strictElementRefFqn } from '../elementRef'
-
-const fqnField = Symbol('fqn')
 
 export class FqnIndex {
 
@@ -35,7 +33,7 @@ export class FqnIndex {
   }
 
   public get(el: ast.Element): Fqn | null {
-    let fqn = ((el as any)[fqnField] as Fqn | undefined) ?? null
+    let fqn = ElementOps.readId(el) ?? null
     // if ()
     // let fqn = this.#fqnMap.get(el) ?? null
     if (fqn && !this.#index.has(fqn)) {
@@ -112,7 +110,7 @@ export class FqnIndex {
         const name = element.name
         const fqn = Fqn(name, parent)
         this.#index.add(fqn, this.descriptions.createDescription(element, name, doc))
-          ; (element as any)[fqnField] = fqn
+        ElementOps.writeId(element, fqn)
         // this.#fqnMap.set(element, fqn)
         if (element.definition) {
           for (const nested of element.definition.elements) {

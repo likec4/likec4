@@ -1,9 +1,9 @@
 
-import type { Fqn, RelationID, ViewID, LayoutedView } from '@likec4/core/types'
+import type { Fqn, RelationID, ViewID, DiagramView, NodeId, EdgeId } from '@likec4/core/types'
 import type { PanelToExtensionProtocol } from '../protocol'
 
 const vscode = acquireVsCodeApi<{
-  view: LayoutedView
+  view: DiagramView
 }>()
 
 const queueMicrotask = (cb: () => void) => void Promise.resolve().then(cb)
@@ -18,7 +18,7 @@ export const getPreviewWindowState = () => {
   return vscode.getState()?.view ?? null
 }
 
-export const savePreviewWindowState = (view: LayoutedView) => {
+export const savePreviewWindowState = (view: DiagramView) => {
   vscode.setState({
     view
   })
@@ -43,23 +43,39 @@ export const openView = (viewId: ViewID) => {
   })
 }
 
-export const goToSource = (element: Fqn) => {
+
+export const notifyNodeClick = (viewId: ViewID, nodeId: NodeId) => {
   sendToExtension({
-    kind: 'goToSource',
-    element
+    kind: 'onNodeClick',
+    viewId,
+    nodeId
+  })
+}
+export const notifyEdgeClick = (viewId: ViewID, edgeId: EdgeId) => {
+  sendToExtension({
+    kind: 'onEdgeClick',
+    viewId,
+    edgeId
   })
 }
 
-export const goToRelation = (relationId: RelationID) => {
-  sendToExtension({
-    kind: 'goToRelation',
-    relationId
-  })
-}
+// export const goToSource = (element: Fqn) => {
+//   sendToExtension({
+//     kind: 'goToSource',
+//     element
+//   })
+// }
 
-export const goToViewSource = (viewId: ViewID) => {
-  sendToExtension({
-    kind: 'goToViewSource',
-    viewId
-  })
-}
+// export const goToRelation = (relationId: RelationID) => {
+//   sendToExtension({
+//     kind: 'goToRelation',
+//     relationId
+//   })
+// }
+
+// export const goToViewSource = (viewId: ViewID) => {
+//   sendToExtension({
+//     kind: 'goToViewSource',
+//     viewId
+//   })
+// }

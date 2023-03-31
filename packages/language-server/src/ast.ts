@@ -61,6 +61,29 @@ export interface ParsedAstElementView {
   rules: c4.ViewRule[]
 }
 
+const idattr = Symbol.for('idattr')
+export const ElementViewOps = {
+  writeId(node: ast.ElementView, id: c4.ViewID) {
+    Object.assign(node, {[idattr]: id})
+    return node
+  },
+  readId(node: ast.ElementView) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (node as any)[idattr] as c4.ViewID | undefined
+  }
+}
+
+export const ElementOps = {
+  writeId(node: ast.Element, id: c4.Fqn) {
+    Object.assign(node, {[idattr]: id})
+    return node
+  },
+  readId(node: ast.Element) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (node as any)[idattr] as c4.Fqn | undefined
+  }
+}
+
 export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
   c4hash?: string
   c4Specification: ParsedAstSpecification
