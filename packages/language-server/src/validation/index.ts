@@ -1,7 +1,7 @@
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
-import { elementKindChecks } from './specification'
+import { elementKindChecks, tagChecks } from './specification'
 
 export function registerValidationChecks(services: LikeC4Services) {
   const registry = services.validation.ValidationRegistry
@@ -16,5 +16,6 @@ export function registerValidationChecks(services: LikeC4Services) {
   registry.register<ast.LikeC4AstType>({
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
+    Tag: tagChecks(services),
   })
 }

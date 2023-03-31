@@ -4,7 +4,7 @@ import { ast } from '../ast'
 import { elementRef, isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
 import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
-import invariant from 'tiny-invariant'
+
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
   private fqnIndex: FqnIndex
@@ -87,31 +87,36 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
   }
 
-  protected computeScope(container: AstNode, referenceType: string) {
+  protected computeScope(node: AstNode, referenceType: string) {
     const scopes: Stream<AstNodeDescription>[] = []
-    const doc = getDocument(container)
+    const doc = getDocument(node)
     const precomputed = doc.precomputedScopes
 
     const byReferenceType = (desc: AstNodeDescription) =>
       this.reflection.isSubtype(desc.type, referenceType)
 
     if (precomputed) {
-      let currentNode: AstNode | undefined = container
-      while (currentNode) {
-        const elements = precomputed.get(currentNode).filter(byReferenceType)
+      const elements = precomputed.get(node).filter(byReferenceType)
+      if (elements.length > 0) {
+        scopes.push(stream(elements))
+      }
+
+      let container = node.$container
+      while (container) {
+        const elements = precomputed.get(container).filter(byReferenceType)
         if (elements.length > 0) {
           scopes.push(stream(elements))
         }
         if (referenceType === ast.Element) {
-          if (ast.isExtendElement(currentNode) && currentNode !== container) {
-            const extendsOf = strictElementRefFqn(currentNode.element)
+          if (ast.isExtendElement(container) && node.$container !== container) {
+            const extendsOf = strictElementRefFqn(container.element)
             scopes.push(this.fqnIndex.uniqueDescedants(extendsOf))
           }
-          if (ast.isElementView(currentNode) && currentNode !== container) {
-            scopes.push(this.scopeElementView(currentNode))
+          if (ast.isElementView(container) && node.$container !== container) {
+            scopes.push(this.scopeElementView(container))
           }
         }
-        currentNode = currentNode.$container
+        container = container.$container
       }
     }
 
