@@ -18,10 +18,12 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
       "color": "secondary",
       "id": "system.backend",
       "kind": "component",
+      "technology": "NodeJS",
       "title": "Backend",
     },
     "system.frontend": {
       "color": "muted",
+      "description": "Frontend description",
       "id": "system.frontend",
       "kind": "component",
       "shape": "browser",

@@ -18,6 +18,7 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
+import { isElementStringProperty } from '../generated/ast'
 
 
 export class LikeC4ModelBuilder {
@@ -232,13 +233,19 @@ export class LikeC4ModelBuilder {
       shape
     } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
-    // const color = styleProps.find(ast.isColorProperty)?.value
-    // const shape = styleProps.find(ast.isShapeProperty)?.value
+
+    const props = astNode.definition?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p))
+
+    const title = astNode.title ?? props?.find(p => p.key === 'title')?.value
+    const description =  props?.find(p => p.key === 'description')?.value
+    const technology =  props?.find(p => p.key === 'technology')?.value
     return {
       id,
       kind,
       astPath,
-      title: astNode.title ?? astNode.name,
+      title: title ?? astNode.name,
+      ...(technology ? { technology } : {}),
+      ...(description ? { description } : {}),
       ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
       ...(color && color !== DefaultThemeColor ? { color } : {}),

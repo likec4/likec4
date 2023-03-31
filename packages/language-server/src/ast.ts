@@ -39,6 +39,7 @@ export interface ParsedAstElement {
   kind: c4.ElementKind
   title: string
   description?: string
+  technology?: string
   tags?: c4.Tag[]
   shape?: c4.ElementShape
   color?: c4.ThemeColor

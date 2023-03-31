@@ -55,7 +55,7 @@
     "@likec4/core": "workspace:*",
     "@mobily/ts-belt": "^3.13.1",
     "langium": "^1.1.0",
-    "nanoid": "^4.0.1",
+    "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.0",
     "strip-indent": "^4.0.0",

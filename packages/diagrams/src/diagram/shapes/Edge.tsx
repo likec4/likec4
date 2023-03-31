@@ -19,8 +19,9 @@ export const EdgeShape = memo(({
 }: EdgeShapeProps) => {
   const {
     points,
-    // headPolygon,
-    label
+    headArrow,
+    label,
+    labelBox
   } = edge
 
   const [opacity, opacityApi] = useSpring(
@@ -58,28 +59,29 @@ export const EdgeShape = memo(({
       strokeWidth={2}
       hitStrokeWidth={20}
     />
-    {/* {headPolygon &&
+    {headArrow &&
       <animated.Line
         {...opacity}
         {...listeners}
-        points={headPolygon.flat()}
+        points={headArrow.flat()}
         closed={true}
         fill={theme.relation.lineColor}
         stroke={theme.relation.lineColor}
         strokeWidth={1}
       />
-    } */}
-    {/* {label &&
+    }
+    {label && labelBox &&
       <animated.Text
         {...opacity}
         {...listeners}
-        {...label}
+        {...labelBox}
+        text={label}
         padding={0}
         fill={theme.relation.labelColor}
         fontFamily={theme.font}
         fontSize={12}
         lineHeight={1.12}
       />
-    } */}
+    }
   </>
 }, deepEqual)

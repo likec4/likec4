@@ -32,6 +32,7 @@ export interface Element {
   readonly kind: ElementKind
   readonly title: string
   readonly description?: string
+  readonly technology?: string
   readonly tags?: Tag[]
   readonly shape?: ElementShape
   readonly color?: ThemeColor

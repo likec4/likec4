@@ -15,6 +15,8 @@ export interface DiagramNode extends ComputedNode {
 
 export interface DiagramEdge extends ComputedEdge {
   points: Point[],
+  // Polygons are used to draw arrows
+  headArrow?: Point[],
   labelBox: {
     x: number
     y: number

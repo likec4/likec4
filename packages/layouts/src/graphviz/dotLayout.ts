@@ -57,13 +57,13 @@ function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
   return b.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
 }
 
-// function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headPolygon'] {
-//   const p = _hdraw_?.find(propEq('op', 'P'))
-//   if (p) {
-//     return p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
-//   }
-//   return undefined
-// }
+function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {
+  const p = _hdraw_?.find(propEq('op', 'P'))
+  if (p) {
+    return p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
+  }
+  return undefined
+}
 
 function textAlignment(align?: string) {
   if (!align)
@@ -136,10 +136,10 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
       labelBox: null,
     }
     diagram.edges.push(edge)
-    // const headPolygon = parseEdgeHeadPolygon(e)
-    // if (headPolygon) {
-    //   edge.headPolygon = headPolygon
-    // }
+    const headArrow = parseEdgeHeadPolygon(e)
+    if (headArrow) {
+      edge.headArrow = headArrow
+    }
     const ldraw = (e._ldraw_ ?? e._tldraw_)?.find(l => l.op === 'T')
     if (ldraw && edge.label) {
       const [x, y] = ldraw.pt.map(pointToPx) as Point

@@ -12,6 +12,7 @@ export interface ComputedNode {
   parent: NodeId | null
   title: string
   description?: string
+  technology?: string
   children: NodeId[]
   shape: ElementShape
   color: ThemeColor

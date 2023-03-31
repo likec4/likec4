@@ -788,7 +788,7 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
     "@react-spring/konva": ^9.7.1
-    "@types/react": ^18.0.28
+    "@types/react": ^18.0.31
     "@types/react-dom": ^18.0.11
     "@typescript-eslint/eslint-plugin": ^5.57.0
     "@typescript-eslint/parser": ^5.57.0
@@ -809,7 +809,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/eslint-config@workspace:packages/eslint-config"
   dependencies:
-    "@types/eslint": ^8.21.3
+    "@types/eslint": ^8.37.0
     "@typescript-eslint/eslint-plugin": ^5.57.0
     "@typescript-eslint/parser": ^5.57.0
     eslint: ^8.37.0
@@ -830,7 +830,7 @@ __metadata:
     eslint: ^8.37.0
     langium: ^1.1.0
     langium-cli: ^1.1.0
-    nanoid: ^4.0.1
+    nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
     rambdax: ^9.1.0
@@ -880,7 +880,7 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
     "@types/node": ^18.15.6
-    "@types/react": ^18.0.28
+    "@types/react": ^18.0.31
     "@types/react-dom": ^18.0.11
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
@@ -893,8 +893,8 @@ __metadata:
     rambdax: ^9.1.0
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-error-boundary: ^4.0.2
-    type-fest: ^3.7.0
+    react-error-boundary: ^4.0.3
+    type-fest: ^3.7.2
     typescript: ^5.0.3
     vite: ^4.2.1
   languageName: unknown
@@ -917,7 +917,7 @@ __metadata:
     eslint: ^8.37.0
     froebel: ^0.23.2
     langium: ^1.1.0
-    nanoid: ^4.0.1
+    nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     path-browserify: ^1.0.1
     rambdax: ^9.1.0
@@ -1159,13 +1159,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^8.21.3":
-  version: 8.21.3
-  resolution: "@types/eslint@npm:8.21.3"
+"@types/eslint@npm:^8.37.0":
+  version: 8.37.0
+  resolution: "@types/eslint@npm:8.37.0"
   dependencies:
     "@types/estree": "*"
     "@types/json-schema": "*"
-  checksum: 80e0b5ca9ffb77bff19d01df08b93a99a6b44cad4c40e6450733ead6f1bc44b5514e7d28c3b0ad6304aeb01d690ee7ca89250729a9373551b7e587c6dbb41d7f
+  checksum: 06d3b3fba12004294591b5c7a52e3cec439472195da54e096076b1f2ddfbb8a445973b9681046dd530a6ac31eca502f635abc1e3ce37d03513089358e6f822ee
   languageName: node
   linkType: hard
 
@@ -1229,7 +1229,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18.0.28":
+"@types/react@npm:*, @types/react@npm:^18.0.31":
   version: 18.0.31
   resolution: "@types/react@npm:18.0.31"
   dependencies:
@@ -3666,12 +3666,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "nanoid@npm:4.0.1"
+"nanoid@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "nanoid@npm:4.0.2"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 21022a7910aa690cb05872c07f0c4a317dfe2aa79cc2b5e4ab41d17476e23d973d24c683206d6fa7e1b56bf657cf5dfbc0f1cac7d596bcd2dea0f49635316628
+  checksum: 747c399cea4664dd0be1d0ec498ffd1ef8f1f5221676fc8b577e3f46f66d9afcddb9595d63d19a2e78d0bc6cc33984f65e66bf1682c850b9e26288883d96b53f
   languageName: node
   linkType: hard
 
@@ -4089,7 +4089,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^4.0.2":
+"react-error-boundary@npm:^4.0.3":
   version: 4.0.3
   resolution: "react-error-boundary@npm:4.0.3"
   dependencies:
@@ -4949,7 +4949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^3.7.0, type-fest@npm:^3.7.2":
+"type-fest@npm:^3.7.2":
   version: 3.7.2
   resolution: "type-fest@npm:3.7.2"
   checksum: 28f5c6eca67f01825308e19792425d1643d6f7589aa278d3a8e34caa07d9502aa54016df6b9f65bd3d51a3f2d9c002d3a739bb391d11ef2505df73e374a10b79

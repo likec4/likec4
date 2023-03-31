@@ -23,12 +23,16 @@ describe('LikeC4ModelBuilder', () => {
       }
       component system {
         backend = component 'Backend' {
+          technology 'NodeJS'
+
           style {
             color secondary
           }
         }
         component frontend {
           #deprecated
+          description 'Frontend description'
+
           style {
             color: muted
             shape: browser
@@ -49,6 +53,7 @@ describe('LikeC4ModelBuilder', () => {
       },
       'system.backend': {
         'color': 'secondary',
+        'technology': 'NodeJS'
       },
       'system.frontend': {
         'color': 'muted',
