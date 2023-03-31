@@ -7,6 +7,7 @@ module.exports = {
   ignorePatterns: [
     ".turbo",
     ".eslintrc.cjs",
-    "dist"
+    "dist",
+    "src/generated"
   ]
 }

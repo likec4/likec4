@@ -3,8 +3,7 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import type { Grammar } from 'langium';
-import { loadGrammarFromJson } from 'langium';
+import { loadGrammarFromJson, Grammar } from 'langium';
 
 let loadedLikeC4Grammar: Grammar | undefined;
 export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4Grammar = loadGrammarFromJson(`{
