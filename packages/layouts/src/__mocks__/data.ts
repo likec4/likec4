@@ -1,4 +1,11 @@
-import type { ComputedView, EdgeId, Fqn, NodeId, RelationID, ViewID } from '@likec4/core/types'
+import type { ComputedView, EdgeId, ElementShape, Fqn, NodeId, RelationID, ThemeColor, ViewID } from '@likec4/core/types'
+
+const base = {
+  shape: 'rectangle' as ElementShape,
+  color: 'primary' as ThemeColor,
+  parent: null as NodeId | null,
+  children: [] as NodeId[],
+}
 
 export const fakeComputedView: ComputedView = {
   id: 'fakeView' as ViewID,
@@ -12,14 +19,13 @@ export const fakeComputedView: ComputedView = {
   }],
   nodes: [
     {
+      ...base,
       id: 'amazon' as NodeId,
-      parent: null,
       title: 'amazon',
-      children: []
     },
     {
+      ...base,
       id: 'cloud' as NodeId,
-      parent: null,
       title: 'cloud',
       children: [
         'cloud.backend' as NodeId,
@@ -27,28 +33,26 @@ export const fakeComputedView: ComputedView = {
       ]
     },
     {
+      ...base,
       id: 'customer' as NodeId,
-      parent: null,
-      title: 'customer',
-      children: []
+      title: 'customer'
     },
     {
+      ...base,
       id: 'support' as NodeId,
-      parent: null,
-      title: 'support',
-      children: []
+      title: 'support'
     },
     {
+      ...base,
       id: 'cloud.backend' as NodeId,
       parent: 'cloud' as NodeId,
       title: 'backend',
-      children: []
     },
     {
+      ...base,
       id: 'cloud.frontend' as NodeId,
       parent: 'cloud' as NodeId,
       title: 'frontend',
-      children: []
     }
   ],
   edges: [

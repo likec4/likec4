@@ -1,6 +1,6 @@
 import { anyPass, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
-import type { Element, ElementView, Relation, ViewRuleStyle } from '../types'
+import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
 import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import * as Expression from '../types/expression'
 import { compareByFqnHierarchically, isSameHierarchy, parentFqn, Relations } from '../utils'
@@ -16,7 +16,7 @@ function updateSetWith<T>(set: Set<T>, elements: T[], addToSet = true): void {
 }
 function computeNodes(elements: Element[]) {
   const ids = new Set(elements.map(e => e.id))
-  const nodes = elements.map(({ id, title }): ComputedNode => {
+  const nodes = elements.map(({ id, title, color, shape, description }): ComputedNode => {
     let parent = parentFqn(id)
     while (parent) {
       if (ids.has(parent)) {
@@ -24,12 +24,17 @@ function computeNodes(elements: Element[]) {
       }
       parent = parentFqn(parent)
     }
-    return {
-      id,
-      parent,
-      title,
-      children: []
-    }
+    return Object.assign(
+      {
+        id,
+        parent,
+        title,
+        color: color ?? DefaultThemeColor,
+        shape: shape ?? DefaultElementShape,
+        children: [],
+      },
+      description ? { description } : {}
+    )
   })
   for (const n of nodes) {
     n.children = nodes.flatMap(child => child.parent === n.id ? child.id : [])

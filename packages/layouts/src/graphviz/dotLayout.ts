@@ -1,11 +1,11 @@
-import type { ComputedView, DiagramEdge, DiagramNode, DiagramView, NodeId, Point } from '@likec4/core/types'
 import type { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { printToDot } from './printToDot'
+import type { ComputedView, DiagramEdge, DiagramNode, DiagramView, NodeId, Point } from '@likec4/core/types'
+import { propEq } from 'rambdax'
 import invariant from 'tiny-invariant'
-import { find, omit, propEq } from 'rambdax'
-import type { GraphvizJson, GVBox, GVPos } from './graphviz-types'
-import { inchToPx, pointToPx } from './graphviz-utils'
 import type { DiagramLayoutFn } from '../types'
+import type { GVBox, GVPos, GraphvizJson } from './graphviz-types'
+import { inchToPx, pointToPx } from './graphviz-utils'
+import { printToDot } from './printToDot'
 
 async function loadGraphviz() {
   const { Graphviz } = await import('@hpcc-js/wasm/graphviz')

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "eslint": "^8.36.0"
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "eslint": "^8.37.0"
   },
   "devDependencies": {
     "@types/eslint": "^8.21.3"

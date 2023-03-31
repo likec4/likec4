@@ -122,6 +122,7 @@ exports[`dotLayout 1`] = `
   "nodes": [
     {
       "children": [],
+      "color": "primary",
       "id": "amazon",
       "parent": null,
       "position": [
@@ -132,6 +133,7 @@ exports[`dotLayout 1`] = `
         165.5,
         632,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
@@ -143,6 +145,7 @@ exports[`dotLayout 1`] = `
         "cloud.backend",
         "cloud.frontend",
       ],
+      "color": "primary",
       "id": "cloud",
       "parent": null,
       "position": [
@@ -153,6 +156,7 @@ exports[`dotLayout 1`] = `
         139,
         155,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 433,
         "width": 304,
@@ -161,6 +165,7 @@ exports[`dotLayout 1`] = `
     },
     {
       "children": [],
+      "color": "primary",
       "id": "customer",
       "parent": null,
       "position": [
@@ -171,6 +176,7 @@ exports[`dotLayout 1`] = `
         0.5,
         0,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
@@ -179,6 +185,7 @@ exports[`dotLayout 1`] = `
     },
     {
       "children": [],
+      "color": "primary",
       "id": "support",
       "parent": null,
       "position": [
@@ -189,6 +196,7 @@ exports[`dotLayout 1`] = `
         330.5,
         0,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
@@ -197,6 +205,7 @@ exports[`dotLayout 1`] = `
     },
     {
       "children": [],
+      "color": "primary",
       "id": "cloud.backend",
       "parent": "cloud",
       "position": [
@@ -207,6 +216,7 @@ exports[`dotLayout 1`] = `
         26.5,
         267,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
@@ -215,6 +225,7 @@ exports[`dotLayout 1`] = `
     },
     {
       "children": [],
+      "color": "primary",
       "id": "cloud.frontend",
       "parent": "cloud",
       "position": [
@@ -225,6 +236,7 @@ exports[`dotLayout 1`] = `
         26.5,
         56,
       ],
+      "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
