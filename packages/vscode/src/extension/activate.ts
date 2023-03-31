@@ -9,6 +9,7 @@ import { registerCommands } from './registerCommands'
 import { registerPreviewPanelSerializer } from './registerWebviewSerializer'
 
 export async function activateExtension({ context, client }: ExtensionRequirements) {
+  console.debug('activateExtension')
 
   const injector = createInjector()
     .provideValue(di.context, context)

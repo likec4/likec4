@@ -178,6 +178,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "isInclude": true,
         },
       ],
+      "title": "api",
       "viewOf": "system.backend.api",
     },
     "v_system.frontend": {
@@ -238,6 +239,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "isInclude": true,
         },
       ],
+      "title": "frontend",
       "viewOf": "system.frontend",
     },
   },

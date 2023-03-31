@@ -1,11 +1,12 @@
 import type { ExtensionContext } from '$/di'
 import { activateExtension } from '$/extension/activate'
-import { LanguageMetaData } from '@likec4/language-server'
+import { fileExtensions, languageId } from '$/meta'
 import path from 'path'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient, TransportKind, type LanguageClientOptions, type ServerOptions
 } from 'vscode-languageclient/node'
+
 let client: NodeLanguageClient | undefined
 
 // this method is called when vs code is activated
@@ -37,15 +38,19 @@ function createLanguageClient(context: ExtensionContext) {
     debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
   }
 
-  const extensions = LanguageMetaData.fileExtensions.map(s => s.substring(1)).join(',')
-  const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{${extensions}}`)
+  const extensions = fileExtensions.map(s => s.substring(1)).join(',')
+  const globPattern = `**/*.{${extensions}}`
+  const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
   context.subscriptions.push(fileSystemWatcher)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    documentSelector: LanguageMetaData.fileExtensions.map(ext => ({
-      pattern: `**/*${ext}`
-    })),
+    documentSelector: [
+      ...fileExtensions.map(ext => ({
+        pattern: `**/*${ext}`
+      })),
+      { language: languageId },
+    ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
       fileEvents: fileSystemWatcher
@@ -55,7 +60,7 @@ function createLanguageClient(context: ExtensionContext) {
 
   // Create the language client and start the client.
   return new NodeLanguageClient(
-    LanguageMetaData.languageId,
+    languageId,
     'LikeC4',
     serverOptions,
     clientOptions

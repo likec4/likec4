@@ -94,13 +94,6 @@ export class LikeC4ModelBuilder {
         return omit(['astPath'], rel)
       }
 
-      const toModelView = (view: ParsedAstElementView): c4.ElementView => {
-        return {
-          ...omit(['astPath', 'rules'], view),
-          rules: clone(view.rules)
-        }
-      }
-
       const elements = pipe(
         docs.flatMap(d => d.c4Elements),
         A.filterMap(flow(
@@ -130,6 +123,17 @@ export class LikeC4ModelBuilder {
           return acc
         })
       )
+      const toModelView = (view: ParsedAstElementView): c4.ElementView => {
+        let title = view.title
+        if (!title && view.viewOf) {
+          title = elements[view.viewOf]?.title
+        }
+        return {
+          ...omit(['astPath', 'rules', 'tite'], view),
+          ...(!!title ? { title } : {}),
+          rules: clone(view.rules)
+        }
+      }
 
       const views = pipe(
         docs.flatMap(d => d.c4Views),

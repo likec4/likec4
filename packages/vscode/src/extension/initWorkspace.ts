@@ -3,8 +3,7 @@ import { mapParallelAsyncWithLimit, delay } from 'rambdax'
 import { buildDocuments } from '@likec4/language-server/protocol'
 import * as vscode from 'vscode'
 import { Utils } from 'vscode-uri'
-
-const extensions = ['.likec4', '.like-c4', '.c4']
+import { fileExtensions } from '$/meta'
 
 const traversePath = async (folderPath: vscode.Uri): Promise<vscode.Uri[]> => {
   const files = await vscode.workspace.fs.readDirectory(folderPath)
@@ -12,7 +11,7 @@ const traversePath = async (folderPath: vscode.Uri): Promise<vscode.Uri[]> => {
   const folders = [] as vscode.Uri[]
   for (const [name, type] of files) {
     const uri = Utils.joinPath(folderPath, name)
-    if (type === vscode.FileType.File && extensions.some(ext => name.endsWith(ext))) {
+    if (type === vscode.FileType.File && fileExtensions.some(ext => name.endsWith(ext))) {
       docs.push(uri)
     }
     // TODO: add ignore patterns
@@ -37,6 +36,7 @@ const collectDocsInWorkspaceVFs = async () => {
 
 export async function initWorkspace(client: LanguageClient) {
   const docs = await collectDocsInWorkspaceVFs()
+  console.debug('initWorkspace: [' + docs.join(', ') + ']')
   for (const uri of docs) {
     try {
       await vscode.workspace.openTextDocument(uri)

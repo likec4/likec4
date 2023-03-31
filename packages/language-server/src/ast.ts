@@ -1,6 +1,6 @@
 import * as ast from './generated/ast'
 import type { LangiumDocument } from 'langium';
-import { AstNode, DocumentState } from 'langium'
+import { DocumentState } from 'langium'
 import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
 import objectHash from 'object-hash'
@@ -55,7 +55,7 @@ export interface ParsedAstRelation {
 export interface ParsedAstElementView {
   id: c4.ViewID
   astPath: string
-  of?: c4.Fqn
+  viewOf?: c4.Fqn
   title?: string
   description?: string
   rules: c4.ViewRule[]

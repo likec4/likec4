@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
-import type { Fqn } from '@likec4/core/types'
+import type { Fqn, ViewID } from '@likec4/core/types'
 
 describe('LikeC4ModelBuilder', () => {
 
@@ -124,8 +124,10 @@ describe('LikeC4ModelBuilder', () => {
       'v1': {
         'id': 'v1',
         'viewOf': 'system.backend.api',
+        'title': 'api'
       }
     })
+    expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
 
     expect(model).toMatchSnapshot()
   })
