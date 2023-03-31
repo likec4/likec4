@@ -4,27 +4,23 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
 {
   "elements": {
     "client": {
-      "astPath": "/model/elements@0",
       "id": "client",
       "kind": "user",
       "shape": "person",
       "title": "client",
     },
     "system": {
-      "astPath": "/model/elements@1",
       "id": "system",
       "kind": "component",
       "title": "system",
     },
     "system.backend": {
-      "astPath": "/model/elements@1/definition/elements@0",
       "color": "secondary",
       "id": "system.backend",
       "kind": "component",
       "title": "Backend",
     },
     "system.frontend": {
-      "astPath": "/model/elements@1/definition/elements@1",
       "color": "muted",
       "id": "system.frontend",
       "kind": "component",
@@ -57,31 +53,26 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
   "elements": {
     "client": {
-      "astPath": "/model/elements@0",
       "id": "client",
       "kind": "user",
       "title": "client",
     },
     "system": {
-      "astPath": "/model/elements@1",
       "id": "system",
       "kind": "component",
       "title": "system",
     },
     "system.backend": {
-      "astPath": "/model/elements@1/definition/elements@0",
       "id": "system.backend",
       "kind": "component",
       "title": "backend",
     },
     "system.backend.api": {
-      "astPath": "/model/elements@0/elements@0",
       "id": "system.backend.api",
       "kind": "component",
       "title": "api",
     },
     "system.frontend": {
-      "astPath": "/model/elements@1/definition/elements@1",
       "id": "system.frontend",
       "kind": "component",
       "title": "frontend",
