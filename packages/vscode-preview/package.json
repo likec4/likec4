@@ -7,7 +7,7 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./src/protocol.ts"
+    "./protocol": "./protocol.ts"
   },
   "sideEffects": false,
   "files": [
@@ -28,6 +28,8 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
     "@types/node": "^18.15.6",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "@types/vscode": "^1.74.0",
     "@types/vscode-webview": "^1.57.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",

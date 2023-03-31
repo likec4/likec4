@@ -53,7 +53,7 @@
     "commands": [
       {
         "command": "likec4.open-preview",
-        "category": "C4X",
+        "category": "Like C4",
         "title": "Open Preview"
       }
     ],

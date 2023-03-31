@@ -46,16 +46,16 @@ const App = () => {
   const viewId = view?.id ?? null
 
   const onNodeClick = useCallback((node: DiagramNode) => {
-    if (node.routeToView && node.routeToView !== viewId) {
-      goToViewSource(node.routeToView)
-      openView(node.routeToView)
-      return
-    }
+    // if (node.routeToView && node.routeToView !== viewId) {
+    //   goToViewSource(node.routeToView)
+    //   openView(node.routeToView)
+    //   return
+    // }
     goToSource(node.id)
   }, [viewId])
 
   const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    goToRelation(edge.relations[0])
+    // goToRelation(edge.relations[0])
   }, [])
 
   if (!view) {
@@ -77,7 +77,7 @@ const App = () => {
       interactive
       id={view.id}
       className={'c4x-diagram'}
-      diagram={view.diagram}
+      diagram={view}
       width={windowSize.width}
       height={windowSize.height}
       onNodeClick={onNodeClick}
