@@ -1,6 +1,6 @@
 import type { Predicate } from 'rambdax'
 import { values } from 'rambdax'
-import type { Element, Fqn, LikeC4Model, Relation, RelationID } from '../types'
+import type { Element, ElementView, Fqn, LikeC4Model, Relation, RelationID, ViewID } from '../types'
 import { parentFqn } from '../utils/fqn'
 import invariant from 'tiny-invariant'
 
@@ -28,6 +28,12 @@ function asPath(id: Fqn) {
 //   relations: Relation[]
 // }
 
+type ModelInput = {
+  elements: Record<Fqn, Element>
+  relations: Record<RelationID, Relation>
+  views: Record<ViewID, ElementView>
+}
+
 export class ModelIndex {
 
   private root: ElementTrie = {
@@ -37,6 +43,7 @@ export class ModelIndex {
   private _elements = new Set<Element>()
 
   private _relations = new Map<RelationID, Relation>()
+  private _defaultElementView = new Map<Fqn, ViewID>()
 
   // private _taggedElements = new Map<Tag, Set<Element>>()
   // private _taggedRelations = new Map<Tag, Set<Relation>>()
@@ -49,7 +56,7 @@ export class ModelIndex {
     return [...this._relations.values()].filter(predicate)
   }
 
-  static from({ elements, relations }: Pick<LikeC4Model, 'elements' | 'relations'>): ModelIndex {
+  static from({ elements, relations, views }: ModelInput): ModelIndex {
     const index = new ModelIndex()
     for (const el of Object.values(elements)) {
       index.addElement(el)
@@ -57,9 +64,11 @@ export class ModelIndex {
     for (const rel of Object.values(relations)) {
       index.addRelation(rel)
     }
-    // for (const view of Object.values(views)) {
-    //   state.addView(view)x
-    // }
+    for (const {id, viewOf} of Object.values(views)) {
+      if (viewOf) {
+        index._defaultElementView.set(viewOf, id)
+      }
+    }
     return index
   }
 
@@ -164,5 +173,9 @@ export class ModelIndex {
     //   tagged.add(rel)
     //   this._taggedRelations.set(tag, tagged)
     // }
+  }
+
+  defaultViewOf = (id: Fqn): ViewID | undefined => {
+    return this._defaultElementView.get(id)
   }
 }

@@ -1,11 +1,8 @@
-import type { DiagramView } from '@likec4/core/types'
 import { useMeasure } from '@react-hookz/web/esm'
 import type { DiagramProps } from './diagram'
 import { Diagram } from './diagram'
 
-export interface EmbeddedDiagramProps extends Omit<DiagramProps, 'width' | 'height' | 'id' | 'diagram' | 'pannable' | 'zoomable' | 'zoomBy'> {
-  diagram: DiagramView
-}
+export type EmbeddedDiagramProps = Omit<DiagramProps, 'width' | 'height' | 'pannable' | 'zoomable' | 'zoomBy'>
 
 export function EmbeddedDiagram({
   diagram,
@@ -35,7 +32,6 @@ export function EmbeddedDiagram({
     }}>
     {measures &&
       <Diagram
-        id={diagram.id}
         diagram={diagram}
         width={measures.width}
         height={measures.height}

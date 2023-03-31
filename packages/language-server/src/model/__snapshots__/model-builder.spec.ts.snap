@@ -93,60 +93,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "views": {
-    "896265706157590f12c4b05d2c5402bd8970e23c": {
-      "edges": [
-        {
-          "id": "system.frontend:system.backend",
-          "label": "requests",
-          "relations": [
-            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
-          ],
-          "source": "system.frontend",
-          "target": "system.backend",
-        },
-        {
-          "id": "client:system.frontend",
-          "label": null,
-          "relations": [
-            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
-          ],
-          "source": "client",
-          "target": "system.frontend",
-        },
-      ],
-      "id": "896265706157590f12c4b05d2c5402bd8970e23c",
-      "nodes": [
-        {
-          "children": [],
-          "id": "client",
-          "parent": null,
-          "title": "client",
-        },
-        {
-          "children": [],
-          "id": "system.backend",
-          "parent": null,
-          "title": "backend",
-        },
-        {
-          "children": [],
-          "id": "system.frontend",
-          "parent": null,
-          "title": "frontend",
-        },
-      ],
-      "rules": [
-        {
-          "exprs": [
-            {
-              "wildcard": true,
-            },
-          ],
-          "isInclude": true,
-        },
-      ],
-      "viewOf": "system.frontend",
-    },
     "index": {
       "edges": [
         {
@@ -163,14 +109,18 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "nodes": [
         {
           "children": [],
+          "color": "primary",
           "id": "client",
           "parent": null,
+          "shape": "rectangle",
           "title": "client",
         },
         {
           "children": [],
+          "color": "primary",
           "id": "system",
           "parent": null,
+          "shape": "rectangle",
           "title": "system",
         },
       ],
@@ -202,14 +152,19 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "nodes": [
         {
           "children": [],
+          "color": "primary",
           "id": "system.frontend",
+          "navigateTo": "v_system.frontend",
           "parent": null,
+          "shape": "rectangle",
           "title": "frontend",
         },
         {
           "children": [],
+          "color": "primary",
           "id": "system.backend.api",
           "parent": null,
+          "shape": "rectangle",
           "title": "api",
         },
       ],
@@ -224,6 +179,66 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "viewOf": "system.backend.api",
+    },
+    "v_system.frontend": {
+      "edges": [
+        {
+          "id": "system.frontend:system.backend",
+          "label": "requests",
+          "relations": [
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend",
+        },
+        {
+          "id": "client:system.frontend",
+          "label": null,
+          "relations": [
+            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+          ],
+          "source": "client",
+          "target": "system.frontend",
+        },
+      ],
+      "id": "v_system.frontend",
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "id": "client",
+          "parent": null,
+          "shape": "rectangle",
+          "title": "client",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "id": "system.backend",
+          "parent": null,
+          "shape": "rectangle",
+          "title": "backend",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "id": "system.frontend",
+          "parent": null,
+          "shape": "rectangle",
+          "title": "frontend",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
+      "viewOf": "system.frontend",
     },
   },
 }

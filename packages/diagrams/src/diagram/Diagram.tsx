@@ -17,7 +17,6 @@ interface IRect {
 }
 
 export interface DiagramProps {
-  id: string
   className?: string
   interactive?: boolean
   pannable?: boolean
@@ -35,7 +34,6 @@ const isCompound = (node: DiagramNode) => node.children.length > 0
 const filterCompounds = partition(isCompound)
 
 export function Diagram({
-  id,
   diagram,
   className,
   zoomBy = 1.06,
@@ -48,7 +46,7 @@ export function Diagram({
   onNodeClick,
   onEdgeClick
 }: DiagramProps): JSX.Element {
-
+  const id = diagram.id
   const theme = defaultKonvaTheme
 
   const lastRenderViewIdRef = useRef<ViewID | null>(null)
@@ -221,7 +219,7 @@ export function Diagram({
     const lastRenderViewId = lastRenderViewIdRef.current
     if (stageRef.current) {
       centerAndFit(interactive && lastRenderViewId !== null && lastRenderViewId !== id)
-      lastRenderViewIdRef.current = id as ViewID
+      lastRenderViewIdRef.current = id
     }
   }, [id, width, height, ...paddings])
 

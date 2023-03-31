@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Fqn, Element, Relation, RelationID, ElementKind } from '../types'
+import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -172,8 +172,23 @@ export const fakeRelations = {
   }
 } satisfies Record<string, Relation>
 
+export const fakeElementView: ElementView = {
+  id: 'fakeView' as ViewID,
+  title: '',
+  viewOf: 'cloud' as Fqn,
+  rules: [{
+    isInclude: true,
+    exprs: [
+      { wildcard: true }
+    ]
+  }],
+}
+
 
 export const fakeModel = () => ModelIndex.from({
   elements: fakeElements,
-  relations: fakeRelations
+  relations: fakeRelations,
+  views: {
+    [fakeElementView.id]: fakeElementView
+  },
 })

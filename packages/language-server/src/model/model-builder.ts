@@ -326,12 +326,15 @@ export class LikeC4ModelBuilder {
     const astPath = this.getAstNodePath(astNode)
     let id = astNode.name as c4.ViewID | undefined
     if (!id) {
-      const doc = getDocument(astNode).uri.toString()
-      id = objectHash({
-        doc,
-        astPath,
-        viewOf: viewOf ?? null,
-      }) as c4.ViewID
+      if (viewOf) {
+        id = ('v_' + viewOf) as c4.ViewID
+      } else {
+        const doc = getDocument(astNode).uri.toString()
+        id = objectHash({
+          doc,
+          astPath,
+        }) as c4.ViewID
+      }
     }
 
     const title = astNode.properties.find(p => p.key === 'title')?.value

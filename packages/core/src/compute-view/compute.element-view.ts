@@ -170,7 +170,13 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
 
   const nodes = applyViewRuleStyles(
     view.rules.filter(isViewRuleStyle),
-    computeNodes([...elements].sort(compareByFqnHierarchically))
+    computeNodes([...elements].sort(compareByFqnHierarchically)).map(nd => {
+      const navigateTo = index.defaultViewOf(nd.id)
+      if (navigateTo && navigateTo !== view.id) {
+        Object.assign(nd, { navigateTo })
+      }
+      return nd
+    })
   )
 
   return {
