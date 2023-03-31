@@ -1,7 +1,7 @@
 import type { ExtensionRequirements } from '$/di'
 import { di } from '$/di'
 import { createInjector } from 'typed-inject'
-// import { initWorkspace } from './initWorkspace'
+import { initWorkspace } from './initWorkspace'
 
 export async function activateExtension({ context, client }: ExtensionRequirements) {
 
@@ -18,7 +18,7 @@ export async function activateExtension({ context, client }: ExtensionRequiremen
   // injector.injectFunction(registerPreviewPanelSerializer)
 
   await client.start()
-  // await injector.injectFunction(initWorkspace)
+  await initWorkspace(client)
 
   return injector
 }

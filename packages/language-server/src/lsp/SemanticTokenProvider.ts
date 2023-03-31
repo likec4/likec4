@@ -1,6 +1,7 @@
 import { AbstractSemanticTokenProvider, type AstNode, type SemanticTokenAcceptor } from 'langium'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
+import { isElementRefHead } from '../elementRef'
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
 
@@ -16,14 +17,27 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'el',
-        type: SemanticTokenTypes.variable,
+        type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property,
       })
+      // acceptor({
+      //   node,
+      //   property: 'el',
+      //   type: SemanticTokenTypes.variable,
+      // })
       return
     }
     //   if (ast.isSpec(node)) {
     //     keyword('spec')
     //     return
     //   }
+    if (ast.isWildcardExpression(node)) {
+      acceptor({
+        node,
+        property: 'isWildcard',
+        type: SemanticTokenTypes.variable
+      })
+      return
+    }
     if (ast.isRelationExpression(node) || ast.isIncomingExpression(node) || ast.isOutgoingExpression(node)) {
       keyword('->')
       return
@@ -96,15 +110,23 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     //     })
     //     return
     //   }
-    //   if (ast.isTags(node)) {
-    //     acceptor({
-    //       node,
-    //       property: 'value',
-    //       type: SemanticTokenTypes.enumMember
-    //     })
-    //     return
-    //   }
-    if (ast.isAStyleProperty(node) || ast.isElementStringProperty(node)) {
+    if (ast.isTags(node)) {
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.macro
+      })
+      return
+    }
+    if (ast.isTag(node)) {
+      acceptor({
+        node,
+        property: 'name',
+        type: SemanticTokenTypes.macro
+      })
+      return
+    }
+    if (ast.isColorProperty(node) || ast.isShapeProperty(node)) {
       acceptor({
         node,
         property: 'key',
@@ -113,8 +135,23 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.property
+        type: SemanticTokenTypes.enumMember
       })
+      return
+    }
+    if (ast.isElementProperty(node) || ast.isViewProperty(node)) {
+      acceptor({
+        node,
+        property: 'key',
+        type: SemanticTokenTypes.keyword,
+      })
+      if ('value' in node) {
+        acceptor({
+          node,
+          property: 'value',
+          type: SemanticTokenTypes.string
+        })
+      }
       return
     }
     if (ast.isModel(node)) {
@@ -178,7 +215,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     acceptor({
       node,
       property: 'kind',
-      type: SemanticTokenTypes.type,
+      type: SemanticTokenTypes.keyword,
       modifier: [
       ]
     })

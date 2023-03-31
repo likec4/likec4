@@ -9,6 +9,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     return
   }
   const modelBuilder = services.likec4.ModelBuilder
+  const LangiumDocuments = services.shared.workspace.LangiumDocuments
 
   connection.onRequest(Rpc.fetchModel, async (_cancelToken) => {
     let model
@@ -24,21 +25,21 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   })
 
 
-  // connection.onRequest(rebuildDocuments, async (docs, cancelToken) => {
-  //   const changed = [] as URI[]
-  //   for (const d of docs) {
-  //     const uri = (d as unknown) as URI
-  //     if (LangiumDocuments.hasDocument(uri)) {
-  //       changed.push(uri)
-  //     } else {
-  //       logger.error(`LangiumDocuments does not have document: ${uri.toString()}`)
-  //     }
-  //   }
-  //   logger.debug(`Received request to rebuild: [
-  //     ${changed.map(d => d.toString()).join('\n      ')}
-  //   ]`)
-  //   await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
-  // })
+  connection.onRequest(Rpc.buildDocuments, async (docs, cancelToken) => {
+    const changed = [] as URI[]
+    for (const d of docs) {
+      const uri = (d as unknown) as URI
+      if (LangiumDocuments.hasDocument(uri)) {
+        changed.push(uri)
+      } else {
+        logger.error(`LangiumDocuments does not have document: ${uri.toString()}`)
+      }
+    }
+    logger.debug(`Received request to rebuild: [
+      ${changed.map(d => d.toString()).join('\n      ')}
+    ]`)
+    await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
+  })
 
   // connection.onRequest(locateElement, ({ element, property }, _cancelToken) => {
   //   return c4Model.locateElement(element, property)

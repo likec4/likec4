@@ -309,7 +309,7 @@ export class LikeC4ModelBuilder {
       }
     }
     if (ast.isViewRuleStyle(astNode)) {
-      const styleProps = toElementStyle(astNode.style.props)
+      const styleProps = toElementStyle(astNode.props)
       return {
         targets: astNode.targets.map(n => this.parseElementExpression(n)),
         style: {
@@ -352,9 +352,7 @@ export class LikeC4ModelBuilder {
       return strictElementRefFqn(node.element)
     }
     const fqn = this.fqnIndex.get(node)
-    if (!fqn) {
-      throw new Error(`Not indexed element: ${this.getAstNodePath(node)}`)
-    }
+    invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)
     return fqn
   }
 

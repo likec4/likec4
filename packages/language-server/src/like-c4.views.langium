@@ -22,12 +22,10 @@ ViewRuleExpression:
   (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)*;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpression (Comma targets+=ElementExpression)* style=ViewRuleStyleProps;
-
-ViewRuleStyleProps: OpenBlock
-  (props+=(
-    ColorProperty | ShapeProperty
-  ))*
+  'style' targets+=ElementExpression (Comma targets+=ElementExpression)* OpenBlock
+    (props+=(
+      ColorProperty | ShapeProperty
+    ))*
 CloseBlock;
 //   'style' targets+=ElementExpression (COMMA? targets+=ElementExpression)* OPEN_BLOCK
 //   (styleProps+=StyleProperty)*

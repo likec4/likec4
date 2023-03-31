@@ -61,7 +61,7 @@ export function isViewRule(item: unknown): item is ViewRule {
 }
 
 export interface ColorProperty extends AstNode {
-    readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyleProps;
+    readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyle;
     readonly $type: 'ColorProperty';
     key: 'color'
     value: ThemeColor
@@ -296,7 +296,7 @@ export function isRelationExpression(item: unknown): item is RelationExpression 
 }
 
 export interface ShapeProperty extends AstNode {
-    readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyleProps;
+    readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyle;
     readonly $type: 'ShapeProperty';
     key: 'shape'
     value: ElementShape
@@ -425,7 +425,7 @@ export function isViewRuleExpression(item: unknown): item is ViewRuleExpression 
 export interface ViewRuleStyle extends AstNode {
     readonly $container: ElementView;
     readonly $type: 'ViewRuleStyle';
-    style: ViewRuleStyleProps
+    props: Array<ColorProperty | ShapeProperty>
     targets: Array<ElementExpression>
 }
 
@@ -433,18 +433,6 @@ export const ViewRuleStyle = 'ViewRuleStyle';
 
 export function isViewRuleStyle(item: unknown): item is ViewRuleStyle {
     return reflection.isInstance(item, ViewRuleStyle);
-}
-
-export interface ViewRuleStyleProps extends AstNode {
-    readonly $container: ViewRuleStyle;
-    readonly $type: 'ViewRuleStyleProps';
-    props: Array<ColorProperty | ShapeProperty>
-}
-
-export const ViewRuleStyleProps = 'ViewRuleStyleProps';
-
-export function isViewRuleStyleProps(item: unknown): item is ViewRuleStyleProps {
-    return reflection.isInstance(item, ViewRuleStyleProps);
 }
 
 export interface WildcardExpression extends AstNode {
@@ -510,14 +498,13 @@ export interface LikeC4AstType {
     ViewRule: ViewRule
     ViewRuleExpression: ViewRuleExpression
     ViewRuleStyle: ViewRuleStyle
-    ViewRuleStyleProps: ViewRuleStyleProps
     WildcardExpression: WildcardExpression
 }
 
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationExpression', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'ViewRuleStyleProps', 'WildcardExpression'];
+        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationExpression', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -674,15 +661,8 @@ export class LikeC4AstReflection extends AbstractAstReflection {
                 return {
                     name: 'ViewRuleStyle',
                     mandatory: [
+                        { name: 'props', type: 'array' },
                         { name: 'targets', type: 'array' }
-                    ]
-                };
-            }
-            case 'ViewRuleStyleProps': {
-                return {
-                    name: 'ViewRuleStyleProps',
-                    mandatory: [
-                        { name: 'props', type: 'array' }
                     ]
                 };
             }
