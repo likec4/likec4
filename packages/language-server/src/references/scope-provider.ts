@@ -1,4 +1,5 @@
-import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, AstNode, getDocument, stream, EMPTY_STREAM } from 'langium'
+import type { AstNode} from 'langium';
+import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, getDocument, stream, EMPTY_STREAM } from 'langium'
 import { ast } from '../ast'
 import { elementRef, isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
 import type { FqnIndex } from '../model/fqn-index'
@@ -87,7 +88,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   protected computeScope(container: AstNode, referenceType: string) {
-    const scopes: Array<Stream<AstNodeDescription>> = []
+    const scopes: Stream<AstNodeDescription>[] = []
     const doc = getDocument(container)
     const precomputed = doc.precomputedScopes
 

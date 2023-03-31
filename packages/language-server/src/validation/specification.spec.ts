@@ -13,8 +13,8 @@ test('elementKindChecks', async () => {
   `)
   expect(diagnostics).toHaveLength(2)
   for (const diagnostic of diagnostics) {
-    expect(diagnostic.severity, `diagnostic severity`).toBe(1)
-    expect(diagnostic.message, `diagnostic message`).toBe("Duplicate element kind 'component'")
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element kind \'component\'')
   }
 })
 
@@ -28,7 +28,7 @@ test.skip('tagChecks', async () => {
   `)
   expect(diagnostics).toHaveLength(2)
   for (const diagnostic of diagnostics) {
-    expect(diagnostic.severity, `diagnostic severity`).toBe(1)
-    expect(diagnostic.message, `diagnostic message`).toBe("Duplicate element kind 'component'")
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element kind \'component\'')
   }
 })

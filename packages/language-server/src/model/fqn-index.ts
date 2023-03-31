@@ -62,10 +62,10 @@ export class FqnIndex {
       () => {
         const prefix = `${parent}.`
 
-        const children = [] as Array<[Fqn, AstNodeDescription]>
+        const children = [] as [Fqn, AstNodeDescription][]
         const childrenNames = new Set<string>()
 
-        const descedants = [] as Array<[Fqn, AstNodeDescription]>
+        const descedants = [] as [Fqn, AstNodeDescription][]
 
         this.#index.entries().forEach(([fqn, desc]) => {
           if (fqn.startsWith(prefix)) {

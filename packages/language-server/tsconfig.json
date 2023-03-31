@@ -14,9 +14,6 @@
     "./src/**/*.ts"
   ],
   "exclude": [
-    "./src/__test__",
-    "./src/test/*",
-    "./src/**/*.spec.ts",
     "node_modules"
   ]
 }

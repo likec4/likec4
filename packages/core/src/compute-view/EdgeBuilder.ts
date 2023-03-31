@@ -1,13 +1,9 @@
 import { equals, keys, pluck, reject } from 'rambdax'
 import type { Fqn, Relation } from '../types'
 import { compareFqnHierarchically } from '../utils'
-import type { ComputedEdge, EdgeId } from './types'
+import type { ComputedEdge, EdgeId } from '../types/computed-view'
 
-interface ResolvedRelationsObj {
-  [source: Fqn]: {
-    [target: Fqn]: Relation[]
-  }
-}
+type ResolvedRelationsObj = Record<Fqn, Record<Fqn, Relation[]>>;
 
 export class EdgeBuilder {
 

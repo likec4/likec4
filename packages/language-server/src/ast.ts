@@ -1,5 +1,6 @@
 import * as ast from './generated/ast'
-import { AstNode, DocumentState, LangiumDocument } from 'langium'
+import type { LangiumDocument } from 'langium';
+import { AstNode, DocumentState } from 'langium'
 import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
 import objectHash from 'object-hash'
@@ -103,7 +104,7 @@ export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocum
 
 export function* streamElements(doc: LikeC4LangiumDocument) {
   const elements = doc.parseResult.value.model?.elements ?? []
-  let traverseStack = [...elements] as (ast.Element | ast.ExtendElement | ast.Relation)[]
+  const traverseStack = [...elements] as (ast.Element | ast.ExtendElement | ast.Relation)[]
   let el
   while (el = traverseStack.shift()) {
     if (ast.isExtendElement(el)) {
@@ -147,7 +148,7 @@ export function resolveRelationPoints(node: ast.Relation): {
 
 
 export function toElementStyle(props?: ast.AStyleProperty[]) {
-  let result: {
+  const result: {
     color?: c4.ThemeColor
     shape?: c4.ElementShape
   } = {}

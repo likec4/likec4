@@ -2,6 +2,7 @@ import type { Predicate } from 'rambdax'
 import { values } from 'rambdax'
 import type { Element, Fqn, LikeC4Model, Relation, RelationID } from '../types'
 import { parentFqn } from '../utils/fqn'
+import invariant from 'tiny-invariant'
 
 interface ElementTrie {
   el?: Element
@@ -66,29 +67,22 @@ export class ModelIndex {
     const path = asPath(el.id)
     let scope = this.root
     for (const name of path) {
-      if (!(name in scope.children)) {
-        scope.children[name] = {
-          children: {}
-        }
+      const next = scope.children[name] ?? {
+        children: {}
       }
-      scope = scope.children[name]!
+      scope.children[name] = next
+      scope = next
     }
     scope.el = el
     this._elements.add(el)
-  //   for (const tag of el.tags) {
-  //     const tagged = this._taggedElements.get(tag) ?? new Set()
-  //     tagged.add(el)
-  //     this._taggedElements.set(tag, tagged)
-  //   }
   }
 
   private locateTrie = (id: Fqn) => {
     let scope = this.root
     for (const name of asPath(id)) {
-      if (!(name in scope.children)) {
-        throw new Error(`Invalid index, Element not found at path ${name} of ${id}`)
-      }
-      scope = scope.children[name]!
+      const next = scope.children[name]
+      invariant(next, `Invalid index, Element not found at path ${name} of ${id}`)
+      scope = next
     }
     return scope
   }
@@ -126,10 +120,9 @@ export class ModelIndex {
     let name = path.shift()
     let trie = this.root
     while (name) {
-      if (!(name in trie.children)) {
-        throw new Error(`invalid index, no ${name} found in ${id}`)
-      }
-      trie = trie.children[name]!
+      const next = trie.children[name]
+      invariant(next, `Invalid index, Element not found at path ${name} of ${id}`)
+      trie = next
       if (!trie.el) {
         throw new Error(`invalid index, no element ${name} found in ${id}`)
       }

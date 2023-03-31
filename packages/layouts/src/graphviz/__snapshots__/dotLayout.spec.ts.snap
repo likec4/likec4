@@ -1,0 +1,249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dotLayout 1`] = `
+{
+  "edges": [
+    {
+      "id": "cloud.frontend:cloud.backend",
+      "label": null,
+      "labelBox": null,
+      "points": [
+        [
+          291,
+          352,
+        ],
+        [
+          291,
+          370,
+        ],
+        [
+          291,
+          389,
+        ],
+        [
+          291,
+          408,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "cloud.backend:amazon",
+      "label": null,
+      "labelBox": null,
+      "points": [
+        [
+          291,
+          562,
+        ],
+        [
+          291,
+          580,
+        ],
+        [
+          291,
+          600,
+        ],
+        [
+          291,
+          619,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud.backend",
+      "target": "amazon",
+    },
+    {
+      "id": "support:cloud.frontend",
+      "label": null,
+      "labelBox": null,
+      "points": [
+        [
+          401,
+          141,
+        ],
+        [
+          386,
+          160,
+        ],
+        [
+          370,
+          181,
+        ],
+        [
+          354,
+          200,
+        ],
+      ],
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
+    {
+      "id": "customer:cloud.frontend",
+      "label": null,
+      "labelBox": null,
+      "points": [
+        [
+          181,
+          141,
+        ],
+        [
+          196,
+          160,
+        ],
+        [
+          213,
+          181,
+        ],
+        [
+          228,
+          200,
+        ],
+      ],
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend",
+    },
+  ],
+  "height": 772,
+  "id": "fakeView",
+  "nodes": [
+    {
+      "children": [],
+      "id": "amazon",
+      "parent": null,
+      "position": [
+        165.5,
+        632,
+      ],
+      "relative": [
+        165.5,
+        632,
+      ],
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "amazon",
+    },
+    {
+      "children": [
+        "cloud.backend",
+        "cloud.frontend",
+      ],
+      "id": "cloud",
+      "parent": null,
+      "position": [
+        139,
+        155,
+      ],
+      "relative": [
+        139,
+        155,
+      ],
+      "size": {
+        "height": 433,
+        "width": 304,
+      },
+      "title": "cloud",
+    },
+    {
+      "children": [],
+      "id": "customer",
+      "parent": null,
+      "position": [
+        0.5,
+        0,
+      ],
+      "relative": [
+        0.5,
+        0,
+      ],
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "id": "support",
+      "parent": null,
+      "position": [
+        330.5,
+        0,
+      ],
+      "relative": [
+        330.5,
+        0,
+      ],
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "support",
+    },
+    {
+      "children": [],
+      "id": "cloud.backend",
+      "parent": "cloud",
+      "position": [
+        165.5,
+        422,
+      ],
+      "relative": [
+        26.5,
+        267,
+      ],
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "backend",
+    },
+    {
+      "children": [],
+      "id": "cloud.frontend",
+      "parent": "cloud",
+      "position": [
+        165.5,
+        211,
+      ],
+      "relative": [
+        26.5,
+        56,
+      ],
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "frontend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+      ],
+      "isInclude": true,
+    },
+  ],
+  "title": "",
+  "viewOf": "cloud",
+  "width": 582,
+}
+`;

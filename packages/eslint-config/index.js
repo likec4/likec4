@@ -1,13 +1,12 @@
 /** @type {import('eslint').ESLint.Options} */
 module.exports = {
   extends: [
+    "plugin:@typescript-eslint/strict",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:@typescript-eslint/strict"
   ],
   plugins: [
     "@typescript-eslint",
-    "unused-imports"
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -43,7 +42,9 @@ module.exports = {
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-inferrable-types": "warn",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
@@ -60,16 +61,6 @@ module.exports = {
       {
         "prefer": "type-imports"
       }
-    ],
-    "unused-imports/no-unused-imports-ts": "warn",
-    "unused-imports/no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "varsIgnorePattern": "^_",
-        "args": "after-used",
-        "argsIgnorePattern": "^_"
-      }
     ]
   },
   overrides: [
@@ -77,6 +68,7 @@ module.exports = {
       files: [
         "**/*.spec.ts",
         "**/*.spec.tsx",
+        "**/__test__/*",
         "**/__mocks__/*"
       ],
       rules: {

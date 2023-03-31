@@ -1,5 +1,7 @@
 import type { Opaque } from 'type-fest'
-import type { ElementView, Fqn, RelationID } from '../types'
+import type { Fqn } from './element'
+import type { RelationID } from './relation'
+import type { ElementView } from './view'
 
 export type NodeId = Fqn
 
@@ -11,6 +13,7 @@ export interface ComputedNode {
   // color: ThemeColor
   parent: NodeId | null
   title: string
+  description?: string
   children: NodeId[]
 }
 

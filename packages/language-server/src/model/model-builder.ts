@@ -1,20 +1,22 @@
+import { computeViews } from '@likec4/core/compute-view'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
-import { computeViews } from '@likec4/core/compute-view'
-import { A, O, F, flow, pipe } from '@mobily/ts-belt'
-import { AstNode, DocumentState, LangiumDocuments, getDocument, interruptAndCheck } from 'langium'
+import { A, O, flow, pipe } from '@mobily/ts-belt'
+import type { AstNode, LangiumDocuments } from 'langium'
+import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
-import { isNil, mergeDeepRight, clone } from 'rambdax'
-import { ParsedAstElement, ParsedAstRelation, ParsedAstSpecification, ast, c4hash, cleanParsedModel, isParsedLikeC4LangiumDocument, isValidDocument, resolveRelationPoints, streamElements, type LikeC4LangiumDocument, toElementStyle, ParsedAstElementView, isLikeC4LangiumDocument } from '../ast'
+import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
+import invariant from 'tiny-invariant'
+import type { CancellationToken } from 'vscode-languageserver-protocol'
+import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
+import { ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import invariant from 'tiny-invariant'
-import { Rpc } from '../protocol'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
 
 
 export class LikeC4ModelBuilder {
@@ -62,11 +64,18 @@ export class LikeC4ModelBuilder {
       return
     }
     try {
-      const c4Specification = docs.reduce((acc, doc) => {
-        return mergeDeepRight(acc, doc.c4Specification)
-      }, <ParsedAstSpecification>{
-        kinds: {}
-      })
+      const c4Specification = reduce(
+        (acc: ParsedAstSpecification, doc) => mergeDeepRight(acc, doc.c4Specification),
+        {
+          kinds: {}
+        },
+        docs
+      )
+      // const c4Specification = docs.reduce<ParsedAstSpecification>((acc, doc) => {
+      //   return mergeDeepRight(acc, doc.c4Specification)
+      // }, {
+      //   kinds: {}
+      // })
 
       const toModelElement = (el: ParsedAstElement): c4.Element | null => {
         const kind = c4Specification.kinds[el.kind]
@@ -74,22 +83,20 @@ export class LikeC4ModelBuilder {
           return {
             ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
             ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
-            ...el,
+            ...(omit(['astPath'], el))
           }
         }
         return null
       }
 
-      const toModelRelation = ({ astPath, ...rel }: ParsedAstRelation): c4.Relation => {
-        return {
-          ...rel
-        }
+      const toModelRelation = (rel: ParsedAstRelation): c4.Relation => {
+        return omit(['astPath'], rel)
       }
 
-      const toModelView = ({ astPath, rules, ...view }: ParsedAstElementView): c4.ElementView => {
+      const toModelView = (view: ParsedAstElementView): c4.ElementView => {
         return {
-          ...view,
-          rules: clone(rules)
+          ...omit(['astPath', 'rules'], view),
+          rules: clone(view.rules)
         }
       }
 
@@ -209,7 +216,8 @@ export class LikeC4ModelBuilder {
 
   private parseElement(astNode: ast.Element): ParsedAstElement {
     const id = this.resolveFqn(astNode)
-    const kind = astNode.kind.ref!.name as c4.ElementKind
+    invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
+    const kind = astNode.kind.ref.name as c4.ElementKind
     const tags = (astNode.definition && this.convertTags(astNode.definition)) ?? []
     const styleProps = astNode.definition?.props.find(ast.isElementStyleProperty)?.props
     const {

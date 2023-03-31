@@ -5,7 +5,7 @@ import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import * as Expression from '../types/expression'
 import { compareByFqnHierarchically, isSameHierarchy, parentFqn, Relations } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
-import type { ComputedNode, ComputedView } from './types'
+import type { ComputedNode, ComputedView } from '../types/computed-view'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
 import { evaluateExpression } from './utils/evaluate-expression'
 

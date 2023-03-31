@@ -1,11 +1,12 @@
 import type { ExtensionContext } from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
+import type { DiagramLayoutFn } from '@likec4/layouts'
 
-// export type { ViewLayoutFn as LayoutFn } from '@c4x/layouts'
-// export type { C4ModelImpl as C4Model } from './c4model'
-// export type { PreviewPanel } from './panels/PreviewPanel'
-
-export type { ExtensionContext, LanguageClient }
+export type {
+  ExtensionContext,
+  LanguageClient,
+  DiagramLayoutFn
+}
 
 export const di = {
   context: 'context', // vscode.ExtensionContext

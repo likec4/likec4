@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
+import type { Fqn } from '@likec4/core/types'
 
 describe('LikeC4ModelBuilder', () => {
 
@@ -54,9 +55,10 @@ describe('LikeC4ModelBuilder', () => {
         'shape': 'browser',
       }
     })
-    expect(model.elements.client).not.toHaveProperty('color')
-    expect(model.elements.system).not.toHaveProperty('color')
-    expect(model.elements.system).not.toHaveProperty('shape')
+    expect(model.elements['client' as Fqn]).not.toHaveProperty('color')
+    expect(model.elements['system' as Fqn]).not.toHaveProperty('color')
+    expect(model.elements['system.backend' as Fqn]).toHaveProperty('color', 'secondary')
+    expect(model.elements['system' as Fqn]).not.toHaveProperty('shape')
     expect(model).toMatchSnapshot()
   })
 
