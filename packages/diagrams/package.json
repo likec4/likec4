@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint src --fix",
-    "clean": "rm -rf .turbo dist"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@radix-ui/colors": "^0.1.8",

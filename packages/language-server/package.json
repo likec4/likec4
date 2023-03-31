@@ -1,26 +1,55 @@
 {
   "name": "@likec4/language-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
     "compile": "",
+    "prepack": "yarn generate && tsc -p tsconfig.build.json",
     "build:langium": "langium generate",
-    "build:ts": "tsc -p tsconfig.build.json",
+    "build:ts": "tsc",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
     "build": "run-s 'build:langium' 'build:ts'",
     "dev": "run-p 'watch:*'",
     "lint": "eslint src --fix",
-    "clean": "rm -rf .turbo dist",
+    "clean": "rm -rf dist",
     "test": "vitest run",
     "vitest": "vitest"
   },
   "type": "module",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://like-c4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./protocol": "./src/protocol.ts"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./protocol": {
+        "types": "./dist/protocol.d.ts",
+        "import": "./dist/protocol.js",
+        "require": "./dist/protocol.cjs"
+      }
+    }
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

@@ -1,6 +1,6 @@
-
-import { G } from '@mobily/ts-belt'
 import type { Element, Fqn } from '../types'
+
+const isString = (value: unknown): value is string => typeof value === 'string'
 
 export function nameFromFqn(fqn: Fqn) {
   const lastDot = fqn.lastIndexOf('.')
@@ -12,14 +12,14 @@ export function nameFromFqn(fqn: Fqn) {
 }
 
 export function isAncestor(...args: [ancestor: Fqn, another: Fqn] | [ancestor: Element, another: Element]) {
-  const ancestor = G.isString(args[0]) ? args[0] : args[0].id
-  const another = G.isString(args[1]) ? args[1] : args[1].id
+  const ancestor = isString(args[0]) ? args[0] : args[0].id
+  const another = isString(args[1]) ? args[1] : args[1].id
   return another.startsWith(ancestor + '.')
 }
 
 export function isSameHierarchy(...args: [one: Fqn, another: Fqn] | [one: Element, another: Element]) {
-  const one = G.isString(args[0]) ? args[0] : args[0].id
-  const another = G.isString(args[1]) ? args[1] : args[1].id
+  const one = isString(args[0]) ? args[0] : args[0].id
+  const another = isString(args[1]) ? args[1] : args[1].id
   return one === another || another.startsWith(one + '.') || one.startsWith(another + '.')
 }
 
