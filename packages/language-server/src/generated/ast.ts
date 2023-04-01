@@ -312,7 +312,7 @@ export function isRelationExpression(item: unknown): item is RelationExpression 
 export interface RelationProperty extends AstNode {
     readonly $container: RelationBody;
     readonly $type: 'RelationProperty';
-    key: 'description' | 'technology' | 'title'
+    key: 'title'
     value: string
 }
 

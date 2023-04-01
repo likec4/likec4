@@ -80,7 +80,7 @@ model {
     }
   }
   user1 -> user2 'responds to' {
-    description 'some description'
+    title 'some description'
   }
 }
 `

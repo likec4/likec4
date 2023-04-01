@@ -1596,21 +1596,8 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "feature": "key",
             "operator": "=",
             "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "title"
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "description"
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "technology"
-                }
-              ]
+              "$type": "Keyword",
+              "value": "title"
             }
           },
           {

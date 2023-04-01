@@ -91,7 +91,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "id": "99bffdfd5c78e024393e6223cd9b19225321a5e3",
       "source": "client",
       "target": "system.frontend",
-      "title": "",
+      "title": "opens",
     },
   },
   "views": {
@@ -99,7 +99,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "edges": [
         {
           "id": "client:system",
-          "label": null,
+          "label": "opens",
           "relations": [
             "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],
@@ -196,7 +196,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
         {
           "id": "client:system.frontend",
-          "label": null,
+          "label": "opens",
           "relations": [
             "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],

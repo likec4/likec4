@@ -73,4 +73,4 @@ RelationBody: OpenBlock
 CloseBlock;
 
 RelationProperty:
-  key=('title' | 'description' | 'technology') Colon? value=STRING;
+  key=('title') Colon? value=STRING;

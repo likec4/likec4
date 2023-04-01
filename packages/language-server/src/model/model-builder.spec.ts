@@ -89,7 +89,9 @@ describe('LikeC4ModelBuilder', () => {
         component api
       }
       system.frontend -> api 'requests'
-      client -> system.frontend
+      client -> system.frontend {
+        title 'opens'
+      }
     }
     views {
       view index {

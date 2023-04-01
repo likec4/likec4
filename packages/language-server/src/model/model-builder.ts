@@ -9,16 +9,14 @@ import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type { CancellationToken } from 'vscode-languageserver-protocol'
-import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast';
-import { ElementViewOps } from '../ast'
-import { ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
+import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
+import { ElementViewOps, ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import { isElementStringProperty } from '../generated/ast'
 
 
 export class LikeC4ModelBuilder {
@@ -31,8 +29,8 @@ export class LikeC4ModelBuilder {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (docs, cancelToken) => {
+      let countOfChangedDocs = 0
       try {
-        let countOfChangedDocs = 0
         for (const doc of docs) {
           await interruptAndCheck(cancelToken)
           try {
@@ -43,11 +41,10 @@ export class LikeC4ModelBuilder {
             logger.warn(`Error parsing document ${doc.uri.toString()}`)
           }
         }
-        if (countOfChangedDocs > 0) {
+      } finally {
+        if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
           await this.notifyClient(cancelToken)
         }
-      } catch (e) {
-        logger.warn(e)
       }
     })
   }
@@ -237,8 +234,8 @@ export class LikeC4ModelBuilder {
     const props = astNode.definition?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p))
 
     const title = astNode.title ?? props?.find(p => p.key === 'title')?.value
-    const description =  props?.find(p => p.key === 'description')?.value
-    const technology =  props?.find(p => p.key === 'technology')?.value
+    const description = props?.find(p => p.key === 'description')?.value
+    const technology = props?.find(p => p.key === 'technology')?.value
     return {
       id,
       kind,
@@ -262,10 +259,11 @@ export class LikeC4ModelBuilder {
       target
     }
     const id = objectHash(hashdata) as c4.RelationID
+    const title = astNode.definition?.props.find(p => p.key === 'title')?.value ?? ''
     return {
       id,
       ...hashdata,
-      title: astNode.title ?? '',
+      title: astNode.title ?? title
     }
   }
 
