@@ -7,12 +7,13 @@
   "scripts": {
     "rebuild": "run -T build",
     "open-web": "yarn rebuild && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
+    "prepack": "yarn node esbuild.js --minify && run-p 'copy:*'",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx --silent cp -r ../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
-    "build": "node esbuild.js && run-p 'copy:*'",
-    "dev": "node esbuild.js --watch",
+    "build": "yarn node esbuild.js && run-p 'copy:*'",
+    "dev": "yarn node esbuild.js --watch",
     "lint": "eslint src --fix",
     "clean": "shx --silent rm -rf dist"
   },
@@ -54,7 +55,8 @@
       {
         "command": "likec4.open-preview",
         "category": "Like C4",
-        "title": "Open Preview"
+        "title": "Open Preview",
+        "shortTitle": "Preview"
       }
     ],
     "configuration": {
@@ -66,7 +68,7 @@
             "off",
             "verbose"
           ],
-          "default": "verbose",
+          "default": "off",
           "description": "Enable debug logging for the LikeC4 extension.",
           "scope": "window"
         },

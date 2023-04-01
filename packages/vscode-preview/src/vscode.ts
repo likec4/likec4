@@ -44,38 +44,23 @@ export const openView = (viewId: ViewID) => {
 }
 
 
-export const notifyNodeClick = (viewId: ViewID, nodeId: NodeId) => {
+export const goToElement = (element: Fqn) => {
   sendToExtension({
-    kind: 'onNodeClick',
-    viewId,
-    nodeId
-  })
-}
-export const notifyEdgeClick = (viewId: ViewID, edgeId: EdgeId) => {
-  sendToExtension({
-    kind: 'onEdgeClick',
-    viewId,
-    edgeId
+    kind: 'goToElementSource',
+    element
   })
 }
 
-// export const goToSource = (element: Fqn) => {
-//   sendToExtension({
-//     kind: 'goToSource',
-//     element
-//   })
-// }
+export const goToRelation = (relationId: RelationID) => {
+  sendToExtension({
+    kind: 'goToRelationSource',
+    relationId
+  })
+}
 
-// export const goToRelation = (relationId: RelationID) => {
-//   sendToExtension({
-//     kind: 'goToRelation',
-//     relationId
-//   })
-// }
-
-// export const goToViewSource = (viewId: ViewID) => {
-//   sendToExtension({
-//     kind: 'goToViewSource',
-//     viewId
-//   })
-// }
+export const goToViewSource = (viewId: ViewID) => {
+  sendToExtension({
+    kind: 'goToViewSource',
+    viewId
+  })
+}

@@ -272,6 +272,7 @@ export function isOutgoingExpression(item: unknown): item is OutgoingExpression 
 export interface Relation extends AstNode {
     readonly $container: ElementBody | ExtendElement | Model;
     readonly $type: 'Relation' | 'RelationWithSource';
+    definition?: RelationBody
     target: ElementRef
     title?: string
 }
@@ -280,6 +281,19 @@ export const Relation = 'Relation';
 
 export function isRelation(item: unknown): item is Relation {
     return reflection.isInstance(item, Relation);
+}
+
+export interface RelationBody extends AstNode {
+    readonly $container: Relation | RelationWithSource;
+    readonly $type: 'RelationBody';
+    props: Array<RelationProperty>
+    tags?: Tags
+}
+
+export const RelationBody = 'RelationBody';
+
+export function isRelationBody(item: unknown): item is RelationBody {
+    return reflection.isInstance(item, RelationBody);
 }
 
 export interface RelationExpression extends AstNode {
@@ -293,6 +307,19 @@ export const RelationExpression = 'RelationExpression';
 
 export function isRelationExpression(item: unknown): item is RelationExpression {
     return reflection.isInstance(item, RelationExpression);
+}
+
+export interface RelationProperty extends AstNode {
+    readonly $container: RelationBody;
+    readonly $type: 'RelationProperty';
+    key: 'description' | 'technology' | 'title'
+    value: string
+}
+
+export const RelationProperty = 'RelationProperty';
+
+export function isRelationProperty(item: unknown): item is RelationProperty {
+    return reflection.isInstance(item, RelationProperty);
 }
 
 export interface ShapeProperty extends AstNode {
@@ -385,7 +412,7 @@ export function isTag(item: unknown): item is Tag {
 }
 
 export interface Tags extends AstNode {
-    readonly $container: ElementBody;
+    readonly $container: ElementBody | RelationBody;
     readonly $type: 'Tags';
     value: Array<Reference<Tag>>
 }
@@ -450,6 +477,7 @@ export function isWildcardExpression(item: unknown): item is WildcardExpression 
 export interface RelationWithSource extends Relation {
     readonly $container: ElementBody | ExtendElement | Model;
     readonly $type: 'RelationWithSource';
+    definition?: RelationBody
     source: ElementRef
     target: ElementRef
     title?: string
@@ -483,7 +511,9 @@ export interface LikeC4AstType {
     ModelViews: ModelViews
     OutgoingExpression: OutgoingExpression
     Relation: Relation
+    RelationBody: RelationBody
     RelationExpression: RelationExpression
+    RelationProperty: RelationProperty
     RelationWithSource: RelationWithSource
     ShapeProperty: ShapeProperty
     SpecificationElementKind: SpecificationElementKind
@@ -504,7 +534,7 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationExpression', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
+        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -620,6 +650,14 @@ export class LikeC4AstReflection extends AbstractAstReflection {
                     name: 'ModelViews',
                     mandatory: [
                         { name: 'views', type: 'array' }
+                    ]
+                };
+            }
+            case 'RelationBody': {
+                return {
+                    name: 'RelationBody',
+                    mandatory: [
+                        { name: 'props', type: 'array' }
                     ]
                 };
             }

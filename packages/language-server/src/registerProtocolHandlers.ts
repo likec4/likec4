@@ -9,6 +9,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     return
   }
   const modelBuilder = services.likec4.ModelBuilder
+  const modelLocator = services.likec4.ModelLocator
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
 
   connection.onRequest(Rpc.fetchModel, async (_cancelToken) => {
@@ -23,7 +24,6 @@ export function registerProtocolHandlers(services: LikeC4Services) {
       model: model ?? null
     })
   })
-
 
   connection.onRequest(Rpc.buildDocuments, async (docs, cancelToken) => {
     const changed = [] as URI[]
@@ -41,15 +41,15 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })
 
-  // connection.onRequest(locateElement, ({ element, property }, _cancelToken) => {
-  //   return c4Model.locateElement(element, property)
-  // })
+  connection.onRequest(Rpc.locateElement, ({ element, property }, _cancelToken) => {
+    return modelLocator.locateElement(element, property)
+  })
 
-  // connection.onRequest(locateRelation, ({ id }, _cancelToken) => {
-  //   return c4Model.locateRelation(id)
-  // })
+  connection.onRequest(Rpc.locateRelation, ({ id }, _cancelToken) => {
+    return modelLocator.locateRelation(id)
+  })
 
-  // connection.onRequest(locateView, ({ id }, _cancelToken) => {
-  //   return c4Model.locateView(id)
-  // })
+  connection.onRequest(Rpc.locateView, ({ id }, _cancelToken) => {
+    return modelLocator.locateView(id)
+  })
 }

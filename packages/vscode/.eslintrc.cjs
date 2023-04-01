@@ -6,10 +6,9 @@ module.exports = {
   },
   ignorePatterns: [
     ".turbo",
-    ".eslintrc.js",
+    ".eslintrc.cjs",
     "esbuild.js",
     "dist",
     "contrib",
-    "media",
   ]
 }

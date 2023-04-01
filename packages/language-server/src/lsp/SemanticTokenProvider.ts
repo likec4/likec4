@@ -139,7 +139,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isElementProperty(node) || ast.isViewProperty(node)) {
+    if (ast.isElementProperty(node) || ast.isRelationProperty(node) || ast.isViewProperty(node)) {
       acceptor({
         node,
         property: 'key',

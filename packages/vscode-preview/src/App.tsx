@@ -4,7 +4,7 @@ import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ExtensionToPanelProtocol } from '../protocol'
-import { closePreviewWindow, getPreviewWindowState, imReady, notifyEdgeClick, notifyNodeClick, openView, savePreviewWindowState } from './vscode'
+import { closePreviewWindow, getPreviewWindowState, goToElement, goToRelation, goToViewSource, imReady, openView, savePreviewWindowState } from './vscode'
 
 const App = () => {
 
@@ -47,19 +47,19 @@ const App = () => {
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     if (node.navigateTo) {
+      goToViewSource(node.navigateTo)
       openView(node.navigateTo)
       return
     }
-    if (viewId) {
-      notifyNodeClick(viewId, node.id)
-    }
-  }, [viewId])
+    goToElement(node.id)
+  }, [])
 
   const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    if (viewId) {
-      notifyEdgeClick(viewId, edge.id)
+    const relation = edge.relations[0]
+    if (relation) {
+      goToRelation(relation)
     }
-  }, [viewId])
+  }, [])
 
   if (!view) {
     return <>

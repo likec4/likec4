@@ -10,7 +10,7 @@ import {
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
-import { FqnIndex, LikeC4ModelBuilder } from './model'
+import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
 import { registerValidationChecks } from './validation'
 import { LikeC4CodeLensProvider, LikeC4DocumentSymbolProvider, LikeC4SemanticTokenProvider } from './lsp'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
@@ -22,6 +22,7 @@ export interface LikeC4AddedServices {
   likec4: {
     FqnIndex: FqnIndex,
     ModelBuilder: LikeC4ModelBuilder,
+    ModelLocator: LikeC4ModelLocator
   }
 }
 
@@ -35,6 +36,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   likec4: {
     FqnIndex: bind(FqnIndex),
     ModelBuilder: bind(LikeC4ModelBuilder),
+    ModelLocator: bind(LikeC4ModelLocator),
     // Model: bind(LikeC4Model),
     // Model: bind(LikeC4Model),
     // SpecIndex: bind(LikeC4SpecIndex),

@@ -4,7 +4,6 @@
     "lib": [
       "ESNext", "WebWorker"
     ],
-    "sourceMap": true,
     "verbatimModuleSyntax": false,
     "downlevelIteration": true,
     "importsNotUsedAsValues": "preserve",

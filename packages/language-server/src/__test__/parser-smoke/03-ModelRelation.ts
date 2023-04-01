@@ -52,3 +52,35 @@ model {
   user -> api
 }
 `
+
+
+export const valid_03_Relation_with_title = `
+specification {
+  element person
+}
+model {
+  person user1
+  person user2 {
+    -> user1 'calls'
+  }
+  user1 -> user2 'responds to'
+}
+`
+
+
+export const valid_03_Relation_with_props = `
+specification {
+  element person
+}
+model {
+  person user1
+  person user2 {
+    -> user1 {
+      title 'calls'
+    }
+  }
+  user1 -> user2 'responds to' {
+    description 'some description'
+  }
+}
+`

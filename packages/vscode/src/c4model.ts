@@ -38,6 +38,7 @@ export class C4ModelImpl extends ADisposable {
       }
       console.log('++subscribe: onDidChangeLikeC4Model')
       this.onDidChangeSubscription = this.client.onNotification(onDidChangeLikeC4Model, () => {
+        console.log('receive: onDidChangeLikeC4Model')
         listener.next(0)
       })
     },

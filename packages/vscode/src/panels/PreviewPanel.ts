@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import type { Fqn, RelationID, ViewID, DiagramView as ViewWithDiagram } from '@likec4/core/types'
+import type { Fqn, RelationID, ViewID, DiagramView } from '@likec4/core/types'
 import * as vscode from 'vscode'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import { ADisposable, getNonce } from '$/util'
@@ -8,6 +8,7 @@ import { di } from '$/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
 import type { Location } from 'vscode-languageserver-types'
+import { locateElement, locateRelation, locateView } from '@likec4/language-server/protocol'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
@@ -18,7 +19,6 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   private panel: WebviewPanel | null = null
   private listener: Disposable | null = null
   private currentViewId: ViewID | null = null
-
 
   static ViewType = 'likec4-preview' as const
   static inject = tokens(di.c4model, di.client, di.context)
@@ -33,12 +33,6 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
     this.currentViewId = null
     this.setupPanel(webviewPanel)
-    // Subscribe to model happens on "open" from webview
-   // this.subscribeToModel(viewId)
-
-    // if (typeof state === 'object' && 'view' in state && typeof state.view === 'object') {
-    //   this.subscribeToModel(state.view.id)
-    // }
     return Promise.resolve()
   }
 
@@ -46,9 +40,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     console.log('open', { this: this, viewId })
     if (this.panel) {
       this.panel.reveal(undefined, true)
-      if (this.currentViewId !== viewId) {
-        this.subscribeToModel(viewId)
-      }
+      this.subscribeToModel(viewId)
       return
     }
 
@@ -99,7 +91,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     this.currentViewId = null
   }
 
-  private sendUpdate(view: ViewWithDiagram) {
+  private sendUpdate(view: DiagramView) {
     if (!this.panel) {
       console.warn('sendUpdate: panel is not initialized')
       return
@@ -123,24 +115,24 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private goToSource = async (element: Fqn) => {
-    // const loc = await this.client.sendRequest(locateElement, { element })
-    // if (loc) {
-    //   await this.goToLocation(loc)
-    // }
+    const loc = await this.client.sendRequest(locateElement, { element })
+    if (loc) {
+      await this.goToLocation(loc)
+    }
   }
 
   private goToRelation = async (id: RelationID) => {
-    // const loc = await this.client.sendRequest(locateRelation, { id })
-    // if (loc) {
-    //   await this.goToLocation(loc)
-    // }
+    const loc = await this.client.sendRequest(locateRelation, { id })
+    if (loc) {
+      await this.goToLocation(loc)
+    }
   }
 
   private goToViewSource = async (id: ViewID) => {
-    // const loc = await this.client.sendRequest(locateView, { id })
-    // if (loc) {
-    //   await this.goToLocation(loc)
-    // }
+    const loc = await this.client.sendRequest(locateView, { id })
+    if (loc) {
+      await this.goToLocation(loc)
+    }
   }
 
   private goToLocation = async (loc: Location) => {
@@ -177,13 +169,16 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
         this.open(message.viewId)
         return
       }
-      case 'onNodeClick': {
-        console.log('onNodeClick', message)
-        // void this.goToRelation(message.relationId)
+      case 'goToRelationSource': {
+        void this.goToRelation(message.relationId)
         return
       }
-      case 'onEdgeClick': {
-        console.log('onEdgeClick', message)
+      case 'goToElementSource': {
+        void this.goToSource(message.element)
+        return
+      }
+      case 'goToViewSource': {
+        void this.goToViewSource(message.viewId)
         return
       }
     }

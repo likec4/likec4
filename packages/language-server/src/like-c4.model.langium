@@ -56,6 +56,7 @@ Relation: RelationWithSource | RelationWithoutSource;
 fragment RelationFragment:
   target=ElementRef
   (title=STRING)?
+  definition=RelationBody?
 ;
 
 RelationWithoutSource infers Relation:
@@ -65,3 +66,11 @@ RelationWithSource:
   source=ElementRef '->' RelationFragment;
 
 // RelationWithSource: {infer RelationWithSource2} RelationWithSourceRule;
+
+RelationBody: OpenBlock
+  tags=Tags?
+  (props+=RelationProperty)*
+CloseBlock;
+
+RelationProperty:
+  key=('title' | 'description' | 'technology') Colon? value=STRING;
