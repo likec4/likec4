@@ -12,7 +12,7 @@ import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
 import { registerValidationChecks } from './validation'
-import { LikeC4CodeLensProvider, LikeC4DocumentSymbolProvider, LikeC4SemanticTokenProvider } from './lsp'
+import { LikeC4CodeLensProvider, LikeC4DocumentSymbolProvider, LikeC4HoverProvider, LikeC4SemanticTokenProvider } from './lsp'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 
 /**
@@ -44,9 +44,10 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   },
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
-    SemanticTokenProvider: bind(LikeC4SemanticTokenProvider)
+    SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
+    HoverProvider: bind(LikeC4HoverProvider),
   },
-  //   HoverProvider: bind(LikeC4HoverProvider),
+  //
   //   // Formatter: bind(LikeC4Formatter),
   //
   // },

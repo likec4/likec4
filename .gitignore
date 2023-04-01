@@ -8,6 +8,8 @@
 .turbo
 .vscode-test-web
 
+examples/*/.vscode
+
 # Logs
 logs
 *.log

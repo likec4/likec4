@@ -1,8 +1,10 @@
 import type * as c4 from '@likec4/core/types'
-import type { AstNodeDescription, LangiumDocuments } from 'langium'
+import type { AstNodeDescription, LangiumDocuments} from 'langium';
+import { getDocument } from 'langium'
 import { findNodeForKeyword, findNodeForProperty } from 'langium'
 import { head } from 'rambdax'
 import type { Location } from 'vscode-languageserver-protocol'
+import type { ParsedAstElement} from '../ast';
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
@@ -20,6 +22,16 @@ export class LikeC4ModelLocator {
 
   private documents() {
     return this.langiumDocuments.all.toArray().filter(isParsedLikeC4LangiumDocument)
+  }
+
+  public getParsedElement(astNode: ast.Element): ParsedAstElement | null {
+    const doc = getDocument(astNode)
+    if (!isParsedLikeC4LangiumDocument(doc)) {
+      return null
+    }
+    const fqn = this.fqnIndex.get(astNode)
+    if (!fqn) return null
+    return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
   public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {

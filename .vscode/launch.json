@@ -9,6 +9,7 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
+      "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*"
       ],
