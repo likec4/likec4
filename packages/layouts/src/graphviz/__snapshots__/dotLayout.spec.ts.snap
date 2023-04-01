@@ -4,6 +4,20 @@ exports[`dotLayout 1`] = `
 {
   "edges": [
     {
+      "headArrow": [
+        [
+          294,
+          408,
+        ],
+        [
+          291,
+          417,
+        ],
+        [
+          288,
+          408,
+        ],
+      ],
       "id": "cloud.frontend:cloud.backend",
       "label": null,
       "labelBox": null,
@@ -33,6 +47,20 @@ exports[`dotLayout 1`] = `
       "target": "cloud.backend",
     },
     {
+      "headArrow": [
+        [
+          294,
+          619,
+        ],
+        [
+          291,
+          628,
+        ],
+        [
+          288,
+          619,
+        ],
+      ],
       "id": "cloud.backend:amazon",
       "label": null,
       "labelBox": null,
@@ -61,6 +89,20 @@ exports[`dotLayout 1`] = `
       "target": "amazon",
     },
     {
+      "headArrow": [
+        [
+          356,
+          203,
+        ],
+        [
+          348,
+          208,
+        ],
+        [
+          351,
+          199,
+        ],
+      ],
       "id": "support:cloud.frontend",
       "label": null,
       "labelBox": null,
@@ -89,6 +131,20 @@ exports[`dotLayout 1`] = `
       "target": "cloud.frontend",
     },
     {
+      "headArrow": [
+        [
+          231,
+          199,
+        ],
+        [
+          235,
+          208,
+        ],
+        [
+          226,
+          203,
+        ],
+      ],
       "id": "customer:cloud.frontend",
       "label": null,
       "labelBox": null,

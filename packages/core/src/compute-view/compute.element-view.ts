@@ -1,9 +1,9 @@
-import { anyPass, type Predicate } from 'rambdax'
+import { anyPass, filter, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
 import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import * as Expression from '../types/expression'
-import { compareByFqnHierarchically, isSameHierarchy, parentFqn, Relations } from '../utils'
+import { compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn, Relations } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import type { ComputedNode, ComputedView } from '../types/computed-view'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
@@ -42,35 +42,33 @@ function computeNodes(elements: Element[]) {
   return nodes
 }
 
-
-function applyViewRuleStyles(_rules: ViewRuleStyle[], nodes: ComputedNode[]) {
-  // for (const rule of rules) {
-  //   const predicates = [] as Predicate<ComputedNode>[]
-  //   // if (keys(rule.style).length === 0) {
-  //   //   // skip empty
-  //   //   continue
-  //   // }
-  //   for (const target of rule.targets) {
-  //     if (Expression.isElementRef(target)) {
-  //       const { element, isDescedants } = target
-  //       predicates.push(isDescedants
-  //         ? (n) => n.id.startsWith(element + '.')
-  //         : (n) => n.id as string === element
-  //       )
-  //       continue
-  //     }
-  //     if (Expression.isWildcard(target)) {
-  //       predicates.push(() => true)
-  //       continue
-  //     }
-
-  //     failExpectedNever(target)
-  //   }
-  //   // filter(anyPass(predicates), nodes).forEach(n => {
-  //   //   n.shape = rule.style.shape ?? n.shape
-  //   //   n.color = rule.style.color ?? n.color
-  //   // })
-  // }
+function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
+  for (const rule of rules) {
+    const predicates = [] as Predicate<ComputedNode>[]
+    if (!rule.style.color && !rule.style.shape) {
+      // skip empty
+      continue
+    }
+    for (const target of rule.targets) {
+      if (Expression.isElementRef(target)) {
+        const { element, isDescedants } = target
+        predicates.push(isDescedants
+          ? (n) => n.id.startsWith(element + '.')
+          : (n) => n.id as string === element
+        )
+        continue
+      }
+      if (Expression.isWildcard(target)) {
+        predicates.push(() => true)
+        continue
+      }
+      failExpectedNever(target)
+    }
+    filter(anyPass(predicates), nodes).forEach(n => {
+      n.shape = rule.style.shape ?? n.shape
+      n.color = rule.style.color ?? n.color
+    })
+  }
 
   return nodes
 }

@@ -136,16 +136,15 @@ views {
 
   view of customer {
     include
-    *,
-    bigbank,
-    customer ->
+      *,
+      bigbank,
+      customer ->
   }
 
   view of singlePageApplication {
     include
       *,
       apiApplication,
-
       internetBankingSystem,
       -> singlePageApplication ->
 
