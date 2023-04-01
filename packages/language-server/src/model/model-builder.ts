@@ -43,7 +43,7 @@ export class LikeC4ModelBuilder {
         }
       } finally {
         if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
-          await this.notifyClient(cancelToken)
+          await this.notifyClient()
         }
       }
     })
@@ -241,8 +241,8 @@ export class LikeC4ModelBuilder {
       kind,
       astPath,
       title: title ?? astNode.name,
-      ...(technology ? { technology } : {}),
-      ...(description ? { description } : {}),
+      ...(technology && { technology }),
+      ...(description && { description }),
       ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
       ...(color && color !== DefaultThemeColor ? { color } : {}),
@@ -338,15 +338,12 @@ export class LikeC4ModelBuilder {
     const astPath = this.getAstNodePath(astNode)
     let id = astNode.name as c4.ViewID | undefined
     if (!id) {
-      if (viewOf) {
-        id = ('v_' + viewOf) as c4.ViewID
-      } else {
-        const doc = getDocument(astNode).uri.toString()
-        id = objectHash({
-          doc,
-          astPath,
-        }) as c4.ViewID
-      }
+      const doc = getDocument(astNode).uri.toString()
+      id = objectHash({
+        doc,
+        astPath,
+        viewOf: viewOf ?? null
+      }) as c4.ViewID
     }
 
     const title = astNode.properties.find(p => p.key === 'title')?.value
@@ -381,19 +378,13 @@ export class LikeC4ModelBuilder {
     ) ?? []
   }
 
-  private async notifyClient(cancelToken: CancellationToken) {
+  private async notifyClient() {
 
     const connection = this.connection
     if (!connection) {
       return
     }
-    const ok = await interruptAndCheck(cancelToken).then(
-      () => true,
-      () => false
-    )
-    if (ok) {
-      logger.debug('Send onDidChangeModel')
-      await connection.sendNotification(Rpc.onDidChangeModel, null)
-    }
+    logger.debug('Send onDidChangeModel')
+    await connection.sendNotification(Rpc.onDidChangeModel, null)
   }
 }
