@@ -2,6 +2,7 @@ import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
 import { elementKindChecks, tagChecks } from './specification'
+import { viewChecks } from './view'
 
 export function registerValidationChecks(services: LikeC4Services) {
   const registry = services.validation.ValidationRegistry
@@ -14,6 +15,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     // ColorStyleProperty: validator.checkColorStyleProperty,
   // }
   registry.register<ast.LikeC4AstType>({
+    ElementView: viewChecks(services),
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
     Tag: tagChecks(services),
