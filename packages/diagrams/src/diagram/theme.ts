@@ -1,6 +1,6 @@
 import type { DiagramTheme, ThemeColors } from './types'
 import { slate, slateDark, indigo, indigoDark } from '@radix-ui/colors'
-//@ts-ignore
+//@ts-expect-error colortranslator does not have types for esm
 import { ColorTranslator as Colors } from 'colortranslator';
 
 const shadow = Colors.toRGB(slateDark.slate2)

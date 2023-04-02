@@ -18,7 +18,7 @@
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
-    "lint": "eslint src --fix",
+    "lint": "run -T eslint src/ --fix",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -34,16 +34,12 @@
     "type-fest": "^3.7.2"
   },
   "devDependencies": {
-    "@likec4/eslint-config": "workspace:*",
     "@types/node": "^18.15.6",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
     "@types/vscode": "^1.74.0",
     "@types/vscode-webview": "^1.57.1",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "^8.37.0",
     "typescript": "^5.0.3",
     "vite": "^4.2.1"
   }

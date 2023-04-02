@@ -15,7 +15,7 @@
     "copy": "run-p 'copy:*'",
     "build": "yarn node esbuild.cjs && run-p 'copy:*'",
     "dev": "yarn node esbuild.cjs --watch",
-    "lint": "eslint src --fix",
+    "lint": "run -T eslint src/ --fix",
     "clean": "shx --silent rm -rf dist"
   },
   "files": [
@@ -86,16 +86,12 @@
   "browser": "dist/browser/index.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
-    "@likec4/eslint-config": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^18.15.6",
     "@types/vscode": "^1.74.0",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
     "esbuild": "^0.17.15",
-    "eslint": "^8.37.0",
     "froebel": "^0.23.2",
     "langium": "^1.1.0",
     "nanoid": "^4.0.2",

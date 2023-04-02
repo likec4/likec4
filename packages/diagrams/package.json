@@ -8,7 +8,7 @@
     "compile": "",
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint src --fix",
+    "lint": "run -T eslint src/ --fix",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -28,12 +28,8 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/eslint-config": "workspace:*",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
-    "eslint": "^8.37.0",
     "typescript": "^5.0.3"
   }
 }

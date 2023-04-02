@@ -26,7 +26,7 @@
     "build": "tsc",
     "prepack": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch",
-    "lint": "eslint src --fix",
+    "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "vitest": "vitest",
     "clean": "rm -rf dist"
@@ -42,13 +42,9 @@
     "type-fest": "^3.7.2"
   },
   "devDependencies": {
-    "@likec4/eslint-config": "workspace:*",
     "@types/graphlib": "^2.1.8",
     "@types/node": "^18.15.6",
     "@types/string-pixel-width": "^1.10.0",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
-    "eslint": "^8.37.0",
     "typescript": "^5.0.3",
     "vite": "^4.2.1",
     "vitest": "^0.29.8"

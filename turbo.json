@@ -27,6 +27,7 @@
       "dependsOn": ["build"]
     },
     "test:watch": {
+      "outputs": [],
       "cache": false
     },
     "clean": {

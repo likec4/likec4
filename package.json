@@ -18,6 +18,7 @@
     "lint": "turbo run lint --continue"
   },
   "devDependencies": {
+    "@types/eslint": "^8.37.0",
     "@types/node": "^18.15.6",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",

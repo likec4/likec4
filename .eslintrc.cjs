@@ -11,20 +11,8 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
-    sourceType: "module",
-    project: "tsconfig.json"
+    project: true
   },
-  ignorePatterns: [
-    ".turbo",
-    ".eslintrc.js",
-    ".eslintrc.cjs",
-    ".esbuild.js",
-    ".esbuild.cjs",
-    "vite.config.ts",
-    "vitest.config.ts",
-    "dist",
-    "node_modules"
-  ],
   rules: {
     "@typescript-eslint/ban-types": "error",
     "@typescript-eslint/quotes": [
@@ -43,7 +31,14 @@ module.exports = {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-inferrable-types": "warn",
     "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
@@ -62,18 +57,16 @@ module.exports = {
       }
     ]
   },
-  overrides: [
-    {
-      files: [
-        "**/*.spec.ts",
-        "**/*.spec.tsx",
-        "**/__test__/*",
-        "**/__mocks__/*"
-      ],
-      rules: {
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-explicit-any": "off"
-      }
+  overrides: [{
+    files: [
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/__test__/*",
+      "**/__mocks__/*"
+    ],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-explicit-any": "off"
     }
-  ]
+  }]
 }

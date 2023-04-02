@@ -11,7 +11,7 @@
     "generate": "langium generate",
     "build": "run-s 'build:langium' 'build:ts'",
     "dev": "run-p 'watch:*'",
-    "lint": "eslint src --fix",
+    "lint": "run -T eslint src/ --fix",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -65,12 +65,8 @@
     "vscode-uri": "3.0.7"
   },
   "devDependencies": {
-    "@likec4/eslint-config": "workspace:*",
     "@types/node": "^18.15.6",
     "@types/object-hash": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
-    "eslint": "^8.37.0",
     "langium-cli": "^1.1.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.0.3",
