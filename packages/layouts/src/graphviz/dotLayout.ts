@@ -42,10 +42,8 @@ function parseNode({ pos, width, height }: GraphvizJson.GvObject): GVBox {
   const w = inchToPx(+width)
   const h = inchToPx(+height)
   return {
-    // x: llx - width / 2,
-    // y: lly - height / 2,
-    x: x - w / 2,
-    y: y - h / 2,
+    x: x - Math.ceil(w / 2),
+    y: y - Math.ceil(h / 2),
     width: w,
     height: h
   }

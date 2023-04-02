@@ -7,36 +7,41 @@ exports[`dotLayout 1`] = `
       "headArrow": [
         [
           294,
-          408,
+          487,
         ],
         [
           291,
-          417,
+          496,
         ],
         [
           288,
-          408,
+          487,
         ],
       ],
       "id": "cloud.frontend:cloud.backend",
-      "label": null,
-      "labelBox": null,
+      "label": "requests",
+      "labelBox": {
+        "align": "left",
+        "width": 62,
+        "x": 295,
+        "y": 459,
+      },
       "points": [
         [
           291,
-          352,
+          406,
         ],
         [
           291,
-          370,
+          432,
         ],
         [
           291,
-          389,
+          461,
         ],
         [
           291,
-          408,
+          487,
         ],
       ],
       "relations": [
@@ -50,15 +55,15 @@ exports[`dotLayout 1`] = `
       "headArrow": [
         [
           294,
-          619,
+          701,
         ],
         [
           291,
-          628,
+          711,
         ],
         [
           288,
-          619,
+          701,
         ],
       ],
       "id": "cloud.backend:amazon",
@@ -67,19 +72,19 @@ exports[`dotLayout 1`] = `
       "points": [
         [
           291,
-          562,
+          641,
         ],
         [
           291,
-          580,
+          660,
         ],
         [
           291,
-          600,
+          681,
         ],
         [
           291,
-          619,
+          702,
         ],
       ],
       "relations": [
@@ -91,16 +96,16 @@ exports[`dotLayout 1`] = `
     {
       "headArrow": [
         [
-          356,
-          203,
+          344,
+          257,
         ],
         [
-          348,
-          208,
+          336,
+          263,
         ],
         [
-          351,
-          199,
+          338,
+          253,
         ],
       ],
       "id": "support:cloud.frontend",
@@ -108,20 +113,20 @@ exports[`dotLayout 1`] = `
       "labelBox": null,
       "points": [
         [
-          401,
+          413,
           141,
         ],
         [
-          386,
-          160,
+          391,
+          176,
         ],
         [
-          370,
-          181,
+          364,
+          218,
         ],
         [
-          354,
-          200,
+          342,
+          255,
         ],
       ],
       "relations": [
@@ -133,37 +138,42 @@ exports[`dotLayout 1`] = `
     {
       "headArrow": [
         [
-          231,
-          199,
+          244,
+          253,
         ],
         [
-          235,
-          208,
+          246,
+          263,
         ],
         [
-          226,
-          203,
+          239,
+          257,
         ],
       ],
       "id": "customer:cloud.frontend",
-      "label": null,
-      "labelBox": null,
+      "label": "opens",
+      "labelBox": {
+        "align": "left",
+        "width": 44,
+        "x": 208,
+        "y": 193,
+      },
       "points": [
         [
-          181,
+          169,
           141,
         ],
         [
-          196,
-          160,
+          191,
+          176,
         ],
         [
-          213,
-          181,
+          218,
+          218,
         ],
         [
-          228,
-          200,
+          241,
+          255,
         ],
       ],
       "relations": [
@@ -173,7 +183,7 @@ exports[`dotLayout 1`] = `
       "target": "cloud.frontend",
     },
   ],
-  "height": 772,
+  "height": 855,
   "id": "fakeView",
   "nodes": [
     {
@@ -182,12 +192,12 @@ exports[`dotLayout 1`] = `
       "id": "amazon",
       "parent": null,
       "position": [
-        165.5,
-        632,
+        165,
+        715,
       ],
       "relative": [
-        165.5,
-        632,
+        165,
+        715,
       ],
       "shape": "rectangle",
       "size": {
@@ -206,15 +216,15 @@ exports[`dotLayout 1`] = `
       "parent": null,
       "position": [
         139,
-        155,
+        210,
       ],
       "relative": [
         139,
-        155,
+        210,
       ],
       "shape": "rectangle",
       "size": {
-        "height": 433,
+        "height": 457,
         "width": 304,
       },
       "title": "cloud",
@@ -225,11 +235,11 @@ exports[`dotLayout 1`] = `
       "id": "customer",
       "parent": null,
       "position": [
-        0.5,
+        0,
         0,
       ],
       "relative": [
-        0.5,
+        0,
         0,
       ],
       "shape": "rectangle",
@@ -245,11 +255,11 @@ exports[`dotLayout 1`] = `
       "id": "support",
       "parent": null,
       "position": [
-        330.5,
+        330,
         0,
       ],
       "relative": [
-        330.5,
+        330,
         0,
       ],
       "shape": "rectangle",
@@ -265,12 +275,12 @@ exports[`dotLayout 1`] = `
       "id": "cloud.backend",
       "parent": "cloud",
       "position": [
-        165.5,
-        422,
+        165,
+        500,
       ],
       "relative": [
-        26.5,
-        267,
+        26,
+        290,
       ],
       "shape": "rectangle",
       "size": {
@@ -285,11 +295,11 @@ exports[`dotLayout 1`] = `
       "id": "cloud.frontend",
       "parent": "cloud",
       "position": [
-        165.5,
-        211,
+        165,
+        266,
       ],
       "relative": [
-        26.5,
+        26,
         56,
       ],
       "shape": "rectangle",

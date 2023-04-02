@@ -60,7 +60,7 @@ export const fakeComputedView: ComputedView = {
       id: 'cloud.frontend:cloud.backend' as EdgeId,
       source: 'cloud.frontend' as NodeId,
       target: 'cloud.backend' as NodeId,
-      label: null,
+      label: 'requests',
       relations: [
         'cloud.frontend.dashboard:cloud.backend.graphql',
         'cloud.frontend.adminPanel:cloud.backend.graphql'
@@ -88,7 +88,7 @@ export const fakeComputedView: ComputedView = {
       id: 'customer:cloud.frontend' as EdgeId,
       source: 'customer' as NodeId,
       target: 'cloud.frontend' as NodeId,
-      label: null,
+      label: 'opens',
       relations: [
         'customer:cloud.frontend.dashboard'
       ] as RelationID[]

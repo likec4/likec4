@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
-import { groupBy } from 'rambdax'
 import graphlib from 'graphlib'
 import type { GraphBaseModel, NodeModel } from 'ts-graphviz'
 import { attribute as _, digraph, toDot } from 'ts-graphviz'
@@ -11,7 +10,7 @@ import { sizes } from './sizes'
 
 const gvName = (node: ComputedNode) => (node.children.length > 0 ? 'cluster_' : 'node_') + node.id as GvNodeName
 
-export function printToDot({nodes, edges, ...view}: ComputedView): DotSource {
+export function printToDot({nodes, edges}: ComputedView): DotSource {
   const gvNodes = new Map<Fqn, NodeModel>()
   const processNode = (node: ComputedNode, parent: GraphBaseModel) => {
     const name = gvName(node)
@@ -51,12 +50,16 @@ export function printToDot({nodes, edges, ...view}: ComputedView): DotSource {
   }
 
   const G = digraph('G', {
+    [_.layout]: 'dot',
     [_.compound]: true,
     [_.rankdir]: 'TB',
     [_.nodesep]: pxToInch(80),
     [_.ranksep]: pxToInch(70),
-    [_.outputorder]: 'nodesfirst'
+    [_.outputorder]: 'nodesfirst',
+    [_.pad]: 0.1,
   })
+  // @ts-expect-error ts-graphviz does not support this attribute
+  G.set('TBbalance', 'min')
 
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',

@@ -2,11 +2,14 @@
 
 exports[`printToDot fake diagram 1`] = `
 "digraph "G" {
+  layout = "dot";
   compound = true;
   rankdir = "TB";
   nodesep = 0.8333333333333334;
   ranksep = 0.7291666666666666;
   outputorder = "nodesfirst";
+  pad = 0.1;
+  TBbalance = "min";
   graph [
     fontname = "Helvetica";
     fontsize = 12;
@@ -67,6 +70,7 @@ exports[`printToDot fake diagram 1`] = `
   }
   "node_cloud.frontend" -> "node_cloud.backend" [
     id = "cloud.frontend:cloud.backend";
+    label = <requests>;
   ];
   "node_cloud.backend" -> "node_amazon" [
     id = "cloud.backend:amazon";
@@ -76,6 +80,7 @@ exports[`printToDot fake diagram 1`] = `
   ];
   "node_customer" -> "node_cloud.frontend" [
     id = "customer:cloud.frontend";
+    label = <opens>;
   ];
 }"
 `;
