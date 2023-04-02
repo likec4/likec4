@@ -9,7 +9,7 @@ import { LikeC4Grammar } from './grammar';
 
 export const LikeC4LanguageMetaData: LanguageMetaData = {
     languageId: 'likec4',
-    fileExtensions: ['.likec4', '.like-c4', '.c4'],
+    fileExtensions: ['.c4', '.likec4', '.like-c4'],
     caseInsensitive: false
 };
 

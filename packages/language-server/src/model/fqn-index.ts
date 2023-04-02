@@ -112,8 +112,8 @@ export class FqnIndex {
         this.#index.add(fqn, this.descriptions.createDescription(element, name, doc))
         ElementOps.writeId(element, fqn)
         // this.#fqnMap.set(element, fqn)
-        if (element.definition) {
-          for (const nested of element.definition.elements) {
+        if (element.body) {
+          for (const nested of element.body.elements) {
             if (ast.isElement(nested)) {
               visitElement(nested, fqn)
             }
@@ -127,8 +127,7 @@ export class FqnIndex {
     const visitExtendElement = (extendElement: ast.ExtendElement) => {
       try {
         const fqn = strictElementRefFqn(extendElement.element)
-        // this.#fqnMap.set(element, fqn)
-        for (const nested of extendElement.elements) {
+        for (const nested of extendElement.body.elements) {
           if (ast.isElement(nested)) {
             visitElement(nested, fqn)
           }

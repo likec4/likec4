@@ -74,9 +74,9 @@ export function isColorProperty(item: unknown): item is ColorProperty {
 }
 
 export interface Element extends AstNode {
-    readonly $container: ElementBody | ExtendElement | Model;
+    readonly $container: ElementBody | ExtendElementBody | Model;
     readonly $type: 'Element';
-    definition?: ElementBody
+    body?: ElementBody
     kind: Reference<ElementKind>
     name: Name
     title?: string
@@ -184,14 +184,26 @@ export function isElementView(item: unknown): item is ElementView {
 export interface ExtendElement extends AstNode {
     readonly $container: Model;
     readonly $type: 'ExtendElement';
+    body: ExtendElementBody
     element: StrictElementRef
-    elements: Array<Element | RelationWithSource>
 }
 
 export const ExtendElement = 'ExtendElement';
 
 export function isExtendElement(item: unknown): item is ExtendElement {
     return reflection.isInstance(item, ExtendElement);
+}
+
+export interface ExtendElementBody extends AstNode {
+    readonly $container: ExtendElement;
+    readonly $type: 'ExtendElementBody';
+    elements: Array<Element | RelationWithSource>
+}
+
+export const ExtendElementBody = 'ExtendElementBody';
+
+export function isExtendElementBody(item: unknown): item is ExtendElementBody {
+    return reflection.isInstance(item, ExtendElementBody);
 }
 
 export interface IncomingExpression extends AstNode {
@@ -270,7 +282,7 @@ export function isOutgoingExpression(item: unknown): item is OutgoingExpression 
 }
 
 export interface Relation extends AstNode {
-    readonly $container: ElementBody | ExtendElement | Model;
+    readonly $container: ElementBody | ExtendElementBody | Model;
     readonly $type: 'Relation' | 'RelationWithSource';
     definition?: RelationBody
     target: ElementRef
@@ -475,7 +487,7 @@ export function isWildcardExpression(item: unknown): item is WildcardExpression 
 }
 
 export interface RelationWithSource extends Relation {
-    readonly $container: ElementBody | ExtendElement | Model;
+    readonly $container: ElementBody | ExtendElementBody | Model;
     readonly $type: 'RelationWithSource';
     definition?: RelationBody
     source: ElementRef
@@ -504,6 +516,7 @@ export interface LikeC4AstType {
     ElementView: ElementView
     Expression: Expression
     ExtendElement: ExtendElement
+    ExtendElementBody: ExtendElementBody
     InOutExpression: InOutExpression
     IncomingExpression: IncomingExpression
     LikeC4Document: LikeC4Document
@@ -534,7 +547,7 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
+        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'ExtendElementBody', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -629,9 +642,9 @@ export class LikeC4AstReflection extends AbstractAstReflection {
                     ]
                 };
             }
-            case 'ExtendElement': {
+            case 'ExtendElementBody': {
                 return {
-                    name: 'ExtendElement',
+                    name: 'ExtendElementBody',
                     mandatory: [
                         { name: 'elements', type: 'array' }
                     ]

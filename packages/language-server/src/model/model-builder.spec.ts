@@ -53,17 +53,21 @@ describe('LikeC4ModelBuilder', () => {
       },
       'system.backend': {
         'color': 'secondary',
+        'title': 'Backend',
         'technology': 'NodeJS'
       },
       'system.frontend': {
         'color': 'muted',
         'shape': 'browser',
+        'description': 'Frontend description',
       }
     })
     expect(model.elements['client' as Fqn]).not.toHaveProperty('color')
     expect(model.elements['system' as Fqn]).not.toHaveProperty('color')
-    expect(model.elements['system.backend' as Fqn]).toHaveProperty('color', 'secondary')
     expect(model.elements['system' as Fqn]).not.toHaveProperty('shape')
+    expect(model.elements['system.backend' as Fqn]).toHaveProperty('color', 'secondary')
+    expect(model.elements['system.backend' as Fqn]).not.toHaveProperty('description')
+
     expect(model).toMatchSnapshot()
   })
 

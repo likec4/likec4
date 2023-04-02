@@ -3,9 +3,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.packageManager": "yarn",
   "npm.packageManager": "yarn",
-  "vitest.enable": true,
-  "vitest.showFailMessages": true,
-  "vitest.commandLine": "yarn workspaces foreach -j unlimited -p run 'vitest' --",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },

@@ -1,5 +1,7 @@
 {
   "recommendations": [
-    "langium.langium-vscode"
+    "langium.langium-vscode",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }

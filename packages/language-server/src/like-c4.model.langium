@@ -13,7 +13,7 @@ Element:
   (
     kind=[ElementKind:Name] name=Name |
     name=Name Eq kind=[ElementKind:Name] (title=STRING)?
-  ) definition=ElementBody?;
+  ) body=ElementBody?;
 
 ElementBody: OpenBlock
   tags=Tags?
@@ -35,12 +35,15 @@ ElementProperty: (
 );
 
 ExtendElement:
-  'extend' element=StrictElementRef (OpenBlock
-    elements+=(
-      Element |
-      RelationWithSource
-    )*
-  CloseBlock)?;
+  'extend' element=StrictElementRef OpenBlock
+    body=ExtendElementBody
+  CloseBlock;
+
+ExtendElementBody:
+  elements+=(
+    Element |
+    RelationWithSource
+  )*;
 
 StrictElementRef:
   el=[Element:Name] (Dot next=StrictElementRef)?;

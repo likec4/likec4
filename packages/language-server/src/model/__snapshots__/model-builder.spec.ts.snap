@@ -34,17 +34,17 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
     },
   },
   "relations": {
-    "2dc0c7f9bbc24d54946dd5291e4f1f6b43f86657": {
-      "id": "2dc0c7f9bbc24d54946dd5291e4f1f6b43f86657",
-      "source": "client",
-      "target": "system.frontend",
-      "title": "",
-    },
-    "ca3a02360ed74e5c11d3ffea13e6b400e2e83534": {
-      "id": "ca3a02360ed74e5c11d3ffea13e6b400e2e83534",
+    "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23": {
+      "id": "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23",
       "source": "system.frontend",
       "target": "system.backend",
       "title": "requests",
+    },
+    "6f3533077304f2e812d6c9cfdb6be977e23efe3d": {
+      "id": "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+      "source": "client",
+      "target": "system.frontend",
+      "title": "",
     },
   },
   "views": {},
@@ -95,7 +95,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "views": {
-    "896265706157590f12c4b05d2c5402bd8970e23c": {
+    "74f5364fa4b064ce9830043b93d4cc6fce9d85b0": {
       "edges": [
         {
           "id": "system.frontend:system.backend",
@@ -116,7 +116,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.frontend",
         },
       ],
-      "id": "896265706157590f12c4b05d2c5402bd8970e23c",
+      "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
       "nodes": [
         {
           "children": [],
@@ -217,7 +217,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "children": [],
           "color": "primary",
           "id": "system.frontend",
-          "navigateTo": "896265706157590f12c4b05d2c5402bd8970e23c",
+          "navigateTo": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
           "parent": null,
           "shape": "rectangle",
           "title": "frontend",

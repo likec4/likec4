@@ -9,7 +9,7 @@ import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
-import { ElementViewOps, ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
+import { ElementViewOps, ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamModel, toElementStyle, type LikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -182,7 +182,7 @@ export class LikeC4ModelBuilder {
       }
     }
 
-    for (const el of streamElements(doc)) {
+    for (const el of streamModel(doc)) {
       if (ast.isElement(el)) {
         try {
           elements.push(this.parseElement(el))
@@ -222,15 +222,15 @@ export class LikeC4ModelBuilder {
     const id = this.resolveFqn(astNode)
     invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
     const kind = astNode.kind.ref.name as c4.ElementKind
-    const tags = (astNode.definition && this.convertTags(astNode.definition)) ?? []
-    const styleProps = astNode.definition?.props.find(ast.isElementStyleProperty)?.props
+    const tags = (astNode.body && this.convertTags(astNode.body)) ?? []
+    const styleProps = astNode.body?.props.find(ast.isElementStyleProperty)?.props
     const {
       color,
       shape
     } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
 
-    const props = astNode.definition?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
+    const props = astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
 
     const title = astNode.title ?? props.find(p => p.key === 'title')?.value
     const description = props.find(p => p.key === 'description')?.value

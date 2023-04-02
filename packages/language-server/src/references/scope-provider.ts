@@ -21,7 +21,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
     return new StreamImpl(
       () => {
-        // if (ast.isElementRef(ref.$container))
         const parent = parentNode.el.ref
         const fqn = parent && this.fqnIndex.get(parent)
         if (fqn) {
@@ -44,7 +43,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     }
     return new StreamImpl(
       () => {
-        // if (ast.isElementRef(ref.$container))
         const target = elementRef(viewOf)
         const fqn = target && this.fqnIndex.get(target)
         if (fqn) {
@@ -108,12 +106,12 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           scopes.push(stream(elements))
         }
         if (referenceType === ast.Element) {
-          if (ast.isExtendElement(container) && node.$container !== container) {
-            const extendsOf = strictElementRefFqn(container.element)
+          if (ast.isExtendElementBody(container)) {
+            const extendsOf = strictElementRefFqn(container.$container.element)
             scopes.push(this.fqnIndex.uniqueDescedants(extendsOf))
           }
-          if (ast.isElementView(container) && node.$container !== container) {
-            scopes.push(this.scopeElementView(container))
+          if (ast.isViewRule(container)) {
+            scopes.push(this.scopeElementView(container.$container))
           }
         }
         container = container.$container

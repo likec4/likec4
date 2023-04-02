@@ -108,7 +108,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       name: nameNode.text,
       range: cst.range,
       selectionRange: nameNode.range,
-      children: astElement.elements.flatMap(this.getElementsSymbol)
+      children: astElement.body.elements.flatMap(this.getElementsSymbol)
     }]
   }
 
@@ -128,7 +128,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       range: cst.range,
       selectionRange: nameNode.range,
       detail,
-      children: astElement.definition?.elements.flatMap(this.getElementsSymbol) ?? []
+      children: astElement.body?.elements.flatMap(this.getElementsSymbol) ?? []
     }]
   }
 

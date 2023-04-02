@@ -126,17 +126,17 @@ export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocum
   )
 }
 
-export function* streamElements(doc: LikeC4LangiumDocument) {
+export function* streamModel(doc: LikeC4LangiumDocument) {
   const elements = doc.parseResult.value.model?.elements ?? []
-  const traverseStack = [...elements] as (ast.Element | ast.ExtendElement | ast.Relation)[]
+  const traverseStack: (ast.Element | ast.ExtendElement | ast.Relation)[] = [...elements]
   let el
   while (el = traverseStack.shift()) {
     if (ast.isExtendElement(el)) {
-      traverseStack.push(...el.elements)
+      traverseStack.push(...el.body.elements)
       continue
     }
-    if (ast.isElement(el) && el.definition && el.definition.elements.length > 0) {
-      traverseStack.push(...el.definition.elements)
+    if (ast.isElement(el) && el.body) {
+      traverseStack.push(...el.body.elements)
     }
     yield el
   }
