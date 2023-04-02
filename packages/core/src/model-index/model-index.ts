@@ -1,8 +1,8 @@
 import type { Predicate } from 'rambdax'
 import { values } from 'rambdax'
-import type { Element, ElementView, Fqn, LikeC4Model, Relation, RelationID, ViewID } from '../types'
-import { parentFqn } from '../utils/fqn'
 import invariant from 'tiny-invariant'
+import type { Element, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
+import { parentFqn } from '../utils/fqn'
 
 interface ElementTrie {
   el?: Element

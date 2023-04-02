@@ -1,7 +1,19 @@
-export * from './element'
-export * from './relation'
-export * from './model'
-export * from './view'
-export * from './expression'
-export * from './computed-view'
-export * from './diagram'
+export {
+  Fqn,
+  DefaultThemeColor,
+  DefaultElementShape
+} from './element'
+
+export {
+  isViewRuleExpression,
+  isViewRuleStyle
+} from './view'
+
+export type * from './opaque'
+export type * from './element'
+export type * from './relation'
+export type * from './model'
+export type * from './view'
+export type * from './expression'
+export type * from './computed-view'
+export type * from './diagram'

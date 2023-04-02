@@ -36,7 +36,7 @@ export const NodeTitle = ({
   theme,
   ...props
 }: NodeTitleProps) => {
-  const { size, title, description, color } = node
+  const { size: { width }, title, description, color } = node
   const colors = theme.colors[color]
 
   const hasDescription = description && description.length > 0
@@ -54,7 +54,7 @@ export const NodeTitle = ({
     const titleHeight = titleRef.current.height()
     const descHeight = descriptionRef.current?.height() ?? 0
     setHeights([titleHeight, descHeight])
-  }, [title, description, size.width])
+  }, [title, description, width])
 
   const descYDelta = Sizes.padding + Sizes.title.fontSize
 
@@ -66,7 +66,7 @@ export const NodeTitle = ({
       ref={titleRef}
       x={0}
       y={0}
-      width={size.width}
+      width={width}
       fill={colors.hiContrast}
       fontSize={Sizes.title.fontSize}
       fontFamily={theme.font}
@@ -80,7 +80,7 @@ export const NodeTitle = ({
         ref={descriptionRef}
         x={0}
         y={titleHeight - descYDelta}
-        width={size.width}
+        width={width}
         fill={colors.loContrast}
         fontSize={Sizes.description.fontSize}
         fontFamily={theme.font}
@@ -106,9 +106,9 @@ export const RectangleShape = memo(({
   theme,
   onNodeClick
 }: RectangleShapeProps) => {
-  const { id, size, position: [x, y], color } = node
-  // const offsetX = Math.round(size.width / 2)
-  const offsetY = Math.round(size.height / 2)
+  const { id, size: { width, height }, position: [x, y], color } = node
+  const offsetX = Math.round(width / 2)
+  const offsetY = Math.round(height / 2)
   const {
     fill,
     shadow: shadowColor
@@ -127,21 +127,19 @@ export const RectangleShape = memo(({
 
   const [groupProps, groupPropsApi] = useSpring(
     () => {
-      const offsetX = Math.round(size.width / 2)
-      const offsetY = Math.round(size.height / 2)
       // const isFirstRender = isFirstRenderRef.current
       return {
         x: x + offsetX,
         y: y + offsetY,
         offsetX,
         offsetY,
-        width: size.width,
-        height: size.height,
+        width,
+        height,
         scaleX: isFirstRender ? 0.75 : 1,
         scaleY: isFirstRender ? 0.75 : 1,
       }
     },
-    [x, y, size.width, size.height, isFirstRender]
+    [x, y, width, height, offsetX, offsetY, isFirstRender]
   )
 
   // On first render
@@ -157,30 +155,14 @@ export const RectangleShape = memo(({
     }
   }, [])
 
-  // useUpdateEffect(() => {
-  //   const offsetX = Math.round(size.width / 2)
-  //   const offsetY = Math.round(size.height / 2)
-  //   groupPropsApi.start({
-  //     to: {
-  //       x: position.x + offsetX,
-  //       y: position.y + offsetY,
-  //       offsetX,
-  //       offsetY,
-  //       ...size,
-  //       scaleX: 1,
-  //       scaleY: 1
-  //     },
-  //   })
-  // }, [position.x, position.y, size.width, size.height])
-
-
   const [rectProps] = useSpring(
     () => ({
-      ...size,
+      width,
+      height,
       fill,
       shadowColor
     }),
-    [size.width, size.height, fill, shadowColor]
+    [width, height, fill, shadowColor]
   )
 
   const listeners = {
@@ -196,14 +178,15 @@ export const RectangleShape = memo(({
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <animated.Group id={'node_' + id}
+  return <animated.Group
+    id={'node_' + id}
     {...groupProps}
     onClick={onClick}
     onMouseEnter={animate ? listeners.onMouseEnter : undefined}
     onMouseLeave={animate ? listeners.onMouseLeave : undefined}
   >
     <animated.Rect
-      cornerRadius={4}
+      cornerRadius={6}
       shadowBlur={12}
       shadowOpacity={0.3}
       shadowOffsetX={0}

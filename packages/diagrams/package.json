@@ -12,6 +12,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@likec4/core": "workspace:*",
     "@radix-ui/colors": "^0.1.8",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
@@ -27,7 +28,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@likec4/eslint-config": "workspace:*",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",

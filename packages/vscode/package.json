@@ -1,12 +1,13 @@
 {
   "name": "@likec4/vscode",
+  "private": true,
   "publisher": "likec4",
   "displayName": "Like C4",
   "description": "Please enter a brief description here",
   "version": "0.1.0",
   "scripts": {
-    "rebuild": "run -T build",
-    "open-web": "yarn rebuild && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
+    "build:vscode": "run -T build --filter='vscode...'",
+    "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "prepack": "yarn node esbuild.js --minify && run-p 'copy:*'",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx --silent cp -r ../language-server/contrib/* contrib/",
@@ -49,14 +50,6 @@
         "language": "likec4",
         "scopeName": "source.likec4",
         "path": "contrib/like-c4.tmLanguage.json"
-      }
-    ],
-    "commands": [
-      {
-        "command": "likec4.open-preview",
-        "category": "Like C4",
-        "title": "Open Preview",
-        "shortTitle": "Preview"
       }
     ],
     "configuration": {
@@ -121,5 +114,8 @@
     "vscode-uri": "^3.0.7",
     "xstream": "^11.14.0"
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.4.1",
+  "volta": {
+    "node": "18.15.0"
+  }
 }

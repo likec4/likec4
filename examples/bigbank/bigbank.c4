@@ -1,7 +1,7 @@
 model {
 
   customer = person "Personal Banking Customer" {
-    description: "A customer of the bank, with personal bank accounts."
+    description "A customer of the bank, with personal bank accounts."
   }
 
   bigbank = enterprise "Big Bank plc" {
@@ -24,7 +24,7 @@ model {
     email = softwaresystem "E-mail System" {
       description: "The internal Microsoft Exchange e-mail system."
       style {
-        color: secondary
+        color: muted
       }
     }
 
@@ -100,7 +100,7 @@ model {
 
   // relationships to/from containers
   customer -> webApplication "Visits bigbank.com/ib using"
-  // customer -> singlePageApplication "Views account balances, and makes payments using"
+  customer -> singlePageApplication "Views account balances, and makes payments using"
   customer -> mobileApp "Views account balances, and makes payments using"
   webApplication -> singlePageApplication "Delivers to the customer's web browser"
 
@@ -124,14 +124,27 @@ model {
 views {
 
   view index {
-    title "Big Bank plc - Internet Banking System"
+    title "Context"
 
     include *
     include customer -> bigbank.*
   }
 
   view of bigbank {
+    title "Big Bank plc"
+
     include *
+  }
+
+
+  view of internetBankingSystem {
+    title "Big Bank plc - Internet Banking System"
+
+    include
+      *,
+      bigbank,
+      backoffice -> *
+    exclude email
   }
 
   view of customer {
@@ -161,20 +174,17 @@ views {
     include *, bigbank
   }
 
-  view of internetBankingSystem {
-    include
-      *,
-      bigbank,
-      backoffice -> *
-  }
-
   view of internetBankingSystem.apiApplication {
-    title "Components"
+    title "API Components"
     include *
     exclude mobileApp
 
     style * {
       color muted
+    }
+
+    style internetBankingSystem.* {
+      color secondary
     }
 
     style apiApplication, apiApplication.* {

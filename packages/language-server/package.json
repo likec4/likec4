@@ -14,7 +14,7 @@
     "lint": "eslint src --fix",
     "clean": "rm -rf dist",
     "test": "vitest run",
-    "vitest": "vitest"
+    "test:watch": "vitest"
   },
   "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",

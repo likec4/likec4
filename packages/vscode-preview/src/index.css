@@ -21,7 +21,24 @@ body,
 #root {
   position: relative;
 }
-div.c4x-diagram-loading-overlay {
+
+.likec4-parsing-screen {
+  padding: 1rem;
+}
+.likec4-parsing-screen section {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.likec4-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.likec4-diagram-loading-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -30,7 +47,7 @@ div.c4x-diagram-loading-overlay {
   background-color: var(--vscode-editor-background);
   opacity: 0.7;
 }
-div.c4x-diagram-loading {
+div.likec4-diagram-loading {
   position: absolute;
   top: 0;
   left: 0;
@@ -40,12 +57,4 @@ div.c4x-diagram-loading {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-}
-
-div.c4x-diagram {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }

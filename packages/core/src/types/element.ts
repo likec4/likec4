@@ -1,4 +1,4 @@
-import type { Opaque } from 'type-fest'
+import type { Opaque } from './opaque'
 
 // Full-qualified-name
 export type Fqn = Opaque<string, 'Fqn'>

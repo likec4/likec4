@@ -1,4 +1,4 @@
-import type { Opaque } from 'type-fest'
+import type { Opaque } from './opaque'
 import type { Fqn, Tag } from './element'
 
 export type RelationID = Opaque<string, 'RelationID'>

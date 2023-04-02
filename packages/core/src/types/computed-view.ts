@@ -1,4 +1,4 @@
-import type { Opaque } from 'type-fest'
+import type { Opaque } from './opaque'
 import type { ElementShape, Fqn, ThemeColor } from './element'
 import type { RelationID } from './relation'
 import type { ElementView, ViewID } from './view'

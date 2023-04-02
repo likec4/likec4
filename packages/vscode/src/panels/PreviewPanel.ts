@@ -237,10 +237,10 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       script-src 'nonce-${nonce}' ${cspSource};
     ">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
-    <script src="${scriptUri}"></script>
   </head>
   <body>
     <div id="root"></div>
+    <script src="${scriptUri}"></script>
   </body>
 </html>`
   }

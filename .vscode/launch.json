@@ -17,7 +17,7 @@
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/bigbank",
       ],
-      "preLaunchTask": "npm: rebuild - packages/vscode",
+      "preLaunchTask": "npm: build:vscode - packages/vscode",
       "autoAttachChildProcesses": true
     },
     {

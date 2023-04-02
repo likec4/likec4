@@ -62,7 +62,7 @@ const App = () => {
   }, [])
 
   if (!view) {
-    return <>
+    return <div className='likec4-parsing-screen'>
       <section>
         <p>Parsing your model...</p>
         <VSCodeProgressRing />
@@ -72,13 +72,13 @@ const App = () => {
           <VSCodeButton appearance="secondary" onClick={closePreviewWindow}>Close</VSCodeButton>
         </p>
       </section>
-    </>
+    </div>
   }
 
   return <>
     <Diagram
       interactive
-      className={'c4x-diagram'}
+      className={'likec4-layer likec4-diagram'}
       diagram={view}
       width={windowSize.width}
       height={windowSize.height}
@@ -87,8 +87,8 @@ const App = () => {
       padding={24}
     />
     {loading && <>
-      <div className='c4x-diagram-loading-overlay'></div>
-      <div className='c4x-diagram-loading'>
+      <div className='likec4-diagram-loading-overlay'></div>
+      <div className='likec4-diagram-loading'>
         <p>Updating...</p>
         <VSCodeProgressRing />
       </div>

@@ -6,12 +6,13 @@
     "packages/*"
   ],
   "scripts": {
-    "compile": "turbo run compile --filter='./packages/*'",
-    "build": "turbo run build --filter='./packages/*'",
+    "compile": "turbo run compile",
+    "build": "turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev --filter='./packages/*'",
-    "test": "turbo run test --filter='./packages/*'",
-    "lint": "turbo run lint --filter='./packages/*' --continue"
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "lint": "turbo run lint --continue"
   },
   "devDependencies": {
     "@types/node": "^18.15.6",
