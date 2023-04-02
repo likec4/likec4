@@ -890,8 +890,6 @@ __metadata:
     vscode-languageclient: 8.0.2
     vscode-languageserver: 8.0.2
     vscode-languageserver-protocol: 3.17.2
-    vscode-languageserver-textdocument: ^1.0.8
-    vscode-languageserver-types: 3.17.2
     vscode-uri: 3.0.7
     xstream: ^11.14.0
   languageName: unknown
@@ -5183,7 +5181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-textdocument@npm:^1.0.8, vscode-languageserver-textdocument@npm:~1.0.8":
+"vscode-languageserver-textdocument@npm:~1.0.8":
   version: 1.0.9
   resolution: "vscode-languageserver-textdocument@npm:1.0.9"
   checksum: 36b76f725098d3e0d97885c05c51fca47388d9b62e936f6c8824c44a4fac7a96e1406538538a0f46ef1fdb9f1053ddc1cacb5e7b168cecb36d3c018942ec6f52

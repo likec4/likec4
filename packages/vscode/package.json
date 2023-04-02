@@ -10,7 +10,7 @@
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "prepack": "yarn node esbuild.cjs --minify && run-p 'copy:*'",
     "compile": "tsc -noEmit",
-    "copy:contrib": "shx echo 'copy contrib' && shx --silent cp -r ../language-server/contrib/* contrib/",
+    "copy:contrib": "shx echo 'copy contrib' && shx mkdir contrib && shx --silent cp -r ../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
     "build": "yarn node esbuild.cjs && run-p 'copy:*'",
@@ -20,7 +20,8 @@
   },
   "files": [
     "contrib",
-    "dist"
+    "dist",
+    "language-configuration.json"
   ],
   "engines": {
     "vscode": "^1.74.0",
@@ -104,8 +105,6 @@
     "vscode-languageclient": "8.0.2",
     "vscode-languageserver": "8.0.2",
     "vscode-languageserver-protocol": "3.17.2",
-    "vscode-languageserver-textdocument": "^1.0.8",
-    "vscode-languageserver-types": "3.17.2",
     "vscode-uri": "3.0.7",
     "xstream": "^11.14.0"
   },

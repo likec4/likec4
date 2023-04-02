@@ -7,7 +7,7 @@ import type { ExtensionContext, C4Model, LanguageClient } from '$/di'
 import { di } from '$/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
-import type { Location } from 'vscode-languageserver-types'
+import type { Location } from 'vscode-languageserver-protocol'
 import { locateElement, locateRelation, locateView } from '@likec4/language-server/protocol'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
@@ -30,7 +30,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     super()
   }
 
-  deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
+  deserializeWebviewPanel(webviewPanel: WebviewPanel, _state: any) {
     this.currentViewId = null
     this.setupPanel(webviewPanel)
     return Promise.resolve()
