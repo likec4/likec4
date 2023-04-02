@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines": {
+    "node": ">=17"
+  },
   "scripts": {
     "compile": "turbo run compile",
     "build": "turbo run build",

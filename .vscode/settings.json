@@ -10,8 +10,9 @@
     "source.fixAll.eslint": true
   },
   "search.exclude": {
-    "node_modules": true,
-    "packages/*/dist": true,
+    "node_modules/**": true,
+    "packages/*/dist/**": true,
+    "packages/*/node_modules/**": true,
   },
   "files.exclude": {
     "packages/*/.turbo": true,

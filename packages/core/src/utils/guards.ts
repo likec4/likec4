@@ -1,3 +1,7 @@
+export function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
 export function failExpectedNever(arg: never): never {
   throw new Error(`Unexpected value: ${JSON.stringify(arg)}`);
 }

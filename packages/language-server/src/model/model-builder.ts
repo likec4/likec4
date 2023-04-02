@@ -8,7 +8,6 @@ import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
 import { ElementViewOps, ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamElements, toElementStyle, type LikeC4LangiumDocument } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
@@ -231,11 +230,11 @@ export class LikeC4ModelBuilder {
     } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
 
-    const props = astNode.definition?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p))
+    const props = astNode.definition?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
 
-    const title = astNode.title ?? props?.find(p => p.key === 'title')?.value
-    const description = props?.find(p => p.key === 'description')?.value
-    const technology = props?.find(p => p.key === 'technology')?.value
+    const title = astNode.title ?? props.find(p => p.key === 'title')?.value
+    const description = props.find(p => p.key === 'description')?.value
+    const technology = props.find(p => p.key === 'technology')?.value
     return {
       id,
       kind,

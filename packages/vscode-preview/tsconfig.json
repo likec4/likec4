@@ -8,5 +8,9 @@
   "include": [
     "./protocol.ts",
     "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

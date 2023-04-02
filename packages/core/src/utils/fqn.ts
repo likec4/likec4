@@ -1,6 +1,5 @@
 import type { Element, Fqn } from '../types'
-
-const isString = (value: unknown): value is string => typeof value === 'string'
+import { isString } from './guards'
 
 export function nameFromFqn(fqn: Fqn) {
   const lastDot = fqn.lastIndexOf('.')

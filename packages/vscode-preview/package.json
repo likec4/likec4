@@ -21,12 +21,20 @@
     "lint": "eslint src --fix",
     "clean": "rm -rf dist"
   },
-  "devDependencies": {
+  "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
-    "@likec4/eslint-config": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "rambdax": "^9.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.3",
+    "type-fest": "^3.7.2"
+  },
+  "devDependencies": {
+    "@likec4/eslint-config": "workspace:*",
     "@types/node": "^18.15.6",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
@@ -35,17 +43,8 @@
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-react": "^3.1.0",
-    "@vscode/webview-ui-toolkit": "^1.2.2",
     "eslint": "^8.37.0",
-    "rambdax": "^9.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-error-boundary": "^4.0.3",
-    "type-fest": "^3.7.2",
     "typescript": "^5.0.3",
     "vite": "^4.2.1"
-  },
-  "volta": {
-    "node": "18.15.0"
   }
 }
