@@ -7,7 +7,7 @@ module.exports = {
   ignorePatterns: [
     ".turbo",
     ".eslintrc.cjs",
-    "esbuild.js",
+    "esbuild.cjs",
     "dist",
     "contrib",
   ]
