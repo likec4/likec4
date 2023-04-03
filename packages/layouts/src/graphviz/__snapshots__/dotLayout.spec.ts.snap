@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`dotLayout 1`] = `
+exports[`dotLayout 1 1`] = `
 {
   "edges": [
     {
@@ -323,5 +323,183 @@ exports[`dotLayout 1`] = `
   "title": "",
   "viewOf": "cloud",
   "width": 582,
+}
+`;
+
+exports[`dotLayout 2 1`] = `
+{
+  "edges": [
+    {
+      "headArrow": [
+        [
+          129,
+          456,
+        ],
+        [
+          126,
+          465,
+        ],
+        [
+          123,
+          456,
+        ],
+      ],
+      "id": "system.frontend:system.backend",
+      "label": "requests",
+      "labelBox": {
+        "align": "left",
+        "width": 62,
+        "x": 130,
+        "y": 428,
+      },
+      "points": [
+        [
+          126,
+          375,
+        ],
+        [
+          126,
+          400,
+        ],
+        [
+          126,
+          429,
+        ],
+        [
+          126,
+          456,
+        ],
+      ],
+      "relations": [
+        "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+      ],
+      "source": "system.frontend",
+      "target": "system.backend",
+    },
+    {
+      "headArrow": [
+        [
+          129,
+          221,
+        ],
+        [
+          126,
+          231,
+        ],
+        [
+          123,
+          221,
+        ],
+      ],
+      "id": "client:system.frontend",
+      "label": "opens",
+      "labelBox": {
+        "align": "left",
+        "width": 44,
+        "x": 130,
+        "y": 193,
+      },
+      "points": [
+        [
+          126,
+          141,
+        ],
+        [
+          126,
+          166,
+        ],
+        [
+          126,
+          195,
+        ],
+        [
+          126,
+          221,
+        ],
+      ],
+      "relations": [
+        "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+      ],
+      "source": "client",
+      "target": "system.frontend",
+    },
+  ],
+  "height": 609,
+  "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+  "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "id": "client",
+      "parent": null,
+      "position": [
+        0,
+        0,
+      ],
+      "relative": [
+        0,
+        0,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "client",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "system.backend",
+      "parent": null,
+      "position": [
+        0,
+        469,
+      ],
+      "relative": [
+        0,
+        469,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "backend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "system.frontend",
+      "parent": null,
+      "position": [
+        0,
+        235,
+      ],
+      "relative": [
+        0,
+        235,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "frontend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+      ],
+      "isInclude": true,
+    },
+  ],
+  "title": "frontend",
+  "viewOf": "system.frontend",
+  "width": 251,
 }
 `;

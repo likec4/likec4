@@ -95,3 +95,65 @@ export const fakeComputedView: ComputedView = {
     }
   ]
 }
+
+export const fakeComputedView2: ComputedView = {
+  'edges': [
+    {
+      'id': 'system.frontend:system.backend',
+      'label': 'requests',
+      'relations': [
+        '671e3db5eb605d5f245f247d95925bd0953e0e4c',
+      ],
+      'source': 'system.frontend',
+      'target': 'system.backend',
+    },
+    {
+      'id': 'client:system.frontend',
+      'label': 'opens',
+      'relations': [
+        '99bffdfd5c78e024393e6223cd9b19225321a5e3',
+      ],
+      'source': 'client',
+      'target': 'system.frontend',
+    },
+  ],
+  'id': '74f5364fa4b064ce9830043b93d4cc6fce9d85b0',
+  'nodes': [
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'client',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'client',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'system.backend',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'backend',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'system.frontend',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'frontend',
+    },
+  ],
+  'rules': [
+    {
+      'exprs': [
+        {
+          'wildcard': true,
+        },
+      ],
+      'isInclude': true,
+    },
+  ],
+  'title': 'frontend',
+  'viewOf': 'system.frontend',
+} as any
