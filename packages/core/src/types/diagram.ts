@@ -1,4 +1,4 @@
-import type { ComputedEdge, ComputedNode } from './computed-view'
+import type { ComputedEdge, ComputedNode, ComputedView } from './computed-view'
 import type { ElementView } from './view'
 
 export type Point = [x: number, y: number]
@@ -26,9 +26,7 @@ export interface DiagramEdge extends ComputedEdge {
   } | null
 }
 
-export interface DiagramView extends ElementView {
+export interface DiagramView extends ComputedView<DiagramNode, DiagramEdge> {
   width: number
   height: number
-  nodes: DiagramNode[]
-  edges: DiagramEdge[]
 }
