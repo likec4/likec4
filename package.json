@@ -3,7 +3,8 @@
   "private": true,
   "packageManager": "yarn@3.4.1",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/generators/*"
   ],
   "engines": {
     "node": ">=17"

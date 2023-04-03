@@ -1,8 +1,4 @@
 export type {
-  Fqn,
-  Element,
-  RelationID,
-  Relation,
   DiagramNode,
   NodeId,
   DiagramEdge,

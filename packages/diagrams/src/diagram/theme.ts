@@ -16,7 +16,7 @@ const primary = {
 } satisfies ThemeColors
 
 
-export const defaultKonvaTheme = {
+export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
   relation: {
     lineColor: Colors.toRGB(slate.slate9),
@@ -39,4 +39,4 @@ export const defaultKonvaTheme = {
       loContrast: Colors.toRGB(slate.slate8)
     }
   }
-} satisfies DiagramTheme
+}

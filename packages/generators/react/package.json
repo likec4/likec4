@@ -1,0 +1,29 @@
+{
+  "name": "@likec4/generator-react",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "compile": "",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "rm -rf dist .turbo",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "json5": "^2.2.3",
+    "langium": "^1.1.0",
+    "rambdax": "^9.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.6",
+    "typescript": "^5.0.3",
+    "vite": "^4.2.1",
+    "vitest": "^0.29.8"
+  }
+}

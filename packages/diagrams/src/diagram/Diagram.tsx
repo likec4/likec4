@@ -6,7 +6,7 @@ import { clamp, partition } from 'rambdax'
 import { useCallback, useEffect, useRef } from 'react'
 import { Layer, Stage } from 'react-konva'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
-import { defaultKonvaTheme } from './theme'
+import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
 
 interface IRect {
@@ -47,7 +47,7 @@ export function Diagram({
   onEdgeClick
 }: DiagramProps): JSX.Element {
   const id = diagram.id
-  const theme = defaultKonvaTheme
+  const theme = DefaultDiagramTheme
 
   const lastRenderViewIdRef = useRef<ViewID | null>(null)
 

@@ -796,6 +796,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/generator-react@workspace:packages/generators/react":
+  version: 0.0.0-use.local
+  resolution: "@likec4/generator-react@workspace:packages/generators/react"
+  dependencies:
+    "@likec4/core": "workspace:*"
+    "@likec4/layouts": "workspace:*"
+    "@types/node": ^18.15.6
+    json5: ^2.2.3
+    langium: ^1.1.0
+    rambdax: ^9.1.0
+    typescript: ^5.0.3
+    vite: ^4.2.1
+    vitest: ^0.29.8
+  languageName: unknown
+  linkType: soft
+
 "@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
@@ -3240,7 +3256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.2.2":
+"json5@npm:^2.2.2, json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
   bin:
