@@ -28,7 +28,7 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export interface ComputedView extends ElementView {
-  nodes: ComputedNode[]
-  edges: ComputedEdge[]
+export interface ComputedView<Node extends ComputedNode = ComputedNode, Edge extends ComputedEdge = ComputedEdge> extends ElementView {
+  nodes: Node[]
+  edges: Edge[]
 }
