@@ -1,4 +1,3 @@
-//@ts-check
 const esbuild = require("esbuild");
 // import inlineWorkerPlugin from 'esbuild-plugin-inline-worker';
 // import lodashTransformer from 'esbuild-plugin-lodash';
@@ -20,8 +19,8 @@ let nodeBuild = esbuild
     format: "cjs",
     target: "node16",
     platform: "node",
-    sourcemap: minify ? false : "inline",
-    sourcesContent: false,
+    sourcemap: minify ? false : 'external',
+    sourcesContent: minify ? false : true,
     minify,
   })
   .then(async (ctx) => {

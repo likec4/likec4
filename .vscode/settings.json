@@ -13,6 +13,7 @@
   },
   "files.exclude": {
     "packages/*/.turbo": true,
+    "examples/*/.turbo": true,
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.folderListener": [

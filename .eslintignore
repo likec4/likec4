@@ -5,6 +5,6 @@ packages/*/node_modules/
 packages/*/dist/
 packages/*/.turbo/
 **/*.d.ts
-**/.esbuild.cjs
+**/esbuild.cjs
 **/vite.config.ts
 **/vitest.config.ts

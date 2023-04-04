@@ -13,10 +13,12 @@
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*"
       ],
+      "enableTurboSourcemaps": true,
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/bigbank",
       ],
+      "internalConsoleOptions": "neverOpen",
       "preLaunchTask": "npm: build:vscode - packages/vscode",
       "autoAttachChildProcesses": true
     },

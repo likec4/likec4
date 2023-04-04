@@ -4,7 +4,7 @@
   "packageManager": "yarn@3.4.1",
   "workspaces": [
     "packages/*",
-    "packages/generators/*"
+    "examples/*"
   ],
   "engines": {
     "node": ">=17"

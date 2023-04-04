@@ -157,3 +157,176 @@ export const fakeComputedView2: ComputedView = {
   'title': 'frontend',
   'viewOf': 'system.frontend',
 } as any
+
+
+export const fakeComputedView3Levels: ComputedView = {
+  'edges': [
+    {
+      'id': 'cloud.frontend.dashboard:cloud.backend.graphql',
+      'label': null,
+      'relations': [
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+      ],
+      'source': 'cloud.frontend.dashboard',
+      'target': 'cloud.backend.graphql',
+    },
+    {
+      'id': 'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'label': null,
+      'relations': [
+        'cloud.frontend.adminPanel:cloud.backend.graphql',
+      ],
+      'source': 'cloud.frontend.adminPanel',
+      'target': 'cloud.backend.graphql',
+    },
+    {
+      'id': 'cloud.backend.storage:amazon',
+      'label': null,
+      'relations': [
+        'cloud.backend.storage:amazon.s3',
+      ],
+      'source': 'cloud.backend.storage',
+      'target': 'amazon',
+    },
+    {
+      'id': 'cloud.backend.graphql:cloud.backend.storage',
+      'label': null,
+      'relations': [
+        'cloud.backend.graphql:cloud.backend.storage',
+      ],
+      'source': 'cloud.backend.graphql',
+      'target': 'cloud.backend.storage',
+    },
+    {
+      'id': 'support:cloud.frontend.adminPanel',
+      'label': null,
+      'relations': [
+        'support:cloud.frontend.adminPanel',
+      ],
+      'source': 'support',
+      'target': 'cloud.frontend.adminPanel',
+    },
+    {
+      'id': 'customer:cloud.frontend.dashboard',
+      'label': null,
+      'relations': [
+        'customer:cloud.frontend.dashboard',
+      ],
+      'source': 'customer',
+      'target': 'cloud.frontend.dashboard',
+    },
+  ],
+  'id': 'cloud3levels',
+  'nodes': [
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'amazon',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'amazon',
+    },
+    {
+      'children': [
+        'cloud.backend',
+        'cloud.frontend',
+      ],
+      'color': 'primary',
+      'id': 'cloud',
+      'navigateTo': 'fakeView',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'cloud',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'customer',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'customer',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'support',
+      'parent': null,
+      'shape': 'rectangle',
+      'title': 'support',
+    },
+    {
+      'children': [
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+      ],
+      'color': 'primary',
+      'id': 'cloud.backend',
+      'parent': 'cloud',
+      'shape': 'rectangle',
+      'title': 'backend',
+    },
+    {
+      'children': [
+        'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard',
+      ],
+      'color': 'primary',
+      'id': 'cloud.frontend',
+      'parent': 'cloud',
+      'shape': 'rectangle',
+      'title': 'frontend',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'cloud.backend.graphql',
+      'parent': 'cloud.backend',
+      'shape': 'rectangle',
+      'title': 'graphql',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'cloud.backend.storage',
+      'parent': 'cloud.backend',
+      'shape': 'rectangle',
+      'title': 'storage',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'cloud.frontend.adminPanel',
+      'parent': 'cloud.frontend',
+      'shape': 'rectangle',
+      'title': 'adminPanel',
+    },
+    {
+      'children': [],
+      'color': 'primary',
+      'id': 'cloud.frontend.dashboard',
+      'parent': 'cloud.frontend',
+      'shape': 'rectangle',
+      'title': 'dashboard',
+    },
+  ],
+  'rules': [
+    {
+      'exprs': [
+        {
+          'wildcard': true,
+        },
+        {
+          'element': 'cloud.frontend',
+          'isDescedants': true,
+        },
+        {
+          'element': 'cloud.backend',
+          'isDescedants': true,
+        },
+      ],
+      'isInclude': true,
+    },
+  ],
+  'title': '',
+  'viewOf': 'cloud',
+} as any

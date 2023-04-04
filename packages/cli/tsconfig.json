@@ -1,8 +1,7 @@
 {
-  "extends": "../../tsconfig/vite-react.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "outDir": "dist",
+    "outDir": "dist"
   },
   "include": [
     "./src/**/*"

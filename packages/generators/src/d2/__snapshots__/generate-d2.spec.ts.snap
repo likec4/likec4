@@ -1,0 +1,103 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generate D2 - fakeComputedView 3 Levels 1`] = `
+"Amazon: {
+  label: "amazon"
+  shape: rectangle
+}
+Cloud: {
+  label: "cloud"
+  shape: rectangle
+
+  Backend: {
+    label: "backend"
+    shape: rectangle
+
+    Graphql: {
+      label: "graphql"
+      shape: rectangle
+    }
+    Storage: {
+      label: "storage"
+      shape: rectangle
+    }
+  }
+  FrontendAdminPanel: {
+    label: "adminPanel"
+    shape: rectangle
+  }
+  FrontendDashboard: {
+    label: "dashboard"
+    shape: rectangle
+  }
+}
+Customer: {
+  label: "customer"
+  shape: rectangle
+}
+Support: {
+  label: "support"
+  shape: rectangle
+}
+
+Cloud.FrontendDashboard -> Cloud.Backend.Graphql
+Cloud.FrontendAdminPanel -> Cloud.Backend.Graphql
+Cloud.Backend.Storage -> Amazon
+Cloud.Backend.Graphql -> Cloud.Backend.Storage
+Support -> Cloud.FrontendAdminPanel
+Customer -> Cloud.FrontendDashboard
+"
+`;
+
+exports[`generate D2 - fakeDiagram 1`] = `
+"Amazon: {
+  label: "amazon"
+  shape: rectangle
+}
+Cloud: {
+  label: "cloud"
+  shape: rectangle
+
+  Backend: {
+    label: "backend"
+    shape: rectangle
+  }
+  Frontend: {
+    label: "frontend"
+    shape: rectangle
+  }
+}
+Customer: {
+  label: "customer"
+  shape: rectangle
+}
+Support: {
+  label: "support"
+  shape: rectangle
+}
+
+Cloud.Frontend -> Cloud.Backend: requests
+Cloud.Backend -> Amazon
+Support -> Cloud.Frontend
+Customer -> Cloud.Frontend: opens
+"
+`;
+
+exports[`generate D2 - fakeDiagram2 1`] = `
+"Client: {
+  label: "client"
+  shape: rectangle
+}
+SystemBackend: {
+  label: "backend"
+  shape: rectangle
+}
+SystemFrontend: {
+  label: "frontend"
+  shape: rectangle
+}
+
+SystemFrontend -> SystemBackend: requests
+Client -> SystemFrontend: opens
+"
+`;

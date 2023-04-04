@@ -3,9 +3,10 @@ import { Text } from 'react-konva'
 import type { DiagramTheme } from '../types'
 import { memo, useEffect, useMemo } from 'react'
 import { animated, useSpring } from '@react-spring/konva'
-import type { OnClickEvent } from './types'
+import type { OnClickEvent, OnMouseEvent } from './types'
 import { isEqualReactSimple as deepEqual } from '@react-hookz/deep-equal/esm'
 import { useFirstMountState } from '@react-hookz/web/esm'
+import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
   animate?: boolean,
@@ -91,6 +92,12 @@ export const CompoundShape = memo(({
   const listeners = useMemo(() => {
     if (!onNodeClick) return {}
     return {
+      onMouseEnter: (e: OnMouseEvent) => {
+        mousePointer(e)
+      },
+      onMouseLeave: (e: OnMouseEvent) => {
+        mouseDefault(e)
+      },
       onClick: (evt: OnClickEvent) => {
         evt.cancelBubble = true
         onNodeClick(node)

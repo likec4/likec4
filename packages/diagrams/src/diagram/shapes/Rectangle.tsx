@@ -167,7 +167,9 @@ export const RectangleShape = memo(({
 
   const listeners = {
     onMouseEnter: useCallback((e: OnMouseEvent) => {
-      mousePointer(e)
+      if (onClick) {
+        mousePointer(e)
+      }
       groupPropsApi.start({ scaleX: 1.04, scaleY: 1.04 })
     }, [groupPropsApi]),
     onMouseLeave: useCallback((e: OnMouseEvent) => {

@@ -61,6 +61,45 @@ test('view of cloud', () => {
   ])
 })
 
+test('view with 3 levels', () => {
+  const view = computeElementView({
+    id: 'cloud3levels' as ViewID,
+    title: '',
+    viewOf: 'cloud' as Fqn,
+    rules: [{
+      isInclude: true,
+      exprs: [
+        // include *
+        { wildcard: true, },
+        // include cloud.frontend.*
+        { element: 'cloud.frontend' as Fqn, isDescedants: true },
+        // include cloud.backend.*
+        { element: 'cloud.backend' as Fqn, isDescedants: true },
+      ]
+    }, {
+      isInclude: false,
+      exprs: [
+        // exclude cloud.frontend
+        { element: 'cloud.frontend' as Fqn, isDescedants: false }
+      ]
+    }]
+  }, fakeModel())
+
+  expect(view.nodes.map(n => n.id)).toEqual([
+    'amazon',
+    'cloud',
+    'customer',
+    'support',
+    'cloud.backend',
+    'cloud.backend.graphql',
+    'cloud.backend.storage',
+    'cloud.frontend.adminPanel',
+    'cloud.frontend.dashboard',
+  ])
+
+  expect(view).toMatchSnapshot()
+})
+
 test('view of amazon', () => {
   const { nodes, edges } = computeElementView({
     id: 'amazon' as ViewID,

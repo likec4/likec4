@@ -34,7 +34,7 @@ import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, View
                                         │ ┗━━━━━━━━━━━━━━┛  │
                                         └───────────────────┘
 
-spec {
+specification {
   element actor
   element system
   element component

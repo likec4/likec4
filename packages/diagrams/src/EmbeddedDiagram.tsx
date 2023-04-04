@@ -12,9 +12,6 @@ export function EmbeddedDiagram({
   const w = Math.ceil(diagram.width)
   const h = Math.ceil(diagram.height)
 
-  // const width = measures?.width ?? diagram.width
-  // const height = measures?.height ?? diagram.height
-
   return <div
     ref={containerRef}
     style={{

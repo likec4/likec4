@@ -1,0 +1,38 @@
+{
+  "name": "@likec4/cli",
+  "version": "0.1.0",
+  "bin": {
+    "likec4": "dist/likec4.js"
+  },
+  "engines": {
+    "node": ">=17"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "esbuild src/cli.ts --bundle --minify --tree-shaking=true --platform=node --target=node16 --outfile=dist/likec4.js",
+    "dev": "run build -- --watch",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "rm -rf dist .turbo",
+    "test": "",
+    "test:watch": ""
+  },
+  "devDependencies": {
+    "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@types/node": "^17.0.0",
+    "chalk": "^5.2.0",
+    "commander": "^10.0.0",
+    "esbuild": "^0.17.15",
+    "fast-glob": "^3.2.12",
+    "langium": "^1.1.0",
+    "mkdirp": "^2.1.6",
+    "rambdax": "^9.1.0",
+    "typescript": "^5.0.3",
+    "vscode-uri": "3.0.7"
+  }
+}

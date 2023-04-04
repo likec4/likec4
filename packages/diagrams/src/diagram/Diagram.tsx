@@ -3,7 +3,7 @@ import { useSyncedRef } from '@react-hookz/web/esm'
 import invariant from 'tiny-invariant'
 import Konva from 'konva'
 import { clamp, partition } from 'rambdax'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Layer, Stage } from 'react-konva'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
@@ -19,6 +19,7 @@ interface IRect {
 export interface DiagramProps {
   className?: string
   interactive?: boolean
+  animate?: boolean
   pannable?: boolean
   zoomable?: boolean
   zoomBy?: number
@@ -26,6 +27,7 @@ export interface DiagramProps {
   width?: number
   height?: number
   padding?: DiagramPaddings
+  onNavigate?: (viewId: ViewID) => void
   onNodeClick?: (node: DiagramNode) => void
   onEdgeClick?: (edge: DiagramEdge) => void
 }
@@ -38,11 +40,13 @@ export function Diagram({
   className,
   zoomBy = 1.06,
   interactive = true,
+  animate = true,
   pannable = interactive,
   zoomable = interactive,
   width = diagram.width,
   height = diagram.height,
   padding = 0,
+  onNavigate,
   onNodeClick,
   onEdgeClick
 }: DiagramProps): JSX.Element {
@@ -218,16 +222,36 @@ export function Diagram({
   useEffect(() => {
     const lastRenderViewId = lastRenderViewIdRef.current
     if (stageRef.current) {
-      centerAndFit(interactive && lastRenderViewId !== null && lastRenderViewId !== id)
+      centerAndFit(animate && lastRenderViewId !== null && lastRenderViewId !== id)
       lastRenderViewIdRef.current = id
     }
   }, [id, width, height, ...paddings])
 
-  const animate = interactive && lastRenderViewIdRef.current !== null
+  const _animate = animate && lastRenderViewIdRef.current !== null
+
+  const onNavigateImpl = useMemo(() => {
+    if (!onNavigate) return null
+
+    return (node: DiagramNode) => {
+      if (node.navigateTo) {
+        onNavigate(node.navigateTo)
+      }
+    }
+  }, [onNavigate])
+
+  const pickOnNodeClick = (node: DiagramNode) => {
+    if (onNavigateImpl) {
+      if (node.navigateTo) {
+        return onNavigateImpl
+      }
+      return undefined
+    } else {
+      return onNodeClick
+    }
+  }
 
   return <Stage
     ref={stageRef}
-    _useStrictMode
     width={Math.max(width, 10)}
     height={Math.max(height, 10)}
     draggable={pannable}
@@ -239,10 +263,10 @@ export function Diagram({
       {compounds.map(node =>
         <CompoundShape
           key={node.id}
-          animate={animate}
+          animate={_animate}
           node={node}
           theme={theme}
-          onNodeClick={onNodeClick}
+          onNodeClick={pickOnNodeClick(node)}
         />)}
     </Layer>
     <Layer>
@@ -259,10 +283,10 @@ export function Diagram({
       {nodes.map(node =>
         <RectangleShape
           key={node.id}
-          animate={animate}
+          animate={_animate}
           node={node}
           theme={theme}
-          onNodeClick={onNodeClick}
+          onNodeClick={pickOnNodeClick(node)}
         />)}
     </Layer>
   </Stage>

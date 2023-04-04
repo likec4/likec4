@@ -1,0 +1,24 @@
+{
+  "name": "@likec4/example-bigbank",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "generate": "likec4 generate-react -o src/likec4.tsx",
+    "vite:dev": "run generate && vite",
+    "vite:build": "run generate && vite build",
+    "preview": "run generate && vite preview"
+  },
+  "dependencies": {
+    "@likec4/diagrams": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@likec4/cli": "workspace:*",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "typescript": "^5.0.3",
+    "vite": "^4.2.0"
+  }
+}

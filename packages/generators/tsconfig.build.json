@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "declarationMap": false
+  },
+  "exclude": [
+    "**/__mocks__/**",
+    "**/__test__/**",
+    "**/*.spec.ts"
+  ]
+}

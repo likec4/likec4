@@ -1,12 +1,18 @@
 {
-  "name": "@likec4/generator-react",
+  "name": "@likec4/generators",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react/index.ts",
+    "./d2": "./src/d2/index.ts"
+  },
   "scripts": {
     "compile": "",
     "build": "tsc",
+    "prepack": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "rm -rf dist .turbo",
@@ -15,7 +21,6 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@likec4/layouts": "workspace:*",
     "json5": "^2.2.3",
     "langium": "^1.1.0",
     "rambdax": "^9.1.0"
