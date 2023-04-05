@@ -43,8 +43,6 @@ const App = () => {
     }
   })
 
-  const viewId = view?.id ?? null
-
   const onNodeClick = useCallback((node: DiagramNode) => {
     if (node.navigateTo) {
       goToViewSource(node.navigateTo)

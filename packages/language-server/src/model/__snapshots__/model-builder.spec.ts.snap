@@ -100,6 +100,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         {
           "id": "system.frontend:system.backend",
           "label": "requests",
+          "parent": null,
           "relations": [
             "671e3db5eb605d5f245f247d95925bd0953e0e4c",
           ],
@@ -109,6 +110,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         {
           "id": "client:system.frontend",
           "label": "opens",
+          "parent": null,
           "relations": [
             "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],
@@ -161,6 +163,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         {
           "id": "client:system",
           "label": "opens",
+          "parent": null,
           "relations": [
             "99bffdfd5c78e024393e6223cd9b19225321a5e3",
           ],
@@ -204,6 +207,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         {
           "id": "system.frontend:system.backend.api",
           "label": "requests",
+          "parent": null,
           "relations": [
             "671e3db5eb605d5f245f247d95925bd0953e0e4c",
           ],

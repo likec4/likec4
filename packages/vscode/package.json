@@ -86,6 +86,7 @@
   "browser": "dist/browser/index.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",

@@ -177,9 +177,20 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     })
   )
 
+  const nodeIds = new Set(nodes.map(n => n.id))
+  const edges = edgeBuilder.build().map(edge => {
+    while (edge.parent) {
+      if (nodeIds.has(edge.parent)) {
+        break
+      }
+      edge.parent = parentFqn(edge.parent)
+    }
+    return edge
+  })
+
   return {
     ...view,
     nodes,
-    edges: edgeBuilder.build()
+    edges
   }
 }

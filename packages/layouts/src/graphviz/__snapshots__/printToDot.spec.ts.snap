@@ -53,6 +53,7 @@ exports[`printToDot fake diagram 1`] = `
     labeljust = "l";
     label = "cloud";
     margin = 20;
+    rank = "same";
     "node_cloud.backend" [
       id = "cloud.backend";
       width = 2.6041666666666665;
@@ -67,11 +68,12 @@ exports[`printToDot fake diagram 1`] = `
       fixedsize = true;
       label = "";
     ];
+    "node_cloud.frontend" -> "node_cloud.backend" [
+      id = "cloud.frontend:cloud.backend";
+      constraint = false;
+      label = <requests>;
+    ];
   }
-  "node_cloud.frontend" -> "node_cloud.backend" [
-    id = "cloud.frontend:cloud.backend";
-    label = <requests>;
-  ];
   "node_cloud.backend" -> "node_amazon" [
     id = "cloud.backend:amazon";
   ];

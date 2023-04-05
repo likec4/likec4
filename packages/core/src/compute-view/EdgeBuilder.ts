@@ -1,6 +1,6 @@
 import { equals, keys, pluck, reject } from 'rambdax'
 import type { Fqn, Relation } from '../types'
-import { compareFqnHierarchically } from '../utils'
+import { commonAncestor, compareFqnHierarchically } from '../utils'
 import type { ComputedEdge, EdgeId } from '../types/computed-view'
 
 type ResolvedRelationsObj = Record<Fqn, Record<Fqn, Relation[]>>;
@@ -30,6 +30,7 @@ export class EdgeBuilder {
         const label = titles.length === 1 ? titles[0]! : null
         return {
           id: `${source}:${target}` as EdgeId,
+          parent: commonAncestor(source, target),
           source,
           target,
           label,

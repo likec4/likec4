@@ -60,6 +60,7 @@ export const fakeComputedView: ComputedView = {
       id: 'cloud.frontend:cloud.backend' as EdgeId,
       source: 'cloud.frontend' as NodeId,
       target: 'cloud.backend' as NodeId,
+      parent: 'cloud' as NodeId,
       label: 'requests',
       relations: [
         'cloud.frontend.dashboard:cloud.backend.graphql',
@@ -70,6 +71,7 @@ export const fakeComputedView: ComputedView = {
       id: 'cloud.backend:amazon' as EdgeId,
       source: 'cloud.backend' as NodeId,
       target: 'amazon' as NodeId,
+      parent: null,
       label: null,
       relations: [
         'cloud.backend.storage:amazon.s3'
@@ -79,6 +81,7 @@ export const fakeComputedView: ComputedView = {
       id: 'support:cloud.frontend' as EdgeId,
       source: 'support' as NodeId,
       target: 'cloud.frontend' as NodeId,
+      parent: null,
       label: null,
       relations: [
         'support:cloud.frontend.adminPanel'
@@ -88,6 +91,7 @@ export const fakeComputedView: ComputedView = {
       id: 'customer:cloud.frontend' as EdgeId,
       source: 'customer' as NodeId,
       target: 'cloud.frontend' as NodeId,
+      parent: null,
       label: 'opens',
       relations: [
         'customer:cloud.frontend.dashboard'
@@ -104,6 +108,7 @@ export const fakeComputedView2: ComputedView = {
       'relations': [
         '671e3db5eb605d5f245f247d95925bd0953e0e4c',
       ],
+      parent: null,
       'source': 'system.frontend',
       'target': 'system.backend',
     },
@@ -113,6 +118,7 @@ export const fakeComputedView2: ComputedView = {
       'relations': [
         '99bffdfd5c78e024393e6223cd9b19225321a5e3',
       ],
+      parent: null,
       'source': 'client',
       'target': 'system.frontend',
     },
@@ -167,6 +173,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'cloud.frontend.dashboard:cloud.backend.graphql',
       ],
+      parent: 'cloud',
       'source': 'cloud.frontend.dashboard',
       'target': 'cloud.backend.graphql',
     },
@@ -176,6 +183,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'cloud.frontend.adminPanel:cloud.backend.graphql',
       ],
+      parent: 'cloud',
       'source': 'cloud.frontend.adminPanel',
       'target': 'cloud.backend.graphql',
     },
@@ -185,6 +193,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'cloud.backend.storage:amazon.s3',
       ],
+      parent: null,
       'source': 'cloud.backend.storage',
       'target': 'amazon',
     },
@@ -194,6 +203,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'cloud.backend.graphql:cloud.backend.storage',
       ],
+      parent: 'cloud.backend',
       'source': 'cloud.backend.graphql',
       'target': 'cloud.backend.storage',
     },
@@ -203,6 +213,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'support:cloud.frontend.adminPanel',
       ],
+      parent: null,
       'source': 'support',
       'target': 'cloud.frontend.adminPanel',
     },
@@ -212,6 +223,7 @@ export const fakeComputedView3Levels: ComputedView = {
       'relations': [
         'customer:cloud.frontend.dashboard',
       ],
+      parent: null,
       'source': 'customer',
       'target': 'cloud.frontend.dashboard',
     },

@@ -22,6 +22,7 @@ export interface ComputedNode {
 
 export interface ComputedEdge {
   id: EdgeId
+  parent: NodeId | null
   source: NodeId
   target: NodeId
   label: string | null

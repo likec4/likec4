@@ -6,6 +6,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": null,
+      "parent": "cloud",
       "relations": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
@@ -15,6 +16,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": null,
+      "parent": "cloud",
       "relations": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
@@ -24,6 +26,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "cloud.backend.storage:amazon",
       "label": null,
+      "parent": null,
       "relations": [
         "cloud.backend.storage:amazon.s3",
       ],
@@ -33,6 +36,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
+      "parent": "cloud.backend",
       "relations": [
         "cloud.backend.graphql:cloud.backend.storage",
       ],
@@ -42,6 +46,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "support:cloud.frontend.adminPanel",
       "label": null,
+      "parent": null,
       "relations": [
         "support:cloud.frontend.adminPanel",
       ],
@@ -51,6 +56,7 @@ exports[`view with 3 levels 1`] = `
     {
       "id": "customer:cloud.frontend.dashboard",
       "label": null,
+      "parent": null,
       "relations": [
         "customer:cloud.frontend.dashboard",
       ],
