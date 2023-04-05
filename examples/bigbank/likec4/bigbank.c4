@@ -130,14 +130,14 @@ views {
     include customer -> bigbank.*
   }
 
-  view of bigbank {
+  view landscape of bigbank {
     title "Big Bank plc"
 
     include *
   }
 
 
-  view of internetBankingSystem {
+  view ibs of internetBankingSystem {
     title "Big Bank plc - Internet Banking System"
 
     include
@@ -147,14 +147,14 @@ views {
     exclude email
   }
 
-  view of customer {
+  view customer of customer {
     include
       *,
       bigbank,
       customer ->
   }
 
-  view of singlePageApplication {
+  view spa of singlePageApplication {
     include
       *,
       apiApplication,
@@ -170,11 +170,13 @@ views {
     }
   }
 
-  view of supportStaff {
-    include *, bigbank
+  view support of supportStaff {
+    include *,
+      bigbank,
+      -> backoffice ->
   }
 
-  view of internetBankingSystem.apiApplication {
+  view apiApp of internetBankingSystem.apiApplication {
     title "API Components"
     include *
     exclude mobileApp
@@ -190,6 +192,10 @@ views {
     style apiApplication, apiApplication.* {
       color primary
     }
+  }
+
+  view webapp of webApplication {
+    include *, internetBankingSystem
   }
 
 }
