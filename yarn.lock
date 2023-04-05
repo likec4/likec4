@@ -753,7 +753,7 @@ __metadata:
     "@types/node": ^18.15.6
     "@types/react": ^18.0.31
     "@types/react-dom": ^18.0.11
-    "@types/vscode": ^1.74.0
+    "@types/vscode": ^1.77.0
     "@types/vscode-webview": ^1.57.1
     "@vitejs/plugin-react": ^3.1.0
     "@vscode/webview-ui-toolkit": ^1.2.2
@@ -776,7 +776,7 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": ^18.15.6
-    "@types/vscode": ^1.74.0
+    "@types/vscode": ^1.77.0
     esbuild: ^0.17.15
     froebel: ^0.23.2
     langium: ^1.1.0
@@ -1146,10 +1146,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode@npm:^1.74.0":
-  version: 1.76.0
-  resolution: "@types/vscode@npm:1.76.0"
-  checksum: f53f185a47a7479d698c0736fda9693aa2a511bd003e0546e17c39d50dd638edb4161efd1265364ec10ea1dbf3f1fd658834b6a5a39053877e2e1f27180e177e
+"@types/vscode@npm:^1.77.0":
+  version: 1.77.0
+  resolution: "@types/vscode@npm:1.77.0"
+  checksum: 169dbced32d3f84aad6a41f0d099343ff2a2a86005e309e48192db500cd846423e0e5848f20a6c1aab71329915423255dd9a083974d6f3eb4bb085c278435b98
   languageName: node
   linkType: hard
 
