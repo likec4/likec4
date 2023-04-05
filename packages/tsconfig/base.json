@@ -10,6 +10,8 @@
     "moduleResolution": "bundler",
 
     "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
 
     "strict": true,
     "allowUnusedLabels": false,

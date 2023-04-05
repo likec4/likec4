@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "compile": "tsc --noEmit",
+    "release:build": "vite build",
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

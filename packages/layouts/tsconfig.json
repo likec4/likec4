@@ -1,12 +1,10 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "sourceMap": true,
-    "downlevelIteration": true
+    "outDir": "./dist"
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*"
   ],
   "exclude": [
     "node_modules",

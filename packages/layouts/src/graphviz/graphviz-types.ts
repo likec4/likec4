@@ -1,5 +1,4 @@
-import type { EdgeId, NodeId } from '@likec4/core/types'
-import type { Opaque } from 'type-fest'
+import type { EdgeId, NodeId, Opaque } from '@likec4/core/types'
 
 export type DotSource = Opaque<string, 'DotSource'>
 

@@ -1,16 +1,9 @@
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "../language-server/tsconfig.json",
   "compilerOptions": {
     "lib": [
       "ESNext", "WebWorker"
     ],
-    "verbatimModuleSyntax": false,
-    "downlevelIteration": true,
-    "importsNotUsedAsValues": "preserve",
-    "outDir": "dist",
-    "ignoreDeprecations": "5.0",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "baseUrl": ".",
     "paths": {
       "$/*": [

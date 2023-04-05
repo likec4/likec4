@@ -23,8 +23,8 @@
   },
   "scripts": {
     "compile": "",
+    "release:build": "tsc -p tsconfig.esm.json",
     "build": "tsc",
-    "prepack": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
@@ -38,8 +38,7 @@
     "rambdax": "^9.1.0",
     "string-pixel-width": "^1.11.0",
     "tiny-invariant": "^1.3.1",
-    "ts-graphviz": "^1.5.5",
-    "type-fest": "^3.7.2"
+    "ts-graphviz": "^1.5.5"
   },
   "devDependencies": {
     "@types/graphlib": "^2.1.8",

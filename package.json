@@ -12,6 +12,7 @@
   "scripts": {
     "compile": "turbo run compile",
     "build": "turbo run build",
+    "release-build": "turbo run clean release:build",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "test": "turbo run test",

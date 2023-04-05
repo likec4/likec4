@@ -634,7 +634,6 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     rambdax: ^9.1.0
-    shx: ^0.3.4
     tiny-invariant: ^1.3.1
     typescript: ^5.0.3
     vite: ^4.2.1
@@ -735,7 +734,6 @@ __metadata:
     string-pixel-width: ^1.11.0
     tiny-invariant: ^1.3.1
     ts-graphviz: ^1.5.5
-    type-fest: ^3.7.2
     typescript: ^5.0.3
     vite: ^4.2.1
     vitest: ^0.29.8

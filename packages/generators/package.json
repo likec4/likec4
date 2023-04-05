@@ -1,21 +1,55 @@
 {
   "name": "@likec4/generators",
   "version": "0.1.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://like-c4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./react": "./src/react/index.ts",
     "./d2": "./src/d2/index.ts"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./react": {
+        "types": "./dist/react/index.d.ts",
+        "import": "./dist/react/index.js",
+        "require": "./dist/react/index.cjs"
+      },
+      "./d2": {
+        "types": "./dist/d2/index.d.ts",
+        "import": "./dist/d2/index.js",
+        "require": "./dist/d2/index.cjs"
+      }
+    }
+  },
   "scripts": {
     "compile": "",
+    "release:build": "tsc -p tsconfig.esm.json",
     "build": "tsc",
-    "prepack": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist .turbo",
+    "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -30,7 +30,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build
-        run: yarn build
+        run: yarn turbo run build compile
 
       - name: Test
         run: yarn test

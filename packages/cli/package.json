@@ -12,12 +12,11 @@
   ],
   "scripts": {
     "compile": "tsc --noEmit",
-    "build": "esbuild src/cli.ts --bundle --minify --tree-shaking=true --platform=node --target=node16 --outfile=dist/likec4.js",
+    "release:build": "run build --minify --tree-shaking=true",
+    "build": "esbuild src/cli.ts --bundle --platform=node --target=node16 --outfile=dist/likec4.js",
     "dev": "run build -- --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist .turbo",
-    "test": "",
-    "test:watch": ""
+    "clean": "rm -rf dist .turbo"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",

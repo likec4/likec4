@@ -1,21 +1,6 @@
 {
   "name": "@likec4/language-server",
   "version": "0.1.0",
-  "scripts": {
-    "compile": "",
-    "prepack": "yarn generate && tsc -p tsconfig.build.json",
-    "build:langium": "langium generate",
-    "build:ts": "tsc",
-    "watch:langium": "langium generate --watch",
-    "watch:ts": "tsc --watch",
-    "generate": "langium generate",
-    "build": "run-s 'build:langium' 'build:ts'",
-    "dev": "run-p 'watch:*'",
-    "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
   "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
@@ -50,6 +35,21 @@
         "require": "./dist/protocol.cjs"
       }
     }
+  },
+  "scripts": {
+    "compile": "",
+    "release:build": "run generate && tsc -p tsconfig.esm.json",
+    "build:langium": "langium generate",
+    "build:ts": "tsc",
+    "watch:langium": "langium generate --watch",
+    "watch:ts": "tsc --watch",
+    "generate": "langium generate",
+    "build": "run-s 'build:langium' 'build:ts'",
+    "dev": "run-p 'watch:*'",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

@@ -3,9 +3,6 @@
   "pipeline": {
     "compile": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**"
-      ],
       "outputs": []
     },
     "build": {
@@ -36,6 +33,9 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "release:build": {
+      "dependsOn": ["^release:build"]
     }
   }
 }
