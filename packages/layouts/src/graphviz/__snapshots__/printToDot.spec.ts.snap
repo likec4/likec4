@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`printToDot fake diagram 1`] = `
+exports[`printToDot: computedAmazonView 1`] = `
 "digraph "G" {
   layout = "dot";
   compound = true;
@@ -8,81 +8,309 @@ exports[`printToDot fake diagram 1`] = `
   nodesep = 0.8333333333333334;
   ranksep = 0.7291666666666666;
   outputorder = "nodesfirst";
-  pad = 0.1;
+  fontname = "Helvetica";
+  fontsize = 12;
   TBbalance = "min";
-  graph [
+  edge [
     fontname = "Helvetica";
     fontsize = 12;
-  ];
-  edge [
-    labelfontname = "Helvetica";
-    labelfontsize = 12;
-    penwidth = 2;
     arrowsize = 0.7;
   ];
   node [
     fontname = "Helvetica";
     fontsize = 15;
     shape = "rectangle";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-  ];
-  "node_amazon" [
-    id = "amazon";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "";
-  ];
-  "node_customer" [
-    id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "";
-  ];
-  "node_support" [
-    id = "support";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "";
   ];
   subgraph "cluster_cloud" {
     id = "cloud";
     labeljust = "l";
     label = "cloud";
     margin = 20;
-    rank = "same";
-    "node_cloud.backend" [
+    "nd_cloud.backend" [
       id = "cloud.backend";
       width = 2.6041666666666665;
       height = 1.4583333333333333;
       fixedsize = true;
-      label = "";
+      label = "backend";
     ];
-    "node_cloud.frontend" [
+  }
+  subgraph "cluster_amazon" {
+    id = "amazon";
+    labeljust = "l";
+    label = "amazon";
+    margin = 20;
+    "nd_amazon.s3" [
+      id = "amazon.s3";
+      width = 2.6041666666666665;
+      height = 1.4583333333333333;
+      fixedsize = true;
+      label = "s3";
+    ];
+  }
+  "nd_cloud.backend" -> "nd_amazon.s3" [
+    id = "cloud.backend:amazon.s3";
+    label = "persists artifacts";
+  ];
+}"
+`;
+
+exports[`printToDot: computedCloud3levels 1`] = `
+"digraph "G" {
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  nodesep = 0.8333333333333334;
+  ranksep = 0.7291666666666666;
+  outputorder = "nodesfirst";
+  fontname = "Helvetica";
+  fontsize = 12;
+  TBbalance = "min";
+  edge [
+    fontname = "Helvetica";
+    fontsize = 12;
+    arrowsize = 0.7;
+  ];
+  node [
+    fontname = "Helvetica";
+    fontsize = 15;
+    shape = "rectangle";
+  ];
+  "nd_customer" [
+    id = "customer";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "customer";
+  ];
+  "nd_support" [
+    id = "support";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "support";
+  ];
+  "nd_amazon" [
+    id = "amazon";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "amazon";
+  ];
+  subgraph "cluster_cloud" {
+    id = "cloud";
+    labeljust = "l";
+    label = "cloud";
+    margin = 30;
+    "nd_cloud.frontend.adminPanel" [
+      id = "cloud.frontend.adminPanel";
+      width = 2.6041666666666665;
+      height = 1.4583333333333333;
+      fixedsize = true;
+      label = "adminPanel";
+      group = "Cloud";
+    ];
+    "nd_cloud.frontend.dashboard" [
+      id = "cloud.frontend.dashboard";
+      width = 2.6041666666666665;
+      height = 1.4583333333333333;
+      fixedsize = true;
+      label = "dashboard";
+      group = "Cloud";
+    ];
+    subgraph "cluster_cloud.backend" {
+      id = "cloud.backend";
+      labeljust = "l";
+      label = "backend";
+      margin = 20;
+      "nd_cloud.backend.graphql" [
+        id = "cloud.backend.graphql";
+        width = 2.6041666666666665;
+        height = 1.4583333333333333;
+        fixedsize = true;
+        label = "graphql";
+        group = "CloudBackend";
+      ];
+      "nd_cloud.backend.storage" [
+        id = "cloud.backend.storage";
+        width = 2.6041666666666665;
+        height = 1.4583333333333333;
+        fixedsize = true;
+        label = "storage";
+        group = "CloudBackend";
+      ];
+      "nd_cloud.backend.graphql" -> "nd_cloud.backend.storage" [
+        id = "cloud.backend.graphql:cloud.backend.storage";
+        constraint = false;
+      ];
+    }
+    "nd_cloud.frontend.dashboard" -> "nd_cloud.backend.graphql" [
+      id = "cloud.frontend.dashboard:cloud.backend.graphql";
+      label = "fetches data";
+    ];
+    "nd_cloud.frontend.adminPanel" -> "nd_cloud.backend.graphql" [
+      id = "cloud.frontend.adminPanel:cloud.backend.graphql";
+      nojustify = true;
+      label = "fetches data in zero trust\\lnetwork with sso\\lauthentification\\l";
+    ];
+  }
+  "nd_cloud.backend.storage" -> "nd_amazon" [
+    id = "cloud.backend.storage:amazon";
+    label = "persists artifacts";
+  ];
+  "nd_support" -> "nd_cloud.frontend.adminPanel" [
+    id = "support:cloud.frontend.adminPanel";
+    label = "manages";
+  ];
+  "nd_customer" -> "nd_cloud.frontend.dashboard" [
+    id = "customer:cloud.frontend.dashboard";
+    label = "opens in browser";
+  ];
+}"
+`;
+
+exports[`printToDot: computedCloudView 1`] = `
+"digraph "G" {
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  nodesep = 0.8333333333333334;
+  ranksep = 0.7291666666666666;
+  outputorder = "nodesfirst";
+  fontname = "Helvetica";
+  fontsize = 12;
+  TBbalance = "min";
+  edge [
+    fontname = "Helvetica";
+    fontsize = 12;
+    arrowsize = 0.7;
+  ];
+  node [
+    fontname = "Helvetica";
+    fontsize = 15;
+    shape = "rectangle";
+  ];
+  "nd_customer" [
+    id = "customer";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "customer";
+  ];
+  "nd_support" [
+    id = "support";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "support";
+  ];
+  "nd_amazon" [
+    id = "amazon";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "amazon";
+  ];
+  subgraph "cluster_cloud" {
+    id = "cloud";
+    labeljust = "l";
+    label = "cloud";
+    margin = 20;
+    "nd_cloud.frontend" [
       id = "cloud.frontend";
       width = 2.6041666666666665;
       height = 1.4583333333333333;
       fixedsize = true;
-      label = "";
+      label = "frontend";
+      group = "Cloud";
     ];
-    "node_cloud.frontend" -> "node_cloud.backend" [
+    "nd_cloud.backend" [
+      id = "cloud.backend";
+      width = 2.6041666666666665;
+      height = 1.4583333333333333;
+      fixedsize = true;
+      label = "backend";
+      group = "Cloud";
+    ];
+    "nd_cloud.frontend" -> "nd_cloud.backend" [
       id = "cloud.frontend:cloud.backend";
       constraint = false;
-      label = <requests>;
     ];
   }
-  "node_cloud.backend" -> "node_amazon" [
+  "nd_cloud.backend" -> "nd_amazon" [
     id = "cloud.backend:amazon";
+    label = "persists artifacts";
   ];
-  "node_support" -> "node_cloud.frontend" [
+  "nd_support" -> "nd_cloud.frontend" [
     id = "support:cloud.frontend";
+    label = "manages";
   ];
-  "node_customer" -> "node_cloud.frontend" [
+  "nd_customer" -> "nd_cloud.frontend" [
     id = "customer:cloud.frontend";
-    label = <opens>;
+    label = "opens in browser";
+  ];
+}"
+`;
+
+exports[`printToDot: computedIndexView 1`] = `
+"digraph "G" {
+  layout = "dot";
+  compound = true;
+  rankdir = "TB";
+  nodesep = 0.8333333333333334;
+  ranksep = 0.7291666666666666;
+  outputorder = "nodesfirst";
+  fontname = "Helvetica";
+  fontsize = 12;
+  TBbalance = "min";
+  edge [
+    fontname = "Helvetica";
+    fontsize = 12;
+    arrowsize = 0.7;
+  ];
+  node [
+    fontname = "Helvetica";
+    fontsize = 15;
+    shape = "rectangle";
+  ];
+  "nd_customer" [
+    id = "customer";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "customer";
+  ];
+  "nd_support" [
+    id = "support";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "support";
+  ];
+  "nd_amazon" [
+    id = "amazon";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "amazon";
+  ];
+  "nd_cloud" [
+    id = "cloud";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "cloud";
+  ];
+  "nd_support" -> "nd_cloud" [
+    id = "support:cloud";
+    label = "manages";
+  ];
+  "nd_customer" -> "nd_cloud" [
+    id = "customer:cloud";
+    label = "opens in browser";
+  ];
+  "nd_cloud" -> "nd_amazon" [
+    id = "cloud:amazon";
+    label = "persists artifacts";
   ];
 }"
 `;

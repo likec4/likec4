@@ -1,15 +1,23 @@
 import { expect, test } from 'vitest'
+import { computedAmazonView, computedCloudView, computedCloud3levels, computedIndexView  } from '../__mocks__/data'
 import { printToDot } from './printToDot'
-import { fakeComputedView } from '../__mocks__/data'
 
-test('printToDot fake diagram', () => {
-  const dot = printToDot(fakeComputedView)
-  expect(dot).toMatchSnapshot()
+test('printToDot: computedIndexView', () => {
+  const diagram = printToDot(computedIndexView)
+  expect(diagram).toMatchSnapshot()
+})
 
-//   const graphviz = await Graphviz.load();
+test('printToDot: computedAmazonView', () => {
+  const diagram = printToDot(computedAmazonView)
+  expect(diagram).toMatchSnapshot()
+})
 
-//   const svg = graphviz.dot(dot, 'json');
-// // await writeFile('test.svg', svg)
-//   console.log(svg)
-// //   // graphviz.
+test('printToDot: computedCloud3levels', () => {
+  const diagram = printToDot(computedCloud3levels)
+  expect(diagram).toMatchSnapshot()
+})
+
+test('printToDot: computedCloudView', () => {
+  const diagram = printToDot(computedCloudView)
+  expect(diagram).toMatchSnapshot()
 })

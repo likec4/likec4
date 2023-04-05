@@ -48,18 +48,6 @@ exports[`view of cloud 1`] = `
   "id": "cloud",
   "nodes": [
     {
-      "children": [
-        "cloud.frontend",
-        "cloud.backend",
-      ],
-      "color": "primary",
-      "id": "cloud",
-      "navigateTo": "fakeView",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "cloud",
-    },
-    {
       "children": [],
       "color": "primary",
       "id": "customer",
@@ -82,6 +70,18 @@ exports[`view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "title": "amazon",
+    },
+    {
+      "children": [
+        "cloud.frontend",
+        "cloud.backend",
+      ],
+      "color": "primary",
+      "id": "cloud",
+      "navigateTo": "fakeView",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "cloud",
     },
     {
       "children": [],
@@ -182,19 +182,6 @@ exports[`view with 3 levels 1`] = `
   "id": "cloud3levels",
   "nodes": [
     {
-      "children": [
-        "cloud.backend",
-        "cloud.frontend.adminPanel",
-        "cloud.frontend.dashboard",
-      ],
-      "color": "primary",
-      "id": "cloud",
-      "navigateTo": "fakeView",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "cloud",
-    },
-    {
       "children": [],
       "color": "primary",
       "id": "customer",
@@ -220,14 +207,16 @@ exports[`view with 3 levels 1`] = `
     },
     {
       "children": [
-        "cloud.backend.graphql",
-        "cloud.backend.storage",
+        "cloud.frontend.adminPanel",
+        "cloud.frontend.dashboard",
+        "cloud.backend",
       ],
       "color": "primary",
-      "id": "cloud.backend",
-      "parent": "cloud",
+      "id": "cloud",
+      "navigateTo": "fakeView",
+      "parent": null,
       "shape": "rectangle",
-      "title": "backend",
+      "title": "cloud",
     },
     {
       "children": [],
@@ -244,6 +233,17 @@ exports[`view with 3 levels 1`] = `
       "parent": "cloud",
       "shape": "rectangle",
       "title": "dashboard",
+    },
+    {
+      "children": [
+        "cloud.backend.graphql",
+        "cloud.backend.storage",
+      ],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": "cloud",
+      "shape": "rectangle",
+      "title": "backend",
     },
     {
       "children": [],

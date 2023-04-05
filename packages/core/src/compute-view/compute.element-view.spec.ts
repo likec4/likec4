@@ -16,10 +16,10 @@ test('index view', () => {
   }, fakeModel())
 
   expect(nodes.map(n => n.id)).toEqual([
-    'cloud',
     'customer',
     'support',
     'amazon',
+    'cloud',
   ])
 
   expect(edges.map(e => e.id)).toEqual([
@@ -46,12 +46,12 @@ test('view of cloud', () => {
   const { nodes, edges } = view
 
   expect(nodes.map(n => n.id)).toEqual([
-    'cloud',
     'customer',
     'support',
     'amazon',
+    'cloud',
     'cloud.frontend',
-    'cloud.backend'
+    'cloud.backend',
   ])
 
   expect(edges.map(e => e.id)).toEqual([
@@ -89,13 +89,13 @@ test('view with 3 levels', () => {
   }, fakeModel())
 
   expect(view.nodes.map(n => n.id)).toEqual([
-    'cloud',
     'customer',
     'support',
     'amazon',
-    'cloud.backend',
+    'cloud',
     'cloud.frontend.adminPanel',
     'cloud.frontend.dashboard',
+    'cloud.backend',
     'cloud.backend.graphql',
     'cloud.backend.storage',
   ])

@@ -1,5 +1,7 @@
-import { Relations, compareFqnHierarchically } from '../../utils'
+import { both } from 'rambdax'
 import type { ComputedEdge, ComputedNode } from '../../types'
+import { compareFqnHierarchically } from '../../utils'
+import { isBetween, isIncoming, isOutgoing } from '../../utils/relations'
 
 export function sortNodes(_edges: ComputedEdge[]) {
 
@@ -9,12 +11,13 @@ export function sortNodes(_edges: ComputedEdge[]) {
   }>()
 
   function edgesCount(node: ComputedNode) {
-    if (cache.has(node)) {
-      return cache.get(node)!
+    let result = cache.get(node)
+    if (result) {
+      return result
     }
-    const result = {
-      in: _edges.filter(Relations.isIncoming(node.id)).length,
-      out: _edges.filter(Relations.isOutgoing(node.id)).length
+    result = {
+      in: _edges.filter(node.parent ? both(isBetween(node.parent), isIncoming(node.id)) : isIncoming(node.id)).length,
+      out: _edges.filter(node.parent ? both(isBetween(node.parent), isOutgoing(node.id)) : isOutgoing(node.id)).length
     }
     cache.set(node, result)
     return result
@@ -25,13 +28,10 @@ export function sortNodes(_edges: ComputedEdge[]) {
       const aedges = edgesCount(a)
       const bedges = edgesCount(b)
 
-      const compareByOut = aedges.out - bedges.out
-      if (compareByOut !== 0) {
-        return compareByOut * -1
-      }
-      const compareByIn = aedges.in - bedges.in
-      if (compareByIn !== 0) {
-        return compareByIn * -1
+      const aWeight = aedges.in - aedges.out
+      const bWeight = bedges.in - bedges.out
+      if (aWeight !== bWeight) {
+        return aWeight - bWeight
       }
       const compareByChildren = a.children.length - b.children.length
       if (compareByChildren !== 0) {

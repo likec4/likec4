@@ -28,7 +28,7 @@
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
-    "vitest": "vitest",
+    "test:watch": "vitest",
     "clean": "rm -rf dist"
   },
   "dependencies": {

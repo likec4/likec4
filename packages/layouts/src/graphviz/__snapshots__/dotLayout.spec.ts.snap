@@ -1,48 +1,728 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`dotLayout 1 1`] = `
+exports[`dotLayout: computedAmazonView 1`] = `
 {
   "edges": [
     {
       "headArrow": [
         [
-          563,
-          333,
+          166,
+          320,
         ],
         [
-          572,
-          336,
+          163,
+          330,
         ],
         [
-          563,
-          339,
+          160,
+          320,
         ],
       ],
-      "id": "cloud.frontend:cloud.backend",
-      "label": "requests",
+      "id": "cloud.backend:amazon.s3",
+      "label": "persists artifacts",
       "labelBox": {
-        "align": "left",
-        "width": 62,
-        "x": 470,
-        "y": 326,
+        "align": "center",
+        "width": 116,
+        "x": 221,
+        "y": 259,
+      },
+      "parent": null,
+      "points": [
+        [
+          163,
+          208,
+        ],
+        [
+          163,
+          243,
+        ],
+        [
+          163,
+          285,
+        ],
+        [
+          163,
+          321,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud.backend",
+      "target": "amazon.s3",
+    },
+  ],
+  "height": 509,
+  "id": "amazon",
+  "nodes": [
+    {
+      "children": [
+        "cloud.backend",
+      ],
+      "color": "primary",
+      "id": "cloud",
+      "navigateTo": "cloud3levels",
+      "parent": null,
+      "position": [
+        11,
+        11,
+      ],
+      "relative": [
+        11,
+        11,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 223,
+        "width": 304,
+      },
+      "title": "cloud",
+    },
+    {
+      "children": [
+        "amazon.s3",
+      ],
+      "color": "primary",
+      "id": "amazon",
+      "navigateTo": "amazon",
+      "parent": null,
+      "position": [
+        11,
+        275,
+      ],
+      "relative": [
+        11,
+        275,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 223,
+        "width": 304,
+      },
+      "title": "amazon",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "amazon.s3",
+      "parent": "amazon",
+      "position": [
+        37,
+        331,
+      ],
+      "relative": [
+        26,
+        56,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "s3",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": "cloud",
+      "position": [
+        37,
+        68,
+      ],
+      "relative": [
+        26,
+        57,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "backend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+        {
+          "element": "cloud",
+          "isDescedants": false,
+        },
+        {
+          "source": {
+            "element": "cloud",
+            "isDescedants": true,
+          },
+          "target": {
+            "element": "amazon",
+            "isDescedants": false,
+          },
+        },
+      ],
+      "isInclude": true,
+    },
+  ],
+  "title": "",
+  "viewOf": "amazon",
+  "width": 326,
+}
+`;
+
+exports[`dotLayout: computedCloud3levels 1`] = `
+{
+  "edges": [
+    {
+      "headArrow": [
+        [
+          340,
+          650,
+        ],
+        [
+          330,
+          647,
+        ],
+        [
+          340,
+          644,
+        ],
+      ],
+      "id": "cloud.backend.graphql:cloud.backend.storage",
+      "label": null,
+      "labelBox": null,
+      "parent": "cloud.backend",
+      "points": [
+        [
+          488,
+          647,
+        ],
+        [
+          439,
+          647,
+        ],
+        [
+          389,
+          647,
+        ],
+        [
+          340,
+          647,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.graphql:cloud.backend.storage",
+      ],
+      "source": "cloud.backend.graphql",
+      "target": "cloud.backend.storage",
+    },
+    {
+      "headArrow": [
+        [
+          532,
+          566,
+        ],
+        [
+          536,
+          575,
+        ],
+        [
+          527,
+          571,
+        ],
+      ],
+      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
+      "label": "fetches data",
+      "labelBox": {
+        "align": "center",
+        "width": 88,
+        "x": 503,
+        "y": 486,
       },
       "parent": "cloud",
       "points": [
         [
+          362,
           417,
+        ],
+        [
+          412,
+          462,
+        ],
+        [
+          478,
+          522,
+        ],
+        [
+          530,
+          570,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend.graphql",
+    },
+    {
+      "headArrow": [
+        [
+          618,
+          566,
+        ],
+        [
+          614,
+          575,
+        ],
+        [
+          611,
+          566,
+        ],
+      ],
+      "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
+      "label": "fetches data in zero trust network with sso authentification",
+      "labelBox": {
+        "align": "left",
+        "width": 176,
+        "x": 619,
+        "y": 467,
+      },
+      "parent": "cloud",
+      "points": [
+        [
+          616,
+          417,
+        ],
+        [
+          615,
+          461,
+        ],
+        [
+          615,
+          520,
+        ],
+        [
+          615,
+          566,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.adminPanel",
+      "target": "cloud.backend.graphql",
+    },
+    {
+      "headArrow": [
+        [
+          206,
+          839,
+        ],
+        [
+          203,
+          848,
+        ],
+        [
+          200,
+          839,
+        ],
+      ],
+      "id": "cloud.backend.storage:amazon",
+      "label": "persists artifacts",
+      "labelBox": {
+        "align": "center",
+        "width": 116,
+        "x": 261,
+        "y": 809,
+      },
+      "parent": null,
+      "points": [
+        [
+          203,
+          718,
+        ],
+        [
+          203,
+          754,
+        ],
+        [
+          203,
+          800,
+        ],
+        [
+          203,
+          839,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud.backend.storage",
+      "target": "amazon",
+    },
+    {
+      "headArrow": [
+        [
+          620,
+          265,
+        ],
+        [
+          616,
+          274,
+        ],
+        [
+          613,
+          265,
+        ],
+      ],
+      "id": "support:cloud.frontend.adminPanel",
+      "label": "manages",
+      "labelBox": {
+        "align": "center",
+        "width": 66,
+        "x": 649,
+        "y": 191,
+      },
+      "parent": null,
+      "points": [
+        [
+          616,
+          141,
+        ],
+        [
+          616,
+          179,
+        ],
+        [
+          616,
+          226,
+        ],
+        [
+          616,
+          265,
+        ],
+      ],
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
+    },
+    {
+      "headArrow": [
+        [
+          289,
+          265,
+        ],
+        [
+          286,
+          274,
+        ],
+        [
+          283,
+          265,
+        ],
+      ],
+      "id": "customer:cloud.frontend.dashboard",
+      "label": "opens in browser",
+      "labelBox": {
+        "align": "center",
+        "width": 122,
+        "x": 347,
+        "y": 191,
+      },
+      "parent": null,
+      "points": [
+        [
+          286,
+          141,
+        ],
+        [
+          286,
+          179,
+        ],
+        [
+          286,
+          226,
+        ],
+        [
+          286,
+          265,
+        ],
+      ],
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend.dashboard",
+    },
+  ],
+  "height": 990,
+  "id": "cloud3levels",
+  "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "id": "customer",
+      "parent": null,
+      "position": [
+        160,
+        0,
+      ],
+      "relative": [
+        160,
+        0,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "position": [
+        490,
+        0,
+      ],
+      "relative": [
+        490,
+        0,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "support",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "amazon",
+      "navigateTo": "amazon",
+      "parent": null,
+      "position": [
+        77,
+        850,
+      ],
+      "relative": [
+        77,
+        850,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "amazon",
+    },
+    {
+      "children": [
+        "cloud.frontend.adminPanel",
+        "cloud.frontend.dashboard",
+        "cloud.backend",
+      ],
+      "color": "primary",
+      "id": "cloud",
+      "navigateTo": "cloud3levels",
+      "parent": null,
+      "position": [
+        11,
+        206,
+      ],
+      "relative": [
+        11,
+        206,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 578,
+        "width": 795,
+      },
+      "title": "cloud",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.adminPanel",
+      "parent": "cloud",
+      "position": [
+        490,
+        276,
+      ],
+      "relative": [
+        479,
+        70,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "adminPanel",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.dashboard",
+      "parent": "cloud",
+      "position": [
+        160,
+        276,
+      ],
+      "relative": [
+        149,
+        70,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "dashboard",
+    },
+    {
+      "children": [
+        "cloud.backend.graphql",
+        "cloud.backend.storage",
+      ],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": "cloud",
+      "position": [
+        51,
+        520,
+      ],
+      "relative": [
+        40,
+        314,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 224,
+        "width": 715,
+      },
+      "title": "backend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend.graphql",
+      "parent": "cloud.backend",
+      "position": [
+        488,
+        577,
+      ],
+      "relative": [
+        437,
+        57,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "graphql",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend.storage",
+      "parent": "cloud.backend",
+      "position": [
+        77,
+        577,
+      ],
+      "relative": [
+        26,
+        57,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "storage",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+        {
+          "element": "cloud.frontend",
+          "isDescedants": true,
+        },
+        {
+          "element": "cloud.backend",
+          "isDescedants": true,
+        },
+      ],
+      "isInclude": true,
+    },
+    {
+      "exprs": [
+        {
+          "element": "cloud.frontend",
+          "isDescedants": false,
+        },
+      ],
+      "isInclude": false,
+    },
+  ],
+  "title": "",
+  "viewOf": "cloud",
+  "width": 816,
+}
+`;
+
+exports[`dotLayout: computedCloudView 1`] = `
+{
+  "edges": [
+    {
+      "headArrow": [
+        [
+          300,
           336,
         ],
         [
-          463,
-          336,
+          290,
+          333,
         ],
         [
-          516,
-          336,
+          300,
+          330,
+        ],
+      ],
+      "id": "cloud.frontend:cloud.backend",
+      "label": null,
+      "labelBox": null,
+      "parent": "cloud",
+      "points": [
+        [
+          448,
+          333,
         ],
         [
-          563,
-          336,
+          399,
+          333,
+        ],
+        [
+          349,
+          333,
+        ],
+        [
+          300,
+          333,
         ],
       ],
       "relations": [
@@ -55,38 +735,43 @@ exports[`dotLayout 1 1`] = `
     {
       "headArrow": [
         [
-          705,
-          467,
+          166,
+          484,
         ],
         [
-          702,
-          476,
+          163,
+          493,
         ],
         [
-          699,
-          467,
+          160,
+          484,
         ],
       ],
       "id": "cloud.backend:amazon",
-      "label": null,
-      "labelBox": null,
+      "label": "persists artifacts",
+      "labelBox": {
+        "align": "center",
+        "width": 116,
+        "x": 221,
+        "y": 455,
+      },
       "parent": null,
       "points": [
         [
-          702,
-          406,
+          163,
+          403,
         ],
         [
-          702,
-          426,
+          163,
+          429,
         ],
         [
-          702,
-          447,
+          163,
+          458,
         ],
         [
-          702,
-          467,
+          163,
+          484,
         ],
       ],
       "relations": [
@@ -98,38 +783,43 @@ exports[`dotLayout 1 1`] = `
     {
       "headArrow": [
         [
-          344,
-          257,
+          626,
+          255,
         ],
         [
-          336,
-          263,
+          618,
+          261,
         ],
         [
-          338,
-          253,
+          620,
+          252,
         ],
       ],
       "id": "support:cloud.frontend",
-      "label": null,
-      "labelBox": null,
+      "label": "manages",
+      "labelBox": {
+        "align": "center",
+        "width": 66,
+        "x": 704,
+        "y": 191,
+      },
       "parent": null,
       "points": [
         [
-          413,
+          695,
           141,
         ],
         [
-          391,
+          673,
           176,
         ],
         [
-          364,
+          646,
           218,
         ],
         [
-          342,
-          255,
+          623,
+          254,
         ],
       ],
       "relations": [
@@ -141,43 +831,43 @@ exports[`dotLayout 1 1`] = `
     {
       "headArrow": [
         [
-          244,
-          253,
+          528,
+          252,
         ],
         [
-          246,
-          263,
+          530,
+          261,
         ],
         [
-          239,
-          257,
+          522,
+          255,
         ],
       ],
       "id": "customer:cloud.frontend",
-      "label": "opens",
+      "label": "opens in browser",
       "labelBox": {
-        "align": "left",
-        "width": 44,
-        "x": 208,
-        "y": 193,
+        "align": "center",
+        "width": 122,
+        "x": 548,
+        "y": 191,
       },
       "parent": null,
       "points": [
         [
-          169,
+          453,
           141,
         ],
         [
-          191,
+          475,
           176,
         ],
         [
-          218,
+          501,
           218,
         ],
         [
-          241,
-          255,
+          524,
+          254,
         ],
       ],
       "relations": [
@@ -187,21 +877,62 @@ exports[`dotLayout 1 1`] = `
       "target": "cloud.frontend",
     },
   ],
-  "height": 621,
-  "id": "fakeView",
+  "height": 635,
+  "id": "cloudView",
   "nodes": [
     {
       "children": [],
       "color": "primary",
-      "id": "amazon",
+      "id": "customer",
       "parent": null,
       "position": [
-        576,
-        481,
+        282,
+        0,
       ],
       "relative": [
-        576,
-        481,
+        282,
+        0,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "position": [
+        613,
+        0,
+      ],
+      "relative": [
+        613,
+        0,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "support",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "amazon",
+      "navigateTo": "amazon",
+      "parent": null,
+      "position": [
+        37,
+        495,
+      ],
+      "relative": [
+        37,
+        495,
       ],
       "shape": "rectangle",
       "size": {
@@ -212,27 +943,236 @@ exports[`dotLayout 1 1`] = `
     },
     {
       "children": [
-        "cloud.backend",
         "cloud.frontend",
+        "cloud.backend",
       ],
       "color": "primary",
       "id": "cloud",
+      "navigateTo": "cloud3levels",
       "parent": null,
       "position": [
-        139,
-        210,
+        11,
+        206,
       ],
       "relative": [
-        139,
-        210,
+        11,
+        206,
       ],
       "shape": "rectangle",
       "size": {
-        "height": 223,
+        "height": 224,
         "width": 715,
       },
       "title": "cloud",
     },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend",
+      "parent": "cloud",
+      "position": [
+        448,
+        263,
+      ],
+      "relative": [
+        437,
+        57,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "frontend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": "cloud",
+      "position": [
+        37,
+        263,
+      ],
+      "relative": [
+        26,
+        57,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 140,
+        "width": 251,
+      },
+      "title": "backend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+      ],
+      "isInclude": true,
+    },
+  ],
+  "title": "",
+  "viewOf": "cloud",
+  "width": 864,
+}
+`;
+
+exports[`dotLayout: computedIndexView 1`] = `
+{
+  "edges": [
+    {
+      "headArrow": [
+        [
+          349,
+          224,
+        ],
+        [
+          341,
+          230,
+        ],
+        [
+          344,
+          221,
+        ],
+      ],
+      "id": "support:cloud",
+      "label": "manages",
+      "labelBox": {
+        "align": "center",
+        "width": 66,
+        "x": 411,
+        "y": 191,
+      },
+      "parent": null,
+      "points": [
+        [
+          406,
+          141,
+        ],
+        [
+          388,
+          167,
+        ],
+        [
+          366,
+          196,
+        ],
+        [
+          347,
+          223,
+        ],
+      ],
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud",
+    },
+    {
+      "headArrow": [
+        [
+          238,
+          221,
+        ],
+        [
+          241,
+          230,
+        ],
+        [
+          233,
+          224,
+        ],
+      ],
+      "id": "customer:cloud",
+      "label": "opens in browser",
+      "labelBox": {
+        "align": "center",
+        "width": 122,
+        "x": 275,
+        "y": 191,
+      },
+      "parent": null,
+      "points": [
+        [
+          176,
+          141,
+        ],
+        [
+          195,
+          167,
+        ],
+        [
+          216,
+          196,
+        ],
+        [
+          235,
+          223,
+        ],
+      ],
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud",
+    },
+    {
+      "headArrow": [
+        [
+          294,
+          452,
+        ],
+        [
+          291,
+          461,
+        ],
+        [
+          288,
+          452,
+        ],
+      ],
+      "id": "cloud:amazon",
+      "label": "persists artifacts",
+      "labelBox": {
+        "align": "center",
+        "width": 116,
+        "x": 349,
+        "y": 422,
+      },
+      "parent": null,
+      "points": [
+        [
+          291,
+          372,
+        ],
+        [
+          291,
+          397,
+        ],
+        [
+          291,
+          426,
+        ],
+        [
+          291,
+          452,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.storage:amazon.s3",
+      ],
+      "source": "cloud",
+      "target": "amazon",
+    },
+  ],
+  "height": 603,
+  "id": "index",
+  "nodes": [
     {
       "children": [],
       "color": "primary",
@@ -276,42 +1216,44 @@ exports[`dotLayout 1 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "cloud.backend",
-      "parent": "cloud",
+      "id": "amazon",
+      "navigateTo": "amazon",
+      "parent": null,
       "position": [
-        576,
-        266,
+        165,
+        463,
       ],
       "relative": [
-        437,
-        56,
+        165,
+        463,
       ],
       "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
       },
-      "title": "backend",
+      "title": "amazon",
     },
     {
       "children": [],
       "color": "primary",
-      "id": "cloud.frontend",
-      "parent": "cloud",
+      "id": "cloud",
+      "navigateTo": "cloud3levels",
+      "parent": null,
       "position": [
         165,
-        266,
+        232,
       ],
       "relative": [
-        26,
-        56,
+        165,
+        232,
       ],
       "shape": "rectangle",
       "size": {
         "height": 140,
         "width": 251,
       },
-      "title": "frontend",
+      "title": "cloud",
     },
   ],
   "rules": [
@@ -325,187 +1267,6 @@ exports[`dotLayout 1 1`] = `
     },
   ],
   "title": "",
-  "viewOf": "cloud",
-  "width": 864,
-}
-`;
-
-exports[`dotLayout 2 1`] = `
-{
-  "edges": [
-    {
-      "headArrow": [
-        [
-          129,
-          456,
-        ],
-        [
-          126,
-          465,
-        ],
-        [
-          123,
-          456,
-        ],
-      ],
-      "id": "system.frontend:system.backend",
-      "label": "requests",
-      "labelBox": {
-        "align": "left",
-        "width": 62,
-        "x": 130,
-        "y": 428,
-      },
-      "parent": null,
-      "points": [
-        [
-          126,
-          375,
-        ],
-        [
-          126,
-          400,
-        ],
-        [
-          126,
-          429,
-        ],
-        [
-          126,
-          456,
-        ],
-      ],
-      "relations": [
-        "671e3db5eb605d5f245f247d95925bd0953e0e4c",
-      ],
-      "source": "system.frontend",
-      "target": "system.backend",
-    },
-    {
-      "headArrow": [
-        [
-          129,
-          221,
-        ],
-        [
-          126,
-          231,
-        ],
-        [
-          123,
-          221,
-        ],
-      ],
-      "id": "client:system.frontend",
-      "label": "opens",
-      "labelBox": {
-        "align": "left",
-        "width": 44,
-        "x": 130,
-        "y": 193,
-      },
-      "parent": null,
-      "points": [
-        [
-          126,
-          141,
-        ],
-        [
-          126,
-          166,
-        ],
-        [
-          126,
-          195,
-        ],
-        [
-          126,
-          221,
-        ],
-      ],
-      "relations": [
-        "99bffdfd5c78e024393e6223cd9b19225321a5e3",
-      ],
-      "source": "client",
-      "target": "system.frontend",
-    },
-  ],
-  "height": 609,
-  "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
-  "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "id": "client",
-      "parent": null,
-      "position": [
-        0,
-        0,
-      ],
-      "relative": [
-        0,
-        0,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 140,
-        "width": 251,
-      },
-      "title": "client",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "id": "system.backend",
-      "parent": null,
-      "position": [
-        0,
-        469,
-      ],
-      "relative": [
-        0,
-        469,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 140,
-        "width": 251,
-      },
-      "title": "backend",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "id": "system.frontend",
-      "parent": null,
-      "position": [
-        0,
-        235,
-      ],
-      "relative": [
-        0,
-        235,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 140,
-        "width": 251,
-      },
-      "title": "frontend",
-    },
-  ],
-  "rules": [
-    {
-      "exprs": [
-        {
-          "wildcard": true,
-        },
-      ],
-      "isInclude": true,
-    },
-  ],
-  "title": "frontend",
-  "viewOf": "system.frontend",
-  "width": 251,
+  "width": 582,
 }
 `;
