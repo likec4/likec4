@@ -43,7 +43,7 @@ export function parentFqn(fqn: Fqn): Fqn | null {
   return null
 }
 
-export const compareFqnHierarchically = (a: Fqn, b: Fqn) => {
+export const compareFqnHierarchically = (a: string, b: string) => {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   if (depthA === depthB) {

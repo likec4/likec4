@@ -39,18 +39,38 @@ describe('isAncestor', () => {
 
 describe('compareFqnHierarchically', () => {
   it('should compare hierarchically', () => {
-    expect(compareFqnHierarchically('a' as Fqn, 'a' as Fqn)).toBe(0)
-    expect(compareFqnHierarchically('a' as Fqn, 'b' as Fqn)).toBeLessThan(0)
-    expect(compareFqnHierarchically('b' as Fqn, 'a' as Fqn)).toBeGreaterThan(0)
-    expect(compareFqnHierarchically('a.b' as Fqn, 'a.b' as Fqn)).toBe(0)
-    expect(compareFqnHierarchically('a.b' as Fqn, 'a.c' as Fqn)).toBeLessThan(0)
-    expect(compareFqnHierarchically('a.c' as Fqn, 'a.b' as Fqn)).toBeGreaterThan(0)
-    expect(compareFqnHierarchically('a.b' as Fqn, 'a' as Fqn)).toBeGreaterThan(0)
-    expect(compareFqnHierarchically('a' as Fqn, 'a.b' as Fqn)).toBeLessThan(0)
-    expect(compareFqnHierarchically('a.b' as Fqn, 'a.b.c' as Fqn)).toBeLessThan(0)
-    expect(compareFqnHierarchically('a.b.c' as Fqn, 'a.b' as Fqn)).toBeGreaterThan(0)
-    expect(compareFqnHierarchically('a.b.c' as Fqn, 'a.b.d' as Fqn)).toBeLessThan(0)
-    expect(compareFqnHierarchically('a.b.d' as Fqn, 'a.b.c' as Fqn)).toBeGreaterThan(0)
-    expect(compareFqnHierarchically('a.b.c' as Fqn, 'a.b.c.d' as Fqn)).toBeLessThan(0)
+    expect([
+      'a',
+      'b',
+      'a.b',
+      'a.b.c',
+      'a.c.c'
+    ].sort(compareFqnHierarchically)).toEqual([
+      'a',
+      'b',
+      'a.b',
+      'a.b.c',
+      'a.c.c',
+    ])
+  })
+
+  it('should compare hierarchically 2', () => {
+    expect([
+      'aaa',
+      'aa',
+      'a',
+      'aaa.c',
+      'aa.b',
+      'a.b',
+      'a.c',
+    ].sort(compareFqnHierarchically)).toEqual([
+      'a',
+      'aa',
+      'aaa',
+      'a.b',
+      'a.c',
+      'aa.b',
+      'aaa.c',
+    ])
   })
 })

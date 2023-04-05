@@ -1,6 +1,11 @@
 
 import { either } from 'rambdax'
-import type { Fqn, Relation } from '../types'
+import type { Fqn } from '../types'
+
+type Relation = {
+  source: Fqn
+  target: Fqn
+}
 
 export const isBetween = (source: Fqn, target: Fqn = source) => {
   const sourcePrefix = source + '.'

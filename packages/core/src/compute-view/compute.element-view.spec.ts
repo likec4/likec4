@@ -16,10 +16,10 @@ test('index view', () => {
   }, fakeModel())
 
   expect(nodes.map(n => n.id)).toEqual([
-    'amazon',
     'cloud',
     'customer',
     'support',
+    'amazon',
   ])
 
   expect(edges.map(e => e.id)).toEqual([
@@ -32,7 +32,7 @@ test('index view', () => {
 
 
 test('view of cloud', () => {
-  const { nodes, edges } = computeElementView({
+  const view = computeElementView({
     id: 'cloud' as ViewID,
     title: '',
     viewOf: 'cloud' as Fqn,
@@ -43,14 +43,15 @@ test('view of cloud', () => {
       }]
     }]
   }, fakeModel())
+  const { nodes, edges } = view
 
   expect(nodes.map(n => n.id)).toEqual([
-    'amazon',
     'cloud',
     'customer',
     'support',
-    'cloud.backend',
-    'cloud.frontend'
+    'amazon',
+    'cloud.frontend',
+    'cloud.backend'
   ])
 
   expect(edges.map(e => e.id)).toEqual([
@@ -59,6 +60,8 @@ test('view of cloud', () => {
     'support:cloud.frontend',
     'customer:cloud.frontend',
   ])
+
+  expect(view).toMatchSnapshot()
 })
 
 test('view with 3 levels', () => {
@@ -86,15 +89,15 @@ test('view with 3 levels', () => {
   }, fakeModel())
 
   expect(view.nodes.map(n => n.id)).toEqual([
-    'amazon',
     'cloud',
     'customer',
     'support',
+    'amazon',
     'cloud.backend',
-    'cloud.backend.graphql',
-    'cloud.backend.storage',
     'cloud.frontend.adminPanel',
     'cloud.frontend.dashboard',
+    'cloud.backend.graphql',
+    'cloud.backend.storage',
   ])
 
   expect(view).toMatchSnapshot()
@@ -122,8 +125,8 @@ test('view of amazon', () => {
   }, fakeModel())
 
   expect(nodes.map(n => n.id)).toEqual([
-    'amazon',
     'cloud',
+    'amazon',
     'amazon.s3',
     'cloud.backend',
   ])
