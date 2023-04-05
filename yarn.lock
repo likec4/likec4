@@ -625,7 +625,7 @@ __metadata:
     typescript: ^5.0.3
     vscode-uri: 3.0.7
   bin:
-    likec4: dist/cli.js
+    likec4: dist/likec4.js
   languageName: unknown
   linkType: soft
 
