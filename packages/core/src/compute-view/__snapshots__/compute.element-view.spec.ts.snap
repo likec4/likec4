@@ -50,14 +50,6 @@ exports[`view of cloud 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "customer",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "customer",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "id": "support",
       "parent": null,
       "shape": "rectangle",
@@ -66,10 +58,10 @@ exports[`view of cloud 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "amazon",
+      "id": "customer",
       "parent": null,
       "shape": "rectangle",
-      "title": "amazon",
+      "title": "customer",
     },
     {
       "children": [
@@ -98,6 +90,14 @@ exports[`view of cloud 1`] = `
       "parent": "cloud",
       "shape": "rectangle",
       "title": "backend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "amazon",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "amazon",
     },
   ],
   "rules": [
@@ -184,14 +184,6 @@ exports[`view with 3 levels 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "customer",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "customer",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "id": "support",
       "parent": null,
       "shape": "rectangle",
@@ -200,15 +192,15 @@ exports[`view with 3 levels 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "amazon",
+      "id": "customer",
       "parent": null,
       "shape": "rectangle",
-      "title": "amazon",
+      "title": "customer",
     },
     {
       "children": [
-        "cloud.frontend.adminPanel",
         "cloud.frontend.dashboard",
+        "cloud.frontend.adminPanel",
         "cloud.backend",
       ],
       "color": "primary",
@@ -221,18 +213,18 @@ exports[`view with 3 levels 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "cloud.frontend.adminPanel",
-      "parent": "cloud",
-      "shape": "rectangle",
-      "title": "adminPanel",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "id": "cloud.frontend.dashboard",
       "parent": "cloud",
       "shape": "rectangle",
       "title": "dashboard",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.adminPanel",
+      "parent": "cloud",
+      "shape": "rectangle",
+      "title": "adminPanel",
     },
     {
       "children": [
@@ -260,6 +252,14 @@ exports[`view with 3 levels 1`] = `
       "parent": "cloud.backend",
       "shape": "rectangle",
       "title": "storage",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "amazon",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "amazon",
     },
   ],
   "rules": [

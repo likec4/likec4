@@ -1,57 +1,51 @@
-import { both } from 'rambdax'
-import type { ComputedEdge, ComputedNode } from '../../types'
-import { compareFqnHierarchically } from '../../utils'
-import { isBetween, isIncoming, isOutgoing } from '../../utils/relations'
+import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 
-export function sortNodes(_edges: ComputedEdge[]) {
+import { Graph, alg } from '@dagrejs/graphlib'
 
-  const cache = new WeakMap<ComputedNode, {
-    in: number,
-    out: number
-  }>()
+export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
 
-  function edgesCount(node: ComputedNode) {
-    let result = cache.get(node)
-    if (result) {
-      return result
+  const g = new Graph({
+    compound: true,
+    directed: true,
+    multigraph: false
+  })
+
+  for (const nd of _nodes.values()) {
+    g.setNode(nd.id)
+    // console.log(`add ${nd.id}`)
+    if (nd.parent) {
+      g.setEdge(nd.parent, nd.id)
+      // console.log(`${nd.parent} -> ${nd.id}`)
     }
-    result = {
-      in: _edges.filter(node.parent ? both(isBetween(node.parent), isIncoming(node.id)) : isIncoming(node.id)).length,
-      out: _edges.filter(node.parent ? both(isBetween(node.parent), isOutgoing(node.id)) : isOutgoing(node.id)).length
-    }
-    cache.set(node, result)
-    return result
   }
 
-  return (a: ComputedNode, b: ComputedNode) => {
-    if (a.parent === b.parent) {
-      const aedges = edgesCount(a)
-      const bedges = edgesCount(b)
-
-      const aWeight = aedges.in - aedges.out
-      const bWeight = bedges.in - bedges.out
-      if (aWeight !== bWeight) {
-        return aWeight - bWeight
+  for (const edge of edges) {
+    const source = _nodes.get(edge.source)
+    let target = _nodes.get(edge.target)
+    while (source && target) {
+      if (!g.hasEdge(source.id, target.id)) {
+        g.setEdge(source.id, target.id)
+        // console.log(`${source.id} -> ${target.id}`)
+        if (!alg.isAcyclic(g)) {
+          g.removeEdge(source.id, target.id)
+          // console.log(`remove ${source.id} -> ${target.id}`)
+        }
       }
-      const compareByChildren = a.children.length - b.children.length
-      if (compareByChildren !== 0) {
-        return compareByChildren * -1
-      }
-
-      return compareFqnHierarchically(a.id, b.id)
-    }
-    if (a.parent && !b.parent) {
-      return 1
-    }
-    if (!a.parent && b.parent) {
-      return -1
-    }
-    if (a.parent && b.parent) {
-      const compareParents = compareFqnHierarchically(a.parent, b.parent)
-      if (compareParents !== 0) {
-        return compareParents
+      if (target.parent && target.parent !== edge.parent) {
+        target = _nodes.get(target.parent)
+      } else {
+        target = undefined
       }
     }
-    return compareFqnHierarchically(a.id, b.id)
   }
+
+  const sorted = alg.topsort(g) as Fqn[]
+  const nodes = sorted.map(id => _nodes.get(id)!)
+
+  for (const node of nodes) {
+    node.children = nodes.flatMap(n => n.parent === node.id ? n.id : [])
+  }
+
+  return nodes
+
 }

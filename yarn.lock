@@ -315,6 +315,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dagrejs/graphlib@npm:^2.1.12":
+  version: 2.1.12
+  resolution: "@dagrejs/graphlib@npm:2.1.12"
+  checksum: a94ac17505743dee1593b281b2b2320c3cf863771c19b0c402c6cd8b6c6d7ebc1439b47f74eca1d859af768627c6dc3cc5b1d1f5da56fd992d66916ea9eac6b7
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.17.15":
   version: 0.17.15
   resolution: "@esbuild/android-arm64@npm:0.17.15"
@@ -633,6 +640,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
+    "@dagrejs/graphlib": ^2.1.12
     rambdax: ^9.1.0
     tiny-invariant: ^1.3.1
     typescript: ^5.0.3
@@ -894,6 +902,13 @@ __metadata:
     mkdirp: ^1.0.4
     rimraf: ^3.0.2
   checksum: 52dc02259d98da517fae4cb3a0a3850227bdae4939dda1980b788a7670636ca2b4a01b58df03dd5f65c1e3cb70c50fa8ce5762b582b3f499ec30ee5ce1fd9380
+  languageName: node
+  linkType: hard
+
+"@polka/url@npm:^1.0.0-next.20":
+  version: 1.0.0-next.21
+  resolution: "@polka/url@npm:1.0.0-next.21"
+  checksum: c7654046d38984257dd639eab3dc770d1b0340916097b2fac03ce5d23506ada684e05574a69b255c32ea6a144a957c8cd84264159b545fca031c772289d88788
   languageName: node
   linkType: hard
 
@@ -1316,6 +1331,19 @@ __metadata:
   dependencies:
     tinyspy: ^1.0.2
   checksum: 7b1607b696275bf94a497e92d7d10c466b9b3d08726bbedb3735bdf57f003763a9516e328af22746829526ce573f87eb6119ab64ce7db95794b2d220aa53b607
+  languageName: node
+  linkType: hard
+
+"@vitest/ui@npm:^0.29.8":
+  version: 0.29.8
+  resolution: "@vitest/ui@npm:0.29.8"
+  dependencies:
+    fast-glob: ^3.2.12
+    flatted: ^3.2.7
+    pathe: ^1.1.0
+    picocolors: ^1.0.0
+    sirv: ^2.0.2
+  checksum: 0190c01a1a467b71a4e81563cd70370c651238f1b4e82c3ff5c6e8a6e6f35ffb6e66f987cd9c892df99ed1ec00ed20d804b2c07c24cdb996eb880c585d13dfcf
   languageName: node
   linkType: hard
 
@@ -2355,7 +2383,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:^3.1.0":
+"flatted@npm:^3.1.0, flatted@npm:^3.2.7":
   version: 3.2.7
   resolution: "flatted@npm:3.2.7"
   checksum: 427633049d55bdb80201c68f7eb1cbd533e03eac541f97d3aecab8c5526f12a20ccecaeede08b57503e772c769e7f8680b37e8d482d1e5f8d7e2194687f9ea35
@@ -3459,6 +3487,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mrmime@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "mrmime@npm:1.0.1"
+  checksum: cc979da44bbbffebaa8eaf7a45117e851f2d4cb46a3ada6ceb78130466a04c15a0de9a9ce1c8b8ba6f6e1b8618866b1352992bf1757d241c0ddca558b9f28a77
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.1.2":
   version: 2.1.2
   resolution: "ms@npm:2.1.2"
@@ -4110,6 +4145,7 @@ __metadata:
     "@types/node": ^18.15.6
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
+    "@vitest/ui": ^0.29.8
     eslint: ^8.37.0
     turbo: ^1.8.8
     typescript: ^5.0.3
@@ -4283,6 +4319,17 @@ __metadata:
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
   checksum: a2f098f247adc367dffc27845853e9959b9e88b01cb301658cfe4194352d8d2bb32e18467c786a7fe15f1d44b233ea35633d076d5e737870b7139949d1ab6318
+  languageName: node
+  linkType: hard
+
+"sirv@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "sirv@npm:2.0.2"
+  dependencies:
+    "@polka/url": ^1.0.0-next.20
+    mrmime: ^1.0.0
+    totalist: ^3.0.0
+  checksum: 6982f8ecee9392d246d7eeea8144e50334fe1b46a4fa942995a844ea88c2d518b17cce781bb09926c9a5692a7002a207d18dfd67af2aa538a15e733dc2042298
   languageName: node
   linkType: hard
 
@@ -4637,6 +4684,13 @@ __metadata:
   dependencies:
     is-number: ^7.0.0
   checksum: f76fa01b3d5be85db6a2a143e24df9f60dd047d151062d0ba3df62953f2f697b16fe5dad9b0ac6191c7efc7b1d9dcaa4b768174b7b29da89d4428e64bc0a20ed
+  languageName: node
+  linkType: hard
+
+"totalist@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "totalist@npm:3.0.1"
+  checksum: 5132d562cf88ff93fd710770a92f31dbe67cc19b5c6ccae2efc0da327f0954d211bbfd9456389655d726c624f284b4a23112f56d1da931ca7cfabbe1f45e778a
   languageName: node
   linkType: hard
 

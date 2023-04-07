@@ -18,13 +18,14 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "lint": "turbo run lint --continue",
-    "vitest:vscode": "vitest --config vitest.config.ts"
+    "vitest:ui": "vitest --ui --config vitest.config.ts"
   },
   "devDependencies": {
     "@types/eslint": "^8.37.0",
     "@types/node": "^18.15.6",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
+    "@vitest/ui": "^0.29.8",
     "eslint": "^8.37.0",
     "turbo": "^1.8.8",
     "typescript": "^5.0.3",

@@ -1,11 +1,12 @@
 import { anyPass, filter, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
+import type { Fqn } from '../types'
 import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
-import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
-import * as Expression from '../types/expression'
-import { compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn, Relations } from '../utils'
-import { EdgeBuilder } from './EdgeBuilder'
 import type { ComputedNode, ComputedView } from '../types/computed-view'
+import * as Expression from '../types/expression'
+import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
+import { Relations, compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn } from '../utils'
+import { EdgeBuilder } from './EdgeBuilder'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
 import { evaluateExpression } from './utils/evaluate-expression'
 import { sortNodes } from './utils/sortNodes'
@@ -15,18 +16,17 @@ function updateSetWith<T>(set: Set<T>, elements: T[], addToSet = true): void {
     addToSet ? set.add(e) : set.delete(e)
   }
 }
-function computeNodes(elements: Element[], index: ModelIndex) {
-  const ids = new Set(elements.map(e => e.id))
-  return elements.map(({ id, title, color, shape, description }): ComputedNode => {
+function transformToNodes(elementsIterator: Iterable<Element>, index: ModelIndex) {
+  return [...elementsIterator].sort(compareByFqnHierarchically).reduce((map, { id, title, color, shape, description }) => {
     let parent = parentFqn(id)
     while (parent) {
-      if (ids.has(parent)) {
+      if (map.has(parent)) {
         break
       }
       parent = parentFqn(parent)
     }
     const navigateTo = index.defaultViewOf(id)
-    return Object.assign(
+    map.set(id, Object.assign(
       {
         id,
         parent,
@@ -37,8 +37,12 @@ function computeNodes(elements: Element[], index: ModelIndex) {
       },
       description ? { description } : {},
       navigateTo ? { navigateTo } : {},
-    )
-  })
+    ))
+    if(parent) {
+      map.get(parent)?.children.push(id)
+    }
+    return map
+  }, new Map<Fqn, ComputedNode>())
 }
 
 function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
@@ -49,16 +53,16 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
       continue
     }
     for (const target of rule.targets) {
+      if (Expression.isWildcard(target)) {
+        predicates.push(() => true)
+        break
+      }
       if (Expression.isElementRef(target)) {
         const { element, isDescedants } = target
         predicates.push(isDescedants
           ? (n) => n.id.startsWith(element + '.')
           : (n) => n.id as string === element
         )
-        continue
-      }
-      if (Expression.isWildcard(target)) {
-        predicates.push(() => true)
         continue
       }
       failExpectedNever(target)
@@ -164,10 +168,11 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     }
   }
 
-  const nodeIds = new Set([...elements].map(n => n.id))
+  const nodesreg  = transformToNodes(elements, index)
+
   const edges = edgeBuilder.build().map(edge => {
     while (edge.parent) {
-      if (nodeIds.has(edge.parent)) {
+      if (nodesreg.has(edge.parent)) {
         break
       }
       edge.parent = parentFqn(edge.parent)
@@ -177,14 +182,8 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
 
   const nodes = applyViewRuleStyles(
     view.rules.filter(isViewRuleStyle),
-    computeNodes([...elements].sort(compareByFqnHierarchically), index)
-  ).sort(
-    sortNodes(edges)
+    sortNodes(nodesreg, edges)
   )
-
-  for (const n of nodes) {
-    n.children = nodes.flatMap(child => child.parent === n.id ? child.id : [])
-  }
 
   return {
     ...view,
