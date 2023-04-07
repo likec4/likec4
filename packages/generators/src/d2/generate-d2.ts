@@ -65,7 +65,7 @@ export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
         names.get(edge.target),
       )
       .append(out =>
-        edge.label && out.append(': ', edge.label.replaceAll('\n', ' '))
+        edge.label && out.append(': ', edge.label.replaceAll('\n', '\\n'))
       )
   }
 
