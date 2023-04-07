@@ -143,9 +143,9 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
       const [x, y] = ldraw.pt.map(pointToPx) as Point
       invariant(ldraw.width, 'edge label should have a width')
       const width = pointToPx(ldraw.width)
-      const align = textAlignment(ldraw.align)
+      const align = e.nojustify === 'true' ? 'left' : textAlignment(ldraw.align)
       edge.labelBox = {
-        x: align === 'left' ? x + 4 : x,
+        x: x - Math.ceil(width / 2),
         y,
         width,
         align,

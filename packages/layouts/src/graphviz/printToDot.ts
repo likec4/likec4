@@ -7,6 +7,7 @@ import { splitToLines } from '../utils'
 import type { DotSource, GvNodeName } from './graphviz-types'
 import { estimateNodeSize, pxToInch } from './graphviz-utils'
 import { sizes } from './sizes'
+import invariant from 'tiny-invariant'
 
 const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toLocaleUpperCase() + value.slice(1)
@@ -24,9 +25,7 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
 
   const processNode = (node: ComputedNode, parent: GraphBaseModel) => {
     const name = gvName(node)
-    const children = nodes
-      .filter(n => n.parent === node.id)
-    if (children.length > 0) {
+    if (node.children.length > 0) {
       const subgraph = parent.createSubgraph(name, {
         [_.id]: node.id,
         [_.labeljust]: 'l',
@@ -36,7 +35,9 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
       gvSubgraphs.set(node.id, subgraph)
       // // @ts-expect-error ts-graphviz does not support this attribute
       // subgraph.set('cluster', true)
-      for (const child of children) {
+      for (const childId of node.children) {
+        const child = nodes.find(n => n.id === childId)
+        invariant(child, `Child node ${childId} if ${node.id} not found`)
         processNode(child, subgraph)
       }
       if (subgraph.nodes.length > 1) {
@@ -45,10 +46,6 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
           n.attributes.set(_.group, group)
         })
       }
-      // if (subgraph.subgraphs.length === 0) {
-      // subgraph.set(_.rankdir, 'same')
-      // }
-      return subgraph
     } else {
       const {
         width,
@@ -68,8 +65,6 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
         [_.label]: node.title.substring(0, 20),
       })
       gvNodes.set(node.id, gNode)
-
-      return gNode
     }
   }
 
@@ -118,11 +113,6 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
       const source = gvNodes.get(edge.source)
       const target = gvNodes.get(edge.target)
       if (source && target) {
-        // g.setEdge({
-        //   v: edge.source,
-        //   w: edge.target,
-        //   name: edge.id,
-        // })
         const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
         const e = container.edge([source, target], {
           [_.id]: edge.id,
@@ -136,9 +126,9 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
         if (edge.label) {
           const labels = splitToLines(edge.label, 30)
           if (labels.length > 0) {
-            let label = labels.join('\\l')
+            let label = labels.join('\\' + 'l')
             if (labels.length > 1) {
-              label += '\\l'
+              label += '\\' + 'l'
               e.attributes.set(_.nojustify, true)
             }
             e.attributes.set(_.label, label)
@@ -147,31 +137,6 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
       }
     }
   }
-
-  // if (G.nodes.length > 1) {
-  //   for (const gvnode of [...G.nodes]) {
-  //     gvnode.attributes.set(_.group, 'root')
-  //     const computedNode = nodes.find(n => n.id === gvnode.attributes.get(_.id))
-  //     invariant(computedNode, 'node not found')
-  //     // if (!computedNode) {
-  //     //   continue
-  //     // }
-
-  //     const { incoming, outgoing } = computedNode
-  //     if (outgoing.length > 0 && incoming.length == 0) {
-  //       G.removeNode(gvnode)
-  //       G.createSubgraph({
-  //         [_.rank]: 'source',
-  //       }).addNode(gvnode)
-  //     }
-  //     if (incoming.length > 0 && outgoing.length == 0) {
-  //       G.removeNode(gvnode)
-  //       G.createSubgraph({
-  //         [_.rank]: 'sink',
-  //       }).addNode(gvnode)
-  //     }
-  //   }
-  // }
 
   return toDot(G) as DotSource
 }

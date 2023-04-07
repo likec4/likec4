@@ -75,19 +75,19 @@ exports[`printToDot: computedCloud3levels 1`] = `
     fontsize = 15;
     shape = "rectangle";
   ];
-  "nd_customer" [
-    id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
-  ];
   "nd_support" [
     id = "support";
     width = 2.6041666666666665;
     height = 1.4583333333333333;
     fixedsize = true;
     label = "support";
+  ];
+  "nd_customer" [
+    id = "customer";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "customer";
   ];
   "nd_amazon" [
     id = "amazon";
@@ -101,20 +101,20 @@ exports[`printToDot: computedCloud3levels 1`] = `
     labeljust = "l";
     label = "cloud";
     margin = 30;
-    "nd_cloud.frontend.adminPanel" [
-      id = "cloud.frontend.adminPanel";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "adminPanel";
-      group = "Cloud";
-    ];
     "nd_cloud.frontend.dashboard" [
       id = "cloud.frontend.dashboard";
       width = 2.6041666666666665;
       height = 1.4583333333333333;
       fixedsize = true;
       label = "dashboard";
+      group = "Cloud";
+    ];
+    "nd_cloud.frontend.adminPanel" [
+      id = "cloud.frontend.adminPanel";
+      width = 2.6041666666666665;
+      height = 1.4583333333333333;
+      fixedsize = true;
+      label = "adminPanel";
       group = "Cloud";
     ];
     subgraph "cluster_cloud.backend" {
@@ -189,19 +189,19 @@ exports[`printToDot: computedCloudView 1`] = `
     fontsize = 15;
     shape = "rectangle";
   ];
-  "nd_customer" [
-    id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
-  ];
   "nd_support" [
     id = "support";
     width = 2.6041666666666665;
     height = 1.4583333333333333;
     fixedsize = true;
     label = "support";
+  ];
+  "nd_customer" [
+    id = "customer";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "customer";
   ];
   "nd_amazon" [
     id = "amazon";
@@ -272,13 +272,6 @@ exports[`printToDot: computedIndexView 1`] = `
     fontsize = 15;
     shape = "rectangle";
   ];
-  "nd_customer" [
-    id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
-  ];
   "nd_support" [
     id = "support";
     width = 2.6041666666666665;
@@ -286,12 +279,12 @@ exports[`printToDot: computedIndexView 1`] = `
     fixedsize = true;
     label = "support";
   ];
-  "nd_amazon" [
-    id = "amazon";
+  "nd_customer" [
+    id = "customer";
     width = 2.6041666666666665;
     height = 1.4583333333333333;
     fixedsize = true;
-    label = "amazon";
+    label = "customer";
   ];
   "nd_cloud" [
     id = "cloud";
@@ -299,6 +292,13 @@ exports[`printToDot: computedIndexView 1`] = `
     height = 1.4583333333333333;
     fixedsize = true;
     label = "cloud";
+  ];
+  "nd_amazon" [
+    id = "amazon";
+    width = 2.6041666666666665;
+    height = 1.4583333333333333;
+    fixedsize = true;
+    label = "amazon";
   ];
   "nd_support" -> "nd_cloud" [
     id = "support:cloud";

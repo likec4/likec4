@@ -139,6 +139,7 @@ export namespace GraphvizJson {
     id: EdgeId
     label: string
     lp: string
+    nojustify?: 'true' | 'false'
     pos?: string
   }
 }
