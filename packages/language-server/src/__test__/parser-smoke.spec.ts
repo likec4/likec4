@@ -1,7 +1,17 @@
 import { toPairs } from 'rambdax'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { createTestServices } from '../test'
 import * as testfiles from './parser-smoke'
+
+vi.mock('../logger', () => ({
+  logger: {
+    log: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn()
+  }
+}))
 
 test.concurrent.each(toPairs(testfiles))('parser: %s', async (name, document) => {
   const { validate } = createTestServices()

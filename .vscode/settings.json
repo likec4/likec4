@@ -9,7 +9,7 @@
   "search.exclude": {
     "node_modules/**": true,
     "packages/*/dist/**": true,
-    "packages/*/node_modules/**": true,
+    "packages/*/node_modules/**": true
   },
   "files.exclude": {
     "packages/*/.turbo": true,
@@ -20,5 +20,6 @@
     "/packages/language-server/src/model",
     "/packages/language-server/src/__test__/parser-smoke",
     "/packages/language-server/src/lsp"
-  ]
+  ],
+  "vitest.commandLine": "yarn vitest:vscode --"
 }

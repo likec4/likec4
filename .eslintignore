@@ -1,10 +1,10 @@
 .eslintrc.cjs
 .yarn/
-node_modules/
-packages/*/node_modules/
-packages/*/dist/
-packages/*/.turbo/
+.vscode
+node_modules
+dist
+.turbo
 **/*.d.ts
-**/esbuild.cjs
-**/vite.config.ts
-**/vitest.config.ts
+esbuild.cjs
+vite.config.ts
+vitest.config.ts

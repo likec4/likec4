@@ -17,7 +17,8 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "lint": "turbo run lint --continue"
+    "lint": "turbo run lint --continue",
+    "vitest:vscode": "vitest --config vitest.config.ts"
   },
   "devDependencies": {
     "@types/eslint": "^8.37.0",
