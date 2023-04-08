@@ -34,7 +34,6 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
     "@react-spring/konva": "^9.7.2",
-    "@use-gesture/react": "^10.2.26",
     "khroma": "^2.0.0",
     "konva": "^8.4.3",
     "rambdax": "^9.1.0",
