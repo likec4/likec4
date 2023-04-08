@@ -1,6 +1,6 @@
 {
   "name": "@likec4/cli",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "bin": {
     "likec4": "dist/likec4.js"
   },

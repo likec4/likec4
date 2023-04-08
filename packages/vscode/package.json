@@ -3,7 +3,11 @@
   "publisher": "likec4",
   "displayName": "Like C4",
   "description": "Please enter a brief description here",
-  "version": "0.1.0",
+  "version": "0.2.2",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "scripts": {
     "build:vscode": "run -T build --filter='vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
@@ -20,7 +24,7 @@
   "files": [
     "contrib",
     "dist",
-    "language-configuration.json"
+    "./language-configuration.json"
   ],
   "engines": {
     "vscode": "^1.74.0",

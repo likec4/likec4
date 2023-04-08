@@ -1,7 +1,7 @@
 {
   "name": "@likec4/example-bigbank",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.2",
   "scripts": {
     "generate": "likec4 generate-react -o src/likec4.tsx",
     "start": "run generate && vite"
