@@ -23,7 +23,7 @@ exports[`dotLayout: computedAmazonView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 116,
-        "x": 163,
+        "x": 221,
         "y": 259,
       },
       "parent": null,
@@ -238,7 +238,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       "labelBox": {
         "align": "center",
         "width": 88,
-        "x": 621,
+        "x": 665,
         "y": 486,
       },
       "parent": "cloud",
@@ -286,7 +286,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       "labelBox": {
         "align": "left",
         "width": 176,
-        "x": 335,
+        "x": 423,
         "y": 467,
       },
       "parent": "cloud",
@@ -346,7 +346,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       "labelBox": {
         "align": "center",
         "width": 116,
-        "x": 203,
+        "x": 261,
         "y": 809,
       },
       "parent": null,
@@ -394,7 +394,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       "labelBox": {
         "align": "center",
         "width": 66,
-        "x": 296,
+        "x": 329,
         "y": 191,
       },
       "parent": null,
@@ -442,7 +442,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       "labelBox": {
         "align": "center",
         "width": 122,
-        "x": 627,
+        "x": 688,
         "y": 191,
       },
       "parent": null,
@@ -764,7 +764,7 @@ exports[`dotLayout: computedCloudView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 116,
-        "x": 163,
+        "x": 221,
         "y": 455,
       },
       "parent": null,
@@ -812,7 +812,7 @@ exports[`dotLayout: computedCloudView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 66,
-        "x": 487,
+        "x": 520,
         "y": 191,
       },
       "parent": null,
@@ -860,7 +860,7 @@ exports[`dotLayout: computedCloudView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 122,
-        "x": 671,
+        "x": 732,
         "y": 191,
       },
       "parent": null,
@@ -1057,7 +1057,7 @@ exports[`dotLayout: computedIndexView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 66,
-        "x": 214,
+        "x": 247,
         "y": 191,
       },
       "parent": null,
@@ -1105,7 +1105,7 @@ exports[`dotLayout: computedIndexView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 122,
-        "x": 378,
+        "x": 439,
         "y": 191,
       },
       "parent": null,
@@ -1153,7 +1153,7 @@ exports[`dotLayout: computedIndexView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 116,
-        "x": 291,
+        "x": 349,
         "y": 422,
       },
       "parent": null,

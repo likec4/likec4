@@ -1,7 +1,6 @@
 import type { DiagramEdge } from '@likec4/core/types'
-import { isEqualReactSimple as deepEqual } from '@react-hookz/deep-equal/esm'
-import { animated, useSpring } from '@react-spring/konva'
-import { memo, useCallback, useMemo } from 'react'
+import { animated, useSpring, type SpringValues } from '@react-spring/konva'
+import { useCallback, useMemo } from 'react'
 
 import type { DiagramTheme } from '../types'
 import type { OnClickEvent } from './types'
@@ -9,12 +8,17 @@ import type { OnClickEvent } from './types'
 export interface EdgeShapeProps {
   edge: DiagramEdge
   theme: DiagramTheme
+  style?: SpringValues<{
+    opacity?: number
+  }>
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
-export const EdgeShape = memo(({
+
+export const EdgeShape = ({
   edge,
   theme,
+  style,
   onEdgeClick
 }: EdgeShapeProps) => {
   const {
@@ -23,13 +27,6 @@ export const EdgeShape = memo(({
     label,
     labelBox
   } = edge
-
-  const [opacity, opacityApi] = useSpring(
-    () => ({
-      opacity: 0.8
-    }),
-    []
-  )
 
   const onClickListener = useMemo(() => {
     if (!onEdgeClick) return {}
@@ -41,17 +38,17 @@ export const EdgeShape = memo(({
     }
   }, [edge, onEdgeClick ?? null])
 
+  const opacityApi = style?.opacity ?? null
+
   const listeners = {
     ...onClickListener,
-    onMouseEnter: useCallback(() => opacityApi.start({ opacity: 1 }), [opacityApi]),
-    onMouseLeave: useCallback(() => opacityApi.start({ opacity: 0.8 }), [opacityApi]),
+    onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
+    onMouseLeave: useCallback(() => opacityApi?.start(0.8), [opacityApi]),
   }
-
   return <>
-    {/* eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment */}
     {/* @ts-ignore */}
     <animated.Line
-      {...opacity}
+      {...style}
       {...listeners}
       points={points.flat()}
       bezier={points.length > 2}
@@ -61,7 +58,7 @@ export const EdgeShape = memo(({
     />
     {headArrow &&
       <animated.Line
-        {...opacity}
+        {...style}
         {...listeners}
         points={headArrow.flat()}
         closed={true}
@@ -72,16 +69,18 @@ export const EdgeShape = memo(({
     }
     {label && labelBox &&
       <animated.Text
-        {...opacity}
+        {...style}
         {...listeners}
         {...labelBox}
+        offsetX={labelBox.align === 'center' ? labelBox.width / 2 : 0}
         text={label}
         padding={0}
         fill={theme.relation.labelColor}
         fontFamily={theme.font}
         fontSize={12}
         lineHeight={1.12}
+        verticalAlign="middle"
       />
     }
   </>
-}, deepEqual)
+}

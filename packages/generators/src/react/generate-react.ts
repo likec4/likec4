@@ -74,16 +74,14 @@ export function generateReact(
         components,
         ({ id, name }) =>
           expandToNode`
-            LikeC4View['${name}'] = (props: LikeC4ViewProps) => <LikeC4View viewId={'${id}'} {...props}/>
+            LikeC4View['${name}'] = (props: LikeC4ViewProps) => <EmbeddedDiagram diagram={LikeC4ViewData['${id}']} {...props}/>
           `,
         {
           separator: ',',
           appendNewLineIfNotEmpty: true
         }
       ),
-      NL,
-      'export default LikeC4View',
-      NL, NL
+      NL
     )
 
   return toString(out)

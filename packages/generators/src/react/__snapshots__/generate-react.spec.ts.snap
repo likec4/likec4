@@ -25,10 +25,8 @@ export function LikeC4View({viewId, ...rest}: LikeC4ViewProps & { viewId: ViewId
   return <EmbeddedDiagram diagram={LikeC4ViewData[viewId]} {...rest}/>
 }
 
-LikeC4View['FakeView'] = (props: LikeC4ViewProps) => <LikeC4View viewId={'fakeView'} {...props}/>,
-LikeC4View['View74f5364fa4b'] = (props: LikeC4ViewProps) => <LikeC4View viewId={'74f5364fa4b'} {...props}/>
-
-export default LikeC4View
+LikeC4View['FakeView'] = (props: LikeC4ViewProps) => <EmbeddedDiagram diagram={LikeC4ViewData['fakeView']} {...props}/>,
+LikeC4View['View74f5364fa4b'] = (props: LikeC4ViewProps) => <EmbeddedDiagram diagram={LikeC4ViewData['74f5364fa4b']} {...props}/>
 
 "
 `;

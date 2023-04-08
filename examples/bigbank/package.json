@@ -4,9 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "generate": "likec4 generate-react -o src/likec4.tsx",
-    "vite:dev": "run generate && vite",
-    "vite:build": "run generate && vite build",
-    "preview": "run generate && vite preview"
+    "start": "run generate && vite"
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",

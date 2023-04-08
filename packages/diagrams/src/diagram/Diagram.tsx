@@ -1,13 +1,16 @@
 import type { DiagramEdge, DiagramNode, DiagramView, ViewID } from '@likec4/core/types'
-import { useSyncedRef } from '@react-hookz/web/esm'
-import invariant from 'tiny-invariant'
-import Konva from 'konva'
+import { useDeepCompareEffect, useDeepCompareMemo } from '@react-hookz/web/esm'
+import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
+import type Konva from 'konva'
 import { clamp, partition } from 'rambdax'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Layer, Stage } from 'react-konva'
+import { Layer, Stage, type KonvaNodeComponent, type StageProps } from 'react-konva'
+import invariant from 'tiny-invariant'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+
+const AStage: AnimatedComponent<KonvaNodeComponent<Konva.Stage, StageProps>> = animated(Stage)
 
 interface IRect {
   x: number
@@ -33,6 +36,7 @@ export interface DiagramProps {
 }
 
 const isCompound = (node: DiagramNode) => node.children.length > 0
+const isNotCompound = (node: DiagramNode) => node.children.length == 0
 const filterCompounds = partition(isCompound)
 
 export function Diagram({
@@ -40,40 +44,26 @@ export function Diagram({
   className,
   zoomBy = 1.06,
   interactive = true,
-  animate = true,
-  pannable = interactive,
-  zoomable = interactive,
-  width = diagram.width,
-  height = diagram.height,
   padding = 0,
   onNavigate,
   onNodeClick,
-  onEdgeClick
+  onEdgeClick,
+  ...props
 }: DiagramProps): JSX.Element {
+  const {
+    width = diagram.width,
+    height = diagram.height,
+    animate = interactive,
+    pannable = interactive,
+    zoomable = interactive,
+  } = props
+
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
   const lastRenderViewIdRef = useRef<ViewID | null>(null)
 
-  const diagramRef = useRef(diagram)
-  diagramRef.current = diagram
-
-  const paddings = Array.isArray(padding) ? padding : [padding, padding, padding, padding] as const
-  const paddingRef = useSyncedRef(paddings)
-
   const stageRef = useRef<Konva.Stage>(null)
-  const stageTweenRef = useRef<Konva.Tween | null>(null)
-
-  const stopTween = useCallback(() => {
-    if (stageTweenRef.current) {
-      stageTweenRef.current.pause().destroy()
-      stageTweenRef.current = null
-    }
-  }, [])
-
-  const handleDragMove = useCallback((_e: Konva.KonvaEventObject<DragEvent>) => {
-    stopTween()
-  }, [])
 
   const handleWheelZoom = useCallback((e: Konva.KonvaEventObject<WheelEvent>) => {
     const stage = stageRef.current
@@ -87,7 +77,7 @@ export function Diagram({
     e.evt.preventDefault()
     e.cancelBubble = true
 
-    stopTween()
+    // stopTween()
 
     const oldScale = stage.scaleX()
 
@@ -118,14 +108,10 @@ export function Diagram({
     stage.position(newPos)
   }, [zoomBy])
 
-  const centerOnRect = useCallback((rect: IRect, animate = false) => {
-    const stage = stageRef.current
-    invariant(stage, 'stageRef.current is null')
-    const container = stage.container()
-
-    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = paddingRef.current
-
-    stopTween()
+  const centerOnRect = (rect: IRect) => {
+    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding) ? padding : [padding, padding, padding, padding] as const
+    // const stage = stageRef.current
+    // const container = stage?.container()
     const
       // Add padding to make a larger rect - this is what we want to fill
       centerTo = {
@@ -137,10 +123,10 @@ export function Diagram({
       // Get the space we can see in the web page = size of div containing stage
       // or stage size, whichever is the smaller
       viewRect = {
-        width: Math.min(container.clientWidth, stage.width()),
-        // width: container.clientWidth,
-        height: Math.min(container.clientHeight, stage.height())
-        // height: container.clientHeight
+        width,
+        height,
+        // width: Math.min(container?.clientWidth ?? width, stage?.width() ?? width),
+        // height: Math.min(container?.clientHeight ?? height, stage?.width() ?? height),
       },
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
@@ -150,7 +136,7 @@ export function Diagram({
       ),
       scale = clamp(
         0.2,
-        Math.max(1.1, stage.scaleX()),
+        1.05,
         viewScale
       ),
       // calculate the final adjustments needed to make
@@ -164,70 +150,69 @@ export function Diagram({
         x: Math.ceil(centeringAjustment.x + (-centerTo.x * scale)),
         y: Math.ceil(centeringAjustment.y + (-centerTo.y * scale))
       }
-
-    if (animate) {
-      stageTweenRef.current = new Konva.Tween({
-        node: stage,
-        ...finalPosition,
-        scaleX: scale,
-        scaleY: scale,
-        duration: 0.75,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        easing: Konva.Easings.StrongEaseOut,
-      }).play()
-    } else {
-      stage.setAttrs({
-        ...finalPosition,
-        scaleX: scale,
-        scaleY: scale,
-      })
+    return {
+      ...finalPosition,
+      scaleX: scale,
+      scaleY: scale,
     }
-  }, [])
+  }
 
-  const centerAndFit = useCallback((animate = false) => {
-    const nodes = diagramRef.current.nodes
-    if (nodes.length === 0) return
-    const boundingRect = [Infinity, Infinity, -Infinity, -Infinity] as [
-      minX: number,
-      minY: number,
-      maxX: number,
-      maxY: number
-    ]
-    for (const node of nodes) {
-      const { position: [x, y], size: { width, height } } = node
-      boundingRect[0] = Math.min(boundingRect[0], x)
-      boundingRect[1] = Math.min(boundingRect[1], y)
-      boundingRect[2] = Math.max(boundingRect[2], x + width)
-      boundingRect[3] = Math.max(boundingRect[3], y + height)
-    }
-    centerOnRect({
-      x: boundingRect[0],
-      y: boundingRect[1],
-      width: boundingRect[2] - boundingRect[0],
-      height: boundingRect[3] - boundingRect[1]
-    }, animate)
-  }, [])
+  // const diagramNodes = diagram.nodes
+  // const diagramNodesBRect = useDeepCompareMemo(() => {
+  //   const boundingRect = [Infinity, Infinity, -Infinity, -Infinity] as [
+  //     minX: number,
+  //     minY: number,
+  //     maxX: number,
+  //     maxY: number
+  //   ]
+  //   for (const node of diagramNodes) {
+  //     const { position: [x, y], size: { width, height } } = node
+  //     boundingRect[0] = Math.min(boundingRect[0], x)
+  //     boundingRect[1] = Math.min(boundingRect[1], y)
+  //     boundingRect[2] = Math.max(boundingRect[2], x + width)
+  //     boundingRect[3] = Math.max(boundingRect[3], y + height)
+  //   }
+  //   return {
+  //     x: boundingRect[0],
+  //     y: boundingRect[1],
+  //     width: boundingRect[2] - boundingRect[0],
+  //     height: boundingRect[3] - boundingRect[1]
+  //   }
+  // }, [diagramNodes])
 
-  const [
-    compounds,
-    nodes
-  ] = filterCompounds(diagram.nodes)
+  const diagramNodesBRect = {
+    x: 0,
+    y: 0,
+    width: diagram.width,
+    height: diagram.height,
+  }
 
-  useEffect(() => {
-    return () => {
-      stopTween()
-    }
-  }, [])
+  const [stageProps, stageSpringApi] = useSpring(() => ({
+    from: {
+      ...centerOnRect(diagramNodesBRect),
+      width,
+      height,
+    },
+    to: {
+      width,
+      height,
+    },
+  }), [width, height])
 
-  useEffect(() => {
+
+  useDeepCompareEffect(() => {
     const lastRenderViewId = lastRenderViewIdRef.current
-    if (stageRef.current) {
-      centerAndFit(animate && lastRenderViewId !== null && lastRenderViewId !== id)
-      lastRenderViewIdRef.current = id
+    if (animate && lastRenderViewId !== null && lastRenderViewId !== id) {
+      stageSpringApi.start(centerOnRect(diagramNodesBRect))
+    } else {
+      stageSpringApi.set(centerOnRect(diagramNodesBRect))
     }
-  }, [id, width, height, ...paddings])
+    lastRenderViewIdRef.current = id
+  }, [id, width, height, diagramNodesBRect])
 
   const _animate = animate && lastRenderViewIdRef.current !== null
+  // const _animate = animate && lastRenderViewIdRef.current !== null
+  // const _animate = animate
 
   const onNavigateImpl = useMemo(() => {
     if (!onNavigate) return null
@@ -237,7 +222,7 @@ export function Diagram({
         onNavigate(node.navigateTo)
       }
     }
-  }, [onNavigate])
+  }, [onNavigate ?? null])
 
   const pickOnNodeClick = (node: DiagramNode) => {
     if (onNavigateImpl) {
@@ -250,44 +235,116 @@ export function Diagram({
     }
   }
 
-  return <Stage
+  const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
+    from: {
+      opacity: 0.4,
+      scaleX: 0.7,
+      scaleY: 0.7,
+    },
+    enter: {
+      opacity: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
+    leave: {
+      opacity: 0.1,
+      scaleX: 0.1,
+      scaleY: 0.1,
+    },
+    immediate: !_animate,
+    config(item, index, state) {
+      return {
+        duration: state === 'leave' ? 120 : 200,
+      }
+    },
+    keys: node => node.id,
+  })
+
+  const edgeTransitions = useTransition(diagram.edges, {
+    from: {
+      opacity: 0.1,
+    },
+    enter: {
+      opacity: 0.8,
+    },
+    leave: {
+      opacity: 0,
+    },
+    immediate: !_animate,
+    config: {
+      duration: 200,
+    },
+    keys: edge => edge.id,
+  })
+
+  const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
+    from: {
+      opacity: 0.5,
+      scaleX: 0.65,
+      scaleY: 0.65,
+    },
+    enter: {
+      opacity: 1,
+      scaleX: 1,
+      scaleY: 1,
+    },
+    leave: {
+      opacity: 0.05,
+      scaleX: 0.1,
+      scaleY: 0.1,
+    },
+    immediate: !_animate,
+    config(item, index, state) {
+      return {
+        duration: state === 'leave' ? 120 : 250,
+      }
+    },
+    keys: node => node.id,
+  })
+
+  // @ts-ignore
+  return <AStage
+    // width={width}
+    // height={height}
     ref={stageRef}
-    width={Math.max(width, 10)}
-    height={Math.max(height, 10)}
-    draggable={pannable}
     className={className}
-    onDragMove={pannable ? handleDragMove : undefined}
-    onWheel={zoomable ? handleWheelZoom : undefined}
+    {...stageProps}
+  // onDragMove={pannable ? handleDragMove : undefined}
+  // onWheel={zoomable ? handleWheelZoom : undefined}
   >
     <Layer>
-      {compounds.map(node =>
+      {compoundTransitions((style, node) =>
         <CompoundShape
           key={node.id}
           animate={_animate}
           node={node}
           theme={theme}
+          style={style}
           onNodeClick={pickOnNodeClick(node)}
         />)}
     </Layer>
     <Layer>
-      {diagram.edges.map(edge =>
+      {edgeTransitions((style, edge) => (
         <EdgeShape
           key={edge.id}
           edge={edge}
           theme={theme}
+          style={style}
           onEdgeClick={onEdgeClick}
         />
-      )}
+      ))}
     </Layer>
     <Layer>
-      {nodes.map(node =>
+      {nodeTransitions((style, node) =>
         <RectangleShape
           key={node.id}
           animate={_animate}
           node={node}
           theme={theme}
           onNodeClick={pickOnNodeClick(node)}
-        />)}
+          style={style}
+        />
+      )}
     </Layer>
-  </Stage>
+  </AStage>
 }

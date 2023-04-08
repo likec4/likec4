@@ -1,93 +1,60 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { Text } from 'react-konva'
-import type { DiagramTheme } from '../types'
-import { memo, useEffect, useMemo } from 'react'
-import { animated, useSpring } from '@react-spring/konva'
-import type { OnClickEvent, OnMouseEvent } from './types'
-import { isEqualReactSimple as deepEqual } from '@react-hookz/deep-equal/esm'
 import { useFirstMountState } from '@react-hookz/web/esm'
+import { animated, useSpring, type SpringValues } from '@react-spring/konva'
+import { useMemo } from 'react'
+
+import type { DiagramTheme } from '../types'
+import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
   animate?: boolean,
   node: DiagramNode
   theme: DiagramTheme
+  style?: SpringValues<{
+    opacity?: number
+    scaleX?: number
+    scaleY?: number
+  }>
   onNodeClick?: ((node: DiagramNode) => void) | undefined
 }
 
-export const CompoundShape = memo(({
+export const CompoundShape = ({
   animate = true,
   node,
   theme,
+  style,
   onNodeClick
 }: CompoundProps) => {
   const { id, size: { width, height }, position: [x, y], color } = node
+  const offsetX = Math.round(width / 2)
+  const offsetY = Math.round(height / 2)
   const {
     hiContrast,
     fill,
     shadow: shadowColor
   } = theme.colors[color]
 
-  const isFirstRender = useFirstMountState() && animate
+  const isFirstRender = useFirstMountState()
 
-  const [groupProps, groupPropsApi] = useSpring(
-    () => {
-      const offsetX = Math.round(width / 2)
-      const offsetY = Math.round(height / 2)
-      return {
-        x: x + offsetX,
-        y: y + offsetY,
-        offsetX,
-        offsetY,
-        width,
-        height,
-        scaleX: isFirstRender ? 0.85 : 1,
-        scaleY: isFirstRender ? 0.85 : 1,
-      }
-    },
-    [x, y, width, height, isFirstRender]
-  )
-
-  // On Enter
-  useEffect(() => {
-    if (animate) {
-      groupPropsApi.start({
-        delay: 10,
-        to: {
-          scaleX: 1,
-          scaleY: 1
-        },
-      })
-    }
-  }, [])
-
-  // useUpdateEffect(() => {
-  //   const offsetX = Math.round(width / 2)
-  //   const offsetY = Math.round(height / 2)
-  //   groupPropsApi.start({
-  //     to: {
-  //       x: x + offsetX,
-  //       y: y + offsetY,
-  //       offsetX,
-  //       offsetY,
-  //       width,
-  //       height,
-  //       scaleX: 1,
-  //       scaleY: 1
-  //     },
-  //   })
-  // }, [x, y, width, height])
-
-
-  const [rectProps] = useSpring(
-    () => ({
+  const [groupProps, _groupPropsApi] = useSpring({
+    delay: isFirstRender && animate ? 30 : 0,
+    to: {
+      x: x + offsetX,
+      y: y + offsetY,
+      offsetX,
+      offsetY,
       width,
       height,
-      fill,
-      shadowColor
-    }),
-    [width, height, fill, shadowColor]
-  )
+    }
+  }, [x, y, offsetX, offsetY])
+
+  const rectProps = useSpring({
+    width,
+    height,
+    fill,
+    shadowColor
+  })
 
   const listeners = useMemo(() => {
     if (!onNodeClick) return {}
@@ -109,6 +76,7 @@ export const CompoundShape = memo(({
   // @ts-ignore
   return <animated.Group
     {...groupProps}
+    {...style}
     id={'compound_' + id}
   >
     <animated.Rect
@@ -120,10 +88,10 @@ export const CompoundShape = memo(({
       shadowOffsetX={0}
       shadowOffsetY={8}
     />
-    <Text
+    <animated.Text
       x={0}
       y={0}
-      width={width}
+      width={rectProps.width}
       fill={hiContrast}
       fontSize={12}
       fontFamily={theme.font}
@@ -132,8 +100,8 @@ export const CompoundShape = memo(({
       align={'left'}
       text={node.title}
       padding={10}
-      opacity={0.65}
+      opacity={0.7}
       {...listeners}
     />
   </animated.Group>
-}, deepEqual)
+}

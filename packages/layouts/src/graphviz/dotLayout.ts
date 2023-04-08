@@ -65,7 +65,7 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 
 function textAlignment(align?: string) {
   if (!align)
-    return 'left'
+    return 'center'
 
   switch (align) {
     case 'l': return 'left'
@@ -145,7 +145,7 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
       const width = pointToPx(ldraw.width)
       const align = e.nojustify === 'true' ? 'left' : textAlignment(ldraw.align)
       edge.labelBox = {
-        x: x - Math.ceil(width / 2),
+        x,
         y,
         width,
         align,

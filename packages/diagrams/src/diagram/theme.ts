@@ -1,42 +1,78 @@
+import { complement, invert } from 'khroma'
 import type { DiagramTheme, ThemeColors } from './types'
-import { slate, slateDark, indigo, indigoDark } from '@radix-ui/colors'
-//@ts-expect-error colortranslator does not have types for esm
-import { ColorTranslator as Colors } from 'colortranslator';
 
-const shadow = Colors.toRGB(slateDark.slate2)
+const shadow = '#1A1D1E'
 
-// radix-ui / indigo
-const primary = {
-  // shadow: '#131620', // indigo1
-  shadow,
-  fill: Colors.toRGB(indigoDark.indigo9),
-  stroke: Colors.toRGB(indigoDark.indigo10),
-  hiContrast: Colors.toRGB(indigoDark.indigo12),
-  loContrast: Colors.toRGB(indigo.indigo7)
-} satisfies ThemeColors
+// {
+//   "font": "Helvetica",
+//   "relation": {
+//     "lineColor": "#889096",
+//     "labelColor": "#D7DBDF"
+//   },
+//   "colors": {
+//     "primary": {
+//       "shadow": "#1A1D1E",
+//       fill: "#3E63DD",
+//       "stroke": "#5373E7",
+//       "hiContrast": "#EEF1FD",
+//       "loContrast": "#AEC0F5"
+//     },
+//     "secondary": {
+//       "shadow": "#1A1D1E",
+//       fill: "#5373E7",
+//       "stroke": "#2F4EB2",
+//       "hiContrast": "#EEF1FD",
+//       "loContrast": "#C6D4F9"
+//     },
+//     "muted": {
+//       "shadow": "#1A1D1E",
+//       fill: "#787F85",
+//       "stroke": "#697177",
+//       "hiContrast": "#F8F9FA",
+//       "loContrast": "#C1C8CD"
+//     }
+//   }
+// }
+
+export function mkThemeColors(base: string): ThemeColors {
+  return {
+    shadow,
+    fill: base,
+    stroke: base,
+    hiContrast: complement(base),
+    loContrast: invert(base),
+  }
+}
 
 
 export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
   relation: {
-    lineColor: Colors.toRGB(slate.slate9),
-    labelColor: Colors.toRGB(slate.slate7),
+    lineColor: '#889096',
+    labelColor: '#D7DBDF',
   },
   colors: {
-    primary: primary,
-    secondary: { // radix-ui / violet
+    primary: {
       shadow,
-      fill: Colors.toRGB(indigoDark.indigo10),
-      stroke:  Colors.toRGB(indigoDark.indigo8),
-      hiContrast: Colors.toRGB(indigoDark.indigo12),
-      loContrast: Colors.toRGB(indigo.indigo6)
+      fill: '#3E63DD',
+      stroke: '#5373E7',
+      hiContrast: '#EEF1FD',
+      loContrast: '#AEC0F5'
+    },
+    // secondary: mkThemeColors('#5373E7'),
+    secondary: {
+      shadow,
+      fill: '#5373E7',
+      stroke: '#2F4EB2',
+      hiContrast: '#EEF1FD',
+      loContrast: '#C6D4F9'
     },
     muted: {
       shadow,
-      fill: Colors.toRGB(slateDark.slate10),
-      stroke: Colors.toRGB(slateDark.slate9),
-      hiContrast: Colors.toRGB(slate.slate2),
-      loContrast: Colors.toRGB(slate.slate8)
+      fill: '#787F85',
+      stroke: '#697177',
+      hiContrast: '#F8F9FA',
+      loContrast: '#C1C8CD'
     }
   }
 }

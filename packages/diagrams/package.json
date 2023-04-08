@@ -31,11 +31,10 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@radix-ui/colors": "^0.1.8",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
-    "@react-spring/konva": "^9.7.1",
-    "colortranslator": "^1.10.2",
+    "@react-spring/konva": "^9.7.2",
+    "khroma": "^2.0.0",
     "konva": "^8.4.3",
     "rambdax": "^9.1.0",
     "react-konva": "^18.2.5",
