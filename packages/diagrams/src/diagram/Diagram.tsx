@@ -1,5 +1,4 @@
 import type { DiagramEdge, DiagramNode, DiagramView, ViewID } from '@likec4/core/types'
-import { useDeepCompareEffect, useDeepCompareMemo } from '@react-hookz/web/esm'
 import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, partition } from 'rambdax'
@@ -9,7 +8,6 @@ import invariant from 'tiny-invariant'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
-import { useDrag, useWheel } from '@use-gesture/react'
 
 const AStage: AnimatedComponent<KonvaNodeComponent<Konva.Stage, StageProps>> = animated(Stage)
 

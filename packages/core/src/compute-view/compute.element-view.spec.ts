@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import type { Fqn, ViewID } from '../types'
-import { fakeModel } from '../__mocks__'
+import { fakeModel } from '../__test__'
 import { computeElementView } from './compute.element-view'
 
 test('index view', () => {

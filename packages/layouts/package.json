@@ -29,7 +29,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rm -rf dist"
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@hpcc-js/wasm": "^2.9.0",

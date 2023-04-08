@@ -47,7 +47,7 @@
     "build": "run-s 'build:langium' 'build:ts'",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest"
   },

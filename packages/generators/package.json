@@ -49,7 +49,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -27,7 +27,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist"
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

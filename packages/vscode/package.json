@@ -15,7 +15,7 @@
     "build": "yarn node esbuild.cjs && run copy",
     "dev": "yarn node esbuild.cjs --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf contrib dist"
+    "clean": "rimraf contrib dist"
   },
   "files": [
     "contrib",

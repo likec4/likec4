@@ -10,13 +10,17 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "scripts": {
     "compile": "tsc --noEmit",
     "release:build": "run build --minify --tree-shaking=true",
     "build": "esbuild src/cli.ts --bundle --platform=node --target=node16 --outfile=dist/likec4.js",
     "dev": "run build -- --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rm -rf dist .turbo"
+    "clean": "rimraf dist .turbo"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
