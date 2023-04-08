@@ -8,7 +8,7 @@ import type { OnClickEvent } from './types'
 export interface EdgeShapeProps {
   edge: DiagramEdge
   theme: DiagramTheme
-  style?: SpringValues<{
+  springs?: SpringValues<{
     opacity?: number
   }>
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
@@ -18,7 +18,7 @@ export interface EdgeShapeProps {
 export const EdgeShape = ({
   edge,
   theme,
-  style,
+  springs,
   onEdgeClick
 }: EdgeShapeProps) => {
   const {
@@ -38,7 +38,7 @@ export const EdgeShape = ({
     }
   }, [edge, onEdgeClick ?? null])
 
-  const opacityApi = style?.opacity ?? null
+  const opacityApi = springs?.opacity ?? null
 
   const listeners = {
     ...onClickListener,
@@ -48,7 +48,7 @@ export const EdgeShape = ({
   return <>
     {/* @ts-ignore */}
     <animated.Line
-      {...style}
+      {...springs}
       {...listeners}
       points={points.flat()}
       bezier={points.length > 2}
@@ -58,7 +58,7 @@ export const EdgeShape = ({
     />
     {headArrow &&
       <animated.Line
-        {...style}
+        {...springs}
         {...listeners}
         points={headArrow.flat()}
         closed={true}
@@ -69,7 +69,7 @@ export const EdgeShape = ({
     }
     {label && labelBox &&
       <animated.Text
-        {...style}
+        {...springs}
         {...listeners}
         {...labelBox}
         offsetX={labelBox.align === 'center' ? labelBox.width / 2 : 0}

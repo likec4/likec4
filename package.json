@@ -15,6 +15,7 @@
     "build": "turbo run build",
     "release-build": "turbo run clean release:build",
     "clean": "turbo run clean",
+    "clean:after:publish": "rimraf --glob '**/package*.tgz' --interactive",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",

@@ -11,7 +11,7 @@ interface CompoundProps {
   animate?: boolean,
   node: DiagramNode
   theme: DiagramTheme
-  style?: SpringValues<{
+  springs?: SpringValues<{
     opacity?: number
     scaleX?: number
     scaleY?: number
@@ -23,7 +23,7 @@ export const CompoundShape = ({
   animate = true,
   node,
   theme,
-  style,
+  springs,
   onNodeClick
 }: CompoundProps) => {
   const { id, size: { width, height }, position: [x, y], color } = node
@@ -80,7 +80,7 @@ export const CompoundShape = ({
   // @ts-ignore
   return <animated.Group
     {...groupProps}
-    {...style}
+    {...springs}
     id={'compound_' + id}
   >
     <animated.Rect

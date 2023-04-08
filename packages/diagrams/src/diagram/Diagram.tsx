@@ -355,36 +355,36 @@ export function Diagram({
     {...stageProps}
   >
     <Layer>
-      {compoundTransitions((style, node) =>
+      {compoundTransitions((springs, node) =>
         <CompoundShape
           key={node.id}
           animate={_animate}
           node={node}
           theme={theme}
-          style={style}
+          springs={springs}
           onNodeClick={pickOnNodeClick(node)}
         />)}
     </Layer>
     <Layer>
-      {edgeTransitions((style, edge) => (
+      {edgeTransitions((springs, edge) => (
         <EdgeShape
           key={edge.id}
           edge={edge}
           theme={theme}
-          style={style}
+          springs={springs}
           onEdgeClick={onEdgeClick}
         />
       ))}
     </Layer>
     <Layer>
-      {nodeTransitions((style, node) =>
+      {nodeTransitions((springs, node) =>
         <RectangleShape
           key={node.id}
           animate={_animate}
           node={node}
           theme={theme}
           onNodeClick={pickOnNodeClick(node)}
-          style={style}
+          springs={springs}
         />
       )}
     </Layer>

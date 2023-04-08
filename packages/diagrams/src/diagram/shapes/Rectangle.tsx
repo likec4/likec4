@@ -106,7 +106,7 @@ interface RectangleShapeProps {
   animate?: boolean
   node: DiagramNode
   theme: DiagramTheme
-  style?: SpringValues<{
+  springs?: SpringValues<{
     opacity?: number
     scaleX?: number
     scaleY?: number
@@ -119,7 +119,7 @@ export const RectangleShape = ({
   animate = true,
   node,
   theme,
-  style,
+  springs,
   onNodeClick
 }: RectangleShapeProps) => {
   const { id, size: { width, height }, position: [x, y], color } = node
@@ -130,7 +130,7 @@ export const RectangleShape = ({
     shadow: shadowColor
   } = theme.colors[color]
 
-  const styleRef = useSyncedRef(style ?? null)
+  const springsRef = useSyncedRef(springs ?? null)
 
   const isFirstRender = useFirstMountState()
 
@@ -162,16 +162,16 @@ export const RectangleShape = ({
     return {
       onMouseEnter: (e: OnMouseEvent) => {
         mousePointer(e)
-        if (animate && styleRef.current) {
-          styleRef.current.scaleX?.start(1.04, { config: { duration: 200 } })
-          styleRef.current.scaleY?.start(1.04, { config: { duration: 200 } })
+        if (animate && springsRef.current) {
+          springsRef.current.scaleX?.start(1.04, { config: { duration: 200 } })
+          springsRef.current.scaleY?.start(1.04, { config: { duration: 200 } })
         }
       },
       onMouseLeave: (e: OnMouseEvent) => {
         mouseDefault(e)
-        if (animate && styleRef.current) {
-          styleRef.current.scaleX?.start(1, { config: { duration: 120 } })
-          styleRef.current.scaleY?.start(1, { config: { duration: 120 } })
+        if (animate && springsRef.current) {
+          springsRef.current.scaleX?.start(1, { config: { duration: 120 } })
+          springsRef.current.scaleY?.start(1, { config: { duration: 120 } })
         }
       },
       onClick: (evt: OnClickEvent) => {
@@ -186,7 +186,7 @@ export const RectangleShape = ({
   return <animated.Group
     id={'node_' + id}
     {...listeners}
-    {...style}
+    {...springs}
     {...groupProps}
   >
     <animated.Rect
