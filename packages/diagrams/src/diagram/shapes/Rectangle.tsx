@@ -7,7 +7,7 @@ import { SpringValue, animated, useSpring, type SpringValues, Controller } from 
 import type { OnClickEvent, OnMouseEvent } from './types'
 import type { DiagramTheme } from '../types'
 import { mouseDefault, mousePointer } from './utils'
-import { useFirstMountState } from '@react-hookz/web/esm'
+import { useFirstMountState, useSyncedRef } from '@react-hookz/web/esm'
 
 
 const Sizes = {
@@ -130,13 +130,7 @@ export const RectangleShape = ({
     shadow: shadowColor
   } = theme.colors[color]
 
-  const onClick = useMemo(() => {
-    if (!onNodeClick) return undefined
-    return (evt: OnClickEvent) => {
-      evt.cancelBubble = true
-      onNodeClick(node)
-    }
-  }, [node, onNodeClick ?? null])
+  const styleRef = useSyncedRef(style ?? null)
 
   const isFirstRender = useFirstMountState()
 
@@ -149,38 +143,49 @@ export const RectangleShape = ({
       offsetY,
       width,
       height
-    }
+    },
+    immediate: !animate
   }, [x, y, offsetX, offsetY])
 
   const rectProps = useSpring({
-    width,
-    height,
-    fill,
-    shadowColor
+    to: {
+      width,
+      height,
+      fill,
+      shadowColor
+    },
+    immediate: !animate
   })
 
-  const listeners = {
-    onMouseEnter: (e: OnMouseEvent) => {
-      if (onClick) {
+  const listeners = useMemo(() => {
+    if (!onNodeClick) return {}
+    return {
+      onMouseEnter: (e: OnMouseEvent) => {
         mousePointer(e)
+        if (animate && styleRef.current) {
+          styleRef.current.scaleX?.start(1.04, { config: { duration: 200 } })
+          styleRef.current.scaleY?.start(1.04, { config: { duration: 200 } })
+        }
+      },
+      onMouseLeave: (e: OnMouseEvent) => {
+        mouseDefault(e)
+        if (animate && styleRef.current) {
+          styleRef.current.scaleX?.start(1, { config: { duration: 120 } })
+          styleRef.current.scaleY?.start(1, { config: { duration: 120 } })
+        }
+      },
+      onClick: (evt: OnClickEvent) => {
+        evt.cancelBubble = true
+        onNodeClick(node)
       }
-      style?.scaleX?.start(1.04, { config: { duration: 200 }})
-      style?.scaleY?.start(1.04, { config: { duration: 200 }})
-    },
-    onMouseLeave: (e: OnMouseEvent) => {
-      mouseDefault(e)
-      style?.scaleX?.start(1, { config: { duration: 150 }})
-      style?.scaleY?.start(1, { config: { duration: 150 }})
     }
-  }
+  }, [node, onNodeClick ?? null, animate])
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return <animated.Group
     id={'node_' + id}
-    onClick={onClick}
-    onMouseEnter={animate ? listeners.onMouseEnter : undefined}
-    onMouseLeave={animate ? listeners.onMouseLeave : undefined}
+    {...listeners}
     {...style}
     {...groupProps}
   >

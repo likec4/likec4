@@ -178,7 +178,7 @@ views {
 
   view apiApp of internetBankingSystem.apiApplication {
     title "API Components"
-    include *
+    include *, bigbank
     exclude mobileApp
 
     style * {
@@ -195,7 +195,11 @@ views {
   }
 
   view webapp of webApplication {
-    include *, internetBankingSystem
+    include *, internetBankingSystem, bigbank
+
+    style bigbank {
+      color muted
+    }
   }
 
 }

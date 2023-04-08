@@ -46,14 +46,18 @@ export const CompoundShape = ({
       offsetY,
       width,
       height,
-    }
+    },
+    immediate: !animate
   }, [x, y, offsetX, offsetY])
 
   const rectProps = useSpring({
-    width,
-    height,
-    fill,
-    shadowColor
+    to: {
+      width,
+      height,
+      fill,
+      shadowColor
+    },
+    immediate: !animate
   })
 
   const listeners = useMemo(() => {

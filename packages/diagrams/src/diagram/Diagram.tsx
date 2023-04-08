@@ -9,6 +9,7 @@ import invariant from 'tiny-invariant'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+import { useDrag, useWheel } from '@use-gesture/react'
 
 const AStage: AnimatedComponent<KonvaNodeComponent<Konva.Stage, StageProps>> = animated(Stage)
 
@@ -42,7 +43,7 @@ const filterCompounds = partition(isCompound)
 export function Diagram({
   diagram,
   className,
-  zoomBy = 1.06,
+  zoomBy = 1.1,
   interactive = true,
   padding = 0,
   onNavigate,
@@ -73,6 +74,13 @@ export function Diagram({
       return
     }
 
+    if (Math.abs(e.evt.deltaY) < 10) {
+      return
+    }
+    let zoomStep = zoomBy * Math.ceil(Math.abs(e.evt.deltaY) / 50)
+
+    let direction = e.evt.deltaY > 0 ? 1 : -1
+
     // stop default scrolling
     e.evt.preventDefault()
     e.cancelBubble = true
@@ -87,7 +95,7 @@ export function Diagram({
     }
 
     // how to scale? Zoom in? Or zoom out?
-    let direction = e.evt.deltaY > 0 ? 1 : -1
+
 
     // when we zoom on trackpad, e.evt.ctrlKey is true
     // in that case lets revert direction
@@ -95,17 +103,16 @@ export function Diagram({
       direction = -direction
     }
 
-    let newScale = direction > 0 ? oldScale * zoomBy : oldScale / zoomBy
+    let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
 
     newScale = clamp(0.1, 1.6, newScale)
 
-    stage.scale({ x: newScale, y: newScale })
-
-    const newPos = {
+    stageSpringApi.start({
+      scaleX: newScale,
+      scaleY: newScale,
       x: pointer.x - mousePointTo.x * newScale,
       y: pointer.y - mousePointTo.y * newScale,
-    }
-    stage.position(newPos)
+    })
   }, [zoomBy])
 
   const centerOnRect = (rect: IRect) => {
@@ -180,16 +187,14 @@ export function Diagram({
   //   }
   // }, [diagramNodes])
 
-  const diagramNodesBRect = {
-    x: 0,
-    y: 0,
-    width: diagram.width,
-    height: diagram.height,
-  }
-
   const [stageProps, stageSpringApi] = useSpring(() => ({
     from: {
-      ...centerOnRect(diagramNodesBRect),
+      ...centerOnRect({
+        x: 0,
+        y: 0,
+        width: diagram.width,
+        height: diagram.height,
+      }),
       width,
       height,
     },
@@ -199,16 +204,44 @@ export function Diagram({
     },
   }), [width, height])
 
+  const panHandlers = useMemo(() => {
+    if (!pannable) {
+      return {
+        draggable: false,
+      }
+    }
+    return {
+      draggable: true,
+      onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
+        stageSpringApi.stop(['x', 'y'])
+      },
+      onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+        const stage = stageRef.current
+        if (stage) {
+          stageSpringApi.set({
+            x: stage.x(),
+            y: stage.y(),
+          })
+        }
+      }
+    }
+  }, [pannable, stageSpringApi])
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     const lastRenderViewId = lastRenderViewIdRef.current
+    const diagramNodesBRect = {
+      x: 0,
+      y: 0,
+      width: diagram.width,
+      height: diagram.height,
+    }
     if (animate && lastRenderViewId !== null && lastRenderViewId !== id) {
       stageSpringApi.start(centerOnRect(diagramNodesBRect))
     } else {
       stageSpringApi.set(centerOnRect(diagramNodesBRect))
     }
     lastRenderViewIdRef.current = id
-  }, [id, width, height, diagramNodesBRect])
+  }, [id, width, height])
 
   const _animate = animate && lastRenderViewIdRef.current !== null
   // const _animate = animate && lastRenderViewIdRef.current !== null
@@ -237,9 +270,9 @@ export function Diagram({
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
     from: {
-      opacity: 0.4,
-      scaleX: 0.7,
-      scaleY: 0.7,
+      opacity: 0.3,
+      scaleX: 0.8,
+      scaleY: 0.8,
     },
     enter: {
       opacity: 1,
@@ -247,9 +280,9 @@ export function Diagram({
       scaleY: 1,
     },
     leave: {
-      opacity: 0.1,
-      scaleX: 0.1,
-      scaleY: 0.1,
+      opacity: 0,
+      scaleX: 0.7,
+      scaleY: 0.7,
     },
     immediate: !_animate,
     config(item, index, state) {
@@ -262,7 +295,7 @@ export function Diagram({
 
   const edgeTransitions = useTransition(diagram.edges, {
     from: {
-      opacity: 0.1,
+      opacity: 0,
     },
     enter: {
       opacity: 0.8,
@@ -271,17 +304,18 @@ export function Diagram({
       opacity: 0,
     },
     immediate: !_animate,
+    delay: _animate ? 50 : 0,
     config: {
-      duration: 200,
+      duration: 120,
     },
     keys: edge => edge.id,
   })
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
     from: {
-      opacity: 0.5,
-      scaleX: 0.65,
-      scaleY: 0.65,
+      opacity: 0.2,
+      scaleX: 0.7,
+      scaleY: 0.7,
     },
     enter: {
       opacity: 1,
@@ -289,9 +323,9 @@ export function Diagram({
       scaleY: 1,
     },
     leave: {
-      opacity: 0.05,
-      scaleX: 0.1,
-      scaleY: 0.1,
+      opacity: 0,
+      scaleX: 0.4,
+      scaleY: 0.4,
     },
     immediate: !_animate,
     config(item, index, state) {
@@ -302,15 +336,25 @@ export function Diagram({
     keys: node => node.id,
   })
 
+  // const bind = useWheel(({ event, offset: [, y], direction: [, dy] }) => {
+  //   event.preventDefault()
+  //   if (dy) {
+  //     wheelOffset.current = y
+  //     runSprings(dragOffset.current + y, dy)
+  //   }
+  // }, {
+
+  // })
+
   // @ts-ignore
   return <AStage
     // width={width}
     // height={height}
     ref={stageRef}
     className={className}
+    {...panHandlers}
+    onWheel={zoomable ? handleWheelZoom : undefined}
     {...stageProps}
-  // onDragMove={pannable ? handleDragMove : undefined}
-  // onWheel={zoomable ? handleWheelZoom : undefined}
   >
     <Layer>
       {compoundTransitions((style, node) =>
