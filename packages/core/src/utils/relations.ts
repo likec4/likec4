@@ -7,7 +7,14 @@ type Relation = {
   target: Fqn
 }
 
-export const isBetween = (source: Fqn, target: Fqn = source) => {
+export const isInside = (parent: Fqn) => {
+  const prefix = parent + '.'
+  return (rel: Relation) => {
+    return rel.source.startsWith(prefix) && rel.target.startsWith(prefix)
+  }
+}
+
+export const isBetween = (source: Fqn, target: Fqn) => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {
