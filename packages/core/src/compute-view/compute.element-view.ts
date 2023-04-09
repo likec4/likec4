@@ -4,7 +4,7 @@ import type { Fqn } from '../types'
 import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
 import type { ComputedNode, ComputedView } from '../types/computed-view'
 import * as Expression from '../types/expression'
-import { isViewRuleExpression, isViewRuleStyle } from '../types/view'
+import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import { Relations, compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
@@ -185,8 +185,11 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     sortNodes(nodesreg, edges)
   )
 
+  const autoLayoutRule = view.rules.find(isViewRuleAutoLayout)
+
   return {
     ...view,
+    autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
     nodes,
     edges
   }

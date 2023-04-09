@@ -122,3 +122,17 @@ views {
   }
 }
 `
+
+
+export const valid_07_ViewLayoutRules = model + `
+views {
+  view {
+    include *
+    style * {
+      color: secondary
+    }
+    autoLayout TB
+    exclude -> frontend
+  }
+}
+`

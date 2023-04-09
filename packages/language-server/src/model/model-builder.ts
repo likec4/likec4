@@ -335,6 +335,11 @@ export class LikeC4ModelBuilder {
         }
       }
     }
+    if (ast.isViewRuleAutoLayout(astNode)) {
+      return {
+        autoLayout: astNode.direction
+      }
+    }
     failExpectedNever(astNode)
   }
 

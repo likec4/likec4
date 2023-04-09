@@ -19,7 +19,7 @@ const normalizeName = (nodeId: string): string => nodeId
 
 const gvName = (node: ComputedNode) => (node.children.length > 0 ? 'cluster_' : 'nd_') + node.id as GvNodeName
 
-export function printToDot({ nodes, edges }: ComputedView): DotSource {
+export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
   const gvSubgraphs = new Map<Fqn, SubgraphModel>()
   const gvNodes = new Map<Fqn, NodeModel>()
 
@@ -71,7 +71,7 @@ export function printToDot({ nodes, edges }: ComputedView): DotSource {
   const G = digraph('G', {
     [_.layout]: 'dot',
     [_.compound]: true,
-    [_.rankdir]: 'TB',
+    [_.rankdir]: autoLayout,
     [_.nodesep]: pxToInch(80),
     [_.ranksep]: pxToInch(70),
     [_.outputorder]: 'nodesfirst',

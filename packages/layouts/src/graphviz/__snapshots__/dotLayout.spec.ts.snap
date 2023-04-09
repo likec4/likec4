@@ -2,6 +2,7 @@
 
 exports[`dotLayout: computedAmazonView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
@@ -174,6 +175,7 @@ exports[`dotLayout: computedAmazonView 1`] = `
 
 exports[`dotLayout: computedCloud3levels 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
@@ -699,6 +701,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
 
 exports[`dotLayout: computedCloudView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
@@ -1041,6 +1044,7 @@ exports[`dotLayout: computedCloudView 1`] = `
 
 exports[`dotLayout: computedIndexView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [

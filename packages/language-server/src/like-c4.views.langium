@@ -16,10 +16,15 @@ ViewProperty:
   key=('title' | 'description') Colon? value=STRING;
 
 ViewRule:
-  ViewRuleExpression | ViewRuleStyle;
+  ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
 ViewRuleExpression:
   (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)*;
+
+ViewRuleLayoutDirection returns string: 'TB' | 'LR' | 'BT' | 'RL';
+
+ViewRuleAutoLayout:
+  'autoLayout' direction=ViewRuleLayoutDirection;
 
 ViewRuleStyle:
   'style' targets+=ElementExpression (Comma targets+=ElementExpression)* OpenBlock
