@@ -8,6 +8,7 @@ import invariant from 'tiny-invariant'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+import { useFirstMountState } from '@react-hookz/web/esm'
 
 const AStage: AnimatedComponent<KonvaNodeComponent<Konva.Stage, StageProps>> = animated(Stage)
 
@@ -24,12 +25,10 @@ export interface DiagramProps {
   animate?: boolean
   pannable?: boolean
   zoomable?: boolean
-  zoomBy?: number
   diagram: DiagramView
   width?: number
   height?: number
   padding?: DiagramPaddings
-  onNavigate?: (viewId: ViewID) => void
   onNodeClick?: (node: DiagramNode) => void
   onEdgeClick?: (edge: DiagramEdge) => void
 }
@@ -41,18 +40,15 @@ const filterCompounds = partition(isCompound)
 export function Diagram({
   diagram,
   className,
-  zoomBy = 1.1,
   interactive = true,
   padding = 0,
-  onNavigate,
+  width = diagram.width,
+  height = diagram.height,
   onNodeClick,
   onEdgeClick,
   ...props
 }: DiagramProps): JSX.Element {
   const {
-    width = diagram.width,
-    height = diagram.height,
-    animate = interactive,
     pannable = interactive,
     zoomable = interactive,
   } = props
@@ -60,30 +56,30 @@ export function Diagram({
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
-  const lastRenderViewIdRef = useRef<ViewID | null>(null)
+  const isFirstRender = useFirstMountState()
+
+  const animate = !isFirstRender && (props.animate ?? interactive)
 
   const stageRef = useRef<Konva.Stage>(null)
 
   const handleWheelZoom = useCallback((e: Konva.KonvaEventObject<WheelEvent>) => {
     const stage = stageRef.current
-    invariant(stage, 'stageRef.current is null')
-    const pointer = stage.getPointerPosition()
-    if (!pointer) {
+    const pointer = stage?.getPointerPosition()
+    if (!stage || !pointer) {
       return
     }
 
     if (Math.abs(e.evt.deltaY) < 10) {
       return
     }
-    let zoomStep = zoomBy * Math.ceil(Math.abs(e.evt.deltaY) / 50)
+
+    let zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
 
     let direction = e.evt.deltaY > 0 ? 1 : -1
 
-    // stop default scrolling
-    e.evt.preventDefault()
-    e.cancelBubble = true
-
-    // stopTween()
+    // // stop default scrolling
+    // e.evt.preventDefault()
+    // e.cancelBubble = true
 
     const oldScale = stage.scaleX()
 
@@ -91,9 +87,6 @@ export function Diagram({
       x: (pointer.x - stage.x()) / oldScale,
       y: (pointer.y - stage.y()) / oldScale,
     }
-
-    // how to scale? Zoom in? Or zoom out?
-
 
     // when we zoom on trackpad, e.evt.ctrlKey is true
     // in that case lets revert direction
@@ -104,19 +97,32 @@ export function Diagram({
     let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
 
     newScale = clamp(0.1, 1.6, newScale)
-
-    stageSpringApi.start({
-      scaleX: newScale,
-      scaleY: newScale,
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    })
-  }, [zoomBy])
+    if (newScale !== oldScale) {
+      stageSpringApi.start({
+        scaleX: newScale,
+        scaleY: newScale,
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+      })
+    }
+  }, [])
 
   const centerOnRect = (rect: IRect) => {
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding) ? padding : [padding, padding, padding, padding] as const
     // const stage = stageRef.current
     // const container = stage?.container()
+
+    // Get the space we can see in the web page = size of div containing stage
+    // or stage size, whichever is the smaller
+    const viewRect = {
+      width,
+      height
+    }
+    // if (stage && container) {
+    //   viewRect.width = Math.min(container.clientWidth, stage.width())
+    //   viewRect.height = Math.min(container.clientHeight, stage.height())
+    // }
+
     const
       // Add padding to make a larger rect - this is what we want to fill
       centerTo = {
@@ -124,14 +130,6 @@ export function Diagram({
         y: rect.y - paddingTop,
         width: rect.width + paddingLeft + paddingRight,
         height: rect.height + paddingTop + paddingBottom
-      },
-      // Get the space we can see in the web page = size of div containing stage
-      // or stage size, whichever is the smaller
-      viewRect = {
-        width,
-        height,
-        // width: Math.min(container?.clientWidth ?? width, stage?.width() ?? width),
-        // height: Math.min(container?.clientHeight ?? height, stage?.width() ?? height),
       },
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
@@ -162,47 +160,17 @@ export function Diagram({
     }
   }
 
-  // const diagramNodes = diagram.nodes
-  // const diagramNodesBRect = useDeepCompareMemo(() => {
-  //   const boundingRect = [Infinity, Infinity, -Infinity, -Infinity] as [
-  //     minX: number,
-  //     minY: number,
-  //     maxX: number,
-  //     maxY: number
-  //   ]
-  //   for (const node of diagramNodes) {
-  //     const { position: [x, y], size: { width, height } } = node
-  //     boundingRect[0] = Math.min(boundingRect[0], x)
-  //     boundingRect[1] = Math.min(boundingRect[1], y)
-  //     boundingRect[2] = Math.max(boundingRect[2], x + width)
-  //     boundingRect[3] = Math.max(boundingRect[3], y + height)
-  //   }
-  //   return {
-  //     x: boundingRect[0],
-  //     y: boundingRect[1],
-  //     width: boundingRect[2] - boundingRect[0],
-  //     height: boundingRect[3] - boundingRect[1]
-  //   }
-  // }, [diagramNodes])
-
-  const [stageProps, stageSpringApi] = useSpring(() => ({
+  const [stageProps, stageSpringApi] = useSpring({
     from: {
-      ...centerOnRect({
-        x: 0,
-        y: 0,
-        width: diagram.width,
-        height: diagram.height,
-      }),
-      width,
-      height,
+      x: 0,
+      y: 0,
+      scaleX: 1,
+      scaleY: 1,
     },
-    to: {
-      width,
-      height,
-    },
-  }), [width, height])
+    immediate: !animate,
+  }, [animate])
 
-  const panHandlers = useMemo(() => {
+  const panning = useMemo(() => {
     if (!pannable) {
       return {
         draggable: false,
@@ -211,7 +179,7 @@ export function Diagram({
     return {
       draggable: true,
       onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
-        stageSpringApi.stop(['x', 'y'])
+        stageSpringApi.stop()
       },
       onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
         const stage = stageRef.current
@@ -226,49 +194,46 @@ export function Diagram({
   }, [pannable, stageSpringApi])
 
   useEffect(() => {
-    const lastRenderViewId = lastRenderViewIdRef.current
-    const diagramNodesBRect = {
-      x: 0,
-      y: 0,
-      width: diagram.width,
-      height: diagram.height,
-    }
-    if (animate && lastRenderViewId !== null && lastRenderViewId !== id) {
-      stageSpringApi.start(centerOnRect(diagramNodesBRect))
-    } else {
-      stageSpringApi.set(centerOnRect(diagramNodesBRect))
-    }
-    lastRenderViewIdRef.current = id
-  }, [id, width, height])
+    stageSpringApi.start({
+      to: {
+        ...centerOnRect({
+          x: 0,
+          y: 0,
+          width: diagram.width,
+          height: diagram.height,
+        })
+      },
+      immediate: !animate,
+    })
+  }, [id, width, height, diagram.width, diagram.height])
 
-  const _animate = animate && lastRenderViewIdRef.current !== null
   // const _animate = animate && lastRenderViewIdRef.current !== null
   // const _animate = animate
 
-  const onNavigateImpl = useMemo(() => {
-    if (!onNavigate) return null
+  // const onNavigateImpl = useMemo(() => {
+  //   if (!onNavigate) return null
 
-    return (node: DiagramNode) => {
-      if (node.navigateTo) {
-        onNavigate(node.navigateTo)
-      }
-    }
-  }, [onNavigate ?? null])
+  //   return (node: DiagramNode) => {
+  //     if (node.navigateTo) {
+  //       onNavigate(node.navigateTo)
+  //     }
+  //   }
+  // }, [onNavigate ?? null])
 
-  const pickOnNodeClick = (node: DiagramNode) => {
-    if (onNavigateImpl) {
-      if (node.navigateTo) {
-        return onNavigateImpl
-      }
-      return undefined
-    } else {
-      return onNodeClick
-    }
-  }
+  // const pickOnNodeClick = (node: DiagramNode) => {
+  //   if (onNavigateImpl) {
+  //     if (node.navigateTo) {
+  //       return onNavigateImpl
+  //     }
+  //     return undefined
+  //   } else {
+  //     return onNodeClick
+  //   }
+  // }
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
     from: {
-      opacity: 0.3,
+      opacity: 0.1,
       scaleX: 0.8,
       scaleY: 0.8,
     },
@@ -282,7 +247,7 @@ export function Diagram({
       scaleX: 0.7,
       scaleY: 0.7,
     },
-    immediate: !_animate,
+    immediate: !animate,
     config(item, index, state) {
       return {
         duration: state === 'leave' ? 120 : 200,
@@ -301,8 +266,8 @@ export function Diagram({
     leave: {
       opacity: 0,
     },
-    immediate: !_animate,
-    delay: _animate ? 50 : 0,
+    immediate: !animate,
+    delay: 50,
     config: {
       duration: 120,
     },
@@ -311,7 +276,7 @@ export function Diagram({
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
     from: {
-      opacity: 0.2,
+      opacity: 0.1,
       scaleX: 0.7,
       scaleY: 0.7,
     },
@@ -325,13 +290,13 @@ export function Diagram({
       scaleX: 0.4,
       scaleY: 0.4,
     },
-    immediate: !_animate,
+    immediate: !animate,
     config(item, index, state) {
       return {
         duration: state === 'leave' ? 120 : 250,
       }
     },
-    keys: node => node.id,
+    keys: node => (node.parent ?? '') + '-' + node.id,
   })
 
   // const bind = useWheel(({ event, offset: [, y], direction: [, dy] }) => {
@@ -346,23 +311,23 @@ export function Diagram({
 
   // @ts-ignore
   return <AStage
-    // width={width}
-    // height={height}
     ref={stageRef}
     className={className}
-    {...panHandlers}
-    onWheel={zoomable ? handleWheelZoom : undefined}
+    onWheel={zoomable && handleWheelZoom}
+    width={width}
+    height={height}
+    {...panning}
     {...stageProps}
   >
     <Layer>
       {compoundTransitions((springs, node) =>
         <CompoundShape
           key={node.id}
-          animate={_animate}
+          animate={animate}
           node={node}
           theme={theme}
           springs={springs}
-          onNodeClick={pickOnNodeClick(node)}
+          onNodeClick={onNodeClick}
         />)}
     </Layer>
     <Layer>
@@ -379,11 +344,11 @@ export function Diagram({
     <Layer>
       {nodeTransitions((springs, node) =>
         <RectangleShape
-          key={node.id}
-          animate={_animate}
+          key={(node.parent ?? '') + '-' + node.id}
+          animate={animate}
           node={node}
           theme={theme}
-          onNodeClick={pickOnNodeClick(node)}
+          onNodeClick={onNodeClick}
           springs={springs}
         />
       )}

@@ -26,9 +26,11 @@
     "verbatimModuleSyntax": true,
     "checkJs": true,
 
+    "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true
   }
 }

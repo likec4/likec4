@@ -1,9 +1,10 @@
 {
-  "extends": "../tsconfig/vite-react.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "jsx": "react-jsx",
+    "jsx": "preserve",
   },
   "include": [
     "./src/**/*"

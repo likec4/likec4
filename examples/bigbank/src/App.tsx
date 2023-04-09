@@ -7,29 +7,26 @@ import { equals } from 'rambdax'
 function App() {
   const [viewId, setViewId] = useState<ViewId>('index')
 
-  const onNavigate = useCallback((viewid: string) => {
-    if (isViewId(viewid)) {
-      setViewId(viewid)
-    }
-  }, [setViewId])
 
-  // const onNodeClick = useCallback((node: DiagramNode) => {
-  //   if (isViewId(node.navigateTo)) {
-  //     setViewId(node.navigateTo)
-  //   }
-  // }, [])
+  const onNodeClick = useCallback((node: DiagramNode) => {
+    if (isViewId(node.navigateTo)) {
+      setViewId(node.navigateTo)
+    }
+  }, [])
 
   const view = LikeC4ViewData[viewId]
-  const [measures, diagramContainerRef] = useMeasure<HTMLDivElement>()
+  const [measures, cntainerRef] = useMeasure<HTMLDivElement>()
 
-  return <div ref={diagramContainerRef} className="diagram-container">
-    <Diagram
-      diagram={view}
-      width={measures?.width}
-      height={measures?.height}
-      padding={40}
-      onNavigate={onNavigate}
-    />
+  return <div ref={cntainerRef} className="diagram-container">
+    {measures &&
+      <Diagram
+        diagram={view}
+        width={measures.width}
+        height={measures.height}
+        padding={40}
+        onNodeClick={onNodeClick}
+      />
+    }
   </div>
 }
 

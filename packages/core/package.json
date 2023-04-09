@@ -1,7 +1,6 @@
 {
   "name": "@likec4/core",
   "version": "0.2.2",
-  "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -24,6 +23,7 @@
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
