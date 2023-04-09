@@ -234,6 +234,8 @@ exports[`printToDot: computedCloudView 1`] = `
     "nd_cloud.frontend" -> "nd_cloud.backend" [
       id = "cloud.frontend:cloud.backend";
       constraint = false;
+      nojustify = true;
+      label = "fetches data in zero trust\\lnetwork with sso\\lauthentification\\l";
     ];
   }
   "nd_cloud.backend" -> "nd_amazon" [

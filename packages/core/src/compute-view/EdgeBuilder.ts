@@ -1,7 +1,8 @@
-import { equals, keys, pluck, reject } from 'rambdax'
+import { equals, head, keys, pluck, reject } from 'rambdax'
 import type { Fqn, Relation } from '../types'
-import { commonAncestor, compareFqnHierarchically } from '../utils'
 import type { ComputedEdge, EdgeId } from '../types/computed-view'
+import { commonAncestor, compareFqnHierarchically } from '../utils/fqn'
+import { compareRelations } from '../utils/relations'
 
 type ResolvedRelationsObj = Record<Fqn, Record<Fqn, Relation[]>>;
 
@@ -19,15 +20,14 @@ export class EdgeBuilder {
   }
 
   build(): ComputedEdge[] {
-    return keys(this._relationsObj).sort(compareFqnHierarchically).reverse().flatMap(source => {
+    return keys(this._relationsObj).flatMap(source => {
       const targets = this._relationsObj[source] ?? {}
-      return keys(targets).sort(compareFqnHierarchically).reverse().map(target => {
-        const relations = targets[target] ?? []
-        const titles = reject(
+      return keys(targets).map(target => {
+        const relations = (targets[target] ?? []).sort(compareRelations)
+        const label = head(reject(
           equals(''),
           pluck('title', relations)
-        )
-        const label = titles.length === 1 ? titles[0]! : null
+        )) ?? null
         return {
           id: `${source}:${target}` as EdgeId,
           parent: commonAncestor(source, target),
@@ -37,7 +37,7 @@ export class EdgeBuilder {
           relations: pluck('id', relations)
         } satisfies ComputedEdge
       })
-    })
-  }
+    }).sort(compareRelations).reverse()
+  } 
 
 }

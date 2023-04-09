@@ -8,8 +8,8 @@ exports[`view of cloud 1`] = `
       "label": null,
       "parent": "cloud",
       "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "source": "cloud.frontend",
       "target": "cloud.backend",
