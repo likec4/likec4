@@ -1,0 +1,23 @@
+specification {
+
+  element enterprise
+  element softwaresystem
+  element container
+  element component
+
+  tag gray
+
+  element person {
+    style {
+      color secondary
+      shape person
+    }
+  }
+
+  element database {
+    style {
+      shape: storage
+    }
+  }
+
+}

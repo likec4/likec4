@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  release:
+    dotenv: ['.env']
+    cmds:
+      - yarn version check --interactive
+      - yarn version apply --all
+      - yarn release-build
+      - yarn workspaces foreach --exclude root,vscode-preview,bigbank npm publish --dry-run
+      - yarn clean:after:publish

@@ -1,0 +1,40 @@
+{
+  "name": "@likec4/docs-website",
+  "version": "0.2.2",
+  "private": true,
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://docs.like-c4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git"
+  },
+  "scripts": {
+    "generate": "likec4 generate-react -o ./index.tsx likec4",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@likec4/diagrams": "workspace:*",
+    "next": "^13.3.0",
+    "nextra": "^2.3.0",
+    "nextra-theme-docs": "^2.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@likec4/cli": "workspace:*",
+    "@types/node": "^17.0.0",
+    "@types/react": "^18.0.31",
+    "@types/react-dom": "^18.0.11",
+    "next": "^13.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.0.3"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}
