@@ -79,7 +79,7 @@ export interface Element extends AstNode {
     body?: ElementBody
     kind: Reference<ElementKind>
     name: Name
-    title?: string
+    props: Array<string>
 }
 
 export const Element = 'Element';
@@ -608,6 +608,14 @@ export class LikeC4AstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
+            case 'Element': {
+                return {
+                    name: 'Element',
+                    mandatory: [
+                        { name: 'props', type: 'array' }
+                    ]
+                };
+            }
             case 'ElementBody': {
                 return {
                     name: 'ElementBody',

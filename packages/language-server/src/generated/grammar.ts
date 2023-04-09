@@ -894,23 +894,77 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                       },
                       "deprecatedSyntax": false
                     }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "props",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@22"
                   },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
                   {
                     "$type": "Assignment",
-                    "feature": "title",
-                    "operator": "=",
+                    "feature": "props",
+                    "operator": "+=",
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
                         "$ref": "#/rules@22"
                       },
                       "arguments": []
-                    },
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@22"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@22"
+                          },
+                          "arguments": []
+                        },
+                        "cardinality": "?"
+                      }
+                    ],
                     "cardinality": "?"
                   }
-                ]
+                ],
+                "cardinality": "?"
               }
-            ]
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",

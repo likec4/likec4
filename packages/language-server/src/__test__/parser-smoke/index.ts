@@ -5,3 +5,4 @@ export * from './04-Scope';
 export * from './05-StrictElementRef';
 export * from './06-ElementRef';
 export * from './07-Views';
+export * from './08-Structurizr';

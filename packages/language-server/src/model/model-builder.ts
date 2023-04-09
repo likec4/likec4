@@ -230,11 +230,18 @@ export class LikeC4ModelBuilder {
     } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
 
-    const props = astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
+    let [
+      title,
+      description,
+      technology,
+    ] = astNode.props
 
-    const title = astNode.title ?? props.find(p => p.key === 'title')?.value
-    const description = props.find(p => p.key === 'description')?.value
-    const technology = props.find(p => p.key === 'technology')?.value
+    const bodyProps = astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
+
+    title = title ?? bodyProps.find(p => p.key === 'title')?.value
+    description = description ?? bodyProps.find(p => p.key === 'description')?.value
+    technology = technology ?? bodyProps.find(p => p.key === 'technology')?.value
+
     return {
       id,
       kind,
