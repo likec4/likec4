@@ -1,13 +1,20 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "moduleResolution": "bundler",
-    "outDir": "dist",
-    "jsx": "preserve",
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "jsx": "react-jsxdev"
   },
   "include": [
-    "./src/**/*"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

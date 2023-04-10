@@ -134,6 +134,7 @@ views {
     title "Big Bank plc"
 
     include *
+    autoLayout LR
   }
 
 

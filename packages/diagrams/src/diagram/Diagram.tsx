@@ -162,10 +162,12 @@ export function Diagram({
 
   const [stageProps, stageSpringApi] = useSpring({
     from: {
-      x: 0,
-      y: 0,
-      scaleX: 1,
-      scaleY: 1,
+      ...centerOnRect({
+        x: 0,
+        y: 0,
+        width: diagram.width,
+        height: diagram.height,
+      })
     },
     immediate: !animate,
   }, [animate])

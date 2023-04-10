@@ -11,5 +11,8 @@ export type {
   DiagramView
 } from '@likec4/core/types'
 
-export * from './diagram'
-export * from './EmbeddedDiagram'
+export { Diagram, DefaultDiagramTheme } from './diagram'
+export type * from './diagram'
+
+export { EmbeddedDiagram } from './embedded/EmbeddedDiagram'
+export type * from './embedded/EmbeddedDiagram'
