@@ -627,7 +627,7 @@ __metadata:
     esbuild: ^0.17.15
     fast-glob: ^3.2.12
     langium: ^1.1.0
-    mkdirp: ^2.1.6
+    mkdirp: ^3.0.0
     rambdax: ^9.1.0
     typescript: ^5.0.3
     vscode-uri: 3.0.7
@@ -3479,12 +3479,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^2.1.6":
-  version: 2.1.6
-  resolution: "mkdirp@npm:2.1.6"
+"mkdirp@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "mkdirp@npm:3.0.0"
   bin:
     mkdirp: dist/cjs/src/bin.js
-  checksum: 8a1d09ffac585e55f41c54f445051f5bc33a7de99b952bb04c576cafdf1a67bb4bae8cb93736f7da6838771fbf75bc630430a3a59e1252047d2278690bd150ee
+  checksum: a17062c41d10ee91a25127c594d919767517ba08e547aeaa4272ec0c03a0c6d7a07a2d5a5aa1ba8621716df57b5f09a4c9ec0dfbda81b8aad166daf744fb04b6
   languageName: node
   linkType: hard
 
