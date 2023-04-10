@@ -35,7 +35,7 @@
     "langium": "^1.1.0",
     "mkdirp": "^2.1.6",
     "rambdax": "^9.1.0",
-    "typescript": "^5.0.3",
+    "typescript": "^5.0.4",
     "vscode-uri": "3.0.7"
   }
 }
