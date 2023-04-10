@@ -1,13 +1,25 @@
 
 import { either } from 'rambdax'
 import type { Fqn } from '../types'
+import { compareFqnHierarchically } from './fqn'
 
 type Relation = {
   source: Fqn
   target: Fqn
 }
 
-export const isBetween = (source: Fqn, target: Fqn = source) => {
+export const compareRelations = <T extends {source: Fqn, target: Fqn}>(a: T, b: T) => {
+  return compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
+}
+
+export const isInside = (parent: Fqn) => {
+  const prefix = parent + '.'
+  return (rel: Relation) => {
+    return rel.source.startsWith(prefix) && rel.target.startsWith(prefix)
+  }
+}
+
+export const isBetween = (source: Fqn, target: Fqn) => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {

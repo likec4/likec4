@@ -105,6 +105,7 @@ describe('LikeC4ModelBuilder', () => {
 
       view v1 of api {
         include *
+        autoLayout LR
       }
 
       view of system.frontend {
@@ -130,12 +131,14 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.views).toMatchObject({
       'index': {
         'id': 'index',
-        'title': 'Index'
+        'title': 'Index',
+        'autoLayout': 'TB'
       },
       'v1': {
         'id': 'v1',
         'viewOf': 'system.backend.api',
-        'title': 'api'
+        'title': 'api',
+        'autoLayout': 'LR'
       }
     })
     expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')

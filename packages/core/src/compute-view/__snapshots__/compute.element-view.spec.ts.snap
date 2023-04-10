@@ -2,14 +2,15 @@
 
 exports[`view of cloud 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "id": "cloud.frontend:cloud.backend",
       "label": null,
       "parent": "cloud",
       "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "source": "cloud.frontend",
       "target": "cloud.backend",
@@ -117,6 +118,7 @@ exports[`view of cloud 1`] = `
 
 exports[`view with 3 levels 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",

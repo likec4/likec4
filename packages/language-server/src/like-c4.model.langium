@@ -12,8 +12,16 @@ Model:
 Element:
   (
     kind=[ElementKind:Name] name=Name |
-    name=Name Eq kind=[ElementKind:Name] (title=STRING)?
-  ) body=ElementBody?;
+    name=Name Eq kind=[ElementKind:Name]
+  )
+  (props+=STRING  // title
+    (props+=STRING  // description
+      (props+=STRING  // technology
+        (props+=STRING)?   // tags
+      )?
+    )?
+  )?
+  body=ElementBody?;
 
 ElementBody: OpenBlock
   tags=Tags?

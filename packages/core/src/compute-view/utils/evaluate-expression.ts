@@ -4,7 +4,7 @@ import type { ModelIndex } from '../../model-index'
 import type { Element, Fqn, Relation, Expression } from '../../types'
 import * as Expr from '../../types/expression'
 import { failExpectedNever, isAncestor } from '../../utils'
-import { isBetween, isIncoming, isOutgoing } from '../../utils/relations'
+import { isBetween, isIncoming, isInside, isOutgoing } from '../../utils/relations'
 import { anyPossibleRelations } from './anyPossibleRelations'
 
 const dropNested = (elements: Element[]) => {
@@ -71,7 +71,7 @@ const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpressi
         ])
       ]
       relations = index.filterRelations(anyPass([
-        isBetween(rootElement),
+        isInside(rootElement),
         isIncoming(rootElement),
         isOutgoing(rootElement),
       ]))
@@ -92,7 +92,7 @@ const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpressi
   if (Expr.isElementRef(expr)) {
     elements = expr.isDescedants ? index.children(expr.element) : [index.find(expr.element)]
     if (expr.isDescedants) {
-      relations = index.filterRelations(isBetween(expr.element))
+      relations = index.filterRelations(isInside(expr.element))
       //   relations = index.filterRelations(anyPass([
       //     isBetween(expr.element),
       //     isIncoming(expr.element),

@@ -163,15 +163,26 @@ export const RectangleShape = ({
       onMouseEnter: (e: OnMouseEvent) => {
         mousePointer(e)
         if (animate && springsRef.current) {
-          springsRef.current.scaleX?.start(1.04, { config: { duration: 200 } })
-          springsRef.current.scaleY?.start(1.04, { config: { duration: 200 } })
+          const cfg = {
+            config: {
+              duration: 200
+            }
+          }
+          springsRef.current.scaleX?.start(1.06, cfg)
+          springsRef.current.scaleY?.start(1.06, cfg)
         }
       },
       onMouseLeave: (e: OnMouseEvent) => {
         mouseDefault(e)
         if (animate && springsRef.current) {
-          springsRef.current.scaleX?.start(1, { config: { duration: 120 } })
-          springsRef.current.scaleY?.start(1, { config: { duration: 120 } })
+          const cfg = {
+            delay: 100,
+            config: {
+              duration: 120
+            }
+          }
+          springsRef.current.scaleX?.start(1, cfg)
+          springsRef.current.scaleY?.start(1, cfg)
         }
       },
       onClick: (evt: OnClickEvent) => {

@@ -1,7 +1,7 @@
 import type { Opaque } from './opaque'
 import type { ElementShape, Fqn, ThemeColor } from './element'
 import type { RelationID } from './relation'
-import type { ElementView, ViewID } from './view'
+import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
 
 export type NodeId = Fqn
 
@@ -30,6 +30,7 @@ export interface ComputedEdge {
 }
 
 export interface ComputedView<Node extends ComputedNode = ComputedNode, Edge extends ComputedEdge = ComputedEdge> extends ElementView {
+  autoLayout: ViewRuleAutoLayout['autoLayout']
   nodes: Node[]
   edges: Edge[]
 }

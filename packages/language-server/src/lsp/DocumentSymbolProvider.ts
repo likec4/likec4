@@ -121,7 +121,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
     const name = astElement.name
     const kind = astElement.kind.$refText
-    const detail = kind + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
+    // TODO: return the title as well
+    const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
     return [{
       kind: SymbolKind.Constructor,
       name: name,

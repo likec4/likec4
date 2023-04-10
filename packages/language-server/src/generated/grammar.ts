@@ -894,23 +894,77 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                       },
                       "deprecatedSyntax": false
                     }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "props",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@22"
                   },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
                   {
                     "$type": "Assignment",
-                    "feature": "title",
-                    "operator": "=",
+                    "feature": "props",
+                    "operator": "+=",
                     "terminal": {
                       "$type": "RuleCall",
                       "rule": {
                         "$ref": "#/rules@22"
                       },
                       "arguments": []
-                    },
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@22"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@22"
+                          },
+                          "arguments": []
+                        },
+                        "cardinality": "?"
+                      }
+                    ],
                     "cardinality": "?"
                   }
-                ]
+                ],
+                "cardinality": "?"
               }
-            ]
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",
@@ -1866,7 +1920,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@47"
+              "$ref": "#/rules@49"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@48"
             },
             "arguments": []
           }
@@ -1910,7 +1971,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@48"
+                "$ref": "#/rules@50"
               },
               "arguments": []
             }
@@ -1932,13 +1993,76 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@48"
+                    "$ref": "#/rules@50"
                   },
                   "arguments": []
                 }
               }
             ],
             "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleLayoutDirection",
+      "dataType": "string",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "TB"
+          },
+          {
+            "$type": "Keyword",
+            "value": "LR"
+          },
+          {
+            "$type": "Keyword",
+            "value": "BT"
+          },
+          {
+            "$type": "Keyword",
+            "value": "RL"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleAutoLayout",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "autoLayout"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "direction",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@47"
+              },
+              "arguments": []
+            }
           }
         ]
       },
@@ -1966,7 +2090,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@49"
+                "$ref": "#/rules@51"
               },
               "arguments": []
             }
@@ -1988,7 +2112,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@49"
+                    "$ref": "#/rules@51"
                   },
                   "arguments": []
                 }
@@ -2071,7 +2195,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 "terminal": {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@49"
+                    "$ref": "#/rules@51"
                   },
                   "arguments": []
                 }
@@ -2103,7 +2227,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@49"
+                  "$ref": "#/rules@51"
                 },
                 "arguments": []
               },
@@ -2133,7 +2257,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                         "terminal": {
                           "$type": "RuleCall",
                           "rule": {
-                            "$ref": "#/rules@49"
+                            "$ref": "#/rules@51"
                           },
                           "arguments": []
                         }
@@ -2202,7 +2326,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@50"
+              "$ref": "#/rules@52"
             },
             "arguments": []
           }

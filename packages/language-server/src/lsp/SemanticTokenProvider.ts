@@ -192,6 +192,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     //     keyword('steps')
     //     return
     //   }
+    if (ast.isViewRuleAutoLayout(node)) {
+      keyword('autoLayout')
+      return
+    }
     if (ast.isViewRuleStyle(node)) {
       keyword('style')
       return

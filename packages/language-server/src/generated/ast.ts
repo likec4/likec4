@@ -52,13 +52,15 @@ export function isView(item: unknown): item is View {
     return reflection.isInstance(item, View);
 }
 
-export type ViewRule = ViewRuleExpression | ViewRuleStyle;
+export type ViewRule = ViewRuleAutoLayout | ViewRuleExpression | ViewRuleStyle;
 
 export const ViewRule = 'ViewRule';
 
 export function isViewRule(item: unknown): item is ViewRule {
     return reflection.isInstance(item, ViewRule);
 }
+
+export type ViewRuleLayoutDirection = 'BT' | 'LR' | 'RL' | 'TB';
 
 export interface ColorProperty extends AstNode {
     readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyle;
@@ -79,7 +81,7 @@ export interface Element extends AstNode {
     body?: ElementBody
     kind: Reference<ElementKind>
     name: Name
-    title?: string
+    props: Array<string>
 }
 
 export const Element = 'Element';
@@ -448,6 +450,18 @@ export function isViewProperty(item: unknown): item is ViewProperty {
     return reflection.isInstance(item, ViewProperty);
 }
 
+export interface ViewRuleAutoLayout extends AstNode {
+    readonly $container: ElementView;
+    readonly $type: 'ViewRuleAutoLayout';
+    direction: ViewRuleLayoutDirection
+}
+
+export const ViewRuleAutoLayout = 'ViewRuleAutoLayout';
+
+export function isViewRuleAutoLayout(item: unknown): item is ViewRuleAutoLayout {
+    return reflection.isInstance(item, ViewRuleAutoLayout);
+}
+
 export interface ViewRuleExpression extends AstNode {
     readonly $container: ElementView;
     readonly $type: 'ViewRuleExpression';
@@ -539,6 +553,7 @@ export interface LikeC4AstType {
     View: View
     ViewProperty: ViewProperty
     ViewRule: ViewRule
+    ViewRuleAutoLayout: ViewRuleAutoLayout
     ViewRuleExpression: ViewRuleExpression
     ViewRuleStyle: ViewRuleStyle
     WildcardExpression: WildcardExpression
@@ -547,7 +562,7 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'ExtendElementBody', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
+        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'ExtendElementBody', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleAutoLayout', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -577,6 +592,7 @@ export class LikeC4AstReflection extends AbstractAstReflection {
             case RelationWithSource: {
                 return this.isSubtype(Relation, supertype);
             }
+            case ViewRuleAutoLayout:
             case ViewRuleExpression:
             case ViewRuleStyle: {
                 return this.isSubtype(ViewRule, supertype);
@@ -608,6 +624,14 @@ export class LikeC4AstReflection extends AbstractAstReflection {
 
     getTypeMetaData(type: string): TypeMetaData {
         switch (type) {
+            case 'Element': {
+                return {
+                    name: 'Element',
+                    mandatory: [
+                        { name: 'props', type: 'array' }
+                    ]
+                };
+            }
             case 'ElementBody': {
                 return {
                     name: 'ElementBody',

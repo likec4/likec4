@@ -1,8 +1,8 @@
 import { useMeasure } from '@react-hookz/web/esm'
-import type { DiagramProps } from './diagram'
-import { Diagram } from './diagram'
+import type { DiagramProps } from '../diagram'
+import { Diagram } from '../diagram'
 
-export type EmbeddedDiagramProps = Omit<DiagramProps, 'width' | 'height' | 'pannable' | 'zoomable' | 'zoomBy'>
+export type EmbeddedDiagramProps = Omit<DiagramProps, 'width' | 'height' | 'pannable' | 'zoomable'>
 
 export function EmbeddedDiagram({
   diagram,

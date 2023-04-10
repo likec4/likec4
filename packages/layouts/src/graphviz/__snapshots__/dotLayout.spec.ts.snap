@@ -2,6 +2,7 @@
 
 exports[`dotLayout: computedAmazonView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
@@ -174,6 +175,7 @@ exports[`dotLayout: computedAmazonView 1`] = `
 
 exports[`dotLayout: computedCloud3levels 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
@@ -699,11 +701,12 @@ exports[`dotLayout: computedCloud3levels 1`] = `
 
 exports[`dotLayout: computedCloudView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [
         [
-          300,
+          299,
           336,
         ],
         [
@@ -711,35 +714,40 @@ exports[`dotLayout: computedCloudView 1`] = `
           333,
         ],
         [
-          300,
+          299,
           330,
         ],
       ],
       "id": "cloud.frontend:cloud.backend",
-      "label": null,
-      "labelBox": null,
+      "label": "fetches data in zero trust network with sso authentification",
+      "labelBox": {
+        "align": "left",
+        "width": 176,
+        "x": 328,
+        "y": 286,
+      },
       "parent": "cloud",
       "points": [
         [
-          448,
+          543,
           333,
         ],
         [
-          399,
+          469,
           333,
         ],
         [
-          349,
+          375,
           333,
         ],
         [
-          300,
+          299,
           333,
         ],
       ],
       "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
       "source": "cloud.frontend",
       "target": "cloud.backend",
@@ -795,15 +803,15 @@ exports[`dotLayout: computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          528,
+          622,
           252,
         ],
         [
-          530,
+          625,
           261,
         ],
         [
-          522,
+          617,
           255,
         ],
       ],
@@ -812,25 +820,25 @@ exports[`dotLayout: computedCloudView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 66,
-        "x": 520,
+        "x": 615,
         "y": 191,
       },
       "parent": null,
       "points": [
         [
-          453,
+          547,
           141,
         ],
         [
-          475,
+          569,
           176,
         ],
         [
-          501,
+          596,
           218,
         ],
         [
-          524,
+          619,
           254,
         ],
       ],
@@ -843,15 +851,15 @@ exports[`dotLayout: computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          626,
+          720,
           255,
         ],
         [
-          618,
+          712,
           261,
         ],
         [
-          620,
+          715,
           252,
         ],
       ],
@@ -860,25 +868,25 @@ exports[`dotLayout: computedCloudView 1`] = `
       "labelBox": {
         "align": "center",
         "width": 122,
-        "x": 732,
+        "x": 827,
         "y": 191,
       },
       "parent": null,
       "points": [
         [
-          695,
+          790,
           141,
         ],
         [
-          673,
+          768,
           176,
         ],
         [
-          646,
+          741,
           218,
         ],
         [
-          623,
+          718,
           254,
         ],
       ],
@@ -898,11 +906,11 @@ exports[`dotLayout: computedCloudView 1`] = `
       "id": "support",
       "parent": null,
       "position": [
-        282,
+        377,
         0,
       ],
       "relative": [
-        282,
+        377,
         0,
       ],
       "shape": "rectangle",
@@ -918,11 +926,11 @@ exports[`dotLayout: computedCloudView 1`] = `
       "id": "customer",
       "parent": null,
       "position": [
-        613,
+        708,
         0,
       ],
       "relative": [
-        613,
+        708,
         0,
       ],
       "shape": "rectangle",
@@ -952,7 +960,7 @@ exports[`dotLayout: computedCloudView 1`] = `
       "shape": "rectangle",
       "size": {
         "height": 224,
-        "width": 715,
+        "width": 809,
       },
       "title": "cloud",
     },
@@ -962,11 +970,11 @@ exports[`dotLayout: computedCloudView 1`] = `
       "id": "cloud.frontend",
       "parent": "cloud",
       "position": [
-        448,
+        542,
         263,
       ],
       "relative": [
-        437,
+        531,
         57,
       ],
       "shape": "rectangle",
@@ -1030,12 +1038,13 @@ exports[`dotLayout: computedCloudView 1`] = `
   ],
   "title": "",
   "viewOf": "cloud",
-  "width": 864,
+  "width": 959,
 }
 `;
 
 exports[`dotLayout: computedIndexView 1`] = `
 {
+  "autoLayout": "TB",
   "edges": [
     {
       "headArrow": [

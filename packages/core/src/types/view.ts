@@ -24,7 +24,14 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
   return 'style' in rule && 'targets' in rule
 }
 
-export type ViewRule = ViewRuleExpression | ViewRuleStyle
+export interface ViewRuleAutoLayout {
+  autoLayout: 'TB' | 'BT' | 'LR' | 'RL'
+}
+export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
+  return 'autoLayout' in rule
+}
+
+export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
 export interface ElementView {
   readonly id: ViewID
