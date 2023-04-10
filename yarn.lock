@@ -621,7 +621,7 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@types/node": ^17.0.0
+    "@types/node": ^18.15.11
     chalk: ^5.2.0
     commander: ^10.0.0
     esbuild: ^0.17.15
@@ -692,7 +692,7 @@ __metadata:
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     json5: ^2.2.3
     langium: ^1.1.0
     rambdax: ^9.1.0
@@ -708,7 +708,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@mobily/ts-belt": ^3.13.1
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
     langium: ^1.1.0
     langium-cli: ^1.1.0
@@ -734,7 +734,7 @@ __metadata:
     "@hpcc-js/wasm": ^2.9.0
     "@likec4/core": "workspace:*"
     "@types/graphlib": ^2.1.8
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     "@types/string-pixel-width": ^1.10.0
     graphlib: ^2.1.8
     rambdax: ^9.1.0
@@ -755,7 +755,7 @@ __metadata:
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     "@types/react": ^18.0.31
     "@types/react-dom": ^18.0.11
     "@types/vscode": ^1.74.0
@@ -781,7 +781,7 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     "@types/vscode": ^1.74.0
     esbuild: ^0.17.15
     froebel: ^0.23.2
@@ -1056,17 +1056,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.15.6":
+"@types/node@npm:*":
   version: 18.15.7
   resolution: "@types/node@npm:18.15.7"
   checksum: 08d1dd1898be10cd274955ed7f491bcab5b7e70ce66b6a1e996a582d5467f7517046b0d9c5f4e15871df94dd72d1ad9e7be236d2cff1a1450ec906d7fa3062d2
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.0":
-  version: 17.0.45
-  resolution: "@types/node@npm:17.0.45"
-  checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
+"@types/node@npm:^18.15.11":
+  version: 18.15.11
+  resolution: "@types/node@npm:18.15.11"
+  checksum: 977b4ad04708897ff0eb049ecf82246d210939c82461922d20f7d2dcfd81bbc661582ba3af28869210f7e8b1934529dcd46bff7d448551400f9d48b9d3bddec3
   languageName: node
   linkType: hard
 
@@ -4176,7 +4176,7 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@types/eslint": ^8.37.0
-    "@types/node": ^18.15.6
+    "@types/node": ^18.15.11
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
     "@vitest/ui": ^0.29.8

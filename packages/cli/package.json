@@ -27,7 +27,7 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@types/node": "^17.0.0",
+    "@types/node": "^18.15.11",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "esbuild": "^0.17.15",
