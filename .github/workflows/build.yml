@@ -29,8 +29,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Compile
+        run: yarn compile
+
       - name: Build
-        run: yarn turbo run build compile
+        run: yarn build
 
       - name: Test
         run: yarn test
