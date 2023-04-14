@@ -6,11 +6,14 @@
       "DOM.Iterable",
       "ESNext"
     ],
+    "module": "ES2022",
+    "target": "ES2022",
     "moduleResolution": "bundler",
-    "emitDeclarationOnly": true,
+    "outDir": "dist",
     "declaration": true,
     "declarationDir": "dist",
-    "jsx": "react-jsxdev"
+    "jsx": "react-jsxdev",
+    "jsxImportSource": "react"
   },
   "include": [
     "src/**/*.ts",

@@ -6,5 +6,6 @@ dist
 .turbo
 **/*.d.ts
 esbuild.cjs
-vite.config.ts
-vitest.config.ts
+esbuild.mjs
+vite.config.*
+vitest.config.*

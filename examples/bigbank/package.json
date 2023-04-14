@@ -8,15 +8,18 @@
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",
+    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/web": "^23.0.0",
+    "rambdax": "^9.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",
-    "@types/react": "^18.0.28",
+    "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^5.0.3",
-    "vite": "^4.2.0"
+    "vite": "^4.2.1"
   }
 }

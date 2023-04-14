@@ -10,7 +10,7 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
-    "generate": "likec4 generate-react -o ./index.tsx likec4",
+    "generate": "likec4 generate-react -o ../components/likec4/generated.tsx ./likec4",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -26,15 +26,13 @@
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",
-    "@types/node": "^17.0.0",
-    "@types/react": "^18.0.31",
+    "@types/node": "^18.15.11",
+    "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
-    "next": "^13.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "canvas": "^2.11.2",
     "typescript": "^5.0.3"
   },
   "installConfig": {
-    "hoistingLimits": "workspaces"
+    "hoistingLimits": "dependencies"
   }
 }

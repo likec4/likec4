@@ -1,9 +1,11 @@
-import { defineConfig } from 'vitest/config'
+import { mergeConfig, defineProject, defineConfig } from 'vitest/config'
+import configShared from '../../vitest.shared.mjs'
 
-export default defineConfig({
-  test: {
-    snapshotFormat: {
-      escapeString: false
+export default mergeConfig(
+  configShared,
+  defineProject({
+    test: {
+      name: 'generators',
     }
-  }
-})
+  })
+)

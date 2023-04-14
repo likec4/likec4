@@ -32,7 +32,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "^2.9.0",
+    "@hpcc-js/wasm": "^2.10.0",
     "@likec4/core": "workspace:*",
     "graphlib": "^2.1.8",
     "rambdax": "^9.1.0",
@@ -42,10 +42,10 @@
   },
   "devDependencies": {
     "@types/graphlib": "^2.1.8",
-    "@types/node": "^18.15.6",
+    "@types/node": "^18.15.11",
     "@types/string-pixel-width": "^1.10.0",
     "typescript": "^5.0.3",
     "vite": "^4.2.1",
-    "vitest": "^0.29.8"
+    "vitest": "^0.30.1"
   }
 }

@@ -10,6 +10,7 @@
 
 examples/*/.vscode
 packages/*/contrib
+packages/*/contrib
 
 # Logs
 logs

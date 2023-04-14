@@ -1,16 +1,18 @@
-import type { DiagramEdge, DiagramNode, DiagramView, ViewID } from '@likec4/core/types'
+/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import { useFirstMountState } from '@react-hookz/web/esm'
+import { Layer, Stage } from 'react-konva'
 import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
 import type Konva from 'konva'
-import { clamp, partition } from 'rambdax'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Layer, Stage, type KonvaNodeComponent, type StageProps } from 'react-konva'
-import invariant from 'tiny-invariant'
+import { clamp } from 'rambdax'
+import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react'
 import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
-import { useFirstMountState } from '@react-hookz/web/esm'
 
-const AStage: AnimatedComponent<KonvaNodeComponent<Konva.Stage, StageProps>> = animated(Stage)
+const AStage: AnimatedComponent<typeof Stage> = animated(Stage)
+AStage.displayName = 'AnimatedStage'
 
 interface IRect {
   x: number
@@ -20,37 +22,35 @@ interface IRect {
 }
 
 export interface DiagramProps {
-  className?: string
+  diagram: DiagramView
+  className?: string | undefined
   interactive?: boolean
   animate?: boolean
   pannable?: boolean
   zoomable?: boolean
-  diagram: DiagramView
   width?: number
   height?: number
-  padding?: DiagramPaddings
-  onNodeClick?: (node: DiagramNode) => void
-  onEdgeClick?: (edge: DiagramEdge) => void
+  padding?: DiagramPaddings | undefined
+  onNodeClick?: ((node: DiagramNode) => void) | undefined
+  onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
 const isCompound = (node: DiagramNode) => node.children.length > 0
 const isNotCompound = (node: DiagramNode) => node.children.length == 0
-const filterCompounds = partition(isCompound)
 
 export function Diagram({
   diagram,
   className,
   interactive = true,
   padding = 0,
-  width = diagram.width,
-  height = diagram.height,
   onNodeClick,
   onEdgeClick,
   ...props
-}: DiagramProps): JSX.Element {
+}: DiagramProps): ReactElement<DiagramProps> {
   const {
     pannable = interactive,
     zoomable = interactive,
+    animate: _animate = interactive,
   } = props
 
   const id = diagram.id
@@ -58,54 +58,12 @@ export function Diagram({
 
   const isFirstRender = useFirstMountState()
 
-  const animate = !isFirstRender && (props.animate ?? interactive)
+  const animate = !isFirstRender && _animate
+
+  const width = Math.max(props.width ?? diagram.width, 16)
+  const height = Math.max(props.height ?? diagram.height, 16)
 
   const stageRef = useRef<Konva.Stage>(null)
-
-  const handleWheelZoom = useCallback((e: Konva.KonvaEventObject<WheelEvent>) => {
-    const stage = stageRef.current
-    const pointer = stage?.getPointerPosition()
-    if (!stage || !pointer) {
-      return
-    }
-
-    if (Math.abs(e.evt.deltaY) < 10) {
-      return
-    }
-
-    let zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
-
-    let direction = e.evt.deltaY > 0 ? 1 : -1
-
-    // // stop default scrolling
-    // e.evt.preventDefault()
-    // e.cancelBubble = true
-
-    const oldScale = stage.scaleX()
-
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    }
-
-    // when we zoom on trackpad, e.evt.ctrlKey is true
-    // in that case lets revert direction
-    if (e.evt.ctrlKey) {
-      direction = -direction
-    }
-
-    let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
-
-    newScale = clamp(0.1, 1.6, newScale)
-    if (newScale !== oldScale) {
-      stageSpringApi.start({
-        scaleX: newScale,
-        scaleY: newScale,
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
-      })
-    }
-  }, [])
 
   const centerOnRect = (rect: IRect) => {
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding) ? padding : [padding, padding, padding, padding] as const
@@ -180,23 +138,66 @@ export function Diagram({
     }
     return {
       draggable: true,
-      onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
-        stageSpringApi.stop()
+      onDragStart: (_e: Konva.KonvaEventObject<DragEvent>) => {
+        stageSpringApi.stop(true)
       },
-      onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
-        const stage = stageRef.current
-        if (stage) {
+      onDragEnd: ({target}: Konva.KonvaEventObject<DragEvent>) => {
+        if (target === stageRef.current) {
           stageSpringApi.set({
-            x: stage.x(),
-            y: stage.y(),
+            x: target.x(),
+            y: target.y(),
           })
         }
       }
     }
   }, [pannable, stageSpringApi])
 
-  useEffect(() => {
+  const handleWheelZoom = useCallback((e: Konva.KonvaEventObject<WheelEvent>) => {
+    const stage = stageRef.current
+    const pointer = stage?.getPointerPosition()
+    if (!stage || !pointer) {
+      return
+    }
+
+    if (Math.abs(e.evt.deltaY) < 10) {
+      return
+    }
+
+    const zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
+
+    let direction = e.evt.deltaY > 0 ? 1 : -1
+
+    // // stop default scrolling
+    // e.evt.preventDefault()
+    // e.cancelBubble = true
+
+    const oldScale = stage.scaleX()
+
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    }
+
+    // when we zoom on trackpad, e.evt.ctrlKey is true
+    // in that case lets revert direction
+    if (e.evt.ctrlKey) {
+      direction = -direction
+    }
+
+    let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
+
+    newScale = clamp(0.1, 1.6, newScale)
+
     stageSpringApi.start({
+      scaleX: newScale,
+      scaleY: newScale,
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    })
+  }, [stageSpringApi])
+
+  useEffect(() => {
+    stageSpringApi.stop(true).start({
       to: {
         ...centerOnRect({
           x: 0,
@@ -208,30 +209,6 @@ export function Diagram({
       immediate: !animate,
     })
   }, [id, width, height, diagram.width, diagram.height])
-
-  // const _animate = animate && lastRenderViewIdRef.current !== null
-  // const _animate = animate
-
-  // const onNavigateImpl = useMemo(() => {
-  //   if (!onNavigate) return null
-
-  //   return (node: DiagramNode) => {
-  //     if (node.navigateTo) {
-  //       onNavigate(node.navigateTo)
-  //     }
-  //   }
-  // }, [onNavigate ?? null])
-
-  // const pickOnNodeClick = (node: DiagramNode) => {
-  //   if (onNavigateImpl) {
-  //     if (node.navigateTo) {
-  //       return onNavigateImpl
-  //     }
-  //     return undefined
-  //   } else {
-  //     return onNodeClick
-  //   }
-  // }
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
     from: {
@@ -269,7 +246,7 @@ export function Diagram({
       opacity: 0,
     },
     immediate: !animate,
-    delay: 50,
+    delay: animate ? 50 : 0,
     config: {
       duration: 120,
     },
@@ -300,16 +277,6 @@ export function Diagram({
     },
     keys: node => (node.parent ?? '') + '-' + node.id,
   })
-
-  // const bind = useWheel(({ event, offset: [, y], direction: [, dy] }) => {
-  //   event.preventDefault()
-  //   if (dy) {
-  //     wheelOffset.current = y
-  //     runSprings(dragOffset.current + y, dy)
-  //   }
-  // }, {
-
-  // })
 
   // @ts-ignore
   return <AStage
@@ -356,4 +323,5 @@ export function Diagram({
       )}
     </Layer>
   </AStage>
+
 }

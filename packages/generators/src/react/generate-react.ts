@@ -32,6 +32,7 @@ export function generateReact(
 
       import type { DiagramView, EmbeddedDiagramProps } from '@likec4/diagrams'
       import { EmbeddedDiagram } from '@likec4/diagrams'
+      import '@likec4/diagrams/dist/index.css'
     `
     .append(NL, NL)
 
@@ -42,47 +43,60 @@ export function generateReact(
 
   out
     .append(
-      'export const LikeC4ViewData = {', NL
+      'export const LikeC4ViewsData = {', NL
     )
-    .indent(indent => {
-      indent.append(
-        joinToNode(
-          views,
-          view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as any) as DiagramView`,
-          {
-            separator: ',',
-            appendNewLineIfNotEmpty: true
-          }
+    .indent({
+      indentation: 2,
+      indentedChildren: indent => {
+        indent.append(
+          joinToNode(
+            views,
+            view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as any) as DiagramView`,
+            {
+              separator: ',',
+              appendNewLineIfNotEmpty: true
+            }
+          )
         )
-      )
+      },
     })
     .append('} as const', NL, NL)
     .appendTemplate`
-      export type ViewId = keyof typeof LikeC4ViewData
+      export type LikeC4ViewsData = typeof LikeC4ViewsData
+      export type ViewId = keyof LikeC4ViewsData
       export function isViewId(value: unknown): value is ViewId {
-        return typeof value === 'string' && value in LikeC4ViewData
+        return typeof value === 'string' && value in LikeC4ViewsData
       }
 
-      export type LikeC4ViewProps = Omit<EmbeddedDiagramProps, 'diagram'>;
-      export function LikeC4View({viewId, ...rest}: LikeC4ViewProps & { viewId: ViewId }) {
-        return <EmbeddedDiagram diagram={LikeC4ViewData[viewId]} {...rest}/>
+      export type LikeC4ViewProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, ViewId>, 'views'>;
+      export function LikeC4View(props: LikeC4ViewProps) {
+        return <EmbeddedDiagram views={LikeC4ViewsData} {...props}/>
       }
+
+      type LikeC4ViewsProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, ViewId>, 'views' | 'viewId'>
+      export const LikeC4Views = {
     `
-    .append(
-      NL, NL,
-      joinToNode(
-        components,
-        ({ id, name }) =>
+    .append(NL)
+    .indent({
+      indentation: 2,
+      indentedChildren: components.map(({ id, name }) =>
           expandToNode`
-            LikeC4View['${name}'] = (props: LikeC4ViewProps) => <EmbeddedDiagram diagram={LikeC4ViewData['${id}']} {...props}/>
-          `,
-        {
-          separator: ',',
-          appendNewLineIfNotEmpty: true
-        }
-      ),
-      NL
-    )
+            ['${name}']: (props: LikeC4ViewsProps) => <LikeC4View viewId={'${id}'} {...props}/>,
+          `.append(NL)
+      )
+      // indentedChildren: [joinToNode(
+      //   components,
+      //   ({ id, name }) =>
+      //     expandToNode`
+      //       ['${name}']: (props: NamedViewProps) => <EmbeddedDiagram views={LikeC4ViewsData} viewId={'${id}'} {...props}/>
+      //     `,
+      //   {
+      //     separator: ',',
+      //     appendNewLineIfNotEmpty: true
+      //   }
+      // )],
+    })
+    .append('} as const', NL, NL)
 
   return toString(out)
 }

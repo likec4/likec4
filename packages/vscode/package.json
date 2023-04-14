@@ -94,7 +94,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^18.15.6",
+    "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
     "esbuild": "^0.17.15",
     "froebel": "^0.23.2",
