@@ -3,7 +3,7 @@
   "publisher": "likec4",
   "displayName": "Like C4",
   "description": "Please enter a brief description here",
-  "version": "0.2.2",
+  "version": "0.4.0",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
