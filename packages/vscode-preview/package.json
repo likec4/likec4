@@ -32,7 +32,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.3",
-    "type-fest": "^3.7.2"
+    "type-fest": "^3.8.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
@@ -41,7 +41,7 @@
     "@types/vscode": "^1.74.0",
     "@types/vscode-webview": "^1.57.1",
     "@vitejs/plugin-react": "^3.1.0",
-    "typescript": "^5.0.3",
+    "typescript": "^5.0.4",
     "vite": "^4.2.1"
   }
 }
