@@ -20,7 +20,7 @@
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rimraf dist"
+    "clean": "run -T rimraf dist"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

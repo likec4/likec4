@@ -19,7 +19,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rimraf dist"
+    "clean": "run -T rimraf dist"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",

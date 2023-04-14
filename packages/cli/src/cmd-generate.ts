@@ -1,39 +1,54 @@
-import type { Command } from 'commander'
-import { initLanguageServices } from './language-services'
+import { generateReact, generateViewsDataTs } from '@likec4/generators'
 import { dotLayouter } from '@likec4/layouts'
-import { generateReact } from '@likec4/generators/react'
-import { mapParallelAsyncWithLimit, values } from 'rambdax'
-import path from 'node:path'
-import mkdirp from 'mkdirp'
-import { existsSync } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
 import chalk from 'chalk'
+import type { Command } from 'commander'
+import mkdirp from 'mkdirp'
+import { writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import { mapParallelAsyncWithLimit, values } from 'rambdax'
+import { initLanguageServices } from './language-services'
 
+async function generateAction(workspaceDir: string, { target, output }: { output?: string, target?: string }) {
+  let extension
+  let generator
+  if (target === 'react') {
+    extension = '.tsx'
+    generator = generateReact
+  } else if (target === 'views-data-ts') {
+    extension = '.ts'
+    generator = generateViewsDataTs
+  } else {
+    console.error(chalk.red(`Unknown target: ${target}`))
+    process.exit(1)
+  }
 
-
-async function generateAction(workspaceDir: string, {output}: { output: string }) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
+
+  console.log(chalk.dim`🔍 Layouting...`)
+
   const layout = await dotLayouter()
   const diagrams = await mapParallelAsyncWithLimit(layout, 2, values(model.views))
 
-  const reactOutput = generateReact(diagrams)
+  const generated = generator(diagrams)
 
-  if (!path.isAbsolute(output)) {
-    output = path.resolve(workspace, output)
+  output = output ? path.resolve(process.cwd(), output) : path.resolve(workspace, `likec4.generated${extension}`)
+
+  await mkdirp(path.dirname(output))
+  const extname = path.extname(output)
+  if (extname !== extension) {
+    output = output.substring(0, output.length - extname.length) + extension
   }
-  if (!existsSync(output)) {
-    await mkdirp(path.dirname(output))
-  }
-  await writeFile(output, reactOutput)
+  await writeFile(output, generated)
   console.log('\nGenerated:\n   ' + chalk.green(output))
 }
 
 
 export const registerGenerateCommand = (program: Command): void => {
   program
-    .command('generate-react')
-    .description('generate react components for views (TypeScript)')
-    .argument('[workspace]', 'directory with sources', process.cwd())
-    .option('-o, --output [output]', 'output file', './src/componets/likec4.tsx')
+    .command('generate')
+    .description('generate react components or typed views data')
+    .argument('[workspace]', 'directory with likec4 sources', process.cwd())
+    .option('-t, --target [target]', 'possible values: react, views-data-ts', 'react')
+    .option('-o, --output [output]', 'output file')
     .action(generateAction)
 }

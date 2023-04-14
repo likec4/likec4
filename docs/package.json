@@ -10,11 +10,12 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
-    "generate": "likec4 generate-react -o ../components/likec4/generated.tsx ./likec4",
+    "generate": "likec4 generate --target react --output components/likec4/generated.tsx ./likec4",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "run -T rimraf .next"
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",

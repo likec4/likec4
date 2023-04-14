@@ -45,9 +45,9 @@
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
     "build": "run-s 'build:langium' 'build:ts'",
-    "dev": "run-p 'watch:*'",
+    "dev": "run generate && run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rimraf dist",
+    "clean": "run -T rimraf dist contrib",
     "test": "vitest run",
     "test:watch": "vitest"
   },

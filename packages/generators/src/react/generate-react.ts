@@ -51,7 +51,7 @@ export function generateReact(
         indent.append(
           joinToNode(
             views,
-            view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as any) as DiagramView`,
+            view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true

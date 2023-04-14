@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "sourceMap": true,
+    "sourceMap": false,
     "verbatimModuleSyntax": false,
     "downlevelIteration": true,
     "importsNotUsedAsValues": "preserve",
@@ -11,9 +11,10 @@
     "noUnusedParameters": false
   },
   "include": [
-    "./src/**/*.ts"
+    "src/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }

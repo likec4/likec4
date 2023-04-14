@@ -19,7 +19,7 @@
     "build": "yarn node esbuild.cjs && run copy",
     "dev": "yarn node esbuild.cjs --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rimraf contrib dist"
+    "clean": "run -T rimraf contrib dist"
   },
   "files": [
     "contrib",
@@ -28,7 +28,7 @@
   ],
   "engines": {
     "vscode": "^1.74.0",
-    "node": ">=16"
+    "node": ">=17"
   },
   "categories": [
     "Programming Languages"
@@ -86,8 +86,8 @@
   "activationEvents": [
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "dist/node/index.js",
-  "browser": "dist/browser/index.js",
+  "main": "./dist/node/index.js",
+  "browser": "./dist/browser/index.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",

@@ -15,31 +15,17 @@
   "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./react": "./src/react/index.ts",
-    "./d2": "./src/d2/index.ts"
-  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      },
-      "./react": {
-        "types": "./dist/react/index.d.ts",
-        "import": "./dist/react/index.js",
-        "require": "./dist/react/index.cjs"
-      },
-      "./d2": {
-        "types": "./dist/d2/index.d.ts",
-        "import": "./dist/d2/index.js",
-        "require": "./dist/d2/index.cjs"
+        "default": "./dist/index.js"
       }
     }
   },
@@ -49,7 +35,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rimraf dist",
+    "clean": "run -T rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -10,17 +10,18 @@
   "files": [
     "dist"
   ],
+  "main": "dist/likec4.js",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "release:build": "run build --minify --tree-shaking=true",
-    "build": "esbuild src/cli.ts --bundle --platform=node --target=node16 --outfile=dist/likec4.js",
-    "dev": "run build -- --watch",
+    "release:build": "run build --minify",
+    "build": "esbuild src/cli.ts --bundle --tree-shaking=true --platform=node --target=node16 --outfile=dist/likec4.js",
+    "dev": "run build --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "rimraf dist .turbo"
+    "clean": "run -T rimraf dist"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
