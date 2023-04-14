@@ -1,6 +1,7 @@
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
+import { relationChecks } from './relation'
 import { elementKindChecks, tagChecks } from './specification'
 import { viewChecks } from './view'
 
@@ -18,6 +19,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ElementView: viewChecks(services),
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
+    Relation: relationChecks(services),
     Tag: tagChecks(services),
   })
 }

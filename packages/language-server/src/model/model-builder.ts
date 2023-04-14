@@ -265,11 +265,11 @@ export class LikeC4ModelBuilder {
       target
     }
     const id = objectHash(hashdata) as c4.RelationID
-    const title = astNode.definition?.props.find(p => p.key === 'title')?.value ?? ''
+    const title = astNode.title ?? (astNode.definition?.props.find(p => p.key === 'title')?.value ?? '')
     return {
       id,
       ...hashdata,
-      title: astNode.title ?? title
+      title
     }
   }
 
