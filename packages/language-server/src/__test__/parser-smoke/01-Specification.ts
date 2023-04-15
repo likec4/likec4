@@ -31,3 +31,12 @@ specification {
   }
 }
 `
+export const invalid_01_Specification_ElementKind = `
+specification {
+  element element {
+    style {
+      shape browser
+    }
+  }
+}
+`

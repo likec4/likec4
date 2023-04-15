@@ -40,7 +40,7 @@ export function isExpression(item: unknown): item is Expression {
     return reflection.isInstance(item, Expression);
 }
 
-export type Name = 'model' | ElementShape | ThemeColor | string;
+export type Name = 'element' | 'model' | ElementShape | ThemeColor | string;
 
 export type ThemeColor = 'muted' | 'primary' | 'secondary';
 

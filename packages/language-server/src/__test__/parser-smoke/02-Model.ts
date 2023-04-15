@@ -16,6 +16,12 @@ model {
   user2 = person
 }
 `
+export const valid_02_Model_Builtin= `
+model {
+  el1 = element
+  el2 = element
+}
+`
 export const valid_02_Model_ElementWithTitle = `
 specification {
   element person

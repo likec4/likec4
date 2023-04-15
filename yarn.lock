@@ -893,11 +893,11 @@ __metadata:
     "@types/react-dom": ^18.0.11
     canvas: ^2.11.2
     next: ^13.3.0
-    nextra: ^2.3.0
-    nextra-theme-docs: ^2.3.0
+    nextra: ^2.4.0
+    nextra-theme-docs: ^2.4.0
     react: ^18.2.0
     react-dom: ^18.2.0
-    typescript: ^5.0.3
+    typescript: ^5.0.4
   languageName: unknown
   linkType: soft
 
@@ -6073,14 +6073,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-seo@npm:^5.5.0":
-  version: 5.15.0
-  resolution: "next-seo@npm:5.15.0"
+"next-seo@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "next-seo@npm:6.0.0"
   peerDependencies:
     next: ^8.1.1-canary.54 || >=9.0.0
     react: ">=16.0.0"
     react-dom: ">=16.0.0"
-  checksum: 05b0769d9c9abcc6a0179e5d724e87b1a3a7591a9c2caa4ef5b791769fcf868cb97fbcd90264106101cf7fbc073b0375ab90026aa519d2e899fbabea12cafbfb
+  checksum: aa986b3731386bc91408df6bca09a9edc0cdd8a7730bcdc331f283ab50803a6d60047b685eeec4b11bde1660dbb792e3737e81ef05a65682323d0d07fa9edd85
   languageName: node
   linkType: hard
 
@@ -6155,9 +6155,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextra-theme-docs@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "nextra-theme-docs@npm:2.3.0"
+"nextra-theme-docs@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "nextra-theme-docs@npm:2.4.0"
   dependencies:
     "@headlessui/react": ^1.7.10
     "@popperjs/core": ^2.11.6
@@ -6167,22 +6167,22 @@ __metadata:
     git-url-parse: ^13.1.0
     intersection-observer: ^0.12.2
     match-sorter: ^6.3.1
-    next-seo: ^5.5.0
+    next-seo: ^6.0.0
     next-themes: ^0.2.1
     scroll-into-view-if-needed: ^3.0.0
     zod: ^3.20.2
   peerDependencies:
     next: ">=9.5.3"
-    nextra: 2.3.0
+    nextra: 2.4.0
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: bd3101555433aed83d3a52c8b82420f119ed9372153ab6eab91cb89feec2a29abe94c3af86354af2bce7e1a743c007b8206e2058d53da33bfc3bf9127c2c35dd
+  checksum: 34eea95682dc1087f61ecf1fba66ee8d84e0a67a8bb646ed681e8134979453c81c3edf65aad49e348d57b09f6c380b48e372193689f8d8033eb442f388d04ce9
   languageName: node
   linkType: hard
 
-"nextra@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "nextra@npm:2.3.0"
+"nextra@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "nextra@npm:2.4.0"
   dependencies:
     "@mdx-js/mdx": ^2.3.0
     "@mdx-js/react": ^2.3.0
@@ -6195,7 +6195,7 @@ __metadata:
     next-mdx-remote: ^4.2.1
     p-limit: ^3.1.0
     rehype-katex: ^6.0.2
-    rehype-pretty-code: 0.9.3
+    rehype-pretty-code: 0.9.4
     remark-gfm: ^3.0.1
     remark-math: ^5.1.1
     remark-reading-time: ^2.0.1
@@ -6209,7 +6209,7 @@ __metadata:
     next: ">=9.5.3"
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: c11eff2ef4c5802f0cd31e15b251757c0764376fc6845b01f0761e49e6db27b289c97632dd9efa021cb3361da27f26f7ac983e6988ad8879f71c8f1f556ac6b9
+  checksum: efb9f64b38ecbd6d612e10eab5785c02f17c723b36f0c252a328b7782af2adaa1dfa34d612c962d67c1ef6158122e4e7a63375b9f99d9a78bb248c5fc247c4da
   languageName: node
   linkType: hard
 
@@ -6988,15 +6988,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rehype-pretty-code@npm:0.9.3":
-  version: 0.9.3
-  resolution: "rehype-pretty-code@npm:0.9.3"
+"rehype-pretty-code@npm:0.9.4":
+  version: 0.9.4
+  resolution: "rehype-pretty-code@npm:0.9.4"
   dependencies:
     hash-obj: ^4.0.0
     parse-numeric-range: ^1.3.0
   peerDependencies:
     shiki: "*"
-  checksum: 5e4c6341467ef37cc08cf90c12c05a10a9bf88015f70b7e6b07270963efb4b456a8d41740fb4a576501bc15860dafd51ba11076e3589aa9839d064b22cf2fcfa
+  checksum: a85e41340dd5d7784f99afa01347a7bdafaa28a1ce726d9ff2a865f3f8db0d9fcb4b91b4f2df7e5521d0c80155864cbab81eb5c70e590e388f7349f15976560b
   languageName: node
   linkType: hard
 
@@ -8071,7 +8071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.0.3, typescript@npm:^5.0.4":
+"typescript@npm:^5.0.4":
   version: 5.0.4
   resolution: "typescript@npm:5.0.4"
   bin:
@@ -8081,7 +8081,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.0.3#~builtin<compat/typescript>, typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
   resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=1f5320"
   bin:

@@ -5,15 +5,18 @@ import type {
   Module, PartialLangiumServices, PartialLangiumSharedServices
 } from 'langium'
 import {
-  createDefaultModule, inject, createDefaultSharedModule
+  createDefaultModule,
+  createDefaultSharedModule,
+  inject
 } from 'langium'
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
+import { LikeC4DocumentSymbolProvider, LikeC4HoverProvider, LikeC4SemanticTokenProvider } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
-import { registerValidationChecks } from './validation'
-import { LikeC4CodeLensProvider, LikeC4DocumentSymbolProvider, LikeC4HoverProvider, LikeC4SemanticTokenProvider } from './lsp'
+import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
+import { LikeC4CodeLensProvider, LikeC4WorkspaceManager } from './shared'
+import { registerValidationChecks } from './validation'
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -59,6 +62,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
   ...LikeC4GeneratedSharedModule,
+  workspace: {
+    WorkspaceManager: (services) => new LikeC4WorkspaceManager(services),
+  },
   lsp: {
     CodeLensProvider: (services) => new LikeC4CodeLensProvider(services)
   }

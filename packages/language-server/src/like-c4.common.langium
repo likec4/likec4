@@ -17,7 +17,7 @@ ThemeColor returns string: 'primary' | 'secondary' | 'muted';
 
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'cylinder' | 'storage' | 'queue';
 
-Name returns string: ElementShape | ThemeColor | 'model' | ID;
+Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
 
 // -------------------------
 

@@ -9,10 +9,12 @@ export function createTestServices() {
   const langiumDocuments = services.shared.workspace.LangiumDocuments
   const documentBuilder = services.shared.workspace.DocumentBuilder
   const modelBuilder = services.likec4.ModelBuilder
+  const initPromise = services.shared.workspace.WorkspaceManager.initializeWorkspace([])
 
   let documentIndex = 1
 
   const parse = async (input: string, uri?: string) => {
+    await initPromise
     uri = uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`
     const document = services.shared.workspace.LangiumDocumentFactory.fromString(input, URI.file(uri))
     langiumDocuments.addDocument(document)
@@ -21,6 +23,7 @@ export function createTestServices() {
   }
 
   const validate = async (input: string | LikeC4LangiumDocument) => {
+    await initPromise
     const document = typeof input === 'string' ? await parse(input) : input
     await documentBuilder.build([document], { validationChecks: 'all' })
     const diagnostics = document.diagnostics ?? []
@@ -33,6 +36,7 @@ export function createTestServices() {
   }
 
   const validateAll = async () => {
+    await initPromise
     const docs = langiumDocuments.all.toArray()
     await documentBuilder.build(docs, { validationChecks: 'all' })
     const diagnostics =  docs.flatMap(doc => doc.diagnostics ?? [])
