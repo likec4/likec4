@@ -110,6 +110,8 @@ export interface RectangleShapeProps {
     opacity?: number
     scaleX?: number
     scaleY?: number
+    width?: number
+    height?: number
   }>
   onNodeClick?: ((node: DiagramNode) => void) | undefined
 }
@@ -141,16 +143,12 @@ export const RectangleShape = ({
       y: y + offsetY,
       offsetX,
       offsetY,
-      width,
-      height
     },
     immediate: !animate
   }, [x, y, offsetX, offsetY])
 
   const rectProps = useSpring({
     to: {
-      width,
-      height,
       fill,
       shadowColor
     },
@@ -207,6 +205,8 @@ export const RectangleShape = ({
       shadowOffsetX={0}
       shadowOffsetY={8}
       {...rectProps}
+      width={springs?.width}
+      height={springs?.height}
     />
     <NodeTitle
       y={offsetY}

@@ -33,6 +33,8 @@ export interface CylinderShapeProps {
     opacity?: number
     scaleX?: number
     scaleY?: number
+    width?: number
+    height?: number
   }>
   onNodeClick?: ((node: DiagramNode) => void) | undefined
 }
@@ -64,9 +66,7 @@ export const CylinderShape = ({
       x: x + offsetX,
       y: y + offsetY,
       offsetX,
-      offsetY,
-      width,
-      height
+      offsetY
     },
     immediate: !animate
   }, [x, y, offsetX, offsetY])
@@ -75,8 +75,6 @@ export const CylinderShape = ({
 
   const cylinderProps = useSpring({
     to: {
-      width,
-      height,
       fill,
       stroke,
       shadowColor
@@ -135,6 +133,8 @@ export const CylinderShape = ({
       shadowOffsetY={8}
       data={path}
       {...cylinderProps}
+      width={springs?.width}
+      height={springs?.height}
     />
     <NodeTitle
       y={offsetY + Math.round((width / 2) * 0.08)}

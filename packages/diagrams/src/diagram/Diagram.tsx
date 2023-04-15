@@ -5,7 +5,7 @@ import { useFirstMountState } from '@react-hookz/web/esm'
 import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { createElement, useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react'
+import { createElement, useCallback, useMemo, useRef, type ReactElement } from 'react'
 import { Layer, Stage } from 'react-konva'
 import { CompoundShape, EdgeShape, nodeShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
@@ -209,27 +209,29 @@ export function Diagram({
   // }, [id, width, height, diagram.width, diagram.height])
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
-    from: {
+    from: (node) => ({
+      width: node.size.width,
+      height: node.size.height,
       opacity: 0.1,
       scaleX: 0.8,
       scaleY: 0.8,
-    },
+    }),
     enter: {
       opacity: 1,
       scaleX: 1,
       scaleY: 1,
     },
+    update: (node) => ({
+      width: node.size.width,
+      height: node.size.height,
+    }),
     leave: {
       opacity: 0,
       scaleX: 0.7,
       scaleY: 0.7,
     },
+    expires: true,
     immediate: isFirstRender || !animate,
-    config(item, index, state) {
-      return {
-        duration: state === 'leave' ? 120 : 200,
-      }
-    },
     keys: node => node.id,
   })
 
@@ -243,8 +245,9 @@ export function Diagram({
     leave: {
       opacity: 0,
     },
+    exitBeforeEnter: true,
+    expires: true,
     immediate: isFirstRender || !animate,
-    delay: animate ? 100 : 0,
     config: {
       duration: 100,
     },
@@ -252,28 +255,30 @@ export function Diagram({
   })
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
-    from: {
+    from: (node) => ({
+      width: node.size.width,
+      height: node.size.height,
       opacity: 0.1,
       scaleX: 0.7,
       scaleY: 0.7,
-    },
+    }),
     enter: {
       opacity: 1,
       scaleX: 1,
       scaleY: 1,
     },
+    update: (node) => ({
+      width: node.size.width,
+      height: node.size.height,
+    }),
     leave: {
       opacity: 0,
       scaleX: 0.4,
       scaleY: 0.4,
     },
+    expires: true,
     immediate: isFirstRender || !animate,
-    config(item, index, state) {
-      return {
-        duration: state === 'leave' ? 120 : 250,
-      }
-    },
-    keys: node => (node.parent ?? '') + '-' + node.id,
+    keys: node => (node.parent ?? '') + '-' + node.id + '-' + node.shape,
   })
 
   // @ts-ignore
@@ -287,9 +292,9 @@ export function Diagram({
     {...stageProps}
   >
     <Layer>
-      {compoundTransitions((springs, node) =>
+      {compoundTransitions((springs, node, {key}) =>
         <CompoundShape
-          key={node.id}
+          key={key}
           animate={animate}
           node={node}
           theme={theme}
@@ -298,9 +303,9 @@ export function Diagram({
         />)}
     </Layer>
     <Layer>
-      {edgeTransitions((springs, edge) => (
+      {edgeTransitions((springs, edge, {key}) => (
         <EdgeShape
-          key={edge.id}
+          key={key}
           edge={edge}
           theme={theme}
           springs={springs}
@@ -309,9 +314,9 @@ export function Diagram({
       ))}
     </Layer>
     <Layer>
-      {nodeTransitions((springs, node) =>
+      {nodeTransitions((springs, node, {key}) =>
         createElement(nodeShape(node), {
-          key: (node.parent ?? '') + '-' + node.id + '-' + node.shape,
+          key,
           animate,
           node,
           theme,

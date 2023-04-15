@@ -21,6 +21,7 @@ function App() {
       width={window.innerWidth}
       height={window.innerHeight}
       onNodeClick={onNodeClick}
+      padding={40}
     />
   </div>
 }
