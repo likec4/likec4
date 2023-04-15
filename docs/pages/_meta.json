@@ -2,7 +2,13 @@
   "index": {
     "title": "Introduction",
     "type": "page",
-    "display": "hidden"
+    "theme": {
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
+    }
   },
   "about": {
     "title": "About",

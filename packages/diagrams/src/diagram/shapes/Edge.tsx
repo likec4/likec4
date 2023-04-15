@@ -1,5 +1,5 @@
 import type { DiagramEdge } from '@likec4/core/types'
-import { animated, useSpring, type SpringValues } from '@react-spring/konva'
+import { animated, type SpringValues } from '@react-spring/konva'
 import { useCallback, useMemo } from 'react'
 
 import type { DiagramTheme } from '../types'
@@ -46,7 +46,6 @@ export const EdgeShape = ({
     onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi]),
   }
   return <>
-    {/* @ts-ignore */}
     <animated.Line
       {...springs}
       {...listeners}
@@ -78,7 +77,7 @@ export const EdgeShape = ({
         fill={theme.relation.labelColor}
         fontFamily={theme.font}
         fontSize={12}
-        lineHeight={1.12}
+        lineHeight={1.15}
         verticalAlign="middle"
       />
     }

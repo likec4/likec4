@@ -5,10 +5,10 @@ export const sizes = {
   padding: 24,
   title: {
     fontSize: 15,
-    lineHeight: 1.12
+    lineHeight: 1.15
   },
   description: {
     fontSize: 13,
-    lineHeight: 1.12
+    lineHeight: 1.15
   }
 } as const

@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
 import { useFirstMountState } from '@react-hookz/web/esm'
-import { Layer, Stage } from 'react-konva'
 import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react'
-import { CompoundShape, EdgeShape, RectangleShape } from './shapes'
+import { createElement, useCallback, useEffect, useMemo, useRef, type ReactElement } from 'react'
+import { Layer, Stage } from 'react-konva'
+import { CompoundShape, EdgeShape, nodeShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
 
@@ -50,15 +50,13 @@ export function Diagram({
   const {
     pannable = interactive,
     zoomable = interactive,
-    animate: _animate = interactive,
+    animate = interactive,
   } = props
 
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
   const isFirstRender = useFirstMountState()
-
-  const animate = !isFirstRender && _animate
 
   const width = Math.max(props.width ?? diagram.width, 16)
   const height = Math.max(props.height ?? diagram.height, 16)
@@ -119,7 +117,7 @@ export function Diagram({
   }
 
   const [stageProps, stageSpringApi] = useSpring({
-    from: {
+    to: {
       ...centerOnRect({
         x: 0,
         y: 0,
@@ -127,8 +125,8 @@ export function Diagram({
         height: diagram.height,
       })
     },
-    immediate: !animate,
-  }, [animate])
+    immediate: isFirstRender || !animate,
+  }, [id, width, height, diagram.width, diagram.height])
 
   const panning = useMemo(() => {
     if (!pannable) {
@@ -141,7 +139,7 @@ export function Diagram({
       onDragStart: (_e: Konva.KonvaEventObject<DragEvent>) => {
         stageSpringApi.stop(true)
       },
-      onDragEnd: ({target}: Konva.KonvaEventObject<DragEvent>) => {
+      onDragEnd: ({ target }: Konva.KonvaEventObject<DragEvent>) => {
         if (target === stageRef.current) {
           stageSpringApi.set({
             x: target.x(),
@@ -196,19 +194,19 @@ export function Diagram({
     })
   }, [stageSpringApi])
 
-  useEffect(() => {
-    stageSpringApi.stop(true).start({
-      to: {
-        ...centerOnRect({
-          x: 0,
-          y: 0,
-          width: diagram.width,
-          height: diagram.height,
-        })
-      },
-      immediate: !animate,
-    })
-  }, [id, width, height, diagram.width, diagram.height])
+  // useEffect(() => {
+  //   stageSpringApi.stop(true).start({
+  //     to: {
+  //       ...centerOnRect({
+  //         x: 0,
+  //         y: 0,
+  //         width: diagram.width,
+  //         height: diagram.height,
+  //       })
+  //     },
+  //     immediate: !animate,
+  //   })
+  // }, [id, width, height, diagram.width, diagram.height])
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
     from: {
@@ -226,7 +224,7 @@ export function Diagram({
       scaleX: 0.7,
       scaleY: 0.7,
     },
-    immediate: !animate,
+    immediate: isFirstRender || !animate,
     config(item, index, state) {
       return {
         duration: state === 'leave' ? 120 : 200,
@@ -245,7 +243,7 @@ export function Diagram({
     leave: {
       opacity: 0,
     },
-    immediate: !animate,
+    immediate: isFirstRender || !animate,
     delay: animate ? 100 : 0,
     config: {
       duration: 100,
@@ -269,7 +267,7 @@ export function Diagram({
       scaleX: 0.4,
       scaleY: 0.4,
     },
-    immediate: !animate,
+    immediate: isFirstRender || !animate,
     config(item, index, state) {
       return {
         duration: state === 'leave' ? 120 : 250,
@@ -312,14 +310,14 @@ export function Diagram({
     </Layer>
     <Layer>
       {nodeTransitions((springs, node) =>
-        <RectangleShape
-          key={(node.parent ?? '') + '-' + node.id}
-          animate={animate}
-          node={node}
-          theme={theme}
-          onNodeClick={onNodeClick}
-          springs={springs}
-        />
+        createElement(nodeShape(node), {
+          key: (node.parent ?? '') + '-' + node.id + '-' + node.shape,
+          animate,
+          node,
+          theme,
+          springs,
+          onNodeClick,
+        })
       )}
     </Layer>
   </AStage>

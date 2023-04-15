@@ -1,14 +1,15 @@
 import React from 'react'
 import type { DocsThemeConfig } from 'nextra-theme-docs'
+import { Logo } from '$/components/logo'
 
 const config: DocsThemeConfig = {
-  logo: <span>LikeC4</span>,
+  logo: <Logo height={30} textFill='#FFF'/>,
   darkMode: true,
   primaryHue: 195,
   //main: ({ children }) => <main className='asd'>{children}</main>,
-  // project: {
-  //   link: 'https://docs.like-c4.dev',
-  // },
+  project: {
+    link: 'https://github.com/likec4/likec4',
+  },
   docsRepositoryBase: 'https://github.com/likec4/likec4/blob/docs',
   // footer: {
   //   text: 'Nextra Docs Template',

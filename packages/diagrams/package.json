@@ -11,8 +11,8 @@
     "type": "git",
     "url": "https://github.com/likec4/likec4.git"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -35,7 +35,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts"
   },
   "scripts": {
     "compile": "tsc --noEmit",

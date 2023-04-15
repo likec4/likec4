@@ -28,6 +28,7 @@ export function estimateNodeSize(node: ComputedNode) {
     Math.max(titleWidth, descriptionWidth),
   )
 
+  // TODO: dirty hack, need to fix it
   const titleLines = Math.ceil(titleWidth / width)
   const descriptionLines = Math.ceil(descriptionWidth / width)
 

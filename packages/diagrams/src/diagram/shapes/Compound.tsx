@@ -30,7 +30,7 @@ export const CompoundShape = ({
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
   const {
-    hiContrast,
+    loContrast,
     fill,
     shadow: shadowColor
   } = theme.colors[color]
@@ -96,7 +96,7 @@ export const CompoundShape = ({
       x={0}
       y={0}
       width={rectProps.width}
-      fill={hiContrast}
+      fill={loContrast}
       fontSize={12}
       fontFamily={theme.font}
       wrap={'none'}
@@ -104,7 +104,7 @@ export const CompoundShape = ({
       align={'left'}
       text={node.title}
       padding={10}
-      opacity={0.7}
+      opacity={0.8}
       {...listeners}
     />
   </animated.Group>
