@@ -1,0 +1,38 @@
+import { LikeC4View } from "$/components"
+
+# Context
+
+```
+views {
+
+  view index {
+    title "Context"
+    include
+      *,
+      customer -> bigbank.*
+    autoLayout LR
+  }
+
+}
+```
+
+...
+
+<LikeC4View viewId="index"/>
+
+# Landscape
+
+```
+views {
+
+  view landscape of bigbank {
+    title "Big Bank plc"
+    include *
+  }
+
+}
+```
+
+...
+
+<LikeC4View viewId="landscape"/>

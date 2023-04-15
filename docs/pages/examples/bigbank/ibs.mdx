@@ -1,0 +1,25 @@
+import { LikeC4View } from "$/components"
+
+# Big Bank plc - Internet Banking System
+
+```
+views {
+
+  view ibs of internetBankingSystem {
+    title "Big Bank plc - Internet Banking System"
+
+    include
+      -> internetBankingSystem.* ->
+    exclude
+      bigbank,
+      bigbank.*
+    include
+      internetBankingSystem
+  }
+
+}
+```
+
+...
+
+<LikeC4View viewId="ibs"/>

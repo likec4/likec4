@@ -1,0 +1,30 @@
+import { LikeC4View } from "$/components"
+
+# Customer: Web application
+
+```
+views {
+
+  view spa of singlePageApplication {
+    include
+      *,
+      apiApplication,
+      internetBankingSystem,
+      -> singlePageApplication ->
+
+    style * {
+      color secondary
+    }
+
+    style singlePageApplication {
+      color primary
+    }
+  }
+
+}
+```
+
+...
+
+
+<LikeC4View viewId="spa"/>

@@ -1,0 +1,21 @@
+import { LikeC4View } from "$/components"
+
+# Personal Banking Customer
+
+```
+views {
+
+  view customer of customer {
+    include
+      customer,
+      bigbank,
+      internetBankingSystem,
+      customer -> internetBankingSystem.*
+  }
+
+}
+```
+
+... to be written ...
+
+<LikeC4View viewId="customer"/>

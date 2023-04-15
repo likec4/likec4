@@ -1,16 +1,22 @@
 {
-  "index": "Introduction",
-  "bigbank": {
-    "title": "Example: BigBank"
+  "index": {
+    "title": "Introduction",
+    "type": "page",
+    "display": "hidden"
   },
   "about": {
     "title": "About",
-    "type": "page"
-  },
-  "contact": {
-    "title": "Contact ↗",
     "type": "page",
-    "href": "https://twitter.com/shuding_",
-    "newWindow": true
+    "display": "hidden"
+  },
+  "examples": {
+    "title": "Examples",
+    "type": "menu",
+    "items": {
+      "bigbank": {
+        "title": "Bigbank",
+        "href": "/examples/bigbank/sources"
+      }
+    }
   }
 }

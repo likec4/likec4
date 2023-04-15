@@ -5,6 +5,7 @@ const config: DocsThemeConfig = {
   logo: <span>LikeC4</span>,
   darkMode: true,
   primaryHue: 195,
+  //main: ({ children }) => <main className='asd'>{children}</main>,
   // project: {
   //   link: 'https://docs.like-c4.dev',
   // },
@@ -12,6 +13,9 @@ const config: DocsThemeConfig = {
   // footer: {
   //   text: 'Nextra Docs Template',
   // },
+  themeSwitch: {
+    component: () => null
+  }
 }
 
 export default config

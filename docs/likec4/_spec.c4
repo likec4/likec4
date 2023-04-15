@@ -5,8 +5,6 @@ specification {
   element container
   element component
 
-  tag gray
-
   element person {
     style {
       color secondary

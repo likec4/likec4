@@ -1,3 +1,40 @@
+import { LikeC4View } from "$/components"
+
+# LikeC4 Source Code
+
+## Specification source
+
+[_spec.c4](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
+
+```
+specification {
+
+  element enterprise
+  element softwaresystem
+  element container
+  element component
+
+  element person {
+    style {
+      color secondary
+      shape person
+    }
+  }
+
+  element database {
+    style {
+      shape: storage
+    }
+  }
+
+}
+```
+
+## Model source
+
+[bigbank.c4](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
+
+```
 model {
 
   customer = person "Personal Banking Customer" {
@@ -119,103 +156,4 @@ model {
   emailComponent -> email "Sends e-mail using"
 
 }
-
-views {
-
-  view index {
-    title "Context"
-    include
-      *,
-      customer -> bigbank.*
-    autoLayout LR
-  }
-
-  view landscape of bigbank {
-    title "Big Bank plc"
-    include *
-  }
-
-
-  view ibs of internetBankingSystem {
-    title "Big Bank plc - Internet Banking System"
-
-    include
-      -> internetBankingSystem.* ->
-    exclude
-      bigbank,
-      bigbank.*
-    include
-      internetBankingSystem
-  }
-
-  view customer of customer {
-    include
-      customer,
-      bigbank,
-      internetBankingSystem,
-      customer -> internetBankingSystem.*
-  }
-
-  view spa of singlePageApplication {
-    include
-      *,
-      apiApplication,
-      internetBankingSystem,
-      -> singlePageApplication ->
-
-    style * {
-      color secondary
-    }
-
-    style singlePageApplication {
-      color primary
-    }
-  }
-
-  view support of supportStaff {
-    include
-      *,
-      bigbank,
-      -> backoffice ->
-  }
-
-  view apiApp of internetBankingSystem.apiApplication {
-    title "API Components"
-    include
-      *,
-      bigbank
-    exclude mobileApp
-
-    style * {
-      color muted
-    }
-
-    style internetBankingSystem.* {
-      color secondary
-    }
-
-    style apiApplication, apiApplication.* {
-      color primary
-    }
-  }
-
-  view webapp of webApplication {
-    include
-      *,
-      internetBankingSystem,
-      bigbank
-
-    style bigbank {
-      color muted
-    }
-  }
-
-  view mobileApp of mobileApp {
-    include
-      *,
-      internetBankingSystem,
-      internetBankingSystem.apiApplication,
-      mobileApp -> internetBankingSystem.apiApplication.*
-  }
-
-}
+```

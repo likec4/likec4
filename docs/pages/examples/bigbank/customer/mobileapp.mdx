@@ -1,0 +1,24 @@
+import { LikeC4View } from "$/components"
+
+# Customer: Mobile application
+
+```
+views {
+
+  view mobileApp of mobileApp {
+    include
+      *,
+      internetBankingSystem,
+      internetBankingSystem.apiApplication,
+      mobileApp -> internetBankingSystem.apiApplication.*
+  }
+
+}
+```
+
+...
+
+
+
+
+<LikeC4View viewId="mobileApp"/>
