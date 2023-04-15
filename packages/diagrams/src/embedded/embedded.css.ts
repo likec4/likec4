@@ -1,5 +1,10 @@
 import { style } from '@vanilla-extract/css'
 
+export const cssEmbeddedContainer = style({
+  flex: '1 1 100%',
+  overflow: 'hidden',
+  cursor: 'pointer',
+})
 
 export const cssMagnifyingGlass = style({
   position: 'absolute',

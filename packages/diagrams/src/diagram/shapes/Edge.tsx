@@ -43,7 +43,7 @@ export const EdgeShape = ({
   const listeners = {
     ...onClickListener,
     onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
-    onMouseLeave: useCallback(() => opacityApi?.start(0.8), [opacityApi]),
+    onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi]),
   }
   return <>
     {/* @ts-ignore */}

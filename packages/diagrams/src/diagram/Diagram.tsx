@@ -240,15 +240,15 @@ export function Diagram({
       opacity: 0,
     },
     enter: {
-      opacity: 0.8,
+      opacity: 0.75,
     },
     leave: {
       opacity: 0,
     },
     immediate: !animate,
-    delay: animate ? 50 : 0,
+    delay: animate ? 100 : 0,
     config: {
-      duration: 120,
+      duration: 100,
     },
     keys: edge => edge.id,
   })

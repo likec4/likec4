@@ -1,10 +1,10 @@
-import { anyPass, filter, type Predicate } from 'rambdax'
+import { anyPass, filter, head, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import type { Fqn } from '../types'
 import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
 import type { ComputedNode, ComputedView } from '../types/computed-view'
 import * as Expression from '../types/expression'
-import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle } from '../types/view'
+import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle, type ViewID } from '../types/view'
 import { Relations, compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
@@ -16,7 +16,7 @@ function updateSetWith<T>(set: Set<T>, elements: T[], addToSet = true): void {
     addToSet ? set.add(e) : set.delete(e)
   }
 }
-function transformToNodes(elementsIterator: Iterable<Element>, index: ModelIndex) {
+function transformToNodes(elementsIterator: Iterable<Element>, index: ModelIndex, currentViewid?: ViewID) {
   return [...elementsIterator].sort(compareByFqnHierarchically).reduce((map, { id, title, color, shape, description }) => {
     let parent = parentFqn(id)
     while (parent) {
@@ -25,7 +25,7 @@ function transformToNodes(elementsIterator: Iterable<Element>, index: ModelIndex
       }
       parent = parentFqn(parent)
     }
-    const navigateTo = index.defaultViewOf(id)
+    const navigateTo = head(index.defaultViewOf(id).filter(v => v !== currentViewid))
     map.set(id, Object.assign(
       {
         id,
@@ -168,7 +168,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     }
   }
 
-  const nodesreg  = transformToNodes(elements, index)
+  const nodesreg  = transformToNodes(elements, index, view.id)
 
   const edges = edgeBuilder.build().map(edge => {
     while (edge.parent) {

@@ -43,7 +43,7 @@ export class ModelIndex {
   private _elements = new Set<Element>()
 
   private _relations = new Map<RelationID, Relation>()
-  private _defaultElementView = new Map<Fqn, ViewID>()
+  private _defaultElementView = new Map<Fqn, ViewID[]>()
 
   // private _taggedElements = new Map<Tag, Set<Element>>()
   // private _taggedRelations = new Map<Tag, Set<Relation>>()
@@ -66,7 +66,9 @@ export class ModelIndex {
     }
     for (const {id, viewOf} of Object.values(views)) {
       if (viewOf) {
-        index._defaultElementView.set(viewOf, id)
+        const views = index._defaultElementView.get(viewOf) ?? []
+        views.push(id)
+        index._defaultElementView.set(viewOf, views)
       }
     }
     return index
@@ -175,7 +177,7 @@ export class ModelIndex {
     // }
   }
 
-  defaultViewOf = (id: Fqn): ViewID | undefined => {
-    return this._defaultElementView.get(id)
+  defaultViewOf = (id: Fqn): ViewID[] => {
+    return this._defaultElementView.get(id) ?? []
   }
 }

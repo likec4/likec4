@@ -9,10 +9,12 @@ import {
 } from '../components/ui/dialog'
 import { LazyDiagram } from '../diagram/lazy'
 import { browserContent, dialogContent } from './browser.css'
+import type { DiagramPaddings } from '../diagram/types'
 
 export interface DiagramBrowserProps<Views extends Record<any, DiagramView>, Id = (keyof Views & string)> {
   views: Views
   selected: Id
+  padding?: DiagramPaddings
   onClose?: (() => void) | undefined
 }
 
@@ -20,10 +22,17 @@ export interface DiagramBrowserProps<Views extends Record<any, DiagramView>, Id 
 export function DiagramBrowser<Views extends Record<any, DiagramView>>({
   views,
   selected,
-  onClose
+  onClose,
+  padding = 8,
 }: DiagramBrowserProps<Views>): JSX.Element {
 
   const [viewId, setViewId] = useState(selected)
+
+  // const backToSelected = useCallback((e: React.MouseEvent) => {
+  //   e.stopPropagation()
+  //   console.log('backToSelected')
+  //   // setViewId(selected)
+  // }, [selected])
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node
@@ -53,7 +62,7 @@ export function DiagramBrowser<Views extends Record<any, DiagramView>>({
             diagram={diagram}
             width={Math.floor(measures.width)}
             height={Math.floor(measures.height)}
-            padding={10}
+            padding={padding}
             onNodeClick={onNodeClick}
           />
         )}

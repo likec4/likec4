@@ -7,6 +7,7 @@ export const dialogContent = style({
   maxHeight: '95vh',
   padding: 4,
   display: 'flex',
+  backgroundColor: '#252930'
 })
 
 

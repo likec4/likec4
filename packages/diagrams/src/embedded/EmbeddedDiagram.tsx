@@ -6,6 +6,7 @@ import invariant from 'tiny-invariant'
 import { LazyDiagramBrowser } from '../browser/lazy'
 import { LazyDiagram } from '../diagram/lazy'
 import type { DiagramPaddings } from '../diagram/types'
+import { cssEmbeddedContainer } from './embedded.css'
 
 export interface EmbeddedDiagramProps<Views extends Record<any, DiagramView>, Id = (keyof Views & string)> {
   views: Views
@@ -53,7 +54,11 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
 
   return <>
     <div className={className} style={style}>
-      <div ref={containerRef} style={{ flex: '1 1 100%', overflow: 'hidden' }}>
+      <div
+        ref={containerRef}
+        className={cssEmbeddedContainer}
+        style={{ flex: '1 1 100%', overflow: 'hidden' }}
+      >
         {measures && (
           <LazyDiagram
             animate

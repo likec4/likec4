@@ -62,7 +62,7 @@ exports[`dotLayout: computedAmazonView 1`] = `
       ],
       "color": "primary",
       "id": "cloud",
-      "navigateTo": "cloud3levels",
+      "navigateTo": "cloudView",
       "parent": null,
       "position": [
         11,
@@ -105,7 +105,6 @@ exports[`dotLayout: computedAmazonView 1`] = `
       ],
       "color": "primary",
       "id": "amazon",
-      "navigateTo": "amazon",
       "parent": null,
       "position": [
         11,
@@ -524,7 +523,7 @@ exports[`dotLayout: computedCloud3levels 1`] = `
       ],
       "color": "primary",
       "id": "cloud",
-      "navigateTo": "cloud3levels",
+      "navigateTo": "cloudView",
       "parent": null,
       "position": [
         11,
@@ -1238,7 +1237,7 @@ exports[`dotLayout: computedIndexView 1`] = `
       "children": [],
       "color": "primary",
       "id": "cloud",
-      "navigateTo": "cloud3levels",
+      "navigateTo": "cloudView",
       "parent": null,
       "position": [
         165,
