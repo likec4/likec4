@@ -134,10 +134,7 @@ export const RectangleShape = ({
 
   const springsRef = useSyncedRef(springs ?? null)
 
-  const isFirstRender = useFirstMountState()
-
   const [groupProps] = useSpring({
-    delay: isFirstRender && animate ? 50 : 0,
     to: {
       x: x + offsetX,
       y: y + offsetY,

@@ -55,7 +55,7 @@ export const DefaultDiagramTheme: DiagramTheme = {
     primary: {
       shadow,
       fill: '#2563eb',
-      stroke: '#1e3a8a',
+      stroke: '#1e40af',
       hiContrast: '#eff6ff',
       loContrast: '#bfdbfe'
     },
@@ -67,7 +67,7 @@ export const DefaultDiagramTheme: DiagramTheme = {
     //   hiContrast: '#eef2ff',
     //   loContrast: '#a5b4fc'
     // },
-        secondary: {
+    secondary: {
       shadow,
       fill: '#0369a1',
       stroke: '#0c4a6e',
@@ -77,7 +77,7 @@ export const DefaultDiagramTheme: DiagramTheme = {
     muted: {
       shadow,
       fill: '#4b5563',
-      stroke: '#111827',
+      stroke: '#374151',
       hiContrast: '#f9fafb',
       loContrast: '#d1d5db'
     }

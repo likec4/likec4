@@ -11,10 +11,10 @@
     "type": "git",
     "url": "https://github.com/likec4/likec4.git"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -35,9 +35,7 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "scripts": {
     "compile": "tsc --noEmit",
@@ -53,8 +51,8 @@
   },
   "dependencies": {
     "@react-spring/konva": "^9.7.2",
-    "konva": "^8.4.3",
-    "react-konva": "^18.2.5"
+    "konva": "^9.0.0",
+    "react-konva": "^18.2.7"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",

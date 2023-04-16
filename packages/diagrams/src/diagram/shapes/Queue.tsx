@@ -1,46 +1,12 @@
-import type { DiagramNode } from '@likec4/core/types'
 import { useSyncedRef } from '@react-hookz/web/esm'
-import { animated, useSpring, type SpringValues } from '@react-spring/konva'
+import { animated, useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
-import type { DiagramTheme } from '../types'
+import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
 import { NodeTitle } from './Rectangle'
 import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
-export function cylinderSVGPath(radius: number, height: number, tilt = 0.1) {
-  const tiltAdjustedHeight = height - radius * tilt;
-  const diameter = radius * 2;
-  const rx = radius;
-  const ry = Math.round(tilt * radius * 1000) / 1000;
-
-  const d = `   M 0,${ry}
-        a ${rx},${ry} 0,0,0 ${diameter} 0
-        a ${rx},${ry} 0,0,0 ${-diameter} 0
-        l 0,${tiltAdjustedHeight}
-        a ${rx},${ry} 0,0,0 ${diameter} 0
-        l 0,${-tiltAdjustedHeight}
-        `
-    .replace(/\s+/g, ' ')
-    .trim();
-  return d;
-}
-
-export interface CylinderShapeProps {
-  animate?: boolean
-  node: DiagramNode
-  theme: DiagramTheme
-  springs?: SpringValues<{
-    opacity?: number
-    scaleX?: number
-    scaleY?: number
-    width?: number
-    height?: number
-  }>
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
-}
-
-
-export const CylinderShape = ({
+export const QueueShape = ({
   animate = true,
   node,
   theme,
@@ -68,10 +34,14 @@ export const CylinderShape = ({
     immediate: !animate
   }, [x, y, offsetX, offsetY])
 
-  const path = useMemo(() => cylinderSVGPath(width / 2, height), [width, height])
+  const path = useMemo(() => cylinderSVGPath(height / 2, width, 0.16), [width, height])
 
-  const cylinderProps = useSpring({
+  const queueProps = useSpring({
     to: {
+      x: offsetX,
+      y: offsetY,
+      offsetX: Math.ceil(height / 2),
+      offsetY: Math.ceil(width / 2),
       fill,
       stroke,
       shadowColor
@@ -114,6 +84,8 @@ export const CylinderShape = ({
     }
   }, [node, onNodeClick ?? null, animate])
 
+  const tiltAdjustedWidth = Math.round((height / 2) * 0.16)
+
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return <animated.Group
@@ -127,17 +99,19 @@ export const CylinderShape = ({
       shadowOpacity={0.3}
       shadowOffsetX={0}
       shadowOffsetY={8}
+      rotation={90}
       data={path}
-      width={springs?.width}
-      height={springs?.height}
-      {...cylinderProps}
+      width={springs?.height}
+      height={springs?.width}
+      {...queueProps}
     />
     <NodeTitle
-      y={offsetY + Math.round((width / 2) * 0.08)}
+      y={offsetY}
+      offsetX={tiltAdjustedWidth}
       title={node.title}
       description={node.description ?? null}
       color={color}
-      width={width}
+      width={width - tiltAdjustedWidth}
       theme={theme}
     />
   </animated.Group>
