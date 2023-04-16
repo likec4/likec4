@@ -1,5 +1,10 @@
 import { expect, test } from 'vitest'
-import { computedAmazonView, computedCloudView, computedCloud3levels, computedIndexView  } from '../__mocks__/data'
+import {
+  computedAmazonView,
+  computedCloudView,
+  computedCloud3levels,
+  computedIndexView
+} from '../__mocks__/data'
 import { printToDot } from './printToDot'
 
 test('printToDot: computedIndexView', () => {

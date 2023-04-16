@@ -53,7 +53,6 @@ model {
 }
 `
 
-
 export const valid_03_Relation_with_title = `
 specification {
   element person
@@ -66,7 +65,6 @@ model {
   user1 -> user2 'responds to'
 }
 `
-
 
 export const valid_03_Relation_with_props = `
 specification {

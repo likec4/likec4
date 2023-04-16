@@ -7,9 +7,5 @@
     "declarationDir": "dist",
     "jsx": "react-jsx"
   },
-  "files": [
-    "src/index.ts",
-    "src/embedded/index.ts",
-    "src/browser/index.ts"
-  ]
+  "files": ["src/index.ts", "src/embedded/index.ts", "src/browser/index.ts"]
 }

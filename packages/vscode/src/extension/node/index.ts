@@ -4,18 +4,19 @@ import { fileExtensions, languageId } from '$/meta'
 import path from 'path'
 import * as vscode from 'vscode'
 import {
-  LanguageClient as NodeLanguageClient, TransportKind, type LanguageClientOptions, type ServerOptions
+  LanguageClient as NodeLanguageClient,
+  TransportKind,
+  type LanguageClientOptions,
+  type ServerOptions
 } from 'vscode-languageclient/node'
 
 let client: NodeLanguageClient | undefined
 
 // this method is called when vs code is activated
 export function activate(context: ExtensionContext) {
-
   client = createLanguageClient(context)
 
   void activateExtension({ client, context })
-
 }
 
 // This function is called when the extension is deactivated.
@@ -24,12 +25,20 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function createLanguageClient(context: ExtensionContext) {
-
-  const serverModule = vscode.Uri.file(path.resolve(context.extensionPath, 'dist/node/server.js')).fsPath
+  const serverModule = vscode.Uri.file(
+    path.resolve(context.extensionPath, 'dist/node/server.js')
+  ).fsPath
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
   // By setting `process.env.DEBUG_BREAK` to a truthy value, the language server will wait until a debugger is attached.
-  const debugOptions = { execArgv: ['--nolazy', `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '6009'}`] }
+  const debugOptions = {
+    execArgv: [
+      '--nolazy',
+      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${
+        process.env['DEBUG_SOCKET'] || '6009'
+      }`
+    ]
+  }
 
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
@@ -49,7 +58,7 @@ function createLanguageClient(context: ExtensionContext) {
       ...fileExtensions.map(ext => ({
         pattern: `**/*${ext}`
       })),
-      { language: languageId },
+      { language: languageId }
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
@@ -59,10 +68,5 @@ function createLanguageClient(context: ExtensionContext) {
   }
 
   // Create the language client and start the client.
-  return new NodeLanguageClient(
-    languageId,
-    'LikeC4',
-    serverOptions,
-    clientOptions
-  )
+  return new NodeLanguageClient(languageId, 'LikeC4', serverOptions, clientOptions)
 }

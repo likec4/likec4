@@ -13,26 +13,30 @@ export const QueueShape = ({
   springs,
   onNodeClick
 }: CylinderShapeProps) => {
-  const { id, size: { width, height }, position: [x, y], color } = node
+  const {
+    id,
+    size: { width, height },
+    position: [x, y],
+    color
+  } = node
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
-  const {
-    fill,
-    stroke,
-    shadow: shadowColor
-  } = theme.colors[color]
+  const { fill, stroke, shadow: shadowColor } = theme.colors[color]
 
   const springsRef = useSyncedRef(springs ?? null)
 
-  const [groupProps] = useSpring({
-    to: {
-      x: x + offsetX,
-      y: y + offsetY,
-      offsetX,
-      offsetY
+  const [groupProps] = useSpring(
+    {
+      to: {
+        x: x + offsetX,
+        y: y + offsetY,
+        offsetX,
+        offsetY
+      },
+      immediate: !animate
     },
-    immediate: !animate
-  }, [x, y, offsetX, offsetY])
+    [x, y, offsetX, offsetY]
+  )
 
   const path = useMemo(() => cylinderSVGPath(height / 2, width, 0.16), [width, height])
 
@@ -88,31 +92,28 @@ export const QueueShape = ({
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <animated.Group
-    id={'node_' + id}
-    {...listeners}
-    {...springs}
-    {...groupProps}
-  >
-    <animated.Path
-      shadowBlur={12}
-      shadowOpacity={0.3}
-      shadowOffsetX={0}
-      shadowOffsetY={8}
-      rotation={90}
-      data={path}
-      width={springs?.height}
-      height={springs?.width}
-      {...queueProps}
-    />
-    <NodeTitle
-      y={offsetY}
-      offsetX={tiltAdjustedWidth}
-      title={node.title}
-      description={node.description ?? null}
-      color={color}
-      width={width - tiltAdjustedWidth}
-      theme={theme}
-    />
-  </animated.Group>
+  return (
+    <animated.Group id={'node_' + id} {...listeners} {...springs} {...groupProps}>
+      <animated.Path
+        shadowBlur={12}
+        shadowOpacity={0.3}
+        shadowOffsetX={0}
+        shadowOffsetY={8}
+        rotation={90}
+        data={path}
+        width={springs?.height}
+        height={springs?.width}
+        {...queueProps}
+      />
+      <NodeTitle
+        y={offsetY}
+        offsetX={tiltAdjustedWidth}
+        title={node.title}
+        description={node.description ?? null}
+        color={color}
+        width={width - tiltAdjustedWidth}
+        theme={theme}
+      />
+    </animated.Group>
+  )
 }

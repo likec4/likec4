@@ -4,6 +4,7 @@ module.exports = {
     "plugin:@typescript-eslint/strict",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier"
   ],
   plugins: [
     "@typescript-eslint",
@@ -15,17 +16,6 @@ module.exports = {
   },
   rules: {
     "@typescript-eslint/ban-types": "error",
-    "@typescript-eslint/quotes": [
-      "error",
-      "single"
-    ],
-    "@typescript-eslint/brace-style": [
-      "error",
-      "1tbs",
-      {
-        "allowSingleLine": true
-      }
-    ],
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

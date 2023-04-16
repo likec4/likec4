@@ -39,38 +39,18 @@ describe('isAncestor', () => {
 
 describe('compareFqnHierarchically', () => {
   it('should compare hierarchically', () => {
-    expect([
+    expect(['a', 'b', 'a.b', 'a.b.c', 'a.c.c'].sort(compareFqnHierarchically)).toEqual([
       'a',
       'b',
       'a.b',
       'a.b.c',
       'a.c.c'
-    ].sort(compareFqnHierarchically)).toEqual([
-      'a',
-      'b',
-      'a.b',
-      'a.b.c',
-      'a.c.c',
     ])
   })
 
   it('should compare hierarchically 2', () => {
-    expect([
-      'aaa',
-      'aa',
-      'a',
-      'aaa.c',
-      'aa.b',
-      'a.b',
-      'a.c',
-    ].sort(compareFqnHierarchically)).toEqual([
-      'a',
-      'aa',
-      'aaa',
-      'a.b',
-      'a.c',
-      'aa.b',
-      'aaa.c',
-    ])
+    expect(
+      ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.b', 'a.c'].sort(compareFqnHierarchically)
+    ).toEqual(['a', 'aa', 'aaa', 'a.b', 'a.c', 'aa.b', 'aaa.c'])
   })
 })

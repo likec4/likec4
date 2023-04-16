@@ -1,2 +1,2 @@
-export * from './wrapText';
-export * from './normalizeFqn';
+export * from './wrapText'
+export * from './normalizeFqn'

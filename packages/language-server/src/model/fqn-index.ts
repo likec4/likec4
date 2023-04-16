@@ -9,7 +9,6 @@ import { Fqn } from '@likec4/core/types'
 import { strictElementRefFqn } from '../elementRef'
 
 export class FqnIndex {
-
   // #fqnMap = new WeakMap<ast.Element, Fqn>()
 
   #index = new MultiMap<Fqn, AstNodeDescription>()
@@ -23,13 +22,15 @@ export class FqnIndex {
         this.cleanIndexedElements(uri)
       }
     })
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.ComputedScopes, (docs, _cancelToken) => {
-      for (const doc of docs) {
-        this.cleanIndexedElements(doc.uri)
-        this.doIndexElements(doc as LikeC4LangiumDocument)
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.ComputedScopes,
+      (docs, _cancelToken) => {
+        for (const doc of docs) {
+          this.cleanIndexedElements(doc.uri)
+          this.doIndexElements(doc as LikeC4LangiumDocument)
+        }
       }
-    })
-
+    )
   }
 
   public get(el: ast.Element): Fqn | null {
@@ -52,7 +53,7 @@ export class FqnIndex {
   public directChildrenOf(parent: Fqn) {
     return this.#index
       .entriesGroupedByKey()
-      .flatMap(([fqn, descrs]) => (descrs.length === 1 && parentFqn(fqn) === parent) ? descrs : [])
+      .flatMap(([fqn, descrs]) => (descrs.length === 1 && parentFqn(fqn) === parent ? descrs : []))
   }
 
   public uniqueDescedants(parent: Fqn) {
@@ -76,7 +77,7 @@ export class FqnIndex {
           }
         })
 
-        if ((children.length + descedants.length) === 0) {
+        if (children.length + descedants.length === 0) {
           return null
         }
 
@@ -91,10 +92,10 @@ export class FqnIndex {
         }
         return nested
           .entriesGroupedByKey()
-          .flatMap(([_name, descrs]) => descrs.length === 1 ? descrs : [])
+          .flatMap(([_name, descrs]) => (descrs.length === 1 ? descrs : []))
           .iterator()
       },
-      (iterator) => {
+      iterator => {
         if (iterator) {
           return iterator.next()
         }
@@ -104,7 +105,6 @@ export class FqnIndex {
   }
 
   private doIndexElements(doc: LikeC4LangiumDocument) {
-
     const visitElement = (element: ast.Element, parent: Fqn | null = null) => {
       try {
         const name = element.name
@@ -152,7 +152,9 @@ export class FqnIndex {
 
   private cleanIndexedElements(docUri: URI) {
     const docUriAsString = docUri.toString()
-    const toDelete = this.#index.entries().filter(([, indexed]) => indexed.documentUri.toString() === docUriAsString)
+    const toDelete = this.#index
+      .entries()
+      .filter(([, indexed]) => indexed.documentUri.toString() === docUriAsString)
     for (const [fqn, indexed] of toDelete.toArray()) {
       this.#index.delete(fqn, indexed)
     }

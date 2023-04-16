@@ -8,7 +8,10 @@ import { LazyDiagram } from '../diagram/lazy'
 import type { DiagramPaddings } from '../diagram/types'
 import { cssEmbeddedContainer } from './embedded.css'
 
-export interface EmbeddedDiagramProps<Views extends Record<any, DiagramView>, Id = (keyof Views & string)> {
+export interface EmbeddedDiagramProps<
+  Views extends Record<any, DiagramView>,
+  Id = keyof Views & string
+> {
   views: Views
   viewId: Id
   className?: string | undefined
@@ -30,21 +33,26 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
   const w = Math.ceil(diagram.width)
   const h = Math.ceil(diagram.height)
 
-  const style = useMemo((): CSSProperties => ({
-    position: 'relative',
-    display: 'flex',
-    aspectRatio: `${w} / ${h}`,
-    margin: '0 auto',
-    ...(w > h ? {
-      width: '100%',
-      height: 'auto',
-      maxWidth: w,
-    } : {
-      width: 'auto',
-      height: '100%',
-      maxHeight: h
+  const style = useMemo(
+    (): CSSProperties => ({
+      position: 'relative',
+      display: 'flex',
+      aspectRatio: `${w} / ${h}`,
+      margin: '0 auto',
+      ...(w > h
+        ? {
+            width: '100%',
+            height: 'auto',
+            maxWidth: w
+          }
+        : {
+            width: 'auto',
+            height: '100%',
+            maxHeight: h
+          })
     }),
-  }), [w, h])
+    [w, h]
+  )
 
   const [isBrowserOpen, toggleBrowser] = useToggle(false)
 
@@ -52,37 +60,35 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
     toggleBrowser(true)
   }, [])
 
-  return <>
-    <div className={className} style={style}>
-      <div
-        ref={containerRef}
-        className={cssEmbeddedContainer}
-        style={{ flex: '1 1 100%', overflow: 'hidden' }}
-      >
-        {measures && (
-          <LazyDiagram
-            animate
-            className={diagramClassName}
-            diagram={diagram}
-            width={Math.floor(measures.width)}
-            height={Math.floor(measures.height)}
-            pannable={false}
-            zoomable={false}
-            padding={padding}
-            onNodeClick={onNodeClick}
-          />
-        )}
-      </div>
-      {/* <div className={cssMagnifyingGlass}>
+  return (
+    <>
+      <div className={className} style={style}>
+        <div
+          ref={containerRef}
+          className={cssEmbeddedContainer}
+          style={{ flex: '1 1 100%', overflow: 'hidden' }}
+        >
+          {measures && (
+            <LazyDiagram
+              animate
+              className={diagramClassName}
+              diagram={diagram}
+              width={Math.floor(measures.width)}
+              height={Math.floor(measures.height)}
+              pannable={false}
+              zoomable={false}
+              padding={padding}
+              onNodeClick={onNodeClick}
+            />
+          )}
+        </div>
+        {/* <div className={cssMagnifyingGlass}>
         <MagnifyingGlassPlus width={24} />
       </div> */}
-      {isBrowserOpen && (
-        <LazyDiagramBrowser
-          views={views}
-          selected={viewId}
-          onClose={toggleBrowser}
-        />
-      )}
-    </div>
-  </>
+        {isBrowserOpen && (
+          <LazyDiagramBrowser views={views} selected={viewId} onClose={toggleBrowser} />
+        )}
+      </div>
+    </>
+  )
 }

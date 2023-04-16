@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTestServices } from '../test'
 
-
 describe('elementChecks', () => {
-
   it('should report duplicate element names', async () => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
@@ -22,7 +20,6 @@ describe('elementChecks', () => {
       expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element name c1')
     }
   })
-
 
   it('should report duplicate element names in extendElement', async () => {
     const { parse, validateAll } = createTestServices()
@@ -68,5 +65,4 @@ describe('elementChecks', () => {
     `)
     expect(errors).toEqual([])
   })
-
 })

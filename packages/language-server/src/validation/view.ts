@@ -8,7 +8,8 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.Elemen
     if (!el.name) {
       return
     }
-    const anotherViews = index.allElements(ast.View)
+    const anotherViews = index
+      .allElements(ast.View)
       .filter(n => n.name === el.name)
       .limit(2)
       .count()

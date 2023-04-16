@@ -23,14 +23,7 @@ const DialogOverlay = forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, children, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    className={clsx(
-      styles.dialogOverlay,
-      className
-    )}
-    {...props}
-    ref={ref}
-  />
+  <DialogPrimitive.Overlay className={clsx(styles.dialogOverlay, className)} {...props} ref={ref} />
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
@@ -40,37 +33,19 @@ const DialogContent = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPrimitive.Portal>
     <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={clsx(
-        styles.dialogContent,
-        className
-      )}
-      {...props}
-    >
+    <DialogPrimitive.Content ref={ref} className={clsx(styles.dialogContent, className)} {...props}>
       {children}
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 ))
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
-const DialogHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={clsx(
-      className
-    )}
-    {...props}
-  />
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={clsx(className)} {...props} />
 )
 DialogHeader.displayName = 'DialogHeader'
 
-const DialogFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={clsx(
       // 'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
@@ -85,14 +60,7 @@ const DialogTitle = forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={clsx(
-      styles.dialogTitle,
-      className
-    )}
-    {...props}
-  />
+  <DialogPrimitive.Title ref={ref} className={clsx(styles.dialogTitle, className)} {...props} />
 ))
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
@@ -118,5 +86,5 @@ export {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-  DialogDescription,
+  DialogDescription
 }

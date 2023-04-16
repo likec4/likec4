@@ -1,5 +1,9 @@
 import { startLanguageServer, EmptyFileSystem } from 'langium'
-import { createConnection, BrowserMessageReader, BrowserMessageWriter } from 'vscode-languageserver/browser'
+import {
+  createConnection,
+  BrowserMessageReader,
+  BrowserMessageWriter
+} from 'vscode-languageserver/browser'
 import { createLanguageServices } from '@likec4/language-server'
 
 // This is an example copied as is from here:

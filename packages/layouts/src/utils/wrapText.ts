@@ -1,4 +1,3 @@
-
 export function splitToLines(input: string, width = 80) {
   const lines = [] as string[]
   for (const inputLine of input.split('\n')) {

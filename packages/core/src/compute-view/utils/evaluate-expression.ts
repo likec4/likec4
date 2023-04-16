@@ -37,7 +37,11 @@ export const keepLeafs = (elements: Element[]) => {
   }, [])
 }
 
-const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpression, rootElement: Fqn | null = null) => {
+const evaluateElementExpression = (
+  index: ModelIndex,
+  expr: Expr.ElementExpression,
+  rootElement: Fqn | null = null
+) => {
   let elements = [] as Element[]
   let neighbours = [] as Element[]
   let relations = [] as Relation[]
@@ -60,21 +64,14 @@ const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpressi
   // WildcardExpression
   if (Expr.isWildcard(expr)) {
     if (rootElement) {
-      elements = [
-        index.find(rootElement),
-        ...index.children(rootElement)
-      ]
+      elements = [index.find(rootElement), ...index.children(rootElement)]
       neighbours = [
         ...index.siblings(rootElement),
-        ...index.ancestors(rootElement).flatMap(a => [
-          ...index.siblings(a.id)
-        ])
+        ...index.ancestors(rootElement).flatMap(a => [...index.siblings(a.id)])
       ]
-      relations = index.filterRelations(anyPass([
-        isInside(rootElement),
-        isIncoming(rootElement),
-        isOutgoing(rootElement),
-      ]))
+      relations = index.filterRelations(
+        anyPass([isInside(rootElement), isIncoming(rootElement), isOutgoing(rootElement)])
+      )
     } else {
       elements = index.rootElements()
       neighbours = elements
@@ -86,7 +83,6 @@ const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpressi
       relations
     }
   }
-
 
   // Identifier
   if (Expr.isElementRef(expr)) {
@@ -111,7 +107,6 @@ const evaluateElementExpression = (index: ModelIndex, expr: Expr.ElementExpressi
     }
   }
 
-
   failExpectedNever(expr)
 }
 
@@ -121,7 +116,11 @@ interface EvaluateViewExpressionResult {
   relations: Relation[]
 }
 
-export function evaluateExpression(index: ModelIndex, expr: Expression, rootElement: Fqn | null): EvaluateViewExpressionResult {
+export function evaluateExpression(
+  index: ModelIndex,
+  expr: Expression,
+  rootElement: Fqn | null
+): EvaluateViewExpressionResult {
   const elements = [] as Element[]
   let neighbours = [] as Element[]
   let relations = [] as Relation[]
@@ -134,15 +133,9 @@ export function evaluateExpression(index: ModelIndex, expr: Expression, rootElem
       if (incoming.length + outgoing.length > 0) {
         elements.push(target)
         neighbours = neighbours.concat(
-          map(index.find, [
-            ...pluck('source', incoming),
-            ...pluck('target', outgoing),
-          ])
+          map(index.find, [...pluck('source', incoming), ...pluck('target', outgoing)])
         )
-        relations = relations.concat([
-          ...incoming,
-          ...outgoing
-        ])
+        relations = relations.concat([...incoming, ...outgoing])
       }
     }
     return {
@@ -158,9 +151,7 @@ export function evaluateExpression(index: ModelIndex, expr: Expression, rootElem
       const incoming = index.filterRelations(isIncoming(target.id))
       if (incoming.length > 0) {
         elements.push(target)
-        neighbours = neighbours.concat(
-          map(index.find, pluck('source', incoming))
-        )
+        neighbours = neighbours.concat(map(index.find, pluck('source', incoming)))
         relations = relations.concat(incoming)
       }
     }
@@ -177,9 +168,7 @@ export function evaluateExpression(index: ModelIndex, expr: Expression, rootElem
       const outgoing = index.filterRelations(isOutgoing(source.id))
       if (outgoing.length > 0) {
         elements.push(source)
-        neighbours = neighbours.concat(
-          map(index.find, pluck('target', outgoing))
-        )
+        neighbours = neighbours.concat(map(index.find, pluck('target', outgoing)))
         relations = relations.concat(outgoing)
       }
     }
@@ -194,14 +183,22 @@ export function evaluateExpression(index: ModelIndex, expr: Expression, rootElem
     const isSourceWildcard = Expr.isWildcard(expr.source)
     const isTargetWildcard = Expr.isWildcard(expr.target)
     if (isSourceWildcard && !isTargetWildcard) {
-      return evaluateExpression(index, {
-        incoming: expr.target
-      }, rootElement)
+      return evaluateExpression(
+        index,
+        {
+          incoming: expr.target
+        },
+        rootElement
+      )
     }
     if (!isSourceWildcard && isTargetWildcard) {
-      return evaluateExpression(index, {
-        outgoing: expr.source
-      }, rootElement)
+      return evaluateExpression(
+        index,
+        {
+          outgoing: expr.source
+        },
+        rootElement
+      )
     }
 
     const sources = evaluateElementExpression(index, expr.source).elements

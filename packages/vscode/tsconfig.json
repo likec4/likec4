@@ -1,21 +1,12 @@
 {
   "extends": "../language-server/tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "ESNext", "WebWorker"
-    ],
+    "lib": ["ESNext", "WebWorker"],
     "baseUrl": ".",
     "paths": {
-      "$/*": [
-        "src/*"
-      ]
+      "$/*": ["src/*"]
     }
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

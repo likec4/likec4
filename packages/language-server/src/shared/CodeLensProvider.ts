@@ -3,19 +3,21 @@ import type { CodeLensProvider } from 'langium/lib/lsp/code-lens-provider'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver-protocol'
 import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
 
-
 export class LikeC4CodeLensProvider implements CodeLensProvider {
-
   constructor(private services: LangiumSharedServices) {
     //
   }
 
-  provideCodeLens(doc: LangiumDocument, _params: CodeLensParams, _cancelToken?: CancellationToken): MaybePromise<CodeLens[] | undefined> {
+  provideCodeLens(
+    doc: LangiumDocument,
+    _params: CodeLensParams,
+    _cancelToken?: CancellationToken
+  ): MaybePromise<CodeLens[] | undefined> {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return
     }
 
-    return doc.parseResult.value.views?.views.flatMap<CodeLens>((ast) => {
+    return doc.parseResult.value.views?.views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const viewId = ElementViewOps.readId(ast)
       const range = ast.$cstNode?.range
@@ -34,10 +36,9 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
         command: {
           command: 'likec4.open-preview',
           arguments: [viewId],
-          title: 'open preview',
+          title: 'open preview'
         }
       }
     })
   }
-
 }

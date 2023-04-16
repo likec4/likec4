@@ -19,7 +19,6 @@ export interface ElementStyle {
   shape?: ElementShape
 }
 
-
 export type Tag = Opaque<string, 'Tag'>
 
 export interface TagSpec {

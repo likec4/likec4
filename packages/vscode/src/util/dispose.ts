@@ -1,10 +1,8 @@
-import { Disposable as VSDisposable} from 'vscode'
+import { Disposable as VSDisposable } from 'vscode'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export class MultiDisposeError extends Error {
-  constructor(
-    public readonly errors: any[]
-  ) {
+  constructor(public readonly errors: any[]) {
     super(`Encountered errors while disposing of store. Errors: [${errors.join(', ')}]`)
   }
 }
@@ -44,9 +42,9 @@ export function disposeAll(disposables: Iterable<Disposable>) {
 }
 
 export abstract class ADisposable implements Disposable {
-  private _isDisposed = false;
+  private _isDisposed = false
 
-  protected _disposables: Disposable[] = [];
+  protected _disposables: Disposable[] = []
 
   public dispose(): any {
     if (this._isDisposed) {

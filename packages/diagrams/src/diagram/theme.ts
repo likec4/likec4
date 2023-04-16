@@ -40,16 +40,15 @@ export function mkThemeColors(base: string): ThemeColors {
     fill: base,
     stroke: base,
     hiContrast: complement(base),
-    loContrast: invert(base),
+    loContrast: invert(base)
   }
 }
-
 
 export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
   relation: {
     lineColor: '#9ca3af',
-    labelColor: '#e5e5e5',
+    labelColor: '#e5e5e5'
   },
   colors: {
     primary: {

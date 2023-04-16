@@ -7,7 +7,9 @@ specification {
   element component
 }
 `
-export const valid_08_Structurizr = model + `
+export const valid_08_Structurizr =
+  model +
+  `
 model {
   u = person "User"
   s = softwareSystem "Software System" {

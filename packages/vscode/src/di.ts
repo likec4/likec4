@@ -21,6 +21,6 @@ export const di = {
 } as const
 
 export interface ExtensionRequirements {
-  context: ExtensionContext,
-  client: LanguageClient,
+  context: ExtensionContext
+  client: LanguageClient
 }

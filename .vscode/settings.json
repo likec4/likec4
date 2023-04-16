@@ -1,6 +1,7 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
+  "prettier.enable": true,
   "eslint.packageManager": "yarn",
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
@@ -12,8 +13,7 @@
     "packages/*/node_modules/**": true
   },
   "files.exclude": {
-    "packages/*/.turbo": true,
-    "examples/*/.turbo": true,
+    "**/.turbo": true,
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.folderListener": [

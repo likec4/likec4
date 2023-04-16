@@ -4,11 +4,7 @@
     {
       "id": "likec4",
       "grammar": "src/like-c4.langium",
-      "fileExtensions": [
-        ".c4",
-        ".likec4",
-        ".like-c4"
-      ],
+      "fileExtensions": [".c4", ".likec4", ".like-c4"],
       "textMate": {
         "out": "contrib/like-c4.tmLanguage.json"
       }

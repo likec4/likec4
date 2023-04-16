@@ -1,5 +1,3 @@
-
-
 export function failExpectedNever(arg: never): never {
   throw new Error(`Unexpected value: ${JSON.stringify(arg)}`)
 }

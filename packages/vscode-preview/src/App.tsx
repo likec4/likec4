@@ -4,10 +4,18 @@ import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { useCallback, useEffect, useState } from 'react'
 import type { ExtensionToPanelProtocol } from '../protocol'
-import { closePreviewWindow, getPreviewWindowState, goToElement, goToRelation, goToViewSource, imReady, openView, savePreviewWindowState } from './vscode'
+import {
+  closePreviewWindow,
+  getPreviewWindowState,
+  goToElement,
+  goToRelation,
+  goToViewSource,
+  imReady,
+  openView,
+  savePreviewWindowState
+} from './vscode'
 
 const App = () => {
-
   const windowSize = useWindowSize(undefined, false)
 
   const [{ view, loading }, updateState] = useState(() => {
@@ -60,38 +68,46 @@ const App = () => {
   }, [])
 
   if (!view) {
-    return <div className='likec4-parsing-screen'>
-      <section>
-        <p>Parsing your model...</p>
-        <VSCodeProgressRing />
-      </section>
-      <section>
-        <p>
-          <VSCodeButton appearance="secondary" onClick={closePreviewWindow}>Close</VSCodeButton>
-        </p>
-      </section>
-    </div>
+    return (
+      <div className='likec4-parsing-screen'>
+        <section>
+          <p>Parsing your model...</p>
+          <VSCodeProgressRing />
+        </section>
+        <section>
+          <p>
+            <VSCodeButton appearance='secondary' onClick={closePreviewWindow}>
+              Close
+            </VSCodeButton>
+          </p>
+        </section>
+      </div>
+    )
   }
 
-  return <>
-    <Diagram
-      interactive
-      className={'likec4-layer likec4-diagram'}
-      diagram={view}
-      width={windowSize.width}
-      height={windowSize.height}
-      onNodeClick={onNodeClick}
-      onEdgeClick={onEdgeClick}
-      padding={24}
-    />
-    {loading && <>
-      <div className='likec4-diagram-loading-overlay'></div>
-      <div className='likec4-diagram-loading'>
-        <p>Updating...</p>
-        <VSCodeProgressRing />
-      </div>
-    </>}
-  </>
+  return (
+    <>
+      <Diagram
+        interactive
+        className={'likec4-layer likec4-diagram'}
+        diagram={view}
+        width={windowSize.width}
+        height={windowSize.height}
+        onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
+        padding={24}
+      />
+      {loading && (
+        <>
+          <div className='likec4-diagram-loading-overlay'></div>
+          <div className='likec4-diagram-loading'>
+            <p>Updating...</p>
+            <VSCodeProgressRing />
+          </div>
+        </>
+      )}
+    </>
+  )
 }
 
 export default App

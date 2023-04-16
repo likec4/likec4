@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTestServices } from '../test'
 
-
 describe('relationChecks', () => {
-
   it('should not report invalid relations', async () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`

@@ -18,24 +18,22 @@ function resolveWorkspaceDir(workspaceDir: string): string {
   return workspaceDir
 }
 
-export async function initLanguageServices(props?: {
-  workspaceDir?: string
-}) {
-
+export async function initLanguageServices(props?: { workspaceDir?: string }) {
   const workspace = props?.workspaceDir ? resolveWorkspaceDir(props.workspaceDir) : process.cwd()
 
   const services = createLanguageServices(NodeFileSystem).likec4
   const metaData = services.LanguageMetaData
   const modelBuilder = services.likec4.ModelBuilder
 
-
   console.log(chalk.dim('🔍 Searching for likec4 files in:'))
   console.log(chalk.dim('   ' + workspace))
 
-  await services.shared.workspace.WorkspaceManager.initializeWorkspace([{
-    name: path.basename(workspace),
-    uri: URI.file(workspace).toString()
-  }])
+  await services.shared.workspace.WorkspaceManager.initializeWorkspace([
+    {
+      name: path.basename(workspace),
+      uri: URI.file(workspace).toString()
+    }
+  ])
 
   const documents = services.shared.workspace.LangiumDocuments.all.toArray()
   if (documents.length === 0) {
@@ -54,9 +52,13 @@ export async function initLanguageServices(props?: {
       hasErrors = true
       console.log(chalk.red('   ⛔️ ' + docPath))
       for (const validationError of errors) {
-        console.log(chalk.red(
-          `      line ${validationError.range.start.line}: ${validationError.message} [${doc.textDocument.getText(validationError.range)}]`
-        ))
+        console.log(
+          chalk.red(
+            `      line ${validationError.range.start.line}: ${
+              validationError.message
+            } [${doc.textDocument.getText(validationError.range)}]`
+          )
+        )
       }
     } else {
       console.log(chalk.green('   ✅ ' + docPath))

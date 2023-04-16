@@ -6,7 +6,6 @@ import type { LikeC4ModelLocator } from '../model'
 import { ast } from '../ast'
 
 export class LikeC4HoverProvider extends AstNodeHoverProvider {
-
   private locator: LikeC4ModelLocator
 
   constructor(services: LikeC4Services) {
@@ -44,21 +43,12 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       if (!el) {
         return
       }
-      const lines = [
-        el.id,
-        `${el.kind}: **${el.title}**`
-      ]
+      const lines = [el.id, `${el.kind}: **${el.title}**`]
       if (el.tags && el.tags.length > 0) {
-        lines.push(
-          '  \n',
-          el.tags.map(t => '#' + t).join(', ')
-        )
+        lines.push('  \n', el.tags.map(t => '#' + t).join(', '))
       }
       if (el.description) {
-        lines.push(
-          '  \n',
-          el.description
-        )
+        lines.push('  \n', el.description)
       }
       return {
         contents: {

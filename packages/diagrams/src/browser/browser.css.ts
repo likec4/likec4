@@ -10,8 +10,7 @@ export const dialogContent = style({
   backgroundColor: '#252930'
 })
 
-
 export const browserContent = style({
   flex: '1 1 100%',
-  overflow: 'hidden',
+  overflow: 'hidden'
 })

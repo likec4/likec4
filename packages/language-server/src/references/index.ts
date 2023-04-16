@@ -1,2 +1,2 @@
-export * from './scope-computation';
-export * from './scope-provider';
+export * from './scope-computation'
+export * from './scope-provider'

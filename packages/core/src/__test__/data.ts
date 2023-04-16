@@ -84,12 +84,12 @@ export const fakeElements = {
   cloud: {
     id: 'cloud' as Fqn,
     kind: 'system' as ElementKind,
-    title: 'cloud',
+    title: 'cloud'
   },
   customer: {
     id: 'customer' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'customer',
+    title: 'customer'
   },
   support: {
     id: 'support' as Fqn,
@@ -109,27 +109,27 @@ export const fakeElements = {
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'frontend',
+    title: 'frontend'
   },
   'cloud.backend.graphql': {
     id: 'cloud.backend.graphql' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'graphql',
+    title: 'graphql'
   },
   'cloud.backend.storage': {
     id: 'cloud.backend.storage' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'storage',
+    title: 'storage'
   },
   'cloud.frontend.adminPanel': {
     id: 'cloud.frontend.adminPanel' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'adminPanel',
+    title: 'adminPanel'
   },
   'cloud.frontend.dashboard': {
     id: 'cloud.frontend.dashboard' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'dashboard',
+    title: 'dashboard'
   }
 } satisfies Record<string, Element>
 
@@ -176,19 +176,19 @@ export const fakeElementView: ElementView = {
   id: 'fakeView' as ViewID,
   title: '',
   viewOf: 'cloud' as Fqn,
-  rules: [{
-    isInclude: true,
-    exprs: [
-      { wildcard: true }
-    ]
-  }],
+  rules: [
+    {
+      isInclude: true,
+      exprs: [{ wildcard: true }]
+    }
+  ]
 }
 
-
-export const fakeModel = () => ModelIndex.from({
-  elements: fakeElements,
-  relations: fakeRelations,
-  views: {
-    [fakeElementView.id]: fakeElementView
-  },
-})
+export const fakeModel = () =>
+  ModelIndex.from({
+    elements: fakeElements,
+    relations: fakeRelations,
+    views: {
+      [fakeElementView.id]: fakeElementView
+    }
+  })

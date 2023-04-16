@@ -1,11 +1,29 @@
 import { anyPass, filter, head, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import type { Fqn } from '../types'
-import { DefaultElementShape, DefaultThemeColor, type Element, type ElementView, type Relation, type ViewRuleStyle } from '../types'
+import {
+  DefaultElementShape,
+  DefaultThemeColor,
+  type Element,
+  type ElementView,
+  type Relation,
+  type ViewRuleStyle
+} from '../types'
 import type { ComputedNode, ComputedView } from '../types/computed-view'
 import * as Expression from '../types/expression'
-import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle, type ViewID } from '../types/view'
-import { Relations, compareByFqnHierarchically, failExpectedNever, isSameHierarchy, parentFqn } from '../utils'
+import {
+  isViewRuleAutoLayout,
+  isViewRuleExpression,
+  isViewRuleStyle,
+  type ViewID
+} from '../types/view'
+import {
+  Relations,
+  compareByFqnHierarchically,
+  failExpectedNever,
+  isSameHierarchy,
+  parentFqn
+} from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
 import { evaluateExpression } from './utils/evaluate-expression'
@@ -16,33 +34,42 @@ function updateSetWith<T>(set: Set<T>, elements: T[], addToSet = true): void {
     addToSet ? set.add(e) : set.delete(e)
   }
 }
-function transformToNodes(elementsIterator: Iterable<Element>, index: ModelIndex, currentViewid?: ViewID) {
-  return [...elementsIterator].sort(compareByFqnHierarchically).reduce((map, { id, title, color, shape, description }) => {
-    let parent = parentFqn(id)
-    while (parent) {
-      if (map.has(parent)) {
-        break
+function transformToNodes(
+  elementsIterator: Iterable<Element>,
+  index: ModelIndex,
+  currentViewid?: ViewID
+) {
+  return [...elementsIterator]
+    .sort(compareByFqnHierarchically)
+    .reduce((map, { id, title, color, shape, description }) => {
+      let parent = parentFqn(id)
+      while (parent) {
+        if (map.has(parent)) {
+          break
+        }
+        parent = parentFqn(parent)
       }
-      parent = parentFqn(parent)
-    }
-    const navigateTo = head(index.defaultViewOf(id).filter(v => v !== currentViewid))
-    map.set(id, Object.assign(
-      {
+      const navigateTo = head(index.defaultViewOf(id).filter(v => v !== currentViewid))
+      map.set(
         id,
-        parent,
-        title,
-        color: color ?? DefaultThemeColor,
-        shape: shape ?? DefaultElementShape,
-        children: [],
-      },
-      description ? { description } : {},
-      navigateTo ? { navigateTo } : {},
-    ))
-    if(parent) {
-      map.get(parent)?.children.push(id)
-    }
-    return map
-  }, new Map<Fqn, ComputedNode>())
+        Object.assign(
+          {
+            id,
+            parent,
+            title,
+            color: color ?? DefaultThemeColor,
+            shape: shape ?? DefaultElementShape,
+            children: []
+          },
+          description ? { description } : {},
+          navigateTo ? { navigateTo } : {}
+        )
+      )
+      if (parent) {
+        map.get(parent)?.children.push(id)
+      }
+      return map
+    }, new Map<Fqn, ComputedNode>())
 }
 
 function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
@@ -59,9 +86,8 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
       }
       if (Expression.isElementRef(target)) {
         const { element, isDescedants } = target
-        predicates.push(isDescedants
-          ? (n) => n.id.startsWith(element + '.')
-          : (n) => n.id as string === element
+        predicates.push(
+          isDescedants ? n => n.id.startsWith(element + '.') : n => (n.id as string) === element
         )
         continue
       }
@@ -75,7 +101,6 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
 
   return nodes
 }
-
 
 export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
   const relations = new Set<Relation>()
@@ -98,7 +123,12 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
       if (isInclude) {
         const filters = [] as Predicate<Relation>[]
         // When include element(s) without newNeighbours, include in-out relations
-        if (elements.size > 0 && newElements.length > 0 && newNeighbours.length === 0 && Expression.isElement(expr)) {
+        if (
+          elements.size > 0 &&
+          newElements.length > 0 &&
+          newNeighbours.length === 0 &&
+          Expression.isElement(expr)
+        ) {
           for (const e of elements) {
             for (const newE of newElements) {
               if (!isSameHierarchy(e, newE)) {
@@ -118,9 +148,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
         //   }
         // }
         if (filters.length > 0) {
-          newRelations = newRelations.concat(
-            index.filterRelations(anyPass(filters))
-          )
+          newRelations = newRelations.concat(index.filterRelations(anyPass(filters)))
         }
       } else {
         if (Expression.isAnyRelation(expr)) {
@@ -145,7 +173,6 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     }
   }
 
-
   const elementsIds = new Set([...elements].map(e => e.id))
 
   const edgeBuilder = new EdgeBuilder()
@@ -168,7 +195,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     }
   }
 
-  const nodesreg  = transformToNodes(elements, index, view.id)
+  const nodesreg = transformToNodes(elements, index, view.id)
 
   const edges = edgeBuilder.build().map(edge => {
     while (edge.parent) {
@@ -180,10 +207,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     return edge
   })
 
-  const nodes = applyViewRuleStyles(
-    view.rules.filter(isViewRuleStyle),
-    sortNodes(nodesreg, edges)
-  )
+  const nodes = applyViewRuleStyles(view.rules.filter(isViewRuleStyle), sortNodes(nodesreg, edges))
 
   const autoLayoutRule = view.rules.find(isViewRuleAutoLayout)
 

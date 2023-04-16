@@ -4,20 +4,19 @@ import { ast } from '../ast'
 import { isElementRefHead } from '../elementRef'
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
-
   protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor) {
-
-    const keyword = (keyword: string, _index?: number) => acceptor({
-      node,
-      keyword,
-      type: SemanticTokenTypes.keyword,
-    })
+    const keyword = (keyword: string, _index?: number) =>
+      acceptor({
+        node,
+        keyword,
+        type: SemanticTokenTypes.keyword
+      })
 
     if (ast.isElementRef(node) || ast.isStrictElementRef(node)) {
       acceptor({
         node,
         property: 'el',
-        type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property,
+        type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property
       })
       // acceptor({
       //   node,
@@ -38,7 +37,11 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isRelationExpression(node) || ast.isIncomingExpression(node) || ast.isOutgoingExpression(node)) {
+    if (
+      ast.isRelationExpression(node) ||
+      ast.isIncomingExpression(node) ||
+      ast.isOutgoingExpression(node)
+    ) {
       keyword('->')
       return
     }
@@ -78,9 +81,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'name',
         type: SemanticTokenTypes.type,
-        modifier: [
-          SemanticTokenModifiers.definition,
-        ]
+        modifier: [SemanticTokenModifiers.definition]
       })
       return
     }
@@ -130,7 +131,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.keyword,
+        type: SemanticTokenTypes.keyword
       })
       acceptor({
         node,
@@ -143,7 +144,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'key',
-        type: SemanticTokenTypes.keyword,
+        type: SemanticTokenTypes.keyword
       })
       if ('value' in node) {
         acceptor({
@@ -212,16 +213,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       node,
       property: 'name',
       type: SemanticTokenTypes.variable,
-      modifier: [
-        SemanticTokenModifiers.declaration,
-      ]
+      modifier: [SemanticTokenModifiers.declaration]
     })
     acceptor({
       node,
       property: 'kind',
       type: SemanticTokenTypes.keyword,
-      modifier: [
-      ]
+      modifier: []
     })
 
     if ('title' in node) {
@@ -238,7 +236,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'name',
-        type: SemanticTokenTypes.variable,
+        type: SemanticTokenTypes.variable
       })
     }
     if (node.viewOf) {

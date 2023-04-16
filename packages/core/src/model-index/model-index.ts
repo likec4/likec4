@@ -35,7 +35,6 @@ type ModelInput = {
 }
 
 export class ModelIndex {
-
   private root: ElementTrie = {
     children: {}
   }
@@ -64,7 +63,7 @@ export class ModelIndex {
     for (const rel of Object.values(relations)) {
       index.addRelation(rel)
     }
-    for (const {id, viewOf} of Object.values(views)) {
+    for (const { id, viewOf } of Object.values(views)) {
       if (viewOf) {
         const views = index._defaultElementView.get(viewOf) ?? []
         views.push(id)

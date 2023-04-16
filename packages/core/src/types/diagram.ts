@@ -1,5 +1,4 @@
 import type { ComputedEdge, ComputedNode, ComputedView } from './computed-view'
-import type { ElementView } from './view'
 
 export type Point = [x: number, y: number]
 
@@ -7,16 +6,15 @@ export interface DiagramNode extends ComputedNode {
   size: {
     width: number
     height: number
-  },
+  }
   position: Point // Absolute position, top left
   relative: Point // Top left, relative to parent
 }
 
-
 export interface DiagramEdge extends ComputedEdge {
-  points: Point[],
+  points: Point[]
   // Polygons are used to draw arrows
-  headArrow?: Point[],
+  headArrow?: Point[]
   labelBox: {
     x: number
     y: number

@@ -4,9 +4,8 @@ import { keys } from 'rambdax'
 import type { Fqn, ViewID } from '@likec4/core/types'
 
 describe('LikeC4ModelBuilder', () => {
-
   it('builds model', async () => {
-    const {validate, buildModel} = createTestServices()
+    const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
       element component
@@ -47,19 +46,19 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      'client': {
-        'kind': 'user',
-        'shape': 'person',
+      client: {
+        kind: 'user',
+        shape: 'person'
       },
       'system.backend': {
-        'color': 'secondary',
-        'title': 'Backend',
-        'technology': 'NodeJS'
+        color: 'secondary',
+        title: 'Backend',
+        technology: 'NodeJS'
       },
       'system.frontend': {
-        'color': 'muted',
-        'shape': 'browser',
-        'description': 'Frontend description',
+        color: 'muted',
+        shape: 'browser',
+        description: 'Frontend description'
       }
     })
     expect(model.elements['client' as Fqn]).not.toHaveProperty('color')
@@ -72,7 +71,7 @@ describe('LikeC4ModelBuilder', () => {
   })
 
   it('builds model with extend', async () => {
-    const {parse, validateAll, buildModel} = createTestServices()
+    const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
     specification {
       element component
@@ -118,32 +117,31 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      'client': {
-        'kind': 'user',
+      client: {
+        kind: 'user'
       },
       'system.backend.api': {
-        'kind': 'component',
+        kind: 'component'
       }
     })
     expect(keys(model.relations)).toHaveLength(2)
 
     expect(keys(model.views)).toHaveLength(3)
     expect(model.views).toMatchObject({
-      'index': {
-        'id': 'index',
-        'title': 'Index',
-        'autoLayout': 'TB'
+      index: {
+        id: 'index',
+        title: 'Index',
+        autoLayout: 'TB'
       },
-      'v1': {
-        'id': 'v1',
-        'viewOf': 'system.backend.api',
-        'title': 'api',
-        'autoLayout': 'LR'
+      v1: {
+        id: 'v1',
+        viewOf: 'system.backend.api',
+        title: 'api',
+        autoLayout: 'LR'
       }
     })
     expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
 
     expect(model).toMatchSnapshot()
   })
-
 })

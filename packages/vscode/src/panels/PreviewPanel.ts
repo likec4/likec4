@@ -15,7 +15,6 @@ function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) 
 }
 
 export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSerializer {
-
   private panel: WebviewPanel | null = null
   private listener: Disposable | null = null
   private currentViewId: ViewID | null = null
@@ -25,7 +24,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   constructor(
     private c4model: C4Model,
     private client: LanguageClient,
-    private context: ExtensionContext,
+    private context: ExtensionContext
   ) {
     super()
   }
@@ -53,7 +52,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   private subscribeToModel(viewId: ViewID) {
     this.listener?.dispose()
     this.currentViewId = viewId
-    this.listener = this.c4model.subscribeToView(viewId, (data) => {
+    this.listener = this.c4model.subscribeToView(viewId, data => {
       this.sendUpdate(data)
     })
   }
@@ -64,11 +63,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     }
     this.panel = panel
 
-    panel.webview.onDidReceiveMessage(
-      this.onWebviewMessage,
-      this,
-      this._disposables
-    )
+    panel.webview.onDidReceiveMessage(this.onWebviewMessage, this, this._disposables)
 
     panel.onDidDispose(
       () => {
@@ -101,17 +96,19 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       return
     }
     this.panel.title = view.title ?? 'Untitled'
-    void this.panel.webview.postMessage({
-      kind: 'update',
-      view
-    }).then(
-      (posted) => {
-        if (!posted) {
-          console.warn('sendUpdate: message not posted')
-        }
-      },
-      (err) => console.error(err)
-    )
+    void this.panel.webview
+      .postMessage({
+        kind: 'update',
+        view
+      })
+      .then(
+        posted => {
+          if (!posted) {
+            console.warn('sendUpdate: message not posted')
+          }
+        },
+        err => console.error(err)
+      )
   }
 
   private goToSource = async (element: Fqn) => {
@@ -145,13 +142,14 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       loc.range.end.character
     )
     await vscode.window.showTextDocument(uri, {
-      viewColumn: (panelViewColumn !== vscode.ViewColumn.One) ? vscode.ViewColumn.One : panelViewColumn,
+      viewColumn:
+        panelViewColumn !== vscode.ViewColumn.One ? vscode.ViewColumn.One : panelViewColumn,
       selection: range
     })
   }
 
   private onWebviewMessage = (message: PanelToExtensionProtocol) => {
-    console.log(`from webview: ${message.kind}`, message )
+    console.log(`from webview: ${message.kind}`, message)
     switch (message.kind) {
       case 'close': {
         this.close()
@@ -189,7 +187,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   private getWebviewOptions(): vscode.WebviewOptions {
     return {
       // Enable javascript in the webview
-      enableScripts: true,
+      enableScripts: true
 
       // And restrict the webview to only loading content from our extension's `dist` directory.
       // localResourceRoots: [
@@ -225,7 +223,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     const scriptUri = getUri(webview, extensionUri, ['dist', 'preview', 'index.js'])
 
     const cspSource = webview.cspSource
-    webview.html = /*html*/`
+    webview.html = /*html*/ `
 <!DOCTYPE html>
 <html>
   <head>

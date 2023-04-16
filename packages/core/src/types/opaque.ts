@@ -1,8 +1,8 @@
-declare const tag: unique symbol;
+declare const tag: unique symbol
 
 declare type Tagged<Token> = {
-	readonly [tag]: Token;
-};
+  readonly [tag]: Token
+}
 
 /**
 Create an opaque type, which hides its internal details from the public, and can only be created by being used explicitly.
@@ -71,7 +71,7 @@ type Person = {
 
 @category Type
 */
-export type Opaque<Type, Token = unknown> = Type & Tagged<Token>;
+export type Opaque<Type, Token = unknown> = Type & Tagged<Token>
 
 /**
 Revert an opaque type back to its original type by removing the readonly `[tag]`.
@@ -101,7 +101,9 @@ type WontWork = UnwrapOpaque<string>;
 
 @category Type
 */
-export type UnwrapOpaque<OpaqueType extends Tagged<unknown>> =
-	OpaqueType extends Opaque<infer Type, OpaqueType[typeof tag]>
-		? Type
-		: OpaqueType;
+export type UnwrapOpaque<OpaqueType extends Tagged<unknown>> = OpaqueType extends Opaque<
+  infer Type,
+  OpaqueType[typeof tag]
+>
+  ? Type
+  : OpaqueType

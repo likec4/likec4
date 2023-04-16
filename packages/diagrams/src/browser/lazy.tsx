@@ -8,7 +8,9 @@ const DiagramBrowser = /* @__PURE__ */ lazy(async () => {
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const LazyDiagramBrowser = <Views extends Record<any, DiagramView>>(props: DiagramBrowserProps<Views>) => (
+export const LazyDiagramBrowser = <Views extends Record<any, DiagramView>>(
+  props: DiagramBrowserProps<Views>
+) => (
   <Suspense fallback={null}>
     <DiagramBrowser {...props} />
   </Suspense>

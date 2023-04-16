@@ -1,4 +1,3 @@
-
 import type { OnMouseEvent } from './types'
 
 export const mousePointer = (e: OnMouseEvent) => {

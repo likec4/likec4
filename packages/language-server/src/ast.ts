@@ -1,5 +1,5 @@
 import * as ast from './generated/ast'
-import type { LangiumDocument } from 'langium';
+import type { LangiumDocument } from 'langium'
 import { DocumentState } from 'langium'
 import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
@@ -15,23 +15,28 @@ export function c4hash({
   c4Relations,
   c4Views
 }: LikeC4LangiumDocument) {
-  return objectHash({
-    c4Specification,
-    c4Elements,
-    c4Relations,
-    c4Views
-  }, {
-    respectType: false,
-  })
+  return objectHash(
+    {
+      c4Specification,
+      c4Elements,
+      c4Relations,
+      c4Views
+    },
+    {
+      respectType: false
+    }
+  )
 }
 
 export interface ParsedAstSpecification {
-  kinds: Record<c4.ElementKind, {
-    shape: c4.ElementShape
-    color: c4.ThemeColor
-  }>
+  kinds: Record<
+    c4.ElementKind,
+    {
+      shape: c4.ElementShape
+      color: c4.ThemeColor
+    }
+  >
 }
-
 
 export interface ParsedAstElement {
   id: c4.Fqn
@@ -65,7 +70,7 @@ export interface ParsedAstElementView {
 const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
-    Object.assign(node, {[idattr]: id})
+    Object.assign(node, { [idattr]: id })
     return node
   },
   readId(node: ast.ElementView) {
@@ -76,7 +81,7 @@ export const ElementViewOps = {
 
 export const ElementOps = {
   writeId(node: ast.Element, id: c4.Fqn) {
-    Object.assign(node, {[idattr]: id})
+    Object.assign(node, { [idattr]: id })
     return node
   },
   readId(node: ast.Element) {
@@ -97,9 +102,9 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   doc.c4Specification = {
     kinds: {}
   }
-  const elements = doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements']
-  const relations = doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations']
-  const views = doc.c4Views = [] as LikeC4LangiumDocument['c4Views']
+  const elements = (doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements'])
+  const relations = (doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations'])
+  const views = (doc.c4Views = [] as LikeC4LangiumDocument['c4Views'])
   return {
     elements,
     relations,
@@ -113,16 +118,19 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
 }
 
 export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
-  return isLikeC4LangiumDocument(doc) && ['c4Specification', 'c4Elements', 'c4Relations', 'c4Views'].every(key => key in doc)
+  return (
+    isLikeC4LangiumDocument(doc) &&
+    ['c4Specification', 'c4Elements', 'c4Relations', 'c4Views'].every(key => key in doc)
+  )
 }
 
 export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {
   if (!isLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
-    state === DocumentState.Validated
-    && parseResult.lexerErrors.length === 0
-    && (!diagnostics || diagnostics.every(d => d.severity !== 1))
+    state === DocumentState.Validated &&
+    parseResult.lexerErrors.length === 0 &&
+    (!diagnostics || diagnostics.every(d => d.severity !== 1))
   )
 }
 
@@ -130,7 +138,7 @@ export function* streamModel(doc: LikeC4LangiumDocument) {
   const elements = doc.parseResult.value.model?.elements ?? []
   const traverseStack: (ast.Element | ast.ExtendElement | ast.Relation)[] = [...elements]
   let el
-  while (el = traverseStack.shift()) {
+  while ((el = traverseStack.shift())) {
     if (ast.isExtendElement(el)) {
       traverseStack.push(...el.body.elements)
       continue
@@ -169,7 +177,6 @@ export function resolveRelationPoints(node: ast.Relation): {
     target
   }
 }
-
 
 export function toElementStyle(props?: ast.AStyleProperty[]) {
   const result: {

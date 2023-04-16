@@ -12,7 +12,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   const modelLocator = services.likec4.ModelLocator
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
 
-  connection.onRequest(Rpc.fetchModel, async (_cancelToken) => {
+  connection.onRequest(Rpc.fetchModel, async _cancelToken => {
     let model
     try {
       model = modelBuilder.buildModel() ?? null
@@ -28,7 +28,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   connection.onRequest(Rpc.buildDocuments, async (docs, cancelToken) => {
     const changed = [] as URI[]
     for (const d of docs) {
-      const uri = (d as unknown) as URI
+      const uri = d as unknown as URI
       if (LangiumDocuments.hasDocument(uri)) {
         changed.push(uri)
       } else {

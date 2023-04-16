@@ -7,11 +7,9 @@ export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
   return {
-    plugins: [
-      react()
-    ],
+    plugins: [react()],
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom']
     },
     build: {
       outDir: isWatchDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
@@ -25,10 +23,9 @@ export default defineConfig(({ mode }) => {
         external: ['vscode'],
         output: {
           entryFileNames: `[name].js`,
-          assetFileNames: `[name].[ext]`,
-        },
-      },
-
-    },
+          assetFileNames: `[name].[ext]`
+        }
+      }
+    }
   }
 })

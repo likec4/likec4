@@ -2,9 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Base Strictest",
   "compilerOptions": {
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "es2022",
     "target": "es2022",
     "moduleResolution": "bundler",

@@ -2,16 +2,18 @@ import type {
   DefaultSharedModuleContext,
   LangiumServices,
   LangiumSharedServices,
-  Module, PartialLangiumServices, PartialLangiumSharedServices
+  Module,
+  PartialLangiumServices,
+  PartialLangiumSharedServices
 } from 'langium'
-import {
-  createDefaultModule,
-  createDefaultSharedModule,
-  inject
-} from 'langium'
+import { createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { LikeC4DocumentSymbolProvider, LikeC4HoverProvider, LikeC4SemanticTokenProvider } from './lsp'
+import {
+  LikeC4DocumentSymbolProvider,
+  LikeC4HoverProvider,
+  LikeC4SemanticTokenProvider
+} from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
@@ -23,8 +25,8 @@ import { registerValidationChecks } from './validation'
  */
 export interface LikeC4AddedServices {
   likec4: {
-    FqnIndex: FqnIndex,
-    ModelBuilder: LikeC4ModelBuilder,
+    FqnIndex: FqnIndex
+    ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
   }
 }
@@ -39,7 +41,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   likec4: {
     FqnIndex: bind(FqnIndex),
     ModelBuilder: bind(LikeC4ModelBuilder),
-    ModelLocator: bind(LikeC4ModelLocator),
+    ModelLocator: bind(LikeC4ModelLocator)
     // Model: bind(LikeC4Model),
     // Model: bind(LikeC4Model),
     // SpecIndex: bind(LikeC4SpecIndex),
@@ -48,7 +50,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
     SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
-    HoverProvider: bind(LikeC4HoverProvider),
+    HoverProvider: bind(LikeC4HoverProvider)
   },
   //
   //   // Formatter: bind(LikeC4Formatter),
@@ -63,15 +65,15 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
   ...LikeC4GeneratedSharedModule,
   workspace: {
-    WorkspaceManager: (services) => new LikeC4WorkspaceManager(services),
+    WorkspaceManager: services => new LikeC4WorkspaceManager(services)
   },
   lsp: {
-    CodeLensProvider: (services) => new LikeC4CodeLensProvider(services)
+    CodeLensProvider: services => new LikeC4CodeLensProvider(services)
   }
 }
 
 export function createLanguageServices(context: DefaultSharedModuleContext): {
-  shared: LangiumSharedServices,
+  shared: LangiumSharedServices
   likec4: LikeC4Services
 } {
   // const connection = context.connection
@@ -84,15 +86,8 @@ export function createLanguageServices(context: DefaultSharedModuleContext): {
   //   logger.trace = connection.tracer.log.bind(connection.tracer)
   // }
 
-  const shared = inject(
-    createDefaultSharedModule(context),
-    LikeC4SharedModule,
-  )
-  const likec4 = inject(
-    createDefaultModule({ shared }),
-    LikeC4GeneratedModule,
-    LikeC4Module
-  )
+  const shared = inject(createDefaultSharedModule(context), LikeC4SharedModule)
+  const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
   registerProtocolHandlers(likec4)

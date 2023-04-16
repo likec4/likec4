@@ -8,10 +8,10 @@ import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
 export function cylinderSVGPath(radius: number, height: number, tilt = 0.1) {
-  const tiltAdjustedHeight = height - radius * tilt;
-  const diameter = radius * 2;
-  const rx = radius;
-  const ry = Math.round(tilt * radius * 1000) / 1000;
+  const tiltAdjustedHeight = height - radius * tilt
+  const diameter = radius * 2
+  const rx = radius
+  const ry = Math.round(tilt * radius * 1000) / 1000
 
   const d = `   M 0,${ry}
         a ${rx},${ry} 0,0,0 ${diameter} 0
@@ -21,8 +21,8 @@ export function cylinderSVGPath(radius: number, height: number, tilt = 0.1) {
         l 0,${-tiltAdjustedHeight}
         `
     .replace(/\s+/g, ' ')
-    .trim();
-  return d;
+    .trim()
+  return d
 }
 
 export interface CylinderShapeProps {
@@ -39,7 +39,6 @@ export interface CylinderShapeProps {
   onNodeClick?: ((node: DiagramNode) => void) | undefined
 }
 
-
 export const CylinderShape = ({
   animate = true,
   node,
@@ -47,26 +46,30 @@ export const CylinderShape = ({
   springs,
   onNodeClick
 }: CylinderShapeProps) => {
-  const { id, size: { width, height }, position: [x, y], color } = node
+  const {
+    id,
+    size: { width, height },
+    position: [x, y],
+    color
+  } = node
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
-  const {
-    fill,
-    stroke,
-    shadow: shadowColor
-  } = theme.colors[color]
+  const { fill, stroke, shadow: shadowColor } = theme.colors[color]
 
   const springsRef = useSyncedRef(springs ?? null)
 
-  const [groupProps] = useSpring({
-    to: {
-      x: x + offsetX,
-      y: y + offsetY,
-      offsetX,
-      offsetY
+  const [groupProps] = useSpring(
+    {
+      to: {
+        x: x + offsetX,
+        y: y + offsetY,
+        offsetX,
+        offsetY
+      },
+      immediate: !animate
     },
-    immediate: !animate
-  }, [x, y, offsetX, offsetY])
+    [x, y, offsetX, offsetY]
+  )
 
   const path = useMemo(() => cylinderSVGPath(width / 2, height), [width, height])
 
@@ -116,29 +119,26 @@ export const CylinderShape = ({
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <animated.Group
-    id={'node_' + id}
-    {...listeners}
-    {...springs}
-    {...groupProps}
-  >
-    <animated.Path
-      shadowBlur={12}
-      shadowOpacity={0.3}
-      shadowOffsetX={0}
-      shadowOffsetY={8}
-      data={path}
-      width={springs?.width}
-      height={springs?.height}
-      {...cylinderProps}
-    />
-    <NodeTitle
-      y={offsetY + Math.round((width / 2) * 0.08)}
-      title={node.title}
-      description={node.description ?? null}
-      color={color}
-      width={width}
-      theme={theme}
-    />
-  </animated.Group>
+  return (
+    <animated.Group id={'node_' + id} {...listeners} {...springs} {...groupProps}>
+      <animated.Path
+        shadowBlur={12}
+        shadowOpacity={0.3}
+        shadowOffsetX={0}
+        shadowOffsetY={8}
+        data={path}
+        width={springs?.width}
+        height={springs?.height}
+        {...cylinderProps}
+      />
+      <NodeTitle
+        y={offsetY + Math.round((width / 2) * 0.08)}
+        title={node.title}
+        description={node.description ?? null}
+        color={color}
+        width={width}
+        theme={theme}
+      />
+    </animated.Group>
+  )
 }

@@ -1,5 +1,5 @@
 import type { ValidationCheck } from 'langium'
-import type { ast} from '../ast';
+import type { ast } from '../ast'
 import { resolveRelationPoints } from '../ast'
 import { isSameHierarchy } from '@likec4/core/utils'
 import type { LikeC4Services } from '../module'
@@ -13,7 +13,7 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       if (!target) {
         return accept('error', 'Invalid target', {
           node: el,
-          property: 'target',
+          property: 'target'
         })
       }
       const source = fqnIndex.get(coupling.source)
@@ -24,17 +24,17 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
       }
       if (isSameHierarchy(source, target)) {
         return accept('error', 'Invalid relation (same hierarchy)', {
-          node: el,
+          node: el
         })
       }
     } catch (e) {
       if (e instanceof Error) {
         return accept('error', e.message, {
-          node: el,
+          node: el
         })
       }
       accept('error', 'Invalid relation', {
-        node: el,
+        node: el
       })
     }
     // const fqn = fqnIndex.get(el)

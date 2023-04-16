@@ -19,7 +19,6 @@ export interface ComputedNode {
   navigateTo?: ViewID
 }
 
-
 export interface ComputedEdge {
   id: EdgeId
   parent: NodeId | null
@@ -29,7 +28,10 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export interface ComputedView<Node extends ComputedNode = ComputedNode, Edge extends ComputedEdge = ComputedEdge> extends ElementView {
+export interface ComputedView<
+  Node extends ComputedNode = ComputedNode,
+  Edge extends ComputedEdge = ComputedEdge
+> extends ElementView {
   autoLayout: ViewRuleAutoLayout['autoLayout']
   nodes: Node[]
   edges: Edge[]

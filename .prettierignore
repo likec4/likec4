@@ -1,0 +1,12 @@
+**/.git
+**/node_modules
+
+.yarn/*
+.turbo
+.vscode
+.vscode-test-web
+.next
+
+examples/*/dist
+packages/*/dist
+packages/*/contrib

@@ -14,10 +14,8 @@ vi.mock('../logger', () => ({
 }))
 
 describe('parser smoke', () => {
-
   toPairs(testfiles).forEach(([name, document]) => {
-
-    it.concurrent(name, async ({expect}) => {
+    it.concurrent(name, async ({ expect }) => {
       const { validate } = createTestServices()
       const { diagnostics } = await validate(document)
       const errors = diagnostics.map(d => d.message)
@@ -27,7 +25,5 @@ describe('parser smoke', () => {
         expect(errors).toEqual([])
       }
     })
-
   })
-
 })

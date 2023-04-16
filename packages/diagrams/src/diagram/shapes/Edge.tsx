@@ -14,19 +14,8 @@ export interface EdgeShapeProps {
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
-
-export const EdgeShape = ({
-  edge,
-  theme,
-  springs,
-  onEdgeClick
-}: EdgeShapeProps) => {
-  const {
-    points,
-    headArrow,
-    label,
-    labelBox
-  } = edge
+export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps) => {
+  const { points, headArrow, label, labelBox } = edge
 
   const onClickListener = useMemo(() => {
     if (!onEdgeClick) return {}
@@ -43,43 +32,45 @@ export const EdgeShape = ({
   const listeners = {
     ...onClickListener,
     onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
-    onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi]),
+    onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi])
   }
-  return <>
-    <animated.Line
-      {...springs}
-      {...listeners}
-      points={points.flat()}
-      bezier={points.length > 2}
-      stroke={theme.relation.lineColor}
-      strokeWidth={2}
-      hitStrokeWidth={20}
-    />
-    {headArrow &&
+  return (
+    <>
       <animated.Line
         {...springs}
         {...listeners}
-        points={headArrow.flat()}
-        closed={true}
-        fill={theme.relation.lineColor}
+        points={points.flat()}
+        bezier={points.length > 2}
         stroke={theme.relation.lineColor}
-        strokeWidth={1}
+        strokeWidth={2}
+        hitStrokeWidth={20}
       />
-    }
-    {label && labelBox &&
-      <animated.Text
-        {...springs}
-        {...listeners}
-        {...labelBox}
-        offsetX={labelBox.align === 'center' ? labelBox.width / 2 : 0}
-        text={label}
-        padding={0}
-        fill={theme.relation.labelColor}
-        fontFamily={theme.font}
-        fontSize={12}
-        lineHeight={1.15}
-        verticalAlign="middle"
-      />
-    }
-  </>
+      {headArrow && (
+        <animated.Line
+          {...springs}
+          {...listeners}
+          points={headArrow.flat()}
+          closed={true}
+          fill={theme.relation.lineColor}
+          stroke={theme.relation.lineColor}
+          strokeWidth={1}
+        />
+      )}
+      {label && labelBox && (
+        <animated.Text
+          {...springs}
+          {...listeners}
+          {...labelBox}
+          offsetX={labelBox.align === 'center' ? labelBox.width / 2 : 0}
+          text={label}
+          padding={0}
+          fill={theme.relation.labelColor}
+          fontFamily={theme.font}
+          fontSize={12}
+          lineHeight={1.15}
+          verticalAlign='middle'
+        />
+      )}
+    </>
+  )
 }

@@ -8,8 +8,24 @@ import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
-import type { ParsedAstElement, ParsedAstElementView, ParsedAstRelation, ParsedAstSpecification } from '../ast'
-import { ElementViewOps, ast, c4hash, cleanParsedModel, isLikeC4LangiumDocument, isParsedLikeC4LangiumDocument, resolveRelationPoints, streamModel, toElementStyle, type LikeC4LangiumDocument } from '../ast'
+import type {
+  ParsedAstElement,
+  ParsedAstElementView,
+  ParsedAstRelation,
+  ParsedAstSpecification
+} from '../ast'
+import {
+  ElementViewOps,
+  ast,
+  c4hash,
+  cleanParsedModel,
+  isLikeC4LangiumDocument,
+  isParsedLikeC4LangiumDocument,
+  resolveRelationPoints,
+  streamModel,
+  toElementStyle,
+  type LikeC4LangiumDocument
+} from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -17,9 +33,7 @@ import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
 
-
 export class LikeC4ModelBuilder {
-
   private fqnIndex: FqnIndex
   private langiumDocuments: LangiumDocuments
 
@@ -27,25 +41,28 @@ export class LikeC4ModelBuilder {
     this.fqnIndex = services.likec4.FqnIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, async (docs, cancelToken) => {
-      let countOfChangedDocs = 0
-      try {
-        for (const doc of docs) {
-          await interruptAndCheck(cancelToken)
-          try {
-            if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
-              countOfChangedDocs++
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Validated,
+      async (docs, cancelToken) => {
+        let countOfChangedDocs = 0
+        try {
+          for (const doc of docs) {
+            await interruptAndCheck(cancelToken)
+            try {
+              if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
+                countOfChangedDocs++
+              }
+            } catch (e) {
+              logger.warn(`Error parsing document ${doc.uri.toString()}`)
             }
-          } catch (e) {
-            logger.warn(`Error parsing document ${doc.uri.toString()}`)
+          }
+        } finally {
+          if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
+            await this.notifyClient()
           }
         }
-      } finally {
-        if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
-          await this.notifyClient()
-        }
       }
-    })
+    )
   }
 
   private get connection() {
@@ -81,7 +98,7 @@ export class LikeC4ModelBuilder {
           return {
             ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
             ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
-            ...(omit(['astPath'], el))
+            ...omit(['astPath'], el)
           }
         }
         return null
@@ -93,10 +110,7 @@ export class LikeC4ModelBuilder {
 
       const elements = pipe(
         docs.flatMap(d => d.c4Elements),
-        A.filterMap(flow(
-          toModelElement,
-          O.fromNullable
-        )),
+        A.filterMap(flow(toModelElement, O.fromNullable)),
         A.sort(compareByFqnHierarchically),
         A.reduce({} as c4.LikeC4Model['elements'], (acc, el) => {
           const parent = parentFqn(el.id)
@@ -110,10 +124,12 @@ export class LikeC4ModelBuilder {
 
       const relations = pipe(
         docs.flatMap(d => d.c4Relations),
-        A.filterMap(flow(
-          toModelRelation,
-          O.fromPredicate(({ source, target }) => source in elements && target in elements)
-        )),
+        A.filterMap(
+          flow(
+            toModelRelation,
+            O.fromPredicate(({ source, target }) => source in elements && target in elements)
+          )
+        ),
         A.reduce({} as c4.LikeC4Model['relations'], (acc, el) => {
           invariant(!(el.id in acc), 'Duplicate relation id: ' + el.id)
           acc[el.id] = el
@@ -134,10 +150,12 @@ export class LikeC4ModelBuilder {
 
       const views = pipe(
         docs.flatMap(d => d.c4Views),
-        A.filterMap(flow(
-          toModelView,
-          O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
-        )),
+        A.filterMap(
+          flow(
+            toModelView,
+            O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
+          )
+        ),
         A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
           invariant(!(v.id in acc), 'Duplicate view id: ' + v.id)
           acc[v.id] = v
@@ -160,12 +178,7 @@ export class LikeC4ModelBuilder {
    * @returns if the document was changed
    */
   protected parseDocument(doc: LikeC4LangiumDocument) {
-    const {
-      elements,
-      relations,
-      views,
-      specification
-    } = cleanParsedModel(doc)
+    const { elements, relations, views, specification } = cleanParsedModel(doc)
 
     const spec = doc.parseResult.value.specification
     if (spec) {
@@ -174,7 +187,7 @@ export class LikeC4ModelBuilder {
           const styleProps = toElementStyle(style?.props)
           specification.kinds[kind.name as c4.ElementKind] = {
             color: styleProps.color ?? DefaultThemeColor,
-            shape: styleProps.shape ?? DefaultElementShape,
+            shape: styleProps.shape ?? DefaultElementShape
           }
         } catch (e) {
           logger.warn(e)
@@ -224,19 +237,15 @@ export class LikeC4ModelBuilder {
     const kind = astNode.kind.ref.name as c4.ElementKind
     const tags = (astNode.body && this.convertTags(astNode.body)) ?? []
     const styleProps = astNode.body?.props.find(ast.isElementStyleProperty)?.props
-    const {
-      color,
-      shape
-    } = toElementStyle(styleProps)
+    const { color, shape } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
 
-    let [
-      title,
-      description,
-      technology,
-    ] = astNode.props
+    let [title, description, technology] = astNode.props
 
-    const bodyProps = astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
+    const bodyProps =
+      astNode.body?.props.filter((p): p is ast.ElementStringProperty =>
+        ast.isElementStringProperty(p)
+      ) ?? []
 
     title = title ?? bodyProps.find(p => p.key === 'title')?.value
     description = description ?? bodyProps.find(p => p.key === 'description')?.value
@@ -251,7 +260,7 @@ export class LikeC4ModelBuilder {
       ...(description && { description }),
       ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
-      ...(color && color !== DefaultThemeColor ? { color } : {}),
+      ...(color && color !== DefaultThemeColor ? { color } : {})
     }
   }
 
@@ -265,7 +274,8 @@ export class LikeC4ModelBuilder {
       target
     }
     const id = objectHash(hashdata) as c4.RelationID
-    const title = astNode.title ?? (astNode.definition?.props.find(p => p.key === 'title')?.value ?? '')
+    const title =
+      astNode.title ?? astNode.definition?.props.find(p => p.key === 'title')?.value ?? ''
     return {
       id,
       ...hashdata,
@@ -312,7 +322,7 @@ export class LikeC4ModelBuilder {
     if (ast.isRelationExpression(astNode)) {
       return {
         source: this.parseElementExpression(astNode.source),
-        target: this.parseElementExpression(astNode.target),
+        target: this.parseElementExpression(astNode.target)
       }
     }
     failExpectedNever(astNode)
@@ -384,13 +394,10 @@ export class LikeC4ModelBuilder {
   }
 
   private convertTags(el: { tags?: ast.Tags }) {
-    return el.tags?.value.map(tagRef =>
-      tagRef.ref?.name as c4.Tag
-    ) ?? []
+    return el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag) ?? []
   }
 
   private async notifyClient() {
-
     const connection = this.connection
     if (!connection) {
       return

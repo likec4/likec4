@@ -10,13 +10,17 @@ export function nameFromFqn(fqn: Fqn) {
   }
 }
 
-export function isAncestor(...args: [ancestor: Fqn, another: Fqn] | [ancestor: Element, another: Element]) {
+export function isAncestor(
+  ...args: [ancestor: Fqn, another: Fqn] | [ancestor: Element, another: Element]
+) {
   const ancestor = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id
   return another.startsWith(ancestor + '.')
 }
 
-export function isSameHierarchy(...args: [one: Fqn, another: Fqn] | [one: Element, another: Element]) {
+export function isSameHierarchy(
+  ...args: [one: Fqn, another: Fqn] | [one: Element, another: Element]
+) {
   const one = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id
   return one === another || another.startsWith(one + '.') || one.startsWith(another + '.')
@@ -53,6 +57,6 @@ export const compareFqnHierarchically = (a: string, b: string) => {
   }
 }
 
-export const compareByFqnHierarchically = <T extends {id: Fqn}>(a: T, b: T) => {
+export const compareByFqnHierarchically = <T extends { id: Fqn }>(a: T, b: T) => {
   return compareFqnHierarchically(a.id, b.id)
 }

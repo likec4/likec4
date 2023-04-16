@@ -3,7 +3,6 @@ import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 import { Graph, alg } from '@dagrejs/graphlib'
 
 export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
-
   const g = new Graph({
     compound: true,
     directed: true,
@@ -43,9 +42,8 @@ export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[])
   const nodes = sorted.map(id => _nodes.get(id)!)
 
   for (const node of nodes) {
-    node.children = nodes.flatMap(n => n.parent === node.id ? n.id : [])
+    node.children = nodes.flatMap(n => (n.parent === node.id ? n.id : []))
   }
 
   return nodes
-
 }

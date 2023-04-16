@@ -1,4 +1,3 @@
-
 import type { Fqn, RelationID, ViewID, DiagramView, NodeId, EdgeId } from '@likec4/core/types'
 import type { PanelToExtensionProtocol } from '../protocol'
 
@@ -42,7 +41,6 @@ export const openView = (viewId: ViewID) => {
     viewId
   })
 }
-
 
 export const goToElement = (element: Fqn) => {
   sendToExtension({

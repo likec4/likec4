@@ -21,7 +21,6 @@ export function elementRef(node: ast.ElementRef) {
   return node.el.ref
 }
 
-
 export function strictElementRefFqn(node: ast.StrictElementRef): c4.Fqn {
   invariant(isElementRefHead(node), 'Expected head StrictElementRef')
   const name = [node.el.$refText]

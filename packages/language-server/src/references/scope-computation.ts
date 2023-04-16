@@ -1,5 +1,10 @@
-
-import { DefaultScopeComputation, MultiMap, type AstNode, type AstNodeDescription, type PrecomputedScopes } from 'langium'
+import {
+  DefaultScopeComputation,
+  MultiMap,
+  type AstNode,
+  type AstNodeDescription,
+  type PrecomputedScopes
+} from 'langium'
 import type { CancellationToken } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 // import type { LikeC4Services } from '../module'
@@ -7,12 +12,14 @@ import { ast, type LikeC4LangiumDocument } from '../ast'
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
-
   // constructor(services: LikeC4Services) {
   //   super(services)
   // }
 
-  override computeExports(document: LikeC4LangiumDocument, _cancelToken: CancellationToken): Promise<AstNodeDescription[]> {
+  override computeExports(
+    document: LikeC4LangiumDocument,
+    _cancelToken: CancellationToken
+  ): Promise<AstNodeDescription[]> {
     const { specification, model, views } = document.parseResult.value
     const docExports: AstNodeDescription[] = []
     if (specification) {
@@ -41,7 +48,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     return Promise.resolve(docExports)
   }
 
-  override async computeLocalScopes(document: LikeC4LangiumDocument, _cancelToken: CancellationToken): Promise<PrecomputedScopes> {
+  override async computeLocalScopes(
+    document: LikeC4LangiumDocument,
+    _cancelToken: CancellationToken
+  ): Promise<PrecomputedScopes> {
     const root = document.parseResult.value
     const scopes = new MultiMap<AstNode, AstNodeDescription>()
     if (root.model) {
@@ -51,7 +61,11 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     return Promise.resolve(scopes)
   }
 
-  protected processContainer(container: ElementsContainer, scopes: PrecomputedScopes, document: LikeC4LangiumDocument) {
+  protected processContainer(
+    container: ElementsContainer,
+    scopes: PrecomputedScopes,
+    document: LikeC4LangiumDocument
+  ) {
     const localScope = new MultiMap<string, AstNodeDescription>()
     const nestedScopes = new MultiMap<string, AstNodeDescription>()
     for (const el of container.elements) {

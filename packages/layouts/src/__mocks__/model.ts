@@ -1,5 +1,13 @@
 import { ModelIndex } from '@likec4/core'
-import type { Element, ElementKind, ElementView, Fqn, Opaque, Relation, RelationID } from '@likec4/core/types'
+import type {
+  Element,
+  ElementKind,
+  ElementView,
+  Fqn,
+  Opaque,
+  Relation,
+  RelationID
+} from '@likec4/core/types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -84,12 +92,12 @@ const fakeElements = {
   cloud: {
     id: 'cloud' as Fqn,
     kind: 'system' as ElementKind,
-    title: 'cloud',
+    title: 'cloud'
   },
   customer: {
     id: 'customer' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'customer',
+    title: 'customer'
   },
   support: {
     id: 'support' as Fqn,
@@ -109,27 +117,27 @@ const fakeElements = {
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'frontend',
+    title: 'frontend'
   },
   'cloud.backend.graphql': {
     id: 'cloud.backend.graphql' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'graphql',
+    title: 'graphql'
   },
   'cloud.backend.storage': {
     id: 'cloud.backend.storage' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'storage',
+    title: 'storage'
   },
   'cloud.frontend.adminPanel': {
     id: 'cloud.frontend.adminPanel' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'adminPanel',
+    title: 'adminPanel'
   },
   'cloud.frontend.dashboard': {
     id: 'cloud.frontend.dashboard' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'dashboard',
+    title: 'dashboard'
   }
 } satisfies Record<string, Element>
 
@@ -175,67 +183,76 @@ const fakeRelations = {
 export const indexView = {
   id: 'index' as Opaque<'index', 'ViewID'>,
   title: '',
-  rules: [{
-    isInclude: true,
-    exprs: [{
-      wildcard: true,
-    }]
-  }]
+  rules: [
+    {
+      isInclude: true,
+      exprs: [
+        {
+          wildcard: true
+        }
+      ]
+    }
+  ]
 } satisfies ElementView
 
 export const cloudView = {
   id: 'cloudView' as Opaque<'cloudView', 'ViewID'>,
   title: '',
   viewOf: 'cloud' as Fqn,
-  rules: [{
-    isInclude: true,
-    exprs: [
-      { wildcard: true }
-    ]
-  }],
+  rules: [
+    {
+      isInclude: true,
+      exprs: [{ wildcard: true }]
+    }
+  ]
 } satisfies ElementView
 
 export const cloud3levels = {
   id: 'cloud3levels' as Opaque<'cloud3levels', 'ViewID'>,
   title: '',
   viewOf: 'cloud' as Fqn,
-  rules: [{
-    isInclude: true,
-    exprs: [
-      // include *
-      { wildcard: true, },
-      // include cloud.frontend.*
-      { element: 'cloud.frontend' as Fqn, isDescedants: true },
-      // include cloud.backend.*
-      { element: 'cloud.backend' as Fqn, isDescedants: true },
-    ]
-  }, {
-    isInclude: false,
-    exprs: [
-      // exclude cloud.frontend
-      { element: 'cloud.frontend' as Fqn, isDescedants: false }
-    ]
-  }]
+  rules: [
+    {
+      isInclude: true,
+      exprs: [
+        // include *
+        { wildcard: true },
+        // include cloud.frontend.*
+        { element: 'cloud.frontend' as Fqn, isDescedants: true },
+        // include cloud.backend.*
+        { element: 'cloud.backend' as Fqn, isDescedants: true }
+      ]
+    },
+    {
+      isInclude: false,
+      exprs: [
+        // exclude cloud.frontend
+        { element: 'cloud.frontend' as Fqn, isDescedants: false }
+      ]
+    }
+  ]
 } satisfies ElementView
 
 export const amazonView = {
   id: 'amazon' as Opaque<'amazon', 'ViewID'>,
   title: '',
   viewOf: 'amazon' as Fqn,
-  rules: [{
-    isInclude: true,
-    exprs: [
-      // include *
-      { wildcard: true, },
-      // include cloud
-      { element: 'cloud' as Fqn, isDescedants: false },
-      // include cloud.* -> amazon
-      {
-        source: { element: 'cloud' as Fqn, isDescedants: true },
-        target: { element: 'amazon' as Fqn, isDescedants: false }
-      },
-    ]
-  }]
+  rules: [
+    {
+      isInclude: true,
+      exprs: [
+        // include *
+        { wildcard: true },
+        // include cloud
+        { element: 'cloud' as Fqn, isDescedants: false },
+        // include cloud.* -> amazon
+        {
+          source: { element: 'cloud' as Fqn, isDescedants: true },
+          target: { element: 'amazon' as Fqn, isDescedants: false }
+        }
+      ]
+    }
+  ]
 } satisfies ElementView
 
 export const views = {
@@ -245,8 +262,9 @@ export const views = {
   [amazonView.id]: amazonView
 } as const
 
-export const fakeModel = () => ModelIndex.from({
-  elements: fakeElements,
-  relations: fakeRelations,
-  views
-})
+export const fakeModel = () =>
+  ModelIndex.from({
+    elements: fakeElements,
+    relations: fakeRelations,
+    views
+  })

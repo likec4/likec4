@@ -7,16 +7,6 @@
     "sourceMap": false,
     "declaration": true
   },
-  "exclude": [
-    "**/__mocks__/**",
-    "**/__test__/**",
-    "**/*.spec.ts",
-    "node_modules",
-    "dist"
-  ],
-  "files": [
-    "src/index.ts",
-    "src/react/index.ts",
-    "src/views-data-ts/index.ts"
-  ]
+  "exclude": ["**/__mocks__/**", "**/__test__/**", "**/*.spec.ts", "node_modules", "dist"],
+  "files": ["src/index.ts", "src/react/index.ts", "src/views-data-ts/index.ts"]
 }

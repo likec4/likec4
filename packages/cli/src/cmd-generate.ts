@@ -8,7 +8,10 @@ import path from 'node:path'
 import { mapParallelAsyncWithLimit, values } from 'rambdax'
 import { initLanguageServices } from './language-services'
 
-async function generateAction(workspaceDir: string, { target, output }: { output?: string, target?: string }) {
+async function generateAction(
+  workspaceDir: string,
+  { target, output }: { output?: string; target?: string }
+) {
   let extension
   let generator
   if (target === 'react') {
@@ -31,7 +34,9 @@ async function generateAction(workspaceDir: string, { target, output }: { output
 
   const generated = generator(diagrams)
 
-  output = output ? path.resolve(process.cwd(), output) : path.resolve(workspace, `likec4.generated${extension}`)
+  output = output
+    ? path.resolve(process.cwd(), output)
+    : path.resolve(workspace, `likec4.generated${extension}`)
 
   await mkdirp(path.dirname(output))
   const extname = path.extname(output)
@@ -41,7 +46,6 @@ async function generateAction(workspaceDir: string, { target, output }: { output
   await writeFile(output, generated)
   console.log('\nGenerated:\n   ' + chalk.green(output))
 }
-
 
 export const registerGenerateCommand = (program: Command): void => {
   program

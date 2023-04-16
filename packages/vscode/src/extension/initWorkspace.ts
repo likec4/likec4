@@ -20,19 +20,14 @@ const traversePath = async (folderPath: vscode.Uri): Promise<vscode.Uri[]> => {
     }
   }
   const fromsubfolder = await mapParallelAsyncWithLimit(traversePath, 2, folders)
-  return [
-    ...docs,
-    ...fromsubfolder.flat()
-  ]
+  return [...docs, ...fromsubfolder.flat()]
 }
-
 
 const collectDocsInWorkspaceVFs = async () => {
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   const docs = await mapParallelAsyncWithLimit(traversePath, 2, folders)
   return docs.flat()
 }
-
 
 export async function initWorkspace(client: LanguageClient) {
   const docs = await collectDocsInWorkspaceVFs()

@@ -15,10 +15,10 @@ export interface GVPos {
 }
 
 export interface GVBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 export interface GraphvizJson {
@@ -41,7 +41,6 @@ export interface GraphvizJson {
   objects?: GraphvizJson.GvObject[]
   edges?: GraphvizJson.Edge[]
 }
-
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace GraphvizJson {

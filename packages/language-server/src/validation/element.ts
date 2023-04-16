@@ -9,16 +9,20 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
     if (!fqn) {
       accept('error', 'Not indexed', {
         node: el,
-        property: 'name',
+        property: 'name'
       })
       return
     }
     const withSameFqn = fqnIndex.byFqn(fqn)
     if (withSameFqn.length > 1) {
-      accept('error', `Duplicate element name ${el.name !== fqn ? el.name +' (' + fqn + ')' : el.name}`, {
-        node: el,
-        property: 'name',
-      })
+      accept(
+        'error',
+        `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,
+        {
+          node: el,
+          property: 'name'
+        }
+      )
     }
   }
 }

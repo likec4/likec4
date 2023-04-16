@@ -1,17 +1,15 @@
 import type * as c4 from '@likec4/core/types'
-import type { AstNodeDescription, LangiumDocuments} from 'langium';
+import type { AstNodeDescription, LangiumDocuments } from 'langium'
 import { getDocument } from 'langium'
 import { findNodeForKeyword, findNodeForProperty } from 'langium'
 import { head } from 'rambdax'
 import type { Location } from 'vscode-languageserver-protocol'
-import type { ParsedAstElement} from '../ast';
+import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
 
-
 export class LikeC4ModelLocator {
-
   private fqnIndex: FqnIndex
   private langiumDocuments: LangiumDocuments
 
@@ -41,7 +39,8 @@ export class LikeC4ModelLocator {
 
     const docUri = descr.documentUri.toString()
     const doc = this.documents().find(d => d.uri.toString() === docUri)
-    const node = doc && this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, descr.path)
+    const node =
+      doc && this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, descr.path)
 
     if (!ast.isElement(node) || !node.$cstNode) return null
 
@@ -52,14 +51,16 @@ export class LikeC4ModelLocator {
     }
   }
 
-
   public locateRelation(relationId: c4.RelationID): Location | null {
     for (const doc of this.documents()) {
       const relation = doc.c4Relations.find(r => r.id === relationId)
       if (!relation) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, relation.astPath)
+      const node = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        relation.astPath
+      )
       if (!ast.isRelation(node)) {
         continue
       }
@@ -96,7 +97,10 @@ export class LikeC4ModelLocator {
       if (!view) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, view.astPath)
+      const node = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        view.astPath
+      )
       if (!ast.isElementView(node)) {
         continue
       }

@@ -1,4 +1,3 @@
-
 import { either } from 'rambdax'
 import type { Fqn } from '../types'
 import { compareFqnHierarchically } from './fqn'
@@ -8,8 +7,10 @@ type Relation = {
   target: Fqn
 }
 
-export const compareRelations = <T extends {source: Fqn, target: Fqn}>(a: T, b: T) => {
-  return compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
+export const compareRelations = <T extends { source: Fqn; target: Fqn }>(a: T, b: T) => {
+  return (
+    compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
+  )
 }
 
 export const isInside = (parent: Fqn) => {
@@ -23,35 +24,34 @@ export const isBetween = (source: Fqn, target: Fqn) => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {
-    return (rel.source + '.').startsWith(sourcePrefix) && (rel.target + '.').startsWith(targetPrefix)
+    return (
+      (rel.source + '.').startsWith(sourcePrefix) && (rel.target + '.').startsWith(targetPrefix)
+    )
   }
 }
 
 export const isAnyBetween = (source: Fqn, target: Fqn) => {
-  return either(
-    isBetween(source, target),
-    isBetween(target, source),
-  )
+  return either(isBetween(source, target), isBetween(target, source))
 }
 
 export const isIncoming = (target: Fqn) => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
-    return !(rel.source + '.').startsWith(targetPrefix) && (rel.target + '.').startsWith(targetPrefix)
+    return (
+      !(rel.source + '.').startsWith(targetPrefix) && (rel.target + '.').startsWith(targetPrefix)
+    )
   }
 }
 
 export const isOutgoing = (source: Fqn) => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
-    return (rel.source + '.').startsWith(sourcePrefix) && !(rel.target + '.').startsWith(sourcePrefix)
+    return (
+      (rel.source + '.').startsWith(sourcePrefix) && !(rel.target + '.').startsWith(sourcePrefix)
+    )
   }
 }
 
-
 export const isAnyInOut = (source: Fqn) => {
-  return either(
-    isIncoming(source),
-    isOutgoing(source)
-  )
+  return either(isIncoming(source), isOutgoing(source))
 }

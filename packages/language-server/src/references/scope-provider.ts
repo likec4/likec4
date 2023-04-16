@@ -1,12 +1,29 @@
-import type { AstNode} from 'langium';
-import { DONE_RESULT, DefaultScopeProvider, EMPTY_SCOPE, StreamImpl, StreamScope, type AstNodeDescription, type ReferenceInfo, type Scope, type Stream, getDocument, stream, EMPTY_STREAM } from 'langium'
+import type { AstNode } from 'langium'
+import {
+  DONE_RESULT,
+  DefaultScopeProvider,
+  EMPTY_SCOPE,
+  StreamImpl,
+  StreamScope,
+  type AstNodeDescription,
+  type ReferenceInfo,
+  type Scope,
+  type Stream,
+  getDocument,
+  stream,
+  EMPTY_STREAM
+} from 'langium'
 import { ast } from '../ast'
-import { elementRef, isElementRefHead, parentStrictElementRef, strictElementRefFqn } from '../elementRef'
+import {
+  elementRef,
+  isElementRefHead,
+  parentStrictElementRef,
+  strictElementRefFqn
+} from '../elementRef'
 import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
-
   private fqnIndex: FqnIndex
 
   constructor(services: LikeC4Services) {
@@ -28,7 +45,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
         return null
       },
-      (iterator) => {
+      iterator => {
         if (iterator) {
           return iterator.next()
         }
@@ -50,7 +67,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         }
         return null
       },
-      (iterator) => {
+      iterator => {
         if (iterator) {
           return iterator.next()
         }
@@ -58,7 +75,6 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
     )
   }
-
 
   override getScope(context: ReferenceInfo): Scope {
     try {
@@ -124,8 +140,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   /**
-     * Create a global scope filtered for the given reference type.
-     */
+   * Create a global scope filtered for the given reference type.
+   */
   protected override getGlobalScope(referenceType: string): Scope {
     return new StreamScope(this.indexManager.allElements(referenceType))
   }

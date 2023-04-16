@@ -9,6 +9,6 @@ const { shared } = createLanguageServices({ connection, ...NodeFileSystem })
 
 startLanguageServer(shared)
 
-process.on('unhandledRejection', (e) => {
+process.on('unhandledRejection', e => {
   console.error('Unhandled exception', e)
 })

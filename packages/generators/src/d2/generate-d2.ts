@@ -42,16 +42,18 @@ export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
     return new CompositeGeneratorNode()
       .append(name, ': {', NL)
       .indent({
-        indentedChildren: (indent) => indent
-          .append('label: "', label, '"', NL)
-          .append('shape: ', shape, NL)
-          .appendIf(node.children.length > 0,
-            NL,
-            joinToNode(
-              nodes.filter(n => n.parent === node.id),
-              n => printNode(n, fqnName)
-            )
-          ),
+        indentedChildren: indent =>
+          indent
+            .append('label: "', label, '"', NL)
+            .append('shape: ', shape, NL)
+            .appendIf(
+              node.children.length > 0,
+              NL,
+              joinToNode(
+                nodes.filter(n => n.parent === node.id),
+                n => printNode(n, fqnName)
+              )
+            ),
         indentation: 2
       })
       .append('}', NL)
@@ -59,35 +61,27 @@ export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
   //     return `${names.get(edge.source)} -> ${names.get(edge.target)}${edge.label ? ': ' + edge.label : ''}`
   const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode()
-      .append(
-        names.get(edge.source),
-        ' -> ',
-        names.get(edge.target),
-      )
-      .append(out =>
-        edge.label && out.append(': ', edge.label.replaceAll('\n', '\\n'))
-      )
+      .append(names.get(edge.source), ' -> ', names.get(edge.target))
+      .append(out => edge.label && out.append(': ', edge.label.replaceAll('\n', '\\n')))
   }
 
-  return toString(new CompositeGeneratorNode()
-    .append(
-      joinToNode(
-        nodes.filter(n => isNil(n.parent)),
-        n => printNode(n),
-        {
-          appendNewLineIfNotEmpty: true,
-        }
-      ),
-    )
-    .appendIf(edges.length > 0,
-      NL,
-      joinToNode(
-        edges,
-        e => printEdge(e),
-        {
-          appendNewLineIfNotEmpty: true,
-        }
-      ),
-    )
+  return toString(
+    new CompositeGeneratorNode()
+      .append(
+        joinToNode(
+          nodes.filter(n => isNil(n.parent)),
+          n => printNode(n),
+          {
+            appendNewLineIfNotEmpty: true
+          }
+        )
+      )
+      .appendIf(
+        edges.length > 0,
+        NL,
+        joinToNode(edges, e => printEdge(e), {
+          appendNewLineIfNotEmpty: true
+        })
+      )
   )
 }

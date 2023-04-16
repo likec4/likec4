@@ -6,11 +6,5 @@
     "target": "ES2022",
     "sourceMap": false
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/__mocks__/**",
-    "**/__test__/**",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["node_modules", "dist", "**/__mocks__/**", "**/__test__/**", "**/*.spec.ts"]
 }

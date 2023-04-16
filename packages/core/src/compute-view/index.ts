@@ -1,3 +1,3 @@
-export { computeView, computeViews } from './compute-view';
+export { computeView, computeViews } from './compute-view'
 
-export type * from '../types/computed-view';
+export type * from '../types/computed-view'

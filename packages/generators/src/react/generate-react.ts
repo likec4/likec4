@@ -10,20 +10,16 @@ const componentName = (value: string): string => {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
 
-export function generateReact(
-  views: DiagramView[],
-) {
-
+export function generateReact(views: DiagramView[]) {
   const components = views.map(({ id }) => {
     return {
       id,
-      name: componentName(id),
+      name: componentName(id)
     }
   })
 
   const out = new CompositeGeneratorNode()
-  out
-    .appendTemplate`
+  out.appendTemplate`
       /******************************************************************************
        * This file was generated
        * DO NOT EDIT MANUALLY!
@@ -33,8 +29,7 @@ export function generateReact(
       import type { DiagramView, EmbeddedDiagramProps } from '@likec4/diagrams'
       import { EmbeddedDiagram } from '@likec4/diagrams'
       import '@likec4/diagrams/dist/index.css'
-    `
-    .append(NL, NL)
+    `.append(NL, NL)
 
   if (components.length == 0) {
     out.append('export {}', NL)
@@ -42,26 +37,24 @@ export function generateReact(
   }
 
   out
-    .append(
-      'export const LikeC4ViewsData = {', NL
-    )
+    .append('export const LikeC4ViewsData = {', NL)
     .indent({
       indentation: 2,
       indentedChildren: indent => {
         indent.append(
           joinToNode(
             views,
-            view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`,
+            view =>
+              expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true
             }
           )
         )
-      },
+      }
     })
-    .append('} as const', NL, NL)
-    .appendTemplate`
+    .append('} as const', NL, NL).appendTemplate`
       export type LikeC4ViewsData = typeof LikeC4ViewsData
       export type ViewId = keyof LikeC4ViewsData
       export function isViewId(value: unknown): value is ViewId {
@@ -80,7 +73,7 @@ export function generateReact(
     .indent({
       indentation: 2,
       indentedChildren: components.map(({ id, name }) =>
-          expandToNode`
+        expandToNode`
             ['${name}']: (props: LikeC4ViewsProps) => <LikeC4View viewId={'${id}'} {...props}/>,
           `.append(NL)
       )

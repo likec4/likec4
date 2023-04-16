@@ -26,7 +26,6 @@ export function isWildcard(expr: Expression): expr is WildcardExpr {
   return 'wildcard' in expr
 }
 
-
 export type ElementExpression = ElementRefExpr | WildcardExpr
 export function isElement(expr: Expression): expr is ElementExpression {
   return isElementRef(expr) || isWildcard(expr)
@@ -60,11 +59,7 @@ export function isOutgoing(expr: Expression): expr is OutgoingExpr {
   return 'outgoing' in expr
 }
 
-export type AnyRelationExpression =
-  RelationExpr |
-  InOutExpr |
-  IncomingExpr |
-  OutgoingExpr
+export type AnyRelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
 
 export function isAnyRelation(expr: Expression): expr is AnyRelationExpression {
   return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)

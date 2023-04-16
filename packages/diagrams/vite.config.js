@@ -6,7 +6,7 @@ import packageJson from './package.json'
 export default defineConfig({
   plugins: [
     react({
-      jsxRuntime: 'classic',
+      jsxRuntime: 'classic'
     })
   ],
   build: {
@@ -14,17 +14,16 @@ export default defineConfig({
     lib: {
       formats: ['es', 'cjs'],
       entry: 'src/index.ts',
-      fileName: (ext) => `index.${ext}.js`,
+      fileName: ext => `index.${ext}.js`
     },
     target: 'esnext',
     rollupOptions: {
-
       // make sure to externalize deps that shouldn't be bundled
       // into your library
       external: [
         ...Object.keys(packageJson.dependencies),
         ...Object.keys(packageJson.peerDependencies)
-      ],
+      ]
       // output: {
       //   // Provide global variables to use in the UMD build
       //   // for externalized deps
@@ -32,6 +31,6 @@ export default defineConfig({
       //     vue: 'Vue',
       //   },
       // },
-    },
-  },
+    }
+  }
 })

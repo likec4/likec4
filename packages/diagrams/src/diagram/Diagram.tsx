@@ -47,11 +47,7 @@ export function Diagram({
   onEdgeClick,
   ...props
 }: DiagramProps): ReactElement<DiagramProps> {
-  const {
-    pannable = interactive,
-    zoomable = interactive,
-    animate = interactive,
-  } = props
+  const { pannable = interactive, zoomable = interactive, animate = interactive } = props
 
   const id = diagram.id
   const theme = DefaultDiagramTheme
@@ -64,7 +60,9 @@ export function Diagram({
   const stageRef = useRef<Konva.Stage>(null)
 
   const centerOnRect = (rect: IRect) => {
-    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding) ? padding : [padding, padding, padding, padding] as const
+    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
+      ? padding
+      : ([padding, padding, padding, padding] as const)
     // const stage = stageRef.current
     // const container = stage?.container()
 
@@ -79,8 +77,7 @@ export function Diagram({
     //   viewRect.height = Math.min(container.clientHeight, stage.height())
     // }
 
-    const
-      // Add padding to make a larger rect - this is what we want to fill
+    const // Add padding to make a larger rect - this is what we want to fill
       centerTo = {
         x: rect.x - paddingLeft,
         y: rect.y - paddingTop,
@@ -89,15 +86,8 @@ export function Diagram({
       },
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
-      viewScale = Math.min(
-        viewRect.width / centerTo.width,
-        viewRect.height / centerTo.height,
-      ),
-      scale = clamp(
-        0.2,
-        1.05,
-        viewScale
-      ),
+      viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
+      scale = clamp(0.2, 1.05, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {
@@ -106,32 +96,35 @@ export function Diagram({
       },
       // and the final position is...
       finalPosition = {
-        x: Math.ceil(centeringAjustment.x + (-centerTo.x * scale)),
-        y: Math.ceil(centeringAjustment.y + (-centerTo.y * scale))
+        x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
+        y: Math.ceil(centeringAjustment.y + -centerTo.y * scale)
       }
     return {
       ...finalPosition,
       scaleX: scale,
-      scaleY: scale,
+      scaleY: scale
     }
   }
 
-  const [stageProps, stageSpringApi] = useSpring({
-    to: {
-      ...centerOnRect({
-        x: 0,
-        y: 0,
-        width: diagram.width,
-        height: diagram.height,
-      })
+  const [stageProps, stageSpringApi] = useSpring(
+    {
+      to: {
+        ...centerOnRect({
+          x: 0,
+          y: 0,
+          width: diagram.width,
+          height: diagram.height
+        })
+      },
+      immediate: isFirstRender || !animate
     },
-    immediate: isFirstRender || !animate,
-  }, [id, width, height, diagram.width, diagram.height])
+    [id, width, height, diagram.width, diagram.height]
+  )
 
   const panning = useMemo(() => {
     if (!pannable) {
       return {
-        draggable: false,
+        draggable: false
       }
     }
     return {
@@ -143,56 +136,59 @@ export function Diagram({
         if (target === stageRef.current) {
           stageSpringApi.set({
             x: target.x(),
-            y: target.y(),
+            y: target.y()
           })
         }
       }
     }
   }, [pannable, stageSpringApi])
 
-  const handleWheelZoom = useCallback((e: Konva.KonvaEventObject<WheelEvent>) => {
-    const stage = stageRef.current
-    const pointer = stage?.getPointerPosition()
-    if (!stage || !pointer) {
-      return
-    }
+  const handleWheelZoom = useCallback(
+    (e: Konva.KonvaEventObject<WheelEvent>) => {
+      const stage = stageRef.current
+      const pointer = stage?.getPointerPosition()
+      if (!stage || !pointer) {
+        return
+      }
 
-    if (Math.abs(e.evt.deltaY) < 10) {
-      return
-    }
+      if (Math.abs(e.evt.deltaY) < 10) {
+        return
+      }
 
-    const zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
+      const zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
 
-    let direction = e.evt.deltaY > 0 ? 1 : -1
+      let direction = e.evt.deltaY > 0 ? 1 : -1
 
-    // // stop default scrolling
-    // e.evt.preventDefault()
-    // e.cancelBubble = true
+      // // stop default scrolling
+      // e.evt.preventDefault()
+      // e.cancelBubble = true
 
-    const oldScale = stage.scaleX()
+      const oldScale = stage.scaleX()
 
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    }
+      const mousePointTo = {
+        x: (pointer.x - stage.x()) / oldScale,
+        y: (pointer.y - stage.y()) / oldScale
+      }
 
-    // when we zoom on trackpad, e.evt.ctrlKey is true
-    // in that case lets revert direction
-    if (e.evt.ctrlKey) {
-      direction = -direction
-    }
+      // when we zoom on trackpad, e.evt.ctrlKey is true
+      // in that case lets revert direction
+      if (e.evt.ctrlKey) {
+        direction = -direction
+      }
 
-    let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
+      let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
 
-    newScale = clamp(0.1, 1.6, newScale)
+      newScale = clamp(0.1, 1.6, newScale)
 
-    stageSpringApi.start({
-      scaleX: newScale,
-      scaleY: newScale,
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    })
-  }, [stageSpringApi])
+      stageSpringApi.start({
+        scaleX: newScale,
+        scaleY: newScale,
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale
+      })
+    },
+    [stageSpringApi]
+  )
 
   // useEffect(() => {
   //   stageSpringApi.stop(true).start({
@@ -209,122 +205,124 @@ export function Diagram({
   // }, [id, width, height, diagram.width, diagram.height])
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
-    from: (node) => ({
+    from: node => ({
       width: node.size.width,
       height: node.size.height,
       opacity: 0.1,
       scaleX: 0.8,
-      scaleY: 0.8,
+      scaleY: 0.8
     }),
     enter: {
       opacity: 1,
       scaleX: 1,
-      scaleY: 1,
+      scaleY: 1
     },
-    update: (node) => ({
+    update: node => ({
       width: node.size.width,
-      height: node.size.height,
+      height: node.size.height
     }),
     leave: {
       opacity: 0,
       scaleX: 0.7,
-      scaleY: 0.7,
+      scaleY: 0.7
     },
     expires: true,
     immediate: isFirstRender || !animate,
-    keys: node => node.id,
+    keys: node => node.id
   })
 
   const edgeTransitions = useTransition(diagram.edges, {
     from: {
-      opacity: 0,
+      opacity: 0
     },
     enter: {
-      opacity: 0.75,
+      opacity: 0.75
     },
     leave: {
-      opacity: 0,
+      opacity: 0
     },
     exitBeforeEnter: true,
     expires: true,
     immediate: isFirstRender || !animate,
     config: {
-      duration: 100,
+      duration: 100
     },
-    keys: edge => edge.id,
+    keys: edge => edge.id
   })
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
-    from: (node) => ({
+    from: node => ({
       width: node.size.width,
       height: node.size.height,
       opacity: 0.1,
       scaleX: 0.7,
-      scaleY: 0.7,
+      scaleY: 0.7
     }),
     enter: {
       opacity: 1,
       scaleX: 1,
-      scaleY: 1,
+      scaleY: 1
     },
-    update: (node) => ({
+    update: node => ({
       width: node.size.width,
-      height: node.size.height,
+      height: node.size.height
     }),
     leave: {
       opacity: 0,
       scaleX: 0.4,
-      scaleY: 0.4,
+      scaleY: 0.4
     },
     expires: true,
     immediate: isFirstRender || !animate,
-    keys: node => (node.parent ?? '') + '-' + node.id + '-' + node.shape,
+    keys: node => (node.parent ?? '') + '-' + node.id + '-' + node.shape
   })
 
   // @ts-ignore
-  return <AStage
-    ref={stageRef}
-    className={className}
-    onWheel={zoomable && handleWheelZoom}
-    width={width}
-    height={height}
-    {...panning}
-    {...stageProps}
-  >
-    <Layer>
-      {compoundTransitions((springs, node, {key}) =>
-        <CompoundShape
-          key={key}
-          animate={animate}
-          node={node}
-          theme={theme}
-          springs={springs}
-          onNodeClick={onNodeClick}
-        />)}
-    </Layer>
-    <Layer>
-      {edgeTransitions((springs, edge, {key}) => (
-        <EdgeShape
-          key={key}
-          edge={edge}
-          theme={theme}
-          springs={springs}
-          onEdgeClick={onEdgeClick}
-        />
-      ))}
-    </Layer>
-    <Layer>
-      {nodeTransitions((springs, node, {key}) =>
-        createElement(nodeShape(node), {
-          key,
-          animate,
-          node,
-          theme,
-          springs,
-          onNodeClick,
-        })
-      )}
-    </Layer>
-  </AStage>
-
+  return (
+    <AStage
+      ref={stageRef}
+      className={className}
+      onWheel={zoomable && handleWheelZoom}
+      width={width}
+      height={height}
+      {...panning}
+      {...stageProps}
+    >
+      <Layer>
+        {compoundTransitions((springs, node, { key }) => (
+          <CompoundShape
+            key={key}
+            animate={animate}
+            node={node}
+            theme={theme}
+            springs={springs}
+            onNodeClick={onNodeClick}
+          />
+        ))}
+      </Layer>
+      <Layer>
+        {edgeTransitions((springs, edge, { key }) => (
+          <EdgeShape
+            key={key}
+            edge={edge}
+            theme={theme}
+            springs={springs}
+            onEdgeClick={onEdgeClick}
+          />
+        ))}
+      </Layer>
+      <Layer>
+        {nodeTransitions((springs, node, { key }) =>
+          createElement(nodeShape(node), {
+            key,
+            animate,
+            node,
+            theme,
+            springs,
+            onNodeClick
+          })
+        )}
+      </Layer>
+    </AStage>
+  )
 }

@@ -10,7 +10,7 @@ export default mergeConfig(
       }
     },
     test: {
-      name: 'language-server',
+      name: 'language-server'
     }
   })
 )

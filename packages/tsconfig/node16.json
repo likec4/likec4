@@ -2,9 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Node 16 + ESM + Strictest",
   "compilerOptions": {
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "declaration": true,
     "declarationMap": true,
     "module": "ES2022",
@@ -31,8 +29,5 @@
     "importsNotUsedAsValues": "error",
     "checkJs": false
   },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "exclude": ["node_modules", "dist"]
 }

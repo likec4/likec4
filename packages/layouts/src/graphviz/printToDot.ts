@@ -12,12 +12,11 @@ import invariant from 'tiny-invariant'
 const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
-const normalizeName = (nodeId: string): string => nodeId
-  .split('.')
-  .map(capitalizeFirstLetter)
-  .join('')
+const normalizeName = (nodeId: string): string =>
+  nodeId.split('.').map(capitalizeFirstLetter).join('')
 
-const gvName = (node: ComputedNode) => (node.children.length > 0 ? 'cluster_' : 'nd_') + node.id as GvNodeName
+const gvName = (node: ComputedNode) =>
+  ((node.children.length > 0 ? 'cluster_' : 'nd_') + node.id) as GvNodeName
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
   const gvSubgraphs = new Map<Fqn, SubgraphModel>()
@@ -30,7 +29,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         [_.id]: node.id,
         [_.labeljust]: 'l',
         [_.label]: node.title,
-        [_.margin]: node.children.length > 2 ? 30 : 20,
+        [_.margin]: node.children.length > 2 ? 30 : 20
       })
       gvSubgraphs.set(node.id, subgraph)
       // // @ts-expect-error ts-graphviz does not support this attribute
@@ -49,7 +48,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     } else {
       const {
         width,
-        height,
+        height
         // title: { fontSize: titleFontSize },
       } = estimateNodeSize(node)
       // const label = [`<FONT POINT-SIZE="15">${splitToLines(node.title, 30).join('<BR/>')}</FONT>`]
@@ -62,7 +61,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         [_.width]: pxToInch(width),
         [_.height]: pxToInch(height),
         [_.fixedsize]: true,
-        [_.label]: node.title.substring(0, 20),
+        [_.label]: node.title.substring(0, 20)
       })
       gvNodes.set(node.id, gNode)
     }
@@ -87,7 +86,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
   G.attributes.node.apply({
     [_.fontname]: 'Helvetica',
     [_.fontsize]: sizes.title.fontSize,
-    [_.shape]: 'rectangle',
+    [_.shape]: 'rectangle'
     // [_.width]: pxToInch(sizes.width),
     // [_.height]: pxToInch(sizes.height)
   })
@@ -95,7 +94,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.fontname]: 'Helvetica',
     [_.fontsize]: 12,
     // [_.penwidth]: 2,
-    [_.arrowsize]: 0.7,
+    [_.arrowsize]: 0.7
     // [_.labeldistance]: 10,
     // [_.labelfloat]: true,
     // [_.nojustify]: true,
@@ -115,7 +114,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
       if (source && target) {
         const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
         const e = container.edge([source, target], {
-          [_.id]: edge.id,
+          [_.id]: edge.id
         })
         // this is the only edge in the container
         // and the container has no subgraphs

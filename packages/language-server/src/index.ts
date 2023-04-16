@@ -9,9 +9,7 @@ export { createLanguageServices } from './module'
 //   LanguageId
 // } from './const'
 
-export {
-  LikeC4LanguageMetaData as LanguageMetaData
-} from './generated/module'
+export { LikeC4LanguageMetaData as LanguageMetaData } from './generated/module'
 
 // export { createC4XServices }
 

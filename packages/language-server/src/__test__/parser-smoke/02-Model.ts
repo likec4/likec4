@@ -16,7 +16,7 @@ model {
   user2 = person
 }
 `
-export const valid_02_Model_Builtin= `
+export const valid_02_Model_Builtin = `
 model {
   el1 = element
   el2 = element

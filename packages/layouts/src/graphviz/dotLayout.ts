@@ -1,5 +1,12 @@
 import type { Graphviz } from '@hpcc-js/wasm/graphviz'
-import type { ComputedView, DiagramEdge, DiagramNode, DiagramView, NodeId, Point } from '@likec4/core/types'
+import type {
+  ComputedView,
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  NodeId,
+  Point
+} from '@likec4/core/types'
 import { propEq } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type { DiagramLayoutFn } from '../types'
@@ -13,9 +20,10 @@ async function loadGraphviz() {
   return graphviz
 }
 
-
 function parseBB(bb?: string): GVBox {
-  const [llx, lly, urx, ury] = bb ? bb.split(',').map(p => pointToPx(+p)) as [number, number, number, number] : [0, 0, 0, 0]
+  const [llx, lly, urx, ury] = bb
+    ? (bb.split(',').map(p => pointToPx(+p)) as [number, number, number, number])
+    : [0, 0, 0, 0]
   const width = Math.ceil(urx - llx)
   const height = Math.ceil(lly - ury)
   return {
@@ -64,13 +72,15 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 function textAlignment(align?: string) {
-  if (!align)
-    return 'center'
+  if (!align) return 'center'
 
   switch (align) {
-    case 'l': return 'left'
-    case 'r': return 'right'
-    case 'c': return 'center'
+    case 'l':
+      return 'left'
+    case 'r':
+      return 'right'
+    case 'c':
+      return 'center'
     default:
       throw new Error(`Unknown text alignment ${align}`)
   }
@@ -78,14 +88,10 @@ function textAlignment(align?: string) {
 
 function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   const dotSource = printToDot(computedView)
-  const {
-    nodes: computedNodes,
-    edges: computedEdges,
-    ...view
-  } = computedView
+  const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
   const rawjson = graphviz.dot(dotSource, 'json', {
-    yInvert: true,
+    yInvert: true
   })
 
   const graphvizJson = JSON.parse(rawjson) as GraphvizJson
@@ -108,10 +114,9 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
     const parent = computedNd.parent ? diagramNodes.get(computedNd.parent) : undefined
     const position: Point = [bb.x, bb.y]
 
-    const relative: Point = parent ? [
-      position[0] - parent.position[0],
-      position[1] - parent.position[1]
-    ] : position
+    const relative: Point = parent
+      ? [position[0] - parent.position[0], position[1] - parent.position[1]]
+      : position
     const node: DiagramNode = {
       ...computedNd,
       // title: n.label.replaceAll('\\n', '\n'),
@@ -131,7 +136,7 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
     const edge: DiagramEdge = {
       ...edgeData,
       points: parseEdgePoints(e),
-      labelBox: null,
+      labelBox: null
     }
     diagram.edges.push(edge)
     const headArrow = parseEdgeHeadPolygon(e)
@@ -148,7 +153,7 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
         x,
         y,
         width,
-        align,
+        align
       }
     }
   }
@@ -156,18 +161,19 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   return diagram
 }
 
-export const dotLayout: DiagramLayoutFn = async (computedView) => {
+export const dotLayout: DiagramLayoutFn = async computedView => {
   const graphviz = await loadGraphviz()
   return layout(graphviz, computedView)
 }
 
 export async function dotLayouter(): Promise<DiagramLayoutFn> {
   const graphviz = await loadGraphviz()
-  return (computedView) => new Promise<DiagramView>((resolve, reject) => {
-    try {
-      resolve(layout(graphviz, computedView))
-    } catch (e) {
-      reject(e)
-    }
-  })
+  return computedView =>
+    new Promise<DiagramView>((resolve, reject) => {
+      try {
+        resolve(layout(graphviz, computedView))
+      } catch (e) {
+        reject(e)
+      }
+    })
 }

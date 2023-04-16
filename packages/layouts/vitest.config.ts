@@ -5,7 +5,7 @@ export default mergeConfig(
   configShared,
   defineProject({
     test: {
-      name: 'layouts',
+      name: 'layouts'
     }
   })
 )

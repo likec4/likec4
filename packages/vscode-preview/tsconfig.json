@@ -3,14 +3,8 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "noEmit": true,
+    "noEmit": true
   },
-  "include": [
-    "./protocol.ts",
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["./protocol.ts", "./src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -11,9 +11,7 @@ import { type LikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
-
-  constructor(private services: LikeC4Services) {
-  }
+  constructor(private services: LikeC4Services) {}
 
   getSymbols(document: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     const { specification, model, views } = document.parseResult.value
@@ -65,13 +63,15 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
     if (specSymbols.length === 0) return []
 
-    return [{
-      kind: SymbolKind.Class,
-      name: astSpec.name,
-      range: cstModel.range,
-      selectionRange: specKeywordNode.range,
-      children: specSymbols
-    }]
+    return [
+      {
+        kind: SymbolKind.Class,
+        name: astSpec.name,
+        range: cstModel.range,
+        selectionRange: specKeywordNode.range,
+        children: specSymbols
+      }
+    ]
   }
 
   protected getModelSymbols = (astModel: ast.Model | undefined): DocumentSymbol[] => {
@@ -79,16 +79,20 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!cstModel) return []
     const nameNode = findNodeForProperty(cstModel, 'name')
     if (!nameNode) return []
-    return [{
-      kind: SymbolKind.Class,
-      name: astModel.name,
-      range: cstModel.range,
-      selectionRange: nameNode.range,
-      children: astModel.elements.flatMap(this.getElementsSymbol)
-    }]
+    return [
+      {
+        kind: SymbolKind.Class,
+        name: astModel.name,
+        range: cstModel.range,
+        selectionRange: nameNode.range,
+        children: astModel.elements.flatMap(this.getElementsSymbol)
+      }
+    ]
   }
 
-  protected getElementsSymbol = (el: ast.Element | ast.Relation | ast.ExtendElement): DocumentSymbol[] => {
+  protected getElementsSymbol = (
+    el: ast.Element | ast.Relation | ast.ExtendElement
+  ): DocumentSymbol[] => {
     if (ast.isExtendElement(el)) {
       return this.getExtendElementSymbol(el)
     }
@@ -103,13 +107,15 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const nameNode = astElement.element.$cstNode
     if (!cst || !nameNode) return []
 
-    return [{
-      kind: SymbolKind.Constructor,
-      name: nameNode.text,
-      range: cst.range,
-      selectionRange: nameNode.range,
-      children: astElement.body.elements.flatMap(this.getElementsSymbol)
-    }]
+    return [
+      {
+        kind: SymbolKind.Constructor,
+        name: nameNode.text,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        children: astElement.body.elements.flatMap(this.getElementsSymbol)
+      }
+    ]
   }
 
   protected getElementSymbol = (astElement: ast.Element): DocumentSymbol[] => {
@@ -123,14 +129,16 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const kind = astElement.kind.$refText
     // TODO: return the title as well
     const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
-    return [{
-      kind: SymbolKind.Constructor,
-      name: name,
-      range: cst.range,
-      selectionRange: nameNode.range,
-      detail,
-      children: astElement.body?.elements.flatMap(this.getElementsSymbol) ?? []
-    }]
+    return [
+      {
+        kind: SymbolKind.Constructor,
+        name: name,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        detail,
+        children: astElement.body?.elements.flatMap(this.getElementsSymbol) ?? []
+      }
+    ]
   }
 
   protected getModelViewsSymbols = (astViews: ast.ModelViews | undefined): DocumentSymbol[] => {
@@ -138,13 +146,15 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!cst) return []
     const nameNode = findNodeForProperty(cst, 'name')
     if (!nameNode) return []
-    return [{
-      kind: SymbolKind.Class,
-      name: astViews.name,
-      range: cst.range,
-      selectionRange: nameNode.range,
-      children: []
-    }]
+    return [
+      {
+        kind: SymbolKind.Class,
+        name: astViews.name,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        children: []
+      }
+    ]
   }
 
   // protected getElementViewSymbol = (astView: ast.ElementView): DocumentSymbol[] => {

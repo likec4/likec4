@@ -6,8 +6,8 @@ export const dialogOverlay = style({
   position: 'fixed',
   inset: 0,
   zIndex: 100,
-  backdropFilter: 'blur(3px)',
-});
+  backdropFilter: 'blur(3px)'
+})
 
 export const dialogContent = style({
   backgroundColor: 'white',
@@ -23,22 +23,22 @@ export const dialogContent = style({
   padding: 25,
   zIndex: 101,
   ':focus': {
-     outline: 'none'
-  },
-});
+    outline: 'none'
+  }
+})
 
 export const dialogTitle = style({
   margin: 0,
   fontWeight: 500,
   color: mauve.mauve12,
-  fontSize: 17,
-});
+  fontSize: 17
+})
 
 export const dialogDescription = style({
   margin: '10px 0 20px',
   color: mauve.mauve11,
   fontSize: 15,
-  lineHeight: 1.5,
-});
+  lineHeight: 1.5
+})
 
 export const flex = style({ display: 'flex' })
