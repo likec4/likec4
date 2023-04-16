@@ -24,7 +24,6 @@
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*"
       ],
-      "enableTurboSourcemaps": true,
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/bigbank",

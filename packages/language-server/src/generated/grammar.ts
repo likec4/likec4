@@ -3,12 +3,10 @@
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
 
-import { loadGrammarFromJson, Grammar } from 'langium'
+import { loadGrammarFromJson, Grammar } from 'langium';
 
-let loadedLikeC4Grammar: Grammar | undefined
-export const LikeC4Grammar = (): Grammar =>
-  loadedLikeC4Grammar ??
-  (loadedLikeC4Grammar = loadGrammarFromJson(`{
+let loadedLikeC4Grammar: Grammar | undefined;
+export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4Grammar = loadGrammarFromJson(`{
   "$type": "Grammar",
   "isDeclared": true,
   "name": "LikeC4",
@@ -2388,4 +2386,4 @@ export const LikeC4Grammar = (): Grammar =>
   "interfaces": [],
   "types": [],
   "usedGrammars": []
-}`))
+}`));

@@ -1,19 +1,15 @@
 import type { LangiumDocument, LangiumDocumentFactory, LangiumSharedServices } from 'langium'
-import { DefaultWorkspaceManager, WorkspaceManager } from 'langium'
-import stripIndent from 'strip-indent'
-import type { Hover, WorkspaceFolder } from 'vscode-languageserver-protocol'
-import type { LikeC4Services } from '../module'
-import type { LikeC4ModelLocator } from '../model'
-import { ast } from '../ast'
+import { DefaultWorkspaceManager } from 'langium'
+import type { WorkspaceFolder } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
-import { logger } from '../logger'
+import * as builtin from '../builtin'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
-  protected readonly langiumDocumentFactory: LangiumDocumentFactory
+  protected readonly documentFactory: LangiumDocumentFactory
 
   constructor(services: LangiumSharedServices) {
     super(services)
-    this.langiumDocumentFactory = services.workspace.LangiumDocumentFactory
+    this.documentFactory = services.workspace.LangiumDocumentFactory
   }
 
   /**
@@ -21,20 +17,11 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * folders and add them to the collector. This can be used to include built-in libraries of
    * your language, which can be either loaded from provided files or constructed in memory.
    */
-  protected override async loadAdditionalDocuments(
-    _folders: WorkspaceFolder[],
-    _collector: (document: LangiumDocument) => void
+  protected override loadAdditionalDocuments(
+    folders: WorkspaceFolder[],
+    collector: (document: LangiumDocument) => void
   ): Promise<void> {
-    const doc = this.langiumDocumentFactory.fromString(
-      `
-    specification {
-      element element
-    }
-  `,
-      URI.parse('memory:///likec4-builtin.c4')
-    )
-    await this.documentBuilder.build([doc], { validationChecks: 'all' })
-    this.langiumDocuments.addDocument(doc)
-    return _collector(doc)
+    collector(this.documentFactory.fromString(builtin.specification.document, URI.parse(builtin.specification.uri)))
+    return Promise.resolve()
   }
 }

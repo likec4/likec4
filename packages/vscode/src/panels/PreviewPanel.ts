@@ -29,9 +29,12 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     super()
   }
 
-  deserializeWebviewPanel(webviewPanel: WebviewPanel, _state: any) {
+  deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
     this.currentViewId = null
     this.setupPanel(webviewPanel)
+    if (typeof state === 'object' && 'view' in state && typeof state.view === 'object') {
+      this.currentViewId = state.view.id
+    }
     return Promise.resolve()
   }
 
@@ -74,6 +77,16 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       this,
       this._disposables
     )
+    // panel.onDidChangeViewState(
+    //   ({webviewPanel}) => {
+
+
+    //     this.panel = null
+    //     this.close()
+    //   },
+    //   this,
+    //   this._disposables
+    // )
 
     this.updateWebviewContent()
   }
@@ -184,10 +197,11 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     throw new Error(`Unexchaustive switch for ${message.kind}`)
   }
 
-  private getWebviewOptions(): vscode.WebviewOptions {
+  private getWebviewOptions(): vscode.WebviewOptions & vscode.WebviewPanelOptions {
     return {
+      retainContextWhenHidden: true,
       // Enable javascript in the webview
-      enableScripts: true
+      enableScripts: true,
 
       // And restrict the webview to only loading content from our extension's `dist` directory.
       // localResourceRoots: [
@@ -202,6 +216,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       'Diagram preview',
       {
         viewColumn: vscode.ViewColumn.Beside,
+
         preserveFocus: true
       },
       this.getWebviewOptions()

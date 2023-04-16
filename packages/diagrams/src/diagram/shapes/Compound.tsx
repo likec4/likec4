@@ -82,32 +82,33 @@ export const CompoundShape = ({
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return (
-    <animated.Group {...groupProps} {...springs} id={'compound_' + id}>
-      <animated.Rect
-        {...rectProps}
-        opacity={0.25}
-        cornerRadius={4}
-        shadowBlur={12}
-        shadowOpacity={0.45}
-        shadowOffsetX={0}
-        shadowOffsetY={8}
-      />
-      <animated.Text
-        x={0}
-        y={0}
-        width={rectProps.width}
-        fill={loContrast}
-        fontSize={12}
-        fontFamily={theme.font}
-        wrap={'none'}
-        ellipsis={true}
-        align={'left'}
-        text={node.title}
-        padding={10}
-        opacity={0.8}
-        {...listeners}
-      />
-    </animated.Group>
-  )
+  return <animated.Group
+    id={'compound_' + id}
+    {...groupProps}
+    {...springs}>
+    <animated.Rect
+      {...rectProps}
+      opacity={0.25}
+      cornerRadius={4}
+      shadowBlur={12}
+      shadowOpacity={0.45}
+      shadowOffsetX={0}
+      shadowOffsetY={8}
+    />
+    <animated.Text
+      x={0}
+      y={0}
+      width={rectProps.width}
+      fill={loContrast}
+      fontSize={12}
+      fontFamily={theme.font}
+      wrap={'none'}
+      ellipsis={true}
+      align={'left'}
+      text={node.title}
+      padding={10}
+      opacity={0.8}
+      {...listeners}
+    />
+  </animated.Group>
 }

@@ -11,13 +11,13 @@
   "scripts": {
     "build:vscode": "run -T build --filter='vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
-    "release:build": "yarn node esbuild.cjs --minify && run copy",
+    "release:build": "yarn node esbuild.mjs --minify && run copy",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r ../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
-    "build": "yarn node esbuild.cjs && run copy",
-    "dev": "yarn node esbuild.cjs --watch",
+    "build": "yarn node esbuild.mjs && run copy",
+    "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist"
   },
@@ -53,7 +53,7 @@
       {
         "language": "likec4",
         "scopeName": "source.likec4",
-        "path": "contrib/like-c4.tmLanguage.json"
+        "path": "contrib/likec4.tmLanguage.json"
       }
     ],
     "configuration": {

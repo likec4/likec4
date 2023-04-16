@@ -16,7 +16,8 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./src/protocol.ts"
+    "./protocol": "./src/protocol.ts",
+    "./builtin": "./src/builtin.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -33,6 +34,11 @@
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.js",
         "require": "./dist/protocol.cjs"
+      },
+      "./builtin": {
+        "types": "./dist/builtin.d.ts",
+        "import": "./dist/builtin.js",
+        "require": "./dist/builtin.cjs"
       }
     }
   },
