@@ -54,7 +54,7 @@
   "dependencies": {
     "@react-spring/konva": "^9.7.2",
     "konva": "^8.4.3",
-    "react-konva": "^18.2.5"
+    "react-konva": "^18.2.7"
   },
   "peerDependencies": {
     "@likec4/core": "workspace:*",
