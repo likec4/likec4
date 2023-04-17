@@ -3,15 +3,16 @@ import { useSyncedRef } from '@react-hookz/web/esm'
 import { animated, useSpring, type SpringValues } from '@react-spring/konva'
 import { useMemo } from 'react'
 import type { DiagramTheme } from '../types'
-import { NodeTitle } from './Rectangle'
+import { NodeLabels as NodeTitle } from './nodeLabels'
 import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
-export function cylinderSVGPath(radius: number, height: number, tilt = 0.1) {
-  const tiltAdjustedHeight = height - radius * tilt
-  const diameter = radius * 2
+export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
+  const radius = Math.round(diameter / 2)
+  // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
   const rx = radius
   const ry = Math.round(tilt * radius * 1000) / 1000
+  const tiltAdjustedHeight = height - 2 * ry
 
   const d = `   M 0,${ry}
         a ${rx},${ry} 0,0,0 ${diameter} 0
@@ -50,7 +51,8 @@ export const CylinderShape = ({
     id,
     size: { width, height },
     position: [x, y],
-    color
+    color,
+    labels
   } = node
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
@@ -71,7 +73,8 @@ export const CylinderShape = ({
     [x, y, offsetX, offsetY]
   )
 
-  const path = useMemo(() => cylinderSVGPath(width / 2, height), [width, height])
+  const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
+  const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
 
   const cylinderProps = useSpring({
     to: {
@@ -117,9 +120,9 @@ export const CylinderShape = ({
     }
   }, [node, onNodeClick ?? null, animate])
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   return (
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <animated.Group id={'node_' + id} {...listeners} {...springs} {...groupProps}>
       <animated.Path
         shadowBlur={12}
@@ -132,11 +135,10 @@ export const CylinderShape = ({
         {...cylinderProps}
       />
       <NodeTitle
-        y={offsetY + Math.round((width / 2) * 0.08)}
-        title={node.title}
-        description={node.description ?? null}
-        color={color}
+        labels={labels}
+        // offsetY={-ry}
         width={width}
+        color={color}
         theme={theme}
       />
     </animated.Group>

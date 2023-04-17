@@ -87,7 +87,8 @@ const fakeElements = {
   amazon: {
     id: 'amazon' as Fqn,
     kind: 'system' as ElementKind,
-    title: 'amazon'
+    title: 'Amazon',
+    description: 'Amazon is a cloud provider'
   },
   cloud: {
     id: 'cloud' as Fqn,
@@ -102,42 +103,48 @@ const fakeElements = {
   support: {
     id: 'support' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'support'
+    title: 'Support Engineer',
+    description: 'Support engineers are responsible for supporting customers'
   },
   'amazon.s3': {
     id: 'amazon.s3' as Fqn,
     kind: 'component' as ElementKind,
-    title: 's3'
+    title: 'S3',
+    description: 'S3 is a storage service'
   },
   'cloud.backend': {
     id: 'cloud.backend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'backend'
+    title: 'Backend'
   },
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'frontend'
+    title: 'Frontend'
   },
   'cloud.backend.graphql': {
     id: 'cloud.backend.graphql' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'graphql'
+    title: 'Graphql API',
+    description: 'Component that allows to query data via GraphQL.'
   },
   'cloud.backend.storage': {
     id: 'cloud.backend.storage' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'storage'
+    title: 'Backend Storage',
+    description: 'The backend storage is a component that stores data.'
   },
   'cloud.frontend.adminPanel': {
     id: 'cloud.frontend.adminPanel' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'adminPanel'
+    title: 'Admin Panel Webapp',
+    description: 'The admin panel is a webapp that allows support staff to manage customer data.'
   },
   'cloud.frontend.dashboard': {
     id: 'cloud.frontend.dashboard' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'dashboard'
+    title: 'Customer Dashboard Webapp',
+    description: 'The customer dashboard is a webapp that allows customers to view their data.'
   }
 } satisfies Record<string, Element>
 

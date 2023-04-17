@@ -2,7 +2,7 @@ import { useSyncedRef } from '@react-hookz/web/esm'
 import { animated, useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
 import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
-import { NodeTitle } from './Rectangle'
+import { NodeLabels } from './nodeLabels'
 import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
@@ -17,7 +17,8 @@ export const QueueShape = ({
     id,
     size: { width, height },
     position: [x, y],
-    color
+    color,
+    labels
   } = node
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
@@ -38,7 +39,8 @@ export const QueueShape = ({
     [x, y, offsetX, offsetY]
   )
 
-  const path = useMemo(() => cylinderSVGPath(height / 2, width, 0.16), [width, height])
+  const path = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
+  const rx = Math.round(2 * 0.1 * (height / 2) * 1000) / 1000
 
   const queueProps = useSpring({
     to: {
@@ -88,11 +90,10 @@ export const QueueShape = ({
     }
   }, [node, onNodeClick ?? null, animate])
 
-  const tiltAdjustedWidth = Math.round((height / 2) * 0.16)
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   return (
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <animated.Group id={'node_' + id} {...listeners} {...springs} {...groupProps}>
       <animated.Path
         shadowBlur={12}
@@ -105,13 +106,10 @@ export const QueueShape = ({
         height={springs?.width}
         {...queueProps}
       />
-      <NodeTitle
-        y={offsetY}
-        offsetX={tiltAdjustedWidth}
-        title={node.title}
-        description={node.description ?? null}
+      <NodeLabels
+        labels={labels}
+        width={width - rx}
         color={color}
-        width={width - tiltAdjustedWidth}
         theme={theme}
       />
     </animated.Group>

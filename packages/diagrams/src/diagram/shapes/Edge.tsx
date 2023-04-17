@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { DiagramEdge } from '@likec4/core/types'
 import { animated, type SpringValues } from '@react-spring/konva'
 import { useCallback, useMemo } from 'react'
+import { Text } from 'react-konva'
 
 import type { DiagramTheme } from '../types'
 import type { OnClickEvent } from './types'
@@ -15,7 +18,7 @@ export interface EdgeShapeProps {
 }
 
 export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps) => {
-  const { points, headArrow, label, labelBox } = edge
+  const { points, headArrow, labels } = edge
 
   const onClickListener = useMemo(() => {
     if (!onEdgeClick) return {}
@@ -36,6 +39,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
   }
   return (
     <>
+    {/* @ts-ignore */}
       <animated.Line
         {...springs}
         {...listeners}
@@ -56,7 +60,27 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
           strokeWidth={1}
         />
       )}
-      {label && labelBox && (
+      {labels.map((label, i) =>
+        <animated.Text
+          key={i}
+          {...springs}
+          {...listeners}
+          x={label.pt[0]}
+          y={label.pt[1] - (label.fontSize / 2)}
+          // offsetY={label.fontSize / 2}
+          // offsetY={label.fontSize / 2}
+          // offsetX={label  .width / 2}
+          // width={label.width}
+          fill={theme.relation.labelColor}
+          fontFamily='Helvetica'
+          fontSize={label.fontSize}
+          fontStyle={label.fontStyle ?? 'normal'}
+          align={label.align}
+          text={label.text}
+          // wrap='none'
+        />
+      )}
+      {/* {label && labelBox && (
         <animated.Text
           {...springs}
           {...listeners}
@@ -70,7 +94,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
           lineHeight={1.15}
           verticalAlign='middle'
         />
-      )}
+      )} */}
     </>
   )
 }

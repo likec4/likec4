@@ -14,7 +14,7 @@ export interface GVPos {
   y: number
 }
 
-export interface GVBox {
+export interface BoundingBox {
   x: number
   y: number
   width: number
@@ -58,43 +58,43 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
-  export interface Ldraw {
-    op: string
+  export type Ldraw = {
+    op: 'F'
     size: number
     face: string
-    grad: string
+  } |  {
+    op: 'c'
     color: string
+  } | {
+    op: 't'
+    fontchar: number
+  } | {
+    op: 'T'
     pt: Point
-    align: string
-    width?: number
+    align: 'l' | 'r' | 'c'
+    width: number
     text: string
   }
 
-  export interface GvObject {
-    name: GvNodeName
-    _draw_: Draw2[]
-    _ldraw_?: Ldraw[]
+  export type GvObject = GvNodeObject | GvSubgraph
+  export interface GvSubgraph {
     bb: string
-    compound: 'true' | 'false'
-    fontname: string
-    fontsize: string
-    id: NodeId
-    label: string
-    labeljust: string
-    lheight: string
-    lp: string
-    lwidth: string
-    nodesep: string
-    outputorder: string
-    rankdir: string
-    ranksep: string
-    splines: string
+    compound: 'true'
+    _ldraw_?: Ldraw[]
+    id?: NodeId
     _gvid: GvId
-    nodes?: GvId[]
-    edges?: GvId[]
+    nodes: GvId[]
+    edges: GvId[]
+  }
+
+  export interface GvNodeObject {
+    _draw_: Draw[]
+    _ldraw_?: Ldraw[]
+    id: NodeId
+    _gvid: GvId
     height: string
     pos: string
-    shape: string
+    shape: "rect"
     width: string
   }
 
@@ -113,26 +113,13 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
-  export interface Ldraw2 {
-    op: string
-    size: number
-    face: string
-    grad: string
-    color: string
-    pt: Point
-    align: string
-    width?: number
-    text: string
-  }
-
   export interface Edge {
     _gvid: GvId
     tail: number
     head: number
     _draw_: Draw3[]
     _hdraw_?: Hdraw[]
-    _ldraw_?: Ldraw2[]
-    _tldraw_?: Ldraw2[]
+    _ldraw_?: Ldraw[]
     fontname: string
     fontsize: string
     id: EdgeId

@@ -1,318 +1,334 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`printToDot: computedAmazonView 1`] = `
-"digraph "G" {
-  layout = "dot";
+"digraph {
   compound = true;
+  pad = 0.07;
   rankdir = "TB";
-  nodesep = 0.8333333333333334;
-  ranksep = 0.7291666666666666;
-  outputorder = "nodesfirst";
+  nodesep = 0.9375;
+  ranksep = 0.9375;
+  layout = "dot";
+  TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  TBbalance = "min";
+  graph [
+    fontname = "Helvetica";
+  ];
   edge [
     fontname = "Helvetica";
-    fontsize = 12;
+    style = "solid";
+    penwidth = 2;
     arrowsize = 0.7;
+    color = "#707070";
+    fontcolor = "#707070";
+    headport = "_";
+    tailport = "_";
   ];
   node [
     fontname = "Helvetica";
-    fontsize = 15;
-    shape = "rectangle";
+    labelloc = "c";
+    shape = "rect";
+    width = 3.3333333333333335;
+    height = 1.875;
+    color = "#6b6b6b";
+    fillcolor = "#999999";
+    fontcolor = "#ffffff";
+    style = "filled";
+    margin = "0.4,0.3";
   ];
-  subgraph "cluster_cloud" {
+  subgraph "cluster_1" {
     id = "cloud";
     labeljust = "l";
-    label = "cloud";
+    fontsize = 9;
+    label = <<B>CLOUD</B>>;
     margin = 20;
-    "nd_cloud.backend" [
+    "nd2" [
       id = "cloud.backend";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "backend";
+      label = <<FONT point-size="13.5">Backend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
   }
-  subgraph "cluster_amazon" {
+  subgraph "cluster_3" {
     id = "amazon";
     labeljust = "l";
-    label = "amazon";
+    fontsize = 9;
+    label = <<B>AMAZON</B>>;
     margin = 20;
-    "nd_amazon.s3" [
+    "nd4" [
       id = "amazon.s3";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "s3";
+      label = <<FONT point-size="13.5">S3<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">S3 is a storage service<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
   }
-  "nd_cloud.backend" -> "nd_amazon.s3" [
+  "nd2" -> "nd4" [
     id = "cloud.backend:amazon.s3";
-    label = "persists artifacts";
+    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
 }"
 `;
 
 exports[`printToDot: computedCloud3levels 1`] = `
-"digraph "G" {
-  layout = "dot";
+"digraph {
   compound = true;
+  pad = 0.07;
   rankdir = "TB";
-  nodesep = 0.8333333333333334;
-  ranksep = 0.7291666666666666;
-  outputorder = "nodesfirst";
+  nodesep = 0.9375;
+  ranksep = 0.9375;
+  layout = "dot";
+  TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  TBbalance = "min";
+  graph [
+    fontname = "Helvetica";
+  ];
   edge [
     fontname = "Helvetica";
-    fontsize = 12;
+    style = "solid";
+    penwidth = 2;
     arrowsize = 0.7;
+    color = "#707070";
+    fontcolor = "#707070";
+    headport = "_";
+    tailport = "_";
   ];
   node [
     fontname = "Helvetica";
-    fontsize = 15;
-    shape = "rectangle";
+    labelloc = "c";
+    shape = "rect";
+    width = 3.3333333333333335;
+    height = 1.875;
+    color = "#6b6b6b";
+    fillcolor = "#999999";
+    fontcolor = "#ffffff";
+    style = "filled";
+    margin = "0.4,0.3";
   ];
-  "nd_support" [
+  "nd1" [
     id = "support";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for supporting<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_customer" [
+  "nd2" [
     id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
+    label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_amazon" [
+  "nd9" [
     id = "amazon";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "amazon";
+    label = <<FONT point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  subgraph "cluster_cloud" {
+  subgraph "cluster_3" {
     id = "cloud";
     labeljust = "l";
-    label = "cloud";
+    fontsize = 9;
+    label = <<B>CLOUD</B>>;
     margin = 30;
-    "nd_cloud.frontend.dashboard" [
+    "nd4" [
       id = "cloud.frontend.dashboard";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "dashboard";
-      group = "Cloud";
+      label = <<FONT point-size="13.5">Customer Dashboard Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The customer dashboard is a webapp that allows<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>customers to view their data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
-    "nd_cloud.frontend.adminPanel" [
+    "nd5" [
       id = "cloud.frontend.adminPanel";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "adminPanel";
-      group = "Cloud";
+      label = <<FONT point-size="13.5">Admin Panel Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The admin panel is a webapp that allows support<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>staff to manage customer data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
-    subgraph "cluster_cloud.backend" {
+    subgraph "cluster_6" {
       id = "cloud.backend";
       labeljust = "l";
-      label = "backend";
+      fontsize = 9;
+      label = <<B>BACKEND</B>>;
       margin = 20;
-      "nd_cloud.backend.graphql" [
+      "nd7" [
         id = "cloud.backend.graphql";
-        width = 2.6041666666666665;
-        height = 1.4583333333333333;
-        fixedsize = true;
-        label = "graphql";
-        group = "CloudBackend";
+        label = <<FONT point-size="13.5">Graphql API<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Component that allows to query data via GraphQL.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
       ];
-      "nd_cloud.backend.storage" [
+      "nd8" [
         id = "cloud.backend.storage";
-        width = 2.6041666666666665;
-        height = 1.4583333333333333;
-        fixedsize = true;
-        label = "storage";
-        group = "CloudBackend";
-      ];
-      "nd_cloud.backend.graphql" -> "nd_cloud.backend.storage" [
-        id = "cloud.backend.graphql:cloud.backend.storage";
-        constraint = false;
+        label = <<FONT point-size="13.5">Backend Storage<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The backend storage is a component that stores<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
       ];
     }
-    "nd_cloud.frontend.dashboard" -> "nd_cloud.backend.graphql" [
-      id = "cloud.frontend.dashboard:cloud.backend.graphql";
-      label = "fetches data";
-    ];
-    "nd_cloud.frontend.adminPanel" -> "nd_cloud.backend.graphql" [
-      id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-      nojustify = true;
-      label = "fetches data in zero trust\\lnetwork with sso\\lauthentification\\l";
-    ];
   }
-  "nd_cloud.backend.storage" -> "nd_amazon" [
+  "nd4" -> "nd7" [
+    id = "cloud.frontend.dashboard:cloud.backend.graphql";
+    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
+  ];
+  "nd5" -> "nd7" [
+    id = "cloud.frontend.adminPanel:cloud.backend.graphql";
+    label = <<FONT point-size="10.5">fetches data in zero trust network with sso<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
+  ];
+  "nd8" -> "nd9" [
     id = "cloud.backend.storage:amazon";
-    label = "persists artifacts";
+    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_support" -> "nd_cloud.frontend.adminPanel" [
+  "nd1" -> "nd5" [
     id = "support:cloud.frontend.adminPanel";
-    label = "manages";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_customer" -> "nd_cloud.frontend.dashboard" [
+  "nd2" -> "nd4" [
     id = "customer:cloud.frontend.dashboard";
-    label = "opens in browser";
+    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
+  ];
+  "nd7" -> "nd8" [
+    id = "cloud.backend.graphql:cloud.backend.storage";
+    minlen = 0;
   ];
 }"
 `;
 
 exports[`printToDot: computedCloudView 1`] = `
-"digraph "G" {
-  layout = "dot";
+"digraph {
   compound = true;
+  pad = 0.07;
   rankdir = "TB";
-  nodesep = 0.8333333333333334;
-  ranksep = 0.7291666666666666;
-  outputorder = "nodesfirst";
+  nodesep = 0.9375;
+  ranksep = 0.9375;
+  layout = "dot";
+  TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  TBbalance = "min";
+  graph [
+    fontname = "Helvetica";
+  ];
   edge [
     fontname = "Helvetica";
-    fontsize = 12;
+    style = "solid";
+    penwidth = 2;
     arrowsize = 0.7;
+    color = "#707070";
+    fontcolor = "#707070";
+    headport = "_";
+    tailport = "_";
   ];
   node [
     fontname = "Helvetica";
-    fontsize = 15;
-    shape = "rectangle";
+    labelloc = "c";
+    shape = "rect";
+    width = 3.3333333333333335;
+    height = 1.875;
+    color = "#6b6b6b";
+    fillcolor = "#999999";
+    fontcolor = "#ffffff";
+    style = "filled";
+    margin = "0.4,0.3";
   ];
-  "nd_support" [
+  "nd1" [
     id = "support";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for supporting<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_customer" [
+  "nd2" [
     id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
+    label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_amazon" [
+  "nd6" [
     id = "amazon";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "amazon";
+    label = <<FONT point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  subgraph "cluster_cloud" {
+  subgraph "cluster_3" {
     id = "cloud";
     labeljust = "l";
-    label = "cloud";
+    fontsize = 9;
+    label = <<B>CLOUD</B>>;
     margin = 20;
-    "nd_cloud.frontend" [
+    "nd4" [
       id = "cloud.frontend";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "frontend";
-      group = "Cloud";
+      label = <<FONT point-size="13.5">Frontend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
-    "nd_cloud.backend" [
+    "nd5" [
       id = "cloud.backend";
-      width = 2.6041666666666665;
-      height = 1.4583333333333333;
-      fixedsize = true;
-      label = "backend";
-      group = "Cloud";
-    ];
-    "nd_cloud.frontend" -> "nd_cloud.backend" [
-      id = "cloud.frontend:cloud.backend";
-      constraint = false;
-      nojustify = true;
-      label = "fetches data in zero trust\\lnetwork with sso\\lauthentification\\l";
+      label = <<FONT point-size="13.5">Backend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
   }
-  "nd_cloud.backend" -> "nd_amazon" [
+  "nd4" -> "nd5" [
+    id = "cloud.frontend:cloud.backend";
+    label = <<FONT point-size="10.5">fetches data in zero trust network with sso<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
+    minlen = 0;
+  ];
+  "nd5" -> "nd6" [
     id = "cloud.backend:amazon";
-    label = "persists artifacts";
+    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_support" -> "nd_cloud.frontend" [
+  "nd1" -> "nd4" [
     id = "support:cloud.frontend";
-    label = "manages";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_customer" -> "nd_cloud.frontend" [
+  "nd2" -> "nd4" [
     id = "customer:cloud.frontend";
-    label = "opens in browser";
+    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
 }"
 `;
 
 exports[`printToDot: computedIndexView 1`] = `
-"digraph "G" {
-  layout = "dot";
+"digraph {
   compound = true;
+  pad = 0.07;
   rankdir = "TB";
-  nodesep = 0.8333333333333334;
-  ranksep = 0.7291666666666666;
-  outputorder = "nodesfirst";
+  nodesep = 0.9375;
+  ranksep = 0.9375;
+  layout = "dot";
+  TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  TBbalance = "min";
+  graph [
+    fontname = "Helvetica";
+  ];
   edge [
     fontname = "Helvetica";
-    fontsize = 12;
+    style = "solid";
+    penwidth = 2;
     arrowsize = 0.7;
+    color = "#707070";
+    fontcolor = "#707070";
+    headport = "_";
+    tailport = "_";
   ];
   node [
     fontname = "Helvetica";
-    fontsize = 15;
-    shape = "rectangle";
+    labelloc = "c";
+    shape = "rect";
+    width = 3.3333333333333335;
+    height = 1.875;
+    color = "#6b6b6b";
+    fillcolor = "#999999";
+    fontcolor = "#ffffff";
+    style = "filled";
+    margin = "0.4,0.3";
   ];
-  "nd_support" [
+  "nd1" [
     id = "support";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for supporting<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_customer" [
+  "nd2" [
     id = "customer";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "customer";
+    label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_cloud" [
+  "nd3" [
     id = "cloud";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "cloud";
+    label = <<FONT point-size="13.5">cloud<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_amazon" [
+  "nd4" [
     id = "amazon";
-    width = 2.6041666666666665;
-    height = 1.4583333333333333;
-    fixedsize = true;
-    label = "amazon";
+    label = <<FONT point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd_support" -> "nd_cloud" [
+  "nd1" -> "nd3" [
     id = "support:cloud";
-    label = "manages";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_customer" -> "nd_cloud" [
+  "nd2" -> "nd3" [
     id = "customer:cloud";
-    label = "opens in browser";
+    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
-  "nd_cloud" -> "nd_amazon" [
+  "nd3" -> "nd4" [
     id = "cloud:amazon";
-    label = "persists artifacts";
+    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
 }"
 `;

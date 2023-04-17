@@ -2,6 +2,7 @@ import type { DiagramNode } from '@likec4/core/types'
 import { useFirstMountState } from '@react-hookz/web/esm'
 import { animated, useSpring, type SpringValues } from '@react-spring/konva'
 import { useMemo } from 'react'
+import { Text } from 'react-konva'
 
 import type { DiagramTheme } from '../types'
 import type { OnClickEvent, OnMouseEvent } from './types'
@@ -30,7 +31,8 @@ export const CompoundShape = ({
     id,
     size: { width, height },
     position: [x, y],
-    color
+    color,
+    labels
   } = node
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
@@ -95,7 +97,26 @@ export const CompoundShape = ({
       shadowOffsetX={0}
       shadowOffsetY={8}
     />
-    <animated.Text
+      {labels.map((label, i) =>
+        <Text
+          key={i}
+          x={label.pt[0]}
+          y={label.pt[1]}
+          offsetY={label.fontSize / 2}
+          // offsetX={label.width / 2}
+          width={width - 2*label.pt[0]}
+          fill={loContrast}
+          fontFamily='Helvetica'
+          fontSize={label.fontSize}
+          fontStyle={label.fontStyle ?? 'normal'}
+          align={label.align}
+          text={label.text}
+          wrap={'none'}
+          ellipsis={true}
+          {...listeners}
+        />
+      )}
+    {/* <animated.Text
       x={0}
       y={0}
       width={rectProps.width}
@@ -109,6 +130,6 @@ export const CompoundShape = ({
       padding={10}
       opacity={0.8}
       {...listeners}
-    />
+    /> */}
   </animated.Group>
 }

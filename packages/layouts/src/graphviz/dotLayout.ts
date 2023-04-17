@@ -1,8 +1,9 @@
-import type { Graphviz } from '@hpcc-js/wasm/graphviz'
+import { Graphviz } from "@hpcc-js/wasm/graphviz";
 import type {
   ComputedView,
   DiagramEdge,
   DiagramNode,
+  DiagramLabel,
   DiagramView,
   NodeId,
   Point
@@ -10,17 +11,11 @@ import type {
 import { propEq } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type { DiagramLayoutFn } from '../types'
-import type { GVBox, GVPos, GraphvizJson } from './graphviz-types'
-import { inchToPx, pointToPx } from './graphviz-utils'
+import type { BoundingBox, GVPos, GraphvizJson } from './graphviz-types'
+import { inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
 
-async function loadGraphviz() {
-  const { Graphviz } = await import('@hpcc-js/wasm/graphviz')
-  const graphviz = await Graphviz.load()
-  return graphviz
-}
-
-function parseBB(bb?: string): GVBox {
+function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
     ? (bb.split(',').map(p => pointToPx(+p)) as [number, number, number, number])
     : [0, 0, 0, 0]
@@ -44,8 +39,8 @@ function parsePos(pos: string): GVPos {
   }
 }
 
-function parseNode({ pos, width, height }: GraphvizJson.GvObject): GVBox {
-  // const cpos = parsePos(posStr, page)
+function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingBox {
+  // const cpos = prsePos(posStr, page)
   const { x, y } = parsePos(pos)
   const w = inchToPx(+width)
   const h = inchToPx(+height)
@@ -55,6 +50,49 @@ function parseNode({ pos, width, height }: GraphvizJson.GvObject): GVBox {
     width: w,
     height: h
   }
+}
+
+
+function parseLabelDraws(
+  { _ldraw_ = [] }: GraphvizJson.GvObject | GraphvizJson.Edge,
+  [containerX, containerY]: Point = [0,0]
+): DiagramLabel[] {
+  const labels = [] as DiagramLabel[]
+
+  let fontSize: number | undefined
+  let fontStyle: DiagramLabel['fontStyle']
+
+  for (const draw of _ldraw_) {
+    if (draw.op === 'F') {
+      fontSize = pointToPx(draw.size)
+      continue
+    }
+    if (draw.op === 't') {
+      if (draw.fontchar === 1) {
+        fontStyle = 'bold'
+      } else {
+        fontStyle = undefined
+      }
+      continue
+    }
+    if (draw.op === 'T') {
+      if (fontSize && draw.text.trim() !== '') {
+        labels.push({
+          fontSize,
+          ...(fontStyle ? { fontStyle } : {}),
+          text: draw.text,
+          pt: [
+            pointToPx(draw.pt[0]) - containerX,
+            pointToPx(draw.pt[1]) - containerY,
+          ],
+          align: toKonvaAlign(draw.align),
+          width: pointToPx(draw.width)
+        })
+      }
+      continue
+    }
+  }
+  return labels
 }
 
 function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
@@ -69,21 +107,6 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
     return p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
   }
   return undefined
-}
-
-function textAlignment(align?: string) {
-  if (!align) return 'center'
-
-  switch (align) {
-    case 'l':
-      return 'left'
-    case 'r':
-      return 'right'
-    case 'c':
-      return 'center'
-    default:
-      throw new Error(`Unknown text alignment ${align}`)
-  }
 }
 
 function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
@@ -107,67 +130,58 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   }
 
   const diagramNodes = new Map<NodeId, DiagramNode>()
-  for (const computedNd of computedNodes) {
-    const n = graphvizJson.objects?.find(o => o.id === computedNd.id)
-    invariant(n, `Node ${computedNd.id} not found in graphviz output`)
-    const bb = n.nodes ? parseBB(n.bb) : parseNode(n)
-    const parent = computedNd.parent ? diagramNodes.get(computedNd.parent) : undefined
-    const position: Point = [bb.x, bb.y]
 
-    const relative: Point = parent
-      ? [position[0] - parent.position[0], position[1] - parent.position[1]]
-      : position
-    const node: DiagramNode = {
-      ...computedNd,
-      // title: n.label.replaceAll('\\n', '\n'),
-      position,
-      relative,
-      size: { width: bb.width, height: bb.height }
+  invariant(graphvizJson.objects, 'graphvizJson.objects is undefined')
+  for (const obj of graphvizJson.objects) {
+    if (!('id' in obj)) {
+      continue
     }
-    diagramNodes.set(computedNd.id, node)
+    const computed = computedNodes.find(n => n.id === obj.id)
+    invariant(computed, `Node ${obj.id} not found in computedNodes`)
+
+    const {
+      x, y,
+      ...size
+    } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+
+    const position = [x, y] as Point
+
+    const node: DiagramNode = {
+      ...computed,
+      position,
+      size,
+      labels: parseLabelDraws(obj, position)
+    }
+    diagramNodes.set(computed.id, node)
     diagram.nodes.push(node)
   }
 
-  const graphvizEdges = graphvizJson.edges ?? []
-
-  for (const e of graphvizEdges) {
+  invariant(graphvizJson.edges, 'graphvizJson.edges is undefined')
+  for (const e of graphvizJson.edges) {
     const edgeData = computedEdges.find(i => i.id === e.id)
     invariant(edgeData, `Edge ${e.id} not found, how did it get into the graphviz output?`)
     const edge: DiagramEdge = {
       ...edgeData,
       points: parseEdgePoints(e),
-      labelBox: null
+      labels: parseLabelDraws(e)
     }
-    diagram.edges.push(edge)
     const headArrow = parseEdgeHeadPolygon(e)
     if (headArrow) {
       edge.headArrow = headArrow
     }
-    const ldraw = (e._ldraw_ ?? e._tldraw_)?.find(l => l.op === 'T')
-    if (ldraw && edge.label) {
-      const [x, y] = ldraw.pt.map(pointToPx) as Point
-      invariant(ldraw.width, 'edge label should have a width')
-      const width = pointToPx(ldraw.width)
-      const align = e.nojustify === 'true' ? 'left' : textAlignment(ldraw.align)
-      edge.labelBox = {
-        x,
-        y,
-        width,
-        align
-      }
-    }
+    diagram.edges.push(edge)
   }
 
   return diagram
 }
 
 export const dotLayout: DiagramLayoutFn = async computedView => {
-  const graphviz = await loadGraphviz()
+  const graphviz = await Graphviz.load()
   return layout(graphviz, computedView)
 }
 
 export async function dotLayouter(): Promise<DiagramLayoutFn> {
-  const graphviz = await loadGraphviz()
+  const graphviz = await Graphviz.load()
   return computedView =>
     new Promise<DiagramView>((resolve, reject) => {
       try {
