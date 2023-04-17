@@ -1,7 +1,14 @@
 {
+  "*": {
+    "theme": {
+      "timestamp": false
+    }
+  },
   "sources": "Source Code",
   "landscape": "Landscape",
-  "ibs": "Internet Banking System",
+  "context": "Context",
+  "containers": "Containers",
+  "components": "Components",
   "customer": "Customer",
   "api": "API Components"
 }

@@ -3,7 +3,9 @@ import { Tab, Tabs } from 'nextra-theme-docs'
 
 # Source Code
 
-<Tabs items={['_spec.c4', 'bigbank.c4']}>
+This example is based on the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown.
+
+<Tabs items={['spec.c4', 'bigbank.c4']}>
   <Tab>
     ```
     specification {
@@ -151,9 +153,107 @@ import { Tab, Tabs } from 'nextra-theme-docs'
       securityComponent -> database "Reads from and writes to"
       mainframeBankingSystemFacade -> mainframe "Makes API calls to"
       emailComponent -> email "Sends e-mail using"
-
     }
-    ```
+
+    views {
+
+      view index {
+        title "Context"
+        include
+          *,
+          customer -> bigbank.*
+        autoLayout LR
+      }
+
+      view landscape of bigbank {
+        title "Big Bank plc"
+        include *
+      }
+
+
+      view ibs of internetBankingSystem {
+        title "Big Bank plc - Internet Banking System"
+
+        include
+          -> internetBankingSystem.* ->
+        exclude
+          bigbank,
+          bigbank.*
+        include
+          internetBankingSystem
+      }
+
+      view customer of customer {
+        include
+          customer,
+          bigbank,
+          internetBankingSystem,
+          customer -> internetBankingSystem.*
+      }
+
+      view spa of singlePageApplication {
+        include
+          *,
+          apiApplication,
+          internetBankingSystem,
+          -> singlePageApplication ->
+
+        style * {
+          color secondary
+        }
+
+        style singlePageApplication {
+          color primary
+        }
+      }
+
+      view support of supportStaff {
+        include
+          *,
+          bigbank,
+          -> backoffice ->
+      }
+
+      view apiApp of internetBankingSystem.apiApplication {
+        title "API Components"
+        include
+          *,
+          bigbank
+        exclude mobileApp
+
+        style * {
+          color muted
+        }
+
+        style internetBankingSystem.* {
+          color secondary
+        }
+
+        style apiApplication, apiApplication.* {
+          color primary
+        }
+      }
+
+      view webapp of webApplication {
+        include
+          *,
+          internetBankingSystem,
+          bigbank
+
+        style bigbank {
+          color muted
+        }
+      }
+
+      view mobileApp of mobileApp {
+        include
+          *,
+          internetBankingSystem,
+          internetBankingSystem.apiApplication,
+          mobileApp -> internetBankingSystem.apiApplication.*
+      }
+    }
+```
     [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
   </Tab>
 </Tabs>

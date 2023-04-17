@@ -2,13 +2,19 @@
   "index": {
     "title": "Introduction",
     "type": "page",
+    "display": "hidden",
     "theme": {
+      "layout": "raw",
       "breadcrumb": false,
       "footer": false,
       "sidebar": false,
       "toc": false,
       "pagination": false
     }
+  },
+  "docs": {
+    "title": "Docs",
+    "type": "page"
   },
   "about": {
     "title": "About",

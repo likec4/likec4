@@ -7,6 +7,7 @@ const withNextra = nextra({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // transpilePackages: ['@likec4/diagrams'],
 }
 
 export default withNextra(nextConfig)

@@ -11,10 +11,9 @@
   },
   "scripts": {
     "generate": "likec4 generate --target react --output components/likec4/generated.tsx ./likec4",
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "run generate && next dev",
+    "build": "run generate && next build",
     "start": "next start",
-    "lint": "next lint",
     "clean": "run -T rimraf .next"
   },
   "dependencies": {

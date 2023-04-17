@@ -98,7 +98,7 @@ model {
   backoffice -> mainframe "Uses"
 
   // relationships to/from containers
-  customer -> webApplication "Visits bigbank.com/ib using"
+  customer -> webApplication "Visits bigbank.com using HTTPS"
   customer -> singlePageApplication "Views account balances, and makes payments using"
   customer -> mobileApp "Views account balances, and makes payments using"
   webApplication -> singlePageApplication "Delivers to the customer's web browser"
@@ -123,11 +123,26 @@ model {
 views {
 
   view index {
-    title "Context"
     include
       *,
       customer -> bigbank.*
-    autoLayout LR
+  }
+
+  view context of bigbank {
+    title "Internet Banking System - SystemContext"
+    include
+      bigbank,
+      mainframe,
+      internetBankingSystem,
+      email,
+      customer
+
+    style * {
+      color secondary
+    }
+    style bigbank, internetBankingSystem {
+      color primary
+    }
   }
 
   view landscape of bigbank {
@@ -135,17 +150,12 @@ views {
     include *
   }
 
-
-  view ibs of internetBankingSystem {
-    title "Big Bank plc - Internet Banking System"
+  view ibsContainers of internetBankingSystem {
+    title "Internet Banking System - Containers"
 
     include
-      -> internetBankingSystem.* ->
-    exclude
-      bigbank,
-      bigbank.*
-    include
-      internetBankingSystem
+      *,
+      -> customer
   }
 
   view customer of customer {
@@ -180,17 +190,15 @@ views {
   }
 
   view apiApp of internetBankingSystem.apiApplication {
-    title "API Components"
-    include
-      *,
-      bigbank
-    exclude mobileApp
+    title "API Application - Components"
+
+    include *
 
     style * {
       color muted
     }
 
-    style internetBankingSystem.* {
+    style singlePageApplication, mobileApp {
       color secondary
     }
 
