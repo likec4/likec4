@@ -859,7 +859,7 @@ __metadata:
     "@vanilla-extract/dynamic": ^2.0.3
     "@vanilla-extract/esbuild-plugin": ^2.2.2
     "@vanilla-extract/recipes": ^0.4.0
-    "@vanilla-extract/sprinkles": ^1.5.2
+    "@vanilla-extract/sprinkles": ^1.6.0
     clsx: ^1.2.1
     esbuild: ^0.17.15
     khroma: ^2.0.0
@@ -2136,12 +2136,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/sprinkles@npm:^1.5.2":
-  version: 1.5.2
-  resolution: "@vanilla-extract/sprinkles@npm:1.5.2"
+"@vanilla-extract/sprinkles@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@vanilla-extract/sprinkles@npm:1.6.0"
   peerDependencies:
     "@vanilla-extract/css": ^1.0.0
-  checksum: 3d3e221a25d3021cfa34436c932d20e1e06bf93b5a6663caf010f8af0b4849a0cec9aa1be1037e6595b1f63db2859254cf7b69dcfb124a2fd47b9e6f132d8f84
+  checksum: ab30ce88f9124f1eacbb5d5fb4f70534cda1ef0fdb992049657b4b480714f340e6b248b12a9c58451d4c7e7cdf55bf2e7a4bfc7c2fc60873ac0da28dc132d32f
   languageName: node
   linkType: hard
 
