@@ -76,7 +76,6 @@
     "@vanilla-extract/dynamic": "^2.0.3",
     "@vanilla-extract/esbuild-plugin": "^2.2.2",
     "@vanilla-extract/recipes": "^0.4.0",
-    "@vanilla-extract/sprinkles": "^1.5.2",
     "clsx": "^1.2.1",
     "esbuild": "^0.17.15",
     "khroma": "^2.0.0",
