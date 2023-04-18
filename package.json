@@ -1,15 +1,16 @@
 {
-  "name": "root",
-  "version": "0.5.0",
+  "name": "likec4-workspaces",
+  "version": "0.5.1",
   "private": true,
+  "license": "MIT",
   "packageManager": "yarn@3.4.1",
   "workspaces": [
-    "docs/",
+    "docs",
     "packages/*",
     "examples/*"
   ],
   "engines": {
-    "node": ">=17"
+    "node": ">=18"
   },
   "scripts": {
     "compile": "turbo run compile --filter='./packages/*'",

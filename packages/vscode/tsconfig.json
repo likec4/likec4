@@ -2,6 +2,9 @@
   "extends": "../language-server/tsconfig.json",
   "compilerOptions": {
     "lib": ["ESNext", "WebWorker"],
+    "module": "es2022",
+    "target": "es2022",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "$/*": ["src/*"]

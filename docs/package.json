@@ -1,7 +1,8 @@
 {
   "name": "@likec4/docs-website",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
+  "license": "UNLICENSED",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://docs.like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",

@@ -1,9 +1,26 @@
 {
   "name": "@likec4/vscode",
+  "version": "0.5.1",
   "publisher": "likec4",
-  "displayName": "Like C4",
-  "description": "Please enter a brief description here",
-  "version": "0.5.0",
+  "displayName": "LikeC4",
+  "description": "Support for the LikeC4 modeling language",
+  "homepage": "https://like-c4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "license": "MIT",
+  "files": [
+    "contrib",
+    "dist",
+    "./language-configuration.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/likec4/likec4/issues",
+    "email": "denis@davydkov.com"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -12,6 +29,7 @@
     "build:vscode": "run -T build --filter='vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "release:build": "yarn node esbuild.mjs --minify && run copy",
+    "vscode:prepublish": "run -T release:build --filter='vscode...'",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r ../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",
@@ -21,25 +39,20 @@
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist"
   },
-  "files": [
-    "contrib",
-    "dist",
-    "./language-configuration.json"
-  ],
   "engines": {
     "vscode": "^1.74.0",
     "node": ">=17"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Visualization"
   ],
   "contributes": {
     "languages": [
       {
         "id": "likec4",
         "aliases": [
-          "Like C4",
-          "likec4"
+          "Like C4"
         ],
         "extensions": [
           ".c4",
@@ -57,7 +70,7 @@
       }
     ],
     "configuration": {
-      "title": "Like C4",
+      "title": "LikeC4",
       "properties": {
         "likec4.trace.extension": {
           "type": "string",
@@ -77,13 +90,14 @@
             "messages",
             "verbose"
           ],
-          "default": "messages",
+          "default": "off",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
       }
     }
   },
   "activationEvents": [
+    "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "./dist/node/index.js",

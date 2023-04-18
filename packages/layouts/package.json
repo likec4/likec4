@@ -1,6 +1,7 @@
 {
   "name": "@likec4/layouts",
-  "version": "0.5.0",
+  "license": "MIT",
+  "version": "0.5.1",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -9,7 +10,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/likec4/likec4.git"
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/layouts"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",

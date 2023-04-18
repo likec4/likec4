@@ -20,9 +20,8 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*"
+        "${workspaceFolder}/packages/vscode/dist/**/*.js"
       ],
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
@@ -32,17 +31,20 @@
       "autoAttachChildProcesses": true
     },
     {
-      "name": "Attach to Language Server",
-      "type": "node",
-      "port": 6009,
-      "request": "attach",
-      "restart": {
-        "delay": 2000,
-        "maxAttempts": 30
-      },
+      "name": "Run Web Extension in VS Code",
+      "type": "extensionHost",
+      "debugWebWorkerHost": true,
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        "--extensionDevelopmentKind=web",
+        "${workspaceFolder}/examples/bigbank",
+      ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"
-      ]
+      ],
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "preLaunchTask": "npm: build:vscode - packages/vscode"
     }
   ]
 }
