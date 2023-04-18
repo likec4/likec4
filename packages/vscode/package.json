@@ -1,5 +1,5 @@
 {
-  "name": "@likec4/vscode",
+  "name": "likec4-vscode",
   "version": "0.5.1",
   "publisher": "likec4",
   "displayName": "LikeC4",
@@ -25,11 +25,15 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
+  "vsce": {
+    "yarn": true,
+    "dependencies": false
+  },
   "scripts": {
-    "build:vscode": "run -T build --filter='vscode...'",
+    "build:vscode": "run -T build --filter='likec4-vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "release:build": "yarn node esbuild.mjs --minify && run copy",
-    "vscode:prepublish": "run -T release:build --filter='vscode...'",
+    "vscode:prepublish": "run -T turbo run release:build --filter='likec4-vscode...'",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r ../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",

@@ -12,8 +12,6 @@ const alias = {
   'vscode-languageserver-textdocument': '../../node_modules/vscode-languageserver-textdocument/lib/esm/main.js'
 }
 
-console.log('alias', alias)
-
 /**
  * @type {esbuild.BuildOptions}
  */
@@ -77,15 +75,15 @@ if (!watch) {
     esbuild.build(webCfg)
   ])
 
-  // const [nodeBundle, webBundle] = bundles
-  // if (nodeBundle.metafile) {
-  //   const metafile = path.resolve('dist', 'node', 'metafile.json')
-  //   await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
-  // }
-  // if (webBundle.metafile) {
-  //   const metafile = path.resolve('dist', 'browser', 'metafile.json')
-  //   await writeFile(metafile, JSON.stringify(webBundle.metafile))
-  // }
+  const [nodeBundle, webBundle] = bundles
+  if (!minify && nodeBundle.metafile) {
+    const metafile = path.resolve('dist', 'node', 'metafile.json')
+    await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
+  }
+  if (!minify && webBundle.metafile) {
+    const metafile = path.resolve('dist', 'browser', 'metafile.json')
+    await writeFile(metafile, JSON.stringify(webBundle.metafile))
+  }
 
   const errors = bundles.flatMap(b => b.errors)
   const warnings = bundles.flatMap(b => b.warnings)

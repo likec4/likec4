@@ -2,4 +2,6 @@
 !contrib/*
 !dist/*
 !package.json
+!LICENSE
+!README.md
 !language-configuration.json
