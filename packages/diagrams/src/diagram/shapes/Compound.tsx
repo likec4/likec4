@@ -1,10 +1,10 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { useFirstMountState } from '@react-hookz/web/esm'
-import { animated, useSpring, type SpringValues } from '@react-spring/konva'
+import { animated, useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
 import { Text } from 'react-konva'
 
 import type { DiagramTheme } from '../types'
+import type { InterporatedNodeSprings } from './nodeSprings'
 import type { OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
@@ -12,11 +12,7 @@ interface CompoundProps {
   animate?: boolean
   node: DiagramNode
   theme: DiagramTheme
-  springs?: SpringValues<{
-    opacity?: number
-    scaleX?: number
-    scaleY?: number
-  }>
+  springs: InterporatedNodeSprings
   onNodeClick?: ((node: DiagramNode) => void) | undefined
 }
 
@@ -27,39 +23,11 @@ export const CompoundShape = ({
   springs,
   onNodeClick
 }: CompoundProps) => {
-  const {
-    id,
-    size: { width, height },
-    position: [x, y],
-    color,
-    labels
-  } = node
-  const offsetX = Math.round(width / 2)
-  const offsetY = Math.round(height / 2)
+  const { id, color, labels } = node
   const { loContrast, fill, shadow: shadowColor } = theme.colors[color]
-
-  const isFirstRender = useFirstMountState()
-
-  const [groupProps, _groupPropsApi] = useSpring(
-    {
-      delay: isFirstRender && animate ? 30 : 0,
-      to: {
-        x: x + offsetX,
-        y: y + offsetY,
-        offsetX,
-        offsetY,
-        width,
-        height
-      },
-      immediate: !animate
-    },
-    [x, y, offsetX, offsetY]
-  )
 
   const rectProps = useSpring({
     to: {
-      width,
-      height,
       fill,
       shadowColor
     },
@@ -82,12 +50,16 @@ export const CompoundShape = ({
     }
   }, [node, onNodeClick ?? null])
 
+  // const {
+  //   x, y, offsetX, offsetY, scaleX, scaleY, opacity
+  // } = useMemo(() => {
+  //   console.log(`CompoundShape useMemo ${id}}` )
+  //   return nodeSprings(springs)
+  // }, [springs])
+
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <animated.Group
-    id={'compound_' + id}
-    {...groupProps}
-    {...springs}>
+  return <animated.Group {...springs}>
     <animated.Rect
       {...rectProps}
       opacity={0.25}
@@ -96,6 +68,8 @@ export const CompoundShape = ({
       shadowOpacity={0.45}
       shadowOffsetX={0}
       shadowOffsetY={8}
+      width={springs.width}
+      height={springs.height}
     />
       {labels.map((label, i) =>
         <Text
@@ -104,11 +78,12 @@ export const CompoundShape = ({
           y={label.pt[1]}
           offsetY={label.fontSize / 2}
           // offsetX={label.width / 2}
-          width={width - 2*label.pt[0]}
+          width={node.size.width - 2*label.pt[0]}
           fill={loContrast}
           fontFamily='Helvetica'
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
+          letterSpacing={0.8}
           align={label.align}
           text={label.text}
           wrap={'none'}

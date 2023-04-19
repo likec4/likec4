@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
-import { useFirstMountState } from '@react-hookz/web/esm'
-import { animated, useSpring, useTransition, type AnimatedComponent } from '@react-spring/konva'
+import {
+  animated,
+  useSpring,
+  useTransition,
+  type AnimatedComponent,
+  useSpringRef,
+  useChain
+} from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { createElement, useCallback, useMemo, useRef, type ReactElement } from 'react'
+import { useCallback, useEffect, useMemo, useRef, type ReactElement, useDebugValue } from 'react'
 import { Layer, Stage } from 'react-konva'
-import { CompoundShape, EdgeShape, nodeShape } from './shapes'
+import { CompoundShape, EdgeShape, RectangleShape, nodeShape } from './shapes'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+import useTilg from 'tilg'
+import { useUpdateEffect } from '@react-hookz/web/esm'
+import { interpolateNodeSprings } from './shapes/nodeSprings'
 
 const AStage: AnimatedComponent<typeof Stage> = animated(Stage)
 AStage.displayName = 'AnimatedStage'
@@ -19,6 +28,22 @@ interface IRect {
   y: number
   width: number
   height: number
+}
+
+function nodeState(overrides: {
+  opacity?: number
+  scale?: number
+} = {}) {
+  const transition = (node: DiagramNode) => ({
+    opacity: overrides.opacity ?? 1,
+    scale: overrides.scale ?? 1,
+    x: node.position[0],
+    y: node.position[1],
+    width: node.size.width,
+    height: node.size.height,
+  })
+  type NodeState = ReturnType<typeof transition>
+  return (transition as unknown) as NodeState
 }
 
 export interface DiagramProps {
@@ -52,12 +77,15 @@ export function Diagram({
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
-  const isFirstRender = useFirstMountState()
-
   const width = Math.max(props.width ?? diagram.width, 16)
   const height = Math.max(props.height ?? diagram.height, 16)
 
-  const stageRef = useRef<Konva.Stage>(null)
+  // const stageRef = useRef<Konva.Stage>(null)
+  const stageSpringApi = useSpringRef<{
+    x: number
+    y: number
+    scale: number
+  }>()
 
   const centerOnRect = (rect: IRect) => {
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
@@ -93,33 +121,39 @@ export function Diagram({
       centeringAjustment = {
         x: (viewRect.width - centerTo.width * scale) / 2,
         y: (viewRect.height - centerTo.height * scale) / 2
-      },
-      // and the final position is...
-      finalPosition = {
-        x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
-        y: Math.ceil(centeringAjustment.y + -centerTo.y * scale)
       }
+    // and the final position is...
+    // finalPosition = {
+    //   x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
+    //   y: Math.ceil(centeringAjustment.y + -centerTo.y * scale)
+    // }
     return {
-      ...finalPosition,
-      scaleX: scale,
-      scaleY: scale
+      x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
+      y: Math.ceil(centeringAjustment.y + -centerTo.y * scale),
+      scale,
     }
   }
 
-  const [stageProps, stageSpringApi] = useSpring(
-    {
-      to: {
-        ...centerOnRect({
-          x: 0,
-          y: 0,
-          width: diagram.width,
-          height: diagram.height
-        })
-      },
-      immediate: isFirstRender || !animate
-    },
-    [id, width, height, diagram.width, diagram.height]
-  )
+  const [stageProps,] = useSpring(() => ({
+    ref: stageSpringApi,
+    from: centerOnRect({
+      x: 0,
+      y: 0,
+      width: diagram.width,
+      height: diagram.height
+    })
+  }))
+
+  useUpdateEffect(() => {
+    stageSpringApi.start({
+      to: centerOnRect({
+        x: 0,
+        y: 0,
+        width: diagram.width,
+        height: diagram.height
+      })
+    })
+  }, [id, width, height, diagram.width, diagram.height])
 
   const panning = useMemo(() => {
     if (!pannable) {
@@ -130,28 +164,28 @@ export function Diagram({
     return {
       draggable: true,
       onDragStart: (_e: Konva.KonvaEventObject<DragEvent>) => {
-        stageSpringApi.stop(true)
+        stageSpringApi.stop()
       },
       onDragEnd: ({ target }: Konva.KonvaEventObject<DragEvent>) => {
-        if (target === stageRef.current) {
-          stageSpringApi.set({
+        // if (target === stageRef.current) {
+        stageSpringApi.start({
+          to: {
             x: target.x(),
             y: target.y()
-          })
-        }
+          },
+          immediate: true
+        })
+        // }
       }
     }
   }, [pannable, stageSpringApi])
 
   const handleWheelZoom = useCallback(
     (e: Konva.KonvaEventObject<WheelEvent>) => {
-      const stage = stageRef.current
+      const stage = e.target.getStage()
       const pointer = stage?.getPointerPosition()
-      if (!stage || !pointer) {
-        return
-      }
 
-      if (Math.abs(e.evt.deltaY) < 10) {
+      if (!stage || !pointer || Math.abs(e.evt.deltaY) < 10) {
         return
       }
 
@@ -181,112 +215,98 @@ export function Diagram({
       newScale = clamp(0.1, 1.6, newScale)
 
       stageSpringApi.start({
-        scaleX: newScale,
-        scaleY: newScale,
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale
+        to: {
+          scale: newScale,
+          x: pointer.x - mousePointTo.x * newScale,
+          y: pointer.y - mousePointTo.y * newScale
+        }
       })
     },
     [stageSpringApi]
   )
 
-  // useEffect(() => {
-  //   stageSpringApi.stop(true).start({
-  //     to: {
-  //       ...centerOnRect({
-  //         x: 0,
-  //         y: 0,
-  //         width: diagram.width,
-  //         height: diagram.height,
-  //       })
-  //     },
-  //     immediate: !animate,
-  //   })
-  // }, [id, width, height, diagram.width, diagram.height])
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
-    from: node => ({
-      width: node.size.width,
-      height: node.size.height,
-      opacity: 0.1,
-      scaleX: 0.8,
-      scaleY: 0.8
+    initial: nodeState(),
+    from: nodeState({
+      opacity: 0.5,
+      scale: 0.8
     }),
     enter: {
       opacity: 1,
-      scaleX: 1,
-      scaleY: 1
+      scale: 1
     },
-    update: node => ({
-      width: node.size.width,
-      height: node.size.height
-    }),
     leave: {
       opacity: 0,
-      scaleX: 0.7,
-      scaleY: 0.7
+      scale: 0.5,
     },
-    expires: true,
-    immediate: isFirstRender || !animate,
-    keys: node => node.id
+    update: nodeState(),
+    expires: false,
+    immediate: !animate,
+    keys: g => g.id,
   })
 
+  // console.log('compoundTransitions', compoundTransitionsRef.current)
+
   const edgeTransitions = useTransition(diagram.edges, {
+    initial: {
+      opacity: 0.8
+    },
     from: {
       opacity: 0
     },
     enter: {
-      opacity: 0.75
+      opacity: 0.8
     },
     leave: {
       opacity: 0
     },
     exitBeforeEnter: true,
     expires: true,
-    immediate: isFirstRender || !animate,
+    immediate: !animate,
     config: {
-      duration: 100
+      duration: 150
     },
-    keys: edge => edge.id
+    keys: e => e.id + id
   })
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
-    from: node => ({
-      width: node.size.width,
-      height: node.size.height,
-      opacity: 0.1,
-      scaleX: 0.7,
-      scaleY: 0.7
+    initial: nodeState(),
+    from: nodeState({
+      opacity: 0.05,
+      scale: 0.7
     }),
     enter: {
       opacity: 1,
-      scaleX: 1,
-      scaleY: 1
+      scale: 1
     },
-    update: node => ({
-      width: node.size.width,
-      height: node.size.height
-    }),
     leave: {
       opacity: 0,
-      scaleX: 0.4,
-      scaleY: 0.4
+      scale: 0.5
     },
+    update: node => ({
+      x: node.position[0],
+      y: node.position[1],
+      width: node.size.width,
+      height: node.size.height,
+    }),
     expires: true,
-    immediate: isFirstRender || !animate,
+    immediate: !animate,
     keys: node => (node.parent ?? '') + '-' + node.id + '-' + node.shape
   })
 
-  // @ts-ignore
   return (
+    // @ts-ignore
     <AStage
-      ref={stageRef}
       className={className}
       onWheel={zoomable && handleWheelZoom}
       width={width}
       height={height}
+      x={stageProps.x}
+      y={stageProps.y}
+      scaleX={stageProps.scale}
+      scaleY={stageProps.scale}
       {...panning}
-      {...stageProps}
     >
       <Layer>
         {compoundTransitions((springs, node, { key }) => (
@@ -295,7 +315,7 @@ export function Diagram({
             animate={animate}
             node={node}
             theme={theme}
-            springs={springs}
+            springs={interpolateNodeSprings(springs)}
             onNodeClick={onNodeClick}
           />
         ))}
@@ -312,15 +332,18 @@ export function Diagram({
         ))}
       </Layer>
       <Layer>
-        {nodeTransitions((springs, node, { key }) =>
-          createElement(nodeShape(node), {
-            key,
-            animate,
-            node,
-            theme,
-            springs,
-            onNodeClick
-          })
+        {nodeTransitions((springs, node, { key, ctrl }) => {
+          const Shape = nodeShape(node)
+          return <Shape
+            key={key}
+            animate={animate}
+            node={node}
+            theme={theme}
+            springs={interpolateNodeSprings(springs)}
+            ctrl={ctrl}
+            onNodeClick={onNodeClick}
+          />
+        }
         )}
       </Layer>
     </AStage>

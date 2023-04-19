@@ -17,7 +17,7 @@ async function generateAction(
   if (target === 'react') {
     extension = '.tsx'
     generator = generateReact
-  } else if (target === 'views-data-ts') {
+  } else if (target === 'views-data') {
     extension = '.ts'
     generator = generateViewsDataTs
   } else {
@@ -52,7 +52,7 @@ export const registerGenerateCommand = (program: Command): void => {
     .command('generate')
     .description('generate react components or typed views data')
     .argument('[workspace]', 'directory with likec4 sources', process.cwd())
-    .option('-t, --target [target]', 'possible values: react, views-data-ts', 'react')
+    .option('-t, --target [target]', 'possible values: react, views-data', 'react')
     .option('-o, --output [output]', 'output file')
     .action(generateAction)
 }

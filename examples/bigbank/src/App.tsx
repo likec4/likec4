@@ -1,12 +1,12 @@
 import type { DiagramNode } from '@likec4/diagrams'
-import { Diagram } from '@likec4/diagrams'
+import { Diagram } from '@likec4/diagrams/src/diagram/Diagram'
 import { useCallback, useState } from 'react'
-import type { ViewId } from './likec4'
-import { LikeC4ViewsData, isViewId } from './likec4'
+import type { ViewId } from './likec4.data'
+import { LikeC4ViewsData, isViewId } from './likec4.data'
+import useTilg from 'tilg'
 
 function App() {
-
-  const [viewId, setViewId] = useState<ViewId>('apiApp')
+  const [viewId, setViewId] = useState<ViewId>('ibs')
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node
@@ -14,6 +14,10 @@ function App() {
       setViewId(navigateTo)
     }
   }, [])
+
+
+  useTilg()`viewId = ${viewId}`
+
 
   return <div className="diagram-container">
     <Diagram

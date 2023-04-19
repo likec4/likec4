@@ -19,7 +19,7 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "release:build": "run build --minify",
-    "build": "esbuild src/cli.ts --bundle --tree-shaking=true --platform=node --target=node16 --outfile=dist/likec4.js",
+    "build": "esbuild src/cli.ts --bundle --platform=node --target=node16 --outfile=dist/likec4.js",
     "dev": "run build --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"

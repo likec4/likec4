@@ -1,6 +1,8 @@
-import { createLanguageServices } from '@likec4/language-server'
+import { createLanguageServices, type LikeC4Services } from '@likec4/language-server'
 import chalk from 'chalk'
+import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
+import type { LikeC4Model } from '@likec4/core/types'
 import { existsSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { URI } from 'vscode-uri'
@@ -18,7 +20,12 @@ function resolveWorkspaceDir(workspaceDir: string): string {
   return workspaceDir
 }
 
-export async function initLanguageServices(props?: { workspaceDir?: string }) {
+export async function initLanguageServices(props?: { workspaceDir?: string }): Promise<{
+  workspace: string
+  metaData: LanguageMetaData
+  services: LikeC4Services
+  model: LikeC4Model
+}> {
   const workspace = props?.workspaceDir ? resolveWorkspaceDir(props.workspaceDir) : process.cwd()
 
   const services = createLanguageServices(NodeFileSystem).likec4
@@ -54,8 +61,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }) {
       for (const validationError of errors) {
         console.log(
           chalk.red(
-            `      line ${validationError.range.start.line}: ${
-              validationError.message
+            `      line ${validationError.range.start.line}: ${validationError.message
             } [${doc.textDocument.getText(validationError.range)}]`
           )
         )

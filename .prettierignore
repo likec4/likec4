@@ -10,3 +10,5 @@
 examples/*/dist
 packages/*/dist
 packages/*/contrib
+
+packages/*/src/generated

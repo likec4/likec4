@@ -134,9 +134,7 @@ views {
     title "Big Bank plc"
 
     include *
-    autoLayout LR
   }
-
 
   view ibs of internetBankingSystem {
     title "Big Bank plc - Internet Banking System"

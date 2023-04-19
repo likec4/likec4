@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.5.1",
   "scripts": {
-    "generate": "likec4 generate --target react --output src/likec4.tsx",
+    "generate": "likec4 generate --target views-data --output src/likec4.data.ts",
     "start": "run generate && vite"
   },
   "dependencies": {

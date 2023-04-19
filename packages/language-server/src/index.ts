@@ -1,7 +1,7 @@
 // import { type DefaultSharedModuleContext, startLanguageServer as startLangiumLanguageServer } from 'langium'
 export { createLanguageServices } from './module'
 
-// export type { C4XServices }
+export type { LikeC4Services } from './module'
 // export type { C4XModel } from './c4x-model'
 // export type { C4XLangiumDocument } from './ast'
 

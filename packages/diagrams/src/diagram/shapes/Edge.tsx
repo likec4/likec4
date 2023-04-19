@@ -11,8 +11,8 @@ import type { OnClickEvent } from './types'
 export interface EdgeShapeProps {
   edge: DiagramEdge
   theme: DiagramTheme
-  springs?: SpringValues<{
-    opacity?: number
+  springs: SpringValues<{
+    opacity: number
   }>
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
@@ -30,12 +30,12 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
     }
   }, [edge, onEdgeClick ?? null])
 
-  const opacityApi = springs?.opacity ?? null
+  // const opacityApi = springs?.opacity ?? null
 
   const listeners = {
     ...onClickListener,
-    onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
-    onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi])
+    // onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
+    // onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi])
   }
   return (
     <>
