@@ -1,0 +1,32 @@
+import { Bleed } from 'nextra-theme-docs'
+
+# LikeC4 Language
+
+LikeC4 is a DSL for describing software architecture.
+It is a superset of the [C4 model](https://c4model.com/), and is designed to be easy to read and write.
+
+## Tailor your specification
+
+```
+views {
+
+  view apiApp of internetBankingSystem.apiApplication {
+    title "API Application - Components"
+
+    include *
+
+    style * {
+      color muted
+    }
+
+    style singlePageApplication, mobileApp {
+      color secondary
+    }
+
+    style apiApplication, apiApplication.* {
+      color primary
+    }
+  }
+
+}
+```

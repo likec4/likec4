@@ -16,19 +16,27 @@
     "title": "Docs",
     "type": "page"
   },
-  "about": {
-    "title": "About",
-    "type": "page",
-    "display": "hidden"
-  },
   "examples": {
     "title": "Examples",
     "type": "menu",
     "items": {
       "bigbank": {
-        "title": "Bigbank",
+        "title": "Big Bank plc",
         "href": "/examples/bigbank/sources"
       }
+    }
+  },
+  "about": {
+    "title": "About",
+    "type": "page",
+    "theme": {
+      "timestamp": false,
+      "typesetting": "article",
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
     }
   }
 }

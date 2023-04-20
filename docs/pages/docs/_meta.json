@@ -1,5 +1,14 @@
 {
   "index": {
-    "title": "Get Started"
+    "title": "Getting Started"
+  },
+  "dsl": {
+    "title": "Language"
+  },
+  "cli": {
+    "title": "CLI"
+  },
+  "react": {
+    "title": "React"
   }
 }

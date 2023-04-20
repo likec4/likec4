@@ -9,6 +9,7 @@
   "context": "Context",
   "containers": "Containers",
   "components": "Components",
-  "customer": "Customer",
-  "api": "API Components"
+  "customer": {
+    "title": "Customer"
+  }
 }
