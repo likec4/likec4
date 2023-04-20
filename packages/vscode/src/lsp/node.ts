@@ -8,7 +8,3 @@ const connection = createConnection(ProposedFeatures.all)
 const { shared } = createLanguageServices({ connection, ...NodeFileSystem })
 
 startLanguageServer(shared)
-
-process.on('unhandledRejection', e => {
-  console.error('Unhandled exception', e)
-})

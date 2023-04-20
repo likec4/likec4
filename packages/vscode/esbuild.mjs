@@ -7,9 +7,9 @@ const minify = process.argv.includes('--minify')
 const watch = process.argv.includes('--watch')
 
 const alias = {
-  'vscode-uri': '../../node_modules/vscode-uri/lib/esm/index.js',
-  'vscode-languageserver-types': '../../node_modules/vscode-languageserver-types/lib/esm/main.js',
-  'vscode-languageserver-textdocument': '../../node_modules/vscode-languageserver-textdocument/lib/esm/main.js'
+  'vscode-uri': 'vscode-uri/lib/esm/index.js',
+  'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
+  'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
 }
 
 /**
@@ -17,14 +17,13 @@ const alias = {
  */
 const nodeCfg = {
   entryPoints: [
-    'src/extension/node/index.ts',
-    'src/extension/node/server.ts'
+    'src/extension-node.ts',
+    'src/lsp/node.ts'
   ],
   metafile: true,
   logLevel: 'info',
-  outbase: 'src/extension',
   outdir: 'dist',
-  conditions: ['module','import'],
+  mainFields: ['browser', 'module', 'main'],
   bundle: true,
   external: ['vscode'],
   format: 'cjs',
@@ -45,11 +44,11 @@ const nodeCfg = {
  */
 const webCfg = {
   entryPoints: [
-    'src/extension/web/index.ts',
+    'src/extension-web.ts'
   ],
   metafile: true,
   logLevel: 'info',
-  outbase: 'src/extension',
+  outbase: 'src',
   outdir: 'dist',
   bundle: true,
   format: 'cjs',
@@ -73,7 +72,7 @@ const webCfg = {
 const webWorkerCfg = {
   ...webCfg,
   entryPoints: [
-    'src/extension/web/server-worker.ts',
+    'src/lsp/web-worker.ts',
   ],
   format: 'iife'
 }
@@ -88,15 +87,15 @@ if (!watch) {
   if (!minify) {
     const [nodeBundle, webBundle, webWorkerBundle] = bundles
     if (nodeBundle.metafile) {
-      const metafile = path.resolve('dist', 'node', 'metafile.json')
+      const metafile = path.resolve('dist', 'extension-node.metafile.json')
       await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
     }
     if (webBundle.metafile) {
-      const metafile = path.resolve('dist', 'web', 'index-metafile.json')
+      const metafile = path.resolve('dist', 'extension-web.metafile.json')
       await writeFile(metafile, JSON.stringify(webBundle.metafile))
     }
     if (webWorkerBundle.metafile) {
-      const metafile = path.resolve('dist', 'web', 'worker-metafile.json')
+      const metafile = path.resolve('dist', 'lsp', 'web-worker.metafile.json')
       await writeFile(metafile, JSON.stringify(webBundle.metafile))
     }
   }

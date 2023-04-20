@@ -1,6 +1,6 @@
 {
   "name": "likec4-workspaces",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@3.4.1",
@@ -15,7 +15,7 @@
   "scripts": {
     "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
-    "release-build": "turbo run clean release:build",
+    "release-build": "turbo run release:build",
     "clean": "turbo run clean",
     "clean:after:publish": "rimraf --glob '**/package*.tgz' --interactive",
     "dev": "turbo run dev --filter='./packages/*'",

@@ -1,6 +1,5 @@
-import { di } from '$/di'
-import type { ExtensionContext } from '$/di'
-import { PreviewPanel } from '../panels/PreviewPanel'
+import { di, type ExtensionContext } from 'src/di'
+import { PreviewPanel } from 'src/panels/PreviewPanel'
 import * as vscode from 'vscode'
 
 export function registerPreviewPanelSerializer(

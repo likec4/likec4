@@ -1,5 +1,5 @@
-import type { ExtensionContext, PreviewPanel } from '$/di'
-import { di } from '$/di'
+import type { ExtensionContext, PreviewPanel } from 'src/di'
+import { di } from 'src/di'
 import type { ViewID } from '@likec4/core/types'
 import { commands } from 'vscode'
 

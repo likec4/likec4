@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "license": "MIT",
   "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",

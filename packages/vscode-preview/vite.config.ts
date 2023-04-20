@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: isWatchDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
-      // outDir: 'dist',
       emptyOutDir: true,
       cssCodeSplit: false,
       sourcemap: isDev,

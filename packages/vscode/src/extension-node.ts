@@ -1,7 +1,6 @@
-import type { ExtensionContext } from '$/di'
-import { activateExtension } from '$/extension/activate'
-import { fileExtensions, languageId } from '$/meta'
-import path from 'path'
+import type { ExtensionContext } from 'src/di'
+import { activateExtension } from 'src/extension/activate'
+import { fileExtensions, languageId } from 'src/meta'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
@@ -25,8 +24,9 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function createLanguageClient(context: ExtensionContext) {
-  const serverModule = vscode.Uri.file(
-    path.resolve(context.extensionPath, 'dist/node/server.js')
+  const serverModule = vscode.Uri.joinPath(
+    context.extensionUri,
+    'dist', 'lsp', 'node.js'
   ).fsPath
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
@@ -34,8 +34,7 @@ function createLanguageClient(context: ExtensionContext) {
   const debugOptions = {
     execArgv: [
       '--nolazy',
-      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${
-        process.env['DEBUG_SOCKET'] || '6009'
+      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '6009'
       }`
     ]
   }

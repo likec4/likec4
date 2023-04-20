@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "likec4",
   "displayName": "LikeC4",
   "description": "Support for the LikeC4 modeling language",
@@ -36,8 +36,8 @@
     "release:build": "yarn node esbuild.mjs --minify && run copy",
     "vscode:prepublish": "run -T turbo run release:build --filter='likec4-vscode...'",
     "compile": "tsc -noEmit",
-    "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r ../language-server/contrib/* contrib/",
-    "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r ../vscode-preview/dist/* dist/preview/",
+    "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",
+    "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r $INIT_CWD/../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
     "build": "yarn node esbuild.mjs && run copy",
     "dev": "yarn node esbuild.mjs --watch",
@@ -115,8 +115,8 @@
     "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "./dist/node/index.js",
-  "browser": "./dist/web/index.js",
+  "main": "./dist/extension-node.js",
+  "browser": "./dist/extension-web.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -133,6 +133,7 @@
     "path-browserify": "^1.0.1",
     "rambdax": "^9.1.0",
     "shx": "^0.3.4",
+    "src": "link:./src",
     "typed-inject": "^3.0.1",
     "typescript": "^5.0.4",
     "vscode-languageclient": "8.0.2",

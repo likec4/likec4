@@ -1,7 +1,7 @@
-import type { ExtensionContext } from '$/di'
-import { activateExtension } from '$/extension/activate'
+import type { ExtensionContext } from 'src/di'
+import { activateExtension } from 'src/extension/activate'
 import * as vscode from 'vscode'
-import { fileExtensions, languageId } from '$/meta'
+import { fileExtensions, languageId } from 'src/meta'
 import {
   LanguageClient as BrowserLanguageClient,
   type LanguageClientOptions
@@ -26,11 +26,11 @@ function createLanguageClient(context: ExtensionContext) {
   const serverMain = vscode.Uri.joinPath(
     context.extensionUri,
     'dist',
-    'web',
-    'server-worker.js'
+    'lsp',
+    'web-worker.js'
   ).toString(true)
   const worker = new Worker(serverMain, {
-    name: 'LikeC4 LanguageServer Worker'
+    name: 'LikeC4 LSP Worker'
   })
 
   const extensions = fileExtensions.map(s => s.substring(1)).join(',')
