@@ -150,8 +150,12 @@ views {
     style * {
       color: secondary
     }
-    autoLayout TB
+    autoLayout BottomTop
     exclude -> frontend
+  }
+  view {
+    autoLayout LeftRight
+    include *
   }
 }
 `

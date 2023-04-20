@@ -194,22 +194,20 @@ export function toElementStyle(props?: ast.AStyleProperty[]) {
 
   return result
 }
-//   const result: c4.ElementStyle = {}
 
-//   const shapeProperty = props.find(ast.isElementShapeStyleProperty)
-//   if (shapeProperty) {
-//     result.shape = shapeProperty.value
-//   }
-
-//   // const colorPropValue = props.find(isColorStyleProperty)?.value
-//   // if (isElementStyleColor(colorPropValue)) {
-//   //   result.color = colorPropValue
-//   // }
-
-//   // const iconProp = props.find(isIconStyleProperty)
-//   // if (iconProp) {
-//   //   result.icon = iconProp.value
-//   // }
-
-//   return result
-// }
+export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
+  switch (direction) {
+    case 'TopBottom': {
+      return 'TB'
+    }
+    case 'BottomTop': {
+      return 'BT'
+    }
+    case 'LeftRight': {
+      return 'LR'
+    }
+    case 'RightLeft': {
+      return 'RL'
+    }
+  }
+}

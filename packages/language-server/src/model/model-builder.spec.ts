@@ -104,7 +104,7 @@ describe('LikeC4ModelBuilder', () => {
 
       view v1 of api {
         include *
-        autoLayout LR
+        autoLayout LeftRight
       }
 
       view of system.frontend {

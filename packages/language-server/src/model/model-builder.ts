@@ -8,11 +8,12 @@ import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
-import type {
+import {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification
+  ParsedAstSpecification,
+  toAutoLayout
 } from '../ast'
 import {
   ElementViewOps,
@@ -347,7 +348,7 @@ export class LikeC4ModelBuilder {
     }
     if (ast.isViewRuleAutoLayout(astNode)) {
       return {
-        autoLayout: astNode.direction
+        autoLayout: toAutoLayout(astNode.direction)
       }
     }
     failExpectedNever(astNode)

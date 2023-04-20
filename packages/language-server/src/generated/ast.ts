@@ -6,6 +6,14 @@
 /* eslint-disable */
 import { AstNode, AbstractAstReflection, Reference, ReferenceInfo, TypeMetaData } from 'langium';
 
+export type AnyStringProperty = ElementStringProperty | RelationStringProperty | ViewProperty;
+
+export const AnyStringProperty = 'AnyStringProperty';
+
+export function isAnyStringProperty(item: unknown): item is AnyStringProperty {
+    return reflection.isInstance(item, AnyStringProperty);
+}
+
 export type AStyleProperty = ColorProperty | ShapeProperty;
 
 export const AStyleProperty = 'AStyleProperty';
@@ -60,7 +68,7 @@ export function isViewRule(item: unknown): item is ViewRule {
     return reflection.isInstance(item, ViewRule);
 }
 
-export type ViewRuleLayoutDirection = 'BT' | 'LR' | 'RL' | 'TB';
+export type ViewRuleLayoutDirection = 'BottomTop' | 'LeftRight' | 'RightLeft' | 'TopBottom';
 
 export interface ColorProperty extends AstNode {
     readonly $container: ElementStyleProperty | SpecificationElementKindStyle | ViewRuleStyle;
@@ -143,7 +151,7 @@ export function isElementRefExpression(item: unknown): item is ElementRefExpress
 }
 
 export interface ElementStringProperty extends AstNode {
-    readonly $container: ElementBody;
+    readonly $container: ElementBody | ElementView | RelationBody;
     readonly $type: 'ElementStringProperty';
     key: 'description' | 'technology' | 'title'
     value: string
@@ -156,7 +164,7 @@ export function isElementStringProperty(item: unknown): item is ElementStringPro
 }
 
 export interface ElementStyleProperty extends AstNode {
-    readonly $container: ElementBody;
+    readonly $container: ElementBody | ElementView | RelationBody;
     readonly $type: 'ElementStyleProperty';
     key: 'style'
     props: Array<ColorProperty | ShapeProperty>
@@ -173,7 +181,7 @@ export interface ElementView extends AstNode {
     readonly $type: 'ElementView';
     name?: Name
     properties: Array<ViewProperty>
-    rules: Array<ViewRule>
+    rules: Array<ViewRuleAutoLayout | ViewRuleExpression | ViewRuleStyle>
     viewOf?: ElementRef
 }
 
@@ -300,7 +308,7 @@ export function isRelation(item: unknown): item is Relation {
 export interface RelationBody extends AstNode {
     readonly $container: Relation | RelationWithSource;
     readonly $type: 'RelationBody';
-    props: Array<RelationProperty>
+    props: Array<RelationStringProperty>
     tags?: Tags
 }
 
@@ -323,17 +331,17 @@ export function isRelationExpression(item: unknown): item is RelationExpression 
     return reflection.isInstance(item, RelationExpression);
 }
 
-export interface RelationProperty extends AstNode {
-    readonly $container: RelationBody;
-    readonly $type: 'RelationProperty';
+export interface RelationStringProperty extends AstNode {
+    readonly $container: ElementBody | ElementView | RelationBody;
+    readonly $type: 'RelationStringProperty';
     key: 'title'
     value: string
 }
 
-export const RelationProperty = 'RelationProperty';
+export const RelationStringProperty = 'RelationStringProperty';
 
-export function isRelationProperty(item: unknown): item is RelationProperty {
-    return reflection.isInstance(item, RelationProperty);
+export function isRelationStringProperty(item: unknown): item is RelationStringProperty {
+    return reflection.isInstance(item, RelationStringProperty);
 }
 
 export interface ShapeProperty extends AstNode {
@@ -438,7 +446,7 @@ export function isTags(item: unknown): item is Tags {
 }
 
 export interface ViewProperty extends AstNode {
-    readonly $container: ElementView;
+    readonly $container: ElementBody | ElementView | RelationBody;
     readonly $type: 'ViewProperty';
     key: 'description' | 'title'
     value: string
@@ -517,6 +525,7 @@ export function isRelationWithSource(item: unknown): item is RelationWithSource 
 
 export interface LikeC4AstType {
     AStyleProperty: AStyleProperty
+    AnyStringProperty: AnyStringProperty
     ColorProperty: ColorProperty
     Element: Element
     ElementBody: ElementBody
@@ -540,7 +549,7 @@ export interface LikeC4AstType {
     Relation: Relation
     RelationBody: RelationBody
     RelationExpression: RelationExpression
-    RelationProperty: RelationProperty
+    RelationStringProperty: RelationStringProperty
     RelationWithSource: RelationWithSource
     ShapeProperty: ShapeProperty
     SpecificationElementKind: SpecificationElementKind
@@ -562,7 +571,7 @@ export interface LikeC4AstType {
 export class LikeC4AstReflection extends AbstractAstReflection {
 
     getAllTypes(): string[] {
-        return ['AStyleProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'ExtendElementBody', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleAutoLayout', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
+        return ['AStyleProperty', 'AnyStringProperty', 'ColorProperty', 'Element', 'ElementBody', 'ElementExpression', 'ElementKind', 'ElementProperty', 'ElementRef', 'ElementRefExpression', 'ElementStringProperty', 'ElementStyleProperty', 'ElementView', 'Expression', 'ExtendElement', 'ExtendElementBody', 'InOutExpression', 'IncomingExpression', 'LikeC4Document', 'Model', 'ModelViews', 'OutgoingExpression', 'Relation', 'RelationBody', 'RelationExpression', 'RelationStringProperty', 'RelationWithSource', 'ShapeProperty', 'SpecificationElementKind', 'SpecificationElementKindStyle', 'SpecificationRule', 'SpecificationTag', 'StrictElementRef', 'Tag', 'Tags', 'View', 'ViewProperty', 'ViewRule', 'ViewRuleAutoLayout', 'ViewRuleExpression', 'ViewRuleStyle', 'WildcardExpression'];
     }
 
     protected override computeIsSubtype(subtype: string, supertype: string): boolean {
@@ -582,12 +591,18 @@ export class LikeC4AstReflection extends AbstractAstReflection {
             case WildcardExpression: {
                 return this.isSubtype(ElementExpression, supertype);
             }
-            case ElementStringProperty:
+            case ElementStringProperty: {
+                return this.isSubtype(AnyStringProperty, supertype) || this.isSubtype(ElementProperty, supertype);
+            }
             case ElementStyleProperty: {
                 return this.isSubtype(ElementProperty, supertype);
             }
             case ElementView: {
                 return this.isSubtype(View, supertype);
+            }
+            case RelationStringProperty:
+            case ViewProperty: {
+                return this.isSubtype(AnyStringProperty, supertype);
             }
             case RelationWithSource: {
                 return this.isSubtype(Relation, supertype);

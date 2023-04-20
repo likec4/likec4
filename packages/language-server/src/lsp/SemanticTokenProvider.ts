@@ -18,17 +18,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'el',
         type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property
       })
-      // acceptor({
-      //   node,
-      //   property: 'el',
-      //   type: SemanticTokenTypes.variable,
-      // })
       return
     }
-    //   if (ast.isSpec(node)) {
-    //     keyword('spec')
-    //     return
-    //   }
     if (ast.isWildcardExpression(node)) {
       acceptor({
         node,
@@ -61,21 +52,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       }
       return
     }
-    //   if (ast.isDynamicViewStep(node)) {
-    //     keyword(node.isReverse ? '<-' : '->')
-    //     if (hasTitle(node)) {
-    //       acceptor({
-    //         node,
-    //         property: 'title',
-    //         type: SemanticTokenTypes.string
-    //       })
-    //     }
-    //     return
-    //   }
-    //   if (ast.isStyleProperties(node)) {
-    //     keyword('style')
-    //     return
-    //   }
     if (ast.isElementKind(node)) {
       acceptor({
         node,
@@ -127,7 +103,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isColorProperty(node) || ast.isShapeProperty(node)) {
+    if (ast.isAStyleProperty(node)) {
       acceptor({
         node,
         property: 'key',
@@ -140,36 +116,34 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    if (ast.isElementProperty(node) || ast.isRelationProperty(node) || ast.isViewProperty(node)) {
+    if (ast.isAnyStringProperty(node)) {
       acceptor({
         node,
         property: 'key',
         type: SemanticTokenTypes.keyword
       })
-      if ('value' in node) {
-        acceptor({
-          node,
-          property: 'value',
-          type: SemanticTokenTypes.string
-        })
-      }
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.string
+      })
       return
     }
-    if (ast.isModel(node)) {
-      keyword('model')
-      return
-    }
-    if (ast.isModelViews(node)) {
-      keyword('views')
-      return
-    }
+    // if (ast.isModel(node)) {
+    //   keyword('model')
+    //   return
+    // }
+    // if (ast.isModelViews(node)) {
+    //   keyword('views')
+    //   return
+    // }
     if (ast.isElement(node)) {
       return this.highlightAstElement(node, acceptor)
     }
-    if (ast.isExtendElement(node)) {
-      keyword('extend')
-      return
-    }
+    // if (ast.isExtendElement(node)) {
+    //   keyword('extend')
+    //   return
+    // }
     //   if (ast.isElementProperty(node) || ast.isRelationProperty(node) || ast.isViewProperty(node)) {
     //     acceptor({
     //       node,
@@ -193,19 +167,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     //     keyword('steps')
     //     return
     //   }
-    if (ast.isViewRuleAutoLayout(node)) {
-      keyword('autoLayout')
-      return
-    }
-    if (ast.isViewRuleStyle(node)) {
-      keyword('style')
-      return
-    }
-    if (ast.isViewRuleExpression(node)) {
-      keyword(node.isInclude ? 'include' : 'exclude')
-      return
-    }
-    //
+    // if (ast.isViewRuleAutoLayout(node)) {
+    //   keyword('autoLayout')
+    //   return
+    // }
+    // if (ast.isViewRuleStyle(node)) {
+    //   keyword('style')
+    //   return
+    // }
+    // if (ast.isViewRuleExpression(node)) {
+    //   keyword(node.isInclude ? 'include' : 'exclude')
+    //   return
+    // }
+    // //
   }
 
   private highlightAstElement(node: ast.Element, acceptor: SemanticTokenAcceptor) {

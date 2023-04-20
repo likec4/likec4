@@ -10,7 +10,6 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
   "$type": "Grammar",
   "isDeclared": true,
   "name": "LikeC4",
-  "imports": [],
   "rules": [
     {
       "$type": "ParserRule",
@@ -39,7 +38,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@27"
+                "$ref": "#/rules@5"
               },
               "arguments": []
             },
@@ -52,7 +51,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@42"
+                "$ref": "#/rules@20"
               },
               "arguments": []
             },
@@ -84,7 +83,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@15"
+              "$ref": "#/rules@45"
             },
             "arguments": []
           },
@@ -121,7 +120,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@16"
+              "$ref": "#/rules@46"
             },
             "arguments": []
           }
@@ -151,7 +150,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@8"
+                "$ref": "#/rules@32"
               },
               "arguments": []
             }
@@ -162,7 +161,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@15"
+                  "$ref": "#/rules@45"
                 },
                 "arguments": []
               },
@@ -182,7 +181,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               {
                 "$type": "RuleCall",
                 "rule": {
-                  "$ref": "#/rules@16"
+                  "$ref": "#/rules@46"
                 },
                 "arguments": []
               }
@@ -211,7 +210,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@15"
+              "$ref": "#/rules@45"
             },
             "arguments": []
           },
@@ -225,14 +224,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@5"
+                    "$ref": "#/rules@30"
                   },
                   "arguments": []
                 },
                 {
                   "$type": "RuleCall",
                   "rule": {
-                    "$ref": "#/rules@6"
+                    "$ref": "#/rules@31"
                   },
                   "arguments": []
                 }
@@ -243,7 +242,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@16"
+              "$ref": "#/rules@46"
             },
             "arguments": []
           }
@@ -273,10 +272,1630 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@9"
+                "$ref": "#/rules@33"
               },
               "arguments": []
             }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Model",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "model"
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "elements",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@6"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@9"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@17"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Element",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "kind",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "CrossReference",
+                      "type": {
+                        "$ref": "#/rules@32"
+                      },
+                      "terminal": {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@36"
+                        },
+                        "arguments": []
+                      },
+                      "deprecatedSyntax": false
+                    }
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "name",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@36"
+                      },
+                      "arguments": []
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "name",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@36"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "RuleCall",
+                    "rule": {
+                      "$ref": "#/rules@44"
+                    },
+                    "arguments": []
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "kind",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "CrossReference",
+                      "type": {
+                        "$ref": "#/rules@32"
+                      },
+                      "terminal": {
+                        "$type": "RuleCall",
+                        "rule": {
+                          "$ref": "#/rules@36"
+                        },
+                        "arguments": []
+                      },
+                      "deprecatedSyntax": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "props",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@50"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Assignment",
+                    "feature": "props",
+                    "operator": "+=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@50"
+                      },
+                      "arguments": []
+                    }
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@50"
+                          },
+                          "arguments": []
+                        }
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "props",
+                        "operator": "+=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@50"
+                          },
+                          "arguments": []
+                        },
+                        "cardinality": "?"
+                      }
+                    ],
+                    "cardinality": "?"
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "body",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@7"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementBody",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "tags",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@13"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "props",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@8"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "elements",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@6"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@14"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementProperty",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "ElementStringProperty"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "key",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "Keyword",
+                      "value": "title"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "description"
+                    },
+                    {
+                      "$type": "Keyword",
+                      "value": "technology"
+                    }
+                  ]
+                }
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@47"
+                },
+                "arguments": [],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "value",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@50"
+                  },
+                  "arguments": []
+                }
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "ElementStyleProperty"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "key",
+                "operator": "=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "style"
+                }
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@45"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "props",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "Alternatives",
+                  "elements": [
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@30"
+                      },
+                      "arguments": []
+                    },
+                    {
+                      "$type": "RuleCall",
+                      "rule": {
+                        "$ref": "#/rules@31"
+                      },
+                      "arguments": []
+                    }
+                  ]
+                },
+                "cardinality": "*"
+              },
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@46"
+                },
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ExtendElement",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "extend"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "element",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@11"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "body",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@10"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ExtendElementBody",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "elements",
+        "operator": "+=",
+        "terminal": {
+          "$type": "Alternatives",
+          "elements": [
+            {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@6"
+              },
+              "arguments": []
+            },
+            {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@17"
+              },
+              "arguments": []
+            }
+          ]
+        },
+        "cardinality": "*"
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "StrictElementRef",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "el",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$ref": "#/rules@6"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@36"
+                },
+                "arguments": []
+              },
+              "deprecatedSyntax": false
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@43"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "next",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@11"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementRef",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "el",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$ref": "#/rules@6"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@36"
+                },
+                "arguments": []
+              },
+              "deprecatedSyntax": false
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@43"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "next",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@12"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Tags",
+      "definition": {
+        "$type": "Assignment",
+        "feature": "value",
+        "operator": "+=",
+        "terminal": {
+          "$type": "CrossReference",
+          "type": {
+            "$ref": "#/rules@33"
+          },
+          "terminal": {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@49"
+            },
+            "arguments": []
+          },
+          "deprecatedSyntax": false
+        }
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Relation",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@17"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@16"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RelationFragment",
+      "fragment": true,
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "target",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@12"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "title",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@50"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "definition",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@18"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RelationWithoutSource",
+      "inferredType": {
+        "$type": "InferredType",
+        "name": "Relation"
+      },
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "this"
+              },
+              {
+                "$type": "Keyword",
+                "value": "it"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Keyword",
+            "value": "->"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RelationWithSource",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "source",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@12"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "->"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@15"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RelationBody",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "tags",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@13"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "props",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@19"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "RelationStringProperty",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "key",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "title"
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@47"
+            },
+            "arguments": [],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@50"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ModelViews",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "views"
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "views",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@21"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "View",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Action",
+            "inferredType": {
+              "$type": "InferredType",
+              "name": "ElementView"
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "view"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@36"
+              },
+              "arguments": []
+            },
+            "cardinality": "?"
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "of"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "viewOf",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@12"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "properties",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@22"
+              },
+              "arguments": []
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "rules",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@23"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@26"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@25"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewProperty",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "key",
+            "operator": "=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "Keyword",
+                  "value": "title"
+                },
+                {
+                  "$type": "Keyword",
+                  "value": "description"
+                }
+              ]
+            }
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@47"
+            },
+            "arguments": [],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@50"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleExpression",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Alternatives",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "isInclude",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "include"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "exclude"
+              }
+            ]
+          },
+          {
+            "$type": "Assignment",
+            "feature": "expressions",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@27"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@48"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "expressions",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@27"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleLayoutDirection",
+      "dataType": "string",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "TopBottom"
+          },
+          {
+            "$type": "Keyword",
+            "value": "LeftRight"
+          },
+          {
+            "$type": "Keyword",
+            "value": "BottomTop"
+          },
+          {
+            "$type": "Keyword",
+            "value": "RightLeft"
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleAutoLayout",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "autoLayout"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "direction",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@24"
+              },
+              "arguments": []
+            }
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ViewRuleStyle",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "style"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "targets",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@28"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@48"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "targets",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@28"
+                  },
+                  "arguments": []
+                }
+              }
+            ],
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
+            },
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "props",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@30"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@31"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "Expression",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "IncomingExpression"
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "->"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "target",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@28"
+                  },
+                  "arguments": []
+                }
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Action",
+                    "inferredType": {
+                      "$type": "InferredType",
+                      "name": "InOutExpression"
+                    },
+                    "feature": "inout",
+                    "operator": "="
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "->"
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ]
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "RuleCall",
+                "rule": {
+                  "$ref": "#/rules@28"
+                },
+                "arguments": []
+              },
+              {
+                "$type": "Alternatives",
+                "elements": [
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Action",
+                        "inferredType": {
+                          "$type": "InferredType",
+                          "name": "RelationExpression"
+                        },
+                        "feature": "source",
+                        "operator": "="
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "->"
+                      },
+                      {
+                        "$type": "Assignment",
+                        "feature": "target",
+                        "operator": "=",
+                        "terminal": {
+                          "$type": "RuleCall",
+                          "rule": {
+                            "$ref": "#/rules@28"
+                          },
+                          "arguments": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "$type": "Group",
+                    "elements": [
+                      {
+                        "$type": "Action",
+                        "inferredType": {
+                          "$type": "InferredType",
+                          "name": "OutgoingExpression"
+                        },
+                        "feature": "source",
+                        "operator": "="
+                      },
+                      {
+                        "$type": "Keyword",
+                        "value": "->"
+                      }
+                    ]
+                  }
+                ],
+                "cardinality": "?"
+              }
+            ]
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementExpression",
+      "definition": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Action",
+                "inferredType": {
+                  "$type": "InferredType",
+                  "name": "WildcardExpression"
+                }
+              },
+              {
+                "$type": "Assignment",
+                "feature": "isWildcard",
+                "operator": "?=",
+                "terminal": {
+                  "$type": "Keyword",
+                  "value": "*"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@29"
+            },
+            "arguments": []
+          }
+        ]
+      },
+      "definesHiddenTokens": false,
+      "entry": false,
+      "fragment": false,
+      "hiddenTokens": [],
+      "parameters": [],
+      "wildcard": false
+    },
+    {
+      "$type": "ParserRule",
+      "name": "ElementRefExpression",
+      "definition": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "id",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "rule": {
+                "$ref": "#/rules@12"
+              },
+              "arguments": []
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "isDescedants",
+            "operator": "?=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": ".*"
+            },
+            "cardinality": "?"
           }
         ]
       },
@@ -305,7 +1924,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@17"
+              "$ref": "#/rules@47"
             },
             "arguments": [],
             "cardinality": "?"
@@ -317,7 +1936,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@10"
+                "$ref": "#/rules@34"
               },
               "arguments": []
             }
@@ -349,7 +1968,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@17"
+              "$ref": "#/rules@47"
             },
             "arguments": [],
             "cardinality": "?"
@@ -361,39 +1980,10 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             "terminal": {
               "$type": "RuleCall",
               "rule": {
-                "$ref": "#/rules@11"
+                "$ref": "#/rules@35"
               },
               "arguments": []
             }
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "AStyleProperty",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@5"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@6"
-            },
-            "arguments": []
           }
         ]
       },
@@ -414,7 +2004,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@12"
+            "$ref": "#/rules@36"
           },
           "arguments": []
         }
@@ -436,7 +2026,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "terminal": {
           "$type": "RuleCall",
           "rule": {
-            "$ref": "#/rules@12"
+            "$ref": "#/rules@36"
           },
           "arguments": []
         }
@@ -526,14 +2116,14 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@11"
+              "$ref": "#/rules@35"
             },
             "arguments": []
           },
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@10"
+              "$ref": "#/rules@34"
             },
             "arguments": []
           },
@@ -548,7 +2138,7 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "RuleCall",
             "rule": {
-              "$ref": "#/rules@23"
+              "$ref": "#/rules@51"
             },
             "arguments": []
           }
@@ -560,6 +2150,72 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
       "hiddenTokens": [],
       "parameters": [],
       "wildcard": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "HASH",
+      "definition": {
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": "#"
+        }
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "UNDERSCORE",
+      "definition": {
+        "$type": "CharacterRange",
+        "left": {
+          "$type": "Keyword",
+          "value": "_"
+        }
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "LETTER",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[^\\\\W\\\\d_]"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "DIGIT",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[0-9]"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "NEWLINE",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[\\\\t\\\\r\\\\n\\\\v\\\\f]"
+      },
+      "hidden": false
+    },
+    {
+      "$type": "TerminalRule",
+      "fragment": true,
+      "name": "SPACE",
+      "definition": {
+        "$type": "RegexToken",
+        "regex": "[^\\\\S\\\\r\\\\n]"
+      },
+      "hidden": false
     },
     {
       "$type": "TerminalRule",
@@ -641,52 +2297,50 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
     },
     {
       "$type": "TerminalRule",
-      "name": "Star",
-      "definition": {
-        "$type": "CharacterRange",
-        "left": {
-          "$type": "Keyword",
-          "value": "*"
-        }
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
-      "name": "Semi",
-      "definition": {
-        "$type": "CharacterRange",
-        "left": {
-          "$type": "Keyword",
-          "value": ";"
-        }
-      },
-      "fragment": false,
-      "hidden": false
-    },
-    {
-      "$type": "TerminalRule",
       "name": "TagID",
-      "type": {
-        "$type": "ReturnType",
-        "name": "string"
-      },
       "definition": {
         "$type": "TerminalGroup",
         "elements": [
           {
-            "$type": "CharacterRange",
-            "left": {
-              "$type": "Keyword",
-              "value": "#"
+            "$type": "TerminalRuleCall",
+            "rule": {
+              "$ref": "#/rules@37"
             }
           },
           {
             "$type": "TerminalRuleCall",
             "rule": {
-              "$ref": "#/rules@23"
+              "$ref": "#/rules@39"
             }
+          },
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "TerminalAlternatives",
+                "elements": [
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$ref": "#/rules@39"
+                    }
+                  },
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$ref": "#/rules@40"
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$ref": "#/rules@38"
+                }
+              }
+            ],
+            "cardinality": "*"
           }
         ]
       },
@@ -707,8 +2361,55 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
       "$type": "TerminalRule",
       "name": "ID",
       "definition": {
-        "$type": "RegexToken",
-        "regex": "[_a-zA-Z][\\\\w_]*"
+        "$type": "TerminalGroup",
+        "elements": [
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$ref": "#/rules@39"
+                }
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$ref": "#/rules@38"
+                }
+              }
+            ]
+          },
+          {
+            "$type": "TerminalAlternatives",
+            "elements": [
+              {
+                "$type": "TerminalAlternatives",
+                "elements": [
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$ref": "#/rules@39"
+                    }
+                  },
+                  {
+                    "$type": "TerminalRuleCall",
+                    "rule": {
+                      "$ref": "#/rules@40"
+                    }
+                  }
+                ]
+              },
+              {
+                "$type": "TerminalRuleCall",
+                "rule": {
+                  "$ref": "#/rules@38"
+                }
+              }
+            ],
+            "cardinality": "*"
+          }
+        ]
       },
       "fragment": false,
       "hidden": false
@@ -718,8 +2419,22 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
       "hidden": true,
       "name": "WS",
       "definition": {
-        "$type": "RegexToken",
-        "regex": "[ \\\\t\\\\r\\\\n\\\\f]+"
+        "$type": "TerminalAlternatives",
+        "elements": [
+          {
+            "$type": "TerminalRuleCall",
+            "rule": {
+              "$ref": "#/rules@41"
+            }
+          },
+          {
+            "$type": "TerminalRuleCall",
+            "rule": {
+              "$ref": "#/rules@42"
+            }
+          }
+        ],
+        "cardinality": "+"
       },
       "fragment": false
     },
@@ -742,1648 +2457,88 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
         "regex": "\\\\/\\\\/[^\\\\n\\\\r]*"
       },
       "fragment": false
-    },
+    }
+  ],
+  "types": [
     {
-      "$type": "ParserRule",
-      "name": "Model",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "model"
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "elements",
-            "operator": "+=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@28"
-                  },
-                  "arguments": []
-                },
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@31"
-                  },
-                  "arguments": []
-                },
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@39"
-                  },
-                  "arguments": []
-                }
-              ]
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "Element",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Alternatives",
-            "elements": [
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "kind",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "CrossReference",
-                      "type": {
-                        "$ref": "#/rules@8"
-                      },
-                      "terminal": {
-                        "$type": "RuleCall",
-                        "rule": {
-                          "$ref": "#/rules@12"
-                        },
-                        "arguments": []
-                      },
-                      "deprecatedSyntax": false
-                    }
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "name",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@12"
-                      },
-                      "arguments": []
-                    }
-                  }
-                ]
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "name",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@12"
-                      },
-                      "arguments": []
-                    }
-                  },
-                  {
-                    "$type": "RuleCall",
-                    "rule": {
-                      "$ref": "#/rules@14"
-                    },
-                    "arguments": []
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "kind",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "CrossReference",
-                      "type": {
-                        "$ref": "#/rules@8"
-                      },
-                      "terminal": {
-                        "$type": "RuleCall",
-                        "rule": {
-                          "$ref": "#/rules@12"
-                        },
-                        "arguments": []
-                      },
-                      "deprecatedSyntax": false
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Assignment",
-                "feature": "props",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@22"
-                  },
-                  "arguments": []
-                }
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "props",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@22"
-                      },
-                      "arguments": []
-                    }
-                  },
-                  {
-                    "$type": "Group",
-                    "elements": [
-                      {
-                        "$type": "Assignment",
-                        "feature": "props",
-                        "operator": "+=",
-                        "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$ref": "#/rules@22"
-                          },
-                          "arguments": []
-                        }
-                      },
-                      {
-                        "$type": "Assignment",
-                        "feature": "props",
-                        "operator": "+=",
-                        "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$ref": "#/rules@22"
-                          },
-                          "arguments": []
-                        },
-                        "cardinality": "?"
-                      }
-                    ],
-                    "cardinality": "?"
-                  }
-                ],
-                "cardinality": "?"
-              }
-            ],
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "body",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@29"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ElementBody",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "tags",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@35"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "props",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@30"
-              },
-              "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "elements",
-            "operator": "+=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@28"
-                  },
-                  "arguments": []
-                },
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@36"
-                  },
-                  "arguments": []
-                }
-              ]
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ElementProperty",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "ElementStringProperty"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "key",
-                "operator": "=",
-                "terminal": {
-                  "$type": "Alternatives",
-                  "elements": [
-                    {
-                      "$type": "Keyword",
-                      "value": "title"
-                    },
-                    {
-                      "$type": "Keyword",
-                      "value": "description"
-                    },
-                    {
-                      "$type": "Keyword",
-                      "value": "technology"
-                    }
-                  ]
-                }
-              },
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@17"
-                },
-                "arguments": [],
-                "cardinality": "?"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "value",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@22"
-                  },
-                  "arguments": []
-                }
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "ElementStyleProperty"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "key",
-                "operator": "=",
-                "terminal": {
-                  "$type": "Keyword",
-                  "value": "style"
-                }
-              },
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@15"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "props",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "Alternatives",
-                  "elements": [
-                    {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@5"
-                      },
-                      "arguments": []
-                    },
-                    {
-                      "$type": "RuleCall",
-                      "rule": {
-                        "$ref": "#/rules@6"
-                      },
-                      "arguments": []
-                    }
-                  ]
-                },
-                "cardinality": "*"
-              },
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@16"
-                },
-                "arguments": []
-              }
-            ]
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ExtendElement",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "extend"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "element",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@33"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "body",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@32"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ExtendElementBody",
-      "definition": {
-        "$type": "Assignment",
-        "feature": "elements",
-        "operator": "+=",
-        "terminal": {
-          "$type": "Alternatives",
-          "elements": [
-            {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@28"
-              },
-              "arguments": []
-            },
-            {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@39"
-              },
-              "arguments": []
-            }
-          ]
-        },
-        "cardinality": "*"
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "StrictElementRef",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "el",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$ref": "#/rules@28"
-              },
-              "terminal": {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@12"
-                },
-                "arguments": []
-              },
-              "deprecatedSyntax": false
-            }
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@13"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "next",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@33"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "?"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ElementRef",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "el",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$ref": "#/rules@28"
-              },
-              "terminal": {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@12"
-                },
-                "arguments": []
-              },
-              "deprecatedSyntax": false
-            }
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@13"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "next",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@34"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "?"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "Tags",
-      "definition": {
-        "$type": "Assignment",
-        "feature": "value",
-        "operator": "+=",
-        "terminal": {
-          "$type": "CrossReference",
-          "type": {
-            "$ref": "#/rules@9"
-          },
-          "terminal": {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@21"
-            },
-            "arguments": []
-          },
-          "deprecatedSyntax": false
-        }
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "Relation",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@39"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@38"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RelationFragment",
-      "fragment": true,
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "target",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@34"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "Assignment",
-            "feature": "title",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@22"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "definition",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@40"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RelationWithoutSource",
-      "inferredType": {
-        "$type": "InferredType",
-        "name": "Relation"
-      },
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Alternatives",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "this"
-              },
-              {
-                "$type": "Keyword",
-                "value": "it"
-              }
-            ],
-            "cardinality": "?"
-          },
-          {
-            "$type": "Keyword",
-            "value": "->"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@37"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RelationWithSource",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "source",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@34"
-              },
-              "arguments": []
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "->"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@37"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RelationBody",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "tags",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@35"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "props",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@41"
-              },
-              "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "RelationProperty",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "key",
-            "operator": "=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "title"
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@17"
-            },
-            "arguments": [],
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "value",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@22"
-              },
-              "arguments": []
-            }
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ModelViews",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "views"
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "views",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@43"
-              },
-              "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "View",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Action",
-            "inferredType": {
-              "$type": "InferredType",
-              "name": "ElementView"
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "view"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@12"
-              },
-              "arguments": []
-            },
-            "cardinality": "?"
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "of"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "viewOf",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@34"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "?"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "properties",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@44"
-              },
-              "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "rules",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@45"
-              },
-              "arguments": []
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ViewProperty",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "key",
-            "operator": "=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "title"
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "description"
-                }
-              ]
-            }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@17"
-            },
-            "arguments": [],
-            "cardinality": "?"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "value",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@22"
-              },
-              "arguments": []
-            }
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
+      "$type": "Type",
       "name": "ViewRule",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
+      "type": {
+        "$type": "UnionType",
+        "types": [
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@46"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@49"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@48"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ViewRuleExpression",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Alternatives",
-            "elements": [
-              {
-                "$type": "Assignment",
-                "feature": "isInclude",
-                "operator": "?=",
-                "terminal": {
-                  "$type": "Keyword",
-                  "value": "include"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "exclude"
-              }
-            ]
-          },
-          {
-            "$type": "Assignment",
-            "feature": "expressions",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@50"
-              },
-              "arguments": []
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@23"
             }
           },
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@18"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "expressions",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@50"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "*"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ViewRuleLayoutDirection",
-      "dataType": "string",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "TB"
-          },
-          {
-            "$type": "Keyword",
-            "value": "LR"
-          },
-          {
-            "$type": "Keyword",
-            "value": "BT"
-          },
-          {
-            "$type": "Keyword",
-            "value": "RL"
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ViewRuleAutoLayout",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "autoLayout"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "direction",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@47"
-              },
-              "arguments": []
-            }
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ViewRuleStyle",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "style"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "targets",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@51"
-              },
-              "arguments": []
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@26"
             }
           },
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@18"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "targets",
-                "operator": "+=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@51"
-                  },
-                  "arguments": []
-                }
-              }
-            ],
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@15"
-            },
-            "arguments": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "props",
-            "operator": "+=",
-            "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@5"
-                  },
-                  "arguments": []
-                },
-                {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@6"
-                  },
-                  "arguments": []
-                }
-              ]
-            },
-            "cardinality": "*"
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@16"
-            },
-            "arguments": []
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@25"
+            }
           }
         ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
+      }
     },
     {
-      "$type": "ParserRule",
-      "name": "Expression",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
+      "$type": "Type",
+      "name": "AnyStringProperty",
+      "type": {
+        "$type": "UnionType",
+        "types": [
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "IncomingExpression"
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "->"
-              },
-              {
-                "$type": "Assignment",
-                "feature": "target",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "rule": {
-                    "$ref": "#/rules@51"
-                  },
-                  "arguments": []
-                }
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Action",
-                    "inferredType": {
-                      "$type": "InferredType",
-                      "name": "InOutExpression"
-                    },
-                    "feature": "inout",
-                    "operator": "="
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "->"
-                  }
-                ],
-                "cardinality": "?"
-              }
-            ]
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "RuleCall",
-                "rule": {
-                  "$ref": "#/rules@51"
-                },
-                "arguments": []
-              },
-              {
-                "$type": "Alternatives",
-                "elements": [
-                  {
-                    "$type": "Group",
-                    "elements": [
-                      {
-                        "$type": "Action",
-                        "inferredType": {
-                          "$type": "InferredType",
-                          "name": "RelationExpression"
-                        },
-                        "feature": "source",
-                        "operator": "="
-                      },
-                      {
-                        "$type": "Keyword",
-                        "value": "->"
-                      },
-                      {
-                        "$type": "Assignment",
-                        "feature": "target",
-                        "operator": "=",
-                        "terminal": {
-                          "$type": "RuleCall",
-                          "rule": {
-                            "$ref": "#/rules@51"
-                          },
-                          "arguments": []
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$type": "Group",
-                    "elements": [
-                      {
-                        "$type": "Action",
-                        "inferredType": {
-                          "$type": "InferredType",
-                          "name": "OutgoingExpression"
-                        },
-                        "feature": "source",
-                        "operator": "="
-                      },
-                      {
-                        "$type": "Keyword",
-                        "value": "->"
-                      }
-                    ]
-                  }
-                ],
-                "cardinality": "?"
-              }
-            ]
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ElementExpression",
-      "definition": {
-        "$type": "Alternatives",
-        "elements": [
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Action",
-                "inferredType": {
-                  "$type": "InferredType",
-                  "name": "WildcardExpression"
-                }
-              },
-              {
-                "$type": "Assignment",
-                "feature": "isWildcard",
-                "operator": "?=",
-                "terminal": {
-                  "$type": "Keyword",
-                  "value": "*"
-                }
-              }
-            ]
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@52"
-            },
-            "arguments": []
-          }
-        ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
-    },
-    {
-      "$type": "ParserRule",
-      "name": "ElementRefExpression",
-      "definition": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Assignment",
-            "feature": "id",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@34"
-              },
-              "arguments": []
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@22"
             }
           },
           {
-            "$type": "Assignment",
-            "feature": "isDescedants",
-            "operator": "?=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": ".*"
-            },
-            "cardinality": "?"
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@8/definition/elements@0/elements@0"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@19"
+            }
           }
         ]
-      },
-      "definesHiddenTokens": false,
-      "entry": false,
-      "fragment": false,
-      "hiddenTokens": [],
-      "parameters": [],
-      "wildcard": false
+      }
+    },
+    {
+      "$type": "Type",
+      "name": "AStyleProperty",
+      "type": {
+        "$type": "UnionType",
+        "types": [
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@30"
+            }
+          },
+          {
+            "$type": "SimpleType",
+            "typeRef": {
+              "$ref": "#/rules@31"
+            }
+          }
+        ]
+      }
     }
   ],
   "definesHiddenTokens": false,
   "hiddenTokens": [],
+  "imports": [],
   "interfaces": [],
-  "types": [],
   "usedGrammars": []
 }`));
