@@ -32,7 +32,7 @@
     "@types/node": "^18.15.11",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
-    "esbuild": "^0.17.15",
+    "esbuild": "^0.17.17",
     "fast-glob": "^3.2.12",
     "langium": "^1.1.0",
     "mkdirp": "^2.1.6",

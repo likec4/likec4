@@ -114,7 +114,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
-    "esbuild": "^0.17.15",
+    "esbuild": "^0.17.17",
     "froebel": "^0.23.2",
     "langium": "^1.1.0",
     "nanoid": "^4.0.2",
