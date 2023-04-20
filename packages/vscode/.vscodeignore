@@ -1,6 +1,7 @@
 *
 !contrib/*
 !dist/*
+!data/*
 !package.json
 !LICENSE
 !README.md

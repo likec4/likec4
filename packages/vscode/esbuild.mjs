@@ -45,8 +45,7 @@ const nodeCfg = {
  */
 const webCfg = {
   entryPoints: [
-    'src/extension/browser/index.ts',
-    'src/extension/browser/server.ts'
+    'src/extension/web/index.ts',
   ],
   metafile: true,
   logLevel: 'info',
@@ -54,7 +53,7 @@ const webCfg = {
   outdir: 'dist',
   bundle: true,
   format: 'cjs',
-  target: 'es2022',
+  target: 'es2020',
   platform: 'browser',
   external: ['vscode'],
   mainFields: ['browser', 'module', 'main'],
@@ -68,22 +67,40 @@ const webCfg = {
   sourcesContent: false,
   minify
 }
+/**
+ * @type {esbuild.BuildOptions}
+ */
+const webWorkerCfg = {
+  ...webCfg,
+  entryPoints: [
+    'src/extension/web/server-worker.ts',
+  ],
+  format: 'iife'
+}
 
 if (!watch) {
   const bundles = await Promise.all([
     esbuild.build(nodeCfg),
-    esbuild.build(webCfg)
+    esbuild.build(webCfg),
+    esbuild.build(webWorkerCfg)
   ])
 
-  const [nodeBundle, webBundle] = bundles
-  if (!minify && nodeBundle.metafile) {
-    const metafile = path.resolve('dist', 'node', 'metafile.json')
-    await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
+  if (!minify) {
+    const [nodeBundle, webBundle, webWorkerBundle] = bundles
+    if (nodeBundle.metafile) {
+      const metafile = path.resolve('dist', 'node', 'metafile.json')
+      await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
+    }
+    if (webBundle.metafile) {
+      const metafile = path.resolve('dist', 'web', 'index-metafile.json')
+      await writeFile(metafile, JSON.stringify(webBundle.metafile))
+    }
+    if (webWorkerBundle.metafile) {
+      const metafile = path.resolve('dist', 'web', 'worker-metafile.json')
+      await writeFile(metafile, JSON.stringify(webBundle.metafile))
+    }
   }
-  if (!minify && webBundle.metafile) {
-    const metafile = path.resolve('dist', 'browser', 'metafile.json')
-    await writeFile(metafile, JSON.stringify(webBundle.metafile))
-  }
+
 
   const errors = bundles.flatMap(b => b.errors)
   const warnings = bundles.flatMap(b => b.warnings)
@@ -108,10 +125,12 @@ if (!watch) {
   process.exit(0)
 }
 
-const [nodeCtx, webCtx] = await Promise.all([
+const [nodeCtx, webCtx, webWorkerCtx] = await Promise.all([
   esbuild.context(nodeCfg),
-  esbuild.context(webCfg)
+  esbuild.context(webCfg),
+  esbuild.context(webWorkerCfg),
 ])
 await nodeCtx.watch()
 await webCtx.watch()
+await webWorkerCtx.watch()
 console.info(' 👀 watching...')

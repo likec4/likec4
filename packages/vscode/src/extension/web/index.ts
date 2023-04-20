@@ -26,8 +26,8 @@ function createLanguageClient(context: ExtensionContext) {
   const serverMain = vscode.Uri.joinPath(
     context.extensionUri,
     'dist',
-    'browser',
-    'server.js'
+    'web',
+    'server-worker.js'
   ).toString(true)
   const worker = new Worker(serverMain, {
     name: 'LikeC4 LanguageServer Worker'

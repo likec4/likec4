@@ -10,6 +10,7 @@
   "files": [
     "contrib",
     "dist",
+    "data",
     "./language-configuration.json"
   ],
   "repository": {
@@ -51,19 +52,29 @@
     "Programming Languages",
     "Visualization"
   ],
+  "icon": "./data/icon.png",
+  "galleryBanner": {
+    "color": "#111111",
+    "theme": "dark"
+  },
   "contributes": {
     "languages": [
       {
         "id": "likec4",
         "aliases": [
-          "Like C4"
+          "Like C4",
+          "c4"
         ],
         "extensions": [
           ".c4",
           ".likec4",
           ".like-c4"
         ],
-        "configuration": "language-configuration.json"
+        "configuration": "language-configuration.json",
+        "icon": {
+          "light": "./data/icon.png",
+          "dark": "./data/icon.png"
+        }
       }
     ],
     "grammars": [
@@ -105,7 +116,7 @@
     "onWebviewPanel:likec4-preview"
   ],
   "main": "./dist/node/index.js",
-  "browser": "./dist/browser/index.js",
+  "browser": "./dist/web/index.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
