@@ -2,6 +2,7 @@
   "name": "@likec4/example-bigbank",
   "private": true,
   "version": "0.6.0",
+  "packageManager": "yarn@3.4.1",
   "scripts": {
     "generate": "likec4 generate --target views-data --output src/likec4.data.ts",
     "start": "run generate && vite"
@@ -21,5 +22,8 @@
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^5.0.4",
     "vite": "^4.2.2"
+  },
+  "installConfig": {
+    "hoistingLimits": "dependencies"
   }
 }

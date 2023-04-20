@@ -24,7 +24,7 @@
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "compile": "",
+    "compile": "tsc --noEmit",
     "release:build": "tsc -p tsconfig.esm.json",
     "build": "tsc",
     "dev": "tsc --watch",

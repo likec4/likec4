@@ -2,7 +2,7 @@
   "name": "likec4-vscode",
   "version": "0.6.0",
   "publisher": "likec4",
-  "displayName": "LikeC4",
+  "displayName": "LikeC4 Architecture Modeling",
   "description": "Support for the LikeC4 modeling language",
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -52,7 +52,7 @@
     "Programming Languages",
     "Visualization"
   ],
-  "icon": "./data/icon.png",
+  "icon": "./data/logo256.png",
   "galleryBanner": {
     "color": "#111111",
     "theme": "dark"

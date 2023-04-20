@@ -329,29 +329,29 @@ export class LikeC4ModelBuilder {
     failExpectedNever(astNode)
   }
 
-  private parseViewRule(astNode: ast.ViewRule): c4.ViewRule {
-    if (ast.isViewRuleExpression(astNode)) {
-      const exprs = astNode.expressions.map(n => this.parseExpression(n))
+  private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
+    if (ast.isViewRuleExpression(astRule)) {
+      const exprs = astRule.expressions.map(n => this.parseExpression(n))
       return {
-        isInclude: astNode.isInclude,
+        isInclude: astRule.isInclude,
         exprs
       }
     }
-    if (ast.isViewRuleStyle(astNode)) {
-      const styleProps = toElementStyle(astNode.props)
+    if (ast.isViewRuleStyle(astRule)) {
+      const styleProps = toElementStyle(astRule.props)
       return {
-        targets: astNode.targets.map(n => this.parseElementExpression(n)),
+        targets: astRule.targets.map(n => this.parseElementExpression(n)),
         style: {
           ...styleProps
         }
       }
     }
-    if (ast.isViewRuleAutoLayout(astNode)) {
+    if (ast.isViewRuleAutoLayout(astRule)) {
       return {
-        autoLayout: toAutoLayout(astNode.direction)
+        autoLayout: toAutoLayout(astRule.direction)
       }
     }
-    failExpectedNever(astNode)
+    failExpectedNever(astRule)
   }
 
   private parseElementView(astNode: ast.ElementView): ParsedAstElementView {
