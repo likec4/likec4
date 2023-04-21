@@ -6,7 +6,7 @@ import type {
   PartialLangiumServices,
   PartialLangiumSharedServices
 } from 'langium'
-import { createDefaultModule, createDefaultSharedModule, inject } from 'langium'
+import { createDefaultModule, createDefaultSharedModule, EmptyFileSystem, inject } from 'langium'
 import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import {
@@ -72,7 +72,9 @@ const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServ
   }
 }
 
-export function createLanguageServices(context: DefaultSharedModuleContext): {
+type LanguageServicesContext = Partial<DefaultSharedModuleContext>
+
+export function createLanguageServices(context?: LanguageServicesContext): {
   shared: LangiumSharedServices
   likec4: LikeC4Services
 } {
@@ -86,7 +88,12 @@ export function createLanguageServices(context: DefaultSharedModuleContext): {
   //   logger.trace = connection.tracer.log.bind(connection.tracer)
   // }
 
-  const shared = inject(createDefaultSharedModule(context), LikeC4SharedModule)
+  const moduleContext: DefaultSharedModuleContext = {
+    ...EmptyFileSystem,
+    ...context
+  }
+
+  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4SharedModule)
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)

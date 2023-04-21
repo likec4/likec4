@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "license": "MIT",
   "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -43,8 +43,8 @@
     }
   },
   "scripts": {
-    "compile": "",
-    "release:build": "run generate && tsc -p tsconfig.esm.json",
+    "compile": "tsc --emitDeclarationOnly",
+    "build:release": "run generate && tsc -p tsconfig.esm.json",
     "build:langium": "langium generate",
     "build:ts": "tsc",
     "watch:langium": "langium generate --watch",

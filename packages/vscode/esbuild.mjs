@@ -8,6 +8,8 @@ const watch = process.argv.includes('--watch')
 
 const alias = {
   'vscode-uri': 'vscode-uri/lib/esm/index.js',
+  'langium': 'langium/src/index.ts',
+  'langium/node': 'langium/src/node/index.ts',
   'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
   'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
 }
@@ -36,6 +38,7 @@ const nodeCfg = {
   allowOverwrite: true,
   sourcemap: true,
   sourcesContent: false,
+  treeShaking: true,
   minify
 }
 

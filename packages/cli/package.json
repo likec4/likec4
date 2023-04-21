@@ -1,26 +1,30 @@
 {
   "name": "@likec4/cli",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "license": "MIT",
   "bin": {
     "likec4": "dist/likec4.js"
   },
   "engines": {
-    "node": ">=17"
+    "node": ">=16"
   },
   "files": [
     "dist"
   ],
-  "main": "dist/likec4.js",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/core"
+  },
   "scripts": {
     "compile": "tsc --noEmit",
-    "release:build": "run build --minify",
-    "build": "esbuild src/cli.ts --bundle --platform=node --target=node16 --outfile=dist/likec4.js",
-    "dev": "run build --watch",
+    "build:release": "run build",
+    "build": "yarn node esbuild.mjs",
+    "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },

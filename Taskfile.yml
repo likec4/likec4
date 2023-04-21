@@ -4,9 +4,9 @@ tasks:
   release:
     dotenv: ['.env']
     cmds:
-      - yarn workspaces foreach -t version minor
+      # - yarn workspaces foreach --topological-dev version minor
       - yarn version check --interactive
-      - yarn version apply --all -R
-      - yarn release-build
-      - yarn workspaces foreach --exclude=likec4-workspaces --exclude="@likec4/example-bigbank" --exclude="@likec4/docs-website" --exclude="likec4-vscode" --exclude="@likec4/vscode-preview" npm publish
+      - yarn compile && yarn clean && yarn build:release
+      - yarn version apply --all
+      - yarn workspaces foreach --topological-dev --no-private --exclude=likec4-vscode npm publish
       - yarn clean:after:publish

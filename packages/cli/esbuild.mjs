@@ -1,40 +1,41 @@
 import * as esbuild from 'esbuild'
 import { formatMessagesSync } from 'esbuild'
-import { vanillaExtractPlugin } from '@vanilla-extract/esbuild-plugin'
-import packageJson from './package.json' assert { type: 'json' }
 
 const watch = process.argv.includes('--watch')
 
 /**
  * @type {esbuild.BuildOptions}
  */
-const cfg = {
-  entryPoints: ['src/index.ts', 'src/browser/index.ts', 'src/embedded/index.ts'],
-  plugins: [
-    vanillaExtractPlugin({
-      // runtime: true
-    })
-  ],
-  mainFields: ['browser', 'module', 'main'],
-  tsconfig: 'tsconfig.build.json',
+const options = {
+  entryPoints: ['src/cli.ts'],
+  outfile: 'dist/likec4.js',
   logLevel: 'info',
+  mainFields: ['module', 'main'],
+  bundle: true,
+  format: 'iife',
+  target: 'node16',
+  platform: 'node',
+  define: {
+    'process.env.NODE_ENV': 'production'
+  },
+  alias: {
+    'vscode-uri': 'vscode-uri/lib/esm/index.js',
+    langium: 'langium/src/index.ts',
+    'langium/node': 'langium/src/node/index.ts',
+    'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
+    'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
+  },
   color: true,
   allowOverwrite: true,
-  chunkNames: 'chunks/[name]-[hash]',
-  bundle: true,
-  splitting: true,
-  platform: 'browser',
-  format: 'esm',
-  outdir: 'dist',
   sourcemap: false,
   sourcesContent: false,
   treeShaking: true,
-  external: [...Object.keys(packageJson.dependencies), ...Object.keys(packageJson.peerDependencies)]
+  minify: true
 }
 
 if (!watch) {
-  const bundle = await esbuild.build(cfg)
-  if (bundle.errors.length || bundle.warnings.length) {
+  const bundle = await esbuild.build(options)
+  if (bundle.warnings.length || bundle.errors.length) {
     console.error(
       [
         ...formatMessagesSync(bundle.warnings, {
@@ -55,6 +56,6 @@ if (!watch) {
   process.exit(0)
 }
 
-const ctx = await esbuild.context(cfg)
+const ctx = await esbuild.context(options)
 await ctx.watch()
 console.info(' 👀 watching...')

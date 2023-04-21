@@ -1,6 +1,6 @@
 {
   "name": "@likec4/language-protocol",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
@@ -14,8 +14,8 @@
     "directory": "packages/language-protocol"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
-    "release:build": "tsc",
+    "compile": "tsc --emitDeclarationOnly",
+    "build:release": "tsc",
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",

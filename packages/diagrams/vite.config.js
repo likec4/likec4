@@ -5,16 +5,17 @@ import packageJson from './package.json'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      jsxRuntime: 'classic'
-    })
+    react()
   ],
   build: {
     cssCodeSplit: false,
     lib: {
       formats: ['es', 'cjs'],
-      entry: 'src/index.ts',
-      fileName: ext => `index.${ext}.js`
+      entry: [
+        'src/index.ts',
+        'src/browser/index.ts',
+        'src/embedded/index.ts'
+      ]
     },
     target: 'esnext',
     rollupOptions: {
@@ -24,13 +25,6 @@ export default defineConfig({
         ...Object.keys(packageJson.dependencies),
         ...Object.keys(packageJson.peerDependencies)
       ]
-      // output: {
-      //   // Provide global variables to use in the UMD build
-      //   // for externalized deps
-      //   globals: {
-      //     vue: 'Vue',
-      //   },
-      // },
     }
   }
 })

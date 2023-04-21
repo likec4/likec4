@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "publisher": "likec4",
   "displayName": "LikeC4 Architecture Modeling",
   "description": "Support for the LikeC4 modeling language",
@@ -33,8 +33,7 @@
   "scripts": {
     "build:vscode": "run -T build --filter='likec4-vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
-    "release:build": "yarn node esbuild.mjs --minify && run copy",
-    "vscode:prepublish": "run -T turbo run release:build --filter='likec4-vscode...'",
+    "build:release": "yarn node esbuild.mjs --minify && run copy",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r $INIT_CWD/../vscode-preview/dist/* dist/preview/",
@@ -127,6 +126,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^2.19.0",
     "esbuild": "^0.17.17",
     "froebel": "^0.23.2",
     "langium": "^1.1.0",

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -24,8 +24,8 @@
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
-    "release:build": "tsc -p tsconfig.esm.json",
+    "compile": "tsc --emitDeclarationOnly",
+    "build:release": "tsc -p tsconfig.esm.json",
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",

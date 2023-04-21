@@ -14,8 +14,8 @@
     "node_modules",
     "dist",
     "src/test",
-    "__mocks__",
-    "__test__",
+    "**/__mocks__/",
+    "**/__test__/",
     "**/*.spec.ts"
   ]
 }

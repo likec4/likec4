@@ -2,8 +2,14 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "compile": {
-      "dependsOn": ["^build"],
-      "outputs": []
+      "dependsOn": ["^compile"],
+      "outputs": [
+        "dist/**",
+        "contrib/**"
+      ],
+      "inputs": [
+        "src/**"
+      ]
     },
     "build": {
       "outputMode": "new-only",
@@ -15,6 +21,10 @@
         "dist/**",
         "contrib/**"
       ]
+    },
+    "build:release": {
+      "dependsOn": ["^build:release"],
+      "cache": false
     },
     "lint": {
       "outputs": []
@@ -33,9 +43,6 @@
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "release:build": {
-      "dependsOn": ["^release:build"]
     }
   }
 }

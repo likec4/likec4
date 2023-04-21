@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.6.3",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "compile": "tsc --noEmit",
-    "release:build": "vite build --mode production",
+    "build:release": "vite build --mode production",
     "build": "vite build",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",

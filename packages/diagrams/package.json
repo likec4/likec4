@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
@@ -46,8 +46,8 @@
     "access": "public"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
-    "release:build": "run-s 'clean' 'build'",
+    "compile": "tsc --emitDeclarationOnly",
+    "build:release": "run-s 'clean' 'build'",
     "build:ts": "yarn node esbuild.mjs",
     "build:tsd": "tsc -p tsconfig.build.json",
     "build": "run-s 'build:ts' 'build:tsd'",
