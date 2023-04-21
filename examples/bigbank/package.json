@@ -1,7 +1,7 @@
 {
   "name": "@likec4/example-bigbank",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.6.1",
   "packageManager": "yarn@3.4.1",
   "scripts": {
     "generate": "likec4 generate --target views-data --output src/likec4.data.ts",

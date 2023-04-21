@@ -8,11 +8,12 @@ import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
-import {
+import type {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification,
+  ParsedAstSpecification} from '../ast';
+import {
   toAutoLayout
 } from '../ast'
 import {
@@ -30,7 +31,7 @@ import {
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { Rpc } from '../protocol'
+import { Rpc } from '@likec4/language-protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
 
@@ -404,6 +405,6 @@ export class LikeC4ModelBuilder {
       return
     }
     logger.debug('Send onDidChangeModel')
-    await connection.sendNotification(Rpc.onDidChangeModel, null)
+    await connection.sendNotification(Rpc.onDidChangeModel)
   }
 }

@@ -8,7 +8,6 @@
   },
   "files": [
     "src/index.ts",
-    "src/protocol.ts",
     "src/builtin.ts"
   ],
   "exclude": [

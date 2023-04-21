@@ -1,7 +1,7 @@
 import type { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
 import { logger } from './logger'
-import { Rpc } from './protocol'
+import { buildDocuments, fetchLikeC4Model, locateElement, locateRelation, locateView } from '@likec4/language-protocol'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
@@ -12,7 +12,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   const modelLocator = services.likec4.ModelLocator
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
 
-  connection.onRequest(Rpc.fetchModel, async _cancelToken => {
+  connection.onRequest(fetchLikeC4Model, async _cancelToken => {
     let model
     try {
       model = modelBuilder.buildModel() ?? null
@@ -25,7 +25,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     })
   })
 
-  connection.onRequest(Rpc.buildDocuments, async (docs, cancelToken) => {
+  connection.onRequest(buildDocuments, async (docs, cancelToken) => {
     const changed = [] as URI[]
     for (const d of docs) {
       const uri = d as unknown as URI
@@ -41,15 +41,27 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })
 
-  connection.onRequest(Rpc.locateElement, ({ element, property }, _cancelToken) => {
-    return modelLocator.locateElement(element, property)
+  connection.onRequest(locateElement, async ({element, property}, _cancelToken) => {
+    try {
+      return Promise.resolve(modelLocator.locateElement(element, property ?? 'name'))
+    } catch (e) {
+      return Promise.reject(e) as never
+    }
   })
 
-  connection.onRequest(Rpc.locateRelation, ({ id }, _cancelToken) => {
-    return modelLocator.locateRelation(id)
+  connection.onRequest(locateRelation, ({ id }, _cancelToken) => {
+    try {
+      return Promise.resolve(modelLocator.locateRelation(id))
+    } catch (e) {
+      return Promise.reject(e) as never
+    }
   })
 
-  connection.onRequest(Rpc.locateView, ({ id }, _cancelToken) => {
-    return modelLocator.locateView(id)
+  connection.onRequest(locateView, ({ id }, _cancelToken) => {
+    try {
+      return Promise.resolve(modelLocator.locateView(id))
+    } catch (e) {
+      return Promise.reject(e) as never
+    }
   })
 }

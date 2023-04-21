@@ -18,5 +18,3 @@ export { LikeC4LanguageMetaData as LanguageMetaData } from './generated/module'
 //   startLangiumLanguageServer(shared)
 //   return likec4
 // }
-
-export { Rpc } from './protocol'

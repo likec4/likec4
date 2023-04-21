@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "license": "MIT",
   "type": "module",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -21,7 +21,6 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./protocol": "./src/protocol.ts",
     "./builtin": "./src/builtin.ts"
   },
   "publishConfig": {
@@ -35,11 +34,6 @@
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js",
         "require": "./dist/index.cjs"
-      },
-      "./protocol": {
-        "types": "./dist/protocol.d.ts",
-        "import": "./dist/protocol.js",
-        "require": "./dist/protocol.cjs"
       },
       "./builtin": {
         "types": "./dist/builtin.d.ts",
@@ -65,16 +59,24 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/language-protocol": "workspace:*",
     "@mobily/ts-belt": "^3.13.1",
-    "langium": "^1.1.0",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.0",
     "strip-indent": "^4.0.0",
     "tiny-invariant": "^1.3.1",
     "type-fest": "^3.8.0",
-    "vscode-languageserver-protocol": "3.17.2",
-    "vscode-uri": "3.0.7"
+    "vscode-uri": "~3.0.7"
+  },
+  "peerDependencies": {
+    "langium": "^1.1.0",
+    "vscode-languageserver-protocol": "~3.17.2"
+  },
+  "peerDependenciesMeta": {
+    "vscode-languageserver-protocol": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
