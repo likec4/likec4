@@ -25,7 +25,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     })
   })
 
-  connection.onRequest(buildDocuments, async (docs, cancelToken) => {
+  connection.onRequest(buildDocuments, async ({docs}, cancelToken) => {
     const changed = [] as URI[]
     for (const d of docs) {
       const uri = d as unknown as URI

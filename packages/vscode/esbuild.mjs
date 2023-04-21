@@ -7,11 +7,11 @@ const minify = process.argv.includes('--minify')
 const watch = process.argv.includes('--watch')
 
 const alias = {
-  'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  'langium': 'langium/src/index.ts',
-  'langium/node': 'langium/src/node/index.ts',
-  'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
-  'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
+  // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
+  // 'langium': 'langium/src/index.ts',
+  // 'langium/node': 'langium/src/node/index.ts',
+  // 'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
+  // 'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
 }
 
 /**
@@ -25,7 +25,7 @@ const nodeCfg = {
   metafile: true,
   logLevel: 'info',
   outdir: 'dist',
-  mainFields: ['browser', 'module', 'main'],
+  // mainFields: ['browser', 'module', 'main'],
   bundle: true,
   external: ['vscode'],
   format: 'cjs',
@@ -58,7 +58,7 @@ const webCfg = {
   target: 'es2020',
   platform: 'browser',
   external: ['vscode'],
-  mainFields: ['browser', 'module', 'main'],
+  // mainFields: ['browser', 'module', 'main'],
   alias: {
     path: 'path-browserify',
     ...alias

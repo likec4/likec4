@@ -8,7 +8,11 @@ export const onDidChangeLikeC4Model = new NotificationType0('likec4/onDidChangeM
 
 //#region To server
 export const fetchLikeC4Model = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
-export const buildDocuments = new RequestType<DocumentUri[], void, void>('likec4/buildDocuments')
+
+export interface BuildDocumentsParams {
+  docs: DocumentUri[]
+}
+export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/buildDocuments')
 
 export interface LocateElementParams {
   element: Fqn

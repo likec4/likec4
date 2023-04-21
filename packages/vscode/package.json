@@ -108,11 +108,22 @@
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
       }
-    }
+    },
+    "commands": [
+      {
+        "command": "likec4.open-preview",
+        "title": "Open Preview",
+        "category": "LikeC4"
+      },
+      {
+        "command": "likec4.open-d2",
+        "title": "Open D2 Preview",
+        "category": "LikeC4"
+      }
+    ]
   },
   "activationEvents": [
     "onLanguage:likec4",
-    "onCommand:likec4.open-preview",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "./dist/extension-node.js",

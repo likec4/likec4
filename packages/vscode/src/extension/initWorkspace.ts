@@ -41,7 +41,7 @@ export async function initWorkspace(client: LanguageClient) {
   }
   await delay(500)
   const uris = docs.map(d => d.toString())
-  await client.sendRequest(buildDocuments, uris)
+  await client.sendRequest(buildDocuments, { docs: uris })
   return uris
 }
 initWorkspace.inject = [di.client] as const

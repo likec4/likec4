@@ -10,7 +10,6 @@ const options = {
   entryPoints: ['src/cli.ts'],
   outfile: 'dist/likec4.js',
   logLevel: 'info',
-  mainFields: ['module', 'main'],
   bundle: true,
   format: 'iife',
   target: 'node16',
@@ -19,11 +18,8 @@ const options = {
     'process.env.NODE_ENV': 'production'
   },
   alias: {
-    'vscode-uri': 'vscode-uri/lib/esm/index.js',
     langium: 'langium/src/index.ts',
-    'langium/node': 'langium/src/node/index.ts',
-    'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
-    'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
+    'langium/node': 'langium/src/node/index.ts'
   },
   color: true,
   allowOverwrite: true,

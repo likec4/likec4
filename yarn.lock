@@ -9206,7 +9206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver@npm:8.0.2, vscode-languageserver@npm:~8.0.2":
+"vscode-languageserver@npm:8.0.2":
   version: 8.0.2
   resolution: "vscode-languageserver@npm:8.0.2"
   dependencies:

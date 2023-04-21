@@ -20,15 +20,21 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
+      "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*.js"
+        "${workspaceFolder}/packages/*/dist/**/*.js"
       ],
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/bigbank",
       ],
-      "preLaunchTask": "npm: build:vscode - packages/vscode",
-      "autoAttachChildProcesses": true
+      "skipFiles": [
+        "**/node_modules/**",
+        "**/vs/workbench/**",
+        "<node_internals>/**"
+      ],
+      "autoAttachChildProcesses": true,
+      "preLaunchTask": "npm: build - packages/vscode",
     },
     {
       "name": "Run Web Extension in VS Code",
