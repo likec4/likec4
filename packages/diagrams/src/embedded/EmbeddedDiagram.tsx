@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { DiagramNode, DiagramView } from '@likec4/core/types'
-import { useMeasure, useToggle } from '@react-hookz/web/esm'
-import { useCallback, useMemo, type CSSProperties } from 'react'
-import invariant from 'tiny-invariant'
-import { LazyDiagramBrowser } from '../browser/lazy'
-import { LazyDiagram } from '../diagram/lazy'
+import type { DiagramView } from '@likec4/core/types'
+import { useMeasure } from '@react-hookz/web/esm'
+import { useMemo, type CSSProperties } from 'react'
+import { Diagram } from '../diagram'
 import type { DiagramPaddings } from '../diagram/types'
-import { cssEmbeddedContainer } from './embedded.css'
 
 export interface EmbeddedDiagramProps<
   Views extends Record<any, DiagramView>,
@@ -29,9 +26,8 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
   const [measures, containerRef] = useMeasure<HTMLDivElement>()
 
   const diagram = views[viewId]
-  invariant(diagram, `View with id "${viewId}" not found`)
-  const w = Math.ceil(diagram.width)
-  const h = Math.ceil(diagram.height)
+  const w = Math.ceil(diagram?.width ?? 10)
+  const h = Math.ceil(diagram?.height ?? 10)
 
   const style = useMemo(
     (): CSSProperties => ({
@@ -54,22 +50,16 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
     [w, h]
   )
 
-  const [isBrowserOpen, toggleBrowser] = useToggle(false)
-
-  const onNodeClick = useCallback((_node: DiagramNode) => {
-    toggleBrowser(true)
-  }, [])
-
   return (
     <>
       <div className={className} style={style}>
         <div
           ref={containerRef}
-          className={cssEmbeddedContainer}
           style={{ flex: '1 1 100%', overflow: 'hidden' }}
         >
-          {measures && (
-            <LazyDiagram
+          {!diagram && <div style={{margin: '1rem 0', background: '#AA00005b'}}>Diagram not found</div>}
+          {measures && diagram && (
+            <Diagram
               animate
               className={diagramClassName}
               diagram={diagram}
@@ -78,16 +68,9 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
               pannable={false}
               zoomable={false}
               padding={padding}
-              onNodeClick={onNodeClick}
             />
           )}
         </div>
-        {/* <div className={cssMagnifyingGlass}>
-        <MagnifyingGlassPlus width={24} />
-      </div> */}
-        {isBrowserOpen && (
-          <LazyDiagramBrowser views={views} selected={viewId} onClose={toggleBrowser} />
-        )}
       </div>
     </>
   )

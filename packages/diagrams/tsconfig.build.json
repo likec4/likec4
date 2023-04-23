@@ -4,8 +4,8 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "dist",
-    "jsx": "react-jsx"
+    "declarationDir": "dist/types",
+    "jsx": "preserve"
   },
   "files": ["src/index.ts", "src/embedded/index.ts", "src/browser/index.ts"]
 }

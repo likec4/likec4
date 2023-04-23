@@ -6,7 +6,8 @@
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -15,23 +16,24 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
       "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./embedded": {
-      "types": "./dist/embedded/index.d.ts",
-      "import": "./dist/embedded/index.js",
-      "default": "./dist/embedded/index.js"
+      "types": "./src/embedded/index.ts",
+      "import": "./dist/embedded.js",
+      "require": "./dist/embedded.cjs"
     },
     "./browser": {
-      "types": "./dist/browser/index.d.ts",
-      "import": "./dist/browser/index.js",
-      "default": "./dist/browser/index.js"
+      "types": "./src/browser/index.ts",
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.cjs"
     },
     "./src/*": [
       "./src/*",
@@ -39,7 +41,7 @@
       "./src/*.tsx",
       "./src/*/index.ts"
     ],
-    "./dist/index.css": "./dist/index.css"
+    "./dist/style.css": "./dist/style.css"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -47,11 +49,11 @@
   },
   "scripts": {
     "compile": "tsc --emitDeclarationOnly",
-    "build:release": "run-s 'clean' 'build'",
-    "build:ts": "yarn node esbuild.mjs",
+    "build:release": "run-s 'build:ts' 'build:tsd'",
+    "build:ts": "yarn vite build --mode=production",
     "build:tsd": "tsc -p tsconfig.build.json",
     "build": "run-s 'build:ts' 'build:tsd'",
-    "dev:ts": "run build:ts --watch",
+    "dev:ts": "yarn vite build --watch",
     "dev:tsd": "run build:tsd --watch",
     "dev": "run-p 'dev:*'",
     "lint": "run -T eslint src/ --fix",
@@ -63,14 +65,8 @@
     "react-konva": "^18.2.7"
   },
   "peerDependencies": {
-    "@likec4/core": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  },
-  "peerDependenciesMeta": {
-    "@likec4/core": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
@@ -82,10 +78,9 @@
     "@types/react-dom": "^18.0.11",
     "@vanilla-extract/css": "^1.11.0",
     "@vanilla-extract/dynamic": "^2.0.3",
-    "@vanilla-extract/esbuild-plugin": "^2.2.2",
     "@vanilla-extract/recipes": "^0.4.0",
+    "@vanilla-extract/vite-plugin": "^3.8.0",
     "clsx": "^1.2.1",
-    "esbuild": "^0.17.17",
     "khroma": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "polished": "^4.2.2",
@@ -94,6 +89,7 @@
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
     "tiny-invariant": "^1.3.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vite": "^4.2.2"
   }
 }

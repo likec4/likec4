@@ -7,8 +7,9 @@
     "moduleResolution": "bundler",
     "outDir": "dist",
     "declaration": true,
-    "declarationDir": "dist",
-    "jsx": "react-jsxdev",
+    "declarationDir": "dist/types",
+    "importsNotUsedAsValues": "remove",
+    "jsx": "preserve",
     "jsxImportSource": "react"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

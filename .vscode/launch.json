@@ -46,11 +46,16 @@
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples/bigbank",
       ],
+      "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/packages/vscode/dist/**/*.js"
+        "${workspaceFolder}/packages/*/dist/**/*.js"
       ],
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "preLaunchTask": "npm: build:vscode - packages/vscode"
+      "skipFiles": [
+        "**/node_modules/**",
+        "**/vs/workbench/**",
+        "<node_internals>/**"
+      ],
+      "preLaunchTask": "npm: build - packages/vscode"
     }
   ]
 }

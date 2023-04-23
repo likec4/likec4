@@ -4,7 +4,7 @@ import { useMeasure } from '@react-hookz/web/esm'
 import { useCallback, useState } from 'react'
 import invariant from 'tiny-invariant'
 import { Dialog, DialogContent } from '../components/ui/dialog'
-import { LazyDiagram } from '../diagram/lazy'
+import { Diagram } from '../diagram'
 import { browserContent, dialogContent } from './browser.css'
 import type { DiagramPaddings } from '../diagram/types'
 
@@ -58,7 +58,7 @@ export function DiagramBrowser<Views extends Record<any, DiagramView>>({
       <DialogContent className={dialogContent}>
         <div ref={cntainerRef} className={browserContent}>
           {measures && (
-            <LazyDiagram
+            <Diagram
               animate
               interactive
               diagram={diagram}
