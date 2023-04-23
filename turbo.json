@@ -20,6 +20,10 @@
         "contrib/**"
       ]
     },
+    "@likec4/docs-website#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "out/**"]
+    },
     "build:release": {
       "dependsOn": ["^build:release"],
       "cache": false

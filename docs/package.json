@@ -17,7 +17,7 @@
     "dev": "run generate && next dev",
     "build": "run generate && next build",
     "start": "next start",
-    "clean": "run -T rimraf .next"
+    "clean": "run -T rimraf .next out"
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",

@@ -20,12 +20,12 @@ const withNextra = nextra({
             {
               id: 'likec4',
               scopeName: 'source.likec4',
-              path: resolve('contrib', 'likec4.tmLanguage.json')
+              path: resolve('resources', 'likec4.tmLanguage.json')
             },
             {
               id: 'structurizr',
               scopeName: 'source.structurizr',
-              path: resolve('contrib', 'structurizr.tmLanguage.json')
+              path: resolve('resources', 'structurizr.tmLanguage.json')
             }
           ]
         })
@@ -36,7 +36,6 @@ const withNextra = nextra({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  distDir: '.next',
   images: {
     unoptimized: true
   }
