@@ -1,8 +1,186 @@
 import { Bleed } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra-theme-docs'
 
-# Model
+# Model Grammar
 
-## Example
+Specification, elements and relations are defined in the model.  
+Maybe split into multiple files.
+
+<Tabs items={['single', 'multiple']}>
+  <Tab>
+    ```likec4 filename="single-file.c4"
+    specification {
+
+      element system
+      
+    }
+  
+    model {
+
+      system1 = system "System 1" {
+        // ...
+      }
+
+      system2 = system "System 2" {
+        // ...
+      }
+
+    }  
+    ```  
+  </Tab>
+  <Tab>
+    ```likec4 filename="specification.c4"
+    specification {
+
+      element system
+      
+    }  
+    ```
+
+    ```likec4 filename="model-1.c4"
+    model {
+       
+      system1 = system "System 1" {
+        // ...
+      }
+    }  
+    ```
+    
+    ```likec4 filename="model-2.c4"
+    model {
+       
+      system2 = system "System 2" {
+        // ...
+      }
+    }  
+    ```  
+  </Tab>
+</Tabs>
+
+
+## Specification
+
+The block `specification` defines the elements types that can be used in a model.  
+The style can be overridden for the whole element type.
+
+Example:
+
+```likec4
+specification {
+
+  element cloud
+  element system
+
+  element user {
+    style {
+      shape person
+    }
+  }
+
+  // Whatever you want
+  element application
+  element component
+  element microservice
+  element queue
+  element graphqlMutation
+
+  element database {
+    style {
+      shape storage
+      color secondary
+    }
+  }
+
+}
+```
+
+**Element Style:** Shape
+
+| shape        | example |
+| :------------ | :---------: |
+| rectangle (default)       |
+| storage, cylinder |    ~~Text~~ |
+| person     |  And more |
+| queue |      ~~Text~~ |
+
+**Element Style:** Color
+
+| color        | example |
+| :------------ | :---------: |
+| primary (default)       |
+| secondary |    |
+| muted     |  |
+
+
+
+## Model
+
+### Elements
+
+| Abstract grammar |
+| :--------|
+| _{'<'}element_type{'>'}_ **ID** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
+| **ID** **'='** _{'<'}element_type{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  |
+
+```likec4 filename="inline-elements.c4"
+specification {
+  element component
+}
+
+// Inline elements
+model {
+  // without title
+  component restApi
+  // or use '='
+  restApi = component
+
+  //  with title
+  component legacyApi 'Legacy API'
+  legacyApi = component 'Legacy API'
+
+  // with title and description
+  component legacyApi 'Legacy API' 'Component description'
+}
+```
+
+### Nested elements 
+
+Any element can contain other elements and becomes a container if has the `{`...`}` block.
+
+```likec4 filename="nested-elements.c4"
+specification {
+  element service
+  element component
+}
+
+// Nested elements
+model {
+
+  service service1 'Service 1' {
+    component backend {
+      component api 'Rest API'
+    }
+    component frontend
+  }
+
+  // or use '=' (or even both)
+
+  service2 = service 'Service 2' {    
+    component backend {
+      api = component 'GraphQL API'
+    }
+    component frontend
+  }
+}
+```
+
+### Relations
+
+...
+
+### Extends
+
+...
 
 ```likec4
 model {
@@ -41,10 +219,6 @@ model {
 }
 ```
 
-## Elements
-
-...
-
-## Relations
+## References scope
 
 ...

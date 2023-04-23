@@ -22,6 +22,17 @@
       }
     },
     {
+      "match": "\\b(component|service)\\s+([^\\W]+)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
       "match": "\\b(shape|color):?\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
