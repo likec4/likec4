@@ -12,6 +12,7 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
+    "turbo-build": "run -T turbo run build --filter='docs-website...'",
     "generate": "likec4 generate --target react --output components/likec4/generated.tsx ./likec4",
     "dev": "run generate && next dev",
     "build": "run generate && next build",
@@ -31,10 +32,9 @@
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
-    "canvas": "^2.11.2",
     "typescript": "^5.0.4"
   },
   "installConfig": {
-    "hoistingLimits": "dependencies"
+    "hoistingLimits": "workspaces"
   }
 }

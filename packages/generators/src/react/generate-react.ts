@@ -56,17 +56,17 @@ export function generateReact(views: DiagramView[]) {
     })
     .append('} as const', NL, NL).appendTemplate`
       export type LikeC4ViewsData = typeof LikeC4ViewsData
-      export type ViewId = keyof LikeC4ViewsData
-      export function isViewId(value: unknown): value is ViewId {
+      export type LikeC4ViewId = keyof LikeC4ViewsData
+      export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
         return typeof value === 'string' && value in LikeC4ViewsData
       }
 
-      export type LikeC4ViewProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, ViewId>, 'views'>;
+      export type LikeC4ViewProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, LikeC4ViewId>, 'views'>;
       export function LikeC4View(props: LikeC4ViewProps) {
         return <EmbeddedDiagram views={LikeC4ViewsData} {...props}/>
       }
 
-      type LikeC4ViewsProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, ViewId>, 'views' | 'viewId'>
+      type LikeC4ViewsProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, LikeC4ViewId>, 'views' | 'viewId'>
       export const LikeC4Views = {
     `
     .append(NL)

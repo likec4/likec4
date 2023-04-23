@@ -31,7 +31,7 @@
     "dependencies": false
   },
   "scripts": {
-    "build:vscode": "run -T build --filter='likec4-vscode...'",
+    "build:vscode": "run -T turbo run build --filter='likec4-vscode...'",
     "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "build:release": "yarn node esbuild.mjs --minify && run copy",
     "compile": "tsc -noEmit",
@@ -138,7 +138,7 @@
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^2.19.0",
-    "esbuild": "^0.17.17",
+    "esbuild": "^0.17.18",
     "froebel": "^0.23.2",
     "langium": "^1.1.0",
     "nanoid": "^4.0.2",

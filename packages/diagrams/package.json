@@ -18,20 +18,20 @@
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./src/index.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./embedded": {
-      "types": "./src/embedded/index.ts",
+      "types": "./dist/types/embedded/index.d.ts",
       "import": "./dist/embedded.js",
       "require": "./dist/embedded.cjs"
     },
     "./browser": {
-      "types": "./src/browser/index.ts",
+      "types": "./dist/types/browser/index.d.ts",
       "import": "./dist/browser.js",
       "require": "./dist/browser.cjs"
     },
@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@react-spring/konva": "^9.7.2",
-    "konva": "^9.0.0",
+    "konva": "^9.0.1",
     "react-konva": "^18.2.7"
   },
   "peerDependencies": {

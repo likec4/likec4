@@ -7,7 +7,11 @@ const withNextra = nextra({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // transpilePackages: ['@likec4/diagrams'],
+  output: 'export',
+  distDir: 'dist',
+  images: {
+    unoptimized: true,
+  }
 }
 
 export default withNextra(nextConfig)

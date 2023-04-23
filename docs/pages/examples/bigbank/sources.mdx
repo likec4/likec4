@@ -5,9 +5,14 @@ import { Tab, Tabs } from 'nextra-theme-docs'
 
 This example is based on the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown.
 
-<Tabs items={['spec.c4', 'bigbank.c4']}>
+<Tabs items={['specification', 'model and views']}>
   <Tab>
-    ```
+
+    Defines allowed element types and their styles.
+
+    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
+
+    ```js filename="specification.c4"
     specification {
 
       element enterprise
@@ -30,10 +35,14 @@ This example is based on the [Big Bank C4 model](https://structurizr.com/dsl?exa
 
     }
     ```
-    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
   </Tab>
   <Tab>
-    ```
+
+    Defines architecture model, elements, composition and relationships and views.
+
+    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
+
+    ```js filename="bigbank.c4"
     model {
 
       customer = person "Personal Banking Customer" {
@@ -254,6 +263,5 @@ This example is based on the [Big Bank C4 model](https://structurizr.com/dsl?exa
       }
     }
 ```
-    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
   </Tab>
 </Tabs>

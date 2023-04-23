@@ -15,8 +15,16 @@ const options = {
   target: 'node16',
   platform: 'node',
   alias: {
-    langium: 'langium/src/index.ts',
-    'langium/node': 'langium/src/node/index.ts'
+    'langium': 'langium/src/index.ts',
+    'langium/node': 'langium/src/node/index.ts',
+    "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
+    "@likec4/core/utils": '../core/src/utils/index.ts',
+    "@likec4/core/types": '../core/src/types/index.ts',
+    "@likec4/core": '../core/src/index.ts',
+    "@likec4/generators": '../generators/src/index.ts',
+    "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
+    "@likec4/language-server": '../language-server/src/index.ts',
+    "@likec4/layouts": '../layouts/src/index.ts'
   },
   color: true,
   allowOverwrite: true,

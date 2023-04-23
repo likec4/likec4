@@ -23,43 +23,32 @@
     "test:watch": "vitest",
     "clean": "run -T rimraf dist"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/index.js",
+  "moduke": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types/index.ts",
-    "./utils": "./src/utils/index.ts",
-    "./compute-view": "./src/compute-view/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
+    },
+    "./compute-view": {
+      "types": "./dist/compute-view/index.d.ts",
+      "default": "./dist/compute-view/index.js"
+    }
   },
   "sideEffects": false,
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      },
-      "./types": {
-        "types": "./dist/types/index.d.ts",
-        "import": "./dist/types/index.js",
-        "require": "./dist/types/index.cjs"
-      },
-      "./utils": {
-        "types": "./dist/utils/index.d.ts",
-        "import": "./dist/utils/index.js",
-        "require": "./dist/utils/index.cjs"
-      },
-      "./compute-view": {
-        "types": "./dist/compute-view/index.d.ts",
-        "import": "./dist/compute-view/index.js",
-        "require": "./dist/compute-view/index.cjs"
-      }
-    }
+    "access": "public"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.12",
