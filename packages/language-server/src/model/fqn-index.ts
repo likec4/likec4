@@ -18,7 +18,7 @@ export class FqnIndex {
   constructor(private services: LikeC4Services) {
     this.descriptions = services.workspace.AstNodeDescriptionProvider
     services.shared.workspace.DocumentBuilder.onUpdate((_changed, removed) => {
-      for (const uri of [...removed]) {
+      for (const uri of [..._changed, ...removed]) {
         this.cleanIndexedElements(uri)
       }
     })

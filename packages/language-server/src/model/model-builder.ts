@@ -144,7 +144,7 @@ export class LikeC4ModelBuilder {
           title = elements[view.viewOf]?.title
         }
         return {
-          ...omit(['astPath', 'rules', 'tite'], view),
+          ...omit(['astPath', 'rules', 'title'], view),
           ...(!!title ? { title } : {}),
           rules: clone(view.rules)
         }
