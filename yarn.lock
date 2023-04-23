@@ -892,6 +892,7 @@ __metadata:
     nextra-theme-docs: ^2.4.0
     react: ^18.2.0
     react-dom: ^18.2.0
+    remark-code-import: ^1.1.1
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
@@ -1868,7 +1869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/unist@npm:*, @types/unist@npm:^2.0.0":
+"@types/unist@npm:*, @types/unist@npm:^2.0.0, @types/unist@npm:^2.0.2":
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
@@ -7430,6 +7431,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remark-code-import@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "remark-code-import@npm:1.1.1"
+  dependencies:
+    strip-indent: ^4.0.0
+    to-gatsby-remark-plugin: ^0.1.0
+    unist-util-visit: ^4.1.0
+  checksum: b202d10513c3babac1f32082921effbf966c1c92482d8d362e5d2e49d660f2e6cdafa8f975d28ec9a4c9f7b57c6a9836367e00a64e9034a68599990d5b321ef8
+  languageName: node
+  linkType: hard
+
 "remark-gfm@npm:^3.0.1":
   version: 3.0.1
   resolution: "remark-gfm@npm:3.0.1"
@@ -8342,12 +8354,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"to-gatsby-remark-plugin@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "to-gatsby-remark-plugin@npm:0.1.0"
+  dependencies:
+    to-vfile: ^6.1.0
+  checksum: c603a1812085b07b1d4b6150fc887bc6dae658094c62e332061c3e9615305c1d3f5969b14bda37f10a83db03764dfbe98328d28fce0b071c8aef359950a7c27a
+  languageName: node
+  linkType: hard
+
 "to-regex-range@npm:^5.0.1":
   version: 5.0.1
   resolution: "to-regex-range@npm:5.0.1"
   dependencies:
     is-number: ^7.0.0
   checksum: f76fa01b3d5be85db6a2a143e24df9f60dd047d151062d0ba3df62953f2f697b16fe5dad9b0ac6191c7efc7b1d9dcaa4b768174b7b29da89d4428e64bc0a20ed
+  languageName: node
+  linkType: hard
+
+"to-vfile@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "to-vfile@npm:6.1.0"
+  dependencies:
+    is-buffer: ^2.0.0
+    vfile: ^4.0.0
+  checksum: 7331aecca00d591bb904277e7ba65b9a12275a4ab035b1dd2cf21ec22f27cca4d0ee9802e73485e9c4bd8a4ca219c740a3ff724413327fb51c784466c8be18fc
   languageName: node
   linkType: hard
 
@@ -8708,6 +8739,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unist-util-stringify-position@npm:^2.0.0":
+  version: 2.0.3
+  resolution: "unist-util-stringify-position@npm:2.0.3"
+  dependencies:
+    "@types/unist": ^2.0.2
+  checksum: f755cadc959f9074fe999578a1a242761296705a7fe87f333a37c00044de74ab4b184b3812989a57d4cd12211f0b14ad397b327c3a594c7af84361b1c25a7f09
+  languageName: node
+  linkType: hard
+
 "unist-util-stringify-position@npm:^3.0.0":
   version: 3.0.3
   resolution: "unist-util-stringify-position@npm:3.0.3"
@@ -8748,7 +8788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unist-util-visit@npm:^4.0.0, unist-util-visit@npm:^4.1.1":
+"unist-util-visit@npm:^4.0.0, unist-util-visit@npm:^4.1.0, unist-util-visit@npm:^4.1.1":
   version: 4.1.2
   resolution: "unist-util-visit@npm:4.1.2"
   dependencies:
@@ -8879,6 +8919,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vfile-message@npm:^2.0.0":
+  version: 2.0.4
+  resolution: "vfile-message@npm:2.0.4"
+  dependencies:
+    "@types/unist": ^2.0.0
+    unist-util-stringify-position: ^2.0.0
+  checksum: 1bade499790f46ca5aba04bdce07a1e37c2636a8872e05cf32c26becc912826710b7eb063d30c5754fdfaeedc8a7658e78df10b3bc535c844890ec8a184f5643
+  languageName: node
+  linkType: hard
+
 "vfile-message@npm:^3.0.0":
   version: 3.1.4
   resolution: "vfile-message@npm:3.1.4"
@@ -8886,6 +8936,18 @@ __metadata:
     "@types/unist": ^2.0.0
     unist-util-stringify-position: ^3.0.0
   checksum: d0ee7da1973ad76513c274e7912adbed4d08d180eaa34e6bd40bc82459f4b7bc50fcaff41556135e3339995575eac5f6f709aba9332b80f775618ea4880a1367
+  languageName: node
+  linkType: hard
+
+"vfile@npm:^4.0.0":
+  version: 4.2.1
+  resolution: "vfile@npm:4.2.1"
+  dependencies:
+    "@types/unist": ^2.0.0
+    is-buffer: ^2.0.0
+    unist-util-stringify-position: ^2.0.0
+    vfile-message: ^2.0.0
+  checksum: ee5726e10d170472cde778fc22e0f7499caa096eb85babea5d0ce0941455b721037ee1c9e6ae506ca2803250acd313d0f464328ead0b55cfe7cb6315f1b462d6
   languageName: node
   linkType: hard
 

@@ -78,8 +78,7 @@ model {
         }
 
       }
-      database database {
-        title: "Database"
+      database = database "Database" {
         description: "Stores user registration information, hashed authentication credentials, access logs, etc."
         technology: "Oracle Database Schema"
       }

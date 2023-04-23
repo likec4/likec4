@@ -1,6 +1,9 @@
 {
-  "concepts": {
-    "title": "Concepts"
+  "index": {
+    "title": "Grammar"
+  },
+  "specification": {
+    "title": "Specification"
   },
   "model": {
     "title": "Model"

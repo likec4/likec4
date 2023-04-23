@@ -31,8 +31,8 @@
     "dependencies": false
   },
   "scripts": {
-    "build:vscode": "run -T turbo run build --filter='likec4-vscode...'",
-    "open-web": "yarn build:vscode && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
+    "turbo-build": "run -T turbo run build --filter='likec4-vscode...'",
+    "open-web": "yarn turbo-build && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "build:release": "yarn node esbuild.mjs --minify && run copy",
     "compile": "tsc -noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",

@@ -2,7 +2,9 @@ import { LikeC4View } from "$/components"
 
 # Personal Banking Customer
 
-```
+LikeC4 has no view types to limit us, we can define a view from the customer perspective, to show the systems they interact with.
+
+```likec4
 views {
 
   view customer of customer {
@@ -16,6 +18,12 @@ views {
 }
 ```
 
-... to be written ...
+```jsx
+import { LikeC4View } from "$/components"
+
+// ...
+
+<LikeC4View viewId="customer"/>
+```
 
 <LikeC4View viewId="customer"/>

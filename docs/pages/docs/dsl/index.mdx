@@ -1,13 +1,22 @@
 import { Bleed } from 'nextra-theme-docs'
 
-# LikeC4 Language
+# LikeC4 Grammar
 
 LikeC4 is a DSL for describing software architecture.
 It is a superset of the [C4 model](https://c4model.com/), and is designed to be easy to read and write.
 
+|         |  |
+| --------: | :--------- |
+| _grammar_ : | [ _spec_stmt_ ] <br/> [ _model_ ]<br/> [ _views_ ]|
+| _spec_stmt_ :| **specification '{'{'}'** [ ..._spec_element_stmt_ ] **'{'}'}'** |
+| _spec_element_stmt_ :| **element** KIND  |
+| person     |  And more |
+| queue |      ~~Text~~ |
+
+
 ## Tailor your specification
 
-```
+```likec4
 views {
 
   view apiApp of internetBankingSystem.apiApplication {

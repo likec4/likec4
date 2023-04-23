@@ -1,12 +1,45 @@
 import { Bleed } from 'nextra-theme-docs'
 
-# Model Grammar
+# Model
 
-...
+## Example
 
-## Specification
+```likec4
+model {
 
-...
+  customer = user 'Customer'
+
+  saas = cloud 'Cloud SAAS' {
+    
+    application = box 'Application'
+    component = box 'Component'
+    microservice = box 'Microservice'
+    graphql = box 'GraphQL'
+    database = storage 'Database'
+  }
+  element system
+
+  element user {
+    style {
+      shape person
+    }
+  }
+
+  // Whatever you want
+  element application
+  element component
+  element microservice
+  element graphql
+
+  element database {
+    style {
+      shape storage
+      color secondary
+    }
+  }
+
+}
+```
 
 ## Elements
 

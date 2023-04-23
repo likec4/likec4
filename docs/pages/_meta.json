@@ -21,14 +21,14 @@
     "type": "menu",
     "items": {
       "bigbank": {
-        "title": "Big Bank plc",
-        "href": "/examples/bigbank/sources"
+        "title": "Big Bank plc"
       }
     }
   },
   "about": {
     "title": "About",
     "type": "page",
+    "display": "hidden",
     "theme": {
       "timestamp": false,
       "typesetting": "article",

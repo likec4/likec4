@@ -3,9 +3,15 @@ import { Tab, Tabs, Bleed } from 'nextra-theme-docs'
 
 # Landscape
 
+The landscape view is a high-level overview of the system, showing the major systems and how they relate to each other.
+Structurizr uses the `systemlandscape` for this view.
+
+There is no special view types in LikeC4.  
+Just define predicates, like `include *` to include all elements.
+
 <Tabs items={['likec4', 'structurizr']}>
   <Tab>
-    ```
+    ```likec4
     views {
 
       view landscape of bigbank {
@@ -27,7 +33,7 @@ import { Tab, Tabs, Bleed } from 'nextra-theme-docs'
     <LikeC4View viewId="landscape"/>
   </Tab>
   <Tab>
-    ```
+    ```structurizr
     views {
 
       systemlandscape "SystemLandscape" {
@@ -40,6 +46,6 @@ import { Tab, Tabs, Bleed } from 'nextra-theme-docs'
 
     Rendered with PlantUML:
 
-    ![](http://www.plantuml.com/plantuml/img/lPTVRzis4C3VzIaEpckQsK6QUe5ir2dIOS223dEsFYHzeAcJJPWYDHvT9olwtNUa9LlnfCpjiiX0uf2ykz_zfVAMl71-LUY4q0DXAPpmre6n1XEll4QOFf370duH9YCfIamIRqlm5cRMUrj0fXnAhwn94beg4pGKy2K14CxPzNjh_5JzXJ3eyrA6kLXfVuFtVgBLt1HeF4Z-WOvtrqwK7rNc5t3Q3wSBSN-DH6AEbOP-yZL95Yf3O2I7rZy4d9tL02BCN6EQJcwkn-E8SIdaSkxiocJlh6RNZdwC3-y4jcejZqyuRLs6hbezduKFhz92P7Qjp1noeGaPOsUqH4VMf6cmyo7FbSIf5td-mjRVhOYJWMwAxlCB8pIYVbK8fJS5y_B6VmvbPD1V2iFRywSn1eFpuImx1AC_EniEpmx7k1RAvBo61t7yJ-NmQ_mjTCLGLqSNHNzuTlfcTb0qNf_Yw_DMYcGR1EXTgZa4sr1gsOCq3TRAGML-X_jRBT6mqJXy9EFJBh95FLHWOsFg7qAMjYAPe0Lc2OjiOWUzqQWE5rJT1B6TxanAF8Sk1ltnxIQ-dz8VmihupjoPhGnLCXHaOAtyGXdm2uGPn-Ca1AEZLmL1syuZif0vs4oPGw0cMQ6C8iz3dGSqy0W7MfMbTVu9l7yECYRRMsIeHhP7estHGrLnrRNHn9lQtA-5gs-K9kUKxnma45g3pIEDv8M857InRkkAoeUPNV6TKGMAZa58oPNi-HkxQKZ4kuZ_GY-ZEvtzo5wrx-qxT_KgZBLly-Y6VL1n80aDrqewItmOhkxbWlKYu4OdHS78-NXsCbnZOP-8RxS3EIPQspNjuXKkxf3qp8arIAxzQ7jpMx9D_h9lgnwhtvVPDlkV5QvRSiffLoxcl97JKBA5M2AKuY6yBL3axHhrx47hLfXEkoQgX-FMexhj_gMPjbxKHHfOZsCugnPbdO_u8sptB6RSZiqawTY0azkZD_tmEUREbKl3BqYZqqydutR7uG9wgGnJyg8I6__1qQUQa76rC18RaQPjg655hAYNj6lk16blgXQIdz3lG9hra3jRF2DGev5QAAR8BxPrFrO6cXATQhiozBI9q06zRyzksytGOcb2Iu8_LqXn2B8fBkd79pOLFXpVtg36Si7l-NMDzv9M8_yzpxyJqdUupBEeHTd7QdXHd5vrmiBPvmBTk-gUJUzRhWB-J-jlZ)
+    ![](https://www.plantuml.com/plantuml/img/lPTVRzis4C3VzIaEpckQsK6QUe5ir2dIOS223dEsFYHzeAcJJPWYDHvT9olwtNUa9LlnfCpjiiX0uf2ykz_zfVAMl71-LUY4q0DXAPpmre6n1XEll4QOFf370duH9YCfIamIRqlm5cRMUrj0fXnAhwn94beg4pGKy2K14CxPzNjh_5JzXJ3eyrA6kLXfVuFtVgBLt1HeF4Z-WOvtrqwK7rNc5t3Q3wSBSN-DH6AEbOP-yZL95Yf3O2I7rZy4d9tL02BCN6EQJcwkn-E8SIdaSkxiocJlh6RNZdwC3-y4jcejZqyuRLs6hbezduKFhz92P7Qjp1noeGaPOsUqH4VMf6cmyo7FbSIf5td-mjRVhOYJWMwAxlCB8pIYVbK8fJS5y_B6VmvbPD1V2iFRywSn1eFpuImx1AC_EniEpmx7k1RAvBo61t7yJ-NmQ_mjTCLGLqSNHNzuTlfcTb0qNf_Yw_DMYcGR1EXTgZa4sr1gsOCq3TRAGML-X_jRBT6mqJXy9EFJBh95FLHWOsFg7qAMjYAPe0Lc2OjiOWUzqQWE5rJT1B6TxanAF8Sk1ltnxIQ-dz8VmihupjoPhGnLCXHaOAtyGXdm2uGPn-Ca1AEZLmL1syuZif0vs4oPGw0cMQ6C8iz3dGSqy0W7MfMbTVu9l7yECYRRMsIeHhP7estHGrLnrRNHn9lQtA-5gs-K9kUKxnma45g3pIEDv8M857InRkkAoeUPNV6TKGMAZa58oPNi-HkxQKZ4kuZ_GY-ZEvtzo5wrx-qxT_KgZBLly-Y6VL1n80aDrqewItmOhkxbWlKYu4OdHS78-NXsCbnZOP-8RxS3EIPQspNjuXKkxf3qp8arIAxzQ7jpMx9D_h9lgnwhtvVPDlkV5QvRSiffLoxcl97JKBA5M2AKuY6yBL3axHhrx47hLfXEkoQgX-FMexhj_gMPjbxKHHfOZsCugnPbdO_u8sptB6RSZiqawTY0azkZD_tmEUREbKl3BqYZqqydutR7uG9wgGnJyg8I6__1qQUQa76rC18RaQPjg655hAYNj6lk16blgXQIdz3lG9hra3jRF2DGev5QAAR8BxPrFrO6cXATQhiozBI9q06zRyzksytGOcb2Iu8_LqXn2B8fBkd79pOLFXpVtg36Si7l-NMDzv9M8_yzpxyJqdUupBEeHTd7QdXHd5vrmiBPvmBTk-gUJUzRhWB-J-jlZ)
   </Tab>
 </Tabs>
