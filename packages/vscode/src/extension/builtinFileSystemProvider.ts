@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { specification } from '@likec4/language-server/builtin'
+// import { specification } from '@likec4/language-server/builtin'
 
 export class BuiltinFS implements vscode.FileSystemProvider {
 
@@ -12,19 +12,21 @@ export class BuiltinFS implements vscode.FileSystemProvider {
   }
 
   stat(_uri: vscode.Uri): vscode.FileStat {
-      const date = Date.now();
-      return {
-          ctime: date,
-          mtime: date,
-          size: specification.document.length,
-          type: vscode.FileType.File
-      };
+    throw vscode.FileSystemError.NoPermissions();
+      // const date = Date.now();
+      // return {
+      //     ctime: date,
+      //     mtime: date,
+      //     size: specification.document.length,
+      //     type: vscode.FileType.File
+      // };
   }
 
   readFile(_uri: vscode.Uri): Uint8Array {
+    throw vscode.FileSystemError.NoPermissions();
       // We could return different libraries based on the URI
       // We have only one, so we always return the same
-      return new Uint8Array(Buffer.from(specification.document));
+      // return new Uint8Array(Buffer.from(specification.document));
   }
 
   // The following class members only serve to satisfy the interface

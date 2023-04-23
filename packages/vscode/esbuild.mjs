@@ -8,8 +8,16 @@ const watch = process.argv.includes('--watch')
 
 const alias = {
   // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  // 'langium': 'langium/src/index.ts',
-  // 'langium/node': 'langium/src/node/index.ts',
+  'langium': 'langium/src/index.ts',
+  'langium/node': 'langium/src/node/index.ts',
+  "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
+  "@likec4/core/utils": '../core/src/utils/index.ts',
+  "@likec4/core/types": '../core/src/types/index.ts',
+  "@likec4/core": '../core/src/index.ts',
+  "@likec4/generators": '../generators/src/index.ts',
+  "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
+  "@likec4/language-server": '../language-server/src/index.ts',
+  "@likec4/layouts": '../layouts/src/index.ts',
   // 'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
   // 'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
 }
@@ -36,10 +44,11 @@ const nodeCfg = {
   },
   color: true,
   allowOverwrite: true,
-  sourcemap: true,
+  sourcemap: !minify,
   sourcesContent: false,
   treeShaking: true,
-  minify
+  keepNames: true,
+  minify: true
 }
 
 /**
@@ -65,9 +74,11 @@ const webCfg = {
   },
   color: true,
   allowOverwrite: true,
-  sourcemap: true,
+  sourcemap: !minify,
   sourcesContent: false,
-  minify
+  treeShaking: true,
+  keepNames: true,
+  minify: true
 }
 /**
  * @type {esbuild.BuildOptions}

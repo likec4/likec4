@@ -1,8 +1,6 @@
 import type { LangiumDocument, LangiumDocumentFactory, LangiumSharedServices } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver-protocol'
-import { URI } from 'vscode-uri'
-import * as builtin from '../builtin'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected readonly documentFactory: LangiumDocumentFactory
@@ -18,10 +16,10 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
    * your language, which can be either loaded from provided files or constructed in memory.
    */
   protected override loadAdditionalDocuments(
-    folders: WorkspaceFolder[],
-    collector: (document: LangiumDocument) => void
+    _folders: WorkspaceFolder[],
+    _collector: (document: LangiumDocument) => void
   ): Promise<void> {
-    collector(this.documentFactory.fromString(builtin.specification.document, URI.parse(builtin.specification.uri)))
+    // collector(this.documentFactory.fromString(builtin.specification.document, URI.parse(builtin.specification.uri)))
     return Promise.resolve()
   }
 }

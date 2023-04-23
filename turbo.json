@@ -3,12 +3,10 @@
   "pipeline": {
     "compile": {
       "dependsOn": ["^compile"],
-      "outputs": [
-        "dist/**",
-        "contrib/**"
-      ],
+      "outputs": [],
       "inputs": [
-        "src/**"
+        "src/**",
+        "tsconfig.json"
       ]
     },
     "build": {

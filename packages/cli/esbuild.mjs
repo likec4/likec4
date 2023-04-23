@@ -14,9 +14,6 @@ const options = {
   format: 'iife',
   target: 'node16',
   platform: 'node',
-  define: {
-    'process.env.NODE_ENV': 'production'
-  },
   alias: {
     langium: 'langium/src/index.ts',
     'langium/node': 'langium/src/node/index.ts'
@@ -26,6 +23,8 @@ const options = {
   sourcemap: false,
   sourcesContent: false,
   treeShaking: true,
+  keepNames: true,
+  legalComments: 'eof',
   minify: true
 }
 
