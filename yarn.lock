@@ -987,7 +987,7 @@ __metadata:
     "@types/node": ^18.15.11
     rambdax: ^9.1.0
     tiny-invariant: ^1.3.1
-    ts-graphviz: ^1.5.5
+    ts-graphviz: ^1.6.0
     typescript: ^5.0.4
     vite: ^4.2.2
     vitest: ^0.30.1
@@ -8403,10 +8403,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-graphviz@npm:^1.5.5":
-  version: 1.5.5
-  resolution: "ts-graphviz@npm:1.5.5"
-  checksum: 9c5695e9ebdf02e260ec9fa6cc7405550b4e21c95e5320e9988d709cd8499e1a9078820efcf6a6e9626b6e8f4acaa0b15bb25fbaad918fe0e27faa42f82e10fb
+"ts-graphviz@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "ts-graphviz@npm:1.6.0"
+  checksum: 17043345f0f46b776f393a3dc1d61926a4d46be41021db6f1fbf874bbb25fa4173419e19d124190a5e0840ae274923ca030afd86caec3640f77b012ed5382ad3
   languageName: node
   linkType: hard
 
