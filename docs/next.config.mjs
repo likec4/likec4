@@ -3,6 +3,8 @@ import { resolve } from 'path'
 import { codeImport } from 'remark-code-import';
 import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
 
+
+
 /** @type {import('nextra').NextraConfig} */
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
@@ -35,6 +37,18 @@ const withNextra = nextra({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['monaco-editor'],
+  // experimental: {
+  // }
+  webpack: function (config, options) {
+    // config.experiments.asyncWebAssembly = true
+    console.log('config.experiments', config.experiments)
+    config.module.rules.push({
+      test: /\.(mp3|wasm)$/i,
+      type: 'asset/resource'
+    })
+    return config
+},
   output: 'export',
   images: {
     unoptimized: true

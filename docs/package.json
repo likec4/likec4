@@ -20,19 +20,37 @@
     "clean": "run -T rimraf .next out"
   },
   "dependencies": {
+    "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
+    "@monaco-editor/react": "^4.5.0",
+    "langium": "^1.1.0",
+    "monaco-editor": "0.36.1",
+    "monaco-editor-workers": "0.36.0",
+    "monaco-languageclient": "5.0.1",
     "next": "^13.3.0",
     "nextra": "^2.4.0",
     "nextra-theme-docs": "^2.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "state-local": "^1.0.7",
+    "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
+    "vscode-jsonrpc": "^8.1.0",
+    "vscode-languageclient": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-uri": "3.0.7"
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
+    "@types/vscode": "~1.77.0",
+    "file-loader": "^6.2.0",
     "remark-code-import": "^1.1.1",
+    "resolve-url-loader": "^5.0.0",
     "typescript": "^5.0.4"
   },
   "installConfig": {
