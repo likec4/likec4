@@ -1,5 +1,5 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedPath } from 'animated-konva'
+import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { useMemo } from 'react'
 import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
 import { useNodeEvents } from './nodeEvents'

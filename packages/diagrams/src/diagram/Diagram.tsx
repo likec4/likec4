@@ -7,7 +7,7 @@ import {
   useSpringRef,
   useTransition,
 } from '@react-spring/konva'
-import { AnimatedStage, Layer } from 'animated-konva'
+import { AnimatedStage, Layer } from '../konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { useCallback, useMemo, type ReactElement } from 'react'
@@ -108,7 +108,7 @@ export function Diagram({
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
       viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
-      scale = clamp(0.2, 1.05, viewScale),
+      scale = clamp(0.1, 1.05, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {

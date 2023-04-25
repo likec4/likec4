@@ -7,7 +7,6 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "types",
     "src",
     "!**/*.map"
   ],
@@ -40,15 +39,16 @@
     "access": "public"
   },
   "scripts": {
+    "turbo-build": "run -T turbo run build --filter='diagrams...'",
     "compile": "tsc --emitDeclarationOnly",
-    "build:ts": "yarn node esbuild.mjs",
+    "build:ts": "yarn node esbuild.js",
     "build:tsd": "tsc --emitDeclarationOnly",
     "build": "run-s 'build:ts' 'build:tsd'",
-    "dev:ts": "yarn node esbuild.mjs --watch",
+    "dev:ts": "yarn node esbuild.js --watch",
     "dev:tsd": "run build:tsd --watch",
     "dev": "run-p 'dev:*'",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist types"
+    "clean": "run -T rimraf dist"
   },
   "dependencies": {
     "@react-spring/konva": "^9.7.2",
@@ -62,16 +62,10 @@
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@radix-ui/colors": "^0.1.8",
-    "@radix-ui/react-dialog": "^1.0.3",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
-    "@vanilla-extract/css": "^1.11.0",
-    "@vanilla-extract/dynamic": "^2.0.3",
-    "@vanilla-extract/esbuild-plugin": "^2.2.2",
-    "@vanilla-extract/recipes": "^0.4.0",
-    "animated-konva": "link:./src/animated-konva",
     "clsx": "^1.2.1",
     "esbuild": "^0.17.18",
     "khroma": "^2.0.0",

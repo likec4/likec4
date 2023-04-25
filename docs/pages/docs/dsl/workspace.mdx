@@ -1,0 +1,65 @@
+import { Bleed } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra-theme-docs'
+
+# Workspace Structure
+
+Maybe split into multiple files.
+
+<Tabs items={['single', 'multiple']}>
+  <Tab>
+    ```likec4 filename="single-file.c4"
+    specification {
+
+      element system
+      
+    }
+  
+    model {
+
+      system1 = system "System 1" {
+        // ...
+      }
+
+      system2 = system "System 2" {
+        // ...
+      }
+
+    }  
+    ```  
+  </Tab>
+  <Tab>
+    ```likec4 filename="specification.c4"
+    specification {
+
+      element system
+      
+    }  
+    ```
+
+    ```likec4 filename="model-1.c4"
+    model {
+       
+      system1 = system "System 1" {
+        // ...
+      }
+    }  
+    ```
+    
+    ```likec4 filename="model-and-views.c4"
+    model {
+       
+      system2 = system "System 2" {
+        // ...
+      }
+    }  
+
+    views {
+      // ...
+    }
+    ```   
+  </Tab>
+</Tabs>
+
+## Extends
+
+...

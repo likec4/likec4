@@ -1,6 +1,5 @@
 import * as esbuild from 'esbuild'
 import { formatMessagesSync } from 'esbuild'
-import { vanillaExtractPlugin } from '@vanilla-extract/esbuild-plugin'
 import packageJson from './package.json' assert { type: 'json' }
 
 const watch = process.argv.includes('--watch')
@@ -10,11 +9,6 @@ const watch = process.argv.includes('--watch')
  */
 const cfg = {
   entryPoints: ['src/index.ts'],
-  plugins: [
-    vanillaExtractPlugin({
-      // runtime: true
-    })
-  ],
   logLevel: 'info',
   color: true,
   allowOverwrite: true,
@@ -22,7 +16,7 @@ const cfg = {
   platform: 'browser',
   format: 'esm',
   outfile: 'dist/index.js',
-  minify: true,
+  minify: false,
   metafile: true,
   sourcemap: true,
   sourcesContent: false,
@@ -34,6 +28,8 @@ const cfg = {
 }
 
 if (!watch) {
+  console.info('🛠️   Build ESM...')
+
   const bundle = await esbuild.build(cfg)
 
   // if (bundle.metafile) {
@@ -63,13 +59,13 @@ if (!watch) {
     process.exit(1)
   }
 
-  console.info(' Build CJS...')
+  console.info('🛠️  Build CJS...')
   await esbuild.build({
     ...cfg,
     metafile: false,
     logLevel: 'warning',
-    plugins: [],
     format: 'cjs',
+    sourcemap: false,
     outfile: 'dist/index.cjs'
   })
 

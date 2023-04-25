@@ -1,7 +1,8 @@
-import { to, type SpringValues, type SpringValue, type Controller } from '@react-spring/konva'
+import type { SpringValues, SpringValue, Controller } from '@react-spring/konva'
 import type { FrameValue } from '@react-spring/core'
+import { to } from '@react-spring/konva'
 
-export interface NodeSprings {
+interface NodeSprings {
   x: number
   y: number
   opacity: number
@@ -26,13 +27,14 @@ export function interpolateNodeSprings({
   scale,
   width,
   height,
-  ...input
+  x,
+  y,
 }: SpringValues<NodeSprings>): InterporatedNodeSprings {
   return {
     offsetX: width.to(w => Math.round(w / 2)),
     offsetY: height.to(h => Math.round(h / 2)),
-    x: to([input.x, width], (v, w) => v + Math.round(w / 2)),
-    y: to([input.y, height], (v, h) => v + Math.round(h / 2)),
+    x: to([x, width], (v, w) => v + Math.round(w / 2)),
+    y: to([y, height], (v, h) => v + Math.round(h / 2)),
     width,
     height,
     opacity,

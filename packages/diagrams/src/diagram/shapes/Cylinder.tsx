@@ -5,7 +5,7 @@ import type { DiagramTheme } from '../types'
 import { useNodeEvents } from './nodeEvents'
 import { NodeLabels as NodeTitle } from './nodeLabels'
 import type { InterporatedNodeSprings, NodeSpringsCtrl } from './nodeSprings'
-import { AnimatedPath, AnimatedGroup } from 'animated-konva'
+import { AnimatedPath, AnimatedGroup } from '../../konva'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   const radius = Math.round(diameter / 2)

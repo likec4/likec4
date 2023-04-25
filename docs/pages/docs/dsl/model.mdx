@@ -1,62 +1,9 @@
 import { Bleed } from 'nextra-theme-docs'
 import { Tab, Tabs } from 'nextra-theme-docs'
 
-# Model Grammar
+# Model
 
 Specification, elements and relations are defined in the model.  
-Maybe split into multiple files.
-
-<Tabs items={['single', 'multiple']}>
-  <Tab>
-    ```likec4 filename="single-file.c4"
-    specification {
-
-      element system
-      
-    }
-  
-    model {
-
-      system1 = system "System 1" {
-        // ...
-      }
-
-      system2 = system "System 2" {
-        // ...
-      }
-
-    }  
-    ```  
-  </Tab>
-  <Tab>
-    ```likec4 filename="specification.c4"
-    specification {
-
-      element system
-      
-    }  
-    ```
-
-    ```likec4 filename="model-1.c4"
-    model {
-       
-      system1 = system "System 1" {
-        // ...
-      }
-    }  
-    ```
-    
-    ```likec4 filename="model-2.c4"
-    model {
-       
-      system2 = system "System 2" {
-        // ...
-      }
-    }  
-    ```  
-  </Tab>
-</Tabs>
-
 
 ## Specification
 
@@ -73,6 +20,13 @@ specification {
 
   element user {
     style {
+      // available shapes:
+      //  - rectangle (default)
+      //  - cylinder
+      //  - storage (same as cylinder)
+      //  - person
+      //  - queue
+      //  - browser
       shape person
     }
   }
@@ -86,14 +40,18 @@ specification {
 
   element database {
     style {
-      shape storage
+      shape storage      
+      // available colors:
+      //  - primary (default)
+      //  - secondary
+      //  - muted
       color secondary
     }
   }
 
 }
 ```
-
+{/*
 **Element Style:** Shape
 
 | shape        | example |
@@ -110,19 +68,11 @@ specification {
 | primary (default)       |
 | secondary |    |
 | muted     |  |
+*/}
 
+## Element
 
-
-## Model
-
-### Elements
-
-| Abstract grammar |
-| :--------|
-| _{'<'}element_type{'>'}_ **ID** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
-| **ID** **'='** _{'<'}element_type{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  |
-
-```likec4 filename="inline-elements.c4"
+```likec4 filename="element.c4"
 specification {
   element component
 }
@@ -143,9 +93,30 @@ model {
 }
 ```
 
-### Nested elements 
+Every element has a type (defined in [specification](#specification)), a name (identifier) and optionally title, description and technology.
 
-Any element can contain other elements and becomes a container if has the `{`...`}` block.
+Element definition:
+
+| Abstract grammar |
+| :--------|
+| _{'<'}element_type{'>'}_ **NAME** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
+| **NAME** **'='** _{'<'}element_type{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  |
+
+Name is a valid identifier, it can contain letters, digits and underscore, but can't start with a digit.
+
+| example        | |
+| :------------ | :--------- |
+| api | ✅ |
+| _api | ✅ |
+| Api | ✅ |
+| 1api | ⛔️ |
+| _1api | ✅ |
+
+Element name is unique within the container (the same hierarchy level), see [below](#nested-elements).
+
+## Nested elements
+
+Any element is a container and can contain other elements.
 
 ```likec4 filename="nested-elements.c4"
 specification {
@@ -156,7 +127,10 @@ specification {
 // Nested elements
 model {
 
+  // service1 has backend and frontend
   service service1 'Service 1' {
+
+    // backend has api
     component backend {
       component api 'Rest API'
     }
@@ -164,7 +138,6 @@ model {
   }
 
   // or use '=' (or even both)
-
   service2 = service 'Service 2' {    
     component backend {
       api = component 'GraphQL API'
@@ -174,51 +147,54 @@ model {
 }
 ```
 
-### Relations
+Nested elements are _"namespaced"_, so the model above has the following elements:
 
-...
+- `service1`  
+- `service1.backend`
+- `service1.backend.api` 
+- `service1.frontend`
 
-### Extends
+and:
 
-...
+- `service2`
+- `service2.backend`
+- `service2.backend.api`
+- `service2.frontend`
 
-```likec4
+It is not possible to have elements with the same name on the same hierarchy level.
+
+```likec4 filename="nested-elements.c4"
+specification {
+  element service
+  element component
+}
+
 model {
 
-  customer = user 'Customer'
+  service service1 'Service 1' {
+    component backend 
 
-  saas = cloud 'Cloud SAAS' {
-    
-    application = box 'Application'
-    component = box 'Component'
-    microservice = box 'Microservice'
-    graphql = box 'GraphQL'
-    database = storage 'Database'
+    component backend // ⛔️ Error: 'service1.backend' already defined
   }
-  element system
+  
+  service service2 'Service 2' {
+    component backend 
 
-  element user {
-    style {
-      shape person
+    component legacy {
+      component backend // ✅ This is OK, 'service2.backend' and 'service2.legacy.backend'
     }
   }
 
-  // Whatever you want
-  element application
-  element component
-  element microservice
-  element graphql
+  component backend // ✅ This is OK
 
-  element database {
-    style {
-      shape storage
-      color secondary
-    }
+  // ✅ This is OK
+  component legacy {
+    component backend
   }
 
 }
 ```
 
-## References scope
+## Element properties
 
 ...

@@ -23,7 +23,9 @@ export function useNodeEvents({
     onMouseEnter: (e: OnMouseEvent) => {
       mousePointer(e)
       void ctrl.start({
-        scale: 1.08,
+        to: {
+          scale: 1.08,
+        },
         config: config.stiff
       })
     },

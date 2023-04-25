@@ -2,7 +2,7 @@ import type { DiagramNode } from '@likec4/core/types'
 import {
   useSpring
 } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect } from 'animated-konva'
+import { AnimatedGroup, AnimatedRect } from '../../konva'
 import type { DiagramTheme } from '../types'
 import { useNodeEvents } from './nodeEvents'
 import { NodeLabels } from './nodeLabels'

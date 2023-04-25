@@ -1,6 +1,6 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect, Text } from 'animated-konva'
+import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
 import { useMemo } from 'react'
 
 import type { DiagramTheme } from '../types'

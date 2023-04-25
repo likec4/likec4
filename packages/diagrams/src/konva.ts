@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Rect, Stage, Text, Group, Path, Line, Layer } from 'react-konva/es/ReactKonvaCore'
+import { Rect, Stage, Shape, Text, Group, Path, Line, Layer } from 'react-konva/es/ReactKonvaCore'
 
 import 'konva/lib/shapes/Rect'
 import 'konva/lib/shapes/Text'
@@ -12,7 +12,10 @@ import type Konva from 'konva'
 import type { KonvaNodeComponent, StageProps } from 'react-konva'
 
 export {
+  Stage,
+  Group,
   Layer,
+  Shape,
   Text
 }
 

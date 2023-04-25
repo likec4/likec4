@@ -5,7 +5,13 @@
   "model": {
     "title": "Model"
   },
+  "relations": {
+    "title": "Relations"
+  },
   "views": {
     "title": "Views"
+  },
+  "workspace": {
+    "title": "Workspace"
   }
 }

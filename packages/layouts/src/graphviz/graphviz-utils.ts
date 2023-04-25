@@ -19,6 +19,7 @@ export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
   // @ts-expect-error - Unexhaustive match
   throw new Error(`Invalid align: ${align}`)
 }
+
 function wrapToHTMLLabel({
   text,
   maxChars,
@@ -60,7 +61,7 @@ export function generateNodeLabel(node: ComputedNode) {
     label += `<FONT point-size="${pxToPoints(14)}"> <BR/></FONT>`
     label += wrapToHTMLLabel({
       text: node.description,
-      maxChars: 50,
+      maxChars: 40,
       fontSize: 14,
       lineHeight: 16
     })
@@ -74,16 +75,10 @@ export function generateEdgeLabel(edge: ComputedEdge) {
   }
   const label = wrapToHTMLLabel({
     text: edge.label,
-    maxChars: 50,
+    maxChars: 40,
     fontSize: 14,
     lineHeight: 16,
     align: 'left'
   })
   return `<${label}>`
-  // return `<<FONT point-size="${pxToPoints(14)}">${wrap(edge.label, {
-  //   width: 50,
-  //   indent: '',
-  //   trim: false,
-  //   newline: `<FONT point-size="${pxToPoints(15.8)}"> <BR ALIGN="LEFT"/></FONT>`
-  // })}</FONT>>`
 }

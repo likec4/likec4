@@ -1,0 +1,16 @@
+.view {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.33, 0.6, 0.11, 1.02);
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+}
+
+.view:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 16px 12px rgb(10 10 10 / 50%);
+  background: hsl(var(--nextra-primary-hue)100% 77%/.09);
+}
+
+.view > div > div {
+  cursor: pointer !important;
+}

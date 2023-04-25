@@ -7,6 +7,9 @@ import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
   themeConfig: './theme.config.tsx',
+  flexsearch: {
+    codeblocks: false
+  },
   mdxOptions: {
     remarkPlugins: [
       codeImport

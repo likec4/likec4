@@ -12,6 +12,8 @@ specification {
     }
   }
 
+  // Structurizr does not have a database element
+  // Just for the sake of the example
   element database {
     style {
       shape: queue

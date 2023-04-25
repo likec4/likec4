@@ -1,1 +1,0 @@
-export * from './vars.css'

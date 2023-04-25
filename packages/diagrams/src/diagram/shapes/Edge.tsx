@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { DiagramEdge } from '@likec4/core/types'
 import { type SpringValues } from '@react-spring/konva'
-import { AnimatedLine, AnimatedText } from 'animated-konva'
+import { AnimatedLine, AnimatedText } from '../../konva'
 import { useMemo } from 'react'
 
 import type { DiagramTheme } from '../types'
