@@ -1,6 +1,7 @@
 import * as esbuild from 'esbuild'
 import { formatMessagesSync } from 'esbuild'
 import { vanillaExtractPlugin } from '@vanilla-extract/esbuild-plugin'
+import packageJson from './package.json' assert { type: 'json' }
 
 const watch = process.argv.includes('--watch')
 
@@ -26,14 +27,10 @@ const cfg = {
   sourcemap: true,
   sourcesContent: false,
   jsx: 'automatic',
-  external: [
-    'react',
-    'react-dom'
-  ]
-  // external: Object.keys({
-  //   ...packageJson.dependencies,
-  //   ...packageJson.peerDependencies
-  // })
+  external: Object.keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies
+  })
 }
 
 if (!watch) {

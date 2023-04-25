@@ -10,10 +10,13 @@
     "target": "ES2022",
     "moduleResolution": "bundler",
     "outDir": "dist",
+    "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
-    "importsNotUsedAsValues": "remove",
+    "importsNotUsedAsValues": "preserve",
+    "verbatimModuleSyntax": false,
+    "ignoreDeprecations": "5.0",
     "jsx": "react-jsx"
   },
   "include": [

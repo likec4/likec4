@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Rect, Stage, Text, Group, Path, Line, Layer } from 'react-konva/es/ReactKonvaCore'
+
+import 'konva/lib/shapes/Rect'
+import 'konva/lib/shapes/Text'
+import 'konva/lib/shapes/Path'
+import 'konva/lib/shapes/Line'
+
 import { animated, type AnimatedProps } from '@react-spring/konva'
-import { Rect, Stage, Text, Group, Path, Line, Layer } from 'react-konva'
+
 import type Konva from 'konva'
 import type { KonvaNodeComponent, StageProps } from 'react-konva'
 
