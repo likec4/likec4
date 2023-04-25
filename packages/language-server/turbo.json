@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "generate": {
+      "outputMode": "new-only",
+      "outputs": [
+        "contrib/**",
+        "src/generated/**"
+      ],
+      "inputs": [
+        "src/*.langium",
+        "langium-config.json"
+      ]
+    },
+    "compile": {
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "^build"],
+      "outputs": [],
+      "inputs": [
+        "src/**",
+        "!src/generated/**"
+      ]
+    },
+    "build": {
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "^build"],
+      "inputs": [
+        "src/**",
+        "tsconfig.esm.json",
+        "!src/generated/**"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "build:release": {
+      "dependsOn": ["generate", "^build:release"]
+    }
+  }
+}

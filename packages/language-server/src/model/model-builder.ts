@@ -31,7 +31,7 @@ import {
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { Rpc } from '@likec4/language-protocol'
+import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
 

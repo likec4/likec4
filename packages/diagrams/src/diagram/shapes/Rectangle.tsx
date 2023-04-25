@@ -1,8 +1,8 @@
 import type { DiagramNode } from '@likec4/core/types'
 import {
-  animated,
   useSpring
 } from '@react-spring/konva'
+import { AnimatedGroup, AnimatedRect } from 'animated-konva'
 import type { DiagramTheme } from '../types'
 import { useNodeEvents } from './nodeEvents'
 import { NodeLabels } from './nodeLabels'
@@ -44,7 +44,7 @@ export const RectangleShape = ({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <animated.Group
+    <AnimatedGroup
       {...springs}
       {...useNodeEvents({
         node,
@@ -52,7 +52,7 @@ export const RectangleShape = ({
         onNodeClick
       })}
     >
-      <animated.Rect
+      <AnimatedRect
         cornerRadius={6}
         shadowBlur={12}
         shadowOpacity={0.3}
@@ -68,6 +68,6 @@ export const RectangleShape = ({
         color={color}
         theme={theme}
       />
-    </animated.Group>
+    </AnimatedGroup>
   )
 }

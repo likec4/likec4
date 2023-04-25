@@ -1,6 +1,6 @@
 {
   "name": "@likec4/docs-website",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "private": true,
   "license": "UNLICENSED",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -12,10 +12,11 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
+    "compile": "tsc --noEmit",
     "turbo-build": "run -T turbo run build --filter='docs-website...'",
     "generate": "likec4 generate --target react --output components/likec4/generated.tsx ./likec4",
     "dev": "run generate && next dev",
-    "build": "run generate && next build",
+    "build": "next build",
     "start": "next start",
     "clean": "run -T rimraf .next out"
   },

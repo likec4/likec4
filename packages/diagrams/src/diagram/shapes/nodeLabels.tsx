@@ -1,6 +1,6 @@
 import type { DiagramNode, ThemeColor } from '@likec4/core/types'
 import { pluck, uniq } from 'rambdax'
-import { Text } from 'react-konva'
+import { Text } from 'animated-konva'
 import type { DiagramTheme } from '../types'
 
 

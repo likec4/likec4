@@ -1,7 +1,7 @@
 import type { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
 import { logger } from './logger'
-import { buildDocuments, fetchLikeC4Model, locateElement, locateRelation, locateView } from '@likec4/language-protocol'
+import { buildDocuments, fetchLikeC4Model, locateElement, locateRelation, locateView } from './protocol'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection

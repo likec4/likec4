@@ -1,6 +1,6 @@
 {
   "name": "@likec4/cli",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "license": "MIT",
   "bin": {
     "likec4": "dist/likec4.js"
@@ -22,7 +22,6 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "build:release": "run build",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",

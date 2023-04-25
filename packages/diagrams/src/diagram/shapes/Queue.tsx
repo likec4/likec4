@@ -1,10 +1,9 @@
-import { animated, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
+import { AnimatedGroup, AnimatedPath } from 'animated-konva'
 import { useMemo } from 'react'
 import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
-import { NodeLabels } from './nodeLabels'
-import type { OnClickEvent, OnMouseEvent } from './types'
-import { mouseDefault, mousePointer } from './utils'
 import { useNodeEvents } from './nodeEvents'
+import { NodeLabels } from './nodeLabels'
 
 export const QueueShape = ({
   animate = true,
@@ -37,7 +36,7 @@ export const QueueShape = ({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <animated.Group
+    <AnimatedGroup
       {...springs}
       {...useNodeEvents({
         node,
@@ -45,7 +44,7 @@ export const QueueShape = ({
         onNodeClick
       })}
     >
-      <animated.Path
+      <AnimatedPath
         shadowBlur={12}
         shadowOpacity={0.3}
         shadowOffsetX={0}
@@ -66,6 +65,6 @@ export const QueueShape = ({
         color={color}
         theme={theme}
       />
-    </animated.Group>
+    </AnimatedGroup>
   )
 }

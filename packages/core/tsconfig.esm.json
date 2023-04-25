@@ -2,8 +2,13 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ES2022",
-    "target": "ES2022"
+    "module": "ES2022"
   },
-  "exclude": ["**/__mocks__/**", "**/__test__/**", "**/*.spec.ts"]
+  "exclude": [
+    "**/node_modules/**",
+    "./dist/**",
+    "**/__mocks__/**",
+    "**/__test__/**",
+    "**/*.spec.ts"
+  ]
 }

@@ -1,10 +1,11 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { animated, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
 import type { DiagramTheme } from '../types'
 import { useNodeEvents } from './nodeEvents'
 import { NodeLabels as NodeTitle } from './nodeLabels'
 import type { InterporatedNodeSprings, NodeSpringsCtrl } from './nodeSprings'
+import { AnimatedPath, AnimatedGroup } from 'animated-konva'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   const radius = Math.round(diameter / 2)
@@ -65,7 +66,7 @@ export const CylinderShape = ({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <animated.Group
+    <AnimatedGroup
       {...springs}
       {...useNodeEvents({
         node,
@@ -73,7 +74,7 @@ export const CylinderShape = ({
         onNodeClick
       })}
       >
-      <animated.Path
+      <AnimatedPath
         shadowBlur={12}
         shadowOpacity={0.3}
         shadowOffsetX={0}
@@ -90,6 +91,6 @@ export const CylinderShape = ({
         color={color}
         theme={theme}
       />
-    </animated.Group>
+    </AnimatedGroup>
   )
 }

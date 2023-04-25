@@ -1,7 +1,7 @@
 import type { DiagramNode } from '@likec4/core/types'
-import { animated, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
+import { AnimatedGroup, AnimatedRect, Text } from 'animated-konva'
 import { useMemo } from 'react'
-import { Text } from 'react-konva'
 
 import type { DiagramTheme } from '../types'
 import type { InterporatedNodeSprings } from './nodeSprings'
@@ -59,8 +59,8 @@ export const CompoundShape = ({
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <animated.Group {...springs}>
-    <animated.Rect
+  return <AnimatedGroup {...springs}>
+    <AnimatedRect
       {...rectProps}
       opacity={0.25}
       cornerRadius={4}
@@ -91,7 +91,7 @@ export const CompoundShape = ({
           {...listeners}
         />
       )}
-    {/* <animated.Text
+    {/* <AnimatedText
       x={0}
       y={0}
       width={rectProps.width}
@@ -106,5 +106,5 @@ export const CompoundShape = ({
       opacity={0.8}
       {...listeners}
     /> */}
-  </animated.Group>
+  </AnimatedGroup>
 }

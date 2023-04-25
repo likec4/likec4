@@ -3,10 +3,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "ES2022",
-    "target": "ES2022",
-    "sourceMap": false,
-    "declaration": true
+    "outDir": "dist"
   },
-  "exclude": ["**/__mocks__/**", "**/__test__/**", "**/*.spec.ts", "node_modules", "dist"],
-  "files": ["src/index.ts", "src/react/index.ts", "src/views-data-ts/index.ts"]
+  "exclude": [
+    "**/node_modules/**",
+    "./dist/**",
+    "./src/test/**",
+    "**/__mocks__/",
+    "**/__test__/",
+    "**/*.spec.ts"
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://like-c4.dev",
@@ -14,6 +14,7 @@
     "directory": "packages/generators"
   },
   "main": "src/index.ts",
+  "module": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
@@ -22,19 +23,11 @@
     "access": "public",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "default": "./dist/index.js"
-      }
-    }
+    "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "compile": "tsc --emitDeclarationOnly",
-    "build:release": "tsc -p tsconfig.esm.json",
-    "build": "tsc",
+    "compile": "tsc --noEmit",
+    "build": "tsc -p tsconfig.esm.json",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
@@ -50,7 +43,6 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "typescript": "^5.0.4",
-    "vite": "^4.2.2",
     "vitest": "^0.30.1"
   }
 }

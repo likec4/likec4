@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { DiagramEdge } from '@likec4/core/types'
-import { animated, type SpringValues } from '@react-spring/konva'
-import { useCallback, useMemo } from 'react'
-import { Text } from 'react-konva'
+import { type SpringValues } from '@react-spring/konva'
+import { AnimatedLine, AnimatedText } from 'animated-konva'
+import { useMemo } from 'react'
 
 import type { DiagramTheme } from '../types'
 import type { OnClickEvent } from './types'
@@ -40,7 +40,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
   return (
     <>
     {/* @ts-ignore */}
-      <animated.Line
+      <AnimatedLine
         {...springs}
         {...listeners}
         points={points.flat()}
@@ -50,7 +50,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
         hitStrokeWidth={20}
       />
       {headArrow && (
-        <animated.Line
+        <AnimatedLine
           {...springs}
           {...listeners}
           points={headArrow.flat()}
@@ -61,7 +61,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
         />
       )}
       {labels.map((label, i) =>
-        <animated.Text
+        <AnimatedText
           key={i}
           {...springs}
           {...listeners}
@@ -81,7 +81,7 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
         />
       )}
       {/* {label && labelBox && (
-        <animated.Text
+        <AnimatedText
           {...springs}
           {...listeners}
           {...labelBox}

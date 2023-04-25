@@ -1,27 +1,20 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import { useUpdateEffect } from '@react-hookz/web/esm'
 import {
-  animated,
   useSpring,
-  useTransition,
-  type AnimatedComponent,
   useSpringRef,
-  useChain
+  useTransition,
 } from '@react-spring/konva'
+import { AnimatedStage, Layer } from 'animated-konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { useCallback, useEffect, useMemo, useRef, type ReactElement, useDebugValue } from 'react'
-import { Layer, Stage } from 'react-konva'
-import { CompoundShape, EdgeShape, RectangleShape, nodeShape } from './shapes'
+import { useCallback, useMemo, type ReactElement } from 'react'
+import { CompoundShape, EdgeShape, nodeShape } from './shapes'
+import { interpolateNodeSprings } from './shapes/nodeSprings'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
-import useTilg from 'tilg'
-import { useUpdateEffect } from '@react-hookz/web/esm'
-import { interpolateNodeSprings } from './shapes/nodeSprings'
-
-const AStage: AnimatedComponent<typeof Stage> = animated(Stage)
-AStage.displayName = 'AnimatedStage'
 
 interface IRect {
   x: number
@@ -297,9 +290,9 @@ export function Diagram({
 
   return (
     // @ts-ignore
-    <AStage
+    <AnimatedStage
       className={className}
-      onWheel={zoomable && handleWheelZoom}
+      onWheel={zoomable ? handleWheelZoom : undefined}
       width={width}
       height={height}
       x={stageProps.x}
@@ -346,6 +339,6 @@ export function Diagram({
         }
         )}
       </Layer>
-    </AStage>
+    </AnimatedStage>
   )
 }

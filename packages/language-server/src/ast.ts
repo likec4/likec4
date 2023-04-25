@@ -9,6 +9,8 @@ import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
 
+
+
 export function c4hash({
   c4Specification,
   c4Elements,
