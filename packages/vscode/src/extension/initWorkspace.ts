@@ -1,6 +1,6 @@
 import { di, type LanguageClient } from 'src/di'
 import { mapParallelAsyncWithLimit, delay } from 'rambdax'
-import { buildDocuments } from '@likec4/language-protocol'
+import { buildDocuments } from '@likec4/language-server/protocol'
 import * as vscode from 'vscode'
 import { Utils } from 'vscode-uri'
 import { fileExtensions } from 'src/meta'

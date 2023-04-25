@@ -8,17 +8,18 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "contrib"
+    "contrib",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/language-server"
   },
+  "type": "module",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
-  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./builtin": "./src/builtin.ts",
@@ -51,11 +52,10 @@
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='language-server...'",
     "compile": "tsc --noEmit",
-    "build:esm": "tsc -p tsconfig.esm.json",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc -p tsconfig.esm.json --watch",
     "generate": "langium generate",
-    "build": "run build:esm",
+    "build": "tsc -p tsconfig.esm.json",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",

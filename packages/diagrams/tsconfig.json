@@ -11,17 +11,18 @@
     "moduleResolution": "bundler",
     "outDir": "dist",
     "declaration": true,
-    "declarationDir": "dist",
+    "declarationMap": true,
     "emitDeclarationOnly": true,
     "importsNotUsedAsValues": "remove",
     "jsx": "react-jsx"
   },
   "include": [
-    "src/"
+    "src/**/*"
   ],
-  "exclude": [
-    "node_modules",
-    "types",
-    "dist"
+  "references": [
+    { "path": "../language-server" },
+    { "path": "../generators" },
+    { "path": "../layouts" },
+    { "path": "../core" }
   ]
 }

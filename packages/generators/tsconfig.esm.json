@@ -3,14 +3,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "ES2022",
-    "outDir": "dist"
+    "target": "ES2022"
   },
   "exclude": [
-    "**/node_modules/**",
-    "./dist/**",
-    "./src/test/**",
     "**/__mocks__/",
     "**/__test__/",
     "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    }
   ]
 }

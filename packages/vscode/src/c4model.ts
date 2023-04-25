@@ -1,7 +1,7 @@
 import type { LanguageClient, LayoutFn } from 'src/di'
 import { di } from 'src/di'
 import { ADisposable, disponsable, queueMicrotask } from 'src/util'
-import { fetchLikeC4Model, onDidChangeLikeC4Model } from '@likec4/language-protocol'
+import { fetchLikeC4Model, onDidChangeLikeC4Model } from '@likec4/language-server/protocol'
 import type { ComputedView, ViewID, DiagramView as LayoutedView } from '@likec4/core/types'
 import { equals } from 'rambdax'
 import { tokens } from 'typed-inject'

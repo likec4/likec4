@@ -6,7 +6,8 @@
   "homepage": "https://like-c4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "dist"
+    "dist",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",

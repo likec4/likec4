@@ -15,7 +15,8 @@
   },
   "files.exclude": {
     "**/.turbo": true,
-    "packages/*/.vscode-test-web": true
+    "packages/*/.vscode-test-web": true,
+    "packages/*/tsconfig.tsbuildinfo": true
   },
   "exportall.config.folderListener": [
     "/packages/language-server/src/model",

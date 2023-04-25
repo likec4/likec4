@@ -11,7 +11,8 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "!**/*.map"
   ],
   "scripts": {
     "compile": "tsc --noEmit",

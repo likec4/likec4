@@ -8,7 +8,8 @@
   "files": [
     "dist",
     "types",
-    "src"
+    "src",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",
@@ -30,10 +31,7 @@
       "./src/*.ts",
       "./src/*.tsx",
       "./src/*/index.ts"
-    ],
-    "./package.json": "./package.json",
-    "./dist/style.css": "./dist/index.css",
-    "./dist/index.css": "./dist/index.css"
+    ]
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

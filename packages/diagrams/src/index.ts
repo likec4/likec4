@@ -13,6 +13,5 @@ export type {
 
 export { Diagram } from './diagram'
 export { EmbeddedDiagram } from './embedded'
-export { DiagramBrowser } from './browser'
 export type * from './diagram'
 export type * from './embedded'

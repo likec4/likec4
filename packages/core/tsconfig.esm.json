@@ -5,8 +5,6 @@
     "module": "ES2022"
   },
   "exclude": [
-    "**/node_modules/**",
-    "./dist/**",
     "**/__mocks__/**",
     "**/__test__/**",
     "**/*.spec.ts"

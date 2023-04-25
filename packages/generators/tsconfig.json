@@ -1,11 +1,18 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "./dist",
+    "composite": true,
+    "declarationMap": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "rootDir": "src"
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "**/node_modules/**",
-    "./dist/**",
+  "include": [
+    "src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    },
   ]
 }

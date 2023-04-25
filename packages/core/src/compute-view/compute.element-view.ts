@@ -39,7 +39,7 @@ function transformToNodes(
   index: ModelIndex,
   currentViewid?: ViewID
 ) {
-  return [...elementsIterator]
+  return Array.from(elementsIterator)
     .sort(compareByFqnHierarchically)
     .reduce((map, { id, title, color, shape, description }) => {
       let parent = parentFqn(id)

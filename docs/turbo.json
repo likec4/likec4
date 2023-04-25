@@ -4,6 +4,7 @@
   "pipeline": {
     "generate": {
       "outputMode": "new-only",
+      "dependsOn": ["@likec4/cli#build"],
       "outputs": [
         "components/**/generated.tsx"
       ],

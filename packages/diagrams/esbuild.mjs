@@ -25,6 +25,7 @@ const cfg = {
   metafile: true,
   sourcemap: true,
   sourcesContent: false,
+  jsx: 'automatic',
   external: [
     'react',
     'react-dom'

@@ -28,7 +28,6 @@ export function generateReact(views: DiagramView[]) {
 
       import type { DiagramView, EmbeddedDiagramProps } from '@likec4/diagrams'
       import { EmbeddedDiagram } from '@likec4/diagrams'
-      import '@likec4/diagrams/dist/style.css'
     `.append(NL, NL)
 
   if (components.length == 0) {
