@@ -64,7 +64,7 @@
     "@radix-ui/colors": "^0.1.8",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
-    "@types/react": "^18.0.35",
+    "@types/react": "^18.2.0",
     "@types/react-dom": "^18.0.11",
     "clsx": "^1.2.1",
     "esbuild": "^0.17.18",

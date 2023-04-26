@@ -680,7 +680,7 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
     "@react-spring/konva": ^9.7.2
-    "@types/react": ^18.0.35
+    "@types/react": ^18.2.0
     "@types/react-dom": ^18.0.11
     clsx: ^1.2.1
     esbuild: ^0.17.18
@@ -706,7 +706,7 @@ __metadata:
     "@likec4/cli": "workspace:*"
     "@likec4/diagrams": "workspace:*"
     "@types/node": ^18.15.11
-    "@types/react": ^18.0.35
+    "@types/react": ^18.2.0
     "@types/react-dom": ^18.0.11
     next: ^13.3.1
     nextra: ^2.4.2
@@ -726,7 +726,7 @@ __metadata:
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
-    "@types/react": ^18.0.35
+    "@types/react": ^18.2.0
     "@types/react-dom": ^18.0.11
     "@vitejs/plugin-react": ^4.0.0
     rambdax: ^9.1.1
@@ -808,7 +808,7 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.0.35
+    "@types/react": ^18.2.0
     "@types/react-dom": ^18.0.11
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
@@ -1438,7 +1438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16, @types/react@npm:^18.0.35":
+"@types/react@npm:*, @types/react@npm:>=16":
   version: 18.0.35
   resolution: "@types/react@npm:18.0.35"
   dependencies:
@@ -1446,6 +1446,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: e65670397216e037b150a509ec08189140b4c20b82b612ac00b2a7133202be2d1def1e7ee69617b2df06ab4c00c43c4ee23e84788ad661aea9664da2f27c518a
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "@types/react@npm:18.2.0"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: db3d92b423150222a666329f7aa3023e3e942044700557b8a7d161530847e621aec9f56c9e7f71761b06dd164c8a7b17ad52355863efe80963dffa5537e8e5fd
   languageName: node
   linkType: hard
 
