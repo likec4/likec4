@@ -710,7 +710,7 @@ __metadata:
     "@types/react-dom": ^18.0.11
     next: ^13.3.0
     nextra: ^2.4.2
-    nextra-theme-docs: ^2.4.0
+    nextra-theme-docs: ^2.4.2
     react: ^18.2.0
     react-dom: ^18.2.0
     remark-code-import: ^1.1.1
@@ -5832,9 +5832,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextra-theme-docs@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "nextra-theme-docs@npm:2.4.0"
+"nextra-theme-docs@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "nextra-theme-docs@npm:2.4.2"
   dependencies:
     "@headlessui/react": ^1.7.10
     "@popperjs/core": ^2.11.6
@@ -5850,10 +5850,10 @@ __metadata:
     zod: ^3.20.2
   peerDependencies:
     next: ">=9.5.3"
-    nextra: 2.4.0
+    nextra: 2.4.2
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: 34eea95682dc1087f61ecf1fba66ee8d84e0a67a8bb646ed681e8134979453c81c3edf65aad49e348d57b09f6c380b48e372193689f8d8033eb442f388d04ce9
+  checksum: 1c4c7959c20ce6479c7b1f52bcec51b9a4bdfe7ab09eab136883ea39748f7c7f436b7dee5d37029068783d0c362374e927e0622dad30a6be7ce6e13b7c6af7a0
   languageName: node
   linkType: hard
 
