@@ -28,7 +28,7 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
-    "rambdax": "^9.1.0",
+    "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.4",

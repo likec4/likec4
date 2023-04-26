@@ -39,7 +39,7 @@
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
     "langium": "^1.1.0",
-    "rambdax": "^9.1.0"
+    "rambdax": "^9.1.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
