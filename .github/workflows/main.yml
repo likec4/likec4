@@ -4,14 +4,13 @@ on:
   push:
     branches: ["main"]
 
-  pull_request_target:
+  pull_request:
     branches:
-      - 'main'
-   
+      - 'main'   
 
 jobs:
   main:
-    name: "build and test"
+    name: "main build-test"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     concurrency:
@@ -27,10 +26,9 @@ jobs:
         with:
           node-version: '18.x'
           
-      - name: Get yarn cache directory path
+      - name: Get yarn cache directory
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-        # run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -43,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Compile
-        run: yarn compile
-
       - name: Build
         run: yarn build
+
+      - name: Compile
+        run: yarn turbo run compile
 
       - name: Test
         run: yarn test
