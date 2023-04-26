@@ -3,13 +3,13 @@ name: develop
 on:
   push:
     branches: ["develop"]
-  pull_request_target:
+  pull_request:
     branches:
       - 'develop'
 
 jobs:
   develop:
-    name: Build and Test
+    name: "dev build test"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     concurrency:
