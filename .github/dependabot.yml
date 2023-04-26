@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "npm"
     target-branch: "develop"
     directory: "/"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     schedule:
       interval: "weekly"
     labels:

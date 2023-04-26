@@ -1,15 +1,19 @@
-name: develop
+name: build
 
 on:
   push:
-    branches: ["develop"]
+    branches:
+      - main
+      - develop
+
   pull_request:
     branches:
-      - 'develop'
+      - main
+      - develop
 
 jobs:
-  develop:
-    name: "dev build test"
+  build:
+    name: build and test
     timeout-minutes: 10
     runs-on: ubuntu-latest
     concurrency:
@@ -25,13 +29,12 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Get yarn cache directory path
+      - name: Get yarn cache directory
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-        # run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -42,7 +45,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Compile
-        run: yarn compile
+        run: yarn turbo run compile
 
       - name: Build
         run: yarn build
