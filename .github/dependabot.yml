@@ -6,8 +6,10 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
+    target-branch: "develop"
     directory: "/"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     schedule:
       interval: "weekly"
-    labels: ["dependencies"]
+    labels:
+      - "dependencies"
