@@ -94,11 +94,11 @@ if (!watch) {
   const [nodeBundle, webBundle, webWorkerBundle] = bundles
 
   if (nodeBundle.metafile) {
-    const metafile = path.resolve('dist', 'extension-node.metafile.json')
+    const metafile = path.resolve('dist', 'node.metafile.json')
     await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
   }
   if (webBundle.metafile) {
-    const metafile = path.resolve('dist', 'extension-web.metafile.json')
+    const metafile = path.resolve('dist', 'web.metafile.json')
     await writeFile(metafile, JSON.stringify(webBundle.metafile))
   }
   if (webWorkerBundle.metafile) {

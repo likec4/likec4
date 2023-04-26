@@ -117,7 +117,9 @@ export class LikeC4ModelBuilder {
         A.reduce({} as c4.LikeC4Model['elements'], (acc, el) => {
           const parent = parentFqn(el.id)
           if (!parent || parent in acc) {
-            invariant(!(el.id in acc), 'Duplicate element id: ' + el.id)
+            if (el.id in acc) {
+              logger.warn(`Duplicate element id: ${el.id}`)
+            }
             acc[el.id] = el
           }
           return acc
@@ -133,7 +135,9 @@ export class LikeC4ModelBuilder {
           )
         ),
         A.reduce({} as c4.LikeC4Model['relations'], (acc, el) => {
-          invariant(!(el.id in acc), 'Duplicate relation id: ' + el.id)
+          if (el.id in acc) {
+            logger.warn(`Duplicate relation id: ${el.id}`)
+          }
           acc[el.id] = el
           return acc
         })
@@ -159,7 +163,9 @@ export class LikeC4ModelBuilder {
           )
         ),
         A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
-          invariant(!(v.id in acc), 'Duplicate view id: ' + v.id)
+          if (v.id in acc) {
+            logger.warn(`Duplicate view id: ${v.id}`)
+          }
           acc[v.id] = v
           return acc
         })
@@ -405,6 +411,6 @@ export class LikeC4ModelBuilder {
       return
     }
     logger.debug('Send onDidChangeModel')
-    await connection.sendNotification(Rpc.onDidChangeModel)
+    await connection.sendNotification(Rpc.onDidChangeModel, void 0)
   }
 }

@@ -1,13 +1,13 @@
 import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core'
 import type { DocumentUri, Location,  } from 'vscode-languageserver-protocol'
-import { NotificationType0, RequestType0, RequestType } from 'vscode-languageserver-protocol'
+import { NotificationType, RequestType0, RequestType } from 'vscode-languageserver-protocol'
 
 //#region From server
-export const onDidChangeLikeC4Model = new NotificationType0('likec4/onDidChangeModel')
+export const onDidChangeModel = new NotificationType<void>('likec4/onDidChangeModel')
 //#endregion
 
 //#region To server
-export const fetchLikeC4Model = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
+export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
 
 export interface BuildDocumentsParams {
   docs: DocumentUri[]
@@ -33,8 +33,8 @@ export const locateView = new RequestType<{ id: ViewID }, Location | null, void>
 //#endregion
 
 export const Rpc = {
-  onDidChangeModel: onDidChangeLikeC4Model,
-  fetchModel: fetchLikeC4Model,
+  onDidChangeModel,
+  fetchModel,
   buildDocuments,
   locateElement,
   locateRelation,

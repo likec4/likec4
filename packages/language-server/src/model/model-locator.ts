@@ -1,8 +1,6 @@
 import type * as c4 from '@likec4/core/types'
-import type { AstNodeDescription, LangiumDocuments } from 'langium'
-import { getDocument } from 'langium'
-import { findNodeForKeyword, findNodeForProperty } from 'langium'
-import { head } from 'rambdax'
+import type { LangiumDocuments } from 'langium'
+import { findNodeForKeyword, findNodeForProperty, getDocument } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
@@ -33,22 +31,31 @@ export class LikeC4ModelLocator {
   }
 
   public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {
-    const descr = head(this.fqnIndex.byFqn(fqn) as AstNodeDescription[])
-
-    if (!descr) return null
-
-    const docUri = descr.documentUri.toString()
-    const doc = this.documents().find(d => d.uri.toString() === docUri)
-    const node =
-      doc && this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, descr.path)
-
-    if (!ast.isElement(node) || !node.$cstNode) return null
-
-    const propertyNode = findNodeForProperty(node.$cstNode, property)
-    return {
-      uri: docUri,
-      range: propertyNode?.range ?? node.$cstNode.range
+    for (const doc of this.documents()) {
+      if (doc.c4fqns && !doc.c4fqns.has(fqn)) {
+        continue
+      }
+      const element = doc.c4Elements.find(e => e.id === fqn)
+      if (!element) {
+        continue
+      }
+      const node = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        element.astPath
+      )
+      if (!ast.isElement(node)) {
+        continue
+      }
+      const propertyNode = findNodeForProperty(node.$cstNode, property) ?? node.$cstNode
+      if (!propertyNode) {
+        return null
+      }
+      return {
+        uri: doc.uri.toString(),
+        range: propertyNode.range
+      }
     }
+    return null
   }
 
   public locateRelation(relationId: c4.RelationID): Location | null {

@@ -1,7 +1,7 @@
 import type { LanguageClient, LayoutFn } from 'src/di'
 import { di } from 'src/di'
 import { ADisposable, disponsable, queueMicrotask } from 'src/util'
-import { fetchLikeC4Model, onDidChangeLikeC4Model } from '@likec4/language-server/protocol'
+import { fetchModel, onDidChangeModel } from '@likec4/language-server/protocol'
 import type { ComputedView, ViewID, DiagramView as LayoutedView } from '@likec4/core/types'
 import { equals } from 'rambdax'
 import { tokens } from 'typed-inject'
@@ -35,14 +35,14 @@ export class C4ModelImpl extends ADisposable {
         if (this.onDidChangeSubscription) {
           throw new Error('modelStream already started')
         }
-        console.log('++subscribe: onDidChangeLikeC4Model')
-        this.onDidChangeSubscription = this.client.onNotification(onDidChangeLikeC4Model, () => {
-          console.log('receive: onDidChangeLikeC4Model')
+        console.log('++subscribe: onDidChangeModel')
+        this.onDidChangeSubscription = this.client.onNotification(onDidChangeModel, () => {
+          console.log('receive: onDidChangeModel')
           listener.next(0)
         })
       },
       stop: () => {
-        console.log('--unsubscribe: onDidChangeLikeC4Model')
+        console.log('--unsubscribe: onDidChangeModel')
         // this.computedViews.clear()
         this.onDidChangeSubscription?.dispose()
         this.onDidChangeSubscription = null
@@ -61,7 +61,7 @@ export class C4ModelImpl extends ADisposable {
 
   public fetchModel() {
     return xs
-      .fromPromise(this.client.sendRequest(fetchLikeC4Model))
+      .fromPromise(this.client.sendRequest(fetchModel))
       .map(s => s.model)
       .filter(isNotNullish)
   }

@@ -75,15 +75,14 @@ ElementProperty: (
 );
 
 ExtendElement:
-  'extend' element=StrictElementRef OpenBlock
-    body=ExtendElementBody
-  CloseBlock;
+  'extend' element=StrictElementRef body=ExtendElementBody;
 
-ExtendElementBody:
+ExtendElementBody: OpenBlock
   elements+=(
     Element |
     RelationWithSource
-  )*;
+  )*
+CloseBlock ;
 
 StrictElementRef:
   el=[Element:Name] (Dot next=StrictElementRef)?;

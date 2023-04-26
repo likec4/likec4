@@ -1,5 +1,5 @@
 import * as ast from './generated/ast'
-import type { LangiumDocument } from 'langium'
+import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
@@ -72,7 +72,8 @@ export interface ParsedAstElementView {
 const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
-    Object.assign(node, { [idattr]: id })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (node as any)[idattr] = id
     return node
   },
   readId(node: ast.ElementView) {
@@ -82,8 +83,13 @@ export const ElementViewOps = {
 }
 
 export const ElementOps = {
-  writeId(node: ast.Element, id: c4.Fqn) {
-    Object.assign(node, { [idattr]: id })
+  writeId(node: ast.Element, id: c4.Fqn | null) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (id === null) {
+      delete (node as any)[idattr]
+    } else {
+      (node as any)[idattr] = id
+    }
     return node
   },
   readId(node: ast.Element) {
@@ -98,6 +104,9 @@ export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
   c4Elements: ParsedAstElement[]
   c4Relations: ParsedAstRelation[]
   c4Views: ParsedAstElementView[]
+
+  // Fqn -> astPath
+  c4fqns?: MultiMap<c4.Fqn, string> | undefined
 }
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
@@ -142,7 +151,9 @@ export function* streamModel(doc: LikeC4LangiumDocument) {
   let el
   while ((el = traverseStack.shift())) {
     if (ast.isExtendElement(el)) {
-      traverseStack.push(...el.body.elements)
+      if (!!el.body) {
+        traverseStack.push(...el.body.elements)
+      }
       continue
     }
     if (ast.isElement(el) && el.body) {

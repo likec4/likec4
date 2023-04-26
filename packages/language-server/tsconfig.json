@@ -5,6 +5,7 @@
     "importsNotUsedAsValues": "preserve",
     "outDir": "dist",
     "ignoreDeprecations": "5.0",
+    "sourceMap": true,
     "composite": true,
     "declarationMap": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",

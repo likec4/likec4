@@ -127,8 +127,8 @@
     "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "./dist/extension-node.js",
-  "browser": "./dist/extension-web.js",
+  "main": "./dist/node.js",
+  "browser": "./dist/web.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",

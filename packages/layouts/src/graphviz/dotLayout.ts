@@ -131,13 +131,16 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
 
   const diagramNodes = new Map<NodeId, DiagramNode>()
 
-  invariant(graphvizJson.objects, 'graphvizJson.objects is undefined')
-  for (const obj of graphvizJson.objects) {
+  const graphvizObjects = graphvizJson.objects ?? []
+  for (const obj of graphvizObjects) {
     if (!('id' in obj)) {
       continue
     }
     const computed = computedNodes.find(n => n.id === obj.id)
-    invariant(computed, `Node ${obj.id} not found in computedNodes`)
+    if (!computed) {
+      console.warn(`Node ${obj.id} not found, how did it get into the graphviz output?`)
+      continue
+    }
 
     const {
       x, y,
@@ -156,10 +159,13 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
     diagram.nodes.push(node)
   }
 
-  invariant(graphvizJson.edges, 'graphvizJson.edges is undefined')
-  for (const e of graphvizJson.edges) {
+  const graphvizEdges = graphvizJson.edges ?? []
+  for (const e of graphvizEdges) {
     const edgeData = computedEdges.find(i => i.id === e.id)
-    invariant(edgeData, `Edge ${e.id} not found, how did it get into the graphviz output?`)
+    if (!edgeData) {
+      console.warn(`Edge ${e.id} not found, how did it get into the graphviz output?`)
+      continue
+    }
     const edge: DiagramEdge = {
       ...edgeData,
       points: parseEdgePoints(e),

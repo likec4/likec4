@@ -13,8 +13,8 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
       })
       return
     }
-    const withSameFqn = fqnIndex.byFqn(fqn)
-    if (withSameFqn.length > 1) {
+    const withSameFqn = fqnIndex.byFqn(fqn).limit(2).count()
+    if (withSameFqn > 1) {
       accept(
         'error',
         `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,

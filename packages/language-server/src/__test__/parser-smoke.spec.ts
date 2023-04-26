@@ -18,11 +18,11 @@ describe('parser smoke', () => {
     it.concurrent(name, async ({ expect }) => {
       const { validate } = createTestServices()
       const { diagnostics } = await validate(document)
-      const errors = diagnostics.map(d => d.message)
+      const errors = diagnostics.map(d => d.message).join('\n')
       if (name.startsWith('invalid_')) {
-        expect(errors).not.toEqual([])
+        expect(errors).not.be.empty
       } else {
-        expect(errors).toEqual([])
+        expect(errors).be.empty
       }
     })
   })
