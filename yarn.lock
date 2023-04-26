@@ -650,7 +650,7 @@ __metadata:
     fast-glob: ^3.2.12
     langium: ^1.1.0
     mkdirp: ^2.1.6
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     typescript: ^5.0.4
     vscode-uri: 3.0.7
   bin:
@@ -663,7 +663,7 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     "@dagrejs/graphlib": ^2.1.12
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
     typescript: ^5.0.4
     vite: ^4.3.3
@@ -688,7 +688,7 @@ __metadata:
     konva: ^9.0.1
     npm-run-all: ^4.1.5
     polished: ^4.2.2
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     react-konva: ^18.2.7
     tilg: ^0.1.1
     tiny-invariant: ^1.3.1
@@ -729,7 +729,7 @@ __metadata:
     "@types/react": ^18.0.35
     "@types/react-dom": ^18.0.11
     "@vitejs/plugin-react": ^3.1.0
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
     typescript: ^5.0.4
@@ -745,7 +745,7 @@ __metadata:
     "@types/node": ^18.15.11
     json5: ^2.2.3
     langium: ^1.1.0
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     typescript: ^5.0.4
     vitest: ^0.30.1
   languageName: unknown
@@ -763,7 +763,7 @@ __metadata:
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     strip-indent: ^4.0.0
     tiny-invariant: ^1.3.1
     type-fest: ^3.8.0
@@ -789,7 +789,7 @@ __metadata:
     "@hpcc-js/wasm": ^2.12.0
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
     ts-graphviz: ^1.5.5
     typescript: ^5.0.4
@@ -814,7 +814,7 @@ __metadata:
     "@types/vscode-webview": ^1.57.1
     "@vitejs/plugin-react": ^3.1.0
     "@vscode/webview-ui-toolkit": ^1.2.2
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.4
@@ -4534,7 +4534,7 @@ __metadata:
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     path-browserify: ^1.0.1
-    rambdax: ^9.1.0
+    rambdax: ^9.1.1
     shx: ^0.3.4
     src: "link:./src"
     typed-inject: ^3.0.1
@@ -6512,10 +6512,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rambdax@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "rambdax@npm:9.1.0"
-  checksum: 2710538390a74df0e88e290d1394b7e7b082f81b9797bb7f5429135cb11a3a56d49b58eeb7dff9464daf55c021c75dea1c255716c8713b6aec14d01053a51954
+"rambdax@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "rambdax@npm:9.1.1"
+  checksum: 9187d876f09766741ef0dc6c9d7e7e14149c864ced6d63f956af83f7a3a1001cb6f8d7a23615b824799ec2b0ac096b3799499e33850f42460dc2e0725291467d
   languageName: node
   linkType: hard
 
