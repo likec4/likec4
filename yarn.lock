@@ -1438,18 +1438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16":
-  version: 18.0.35
-  resolution: "@types/react@npm:18.0.35"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: e65670397216e037b150a509ec08189140b4c20b82b612ac00b2a7133202be2d1def1e7ee69617b2df06ab4c00c43c4ee23e84788ad661aea9664da2f27c518a
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18.2.0":
+"@types/react@npm:*, @types/react@npm:>=16, @types/react@npm:^18.2.0":
   version: 18.2.0
   resolution: "@types/react@npm:18.2.0"
   dependencies:
@@ -6337,7 +6326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.21, postcss@npm:^8.4.23":
+"postcss@npm:^8.4.23":
   version: 8.4.23
   resolution: "postcss@npm:8.4.23"
   dependencies:
@@ -6776,7 +6765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.22.1":
+"resolve@npm:^1.1.6, resolve@npm:^1.10.0":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1"
   dependencies:
@@ -6789,7 +6778,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
   dependencies:
@@ -6835,20 +6824,6 @@ __metadata:
   bin:
     rimraf: dist/cjs/src/bin.js
   checksum: b786adc02651e2e24bbedb04bbdea80652fc9612632931ff2d9f898c5e4708fe30956186597373c568bd5230a4dc2fadfc816ccacba8a1daded3a006a6b74f1a
-  languageName: node
-  linkType: hard
-
-"rollup@npm:^3.18.0":
-  version: 3.20.2
-  resolution: "rollup@npm:3.20.2"
-  dependencies:
-    fsevents: ~2.3.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    rollup: dist/bin/rollup
-  checksum: 34b0932839b7c2a5d1742fb21ce95a47e0b49a0849f4abee2dccf25833187aa7babb898ca90d4fc761cffa4102b9ed0ac6ad7f6f6b96c8b8e2d67305abc5da65
   languageName: node
   linkType: hard
 
@@ -8189,45 +8164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^3.0.0 || ^4.0.0":
-  version: 4.2.2
-  resolution: "vite@npm:4.2.2"
-  dependencies:
-    esbuild: ^0.17.5
-    fsevents: ~2.3.2
-    postcss: ^8.4.21
-    resolve: ^1.22.1
-    rollup: ^3.18.0
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 7fff9d046f6091c02e030aa5f45e68939b9bec1dd15d4e2c3c084d82ec185300295f3db26f537daf2e19f9ad191be260bf70e5fe0e2d9054f174a7ad457623f8
-  languageName: node
-  linkType: hard
-
-"vite@npm:^4.3.3":
+"vite@npm:^3.0.0 || ^4.0.0, vite@npm:^4.3.3":
   version: 4.3.3
   resolution: "vite@npm:4.3.3"
   dependencies:
