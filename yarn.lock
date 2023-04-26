@@ -709,7 +709,7 @@ __metadata:
     "@types/react": ^18.0.35
     "@types/react-dom": ^18.0.11
     next: ^13.3.0
-    nextra: ^2.4.0
+    nextra: ^2.4.2
     nextra-theme-docs: ^2.4.0
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5867,9 +5867,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextra@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "nextra@npm:2.4.0"
+"nextra@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "nextra@npm:2.4.2"
   dependencies:
     "@mdx-js/mdx": ^2.3.0
     "@mdx-js/react": ^2.3.0
@@ -5896,7 +5896,7 @@ __metadata:
     next: ">=9.5.3"
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: efb9f64b38ecbd6d612e10eab5785c02f17c723b36f0c252a328b7782af2adaa1dfa34d612c962d67c1ef6158122e4e7a63375b9f99d9a78bb248c5fc247c4da
+  checksum: 377b0ae22883dae58e29d0577f3380e8b89c296d075685be677b930766c90f96c5a81d3f4322ef162ece2cce9d35f5b34f92c9a945a643d21fd31c6065817c77
   languageName: node
   linkType: hard
 
