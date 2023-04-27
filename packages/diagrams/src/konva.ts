@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Rect, Stage, Shape, Text, Group, Path, Line, Layer } from 'react-konva/es/ReactKonvaCore'
+import { Rect, Stage, Shape, Text, Group, Path, Circle, Line, Layer } from 'react-konva/es/ReactKonvaCore'
 
 import 'konva/lib/shapes/Rect'
 import 'konva/lib/shapes/Text'
 import 'konva/lib/shapes/Path'
+import 'konva/lib/shapes/Circle'
 import 'konva/lib/shapes/Line'
 
 import { animated, type AnimatedProps } from '@react-spring/konva'
@@ -16,7 +17,9 @@ export {
   Group,
   Layer,
   Shape,
-  Text
+  Text,
+  Circle,
+  Rect
 }
 
 export const AnimatedStage: KonvaNodeComponent<Konva.Stage, AnimatedProps<StageProps>> = animated(Stage) as any

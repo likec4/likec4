@@ -1,11 +1,8 @@
-import type { DiagramNode } from '@likec4/core/types'
 import { useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
-import type { DiagramTheme } from '../types'
-import { useNodeEvents } from './nodeEvents'
+import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { NodeLabels as NodeTitle } from './nodeLabels'
-import type { InterporatedNodeSprings, NodeSpringsCtrl } from './nodeSprings'
-import { AnimatedPath, AnimatedGroup } from '../../konva'
+import type { NodeShapeProps } from './types'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   const radius = Math.round(diameter / 2)
@@ -26,25 +23,13 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   return d
 }
 
-export interface CylinderShapeProps {
-  animate?: boolean
-  node: DiagramNode
-  theme: DiagramTheme
-  springs: InterporatedNodeSprings
-  ctrl: NodeSpringsCtrl
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
-}
-
 export const CylinderShape = ({
-  animate = true,
   node,
   theme,
   springs,
-  ctrl,
-  onNodeClick
-}: CylinderShapeProps) => {
+  ...listeners
+}: NodeShapeProps) => {
   const {
-    id,
     size: { width, height },
     color,
     labels
@@ -52,15 +37,14 @@ export const CylinderShape = ({
   const { fill, stroke, shadow: shadowColor } = theme.colors[color]
 
   const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
-  const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
+  // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
 
   const cylinderProps = useSpring({
     to: {
       fill,
       stroke,
       shadowColor
-    },
-    immediate: !animate
+    }
   })
 
   return (
@@ -68,11 +52,7 @@ export const CylinderShape = ({
     // @ts-ignore
     <AnimatedGroup
       {...springs}
-      {...useNodeEvents({
-        node,
-        ctrl,
-        onNodeClick
-      })}
+      {...listeners}
       >
       <AnimatedPath
         shadowBlur={12}

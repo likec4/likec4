@@ -1,20 +1,17 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { useMemo } from 'react'
-import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
-import { useNodeEvents } from './nodeEvents'
+import { AnimatedGroup, AnimatedPath } from '../../konva'
+import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
+import type { NodeShapeProps } from './types'
 
 export const QueueShape = ({
-  animate = true,
   node,
   theme,
   springs,
-  ctrl,
-  onNodeClick
-}: CylinderShapeProps) => {
+  ...listeners
+}: NodeShapeProps) => {
   const {
-    id,
     size: { width, height },
     color,
     labels
@@ -29,8 +26,7 @@ export const QueueShape = ({
       fill,
       stroke,
       shadowColor
-    },
-    immediate: !animate
+    }
   })
 
   return (
@@ -38,11 +34,7 @@ export const QueueShape = ({
     // @ts-ignore
     <AnimatedGroup
       {...springs}
-      {...useNodeEvents({
-        node,
-        ctrl,
-        onNodeClick
-      })}
+      {...listeners}
     >
       <AnimatedPath
         shadowBlur={12}

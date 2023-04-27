@@ -1,10 +1,9 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { config } from '@react-spring/konva'
-import type { NodeSpringsCtrl } from './nodeSprings'
-import type { OnClickEvent, OnMouseEvent } from './types'
+import type { NodeSpringsCtrl, OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
-export function useNodeEvents({
+export function nodeListeners({
   node,
   ctrl,
   onNodeClick

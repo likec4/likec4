@@ -1,11 +1,10 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
 import { useMemo } from 'react'
+import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
 
 import type { DiagramTheme } from '../types'
-import type { InterporatedNodeSprings } from './nodeSprings'
-import type { OnClickEvent, OnMouseEvent } from './types'
+import type { InterporatedNodeSprings, OnClickEvent, OnMouseEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {

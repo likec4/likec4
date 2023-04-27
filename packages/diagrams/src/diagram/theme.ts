@@ -1,4 +1,4 @@
-import { complement, invert } from 'khroma'
+import { complement, darken, invert } from 'khroma'
 import type { DiagramTheme, ThemeColors } from './types'
 
 const shadow = '#0a0a0a'
@@ -54,7 +54,8 @@ export const DefaultDiagramTheme: DiagramTheme = {
     primary: {
       shadow,
       fill: '#2563eb',
-      stroke: '#1e40af',
+      stroke: darken('#2563eb', 11),
+      // stroke: '#1e40af',
       hiContrast: '#eff6ff',
       loContrast: '#bfdbfe'
     },
@@ -69,14 +70,16 @@ export const DefaultDiagramTheme: DiagramTheme = {
     secondary: {
       shadow,
       fill: '#0369a1',
-      stroke: '#0c4a6e',
+      // stroke: '#0c4a6e',
+      stroke: darken('#0369a1', 10),
       hiContrast: '#f0f9ff',
       loContrast: '#bae6fd'
     },
     muted: {
       shadow,
       fill: '#4b5563',
-      stroke: '#374151',
+      // stroke: '#374151',
+      stroke: darken('#4b5563', 10),
       hiContrast: '#f9fafb',
       loContrast: '#d1d5db'
     }

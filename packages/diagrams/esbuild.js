@@ -16,7 +16,8 @@ const cfg = {
   platform: 'browser',
   format: 'esm',
   outfile: 'dist/index.js',
-  minify: false,
+  minify: !!watch,
+  keepNames: true,
   metafile: true,
   sourcemap: true,
   sourcesContent: false,
@@ -63,7 +64,6 @@ if (!watch) {
   await esbuild.build({
     ...cfg,
     metafile: false,
-    logLevel: 'warning',
     format: 'cjs',
     sourcemap: false,
     outfile: 'dist/index.cjs'

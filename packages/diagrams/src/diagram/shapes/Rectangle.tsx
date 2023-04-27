@@ -1,33 +1,18 @@
-import type { DiagramNode } from '@likec4/core/types'
 import {
   useSpring
 } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect } from '../../konva'
-import type { DiagramTheme } from '../types'
-import { useNodeEvents } from './nodeEvents'
 import { NodeLabels } from './nodeLabels'
-import type { InterporatedNodeSprings, NodeSpringsCtrl } from './nodeSprings'
+import type { NodeShapeProps } from './types'
 
-
-export interface RectangleShapeProps {
-  animate?: boolean
-  node: DiagramNode
-  theme: DiagramTheme
-  springs: InterporatedNodeSprings
-  ctrl: NodeSpringsCtrl
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
-}
 
 export const RectangleShape = ({
-  animate = true,
   node,
   theme,
   springs,
-  ctrl,
-  onNodeClick
-}: RectangleShapeProps) => {
+  ...listeners
+}: NodeShapeProps) => {
   const {
-    id,
     color,
     labels
   } = node
@@ -37,8 +22,7 @@ export const RectangleShape = ({
     to: {
       fill,
       shadowColor
-    },
-    immediate: !animate
+    }
   })
 
   return (
@@ -46,11 +30,7 @@ export const RectangleShape = ({
     // @ts-ignore
     <AnimatedGroup
       {...springs}
-      {...useNodeEvents({
-        node,
-        ctrl,
-        onNodeClick
-      })}
+      {...listeners}
     >
       <AnimatedRect
         cornerRadius={6}
@@ -68,6 +48,22 @@ export const RectangleShape = ({
         color={color}
         theme={theme}
       />
+      {/* {hovered && (
+        <Rect
+          x={10}
+          y={10}
+          width={node.size.width - 20}
+          height={20}
+          visible={hovered}
+          fill={darken(fill, 2)}
+          onMouseEnter={e => {
+            console.log('enter')
+          }}
+          onMouseLeave={e => {
+            console.log('leave')
+          }}
+        />
+      )} */}
     </AnimatedGroup>
   )
 }

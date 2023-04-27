@@ -31,7 +31,7 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
         position: 'relative',
         display: 'flex',
         aspectRatio: `${w} / ${h}`,
-        ...(w > h
+        ...(w >= h
           ? {
             width: '100%',
             height: 'auto',

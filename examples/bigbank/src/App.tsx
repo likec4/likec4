@@ -6,7 +6,7 @@ import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.data'
 import useTilg from 'tilg'
 
 function App() {
-  const [viewId, setViewId] = useState<LikeC4ViewId>('index')
+  const [viewId, setViewId] = useState<LikeC4ViewId>('ibs')
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node
@@ -23,6 +23,7 @@ function App() {
     <EmbeddedDiagram
       views={LikeC4ViewsData}
       viewId={viewId}
+      onNodeClick={onNodeClick}
     // diagram={LikeC4ViewsData[viewId]}
     // width={window.innerWidth}
     // height={window.innerHeight}

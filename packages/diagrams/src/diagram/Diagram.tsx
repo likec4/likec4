@@ -17,6 +17,7 @@ import { interpolateNodeSprings } from './shapes/nodeSprings'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
 import { mouseDefault, mousePointer } from './shapes/utils'
+import { nodeListeners } from './shapes/nodeEvents'
 
 interface IRect {
   x: number
@@ -359,12 +360,14 @@ export function Diagram({
           const Shape = nodeShape(node)
           return <Shape
             key={key}
-            animate={animate}
             node={node}
             theme={theme}
             springs={interpolateNodeSprings(springs)}
-            ctrl={ctrl}
-            onNodeClick={onNodeClick}
+            {...nodeListeners({
+              node,
+              ctrl,
+              onNodeClick
+            })}
           />
         })}
       </Layer>
