@@ -34,7 +34,7 @@
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.8",
-    "rimraf": "^4.4.1",
+    "rimraf": "^5.0.0",
     "turbo": "^1.9.3",
     "typescript": "^5.0.4",
     "vite": "^4.3.3",
