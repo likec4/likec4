@@ -732,6 +732,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
+    tilg: ^0.1.1
     typescript: ^5.0.4
     vite: ^4.3.3
   languageName: unknown

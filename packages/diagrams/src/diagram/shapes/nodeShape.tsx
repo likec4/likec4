@@ -2,6 +2,7 @@ import type { DiagramNode } from '@likec4/core/types'
 import { CylinderShape } from './Cylinder'
 import { RectangleShape } from './Rectangle'
 import { QueueShape } from './Queue'
+import { unexhaustive } from './utils'
 
 export function nodeShape({ shape }: DiagramNode) {
   switch (shape) {
@@ -19,5 +20,5 @@ export function nodeShape({ shape }: DiagramNode) {
     }
   }
   // @ts-expect-error - this should be unreachable
-  throw new Error('Unexpected shape: ' + shape)
+  unexhaustive(shape)
 }

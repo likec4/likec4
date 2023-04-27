@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
-import { useUpdateEffect } from '@react-hookz/web/esm'
+import { useDebouncedEffect, useSyncedRef, useThrottledEffect, useUpdateEffect } from '@react-hookz/web/esm'
 import {
+  config,
   useSpring,
   useSpringRef,
   useTransition,
@@ -10,11 +11,12 @@ import {
 import { AnimatedStage, Layer } from '../konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { useCallback, useMemo, type ReactElement } from 'react'
+import { useCallback, useMemo, type ReactElement, useRef } from 'react'
 import { CompoundShape, EdgeShape, nodeShape } from './shapes'
 import { interpolateNodeSprings } from './shapes/nodeSprings'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+import { mouseDefault, mousePointer } from './shapes/utils'
 
 interface IRect {
   x: number
@@ -73,6 +75,13 @@ export function Diagram({
   const width = Math.max(props.width ?? diagram.width, 16)
   const height = Math.max(props.height ?? diagram.height, 16)
 
+  const viewRect = {
+    width,
+    height,
+  }
+  const viewRectRef = useRef(viewRect)
+  viewRectRef.current = viewRect
+
   // const stageRef = useRef<Konva.Stage>(null)
   const stageSpringApi = useSpringRef<{
     x: number
@@ -89,10 +98,11 @@ export function Diagram({
 
     // Get the space we can see in the web page = size of div containing stage
     // or stage size, whichever is the smaller
-    const viewRect = {
-      width,
-      height
-    }
+    const viewRect = viewRectRef.current
+    // const viewRect = {
+    //   width,
+    //   height
+    // }
     // if (stage && container) {
     //   viewRect.width = Math.min(container.clientWidth, stage.width())
     //   viewRect.height = Math.min(container.clientHeight, stage.height())
@@ -123,7 +133,7 @@ export function Diagram({
     return {
       x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
       y: Math.ceil(centeringAjustment.y + -centerTo.y * scale),
-      scale,
+      scale
     }
   }
 
@@ -138,7 +148,7 @@ export function Diagram({
   }))
 
   useUpdateEffect(() => {
-    stageSpringApi.start({
+    stageSpringApi.stop(true).start({
       to: centerOnRect({
         x: 0,
         y: 0,
@@ -157,7 +167,7 @@ export function Diagram({
     return {
       draggable: true,
       onDragStart: (_e: Konva.KonvaEventObject<DragEvent>) => {
-        stageSpringApi.stop()
+        stageSpringApi.stop(true, ['x', 'y'])
       },
       onDragEnd: ({ target }: Konva.KonvaEventObject<DragEvent>) => {
         // if (target === stageRef.current) {
@@ -207,7 +217,7 @@ export function Diagram({
 
       newScale = clamp(0.1, 1.6, newScale)
 
-      stageSpringApi.start({
+      stageSpringApi.stop(true).start({
         to: {
           scale: newScale,
           x: pointer.x - mousePointTo.x * newScale,
@@ -238,8 +248,6 @@ export function Diagram({
     immediate: !animate,
     keys: g => g.id,
   })
-
-  // console.log('compoundTransitions', compoundTransitionsRef.current)
 
   const edgeTransitions = useTransition(diagram.edges, {
     initial: {
@@ -312,15 +320,37 @@ export function Diagram({
             onNodeClick={onNodeClick}
           />
         ))}
-      </Layer>
-      <Layer>
-        {edgeTransitions((springs, edge, { key }) => (
+        {edgeTransitions((springs, edge, { key, ctrl }) => (
           <EdgeShape
             key={key}
             edge={edge}
             theme={theme}
             springs={springs}
-            onEdgeClick={onEdgeClick}
+            onClick={e => {
+              if (onEdgeClick) {
+                e.cancelBubble = true
+                onEdgeClick(edge)
+              }
+            }}
+            onMouseEnter={e => {
+              mousePointer(e)
+              void ctrl.start({
+                to: {
+                  opacity: 1,
+                },
+                config: config.stiff
+              })
+            }}
+            onMouseLeave={e => {
+              mouseDefault(e)
+              void ctrl.start({
+                to: {
+                  opacity: 0.8,
+                },
+                delay: 50,
+                config: config.slow
+              })
+            }}
           />
         ))}
       </Layer>
@@ -336,8 +366,7 @@ export function Diagram({
             ctrl={ctrl}
             onNodeClick={onNodeClick}
           />
-        }
-        )}
+        })}
       </Layer>
     </AnimatedStage>
   )

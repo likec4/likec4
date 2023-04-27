@@ -5,7 +5,7 @@
   "packageManager": "yarn@3.4.1",
   "scripts": {
     "generate": "likec4 generate --target views-data --output src/likec4.data.ts",
-    "start": "run generate && vite"
+    "dev": "run generate && vite"
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",
@@ -20,6 +20,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
+    "tilg": "^0.1.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.3"
   },

@@ -1,16 +1,16 @@
 import type { DiagramNode } from '@likec4/diagrams'
-import { Diagram } from '@likec4/diagrams/src/diagram/Diagram'
+import { EmbeddedDiagram } from '@likec4/diagrams/src/embedded/EmbeddedDiagram'
 import { useCallback, useState } from 'react'
-import type { ViewId } from './likec4.data'
-import { LikeC4ViewsData, isViewId } from './likec4.data'
+import type { LikeC4ViewId } from './likec4.data'
+import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.data'
 import useTilg from 'tilg'
 
 function App() {
-  const [viewId, setViewId] = useState<ViewId>('ibs')
+  const [viewId, setViewId] = useState<LikeC4ViewId>('index')
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node
-    if (isViewId(navigateTo)) {
+    if (isLikeC4ViewId(navigateTo)) {
       setViewId(navigateTo)
     }
   }, [])
@@ -19,15 +19,17 @@ function App() {
   useTilg()`viewId = ${viewId}`
 
 
-  return <div className="diagram-container">
-    <Diagram
-      diagram={LikeC4ViewsData[viewId]}
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onNodeClick={onNodeClick}
-      padding={40}
+  return <section>
+    <EmbeddedDiagram
+      views={LikeC4ViewsData}
+      viewId={viewId}
+    // diagram={LikeC4ViewsData[viewId]}
+    // width={window.innerWidth}
+    // height={window.innerHeight}
+    // onNodeClick={onNodeClick}
+    // padding={40}
     />
-  </div>
+  </section>
 }
 
 export default App
