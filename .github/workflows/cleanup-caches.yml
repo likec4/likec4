@@ -5,7 +5,7 @@ on:
       - closed
 
 permissions:
-  contents: write
+  actions: write
 
 jobs:
   cleanup:
