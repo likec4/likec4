@@ -5,6 +5,7 @@
   "bin": {
     "likec4": "dist/likec4.js"
   },
+  "main": "dist/likec4.js",
   "engines": {
     "node": ">=16"
   },
@@ -28,6 +29,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
+    "@commander-js/extra-typings": "^10.0.3",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",

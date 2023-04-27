@@ -1,6 +1,6 @@
-import { Command } from 'commander'
-import { registerGenerateCommand } from './cmd-generate'
+import { createCommand } from '@commander-js/extra-typings'
+import { codegenCommand } from './cmd-codegen'
 
-const program = new Command()
-registerGenerateCommand(program)
-program.parse(process.argv)
+const program = createCommand()
+  .addCommand(codegenCommand())
+void program.parseAsync()

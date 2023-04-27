@@ -4,7 +4,7 @@
   "version": "0.7.0",
   "packageManager": "yarn@3.4.1",
   "scripts": {
-    "generate": "likec4 generate --target views-data --output src/likec4.data.ts",
+    "generate": "likec4 codegen views-data --output src/likec4.data.ts",
     "dev": "run generate && vite"
   },
   "dependencies": {

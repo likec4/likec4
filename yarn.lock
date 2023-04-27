@@ -315,6 +315,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@commander-js/extra-typings@npm:^10.0.3":
+  version: 10.0.3
+  resolution: "@commander-js/extra-typings@npm:10.0.3"
+  peerDependencies:
+    commander: 10.0.x
+  checksum: a9ab69c4a69c65649cc4c6735e9ad6cfe1ed54785f86d718db8897a4695206bc9fcb8f8de1a1f61be629ad97212e9a024d74ac5755558676d5251cfe493459af
+  languageName: node
+  linkType: hard
+
 "@dagrejs/dagre@npm:^0.8.0":
   version: 0.8.0
   resolution: "@dagrejs/dagre@npm:0.8.0"
@@ -639,6 +648,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/cli@workspace:packages/cli"
   dependencies:
+    "@commander-js/extra-typings": ^10.0.3
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"

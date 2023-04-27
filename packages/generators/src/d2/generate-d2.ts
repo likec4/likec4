@@ -45,7 +45,10 @@ export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
         indentedChildren: indent =>
           indent
             .append('label: "', label, '"', NL)
-            .append('shape: ', shape, NL)
+            .appendIf(
+              shape !== 'rectangle',
+              'shape: ', shape, NL
+            )
             .appendIf(
               node.children.length > 0,
               NL,

@@ -14,7 +14,7 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "turbo-build": "run -T turbo run build --filter='docs-website...'",
-    "generate": "likec4 generate --target react --output components/likec4/generated.tsx ./likec4",
+    "generate": "likec4 codegen react --output components/likec4/generated.tsx ./likec4",
     "dev": "run generate && next dev",
     "build": "next build",
     "start": "next start",
