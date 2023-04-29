@@ -735,7 +735,6 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.3
     langium: ^1.1.0
     monaco-editor: 0.36.1
-    monaco-editor-workers: 0.36.0
     monaco-languageclient: 5.0.1
     next: ^13.3.1
     nextra: ^2.4.2
@@ -748,11 +747,12 @@ __metadata:
     typescript: ^5.0.4
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-json-languageservice: ~5.3.2
-    vscode-jsonrpc: ~8.1.0
-    vscode-languageclient: ~8.1.0
-    vscode-languageserver: ~8.1.0
+    vscode-jsonrpc: 8.1.0
+    vscode-languageclient: 8.1.0
+    vscode-languageserver: 8.1.0
+    vscode-languageserver-protocol: 3.17.3
     vscode-uri: ~3.0.7
-    vscode-ws-jsonrpc: 3.0.0
+    zustand: ^4.3.7
   languageName: unknown
   linkType: soft
 
@@ -812,7 +812,7 @@ __metadata:
     vscode-uri: ~3.0.7
   peerDependencies:
     langium: ^1.1.0
-    vscode-languageserver-protocol: ~3.17.2
+    vscode-languageserver-protocol: 3.17.3
   peerDependenciesMeta:
     vscode-languageserver-protocol:
       optional: true
@@ -4773,9 +4773,8 @@ __metadata:
     src: "link:./src"
     typed-inject: ^3.0.1
     typescript: ^5.0.4
-    vscode-languageclient: 8.0.2
-    vscode-languageserver: 8.0.2
-    vscode-languageserver-protocol: 3.17.2
+    vscode-languageclient: 8.1.0
+    vscode-languageserver: 8.1.0
     vscode-uri: ~3.0.7
     xstream: ^11.14.0
   languageName: unknown
@@ -5925,13 +5924,6 @@ __metadata:
     pkg-types: ^1.0.2
     ufo: ^1.1.1
   checksum: 640b019eb20e8e556bd623141b861d47e5c05f8af00210376ce1015912695dbd93a38cfe7ba18ca04f00e75645378f0f94a48a90bfa6e1b5dee1f0ec9c14eed1
-  languageName: node
-  linkType: hard
-
-"monaco-editor-workers@npm:0.36.0":
-  version: 0.36.0
-  resolution: "monaco-editor-workers@npm:0.36.0"
-  checksum: 3322ffcfc310b761e3428455db131bfef74b95f2baf0442016f0410dd8fd6cc6073108b52db35cab851c7b38047253865dbab1f4fd60834f58fabef278828f1a
   languageName: node
   linkType: hard
 
@@ -8661,6 +8653,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-sync-external-store@npm:1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
+  languageName: node
+  linkType: hard
+
 "util-deprecate@npm:^1.0.1, util-deprecate@npm:^1.0.2":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -8885,32 +8886,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-jsonrpc@npm:8.0.2":
-  version: 8.0.2
-  resolution: "vscode-jsonrpc@npm:8.0.2"
-  checksum: 9d055fd4c87ef1093b0eecb5370bfaf3402179b6639149b6d0f7e0bde60cf580091c7e07b0caff868f10f90331b17e7383c087217c077fdd1b5ae7bc23b72f77
-  languageName: node
-  linkType: hard
-
-"vscode-jsonrpc@npm:8.1.0, vscode-jsonrpc@npm:~8.1.0":
+"vscode-jsonrpc@npm:8.1.0":
   version: 8.1.0
   resolution: "vscode-jsonrpc@npm:8.1.0"
   checksum: 8980037cc0014802e6ac1e5dfcff9a65e8292727096dfd23c92d2039c0c45de74a00d6ee06938cf1a671286dd8258a5f418cf048c26ad0fcb0c44f96c9e0f278
   languageName: node
   linkType: hard
 
-"vscode-languageclient@npm:8.0.2":
-  version: 8.0.2
-  resolution: "vscode-languageclient@npm:8.0.2"
-  dependencies:
-    minimatch: ^3.0.4
-    semver: ^7.3.5
-    vscode-languageserver-protocol: 3.17.2
-  checksum: 3a145605a3cdb2855a2a771d6b8e75e72a1ca5aa32e091933c2f0e6f7b8fc1a45a9ea79b434001ad8af6b8cdb4ef88ff92fbb128b37988ebb21cac1b60cd44c3
-  languageName: node
-  linkType: hard
-
-"vscode-languageclient@npm:~8.1.0":
+"vscode-languageclient@npm:8.1.0":
   version: 8.1.0
   resolution: "vscode-languageclient@npm:8.1.0"
   dependencies:
@@ -8918,16 +8901,6 @@ __metadata:
     semver: ^7.3.7
     vscode-languageserver-protocol: 3.17.3
   checksum: b9d46aa256188dae19dcc5adb502be7193564b3313cbf20f99f83730ffbbf88cec40a08c4cafdc005b65c6385544c9f316de9b152067ab263221383326f00f95
-  languageName: node
-  linkType: hard
-
-"vscode-languageserver-protocol@npm:3.17.2":
-  version: 3.17.2
-  resolution: "vscode-languageserver-protocol@npm:3.17.2"
-  dependencies:
-    vscode-jsonrpc: 8.0.2
-    vscode-languageserver-types: 3.17.2
-  checksum: f4a05d3a631af315a32a3700953c2117fa4e5c44bc03764154c6605da9cbbcb50a1b01b46f11b2f6948916d01b4948bebf1a84c135fc73b27fa839c58d0847ab
   languageName: node
   linkType: hard
 
@@ -8955,13 +8928,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-types@npm:3.17.2":
-  version: 3.17.2
-  resolution: "vscode-languageserver-types@npm:3.17.2"
-  checksum: ef2d862d22f622b64de0f428773d50a5928ec6cdd485960a7564ebe4fd4a3c8bcd956f29eb15bc45a0f353846e62f39f6c764d2ab85ce774b8724411ba84342f
-  languageName: node
-  linkType: hard
-
 "vscode-languageserver-types@npm:3.17.3, vscode-languageserver-types@npm:^3.17.3":
   version: 3.17.3
   resolution: "vscode-languageserver-types@npm:3.17.3"
@@ -8969,18 +8935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver@npm:8.0.2, vscode-languageserver@npm:~8.0.2":
-  version: 8.0.2
-  resolution: "vscode-languageserver@npm:8.0.2"
-  dependencies:
-    vscode-languageserver-protocol: 3.17.2
-  bin:
-    installServerIntoExtension: bin/installServerIntoExtension
-  checksum: f564417bf08f5400e8381b6d0defb4e7242a04525696b1728b05524b89932047af625fac07715b4d36307e1de599cbef54d240c15101fe831aaface431f21e1b
-  languageName: node
-  linkType: hard
-
-"vscode-languageserver@npm:~8.1.0":
+"vscode-languageserver@npm:8.1.0":
   version: 8.1.0
   resolution: "vscode-languageserver@npm:8.1.0"
   dependencies:
@@ -9009,15 +8964,6 @@ __metadata:
   version: 3.0.7
   resolution: "vscode-uri@npm:3.0.7"
   checksum: c899a0334f9f6ba53021328e083f6307978c09b94407d7e5fe86fcd8fcb8f1da0cb344123a335e55769055007a46d51aff83f9ee1dfc0296ee54b78f34ef0e4f
-  languageName: node
-  linkType: hard
-
-"vscode-ws-jsonrpc@npm:3.0.0":
-  version: 3.0.0
-  resolution: "vscode-ws-jsonrpc@npm:3.0.0"
-  dependencies:
-    vscode-jsonrpc: ~8.1.0
-  checksum: 005482a364bb7334840f34bab1c04e69db90142333654503c2870c1bf5a1947deb4a8494cd088de5381950f49e8e48c5cd21363a64a60d170107078b7e759159
   languageName: node
   linkType: hard
 
@@ -9262,6 +9208,23 @@ __metadata:
   version: 3.21.4
   resolution: "zod@npm:3.21.4"
   checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^4.3.7":
+  version: 4.3.7
+  resolution: "zustand@npm:4.3.7"
+  dependencies:
+    use-sync-external-store: 1.2.0
+  peerDependencies:
+    immer: ">=9.0"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: 355b414ba4830b6106bcb888077c5f90f40ed649e4127e337eff4fb4ea90e88bf5cccf32344711d743cb92a676a0643a6ab3674ddc60ed49f17ea1bc8e3f58e2
   languageName: node
   linkType: hard
 

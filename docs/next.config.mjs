@@ -1,9 +1,7 @@
 import nextra from 'nextra'
 import { resolve } from 'path'
-import { codeImport } from 'remark-code-import';
+import { codeImport } from 'remark-code-import'
 import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
-
-
 
 /** @type {import('nextra').NextraConfig} */
 const withNextra = nextra({
@@ -13,9 +11,7 @@ const withNextra = nextra({
     codeblocks: false
   },
   mdxOptions: {
-    remarkPlugins: [
-      codeImport
-    ],
+    remarkPlugins: [codeImport],
     rehypePrettyCodeOptions: {
       getHighlighter: options =>
         getHighlighter({
@@ -40,18 +36,17 @@ const withNextra = nextra({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['monaco-editor'],
   // experimental: {
   // }
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
-    console.log('config.experiments', config.experiments)
+    // console.log('config.experiments', config.experiments)
     config.module.rules.push({
       test: /\.(mp3|wasm)$/i,
       type: 'asset/resource'
     })
     return config
-},
+  },
   output: 'export',
   transpilePackages: ['@likec4/diagrams'],
   images: {

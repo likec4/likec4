@@ -1,8 +1,16 @@
-import CodeEditor from './editor'
+import { useFilesStore, updateFile } from './data'
+import { MonacoEditor } from './editor'
 import styles from './playground.module.css'
 
-export const PlaygroundPage = () => {
+export default function PlaygroundPage() {
+
+  const current = useFilesStore(s => s.current)
+
   return <div className={styles.playground}>
-    <CodeEditor />
+    <MonacoEditor
+      currentFile={current}
+      initiateFiles={() => useFilesStore.getState().files}
+      onChange={value => updateFile(current, value)}
+    />
   </div>
 }

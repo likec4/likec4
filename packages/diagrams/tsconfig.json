@@ -20,9 +20,6 @@
     "src/**/*"
   ],
   "references": [
-    { "path": "../language-server" },
-    { "path": "../generators" },
-    { "path": "../layouts" },
     { "path": "../core" }
   ]
 }

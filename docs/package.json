@@ -30,7 +30,6 @@
     "body-scroll-lock-upgrade": "^1.0.3",
     "langium": "^1.1.0",
     "monaco-editor": "0.36.1",
-    "monaco-editor-workers": "0.36.0",
     "monaco-languageclient": "5.0.1",
     "next": "^13.3.1",
     "nextra": "^2.4.2",
@@ -40,11 +39,12 @@
     "state-local": "^1.0.7",
     "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
     "vscode-json-languageservice": "~5.3.2",
-    "vscode-jsonrpc": "~8.1.0",
-    "vscode-languageclient": "~8.1.0",
-    "vscode-languageserver": "~8.1.0",
+    "vscode-jsonrpc": "8.1.0",
+    "vscode-languageclient": "8.1.0",
+    "vscode-languageserver": "8.1.0",
+    "vscode-languageserver-protocol": "3.17.3",
     "vscode-uri": "~3.0.7",
-    "vscode-ws-jsonrpc": "3.0.0"
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",

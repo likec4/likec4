@@ -23,7 +23,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./builtin": "./src/builtin.ts",
-    "./protocol": "./src/protocol.ts"
+    "./protocol": "./src/protocol.ts",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -46,16 +47,17 @@
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.js",
         "require": "./dist/protocol.js"
-      }
+      },
+      "./dist/*": "./dist/*"
     }
   },
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='language-server...'",
-    "compile": "tsc --noEmit",
+    "compile": "tsc --build --emitDeclarationOnly",
     "watch:langium": "langium generate --watch",
-    "watch:ts": "tsc -p tsconfig.esm.json --watch",
+    "watch:ts": "tsc --build --watch",
     "generate": "langium generate",
-    "build": "tsc -p tsconfig.esm.json",
+    "build": "tsc --build",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
@@ -75,7 +77,7 @@
   },
   "peerDependencies": {
     "langium": "^1.1.0",
-    "vscode-languageserver-protocol": "~3.17.2"
+    "vscode-languageserver-protocol": "3.17.3"
   },
   "peerDependenciesMeta": {
     "vscode-languageserver-protocol": {

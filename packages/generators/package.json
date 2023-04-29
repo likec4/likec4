@@ -28,7 +28,7 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "build": "tsc -p tsconfig.esm.json",
+    "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",

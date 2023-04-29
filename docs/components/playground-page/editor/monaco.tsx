@@ -1,0 +1,278 @@
+/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+import { loader, type Monaco } from "@monaco-editor/react"
+import 'monaco-editor/esm/vs/editor/edcore.main.js'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+
+
+import { onDidChangeModel, buildDocuments } from '@likec4/language-server/dist/protocol'
+import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
+import { CloseAction, ErrorAction } from 'vscode-languageclient'
+import { BrowserMessageReader, BrowserMessageWriter } from 'vscode-languageclient/browser'
+
+import { once, toPairs, delay } from 'rambdax'
+import { StandaloneServices } from 'vscode/services'
+
+import { Editor } from "@monaco-editor/react"
+import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
+import getNotificationServiceOverride from 'vscode/service-override/notifications'
+import getDialogServiceOverride from 'vscode/service-override/dialogs'
+import likec4Monarch from './likec4.monarch'
+import styles from './monaco.module.css'
+
+self.MonacoEnvironment = {
+  getWorker(_, label) {
+    if (label === 'json') {
+      return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url))
+    }
+    // if (label === 'typescript' || label === 'javascript') {
+    //   return new Worker(new URL('monaco-editor/esm/vs/language/typescript/ts.worker', import.meta.url))
+    // }
+    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
+  }
+}
+
+StandaloneServices.initialize({
+  ...getNotificationServiceOverride(document.body),
+  ...getDialogServiceOverride(document.body),
+  ...getModelEditorServiceOverride((_model, _options, _sideBySide) => {
+    // const editor = getMonacoEditor()
+    // if (!editor) {
+    //   console.warn('no active editor')
+    //   return Promise.resolve(undefined)
+    // }
+    // // const editorModel = editor.getModel() ?? null
+    // // if (!editorModel || editorModel.uri.toString() !== model.uri.toString()) {
+    // //   changeCurrentDocument(model.uri.toString())
+    // // }
+    return Promise.resolve(undefined)
+  })
+})
+
+loader.config({ monaco })
+
+export const languageId = 'likec4'
+const themeId = 'likec4PlaygroundTheme'
+
+let languageClient: MonacoLanguageClient | null = null
+
+async function startLanguageClient(monaco: Monaco) {
+  if (!languageClient) {
+    console.debug('create likec4 language client')
+    const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
+      name: 'likec4-language-worker'
+    })
+    const reader = new BrowserMessageReader(worker)
+    const writer = new BrowserMessageWriter(worker)
+
+    languageClient = new MonacoLanguageClient({
+      name: 'LikeC4 Language Client',
+      clientOptions: {
+        // use a language id as a document selector
+        documentSelector: [languageId],
+        // disable the default error handler
+        errorHandler: {
+          error: () => ({ action: ErrorAction.Continue }),
+          closed: () => ({ action: CloseAction.DoNotRestart })
+        }
+      },
+      // create a language client connection from the JSON RPC connection on demand
+      connectionProvider: {
+        get: () => {
+          return Promise.resolve({ reader, writer })
+        }
+      }
+    })
+
+    languageClient.onNotification(onDidChangeModel.method, () => {
+      console.log('languageClient received onDidChangeModel')
+    })
+  }
+
+  if (languageClient.needsStart()) {
+    console.debug('starting likec4 language client')
+    await languageClient.start()
+  }
+  console.debug('likec4 language client started')
+
+  const models = monaco.editor.getModels()
+  console.debug('monaco.models', models)
+  const likec4docs = models.flatMap(m => m.getLanguageId() === languageId ? [m.uri.toString()] : [])
+  console.debug('likec4docs', likec4docs)
+
+  if (likec4docs.length) {
+    await delay(500)
+    await languageClient.sendRequest(buildDocuments.method, likec4docs)
+  }
+
+  return languageClient
+}
+
+const loadMonacoModels = (monaco: Monaco, files: Record<string, string>) => {
+  for (const [filename, value] of toPairs(files)) {
+    const uri = monaco.Uri.parse(filename)
+    const model = monaco.editor.getModel(uri)
+    if (!model) {
+      monaco.editor.createModel(value, languageId, uri)
+    } else {
+      model.setValue(value)
+    }
+  }
+}
+
+const setup = once((monaco: Monaco) => {
+  // do something before editor is mounted
+  monaco.languages.register({
+    id: languageId,
+    extensions: ['.c4'],
+    aliases: ['LikeC4', 'likec4', 'c4'],
+    mimetypes: ['text/plain'],
+  })
+  monaco.languages.setLanguageConfiguration(languageId, {
+    "comments": {
+      // symbol used for single line comment. Remove this entry if your language does not support line comments
+      "lineComment": "//",
+      // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
+      "blockComment": ["/*", "*/"]
+    },
+    // symbols used as brackets
+    "brackets": [
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"]
+    ],
+    // symbols that are auto closed when typing
+    "autoClosingPairs": [
+      {
+        "open": "{",
+        "close": "}"
+      },
+      {
+        "open": "[",
+        "close": "]"
+      },
+      {
+        "open": "(",
+        "close": ")"
+      },
+      {
+        "open": "'",
+        "close": "'",
+        "notIn": ["string", "comment"]
+      },
+      {
+        "open": "\"",
+        "close": "\"",
+        "notIn": ["string"]
+      },
+      {
+        "open": "`",
+        "close": "`",
+        "notIn": ["string", "comment"]
+      },
+      {
+        "open": "/*",
+        "close": " */",
+        "notIn": ["string"]
+      }
+    ],
+    // symbols that can be used to surround a selection
+    "surroundingPairs": [
+      {
+        open: '{',
+        close: '}'
+      },
+      {
+        open: '"',
+        close: '"'
+      },
+      {
+        open: '\'',
+        close: '\''
+      },
+    ],
+    "colorizedBracketPairs": [["{", "}"]],
+    "indentationRules": {
+      "increaseIndentPattern": new RegExp("^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$"),
+      "decreaseIndentPattern": new RegExp("^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$")
+    }
+  })
+  monaco.languages.setMonarchTokensProvider(languageId, likec4Monarch)
+
+  monaco.editor.defineTheme(themeId, {
+    base: 'vs-dark',
+    inherit: true,
+    colors: {
+      'editor.background': '#FFFFFF00',
+    },
+    rules: []
+  })
+
+  MonacoServices.install()
+})
+
+interface MonacoEditorProps {
+  currentFile: string
+  initiateFiles: () => Record<string, string>
+  onChange: (value: string) => void
+}
+
+export default function MonacoEditor({
+  currentFile,
+  initiateFiles,
+  onChange
+}: MonacoEditorProps) {
+
+  // const monaco = useMonaco()
+  // const monaroRef = useRef(monaco)
+  // monaroRef.current = monaco
+
+  return <Editor
+    options={{
+      extraEditorClassName: styles.monacoeditor + ' likec4-editor',
+      minimap: {
+        enabled: false
+      },
+      scrollbar: {
+        vertical: 'hidden',
+      },
+      guides: {
+        indentation: false,
+        bracketPairs: false,
+        bracketPairsHorizontal: 'active'
+        // bracketPairs: 'active',
+
+        // highlightActiveIndentation: false
+      },
+      fontFamily: '"Fira Code"',
+      fontSize: 14,
+      lineHeight: 22,
+      renderLineHighlightOnlyWhenFocus: true,
+      foldingHighlight: false,
+      overviewRulerBorder: false,
+      overviewRulerLanes: 0,
+      hideCursorInOverviewRuler: true,
+      'semanticHighlighting.enabled': true,
+    }}
+    theme={themeId}
+    path={currentFile}
+    onChange={update => {
+      onChange(update ?? '')
+    }}
+    keepCurrentModel
+    beforeMount={monaco => {
+      setup(monaco)
+      loadMonacoModels(monaco, initiateFiles())
+    }}
+    onMount={(_editor, monaco) => {
+      void startLanguageClient(monaco)
+    }}
+  // onValidate={markers =>
+  //   console.log('onValidate', { markers })
+  // }
+  />
+}

@@ -22,7 +22,7 @@
     "directory": "packages/core"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
+    "compile": "tsc --build --noEmit",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",

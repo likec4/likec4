@@ -40,7 +40,7 @@
   },
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='diagrams...'",
-    "compile": "tsc --emitDeclarationOnly",
+    "compile": "tsc --noEmit",
     "build:ts": "yarn node esbuild.js",
     "build:tsd": "tsc --emitDeclarationOnly",
     "build": "run-s 'build:ts' 'build:tsd'",
