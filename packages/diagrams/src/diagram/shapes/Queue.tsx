@@ -37,10 +37,11 @@ export const QueueShape = ({
       {...listeners}
     >
       <AnimatedPath
-        shadowBlur={12}
-        shadowOpacity={0.3}
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
         rotation={90}
         data={path}
         width={springs.height}
@@ -49,6 +50,9 @@ export const QueueShape = ({
         y={springs.offsetY}
         offsetX={springs.offsetY}
         offsetY={springs.offsetX}
+        shadowForStrokeEnabled={false}
+        hitStrokeWidth={0}
+        strokeScaleEnabled={false}
         {...queueProps}
       />
       <NodeLabels

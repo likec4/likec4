@@ -30,9 +30,12 @@ export const EdgeShape = ({
         {...listeners}
         points={points.flat()}
         bezier={points.length > 2}
+        // width={2}
+        fill={theme.relation.lineColor}
         stroke={theme.relation.lineColor}
         strokeWidth={2}
         hitStrokeWidth={20}
+        perfectDrawEnabled={false}
       />
       {headArrow && (
         <AnimatedLine
@@ -43,6 +46,8 @@ export const EdgeShape = ({
           fill={theme.relation.lineColor}
           stroke={theme.relation.lineColor}
           strokeWidth={1}
+          perfectDrawEnabled={false}
+          hitStrokeWidth={0}
         />
       )}
       {labels.map((label, i) =>
@@ -62,6 +67,8 @@ export const EdgeShape = ({
           fontStyle={label.fontStyle ?? 'normal'}
           align={label.align}
           text={label.text}
+          perfectDrawEnabled={false}
+          hitStrokeWidth={0}
         // wrap='none'
         />
       )}

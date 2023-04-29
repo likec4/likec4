@@ -39,6 +39,7 @@ const withNextra = nextra({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  transpilePackages: ['@likec4/diagrams'],
   images: {
     unoptimized: true
   }

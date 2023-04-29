@@ -1,5 +1,5 @@
 import type { DiagramNode } from '@likec4/diagrams'
-import { EmbeddedDiagram } from '@likec4/diagrams/src/embedded/EmbeddedDiagram'
+import { Diagram } from '@likec4/diagrams/src/diagram/Diagram'
 import { useCallback, useState } from 'react'
 import type { LikeC4ViewId } from './likec4.data'
 import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.data'
@@ -19,18 +19,16 @@ function App() {
   useTilg()`viewId = ${viewId}`
 
 
-  return <section>
-    <EmbeddedDiagram
-      views={LikeC4ViewsData}
-      viewId={viewId}
+  return <Diagram
+      diagram={LikeC4ViewsData[viewId]}
       onNodeClick={onNodeClick}
-    // diagram={LikeC4ViewsData[viewId]}
-    // width={window.innerWidth}
-    // height={window.innerHeight}
+      width={window.innerWidth}
+      height={window.innerHeight}
+      padding={40}
+
     // onNodeClick={onNodeClick}
     // padding={40}
     />
-  </section>
 }
 
 export default App

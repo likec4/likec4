@@ -31,6 +31,10 @@ export interface NodeShapeProps extends KonvaNodeEvents {
 }
 
 export type OnMouseEvent = Konva.KonvaEventObject<MouseEvent>
-export type OnClickEvent = Konva.KonvaEventObject<MouseEvent>
+export type OnPointerEvent = Konva.KonvaEventObject<PointerEvent>
+export type OnClickEvent = Konva.KonvaEventObject<PointerEvent>
 
 export type OnWheelEvent = Konva.KonvaEventObject<WheelEvent>
+
+export type OnNodeClick = (node: DiagramNode, event: OnPointerEvent) => void
+export type OnStageClick = (stage: Konva.Stage, event: OnPointerEvent) => void

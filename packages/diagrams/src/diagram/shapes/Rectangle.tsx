@@ -34,10 +34,12 @@ export const RectangleShape = ({
     >
       <AnimatedRect
         cornerRadius={6}
-        shadowBlur={12}
-        shadowOpacity={0.3}
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
+        perfectDrawEnabled={false}
         width={springs.width}
         height={springs.height}
         {...rectProps}

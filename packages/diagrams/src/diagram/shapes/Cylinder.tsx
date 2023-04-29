@@ -55,13 +55,17 @@ export const CylinderShape = ({
       {...listeners}
       >
       <AnimatedPath
-        shadowBlur={12}
-        shadowOpacity={0.3}
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
         data={path}
         width={springs.width}
         height={springs.height}
+        shadowForStrokeEnabled={false}
+        hitStrokeWidth={0}
+        strokeScaleEnabled={false}
         {...cylinderProps}
       />
       <NodeTitle

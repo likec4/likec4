@@ -181,7 +181,6 @@ views {
   view apiApp of internetBankingSystem.apiApplication {
     title "API Components"
     include *, bigbank
-    exclude mobileApp
 
     style * {
       color muted
@@ -191,7 +190,7 @@ views {
       color secondary
     }
 
-    style apiApplication, apiApplication.* {
+    style bigbank, apiApplication, apiApplication.* {
       color primary
     }
   }

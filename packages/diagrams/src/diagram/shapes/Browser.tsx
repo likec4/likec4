@@ -1,4 +1,4 @@
-import { darken } from 'khroma'
+import { useSpring } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
@@ -10,14 +10,18 @@ export const BrowserShape = ({
   springs,
   ...listeners
 }: NodeShapeProps) => {
-  const colors = theme.colors[node.color]
 
-    // const { fill } = useSpring({
-    //   to: {
-    //     fill: colors.fill,
-    //   },
-    //   immediate: !animate
-    // })
+    const colors = theme.colors[node.color]
+
+    const {
+      fill,
+      stroke
+    } = useSpring({
+      to: {
+        fill: colors.fill,
+        stroke: colors.stroke
+      }
+    })
 
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
@@ -28,38 +32,41 @@ export const BrowserShape = ({
     >
       <AnimatedRect
         cornerRadius={6}
-        shadowBlur={12}
-        shadowOpacity={0.3}
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
         width={springs.width}
         height={springs.height}
-        fill={darken(colors.fill, 9)}
+        fill={stroke}
         shadowColor={colors.shadow}
       />
       <Circle
         x={16}
         y={15}
         radius={7}
-        fill={darken(colors.fill, 2)}/>
+        fill={colors.fill}
+      />
       <Circle
         x={36}
         y={15}
         radius={7}
-        fill={darken(colors.fill, 2)}/>
+        fill={colors.fill}
+      />
       <Circle
         x={56}
         y={15}
         radius={7}
-        fill={darken(colors.fill, 2)}/>
+        fill={colors.fill}
+      />
       <AnimatedRect
         cornerRadius={5}
         x={70}
         y={7}
         width={springs.width.to(w => w - 80)}
         height={16}
-        fill={darken(colors.fill, 1)}
-
+        fill={fill}
       />
       <AnimatedRect
         cornerRadius={5}
@@ -67,7 +74,7 @@ export const BrowserShape = ({
         y={31}
         width={springs.width.to(w => w - 18)}
         height={springs.height.to(h => h - 40)}
-        fill={colors.fill}
+        fill={fill}
       />
       <NodeLabels
         labels={node.labels}

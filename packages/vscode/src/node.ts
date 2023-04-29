@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext) {
 
 // This function is called when the extension is deactivated.
 export function deactivate(): Thenable<void> | undefined {
-  return client?.stop()
+  return client?.dispose()
 }
 
 function createLanguageClient(context: ExtensionContext) {

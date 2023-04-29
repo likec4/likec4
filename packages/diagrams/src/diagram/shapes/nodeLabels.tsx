@@ -44,7 +44,8 @@ export function NodeLabels({
         fontStyle={label.fontStyle ?? 'normal'}
         align={'center'}
         text={label.text}
-        _s
+        perfectDrawEnabled={false}
+        hitStrokeWidth={0}
          />
     }
     )}

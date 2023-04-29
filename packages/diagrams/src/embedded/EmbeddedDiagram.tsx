@@ -6,13 +6,17 @@ import { Diagram, type DiagramProps } from '../diagram'
 export interface EmbeddedDiagramProps<
   Views extends Record<any, DiagramView>,
   Id = keyof Views & string
-> extends Omit<DiagramProps, 'diagram' | 'animate' | 'interactive' | 'zoomable' | 'pannable' | 'width' | 'height'> {
+> extends Omit<DiagramProps, 'diagram' | 'width' | 'height'> {
   views: Views
   viewId: Id
   diagramClassName?: string | undefined
 }
 
 export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
+  animate = false,
+  interactive = false,
+  zoomable = false,
+  pannable = false,
   className,
   diagramClassName,
   padding = 10,
@@ -48,14 +52,14 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
       <div ref={containerRef} style={{ flex: '1 1 100%', overflow: 'hidden' }}>
         {!diagram && <div style={{ margin: '1rem 0', padding: '1rem', background: '#AA00005b' }}>Diagram not found</div>}
         {measures && diagram && (<Diagram
-          interactive
-          animate
+          interactive={interactive}
+          animate={animate}
           className={diagramClassName}
           diagram={diagram}
           width={Math.ceil(measures.width)}
           height={Math.ceil(measures.height)}
-          pannable={false}
-          zoomable={false}
+          pannable={pannable}
+          zoomable={zoomable}
           padding={padding}
           {...props}
         />)}
