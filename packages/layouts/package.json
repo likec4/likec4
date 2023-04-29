@@ -1,12 +1,13 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "bugs": "https://github.com/likec4/likec4/issues",
-  "homepage": "https://like-c4.dev",
+  "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "dist"
+    "dist",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",
@@ -14,6 +15,7 @@
     "directory": "packages/layouts"
   },
   "main": "src/index.ts",
+  "module": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
@@ -21,13 +23,13 @@
     "registry": "https://registry.npmjs.org",
     "access": "public",
     "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "compile": "tsc --emitDeclarationOnly",
-    "build:release": "tsc -p tsconfig.esm.json",
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "compile": "tsc --noEmit",
+    "build": "tsc -p tsconfig.esm.json",
+    "dev": "tsc -p tsconfig.esm.json --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -38,15 +40,15 @@
     "@dagrejs/graphlib": "^2.1.12",
     "@hpcc-js/wasm": "^2.12.0",
     "@likec4/core": "workspace:*",
-    "rambdax": "^9.1.0",
+    "rambdax": "^9.1.1",
     "tiny-invariant": "^1.3.1",
-    "ts-graphviz": "^1.5.5",
+    "ts-graphviz": "^1.6.1",
     "word-wrap": "^1.2.3"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
     "typescript": "^5.0.4",
-    "vite": "^4.2.2",
+    "vite": "^4.3.3",
     "vitest": "^0.30.1"
   }
 }

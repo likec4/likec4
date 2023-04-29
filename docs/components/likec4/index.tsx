@@ -1,18 +1,16 @@
 
-import type { LikeC4ViewProps } from './generated'
+import type { LikeC4DiagramProps } from './LikeC4Diagram'
 import dynamic from 'next/dynamic'
 
 const NoSSRLikeC4View = dynamic(
-  () => import('./generated').then(m => m.LikeC4View),
+  () => import('./LikeC4Diagram'),
   {
     loading: () => <div>loading...</div>,
     ssr: false,
   }
 )
 
-export function LikeC4View(props: LikeC4ViewProps) {
-  return <NoSSRLikeC4View
-    padding={10}
-    {...props}
+export function LikeC4View(props: LikeC4DiagramProps) {
+  return <NoSSRLikeC4View {...props}
   />
 }

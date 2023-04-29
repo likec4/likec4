@@ -2,18 +2,22 @@ name: build
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - develop
 
   pull_request:
-    types: [opened, synchronize]
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
-    name: Build and Test
+    name: build and test
     timeout-minutes: 10
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
@@ -24,13 +28,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          cache: 'yarn'
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Compile
-        run: yarn compile
+        run: yarn turbo run compile
 
       - name: Build
         run: yarn build

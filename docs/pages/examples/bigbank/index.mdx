@@ -1,26 +1,30 @@
 import { Tab, Tabs } from 'nextra-theme-docs'
 
-# LikeC4 Code
+# Source Code
 
-This example is based on the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown.  
-  LikeC4 does not support the deployment views.
+Let's take the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown and convert it to LikeC4.
 
-<Tabs items={['likec4', 'structurizr']}>
-  <Tab>
-    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
+## Original
 
-    ```likec4 file=<rootDir>/likec4/_spec.c4 filename="_spec.c4"
-    ```
+This is the original C4 model defined in Structurizr DSL.  
+[open on structurizr](https://structurizr.com/dsl?example=big-bank-plc)
 
-    [open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
+```structurizr showLineNumbers file=<rootDir>/resources/structurizr.dsl filename="structurizr.dsl"
+```
 
-    ```likec4 file=<rootDir>/likec4/bigbank.c4 filename="bigbank.c4"
-    ```
-  </Tab>
-  <Tab>
-    [open on structurizr](https://structurizr.com/dsl?example=big-bank-plc)
+## LikeC4 Code
 
-    ```structurizr file=<rootDir>/resources/structurizr.dsl filename="structurizr.dsl"
-    ```
-  </Tab>
-</Tabs>
+First, we define the specification and element types.  
+[open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
+
+```likec4 showLineNumbers file=<rootDir>/likec4/_spec.c4 filename="_spec.c4" 
+```
+
+
+Now, copy-paste the model and views from Structurizr DSL.  
+LikeC4 does not support the deployment views, so skip them.  
+`views` also require some additional work, that is covered in the next sections.  
+[open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
+
+```likec4 showLineNumbers file=<rootDir>/likec4/bigbank.c4 filename="bigbank.c4" showLineNumbers
+```

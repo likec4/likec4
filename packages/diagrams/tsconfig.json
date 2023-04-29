@@ -1,17 +1,28 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ES2022",
     "target": "ES2022",
     "moduleResolution": "bundler",
     "outDir": "dist",
+    "rootDir": "src",
     "declaration": true,
-    "declarationDir": "dist/types",
-    "importsNotUsedAsValues": "remove",
-    "jsx": "preserve",
-    "jsxImportSource": "react"
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "references": [
+    { "path": "../language-server" },
+    { "path": "../generators" },
+    { "path": "../layouts" },
+    { "path": "../core" }
+  ]
 }

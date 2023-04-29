@@ -1,6 +1,5 @@
 import * as esbuild from 'esbuild'
 import { formatMessagesSync } from 'esbuild'
-import { vanillaExtractPlugin } from '@vanilla-extract/esbuild-plugin'
 import packageJson from './package.json' assert { type: 'json' }
 
 const watch = process.argv.includes('--watch')
@@ -9,31 +8,39 @@ const watch = process.argv.includes('--watch')
  * @type {esbuild.BuildOptions}
  */
 const cfg = {
-  entryPoints: ['src/index.ts', 'src/browser/index.ts', 'src/embedded/index.ts'],
-  plugins: [
-    vanillaExtractPlugin({
-      // runtime: true
-    })
-  ],
-  mainFields: ['browser', 'module', 'main'],
-  tsconfig: 'tsconfig.build.json',
+  entryPoints: ['src/index.ts'],
   logLevel: 'info',
   color: true,
   allowOverwrite: true,
-  chunkNames: 'chunks/[name]-[hash]',
   bundle: true,
-  splitting: true,
   platform: 'browser',
   format: 'esm',
-  outdir: 'dist',
-  sourcemap: false,
+  outfile: 'dist/index.js',
+  minify: !!watch,
+  keepNames: true,
+  metafile: true,
+  sourcemap: true,
   sourcesContent: false,
-  treeShaking: true,
-  external: [...Object.keys(packageJson.dependencies), ...Object.keys(packageJson.peerDependencies)]
+  jsx: 'automatic',
+  external: Object.keys({
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies
+  })
 }
 
 if (!watch) {
+  console.info('🛠️   Build ESM...')
+
   const bundle = await esbuild.build(cfg)
+
+  // if (bundle.metafile) {
+  //   console.log(
+  //     await esbuild.analyzeMetafile(bundle.metafile, {
+  //       // verbose: true
+  //     })
+  //   )
+  // }
+
   if (bundle.errors.length || bundle.warnings.length) {
     console.error(
       [
@@ -52,6 +59,16 @@ if (!watch) {
     console.error('\n ⛔️ Build failed')
     process.exit(1)
   }
+
+  console.info('🛠️  Build CJS...')
+  await esbuild.build({
+    ...cfg,
+    metafile: false,
+    format: 'cjs',
+    sourcemap: false,
+    outfile: 'dist/index.cjs'
+  })
+
   process.exit(0)
 }
 

@@ -1,41 +1,43 @@
 import type { DiagramNode } from '@likec4/core/types'
 import { config } from '@react-spring/konva'
-import type { NodeSpringsCtrl } from './nodeSprings'
-import type { OnClickEvent, OnMouseEvent } from './types'
+import type { NodeSpringsCtrl, OnNodeClick, OnPointerEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
-export function useNodeEvents({
+export function nodeListeners({
   node,
   ctrl,
   onNodeClick
 }: {
   node: DiagramNode
   ctrl: NodeSpringsCtrl
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
+  onNodeClick?: OnNodeClick | undefined
 }) {
+  if (!onNodeClick) {
+    return {} as const
+  }
   return {
-    onClick: (e: OnClickEvent) => {
-      if (onNodeClick) {
-        e.cancelBubble = true
-        onNodeClick(node)
-      }
-    },
-    onMouseEnter: (e: OnMouseEvent) => {
+    onPointerEnter: (e: OnPointerEvent) => {
       mousePointer(e)
       void ctrl.start({
-        scale: 1.08,
+        to: {
+          scale: 1.08,
+        },
         config: config.stiff
       })
     },
-    onMouseLeave: (e: OnMouseEvent) => {
+    onPointerLeave: (e: OnPointerEvent) => {
       mouseDefault(e)
       void ctrl.start({
         to: {
           scale: 1,
         },
-        delay: 50,
+        delay: 100,
         config: config.slow
       })
+    },
+    onPointerClick: (e: OnPointerEvent) => {
+      e.cancelBubble = true
+      onNodeClick(node, e)
     }
-  }
+  } as const
 }

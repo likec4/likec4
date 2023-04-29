@@ -20,16 +20,21 @@ body {
 #root {
 }
 
+section {
+  padding: 100px;
+  /* display: block;
+  position: relative;
+  width: 100%;
+  min-height: 500px; */
+}
+
 .diagram-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
+  /* width: 100vw;
   height: 100vh;
-  overflow: hidden;
   display: flex;
+  padding: 100px; */
 }
 
 .diagram-container > div {
-  flex: 1 1 100%;
+  /* flex: 1 1 100%; */
 }

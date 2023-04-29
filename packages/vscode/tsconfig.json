@@ -1,15 +1,13 @@
 {
-  "extends": "../language-server/tsconfig.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "lib": ["ESNext", "WebWorker"],
-    "module": "es2022",
-    "target": "es2022",
-    "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "$/*": ["src/*"]
-    }
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "references": [
+    { "path": "../core" },
+    { "path": "../generators" },
+    { "path": "../layouts" },
+    { "path": "../language-server" },
+  ]
 }

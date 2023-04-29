@@ -1,21 +1,17 @@
-import { animated, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
-import { cylinderSVGPath, type CylinderShapeProps } from './Cylinder'
+import { AnimatedGroup, AnimatedPath } from '../../konva'
+import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
-import type { OnClickEvent, OnMouseEvent } from './types'
-import { mouseDefault, mousePointer } from './utils'
-import { useNodeEvents } from './nodeEvents'
+import type { NodeShapeProps } from './types'
 
 export const QueueShape = ({
-  animate = true,
   node,
   theme,
   springs,
-  ctrl,
-  onNodeClick
-}: CylinderShapeProps) => {
+  ...listeners
+}: NodeShapeProps) => {
   const {
-    id,
     size: { width, height },
     color,
     labels
@@ -30,26 +26,22 @@ export const QueueShape = ({
       fill,
       stroke,
       shadowColor
-    },
-    immediate: !animate
+    }
   })
 
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <animated.Group
+    <AnimatedGroup
       {...springs}
-      {...useNodeEvents({
-        node,
-        ctrl,
-        onNodeClick
-      })}
+      {...listeners}
     >
-      <animated.Path
-        shadowBlur={12}
-        shadowOpacity={0.3}
+      <AnimatedPath
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
         rotation={90}
         data={path}
         width={springs.height}
@@ -58,6 +50,9 @@ export const QueueShape = ({
         y={springs.offsetY}
         offsetX={springs.offsetY}
         offsetY={springs.offsetX}
+        shadowForStrokeEnabled={false}
+        hitStrokeWidth={0}
+        strokeScaleEnabled={false}
         {...queueProps}
       />
       <NodeLabels
@@ -66,6 +61,6 @@ export const QueueShape = ({
         color={color}
         theme={theme}
       />
-    </animated.Group>
+    </AnimatedGroup>
   )
 }

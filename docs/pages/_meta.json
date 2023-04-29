@@ -4,12 +4,13 @@
     "type": "page",
     "display": "hidden",
     "theme": {
-      "layout": "raw",
+      "layout": "full",
       "breadcrumb": false,
       "footer": false,
       "sidebar": false,
       "toc": false,
-      "pagination": false
+      "pagination": false,
+      "timestamp": false
     }
   },
   "docs": {

@@ -3,21 +3,21 @@ import { formatMessagesSync } from 'esbuild'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const minify = process.argv.includes('--minify')
 const watch = process.argv.includes('--watch')
 
 const alias = {
   // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  'langium': 'langium/src/index.ts',
   'langium/node': 'langium/src/node/index.ts',
-  "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
-  "@likec4/core/utils": '../core/src/utils/index.ts',
-  "@likec4/core/types": '../core/src/types/index.ts',
-  "@likec4/core": '../core/src/index.ts',
-  "@likec4/generators": '../generators/src/index.ts',
-  "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
-  "@likec4/language-server": '../language-server/src/index.ts',
-  "@likec4/layouts": '../layouts/src/index.ts',
+  langium: 'langium/src/index.ts',
+  // "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
+  // "@likec4/core/utils": '../core/src/utils/index.ts',
+  // "@likec4/core/types": '../core/src/types/index.ts',
+  // "@likec4/core": '../core/src/index.ts',
+  // "@likec4/generators": '../generators/src/index.ts',
+  // "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
+  // "@likec4/language-server/protocol": '../language-server/src/protocol.ts',
+  // "@likec4/language-server": '../language-server/src/index.ts',
+  // "@likec4/layouts": '../layouts/src/index.ts',
   // 'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
   // 'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
 }
@@ -26,10 +26,7 @@ const alias = {
  * @type {esbuild.BuildOptions}
  */
 const nodeCfg = {
-  entryPoints: [
-    'src/extension-node.ts',
-    'src/lsp/node.ts'
-  ],
+  entryPoints: ['src/node.ts', 'src/lsp/node.ts'],
   metafile: true,
   logLevel: 'info',
   outdir: 'dist',
@@ -44,7 +41,7 @@ const nodeCfg = {
   },
   color: true,
   allowOverwrite: true,
-  sourcemap: !minify,
+  sourcemap: true,
   sourcesContent: false,
   treeShaking: true,
   keepNames: true,
@@ -55,9 +52,7 @@ const nodeCfg = {
  * @type {esbuild.BuildOptions}
  */
 const webCfg = {
-  entryPoints: [
-    'src/extension-web.ts'
-  ],
+  entryPoints: ['src/web.ts'],
   metafile: true,
   logLevel: 'info',
   outbase: 'src',
@@ -74,7 +69,7 @@ const webCfg = {
   },
   color: true,
   allowOverwrite: true,
-  sourcemap: !minify,
+  sourcemap: true,
   sourcesContent: false,
   treeShaking: true,
   keepNames: true,
@@ -85,9 +80,7 @@ const webCfg = {
  */
 const webWorkerCfg = {
   ...webCfg,
-  entryPoints: [
-    'src/lsp/web-worker.ts',
-  ],
+  entryPoints: ['src/lsp/web-worker.ts'],
   format: 'iife'
 }
 
@@ -98,22 +91,20 @@ if (!watch) {
     esbuild.build(webWorkerCfg)
   ])
 
-  if (!minify) {
-    const [nodeBundle, webBundle, webWorkerBundle] = bundles
-    if (nodeBundle.metafile) {
-      const metafile = path.resolve('dist', 'extension-node.metafile.json')
-      await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
-    }
-    if (webBundle.metafile) {
-      const metafile = path.resolve('dist', 'extension-web.metafile.json')
-      await writeFile(metafile, JSON.stringify(webBundle.metafile))
-    }
-    if (webWorkerBundle.metafile) {
-      const metafile = path.resolve('dist', 'lsp', 'web-worker.metafile.json')
-      await writeFile(metafile, JSON.stringify(webBundle.metafile))
-    }
-  }
+  const [nodeBundle, webBundle, webWorkerBundle] = bundles
 
+  if (nodeBundle.metafile) {
+    const metafile = path.resolve('dist', 'node.metafile.json')
+    await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
+  }
+  if (webBundle.metafile) {
+    const metafile = path.resolve('dist', 'web.metafile.json')
+    await writeFile(metafile, JSON.stringify(webBundle.metafile))
+  }
+  if (webWorkerBundle.metafile) {
+    const metafile = path.resolve('dist', 'lsp', 'web-worker.metafile.json')
+    await writeFile(metafile, JSON.stringify(webBundle.metafile))
+  }
 
   const errors = bundles.flatMap(b => b.errors)
   const warnings = bundles.flatMap(b => b.warnings)
@@ -141,7 +132,7 @@ if (!watch) {
 const [nodeCtx, webCtx, webWorkerCtx] = await Promise.all([
   esbuild.context(nodeCfg),
   esbuild.context(webCfg),
-  esbuild.context(webWorkerCfg),
+  esbuild.context(webWorkerCfg)
 ])
 await nodeCtx.watch()
 await webCtx.watch()

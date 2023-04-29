@@ -13,7 +13,7 @@ export function isElementRefHead(node: ast.ElementRef | ast.StrictElementRef) {
   failExpectedNever(node)
 }
 
-export function elementRef(node: ast.ElementRef) {
+export function elementRef(node: ast.ElementRef | ast.StrictElementRef) {
   invariant(isElementRefHead(node), 'Expected head ElementRef')
   while (node.next) {
     node = node.next

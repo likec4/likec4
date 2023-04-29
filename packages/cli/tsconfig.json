@@ -1,12 +1,10 @@
 {
-  "extends": "../language-server/tsconfig.json",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["./src/**/*"],
-  "exclude": [
-    "**/node_modules/**",
-    "node_modules",
-    "./dist/**"
+  "extends": "../tsconfig/base.json",
+  "include": ["src/**/*"],
+  "references": [
+    { "path": "../language-server" },
+    { "path": "../generators" },
+    { "path": "../layouts" },
+    { "path": "../core" }
   ]
 }

@@ -1,4 +1,5 @@
-import { complement, invert } from 'khroma'
+import { complement, darken, invert } from 'khroma'
+import colors from 'tailwindcss/colors'
 import type { DiagramTheme, ThemeColors } from './types'
 
 const shadow = '#0a0a0a'
@@ -47,16 +48,19 @@ export function mkThemeColors(base: string): ThemeColors {
 export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
   relation: {
-    lineColor: '#9ca3af',
-    labelColor: '#e5e5e5'
+    lineColor: colors.neutral[400],
+    labelColor: colors.neutral[200],
   },
   colors: {
     primary: {
       shadow,
-      fill: '#2563eb',
-      stroke: '#1e40af',
-      hiContrast: '#eff6ff',
-      loContrast: '#bfdbfe'
+      // fill: '#2563eb',
+      // stroke: darken('#2563eb', 11),
+      // stroke: '#1e40af',
+      fill: colors.blue[500],
+      stroke: colors.blue[600],
+      hiContrast: colors.blue[50],
+      loContrast: colors.blue[100],
     },
     // secondary: mkThemeColors('#5373E7'),
     // secondary: {
@@ -68,17 +72,22 @@ export const DefaultDiagramTheme: DiagramTheme = {
     // },
     secondary: {
       shadow,
-      fill: '#0369a1',
-      stroke: '#0c4a6e',
-      hiContrast: '#f0f9ff',
-      loContrast: '#bae6fd'
+      // fill: '#0369a1',
+      // // stroke: '#0c4a6e',
+      // stroke: darken('#0369a1', 10),
+      // hiContrast: '#f0f9ff',
+      // loContrast: '#bae6fd'
+      fill: colors.sky[600],
+      stroke: colors.sky[700],
+      hiContrast: colors.sky[50],
+      loContrast: colors.sky[100],
     },
     muted: {
       shadow,
-      fill: '#4b5563',
-      stroke: '#374151',
-      hiContrast: '#f9fafb',
-      loContrast: '#d1d5db'
+      fill: colors.slate[500],
+      stroke: colors.slate[600],
+      hiContrast: colors.slate[50],
+      loContrast: colors.slate[200],
     }
   }
 }

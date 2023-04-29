@@ -1,27 +1,22 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import { useUpdateEffect } from '@react-hookz/web/esm'
 import {
-  animated,
   useSpring,
-  useTransition,
-  type AnimatedComponent,
-  useSpringRef,
-  useChain
+  useTransition
 } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
-import { useCallback, useEffect, useMemo, useRef, type ReactElement, useDebugValue } from 'react'
-import { Layer, Stage } from 'react-konva'
-import { CompoundShape, EdgeShape, RectangleShape, nodeShape } from './shapes'
+import { useCallback, useMemo, useRef, type ReactElement, useEffect } from 'react'
+import { AnimatedStage, Layer } from '../konva'
+import { CompoundShape, EdgeShape, nodeShape } from './shapes'
+import { nodeListeners } from './shapes/nodeEvents'
+import { interpolateNodeSprings } from './shapes/nodeSprings'
+import type { OnNodeClick, OnPointerEvent, OnStageClick } from './shapes/types'
+import { mouseDefault, mousePointer } from './shapes/utils'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
-import useTilg from 'tilg'
-import { useUpdateEffect } from '@react-hookz/web/esm'
-import { interpolateNodeSprings } from './shapes/nodeSprings'
-
-const AStage: AnimatedComponent<typeof Stage> = animated(Stage)
-AStage.displayName = 'AnimatedStage'
 
 interface IRect {
   x: number
@@ -46,17 +41,27 @@ function nodeState(overrides: {
   return (transition as unknown) as NodeState
 }
 
-export interface DiagramProps {
+export interface DiagramProps extends
+  Pick<
+    React.HTMLAttributes<HTMLDivElement>,
+    'className' | 'role' | 'style' | 'tabIndex' | 'title'
+  > {
   diagram: DiagramView
-  className?: string | undefined
   interactive?: boolean
   animate?: boolean
   pannable?: boolean
   zoomable?: boolean
+
+  initialStagePosition?: {
+    x: number
+    y: number
+    scale: number
+  }
   width?: number
   height?: number
   padding?: DiagramPaddings | undefined
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
+  onNodeClick?: OnNodeClick | undefined
+  onStageClick?: OnStageClick | undefined
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
@@ -65,27 +70,34 @@ const isNotCompound = (node: DiagramNode) => node.children.length == 0
 
 export function Diagram({
   diagram,
-  className,
   interactive = true,
   padding = 0,
+  initialStagePosition,
   onNodeClick,
   onEdgeClick,
-  ...props
+  onStageClick,
+  ...diagramprops
 }: DiagramProps): ReactElement<DiagramProps> {
-  const { pannable = interactive, zoomable = interactive, animate = interactive } = props
+  const {
+    pannable = interactive,
+    zoomable = interactive,
+    animate = interactive,
+    width = diagram.width,
+    height = diagram.height,
+    ...stageprops
+  } = diagramprops
 
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
-  const width = Math.max(props.width ?? diagram.width, 16)
-  const height = Math.max(props.height ?? diagram.height, 16)
+  const viewRect = {
+    width,
+    height,
+  }
+  const viewRectRef = useRef(viewRect)
+  viewRectRef.current = viewRect
 
-  // const stageRef = useRef<Konva.Stage>(null)
-  const stageSpringApi = useSpringRef<{
-    x: number
-    y: number
-    scale: number
-  }>()
+  const stageRef = useRef<Konva.Stage>(null)
 
   const centerOnRect = (rect: IRect) => {
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
@@ -96,10 +108,11 @@ export function Diagram({
 
     // Get the space we can see in the web page = size of div containing stage
     // or stage size, whichever is the smaller
-    const viewRect = {
-      width,
-      height
-    }
+    const viewRect = viewRectRef.current
+    // const viewRect = {
+    //   width,
+    //   height
+    // }
     // if (stage && container) {
     //   viewRect.width = Math.min(container.clientWidth, stage.width())
     //   viewRect.height = Math.min(container.clientHeight, stage.height())
@@ -115,7 +128,7 @@ export function Diagram({
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
       viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
-      scale = clamp(0.2, 1.05, viewScale),
+      scale = clamp(0.1, 1, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {
@@ -130,13 +143,12 @@ export function Diagram({
     return {
       x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
       y: Math.ceil(centeringAjustment.y + -centerTo.y * scale),
-      scale,
+      scale
     }
   }
 
-  const [stageProps,] = useSpring(() => ({
-    ref: stageSpringApi,
-    from: centerOnRect({
+  const [stageProps, stageSpringApi] = useSpring(() => ({
+    from: initialStagePosition ?? centerOnRect({
       x: 0,
       y: 0,
       width: diagram.width,
@@ -144,8 +156,8 @@ export function Diagram({
     })
   }))
 
-  useUpdateEffect(() => {
-    stageSpringApi.start({
+  useEffect(() => {
+    stageSpringApi.stop(true).start({
       to: centerOnRect({
         x: 0,
         y: 0,
@@ -163,19 +175,25 @@ export function Diagram({
     }
     return {
       draggable: true,
-      onDragStart: (_e: Konva.KonvaEventObject<DragEvent>) => {
-        stageSpringApi.stop()
+      dragDistance: 5,
+      onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
+        if (e.target === stageRef.current) {
+          e.cancelBubble = true
+          stageSpringApi.stop(true, ['x', 'y'])
+        }
       },
-      onDragEnd: ({ target }: Konva.KonvaEventObject<DragEvent>) => {
-        // if (target === stageRef.current) {
-        stageSpringApi.start({
-          to: {
-            x: target.x(),
-            y: target.y()
-          },
-          immediate: true
-        })
-        // }
+      onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+        if (e.target === stageRef.current) {
+          e.cancelBubble = true
+          e.evt.stopPropagation()
+          stageSpringApi.start({
+            to: {
+              x: e.target.x(),
+              y: e.target.y()
+            },
+            immediate: true
+          })
+        }
       }
     }
   }, [pannable, stageSpringApi])
@@ -214,7 +232,7 @@ export function Diagram({
 
       newScale = clamp(0.1, 1.6, newScale)
 
-      stageSpringApi.start({
+      stageSpringApi.stop(true).start({
         to: {
           scale: newScale,
           x: pointer.x - mousePointTo.x * newScale,
@@ -241,22 +259,20 @@ export function Diagram({
       scale: 0.5,
     },
     update: nodeState(),
-    expires: false,
+    expires: true,
     immediate: !animate,
     keys: g => g.id,
   })
 
-  // console.log('compoundTransitions', compoundTransitionsRef.current)
-
   const edgeTransitions = useTransition(diagram.edges, {
     initial: {
-      opacity: 0.8
+      opacity: 1
     },
     from: {
       opacity: 0
     },
     enter: {
-      opacity: 0.8
+      opacity: 1
     },
     leave: {
       opacity: 0
@@ -292,21 +308,30 @@ export function Diagram({
     }),
     expires: true,
     immediate: !animate,
-    keys: node => (node.parent ?? '') + '-' + node.id + '-' + node.shape
+    keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
   })
-
   return (
     // @ts-ignore
-    <AStage
-      className={className}
-      onWheel={zoomable && handleWheelZoom}
+    <AnimatedStage
+      ref={stageRef}
+      onWheel={zoomable ? handleWheelZoom : undefined}
       width={width}
       height={height}
       x={stageProps.x}
       y={stageProps.y}
       scaleX={stageProps.scale}
       scaleY={stageProps.scale}
+      onPointerClick={onStageClick ? (e) => {
+        if (e.target.isDragging() || !stageRef.current) {
+          return
+        }
+        if (e.target === stageRef.current || !onNodeClick) {
+          e.cancelBubble = true
+          onStageClick(stageRef.current, e)
+        }
+      } : undefined}
       {...panning}
+      {...stageprops}
     >
       <Layer>
         {compoundTransitions((springs, node, { key }) => (
@@ -319,15 +344,24 @@ export function Diagram({
             onNodeClick={onNodeClick}
           />
         ))}
-      </Layer>
-      <Layer>
         {edgeTransitions((springs, edge, { key }) => (
           <EdgeShape
             key={key}
             edge={edge}
             theme={theme}
             springs={springs}
-            onEdgeClick={onEdgeClick}
+            onPointerClick={onEdgeClick ? (e) => {
+              e.cancelBubble = true
+              onEdgeClick(edge)
+            } : undefined}
+            {...(onEdgeClick || interactive ? {
+              onPointerEnter: (e: OnPointerEvent) => {
+                mousePointer(e)
+              },
+              onPointerLeave: (e: OnPointerEvent) => {
+                mouseDefault(e)
+              }
+            } : undefined)}
           />
         ))}
       </Layer>
@@ -336,16 +370,17 @@ export function Diagram({
           const Shape = nodeShape(node)
           return <Shape
             key={key}
-            animate={animate}
             node={node}
             theme={theme}
             springs={interpolateNodeSprings(springs)}
-            ctrl={ctrl}
-            onNodeClick={onNodeClick}
+            {...nodeListeners({
+              node,
+              ctrl,
+              onNodeClick
+            })}
           />
-        }
-        )}
+        })}
       </Layer>
-    </AStage>
+    </AnimatedStage>
   )
 }

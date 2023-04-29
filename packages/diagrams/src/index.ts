@@ -12,6 +12,6 @@ export type {
 } from '@likec4/core'
 
 export { Diagram } from './diagram'
-export { EmbeddedDiagram } from './embedded'
+export { EmbeddedDiagram, FlexDiagram } from './embedded'
 export type * from './diagram'
 export type * from './embedded'

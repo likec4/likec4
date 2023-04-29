@@ -1,33 +1,18 @@
-import type { DiagramNode } from '@likec4/core/types'
 import {
-  animated,
   useSpring
 } from '@react-spring/konva'
-import type { DiagramTheme } from '../types'
-import { useNodeEvents } from './nodeEvents'
+import { AnimatedGroup, AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
-import type { InterporatedNodeSprings, NodeSpringsCtrl } from './nodeSprings'
+import type { NodeShapeProps } from './types'
 
-
-export interface RectangleShapeProps {
-  animate?: boolean
-  node: DiagramNode
-  theme: DiagramTheme
-  springs: InterporatedNodeSprings
-  ctrl: NodeSpringsCtrl
-  onNodeClick?: ((node: DiagramNode) => void) | undefined
-}
 
 export const RectangleShape = ({
-  animate = true,
   node,
   theme,
   springs,
-  ctrl,
-  onNodeClick
-}: RectangleShapeProps) => {
+  ...listeners
+}: NodeShapeProps) => {
   const {
-    id,
     color,
     labels
   } = node
@@ -37,27 +22,24 @@ export const RectangleShape = ({
     to: {
       fill,
       shadowColor
-    },
-    immediate: !animate
+    }
   })
 
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <animated.Group
+    <AnimatedGroup
       {...springs}
-      {...useNodeEvents({
-        node,
-        ctrl,
-        onNodeClick
-      })}
+      {...listeners}
     >
-      <animated.Rect
+      <AnimatedRect
         cornerRadius={6}
-        shadowBlur={12}
-        shadowOpacity={0.3}
+        shadowBlur={16}
+        shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowEnabled={!!node.parent}
+        perfectDrawEnabled={false}
         width={springs.width}
         height={springs.height}
         {...rectProps}
@@ -68,6 +50,22 @@ export const RectangleShape = ({
         color={color}
         theme={theme}
       />
-    </animated.Group>
+      {/* {hovered && (
+        <Rect
+          x={10}
+          y={10}
+          width={node.size.width - 20}
+          height={20}
+          visible={hovered}
+          fill={darken(fill, 2)}
+          onMouseEnter={e => {
+            console.log('enter')
+          }}
+          onMouseLeave={e => {
+            console.log('leave')
+          }}
+        />
+      )} */}
+    </AnimatedGroup>
   )
 }

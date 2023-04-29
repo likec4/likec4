@@ -1,0 +1,46 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "generate": {
+      "outputMode": "new-only",
+      "dependsOn": ["@likec4/cli#build"],
+      "outputs": [
+        "components/**/generated.tsx"
+      ],
+      "inputs": [
+        "likec4/**"
+      ]
+    },
+    "compile": {
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "^build"],
+      "outputs": [],
+      "inputs": [
+        "**/*",
+        "!.next/**",
+        "!node_modules/**",
+        "!out/**",
+        "!likec4/**",
+        "!components/**/generated.tsx"
+      ]
+    },
+    "build": {
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "^build"],
+      "inputs": [
+        "**/*",
+        "!.next/**",
+        "!node_modules/**",
+        "!out/**",
+        "!likec4/**",
+        "!components/**/generated.tsx"
+      ],
+      "outputs": [
+        ".next/**",
+        "out/**",
+        "!.next/cache/**"
+      ]
+    }
+  }
+}

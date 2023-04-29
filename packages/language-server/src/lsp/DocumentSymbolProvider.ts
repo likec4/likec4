@@ -9,9 +9,10 @@ import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } f
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { type LikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
+import { logger } from '../logger'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
-  constructor(private services: LikeC4Services) {}
+  constructor(private services: LikeC4Services) { }
 
   getSymbols(document: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     const { specification, model, views } = document.parseResult.value
@@ -42,7 +43,11 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       }
     }
     for (const astKind of astSpec.elementKinds) {
-      specSymbols.push(getElementKindSymbol(astKind))
+      try {
+        specSymbols.push(getElementKindSymbol(astKind))
+      } catch (e) {
+        logger.error(e)
+      }
     }
 
     const getTagSymbol = (astTag: ast.SpecificationTag): DocumentSymbol => {
@@ -58,7 +63,11 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     }
 
     for (const astTag of astSpec.tags) {
-      specSymbols.push(getTagSymbol(astTag))
+      try {
+        specSymbols.push(getTagSymbol(astTag))
+      } catch (e) {
+        logger.error(e)
+      }
     }
 
     if (specSymbols.length === 0) return []
@@ -85,7 +94,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
-        children: astModel.elements.flatMap(this.getElementsSymbol)
+        children: astModel.elements.flatMap(e => this.getElementsSymbol(e))
       }
     ]
   }
@@ -93,11 +102,15 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected getElementsSymbol = (
     el: ast.Element | ast.Relation | ast.ExtendElement
   ): DocumentSymbol[] => {
-    if (ast.isExtendElement(el)) {
-      return this.getExtendElementSymbol(el)
-    }
-    if (ast.isElement(el)) {
-      return this.getElementSymbol(el)
+    try {
+      if (ast.isExtendElement(el)) {
+        return this.getExtendElementSymbol(el)
+      }
+      if (ast.isElement(el)) {
+        return this.getElementSymbol(el)
+      }
+    } catch (e) {
+      logger.error(e)
     }
     return []
   }
@@ -105,7 +118,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected getExtendElementSymbol = (astElement: ast.ExtendElement): DocumentSymbol[] => {
     const cst = astElement.$cstNode
     const nameNode = astElement.element.$cstNode
-    if (!cst || !nameNode) return []
+    const body = astElement.body
+    if (!cst || !nameNode || !body) return []
 
     return [
       {
@@ -113,7 +127,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: nameNode.text,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: astElement.body.elements.flatMap(this.getElementsSymbol)
+        children: body.elements.flatMap(e => this.getElementsSymbol(e))
       }
     ]
   }
@@ -136,7 +150,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         range: cst.range,
         selectionRange: nameNode.range,
         detail,
-        children: astElement.body?.elements.flatMap(this.getElementsSymbol) ?? []
+        children: astElement.body?.elements.flatMap(e => this.getElementsSymbol(e)) ?? []
       }
     ]
   }

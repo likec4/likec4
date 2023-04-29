@@ -1,27 +1,28 @@
 {
   "name": "@likec4/example-bigbank",
   "private": true,
-  "version": "0.6.3",
+  "version": "0.7.0",
   "packageManager": "yarn@3.4.1",
   "scripts": {
-    "generate": "likec4 generate --target views-data --output src/likec4.data.ts",
-    "start": "run generate && vite"
+    "generate": "likec4 codegen views-data --output src/likec4.data.ts",
+    "dev": "run generate && vite"
   },
   "dependencies": {
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
-    "rambdax": "^9.1.0",
+    "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",
-    "@types/react": "^18.0.35",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "tilg": "^0.1.1",
     "typescript": "^5.0.4",
-    "vite": "^4.2.2"
+    "vite": "^4.3.3"
   },
   "installConfig": {
     "hoistingLimits": "dependencies"

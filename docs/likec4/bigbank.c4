@@ -38,6 +38,9 @@ model {
       singlePageApplication = container "Single-Page Application" {
         description: "Provides all of the Internet banking functionality to customers via their web browser."
         technology: "JavaScript and Angular"
+        style {
+          shape: browser
+        }
       }
       mobileApp = container "Mobile App" {
         description: "Provides a limited subset of the Internet banking functionality to customers via their mobile device."
@@ -173,10 +176,10 @@ views {
       -> singlePageApplication ->
 
     style * {
-      color secondary
+      color muted
     }
 
-    style singlePageApplication {
+    style singlePageApplication, customer {
       color primary
     }
   }

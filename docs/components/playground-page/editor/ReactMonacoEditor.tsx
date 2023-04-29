@@ -2,7 +2,7 @@
  * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-import 'monaco-editor/esm/vs/editor/editor.all'
+import 'monaco-editor/esm/vs/editor/edcore.main.js';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient';
@@ -11,8 +11,8 @@ import React, { createRef, useEffect, useMemo, useRef } from 'react';
 import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclient';
 
 import { StandaloneServices } from 'vscode/services';
-import getNotificationServiceOverride from 'vscode/service-override/notifications';
-import getDialogServiceOverride from 'vscode/service-override/dialogs';
+// import getNotificationServiceOverride from 'vscode/service-override/notifications';
+// import getDialogServiceOverride from 'vscode/service-override/dialogs';
 import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
 
 // buildWorkerDefinition('../../../node_modules/monaco-editor-workers/dist/workers/', new URL('', window.location.href).href, true);

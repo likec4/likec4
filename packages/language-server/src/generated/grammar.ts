@@ -767,13 +767,6 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
             }
           },
           {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@45"
-            },
-            "arguments": []
-          },
-          {
             "$type": "Assignment",
             "feature": "body",
             "operator": "=",
@@ -784,13 +777,6 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
               },
               "arguments": []
             }
-          },
-          {
-            "$type": "RuleCall",
-            "rule": {
-              "$ref": "#/rules@46"
-            },
-            "arguments": []
           }
         ]
       },
@@ -805,29 +791,48 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
       "$type": "ParserRule",
       "name": "ExtendElementBody",
       "definition": {
-        "$type": "Assignment",
-        "feature": "elements",
-        "operator": "+=",
-        "terminal": {
-          "$type": "Alternatives",
-          "elements": [
-            {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@6"
-              },
-              "arguments": []
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@45"
             },
-            {
-              "$type": "RuleCall",
-              "rule": {
-                "$ref": "#/rules@17"
-              },
-              "arguments": []
-            }
-          ]
-        },
-        "cardinality": "*"
+            "arguments": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "elements",
+            "operator": "+=",
+            "terminal": {
+              "$type": "Alternatives",
+              "elements": [
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@6"
+                  },
+                  "arguments": []
+                },
+                {
+                  "$type": "RuleCall",
+                  "rule": {
+                    "$ref": "#/rules@17"
+                  },
+                  "arguments": []
+                }
+              ]
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "RuleCall",
+            "rule": {
+              "$ref": "#/rules@46"
+            },
+            "arguments": []
+          }
+        ]
       },
       "definesHiddenTokens": false,
       "entry": false,

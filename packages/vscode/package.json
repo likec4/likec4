@@ -4,14 +4,15 @@
   "publisher": "likec4",
   "displayName": "LikeC4 Architecture Modeling",
   "description": "Support for the LikeC4 modeling language",
-  "homepage": "https://like-c4.dev",
+  "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "license": "MIT",
   "files": [
     "contrib",
     "dist",
     "data",
-    "./language-configuration.json"
+    "./language-configuration.json",
+    "!**/*.map"
   ],
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
     "turbo-build": "run -T turbo run build --filter='likec4-vscode...'",
     "open-web": "yarn turbo-build && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "build:release": "yarn node esbuild.mjs --minify && run copy",
-    "compile": "tsc -noEmit",
+    "compile": "tsc --noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r $INIT_CWD/../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
@@ -126,12 +127,11 @@
     "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "./dist/extension-node.js",
-  "browser": "./dist/extension-web.js",
+  "main": "./dist/node.js",
+  "browser": "./dist/web.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
-    "@likec4/language-protocol": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
@@ -144,7 +144,7 @@
     "nanoid": "^4.0.2",
     "npm-run-all": "^4.1.5",
     "path-browserify": "^1.0.1",
-    "rambdax": "^9.1.0",
+    "rambdax": "^9.1.1",
     "shx": "^0.3.4",
     "src": "link:./src",
     "typed-inject": "^3.0.1",

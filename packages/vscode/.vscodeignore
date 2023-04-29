@@ -6,3 +6,5 @@
 !LICENSE
 !README.md
 !language-configuration.json
+*.map
+*.metafile.json

@@ -1,56 +1,44 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { DiagramEdge } from '@likec4/core/types'
-import { animated, type SpringValues } from '@react-spring/konva'
-import { useCallback, useMemo } from 'react'
-import { Text } from 'react-konva'
+import type { SpringValues } from '@react-spring/konva'
+import { AnimatedLine, AnimatedText } from '../../konva'
 
+import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { DiagramTheme } from '../types'
-import type { OnClickEvent } from './types'
 
-export interface EdgeShapeProps {
+export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
   theme: DiagramTheme
   springs: SpringValues<{
     opacity: number
   }>
-  onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
-export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps) => {
+export const EdgeShape = ({
+  edge,
+  theme,
+  springs,
+  ...listeners
+}: EdgeShapeProps) => {
   const { points, headArrow, labels } = edge
-
-  const onClickListener = useMemo(() => {
-    if (!onEdgeClick) return {}
-    return {
-      onClick: (evt: OnClickEvent) => {
-        evt.cancelBubble = true
-        onEdgeClick(edge)
-      }
-    }
-  }, [edge, onEdgeClick ?? null])
-
-  // const opacityApi = springs?.opacity ?? null
-
-  const listeners = {
-    ...onClickListener,
-    // onMouseEnter: useCallback(() => opacityApi?.start(1), [opacityApi]),
-    // onMouseLeave: useCallback(() => opacityApi?.start(0.75), [opacityApi])
-  }
   return (
     <>
-    {/* @ts-ignore */}
-      <animated.Line
+      {/* @ts-ignore */}
+      <AnimatedLine
         {...springs}
         {...listeners}
         points={points.flat()}
         bezier={points.length > 2}
+        // width={2}
+        fill={theme.relation.lineColor}
         stroke={theme.relation.lineColor}
         strokeWidth={2}
         hitStrokeWidth={20}
+        perfectDrawEnabled={false}
       />
       {headArrow && (
-        <animated.Line
+        <AnimatedLine
           {...springs}
           {...listeners}
           points={headArrow.flat()}
@@ -58,10 +46,12 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
           fill={theme.relation.lineColor}
           stroke={theme.relation.lineColor}
           strokeWidth={1}
+          perfectDrawEnabled={false}
+          hitStrokeWidth={0}
         />
       )}
       {labels.map((label, i) =>
-        <animated.Text
+        <AnimatedText
           key={i}
           {...springs}
           {...listeners}
@@ -77,11 +67,13 @@ export const EdgeShape = ({ edge, theme, springs, onEdgeClick }: EdgeShapeProps)
           fontStyle={label.fontStyle ?? 'normal'}
           align={label.align}
           text={label.text}
-          // wrap='none'
+          perfectDrawEnabled={false}
+          hitStrokeWidth={0}
+        // wrap='none'
         />
       )}
       {/* {label && labelBox && (
-        <animated.Text
+        <AnimatedText
           {...springs}
           {...listeners}
           {...labelBox}

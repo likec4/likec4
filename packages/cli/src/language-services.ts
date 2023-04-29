@@ -43,7 +43,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   ])
 
   const documents = services.shared.workspace.LangiumDocuments.all.toArray()
-  if (documents.filter(d => d.uri.scheme !== 'builtin').length === 0) {
+  if (documents.length === 0) {
     console.log(chalk.red`No likec4 files found`)
     process.exit(1)
   }
@@ -68,11 +68,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
       }
       continue
     }
-    if (doc.uri.scheme === 'builtin') {
-      console.log(chalk.green('   ✅ ' + doc.uri.toString()))
-    } else {
-      console.log(chalk.green('   ✅ ' + docPath))
-    }
+    console.log(chalk.green('   ✅ ' + docPath))
   }
 
   if (hasErrors) {

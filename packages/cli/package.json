@@ -1,10 +1,11 @@
 {
   "name": "@likec4/cli",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "license": "MIT",
   "bin": {
     "likec4": "dist/likec4.js"
   },
+  "main": "dist/likec4.js",
   "engines": {
     "node": ">=16"
   },
@@ -22,13 +23,13 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "build:release": "run build",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
+    "@commander-js/extra-typings": "^10.0.3",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
@@ -40,7 +41,7 @@
     "fast-glob": "^3.2.12",
     "langium": "^1.1.0",
     "mkdirp": "^2.1.6",
-    "rambdax": "^9.1.0",
+    "rambdax": "^9.1.1",
     "typescript": "^5.0.4",
     "vscode-uri": "3.0.7"
   }

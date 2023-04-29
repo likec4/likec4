@@ -1,0 +1,48 @@
+import { Bleed } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra-theme-docs'
+
+# Relations
+
+Example:
+
+```likec4 filename="relations.c4"
+specification {
+  element service
+  element system
+  element component
+  element person
+}
+
+model {
+
+  customer = person 'Customer'
+
+  cloud = system 'SAAS' {
+
+    dashboard = service 'Dashboard' {
+      component backend {
+        -> rds
+      }
+      component frontend
+
+      frontend -> backend
+    }
+
+  }
+  
+  aws = system 'Amazon' {
+    component rds
+  }
+
+  customer -> frontend
+
+}
+```
+
+## Relation Definition
+
+...
+
+## Implicit Relations
+
+...

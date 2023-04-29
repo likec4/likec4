@@ -2,12 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "compile": {
-      "dependsOn": ["^compile"],
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tsconfig.json"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "build": {
       "outputMode": "new-only",
@@ -20,20 +16,12 @@
         "contrib/**"
       ]
     },
-    "@likec4/docs-website#build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "out/**"]
-    },
-    "build:release": {
-      "dependsOn": ["^build:release"],
-      "cache": false
-    },
     "lint": {
       "outputs": []
     },
     "test": {
       "outputs": [],
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"]
     },
     "test:watch": {
       "outputs": [],
@@ -46,5 +34,8 @@
       "cache": false,
       "persistent": true
     }
-  }
+  },
+  "globalDependencies": [
+    "packages/tsconfig/*"
+  ]
 }
