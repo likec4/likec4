@@ -61,6 +61,9 @@ const nextConfig = {
     '@likec4/language-server',
   //   '@likec4/diagrams'
   ],
+  typescript: {
+    tsconfigPath: './tsconfig.next.json',
+  },
   images: {
     unoptimized: true
   }

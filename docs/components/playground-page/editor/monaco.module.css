@@ -1,5 +1,5 @@
-.likec4editor {
-  --tw-ring-opacity: 0;
-  --tw-ring-offset-shadow: 0 0 transparent;
-  --tw-ring-shadow: 0 0 transparent;
+.likec4editor textarea {
+  --tw-ring-opacity: 0 !important;
+  --tw-ring-offset-shadow: 0 0 transparent !important;
+  --tw-ring-shadow: 0 0 transparent !important;
 }

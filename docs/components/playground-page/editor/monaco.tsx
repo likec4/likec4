@@ -4,13 +4,13 @@
  * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-import * as monaco from 'monaco-editor'
-import { loader, type Monaco } from "@monaco-editor/react"
-import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
-import { CloseAction, ErrorAction, BrowserMessageReader, BrowserMessageWriter } from 'vscode-languageclient/browser'
 import { Rpc } from '@likec4/language-server/protocol'
+import { loader, type Monaco } from "@monaco-editor/react"
+import * as monaco from 'monaco-editor'
+import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
+import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
 
-import { once, toPairs, delay } from 'rambdax'
+import { once, toPairs } from 'rambdax'
 import { StandaloneServices } from 'vscode/services'
 
 import { Editor } from "@monaco-editor/react"
@@ -19,6 +19,7 @@ import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
 // import getDialogServiceOverride from 'vscode/service-override/dialogs'
 import likec4Monarch from './likec4.monarch'
 import styles from './monaco.module.css'
+import { Fira_Code } from 'next/font/google'
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -31,6 +32,11 @@ self.MonacoEnvironment = {
     return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
   }
 }
+
+const firaCodeFont = Fira_Code({
+  preload: true,
+  subsets: ['latin']
+})
 
 loader.config({ monaco })
 
@@ -56,7 +62,7 @@ const themeId = 'likec4PlaygroundTheme'
 
 let languageClient: MonacoLanguageClient | null = null
 
-function startLanguageClient(monaco: Monaco) {
+function startLanguageClient(_monaco: Monaco) {
   if (!languageClient) {
     console.debug('create likec4 language client')
     const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
@@ -243,8 +249,8 @@ export default function MonacoEditor({
   // monaroRef.current = monaco
 
   return <Editor
+    className={styles.likec4editor + ' likec4-editor ' + firaCodeFont.className}
     options={{
-      extraEditorClassName: styles.monacoeditor + ' likec4-editor',
       minimap: {
         enabled: false
       },
@@ -259,7 +265,7 @@ export default function MonacoEditor({
 
         // highlightActiveIndentation: false
       },
-      fontFamily: '"Fira Code"',
+      fontFamily: firaCodeFont.style.fontFamily,
       fontSize: 14,
       lineHeight: 22,
       renderLineHighlightOnlyWhenFocus: true,
@@ -274,15 +280,15 @@ export default function MonacoEditor({
     onChange={update => {
       onChange(update ?? '')
     }}
-    keepCurrentModel
+    // keepCurrentModel
     beforeMount={monaco => {
       setup(monaco)
       loadMonacoModels(monaco, initiateFiles())
       void startLanguageClient(monaco)
     }}
-    // onMount={(_editor, monaco) => {
+  // onMount={(_editor, monaco) => {
 
-    // }}
+  // }}
   // onValidate={markers =>
   //   console.log('onValidate', { markers })
   // }
