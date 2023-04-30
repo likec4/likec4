@@ -11,9 +11,9 @@
     "moduleResolution": "bundler",
     "outDir": "dist",
     "rootDir": "src",
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
     "jsx": "react-jsx"
   },
   "include": [

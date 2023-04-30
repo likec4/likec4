@@ -51,7 +51,7 @@ jobs:
         run: yarn turbo run compile
 
       - name: Test
-        run: yarn test
+        run: yarn vitest run
 
       - if: success() && steps.yarn-cache.outputs.cache-hit != 'true' && github.ref_protected == true
         uses: actions/cache/save@v3

@@ -1,8 +1,8 @@
 import type { DiagramNode } from '@likec4/diagrams'
 import { Diagram } from '@likec4/diagrams/src/diagram/Diagram'
 import { useCallback, useState } from 'react'
-import type { LikeC4ViewId } from './likec4.data'
-import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.data'
+import type { LikeC4ViewId } from './likec4.generated'
+import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.generated'
 import useTilg from 'tilg'
 
 function App() {

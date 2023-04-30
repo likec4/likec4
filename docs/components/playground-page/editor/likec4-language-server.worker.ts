@@ -21,7 +21,6 @@ const connection = createConnection(messageReader, messageWriter)
 
 // Inject the shared services and language-specific services
 const { shared } = createLanguageServices({
-  // @ts-expect-error Different types in vscode-rpc of playground and @likec4/language-server
   connection,
   ...EmptyFileSystem
 })
