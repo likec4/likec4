@@ -36,8 +36,7 @@ const withNextra = nextra({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // experimental: {
-  // }
+  trailingSlash: true,
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
     // console.log('config.experiments', config.experiments)
@@ -53,16 +52,15 @@ const nextConfig = {
     // }
     return config
   },
-
+  eslint: {
+    ignoreDuringBuilds: true
+  },
   output: 'export',
   transpilePackages: [
-  //   'monaco-editor',
-  //   '@likec4/core',
-    '@likec4/language-server',
-  //   '@likec4/diagrams'
+    '@likec4/language-server'
   ],
   typescript: {
-    tsconfigPath: './tsconfig.next.json',
+    tsconfigPath: './tsconfig.next.json'
   },
   images: {
     unoptimized: true

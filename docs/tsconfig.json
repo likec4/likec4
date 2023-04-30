@@ -1,45 +1,20 @@
 {
+  "extends": "./tsconfig.next.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "WebWorker"
-    ],
-    "downlevelIteration": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "paths": {
-      "$/*": [
-        "./*"
-      ]
-    },
-    "incremental": true
+    "moduleResolution": "bundler"
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
   "references": [
     {
       "path": "../packages/core"
     },
     {
       "path": "../packages/diagrams"
+    },
+    {
+      "path": "../packages/layouts"
+    },
+    {
+      "path": "../packages/language-server"
     }
   ]
 }

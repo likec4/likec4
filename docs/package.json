@@ -2,9 +2,10 @@
   "name": "@likec4/docs-website",
   "version": "0.7.0",
   "private": true,
-  "license": "UNLICENSED",
+  "type": "module",
+  "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
-  "homepage": "https://docs.like-c4.dev",
+  "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "packageManager": "yarn@3.4.1",
   "repository": {
@@ -18,7 +19,7 @@
     "dev": "run generate && next dev",
     "build": "next build",
     "start": "next start",
-    "clean": "run -T rimraf .next out"
+    "clean": "run -T rimraf -v .next out"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
@@ -57,5 +58,8 @@
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
+  },
+  "volta": {
+    "node": "18.15.0"
   }
 }
