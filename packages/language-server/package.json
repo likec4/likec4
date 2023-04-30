@@ -9,7 +9,10 @@
   "files": [
     "dist",
     "contrib",
-    "protocol",
+    "!**/__mocks__/",
+    "!**/__test__/",
+    "!**/*.spec.js",
+    "!**/*.spec.d.ts",
     "!**/*.map"
   ],
   "repository": {
@@ -24,9 +27,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./builtin": "./src/builtin.ts",
-    "./protocol": "./src/protocol.ts",
-    "./dist": "./dist/index.js",
-    "./dist/*": "./dist/*"
+    "./protocol": "./src/protocol.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -49,18 +50,16 @@
         "types": "./dist/protocol.d.ts",
         "import": "./dist/protocol.js",
         "require": "./dist/protocol.js"
-      },
-      "./dist": "./dist/index.js",
-      "./dist/*": "./dist/*"
+      }
     }
   },
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='language-server...'",
-    "compile": "tsc --build --emitDeclarationOnly",
+    "compile": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
-    "watch:ts": "tsc --build --watch",
+    "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "build": "tsc --build",
+    "build": "tsc",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
