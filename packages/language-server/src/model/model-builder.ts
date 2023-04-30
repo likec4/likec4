@@ -411,6 +411,6 @@ export class LikeC4ModelBuilder {
       return
     }
     logger.debug('Send onDidChangeModel')
-    await connection.sendNotification(Rpc.onDidChangeModel, void 0)
+    await connection.sendNotification(Rpc.onDidChangeModel)
   }
 }

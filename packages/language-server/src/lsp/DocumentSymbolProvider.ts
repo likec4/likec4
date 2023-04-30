@@ -6,7 +6,7 @@
 
 import invariant from 'tiny-invariant'
 import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
-import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
+import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver'
 import { type LikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { logger } from '../logger'

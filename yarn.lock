@@ -765,11 +765,10 @@ __metadata:
     state-local: ^1.0.7
     typescript: ^5.0.4
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
-    vscode-json-languageservice: ~5.3.2
-    vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
     vscode-languageserver: 8.1.0
-    vscode-languageserver-protocol: 3.17.3
+    vscode-oniguruma: 1.7.0
+    vscode-textmate: ^9.0.0
     vscode-uri: ~3.0.7
     zustand: ^4.3.7
   languageName: unknown
@@ -831,9 +830,9 @@ __metadata:
     vscode-uri: ~3.0.7
   peerDependencies:
     langium: ^1.1.0
-    vscode-languageserver-protocol: 3.17.3
+    vscode-languageserver: ~8.1.0
   peerDependenciesMeta:
-    vscode-languageserver-protocol:
+    vscode-languageserver:
       optional: true
   languageName: unknown
   linkType: soft
@@ -1781,13 +1780,6 @@ __metadata:
     loupe: ^2.3.6
     pretty-format: ^27.5.1
   checksum: a685b6ba34b0173e4da388055dc2a22ba335a74cf99679f7036cea1d183e0ee804a01984148eaad0e0f48bfb786d33800ff6dd549b94f3d064e14caa0857ee62
-  languageName: node
-  linkType: hard
-
-"@vscode/l10n@npm:^0.0.13":
-  version: 0.0.13
-  resolution: "@vscode/l10n@npm:0.0.13"
-  checksum: 9bec12071a6b626b570d2a6fb79f25f382deb6cdb227a86270c6dde36ca6a32da94dde34503aa3f8cbccf9c283d52bcbd8b130e80d15970ce4960b1e9f223e52
   languageName: node
   linkType: hard
 
@@ -8913,20 +8905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-json-languageservice@npm:~5.3.2":
-  version: 5.3.4
-  resolution: "vscode-json-languageservice@npm:5.3.4"
-  dependencies:
-    "@vscode/l10n": ^0.0.13
-    jsonc-parser: ^3.2.0
-    vscode-languageserver-textdocument: ^1.0.8
-    vscode-languageserver-types: ^3.17.3
-    vscode-uri: ^3.0.7
-  checksum: 60df0d48038079ac0cd5e783b75d720841b5d54c6324257aafeed891d9a1b0848538acd40b9a9805932b915cdd549c34db37754d2b28fd6d243f8098266764ef
-  languageName: node
-  linkType: hard
-
-"vscode-jsonrpc@npm:8.1.0":
+"vscode-jsonrpc@npm:8.1.0, vscode-jsonrpc@npm:~8.1.0":
   version: 8.1.0
   resolution: "vscode-jsonrpc@npm:8.1.0"
   checksum: 8980037cc0014802e6ac1e5dfcff9a65e8292727096dfd23c92d2039c0c45de74a00d6ee06938cf1a671286dd8258a5f418cf048c26ad0fcb0c44f96c9e0f278
@@ -8954,13 +8933,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-textdocument@npm:^1.0.8":
-  version: 1.0.10
-  resolution: "vscode-languageserver-textdocument@npm:1.0.10"
-  checksum: 605ff0662535088567a145b48d28f0c41844d28269fa0b3fca3a1e179dd14baf7181150b274bf3840ef2a043ed8474a9227aaf169a6fae574516349a1b371a18
-  languageName: node
-  linkType: hard
-
 "vscode-languageserver-textdocument@npm:~1.0.8":
   version: 1.0.9
   resolution: "vscode-languageserver-textdocument@npm:1.0.9"
@@ -8968,7 +8940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-types@npm:3.17.3, vscode-languageserver-types@npm:^3.17.3":
+"vscode-languageserver-types@npm:3.17.3":
   version: 3.17.3
   resolution: "vscode-languageserver-types@npm:3.17.3"
   checksum: fbc8221297261f659a6482875ff2a419dc9d55965dc53745797da569ff9f819cd832e6f2699017baadd946548bbfe212e3f6971f3d960f12dc0ee9c629dacc07
@@ -8986,7 +8958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-oniguruma@npm:^1.7.0":
+"vscode-oniguruma@npm:1.7.0, vscode-oniguruma@npm:^1.7.0":
   version: 1.7.0
   resolution: "vscode-oniguruma@npm:1.7.0"
   checksum: 53519d91d90593e6fb080260892e87d447e9b200c4964d766772b5053f5699066539d92100f77f1302c91e8fc5d9c772fbe40fe4c90f3d411a96d5a9b1e63f42
@@ -9000,7 +8972,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-uri@npm:3.0.7, vscode-uri@npm:^3.0.7, vscode-uri@npm:~3.0.7":
+"vscode-textmate@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "vscode-textmate@npm:9.0.0"
+  checksum: 17f5e1e9ad4b56d15e29826a440054d9f50b65b25c8ba189ce36972dca003b5e68318d3703ec5f575104c4423463dff3944464c67027d9b88f91aa0e8e5f0296
+  languageName: node
+  linkType: hard
+
+"vscode-uri@npm:3.0.7, vscode-uri@npm:~3.0.7":
   version: 3.0.7
   resolution: "vscode-uri@npm:3.0.7"
   checksum: c899a0334f9f6ba53021328e083f6307978c09b94407d7e5fe86fcd8fcb8f1da0cb344123a335e55769055007a46d51aff83f9ee1dfc0296ee54b78f34ef0e4f

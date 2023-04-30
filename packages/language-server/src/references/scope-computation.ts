@@ -5,7 +5,7 @@ import {
   type AstNodeDescription,
   type PrecomputedScopes
 } from 'langium'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
+import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { computeDocumentFqn } from './fqn-computation'

@@ -4,23 +4,19 @@
  * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
+import * as monaco from 'monaco-editor'
 import { loader, type Monaco } from "@monaco-editor/react"
-import 'monaco-editor/esm/vs/editor/edcore.main.js'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-
-
-import { onDidChangeModel, buildDocuments } from '@likec4/language-server/dist/protocol'
 import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
-import { CloseAction, ErrorAction } from 'vscode-languageclient'
-import { BrowserMessageReader, BrowserMessageWriter } from 'vscode-languageclient/browser'
+import { CloseAction, ErrorAction, BrowserMessageReader, BrowserMessageWriter } from 'vscode-languageclient/browser'
+import { Rpc } from '@likec4/language-server/protocol'
 
 import { once, toPairs, delay } from 'rambdax'
 import { StandaloneServices } from 'vscode/services'
 
 import { Editor } from "@monaco-editor/react"
 import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
-import getNotificationServiceOverride from 'vscode/service-override/notifications'
-import getDialogServiceOverride from 'vscode/service-override/dialogs'
+// import getNotificationServiceOverride from 'vscode/service-override/notifications'
+// import getDialogServiceOverride from 'vscode/service-override/dialogs'
 import likec4Monarch from './likec4.monarch'
 import styles from './monaco.module.css'
 
@@ -36,9 +32,11 @@ self.MonacoEnvironment = {
   }
 }
 
+loader.config({ monaco })
+
 StandaloneServices.initialize({
-  ...getNotificationServiceOverride(document.body),
-  ...getDialogServiceOverride(document.body),
+  // ...getNotificationServiceOverride(document.body),
+  // ...getDialogServiceOverride(document.body),
   ...getModelEditorServiceOverride((_model, _options, _sideBySide) => {
     // const editor = getMonacoEditor()
     // if (!editor) {
@@ -53,14 +51,12 @@ StandaloneServices.initialize({
   })
 })
 
-loader.config({ monaco })
-
 export const languageId = 'likec4'
 const themeId = 'likec4PlaygroundTheme'
 
 let languageClient: MonacoLanguageClient | null = null
 
-async function startLanguageClient(monaco: Monaco) {
+function startLanguageClient(monaco: Monaco) {
   if (!languageClient) {
     console.debug('create likec4 language client')
     const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
@@ -88,26 +84,40 @@ async function startLanguageClient(monaco: Monaco) {
       }
     })
 
-    languageClient.onNotification(onDidChangeModel.method, () => {
+    async function fetchLikec4() {
+      const model = await languageClient?.sendRequest(Rpc.fetchModel)
+      console.debug('fetchLikec4', model?.model)
+    }
+
+    languageClient.onNotification(Rpc.onDidChangeModel, () => {
       console.log('languageClient received onDidChangeModel')
+      void fetchLikec4()
     })
   }
 
   if (languageClient.needsStart()) {
-    console.debug('starting likec4 language client')
-    await languageClient.start()
-  }
-  console.debug('likec4 language client started')
+    void (async (client: MonacoLanguageClient) => {
+      console.debug('starting likec4 language client')
+      await client.start()
+      console.debug('likec4 language client started')
 
-  const models = monaco.editor.getModels()
-  console.debug('monaco.models', models)
-  const likec4docs = models.flatMap(m => m.getLanguageId() === languageId ? [m.uri.toString()] : [])
-  console.debug('likec4docs', likec4docs)
+      client.onDidChangeState(({ newState }) => {
+        console.debug('likec4 language client state changed', newState)
+      })
 
-  if (likec4docs.length) {
-    await delay(500)
-    await languageClient.sendRequest(buildDocuments.method, likec4docs)
+      // const models = monaco.editor.getModels()
+      // console.debug('monaco.models', models)
+      // const docs = models.flatMap(m => m.getLanguageId() === languageId ? [m.uri.toString()] : [])
+      // console.debug('likec4docs', docs)
+
+      // if (docs.length) {
+      //   await delay(1000)
+      //   await languageClient.sendRequest(Rpc.buildDocuments, { docs })
+      // }
+
+    })(languageClient)
   }
+
 
   return languageClient
 }
@@ -125,6 +135,7 @@ const loadMonacoModels = (monaco: Monaco, files: Record<string, string>) => {
 }
 
 const setup = once((monaco: Monaco) => {
+  console.debug('setup monaco')
   // do something before editor is mounted
   monaco.languages.register({
     id: languageId,
@@ -267,10 +278,11 @@ export default function MonacoEditor({
     beforeMount={monaco => {
       setup(monaco)
       loadMonacoModels(monaco, initiateFiles())
-    }}
-    onMount={(_editor, monaco) => {
       void startLanguageClient(monaco)
     }}
+    // onMount={(_editor, monaco) => {
+
+    // }}
   // onValidate={markers =>
   //   console.log('onValidate', { markers })
   // }

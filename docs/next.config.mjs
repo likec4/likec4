@@ -45,10 +45,22 @@ const nextConfig = {
       test: /\.(mp3|wasm)$/i,
       type: 'asset/resource'
     })
+    // config.resolve.alias = {
+    //   ...config.resolve.alias,
+    //   '@likec4/core': '@likec4/core/dist',
+    //   '@likec4/layouts': '@likec4/layouts/dist',
+    //   '@likec4/language-server': '@likec4/language-server/dist',
+    // }
     return config
   },
+
   output: 'export',
-  transpilePackages: ['@likec4/diagrams'],
+  transpilePackages: [
+  //   'monaco-editor',
+  //   '@likec4/core',
+    '@likec4/language-server',
+  //   '@likec4/diagrams'
+  ],
   images: {
     unoptimized: true
   }

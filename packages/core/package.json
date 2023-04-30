@@ -30,7 +30,13 @@
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts",
-    "./compute-view": "./src/compute-view/index.ts"
+    "./compute-view": "./src/compute-view/index.ts",
+    "./dist": "./dist/index.js",
+    "./dist/*": [
+      "./dist/*",
+      "./dist/*.js",
+      "./dist/*/index.js"
+    ]
   },
   "sideEffects": false,
   "publishConfig": {
