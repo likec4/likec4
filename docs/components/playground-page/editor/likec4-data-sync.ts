@@ -1,9 +1,9 @@
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 // import { CancellationTokenSource, type CancellationToken } from 'monaco-editor'
 import { Rpc } from '@likec4/language-server/protocol'
+import { useEffect } from 'react'
 import { updateViewsStore } from '../data'
-import { useEffect, useRef} from 'react'
 
 function syncLikeC4Data(languageClient: MonacoLanguageClient) {
 

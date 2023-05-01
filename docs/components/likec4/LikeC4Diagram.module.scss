@@ -24,6 +24,14 @@
   animation: fade 0.15s ease-in-out;
 }
 
+.diagramTitle {
+  position: absolute;
+
+  h2 {
+    text-shadow: 1px 1px 4px rgb(17 17 17);
+  }
+}
+
 
 .container {
   cursor: zoom-in;

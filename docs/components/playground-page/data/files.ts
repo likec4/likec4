@@ -1,6 +1,6 @@
 import { unstable_batchedUpdates } from 'react-dom'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 interface FilesStore {
   current: string
@@ -320,7 +320,7 @@ export const useFilesStore = create<FilesStore>()(
     }
   }, {
     name: 'likec4-playground-files',
-    // merge: (persistedState, currentState) => currentState,
+    storage: createJSONStorage(() => sessionStorage),
   })
 )
 

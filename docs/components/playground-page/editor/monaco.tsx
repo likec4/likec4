@@ -4,8 +4,7 @@
  * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-import { Rpc } from '@likec4/language-server/protocol'
-import { loader, useMonaco, type Monaco } from "@monaco-editor/react"
+import { loader, type Monaco } from "@monaco-editor/react"
 import * as monaco from 'monaco-editor'
 import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
 import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
@@ -14,14 +13,15 @@ import { once, toPairs } from 'rambdax'
 import { StandaloneServices } from 'vscode/services'
 
 import { Editor } from "@monaco-editor/react"
-import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
-// import getNotificationServiceOverride from 'vscode/service-override/notifications'
-// import getDialogServiceOverride from 'vscode/service-override/dialogs'
+// import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
+import getNotificationServiceOverride from 'vscode/service-override/notifications'
+import getDialogServiceOverride from 'vscode/service-override/dialogs'
+// import getTokenClassificationServiceOverride from 'vscode/service-override/tokenClassification'
 import likec4Monarch from './likec4.monarch'
 import styles from './monaco.module.css'
 import { Fira_Code } from 'next/font/google'
 import { useEffect, useRef } from 'react'
-import type { ViewID, ComputedView } from '@likec4/core/types'
+import type { ViewID } from '@likec4/core/types'
 import { useLikeC4DataSyncEffect } from './likec4-data-sync'
 import { setDiagramFromViewId } from '../data'
 
@@ -46,20 +46,20 @@ const firaCodeFont = Fira_Code({
 loader.config({ monaco })
 
 StandaloneServices.initialize({
-  // ...getNotificationServiceOverride(document.body),
-  // ...getDialogServiceOverride(document.body),
-  ...getModelEditorServiceOverride((_model, _options, _sideBySide) => {
-    // const editor = getMonacoEditor()
-    // if (!editor) {
-    //   console.warn('no active editor')
-    //   return Promise.resolve(undefined)
-    // }
-    // // const editorModel = editor.getModel() ?? null
-    // // if (!editorModel || editorModel.uri.toString() !== model.uri.toString()) {
-    // //   changeCurrentDocument(model.uri.toString())
-    // // }
-    return Promise.resolve(undefined)
-  })
+  ...getNotificationServiceOverride(document.body),
+  ...getDialogServiceOverride(document.body),
+  // ...getModelEditorServiceOverride((_model, _options, _sideBySide) => {
+  //   // const editor = getMonacoEditor()
+  //   // if (!editor) {
+  //   //   console.warn('no active editor')
+  //   //   return Promise.resolve(undefined)
+  //   // }
+  //   // // const editorModel = editor.getModel() ?? null
+  //   // // if (!editorModel || editorModel.uri.toString() !== model.uri.toString()) {
+  //   // //   changeCurrentDocument(model.uri.toString())
+  //   // // }
+  //   return Promise.resolve(undefined)
+  // })
 })
 
 export const languageId = 'likec4'
@@ -216,16 +216,12 @@ const setup = once((monaco: Monaco) => {
     },
     rules: []
   })
-
-  MonacoServices.install()
 })
 
 interface MonacoEditorProps {
   currentFile: string
   initiateFiles: () => Record<string, string>
   onChange: (value: string) => void
-  // /onSwitchView: (viewId: ViewID) => void
-  // onChangeViews: (views: Record<ViewID, ComputedView>) => void
 }
 
 export default function MonacoEditor({
@@ -256,40 +252,6 @@ export default function MonacoEditor({
     }
   }, [editor])
 
-  // useEffect(() => {
-  //   const languageClient = startLanguageClient()
-  //   let seqId = 1
-
-  //   async function fetchModel() {
-  //     const id = seqId++
-  //     const tag = `syncLikeC4Data.fetchModel.${id}`
-  //     console.time(tag)
-  //     try {
-  //       const { model } = await languageClient.sendRequest(Rpc.fetchModel)
-  //       if (!model) {
-  //         console.warn(`${tag}: empty model`)
-  //         return
-  //       }
-  //       onChangeViews(model.views)
-  //     } catch (error) {
-  //       console.error(`${id}: error`, error)
-  //     } finally {
-  //       console.timeEnd(tag)
-  //     }
-  //   }
-
-  //   const onDidChangeModel = languageClient.onNotification(Rpc.onDidChangeModel, () => {
-  //     console.debug('syncLikeC4Data: onDidChangeModel')
-  //     void fetchModel()
-  //   })
-  //   console.debug('syncLikeC4Data: on')
-
-  //   return () => {
-  //     onDidChangeModel.dispose()
-  //     console.debug('syncLikeC4Data: off')
-  //   }
-  // }, [])
-
   return <Editor
     options={{
       extraEditorClassName: styles.likec4editor + ' likec4-editor',
@@ -307,10 +269,11 @@ export default function MonacoEditor({
 
         // highlightActiveIndentation: false
       },
+      lineNumbersMinChars:3,
       fontFamily: firaCodeFont.style.fontFamily,
       fontWeight: '500',
       fontSize: 14,
-      lineHeight: 22,
+      lineHeight: 20,
       renderLineHighlightOnlyWhenFocus: true,
       foldingHighlight: false,
       overviewRulerBorder: false,
