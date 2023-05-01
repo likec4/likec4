@@ -10,12 +10,11 @@ export default {
 
     tokenizer: {
         initial: [
-            { regex: /[0-9]/, action: {"token":"DIGIT"} },
-            { regex: /[\t\r\n\v\f]/, action: {"token":"NEWLINE"} },
+            { regex: /[\t\r\n\v\f]/, action: {"token":"white"} },
             { regex: /"[^"]*"|'[^']*'/, action: {"token":"string"} },
             { include: '@whitespace' },
-            { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
-            { regex: /[^\W\d_]+/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"source"} }} }
+            { regex: /->|\.\*|\*/, action: {"token":" operator"} },
+            { regex: /\b[^\W\d_]+\b/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"source"} }} }
         ],
         whitespace: [
             { regex: /[^\S\r\n]/, action: {"token":"white"} },

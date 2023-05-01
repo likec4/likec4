@@ -28,6 +28,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@monaco-editor/react": "^4.5.0",
+    "@react-hookz/web": "^23.0.0",
     "body-scroll-lock-upgrade": "^1.0.3",
     "langium": "^1.1.0",
     "monaco-editor": "0.36.1",
@@ -35,6 +36,7 @@
     "next": "^13.3.1",
     "nextra": "^2.4.2",
     "nextra-theme-docs": "^2.4.2",
+    "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "state-local": "^1.0.7",
@@ -54,6 +56,7 @@
     "@types/vscode": "~1.77.0",
     "remark-code-import": "^1.1.1",
     "resolve-url-loader": "^5.0.0",
+    "sass": "^1.62.1",
     "typescript": "^5.0.4"
   },
   "installConfig": {

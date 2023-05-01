@@ -1,8 +1,0 @@
-.playground {
-  position: fixed;
-  top: var(--nextra-navbar-height);
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-}

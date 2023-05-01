@@ -1,7 +1,11 @@
 {
   "extends": "./tsconfig.next.json",
   "compilerOptions": {
-    "moduleResolution": "bundler"
+    "noEmit": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "moduleResolution": "bundler",
+    "noUncheckedIndexedAccess": true
   },
   "references": [
     {

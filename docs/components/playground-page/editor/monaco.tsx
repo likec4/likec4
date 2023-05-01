@@ -5,7 +5,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 import { Rpc } from '@likec4/language-server/protocol'
-import { loader, type Monaco } from "@monaco-editor/react"
+import { loader, useMonaco, type Monaco } from "@monaco-editor/react"
 import * as monaco from 'monaco-editor'
 import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
 import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
@@ -20,12 +20,16 @@ import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
 import likec4Monarch from './likec4.monarch'
 import styles from './monaco.module.css'
 import { Fira_Code } from 'next/font/google'
+import { useEffect, useRef } from 'react'
+import type { ViewID, ComputedView } from '@likec4/core/types'
+import { useLikeC4DataSyncEffect } from './likec4-data-sync'
+import { setDiagramFromViewId } from '../data'
 
 self.MonacoEnvironment = {
-  getWorker(_, label) {
-    if (label === 'json') {
-      return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url))
-    }
+  getWorker(_, _label) {
+    // if (label === 'json') {
+    //   return new Worker(new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url))
+    // }
     // if (label === 'typescript' || label === 'javascript') {
     //   return new Worker(new URL('monaco-editor/esm/vs/language/typescript/ts.worker', import.meta.url))
     // }
@@ -35,6 +39,7 @@ self.MonacoEnvironment = {
 
 const firaCodeFont = Fira_Code({
   preload: true,
+  weight: ['400', '500'],
   subsets: ['latin']
 })
 
@@ -62,12 +67,17 @@ const themeId = 'likec4PlaygroundTheme'
 
 let languageClient: MonacoLanguageClient | null = null
 
-function startLanguageClient(_monaco: Monaco) {
+function startLanguageClient() {
   if (!languageClient) {
     console.debug('create likec4 language client')
     const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
       name: 'likec4-language-worker'
     })
+
+    window?.addEventListener('beforeunload', () => {
+      worker.terminate()
+    })
+
     const reader = new BrowserMessageReader(worker)
     const writer = new BrowserMessageWriter(worker)
 
@@ -89,39 +99,17 @@ function startLanguageClient(_monaco: Monaco) {
         }
       }
     })
-
-    async function fetchLikec4() {
-      const model = await languageClient?.sendRequest(Rpc.fetchModel)
-      console.debug('fetchLikec4', model?.model)
-    }
-
-    languageClient.onNotification(Rpc.onDidChangeModel, () => {
-      console.log('languageClient received onDidChangeModel')
-      void fetchLikec4()
-    })
   }
 
   if (languageClient.needsStart()) {
-    void (async (client: MonacoLanguageClient) => {
-      console.debug('starting likec4 language client')
-      await client.start()
-      console.debug('likec4 language client started')
-
-      client.onDidChangeState(({ newState }) => {
-        console.debug('likec4 language client state changed', newState)
-      })
-
-      // const models = monaco.editor.getModels()
-      // console.debug('monaco.models', models)
-      // const docs = models.flatMap(m => m.getLanguageId() === languageId ? [m.uri.toString()] : [])
-      // console.debug('likec4docs', docs)
-
-      // if (docs.length) {
-      //   await delay(1000)
-      //   await languageClient.sendRequest(Rpc.buildDocuments, { docs })
-      // }
-
-    })(languageClient)
+    languageClient.start().then(
+      () => {
+        console.info('languageClient.started')
+      },
+      err => {
+        console.error('languageClient.start', err)
+      },
+    )
   }
 
 
@@ -224,7 +212,7 @@ const setup = once((monaco: Monaco) => {
     base: 'vs-dark',
     inherit: true,
     colors: {
-      'editor.background': '#FFFFFF00',
+      'editor.background': '#00000000',
     },
     rules: []
   })
@@ -236,21 +224,75 @@ interface MonacoEditorProps {
   currentFile: string
   initiateFiles: () => Record<string, string>
   onChange: (value: string) => void
+  // /onSwitchView: (viewId: ViewID) => void
+  // onChangeViews: (views: Record<ViewID, ComputedView>) => void
 }
 
 export default function MonacoEditor({
   currentFile,
   initiateFiles,
-  onChange
+  onChange,
+  // onSwitchView,
+  // onChangeViews
 }: MonacoEditorProps) {
 
-  // const monaco = useMonaco()
-  // const monaroRef = useRef(monaco)
-  // monaroRef.current = monaco
+  const monacoRef = useRef<Monaco | null>(null)
+
+  useLikeC4DataSyncEffect(startLanguageClient)
+
+  const editor = monacoRef.current?.editor ?? null
+
+  useEffect(() => {
+    if (!editor) {
+      return
+    }
+    const disposable = editor.registerCommand('likec4.open-preview', (_, viewID?: ViewID) => {
+      if (viewID) {
+        setDiagramFromViewId(viewID)
+      }
+    })
+    return () => {
+      disposable.dispose()
+    }
+  }, [editor])
+
+  // useEffect(() => {
+  //   const languageClient = startLanguageClient()
+  //   let seqId = 1
+
+  //   async function fetchModel() {
+  //     const id = seqId++
+  //     const tag = `syncLikeC4Data.fetchModel.${id}`
+  //     console.time(tag)
+  //     try {
+  //       const { model } = await languageClient.sendRequest(Rpc.fetchModel)
+  //       if (!model) {
+  //         console.warn(`${tag}: empty model`)
+  //         return
+  //       }
+  //       onChangeViews(model.views)
+  //     } catch (error) {
+  //       console.error(`${id}: error`, error)
+  //     } finally {
+  //       console.timeEnd(tag)
+  //     }
+  //   }
+
+  //   const onDidChangeModel = languageClient.onNotification(Rpc.onDidChangeModel, () => {
+  //     console.debug('syncLikeC4Data: onDidChangeModel')
+  //     void fetchModel()
+  //   })
+  //   console.debug('syncLikeC4Data: on')
+
+  //   return () => {
+  //     onDidChangeModel.dispose()
+  //     console.debug('syncLikeC4Data: off')
+  //   }
+  // }, [])
 
   return <Editor
-    className={styles.likec4editor + ' likec4-editor ' + firaCodeFont.className}
     options={{
+      extraEditorClassName: styles.likec4editor + ' likec4-editor',
       minimap: {
         enabled: false
       },
@@ -266,6 +308,7 @@ export default function MonacoEditor({
         // highlightActiveIndentation: false
       },
       fontFamily: firaCodeFont.style.fontFamily,
+      fontWeight: '500',
       fontSize: 14,
       lineHeight: 22,
       renderLineHighlightOnlyWhenFocus: true,
@@ -280,15 +323,16 @@ export default function MonacoEditor({
     onChange={update => {
       onChange(update ?? '')
     }}
-    // keepCurrentModel
+    keepCurrentModel
     beforeMount={monaco => {
+      monacoRef.current = monaco
       setup(monaco)
       loadMonacoModels(monaco, initiateFiles())
-      void startLanguageClient(monaco)
+      void startLanguageClient()
     }}
-  // onMount={(_editor, monaco) => {
+    // onMount={(_editor, monaco) => {
 
-  // }}
+    // }}
   // onValidate={markers =>
   //   console.log('onValidate', { markers })
   // }
