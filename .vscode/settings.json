@@ -10,18 +10,19 @@
   "vitest.commandLine": "yarn run -T vitest",
   "search.exclude": {
     "node_modules/**": true,
+    "docs/.next/**": true,
+    "docs/node_modules/**": true,
     "packages/*/dist/**": true,
     "packages/*/node_modules/**": true
   },
   "files.exclude": {
     "**/.turbo": true,
     "packages/*/.vscode-test-web": true,
-    "packages/*/tsconfig.tsbuildinfo": true
+    "**/*.tsbuildinfo": true
   },
   "exportall.config.folderListener": [
     "/packages/language-server/src/model",
     "/packages/language-server/src/__test__/parser-smoke",
-    "/packages/language-server/src/lsp",
-    "/packages/diagrams/src/icons"
+    "/packages/language-server/src/lsp"
   ]
 }

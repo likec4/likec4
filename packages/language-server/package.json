@@ -9,6 +9,10 @@
   "files": [
     "dist",
     "contrib",
+    "!**/__mocks__/",
+    "!**/__test__/",
+    "!**/*.spec.js",
+    "!**/*.spec.d.ts",
     "!**/*.map"
   ],
   "repository": {
@@ -53,9 +57,9 @@
     "turbo-build": "run -T turbo run build --filter='language-server...'",
     "compile": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
-    "watch:ts": "tsc -p tsconfig.esm.json --watch",
+    "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "build": "tsc -p tsconfig.esm.json",
+    "build": "tsc",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
@@ -70,15 +74,14 @@
     "rambdax": "^9.1.1",
     "strip-indent": "^4.0.0",
     "tiny-invariant": "^1.3.1",
-    "type-fest": "^3.9.0",
-    "vscode-uri": "~3.0.7"
+    "type-fest": "^3.9.0"
   },
   "peerDependencies": {
     "langium": "^1.1.0",
-    "vscode-languageserver-protocol": "~3.17.2"
+    "vscode-languageserver": "~8.1.0"
   },
   "peerDependenciesMeta": {
-    "vscode-languageserver-protocol": {
+    "vscode-languageserver": {
       "optional": true
     }
   },

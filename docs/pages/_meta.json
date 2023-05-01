@@ -17,6 +17,19 @@
     "title": "Docs",
     "type": "page"
   },
+  "playground": {
+    "title": "Playground",
+    "type": "page",
+    "theme": {
+      "layout": "raw",
+      "timestamp": false,
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
+    }
+  },
   "examples": {
     "title": "Examples",
     "type": "menu",

@@ -2,8 +2,9 @@ import type { EmbeddedDiagramProps } from '@likec4/diagrams'
 import { EmbeddedDiagram, FlexDiagram } from '@likec4/diagrams'
 import type Konva from 'konva'
 import { useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { createPortal } from 'react-dom'
-import styles from './LikeC4Diagram.module.css'
+import styles from './LikeC4Diagram.module.scss'
 import type { LikeC4ViewId } from './generated'
 import { LikeC4ViewsData, isLikeC4ViewId } from './generated'
 import {
@@ -43,9 +44,11 @@ function DiagramsBrowser({
     }
   }, [])
 
+  const diagram = LikeC4ViewsData[viewId]
+
   return <div className={styles.overlay} ref={overlayRef}>
     <FlexDiagram
-      diagram={LikeC4ViewsData[viewId]}
+      diagram={diagram}
       initialStagePosition={initialPosition}
       padding={30}
       onNodeClick={({ navigateTo }) => {
@@ -55,6 +58,13 @@ function DiagramsBrowser({
       }}
       onStageClick={() => onClose()}
     />
+    <div className={styles.diagramTitle}>
+      <h2 className={clsx(
+        'nx-p-4',
+        'nx-text-lg nx-font-bold nx-tracking-tight',
+        'nx-text-slate-900 dark:nx-text-slate-100'
+      )}>{diagram.title}</h2>
+    </div>
   </div>
 }
 

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
-import { useUpdateEffect } from '@react-hookz/web/esm'
 import {
   useSpring,
   useTransition
@@ -103,67 +102,82 @@ export function Diagram({
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
       ? padding
       : ([padding, padding, padding, padding] as const)
-    // const stage = stageRef.current
-    // const container = stage?.container()
-
-    // Get the space we can see in the web page = size of div containing stage
-    // or stage size, whichever is the smaller
-    const viewRect = viewRectRef.current
-    // const viewRect = {
-    //   width,
-    //   height
-    // }
-    // if (stage && container) {
-    //   viewRect.width = Math.min(container.clientWidth, stage.width())
-    //   viewRect.height = Math.min(container.clientHeight, stage.height())
-    // }
+    const container = stageRef.current?.container()
 
     const // Add padding to make a larger rect - this is what we want to fill
       centerTo = {
-        x: rect.x - paddingLeft,
-        y: rect.y - paddingTop,
-        width: rect.width + paddingLeft + paddingRight,
-        height: rect.height + paddingTop + paddingBottom
+        x: rect.x, // + rect.width /2,
+        y: rect.y, // + rect.height /2,
+        width: rect.width,
+        height: rect.height
+      },
+      // Get the space we can see in the web page = size of div containing stage
+      // or stage size, whichever is the smaller
+      viewport = {
+        width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
+        height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
       },
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
-      viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
+      viewScale = Math.min(
+        viewport.width / centerTo.width,
+        viewport.height / centerTo.height
+      ),
       scale = clamp(0.1, 1, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {
-        x: (viewRect.width - centerTo.width * scale) / 2,
-        y: (viewRect.height - centerTo.height * scale) / 2
+        x: ((width - centerTo.width) * scale + viewport.width) / 2,
+        y: ((height - centerTo.height) * scale + viewport.height) / 2
+      },
+      // and the final position is...
+      finalPosition = {
+        x: Math.ceil(paddingLeft + centeringAjustment.x - (centerTo.x * scale)),
+        y: Math.ceil(paddingTop + centeringAjustment.y - (centerTo.y * scale)),
       }
-    // and the final position is...
-    // finalPosition = {
-    //   x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
-    //   y: Math.ceil(centeringAjustment.y + -centerTo.y * scale)
-    // }
     return {
-      x: Math.ceil(centeringAjustment.x + -centerTo.x * scale),
-      y: Math.ceil(centeringAjustment.y + -centerTo.y * scale),
+      ...finalPosition,
       scale
     }
   }
 
-  const [stageProps, stageSpringApi] = useSpring(() => ({
-    from: initialStagePosition ?? centerOnRect({
+  const centerAndFitDiagram = () => {
+    // const nodes = diagram.nodes
+    // if (nodes.length === 0) return
+    // const boundingRect = [Infinity, Infinity, -Infinity, -Infinity] as [
+    //   minX: number,
+    //   minY: number,
+    //   maxX: number,
+    //   maxY: number
+    // ]
+    // for (const node of nodes) {
+    //   const { position: [x, y], size: { width, height } } = node
+    //   boundingRect[0] = Math.min(boundingRect[0], x)
+    //   boundingRect[1] = Math.min(boundingRect[1], y)
+    //   boundingRect[2] = Math.max(boundingRect[2], x + width)
+    //   boundingRect[3] = Math.max(boundingRect[3], y + height)
+    // }
+    // return centerOnRect({
+    //   x: boundingRect[0],
+    //   y: boundingRect[1],
+    //   width: boundingRect[2] - boundingRect[0],
+    //   height: boundingRect[3] - boundingRect[1]
+    // })
+    return centerOnRect({
       x: 0,
       y: 0,
       width: diagram.width,
       height: diagram.height
     })
+  }
+
+  const [stageProps, stageSpringApi] = useSpring(() => ({
+    from: initialStagePosition ?? centerAndFitDiagram()
   }))
 
   useEffect(() => {
     stageSpringApi.stop(true).start({
-      to: centerOnRect({
-        x: 0,
-        y: 0,
-        width: diagram.width,
-        height: diagram.height
-      })
+      to: centerAndFitDiagram()
     })
   }, [id, width, height, diagram.width, diagram.height])
 
@@ -179,13 +193,20 @@ export function Diagram({
       onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
         if (e.target === stageRef.current) {
           e.cancelBubble = true
-          stageSpringApi.stop(true, ['x', 'y'])
+          // stageSpringApi.pause(['x', 'y'])
+        }
+      },
+      onDragMove: (e: Konva.KonvaEventObject<DragEvent>) => {
+        if (e.target === stageRef.current) {
+          stageSpringApi.set({
+            x: e.target.x(),
+            y: e.target.y()
+          })
         }
       },
       onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
         if (e.target === stageRef.current) {
           e.cancelBubble = true
-          e.evt.stopPropagation()
           stageSpringApi.start({
             to: {
               x: e.target.x(),
@@ -200,26 +221,23 @@ export function Diagram({
 
   const handleWheelZoom = useCallback(
     (e: Konva.KonvaEventObject<WheelEvent>) => {
-      const stage = e.target.getStage()
-      const pointer = stage?.getPointerPosition()
-
-      if (!stage || !pointer || Math.abs(e.evt.deltaY) < 10) {
+      const pointer = e.target.getStage()?.getPointerPosition()
+      if (!pointer || Math.abs(e.evt.deltaY) < 3) {
         return
       }
+      e.cancelBubble = true
 
-      const zoomStep = Math.abs(e.evt.deltaY) < 50 ? 1.1 : 1.7
+      const zoomStep = Math.abs(e.evt.deltaY) < 20 ? 1.03 : 1.15
 
       let direction = e.evt.deltaY > 0 ? 1 : -1
 
-      // // stop default scrolling
-      // e.evt.preventDefault()
-      // e.cancelBubble = true
-
-      const oldScale = stage.scaleX()
+      const oldScale = stageProps.scale.get()
+      const stageX = stageProps.x.get()
+      const stageY = stageProps.y.get()
 
       const mousePointTo = {
-        x: (pointer.x - stage.x()) / oldScale,
-        y: (pointer.y - stage.y()) / oldScale
+        x: (pointer.x - stageX) / oldScale,
+        y: (pointer.y - stageY) / oldScale
       }
 
       // when we zoom on trackpad, e.evt.ctrlKey is true
@@ -232,7 +250,7 @@ export function Diagram({
 
       newScale = clamp(0.1, 1.6, newScale)
 
-      stageSpringApi.stop(true).start({
+      stageSpringApi.start({
         to: {
           scale: newScale,
           x: pointer.x - mousePointTo.x * newScale,
@@ -317,6 +335,8 @@ export function Diagram({
       onWheel={zoomable ? handleWheelZoom : undefined}
       width={width}
       height={height}
+      offsetX={width / 2}
+      offsetY={height / 2}
       x={stageProps.x}
       y={stageProps.y}
       scaleX={stageProps.scale}

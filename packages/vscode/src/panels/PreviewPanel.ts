@@ -7,7 +7,7 @@ import type { ExtensionContext, C4Model, LanguageClient } from 'src/di'
 import { di } from 'src/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
-import type { Location } from 'vscode-languageserver-protocol'
+import type { Location } from 'vscode-languageserver'
 import { locateElement, locateRelation, locateView } from '@likec4/language-server/protocol'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {

@@ -4,6 +4,7 @@
     "outDir": "dist",
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "rootDir": "src",
+    "incremental": true,
     "composite": true,
     "declarationMap": true
   },

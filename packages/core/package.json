@@ -7,6 +7,8 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
+    "!**/*.spec.js",
+    "!**/*.spec.d.ts",
     "!**/*.map"
   ],
   "repository": {
@@ -16,8 +18,8 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "build": "tsc -p tsconfig.esm.json",
-    "dev": "tsc -p tsconfig.esm.json --watch",
+    "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "test:watch": "vitest",

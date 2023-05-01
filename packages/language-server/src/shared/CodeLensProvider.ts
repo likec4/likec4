@@ -1,6 +1,6 @@
 import type { LangiumDocument, LangiumSharedServices, MaybePromise } from 'langium'
 import type { CodeLensProvider } from 'langium/lib/lsp/code-lens-provider'
-import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver-protocol'
+import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
 import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {

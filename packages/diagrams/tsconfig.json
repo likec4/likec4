@@ -11,18 +11,15 @@
     "moduleResolution": "bundler",
     "outDir": "dist",
     "rootDir": "src",
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
     "jsx": "react-jsx"
   },
   "include": [
     "src/**/*"
   ],
   "references": [
-    { "path": "../language-server" },
-    { "path": "../generators" },
-    { "path": "../layouts" },
     { "path": "../core" }
   ]
 }

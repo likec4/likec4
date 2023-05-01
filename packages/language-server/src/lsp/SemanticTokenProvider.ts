@@ -1,5 +1,5 @@
 import { AbstractSemanticTokenProvider, type AstNode, type SemanticTokenAcceptor } from 'langium'
-import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
+import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver'
 import { ast } from '../ast'
 import { isElementRefHead } from '../elementRef'
 

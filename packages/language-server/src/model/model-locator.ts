@@ -1,7 +1,7 @@
 import type * as c4 from '@likec4/core/types'
 import type { LangiumDocuments } from 'langium'
 import { findNodeForKeyword, findNodeForProperty, getDocument } from 'langium'
-import type { Location } from 'vscode-languageserver-protocol'
+import type { Location } from 'vscode-languageserver'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'

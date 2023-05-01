@@ -1,6 +1,6 @@
 import type { LangiumDocument, LangiumDocumentFactory, LangiumSharedServices } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
-import type { WorkspaceFolder } from 'vscode-languageserver-protocol'
+import type { WorkspaceFolder } from 'vscode-languageserver'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   protected readonly documentFactory: LangiumDocumentFactory
