@@ -54,7 +54,7 @@
     }
   },
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='language-server...'",
+    "turbo-build": "run -T turbo run build --filter='language-server'",
     "compile": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",

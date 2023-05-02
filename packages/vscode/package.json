@@ -32,17 +32,16 @@
     "dependencies": false
   },
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='likec4-vscode...'",
+    "turbo-build": "run -T turbo run build --filter='likec4-vscode'",
     "open-web": "yarn turbo-build && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
-    "build:release": "yarn node esbuild.mjs --minify && run copy",
     "compile": "tsc --noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r $INIT_CWD/../vscode-preview/dist/* dist/preview/",
     "copy": "run-p 'copy:*'",
-    "build": "yarn node esbuild.mjs && run copy",
+    "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf contrib dist"
+    "clean": "run -T rimraf contrib dist src/generated"
   },
   "engines": {
     "vscode": "^1.74.0",

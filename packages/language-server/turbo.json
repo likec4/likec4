@@ -9,7 +9,7 @@
         "src/generated/**"
       ],
       "inputs": [
-        "src/*.langium",
+        "src/**/*.langium",
         "langium-config.json"
       ]
     },
@@ -18,7 +18,10 @@
       "dependsOn": ["generate", "^build"],
       "outputs": [],
       "inputs": [
-        "src/**",
+        "**/*",
+        "!dist/**",
+        "!contrib/**",
+        "!*.langium",
         "!src/generated/**"
       ]
     },
@@ -26,16 +29,15 @@
       "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
       "inputs": [
-        "src/**",
-        "tsconfig.esm.json",
+        "**/*",
+        "!dist/**",
+        "!contrib/**",
+        "!*.langium",
         "!src/generated/**"
       ],
       "outputs": [
         "dist/**"
       ]
-    },
-    "build:release": {
-      "dependsOn": ["generate", "^build:release"]
     }
   }
 }

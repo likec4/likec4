@@ -1,4 +1,4 @@
-import { Diagram, type DiagramPaddings } from '@likec4/diagrams/src/diagram'
+import { Diagram, type DiagramPaddings } from '@likec4/diagrams'
 import { useMeasure, type Measures } from '@react-hookz/web/esm'
 import {
   disableBodyScroll,

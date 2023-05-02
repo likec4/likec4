@@ -52,15 +52,19 @@ const nextConfig = {
     // }
     return config
   },
+  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true
   },
   output: 'export',
   transpilePackages: [
+    'monaco-editor',
     '@likec4/language-server'
   ],
   typescript: {
-    tsconfigPath: './tsconfig.next.json'
+    tsconfigPath: './tsconfig.next.json',
+    // There is a task "compile"
+    ignoreBuildErrors: true
   },
   images: {
     unoptimized: true

@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-// import { CancellationTokenSource, type CancellationToken } from 'monaco-editor'
+// import { protocol as Rpc } from '@likec4/language-server'
 import { Rpc } from '@likec4/language-server/protocol'
 import { useEffect } from 'react'
 import { updateViewsStore } from '../data'

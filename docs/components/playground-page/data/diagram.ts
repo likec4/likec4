@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView, ViewID } from '@likec4/core/types'
+import type { ComputedView, DiagramView, ViewID } from '@likec4/core'
 import { dotLayout } from '@likec4/layouts'
 import { equals, values, head } from 'rambdax'
 import { create } from 'zustand'
