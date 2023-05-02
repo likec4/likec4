@@ -1,28 +1,25 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* --------------------------------------------------------------------------------------------
- * Copyright (c) 2018-2022 TypeFox GmbH (http://www.typefox.io). All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
-import { loader, type Monaco } from "@monaco-editor/react"
 import * as monaco from 'monaco-editor'
-import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient'
-import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
+import { Editor, loader, type Monaco  } from "@monaco-editor/react"
 
-import { once, toPairs } from 'rambdax'
 import { StandaloneServices } from 'vscode/services'
-
-import { Editor } from "@monaco-editor/react"
 // import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
 import getNotificationServiceOverride from 'vscode/service-override/notifications'
 import getDialogServiceOverride from 'vscode/service-override/dialogs'
 // import getTokenClassificationServiceOverride from 'vscode/service-override/tokenClassification'
+
+import { MonacoLanguageClient } from 'monaco-languageclient'
+import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
+
+import { useEffect, useRef } from 'react'
+import { once, toPairs } from 'rambdax'
+import { Fira_Code } from 'next/font/google'
+
 import likec4Monarch from './likec4.monarch'
 import styles from './monaco.module.css'
-import { Fira_Code } from 'next/font/google'
-import { useEffect, useRef } from 'react'
-import type { ViewID } from '@likec4/core/types'
 import { useLikeC4DataSyncEffect } from './likec4-data-sync'
+import type { ViewID } from '@likec4/core'
 import { setDiagramFromViewId } from '../data'
 
 self.MonacoEnvironment = {

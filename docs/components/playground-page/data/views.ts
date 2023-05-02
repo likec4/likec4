@@ -1,4 +1,4 @@
-import type { ComputedView, ViewID } from '@likec4/core/types'
+import type { ComputedView, ViewID } from '@likec4/core'
 import { equals, map } from 'rambdax'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'

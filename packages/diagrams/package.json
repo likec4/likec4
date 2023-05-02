@@ -31,7 +31,8 @@
       "./src/*",
       "./src/*.ts",
       "./src/*.tsx",
-      "./src/*/index.ts"
+      "./src/*/index.ts",
+      "./src/*/index.tsx"
     ]
   },
   "publishConfig": {
@@ -39,7 +40,7 @@
     "access": "public"
   },
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='diagrams...'",
+    "turbo-build": "run -T turbo run build --filter='diagrams'",
     "compile": "tsc --noEmit",
     "build:ts": "yarn node esbuild.js",
     "build:tsd": "tsc --emitDeclarationOnly",
@@ -51,16 +52,17 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
+    "@likec4/core": "^workspace:*",
     "@react-spring/konva": "^9.7.2",
     "konva": "^9.0.1",
-    "react-konva": "^18.2.7"
+    "react-konva": "^18.2.7",
+    "tiny-invariant": "^1.3.1"
   },
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@radix-ui/colors": "^0.1.8",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
@@ -74,7 +76,6 @@
     "rambdax": "^9.1.1",
     "tailwindcss": "^3.3.2",
     "tilg": "^0.1.1",
-    "tiny-invariant": "^1.3.1",
     "typescript": "^5.0.4"
   }
 }

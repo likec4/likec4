@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-components/likec4/generated.tsx
+components/**/generated.tsx
 
 # dependencies
 /node_modules

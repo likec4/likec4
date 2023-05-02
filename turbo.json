@@ -8,12 +8,8 @@
     "build": {
       "outputMode": "new-only",
       "dependsOn": ["^build"],
-      "inputs": [
-        "src/**"
-      ],
       "outputs": [
-        "dist/**",
-        "contrib/**"
+        "dist/**"
       ]
     },
     "lint": {

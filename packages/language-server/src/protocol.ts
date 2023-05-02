@@ -1,4 +1,4 @@
-import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core/types'
+import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core'
 import type { DocumentUri, Location,  } from 'vscode-languageserver'
 import { NotificationType0, RequestType0, RequestType } from 'vscode-languageserver'
 

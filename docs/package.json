@@ -13,8 +13,9 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
+    "turbo-compile": "run -T turbo run compile --filter='docs-website'",
     "compile": "tsc --noEmit",
-    "turbo-build": "run -T turbo run build --filter='docs-website...'",
+    "turbo-build": "run -T turbo run build --filter='docs-website'",
     "generate": "likec4 codegen react --output components/likec4/generated.tsx ./likec4",
     "dev": "run generate && next dev",
     "build": "next build",
