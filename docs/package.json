@@ -34,7 +34,7 @@
     "langium": "^1.1.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
-    "next": "^13.3.1",
+    "next": "^13.3.4",
     "nextra": "^2.4.2",
     "nextra-theme-docs": "^2.4.2",
     "rambdax": "^9.1.1",
