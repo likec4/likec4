@@ -1,6 +1,6 @@
 import { di, type LanguageClient } from 'src/di'
 import { mapParallelAsyncWithLimit, delay } from 'rambdax'
-import { buildDocuments } from '@likec4/language-server/protocol'
+import { Rpc } from '../protocol'
 import * as vscode from 'vscode'
 import { Utils } from 'vscode-uri'
 import { fileExtensions } from 'src/meta'
@@ -41,7 +41,7 @@ export async function initWorkspace(client: LanguageClient) {
   }
   await delay(500)
   const uris = docs.map(d => d.toString())
-  await client.sendRequest(buildDocuments, { docs: uris })
+  await client.sendRequest(Rpc.buildDocuments, { docs: uris })
   return uris
 }
 initWorkspace.inject = [di.client] as const

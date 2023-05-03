@@ -12,7 +12,10 @@ views {
       customer,
       bigbank,
       internetBankingSystem,
-      customer -> internetBankingSystem.*
+      customer -> internetBankingSystem.*,
+      customer -> bigbank.*
+    
+    exclude webApplication
   }
 
 }

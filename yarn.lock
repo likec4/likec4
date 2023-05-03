@@ -768,8 +768,10 @@ __metadata:
     state-local: ^1.0.7
     typescript: ^5.0.4
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
+    vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
     vscode-languageserver: 8.1.0
+    vscode-languageserver-protocol: 3.17.3
     vscode-oniguruma: 1.7.0
     vscode-textmate: ^9.0.0
     vscode-uri: ~3.0.7
@@ -819,6 +821,7 @@ __metadata:
     "@mobily/ts-belt": ^3.13.1
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
+    langium: ^1.1.0
     langium-cli: ^1.1.0
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
@@ -830,12 +833,8 @@ __metadata:
     typescript: ^5.0.4
     vite: ^4.3.3
     vitest: ^0.30.1
-  peerDependencies:
-    langium: ^1.1.0
     vscode-languageserver: ~8.1.0
-  peerDependenciesMeta:
-    vscode-languageserver:
-      optional: true
+    vscode-languageserver-protocol: ~3.17.3
   languageName: unknown
   linkType: soft
 
@@ -4793,8 +4792,10 @@ __metadata:
     src: "link:./src"
     typed-inject: ^3.0.1
     typescript: ^5.0.4
+    vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
     vscode-languageserver: 8.1.0
+    vscode-languageserver-protocol: 3.17.3
     vscode-uri: ~3.0.7
     xstream: ^11.14.0
   languageName: unknown
@@ -8927,7 +8928,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-jsonrpc@npm:8.1.0, vscode-jsonrpc@npm:~8.1.0":
+"vscode-jsonrpc@npm:8.1.0":
   version: 8.1.0
   resolution: "vscode-jsonrpc@npm:8.1.0"
   checksum: 8980037cc0014802e6ac1e5dfcff9a65e8292727096dfd23c92d2039c0c45de74a00d6ee06938cf1a671286dd8258a5f418cf048c26ad0fcb0c44f96c9e0f278

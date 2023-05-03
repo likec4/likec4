@@ -24,7 +24,10 @@ export const useViewsStore = create<ViewsStore>()(
 )
 
 export const updateViewsStore = (nextViews: Record<ViewID, ComputedView>) => {
-  const currentViews = useViewsStore.getState().views
+  const {
+    ready: wasReady,
+    views: currentViews
+  } = useViewsStore.getState()
   let hasChanges = false
   const views = map(
     (next, id) => {
@@ -38,8 +41,8 @@ export const updateViewsStore = (nextViews: Record<ViewID, ComputedView>) => {
     },
     nextViews
   )
-  if (hasChanges) {
+  if (hasChanges || !wasReady) {
     useViewsStore.setState({ ready: true, views }, false, 'updateViewsStore')
+    return
   }
-
 }

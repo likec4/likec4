@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 import { useMeasure } from '@react-hookz/web/esm'
 import { Diagram, type DiagramProps } from '../diagram'
 
@@ -30,24 +30,17 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
   const w = Math.ceil(diagram?.width ?? 10)
   const h = Math.ceil(diagram?.height ?? 10)
 
-  return <div className={className}
+  return (
+    <div className={className}
       style={{
         position: 'relative',
         display: 'flex',
         aspectRatio: `${w} / ${h}`,
-        ...(w >= h
-          ? {
-            width: '100%',
-            height: 'auto',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            maxWidth: w
-          }
-          : {
-            width: 'auto',
-            height: '100%',
-            maxHeight: h
-          })
+        width: '100%',
+        height: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        maxWidth: w
       }}>
       <div ref={containerRef} style={{ flex: '1 1 100%', overflow: 'hidden' }}>
         {!diagram && <div style={{ margin: '1rem 0', padding: '1rem', background: '#AA00005b' }}>Diagram not found</div>}
@@ -65,4 +58,5 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
         />)}
       </div>
     </div>
+  )
 }

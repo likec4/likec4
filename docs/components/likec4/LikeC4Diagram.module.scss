@@ -21,17 +21,22 @@
   place-content: strech;
   place-items: strech;
   will-change: transform;
-  animation: fade 0.15s ease-in-out;
-}
+  animation: fade 0.2s ease-in-out;
 
-.diagramTitle {
-  position: absolute;
+  .diagram {
+    flex: 1 1 100%;
+    overflow: hidden;
+  }
 
-  h2 {
-    text-shadow: 1px 1px 4px rgb(17 17 17);
+  .diagramTitle {
+    position: absolute;
+    pointer-events: none;
+
+    h2 {
+      text-shadow: 1px 1px 4px rgb(17 17 17);
+    }
   }
 }
-
 
 .container {
   cursor: zoom-in;

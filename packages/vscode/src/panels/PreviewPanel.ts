@@ -8,7 +8,7 @@ import { di } from 'src/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
 import type { Location } from 'vscode-languageserver'
-import { locateElement, locateRelation, locateView } from '@likec4/language-server/protocol'
+import { Rpc } from '../protocol'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
@@ -125,27 +125,21 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private goToSource = async (element: Fqn) => {
-    const loc = await this.client.sendRequest(locateElement, { element })
-    if (loc) {
-      await this.goToLocation(loc)
-    }
+    return  await this.client.sendRequest(Rpc.locateElement, { element })
   }
 
   private goToRelation = async (id: RelationID) => {
-    const loc = await this.client.sendRequest(locateRelation, { id })
-    if (loc) {
-      await this.goToLocation(loc)
-    }
+    return await this.client.sendRequest(Rpc.locateRelation, { id })
   }
 
   private goToViewSource = async (id: ViewID) => {
-    const loc = await this.client.sendRequest(locateView, { id })
-    if (loc) {
-      await this.goToLocation(loc)
-    }
+    return await this.client.sendRequest(Rpc.locateView, { id })
   }
 
-  private goToLocation = async (loc: Location) => {
+  private goToLocation = async (loc: Location | null) => {
+    if (!loc) {
+      return
+    }
     const panelViewColumn = this.panel?.viewColumn ?? vscode.ViewColumn.Two
     const uri = vscode.Uri.parse(loc.uri)
     const range = new vscode.Range(
@@ -181,15 +175,15 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
         return
       }
       case 'goToRelationSource': {
-        void this.goToRelation(message.relationId)
+        void this.goToRelation(message.relationId).then(this.goToLocation)
         return
       }
       case 'goToElementSource': {
-        void this.goToSource(message.element)
+        void this.goToSource(message.element).then(this.goToLocation)
         return
       }
       case 'goToViewSource': {
-        void this.goToViewSource(message.viewId)
+        void this.goToViewSource(message.viewId).then(this.goToLocation)
         return
       }
     }

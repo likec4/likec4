@@ -52,13 +52,13 @@ const nextConfig = {
     // }
     return config
   },
-  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true
   },
   output: 'export',
   transpilePackages: [
     'monaco-editor',
+    'monaco-languageclient',
     '@likec4/language-server'
   ],
   typescript: {

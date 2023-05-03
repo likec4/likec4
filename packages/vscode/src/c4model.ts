@@ -1,7 +1,7 @@
 import type { LanguageClient, LayoutFn } from 'src/di'
 import { di } from 'src/di'
 import { ADisposable, disponsable, queueMicrotask } from 'src/util'
-import { fetchModel, onDidChangeModel } from '@likec4/language-server/protocol'
+import { Rpc } from './protocol'
 import type { ComputedView, ViewID, DiagramView as LayoutedView } from '@likec4/core/types'
 import { equals } from 'rambdax'
 import { tokens } from 'typed-inject'
@@ -36,7 +36,7 @@ export class C4ModelImpl extends ADisposable {
           throw new Error('modelStream already started')
         }
         console.log('++subscribe: onDidChangeModel')
-        this.onDidChangeSubscription = this.client.onNotification(onDidChangeModel, () => {
+        this.onDidChangeSubscription = this.client.onNotification(Rpc.onDidChangeModel, () => {
           console.log('receive: onDidChangeModel')
           listener.next(0)
         })
@@ -61,7 +61,7 @@ export class C4ModelImpl extends ADisposable {
 
   public fetchModel() {
     return xs
-      .fromPromise(this.client.sendRequest(fetchModel))
+      .fromPromise(this.client.sendRequest(Rpc.fetchModel))
       .map(s => s.model)
       .filter(isNotNullish)
   }

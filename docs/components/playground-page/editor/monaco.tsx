@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import * as monaco from 'monaco-editor'
-import { Editor, loader, type Monaco  } from "@monaco-editor/react"
+import 'monaco-editor/esm/vs/editor/edcore.main.js'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 import { StandaloneServices } from 'vscode/services'
 // import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
@@ -9,8 +9,9 @@ import getNotificationServiceOverride from 'vscode/service-override/notification
 import getDialogServiceOverride from 'vscode/service-override/dialogs'
 // import getTokenClassificationServiceOverride from 'vscode/service-override/tokenClassification'
 
-import { MonacoLanguageClient } from 'monaco-languageclient'
 import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
+import { MonacoLanguageClient } from 'monaco-languageclient'
+import { Editor, loader, type Monaco  } from "@monaco-editor/react"
 
 import { useEffect, useRef } from 'react'
 import { once, toPairs } from 'rambdax'
@@ -21,6 +22,7 @@ import styles from './monaco.module.css'
 import { useLikeC4DataSyncEffect } from './likec4-data-sync'
 import type { ViewID } from '@likec4/core'
 import { setDiagramFromViewId } from '../data'
+import { useRevealRequestsHandler } from './editor-state-handler'
 
 self.MonacoEnvironment = {
   getWorker(_, _label) {
@@ -30,7 +32,9 @@ self.MonacoEnvironment = {
     // if (label === 'typescript' || label === 'javascript') {
     //   return new Worker(new URL('monaco-editor/esm/vs/language/typescript/ts.worker', import.meta.url))
     // }
-    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url))
+    return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), {
+      name: 'monaco-editor-worker'
+    })
   }
 }
 
@@ -40,11 +44,9 @@ const firaCodeFont = Fira_Code({
   subsets: ['latin']
 })
 
-loader.config({ monaco })
-
 StandaloneServices.initialize({
   ...getNotificationServiceOverride(document.body),
-  ...getDialogServiceOverride(document.body),
+  ...getDialogServiceOverride(),
   // ...getModelEditorServiceOverride((_model, _options, _sideBySide) => {
   //   // const editor = getMonacoEditor()
   //   // if (!editor) {
@@ -58,6 +60,8 @@ StandaloneServices.initialize({
   //   return Promise.resolve(undefined)
   // })
 })
+
+loader.config({ monaco })
 
 export const languageId = 'likec4'
 const themeId = 'likec4PlaygroundTheme'
@@ -249,6 +253,8 @@ export default function MonacoEditor({
     }
   }, [editor])
 
+  useRevealRequestsHandler(monacoRef, startLanguageClient)
+
   return <Editor
     options={{
       extraEditorClassName: styles.likec4editor + ' likec4-editor',
@@ -266,7 +272,7 @@ export default function MonacoEditor({
 
         // highlightActiveIndentation: false
       },
-      lineNumbersMinChars:3,
+      lineNumbersMinChars: 4,
       fontFamily: firaCodeFont.style.fontFamily,
       fontWeight: '500',
       fontSize: 14,

@@ -1,7 +1,6 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-// import { protocol as Rpc } from '@likec4/language-server'
-import { Rpc } from '@likec4/language-server/protocol'
+import { Rpc } from './protocol'
 import { useEffect } from 'react'
 import { updateViewsStore } from '../data'
 

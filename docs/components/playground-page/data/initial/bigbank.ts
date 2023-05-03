@@ -1,3 +1,30 @@
+import type { FilesStore } from '../files'
+
+export const BigBankPlayground = {
+  current: 'file:///bigbank.c4',
+  files: {
+    'file:///bigbank.c4': `
+specification {
+
+  element enterprise
+  element softwaresystem
+  element container
+  element component
+
+  element person {
+    style {
+      color secondary
+    }
+  }
+
+  element database {
+    style {
+      shape storage
+    }
+  }
+
+}
+
 model {
 
   customer = person "Personal Banking Customer" {
@@ -149,11 +176,6 @@ views {
     }
   }
 
-  view landscape of bigbank {
-    title "Big Bank plc"
-    include *
-  }
-
   view ibsContainers of internetBankingSystem {
     title "Internet Banking System - Containers"
 
@@ -169,7 +191,6 @@ views {
       internetBankingSystem,
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
-
     exclude webApplication
   }
 
@@ -234,3 +255,6 @@ views {
   }
 
 }
+`.trimStart()
+  }
+} satisfies FilesStore

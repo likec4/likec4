@@ -6,7 +6,7 @@ import {
   useTransition
 } from '@react-spring/konva'
 import type Konva from 'konva'
-import { clamp } from 'rambdax'
+import { clamp, isNil } from 'rambdax'
 import { useCallback, useMemo, useRef, type ReactElement, useEffect } from 'react'
 import { AnimatedStage, Layer } from '../konva'
 import { CompoundShape, EdgeShape, nodeShape } from './shapes'
@@ -24,20 +24,30 @@ interface IRect {
   height: number
 }
 
-function nodeState(overrides: {
-  opacity?: number
-  scale?: number
-} = {}) {
-  const transition = (node: DiagramNode) => ({
-    opacity: overrides.opacity ?? 1,
-    scale: overrides.scale ?? 1,
+function defaultNodeSprings(node: DiagramNode) {
+  return {
+    opacity: 1,
+    scale: 1,
     x: node.position[0],
     y: node.position[1],
     width: node.size.width,
     height: node.size.height,
+  }
+}
+type NodeState = ReturnType<typeof defaultNodeSprings>
+
+function nodeSprings(overrides?: {
+  opacity?: number
+  scale?: number
+}) {
+  if (isNil(overrides)) {
+    return (defaultNodeSprings as unknown) as NodeState
+  }
+  const nodesprings = (node: DiagramNode) => ({
+    ...defaultNodeSprings(node),
+    ...overrides
   })
-  type NodeState = ReturnType<typeof transition>
-  return (transition as unknown) as NodeState
+  return nodesprings as unknown as NodeState
 }
 
 export interface DiagramProps extends
@@ -89,46 +99,34 @@ export function Diagram({
   const id = diagram.id
   const theme = DefaultDiagramTheme
 
-  const viewRect = {
-    width,
-    height,
-  }
-  const viewRectRef = useRef(viewRect)
-  viewRectRef.current = viewRect
-
   const stageRef = useRef<Konva.Stage>(null)
 
-  const centerOnRect = (rect: IRect) => {
+  const centerOnRect = (centerTo: IRect) => {
     const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
       ? padding
       : ([padding, padding, padding, padding] as const)
     const container = stageRef.current?.container()
 
-    const // Add padding to make a larger rect - this is what we want to fill
-      centerTo = {
-        x: rect.x, // + rect.width /2,
-        y: rect.y, // + rect.height /2,
-        width: rect.width,
-        height: rect.height
-      },
+    const
       // Get the space we can see in the web page = size of div containing stage
       // or stage size, whichever is the smaller
-      viewport = {
+      // and Exclude padding
+      viewRect = {
         width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
         height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
       },
       // Get the ratios of target shape v's view space widths and heights
       // decide on best scale to fit longest side of shape into view
       viewScale = Math.min(
-        viewport.width / centerTo.width,
-        viewport.height / centerTo.height
+        viewRect.width / centerTo.width,
+        viewRect.height / centerTo.height
       ),
-      scale = clamp(0.1, 1, viewScale),
+      scale = clamp(0.2, 1, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {
-        x: ((width - centerTo.width) * scale + viewport.width) / 2,
-        y: ((height - centerTo.height) * scale + viewport.height) / 2
+        x: ((width - centerTo.width) * scale + viewRect.width) / 2,
+        y: ((height - centerTo.height) * scale + viewRect.height) / 2
       },
       // and the final position is...
       finalPosition = {
@@ -142,27 +140,6 @@ export function Diagram({
   }
 
   const centerAndFitDiagram = () => {
-    // const nodes = diagram.nodes
-    // if (nodes.length === 0) return
-    // const boundingRect = [Infinity, Infinity, -Infinity, -Infinity] as [
-    //   minX: number,
-    //   minY: number,
-    //   maxX: number,
-    //   maxY: number
-    // ]
-    // for (const node of nodes) {
-    //   const { position: [x, y], size: { width, height } } = node
-    //   boundingRect[0] = Math.min(boundingRect[0], x)
-    //   boundingRect[1] = Math.min(boundingRect[1], y)
-    //   boundingRect[2] = Math.max(boundingRect[2], x + width)
-    //   boundingRect[3] = Math.max(boundingRect[3], y + height)
-    // }
-    // return centerOnRect({
-    //   x: boundingRect[0],
-    //   y: boundingRect[1],
-    //   width: boundingRect[2] - boundingRect[0],
-    //   height: boundingRect[3] - boundingRect[1]
-    // })
     return centerOnRect({
       x: 0,
       y: 0,
@@ -263,8 +240,8 @@ export function Diagram({
 
 
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
-    initial: nodeState(),
-    from: nodeState({
+    initial: nodeSprings(),
+    from: nodeSprings({
       opacity: 0.5,
       scale: 0.8
     }),
@@ -276,7 +253,7 @@ export function Diagram({
       opacity: 0,
       scale: 0.5,
     },
-    update: nodeState(),
+    update: nodeSprings(),
     expires: true,
     immediate: !animate,
     keys: g => g.id,
@@ -305,8 +282,8 @@ export function Diagram({
   })
 
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
-    initial: nodeState(),
-    from: nodeState({
+    initial: nodeSprings(),
+    from: nodeSprings({
       opacity: 0.05,
       scale: 0.7
     }),
@@ -318,12 +295,7 @@ export function Diagram({
       opacity: 0,
       scale: 0.5
     },
-    update: node => ({
-      x: node.position[0],
-      y: node.position[1],
-      width: node.size.width,
-      height: node.size.height,
-    }),
+    update: nodeSprings(),
     expires: true,
     immediate: !animate,
     keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape

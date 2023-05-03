@@ -20,4 +20,20 @@
     flex: 1 1 100%;
     overflow: hidden;
   }
+
+  & > .diagramtitle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-shadow: 1px 1px 4px rgb(17 17 17);
+    pointer-events: none;
+
+    & h3 {
+      pointer-events: visible;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
+    }
+  }
 }

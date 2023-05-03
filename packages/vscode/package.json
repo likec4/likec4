@@ -148,8 +148,10 @@
     "src": "link:./src",
     "typed-inject": "^3.0.1",
     "typescript": "^5.0.4",
+    "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
+    "vscode-languageserver-protocol": "3.17.3",
     "vscode-uri": "~3.0.7",
     "xstream": "^11.14.0"
   },

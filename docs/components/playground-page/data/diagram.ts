@@ -36,30 +36,28 @@ export async function setDiagramFromView(view: ComputedView) {
   useDiagramStore.setState({
     viewId: view.id,
     diagram,
-  }, false,  'set-current-diagram')
+  }, true, 'set-current-diagram')
 }
 
-useViewsStore.subscribe(({views}, {views: previousViews}) => {
+useViewsStore.subscribe(({ views, ready }, { views: previousViews, ready: wasReady }) => {
   const { viewId } = useDiagramStore.getState()
+  if (ready && !wasReady) {
+    const view = 'index' in views ? views.index : head(values(views))
+    if (view) {
+      void setDiagramFromView(view)
+    }
+    return
+  }
   if (!viewId) {
-    if ('index' in views) {
-      void setDiagramFromView(views.index)
-      return
-    }
-    const anyFirstView =  head(values(views))
-    if (anyFirstView) {
-      void setDiagramFromView(anyFirstView)
-    }
     return
   }
   const currentView = views[viewId]
   if (!currentView) {
-    useDiagramStore.setState({diagram: null}, false, 'reset-current-diagram')
+    useDiagramStore.setState({ diagram: null }, false, 'reset-current-diagram')
     return
   }
-
   const previosView = previousViews[viewId]
-  if (!equals(currentView, previosView)) {
+  if (!previosView || !equals(currentView, previosView)) {
     void setDiagramFromView(currentView)
   }
 })
