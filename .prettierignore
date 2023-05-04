@@ -7,6 +7,8 @@
 .vscode-test-web
 .next
 
+docs/out
+
 examples/*/dist
 packages/*/dist
 packages/*/contrib
