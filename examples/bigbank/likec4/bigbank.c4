@@ -29,7 +29,6 @@ model {
     }
 
     atm = softwaresystem "ATM" {
-      #gray
       description: "Allows customers to withdraw cash."
     }
 
@@ -40,7 +39,7 @@ model {
         description: "Provides all of the Internet banking functionality to customers via their web browser."
         technology: "JavaScript and Angular"
         style {
-          shape browser
+          shape: browser
         }
       }
       mobileApp = container "Mobile App" {
@@ -82,8 +81,7 @@ model {
         }
 
       }
-      database database {
-        title: "Database"
+      database = database "Database" {
         description: "Stores user registration information, hashed authentication credentials, access logs, etc."
         technology: "Oracle Database Schema"
       }
@@ -102,7 +100,7 @@ model {
   backoffice -> mainframe "Uses"
 
   // relationships to/from containers
-  customer -> webApplication "Visits bigbank.com/ib using"
+  customer -> webApplication "Visits bigbank.com using HTTPS"
   customer -> singlePageApplication "Views account balances, and makes payments using"
   customer -> mobileApp "Views account balances, and makes payments using"
   webApplication -> singlePageApplication "Delivers to the customer's web browser"
@@ -127,33 +125,52 @@ model {
 views {
 
   view index {
-    title "Context"
+    title "Big Bank - Landscape"
 
-    include *
-    include customer -> bigbank.*
+    include
+      *,
+      customer -> bigbank.*
+  }
+
+  view context of bigbank {
+    title "Internet Banking System - SystemContext"
+    include
+      bigbank,
+      mainframe,
+      internetBankingSystem,
+      email,
+      customer
+
+    style * {
+      color secondary
+    }
+    style bigbank, internetBankingSystem {
+      color primary
+    }
   }
 
   view landscape of bigbank {
     title "Big Bank plc"
-
     include *
   }
 
-  view ibs of internetBankingSystem {
-    title "Big Bank plc - Internet Banking System"
+  view ibsContainers of internetBankingSystem {
+    title "Internet Banking System - Containers"
 
     include
       *,
-      bigbank,
-      backoffice -> *
-    exclude email
+      -> customer
   }
 
   view customer of customer {
     include
-      *,
+      customer,
       bigbank,
-      customer ->
+      internetBankingSystem,
+      customer -> internetBankingSystem.*,
+      customer -> bigbank.*
+
+    exclude webApplication
   }
 
   view spa of singlePageApplication {
@@ -167,40 +184,53 @@ views {
       color primary
     }
 
-    style singlePageApplication {
-      color secondary
+    style singlePageApplication, customer {
+      color primary
     }
   }
 
   view support of supportStaff {
-    include *,
+    include
+      *,
       bigbank,
       -> backoffice ->
   }
 
   view apiApp of internetBankingSystem.apiApplication {
-    title "API Components"
-    include *, bigbank
+    title "API Application - Components"
+
+    include *
 
     style * {
       color muted
     }
 
-    style internetBankingSystem.* {
+    style singlePageApplication, mobileApp {
       color secondary
     }
 
-    style bigbank, apiApplication, apiApplication.* {
+    style apiApplication, apiApplication.* {
       color primary
     }
   }
 
   view webapp of webApplication {
-    include *, internetBankingSystem, bigbank
+    include
+      *,
+      internetBankingSystem,
+      bigbank
 
     style bigbank {
       color muted
     }
+  }
+
+  view mobileApp of mobileApp {
+    include
+      *,
+      internetBankingSystem,
+      internetBankingSystem.apiApplication,
+      mobileApp -> internetBankingSystem.apiApplication.*
   }
 
 }

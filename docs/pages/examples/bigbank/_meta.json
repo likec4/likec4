@@ -11,5 +11,9 @@
   "components": "Components",
   "customer": {
     "title": "Customer"
+  },
+  "playground": {
+    "title": "Open in playground",
+    "href": "/playground/"
   }
 }

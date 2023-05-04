@@ -1,0 +1,12 @@
+import { Card, Cards } from "nextra-theme-docs"
+import meta from "./dsl/_meta.json"
+
+export const prefix = "/docs/dsl"
+
+# LikeC4 Language
+
+<Cards>
+  {Object.entries(meta).map(([key, page]) => (
+    <Card key={key} title={page.title} href={`${prefix}/${key}/`} arrow />
+  ))}
+</Cards>
