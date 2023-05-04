@@ -10,5 +10,9 @@ vite.config.*
 vitest.config.*
 vitest.shared.*
 vitest.workspace.*
-docs/next.config.js
+docs/*.ts
+docs/*.tsx
+docs/*.js
+docs/*.mjs
+docs/components/ui/
 packages/*/src/generated

@@ -1,12 +1,12 @@
-import type { DiagramNode } from '@likec4/diagrams'
-import { Diagram } from '@likec4/diagrams/src/diagram/Diagram'
+import type { DiagramNode } from '@likec4/core'
+import { Diagram } from '@likec4/diagrams/src/index'
 import { useCallback, useState } from 'react'
 import type { LikeC4ViewId } from './likec4.generated'
 import { LikeC4ViewsData, isLikeC4ViewId } from './likec4.generated'
 import useTilg from 'tilg'
 
 function App() {
-  const [viewId, setViewId] = useState<LikeC4ViewId>('ibs')
+  const [viewId, setViewId] = useState<LikeC4ViewId>('index')
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node

@@ -16,32 +16,57 @@ export const RectangleShape = ({
     color,
     labels
   } = node
-  const { fill, shadow: shadowColor } = theme.colors[color]
+  const colors = theme.colors[color]
 
   const rectProps = useSpring({
     to: {
-      fill,
-      shadowColor
+      fill: colors.fill,
+      shadowColor: colors.shadow
     }
   })
+
+  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
 
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <AnimatedGroup
-      {...springs}
+      x={springs.x}
+      y={springs.y}
+      offsetX={springs.offsetX}
+      offsetY={springs.offsetY}
+      opacity={springs.opacity}
+      scaleX={springs.scaleX}
+      scaleY={springs.scaleY}
       {...listeners}
+      // onPointerEnter={evt => {
+      //   console.log(`--> onPointerEnter ${node.id}}`, {evt})
+      //   onPointerEnter?.(evt)
+      //   toggleToolbar(true)
+      // }}
+      // onPointerLeave={evt => {
+      //   console.log(`<-- onPointerLeave ${node.id}}`, {evt})
+      //   toggleToolbar(false)
+      //   onPointerLeave?.(evt)
+      //   // toggleToolbar(false)
+      // }}
     >
       <AnimatedRect
+        width={springs.width}
+        height={springs.height}
         cornerRadius={6}
         shadowBlur={16}
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={!!node.parent}
+        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
         perfectDrawEnabled={false}
-        width={springs.width}
-        height={springs.height}
+        strokeEnabled={false}
+        // shadowForStrokeEnabled={false}
+        // stroke={rectProps.fill}
+        // strokeScaleEnabled={false}
+        // strokeWidth={1}
+        // hitStrokeWidth={25}
         {...rectProps}
       />
       <NodeLabels
@@ -50,22 +75,13 @@ export const RectangleShape = ({
         color={color}
         theme={theme}
       />
-      {/* {hovered && (
-        <Rect
-          x={10}
-          y={10}
-          width={node.size.width - 20}
-          height={20}
-          visible={hovered}
-          fill={darken(fill, 2)}
-          onMouseEnter={e => {
-            console.log('enter')
-          }}
-          onMouseLeave={e => {
-            console.log('leave')
-          }}
-        />
-      )} */}
+      {/* <ExternalLink
+        x={-2}
+        y={30}
+        fill={scale(colors.fill, { s: -10, l: 3 })}
+        fillIcon={colors.loContrast}
+        {...toolbarProps}
+      /> */}
     </AnimatedGroup>
   )
 }

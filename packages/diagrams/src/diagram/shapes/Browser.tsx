@@ -11,17 +11,19 @@ export const BrowserShape = ({
   ...listeners
 }: NodeShapeProps) => {
 
-    const colors = theme.colors[node.color]
+  const colors = theme.colors[node.color]
 
-    const {
-      fill,
-      stroke
-    } = useSpring({
-      to: {
-        fill: colors.fill,
-        stroke: colors.stroke
-      }
-    })
+  const {
+    fill,
+    stroke
+  } = useSpring({
+    to: {
+      fill: colors.fill,
+      stroke: colors.stroke
+    }
+  })
+
+  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
 
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
@@ -36,7 +38,7 @@ export const BrowserShape = ({
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={!!node.parent}
+        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
         width={springs.width}
         height={springs.height}
         fill={stroke}
@@ -83,22 +85,13 @@ export const BrowserShape = ({
         theme={theme}
         offsetY={-8}
       />
-      {/* {hovered && (
-        <Rect
-          x={10}
-          y={10}
-          width={node.size.width - 20}
-          height={20}
-          visible={hovered}
-          fill={darken(fill, 2)}
-          onMouseEnter={e => {
-            console.log('enter')
-          }}
-          onMouseLeave={e => {
-            console.log('leave')
-          }}
-        />
-      )} */}
+      {/* <ExternalLink
+        x={-2}
+        y={30}
+        fill={adjust(colors.fill, { s: -20, l: 3 })}
+        fillIcon={colors.loContrast}
+        {...toolbarProps}
+      /> */}
     </AnimatedGroup>
   )
 }

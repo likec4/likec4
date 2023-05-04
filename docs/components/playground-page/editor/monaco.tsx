@@ -18,7 +18,6 @@ import { once, toPairs } from 'rambdax'
 import { Fira_Code } from 'next/font/google'
 
 import likec4Monarch from './likec4.monarch'
-import styles from './monaco.module.css'
 import { useLikeC4DataSyncEffect } from './likec4-data-sync'
 import type { ViewID } from '@likec4/core'
 import { setDiagramFromViewId } from '../data'
@@ -257,7 +256,6 @@ export default function MonacoEditor({
 
   return <Editor
     options={{
-      extraEditorClassName: styles.likec4editor + ' likec4-editor',
       minimap: {
         enabled: false
       },

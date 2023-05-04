@@ -8,6 +8,7 @@
 .next
 
 docs/out
+docs/components/ui/
 
 examples/*/dist
 packages/*/dist

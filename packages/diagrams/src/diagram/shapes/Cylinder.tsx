@@ -59,13 +59,14 @@ export const CylinderShape = ({
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={!!node.parent}
+        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
         data={path}
         width={springs.width}
         height={springs.height}
+        perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
-        hitStrokeWidth={0}
-        strokeScaleEnabled={false}
+        strokeWidth={2}
+        hitStrokeWidth={8}
         {...cylinderProps}
       />
       <NodeTitle

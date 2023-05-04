@@ -13,8 +13,8 @@ export function interpolateNodeSprings({
   return {
     offsetX: width.to(w => Math.round(w / 2)),
     offsetY: height.to(h => Math.round(h / 2)),
-    x: to([x, width], (v, w) => v + Math.round(w / 2)),
-    y: to([y, height], (v, h) => v + Math.round(h / 2)),
+    x: to([x, width], (val, w) => Math.round(val + w / 2)),
+    y: to([y, height], (val, h) => Math.round(val + h / 2)),
     width,
     height,
     opacity,

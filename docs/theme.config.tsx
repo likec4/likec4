@@ -10,13 +10,17 @@ const config: DocsThemeConfig = {
   sidebar: {
     toggleButton: true,
   },
-  //main: ({ children }) => <main className='asd'>{children}</main>,
+  // main: Main,
   project: {
     link: 'https://github.com/likec4/likec4',
   },
   docsRepositoryBase: 'https://github.com/likec4/likec4/blob/main/docs',
   themeSwitch: {
     component: () => null
+  },
+  nextThemes: {
+    defaultTheme: 'dark',
+    forcedTheme: 'dark'
   },
   footer: {
     text: `MIT ${new Date().getFullYear()} LikeC4`

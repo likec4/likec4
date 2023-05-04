@@ -14,7 +14,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(17, 17, 17, 0.8);
+  background-color: hsl(var(--background) / .8);
   backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;

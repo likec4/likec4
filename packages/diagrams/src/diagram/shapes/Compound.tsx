@@ -1,5 +1,4 @@
-import type { DiagramNode } from '@likec4/core/types'
-import { useMemo } from 'react'
+import type { DiagramNode } from '@likec4/core'
 import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
 
 import { scale } from 'khroma'
@@ -34,12 +33,11 @@ export const CompoundShape = ({
     l: -15
   })
 
-
   const listeners = onNodeClick ? {
-    onMouseEnter: (e: OnPointerEvent) => {
+    onPointerEnter: (e: OnPointerEvent) => {
       mousePointer(e)
     },
-    onMouseLeave: (e: OnPointerEvent) => {
+    onPointerLeave: (e: OnPointerEvent) => {
       mouseDefault(e)
     },
     onPointerClick: (evt: OnPointerEvent) => {
@@ -47,18 +45,12 @@ export const CompoundShape = ({
       onNodeClick(node, evt)
     }
   } : {}
-  // const {
-  //   x, y, offsetX, offsetY, scaleX, scaleY, opacity
-  // } = useMemo(() => {
-  //   console.log(`CompoundShape useMemo ${id}}` )
-  //   return nodeSprings(springs)
-  // }, [springs])
+  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
 
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return <AnimatedGroup {...springs}>
     <AnimatedRect
-      // {...rectProps}
       cornerRadius={4}
       shadowColor={colors.shadow}
       shadowBlur={12}
@@ -69,7 +61,7 @@ export const CompoundShape = ({
       width={springs.width}
       height={springs.height}
       fill={fill}
-    // fill={tailwind.blue[700]}
+      strokeEnabled={false}
     />
     {labels.map((label) =>
       <Text
@@ -87,25 +79,17 @@ export const CompoundShape = ({
         text={label.text}
         wrap={'none'}
         ellipsis={true}
+        perfectDrawEnabled={false}
         padding={0}
         {...listeners}
-        perfectDrawEnabled={false}
       />
     )}
-    {/* <AnimatedText
-      x={0}
-      y={0}
-      width={rectProps.width}
-      fill={loContrast}
-      fontSize={12}
-      fontFamily={theme.font}
-      wrap={'none'}
-      ellipsis={true}
-      align={'left'}
-      text={node.title}
-      padding={10}
-      opacity={0.8}
-      {...listeners}
+    {/* <ExternalLink
+      x={-5}
+      y={36}
+      fill={colors.fill}
+      fillIcon={colors.loContrast}
+      {...toolbarProps}
     /> */}
   </AnimatedGroup>
 }

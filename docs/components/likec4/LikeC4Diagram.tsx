@@ -2,7 +2,6 @@ import type { EmbeddedDiagramProps } from '@likec4/diagrams'
 import { EmbeddedDiagram, Diagram } from '@likec4/diagrams'
 import type Konva from 'konva'
 import { useEffect, useRef, useState } from 'react'
-import clsx from 'clsx'
 import { createPortal } from 'react-dom'
 import styles from './LikeC4Diagram.module.scss'
 import type { LikeC4ViewId } from './generated'
@@ -12,6 +11,7 @@ import {
   enableBodyScroll
 } from "body-scroll-lock-upgrade"
 import { useMeasure } from '@react-hookz/web/esm'
+import { cn } from '$/lib'
 
 
 export type LikeC4DiagramProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, LikeC4ViewId>, 'views' | 'onNodeClick' | 'onStageClick' | 'onEdgeClick'>
@@ -65,10 +65,10 @@ function DiagramsBrowser({
       />
     </div>
     <div className={styles.diagramTitle}>
-      <h2 className={clsx(
-        'nx-p-4',
-        'nx-text-lg nx-font-medium nx-tracking-tight',
-        'nx-text-slate-900 dark:nx-text-slate-100'
+      <h2 className={cn(
+        'p-4',
+        'text-lg font-medium tracking-tight',
+        'text-slate-900 dark:text-slate-100'
       )}>{diagram.title}</h2>
     </div>
   </div>

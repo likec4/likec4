@@ -3,7 +3,7 @@
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
 import {
   useSpring,
-  useTransition
+  useTransition,
 } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
@@ -242,7 +242,7 @@ export function Diagram({
   const compoundTransitions = useTransition(diagram.nodes.filter(isCompound), {
     initial: nodeSprings(),
     from: nodeSprings({
-      opacity: 0.5,
+      opacity: 0.6,
       scale: 0.8
     }),
     enter: {
@@ -257,6 +257,14 @@ export function Diagram({
     expires: true,
     immediate: !animate,
     keys: g => g.id,
+    config: (node, item, state) => {
+      if (state === 'leave') {
+        return {
+          duration: 150
+        }
+      }
+      return {}
+    }
   })
 
   const edgeTransitions = useTransition(diagram.edges, {
@@ -276,7 +284,7 @@ export function Diagram({
     expires: true,
     immediate: !animate,
     config: {
-      duration: 150
+      duration: 130
     },
     keys: e => e.id + id
   })
@@ -284,7 +292,7 @@ export function Diagram({
   const nodeTransitions = useTransition(diagram.nodes.filter(isNotCompound), {
     initial: nodeSprings(),
     from: nodeSprings({
-      opacity: 0.05,
+      opacity: 0.6,
       scale: 0.7
     }),
     enter: {
@@ -293,12 +301,20 @@ export function Diagram({
     },
     leave: {
       opacity: 0,
-      scale: 0.5
+      scale: 0.4
     },
     update: nodeSprings(),
     expires: true,
     immediate: !animate,
-    keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
+    keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape,
+    config: (node, item, state) => {
+      if (state === 'leave') {
+        return {
+          duration: 130
+        }
+      }
+      return {}
+    }
   })
   return (
     // @ts-ignore

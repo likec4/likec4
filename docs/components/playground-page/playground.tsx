@@ -7,8 +7,8 @@ import {
 } from "body-scroll-lock-upgrade"
 import { useEffect, useId, useMemo, useRef } from 'react'
 import { revealInEditor, setDiagramFromViewId, updateFile, useDiagramStore, useFilesStore, useViewsStore } from './data'
-import styles from './playground.module.scss'
-import clsx from 'clsx'
+import styles from './playground.module.css'
+import { cn } from '$/lib'
 
 const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, container: Measures }) => {
   const padding = useMemo((): DiagramPaddings => [20, 20, 20, sidebarWidth + 20], [sidebarWidth])
@@ -73,9 +73,9 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
       }}
     >
       <h3
-        className={clsx(
-          "nx-mt-2 nx-mb-0",
-          ' nx-text-xs nx-text-gray-500 dark:nx-text-gray-400'
+        className={cn(
+          'mt-2 mb-0',
+          'text-xs text-gray-500 dark:text-gray-400'
         )}
         onClick={e => {
           e.stopPropagation()
@@ -85,10 +85,10 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
         id: {diagram.id}
       </h3>
       <h2
-        className={clsx(
-          "nx-mt-0 nx-mb-2",
-          'nx-text-md nx-font-medium nx-tracking-tight',
-          'nx-text-slate-900 dark:nx-text-slate-100'
+        className={cn(
+          'mt-0 mb-2',
+          'text-md font-medium tracking-tight',
+          'text-slate-900 dark:text-slate-100'
         )}
       >{diagram.title}</h2>
     </div>
