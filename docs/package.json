@@ -30,6 +30,7 @@
     "@likec4/layouts": "workspace:*",
     "@monaco-editor/react": "^4.5.0",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
+    "@radix-ui/react-scroll-area": "^1.0.3",
     "@react-hookz/web": "^23.0.0",
     "body-scroll-lock-upgrade": "^1.0.3",
     "class-variance-authority": "^0.6.0",
