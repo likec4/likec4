@@ -5,16 +5,14 @@ import { AnimatedGroup, AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-
-export const RectangleShape = ({
+export function RectangleShape({
   node,
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) => {
+}: NodeShapeProps) {
   const {
-    color,
-    labels
+    color, labels
   } = node
   const colors = theme.colors[color]
 
@@ -26,7 +24,6 @@ export const RectangleShape = ({
   })
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
-
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -39,17 +36,6 @@ export const RectangleShape = ({
       scaleX={springs.scaleX}
       scaleY={springs.scaleY}
       {...listeners}
-      // onPointerEnter={evt => {
-      //   console.log(`--> onPointerEnter ${node.id}}`, {evt})
-      //   onPointerEnter?.(evt)
-      //   toggleToolbar(true)
-      // }}
-      // onPointerLeave={evt => {
-      //   console.log(`<-- onPointerLeave ${node.id}}`, {evt})
-      //   toggleToolbar(false)
-      //   onPointerLeave?.(evt)
-      //   // toggleToolbar(false)
-      // }}
     >
       <AnimatedRect
         width={springs.width}
@@ -67,21 +53,19 @@ export const RectangleShape = ({
         // strokeScaleEnabled={false}
         // strokeWidth={1}
         // hitStrokeWidth={25}
-        {...rectProps}
-      />
+        {...rectProps} />
       <NodeLabels
         labels={labels}
         width={node.size.width}
         color={color}
-        theme={theme}
-      />
+        theme={theme} />
       {/* <ExternalLink
-        x={-2}
-        y={30}
-        fill={scale(colors.fill, { s: -10, l: 3 })}
-        fillIcon={colors.loContrast}
-        {...toolbarProps}
-      /> */}
+              x={-2}
+              y={30}
+              fill={scale(colors.fill, { s: -10, l: 3 })}
+              fillIcon={colors.loContrast}
+              {...toolbarProps}
+            /> */}
     </AnimatedGroup>
   )
 }

@@ -1,11 +1,10 @@
-import type { EmbeddedDiagramProps } from '@likec4/diagrams'
-import { EmbeddedDiagram, Diagram } from '@likec4/diagrams'
-import type Konva from 'konva'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import styles from './LikeC4Diagram.module.scss'
+import styles from './LikeC4Diagram.module.css'
+import { EmbeddedDiagram, Diagram, type EmbeddedDiagramProps } from '@likec4/diagrams'
 import type { LikeC4ViewId } from './generated'
 import { LikeC4ViewsData, isLikeC4ViewId } from './generated'
+import type Konva from 'konva'
 import {
   disableBodyScroll,
   enableBodyScroll

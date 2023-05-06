@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
 import { AnimatedGroup, AnimatedPath } from '../../konva'
@@ -23,22 +24,19 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   return d
 }
 
-export const CylinderShape = ({
+export function CylinderShape({
   node,
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) => {
+}: NodeShapeProps) {
   const {
-    size: { width, height },
-    color,
-    labels
+    size: { width, height }, color, labels
   } = node
   const { fill, stroke, shadow: shadowColor } = theme.colors[color]
 
   const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
   // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
-
   const cylinderProps = useSpring({
     to: {
       fill,
@@ -53,7 +51,7 @@ export const CylinderShape = ({
     <AnimatedGroup
       {...springs}
       {...listeners}
-      >
+    >
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
@@ -67,15 +65,13 @@ export const CylinderShape = ({
         shadowForStrokeEnabled={false}
         strokeWidth={2}
         hitStrokeWidth={8}
-        {...cylinderProps}
-      />
+        {...cylinderProps} />
       <NodeTitle
         labels={labels}
         // offsetY={-ry}
         width={width}
         color={color}
-        theme={theme}
-      />
+        theme={theme} />
     </AnimatedGroup>
   )
 }

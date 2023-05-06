@@ -27,7 +27,7 @@ const config: DocsThemeConfig = {
     // component: () => null,
     text: `MIT ${new Date().getFullYear()} LikeC4`
   },
-  useNextSeoProps: () => {
+  useNextSeoProps() {
     const { frontMatter } = useConfig()
     const { route } = useRouter()
     return {
@@ -42,32 +42,25 @@ const config: DocsThemeConfig = {
       description: 'Architecture diagrams from the code - always consistent, up-to-date and with the history',
       themeColor: '#111',
       openGraph: {
-        url: 'https://likec4.dev' + route,
+        url: 'https://likec4.dev' + route + (route.endsWith('/') ? '' : '/'),
         images: [{
           url: 'https://likec4.dev/logo.png',
-          type: 'image/png',
-          width: 1154,
-          height: 580
+          type: 'image/png'
         }]
-      },
-      // additionalMetaTags: [{
-      //   name: 'viewport',
-      //   content: isZoomDisabled ? 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' :
-      //     'width=device-width, initial-scale=1.0'
-      // }]
+      }
     }
   },
-  head: function () {
-    const { route } = useRouter()
-    const isZoomDisabled = route.startsWith('/examples') || route.startsWith('/playground')
-    return (<>
-      {isZoomDisabled ? (
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-      ) : (
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      )}
-    </>)
-  }
+  // head: function () {
+  //   const { route } = useRouter()
+  //   const isZoomDisabled = route.startsWith('/examples') || route.startsWith('/playground')
+  //   return (<>
+  //     {isZoomDisabled ? (
+  //       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+  //     ) : (
+  //       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  //     )}
+  //   </>)
+  // }
   // useNextSeoProps: () => ({ titleTemplate: '%s – LikeC4' })
   // head: function useHead() {
   //   const { title } = useConfig()

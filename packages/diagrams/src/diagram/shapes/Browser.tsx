@@ -2,20 +2,20 @@ import { useSpring } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
+import React from 'react'
 
 
-export const BrowserShape = ({
+export function BrowserShape({
   node,
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) => {
+}: NodeShapeProps) {
 
   const colors = theme.colors[node.color]
 
   const {
-    fill,
-    stroke
+    fill, stroke
   } = useSpring({
     to: {
       fill: colors.fill,
@@ -24,7 +24,6 @@ export const BrowserShape = ({
   })
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
-
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -42,56 +41,49 @@ export const BrowserShape = ({
         width={springs.width}
         height={springs.height}
         fill={stroke}
-        shadowColor={colors.shadow}
-      />
+        shadowColor={colors.shadow} />
       <Circle
         x={16}
         y={15}
         radius={7}
-        fill={colors.fill}
-      />
+        fill={colors.fill} />
       <Circle
         x={36}
         y={15}
         radius={7}
-        fill={colors.fill}
-      />
+        fill={colors.fill} />
       <Circle
         x={56}
         y={15}
         radius={7}
-        fill={colors.fill}
-      />
+        fill={colors.fill} />
       <AnimatedRect
         cornerRadius={5}
         x={70}
         y={7}
         width={springs.width.to(w => w - 80)}
         height={16}
-        fill={fill}
-      />
+        fill={fill} />
       <AnimatedRect
         cornerRadius={5}
         x={9}
         y={31}
         width={springs.width.to(w => w - 18)}
         height={springs.height.to(h => h - 40)}
-        fill={fill}
-      />
+        fill={fill} />
       <NodeLabels
         labels={node.labels}
         width={node.size.width}
         color={node.color}
         theme={theme}
-        offsetY={-8}
-      />
+        offsetY={-8} />
       {/* <ExternalLink
-        x={-2}
-        y={30}
-        fill={adjust(colors.fill, { s: -20, l: 3 })}
-        fillIcon={colors.loContrast}
-        {...toolbarProps}
-      /> */}
+              x={-2}
+              y={30}
+              fill={adjust(colors.fill, { s: -20, l: 3 })}
+              fillIcon={colors.loContrast}
+              {...toolbarProps}
+            /> */}
     </AnimatedGroup>
   )
 }

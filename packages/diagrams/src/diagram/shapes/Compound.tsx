@@ -1,3 +1,4 @@
+import React from 'react'
 import type { DiagramNode } from '@likec4/core'
 import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
 
@@ -14,12 +15,12 @@ interface CompoundProps {
   onNodeClick?: OnNodeClick | undefined
 }
 
-export const CompoundShape = ({
+export function CompoundShape({
   node,
   theme,
   springs,
   onNodeClick
-}: CompoundProps) => {
+}: CompoundProps) {
   const { color, labels } = node
   const colors = theme.colors[color]
 
@@ -46,7 +47,6 @@ export const CompoundShape = ({
     }
   } : {}
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
-
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return <AnimatedGroup {...springs}>
@@ -61,35 +61,32 @@ export const CompoundShape = ({
       width={springs.width}
       height={springs.height}
       fill={fill}
-      strokeEnabled={false}
-    />
-    {labels.map((label) =>
-      <Text
-        key={label.text}
-        x={label.pt[0]}
-        y={label.pt[1]}
-        offsetY={label.fontSize / 2}
-        width={node.size.width - 2 * label.pt[0]}
-        fill={loContrast}
-        fontFamily='Helvetica'
-        fontSize={label.fontSize}
-        fontStyle={label.fontStyle ?? 'normal'}
-        letterSpacing={0.8}
-        align={label.align}
-        text={label.text}
-        wrap={'none'}
-        ellipsis={true}
-        perfectDrawEnabled={false}
-        padding={0}
-        {...listeners}
-      />
+      strokeEnabled={false} />
+    {labels.map((label) => <Text
+      key={label.text}
+      x={label.pt[0]}
+      y={label.pt[1]}
+      offsetY={label.fontSize / 2}
+      width={node.size.width - 2 * label.pt[0]}
+      fill={loContrast}
+      fontFamily='Helvetica'
+      fontSize={label.fontSize}
+      fontStyle={label.fontStyle ?? 'normal'}
+      letterSpacing={0.8}
+      align={label.align}
+      text={label.text}
+      wrap={'none'}
+      ellipsis={true}
+      perfectDrawEnabled={false}
+      padding={0}
+      {...listeners} />
     )}
     {/* <ExternalLink
-      x={-5}
-      y={36}
-      fill={colors.fill}
-      fillIcon={colors.loContrast}
-      {...toolbarProps}
-    /> */}
+          x={-5}
+          y={36}
+          fill={colors.fill}
+          fillIcon={colors.loContrast}
+          {...toolbarProps}
+        /> */}
   </AnimatedGroup>
 }

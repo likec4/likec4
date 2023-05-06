@@ -22,20 +22,20 @@
   place-items: strech;
   will-change: transform;
   animation: fade 0.2s ease-in-out;
+}
 
-  .diagram {
-    flex: 1 1 100%;
-    overflow: hidden;
-  }
+.diagram {
+  flex: 1 1 100%;
+  overflow: hidden;
+}
 
-  .diagramTitle {
-    position: absolute;
-    pointer-events: none;
+.diagramTitle {
+  position: absolute;
+  pointer-events: none;
+}
 
-    h2 {
-      text-shadow: 1px 1px 4px rgb(17 17 17);
-    }
-  }
+.diagramTitle h2 {
+  text-shadow: 1px 1px 4px rgb(17 17 17);
 }
 
 .container {

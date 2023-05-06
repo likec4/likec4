@@ -1,11 +1,14 @@
-import type { DiagramNode } from '@likec4/core/types'
-import { CylinderShape } from './Cylinder'
+import type { DiagramNode } from '@likec4/core'
 import { RectangleShape } from './Rectangle'
+import { CylinderShape } from './Cylinder'
 import { QueueShape } from './Queue'
 import { unexhaustive } from './utils'
 import { BrowserShape } from './Browser'
+import type { NodeShapeProps } from './types'
 
-export function nodeShape({ shape }: DiagramNode) {
+type ShapeComponent = (props: NodeShapeProps) => JSX.Element
+
+export function nodeShape({ shape }: DiagramNode): ShapeComponent {
   switch (shape) {
     case 'cylinder':
     case 'storage': {

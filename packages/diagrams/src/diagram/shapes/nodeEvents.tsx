@@ -1,4 +1,4 @@
-import type { DiagramNode } from '@likec4/core/types'
+import type { DiagramNode } from '@likec4/core'
 import { config } from '@react-spring/konva'
 import type { NodeSpringsCtrl, OnNodeClick, OnPointerEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'

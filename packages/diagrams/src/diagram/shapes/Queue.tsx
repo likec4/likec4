@@ -4,17 +4,16 @@ import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
+import React from 'react'
 
-export const QueueShape = ({
+export function QueueShape({
   node,
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) => {
+}: NodeShapeProps) {
   const {
-    size: { width, height },
-    color,
-    labels
+    size: { width, height }, color, labels
   } = node
   const { fill, stroke, shadow: shadowColor } = theme.colors[color]
 
@@ -54,14 +53,12 @@ export const QueueShape = ({
         shadowForStrokeEnabled={false}
         strokeWidth={2}
         hitStrokeWidth={8}
-        {...queueProps}
-      />
+        {...queueProps} />
       <NodeLabels
         labels={labels}
         width={width - rx}
         color={color}
-        theme={theme}
-      />
+        theme={theme} />
     </AnimatedGroup>
   )
 }

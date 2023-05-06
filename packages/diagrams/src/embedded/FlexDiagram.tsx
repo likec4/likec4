@@ -1,5 +1,6 @@
 import { useMeasure } from '@react-hookz/web/esm'
 import { Diagram, type DiagramProps } from '../diagram'
+import React from 'react'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FlexDiagramProps extends

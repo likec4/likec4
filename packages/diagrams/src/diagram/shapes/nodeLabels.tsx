@@ -1,7 +1,9 @@
-import type { DiagramNode, ThemeColor } from '@likec4/core/types'
+import type { DiagramNode, ThemeColor } from '@likec4/core'
 import { pluck, uniq } from 'rambdax'
 import { Text } from '../../konva'
 import type { DiagramTheme } from '../types'
+import { Fragment } from 'react'
+import React from 'react'
 
 
 type NodeLabelsProps = {
@@ -20,7 +22,7 @@ export function NodeLabels({
   const [
     _titleFontSize, descriptionFontSize
   ] = uniq(pluck('fontSize', labels)).sort().reverse()
-  return <>
+  return <Fragment>
     {labels.map((label, i) => {
       let color = colors.hiContrast
       if (descriptionFontSize && descriptionFontSize === label.fontSize) {
@@ -48,8 +50,8 @@ export function NodeLabels({
         perfectDrawEnabled={false}
         hitStrokeWidth={0}
         listening={false}
-         />
+      />
     }
     )}
-  </>
+  </Fragment>
 }

@@ -1,4 +1,4 @@
-import type { ThemeColor as ElementStyleColor } from '@likec4/core/types'
+import type { ThemeColor as ElementStyleColor } from '@likec4/core'
 
 export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
 

@@ -1,9 +1,9 @@
-import nextra from 'nextra'
-import { resolve } from 'path'
-import { codeImport } from 'remark-code-import'
-import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
+// @ts-check
+import nextra  from 'nextra'
+import  { resolve }  from 'path'
+import { codeImport }  from 'remark-code-import'
+import { getHighlighter, BUNDLED_LANGUAGES }  from 'shiki'
 
-/** @type {import('nextra').NextraConfig} */
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
   themeConfig: './theme.config.tsx',
@@ -14,6 +14,7 @@ const withNextra = nextra({
     remarkPlugins: [codeImport],
     rehypePrettyCodeOptions: {
       getHighlighter: options =>
+        // @ts-ignore
         getHighlighter({
           ...options,
           langs: [
@@ -34,9 +35,16 @@ const withNextra = nextra({
   }
 })
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+export default withNextra({
+  reactStrictMode: true,
   trailingSlash: true,
+  // productionBrowserSourceMaps: true,
+  experimental: {
+    // appDir: false,
+    // appDir: false
+    // appDir: false
+    // esmExternals: true
+  },
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
     // console.log('config.experiments', config.experiments)
@@ -69,6 +77,4 @@ const nextConfig = {
   images: {
     unoptimized: true
   }
-}
-
-export default withNextra(nextConfig)
+})

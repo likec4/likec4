@@ -14,7 +14,7 @@ export default function PlaygroundViewD2({ diagram }: PlaygroundViewD2Props) {
     <CodeWindow className={cn('flex-1')}>
       <ScrollArea>
         <pre className={cn(
-          'py-2 px-4',
+          'p-4',
           'text-xs font-medium leading-normal',
           'text-slate-900 dark:text-slate-300'
         )}>{generateD2(diagram)}</pre>

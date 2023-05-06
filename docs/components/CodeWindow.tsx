@@ -1,6 +1,5 @@
-import { cn } from '$/lib'
-import clsx from 'clsx'
 import type { DetailedHTMLProps, HTMLAttributes } from 'react'
+import { cn } from '$/lib'
 
 type CodeBlockProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
@@ -8,7 +7,7 @@ export function CodeWindow({ children, className, ...props}: CodeBlockProps) {
   const border = true
   return (
     <div
-      className={clsx(
+      className={cn(
         'relative overflow-hidden shadow-xl flex bg-neutral-800/60 sm:rounded-xl dark:backdrop-blur dark:ring-1 dark:ring-inset dark:ring-neutral-700/80',
         className
       )}

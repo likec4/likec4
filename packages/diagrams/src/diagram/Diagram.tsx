@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import { useCallback, useMemo, useRef, useEffect } from 'react'
+import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import {
   useSpring,
   useTransition,
 } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
-import { useCallback, useMemo, useRef, type ReactElement, useEffect } from 'react'
 import { AnimatedStage, Layer } from '../konva'
 import { CompoundShape, EdgeShape, nodeShape } from './shapes'
 import { nodeListeners } from './shapes/nodeEvents'
@@ -86,7 +86,7 @@ export function Diagram({
   onEdgeClick,
   onStageClick,
   ...diagramprops
-}: DiagramProps): ReactElement<DiagramProps> {
+}: DiagramProps) {
   const {
     pannable = interactive,
     zoomable = interactive,

@@ -16,7 +16,7 @@
     "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
     "release": "run clean && turbo run build compile --filter='./packages/*'",
-    "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo'",
+    "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
     "dev": "turbo run dev --filter='./packages/*'",
     "test": "turbo run test --filter='./packages/*'",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/eslint": "^8.37.0",
     "@types/node": "^18.15.11",
-    "@types/prettier": "^2",
+    "@types/prettier": "^2.7.2",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "@vitest/ui": "^0.30.1",
@@ -42,7 +42,8 @@
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "18.15.0"
+    "node": "18.16.0",
+    "yarn": "2.4.3"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.1.0",

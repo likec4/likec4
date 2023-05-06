@@ -61,7 +61,7 @@ function listenRevealRequests(monacoRef: RefObject<Monaco>, languageClient: Mona
 
   let previousRequest: unknown | null = null
   return useEditorState.subscribe(({revealRequest}) => {
-    if (isNil(revealRequest) || equals(revealRequest, previousRequest)) {
+    if (isNil(revealRequest) || Object.is(revealRequest, previousRequest)) {
       previousRequest = revealRequest
       return
     }

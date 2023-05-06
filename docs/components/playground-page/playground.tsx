@@ -1,17 +1,17 @@
 import MonacoEditor from './editor/monaco'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '$/components/ui/dropdown-menu'
+import { cn } from '$/lib'
 import { Diagram, type DiagramPaddings } from '@likec4/diagrams'
 import { useMeasure, type Measures } from '@react-hookz/web/esm'
 import {
   disableBodyScroll,
   enableBodyScroll
 } from "body-scroll-lock-upgrade"
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { Button } from '../ui/button'
 import { revealInEditor, setDiagramFromViewId, updateFile, useDiagramStore, useFilesStore, useViewsStore } from './data'
 import styles from './playground.module.css'
-import { cn } from '$/lib'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '$/components/ui/dropdown-menu'
-import { Button } from '../ui/button'
-import { ChevronDown } from 'lucide-react'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
 
@@ -103,7 +103,9 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
         <h3
           className={cn(
             'mt-2 mb-0',
-            'text-xs text-gray-500 dark:text-gray-400'
+            'text-xs text-gray-500 dark:text-gray-400',
+            'cursor-pointer',
+            'hover:text-blue-500 dark:hover:text-blue-400',
           )}
           onClick={e => {
             e.stopPropagation()
@@ -115,6 +117,7 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
         <h2
           className={cn(
             'mt-0 mb-2',
+            'select-none',
             'text-md font-medium tracking-tight',
             'text-slate-900 dark:text-slate-100'
           )}
@@ -123,7 +126,7 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
       <div className='flex-initial flex-shrink-0'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className='rounded-sm'>
+              <Button variant="ghost" size="sm" className='rounded-sm'>
                 {ViewModes[viewMode]}
                 <ChevronDown className='ml-2 w-4'/>
               </Button>
@@ -138,12 +141,6 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
           </DropdownMenu>
       </div>
     </div >
-    {/* <div
-      className={styles.diagramtitle}
-
-    >
-
-    </div> */}
   </>
 }
 
