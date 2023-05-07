@@ -30,6 +30,7 @@ export interface NodeShapeProps extends KonvaNodeEvents {
   springs: InterporatedNodeSprings
 }
 
+export type OnDragEvent = Konva.KonvaEventObject<DragEvent>
 export type OnMouseEvent = Konva.KonvaEventObject<MouseEvent>
 export type OnPointerEvent = Konva.KonvaEventObject<PointerEvent>
 export type OnClickEvent = Konva.KonvaEventObject<PointerEvent>

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { DiagramNode } from '@likec4/core'
-import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
+import { AnimatedGroup, AnimatedRect, Text, KonvaCore } from '../../konva'
 
 import { scale } from 'khroma'
 import type { DiagramTheme } from '../types'
@@ -42,6 +42,9 @@ export function CompoundShape({
       mouseDefault(e)
     },
     onPointerClick: (evt: OnPointerEvent) => {
+      if (KonvaCore.isDragging()) {
+        return
+      }
       evt.cancelBubble = true
       onNodeClick(node, evt)
     }

@@ -2,6 +2,7 @@ import type { DiagramNode } from '@likec4/core'
 import { config } from '@react-spring/konva'
 import type { NodeSpringsCtrl, OnNodeClick, OnPointerEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
+import KonvaCore from 'konva/lib/Core'
 
 export function nodeListeners({
   node,
@@ -36,6 +37,9 @@ export function nodeListeners({
       })
     },
     onPointerClick: (e: OnPointerEvent) => {
+      if (KonvaCore.isDragging()) {
+        return
+      }
       e.cancelBubble = true
       onNodeClick(node, e)
     }

@@ -16,7 +16,7 @@ import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
 
 const ViewModes = {
-  'diagram': 'Diagram',
+  'diagram': 'React Diagram',
   'd2': 'D2',
   'dot': 'Graphviz DOT'
 } as const

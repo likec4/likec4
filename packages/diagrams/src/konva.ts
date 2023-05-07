@@ -12,7 +12,17 @@ import { animated, type AnimatedProps } from '@react-spring/konva'
 import type Konva from 'konva'
 import type { KonvaNodeComponent, StageProps } from 'react-konva'
 
+import KonvaCore from 'konva/lib/Core'
+
+// by default Konva prevent some events when node is dragging
+// it improve the performance and work well for 95% of cases
+// we need to enable all events on Konva, even when we are dragging a node
+// so it triggers touchmove correctly
+KonvaCore.hitOnDragEnabled = true
+KonvaCore.capturePointerEventsEnabled = true
+
 export {
+  KonvaCore,
   Stage,
   Group,
   Layer,

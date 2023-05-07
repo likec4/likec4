@@ -2,17 +2,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useCallback, useMemo, useRef, useEffect } from 'react'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
-import {
-  useSpring,
-  useTransition,
-} from '@react-spring/konva'
-import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
-import { AnimatedStage, Layer } from '../konva'
+import { AnimatedStage, Layer, KonvaCore } from '../konva'
+import type Konva from 'konva'
+import { useSpring, useTransition } from '@react-spring/konva'
 import { CompoundShape, EdgeShape, nodeShape } from './shapes'
 import { nodeListeners } from './shapes/nodeEvents'
 import { interpolateNodeSprings } from './shapes/nodeSprings'
-import type { OnNodeClick, OnPointerEvent, OnStageClick } from './shapes/types'
+import type { OnDragEvent, OnNodeClick, OnPointerEvent, OnStageClick } from './shapes/types'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
@@ -48,6 +45,22 @@ function nodeSprings(overrides?: {
     ...overrides
   })
   return nodesprings as unknown as NodeState
+}
+
+type Point = {
+  x: number
+  y: number
+}
+
+function getDistance(p1: Point, p2: Point) {
+  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+}
+
+function getCenter(p1: Point, p2: Point): Point {
+  return {
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2,
+  }
 }
 
 export interface DiagramProps extends
@@ -153,6 +166,17 @@ export function Diagram({
   }))
 
   useEffect(() => {
+    const el = stageRef.current?.container()
+    if (!el)
+      return
+    if (!pannable && !zoomable) {
+      el.style.touchAction = 'none'
+      return
+    }
+    el.style.touchAction = `${pannable ? 'pan-x pan-y ' : ''}${zoomable ? 'pinch-zoom' : ''}`
+  }, [pannable, zoomable])
+
+  useEffect(() => {
     stageSpringApi.stop(true).start({
       to: centerAndFitDiagram()
     })
@@ -164,16 +188,90 @@ export function Diagram({
         draggable: false
       }
     }
+    let lastCenter: Point | null = null
+    let lastDist = 0
     return {
       draggable: true,
       dragDistance: 5,
-      onDragStart: (e: Konva.KonvaEventObject<DragEvent>) => {
+      onTouchMove: (e: Konva.KonvaEventObject<TouchEvent>) => {
+        const touch1 = e.evt.touches[0]
+        const touch2 = e.evt.touches[1]
+        const stage = e.target.getStage()
+        if (!touch1 || !touch2 || !stage) {
+          return
+        }
+        e.evt.preventDefault()
+
+        // if the stage was under Konva's drag&drop
+        // we need to stop it, and implement our own pan logic with two pointers
+        if (stage.isDragging()) {
+          stage.stopDrag()
+        }
+
+        const p1 = {
+          x: touch1.clientX,
+          y: touch1.clientY,
+        }
+        const p2 = {
+          x: touch2.clientX,
+          y: touch2.clientY,
+        }
+
+        if (!lastCenter) {
+          lastCenter = getCenter(p1, p2)
+          return
+        }
+        const newCenter = getCenter(p1, p2)
+        const dist = getDistance(p1, p2)
+
+        if (!dist) {
+          return
+        }
+
+        if (!lastDist) {
+          lastDist = dist
+        }
+
+        const currentScale = stageProps.scale.get()
+        // local coordinates of center point
+        const pointTo = {
+          // x: (newCenter.x - stage.x()) / stageScale,
+          x: (newCenter.x - stageProps.x.get()) / currentScale,
+          // y: (newCenter.y - stage.y()) / stageScale,
+          y: (newCenter.y - stageProps.y.get()) / currentScale,
+        }
+
+        const scale = clamp(0.1, 3, currentScale * (dist / lastDist))
+
+        // calculate new position of the stage
+        const dx = newCenter.x - lastCenter.x
+        const dy = newCenter.y - lastCenter.y
+
+        const newPos = {
+          x: Math.round(newCenter.x - pointTo.x * scale + dx),
+          y: Math.round(newCenter.y - pointTo.y * scale + dy),
+        }
+
+        stageSpringApi.set({
+          x: newPos.x,
+          y: newPos.y,
+          scale: scale
+        })
+
+        lastDist = dist
+        lastCenter = newCenter
+      },
+      onTouchEnd: (_e: Konva.KonvaEventObject<TouchEvent>) => {
+        lastCenter = null
+        lastDist = 0
+      },
+      onDragStart: (e: OnDragEvent) => {
         if (e.target === stageRef.current) {
           e.cancelBubble = true
           // stageSpringApi.pause(['x', 'y'])
         }
       },
-      onDragMove: (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragMove: (e: OnDragEvent) => {
         if (e.target === stageRef.current) {
           stageSpringApi.set({
             x: e.target.x(),
@@ -181,7 +279,7 @@ export function Diagram({
           })
         }
       },
-      onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+      onDragEnd: (e: OnDragEvent) => {
         if (e.target === stageRef.current) {
           e.cancelBubble = true
           stageSpringApi.start({
@@ -191,6 +289,8 @@ export function Diagram({
             },
             immediate: true
           })
+          lastCenter = null
+          lastDist = 0
         }
       }
     }
@@ -284,7 +384,7 @@ export function Diagram({
     expires: true,
     immediate: !animate,
     config: {
-      duration: 130
+      duration: 150
     },
     keys: e => e.id + id
   })
@@ -330,7 +430,7 @@ export function Diagram({
       scaleX={stageProps.scale}
       scaleY={stageProps.scale}
       onPointerClick={onStageClick ? (e) => {
-        if (e.target.isDragging() || !stageRef.current) {
+        if (KonvaCore.isDragging() || !stageRef.current) {
           return
         }
         if (e.target === stageRef.current || !onNodeClick) {
@@ -338,6 +438,17 @@ export function Diagram({
           onStageClick(stageRef.current, e)
         }
       } : undefined}
+      onPointerDblClick={e => {
+        if (KonvaCore.isDragging() || !stageRef.current) {
+          return
+        }
+        if (e.target === stageRef.current || !onNodeClick) {
+          e.cancelBubble = true
+          stageSpringApi.start({
+            to: centerAndFitDiagram()
+          })
+        }
+      }}
       {...panning}
       {...stageprops}
     >
@@ -359,6 +470,9 @@ export function Diagram({
             theme={theme}
             springs={springs}
             onPointerClick={onEdgeClick ? (e) => {
+              if (KonvaCore.isDragging()) {
+                return
+              }
               e.cancelBubble = true
               onEdgeClick(edge)
             } : undefined}
