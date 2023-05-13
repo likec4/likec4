@@ -723,7 +723,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/core@^workspace:*, @likec4/core@workspace:*, @likec4/core@workspace:packages/core":
+"@likec4/core@workspace:*, @likec4/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
@@ -740,7 +740,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/diagrams@workspace:packages/diagrams"
   dependencies:
-    "@likec4/core": "^workspace:*"
+    "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.0
     "@react-spring/konva": ^9.7.2
