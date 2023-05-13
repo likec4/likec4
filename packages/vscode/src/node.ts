@@ -54,9 +54,7 @@ function createLanguageClient(context: ExtensionContext) {
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
-      ...fileExtensions.map(ext => ({
-        pattern: `**/*${ext}`
-      })),
+      { pattern: `*.{${extensions}}` },
       { language: languageId }
     ],
     synchronize: {

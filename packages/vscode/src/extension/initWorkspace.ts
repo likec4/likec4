@@ -19,27 +19,31 @@ const traversePath = async (folderPath: vscode.Uri): Promise<vscode.Uri[]> => {
       folders.push(uri)
     }
   }
-  const fromsubfolder = await mapParallelAsyncWithLimit(traversePath, 2, folders)
+  const fromsubfolder = await mapParallelAsyncWithLimit(traversePath, 4, folders)
   return [...docs, ...fromsubfolder.flat()]
 }
 
 const collectDocsInWorkspaceVFs = async () => {
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
-  const docs = await mapParallelAsyncWithLimit(traversePath, 2, folders)
+  const docs = await mapParallelAsyncWithLimit(traversePath, 1, folders)
   return docs.flat()
 }
 
 export async function initWorkspace(client: LanguageClient) {
+  // TODO: find a better way to wait for the workspace to be ready
+  await delay(500)
   const docs = await collectDocsInWorkspaceVFs()
   console.debug('initWorkspace: [' + docs.join(', ') + ']')
   for (const uri of docs) {
     try {
+      // Langium started with EmptyFileSystem
+      // so we need to open all files to make them available
       await vscode.workspace.openTextDocument(uri)
     } catch (e) {
       console.error(e)
     }
   }
-  await delay(500)
+  await delay(1000)
   const uris = docs.map(d => d.toString())
   await client.sendRequest(Rpc.buildDocuments, { docs: uris })
   return uris

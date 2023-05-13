@@ -5276,7 +5276,6 @@ __metadata:
     path-browserify: ^1.0.1
     rambdax: ^9.1.1
     shx: ^0.3.4
-    src: "link:./src"
     typed-inject: ^3.0.1
     typescript: ^5.0.4
     vscode-jsonrpc: 8.1.0
@@ -8219,12 +8218,6 @@ __metadata:
   checksum: 19d79aec211f09b99ec3099b5b2ae2f6e9cdefe50bc91ac4c69144b6d3928a640bb6ae5b3def70c2e85a2c3d9f5ec2719921e3a59d3ca3ef4b2fd1a4656a0df3
   languageName: node
   linkType: hard
-
-"src@link:./src::locator=likec4-vscode%40workspace%3Apackages%2Fvscode":
-  version: 0.0.0-use.local
-  resolution: "src@link:./src::locator=likec4-vscode%40workspace%3Apackages%2Fvscode"
-  languageName: node
-  linkType: soft
 
 "ssri@npm:^9.0.0":
   version: 9.0.1

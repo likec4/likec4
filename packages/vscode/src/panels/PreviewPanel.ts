@@ -7,7 +7,7 @@ import type { ExtensionContext, C4Model, LanguageClient } from 'src/di'
 import { di } from 'src/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
-import type { Location } from 'vscode-languageserver'
+import type { Location } from 'vscode-languageclient/lib/common/api'
 import { Rpc } from '../protocol'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
@@ -125,7 +125,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private goToSource = async (element: Fqn) => {
-    return  await this.client.sendRequest(Rpc.locateElement, { element })
+    return await this.client.sendRequest(Rpc.locateElement, { element })
   }
 
   private goToRelation = async (id: RelationID) => {
@@ -205,15 +205,17 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private createWebviewPanel(): WebviewPanel {
-    return vscode.window.createWebviewPanel(
-      PreviewPanel.ViewType,
-      'Diagram preview',
-      {
-        viewColumn: vscode.ViewColumn.Beside,
+    return this._register(
+      vscode.window.createWebviewPanel(
+        PreviewPanel.ViewType,
+        'Diagram preview',
+        {
+          viewColumn: vscode.ViewColumn.Beside,
 
-        preserveFocus: true
-      },
-      this.getWebviewOptions()
+          preserveFocus: true
+        },
+        this.getWebviewOptions()
+      )
     )
   }
 

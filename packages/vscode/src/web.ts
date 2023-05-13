@@ -1,12 +1,13 @@
 import type { ExtensionContext } from 'src/di'
 import { activateExtension } from 'src/extension/activate'
-import * as vscode from 'vscode'
 import { fileExtensions, languageId } from 'src/meta'
+import * as vscode from 'vscode'
 import {
   LanguageClient as BrowserLanguageClient,
   type LanguageClientOptions
 } from 'vscode-languageclient/browser'
 
+let worker: Worker | undefined
 let client: BrowserLanguageClient | undefined
 
 // this method is called when vs code is activated
@@ -18,7 +19,7 @@ export function activate(context: ExtensionContext) {
 
 // This function is called when the extension is deactivated.
 export function deactivate(): Thenable<void> | undefined {
-  return client?.stop()
+  return client?.dispose().then(() => worker?.terminate())
 }
 
 function createLanguageClient(context: ExtensionContext) {
@@ -29,7 +30,7 @@ function createLanguageClient(context: ExtensionContext) {
     'lsp',
     'web-worker.js'
   ).toString(true)
-  const worker = new Worker(serverMain, {
+  worker = new Worker(serverMain, {
     name: 'LikeC4 LSP Worker'
   })
 
@@ -41,9 +42,7 @@ function createLanguageClient(context: ExtensionContext) {
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
-      ...fileExtensions.map(ext => ({
-        pattern: `**/*${ext}`
-      })),
+      { pattern: `*.{${extensions}}` },
       { language: languageId }
     ],
     synchronize: {

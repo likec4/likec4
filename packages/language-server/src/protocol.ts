@@ -3,16 +3,18 @@ import type { DocumentUri, Location,  } from 'vscode-languageserver-protocol'
 import { NotificationType0, RequestType0, RequestType } from 'vscode-languageserver-protocol'
 
 //#region From server
-export const onDidChangeModel = new NotificationType0('likec4/onDidChangeModel')
+const onDidChangeModel = new NotificationType0('likec4/onDidChangeModel')
 //#endregion
 
 //#region To server
-export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
+const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
 
-export interface BuildDocumentsParams {
+const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
+
+interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
-export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/buildDocuments')
+const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/buildDocuments')
 
 export interface LocateElementParams {
   element: Fqn
@@ -35,6 +37,7 @@ export const locateView = new RequestType<{ id: ViewID }, Location | null, void>
 export const Rpc = {
   onDidChangeModel,
   fetchModel,
+  rebuild,
   buildDocuments,
   locateElement,
   locateRelation,

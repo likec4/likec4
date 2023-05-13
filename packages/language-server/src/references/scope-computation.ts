@@ -8,7 +8,6 @@ import {
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import { computeDocumentFqn } from './fqn-computation'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
@@ -40,7 +39,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
         }
       }
-      computeDocumentFqn(document, this.services)
     }
     // const c4fqns = document.c4fqns
     // logger.debug(`doc ${document.uri.path}:

@@ -42,10 +42,6 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     FqnIndex: bind(FqnIndex),
     ModelBuilder: bind(LikeC4ModelBuilder),
     ModelLocator: bind(LikeC4ModelLocator)
-    // Model: bind(LikeC4Model),
-    // Model: bind(LikeC4Model),
-    // SpecIndex: bind(LikeC4SpecIndex),
-    // Validator: bind(LikeC4Validator)
   },
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),

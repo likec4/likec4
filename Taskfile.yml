@@ -6,7 +6,11 @@ tasks:
     cmds:
       # - yarn workspaces foreach --topological-dev version minor
       - yarn version check --interactive
-      - yarn compile && yarn clean && yarn build:release
+      - yarn build
       - yarn version apply --all
       - yarn workspaces foreach --topological-dev --no-private --exclude=likec4-vscode npm publish
-      - yarn clean:after:publish
+
+  # publish-vscode:
+  #   dir: packages/vscode
+  #   cmds:
+  #     - yarn vsce publish 0.8.0

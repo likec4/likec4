@@ -1,16 +1,14 @@
-import { DocumentState, DONE_RESULT, getDocument, MultiMap, StreamImpl } from 'langium'
-import type { AstNodeDescription, AstNodeDescriptionProvider , LangiumDocument} from 'langium'
-import type { URI } from 'vscode-uri'
-import type { ast} from '../ast';
-import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
-import type { LikeC4Services } from '../module'
-import { logger } from '../logger'
-import { nameFromFqn, parentFqn } from '@likec4/core/utils'
 import type { Fqn } from '@likec4/core/types'
-import { strictElementRefFqn } from '../elementRef'
+import { nameFromFqn, parentFqn } from '@likec4/core/utils'
+import type { LangiumDocument, LangiumDocuments } from 'langium'
+import { DocumentState, DONE_RESULT, getDocument, MultiMap, StreamImpl } from 'langium'
 import { isNil } from 'rambdax'
-import { isLikeC4Document, LikeC4Document } from '../generated/ast'
-import type { SetRequired, SetNonNullable } from 'type-fest'
+import type { SetNonNullable, SetRequired } from 'type-fest'
+import type { ast } from '../ast'
+import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
+import { logger } from '../logger'
+import type { LikeC4Services } from '../module'
+import { computeDocumentFqn } from './fqn-computation'
 
 type FqnIndexedDocument = SetNonNullable<SetRequired<LikeC4LangiumDocument, 'c4fqns'>, 'c4fqns'>
 
@@ -25,56 +23,39 @@ export interface FqnIndexEntry {
 }
 
 export class FqnIndex {
-  // #fqnMap = new WeakMap<ast.Element, Fqn>()
-  // protected readonly descriptions: AstNodeDescriptionProvider
+
+  protected langiumDocuments: LangiumDocuments
 
   constructor(private services: LikeC4Services) {
-    // this.descriptions = services.workspace.AstNodeDescriptionProvider
-    // services.shared.workspace.DocumentBuilder.onUpdate((_changed, removed) => {
-    //   for (const uri of [..._changed, ...removed]) {
-    //     this.cleanIndexedElements(uri)
-    //   }
-    // })
-    // services.shared.workspace.DocumentBuilder.onBuildPhase(
-    //   DocumentState.Parsed,
-    //   (docs, _cancelToken) => {
-    //     for (const doc of docs) {
-    //       this.cleanIndexedElements(doc.uri)
-    //       this.doIndexElements(doc as LikeC4LangiumDocument)
-    //     }
-    //   }
-    // )
+    this.langiumDocuments = services.shared.workspace.LangiumDocuments
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.IndexedContent,
+      (docs, _cancelToken) => {
+        for (const doc of docs) {
+          if (isLikeC4LangiumDocument(doc)) {
+            try {
+              computeDocumentFqn(doc, services)
+            } catch (e) {
+              logger.error(e)
+            }
+          }
+        }
+      }
+    )
   }
 
   private documents() {
-    return this.services.shared.workspace.LangiumDocuments.all.filter(isFqnIndexedDocument)
+    return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
   private entries() {
     return this.documents().flatMap(doc => doc.c4fqns.entries().map(([fqn, path]) => ({ fqn, path, doc })))
   }
 
-  // private index() {
-  //   const index = new MultiMap<Fqn, {
-  //     path: string,
-  //     doc: LikeC4LangiumDocument
-  //   }>()
-  //   this.entries().toMap()
-  //   this.entries().forEach(({ fqn, path, doc }) => {
-  //     index.add(fqn, { path, doc })
-  //   })
-  //   // for (const doc of this.documents()) {
-  //   //   doc.c4fqns.entries().forEach(([fqn, path]) => {
-  //   //     index.add(fqn, { path, doc })
-  //   //   })
-  //   // }
-  //   return index
-  // }
-
   public get(el: ast.Element): Fqn | null {
     let fqn = ElementOps.readId(el) ?? null
-    const doc = getDocument(el)
     if (fqn) {
+      const doc = getDocument(el)
       if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
         return fqn
       }
@@ -113,7 +94,7 @@ export class FqnIndex {
         this.entries().forEach(e => {
           if (e.fqn.startsWith(prefix)) {
             const name = nameFromFqn(e.fqn)
-            const entry = { ...e, name}
+            const entry = { ...e, name }
             if (parentFqn(e.fqn) === parent) {
               childrenNames.add(name)
               children.push(entry)

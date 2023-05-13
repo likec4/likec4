@@ -1,14 +1,22 @@
-import type { ExtensionContext, PreviewPanel } from 'src/di'
-import { di } from 'src/di'
 import type { ViewID } from '@likec4/core/types'
-import { URI } from 'vscode-uri'
-import { commands, extensions, workspace } from 'vscode'
+import type { ExtensionContext, LanguageClient, PreviewPanel } from 'src/di'
+import { di } from 'src/di'
+import { Rpc } from 'src/protocol'
+import { commands } from 'vscode'
 
 // This function is called when the extension is activated.
-export function registerCommands(context: ExtensionContext, previewPanel: PreviewPanel) {
+export function registerCommands(
+  context: ExtensionContext,
+  previewPanel: PreviewPanel,
+  client: LanguageClient
+) {
   context.subscriptions.push(
     commands.registerCommand('likec4.open-preview', (viewId?: ViewID) => {
       previewPanel.open(viewId ?? ('index' as ViewID))
+    }),
+    commands.registerCommand('likec4.rebuild', async () => {
+      const { docs } = await client.sendRequest(Rpc.rebuild)
+      console.debug(`rebuild response: ${docs}`)
     }),
     // commands.registerCommand('likec4.open-d2',  async (viewId?: ViewID) => {
     //   try {
@@ -34,4 +42,4 @@ export function registerCommands(context: ExtensionContext, previewPanel: Previe
     // })
   )
 }
-registerCommands.inject = [di.context, di.previewPanel] as const
+registerCommands.inject = [di.context, di.previewPanel, di.client] as const

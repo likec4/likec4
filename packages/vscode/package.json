@@ -116,8 +116,8 @@
         "category": "LikeC4"
       },
       {
-        "command": "likec4.open-d2",
-        "title": "Open D2 Preview",
+        "command": "likec4.rebuild",
+        "title": "Rebuild model",
         "category": "LikeC4"
       }
     ]
@@ -145,7 +145,6 @@
     "path-browserify": "^1.0.1",
     "rambdax": "^9.1.1",
     "shx": "^0.3.4",
-    "src": "link:./src",
     "typed-inject": "^3.0.1",
     "typescript": "^5.0.4",
     "vscode-jsonrpc": "8.1.0",

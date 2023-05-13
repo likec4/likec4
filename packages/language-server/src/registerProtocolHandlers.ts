@@ -25,14 +25,29 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     })
   })
 
-  connection.onRequest(Rpc.buildDocuments, async ({docs}, cancelToken) => {
+  connection.onRequest(Rpc.rebuild, async cancelToken => {
+    const changed = LangiumDocuments.all.map(d => d.uri).toArray()
+    logger.debug(`Rebuild all documents: [
+      ${changed.map(d => d.toString()).join('\n      ')}
+    ]`)
+    await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
+    return {
+      docs: changed.map(d => d.toString())
+    }
+  })
+
+  connection.onRequest(Rpc.buildDocuments, async ({ docs }, cancelToken) => {
     const changed = [] as URI[]
     for (const d of docs) {
-      const uri = d as unknown as URI
-      if (LangiumDocuments.hasDocument(uri)) {
+      try {
+        const uri = d as unknown as URI
         changed.push(uri)
-      } else {
-        logger.error(`LangiumDocuments does not have document: ${uri.toString()}`)
+        if (!LangiumDocuments.hasDocument(uri)) {
+          logger.warn(`LangiumDocuments does not have document: ${uri.toString()}`)
+          LangiumDocuments.getOrCreateDocument(uri)
+        }
+      } catch (e) {
+        logger.error(e)
       }
     }
     logger.debug(`Received request to rebuild: [
@@ -41,7 +56,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })
 
-  connection.onRequest(Rpc.locateElement, async ({element, property}, _cancelToken) => {
+  connection.onRequest(Rpc.locateElement, async ({ element, property }, _cancelToken) => {
     try {
       return Promise.resolve(modelLocator.locateElement(element, property ?? 'name'))
     } catch (e) {
