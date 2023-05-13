@@ -1,4 +1,4 @@
-import type { LanguageClient, LayoutFn } from 'src/di'
+import type { LanguageClient, LayoutFn, Logger } from 'src/di'
 import { di } from 'src/di'
 import { ADisposable, disponsable, queueMicrotask } from 'src/util'
 import { Rpc } from './protocol'
@@ -18,8 +18,8 @@ function isNotNullish<T>(x: T): x is NonNullable<T> {
 export class C4ModelImpl extends ADisposable {
   private onDidChangeSubscription: vscode.Disposable | null = null
 
-  static inject = tokens(di.client, di.layout)
-  constructor(private client: LanguageClient, private layout: LayoutFn) {
+  static inject = tokens(di.client, di.layout, di.logger)
+  constructor(private client: LanguageClient, private layout: LayoutFn, protected logger: Logger) {
     super()
     // this.modelListeners = this._register(new vscode.EventEmitter<void>())
     this._register(
@@ -35,14 +35,14 @@ export class C4ModelImpl extends ADisposable {
         if (this.onDidChangeSubscription) {
           throw new Error('modelStream already started')
         }
-        console.log('++subscribe: onDidChangeModel')
+        this.logger.logDebug('++subscribe: onDidChangeModel')
         this.onDidChangeSubscription = this.client.onNotification(Rpc.onDidChangeModel, () => {
-          console.log('receive: onDidChangeModel')
+          this.logger.logDebug('receive: onDidChangeModel')
           listener.next(0)
         })
       },
       stop: () => {
-        console.log('--unsubscribe: onDidChangeModel')
+        this.logger.logDebug('--unsubscribe: onDidChangeModel')
         // this.computedViews.clear()
         this.onDidChangeSubscription?.dispose()
         this.onDidChangeSubscription = null
@@ -67,7 +67,7 @@ export class C4ModelImpl extends ADisposable {
   }
 
   public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
-    console.log(`subscribeToView: ${viewId}`)
+    this.logger.logDebug(`subscribeToView: ${viewId}`)
     const subscription = this.modelStream
       .map(({ views }) => (viewId in views ? views[viewId] : null))
       .filter(isNotNullish)
@@ -88,7 +88,7 @@ export class C4ModelImpl extends ADisposable {
     return this._register(
       disponsable(() => {
         queueMicrotask(() => {
-          console.log(`--unsubscribe: ${viewId}`)
+          this.logger.logDebug(`--unsubscribe: ${viewId}`)
           subscription.unsubscribe()
         })
       })

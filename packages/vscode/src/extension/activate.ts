@@ -3,6 +3,7 @@ import { di } from 'src/di'
 import { createInjector } from 'typed-inject'
 import { dotLayout } from '@likec4/layouts'
 import { C4ModelImpl } from 'src/c4model'
+import { Logger } from 'src/logger'
 import { PreviewPanel } from 'src/panels/PreviewPanel'
 import { registerCommands } from './registerCommands'
 import { registerPreviewPanelSerializer } from './registerWebviewSerializer'
@@ -14,6 +15,7 @@ export async function activateExtension({ context, client }: ExtensionRequiremen
   await client.start()
 
   const injector = createInjector()
+    .provideClass(di.logger, Logger)
     .provideValue(di.context, context)
     .provideValue(di.client, client)
     .provideValue(di.layout, dotLayout)
@@ -25,7 +27,7 @@ export async function activateExtension({ context, client }: ExtensionRequiremen
   injector.injectFunction(registerCommands)
   injector.injectFunction(registerPreviewPanelSerializer)
 
-  await initWorkspace(client)
+  await initWorkspace(client, injector.resolve(di.logger))
 
   return injector
 }

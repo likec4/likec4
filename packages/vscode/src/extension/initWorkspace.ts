@@ -1,4 +1,4 @@
-import { di, type LanguageClient } from 'src/di'
+import { di, type LanguageClient, type Logger } from 'src/di'
 import { mapParallelAsyncWithLimit, delay } from 'rambdax'
 import { Rpc } from '../protocol'
 import * as vscode from 'vscode'
@@ -29,18 +29,18 @@ const collectDocsInWorkspaceVFs = async () => {
   return docs.flat()
 }
 
-export async function initWorkspace(client: LanguageClient) {
+export async function initWorkspace(client: LanguageClient, logger: Logger) {
   // TODO: find a better way to wait for the workspace to be ready
   await delay(500)
   const docs = await collectDocsInWorkspaceVFs()
-  console.debug('initWorkspace: [' + docs.join(', ') + ']')
+  logger.logDebug('initWorkspace: [' + docs.join(', ') + ']')
   for (const uri of docs) {
     try {
       // Langium started with EmptyFileSystem
       // so we need to open all files to make them available
       await vscode.workspace.openTextDocument(uri)
     } catch (e) {
-      console.error(e)
+      logger.logError(`${e}`, e)
     }
   }
   await delay(1000)

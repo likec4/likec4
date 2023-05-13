@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "publisher": "likec4",
   "displayName": "LikeC4 Architecture Modeling",
   "description": "Support for the LikeC4 modeling language",
@@ -47,6 +47,12 @@
     "vscode": "^1.74.0",
     "node": ">=17"
   },
+  "keywords": [
+    "architecture",
+    "architecture-as-code",
+    "diagrams",
+    "c4"
+  ],
   "categories": [
     "Programming Languages",
     "Visualization"
@@ -55,6 +61,9 @@
   "galleryBanner": {
     "color": "#111111",
     "theme": "dark"
+  },
+  "capabilities": {
+    "virtualWorkspaces": true
   },
   "contributes": {
     "languages": [
@@ -84,7 +93,7 @@
       }
     ],
     "configuration": {
-      "title": "LikeC4",
+      "title": "%ext.title%",
       "properties": {
         "likec4.trace.extension": {
           "type": "string",
@@ -112,13 +121,13 @@
     "commands": [
       {
         "command": "likec4.open-preview",
-        "title": "Open Preview",
-        "category": "LikeC4"
+        "title": "%ext.cmd.open-preview%",
+        "category": "%ext.title%"
       },
       {
         "command": "likec4.rebuild",
-        "title": "Rebuild model",
-        "category": "LikeC4"
+        "title": "%ext.cmd.rebuild%",
+        "category": "%ext.title%"
       }
     ]
   },

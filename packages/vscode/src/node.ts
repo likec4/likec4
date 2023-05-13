@@ -65,5 +65,5 @@ function createLanguageClient(context: ExtensionContext) {
   }
 
   // Create the language client and start the client.
-  return new NodeLanguageClient(languageId, 'LikeC4', serverOptions, clientOptions)
+  return new NodeLanguageClient(languageId, 'LikeC4 Extension', serverOptions, clientOptions)
 }

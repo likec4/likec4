@@ -1,5 +1,5 @@
 import type { ViewID } from '@likec4/core/types'
-import type { ExtensionContext, LanguageClient, PreviewPanel } from 'src/di'
+import type { ExtensionContext, LanguageClient, Logger, PreviewPanel } from 'src/di'
 import { di } from 'src/di'
 import { Rpc } from 'src/protocol'
 import { commands } from 'vscode'
@@ -8,6 +8,7 @@ import { commands } from 'vscode'
 export function registerCommands(
   context: ExtensionContext,
   previewPanel: PreviewPanel,
+  logger: Logger,
   client: LanguageClient
 ) {
   context.subscriptions.push(
@@ -16,7 +17,7 @@ export function registerCommands(
     }),
     commands.registerCommand('likec4.rebuild', async () => {
       const { docs } = await client.sendRequest(Rpc.rebuild)
-      console.debug(`rebuild response: ${docs}`)
+      logger.logDebug(`rebuild response: ${docs}`)
     }),
     // commands.registerCommand('likec4.open-d2',  async (viewId?: ViewID) => {
     //   try {
@@ -42,4 +43,4 @@ export function registerCommands(
     // })
   )
 }
-registerCommands.inject = [di.context, di.previewPanel, di.client] as const
+registerCommands.inject = [di.context, di.previewPanel, di.logger, di.client] as const
