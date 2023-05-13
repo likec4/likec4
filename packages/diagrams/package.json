@@ -52,7 +52,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@likec4/core": "^workspace:*",
+    "@likec4/core": "workspace:*",
     "@react-spring/konva": "^9.7.2",
     "konva": "^9.0.1",
     "react-konva": "^18.2.7",
