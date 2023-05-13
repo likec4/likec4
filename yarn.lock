@@ -611,14 +611,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:^2.12.0":
-  version: 2.12.0
-  resolution: "@hpcc-js/wasm@npm:2.12.0"
+"@hpcc-js/wasm@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "@hpcc-js/wasm@npm:2.13.0"
   dependencies:
-    yargs: 17.7.1
+    yargs: 17.7.2
   bin:
     dot-wasm: bin/dot-wasm.js
-  checksum: bb6e4205e612e47a5edd6386031fe0166bd47602669df80b56fbb4793d63b1374f60cd70b75ea1d3ebc0457eea117c252d7a9634cbc5db34b91411041ee89633
+  checksum: b84a1967e8cda3354711d05fe8711bbfb8e007ea0406a19b7fd13e146a11939256b02c6a7c7d811bfe61dfebc6dc1fc9cfc3b9d915655860348d38076b90e9e5
   languageName: node
   linkType: hard
 
@@ -713,7 +713,7 @@ __metadata:
     commander: ^10.0.1
     esbuild: ^0.17.18
     fast-glob: ^3.2.12
-    langium: ^1.1.0
+    langium: ^1.2.0
     mkdirp: ^2.1.6
     rambdax: ^9.1.1
     typescript: ^5.0.4
@@ -787,7 +787,7 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.3
     class-variance-authority: ^0.6.0
     clsx: ^1.2.1
-    langium: ^1.1.0
+    langium: ^1.2.0
     lucide-react: ^0.206.0
     monaco-editor: 0.36.1
     monaco-languageclient: 5.0.1
@@ -843,7 +843,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     json5: ^2.2.3
-    langium: ^1.1.0
+    langium: ^1.2.0
     rambdax: ^9.1.1
     typescript: ^5.0.4
     vitest: ^0.31.0
@@ -858,8 +858,8 @@ __metadata:
     "@mobily/ts-belt": ^3.13.1
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
-    langium: ^1.1.0
-    langium-cli: ^1.1.0
+    langium: ^1.2.0
+    langium-cli: ^1.2.0
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
@@ -881,7 +881,7 @@ __metadata:
   dependencies:
     "@dagrejs/dagre": ^0.8.0
     "@dagrejs/graphlib": ^2.1.12
-    "@hpcc-js/wasm": ^2.12.0
+    "@hpcc-js/wasm": ^2.13.0
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     rambdax: ^9.1.1
@@ -5210,32 +5210,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "langium-cli@npm:1.1.0"
+"langium-cli@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "langium-cli@npm:1.2.0"
   dependencies:
     chalk: ~4.1.2
     commander: ~10.0.0
     fs-extra: ~11.1.0
     jsonschema: ~1.4.1
-    langium: ~1.1.0
+    langium: ~1.2.0
     lodash: ~4.17.21
   bin:
     langium: bin/langium.js
-  checksum: 86bb80f9ff737eeb521d6367e9d0cdf16e1186f9b48c377ee5483af7848a849988a83f1dd3f6fffba0a2e6c0f7adb5285a5154127e129443234801b4ac5840d0
+  checksum: ea9b85a5030cd3570fe19cd9d625f8fbd95897248baa92e6ab126efd14264ce86205ca439187a0eee1ad187beec21cb1f4eeee48bc19ad64dbac4b34ebadd4fa
   languageName: node
   linkType: hard
 
-"langium@npm:^1.1.0, langium@npm:~1.1.0":
-  version: 1.1.0
-  resolution: "langium@npm:1.1.0"
+"langium@npm:^1.2.0, langium@npm:~1.2.0":
+  version: 1.2.0
+  resolution: "langium@npm:1.2.0"
   dependencies:
     chevrotain: ~10.4.2
     chevrotain-allstar: ~0.1.4
     vscode-languageserver: ~8.0.2
     vscode-languageserver-textdocument: ~1.0.8
     vscode-uri: ~3.0.7
-  checksum: 8bdefb6cd4f794ce38c4dbca55ade642eb7eb8aea2bc6e4c73efdba2df2531015a2c8496dd7b77d86cf9be58656fcce5af55a2740d2133e8c6cf924f810d5b1b
+  checksum: ed51840579928ebe3a6399dd75a0e1722f2aa9039183d5fbb943233596dcd98ecca01f6b1a60efcc5f8238a0448bd62e869a3360a86a67bf34848a5fd1e144bd
   languageName: node
   linkType: hard
 
@@ -5270,7 +5270,7 @@ __metadata:
     "@vscode/vsce": ^2.19.0
     esbuild: ^0.17.18
     froebel: ^0.23.2
-    langium: ^1.1.0
+    langium: ^1.2.0
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     path-browserify: ^1.0.1
@@ -9726,9 +9726,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.1":
-  version: 17.7.1
-  resolution: "yargs@npm:17.7.1"
+"yargs@npm:17.7.2":
+  version: 17.7.2
+  resolution: "yargs@npm:17.7.2"
   dependencies:
     cliui: ^8.0.1
     escalade: ^3.1.1
@@ -9737,7 +9737,7 @@ __metadata:
     string-width: ^4.2.3
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
-  checksum: 3d8a43c336a4942bc68080768664aca85c7bd406f018bad362fd255c41c8f4e650277f42fd65d543fce99e084124ddafee7bbfc1a5c6a8fda4cec78609dcf8d4
+  checksum: 73b572e863aa4a8cbef323dd911d79d193b772defd5a51aab0aca2d446655216f5002c42c5306033968193bdbf892a7a4c110b0d77954a7fdf563e653967b56a
   languageName: node
   linkType: hard
 
