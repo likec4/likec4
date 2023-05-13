@@ -95,7 +95,10 @@ const App = () => {
         height={windowSize.height}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
-        padding={24}
+        onStageClick={() => {
+          goToViewSource(view.id)
+        }}
+        padding={16}
       />
       {loading && (
         <>
