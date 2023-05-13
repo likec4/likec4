@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.6.3",
+  "version": "0.8.0",
   "publisher": "likec4",
   "displayName": "LikeC4 Architecture Modeling",
   "description": "Support for the LikeC4 modeling language",
