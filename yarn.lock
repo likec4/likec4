@@ -754,7 +754,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-konva: ^18.2.7
+    react-konva: ^18.2.8
     tailwindcss: ^3.3.2
     tilg: ^0.1.1
     tiny-invariant: ^1.3.1
@@ -7459,9 +7459,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-konva@npm:^18.2.7":
-  version: 18.2.7
-  resolution: "react-konva@npm:18.2.7"
+"react-konva@npm:^18.2.8":
+  version: 18.2.8
+  resolution: "react-konva@npm:18.2.8"
   dependencies:
     "@types/react-reconciler": ^0.28.2
     its-fine: ^1.0.6
@@ -7471,7 +7471,7 @@ __metadata:
     konva: ^8.0.1 || ^7.2.5 || ^9.0.0
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 40c780ac69c9d03ed8a4e6a43ff450e6fab12781b03d511b1cbb670a01a0286c2efc2e05c56bbbd7cd2e7980996fff6ebaf36c835fa6b316b3937be8f30afafd
+  checksum: 7106c8bda0613ab2066d2d9da2e566e04b67877aa2c0531cc48528010e58d04defdae786b1d9db1e9a5b95b60f238b303b0602f066d43d0032bd8c91736b1aaf
   languageName: node
   linkType: hard
 
