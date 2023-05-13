@@ -16,7 +16,7 @@ specification {
   // Just for the sake of the example
   element database {
     style {
-      shape: queue
+      shape storage
     }
   }
 
