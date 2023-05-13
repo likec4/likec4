@@ -30,6 +30,7 @@ const config: DocsThemeConfig = {
   useNextSeoProps() {
     const { frontMatter } = useConfig()
     const { route } = useRouter()
+    const url = 'https://likec4.dev' + route + (route.endsWith('/') ? '' : '/')
     return {
       ...(frontMatter.title ? {
         title: frontMatter.title,
@@ -39,28 +40,31 @@ const config: DocsThemeConfig = {
             ? 'Example Big Bank: %s'
             : '%s – LikeC4',
       }),
-      description: 'Architecture diagrams from the code - always consistent, up-to-date and with the history',
+      description: 'Declare your architecture in code, get diagrams as images or react components and keep your documentation always up-to-date.',
       themeColor: '#111',
       openGraph: {
-        url: 'https://likec4.dev' + route + (route.endsWith('/') ? '' : '/'),
+        url,
         images: [{
           url: 'https://likec4.dev/logo.png',
           type: 'image/png'
         }]
-      }
+      },
+      additionalMetaTags: [
+        {name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4'}
+      ]
     }
   },
-  // head: function () {
-  //   const { route } = useRouter()
-  //   const isZoomDisabled = route.startsWith('/examples') || route.startsWith('/playground')
-  //   return (<>
-  //     {isZoomDisabled ? (
-  //       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-  //     ) : (
-  //       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  //     )}
-  //   </>)
-  // }
+  head: function () {
+    const { route } = useRouter()
+    const isZoomDisabled = route.startsWith('/playground')
+    return (<>
+      {isZoomDisabled ? (
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+      ) : (
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      )}
+    </>)
+  }
   // useNextSeoProps: () => ({ titleTemplate: '%s – LikeC4' })
   // head: function useHead() {
   //   const { title } = useConfig()
