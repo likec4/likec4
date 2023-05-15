@@ -792,7 +792,7 @@ __metadata:
     monaco-editor: 0.36.1
     monaco-languageclient: 5.0.1
     next: ^13.4.1
-    nextra: ^2.5.0
+    nextra: ^2.5.2
     nextra-theme-docs: ^2.5.0
     postcss: ^8.4.23
     rambdax: ^9.1.1
@@ -6668,9 +6668,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextra@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "nextra@npm:2.5.0"
+"nextra@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "nextra@npm:2.5.2"
   dependencies:
     "@mdx-js/mdx": ^2.3.0
     "@mdx-js/react": ^2.3.0
@@ -6697,7 +6697,7 @@ __metadata:
     next: ">=9.5.3"
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: b8c7fa55e90654765363f822319080376c8db5be356ad98e8e29496a3ebdf996a27da003e857bbaf77eb460e09413b977e6e0c7164a2fd4e94a6c63139502b4a
+  checksum: 20945786715382c73488edcac233a9c74a4a2b7cee675e8fb2fe705dc0cd0571e15a859062ca02cb01f42f097dac7bbed1cf87e7d43eef6e2ed04f8997bb583d
   languageName: node
   linkType: hard
 
