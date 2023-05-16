@@ -9,13 +9,13 @@ import { registerCommands } from './registerCommands'
 import { registerPreviewPanelSerializer } from './registerWebviewSerializer'
 import { initWorkspace } from './initWorkspace'
 
-export async function activateExtension({ context, client }: ExtensionRequirements) {
-  console.debug('activateExtension')
-
+export async function activateExtension({ context, client }: ExtensionRequirements, isWebExtension = false) {
   await client.start()
 
+  const logger = new Logger(client.outputChannel)
+
   const injector = createInjector()
-    .provideClass(di.logger, Logger)
+    .provideValue(di.logger, logger)
     .provideValue(di.context, context)
     .provideValue(di.client, client)
     .provideValue(di.layout, dotLayout)
@@ -27,7 +27,11 @@ export async function activateExtension({ context, client }: ExtensionRequiremen
   injector.injectFunction(registerCommands)
   injector.injectFunction(registerPreviewPanelSerializer)
 
-  await initWorkspace(client, injector.resolve(di.logger))
+  if (isWebExtension) {
+    // LSP web extensions does not have access to the file system (even virtual)
+    // so we do this trick (find all files and open them)
+    await initWorkspace(client, logger)
+  }
 
   return injector
 }

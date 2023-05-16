@@ -40,7 +40,8 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   public open(viewId: ViewID) {
-    this.logger.logDebug('open', { this: this, viewId })
+    this.logger.logDebug('open', { viewId })
+    this.logger.logDebug('open', { viewId })
     if (this.panel) {
       this.panel.reveal(undefined, true)
       this.subscribeToModel(viewId)
@@ -142,17 +143,11 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       return
     }
     const panelViewColumn = this.panel?.viewColumn ?? vscode.ViewColumn.Two
-    const uri = vscode.Uri.parse(loc.uri)
-    const range = new vscode.Range(
-      loc.range.start.line,
-      loc.range.start.character,
-      loc.range.end.line,
-      loc.range.end.character
-    )
-    await vscode.window.showTextDocument(uri, {
+    const location = this.client.protocol2CodeConverter.asLocation(loc)
+    await vscode.window.showTextDocument(location.uri, {
       viewColumn:
         panelViewColumn !== vscode.ViewColumn.One ? vscode.ViewColumn.One : panelViewColumn,
-      selection: range
+      selection: location.range
     })
   }
 
@@ -212,7 +207,6 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
         'Diagram preview',
         {
           viewColumn: vscode.ViewColumn.Beside,
-
           preserveFocus: true
         },
         this.getWebviewOptions()

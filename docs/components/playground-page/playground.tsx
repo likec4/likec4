@@ -112,7 +112,7 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
             revealInEditor({ view: diagram.id })
           }}
         >
-          id: {diagram.id}
+          view id: {diagram.id}
         </h3>
         <h2
           className={cn(

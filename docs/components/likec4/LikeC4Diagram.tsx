@@ -54,7 +54,7 @@ function DiagramsBrowser({
         width={measures?.width ?? window.innerWidth}
         height={measures?.height ?? window.innerHeight}
         initialStagePosition={initialPosition}
-        padding={10}
+        padding={20}
         onNodeClick={({ navigateTo }) => {
           if (isLikeC4ViewId(navigateTo)) {
             setViewId(navigateTo)

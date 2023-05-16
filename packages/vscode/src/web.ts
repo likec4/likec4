@@ -14,7 +14,7 @@ let client: BrowserLanguageClient | undefined
 export function activate(context: ExtensionContext) {
   client = createLanguageClient(context)
 
-  void activateExtension({ client, context })
+  void activateExtension({ client, context }, true)
 }
 
 // This function is called when the extension is deactivated.
@@ -42,8 +42,10 @@ function createLanguageClient(context: ExtensionContext) {
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
-      { pattern: `*.{${extensions}}` },
-      { language: languageId }
+      { pattern: globPattern, scheme: 'file' },
+      { pattern: globPattern, scheme: 'vscode-vfs' },
+      { language: languageId, scheme: 'file' },
+      { language: languageId, scheme: 'vscode-vfs' },
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace

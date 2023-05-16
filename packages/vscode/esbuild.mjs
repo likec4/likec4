@@ -62,7 +62,6 @@ const webCfg = {
   target: 'es2020',
   platform: 'browser',
   external: ['vscode'],
-  // mainFields: ['browser', 'module', 'main'],
   alias: {
     path: 'path-browserify',
     ...alias
@@ -70,7 +69,7 @@ const webCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  sourcesContent: false,
+  sourcesContent: true,
   treeShaking: true,
   keepNames: true,
   minify: true

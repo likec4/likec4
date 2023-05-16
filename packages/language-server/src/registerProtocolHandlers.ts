@@ -1,4 +1,4 @@
-import type { URI } from 'vscode-uri'
+import { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
 import { logger } from './logger'
 import { Rpc } from './protocol'
@@ -6,6 +6,7 @@ import { Rpc } from './protocol'
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
   if (!connection) {
+    logger.debug('No connection found, skipping protocol handlers')
     return
   }
   const modelBuilder = services.likec4.ModelBuilder
@@ -20,9 +21,7 @@ export function registerProtocolHandlers(services: LikeC4Services) {
       model = null
       logger.error(e)
     }
-    return Promise.resolve({
-      model: model ?? null
-    })
+    return Promise.resolve({model})
   })
 
   connection.onRequest(Rpc.rebuild, async cancelToken => {
@@ -37,22 +36,38 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   })
 
   connection.onRequest(Rpc.buildDocuments, async ({ docs }, cancelToken) => {
+    if (docs.length === 0) {
+      logger.debug(`Received empty request to rebuild`)
+      return
+    }
+    logger.debug(`Received request to rebuild: [
+      ${docs.join('\n      ')}
+    ]`)
     const changed = [] as URI[]
     for (const d of docs) {
       try {
-        const uri = d as unknown as URI
-        changed.push(uri)
-        if (!LangiumDocuments.hasDocument(uri)) {
-          logger.warn(`LangiumDocuments does not have document: ${uri.toString()}`)
+        const uri = URI.parse(d)
+        if (LangiumDocuments.hasDocument(uri)) {
+          changed.push(uri)
+        } else {
+          logger.warn(`LangiumDocuments does not have document: ${d}`)
           LangiumDocuments.getOrCreateDocument(uri)
         }
       } catch (e) {
         logger.error(e)
       }
     }
-    logger.debug(`Received request to rebuild: [
-      ${changed.map(d => d.toString()).join('\n      ')}
-    ]`)
+    if (changed.length !== docs.length) {
+      const all = LangiumDocuments.all.map(d => d.uri.toString()).toArray()
+      logger.warn(`
+We have in LangiumDocuments: [
+  ${all.join('\n  ')}
+]
+We rebuild: [
+  ${changed.join('\n  ')}
+]
+`.trim())
+    }
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })
 

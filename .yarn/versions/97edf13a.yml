@@ -1,0 +1,12 @@
+releases:
+  "@likec4/cli": minor
+  "@likec4/core": minor
+  "@likec4/diagrams": minor
+  "@likec4/docs-website": minor
+  "@likec4/example-bigbank": minor
+  "@likec4/generators": minor
+  "@likec4/language-server": minor
+  "@likec4/layouts": minor
+  "@likec4/vscode-preview": minor
+  likec4-vscode: minor
+  likec4-workspaces: minor

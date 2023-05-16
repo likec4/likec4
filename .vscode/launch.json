@@ -25,11 +25,12 @@
         "${workspaceFolder}/packages/*/dist/**/*.js"
       ],
       "args": [
+        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/bigbank",
       ],
       "skipFiles": [
-        "**/node_modules/**",
+        "${workspaceFolder}/node_modules/**",
         "**/vs/workbench/**",
         "<node_internals>/**"
       ],
@@ -42,6 +43,7 @@
       "debugWebWorkerHost": true,
       "request": "launch",
       "args": [
+        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples/bigbank",
@@ -51,7 +53,7 @@
         "${workspaceFolder}/packages/*/dist/**/*.js"
       ],
       "skipFiles": [
-        "**/node_modules/**",
+        "${workspaceFolder}/node_modules/**",
         "**/vs/workbench/**",
         "<node_internals>/**"
       ],

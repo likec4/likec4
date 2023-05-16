@@ -21,7 +21,6 @@ export class C4ModelImpl extends ADisposable {
   static inject = tokens(di.client, di.layout, di.logger)
   constructor(private client: LanguageClient, private layout: LayoutFn, protected logger: Logger) {
     super()
-    // this.modelListeners = this._register(new vscode.EventEmitter<void>())
     this._register(
       disponsable(() => {
         this.onDidChangeSubscription?.dispose()
@@ -52,7 +51,7 @@ export class C4ModelImpl extends ADisposable {
     .compose(debounce(200))
     .map(() =>
       this.fetchModel().replaceError(err => {
-        console.error(err)
+        this.logger.logError(err)
         return xs.empty()
       })
     )
@@ -74,7 +73,7 @@ export class C4ModelImpl extends ADisposable {
       .compose(dropRepeats<ComputedView>(equals))
       .map(view =>
         xs.fromPromise(this.layout(view)).replaceError(err => {
-          console.error(err)
+          this.logger.logError(err)
           return xs.empty()
         })
       )

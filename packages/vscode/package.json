@@ -1,8 +1,8 @@
 {
   "name": "likec4-vscode",
-  "version": "0.8.1",
+  "version": "0.8.3",
   "publisher": "likec4",
-  "displayName": "LikeC4 Architecture Modeling",
+  "displayName": "LikeC4",
   "description": "Support for the LikeC4 modeling language",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -70,8 +70,8 @@
       {
         "id": "likec4",
         "aliases": [
-          "Like C4",
-          "c4"
+          "LikeC4",
+          "Like C4"
         ],
         "extensions": [
           ".c4",
@@ -132,6 +132,9 @@
     ]
   },
   "activationEvents": [
+    "workspaceContains:**/*.c4",
+    "workspaceContains:**/*.likec4",
+    "workspaceContains:**/*.like-c4",
     "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],

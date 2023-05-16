@@ -13,7 +13,7 @@ import { computeDocumentFqn } from './fqn-computation'
 type FqnIndexedDocument = SetNonNullable<SetRequired<LikeC4LangiumDocument, 'c4fqns'>, 'c4fqns'>
 
 const isFqnIndexedDocument = (doc: LangiumDocument): doc is FqnIndexedDocument =>
-  isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.ComputedScopes && !isNil(doc.c4fqns)
+  isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
 
 export interface FqnIndexEntry {
   fqn: Fqn

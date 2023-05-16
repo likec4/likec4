@@ -22,6 +22,7 @@
   place-items: strech;
   will-change: transform;
   animation: fade 0.2s ease-in-out;
+  touch-action: pan-x pan-y pinch-zoom;
 }
 
 .diagram {

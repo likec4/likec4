@@ -106,7 +106,7 @@ export function Diagram({
     animate = interactive,
     width = diagram.width,
     height = diagram.height,
-    ...stageprops
+    ...rest
   } = diagramprops
 
   const id = diagram.id
@@ -134,7 +134,7 @@ export function Diagram({
         viewRect.width / centerTo.width,
         viewRect.height / centerTo.height
       ),
-      scale = clamp(0.2, 1, viewScale),
+      scale = clamp(0.1, 1, viewScale),
       // calculate the final adjustments needed to make
       // the shape centered in the view
       centeringAjustment = {
@@ -241,7 +241,7 @@ export function Diagram({
           y: (newCenter.y - stageProps.y.get()) / currentScale,
         }
 
-        const scale = clamp(0.1, 3, currentScale * (dist / lastDist))
+        const scale = clamp(0.1, 2, currentScale * (dist / lastDist))
 
         // calculate new position of the stage
         const dx = newCenter.x - lastCenter.x
@@ -303,8 +303,9 @@ export function Diagram({
         return
       }
       e.cancelBubble = true
+      e.evt.preventDefault()
 
-      const zoomStep = Math.abs(e.evt.deltaY) < 20 ? 1.03 : 1.15
+      const zoomStep = 1 + clamp(0.01, .2, Math.abs(e.evt.deltaY) / 120)
 
       let direction = e.evt.deltaY > 0 ? 1 : -1
 
@@ -325,7 +326,7 @@ export function Diagram({
 
       let newScale = direction > 0 ? oldScale * zoomStep : oldScale / zoomStep
 
-      newScale = clamp(0.1, 1.6, newScale)
+      newScale = clamp(0.1, 2, newScale)
 
       stageSpringApi.start({
         to: {
@@ -450,7 +451,7 @@ export function Diagram({
         }
       }}
       {...panning}
-      {...stageprops}
+      {...rest}
     >
       <Layer>
         {compoundTransitions((springs, node, { key }) => (

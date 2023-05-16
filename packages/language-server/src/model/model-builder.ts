@@ -4,17 +4,15 @@ import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
 import { A, O, flow, pipe } from '@mobily/ts-belt'
 import type { AstNode, LangiumDocuments } from 'langium'
-import { DocumentState, getDocument, interruptAndCheck } from 'langium'
+import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
-import { clone, isNil, mergeDeepRight, omit, reduce } from 'rambdax'
+import { clone, isNil, mergeDeepRight, reduce } from 'rambdax'
 import invariant from 'tiny-invariant'
 import type {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification} from '../ast';
-import {
-  toAutoLayout
+  ParsedAstSpecification
 } from '../ast'
 import {
   ElementViewOps,
@@ -25,6 +23,7 @@ import {
   isParsedLikeC4LangiumDocument,
   resolveRelationPoints,
   streamModel,
+  toAutoLayout,
   toElementStyle,
   type LikeC4LangiumDocument
 } from '../ast'
@@ -45,23 +44,22 @@ export class LikeC4ModelBuilder {
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      async (docs, cancelToken) => {
+      (docs, cancelToken) => {
         let countOfChangedDocs = 0
-        try {
-          for (const doc of docs) {
-            await interruptAndCheck(cancelToken)
-            try {
-              if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
-                countOfChangedDocs++
-              }
-            } catch (e) {
-              logger.warn(`Error parsing document ${doc.uri.toString()}`)
+        for (const doc of docs) {
+          if (cancelToken.isCancellationRequested) {
+            break
+          }
+          try {
+            if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
+              countOfChangedDocs++
             }
+          } catch (e) {
+            logger.warn(`Error parsing document ${doc.uri.toString()}`)
           }
-        } finally {
-          if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
-            await this.notifyClient()
-          }
+        }
+        if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
+          void this.notifyClient()
         }
       }
     )
@@ -78,8 +76,10 @@ export class LikeC4ModelBuilder {
   public buildModel(): c4.LikeC4Model | undefined {
     const docs = this.documents()
     if (docs.length === 0) {
+      logger.debug('No documents to build model from')
       return
     }
+    // TODO:
     try {
       const c4Specification = reduce(
         (acc: ParsedAstSpecification, doc) => mergeDeepRight(acc, doc.c4Specification),
@@ -97,17 +97,19 @@ export class LikeC4ModelBuilder {
       const toModelElement = (el: ParsedAstElement): c4.Element | null => {
         const kind = c4Specification.kinds[el.kind]
         if (kind) {
+          const { astPath, ...model } = el
           return {
             ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
             ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
-            ...omit(['astPath'], el)
+            ...model
           }
         }
         return null
       }
 
       const toModelRelation = (rel: ParsedAstRelation): c4.Relation => {
-        return omit(['astPath'], rel)
+        const { astPath, ...model } = rel
+        return model
       }
 
       const elements = pipe(
@@ -119,6 +121,7 @@ export class LikeC4ModelBuilder {
           if (!parent || parent in acc) {
             if (el.id in acc) {
               logger.warn(`Duplicate element id: ${el.id}`)
+              return acc
             }
             acc[el.id] = el
           }
@@ -137,20 +140,22 @@ export class LikeC4ModelBuilder {
         A.reduce({} as c4.LikeC4Model['relations'], (acc, el) => {
           if (el.id in acc) {
             logger.warn(`Duplicate relation id: ${el.id}`)
+            return acc
           }
           acc[el.id] = el
           return acc
         })
       )
       const toModelView = (view: ParsedAstElementView): c4.ElementView => {
-        let title = view.title
+        // eslint-disable-next-line prefer-const
+        let { astPath, rules, title, ...model } = view
         if (!title && view.viewOf) {
           title = elements[view.viewOf]?.title
         }
         return {
-          ...omit(['astPath', 'rules', 'title'], view),
+          ...model,
           ...(!!title ? { title } : {}),
-          rules: clone(view.rules)
+          rules: clone(rules)
         }
       }
 
@@ -165,6 +170,7 @@ export class LikeC4ModelBuilder {
         A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
           if (v.id in acc) {
             logger.warn(`Duplicate view id: ${v.id}`)
+            return acc
           }
           acc[v.id] = v
           return acc
@@ -410,7 +416,6 @@ export class LikeC4ModelBuilder {
     if (!connection) {
       return
     }
-    logger.debug('Send onDidChangeModel')
     await connection.sendNotification(Rpc.onDidChangeModel)
   }
 }

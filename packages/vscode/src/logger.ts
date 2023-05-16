@@ -1,11 +1,13 @@
-import { window } from "vscode";
+import type * as vscode from "vscode"
 
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR" | "NONE";
 
 export class Logger {
-  private outputChannel = window.createOutputChannel('LikeC4');
 
-  private logLevel: LogLevel = "INFO";
+  constructor(protected outputChannel: vscode.OutputChannel) {
+  }
+
+  protected logLevel: LogLevel = "DEBUG";
 
   public setOutputLevel(logLevel: LogLevel) {
     this.logLevel = logLevel;

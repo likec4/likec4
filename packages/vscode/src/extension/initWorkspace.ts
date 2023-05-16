@@ -1,41 +1,21 @@
-import { di, type LanguageClient, type Logger } from 'src/di'
-import { mapParallelAsyncWithLimit, delay } from 'rambdax'
-import { Rpc } from '../protocol'
-import * as vscode from 'vscode'
-import { Utils } from 'vscode-uri'
+import { delay } from 'rambdax'
+import { type LanguageClient, type Logger } from 'src/di'
 import { fileExtensions } from 'src/meta'
-
-const traversePath = async (folderPath: vscode.Uri): Promise<vscode.Uri[]> => {
-  const files = await vscode.workspace.fs.readDirectory(folderPath)
-  const docs = [] as vscode.Uri[]
-  const folders = [] as vscode.Uri[]
-  for (const [name, type] of files) {
-    const uri = Utils.joinPath(folderPath, name)
-    if (type === vscode.FileType.File && fileExtensions.some(ext => name.endsWith(ext))) {
-      docs.push(uri)
-    }
-    // TODO: add ignore patterns
-    if (type === vscode.FileType.Directory) {
-      folders.push(uri)
-    }
-  }
-  const fromsubfolder = await mapParallelAsyncWithLimit(traversePath, 4, folders)
-  return [...docs, ...fromsubfolder.flat()]
-}
-
-const collectDocsInWorkspaceVFs = async () => {
-  const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
-  const docs = await mapParallelAsyncWithLimit(traversePath, 1, folders)
-  return docs.flat()
-}
+import * as vscode from 'vscode'
+import { Rpc } from '../protocol'
 
 export async function initWorkspace(client: LanguageClient, logger: Logger) {
   // TODO: find a better way to wait for the workspace to be ready
-  await delay(500)
-  const docs = await collectDocsInWorkspaceVFs()
-  logger.logDebug('initWorkspace: [' + docs.join(', ') + ']')
-  for (const uri of docs) {
+  await delay(1000)
+  const c2pConverter = client.code2ProtocolConverter;
+  const extensions = fileExtensions.map(s => s.substring(1)).join(',')
+  const globPattern = `**/*.{${extensions}}`
+  const uris = await vscode.workspace.findFiles(globPattern)
+  const docs = uris.map(d => c2pConverter.asUri(d))
+  logger.logInfo(`initWorkspace with pattern "${globPattern}"\n  found: [\n  ${docs.join(',\n  ')}\n]`)
+  for (const uri of uris) {
     try {
+      logger.logDebug(`openTextDocument: ${uri}`)
       // Langium started with EmptyFileSystem
       // so we need to open all files to make them available
       await vscode.workspace.openTextDocument(uri)
@@ -43,9 +23,10 @@ export async function initWorkspace(client: LanguageClient, logger: Logger) {
       logger.logError(`${e}`, e)
     }
   }
-  await delay(1000)
-  const uris = docs.map(d => d.toString())
-  await client.sendRequest(Rpc.buildDocuments, { docs: uris })
-  return uris
+  logger.logDebug(`Waiting...`)
+  await delay(5000)
+
+  logger.logDebug(`Send request buildDocuments`)
+  await client.sendRequest(Rpc.buildDocuments, { docs })
+  return
 }
-initWorkspace.inject = [di.client] as const
