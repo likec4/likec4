@@ -13,7 +13,7 @@
   left: 0px;
   position: absolute;
   opacity: 0.2;
-  background: radial-gradient(circle, rgb(110 110 110) 0%, rgb(31 31 31) 100%);
+  /* background: radial-gradient(circle, rgb(110 110 110) 0%, rgb(31 31 31) 100%); */
 }
 .hero_ratio {
   aspect-ratio: 16/9;
