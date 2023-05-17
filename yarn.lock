@@ -793,7 +793,7 @@ __metadata:
     monaco-languageclient: 5.0.1
     next: ^13.4.1
     nextra: ^2.5.2
-    nextra-theme-docs: ^2.5.0
+    nextra-theme-docs: ^2.5.2
     postcss: ^8.4.23
     rambdax: ^9.1.1
     react: ^18.2.0
@@ -6643,9 +6643,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nextra-theme-docs@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "nextra-theme-docs@npm:2.5.0"
+"nextra-theme-docs@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "nextra-theme-docs@npm:2.5.2"
   dependencies:
     "@headlessui/react": ^1.7.10
     "@popperjs/core": ^2.11.6
@@ -6661,10 +6661,10 @@ __metadata:
     zod: ^3.20.2
   peerDependencies:
     next: ">=9.5.3"
-    nextra: 2.5.0
+    nextra: 2.5.2
     react: ">=16.13.1"
     react-dom: ">=16.13.1"
-  checksum: 0bc4a22dde4f88bdbd960fe8ea80dbafa1c057eedcd077ac7da5fa4dd1dfd15125517fe132f093cd03560a58d470bd81b7a4519801ece410b00b6a8c1b1fb9cf
+  checksum: 28868658845ddb73c6cf699bf95f3a7c45f5a36f53d7790ea9401ead2ece97b1b8ec03c8f112492a6054fdfeee19f4a8179ee383e3768bcf1f7890a23190230a
   languageName: node
   linkType: hard
 
