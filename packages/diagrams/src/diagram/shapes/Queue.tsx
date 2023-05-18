@@ -7,6 +7,7 @@ import type { NodeShapeProps } from './types'
 import React from 'react'
 
 export function QueueShape({
+  id,
   node,
   theme,
   springs,
@@ -32,6 +33,7 @@ export function QueueShape({
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <AnimatedGroup
+      id={id}
       {...springs}
       {...listeners}
     >

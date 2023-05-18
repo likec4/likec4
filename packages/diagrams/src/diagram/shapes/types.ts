@@ -25,6 +25,7 @@ export type InterporatedNodeSprings = SpringValues<Omit<NodeSprings, 'x' | 'y' |
 }
 
 export interface NodeShapeProps extends KonvaNodeEvents {
+  id?: string
   node: DiagramNode
   theme: DiagramTheme
   springs: InterporatedNodeSprings

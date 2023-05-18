@@ -6,6 +6,7 @@ import React from 'react'
 
 
 export function BrowserShape({
+  id,
   node,
   theme,
   springs,
@@ -28,6 +29,7 @@ export function BrowserShape({
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <AnimatedGroup
+      id={id}
       {...springs}
       {...listeners}
     >

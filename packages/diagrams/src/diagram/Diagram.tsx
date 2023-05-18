@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useMemo, useRef, useEffect, forwardRef } from 'react'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import { clamp, isNil } from 'rambdax'
 import { AnimatedStage, Layer, KonvaCore } from '../konva'
@@ -13,6 +13,8 @@ import type { OnDragEvent, OnNodeClick, OnPointerEvent, OnStageClick } from './s
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web/esm'
+import invariant from 'tiny-invariant'
 
 interface IRect {
   x: number
@@ -63,6 +65,17 @@ function getCenter(p1: Point, p2: Point): Point {
   }
 }
 
+export interface DiagramApi {
+  stage: Konva.Stage
+  toDataURL(config?: {
+    pixelRatio?: number
+    mimeType?: string;
+    quality?: number;
+  }): string
+  centerOnNode(node: DiagramNode): void
+  centerAndFit(): void
+}
+
 export interface DiagramProps extends
   Pick<
     React.HTMLAttributes<HTMLDivElement>,
@@ -90,7 +103,12 @@ export interface DiagramProps extends
 const isCompound = (node: DiagramNode) => node.children.length > 0
 const isNotCompound = (node: DiagramNode) => node.children.length == 0
 
-export function Diagram({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const notImplemented: any = () => {
+  throw new Error('Not implemented')
+}
+
+export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
   diagram,
   interactive = true,
   padding = 0,
@@ -99,7 +117,7 @@ export function Diagram({
   onEdgeClick,
   onStageClick,
   ...diagramprops
-}: DiagramProps) {
+}, ref) => {
   const {
     pannable = interactive,
     zoomable = interactive,
@@ -165,6 +183,42 @@ export function Diagram({
     from: initialStagePosition ?? centerAndFitDiagram()
   }))
 
+  const diagramApiRef = useRef<DiagramApi>({
+    stage: null as unknown as Konva.Stage,
+    toDataURL: notImplemented,
+    centerOnNode: notImplemented,
+    centerAndFit: centerAndFitDiagram
+  })
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  diagramApiRef.current.stage = stageRef.current!
+  diagramApiRef.current.centerAndFit = () => {
+    stageSpringApi.stop(true).start({
+      to: centerAndFitDiagram()
+    })
+  }
+  diagramApiRef.current.toDataURL = (config) => {
+    const stage = stageRef.current
+    invariant(stage, 'Stage not initialized')
+    return stage.toDataURL(config)
+  }
+
+  useIsomorphicLayoutEffect(() => {
+    if (!ref) {
+      return
+    }
+    const setRef = (refVal: DiagramApi | null) => {
+      if (typeof ref === 'function') {
+        ref(refVal)
+      } else {
+        ref.current = refVal
+      }
+    }
+    setRef(diagramApiRef.current)
+    return () => {
+      setRef(null)
+    }
+  }, [])
+
   useEffect(() => {
     const el = stageRef.current?.container()
     if (!el)
@@ -177,9 +231,7 @@ export function Diagram({
   }, [pannable, zoomable])
 
   useEffect(() => {
-    stageSpringApi.stop(true).start({
-      to: centerAndFitDiagram()
-    })
+    diagramApiRef.current.centerAndFit()
   }, [id, width, height, diagram.width, diagram.height])
 
   const panning = useMemo(() => {
@@ -457,6 +509,7 @@ export function Diagram({
         {compoundTransitions((springs, node, { key }) => (
           <CompoundShape
             key={key}
+            id={node.id}
             animate={animate}
             node={node}
             theme={theme}
@@ -493,6 +546,7 @@ export function Diagram({
           const Shape = nodeShape(node)
           return <Shape
             key={key}
+            id={key}
             node={node}
             theme={theme}
             springs={interpolateNodeSprings(springs)}
@@ -506,4 +560,4 @@ export function Diagram({
       </Layer>
     </AnimatedStage>
   )
-}
+})

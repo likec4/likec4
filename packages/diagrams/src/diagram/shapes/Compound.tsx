@@ -8,6 +8,7 @@ import type { InterporatedNodeSprings, OnNodeClick, OnPointerEvent } from './typ
 import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
+  id?: string
   animate?: boolean
   node: DiagramNode
   theme: DiagramTheme
@@ -16,6 +17,7 @@ interface CompoundProps {
 }
 
 export function CompoundShape({
+  id,
   node,
   theme,
   springs,
@@ -52,7 +54,7 @@ export function CompoundShape({
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return <AnimatedGroup {...springs}>
+  return <AnimatedGroup id={id} {...springs}>
     <AnimatedRect
       cornerRadius={4}
       shadowColor={colors.shadow}

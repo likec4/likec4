@@ -6,6 +6,7 @@ import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
 export function RectangleShape({
+  id,
   node,
   theme,
   springs,
@@ -28,6 +29,7 @@ export function RectangleShape({
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <AnimatedGroup
+      id={id}
       x={springs.x}
       y={springs.y}
       offsetX={springs.offsetX}

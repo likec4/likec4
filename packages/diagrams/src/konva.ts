@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Rect, Stage, Shape, Text, Group, Path, Circle, Line, Layer } from 'react-konva/es/ReactKonvaCore'
+import KonvaCore from 'konva/lib/Core'
 
 import 'konva/lib/shapes/Rect'
 import 'konva/lib/shapes/Text'
@@ -11,8 +12,6 @@ import { animated, type AnimatedProps } from '@react-spring/konva'
 
 import type Konva from 'konva'
 import type { KonvaNodeComponent, StageProps } from 'react-konva'
-
-import KonvaCore from 'konva/lib/Core'
 
 // by default Konva prevent some events when node is dragging
 // it improve the performance and work well for 95% of cases

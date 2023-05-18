@@ -7,7 +7,7 @@ export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
   relation: {
     lineColor: colors.neutral[400],
-    labelColor: colors.neutral[200],
+    labelColor: colors.neutral[300],
   },
   colors: {
     primary: {

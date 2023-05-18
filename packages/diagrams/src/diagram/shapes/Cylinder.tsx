@@ -25,6 +25,7 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
 }
 
 export function CylinderShape({
+  id,
   node,
   theme,
   springs,
@@ -49,6 +50,7 @@ export function CylinderShape({
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
     <AnimatedGroup
+      id={id}
       {...springs}
       {...listeners}
     >
