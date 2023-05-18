@@ -1,7 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`generate D2 - fakeComputedView 3 Levels 1`] = `
-"Amazon: {
+"direction: 
+
+Amazon: {
   label: "amazon"
 }
 Cloud: {
@@ -41,7 +43,9 @@ Customer -> Cloud.FrontendDashboard
 `;
 
 exports[`generate D2 - fakeDiagram 1`] = `
-"Amazon: {
+"direction: 
+
+Amazon: {
   label: "amazon"
 }
 Cloud: {
@@ -69,7 +73,9 @@ Customer -> Cloud.Frontend: opens
 `;
 
 exports[`generate D2 - fakeDiagram2 1`] = `
-"Client: {
+"direction: 
+
+Client: {
   label: "client"
 }
 SystemBackend: {

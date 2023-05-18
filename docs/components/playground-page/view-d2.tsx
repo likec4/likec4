@@ -1,7 +1,6 @@
 import { cn } from '$/lib'
 import type { DiagramView } from '@likec4/diagrams'
 import { generateD2 } from '@likec4/generators'
-import { CodeWindow } from '../CodeWindow'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
@@ -14,9 +13,15 @@ import useSWR from 'swr'
 const fetchFromKroki = async (d2: string) => {
   const res = await fetch('https://kroki.io/d2/svg', {
     method: 'POST',
-    body: d2,
+    body: JSON.stringify({
+      "diagram_source": d2,
+      "diagram_options": {
+        "theme": "colorblind-clear"
+      },
+      'output_format': "svg"
+    }),
     headers: {
-      'Content-Type': 'text/plain'
+      'Content-Type': 'application/json'
     }
   })
   return await res.text()
@@ -30,7 +35,10 @@ export default function PlaygroundViewD2({ diagram }: PlaygroundViewD2Props) {
   const [tab, setTab] = useState<'source' | 'render'>('source')
   const d2 = useMemo(() => generateD2(diagram), [diagram])
 
-  const { data } = useSWR(tab == 'render' ? d2 : null, fetchFromKroki)
+  const { data } = useSWR(tab == 'render' ? d2 : null, fetchFromKroki, {
+    revalidateIfStale: false,
+    keepPreviousData: true,
+  })
 
   return <div
     className={cn(

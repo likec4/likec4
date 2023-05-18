@@ -11,6 +11,15 @@ const nodeName = (node: ComputedNode): string => {
   return fqnName(node.parent ? node.id.slice(node.parent.length + 1) : node.id)
 }
 
+const d2direction = ({ autoLayout }: ComputedView) => {
+  switch (autoLayout) {
+    case "TB": { return "down" }
+    case "BT": { return "up" }
+    case "LR": { return "right" }
+    case "RL": { return "left" }
+  }
+}
+
 const d2shape = ({ shape }: ComputedNode) => {
   switch (shape) {
     case 'queue':
@@ -28,7 +37,8 @@ const d2shape = ({ shape }: ComputedNode) => {
   }
 }
 
-export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
+export function generateD2<V extends ComputedView>(view: V) {
+  const { nodes, edges } = view
   const names = new Map<NodeId, string>()
 
   const printNode = (node: ComputedNode, parentName?: string): CompositeGeneratorNode => {
@@ -70,6 +80,7 @@ export function generateD2<V extends ComputedView>({ nodes, edges }: V) {
 
   return toString(
     new CompositeGeneratorNode()
+      .append('direction: ', d2direction(view), NL, NL)
       .append(
         joinToNode(
           nodes.filter(n => isNil(n.parent)),
