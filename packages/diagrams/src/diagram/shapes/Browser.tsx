@@ -11,7 +11,7 @@ export function BrowserShape({
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) {
+}: NodeShapeProps): JSX.Element {
 
   const colors = theme.colors[node.color]
 

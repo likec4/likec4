@@ -22,7 +22,7 @@ export function EdgeShape({
   theme,
   springs,
   ...listeners
-}: EdgeShapeProps) {
+}: EdgeShapeProps): JSX.Element {
   const { points, headArrow, labels } = edge
   return <Fragment>
     {/* @ts-ignore */}
@@ -51,10 +51,10 @@ export function EdgeShape({
     )}
     {labels.map((label, i) => <AnimatedText
       key={i}
-      {...springs}
       {...listeners}
       x={label.pt[0]}
       y={label.pt[1] - (label.fontSize / 2)}
+      opacity={springs.opacity}
       // offsetY={label.fontSize / 2}
       // offsetY={label.fontSize / 2}
       // offsetX={label  .width / 2}
@@ -68,20 +68,5 @@ export function EdgeShape({
       perfectDrawEnabled={false}
       hitStrokeWidth={0} />
     )}
-      {/* {label && labelBox && (
-              <AnimatedText
-                {...springs}
-                {...listeners}
-                {...labelBox}
-                offsetX={labelBox.align === 'center' ? labelBox.width / 2 : 0}
-                text={label}
-                padding={0}
-                fill={theme.relation.labelColor}
-                fontFamily={theme.font}
-                fontSize={12}
-                lineHeight={1.15}
-                verticalAlign='middle'
-              />
-            )} */}
   </Fragment>
 }

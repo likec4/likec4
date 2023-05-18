@@ -30,7 +30,7 @@ export function CylinderShape({
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) {
+}: NodeShapeProps): JSX.Element {
   const {
     size: { width, height }, color, labels
   } = node

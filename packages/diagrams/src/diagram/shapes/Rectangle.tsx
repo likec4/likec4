@@ -11,7 +11,7 @@ export function RectangleShape({
   theme,
   springs,
   ...listeners
-}: NodeShapeProps) {
+}: NodeShapeProps): JSX.Element {
   const {
     color, labels
   } = node

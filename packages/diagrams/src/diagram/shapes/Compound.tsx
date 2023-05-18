@@ -22,7 +22,7 @@ export function CompoundShape({
   theme,
   springs,
   onNodeClick
-}: CompoundProps) {
+}: CompoundProps): JSX.Element {
   const { color, labels } = node
   const colors = theme.colors[color]
 
