@@ -10,7 +10,7 @@ export default mergeConfig(
       }
     },
     test: {
-      includeSource: ['src/__test__/parser-smoke/*.ts'],
+      includeSource: ['src/__test__/**/*.ts'],
       name: 'language-server'
     }
   })
