@@ -51,7 +51,8 @@ export const compareFqnHierarchically = (a: string, b: string) => {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   if (depthA === depthB) {
-    return a.localeCompare(b)
+    // return a.localeCompare(b)
+    return 0
   } else {
     return depthA - depthB
   }

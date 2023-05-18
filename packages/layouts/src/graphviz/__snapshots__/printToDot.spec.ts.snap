@@ -103,12 +103,12 @@ exports[`printToDot: computedCloud3levels 1`] = `
     margin = "0.4,0.3";
   ];
   "nd1" [
-    id = "support";
-    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
-  ];
-  "nd2" [
     id = "customer";
     label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+  ];
+  "nd2" [
+    id = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
   "nd9" [
     id = "amazon";
@@ -121,12 +121,12 @@ exports[`printToDot: computedCloud3levels 1`] = `
     label = <<B>CLOUD</B>>;
     margin = 30;
     "nd4" [
-      id = "cloud.frontend.dashboard";
-      label = <<FONT point-size="13.5">Customer Dashboard Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The customer dashboard is a webapp that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>allows customers to view their data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
-    ];
-    "nd5" [
       id = "cloud.frontend.adminPanel";
       label = <<FONT point-size="13.5">Admin Panel Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The admin panel is a webapp that allows<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>support staff to manage customer data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    ];
+    "nd5" [
+      id = "cloud.frontend.dashboard";
+      label = <<FONT point-size="13.5">Customer Dashboard Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">The customer dashboard is a webapp that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>allows customers to view their data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
     subgraph "cluster_6" {
       id = "cloud.backend";
@@ -145,14 +145,18 @@ exports[`printToDot: computedCloud3levels 1`] = `
     }
   }
   "nd4" -> "nd7" [
+    id = "cloud.frontend.adminPanel:cloud.backend.graphql";
+    label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
+  ];
+  "nd5" -> "nd7" [
     id = "cloud.frontend.dashboard:cloud.backend.graphql";
     label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
-  "nd5" -> "nd7" [
-    id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-    label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
-    nojustify = true;
+  "nd7" -> "nd8" [
+    id = "cloud.backend.graphql:cloud.backend.storage";
+    minlen = 0;
   ];
   "nd8" -> "nd9" [
     id = "cloud.backend.storage:amazon";
@@ -160,18 +164,14 @@ exports[`printToDot: computedCloud3levels 1`] = `
     nojustify = true;
   ];
   "nd1" -> "nd5" [
-    id = "support:cloud.frontend.adminPanel";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
-    nojustify = true;
-  ];
-  "nd2" -> "nd4" [
     id = "customer:cloud.frontend.dashboard";
     label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
-  "nd7" -> "nd8" [
-    id = "cloud.backend.graphql:cloud.backend.storage";
-    minlen = 0;
+  "nd2" -> "nd4" [
+    id = "support:cloud.frontend.adminPanel";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    nojustify = true;
   ];
 }"
 `;
@@ -213,12 +213,12 @@ exports[`printToDot: computedCloudView 1`] = `
     margin = "0.4,0.3";
   ];
   "nd1" [
-    id = "support";
-    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
-  ];
-  "nd2" [
     id = "customer";
     label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+  ];
+  "nd2" [
+    id = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
   "nd6" [
     id = "amazon";
@@ -241,7 +241,7 @@ exports[`printToDot: computedCloudView 1`] = `
   }
   "nd4" -> "nd5" [
     id = "cloud.frontend:cloud.backend";
-    label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
     minlen = 0;
   ];
@@ -251,13 +251,13 @@ exports[`printToDot: computedCloudView 1`] = `
     nojustify = true;
   ];
   "nd1" -> "nd4" [
-    id = "support:cloud.frontend";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    id = "customer:cloud.frontend";
+    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
   "nd2" -> "nd4" [
-    id = "customer:cloud.frontend";
-    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    id = "support:cloud.frontend";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
 }"
@@ -300,12 +300,12 @@ exports[`printToDot: computedIndexView 1`] = `
     margin = "0.4,0.3";
   ];
   "nd1" [
-    id = "support";
-    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
-  ];
-  "nd2" [
     id = "customer";
     label = <<FONT point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+  ];
+  "nd2" [
+    id = "support";
+    label = <<FONT point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
   "nd3" [
     id = "cloud";
@@ -315,19 +315,19 @@ exports[`printToDot: computedIndexView 1`] = `
     id = "amazon";
     label = <<FONT point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
   ];
-  "nd1" -> "nd3" [
-    id = "support:cloud";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+  "nd3" -> "nd4" [
+    id = "cloud:amazon";
+    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
-  "nd2" -> "nd3" [
+  "nd1" -> "nd3" [
     id = "customer:cloud";
     label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
-  "nd3" -> "nd4" [
-    id = "cloud:amazon";
-    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+  "nd2" -> "nd3" [
+    id = "support:cloud";
+    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
     nojustify = true;
   ];
 }"

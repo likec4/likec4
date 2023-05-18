@@ -22,9 +22,19 @@ test('index view', () => {
     fakeModel()
   )
 
-  expect(nodes.map(n => n.id)).toEqual(['support', 'customer', 'cloud', 'amazon'])
+  expect(nodes.map(n => n.id)).toEqual([
+    'customer',
+    'support',
+    'cloud',
+    'amazon'
+  ])
 
-  expect(edges.map(e => e.id)).toEqual(['support:cloud', 'customer:cloud', 'cloud:amazon'])
+
+  expect(edges.map(e => e.id)).toEqual([
+    'cloud:amazon',
+    'customer:cloud',
+    'support:cloud'
+  ])
 })
 
 test('view of cloud', () => {
@@ -49,8 +59,8 @@ test('view of cloud', () => {
   const { nodes, edges } = view
 
   expect(nodes.map(n => n.id)).toEqual([
-    'support',
     'customer',
+    'support',
     'cloud',
     'cloud.frontend',
     'cloud.backend',
@@ -60,8 +70,8 @@ test('view of cloud', () => {
   expect(edges.map(e => e.id)).toEqual([
     'cloud.frontend:cloud.backend',
     'cloud.backend:amazon',
+    'customer:cloud.frontend',
     'support:cloud.frontend',
-    'customer:cloud.frontend'
   ])
 
   expect(view).toMatchSnapshot()
@@ -98,11 +108,11 @@ test('view with 3 levels', () => {
   )
 
   expect(view.nodes.map(n => n.id)).toEqual([
-    'support',
     'customer',
+    'support',
     'cloud',
-    'cloud.frontend.dashboard',
     'cloud.frontend.adminPanel',
+    'cloud.frontend.dashboard',
     'cloud.backend',
     'cloud.backend.graphql',
     'cloud.backend.storage',

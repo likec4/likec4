@@ -9,8 +9,8 @@ exports[`view of cloud 1`] = `
       "label": null,
       "parent": "cloud",
       "relations": [
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
         "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "source": "cloud.frontend",
       "target": "cloud.backend",
@@ -26,16 +26,6 @@ exports[`view of cloud 1`] = `
       "target": "amazon",
     },
     {
-      "id": "support:cloud.frontend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend",
-    },
-    {
       "id": "customer:cloud.frontend",
       "label": null,
       "parent": null,
@@ -45,17 +35,19 @@ exports[`view of cloud 1`] = `
       "source": "customer",
       "target": "cloud.frontend",
     },
+    {
+      "id": "support:cloud.frontend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
   ],
   "id": "cloud",
   "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "id": "support",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "support",
-    },
     {
       "children": [],
       "color": "primary",
@@ -63,6 +55,14 @@ exports[`view of cloud 1`] = `
       "parent": null,
       "shape": "rectangle",
       "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "support",
     },
     {
       "children": [
@@ -121,16 +121,6 @@ exports[`view with 3 levels 1`] = `
   "autoLayout": "TB",
   "edges": [
     {
-      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
-      "label": null,
-      "parent": "cloud",
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.dashboard",
-      "target": "cloud.backend.graphql",
-    },
-    {
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": null,
       "parent": "cloud",
@@ -141,14 +131,14 @@ exports[`view with 3 levels 1`] = `
       "target": "cloud.backend.graphql",
     },
     {
-      "id": "cloud.backend.storage:amazon",
+      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": null,
-      "parent": null,
+      "parent": "cloud",
       "relations": [
-        "cloud.backend.storage:amazon.s3",
+        "cloud.frontend.dashboard:cloud.backend.graphql",
       ],
-      "source": "cloud.backend.storage",
-      "target": "amazon",
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend.graphql",
     },
     {
       "id": "cloud.backend.graphql:cloud.backend.storage",
@@ -161,14 +151,14 @@ exports[`view with 3 levels 1`] = `
       "target": "cloud.backend.storage",
     },
     {
-      "id": "support:cloud.frontend.adminPanel",
+      "id": "cloud.backend.storage:amazon",
       "label": null,
       "parent": null,
       "relations": [
-        "support:cloud.frontend.adminPanel",
+        "cloud.backend.storage:amazon.s3",
       ],
-      "source": "support",
-      "target": "cloud.frontend.adminPanel",
+      "source": "cloud.backend.storage",
+      "target": "amazon",
     },
     {
       "id": "customer:cloud.frontend.dashboard",
@@ -180,17 +170,19 @@ exports[`view with 3 levels 1`] = `
       "source": "customer",
       "target": "cloud.frontend.dashboard",
     },
+    {
+      "id": "support:cloud.frontend.adminPanel",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
+    },
   ],
   "id": "cloud3levels",
   "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "id": "support",
-      "parent": null,
-      "shape": "rectangle",
-      "title": "support",
-    },
     {
       "children": [],
       "color": "primary",
@@ -200,9 +192,17 @@ exports[`view with 3 levels 1`] = `
       "title": "customer",
     },
     {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "support",
+    },
+    {
       "children": [
-        "cloud.frontend.dashboard",
         "cloud.frontend.adminPanel",
+        "cloud.frontend.dashboard",
         "cloud.backend",
       ],
       "color": "primary",
@@ -215,18 +215,18 @@ exports[`view with 3 levels 1`] = `
     {
       "children": [],
       "color": "primary",
-      "id": "cloud.frontend.dashboard",
-      "parent": "cloud",
-      "shape": "rectangle",
-      "title": "dashboard",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "id": "cloud.frontend.adminPanel",
       "parent": "cloud",
       "shape": "rectangle",
       "title": "adminPanel",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.dashboard",
+      "parent": "cloud",
+      "shape": "rectangle",
+      "title": "dashboard",
     },
     {
       "children": [

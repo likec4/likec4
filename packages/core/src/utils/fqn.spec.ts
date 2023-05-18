@@ -48,9 +48,17 @@ describe('compareFqnHierarchically', () => {
     ])
   })
 
-  it('should compare hierarchically 2', () => {
+  it('should preserve initial order', () => {
     expect(
-      ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.b', 'a.c'].sort(compareFqnHierarchically)
-    ).toEqual(['a', 'aa', 'aaa', 'a.b', 'a.c', 'aa.b', 'aaa.c'])
+      ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically)
+    ).toEqual([
+      "aaa",
+      "aa",
+      "a",
+      "aaa.c",
+      "aa.b",
+      "a.c",
+      "a.b"
+    ])
   })
 })
