@@ -71,7 +71,8 @@ function startLanguageClient() {
   if (!languageClient) {
     console.debug('create likec4 language client')
     const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
-      name: 'likec4-language-worker'
+      name: 'likec4-language-worker',
+      type: 'module'
     })
 
     window?.addEventListener('beforeunload', () => {

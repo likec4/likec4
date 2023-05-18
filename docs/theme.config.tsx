@@ -3,9 +3,18 @@ import type { DocsThemeConfig } from 'nextra-theme-docs'
 import { useConfig } from 'nextra-theme-docs'
 import { Logo } from '$/components/logo'
 import { useRouter } from 'next/router'
+import { cn } from './lib'
+
+const logo = (
+  <span className={cn(
+    'inline-block h-[30px] pr-4'
+  )}>
+    <Logo className='w-auto h-full'/>
+  </span>
+)
 
 const config: DocsThemeConfig = {
-  logo: <Logo height={30} textFill='#FFF' />,
+  logo,
   darkMode: true,
   primaryHue: 195,
   sidebar: {
