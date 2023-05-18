@@ -22,7 +22,13 @@ export function CodeWindow({ children, className, ...props}: CodeBlockProps) {
           </div>
           {/* <div className="h-px bg-gradient-to-r from-sky-300/0 via-sky-300/20 to-sky-300/0" /> */}
         </div>
-        <div className="relative min-h-0 flex-auto flex flex-col">{children}</div>
+        <div className="relative flex-auto flex">
+          <div className="absolute inset-0 overflow-auto">
+            <div className="min-w-min min-h-min">
+            {children}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

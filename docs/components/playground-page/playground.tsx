@@ -1,5 +1,3 @@
-import MonacoEditor from './editor/monaco'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '$/components/ui/dropdown-menu'
 import { cn } from '$/lib'
 import { Diagram, type DiagramPaddings } from '@likec4/diagrams'
@@ -9,8 +7,10 @@ import {
   enableBodyScroll
 } from "body-scroll-lock-upgrade"
 import { ChevronDown } from 'lucide-react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import { revealInEditor, setDiagramFromViewId, updateFile, useDiagramStore, useFilesStore, useViewsStore } from './data'
+import MonacoEditor from './editor/monaco'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
@@ -57,7 +57,7 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
   }
 
   return <>
-    {viewMode === 'diagram' && (
+    {viewMode === 'diagram' && <>
       <Diagram
         className={styles.diagram}
         diagram={diagram}
@@ -79,7 +79,19 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
             return
           }
         }}
-      />)}
+      />
+      {/*
+      <div
+        className={cn(
+          'absolute top-[50px] right-8'
+        )}
+      >
+        <Button size="sm" variant="ghost">
+          <ArrowDownToLineIcon className={"mr-2 w-4 h-4"} />
+          <span>PNG</span>
+        </Button>
+      </div> */}
+    </>}
     {viewMode !== 'diagram' && (
       <div
         className={cn(styles.diagram, 'pt-12', 'flex')}
@@ -124,21 +136,21 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
         >{diagram.title}</h2>
       </div>
       <div className='flex-initial flex-shrink-0'>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className='rounded-sm'>
-                {ViewModes[viewMode]}
-                <ChevronDown className='ml-2 w-4'/>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuRadioGroup value={viewMode} onValueChange={v => setViewMode(v as ViewMode)}>
-                <DropdownMenuRadioItem value="diagram">{ViewModes.diagram}</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="d2">{ViewModes.d2}</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dot">{ViewModes.dot}</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className='rounded-sm'>
+              {ViewModes[viewMode]}
+              <ChevronDown className='ml-2 w-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuRadioGroup value={viewMode} onValueChange={v => setViewMode(v as ViewMode)}>
+              <DropdownMenuRadioItem value="diagram">{ViewModes.diagram}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="d2">{ViewModes.d2}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="dot">{ViewModes.dot}</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div >
   </>
