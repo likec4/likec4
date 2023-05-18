@@ -1,0 +1,120 @@
+model {
+
+  extend amazon.rds {
+    aurora = component 'Aurora' {
+      #db
+      style {
+        shape storage
+        color secondary
+      }
+
+      tblUsers = table 'Users Table' {
+        #next
+        description '
+          Table with registered users.
+          Contains references to Identity provider.
+        '
+        style {
+          shape storage
+          color secondary
+        }
+      }
+    }
+  }
+
+  extend cloud.next {
+
+    backend = app 'Backend V2' {
+      description 'The next version of backend'
+    }
+
+    graphql = component 'GraphQL' {
+      #next
+      description '
+        GraphQL API for the backend
+        Uses Apollo Server
+      '
+
+      gqlQuery myAccount {
+        description '
+          Returns the account of the authenticated user
+        '
+
+        -> backend 'reads'
+      }
+      gqlMutation updateAccount {
+        description '
+          If requested by customer, updates only its own account
+          Support user updates any account
+        '
+
+        -> backend 'writes'
+      }
+    }
+
+    backend -> aurora.tblUsers 'reads/writes'
+    backend -> cloud.legacy.backend.services 'calls legacy'
+
+    events = component 'Events Manager' {
+      -> amazon.queue1 'writes'
+    }
+
+    backend -> events "emits"
+  }
+
+}
+
+views {
+
+  view rds of amazon.rds {
+    include
+      *,
+      pg.*,
+      aurora.*,
+      cloud.next.* -> amazon.rds,
+      cloud.legacy.* -> amazon.rds,
+      cloud,
+      cloud.next,
+      cloud.legacy
+
+    style * {
+      color: muted
+    }
+    style cloud.* {
+      color: primary
+    }
+    style amazon.rds.* {
+      color: secondary
+    }
+  }
+
+  view nextbackend of backend {
+    include
+      *,
+      cloud,
+      cloud.*
+    exclude
+      cloud.ui,
+      cloud.supportUser
+
+    style * {
+      color muted
+    }
+
+    style backend {
+      color primary
+    }
+  }
+
+  view graphql of graphql {
+    include *, cloud.next
+
+    style * {
+      color muted
+    }
+
+    style graphql, graphql.* {
+      color primary
+    }
+  }
+}

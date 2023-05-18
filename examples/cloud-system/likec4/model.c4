@@ -1,0 +1,56 @@
+model {
+
+  customer = actor 'Cloud System Customer' {
+    description 'The regular customer of the system'
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = container 'Frontends' {
+      description 'All the frontend applications of the cloud system'
+      style {
+        shape browser
+      }
+    }
+
+    legacy = container 'Cloud Legacy' {
+      description '
+        The legacy version of our SaaS
+        MVP as was presented to the first customers
+      '
+    }
+
+    next = container 'Cloud Next' {
+      description 'Cloud Next is the next version of our cloud systems'
+    }
+
+    supportUser = actor 'Support User' {
+      description '
+        A user from the support team
+        Has limited access to the system
+      '
+
+      -> customer 'helps with questions'
+    }
+  }
+
+}
+views {
+
+  view index {
+    title "Landscape"
+    include
+      *,
+      cloud.*
+  }
+
+  view customer of customer {
+    include *
+  }
+
+}

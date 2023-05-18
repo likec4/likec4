@@ -1,0 +1,46 @@
+views {
+
+  view cloud of cloud {
+    title "The Cloud System"
+
+    include
+      *,
+      ui.*,
+      next.*,
+      legacy.*
+    exclude
+      supportUser,
+      ui.supportPanel,
+      next -> legacy
+    include
+      cloud.* -> amazon.*,
+      amazon
+    exclude
+      amazon -> *
+
+    style * {
+      color muted
+    }
+
+    style cloud, cloud.* {
+      color primary
+    }
+  }
+
+  view next of cloud.next {
+    include *
+    include cloud
+    exclude amazon.* -> cloud
+    exclude cloud.next.backend -> amazon.*
+
+
+    style * {
+      color muted
+    }
+
+    style cloud.next, cloud.next.* {
+      color primary
+    }
+  }
+
+}

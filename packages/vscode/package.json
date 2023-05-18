@@ -63,7 +63,10 @@
     "theme": "dark"
   },
   "capabilities": {
-    "virtualWorkspaces": true
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
   },
   "contributes": {
     "languages": [

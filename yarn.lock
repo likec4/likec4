@@ -817,9 +817,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/example-bigbank@workspace:examples/bigbank":
+"@likec4/example-cloud-system@workspace:examples/cloud-system":
   version: 0.0.0-use.local
-  resolution: "@likec4/example-bigbank@workspace:examples/bigbank"
+  resolution: "@likec4/example-cloud-system@workspace:examples/cloud-system"
   dependencies:
     "@likec4/cli": "workspace:*"
     "@likec4/diagrams": "workspace:*"

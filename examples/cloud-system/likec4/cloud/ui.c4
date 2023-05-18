@@ -1,0 +1,83 @@
+model {
+
+  extend cloud.ui {
+
+    dashboard = app {
+      title 'Customer Dashboard'
+      description 'Nextjs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+    }
+
+    dashboard -> cloud.graphql.myAccount "fetches via GraphQL"
+    dashboard -> cloud.graphql.updateAccount "mutates via GraphQL"
+
+    dashboard -> cloud.legacy.services "fetches via REST"
+
+    supportPanel = app {
+      title 'Support Panel'
+      description 'Retoool Application'
+      style {
+        shape browser
+      }
+      -> cloud.next.graphql "updates data in case of a support request"
+      -> amazon.aurora.tblUsers "reads users from the database"
+    }
+
+  }
+
+  customer -> dashboard "opens in the browser"
+  cloud.supportUser -> supportPanel "accesses via browser with encrypted VPN connection"
+
+}
+
+views {
+
+  view ui of cloud.ui {
+    include *
+    include cloud
+
+    style * {
+      color muted
+    }
+    style customer, cloud.supportUser {
+      color secondary
+    }
+    style cloud.ui, cloud.ui.* {
+      color primary
+    }
+  }
+
+  view dashboard of dashboard {
+    include *
+    exclude * -> dashboard
+    include cloud.ui
+
+    style * {
+      color muted
+    }
+
+    style cloud.ui, cloud.ui.* {
+      color primary
+    }
+  }
+
+  view supportPanel of supportPanel {
+    include
+      *,
+      cloud.ui,
+      cloud,
+      supportPanel -> *,
+      amazon.aurora
+
+    style cloud, cloud.* {
+      color muted
+    }
+
+    style cloud.ui, cloud.ui.* {
+      color primary
+    }
+  }
+
+}
