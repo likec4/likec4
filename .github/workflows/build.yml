@@ -1,24 +1,12 @@
 name: build
 
-on:
-  push:
-    branches:
-      - main
-      - develop
-
-  pull_request:
-    branches:
-      - main
-      - develop
+on: [push]
 
 jobs:
   build:
     name: build and test
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
 
     steps:
       - name: Check out code
