@@ -23,7 +23,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "tilg": "^0.1.1",
     "typescript": "^5.0.4",
-    "vite": "^4.3.3"
+    "vite": "^4.3.8"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
