@@ -29,6 +29,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      # Clear yarn cache if protected branch and yarn.lock has changed
+      - if: steps.yarn-cache.outputs.cache-hit != 'true' && github.ref_protected == true
+        name: Clear yarn cache
+        run: yarn cache clean --all
+
       - name: Install dependencies
         run: yarn install --immutable
 
