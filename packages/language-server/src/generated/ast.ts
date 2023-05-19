@@ -58,10 +58,10 @@ export function isName(item: unknown): item is Name {
     return isElementShape(item) || isThemeColor(item) || item === 'element' || item === 'model' || (typeof item === 'string' && (/((([^\W\d_])|(_))((([^\W\d_])|([0-9]))|(_))*)/.test(item)));
 }
 
-export type ThemeColor = 'muted' | 'primary' | 'secondary';
+export type ThemeColor = 'amber' | 'blue' | 'gray' | 'green' | 'indigo' | 'muted' | 'primary' | 'red' | 'secondary' | 'sky' | 'slate';
 
 export function isThemeColor(item: unknown): item is ThemeColor {
-    return item === 'primary' || item === 'secondary' || item === 'muted';
+    return item === 'primary' || item === 'secondary' || item === 'muted' || item === 'slate' || item === 'blue' || item === 'indigo' || item === 'sky' || item === 'red' || item === 'gray' || item === 'green' || item === 'amber';
 }
 
 export type View = ElementView;

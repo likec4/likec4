@@ -31,6 +31,20 @@ specification {
   }
 }
 `
+export const valid_01_Specification_StyleColor = `
+specification {
+  element green {
+    style {
+      color green
+    }
+  }
+  element red {
+    style {
+      color red
+    }
+  }
+}
+`
 // export const invalid_01_Specification_BuiltinElementKind = `
 // specification {
 //   element element {

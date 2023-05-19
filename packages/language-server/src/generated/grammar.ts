@@ -2061,6 +2061,38 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           {
             "$type": "Keyword",
             "value": "muted"
+          },
+          {
+            "$type": "Keyword",
+            "value": "slate"
+          },
+          {
+            "$type": "Keyword",
+            "value": "blue"
+          },
+          {
+            "$type": "Keyword",
+            "value": "indigo"
+          },
+          {
+            "$type": "Keyword",
+            "value": "sky"
+          },
+          {
+            "$type": "Keyword",
+            "value": "red"
+          },
+          {
+            "$type": "Keyword",
+            "value": "gray"
+          },
+          {
+            "$type": "Keyword",
+            "value": "green"
+          },
+          {
+            "$type": "Keyword",
+            "value": "amber"
           }
         ]
       },

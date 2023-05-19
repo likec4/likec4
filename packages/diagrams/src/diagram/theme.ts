@@ -1,7 +1,31 @@
 import colors from 'tailwindcss/colors'
-import type { DiagramTheme } from './types'
+import type { DiagramTheme, ThemeColors } from './types'
 
 const shadow = '#0a0a0a'
+
+const blue: ThemeColors  = {
+  shadow,
+  fill: colors.blue[500],
+  stroke: colors.blue[600],
+  hiContrast: colors.blue[50],
+  loContrast: colors.blue[100],
+} satisfies ThemeColors
+
+const sky  = {
+  shadow,
+  fill: colors.sky[600],
+  stroke: colors.sky[700],
+  hiContrast: colors.sky[50],
+  loContrast: colors.sky[100],
+} satisfies ThemeColors
+
+const slate = {
+  shadow,
+  fill: colors.slate[500],
+  stroke: colors.slate[600],
+  hiContrast: colors.slate[50],
+  loContrast: colors.slate[200],
+} satisfies ThemeColors
 
 export const DefaultDiagramTheme: DiagramTheme = {
   font: 'Helvetica',
@@ -10,42 +34,46 @@ export const DefaultDiagramTheme: DiagramTheme = {
     labelColor: colors.neutral[300],
   },
   colors: {
-    primary: {
+    primary: blue,
+    blue,
+    secondary: sky,
+    sky,
+    muted: slate,
+    slate,
+    gray: {
       shadow,
-      // fill: '#2563eb',
-      // stroke: darken('#2563eb', 11),
-      // stroke: '#1e40af',
-      fill: colors.blue[500],
-      stroke: colors.blue[600],
-      hiContrast: colors.blue[50],
-      loContrast: colors.blue[100],
+      fill: colors.neutral[500],
+      stroke: colors.neutral[600],
+      hiContrast: colors.neutral[50],
+      loContrast: colors.neutral[200],
     },
-    // secondary: mkThemeColors('#5373E7'),
-    // secondary: {
-    //   shadow,
-    //   fill: '#4338ca',
-    //   stroke: '#312e81',
-    //   hiContrast: '#eef2ff',
-    //   loContrast: '#a5b4fc'
-    // },
-    secondary: {
+    red: {
       shadow,
-      // fill: '#0369a1',
-      // // stroke: '#0c4a6e',
-      // stroke: darken('#0369a1', 10),
-      // hiContrast: '#f0f9ff',
-      // loContrast: '#bae6fd'
-      fill: colors.sky[600],
-      stroke: colors.sky[700],
-      hiContrast: colors.sky[50],
-      loContrast: colors.sky[100],
+      fill: colors.red[500],
+      stroke: colors.red[600],
+      hiContrast: colors.red[50],
+      loContrast: colors.red[200],
     },
-    muted: {
+    green: {
       shadow,
-      fill: colors.slate[500],
-      stroke: colors.slate[600],
-      hiContrast: colors.slate[50],
-      loContrast: colors.slate[200],
+      fill: colors.green[600],
+      stroke: colors.green[700],
+      hiContrast: colors.green[50],
+      loContrast: colors.green[200],
+    },
+    amber: {
+      shadow,
+      fill: colors.amber[600],
+      stroke: colors.amber[700],
+      hiContrast: colors.amber[50],
+      loContrast: colors.amber[200],
+    },
+    indigo: {
+      shadow,
+      fill: colors.indigo[500],
+      stroke: colors.indigo[600],
+      hiContrast: colors.indigo[50],
+      loContrast: colors.indigo[200],
     }
   }
 }
