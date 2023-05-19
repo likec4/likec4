@@ -1,7 +1,261 @@
-import { Callout } from "nextra-theme-docs"
+import {  Steps, Callout } from 'nextra-theme-docs'
 
 # Getting Started
 
-<Callout emoji="🚧">
-  Docs are still very much a work in progress!
+The three pillars:
+
+- `specification` - what can be defined in an architecture model
+- `model` - architecture elements, hierarchy and relationships
+- `views` - visual "projections" of the model from different perspectives
+
+Any change in the model is reflected everywhere automatically.   
+Rename elements, update descriptions, mark as deprecated or add/remove relationships -  and all views are updated automatically.
+
+Various ways to play and learn the tool:
+- Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
+- Online [playground](/playground/)
+- With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4) 
+- With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4) 
+
+Be sure you agree and install the recommended extension if you pick last two options.
+
+
+## Getting Started Example
+
+<Steps>
+
+### Tailor your model
+
+We start with defining the kinds we want to use in our model.  
+For now we want only two - `actor` and `system`
+
+```likec4 showLineNumbers filename="demo.c4" 
+specification {
+  element actor
+  element system
+}
+```
+
+### Define base model
+
+We work on a system and hope to have customers.
+
+```likec4 showLineNumbers filename="demo.c4" 
+specification {
+  element actor
+  element system
+}
+
+model {
+  customer = actor 'Customer'
+  saas = system 'Our SaaS'
+}
+```
+
+### Add system components
+
+Assume the system has two main componets - `ui` and `backend`.  
+We add new element kind - `component` and update the model.
+
+```likec4 showLineNumbers {4,10-11}  filename="demo.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer'
+  saas = system 'Our SaaS' {
+    component ui
+    component backend
+  }
+}
+```
+
+### Relationships
+
+We have at least these relationships in our architecture:
+
+```likec4 showLineNumbers {13,14,16,17} filename="demo.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer'
+  saas = system 'Our SaaS' {
+    component ui 
+    component backend
+
+    // UI requests data from the Backend
+    ui -> backend
+
+    // Customer uses the UI
+    customer -> ui 'opens in browser'
+  }
+}
+```
+
+### First view
+
+View is a projection, a slice of the model defined by predicates (what to include/exclude).   
+
+```likec4 showLineNumbers copy {23-25} filename="demo.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer'
+  saas = system 'Our SaaS' {
+    component ui 
+    component backend
+
+    // UI requests data from the Backend
+    ui -> backend
+
+    // Customer uses the UI
+    customer -> ui 'opens in browser'
+  }
+}
+
+views {
+
+  view index {    
+    include *
+  }
+
+}
+```
+
+In this case we look at the whole model from the top.  
+We got this:
+
+![](/getting-started/01.png)
+
+<Callout type="info">
+  **Why there is a relationship?**
+
+  The relationships are implied from the model, for example,
+  `customer -> saas` is implied, because
+  the `customer` has relationship with nested `saas.ui` element   
+  
+  But we can exclude by predicate:  
+  `exclude * -> saas` - all the incoming to the `saas` relationships
 </Callout>
+
+You can copy the source and paste to the [playground](/playground/)
+
+### Add more views
+
+View may have a root element (`view of ...`) and it is used as initial scope/predicate
+
+```likec4 showLineNumbers copy {27-29} filename="demo.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer'
+  saas = system 'Our SaaS' {
+    component ui 
+    component backend
+
+    // UI requests data from the Backend
+    ui -> backend
+
+    // Customer uses the UI
+    customer -> ui 'opens in browser'
+  }
+}
+
+views {
+
+  view index {
+    include *
+  }
+
+  view of saas {    
+    include *
+  }  
+
+}
+```
+
+Imagine, we zoom-in and expand the `saas` element, look at nested elements and their relationships:
+
+![](/getting-started/02.png)
+
+### Enrich the model
+
+Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
+
+```likec4 showLineNumbers {9,13-24,27,43-45} copy filename="demo.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'The regular customer of the system'
+  }
+
+  saas = system 'Our SaaS' {
+    component ui 'Frontend' {
+      description 'Nextjs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+    }
+    component backend 'Backend Services' {
+      description '
+        Implements business logic
+        and exposes as REST API
+      '
+    }
+
+    // UI requests data from the Backend
+    ui -> backend 'fetches via HTTPS'
+
+    // Customer uses the UI
+    customer -> ui 'opens in browser'
+  }
+}
+
+views {
+
+  view index {
+    include *
+  }
+
+  view of saas {    
+    include *
+
+    style customer {
+      color muted
+    }
+  }  
+
+}
+```
+
+The `saas` view now looks like this:
+
+![](/getting-started/03.png)
+
+And if we change any element/relationship - the change will be reflected everywhere.   
+No more outdated diagrams
+
+
+Copy the source, paste it to the [playground](/playground/) and try it yourself.
+
+</Steps>

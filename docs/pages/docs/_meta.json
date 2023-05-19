@@ -1,6 +1,9 @@
 {
   "index": {
-    "title": "Getting Started"
+    "title": "Getting Started",
+    "theme": {
+      "toc": false
+      }
   },
   "dsl": {
     "title": "LikeC4 Language"
