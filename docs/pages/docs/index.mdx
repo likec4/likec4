@@ -1,4 +1,4 @@
-import {  Steps, Callout } from 'nextra-theme-docs'
+import { Card, Cards, Steps, Callout } from 'nextra-theme-docs'
 
 # Getting Started
 
@@ -9,20 +9,18 @@ That means you can keep your architecture model in the repository, review change
 
 The three pillars:
 
-- `specification` - you are free to go beyond C4 layers and define your own element kinds, like `app`, `microservice` and so on
-- `model` - architecture elements, hierarchies, conmpositions and relationships
-- `views` - visual "projections" of the model from different perspectives (by filtering with predicates)
+- `specification` - you are free to go beyond C4 layers and define your own element kinds, like **app**, **microservice**, **grapqlMutation**, wantever you need
+- `model` - architecture elements, hierarchies, compositions and relationships
+- `views` - visual "projections" of the model from different perspectives (by predicates)
 
-Any change in the model is reflected everywhere automatically.   
-Rename elements, update descriptions, mark as deprecated or add/remove relationships -  and all views are updated automatically.
+Any change in the model automatically reflected - rename elements, update descriptions, mark as deprecated or add/remove relationships -  and all views are updated automatically.
 
 Various ways to play and learn the tool:
 - Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 - Online [playground](/playground/)
-- With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4) 
-- With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4) 
+- With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4) (install recommended extension)
+- With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4) (install recommended extension)
 
-Be sure you agree and install the recommended extension if you pick last two options.
 
 ## Tutorial
 
@@ -31,7 +29,7 @@ Be sure you agree and install the recommended extension if you pick last two opt
 ### Tailor your model
 
 We start with defining the kinds we want to use in our model.  
-For now we want only two - `actor` and `system`
+For now we need only two - `actor` and `system`
 
 ```likec4 showLineNumbers filename="getting-started.c4" 
 specification {
@@ -58,8 +56,8 @@ model {
 
 ### Add nested elements
 
-Assume the system has two main components - `ui` and `backend`.  
-We add new element kind - `component` and update the model.
+Assume our system has two main components - `ui` and `backend`.  
+We add new kind to the specification - `component` and update the model.
 
 ```likec4 showLineNumbers {4,10-11}  filename="getting-started.c4" 
 specification {
@@ -81,7 +79,7 @@ model {
 
 We have at least these relationships:
 
-```likec4 showLineNumbers {13,14,16,17} filename="getting-started.c4" 
+```likec4 showLineNumbers {13,14,17-18} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -96,10 +94,10 @@ model {
 
     // UI requests data from the Backend
     ui -> backend
-
-    // Customer uses the UI
-    customer -> ui 'opens in browser'
   }
+
+  // Customer uses the UI
+  customer -> ui 'opens in browser'
 }
 ```
 
@@ -152,7 +150,8 @@ We got this:
 
 ### Add more views
 
-View may have a root element (`view of ...`) as initial scope
+View may have a root element `view of ...` as initial scope.  
+Then predicate `include *` is applied to the root element and includes nested elements.
 
 ```likec4 showLineNumbers copy {27-29} filename="getting-started.c4" 
 specification {
@@ -188,7 +187,7 @@ views {
 }
 ```
 
-Imagine, we zoom-in and expand the `saas` element, look at nested elements and their relationships:
+Imagine, we zoom-in and expand the `saas` element, we see nested elements and their relationships:
 
 ![saas view](/getting-started/02.png)
 
@@ -224,10 +223,10 @@ model {
 
     // UI requests data from the Backend
     ui -> backend 'fetches via HTTPS'
-
-    // Customer uses the UI
-    customer -> ui 'opens in browser'
   }
+
+  // Customer uses the UI
+  customer -> ui 'opens in browser'
 }
 
 views {

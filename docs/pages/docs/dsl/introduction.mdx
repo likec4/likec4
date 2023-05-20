@@ -1,0 +1,72 @@
+---
+title: LikeC4 DSL Introduction
+---
+
+import { Callout, FileTree } from 'nextra-theme-docs'
+
+# LikeC4 Language Introduction
+
+LikeC4 is a DSL for describing software architecture.  
+
+It might look like [Structurizr DSL](https://github.com/structurizr/dsl), though it is not
+fully compatible.
+
+LikeC4 removes boundaries and gives more expressive freedom to the user,
+makes it easier to write with IDE support and exports to other formats
+or even generates React components to embed and explore the architecture.  
+[Check example](/examples/bigbank/landscape/) 
+
+The source files should have `.likec4` or `.c4` extension.  
+LikeC4 looks for all source files and **merges into a single model**, use are free to organize your files as you wish:
+
+Example:
+
+<FileTree>
+  <FileTree.Folder name="backend" open>
+    <FileTree.Folder name="service1" open>
+      <FileTree.File name="model.c4" />
+      <FileTree.File name="views.c4" />
+    </FileTree.Folder>
+    <FileTree.Folder name="service2" open>
+      <FileTree.File name="model.c4" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+  <FileTree.Folder name="externals" open>
+    <FileTree.File name="amazon.c4" />
+  </FileTree.Folder>
+  <FileTree.File name="landscape.c4" />
+  <FileTree.File name="specs.c4" />  
+</FileTree>
+
+## Top level statements
+
+- `specification` - define your own element kinds, like **app**, **microservice**, **grapqlMutation**, wantever you need
+- `model` - architecture elements, hierarchies, compositions and relationships
+- `views` - visual "projections" of the model from different perspectives (by predicates)
+
+
+```likec4
+specification {
+  //...
+}
+
+model {
+  //...  
+}
+
+views {
+  //...
+}
+```
+
+It is not allowed to change the order or have multiple statements of the same kind.  
+
+```likec4
+model {
+}
+
+// ⛔️ not allowed to have multiple statements
+model {}
+```
+
+But it is allowed to skip any of them, so you can have only `model` or only `views` or only `specification` or any combination of them.

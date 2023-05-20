@@ -31,10 +31,10 @@ model {
 
     // UI requests data from the Backend
     ui -> backend 'fetches via HTTPS'
-
-    // Customer uses the UI
-    customer -> ui 'opens in browser'
   }
+
+  // Customer uses the UI
+  customer -> ui 'opens in browser'
 }
 
 views {

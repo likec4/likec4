@@ -4,6 +4,9 @@ export const BigBankPlayground = {
   current: 'file:///bigbank.c4' as const,
   files: {
     'file:///bigbank.c4': `
+// The original C4 model
+// https://structurizr.com/dsl?example=big-bank-plc
+
 specification {
 
   element enterprise

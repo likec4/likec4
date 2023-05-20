@@ -7,6 +7,6 @@ export const prefix = "/docs/dsl"
 
 <Cards>
   {Object.entries(meta).map(([key, page]) => (
-    <Card key={key} title={page.title} href={`${prefix}/${key}/`} arrow />
+    <Card key={key} title={page.title} href={`${prefix}/${key}/`}/>
   ))}
 </Cards>

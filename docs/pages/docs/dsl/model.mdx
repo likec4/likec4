@@ -3,13 +3,12 @@ import { Tab, Tabs } from 'nextra-theme-docs'
 
 # Model
 
-Specification, elements and relations are defined in the model.  
+Specification, elements and relations describe the architecture model.
 
 ## Specification
 
-The block `specification` defines the elements types that can be used in a model.  
-The style can be overridden for the whole element type.
-
+The `specification` statement defines the elements kinds that can be used in a model.  
+Also it can define the default `shape` and/or `color` for the elements of this kind.  
 Example:
 
 ```likec4
@@ -20,14 +19,14 @@ specification {
 
   element user {
     style {
-      // available shapes:
-      //  - rectangle (default)
-      //  - cylinder
-      //  - storage (same as cylinder)
-      //  - person
-      //  - queue
-      //  - browser
       shape person
+    }
+  }
+
+  element frontendApp {
+    style {
+      shape browser
+      color amber
     }
   }
 
@@ -37,14 +36,9 @@ specification {
   element microservice
   element queue
   element graphqlMutation
-
   element database {
     style {
-      shape storage      
-      // available colors:
-      //  - primary (default)
-      //  - secondary
-      //  - muted
+      shape storage
       color secondary
     }
   }
@@ -104,7 +98,7 @@ Element definition:
 
 Name is a valid identifier, it can contain letters, digits and underscore, but can't start with a digit.
 
-| example        | |
+| identifier        | |
 | :------------ | :--------- |
 | api | ✅ |
 | _api | ✅ |
