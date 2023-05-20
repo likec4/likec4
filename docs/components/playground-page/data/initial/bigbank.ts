@@ -1,7 +1,7 @@
-import type { FilesStore } from '../files'
+import type { FilesStore } from '../atoms'
 
 export const BigBankPlayground = {
-  current: 'file:///bigbank.c4',
+  current: 'file:///bigbank.c4' as const,
   files: {
     'file:///bigbank.c4': `
 specification {

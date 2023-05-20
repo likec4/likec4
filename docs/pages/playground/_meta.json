@@ -1,0 +1,26 @@
+{
+  "index": {
+    "title": "BigBank",
+    "theme": {
+      "layout": "raw",
+      "timestamp": false,
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
+    }
+  },
+  "getting-started": {
+    "title": "Getting Started",
+    "theme": {
+      "layout": "raw",
+      "timestamp": false,
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
+    }
+  }
+}

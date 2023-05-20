@@ -9,8 +9,7 @@ const Playground = dynamic(
 )
 // import Playground from './playground'
 
-
-export default function PlaygroundPage() {
+export function PlaygroundBigbank() {
   return <div style={{
     position: 'fixed',
     top: 'var(--nextra-navbar-height)',
@@ -18,6 +17,18 @@ export default function PlaygroundPage() {
     left: 0,
     right: 0
   }}>
-    <Playground />
+    <Playground variant={'bigbank'}/>
+  </div>
+}
+
+export function PlaygroundGettingStarted() {
+  return <div style={{
+    position: 'fixed',
+    top: 'var(--nextra-navbar-height)',
+    bottom: 0,
+    left: 0,
+    right: 0
+  }}>
+    <Playground variant={'getting-started'}/>
   </div>
 }

@@ -2,11 +2,16 @@ import {  Steps, Callout } from 'nextra-theme-docs'
 
 # Getting Started
 
+LikeC4 inherits the ideas of [C4 Model](https://c4model.com/) and [Structurizr DSL](https://structurizr.com/).
+
+Based on "software architecture as code" approach, it allows to define architecture model in a text file and automaticallty generate various views from it.  
+That means you can keep your architecture model in the repository, review changes, track history and compare generated views.
+
 The three pillars:
 
-- `specification` - what can be defined in an architecture model
-- `model` - architecture elements, hierarchy and relationships
-- `views` - visual "projections" of the model from different perspectives
+- `specification` - you are free to go beyond C4 layers and define your own element kinds, like `app`, `microservice` and so on
+- `model` - architecture elements, hierarchies, conmpositions and relationships
+- `views` - visual "projections" of the model from different perspectives (by filtering with predicates)
 
 Any change in the model is reflected everywhere automatically.   
 Rename elements, update descriptions, mark as deprecated or add/remove relationships -  and all views are updated automatically.
@@ -19,8 +24,7 @@ Various ways to play and learn the tool:
 
 Be sure you agree and install the recommended extension if you pick last two options.
 
-
-## Getting Started Example
+## Tutorial
 
 <Steps>
 
@@ -29,7 +33,7 @@ Be sure you agree and install the recommended extension if you pick last two opt
 We start with defining the kinds we want to use in our model.  
 For now we want only two - `actor` and `system`
 
-```likec4 showLineNumbers filename="demo.c4" 
+```likec4 showLineNumbers filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -38,9 +42,9 @@ specification {
 
 ### Define base model
 
-We work on a system and hope to have customers.
+Start with top-level elements
 
-```likec4 showLineNumbers filename="demo.c4" 
+```likec4 showLineNumbers filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -52,12 +56,12 @@ model {
 }
 ```
 
-### Add system components
+### Add nested elements
 
-Assume the system has two main componets - `ui` and `backend`.  
+Assume the system has two main components - `ui` and `backend`.  
 We add new element kind - `component` and update the model.
 
-```likec4 showLineNumbers {4,10-11}  filename="demo.c4" 
+```likec4 showLineNumbers {4,10-11}  filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -75,9 +79,9 @@ model {
 
 ### Relationships
 
-We have at least these relationships in our architecture:
+We have at least these relationships:
 
-```likec4 showLineNumbers {13,14,16,17} filename="demo.c4" 
+```likec4 showLineNumbers {13,14,16,17} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -99,11 +103,12 @@ model {
 }
 ```
 
-### First view
+### Landscape view
 
-View is a projection, a slice of the model defined by predicates (what to include/exclude).   
+View is a projection, a slice of the model defined by predicates (what to include/exclude).  
+Let's add the Landscape view, i.e bird's eye view of the architecture.
 
-```likec4 showLineNumbers copy {23-25} filename="demo.c4" 
+```likec4 showLineNumbers copy {23-25} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -133,29 +138,23 @@ views {
 }
 ```
 
-In this case we look at the whole model from the top.  
 We got this:
 
-![](/getting-started/01.png)
+![landscape view](/getting-started/01.png)
 
 <Callout type="info">
   **Why there is a relationship?**
 
-  The relationships are implied from the model, for example,
-  `customer -> saas` is implied, because
-  the `customer` has relationship with nested `saas.ui` element   
-  
-  But we can exclude by predicate:  
-  `exclude * -> saas` - all the incoming to the `saas` relationships
+  The relationships are implied from the model.  
+  `customer -> saas` is implied, because `customer` has the relationship with nested `saas.ui` element.  
+  All "implied" relationships are merged together.
 </Callout>
-
-You can copy the source and paste to the [playground](/playground/)
 
 ### Add more views
 
-View may have a root element (`view of ...`) and it is used as initial scope/predicate
+View may have a root element (`view of ...`) as initial scope
 
-```likec4 showLineNumbers copy {27-29} filename="demo.c4" 
+```likec4 showLineNumbers copy {27-29} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -191,13 +190,13 @@ views {
 
 Imagine, we zoom-in and expand the `saas` element, look at nested elements and their relationships:
 
-![](/getting-started/02.png)
+![saas view](/getting-started/02.png)
 
 ### Enrich the model
 
 Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
 
-```likec4 showLineNumbers {9,13-24,27,43-45} copy filename="demo.c4" 
+```likec4 showLineNumbers {9,13-24,27,43-45} copy filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -248,14 +247,16 @@ views {
 }
 ```
 
-The `saas` view now looks like this:
+The `saas` view after changes:
 
-![](/getting-started/03.png)
+![saas view after changes](/getting-started/03.png)
 
 And if we change any element/relationship - the change will be reflected everywhere.   
 No more outdated diagrams
 
 
-Copy the source, paste it to the [playground](/playground/) and try it yourself.
+<Cards>
+  <Card title="Open in playground" href={`/playground/getting-started/`} arrow/>
+</Cards>
 
 </Steps>

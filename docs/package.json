@@ -23,6 +23,7 @@
     "shadcn-ui": "yarn dlx shadcn-ui -- "
   },
   "dependencies": {
+    "@emotion/react": "^11.11.0",
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -35,6 +36,8 @@
     "body-scroll-lock-upgrade": "^1.0.3",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "jotai": "^2.1.0",
+    "jotai-devtools": "^0.5.3",
     "langium": "^1.2.0",
     "lucide-react": "^0.206.0",
     "monaco-editor": "0.36.1",
@@ -57,11 +60,11 @@
     "vscode-languageserver-protocol": "3.17.3",
     "vscode-oniguruma": "1.7.0",
     "vscode-textmate": "^9.0.0",
-    "vscode-uri": "~3.0.7",
-    "zustand": "^4.3.8"
+    "vscode-uri": "~3.0.7"
   },
   "devDependencies": {
     "@likec4/cli": "workspace:*",
+    "@swc-jotai/debug-label": "^0.0.10",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
@@ -74,6 +77,6 @@
   },
   "volta": {
     "node": "18.16.0",
-    "yarn": "2.4.3"
+    "yarn": "1.22.19"
   }
 }

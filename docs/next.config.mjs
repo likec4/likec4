@@ -38,12 +38,8 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   trailingSlash: true,
-  // productionBrowserSourceMaps: true,
   experimental: {
-    // appDir: false,
-    // appDir: false
-    // appDir: false
-    // esmExternals: true
+    swcPlugins: [['@swc-jotai/debug-label', {}]],
   },
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
@@ -65,6 +61,7 @@ export default withNextra({
   },
   output: 'export',
   transpilePackages: [
+    'jotai-devtools',
     'monaco-editor',
     'monaco-languageclient',
     '@likec4/language-server'

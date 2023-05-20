@@ -27,7 +27,7 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/bigbank",
+        "${workspaceFolder}/examples/cloud-system/likec4",
       ],
       "skipFiles": [
         "${workspaceFolder}/node_modules/**",
@@ -46,7 +46,7 @@
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/examples/bigbank",
+        "${workspaceFolder}/examples/cloud-system/likec4",
       ],
       "sourceMaps": true,
       "outFiles": [

@@ -1,27 +1,29 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import 'monaco-editor/esm/vs/editor/edcore.main.js'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 
 import { StandaloneServices } from 'vscode/services'
 // import getModelEditorServiceOverride from 'vscode/service-override/modelEditor'
-import getNotificationServiceOverride from 'vscode/service-override/notifications'
 import getDialogServiceOverride from 'vscode/service-override/dialogs'
+import getNotificationServiceOverride from 'vscode/service-override/notifications'
 // import getTokenClassificationServiceOverride from 'vscode/service-override/tokenClassification'
 
-import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
+import { Editor, loader, type Monaco } from "@monaco-editor/react"
 import { MonacoLanguageClient } from 'monaco-languageclient'
-import { Editor, loader, type Monaco  } from "@monaco-editor/react"
+import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
 
-import { useEffect, useRef } from 'react'
-import { once, toPairs } from 'rambdax'
 import { Fira_Code } from 'next/font/google'
+import { once, toPairs } from 'rambdax'
+import { useCallback, useEffect, useRef } from 'react'
 
-import likec4Monarch from './likec4.monarch'
-import { useLikeC4DataSyncEffect } from './likec4-data-sync'
 import type { ViewID } from '@likec4/core'
-import { setDiagramFromViewId } from '../data'
+import { useUnmountEffect } from '@react-hookz/web/esm'
+import { useSetAtom } from 'jotai'
+import { diagramIdAtom } from '../data/atoms'
 import { useRevealRequestsHandler } from './editor-state-handler'
+import { useLikeC4DataSync } from './likec4-data-sync'
+import likec4Monarch from './likec4.monarch'
 
 self.MonacoEnvironment = {
   getWorker(_, _label) {
@@ -54,7 +56,7 @@ StandaloneServices.initialize({
   //   // }
   //   // // const editorModel = editor.getModel() ?? null
   //   // // if (!editorModel || editorModel.uri.toString() !== model.uri.toString()) {
-  //   // //   changeCurrentDocument(model.uri.toString())
+  //  // //   changeCurrentDocument(model.uri.toString())
   //   // // }
   //   return Promise.resolve(undefined)
   // })
@@ -65,56 +67,88 @@ loader.config({ monaco })
 export const languageId = 'likec4'
 const themeId = 'likec4PlaygroundTheme'
 
-let languageClient: MonacoLanguageClient | null = null
+function useLikeC4LanguageClient() {
+  const workerRef = useRef<Worker | null>(null)
+  const languageClientRef = useRef<MonacoLanguageClient | null>(null)
 
-function startLanguageClient() {
-  if (!languageClient) {
-    console.debug('create likec4 language client')
-    const worker = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
-      name: 'likec4-language-worker',
-      type: 'module'
-    })
+  useUnmountEffect(() => {
+    const languageClient = languageClientRef.current
+    if (languageClient) {
+      // switch (languageClient.state) {
+      //   case State.Starting:   // Starting
+      //   case State.Running: { // Running
+      //     void languageClient.stop(5000).then(
+      //       () => languageClient.dispose(5000)
+      //     )
+      //     break
+      //   }
+      //   case State.Stopped: { // Stopped
+      //     void languageClient.dispose(5000)
+      //     break
+      //   }
+      // }
 
-    window?.addEventListener('beforeunload', () => {
-      worker.terminate()
-    })
+      languageClientRef.current = null
+    }
+    if (workerRef.current) {
+      console.log('Stop worker')
+      workerRef.current.terminate()
+      workerRef.current = null
+    }
+  })
 
-    const reader = new BrowserMessageReader(worker)
-    const writer = new BrowserMessageWriter(worker)
+  const startLanguageClient = useCallback(() => {
+    if (!languageClientRef.current) {
+      console.debug('create likec4 language client')
+      const worker = workerRef.current = new Worker(new URL('./likec4-language-server.worker', import.meta.url), {
+        name: 'likec4-language-worker',
+        type: 'module'
+      })
 
-    languageClient = new MonacoLanguageClient({
-      name: 'LikeC4 Language Client',
-      clientOptions: {
-        // use a language id as a document selector
-        documentSelector: [languageId],
-        // disable the default error handler
-        errorHandler: {
-          error: () => ({ action: ErrorAction.Continue }),
-          closed: () => ({ action: CloseAction.DoNotRestart })
+      // window?.addEventListener('beforeunload', () => {
+      //   worker.terminate()
+      // })
+
+      const reader = new BrowserMessageReader(worker)
+      const writer = new BrowserMessageWriter(worker)
+
+      const languageClient = languageClientRef.current = new MonacoLanguageClient({
+        name: 'LikeC4 Language Client',
+        clientOptions: {
+          // use a language id as a document selector
+          documentSelector: [languageId],
+          // disable the default error handler
+          errorHandler: {
+            error: () => ({ action: ErrorAction.Continue }),
+            closed: () => ({ action: CloseAction.DoNotRestart })
+          }
+        },
+        // create a language client connection from the JSON RPC connection on demand
+        connectionProvider: {
+          get: () => {
+            return Promise.resolve({ reader, writer })
+          }
         }
-      },
-      // create a language client connection from the JSON RPC connection on demand
-      connectionProvider: {
-        get: () => {
-          return Promise.resolve({ reader, writer })
-        }
-      }
-    })
+      })
+
+      void languageClient.start().then(
+        () => {
+          console.info('languageClient.started')
+        },
+        err => {
+          console.error('languageClient.start failed', err)
+        },
+      )
+      return languageClient
+    }
+    return languageClientRef.current
+  }, [])
+
+
+  return {
+    languageClientRef,
+    startLanguageClient
   }
-
-  if (languageClient.needsStart()) {
-    languageClient.start().then(
-      () => {
-        console.info('languageClient.started')
-      },
-      err => {
-        console.error('languageClient.start', err)
-      },
-    )
-  }
-
-
-  return languageClient
 }
 
 const loadMonacoModels = (monaco: Monaco, files: Record<string, string>) => {
@@ -221,21 +255,30 @@ const setup = once((monaco: Monaco) => {
 
 interface MonacoEditorProps {
   currentFile: string
-  initiateFiles: () => Record<string, string>
+  initialFiles: Record<string, string>
   onChange: (value: string) => void
 }
 
 export default function MonacoEditor({
   currentFile,
-  initiateFiles,
+  initialFiles,
   onChange,
   // onSwitchView,
   // onChangeViews
 }: MonacoEditorProps) {
 
+  console.log(`Render MonacoEditor`)
+
   const monacoRef = useRef<Monaco | null>(null)
 
-  useLikeC4DataSyncEffect(startLanguageClient)
+  const setDiagramFromViewId = useSetAtom(diagramIdAtom)
+
+  const {
+    languageClientRef,
+    startLanguageClient
+  } = useLikeC4LanguageClient()
+
+  const startDataSync = useLikeC4DataSync()
 
   const editor = monacoRef.current?.editor ?? null
 
@@ -253,7 +296,11 @@ export default function MonacoEditor({
     }
   }, [editor])
 
-  useRevealRequestsHandler(monacoRef, startLanguageClient)
+  useRevealRequestsHandler(monacoRef, languageClientRef)
+
+  useUnmountEffect(() => {
+    editor?.getModels().forEach(model => model.dispose())
+  })
 
   return <Editor
     options={{
@@ -288,12 +335,12 @@ export default function MonacoEditor({
     onChange={update => {
       onChange(update ?? '')
     }}
-    keepCurrentModel
     beforeMount={monaco => {
       monacoRef.current = monaco
       setup(monaco)
-      loadMonacoModels(monaco, initiateFiles())
-      void startLanguageClient()
+      loadMonacoModels(monaco, initialFiles)
+      const client = startLanguageClient()
+      startDataSync(client)
     }}
     // onMount={(_editor, monaco) => {
 

@@ -1,10 +1,15 @@
+import type { ComputedView } from '@likec4/core'
+import { useUnmountEffect } from '@react-hookz/web/esm'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
+import { useCallback, useRef } from 'react'
+import { useUpdateViews } from '../data/atom-hooks'
 import { Rpc } from './protocol'
-import { useEffect } from 'react'
-import { updateViewsStore } from '../data'
 
-function syncLikeC4Data(languageClient: MonacoLanguageClient) {
+function syncLikeC4Data(
+  languageClient: MonacoLanguageClient,
+  updateViews: (nextViews: Record<string, ComputedView>) => void
+) {
 
   let tokenSource: monaco.CancellationTokenSource | undefined
 
@@ -24,7 +29,7 @@ function syncLikeC4Data(languageClient: MonacoLanguageClient) {
         console.warn(`${tag}: empty model`)
         return
       }
-      updateViewsStore(model.views)
+      updateViews(model.views)
     } catch (error) {
       console.error(`${tag}: error`, error)
     } finally {
@@ -54,5 +59,17 @@ function syncLikeC4Data(languageClient: MonacoLanguageClient) {
   }
 }
 
-export const useLikeC4DataSyncEffect = (languageClient: () => MonacoLanguageClient) =>
-  useEffect(() => syncLikeC4Data(languageClient()), [])
+export const useLikeC4DataSync = () => {
+  const updateViews = useUpdateViews()
+  const syncLikeC4DataRef = useRef<null | (() => void)>(null)
+
+  useUnmountEffect(() => {
+    syncLikeC4DataRef.current?.()
+    syncLikeC4DataRef.current = null
+  })
+
+  return useCallback((languageClient: MonacoLanguageClient) => {
+    syncLikeC4DataRef.current?.()
+    syncLikeC4DataRef.current = syncLikeC4Data(languageClient, updateViews)
+  }, [updateViews])
+}

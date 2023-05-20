@@ -1,14 +1,19 @@
 import { type Monaco } from "@monaco-editor/react"
+import { useStore } from 'jotai'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-import { delay, equals, isNil } from 'rambdax'
-import type { Location } from 'vscode-languageclient'
-import { switchToFile, useEditorState } from '../data'
-import { type EditorRevealRequest } from '../data/editor-state'
-import type { RefObject} from 'react';
+import { delay, isNil } from 'rambdax'
+import type { RefObject } from 'react'
 import { useEffect } from 'react'
+import type { Location } from 'vscode-languageclient'
+import { currentFileAtom, editorRevealRequestAtom } from '../data'
+import { type EditorRevealRequest } from '../data'
 import { Rpc } from './protocol'
 
-function listenRevealRequests(monacoRef: RefObject<Monaco>, languageClient: MonacoLanguageClient) {
+function processRevealRequests(
+  switchToFile: (uri: string) => void,
+  monacoRef: RefObject<Monaco>,
+  languageClientRef: RefObject<MonacoLanguageClient>
+) {
 
   async function goToLocation(location: Location) {
     const monaco = monacoRef.current
@@ -39,7 +44,7 @@ function listenRevealRequests(monacoRef: RefObject<Monaco>, languageClient: Mona
     editor.focus()
   }
 
-  async function requestLocation(revealRequest: EditorRevealRequest) {
+  async function requestLocation(languageClient: MonacoLanguageClient, revealRequest: EditorRevealRequest) {
     if ('element' in revealRequest) {
       return await languageClient.sendRequest(Rpc.locateElement, { element: revealRequest.element })
     }
@@ -52,29 +57,50 @@ function listenRevealRequests(monacoRef: RefObject<Monaco>, languageClient: Mona
     throw new Error('Unknown reveal request')
   }
 
-  async function process(revealRequest: EditorRevealRequest) {
-    const location = await requestLocation(revealRequest)
+  return async (revealRequest: EditorRevealRequest) => {
+    const languageClient = languageClientRef.current
+    if (!languageClient) return
+    const location = await requestLocation(languageClient, revealRequest)
     if (location) {
       await goToLocation(location)
     }
   }
 
-  let previousRequest: unknown | null = null
-  return useEditorState.subscribe(({revealRequest}) => {
-    if (isNil(revealRequest) || Object.is(revealRequest, previousRequest)) {
-      previousRequest = revealRequest
-      return
-    }
-    previousRequest = revealRequest
-    process(revealRequest).catch(e => {
-      console.error('revealRequest error', e)
-    })
-  })
+  // let previousRequest: unknown | null = null
+  // return useEditorState.subscribe(({revealRequest}) => {
+  //   if (isNil(revealRequest) || Object.is(revealRequest, previousRequest)) {
+  //     previousRequest = revealRequest
+  //     return
+  //   }
+  //   previousRequest = revealRequest
+  //   process(revealRequest).catch(e => {
+  //     console.error('revealRequest error', e)
+  //   })
+  // })
 }
 
 export const useRevealRequestsHandler = (
   monacoRef: RefObject<Monaco>,
-  languageClient: () => MonacoLanguageClient
+  languageClientRef: RefObject<MonacoLanguageClient>
 ) => {
-  useEffect(() => listenRevealRequests(monacoRef, languageClient()), [])
+  const store = useStore()
+  useEffect(() => {
+    const process = processRevealRequests(
+      (uri: string) => store.set(currentFileAtom, uri),
+      monacoRef,
+      languageClientRef
+    )
+    let previousRequest: unknown | null = null
+    return store.sub(editorRevealRequestAtom, () => {
+      const revealRequest = store.get(editorRevealRequestAtom)
+      if (isNil(revealRequest) || Object.is(revealRequest, previousRequest)) {
+        previousRequest = revealRequest
+        return
+      }
+      previousRequest = revealRequest
+      process(revealRequest).catch(e => {
+        console.error('revealRequest error', e)
+      })
+    })
+  }, [])
 }

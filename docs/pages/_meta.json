@@ -1,6 +1,6 @@
 {
   "index": {
-    "title": "Introduction",
+    "title": "LikeC4 - Architecture-as-a-code",
     "type": "page",
     "display": "hidden",
     "theme": {
@@ -19,16 +19,7 @@
   },
   "playground": {
     "title": "Playground",
-    "type": "page",
-    "theme": {
-      "layout": "raw",
-      "timestamp": false,
-      "breadcrumb": false,
-      "footer": false,
-      "sidebar": false,
-      "toc": false,
-      "pagination": false
-    }
+    "type": "page"
   },
   "examples": {
     "title": "Examples",

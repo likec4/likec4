@@ -6,10 +6,14 @@ import {
   disableBodyScroll,
   enableBodyScroll
 } from "body-scroll-lock-upgrade"
+import { useAtom, useAtomValue } from 'jotai'
 import { ChevronDown } from 'lucide-react'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button } from '../ui/button'
-import { revealInEditor, setDiagramFromViewId, updateFile, useDiagramStore, useFilesStore, useViewsStore } from './data'
+import type { PlaygroundDataProviderProps } from './data/PlaygroundDataProvider'
+import { PlaygroundDataProvider } from './data/PlaygroundDataProvider'
+import { useCurrentDiagram, useCurrentFile, useInitialFiles, useRevealInEditor, useUpdateCurrentFile } from './data/atom-hooks'
+import { diagramIdAtom, viewsReadyAtom } from './data/atoms'
 import MonacoEditor from './editor/monaco'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
@@ -22,25 +26,26 @@ const ViewModes = {
 } as const
 type ViewMode = keyof typeof ViewModes
 
-const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, container: Measures }) => {
+const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, container: Measures }) => {
+  console.log('render PlaygroundPreview')
   const padding = useMemo((): DiagramPaddings => [20, 20, 20, sidebarWidth + 20], [sidebarWidth])
-  const { viewId, diagram } = useDiagramStore()
+  const [viewId, setDiagramFromViewId] = useAtom(diagramIdAtom)
+  const diagramState = useCurrentDiagram()
   const [viewMode, setViewMode] = useState<ViewMode>('diagram')
-  const isReady = useViewsStore(s => s.ready)
+  const isReady = useAtomValue(viewsReadyAtom)
+  const revealInEditor = useRevealInEditor()
 
   const isFirstRenderRef = useRef(true)
 
-  const diagramId = diagram?.id ?? null
-
   useEffect(() => {
-    if (isFirstRenderRef.current && diagramId) {
+    if (isFirstRenderRef.current && viewId) {
       isFirstRenderRef.current = false
-      revealInEditor({ view: diagramId })
+      revealInEditor({ view: viewId })
       return
     }
-  }, [diagramId])
+  }, [viewId])
 
-  if (!diagram) {
+  if (diagramState.state !== 'hasData') {
     return <div className={styles.diagram}
       style={{
         padding: '2rem',
@@ -53,6 +58,18 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
       {isReady && (
         <h1>{viewId ? `View "${viewId}" is not parsed or not found` : 'Select view to preview'}</h1>
       )}
+    </div>
+  }
+
+  const diagram = diagramState.data
+  if (!diagram) {
+    return <div className={styles.diagram}
+      style={{
+        padding: '2rem',
+        paddingLeft: `calc(2rem + ${sidebarWidth}px)`
+      }}
+    >
+        <h1>{viewId ? `View "${viewId}" is not parsed or not found` : 'Select view to preview'}</h1>
     </div>
   }
 
@@ -156,12 +173,14 @@ const PlaygroundDiagram = ({ sidebarWidth, container }: { sidebarWidth: number, 
   </>
 }
 
-export default function Playground() {
+function Playground() {
   const id = useId()
   const [containerMeasures, containerRef] = useMeasure<HTMLDivElement>()
   const [sideBarMeasures, sidebarRef] = useMeasure<HTMLDivElement>()
 
-  const current = useFilesStore(s => s.current)
+  const current = useCurrentFile()
+  const initialFiles = useInitialFiles()
+  const updateCurrentFile = useUpdateCurrentFile()
 
   useEffect(() => {
     const target = document.getElementById(id)
@@ -175,13 +194,21 @@ export default function Playground() {
   }, [id])
 
   return <div id={id} ref={containerRef} className={styles.playground}>
-    {sideBarMeasures && containerMeasures && <PlaygroundDiagram sidebarWidth={sideBarMeasures.width} container={containerMeasures} />}
+    {sideBarMeasures && containerMeasures && <Suspense fallback="Loading...">
+        <PlaygroundPreview sidebarWidth={sideBarMeasures.width} container={containerMeasures} />
+    </Suspense>}
     <div ref={sidebarRef} className={styles.sidebar}>
       <MonacoEditor
         currentFile={current}
-        initiateFiles={() => useFilesStore.getState().files}
-        onChange={value => updateFile(current, value)}
+        initialFiles={initialFiles}
+        onChange={updateCurrentFile}
       />
     </div>
   </div>
+}
+
+export default function PlaygroundWrapper({variant}: PlaygroundDataProviderProps) {
+  return <PlaygroundDataProvider variant={variant}>
+    <Playground />
+  </PlaygroundDataProvider>
 }
