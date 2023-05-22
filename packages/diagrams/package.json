@@ -65,7 +65,7 @@
   "devDependencies": {
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.0",
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.0",
     "clsx": "^1.2.1",
     "esbuild": "^0.17.19",
