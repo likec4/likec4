@@ -1106,7 +1106,7 @@ __metadata:
     jotai-devtools: ^0.5.3
     langium: ^1.2.0
     lucide-react: ^0.206.0
-    monaco-editor: 0.36.1
+    monaco-editor: 0.38.0
     monaco-languageclient: 5.0.1
     next: ^13.4.2
     nextra: ^2.5.2
@@ -7131,10 +7131,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.36.1":
-  version: 0.36.1
-  resolution: "monaco-editor@npm:0.36.1"
-  checksum: 75e7cfbe03b4cb964e550c8021d6b2cc4f5265ee17703ddda7a63a26492a95fdbfaf34aa3e50004930ff8afb1422ae2b1dc0b9d3f122d558bdf1a335403937fd
+"monaco-editor@npm:0.38.0":
+  version: 0.38.0
+  resolution: "monaco-editor@npm:0.38.0"
+  checksum: c5dcd6f9d178f9b87eb06021dc6f50a199bdc0e3ceecc608e2959867c48c3bf0c8723ac4e94270b20c89da188058afe928d2af141b5d87e8e1388e6a4d974eea
   languageName: node
   linkType: hard
 
