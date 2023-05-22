@@ -1,0 +1,102 @@
+import { Table } from 'nextra-theme-docs'
+
+# Specification
+
+The `specification` statement customizes your architecture model.
+
+## Element
+
+`element` statement defines the kind, the can be used in the model.
+
+```likec4 copy
+specification {
+
+  // Whatever you want
+  element user
+  element cloud
+  element system
+  element application
+  element component
+  element microservice
+  element queue
+  element graphqlMutation
+  element repository
+  element database
+
+}
+```
+
+Kind definition may have a `style` statement - defaults for all elements of this kind.
+
+```likec4 copy
+specification {
+
+  element user {
+    style {
+      shape person
+    }
+  }
+
+  element singlePageApp {
+    style {
+      shape browser
+      color amber
+    }
+  }
+
+  element queue {
+    style {
+      shape queue
+      color gray
+    }
+  }  
+
+}
+```
+
+### Shapes
+
+The following element shapes are available:
+
+| shape        |  |
+| :------------ | :---------: |
+| rectangle (default)       |
+| storage, cylinder |  |
+| browser |   |
+| person     |  |
+| queue |   |
+
+
+### Colors
+
+Based on TailwindCSS:
+
+| color        |  |
+| :------------ | :---------: |
+| primary, blue (default) | <div className="bg-blue-500 rounded-sm w-8 h-6"></div> |
+| secondary, sky | <div className="bg-sky-600 rounded-sm w-8 h-6"></div>   |
+| muted, slate    | <div className="bg-slate-600 rounded-sm w-8 h-6"></div>   |
+| amber     | <div className="bg-amber-600 rounded-sm w-8 h-6"></div>   |
+| gray     |  <div className="bg-neutral-500 rounded-sm w-8 h-6"></div>   |
+| green     |  <div className="bg-green-600 rounded-sm w-8 h-6"></div>   |
+| indigo     | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>   |
+| red     |  <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
+
+## Tag
+
+The tags are used to mark elements in the model (and override the default style).
+
+```likec4 copy
+specification {
+
+  tag team1
+  tag database
+
+  tag deprecated {
+    style {
+      color muted
+    }
+  }
+
+}
+```

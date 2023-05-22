@@ -22,7 +22,11 @@
       }
     },
     {
-      "match": "\\b(component|service)\\s+([^\\W]+)\\b",
+      "name": "keyword.control.likec4",
+      "match": "\\b(specification|model|views)\\b"
+    },
+    {
+      "match": "\\b(actor|component|service)\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -85,7 +89,22 @@
           "name": "variable.other.constant.likec4"
         }
       }
-    },{
+    },
+    {
+      "match": "\\b(it|this)\\s+(->)\\s+([^\\W]+)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "storage.type.function.likec4"
+        },
+        "3": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
       "match": "\\b([^\\W]+)\\s+(->)\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
@@ -100,12 +119,34 @@
       }
     },
     {
+      "match": "\\s+(->)\\s+([^\\W]+)\\b",
+      "captures": {
+        "1": {
+          "name": "storage.type.function.likec4"
+        },
+        "2": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
+      "match": "(\\b|\\.)([^\\W]+)\\b",
+      "captures": {
+        "1": {
+          "name": "source.likec4"
+        },
+        "2": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
 			"name": "storage.type.function.likec4",
 			"match": "->"
 		},
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|color|cylinder|description|element|exclude|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|actor|color|cylinder|description|element|exclude|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"
     },
     {
       "name": "string.quoted.double.likec4",

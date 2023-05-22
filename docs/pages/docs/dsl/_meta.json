@@ -2,16 +2,22 @@
   "introduction": {
     "title": "Introduction"
   },
+  "specification": {
+    "title": "Specification"
+  },
   "model": {
     "title": "Model"
   },
   "relations": {
     "title": "Relations"
   },
+  "references": {
+    "title": "References"
+  },
   "views": {
     "title": "Views"
   },
   "workspace": {
-    "title": "Workspace"
+    "title": "Multiple sources"
   }
 }

@@ -11,15 +11,12 @@ LikeC4 is a DSL for describing software architecture.
 It might look like [Structurizr DSL](https://github.com/structurizr/dsl), though it is not
 fully compatible.
 
-LikeC4 removes boundaries and gives more expressive freedom to the user,
-makes it easier to write with IDE support and exports to other formats
-or even generates React components to embed and explore the architecture.  
-[Check example](/examples/bigbank/landscape/) 
+LikeC4 gives a freedom to the architect/developer and makes it easier to write with IDE support.
 
 The source files should have `.likec4` or `.c4` extension.  
-LikeC4 looks for all source files and **merges into a single model**, use are free to organize your files as you wish:
 
-Example:
+LikeC4 looks for all source files and **merges into a single model**.  
+A project may look like:
 
 <FileTree>
   <FileTree.Folder name="backend" open>
@@ -40,6 +37,8 @@ Example:
 
 ## Top level statements
 
+Source files should have at least one of these statements:
+
 - `specification` - define your own element kinds, like **app**, **microservice**, **grapqlMutation**, wantever you need
 - `model` - architecture elements, hierarchies, compositions and relationships
 - `views` - visual "projections" of the model from different perspectives (by predicates)
@@ -59,7 +58,7 @@ views {
 }
 ```
 
-It is not allowed to change the order or have multiple statements of the same kind.  
+It is not allowed to have multiple statements of the same kind.  
 
 ```likec4
 model {

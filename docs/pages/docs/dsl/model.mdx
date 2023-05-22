@@ -3,144 +3,122 @@ import { Tab, Tabs } from 'nextra-theme-docs'
 
 # Model
 
-Specification, elements and relations describe the architecture model.
-
-## Specification
-
-The `specification` statement defines the elements kinds that can be used in a model.  
-Also it can define the default `shape` and/or `color` for the elements of this kind.  
-Example:
-
-```likec4
-specification {
-
-  element cloud
-  element system
-
-  element user {
-    style {
-      shape person
-    }
-  }
-
-  element frontendApp {
-    style {
-      shape browser
-      color amber
-    }
-  }
-
-  // Whatever you want
-  element application
-  element component
-  element microservice
-  element queue
-  element graphqlMutation
-  element database {
-    style {
-      shape storage
-      color secondary
-    }
-  }
-
-}
-```
-{/*
-**Element Style:** Shape
-
-| shape        | example |
-| :------------ | :---------: |
-| rectangle (default)       |
-| storage, cylinder |    ~~Text~~ |
-| person     |  And more |
-| queue |      ~~Text~~ |
-
-**Element Style:** Color
-
-| color        | example |
-| :------------ | :---------: |
-| primary (default)       |
-| secondary |    |
-| muted     |  |
-*/}
+The singe source of truth for the architecture is the model. It is a set of elements and relations between them.
 
 ## Element
 
-```likec4 filename="element.c4"
+Element is a basic building block.
+It represents a logical or physical part of the architecture.  
+The element kind must be [specified](./specification) first.
+
+```likec4 copy filename="element.c4"
 specification {
-  element component
+  element actor
+  element service
 }
-
-// Inline elements
 model {
-  // without title
-  component restApi
+  actor customer
+  service cloud
   // or use '='
-  restApi = component
-
-  //  with title
-  component legacyApi 'Legacy API'
-  legacyApi = component 'Legacy API'
-
-  // with title and description
-  component legacyApi 'Legacy API' 'Component description'
+  cloud = service  
 }
 ```
 
-Every element has a type (defined in [specification](#specification)), a name (identifier) and optionally title, description and technology.
-
-Element definition:
-
-| Abstract grammar |
-| :--------|
-| _{'<'}element_type{'>'}_ **NAME** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
-| **NAME** **'='** _{'<'}element_type{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  |
-
-Name is a valid identifier, it can contain letters, digits and underscore, but can't start with a digit.
+Element must have a name - the identifier and it is used for references.  
+It can contain letters, digits and underscore, but can't start with a digit.
 
 | identifier        | |
 | :------------ | :--------- |
 | api | ✅ |
-| _api | ✅ |
 | Api | ✅ |
-| 1api | ⛔️ |
+| _api | ✅ |
 | _1api | ✅ |
+| 1api | ⛔️ |
+| a.pi | ⛔️ |
 
-Element name is unique within the container (the same hierarchy level), see [below](#nested-elements).
+Element name is also used as a default title and displayed on views.  
+To customize it.
 
-## Nested elements
+```likec4 copy filename="element.c4"
+specification {
+  element actor
+  element service
+}
+model {
+  actor customer 'Customer'
+  service cloud 'Cloud'
+  // or use '='
+  cloud = service 'Cloud'
+}
+```
 
-Any element is a container and can contain other elements.
+Element may have description and technology. 
 
-```likec4 filename="nested-elements.c4"
+```likec4 copy filename="element.c4"
 specification {
   element service
-  element component
 }
-
-// Nested elements
 model {
+  cloud = service 'Cloud' 'Provides services to customers'
+}
+```
 
-  // service1 has backend and frontend
-  service service1 'Service 1' {
+| Abstract grammar |
+| :--------|
+| _{'<'}element_kind{'>'}_ **NAME** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
+| **NAME** **'='** _{'<'}element_kind{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  |
 
-    // backend has api
-    component backend {
-      component api 'Rest API'
-    }
-    component frontend
+These properties may be defined in nested block:
+
+
+```likec4 copy filename="element.c4"
+specification {
+  element actor
+  element service
+}
+model {
+  // only description inside
+  customer = actor 'Customer' {
+    description 'Uses the Cloud service'
   }
-
-  // or use '=' (or even both)
-  service2 = service 'Service 2' {    
-    component backend {
-      api = component 'GraphQL API'
-    }
-    component frontend
+  // or even title inside
+  cloud = service {
+    title 'Cloud'
+    description 'Provides services to customers'
   }
 }
 ```
 
+## Structure
+
+Any element is a container and can contain other elements.  
+This way you define the structure, the internals if the element.
+
+```likec4 copy filename="nested-elements.c4"
+specification {
+  element service
+  element component
+}
+model {
+
+  // service1 has backend and frontend
+  service service1 {
+    component backend {
+      component api
+    }
+    component frontend
+  }
+
+  service2 = service {    
+    backend = component {
+      api = component
+    }
+    frontend = component 
+  }
+}
+```
+
+Element name must be unique within the container (the same hierarchy level).  
 Nested elements are _"namespaced"_, so the model above has the following elements:
 
 - `service1`  
@@ -162,7 +140,6 @@ specification {
   element service
   element component
 }
-
 model {
 
   service service1 'Service 1' {
@@ -172,23 +149,13 @@ model {
   }
   
   service service2 'Service 2' {
-    component backend 
+    component backend // ✅ This is OK - 'service2.backend'
 
     component legacy {
-      component backend // ✅ This is OK, 'service2.backend' and 'service2.legacy.backend'
+      component backend // ✅ This is OK - 'service2.legacy.backend'
     }
   }
 
-  component backend // ✅ This is OK
-
-  // ✅ This is OK
-  component legacy {
-    component backend
-  }
-
+  component backend // ✅ This is OK - 'backend'
 }
 ```
-
-## Element properties
-
-...

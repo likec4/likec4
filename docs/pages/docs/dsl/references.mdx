@@ -1,0 +1,101 @@
+import { Callout } from 'nextra-theme-docs'
+
+# References
+
+To define relations between components, we need reference the source and target.  
+LikeC4 uses the lexical scope, almost like in JavaScript, but not quite.
+
+## Lexical Scope
+
+Lets consider the following example:
+
+```likec4 filename="references.c4"
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+}
+```
+
+Every element is unique in the model, so we can add relation:
+
+```likec4 {6} filename="references.c4"
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  frontend -> api
+}
+```
+
+But if we add another service:
+
+```likec4 {6-9} filename="references.c4"
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  service service2 {
+    component api
+  }
+  frontend -> api // ⛔️ Error: 'api' not found
+}
+```
+
+The reference is ambiguous because now there are two `api` components in the scope of `model`.  
+We can fix it moving the relation:
+
+```likec4 {6} filename="references.c4" 
+model {
+  service service1 {
+    component api
+    component frontend
+
+    frontend -> api // api is unique in the scope of service1
+  }
+  service service2 {
+    component api
+  }  
+}
+```
+
+## Hoisting
+
+<Callout type="info" emoji="ℹ️">
+  **Hoisting** is a mechanism that moves the reference to the top of the scope.
+</Callout>
+
+The element name is hoisted (_"bubbles"_) to the upper scope while it stays unique.  
+We even may reference something that is not yet defined.
+
+```likec4 copy filename="nested-elements.c4"
+model {
+  
+  service service1 {
+    component api
+    component frontend
+
+    frontend -> api // ✅ This is OK, references to api from service1
+    frontend -> graphql // ✅ This is OK, references to unique graphql defined later
+  }  
+
+  frontend -> api // ⛔️ Error: 'api' is ambiguous
+
+  service service2 {
+    component api
+    component graphql
+
+    frontend -> api  // ✅ This is OK, references to api from service2
+  }  
+  
+}
+```
+
+## FullQualified Names
+
+<Callout>
+  TODO: Document fullqualified names
+</Callout>

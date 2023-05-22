@@ -1,48 +1,80 @@
-import { Bleed } from 'nextra-theme-docs'
-import { Tab, Tabs } from 'nextra-theme-docs'
+import { Callout } from 'nextra-theme-docs'
 
 # Relations
 
-Example:
+## Relation Definition
+
+Relations are used to describe the connections and/or interactions between elements.  
+They are defined using the `->` operator.
 
 ```likec4 filename="relations.c4"
-specification {
-  element service
-  element system
-  element component
-  element person
-}
-
 model {
+  customer = actor 'Customer'
+  cloud = service 'Cloud'
 
-  customer = person 'Customer'
-
-  cloud = system 'SAAS' {
-
-    dashboard = service 'Dashboard' {
-      component backend {
-        -> rds
-      }
-      component frontend
-
-      frontend -> backend
-    }
-
-  }
-  
-  aws = system 'Amazon' {
-    component rds
-  }
-
-  customer -> frontend
-
+  customer -> cloud
 }
 ```
 
-## Relation Definition
+Relation may be nested
 
-...
+```likec4 filename="relations.c4"
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend
+    customer -> frontend
+  }
+}
+```
+
+
+Relation may have a title (and better to have one)
+
+```likec4 filename="relations.c4"
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend 'requests data'
+  }
+
+  customer -> frontend 'opens in browser'
+}
+```
+
+Nested relation may be "sourceless" or use `it` or `this` as source.  
+Then the source is the parent element.
+
+
+```likec4 filename="relations.c4"
+model {
+  customer = actor {
+    -> frontend 'opens in browser'
+  }
+  service cloud {
+    component backend
+    component frontend {
+      -> backend 'requests data'
+    }
+  }
+
+  // also valid to use 'it' or 'this'
+  customer = actor {
+    it -> frontend 'opens in browser'
+    this -> frontend 'opens in browser'
+  }    
+}
+```
+
 
 ## Implicit Relations
 
-...
+<Callout>
+  TODO: Document implicit relations
+</Callout>

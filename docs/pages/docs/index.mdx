@@ -1,4 +1,7 @@
 import { Card, Cards, Steps, Callout } from 'nextra-theme-docs'
+import { Button } from '$/components/ui/button'
+import Link from 'next/link'
+import { ExternalLink } from 'lucide-react'
 
 # Getting Started
 
@@ -15,12 +18,18 @@ The three pillars:
 
 Any change in the model automatically reflected - rename elements, update descriptions, mark as deprecated or add/remove relationships -  and all views are updated automatically.
 
-Various ways to play and learn the tool:
-- Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
-- Online [playground](/playground/)
-- With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4) (install recommended extension)
-- With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4) (install recommended extension)
+<Callout emoji="🚧">
+  Project is in active development and needs your feedback.
+</Callout>
 
+## How to try
+
+Various ways to play and learn the tool:
+
+- Online [playground](/playground/)
+- With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
+- With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
+- Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 
 ## Tutorial
 
@@ -129,7 +138,7 @@ model {
 
 views {
 
-  view index {    
+  view index { 
     include *
   }
 
@@ -153,7 +162,7 @@ We got this:
 View may have a root element `view of ...` as initial scope.  
 Then predicate `include *` is applied to the root element and includes nested elements.
 
-```likec4 showLineNumbers copy {27-29} filename="getting-started.c4" 
+```likec4 showLineNumbers copy {29-31} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -177,6 +186,8 @@ model {
 views {
 
   view index {
+    title 'Landscape view'
+
     include *
   }
 
@@ -187,15 +198,15 @@ views {
 }
 ```
 
-Imagine, we zoom-in and expand the `saas` element, we see nested elements and their relationships:
+Imagine, we zoom in the `saas` element, see nested elements and their relationships:
 
 ![saas view](/getting-started/02.png)
 
-### Enrich the model
+### Enrich model
 
 Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
 
-```likec4 showLineNumbers {9,13-24,27,43-45} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {9,13-24,27,45-47} copy filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -232,6 +243,8 @@ model {
 views {
 
   view index {
+    title 'Landscape view'
+
     include *
   }
 
@@ -250,12 +263,81 @@ The `saas` view after changes:
 
 ![saas view after changes](/getting-started/03.png)
 
-And if we change any element/relationship - the change will be reflected everywhere.   
-No more outdated diagrams
+### Change model
 
+And if we change the model - views are updated automatically.
 
-<Cards>
-  <Card title="Open in playground" href={`/playground/getting-started/`} arrow/>
-</Cards>
+```likec4 showLineNumbers {9,31} copy filename="getting-started.c4" 
+specification {
+  element actor
+  element system
+  element component
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'Our dear customer'
+  }
+
+  saas = system 'Our SaaS' {
+    component ui 'Frontend' {
+      description 'Nextjs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+    }
+    component backend 'Backend Services' {
+      description '
+        Implements business logic
+        and exposes as REST API
+      '
+    }
+
+    // UI requests data from the Backend
+    ui -> backend 'fetches via HTTPS'
+  }
+
+  // Customer uses the UI
+  customer -> ui 'enjoys our product'
+}
+
+views {
+
+  view index {
+    title 'Landscape view'
+    
+    include *
+  }
+
+  view of saas {    
+    include *
+
+    style customer {
+      color muted
+    }
+  }  
+
+}
+```
+
+We changed description of the element and label of the relationship.  
+Landscape view:
+
+![landscape view after changes](/getting-started/04.png)
+
+`saas` view:
+
+![landscape view after changes](/getting-started/05.png)
 
 </Steps>
+
+## Next steps
+
+The following steps would be - install the CLI, export views as images or generate react components.  
+Or you can try [this tutorial in playground](/playground/getting-started/).
+
+But better start the language reference first and then jump to the playground.
+
+<Cards>
+  <Card title="LikeC4 Language" href={`/docs/dsl/introduction/`} arrow/>
+</Cards>

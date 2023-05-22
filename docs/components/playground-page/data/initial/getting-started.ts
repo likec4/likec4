@@ -40,6 +40,8 @@ model {
 views {
 
   view index {
+    title 'Landscape view'
+
     include *
   }
 

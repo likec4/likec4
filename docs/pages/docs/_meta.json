@@ -2,7 +2,7 @@
   "index": {
     "title": "Getting Started",
     "theme": {
-      "toc": false
+      "pagination": false
     }
   },
   "dsl": {
