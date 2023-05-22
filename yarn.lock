@@ -1117,7 +1117,6 @@ __metadata:
     react-dom: ^18.2.0
     react-icons: ^4.8.0
     remark-code-import: ^1.2.0
-    state-local: ^1.0.7
     swr: ^2.1.5
     tailwind-merge: ^1.12.0
     tailwindcss: ^3.3.2
@@ -9102,7 +9101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"state-local@npm:^1.0.6, state-local@npm:^1.0.7":
+"state-local@npm:^1.0.6":
   version: 1.0.7
   resolution: "state-local@npm:1.0.7"
   checksum: d1afcf1429e7e6eb08685b3a94be8797db847369316d4776fd51f3962b15b984dacc7f8e401ad20968e5798c9565b4b377afedf4e4c4d60fe7495e1cbe14a251

@@ -6,15 +6,15 @@ import {
   disableBodyScroll,
   enableBodyScroll
 } from "body-scroll-lock-upgrade"
+import MonacoEditor from './editor/monaco'
 import { useAtom, useAtomValue } from 'jotai'
 import { ChevronDown } from 'lucide-react'
 import { Suspense, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import type { PlaygroundDataProviderProps } from './data/PlaygroundDataProvider'
 import { PlaygroundDataProvider } from './data/PlaygroundDataProvider'
-import { useCurrentDiagram, useCurrentFile, useInitialFiles, useRevealInEditor, useUpdateCurrentFile } from './data/atom-hooks'
-import { diagramIdAtom, viewsReadyAtom } from './data/atoms'
-import MonacoEditor from './editor/monaco'
+import { useCurrentDiagram, useCurrentFile, useInitialFiles, useRevealInEditor, useUpdateCurrentFile } from './data'
+import { diagramIdAtom, viewsReadyAtom } from './data'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
@@ -27,7 +27,6 @@ const ViewModes = {
 type ViewMode = keyof typeof ViewModes
 
 const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, container: Measures }) => {
-  console.log('render PlaygroundPreview')
   const padding = useMemo((): DiagramPaddings => [20, 20, 20, sidebarWidth + 20], [sidebarWidth])
   const [viewId, setDiagramFromViewId] = useAtom(diagramIdAtom)
   const diagramState = useCurrentDiagram()
@@ -97,17 +96,6 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
           }
         }}
       />
-      {/*
-      <div
-        className={cn(
-          'absolute top-[50px] right-8'
-        )}
-      >
-        <Button size="sm" variant="ghost">
-          <ArrowDownToLineIcon className={"mr-2 w-4 h-4"} />
-          <span>PNG</span>
-        </Button>
-      </div> */}
     </>}
     {viewMode !== 'diagram' && (
       <div

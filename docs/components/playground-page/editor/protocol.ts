@@ -9,7 +9,6 @@ const onDidChangeModel = new NotificationType0('likec4/onDidChangeModel')
 //#region To server
 const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
 
-
 interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
@@ -31,7 +30,7 @@ const locateRelation = new RequestType<{ id: RelationID }, Location | null, void
 const locateView = new RequestType<{ id: ViewID }, Location | null, void>(
   'likec4/locateView'
 )
-// //#endregion
+//#endregion
 
 export const Rpc = {
   onDidChangeModel,

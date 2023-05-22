@@ -3,7 +3,7 @@ import { useUnmountEffect } from '@react-hookz/web/esm'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { useCallback, useRef } from 'react'
-import { useUpdateViews } from '../data/atom-hooks'
+import { useUpdateViews } from '../data'
 import { Rpc } from './protocol'
 
 function syncLikeC4Data(

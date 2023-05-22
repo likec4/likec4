@@ -21,8 +21,8 @@ import type { ViewID } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web/esm'
 import { useSetAtom } from 'jotai'
 import { diagramIdAtom } from '../data/atoms'
-import { useRevealRequestsHandler } from './editor-state-handler'
-import { useLikeC4DataSync } from './likec4-data-sync'
+import { useRevealRequestsHandler } from './useRevealRequestsHandler'
+import { useLikeC4DataSync } from './useLikeC4DataSync'
 import likec4Monarch from './likec4.monarch'
 
 self.MonacoEnvironment = {
@@ -87,9 +87,12 @@ function useLikeC4LanguageClient() {
       //     break
       //   }
       // }
-
       languageClientRef.current = null
     }
+    // I don't know why this doesn't work
+    //  languageClient.stop()
+    // But seems we can just terminate the worker
+
     if (workerRef.current) {
       console.log('Stop worker')
       workerRef.current.terminate()
@@ -104,10 +107,6 @@ function useLikeC4LanguageClient() {
         name: 'likec4-language-worker',
         type: 'module'
       })
-
-      // window?.addEventListener('beforeunload', () => {
-      //   worker.terminate()
-      // })
 
       const reader = new BrowserMessageReader(worker)
       const writer = new BrowserMessageWriter(worker)
@@ -262,9 +261,7 @@ interface MonacoEditorProps {
 export default function MonacoEditor({
   currentFile,
   initialFiles,
-  onChange,
-  // onSwitchView,
-  // onChangeViews
+  onChange
 }: MonacoEditorProps) {
 
   console.log(`Render MonacoEditor`)
@@ -315,7 +312,6 @@ export default function MonacoEditor({
         bracketPairs: false,
         bracketPairsHorizontal: 'active'
         // bracketPairs: 'active',
-
         // highlightActiveIndentation: false
       },
       lineNumbersMinChars: 4,
