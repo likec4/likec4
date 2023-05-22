@@ -1105,7 +1105,7 @@ __metadata:
     jotai: ^2.1.0
     jotai-devtools: ^0.5.3
     langium: ^1.2.0
-    lucide-react: ^0.206.0
+    lucide-react: ^0.220.0
     monaco-editor: 0.36.1
     monaco-languageclient: 5.0.1
     next: ^13.4.2
@@ -6141,12 +6141,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.206.0":
-  version: 0.206.0
-  resolution: "lucide-react@npm:0.206.0"
+"lucide-react@npm:^0.220.0":
+  version: 0.220.0
+  resolution: "lucide-react@npm:0.220.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 095193c83550235e7c7eb2c17b5fd42a01fe81ecd75603b4ef6ae3fa50a182fb848b02ef66882ec0b7cb7a12869b2effaa5570214a7f50934a24f086fc5d777c
+  checksum: 3973fe4db8caf01316477386cc501367e0e99307ba6ee1dbb10541d236b9741f99c151081ac957dbfec685e61cd14ba769ce1638b2f731e91b781399a2c8d85d
   languageName: node
   linkType: hard
 
