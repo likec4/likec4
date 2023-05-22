@@ -5,7 +5,7 @@ import { Callout } from 'nextra-theme-docs'
 ## Relation Definition
 
 Relations are used to describe the connections and/or interactions between elements.  
-They are defined using the `->` operator.
+They are defined with the **`->`** operator.
 
 ```likec4 filename="relations.c4"
 model {
@@ -32,7 +32,7 @@ model {
 ```
 
 
-Relation may have a title (and better to have one)
+Relation may have a label (and better to have one)
 
 ```likec4 filename="relations.c4"
 model {
@@ -48,19 +48,19 @@ model {
 }
 ```
 
-Nested relation may be "sourceless" or use `it` or `this` as source.  
+Nested relation may be "source-less" or use `it` or `this` as source.  
 Then the source is the parent element.
 
 
 ```likec4 filename="relations.c4"
 model {
-  customer = actor {
-    -> frontend 'opens in browser'
+  customer = actor {    
+    -> frontend 'opens in browser' // same as customer -> frontend
   }
   service cloud {
     component backend
     component frontend {
-      -> backend 'requests data'
+      -> backend 'requests data' 
     }
   }
 

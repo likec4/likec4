@@ -2,10 +2,9 @@ import { Callout } from 'nextra-theme-docs'
 
 # References
 
-To define relations between components, we need reference the source and target.  
-LikeC4 uses the lexical scope, almost like in JavaScript, but not quite.
+LikeC4 uses the lexical scope, with hoisting, almost like in JavaScript.
 
-## Lexical Scope
+## Scope
 
 Lets consider the following example:
 
@@ -18,7 +17,7 @@ model {
 }
 ```
 
-Every element is unique in the model, so we can add relation:
+Every element is unique in the model, so we can add relation referencing them, like:
 
 ```likec4 {6} filename="references.c4"
 model {
@@ -30,7 +29,7 @@ model {
 }
 ```
 
-But if we add another service:
+But if we add another `service` with `api`:
 
 ```likec4 {6-9} filename="references.c4"
 model {
@@ -45,8 +44,10 @@ model {
 }
 ```
 
-The reference is ambiguous because now there are two `api` components in the scope of `model`.  
-We can fix it moving the relation:
+The reference is ambiguous - now there are two `api` components in the model.   
+Every block creates a new scope, so `api` is unique in the scope of `service1` and `service2`, but not in the scope of `model`.  
+
+We can fix it by moving the relation to the scope of `service1`:
 
 ```likec4 {6} filename="references.c4" 
 model {
@@ -54,11 +55,12 @@ model {
     component api
     component frontend
 
-    frontend -> api // api is unique in the scope of service1
+    frontend -> api // ✅ This is OK, api is unique in the scope of service1
   }
   service service2 {
     component api
   }  
+  frontend -> api // ⛔️ Error: 'api' not found
 }
 ```
 
@@ -69,7 +71,9 @@ model {
 </Callout>
 
 The element name is hoisted (_"bubbles"_) to the upper scope while it stays unique.  
-We even may reference something that is not yet defined.
+We even may reference something that is not yet defined as it will be hoisted later.
+
+The relation from `frontend` referencing not yet defined `graphql`:
 
 ```likec4 copy filename="nested-elements.c4"
 model {
@@ -94,8 +98,64 @@ model {
 }
 ```
 
-## FullQualified Names
+## Full qualified names
 
-<Callout>
-  TODO: Document fullqualified names
-</Callout>
+Full qualified name is a unique "path" to the element, including all the parents.
+
+Example:
+
+```likec4 filename="references.c4"
+model {
+  service service1 {
+    component api
+    component frontend
+  }
+  service service2 {
+    component api
+  }
+
+  frontend -> api // ⛔️ Error: 'api' not found
+  frontend -> service1.api // ✅ This is OK
+  frontend -> service2.api // ✅ This is OK
+}
+```
+
+Or even:
+
+```likec4 filename="references.c4"
+model {
+  service service1 {
+    component api
+    component frontend {
+      -> service2.api 
+    }
+  }
+  service service2 {
+    component api
+  }
+}
+```
+
+Middle-parts may be omitted, if target element is already unique in the scope:
+
+```likec4 filename="references.c4"
+model {
+  service service {
+    component backend1  {
+      component api
+    }
+    component backend2  {
+      component api
+      component graphql
+    }  
+  }
+
+  frontend -> service.backend2.graphql // ✅ Non-ambiguous full qualified name
+
+  frontend -> service.graphql // ✅ This is also OK
+                              //    we omit backend2 as
+                              //    graphql is unique in the scope of service
+
+  frontend -> service.api // ⛔️ Error: api is ambiguous in the scope of service
+}
+```

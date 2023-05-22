@@ -1,5 +1,141 @@
-import { Bleed } from 'nextra-theme-docs'
+import { Bleed, Cards, Card, Callout } from 'nextra-theme-docs'
 
 # Views
 
+Views are the visualizations of the same model from different perspectives, with different level of details, like:
+
+- System / service overviews, internal structure
+- Interactions between components in the context of some use case
+- Incoming and outgoing data flows
+
+## View Definition
+
+View may be named (must be unique) or unnamed (can't be referenced).
+
+```likec4 filename="views.c4"
+views {
+  // with name
+  view index {  
+  }
+  // unnamed
+  view {
+  }
+}
+```
+
+View may have a title 
+
+```likec4 filename="views.c4"
+views {
+
+  view {
+    title 'Titled View'
+  }
+
+}
+```
+
+View may have a root element, then it inherits the scope (for references)
+
+```likec4 filename="views.c4"
+views {
+
+  view of cloud.backend {
+    title 'Backend components'
+  }
+
+}
+```
+
+## View predicates
+
+View predicates define what elements/relations are included/excluded.
+
+```likec4 
+// include element
+include cloud.backend
+
+// or exclude
+exclude cloud.backend
+
+// children of cloud.backend
+include cloud.backend.*
+
+// incoming relations
+include -> cloud.backend
+
+// outgoing relations
+include cloud.backend ->
+
+// relations between
+include customer -> cloud
+```
+
+Wildcard may be used to reference "everything", but depends on the context.
+
+```likec4 
+view {
+  // include all top level elements
+  include *
+}
+
+view of cloud.backend {
+  // include root element and all its children
+  include *
+}
+```
+
+Predicate are applied in same the order as defined in view.  
+Example from [BigBank](/examples/bigbank/customer/):
+
+```likec4 
+view {
+  // rules may be merged
+  include
+    customer,
+    bigbank,
+    internetBankingSystem,
+    customer -> internetBankingSystem.*,
+    customer -> bigbank.*
+
+  exclude webApplication
+}
+```
+
+
+## Style rules
+
+Style predicates define how elements are rendered.  
+Example from [BigBank](/examples/bigbank/components/):
+
+```likec4 
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  style * {
+    color muted
+  }
+
+  style singlePageApplication, mobileApp {
+    color secondary
+  }
+
+  style apiApplication, apiApplication.* {
+    color primary
+  }
+}
+```  
+
+<Callout>
+  TODO: Document style rules
+</Callout>
+
 ...
+
+
+Try to play with the architecture from Getting Started tutorial:
+
+<Cards>
+  <Card title="Open Playground" href={`/playground/getting-started/`} arrow/>
+</Cards>

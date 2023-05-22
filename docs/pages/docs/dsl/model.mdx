@@ -1,9 +1,9 @@
-import { Bleed } from 'nextra-theme-docs'
+import { Bleed, Callout } from 'nextra-theme-docs'
 import { Tab, Tabs } from 'nextra-theme-docs'
 
 # Model
 
-The singe source of truth for the architecture is the model. It is a set of elements and relations between them.
+It is a set of architecture elements and relations/interactions between them.
 
 ## Element
 
@@ -36,8 +36,7 @@ It can contain letters, digits and underscore, but can't start with a digit.
 | 1api | ⛔️ |
 | a.pi | ⛔️ |
 
-Element name is also used as a default title and displayed on views.  
-To customize it.
+Element name is also used as a title when rendered. To customize it:
 
 ```likec4 copy filename="element.c4"
 specification {
@@ -78,7 +77,7 @@ specification {
 }
 model {
   // only description inside
-  customer = actor 'Customer' {
+  customer = actor 'Customer' 
     description 'Uses the Cloud service'
   }
   // or even title inside
@@ -92,7 +91,7 @@ model {
 ## Structure
 
 Any element is a container and can contain other elements.  
-This way you define the structure, the internals if the element.
+This way you define the structure, the internals of the element.
 
 ```likec4 copy filename="nested-elements.c4"
 specification {
@@ -118,8 +117,10 @@ model {
 }
 ```
 
-Element name must be unique within the container (the same hierarchy level).  
-Nested elements are _"namespaced"_, so the model above has the following elements:
+Element name must be unique within the container.  
+
+Nested elements are _"namespaced"_, the parent name is used as a prefix for the children.  
+So the model above has the elements with these full qualified names:
 
 - `service1`  
 - `service1.backend`
@@ -132,6 +133,10 @@ and:
 - `service2.backend`
 - `service2.backend.api`
 - `service2.frontend`
+
+<Callout>
+  Full qualified name may used for references. This explained later
+</Callout>
 
 It is not possible to have elements with the same name on the same hierarchy level.
 
