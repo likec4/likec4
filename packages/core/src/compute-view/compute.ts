@@ -1,8 +1,7 @@
 import { map } from 'rambdax'
 import { ModelIndex } from '../model-index'
-import type { Element, ElementView, Fqn, LikeC4Model, Relation, RelationID, ViewID } from '../types'
-import { computeElementView } from './compute.element-view'
-import type { ComputedView } from '../types/computed-view'
+import type { Element, ElementView, Fqn, LikeC4Model, Relation, ComputedView, RelationID, ViewID } from '../types'
+import { computeElementView } from './compute-element-view'
 
 export function computeView(view: ElementView, index: ModelIndex): ComputedView {
   return computeElementView(view, index)

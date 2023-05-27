@@ -1,6 +1,15 @@
 import { expect, describe, it } from 'vitest'
-import type { Fqn } from '../types'
-import { commonAncestor, compareFqnHierarchically, isAncestor, parentFqn } from './fqn'
+import type { Fqn, Element } from '../types'
+import {
+  commonAncestor,
+  compareFqnHierarchically,
+  isAncestor,
+  isDescendantOf,
+  notDescendantOf,
+  parentFqn
+} from './fqn'
+
+const el = (id: string): Element => (({ id } as unknown) as Element)
 
 describe('parentFqn', () => {
   it('should return null if no parent', () => {
@@ -37,6 +46,37 @@ describe('isAncestor', () => {
   })
 })
 
+describe('isDescendantOf', () => {
+  const predicate = isDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+
+  it('should return true if isDescendantOf', () => {
+    expect(predicate(el('a'))).toBe(true)
+    expect(predicate(el('b.c'))).toBe(true)
+    expect(predicate(el('a.b.c.d.e'))).toBe(true)
+  })
+  it('should return false if not descendantOf', () => {
+    expect(predicate(el('c'))).toBe(false)
+    expect(predicate(el('ac'))).toBe(false)
+    expect(predicate(el('d.a.c'))).toBe(false)
+
+  })
+})
+
+describe('notDescendantOf', () => {
+  const predicate = notDescendantOf(['a', 'b', 'a.b', 'a.b.c'].map(el))
+
+  it('should return true if notDescendantOf', () => {
+    expect(predicate(el('c'))).toBe(true)
+    expect(predicate(el('ac'))).toBe(true)
+    expect(predicate(el('d.a.c'))).toBe(true)
+  })
+  it('should return false if descendantOf', () => {
+    expect(predicate(el('a'))).toBe(false)
+    expect(predicate(el('b.c'))).toBe(false)
+    expect(predicate(el('a.b.c.d.e'))).toBe(false)
+  })
+})
+
 describe('compareFqnHierarchically', () => {
   it('should compare hierarchically', () => {
     expect(['a', 'b', 'a.b', 'a.b.c', 'a.c.c'].sort(compareFqnHierarchically)).toEqual([
@@ -51,14 +91,6 @@ describe('compareFqnHierarchically', () => {
   it('should preserve initial order', () => {
     expect(
       ['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'].sort(compareFqnHierarchically)
-    ).toEqual([
-      "aaa",
-      "aa",
-      "a",
-      "aaa.c",
-      "aa.b",
-      "a.c",
-      "a.b"
-    ])
+    ).toEqual(['aaa', 'aa', 'a', 'aaa.c', 'aa.b', 'a.c', 'a.b'])
   })
 })

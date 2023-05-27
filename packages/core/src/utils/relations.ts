@@ -1,6 +1,6 @@
 import { either } from 'rambdax'
-import type { Fqn } from '../types'
-import { compareFqnHierarchically } from './fqn'
+import type { Fqn, Element } from '../types'
+import { compareFqnHierarchically, isAncestor } from './fqn'
 
 type Relation = {
   source: Fqn
@@ -54,4 +54,10 @@ export const isOutgoing = (source: Fqn) => {
 
 export const isAnyInOut = (source: Fqn) => {
   return either(isIncoming(source), isOutgoing(source))
+}
+
+export const hasRelation = (rel: Relation) => {
+  return (element: Element) => {
+    return isAncestor(rel.source, element.id) || isAncestor(rel.target, element.id)
+  }
 }

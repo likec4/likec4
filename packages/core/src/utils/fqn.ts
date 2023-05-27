@@ -1,3 +1,4 @@
+import { allPass, anyPass, negate, none } from 'rambdax'
 import type { Element, Fqn } from '../types'
 import { isString } from './guards'
 
@@ -24,6 +25,20 @@ export function isSameHierarchy(
   const one = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id
   return one === another || another.startsWith(one + '.') || one.startsWith(another + '.')
+}
+
+export function isDescendantOf(ancestors: Element[]): (e: Element) => boolean {
+  const predicates = ancestors.flatMap(a => [
+    (e: Element) => e.id === a.id,
+    (e: Element) => isAncestor(a, e)
+  ])
+  return anyPass(predicates)
+}
+
+
+export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
+  const isDescendant = isDescendantOf(ancestors)
+  return (e: Element) => !isDescendant(e)
 }
 
 export function commonAncestor(first: Fqn, second: Fqn) {

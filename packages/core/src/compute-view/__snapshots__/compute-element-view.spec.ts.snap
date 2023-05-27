@@ -1,6 +1,105 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`view of cloud 1`] = `
+exports[`compute-element-view > view of cloud (exclude cloud, amazon.*) 1`] = `
+{
+  "autoLayout": "TB",
+  "edges": [
+    {
+      "id": "cloud.frontend:cloud.backend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "customer:cloud.frontend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend",
+    },
+    {
+      "id": "support:cloud.frontend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
+  ],
+  "id": "cloud",
+  "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "id": "customer",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "support",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "frontend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "backend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+      ],
+      "isInclude": true,
+    },
+    {
+      "exprs": [
+        {
+          "element": "cloud",
+          "isDescedants": false,
+        },
+        {
+          "element": "amazon",
+          "isDescedants": true,
+        },
+      ],
+      "isInclude": false,
+    },
+  ],
+  "title": "",
+  "viewOf": "cloud",
+}
+`;
+
+exports[`compute-element-view > view of cloud 1`] = `
 {
   "autoLayout": "TB",
   "edges": [
@@ -116,7 +215,7 @@ exports[`view of cloud 1`] = `
 }
 `;
 
-exports[`view with 3 levels 1`] = `
+exports[`compute-element-view > view with 3 levels 1`] = `
 {
   "autoLayout": "TB",
   "edges": [

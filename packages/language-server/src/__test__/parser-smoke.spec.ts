@@ -1,29 +1,25 @@
-import { toPairs } from 'rambdax'
 import { describe, vi, it } from 'vitest'
+import '../logger'
+vi.mock('../logger')
+
+import { toPairs } from 'rambdax'
 import { createTestServices } from '../test'
 import * as testfiles from './parser-smoke'
 
-vi.mock('../logger', () => ({
-  logger: {
-    log: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn()
-  }
-}))
 
-describe('parser smoke', () => {
-  toPairs(testfiles).forEach(([name, document]) => {
-    it.concurrent(name, async ({ expect }) => {
+describe.concurrent('parser smoke', () => {
+
+  for (const [name, document] of toPairs(testfiles)) {
+    it(name, async ({ expect }) => {
       const { validate } = createTestServices()
       const { diagnostics } = await validate(document)
       const errors = diagnostics.map(d => d.message).join('\n')
       if (name.startsWith('invalid_')) {
-        expect(errors).not.be.empty
+        expect(errors).not.toBe('')
       } else {
-        expect(errors).be.empty
+        expect(errors).toBe('')
       }
     })
-  })
+  }
+
 })
