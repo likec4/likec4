@@ -3,20 +3,33 @@ import { DevTools, useAtomsDevtools } from 'jotai-devtools'
 import { useHydrateAtoms } from 'jotai/utils'
 import { useMemo } from 'react'
 import { currentFileAtom, filesAtom, viewsReadyAtom } from './atoms'
-import { BigBankPlayground } from './initial/bigbank'
-import { GettingStartedPlayground } from './initial/getting-started'
+import { BigBankPlayground, GettingStartedPlayground, BlankPlayground } from './initial'
 
 export type PlaygroundDataProviderProps = {
-  variant: 'bigbank' | 'getting-started'
+  variant: 'bigbank' | 'getting-started' | 'blank'
 }
 
 function InitJotaiAtoms({ variant, children }: React.PropsWithChildren<PlaygroundDataProviderProps>) {
   // initialising on state with prop on render here
-  const initial = variant === 'bigbank' ? BigBankPlayground : GettingStartedPlayground
+  let initial
+  switch (variant) {
+    case "bigbank": {
+      initial = BigBankPlayground
+      break
+    }
+    case "getting-started": {
+      initial = GettingStartedPlayground
+      break
+    }
+    case "blank": {
+      initial = BlankPlayground
+      break
+    }
+  }
   useHydrateAtoms([
     [currentFileAtom, initial.current],
     [viewsReadyAtom, false],
-    [filesAtom, {...initial.files}]
+    [filesAtom, { ...initial.files }]
   ])
   useAtomsDevtools(variant)
   return <>{children}</>
@@ -27,9 +40,9 @@ export function PlaygroundDataProvider({ variant, children }: React.PropsWithChi
   const jotaiStore = useMemo(() => createStore(), [variant])
 
   return <Provider store={jotaiStore}>
-      <InitJotaiAtoms variant={variant}>
-        <DevTools store={jotaiStore} />
-        {children}
-      </InitJotaiAtoms>
-    </Provider>
+    <InitJotaiAtoms variant={variant}>
+      <DevTools store={jotaiStore} />
+      {children}
+    </InitJotaiAtoms>
+  </Provider>
 }

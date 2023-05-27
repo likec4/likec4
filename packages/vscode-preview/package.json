@@ -31,7 +31,7 @@
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-error-boundary": "^4.0.4",
+    "react-error-boundary": "^4.0.7",
     "type-fest": "^3.10.0"
   },
   "devDependencies": {
@@ -42,6 +42,6 @@
     "@types/vscode-webview": "^1.57.1",
     "@vitejs/plugin-react": "^4.0.0",
     "typescript": "^5.0.4",
-    "vite": "^4.3.8"
+    "vite": "^4.3.9"
   }
 }

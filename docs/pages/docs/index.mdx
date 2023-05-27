@@ -24,14 +24,17 @@ Any change in the model automatically reflected - rename elements, update descri
 
 ## How to try
 
-Various ways to play and learn the tool:
-
-- Online [playground](/playground/)
+- Online playground:
+  - [Blank](/playground/blank/)  
+  - [Tutorial](/playground/getting-started/)
+  - [BigBank ](/playground/)
 - With [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
 - With [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
 - Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 
 ## Tutorial
+
+Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [text-underline-position:from-font]" href="/playground/blank/" target="_blank">blank playground</Link> in a new tab and follow the steps.
 
 <Steps>
 
@@ -40,18 +43,18 @@ Various ways to play and learn the tool:
 We start with defining the element kinds we want in our model.  
 For now we need only two - `actor` and `system`
 
-```likec4 showLineNumbers filename="getting-started.c4" 
+```likec4 showLineNumbers copy filename="getting-started.c4" 
 specification {
   element actor
   element system
 }
 ```
 
-### Define base model
+### Define first elements
 
-Start with top-level elements
+Start with top-level architecture elements
 
-```likec4 showLineNumbers filename="getting-started.c4" 
+```likec4 showLineNumbers copy {7-8} filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -66,9 +69,9 @@ model {
 ### Add nested elements
 
 Assume our system has two main components - `ui` and `backend`.  
-We add new kind to the specification - `component` and update the model.
+We add new kind to the specification and update the model.
 
-```likec4 showLineNumbers {4,10-11}  filename="getting-started.c4" 
+```likec4 showLineNumbers {4,10-11} copy filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -84,11 +87,11 @@ model {
 }
 ```
 
-### Relationships
+### Add relationships
 
 We have at least these relationships:
 
-```likec4 showLineNumbers {13,14,17-18} filename="getting-started.c4" 
+```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -115,7 +118,7 @@ model {
 View is a projection, a slice of the model defined by predicates (what to include/exclude).  
 Let's add the Landscape view, i.e bird's eye view of the architecture.
 
-```likec4 showLineNumbers copy {23-25} filename="getting-started.c4" 
+```likec4 showLineNumbers {23-25} copy filename="getting-started.c4" 
 specification {
   element actor
   element system
@@ -152,15 +155,15 @@ We got this:
 <Callout type="info">
   **Why there is a relationship?**
 
-  The relationships are implied from the model.  
-  `customer -> saas` is implied, because `customer` has the relationship with nested `saas.ui` element.  
-  All "implied" relationships are merged together.
+  The relationships are implied from the nested elements.  
+  `customer` has the relationship with the nested `saas.ui` element
 </Callout>
 
 ### Add more views
 
 View may have a root element `view of ...` as initial scope.  
-Then predicate `include *` is applied to the root element and includes nested elements.
+Then predicate `include *` is applied to the root element and includes nested elements.  
+This covered in more details in [LikeC4 Language - Views](/docs/dsl/views).
 
 ```likec4 showLineNumbers copy {29-31} filename="getting-started.c4" 
 specification {
@@ -265,7 +268,7 @@ The `saas` view after changes:
 
 ### Change model
 
-And if we change the model - views are updated automatically.
+Let's change the description of the `customer` and the label of `customer -> ui`
 
 ```likec4 showLineNumbers {9,31} copy filename="getting-started.c4" 
 specification {
@@ -320,8 +323,9 @@ views {
 }
 ```
 
-We changed description of the element and label of the relationship.  
-Landscape view:
+We made changes and all views are updated automatically.
+
+`index` view:
 
 ![landscape view after changes](/getting-started/04.png)
 
@@ -334,7 +338,7 @@ Landscape view:
 ## Next steps
 
 The following steps would be - install the CLI, export views as images or generate react components.  
-Or you can try [this tutorial in playground](/playground/getting-started/).
+Or you can play with [this tutorial in playground](/playground/getting-started/).
 
 But better start the language reference first and then jump to the playground.
 

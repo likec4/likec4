@@ -40,8 +40,14 @@ View may have a root element, then it inherits the scope (for references)
 ```likec4 filename="views.c4"
 views {
 
+  view {
+    include api // ⛔️ Error: 'api' is not found
+  }
+
   view of cloud.backend {
     title 'Backend components'
+
+    include api // ✅ This is OK, references 'cloud.backend.api'
   }
 
 }
@@ -49,7 +55,7 @@ views {
 
 ## View predicates
 
-View predicates define what elements/relations are included/excluded.
+View predicates define what elements/relations should be included/excluded.
 
 ```likec4 
 // include element
@@ -85,23 +91,24 @@ view of cloud.backend {
 }
 ```
 
-Predicate are applied in same the order as defined in view.  
-Example from [BigBank](/examples/bigbank/customer/):
+Predicates are applied in same the order as defined in view.  
+
 
 ```likec4 
 view {
   // rules may be merged
   include
     customer,
-    bigbank,
-    internetBankingSystem,
-    customer -> internetBankingSystem.*,
-    customer -> bigbank.*
+    bigbank.*
 
-  exclude webApplication
+  // exclude webApplication being included with `bigbank.*`
+  exclude bigbank.webApplication
+
+  include
+    bigbank,
+    customer -> bigbank.*
 }
 ```
-
 
 ## Style rules
 
@@ -113,14 +120,17 @@ view apiApp of internetBankingSystem.apiApplication {
 
   include *
 
+  // apply to all elements
   style * {
     color muted
   }
 
+  // apply only to these elements
   style singlePageApplication, mobileApp {
     color secondary
   }
 
+  // apply only to apiApplication and its descdendants
   style apiApplication, apiApplication.* {
     color primary
   }
@@ -130,12 +140,3 @@ view apiApp of internetBankingSystem.apiApplication {
 <Callout>
   TODO: Document style rules
 </Callout>
-
-...
-
-
-Try to play with the architecture from Getting Started tutorial:
-
-<Cards>
-  <Card title="Open Playground" href={`/playground/getting-started/`} arrow/>
-</Cards>

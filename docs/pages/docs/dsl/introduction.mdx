@@ -1,19 +1,17 @@
 ---
-title: LikeC4 DSL Introduction
+title: LikeC4 Language
 ---
 
 import { Callout, FileTree } from 'nextra-theme-docs'
 
-# LikeC4 Language Introduction
+# LikeC4 Language
 
 LikeC4 is a DSL for describing software architecture. It might look like [Structurizr DSL](https://github.com/structurizr/dsl), though it is not
 fully compatible.
 
-LikeC4 gives a freedom to the architect/developer and makes it easier to write with IDE support.
-
 The source files have `.likec4` or `.c4` extension.  
+LikeC4 looks for all source files and merges into a single model (explained later in [multiple sources](./workspace)).
 
-LikeC4 looks for all source files and **merges into a single model** (explained later in [multiple sources](./workspace)).  
 A project may look like:
 
 <FileTree>
@@ -37,7 +35,7 @@ A project may look like:
 
 Source files should have at least one of these statements:
 
-- `specification` - define your own element kinds, like **app**, **microservice**, **grapqlMutation**, wantever you need
+- `specification` - define your own element kinds, like **app**, **microservice**, **grapqlMutation**, whatever you need
 - `model` - architecture elements, hierarchies, compositions and relationships
 - `views` - visual "projections" of the model from different perspectives (by predicates)
 

@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+    {
+      "type": "npm",
+      "script": "dev",
+      "path": "docs",
+      "problemMatcher": [],
+      "label": "docs: next dev",
+      "detail": "run generate && next dev"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "label": "build",
+      "detail": "turbo run build --filter='./packages/*'",
+      "presentation": {
+        "echo": true,
+        "close": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}

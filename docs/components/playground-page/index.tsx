@@ -8,27 +8,32 @@ const Playground = dynamic(
   }
 )
 // import Playground from './playground'
-
-export function PlaygroundBigbank() {
-  return <div style={{
+const PlaygroundContainer = ({children}: React.PropsWithChildren) => (
+  <div style={{
     position: 'fixed',
     top: 'var(--nextra-navbar-height)',
     bottom: 0,
     left: 0,
     right: 0
   }}>
-    <Playground variant={'bigbank'}/>
+    {children}
   </div>
+)
+
+export function PlaygroundBigbank() {
+  return <PlaygroundContainer>
+    <Playground variant={'bigbank'}/>
+  </PlaygroundContainer>
 }
 
 export function PlaygroundGettingStarted() {
-  return <div style={{
-    position: 'fixed',
-    top: 'var(--nextra-navbar-height)',
-    bottom: 0,
-    left: 0,
-    right: 0
-  }}>
+  return <PlaygroundContainer>
     <Playground variant={'getting-started'}/>
-  </div>
+  </PlaygroundContainer>
+}
+
+export function PlaygroundBlank() {
+  return <PlaygroundContainer>
+    <Playground variant={'blank'}/>
+  </PlaygroundContainer>
 }

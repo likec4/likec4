@@ -1,6 +1,5 @@
 {
-  "index": {
-    "title": "BigBank",
+  "*": {
     "theme": {
       "layout": "raw",
       "timestamp": false,
@@ -11,16 +10,13 @@
       "pagination": false
     }
   },
+  "index": {
+    "title": "Playground - BigBank"
+  },
   "getting-started": {
-    "title": "Getting Started",
-    "theme": {
-      "layout": "raw",
-      "timestamp": false,
-      "breadcrumb": false,
-      "footer": false,
-      "sidebar": false,
-      "toc": false,
-      "pagination": false
-    }
+    "title": "Playground - Getting Started"
+  },
+  "blank": {
+    "title": "Playground - Blank"
   }
 }

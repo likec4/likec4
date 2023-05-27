@@ -75,7 +75,7 @@ We even may reference something that is not yet defined as it will be hoisted la
 
 The relation from `frontend` referencing not yet defined `graphql`:
 
-```likec4 copy filename="nested-elements.c4"
+```likec4 showLineNumbers copy filename="hoisting.c4"
 model {
   
   service service1 {
@@ -97,6 +97,13 @@ model {
   
 }
 ```
+
+<Callout type="info" emoji="ℹ️">
+  Line 7 and 17 look the same  
+  `frontend -> api`  
+
+  But they refer different `api` elements.
+</Callout>
 
 ## Full qualified names
 

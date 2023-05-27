@@ -24,7 +24,7 @@ model {
 }
 ```
 
-Element must have a name - the identifier and it is used for references.  
+Element must have a name. It is used for references.  
 It can contain letters, digits and underscore, but can't start with a digit.
 
 | identifier        | |
@@ -103,11 +103,13 @@ model {
   // service1 has backend and frontend
   service service1 {
     component backend {
+      // backend has api
       component api
     }
     component frontend
   }
 
+  // or use '='
   service2 = service {    
     backend = component {
       api = component
@@ -135,7 +137,7 @@ and:
 - `service2.frontend`
 
 <Callout>
-  Full qualified name may used for references. This explained later
+  Full qualified name may be used in references.
 </Callout>
 
 It is not possible to have elements with the same name on the same hierarchy level.
