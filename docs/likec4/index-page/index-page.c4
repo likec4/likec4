@@ -1,0 +1,40 @@
+specification {
+  element actor
+  element system
+  element component
+}
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+  }
+
+  saas = system 'Our SaaS' {
+    description 'Our product allows customers to manage their data'
+
+    backend = component 'Backend Services' {
+      description '
+        Implement business logic
+        and expose as REST API
+      '
+    }
+
+    ui = component 'Frontend' {
+      description 'NextJs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+
+      -> backend 'fetches via HTTPS'
+    }
+  }
+
+  customer -> saas 'uses to manage data'
+  customer -> ui 'opens in browser'
+}
+views {
+
+  view index {
+    title 'Landscape view'
+    include *
+  }
+}

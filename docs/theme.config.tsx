@@ -7,7 +7,7 @@ import { cn } from './lib'
 
 const logo = (
   <span className={cn(
-    'inline-block h-[30px] pr-4'
+    'inline-block h-[28px] pr-4'
   )}>
     <Logo className='w-auto h-full'/>
   </span>
@@ -34,7 +34,7 @@ const config: DocsThemeConfig = {
   },
   footer: {
     // component: () => null,
-    text: `MIT ${new Date().getFullYear()} LikeC4`
+    text: `${new Date().getFullYear()} MIT License © LikeC4`
   },
   useNextSeoProps() {
     const { frontMatter } = useConfig()
@@ -49,7 +49,7 @@ const config: DocsThemeConfig = {
             ? 'Example Big Bank: %s'
             : '%s – LikeC4',
       }),
-      description: 'Declare your architecture in code, get diagrams as images or react components and keep your documentation always up-to-date.',
+      description: 'Live diagrams from the "like c4" model, managed by open-source tooling as code in your repository.',
       themeColor: '#111',
       openGraph: {
         url,

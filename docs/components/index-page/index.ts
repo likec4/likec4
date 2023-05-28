@@ -1,1 +1,1 @@
-export * from './hero';
+export * from './index-page';

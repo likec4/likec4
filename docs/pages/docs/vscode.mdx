@@ -5,28 +5,27 @@ import { TbBrandVscode } from "react-icons/tb"
 
 # VSCode Extension
 
-<div className="my-6 w-full max-w-[1312px] mx-auto">
-  <div className="p-2 relative overflow-hidden shadow-xl flex bg-neutral-800/60 sm:rounded-xl dark:backdrop-blur dark:ring-neutral-700/80">
-    <video autoPlay loop playsInline>
-      <source src="https://github-production-user-asset-6210df.s3.amazonaws.com/824903/238808661-24521327-25d6-44ae-a6b4-6eb492242862.mp4" type="video/mp4"/>
+<div className="my-6 w-full max-w-[1000px] mr-auto">
+  <div className="relative overflow-hidden flex rounded-sm">
+    <video autoPlay loop playsInline muted poster="/index-page-video.png">
+      <source src="/index-page.mp4" type="video/mp4" />
     </video>
   </div>
 </div>
 
-LikeC4 has an official [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode).
-
-The extension provides (via [LSP](https://microsoft.github.io/language-server-protocol)):
+LikeC4 has an official [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode) - open-source and available on [github](https://github.dev/likec4/example-cloud-system).  
+The extension provides (via [language server protocol](https://microsoft.github.io/language-server-protocol)):
 
 - Validation and error reporting
-- Previews
+- Semantic syntax highlighting
+- Live Previews
 - Code completion and navigation 
 - Resolve references (like `find all references`, `go to definition` .. )
 - "Safe" renames
-- Syntax highlighting
 - Hover information
 
 Extension is universal and can run as web-version.  
-You can open [this sample](https://github.dev/likec4/example-cloud-system) in the browser (install workspace recommendation and refresh the page).
+Open [example-cloud-system](https://github.dev/likec4/example-cloud-system) in the browser using any of:
 
 <Cards>
   <Card

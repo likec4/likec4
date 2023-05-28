@@ -2,6 +2,29 @@
 title: LikeC4 - Architecture-as-a-code
 ---
 
-import { IndexPageHero } from '$/components/index-page'
+import { Hero, HeroVideo, IndexPageSection, IndexPageDiagram } from '$/components/index-page'
 
-<IndexPageHero/>
+<Hero/>
+<HeroVideo/>
+
+<IndexPageSection>
+  ### Showcase
+    
+  ```likec4 file=<rootDir>/likec4/index-page/index-page.c4 filename="showcase.c4"
+  ```
+
+  and generated diagrams (click to explore):
+  
+  <IndexPageDiagram/>  
+
+  ### Export
+
+  - React components
+  - PNG / SVG
+  - Structurizr
+  - D2
+  - PlantUML
+  - Mermaid
+  
+
+</IndexPageSection>
