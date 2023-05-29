@@ -4,7 +4,7 @@ import { type Fqn, type Element, type ElementView, type Relation, DefaultThemeCo
 import type * as Expr from '../types/expression'
 import * as Expression from '../types/expression'
 import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle, type ViewID, type ViewRuleStyle } from '../types/view'
-import { compareByFqnHierarchically, failExpectedNever, ignoreNeverInRuntime, isAncestor, isSameHierarchy, parentFqn, Relations } from '../utils'
+import { compareByFqnHierarchically, failExpectedNever, ignoreNeverInRuntime, isAncestor, isSameHierarchy, notDescendantOf, parentFqn, Relations } from '../utils'
 import { hasRelation, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from '../utils/relations'
 import { EdgeBuilder } from './EdgeBuilder'
 import { sortNodes } from './utils/sortNodes'
@@ -87,7 +87,13 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
   if (expr.isDescedants) {
     filters.push(Relations.isInside(expr.element))
   }
+  let excludeImplicits = [] as Element[]
   for (const el of elements) {
+    if (ctx.root && ctx.root !== el.id && !isAncestor(el.id, ctx.root)) {
+      excludeImplicits = excludeImplicits.concat(
+        [...ctx.implicits].filter(impl => isAncestor(el.id, impl.id))
+      )
+    }
     for (const current of ctx.elements) {
       if (!isSameHierarchy(el, current)) {
         filters.push(Relations.isAnyBetween(el.id, current.id))
@@ -95,7 +101,14 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
     }
   }
   const relations = ctx.index.filterRelations(anyPass(filters))
-  return ctx.include({ elements, relations })
+
+  if (excludeImplicits.length == 0) {
+    return ctx.include({ elements, relations })
+  }
+
+  return ctx
+    .include({ elements, relations })
+    .exclude({ implicits: excludeImplicits })
 }
 
 const excludeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
@@ -265,13 +278,14 @@ const includeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
   })
 }
 
-const excludeInoutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => {
+const excludeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => {
   if (Expression.isWildcard(expr.inout) && !ctx.root) {
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
-  const filters = targets.map(t => isAnyInOut(t.id))
-  const excluded = [...ctx.relations].filter(anyPass(filters))
+  const excluded = [...ctx.relations].filter(
+    anyPass(targets.map(t => isAnyInOut(t.id)))
+  )
   if (excluded.length > 0) {
     return ctx.exclude({
       relations: excluded
@@ -320,15 +334,17 @@ const excludeRelationExpr = (ctx: ComputeCtx, expr: Expr.RelationExpr): ComputeC
       filters.push(isBetween(source.id, target.id))
     }
   }
-
+  if (filters.length == 0) {
+    return ctx
+  }
   const excluded = [...ctx.relations].filter(anyPass(filters))
-  if (excluded.length > 0) {
-    return ctx.exclude({
-      relations: excluded
-    })
+  if (excluded.length == 0) {
+    return ctx
   }
 
-  return ctx
+  return ctx.exclude({
+    relations: excluded
+  })
 }
 
 export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
@@ -359,7 +375,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
         continue
       }
       if (Expression.isInOut(expr)) {
-        ctx = isInclude ? includeInOutExpr(ctx, expr) : excludeInoutExpr(ctx, expr)
+        ctx = isInclude ? includeInOutExpr(ctx, expr) : excludeInOutExpr(ctx, expr)
         continue
       }
       if (Expression.isRelation(expr)) {

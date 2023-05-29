@@ -215,6 +215,120 @@ exports[`compute-element-view > view of cloud 1`] = `
 }
 `;
 
+exports[`compute-element-view > view of cloud.frontend 1`] = `
+{
+  "autoLayout": "TB",
+  "edges": [
+    {
+      "id": "cloud.frontend.adminPanel:cloud.backend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.adminPanel",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "cloud.frontend.dashboard:cloud.backend",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "customer:cloud.frontend.dashboard",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend.dashboard",
+    },
+    {
+      "id": "support:cloud.frontend.adminPanel",
+      "label": null,
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
+    },
+  ],
+  "id": "cloudfrontend",
+  "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "id": "customer",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "support",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "support",
+    },
+    {
+      "children": [
+        "cloud.frontend.adminPanel",
+        "cloud.frontend.dashboard",
+      ],
+      "color": "primary",
+      "id": "cloud.frontend",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "frontend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.adminPanel",
+      "parent": "cloud.frontend",
+      "shape": "rectangle",
+      "title": "adminPanel",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.frontend.dashboard",
+      "parent": "cloud.frontend",
+      "shape": "rectangle",
+      "title": "dashboard",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "id": "cloud.backend",
+      "parent": null,
+      "shape": "rectangle",
+      "title": "backend",
+    },
+  ],
+  "rules": [
+    {
+      "exprs": [
+        {
+          "wildcard": true,
+        },
+      ],
+      "isInclude": true,
+    },
+  ],
+  "title": "",
+  "viewOf": "cloud.frontend",
+}
+`;
+
 exports[`compute-element-view > view with 3 levels 1`] = `
 {
   "autoLayout": "TB",

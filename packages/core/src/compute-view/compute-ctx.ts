@@ -1,7 +1,6 @@
 import { difference } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import type { Fqn, Element, Relation } from '../types'
-import { notDescendantOf } from '../utils'
 
 export type ComputeCtxPatch = {
   elements?: Element[]
@@ -23,18 +22,12 @@ export class ComputeCtx {
   include({
     elements, relations, implicits
   }: ComputeCtxPatch) {
-    let newImplicits = implicits ? new Set([...this.implicits, ...implicits]) : this.implicits
-    if (elements) {
-      newImplicits = new Set(
-        [...newImplicits].filter(notDescendantOf(elements))
-      )
-    }
     return new ComputeCtx(
       this.index,
       this.root,
       elements ? new Set([...this.elements, ...elements]) : this.elements,
       relations ? new Set([...this.relations, ...relations]) : this.relations,
-      newImplicits
+      implicits ? new Set([...this.implicits, ...implicits]) : this.implicits
     )
   }
 

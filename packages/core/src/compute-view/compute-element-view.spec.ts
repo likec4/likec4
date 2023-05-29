@@ -132,6 +132,90 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
+
+  it('view of cloud.frontend', () => {
+    const view = computeElementView(
+      {
+        id: 'cloudfrontend' as ViewID,
+        title: '',
+        viewOf: 'cloud.frontend' as Fqn,
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                wildcard: true
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+    const { nodes, edges } = view
+
+    expect(nodes.map(n => n.id)).toEqual([
+      'customer',
+      'support',
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend'
+    ])
+
+    expect(edges.map(e => e.id)).toEqual([
+      "cloud.frontend.adminPanel:cloud.backend",
+      "cloud.frontend.dashboard:cloud.backend",
+      "customer:cloud.frontend.dashboard",
+      "support:cloud.frontend.adminPanel",
+    ])
+
+    expect(view).toMatchSnapshot()
+  })
+
+  it('view of cloud.frontend (and include parent cloud)', () => {
+    const view = computeElementView(
+      {
+        id: 'cloudfrontend2' as ViewID,
+        title: '',
+        viewOf: 'cloud.frontend' as Fqn,
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                wildcard: true
+              },
+              // including parent cloud should not remove implicit cloud.backend
+              {
+                element: 'cloud' as Fqn, isDescedants: false
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+    const { nodes, edges } = view
+
+    expect(nodes.map(n => n.id)).toEqual([
+      'customer',
+      'support',
+      'cloud',
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend'
+    ])
+
+    expect(edges.map(e => e.id)).toEqual([
+      "cloud.frontend.adminPanel:cloud.backend",
+      "cloud.frontend.dashboard:cloud.backend",
+      "customer:cloud.frontend.dashboard",
+      "support:cloud.frontend.adminPanel",
+    ])
+  })
+
   it('view of cloud (exclude cloud, amazon.*)', () => {
     const view = computeElementView(
       {
