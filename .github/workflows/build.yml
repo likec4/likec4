@@ -2,6 +2,8 @@ name: build
 
 on: [push]
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   build:
     name: build and test
