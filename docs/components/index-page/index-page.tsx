@@ -21,10 +21,9 @@ export const Hero = () => (
   <section className={cn(
     'w-full flex flex-col space-y-4 lg:space-y-6 items-center',
     'mt-8 md:mt-12 lg:mt-20',
-    'px-7 md:px-4'
   )}>
     <h1 className={cn(
-      'text-[min(3.75rem,max(6vw,2.25rem))]',
+      'text-center text-[min(3.75rem,max(6vw,2.25rem))]',
       'tracking-tight leading-none',
       'text-transparent bg-clip-text bg-gradient-to-br from-[#F8F3D4] to-[#5E98AF]',
       heroFont.className
@@ -44,7 +43,6 @@ export const HeroVideo = () => (
   <section className={cn(
     'w-full',
     'mt-12 md:mt-16',
-    'px-4',
   )}>
     <div className="w-full max-w-[1000px] mx-auto">
       <div className="relative overflow-hidden flex rounded-xl">
@@ -60,7 +58,6 @@ export const IndexPageSection = ({children}: PropsWithChildren) => (
   <section className={cn(
     'w-full max-w-5xl mx-auto',
     'mt-8',
-    'px-4',
   )}>
     {children}
   </section>
