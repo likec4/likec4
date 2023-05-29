@@ -1,5 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '$/components/ui/dropdown-menu'
 import { cn } from '$/lib'
+import type { DiagramView} from '@likec4/diagrams';
 import { Diagram, type DiagramPaddings } from '@likec4/diagrams'
 import { useMeasure, type Measures } from '@react-hookz/web/esm'
 import {
@@ -9,10 +10,9 @@ import {
 import MonacoEditor from './editor/monaco'
 import { useAtom, useAtomValue } from 'jotai'
 import { ChevronDown } from 'lucide-react'
-import { Suspense, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Button } from '../ui/button'
-import type { PlaygroundDataProviderProps } from './data/PlaygroundDataProvider'
-import { PlaygroundDataProvider } from './data/PlaygroundDataProvider'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Button } from '$/components/ui/button'
+import { PlaygroundDataProvider, type PlaygroundDataProviderProps } from './data/PlaygroundDataProvider'
 import { useCurrentDiagram, useCurrentFile, useInitialFiles, useRevealInEditor, useUpdateCurrentFile } from './data'
 import { diagramIdAtom, viewsReadyAtom } from './data'
 import styles from './playground.module.css'
@@ -34,6 +34,12 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
   const isReady = useAtomValue(viewsReadyAtom)
   const revealInEditor = useRevealInEditor()
 
+  const previousDiagramRef = useRef<DiagramView | null>(null)
+  if (diagramState.state === 'hasData' && diagramState.data) {
+    previousDiagramRef.current = diagramState.data
+  }
+  const previousDiagram = previousDiagramRef.current
+
   const isFirstRenderRef = useRef(true)
 
   useEffect(() => {
@@ -44,7 +50,8 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
     }
   }, [viewId])
 
-  if (diagramState.state !== 'hasData') {
+  if (diagramState.state !== 'hasData' && !previousDiagram) {
+    //console.log('PlaygroundPreview: diagramState.state !== "hasData" && !previousDiagram')
     return <div className={styles.diagram}
       style={{
         padding: '2rem',
@@ -60,8 +67,9 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
     </div>
   }
 
-  const diagram = diagramState.data
+  const diagram = diagramState.state === 'hasData' ? diagramState.data : previousDiagram
   if (!diagram) {
+    //console.log('PlaygroundPreview: !diagram')
     return <div className={styles.diagram}
       style={{
         padding: '2rem',
@@ -182,9 +190,9 @@ function Playground() {
   }, [id])
 
   return <div id={id} ref={containerRef} className={styles.playground}>
-    {sideBarMeasures && containerMeasures && <Suspense fallback="Loading...">
+    {sideBarMeasures && containerMeasures && <>
         <PlaygroundPreview sidebarWidth={sideBarMeasures.width} container={containerMeasures} />
-    </Suspense>}
+    </>}
     <div ref={sidebarRef} className={styles.sidebar}>
       <MonacoEditor
         currentFile={current}
