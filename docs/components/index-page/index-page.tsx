@@ -2,6 +2,9 @@ import { cn } from '$/lib'
 import { Noto_Sans } from 'next/font/google'
 import type { PropsWithChildren } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { Button } from '../ui/button'
+
 
 const LikeC4View = dynamic({
   loader: () => import('./LikeC4Diagram'),
@@ -24,17 +27,17 @@ export const Hero = () => (
   )}>
     <h1 className={cn(
       'text-center text-[min(3.75rem,max(6vw,2.25rem))]',
-      'tracking-tight leading-none',
+      'tracking-tight leading-none whitespace-nowrap',
       'text-transparent bg-clip-text bg-gradient-to-br from-[#F8F3D4] to-[#5E98AF]',
       heroFont.className
     )}>Architecture as a code</h1>
     <div className={cn(
-      'text-center text-[min(1.5rem,max(3vw,1.25rem))] max-w-4xl',
+      'text-center text-[min(1.5rem,max(3vw,1.25rem))] max-w-[42rem]',
       'leading-tight',
       'text-transparent bg-clip-text bg-gradient-to-r from-[#F8F3D4] to-[#5E98AF]',
       heroFont.className
     )}>
-      Live diagrams from the "like c4" model, managed by open-source tooling as code in your repository, under your control.
+      Visualize, collaborate, and evolve the software architecture with always actual and live diagrams
     </div>
   </section>
 )
@@ -54,14 +57,42 @@ export const HeroVideo = () => (
   </section>
 )
 
+export const GetStartedButton = () => (
+  <section className={cn(
+    'w-full',
+    'mt-6',
+    'text-center'
+  )}>
+    <Link
+      href={'/docs/'}
+      className={cn(
+        heroFont.className,
+        'inline-flex items-center justify-center rounded-md text-md',
+        'text-black',
+        'bg-gradient-to-br from-[#F8F3D4] to-[#5E98AF]',
+        'hover:bg-opacity-40',
+        'px-3 py-2'
+      )}>
+      Getting Started
+    </Link>
+  </section>
+)
+
 export const IndexPageSection = ({children}: PropsWithChildren) => (
   <section className={cn(
     'w-full max-w-5xl mx-auto',
-    'mt-8',
+    'mt-20',
   )}>
     {children}
   </section>
 )
+
+export const IndexPageWhy = () => (<div>
+  <div>
+    <div>Code</div>
+    <img src="/index-page-likec4-file.png"/>
+  </div>
+</div>)
 
 
 export const IndexPageDiagram = () => (

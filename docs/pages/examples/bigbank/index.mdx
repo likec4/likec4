@@ -1,36 +1,14 @@
 import { Card, Cards } from "nextra-theme-docs"
 
-# Source Code
+# Original
 
 This example is taken from the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown and converted to LikeC4.
 
 
-<Cards>
-  <Card title="Open in playground" href={`/playground/`} arrow/>
-</Cards>
-
-
-## Original
+## Structurizr DSL
 
 This is the original C4 model defined in Structurizr DSL.  
 [open on structurizr](https://structurizr.com/dsl?example=big-bank-plc)
 
 ```structurizr showLineNumbers file=<rootDir>/resources/structurizr.dsl filename="structurizr.dsl"
-```
-
-## LikeC4 Code
-
-First, we define the specification and element types.  
-[open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/_spec.c4)
-
-```likec4 showLineNumbers file=<rootDir>/likec4/bigbank/_spec.c4 filename="_spec.c4" 
-```
-
-
-Now, copy-paste the model and views from Structurizr DSL.  
-LikeC4 does not support the deployment views, so skip them.  
-`views` also require some additional work, that is covered in the next sections.  
-[open on github](https://github.com/likec4/likec4/blob/main/docs/likec4/bigbank.c4)
-
-```likec4 showLineNumbers file=<rootDir>/likec4/bigbank/bigbank.c4 filename="bigbank.c4" showLineNumbers
 ```

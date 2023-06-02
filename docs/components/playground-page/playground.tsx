@@ -18,10 +18,14 @@ import { diagramIdAtom, viewsReadyAtom } from './data'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
+import { keys } from 'rambdax'
 
 const ViewModes = {
   'diagram': 'React Diagram',
   'd2': 'D2',
+  'plantuml': 'PlantUML',
+  'structurizr': 'Structurizr',
+  'mermaid': 'Mermaid',
   'dot': 'Graphviz DOT'
 } as const
 type ViewMode = keyof typeof ViewModes
@@ -39,16 +43,6 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
     previousDiagramRef.current = diagramState.data
   }
   const previousDiagram = previousDiagramRef.current
-
-  const isFirstRenderRef = useRef(true)
-
-  useEffect(() => {
-    if (isFirstRenderRef.current && viewId) {
-      isFirstRenderRef.current = false
-      revealInEditor({ view: viewId })
-      return
-    }
-  }, [viewId])
 
   if (diagramState.state !== 'hasData' && !previousDiagram) {
     //console.log('PlaygroundPreview: diagramState.state !== "hasData" && !previousDiagram')
@@ -112,7 +106,7 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
           paddingLeft: sidebarWidth + 5
         }}>
         {viewMode === 'd2' && <PlaygroundViewD2 diagram={diagram} />}
-        {viewMode === 'dot' && <PlaygroundViewDot diagram={diagram} />}
+        {viewMode !== 'd2' && <PlaygroundViewDot diagram={diagram} />}
       </div>
     )}
     <div
@@ -158,9 +152,9 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuRadioGroup value={viewMode} onValueChange={v => setViewMode(v as ViewMode)}>
-              <DropdownMenuRadioItem value="diagram">{ViewModes.diagram}</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="d2">{ViewModes.d2}</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="dot">{ViewModes.dot}</DropdownMenuRadioItem>
+              {keys(ViewModes).map(key =>
+                <DropdownMenuRadioItem key={key} value={key}>{ViewModes[key]}</DropdownMenuRadioItem>
+              )}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>

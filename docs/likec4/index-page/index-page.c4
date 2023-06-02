@@ -11,11 +11,26 @@ model {
   saas = system 'Our SaaS' {
     description 'Our product allows customers to manage their data'
 
-    backend = component 'Backend Services' {
+    backend = component 'Backend' {
       description '
-        Implement business logic
-        and expose as REST API
+        Implements business logic
+        and provides GraphQL API
       '
+
+      api = component 'GraphQL' {
+        description 'Configured Hasura, provides access to data from database or calls services'
+      }
+
+      services = component 'Services' {
+        description '
+        Serverless Functions
+        Implement business logic and comminucate with external services
+        '
+      }
+
+      api -> services 'calls'
+      api -> db 'reads'
+      services -> db 'writes'
     }
 
     ui = component 'Frontend' {
@@ -24,8 +39,21 @@ model {
         shape browser
       }
 
-      -> backend 'fetches via HTTPS'
+      -> api 'requests via HTTPS'
     }
+
+    infra = component 'Infrastructure' {
+      description 'Cloud Infrastructure, managed services'
+
+      db = component 'Database' {
+        description 'PostgreSQL, hosted on DigitalOcean'
+        style {
+          shape storage
+        }
+      }
+    }
+
+    backend -> infra 'uses'
   }
 
   customer -> saas 'uses to manage data'
@@ -36,5 +64,63 @@ views {
   view index {
     title 'Landscape view'
     include *
+  }
+
+view customer of customer {
+    include *, saas.ui
+
+    style customer {
+      color sky
+    }
+  }
+
+  view saas of saas {
+    title 'Our Saas - Overview'
+    include *
+
+    style saas.* {
+      color sky
+    }
+  }
+
+  view ui of saas.ui {
+    include saas, *
+
+    style saas.ui {
+      color sky
+    }
+  }
+
+  view backend of saas.backend {
+    include *, infra, infra.*
+    style saas.backend.* {
+      color sky
+    }
+  }
+
+  view of infra {
+    include
+      *,
+      backend.* -> infra
+
+    style infra, infra.* {
+      color sky
+    }
+  }
+
+  view of api {
+    include *, backend
+
+    style api {
+      color sky
+    }
+  }
+
+  view of services {
+    include backend, * , -> infra
+
+    style services {
+      color sky
+    }
   }
 }

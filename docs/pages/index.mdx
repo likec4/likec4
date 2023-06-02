@@ -2,29 +2,48 @@
 title: LikeC4 - Architecture-as-a-code
 ---
 
-import { Hero, HeroVideo, IndexPageSection, IndexPageDiagram } from '$/components/index-page'
+import { Hero, HeroVideo, GetStartedButton, IndexPageWhy, IndexPageSection, IndexPageDiagram } from '$/components/index-page'
+import { ArrowBigRightDashIcon } from 'lucide-react'
 
 <Hero/>
+<GetStartedButton/>
 <HeroVideo/>
 
 <IndexPageSection>
-  ### Showcase
-    
-  ```likec4 file=<rootDir>/likec4/index-page/index-page.c4 filename="showcase.c4"
-  ```
+  ## Automation
+  
+  <div className="mt-4 flex flex-row items-center space-x-12">
+  <div className="flex-grow-0 flex items-center justify-center">
+      **From single**
 
-  and generated diagrams (click to explore):
+
+    </div>
+    <div className="flex-grow-0">      
+      ![](/index-page-likec4-file.png)
+    </div>
+    <div className="flex-grow-0 flex items-center justify-center">
+      **to**
+    </div>
+    <div className="flex-grow-0">
+      - React component
+      - PNG / SVG
+      - Structurizr
+      - D2
+      - PlantUML
+      - Mermaid      
+    </div>
+  </div>
+</IndexPageSection>
+
+
+<IndexPageSection>
+  ## Why "Like" C4?
+
+  ...
+
+  ### Showcase
   
   <IndexPageDiagram/>  
-
-  ### Export
-
-  - React components
-  - PNG / SVG
-  - Structurizr
-  - D2
-  - PlantUML
-  - Mermaid
   
 
 </IndexPageSection>
