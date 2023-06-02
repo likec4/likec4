@@ -1,12 +1,28 @@
 <div align="center">
-  <a href="https://github.com/likec4/likec4">
-    <img width="55%" src="https://user-images.githubusercontent.com/824903/232745655-51cdc26b-1723-4ad2-b6e0-4163ae43be09.png">
-  </a>
   <h3>
-    Code your architecture
+    Architecture as a code
   </h3>
+  <p>
+    Live diagrams from the "like c4" model, managed by open-source tooling as code in your repository, under your control.
+  </p>
 </div>
 
-# LikeC4 Support for VS Code
+![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
-This extension contributes a language server for the LikeC4
+---
+
+The extension provides (via [language server protocol](https://microsoft.github.io/language-server-protocol)):
+
+- Validation and error reporting
+- Semantic syntax highlighting
+- Live Previews
+- Code completion and navigation 
+- Resolve references (like `find all references`, `go to definition` .. )
+- "Safe" renames
+- Hover information
+
+Extension is universal and can run as web-version.  
+Open [example-cloud-system](https://github.dev/likec4/example-cloud-system) in the browser using any of:
+
+- [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
+- [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
