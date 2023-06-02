@@ -65,9 +65,9 @@ export class ModelIndex {
     }
     for (const { id, viewOf } of Object.values(views)) {
       if (viewOf) {
-        const views = index._defaultElementView.get(viewOf) ?? []
-        views.push(id)
-        index._defaultElementView.set(viewOf, views)
+        const viewsOf = index._defaultElementView.get(viewOf) ?? []
+        viewsOf.push(id)
+        index._defaultElementView.set(viewOf, viewsOf)
       }
     }
     return index

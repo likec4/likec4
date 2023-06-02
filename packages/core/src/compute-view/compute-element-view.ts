@@ -1,15 +1,46 @@
 import { anyPass, filter, head, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
-import { type Fqn, type Element, type ElementView, type Relation, DefaultThemeColor, DefaultElementShape, type ComputedNode, type ComputedView } from '../types'
+import {
+  type Fqn,
+  type Element,
+  type ElementView,
+  type Relation,
+  DefaultThemeColor,
+  DefaultElementShape,
+  type ComputedNode,
+  type ComputedView
+} from '../types'
 import type * as Expr from '../types/expression'
 import * as Expression from '../types/expression'
-import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle, type ViewID, type ViewRuleStyle } from '../types/view'
-import { compareByFqnHierarchically, failExpectedNever, ignoreNeverInRuntime, isAncestor, isSameHierarchy, notDescendantOf, parentFqn, Relations } from '../utils'
-import { hasRelation, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from '../utils/relations'
+import {
+  isViewRuleAutoLayout,
+  isViewRuleExpression,
+  isViewRuleStyle,
+  type ViewID,
+  type ViewRuleStyle
+} from '../types/view'
+import {
+  compareByFqnHierarchically,
+  failExpectedNever,
+  ignoreNeverInRuntime,
+  isAncestor,
+  isSameHierarchy,
+  parentFqn,
+  Relations
+} from '../utils'
+import {
+  hasRelation,
+  isAnyInOut,
+  isBetween,
+  isIncoming,
+  isInside,
+  isOutgoing
+} from '../utils/relations'
 import { EdgeBuilder } from './EdgeBuilder'
 import { sortNodes } from './utils/sortNodes'
 import { ComputeCtx } from './compute-ctx'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
+import invariant from 'tiny-invariant'
 
 function transformToNodes(
   elementsIterator: Iterable<Element>,
@@ -27,24 +58,22 @@ function transformToNodes(
         parent = parentFqn(parent)
       }
       const navigateTo = head(index.defaultViewOf(id).filter(v => v !== currentViewid))
-      map.set(
-        id,
-        Object.assign(
-          {
-            id,
-            parent,
-            title,
-            color: color ?? DefaultThemeColor,
-            shape: shape ?? DefaultElementShape,
-            children: []
-          },
-          description ? { description } : {},
-          navigateTo ? { navigateTo } : {}
-        )
-      )
       if (parent) {
-        map.get(parent)?.children.push(id)
+        const parentNd = map.get(parent)
+        invariant(parentNd, `parent node ${parent} not found`)
+        parentNd.children.push(id)
       }
+      const node: ComputedNode = {
+        id,
+        parent,
+        title,
+        color: color ?? DefaultThemeColor,
+        shape: shape ?? DefaultElementShape,
+        children: [],
+        ...(description ? { description } : {}),
+        ...(navigateTo ? { navigateTo } : {})
+      }
+      map.set(id, node)
       return map
     }, new Map<Fqn, ComputedNode>())
 }
@@ -106,9 +135,7 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
     return ctx.include({ elements, relations })
   }
 
-  return ctx
-    .include({ elements, relations })
-    .exclude({ implicits: excludeImplicits })
+  return ctx.include({ elements, relations }).exclude({ implicits: excludeImplicits })
 }
 
 const excludeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
@@ -283,9 +310,7 @@ const excludeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
-  const excluded = [...ctx.relations].filter(
-    anyPass(targets.map(t => isAnyInOut(t.id)))
-  )
+  const excluded = [...ctx.relations].filter(anyPass(targets.map(t => isAnyInOut(t.id))))
   if (excluded.length > 0) {
     return ctx.exclude({
       relations: excluded
