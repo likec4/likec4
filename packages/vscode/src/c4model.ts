@@ -71,12 +71,11 @@ export class C4ModelImpl extends ADisposable {
       .map(({ views }) => (viewId in views ? views[viewId] : null))
       .filter(isNotNullish)
       .compose(dropRepeats<ComputedView>(equals))
-      .map(view =>
-        xs.fromPromise(this.layout(view)).replaceError(err => {
-          this.logger.logError(err)
-          return xs.empty()
-        })
-      )
+      .map(view => xs.fromPromise(this.layout(view)))
+      .replaceError(err => {
+        this.logger.logError(err)
+        return xs.empty()
+      })
       .compose(flattenSequentially)
       .subscribe({
         next: diagram => {
