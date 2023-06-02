@@ -42,7 +42,7 @@
 .container {
   cursor: zoom-in;
   transition: all 0.3s cubic-bezier(0.33, 0.6, 0.11, 1.02);
-  padding: 8px;
+  padding: 2rem 1rem;
   border-radius: 0.75rem;
   background: hsl(var(--nextra-primary-hue) 100% 77%/0.1);
 }

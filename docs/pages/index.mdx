@@ -9,9 +9,7 @@ import { ArrowBigRightDashIcon } from 'lucide-react'
 <GetStartedButton/>
 <HeroVideo/>
 
-<IndexPageSection>
-  ## Automation
-  
+<IndexPageSection title="Automation">  
   <div className="mt-4 flex flex-row items-center space-x-12">
   <div className="flex-grow-0 flex items-center justify-center">
       **From single**
@@ -36,14 +34,13 @@ import { ArrowBigRightDashIcon } from 'lucide-react'
 </IndexPageSection>
 
 
-<IndexPageSection>
-  ## Why "Like" C4?
+<IndexPageSection title={'Why "Like" C4?'}>    
+  [C4 Model](https://c4model.com/) is nice, thanks Simon.  
+  But sometimes we want to go beyond container/component elements, have custom ones with our semantics.
 
-  ...
+  LikeC4 extends C4, allows to customize architecture elements
+</IndexPageSection>
 
-  ### Showcase
-  
-  <IndexPageDiagram/>  
-  
-
+<IndexPageSection title={'Showcase'}>    
+  <IndexPageDiagram/>
 </IndexPageSection>

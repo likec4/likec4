@@ -3,7 +3,6 @@ import { Noto_Sans } from 'next/font/google'
 import type { PropsWithChildren } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Button } from '../ui/button'
 
 
 const LikeC4View = dynamic({
@@ -73,16 +72,30 @@ export const GetStartedButton = () => (
         'hover:bg-opacity-40',
         'px-3 py-2'
       )}>
-      Getting Started
+      Get Started
     </Link>
   </section>
 )
 
-export const IndexPageSection = ({children}: PropsWithChildren) => (
+type IndexPageSectionProps = PropsWithChildren<{
+  title?: string
+}>
+
+export const IndexPageSection = ({title, children}: IndexPageSectionProps) => (
   <section className={cn(
     'w-full max-w-5xl mx-auto',
-    'mt-20',
+    'mt-20 md:mt-44',
   )}>
+    {title && <div className="mx-auto max-w-[42rem] my-10 md:my-16 text-">
+        <h2 className={cn(
+        'text-center text-[min(3rem,max(4vw,1.875rem))]',
+        'leading-tight',
+        'text-transparent bg-clip-text bg-gradient-to-r from-[#F8F3D4] to-[#5E98AF]',
+        heroFont.className
+      )}>
+        {title}
+      </h2>
+    </div>}
     {children}
   </section>
 )
