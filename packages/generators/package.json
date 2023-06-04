@@ -7,6 +7,8 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
+    "!dist/__mocks__/**",
+    "!**/*.spec.*",
     "!**/*.map"
   ],
   "repository": {

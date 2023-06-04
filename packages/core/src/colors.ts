@@ -40,6 +40,13 @@ const slate = {
   loContrast: '#e2e8f0'
 } satisfies ElementColors
 
+export const RelationColors = {
+  // lineColor: colors.neutral[400],
+  // labelColor: colors.neutral[300],
+  lineColor: '#a3a3a3',
+  labelColor: '#d4d4d4',
+} as const
+
 export const Colors = {
   primary: blue,
   blue,

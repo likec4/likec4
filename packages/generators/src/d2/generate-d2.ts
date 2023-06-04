@@ -1,5 +1,5 @@
 import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core/types'
-import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium/lib/generator'
 import { isNil } from 'rambdax'
 
 const capitalizeFirstLetter = (value: string) =>

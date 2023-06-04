@@ -11,8 +11,7 @@
     "contrib",
     "!**/__mocks__/",
     "!**/__test__/",
-    "!**/*.spec.js",
-    "!**/*.spec.d.ts",
+    "!**/*.spec.*",
     "!**/*.map"
   ],
   "repository": {

@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core/types'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium/lib/generator'
 
 const componentName = (value: string): string => {
   if (!value.charAt(0).match(/[a-zA-Z]/)) {

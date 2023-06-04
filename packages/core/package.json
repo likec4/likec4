@@ -7,8 +7,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "!**/*.spec.js",
-    "!**/*.spec.d.ts",
+    "!**/*.spec.*",
     "!**/*.map"
   ],
   "repository": {

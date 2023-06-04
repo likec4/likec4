@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core/types'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium/lib/generator'
 
 export function generateViewsDataTs(views: DiagramView[]) {
   const out = new CompositeGeneratorNode()

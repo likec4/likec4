@@ -15,8 +15,9 @@ const options = {
   target: 'node16',
   platform: 'node',
   alias: {
-    'langium': 'langium/src/index.ts',
     'langium/node': 'langium/src/node/index.ts',
+    'langium/lib/generator': 'langium/src/generator/index.ts',
+    'langium': 'langium/src/index.ts',
     "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
     "@likec4/core/utils": '../core/src/utils/index.ts',
     "@likec4/core/types": '../core/src/types/index.ts',

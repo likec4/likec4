@@ -1,4 +1,5 @@
 import type { ComputedEdge, ComputedNode } from '@likec4/core/types'
+import { Colors } from '@likec4/core'
 import wrap from 'word-wrap'
 
 
@@ -25,12 +26,14 @@ function wrapToHTMLLabel({
   maxChars,
   fontSize,
   lineHeight,
+  color,
   align = 'center'
 }: {
   text: string
   maxChars: number
   fontSize: number
   lineHeight: number,
+  color?: string,
   align?: 'left' | 'right' | 'center'
 }) {
   const lines = wrap(text, {
@@ -47,7 +50,7 @@ function wrapToHTMLLabel({
   .split('\n')
   .map(line => `${line}<FONT point-size="${pxToPoints(lineHeight)}"> <BR ALIGN="${align.toUpperCase()}"/></FONT>`)
   .join('')
-  return `<FONT point-size="${pxToPoints(fontSize)}">${lines}</FONT>`
+  return `<FONT ${color ? `color="${color}" `: ``}point-size="${pxToPoints(fontSize)}">${lines}</FONT>`
 }
 
 export function generateNodeLabel(node: ComputedNode) {
@@ -55,7 +58,8 @@ export function generateNodeLabel(node: ComputedNode) {
     text: node.title,
     maxChars: 30,
     fontSize: 18,
-    lineHeight: 20
+    lineHeight: 20,
+    color: Colors[node.color].hiContrast
   })
   if (node.description) {
     label += `<FONT point-size="${pxToPoints(14)}"> <BR/></FONT>`
@@ -63,7 +67,8 @@ export function generateNodeLabel(node: ComputedNode) {
       text: node.description,
       maxChars: 40,
       fontSize: 14,
-      lineHeight: 16
+      lineHeight: 16,
+      color: Colors[node.color].loContrast
     })
   }
   return `<${label}>`
@@ -78,7 +83,7 @@ export function generateEdgeLabel(edge: ComputedEdge) {
     maxChars: 40,
     fontSize: 14,
     lineHeight: 16,
-    align: 'left'
+    align: 'left',
   })
   return `<${label}>`
 }

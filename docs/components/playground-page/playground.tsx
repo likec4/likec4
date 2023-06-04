@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '$/components/ui/dropdown-menu'
 import { cn } from '$/lib'
-import type { DiagramView} from '@likec4/diagrams';
+import type { DiagramView } from '@likec4/diagrams'
 import { Diagram, type DiagramPaddings } from '@likec4/diagrams'
 import { useMeasure, type Measures } from '@react-hookz/web/esm'
 import {
@@ -19,6 +19,7 @@ import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
 import { keys } from 'rambdax'
+import PlaygroundViewNotReady from './view-not-ready'
 
 const ViewModes = {
   'diagram': 'React Diagram',
@@ -29,6 +30,17 @@ const ViewModes = {
   'dot': 'Graphviz DOT'
 } as const
 type ViewMode = keyof typeof ViewModes
+
+const renderView = (viewMode: Omit<ViewMode, 'diagram'>, diagram: DiagramView) => {
+  switch (viewMode) {
+    case 'd2':
+      return <PlaygroundViewD2 diagram={diagram} />
+    case 'dot':
+      return <PlaygroundViewDot diagram={diagram} />
+    default:
+      return <PlaygroundViewNotReady diagram={diagram} />
+  }
+}
 
 const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, container: Measures }) => {
   const padding = useMemo((): DiagramPaddings => [20, 20, 20, sidebarWidth + 20], [sidebarWidth])
@@ -70,7 +82,7 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
         paddingLeft: `calc(2rem + ${sidebarWidth}px)`
       }}
     >
-        <h1>{viewId ? `View "${viewId}" is not parsed or not found` : 'Select view to preview'}</h1>
+      <h1>{viewId ? `View "${viewId}" is not parsed or not found` : 'Select view to preview'}</h1>
     </div>
   }
 
@@ -105,8 +117,7 @@ const PlaygroundPreview = ({ sidebarWidth, container }: { sidebarWidth: number, 
         style={{
           paddingLeft: sidebarWidth + 5
         }}>
-        {viewMode === 'd2' && <PlaygroundViewD2 diagram={diagram} />}
-        {viewMode !== 'd2' && <PlaygroundViewDot diagram={diagram} />}
+        {renderView(viewMode, diagram)}
       </div>
     )}
     <div
@@ -185,7 +196,7 @@ function Playground() {
 
   return <div id={id} ref={containerRef} className={styles.playground}>
     {sideBarMeasures && containerMeasures && <>
-        <PlaygroundPreview sidebarWidth={sideBarMeasures.width} container={containerMeasures} />
+      <PlaygroundPreview sidebarWidth={sideBarMeasures.width} container={containerMeasures} />
     </>}
     <div ref={sidebarRef} className={styles.sidebar}>
       <MonacoEditor
@@ -197,7 +208,7 @@ function Playground() {
   </div>
 }
 
-export default function PlaygroundWrapper({variant}: PlaygroundDataProviderProps) {
+export default function PlaygroundWrapper({ variant }: PlaygroundDataProviderProps) {
   return <PlaygroundDataProvider variant={variant}>
     <Playground />
   </PlaygroundDataProvider>

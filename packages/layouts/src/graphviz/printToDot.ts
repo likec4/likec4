@@ -4,6 +4,7 @@ import { groupBy, values } from 'rambdax'
 import { attribute as _, digraph, toDot, type GraphBaseModel, type NodeModel, type SubgraphModel } from 'ts-graphviz'
 import type { DotSource } from './graphviz-types'
 import { generateEdgeLabel, generateNodeLabel, pxToInch, pxToPoints } from './graphviz-utils'
+import { Colors, RelationColors } from '@likec4/core'
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
   const gvSubgraphs = new Map<Fqn, SubgraphModel>()
@@ -28,8 +29,15 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     } else {
       const gNode = parent.createNode('nd' + sequence++, {
         [_.id]: node.id,
-        [_.label]: generateNodeLabel(node)
+        [_.label]: generateNodeLabel(node),
       })
+      if (node.color !== 'primary') {
+        gNode.attributes.set(_.color, Colors[node.color].stroke)
+        gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
+      }
+      if (node.shape === 'cylinder' || node.shape === 'storage') {
+        gNode.attributes.set(_.shape, 'cylinder')
+      }
       gvNodes.set(node.id, gNode)
     }
   }
@@ -47,9 +55,9 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.fontsize]: pxToPoints(16),
   })
 
-  G.attributes.graph.apply({
-    [_.fontname]: 'Helvetica',
-  })
+  // G.attributes.graph.apply({
+  //   [_.fontname]: 'Helvetica',
+  // })
 
   G.attributes.node.apply({
     [_.fontname]: 'Helvetica',
@@ -57,10 +65,9 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
-    [_.color]: '#6b6b6b',
-    [_.fillcolor]: '#999999',
-    [_.fontcolor]: '#ffffff',
-    [_.style]: 'filled',
+    [_.style]: 'filled,rounded',
+    [_.color]: Colors.primary.stroke,
+    [_.fillcolor]: Colors.primary.fill,
     // @ts-expect-error ts-graphviz does not support this attribute
     ['margin']: '0.4,0.3',
   })
@@ -70,10 +77,11 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.style]: 'solid',
     [_.penwidth]: 2,
     [_.arrowsize]: 0.7,
-    [_.color]: '#707070',
-    [_.fontcolor]: '#707070',
+    [_.color]: RelationColors.lineColor,
+    [_.fontcolor]: RelationColors.labelColor,
     [_.headport]: '_',
     [_.tailport]: '_',
+    [_.nojustify]: true,
   })
 
   for (const root of nodes.filter(n => n.parent === null)) {
@@ -92,7 +100,6 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         const label = generateEdgeLabel(edge)
         if (label) {
           e.attributes.set(_.label, label)
-          e.attributes.set(_.nojustify, true)
         }
         // this is the only edge in the container
         // and the container has no subgraphs
