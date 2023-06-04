@@ -132,7 +132,8 @@ const fakeElements = {
     id: 'cloud.backend.storage' as Fqn,
     kind: 'component' as ElementKind,
     title: 'Backend Storage',
-    description: 'The backend storage is a component that stores data.'
+    description: 'The backend storage is a component that stores data.',
+    shape: 'storage'
   },
   'cloud.frontend.adminPanel': {
     id: 'cloud.frontend.adminPanel' as Fqn,

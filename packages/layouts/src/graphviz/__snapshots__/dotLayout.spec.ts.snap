@@ -927,7 +927,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
         487,
         640,
       ],
-      "shape": "rectangle",
+      "shape": "storage",
       "size": {
         "height": 180,
         "width": 327,

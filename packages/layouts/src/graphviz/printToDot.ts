@@ -35,8 +35,14 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         gNode.attributes.set(_.color, Colors[node.color].stroke)
         gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
       }
-      if (node.shape === 'cylinder' || node.shape === 'storage') {
-        gNode.attributes.set(_.shape, 'cylinder')
+      switch (node.shape) {
+        case 'cylinder':
+        case 'storage': {
+          gNode.attributes.set(_.shape, 'cylinder')
+          break
+        }
+        default:
+          break;
       }
       gvNodes.set(node.id, gNode)
     }

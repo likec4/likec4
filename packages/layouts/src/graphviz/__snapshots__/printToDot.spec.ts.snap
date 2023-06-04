@@ -134,6 +134,7 @@ exports[`printToDot: computedCloud3levels 1`] = `
       "nd8" [
         id = "cloud.backend.storage";
         label = <<FONT color="#eff6ff" point-size="13.5">Backend Storage<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">The backend storage is a component that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>stores data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+        shape = "cylinder";
       ];
     }
   }
