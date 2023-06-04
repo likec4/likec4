@@ -9,6 +9,7 @@
     },
   },
   "include": ["src/**/*"],
+  "exclude": ["node_modules"],
   "references": [
     { "path": "../core" },
     { "path": "../generators" },

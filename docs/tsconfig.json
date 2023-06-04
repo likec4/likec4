@@ -20,5 +20,8 @@
     {
       "path": "../packages/language-server"
     }
+  ],
+  "exclude": [
+    "node_modules",
   ]
 }

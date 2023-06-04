@@ -6,5 +6,6 @@
     { "path": "../generators" },
     { "path": "../layouts" },
     { "path": "../core" }
-  ]
+  ],
+  "exclude": ["node_modules"]
 }

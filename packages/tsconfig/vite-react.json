@@ -30,5 +30,6 @@
 
     "verbatimModuleSyntax": true,
     "checkJs": false
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }
