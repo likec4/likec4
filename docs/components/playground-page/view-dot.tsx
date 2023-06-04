@@ -1,9 +1,10 @@
 import { cn } from '$/lib'
 import type { DiagramView } from '@likec4/diagrams'
 import { printToDot } from '@likec4/layouts'
-import { Callout } from "nextra-theme-docs"
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
+import { CodePanel } from '../CodePanel'
+import styles from './view-dot.module.css'
 
 const fetchFromKroki = async (dot: string) => {
   const res = await fetch('https://kroki.io/graphviz', {
@@ -24,6 +25,14 @@ type PlaygroundViewDotProps = {
   diagram: DiagramView
 }
 
+const tabClassName = (isActive = false) => cn(
+  'text-sm font-medium leading-loose px-3',
+  'text-slate-400',
+  'cursor-pointer rounded-xl',
+  'hover:text-slate-300',
+  isActive && 'bg-neutral-600 text-slate-300'
+)
+
 export default function PlaygroundViewDot({ diagram }: PlaygroundViewDotProps) {
   const [tab, setTab] = useState<'source' | 'render'>('source')
   const dot = useMemo(() => printToDot(diagram), [diagram])
@@ -35,58 +44,56 @@ export default function PlaygroundViewDot({ diagram }: PlaygroundViewDotProps) {
 
   return <div
     className={cn(
-      'flex-auto flex m-4 relative overflow-hidden shadow-xl bg-neutral-800/60 sm:rounded-xl dark:backdrop-blur dark:ring-1 dark:ring-inset dark:ring-neutral-700/80',
+      'flex-auto flex m-4 relative overflow-hidden',
     )}
   >
-    <div className="relative w-full flex flex-col">
-      <div className={cn('flex-none border-b border-neutral-500/30')}>
-        <div className="flex items-center h-8 space-x-1.5 px-3">
-          <div className="w-2.5 h-2.5 bg-neutral-600 rounded-full" />
-          <div className="w-2.5 h-2.5 bg-neutral-600 rounded-full" />
-          <div className="w-2.5 h-2.5 bg-neutral-600 rounded-full" />
-          <div className="flex space-x-1 px-3">
-            <div className={cn(
-              'text-xs leading-normal p-1',
-              'text-slate-900 dark:text-slate-400',
-              'cursor-pointer rounded-sm',
-              'hover:bg-white hover:bg-opacity-10',
-              tab === 'source' && 'font-medium dark:text-slate-300'
-            )}
-              onClick={() => setTab('source')}
-            >
-              source
-            </div>
-            <div className={cn(
-              'text-xs leading-normal p-1',
-              'text-slate-900 dark:text-slate-400',
-              'cursor-pointer rounded-sm',
-              'hover:bg-white hover:bg-opacity-10',
-              tab === 'render' && 'font-medium dark:text-slate-300'
-            )}
-              onClick={() => setTab('render')}
-            >
-              rendered
-            </div>
+    <CodePanel
+      className={cn(
+        'flex-auto flex flex-col',
+      )}
+      style={{
+        padding: 0,
+      }}
+    >
+      <div className="pl-24 py-2">
+        <div className="inline-flex space-x-1 px-1 py-1 bg-neutral-700 bg-opacity-50 rounded-xl">
+          <div
+            className={tabClassName(tab === 'source')}
+          //  className={cn(
+          //   'text-sm font-medium leading-loose px-3',
+          //   'text-slate-400',
+          //   'cursor-pointer rounded-xl',
+          //   'hover:text-slate-300',
+          //   tab === 'source' && 'bg-neutral-600 text-slate-300'
+          // )}
+            onClick={() => setTab('source')}
+          >
+            source
+          </div>
+          <div
+          className={tabClassName(tab === 'render')}
+          // className={cn(
+          //   'text-sm font-medium leading-loose px-3',
+          //   'text-slate-400',
+          //   'cursor-pointer rounded-xl',
+          //   'hover:text-slate-300',
+          //   tab === 'render' && 'bg-neutral-600 text-slate-300'
+          // )}
+            onClick={() => setTab('render')}
+          >
+            rendered with kroki
           </div>
         </div>
       </div>
-      <div className="relative flex-auto flex">
-        <div className="absolute inset-0 overflow-auto">
-          <div className="min-w-min min-h-min">
-            {tab === 'source' && (
-              <pre className={cn(
-                'p-4',
-                'text-xs font-medium leading-normal',
-                'text-slate-900 dark:text-slate-300'
-              )}>{dot}</pre>
-            )}
-            {tab === 'render' && (<>
-              {!data && <>loading...</>}
-              {data && <div dangerouslySetInnerHTML={{ __html: data }} />}
-            </>)}
-          </div>
-        </div>
+      <div className={'overflow-auto'}>
+        {tab === 'source' && (
+          <code className='whitespace-pre px-5'>{dot}</code>
+        )}
+        {tab === 'render' && (<>
+          {!data && <>loading...</>}
+          {data && <div className={styles.RenderContainer} dangerouslySetInnerHTML={{ __html: data }} />}
+        </>)}
       </div>
-    </div>
+    </CodePanel>
   </div>
-  }
+}

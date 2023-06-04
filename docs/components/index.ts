@@ -1,2 +1,3 @@
 export { LikeC4View } from './likec4/index'
-export * from './CodeWindow'
+export { CodeWindow } from './CodeWindow'
+export { CodePanel } from './CodePanel'
