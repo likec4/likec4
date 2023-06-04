@@ -6,7 +6,6 @@ import { Rpc } from './protocol'
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
   if (!connection) {
-    logger.debug('No connection found, skipping protocol handlers')
     return
   }
   const modelBuilder = services.likec4.ModelBuilder

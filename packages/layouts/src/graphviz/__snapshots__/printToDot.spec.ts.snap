@@ -11,9 +11,6 @@ exports[`printToDot: computedAmazonView 1`] = `
   TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  graph [
-    fontname = "Helvetica";
-  ];
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -76,9 +73,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
   TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  graph [
-    fontname = "Helvetica";
-  ];
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -181,9 +175,6 @@ exports[`printToDot: computedCloudView 1`] = `
   TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  graph [
-    fontname = "Helvetica";
-  ];
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -264,9 +255,6 @@ exports[`printToDot: computedIndexView 1`] = `
   TBbalance = "min";
   fontname = "Helvetica";
   fontsize = 12;
-  graph [
-    fontname = "Helvetica";
-  ];
   edge [
     fontname = "Helvetica";
     style = "solid";
