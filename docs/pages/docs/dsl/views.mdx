@@ -71,10 +71,10 @@ include cloud.backend.*
 include -> cloud.backend
 
 // outgoing relations
-include cloud.backend ->
+include cloud.* ->
 
 // relations between
-include customer -> cloud
+include customer -> cloud.*
 ```
 
 Wildcard may be used to reference "everything", but depends on the context.
@@ -109,6 +109,11 @@ view {
     customer -> bigbank.*
 }
 ```
+
+<Callout type="info" emoji="ℹ️">
+  Relations with container elements are not shown.
+</Callout>
+
 
 ## Style rules
 

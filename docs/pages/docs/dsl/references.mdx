@@ -157,12 +157,15 @@ model {
     }  
   }
 
-  frontend -> service.backend2.graphql // ✅ Non-ambiguous full qualified name
+  frontend -> service.backend1.api // ✅ Non-ambiguous full qualified name
+
+  frontend -> backend1.api  // ✅ This is OK, backend1 is unique in the scope of model
+  frontend -> backend2.api  // ✅ This is also OK
+
+  frontend -> service.api // ⛔️ Error: api is ambiguous in the scope of service
 
   frontend -> service.graphql // ✅ This is also OK
                               //    we omit backend2 as
                               //    graphql is unique in the scope of service
-
-  frontend -> service.api // ⛔️ Error: api is ambiguous in the scope of service
 }
 ```

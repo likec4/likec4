@@ -8,13 +8,11 @@
   "dsl": {
     "title": "LikeC4 Language"
   },
-  "cli": {
-    "title": "CLI"
+  "tools": {
+    "title": "Tooling"
   },
-  "react": {
-    "title": "React"
-  },
-  "vscode": {
-    "title": "VSCode Extension"
+  "playground": {
+    "title": "Open playground",
+    "href": "/playground/"
   }
 }
