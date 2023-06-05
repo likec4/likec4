@@ -41,7 +41,7 @@
     "jotai": "^2.1.0",
     "jotai-devtools": "^0.5.3",
     "langium": "^1.2.0",
-    "lucide-react": "^0.220.0",
+    "lucide-react": "^0.236.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
     "next": "13.4.2",
