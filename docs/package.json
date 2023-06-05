@@ -46,7 +46,7 @@
     "monaco-languageclient": "5.0.1",
     "next": "13.4.2",
     "nextra": "^2.6.2",
-    "nextra-theme-docs": "^2.6.2",
+    "nextra-theme-docs": "^2.7.0",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
