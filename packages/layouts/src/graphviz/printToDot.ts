@@ -49,14 +49,13 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
   }
 
   const G = digraph({
-    // @ts-expect-error ts-graphviz does not support this attribute
     [_.compound]: true,
     [_.pad]: 0.07,
     [_.rankdir]: autoLayout,
     [_.nodesep]: pxToInch(90),
     [_.ranksep]: pxToInch(90),
     [_.layout]: 'dot',
-    ['TBbalance']: 'min',
+    [_.TBbalance]: 'min',
     [_.fontname]: 'Helvetica',
     [_.fontsize]: pxToPoints(16),
   })
@@ -74,8 +73,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.style]: 'filled,rounded',
     [_.color]: Colors.primary.stroke,
     [_.fillcolor]: Colors.primary.fill,
-    // @ts-expect-error ts-graphviz does not support this attribute
-    ['margin']: '0.4,0.3',
+    [_.margin]: '0.4,0.3',
   })
 
   G.attributes.edge.apply({
