@@ -24,11 +24,12 @@
     "test:watch": "vitest",
     "clean": "run -T rimraf dist"
   },
-  "main": "src/index.ts",
+  "module": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./colors": "./src/colors.ts",
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts",
     "./compute-view": "./src/compute-view/index.ts"
@@ -37,7 +38,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
       ".": {
@@ -49,6 +50,11 @@
         "types": "./dist/types/index.d.ts",
         "import": "./dist/types/index.js",
         "default": "./dist/types/index.js"
+      },
+      "./colors": {
+        "types": "./dist/colors.d.ts",
+        "import": "./dist/colors.js",
+        "default": "./dist/colors.js"
       },
       "./utils": {
         "types": "./dist/utils/index.d.ts",

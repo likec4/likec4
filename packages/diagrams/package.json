@@ -27,6 +27,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./src": "./src/index.ts",
+    "./src/diagram": "./src/diagram/index.ts",
     "./src/*": [
       "./src/*",
       "./src/*.ts",

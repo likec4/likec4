@@ -6,7 +6,7 @@ const watch = process.argv.includes('--watch')
 /**
  * @type {esbuild.BuildOptions}
  */
-const options = {
+const cli = {
   entryPoints: ['src/cli.ts'],
   outfile: 'dist/likec4.js',
   logLevel: 'info',
@@ -37,8 +37,28 @@ const options = {
   minify: true
 }
 
-if (!watch) {
-  const bundle = await esbuild.build(options)
+/**
+ * @type {esbuild.BuildOptions}
+ */
+const exportPage = {
+  entryPoints: ['src/export/puppeteer-page/index.tsx'],
+  outfile: 'dist/puppeteer-page.js',
+  logLevel: 'info',
+  bundle: true,
+  format: 'iife',
+  target: 'es2022',
+  platform: 'browser',
+  color: true,
+  allowOverwrite: true,
+  treeShaking: true,
+  minify: true
+}
+
+/**
+ *
+ * @param {esbuild.BuildResult} bundle
+ */
+function failIfError(bundle) {
   if (bundle.warnings.length || bundle.errors.length) {
     console.error(
       [
@@ -57,9 +77,17 @@ if (!watch) {
     console.error('\n ⛔️ Build failed')
     process.exit(1)
   }
+}
+
+if (!watch) {
+  failIfError(await esbuild.build(cli))
+  failIfError(await esbuild.build(exportPage))
+
   process.exit(0)
 }
 
-const ctx = await esbuild.context(options)
-await ctx.watch()
+const cliCtx = await esbuild.context(cli)
+const exportPageCtx = await esbuild.context(exportPage)
+await cliCtx.watch()
+await exportPageCtx.watch()
 console.info(' 👀 watching...')
