@@ -25,7 +25,8 @@ export const isBetween = (source: Fqn, target: Fqn) => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
-      (rel.source + '.').startsWith(sourcePrefix) && (rel.target + '.').startsWith(targetPrefix)
+      (rel.source === source || (rel.source + '.').startsWith(sourcePrefix)) &&
+      (rel.target === target || (rel.target + '.').startsWith(targetPrefix))
     )
   }
 }
@@ -38,7 +39,9 @@ export const isIncoming = (target: Fqn) => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
-      !(rel.source + '.').startsWith(targetPrefix) && (rel.target + '.').startsWith(targetPrefix)
+      !(rel.source + '.').startsWith(targetPrefix) && (
+        rel.target === target || (rel.target + '.').startsWith(targetPrefix)
+      )
     )
   }
 }
@@ -47,7 +50,9 @@ export const isOutgoing = (source: Fqn) => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
     return (
-      (rel.source + '.').startsWith(sourcePrefix) && !(rel.target + '.').startsWith(sourcePrefix)
+      (
+        rel.source === source || (rel.source + '.').startsWith(sourcePrefix)
+      ) && !(rel.target + '.').startsWith(sourcePrefix)
     )
   }
 }
