@@ -9,6 +9,7 @@
   "engines": {
     "node": ">=16"
   },
+  "engineStrict": true,
   "files": [
     "dist"
   ],
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@commander-js/extra-typings": "^10.0.3",
     "@likec4/core": "workspace:*",
+    "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
@@ -38,10 +40,14 @@
     "chalk": "^5.2.0",
     "commander": "^10.0.1",
     "esbuild": "^0.17.19",
+    "execa": "^7.1.1",
     "fast-glob": "^3.2.12",
+    "json5": "^2.2.3",
     "langium": "^1.2.0",
     "mkdirp": "^3.0.1",
     "rambdax": "^9.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "^5.0.4",
     "vscode-uri": "3.0.7"
   }
