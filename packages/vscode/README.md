@@ -3,11 +3,14 @@
     Architecture as a code
   </h3>
   <p>
-    Live diagrams from the "like c4" model, managed by open-source tooling as code in your repository, under your control.
+    Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </p>
-</div>
+  
+  [docs](https://likec4.dev/docs/) | [playground](https://likec4.dev/playground/) | [example](https://likec4.dev/examples/bigbank/likec4/)
 
-![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
+  ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
+
+</div>
 
 ---
 

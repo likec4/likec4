@@ -1,5 +1,5 @@
 import type { DiagramEdge, DiagramNode } from '@likec4/core/types'
-import { Diagram } from '@likec4/diagrams'
+import { Diagram } from '@likec4/diagrams/src/diagram'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { useCallback, useEffect, useState } from 'react'
