@@ -1,4 +1,4 @@
-import { allPass, anyPass, negate, none } from 'rambdax'
+import { anyPass } from 'rambdax'
 import type { Element, Fqn } from '../types'
 import { isString } from './guards'
 
