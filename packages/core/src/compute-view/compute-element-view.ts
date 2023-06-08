@@ -1,4 +1,4 @@
-import { anyPass, filter, head, type Predicate } from 'rambdax'
+import { anyPass, difference, filter, head, uniq, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import {
   type Fqn,
@@ -123,14 +123,13 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
         [...ctx.implicits].filter(impl => isAncestor(el.id, impl.id))
       )
     }
-    for (const current of ctx.elements) {
+    for (const current of uniq([...ctx.elements, ...ctx.implicits])) {
       if (!isSameHierarchy(el, current)) {
         filters.push(Relations.isAnyBetween(el.id, current.id))
       }
     }
   }
   const relations = ctx.index.filterRelations(anyPass(filters))
-
   if (excludeImplicits.length == 0) {
     return ctx.include({ elements, relations })
   }
@@ -152,15 +151,36 @@ const excludeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
 const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
   const { root } = ctx
   if (root) {
+    const elements = [ctx.index.find(root), ...ctx.index.children(root)]
+    const allImplicits = [
+      ...ctx.index.siblings(root),
+      ...ctx.index.ancestors(root).flatMap(a => [...ctx.index.siblings(a.id)])
+    ]
+    const resolvedImplicits = [] as Element[]
+    const allInOutRelations = ctx.index.filterRelations(isAnyInOut(root))
+    const resolvedRelations = [] as Relation[]
+
+    for (const implicit of allImplicits) {
+      let idx = allInOutRelations.findIndex(isAnyInOut(implicit.id))
+      if (idx >= 0) {
+        if (resolvedImplicits.every(e => !isSameHierarchy(e, implicit))) {
+          resolvedImplicits.push(implicit)
+        }
+      }
+      while (allInOutRelations.length > 0 && idx >= 0) {
+        const [rel] = allInOutRelations.splice(idx, 1)
+        if (rel) resolvedRelations.push(rel)
+        idx = allInOutRelations.findIndex(isAnyInOut(implicit.id))
+      }
+    }
+
     return ctx.include({
-      elements: [ctx.index.find(root), ...ctx.index.children(root)],
-      relations: ctx.index.filterRelations(
-        anyPass([isInside(root), isIncoming(root), isOutgoing(root)])
-      ),
-      implicits: [
-        ...ctx.index.siblings(root),
-        ...ctx.index.ancestors(root).flatMap(a => [...ctx.index.siblings(a.id)])
-      ]
+      elements,
+      relations: [
+        ...ctx.index.filterRelations(isInside(root)),
+        ...resolvedRelations,
+      ],
+      implicits: resolvedImplicits
     })
   } else {
     return new ComputeCtx(

@@ -132,6 +132,46 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
+  it('view of cloud.backend', () => {
+    const view = computeElementView(
+      {
+        id: 'cloudbackend' as ViewID,
+        title: '',
+        viewOf: 'cloud.backend' as Fqn,
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                wildcard: true
+              },
+              {
+                element: 'customer' as Fqn, isDescedants: false
+              }
+            ]
+          },
+        ]
+      },
+      fakeModel()
+    )
+    const { nodes, edges } = view
+
+    expect(nodes.map(n => n.id)).toEqual([
+      "customer",
+      "cloud.frontend",
+      "cloud.backend",
+      "cloud.backend.graphql",
+      "cloud.backend.storage",
+      "amazon",
+    ])
+
+    expect(edges.map(e => e.id)).toEqual([
+      "cloud.backend.graphql:cloud.backend.storage",
+      "cloud.backend.storage:amazon",
+      "cloud.frontend:cloud.backend.graphql",
+      "customer:cloud.frontend",
+    ])
+  })
 
   it('view of cloud.frontend', () => {
     const view = computeElementView(
@@ -244,7 +284,12 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(nodes.map(n => n.id)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
+    expect(nodes.map(n => n.id)).toEqual([
+      'customer',
+      'support',
+      'cloud.frontend',
+      'cloud.backend'
+    ])
 
     expect(edges.map(e => e.id)).toEqual([
       'cloud.frontend:cloud.backend',
