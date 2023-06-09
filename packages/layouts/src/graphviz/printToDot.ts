@@ -50,7 +50,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
 
   const G = digraph({
     [_.compound]: true,
-    [_.pad]: 0.07,
+    [_.pad]: 0.08,
     [_.rankdir]: autoLayout,
     [_.nodesep]: pxToInch(90),
     [_.ranksep]: pxToInch(90),
@@ -59,10 +59,6 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.fontname]: 'Helvetica',
     [_.fontsize]: pxToPoints(16),
   })
-
-  // G.attributes.graph.apply({
-  //   [_.fontname]: 'Helvetica',
-  // })
 
   G.attributes.node.apply({
     [_.fontname]: 'Helvetica',
@@ -83,8 +79,6 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.arrowsize]: 0.7,
     [_.color]: RelationColors.lineColor,
     [_.fontcolor]: RelationColors.labelColor,
-    [_.headport]: '_',
-    [_.tailport]: '_',
     [_.nojustify]: true,
   })
 

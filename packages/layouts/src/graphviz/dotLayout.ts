@@ -111,9 +111,12 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 
 function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   const dotSource = printToDot(computedView)
+
+  const dot = graphviz.unflatten(dotSource)
+
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
-  const rawjson = graphviz.dot(dotSource, 'json', {
+  const rawjson = graphviz.dot(dot, 'json', {
     yInvert: true
   })
 
