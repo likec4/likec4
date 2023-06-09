@@ -913,7 +913,7 @@ __metadata:
     clsx: ^1.2.1
     esbuild: ^0.17.19
     khroma: ^2.0.0
-    konva: ^9.0.2
+    konva: ^9.2.0
     npm-run-all: ^4.1.5
     rambdax: ^9.1.1
     react: ^18.2.0
@@ -5707,10 +5707,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.0.2":
-  version: 9.0.2
-  resolution: "konva@npm:9.0.2"
-  checksum: c6fbe8337d32ec11188a319d569fb3fcb760aa36f3319c3a11708bed6f913b2d78123148d384862850e0fb4b662b3ff6cc535cd0d4713d638ea1ee8b89a42105
+"konva@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "konva@npm:9.2.0"
+  checksum: 12f8635b54189a8788f9e49e1426b9e80e934769df2750a66b0ae4c88b22ae765e373fec7573411b46e5225086437bb99030ef0497c79e9e199e774bac835845
   languageName: node
   linkType: hard
 
