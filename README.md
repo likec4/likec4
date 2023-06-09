@@ -23,12 +23,14 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
 
 ## What is LikeC4? Why "like"?
 
-C4 is great. But sometimes we want to go beyond four levels, we want custom ones with our semantics.  
-This is where LikeC4 comes in. It allows to customize and tailor architecture model to our needs.  
-And customization is essential for Architecture-as-a-Code approach.
+C4 is great. But sometimes we need to go futher suggested levels and even have custom ones with our semantics.  
+This is where LikeC4 comes in.
 
-....
+LikeC4 is a modeling language for describing software architecture. It might look like [Structurizr DSL](https://github.com/structurizr/dsl), though it is not
+fully compatible.
 
+With LikeC4 you have more flexibility, you can define your own notation, element types, and any number of nested levels in your architecture model.  
+This allows you to create a system design that is tailored to your specific needs and requirements.
 
 
 ## What does LikeC4 look like?
