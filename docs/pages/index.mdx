@@ -19,9 +19,9 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
 
 
 <IndexPageSection title={'What is LikeC4? Why "like"?'}>    
-  C4 is great. But sometimes we want to go beyond four levels, we want custom ones with our semantics.  
+  C4 is great. But sometimes we need to go futher suggested levels and even have custom ones with our semantics.  
   This is where LikeC4 comes in. It allows to customize and tailor architecture model to our needs.  
-  And customization is essential for Architecture-as-a-Code approach.
+  Customization is essential for Architecture-as-a-Code approach.
 
   ....
 
@@ -29,14 +29,17 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
 
 <IndexPageSection title={'What does LikeC4 look like?'}>   
 
+  LikeC4 is a modeling language and tooling to generate diagrams from the model.  
   Example ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
 
-  ```likec4
+  ```likec4 filename="example.c4"
+  // custom elements for the model
   specification {
     element actor
     element system
   }
 
+  // describes architecture as single model
   model {
     customer = actor 'Customer' {
       description 'A user of our product with active subscription'
@@ -49,6 +52,7 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
     customer -> saas 'uses to manage data'
   }
 
+  // generares diagrams from the model 
   views {
     view index {
       include *
@@ -56,7 +60,23 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
   }
   ```  
 
-  Generated diagram (click to explore):   
+  Run CLI to generate react components (or export to any other format):
+
+  ```bash
+  likec4 codegen react -o likec4-generated.tsx
+  ```
+
+  Import component:
+
+  ```jsx
+  import { LikeC4View } from "$/likec4-generated"
+
+  // ...
+
+  <LikeC4View viewId="index"/>
+  ```
+
+  And this is what we get (click to explore):   
 
   <IndexPageDiagram/>
 

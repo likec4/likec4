@@ -31,7 +31,7 @@ export const Hero = () => (
       heroFont.className
     )}>Architecture as a code</h1>
     <div className={cn(
-      'text-center text-[min(1.5rem,max(3vw,1.25rem))] max-w-[42rem]',
+      'text-center text-[min(1.5rem,max(3vw,1.25rem))] max-w-[46rem]',
       'leading-tight',
       'text-transparent bg-clip-text bg-gradient-to-r from-[#F8F3D4] to-[#5E98AF]',
       heroFont.className
@@ -86,7 +86,7 @@ export const IndexPageSection = ({title, children}: IndexPageSectionProps) => (
     'w-full max-w-5xl mx-auto',
     'mt-16 md:mt-28',
   )}>
-    {title && <div className="mx-auto max-w-[42rem] my-8 md:my-12 text-">
+    {title && <div className="mx-auto max-w-[42rem] my-8 md:my-12">
         <h2 className={cn(
         'text-center text-[min(2.25rem,max(3vw,1.5rem))]',
         'leading-tight',

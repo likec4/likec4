@@ -47,38 +47,23 @@ You split and organize the workspace as you want.
   </Tab>
   <Tab>
     ```likec4    
+    model {
+      extend cloud {
+        service1 = service 'Service 1'
+      }
+    }
     ```  
   </Tab>
   <Tab>
-    ```likec4 filename="specification.c4"
-    specification {
-
-      element system
-      
-    }  
-    ```
-
-    ```likec4 filename="model-1.c4"
+    ```likec4    
     model {
-       
-      system1 = system "System 1" {
-        // ...
+      amazon = externals 'Amazon Web Services' {
+        rds = service 'Database'
       }
-    }  
-    ```
-    
-    ```likec4 filename="model-and-views.c4"
-    model {
-       
-      system2 = system "System 2" {
-        // ...
-      }
-    }  
 
-    views {
-      // ...
+      cloud.service1 -> amazon.rds
     }
-    ```   
+    ```  
   </Tab>
 </Tabs>
 
