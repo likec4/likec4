@@ -9,6 +9,9 @@ updates:
     target-branch: "develop"
     directory: "/"
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
     schedule:
       interval: "weekly"
     labels:
