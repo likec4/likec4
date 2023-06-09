@@ -72,6 +72,10 @@ export interface DiagramApi {
     mimeType?: string;
     quality?: number;
   }): string
+  /**
+   * Reset stage position and zoom
+   */
+  resetStageZoom(immediate?: boolean): void
   centerOnNode(node: DiagramNode): void
   centerAndFit(): void
 }
@@ -187,6 +191,7 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
     stage: null as unknown as Konva.Stage,
     toDataURL: notImplemented,
     centerOnNode: notImplemented,
+    resetStageZoom: notImplemented,
     centerAndFit: centerAndFitDiagram
   })
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -199,7 +204,22 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
   diagramApiRef.current.toDataURL = (config) => {
     const stage = stageRef.current
     invariant(stage, 'Stage not initialized')
-    return stage.toDataURL(config)
+    return stage.toDataURL({
+      mimeType: 'image/png',
+      // @ts-expect-error Konva types are wrong
+      imageSmoothingEnabled: false,
+      ...config
+    })
+  }
+  diagramApiRef.current.resetStageZoom = (immediate = !animate) => {
+    stageSpringApi.stop(true).start({
+      to: {
+        x: 0,
+        y: 0,
+        scale: 1
+      },
+      immediate
+    })
   }
 
   useIsomorphicLayoutEffect(() => {

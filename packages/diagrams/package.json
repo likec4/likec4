@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.12.0",
+  "version": "0.14.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -27,6 +27,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./src": "./src/index.ts",
+    "./src/diagram": "./src/diagram/index.ts",
     "./src/*": [
       "./src/*",
       "./src/*.ts",

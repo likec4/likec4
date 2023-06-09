@@ -4,9 +4,14 @@ on:
   pull_request:
   push:
     branches:
-      - '*'
+      - 'main'
+      - 'develop'
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+permissions:
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   build:
@@ -47,7 +52,7 @@ jobs:
       - name: Test
         run: yarn vitest run
 
-      - if: success() && steps.yarn-cache.outputs.cache-hit != 'true' && github.ref_protected == true
+      - if: success() && steps.yarn-cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_protected == true
         uses: actions/cache/save@v3
         with:
           path: ${{ steps.yarn-cachedir.outputs.dir }}

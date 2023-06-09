@@ -1,6 +1,6 @@
 {
   "name": "@likec4/docs-website",
-  "version": "0.12.0",
+  "version": "0.14.0",
   "private": true,
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -46,7 +46,7 @@
     "monaco-languageclient": "5.0.1",
     "next": "13.4.2",
     "nextra": "^2.6.2",
-    "nextra-theme-docs": "^2.6.2",
+    "nextra-theme-docs": "^2.7.1",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

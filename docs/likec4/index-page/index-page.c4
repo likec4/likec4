@@ -66,7 +66,7 @@ views {
     include *
   }
 
-view customer of customer {
+  view customer of customer {
     include *, saas.ui
 
     style customer {
@@ -83,22 +83,22 @@ view customer of customer {
     }
   }
 
-  view ui of saas.ui {
-    include saas, *
+  view ui of ui {
+    include *, saas
 
-    style saas.ui {
+    style ui {
       color sky
     }
   }
 
-  view backend of saas.backend {
-    include *, infra, infra.*
-    style saas.backend.* {
+  view backend of backend {
+    include *, infra
+    style backend.* {
       color sky
     }
   }
 
-  view of infra {
+  view infra of infra {
     include
       *,
       backend.* -> infra
@@ -108,16 +108,19 @@ view customer of customer {
     }
   }
 
-  view of api {
-    include *, backend
+  view backendApi of api {
+    include *, infra, backend
 
     style api {
       color sky
     }
   }
 
-  view of services {
-    include backend, * , -> infra
+  view backendServices of services {
+    include
+      *,
+      backend,
+      infra.*
 
     style services {
       color sky

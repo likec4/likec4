@@ -1,4 +1,4 @@
-import { anyPass, filter, head, type Predicate } from 'rambdax'
+import { anyPass, difference, filter, head, uniq, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import {
   type Fqn,
@@ -116,21 +116,24 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
   if (expr.isDescedants) {
     filters.push(Relations.isInside(expr.element))
   }
-  let excludeImplicits = [] as Element[]
+
+  const ctxElements = uniq([...ctx.elements, ...ctx.implicits])
+  const excludeImplicits = [] as Element[]
+
   for (const el of elements) {
     if (ctx.root && ctx.root !== el.id && !isAncestor(el.id, ctx.root)) {
-      excludeImplicits = excludeImplicits.concat(
-        [...ctx.implicits].filter(impl => isAncestor(el.id, impl.id))
+      excludeImplicits.push(
+        ...[...ctx.implicits].filter(impl => isAncestor(el.id, impl.id))
       )
     }
-    for (const current of ctx.elements) {
-      if (!isSameHierarchy(el, current)) {
-        filters.push(Relations.isAnyBetween(el.id, current.id))
+    for (const ctxEl of ctxElements) {
+      if (!isSameHierarchy(el, ctxEl)) {
+        filters.push(Relations.isAnyBetween(el.id, ctxEl.id))
       }
     }
   }
-  const relations = ctx.index.filterRelations(anyPass(filters))
 
+  const relations = filters.length ? ctx.index.filterRelations(anyPass(filters)) : []
   if (excludeImplicits.length == 0) {
     return ctx.include({ elements, relations })
   }
@@ -152,22 +155,55 @@ const excludeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
 const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
   const { root } = ctx
   if (root) {
+    const elements = [ctx.index.find(root), ...ctx.index.children(root)]
+    // All neighbors that may have relations with root or its children
+    const allImplicits = [
+      ...ctx.index.siblings(root),
+      ...ctx.index.ancestors(root).flatMap(a => [...ctx.index.siblings(a.id)])
+    ]
+    const allInOut = ctx.index.filterRelations(isAnyInOut(root))
+
+    // Neighbors that have relations with root or its children
+    const implicits = [] as Element[]
+    const relations = [] as Relation[]
+
+    for (const implicit of allImplicits) {
+      const relationsWithImplicit = allInOut.filter(isAnyInOut(implicit.id))
+      if (relationsWithImplicit.length) {
+        implicits.push(implicit)
+        relations.push(...relationsWithImplicit)
+      }
+    }
+
     return ctx.include({
-      elements: [ctx.index.find(root), ...ctx.index.children(root)],
-      relations: ctx.index.filterRelations(
-        anyPass([isInside(root), isIncoming(root), isOutgoing(root)])
-      ),
-      implicits: [
-        ...ctx.index.siblings(root),
-        ...ctx.index.ancestors(root).flatMap(a => [...ctx.index.siblings(a.id)])
-      ]
+      elements,
+      relations: [
+        ...ctx.index.filterRelations(isInside(root)),
+        ...relations,
+      ],
+      implicits: implicits
     })
   } else {
+    const elements = ctx.index.rootElements()
+    if (elements.length <= 1) {
+      return new ComputeCtx(
+        ctx.index,
+        ctx.root,
+        new Set(elements),
+      )
+    }
+
+    const predicates = [] as Predicate<Relation>[]
+    for (const [source, target] of anyPossibleRelations(elements)) {
+      predicates.push(Relations.isAnyBetween(source.id, target.id))
+    }
+    const relations = predicates.length ? ctx.index.filterRelations(anyPass(predicates)) : []
+
     return new ComputeCtx(
       ctx.index,
       ctx.root,
-      new Set(ctx.index.rootElements()),
-      new Set([...ctx.index.relations])
+      new Set(elements),
+      new Set(relations)
     )
   }
 }
@@ -209,6 +245,9 @@ const includeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeC
     return ctx
   }
   const elements = resolveElements(ctx, expr.incoming)
+  if (elements.length === 0) {
+    return ctx
+  }
   const implicits = [] as Element[]
   const relations = [] as Relation[]
 
@@ -231,6 +270,9 @@ const excludeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeC
     return ctx
   }
   const elements = resolveElements(ctx, expr.incoming)
+  if (elements.length === 0) {
+    return ctx
+  }
   const isIncomings = anyPass(elements.map(el => isIncoming(el.id)))
 
   const excluded = [...ctx.relations].filter(isIncomings)
@@ -248,6 +290,9 @@ const includeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeC
     return ctx
   }
   const elements = resolveElements(ctx, expr.outgoing)
+  if (elements.length === 0) {
+    return ctx
+  }
   const implicits = [] as Element[]
   const relations = [] as Relation[]
 
@@ -270,6 +315,9 @@ const excludeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeC
     return ctx
   }
   const elements = resolveElements(ctx, expr.outgoing)
+  if (elements.length === 0) {
+    return ctx
+  }
   const isOutgoings = anyPass(elements.map(el => isOutgoing(el.id)))
 
   const excluded = [...ctx.relations].filter(isOutgoings)
@@ -287,6 +335,9 @@ const includeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
+  if (targets.length === 0) {
+    return ctx
+  }
 
   const implicits = [] as Element[]
   const relations = [] as Relation[]
@@ -310,6 +361,9 @@ const excludeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
+  if (targets.length === 0) {
+    return ctx
+  }
   const excluded = [...ctx.relations].filter(anyPass(targets.map(t => isAnyInOut(t.id))))
   if (excluded.length > 0) {
     return ctx.exclude({
@@ -323,6 +377,9 @@ const excludeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
 const includeRelationExpr = (ctx: ComputeCtx, expr: Expr.RelationExpr): ComputeCtx => {
   const sources = resolveElements(ctx, expr.source)
   const targets = resolveElements(ctx, expr.target)
+  if (sources.length === 0 || targets.length === 0) {
+    return ctx
+  }
 
   const implicits = [] as Element[]
   const relations = [] as Relation[]

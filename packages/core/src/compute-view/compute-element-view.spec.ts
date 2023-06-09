@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { fakeModel } from '../__test__'
 import type { Fqn, ViewID } from '../types'
 import { computeElementView } from './compute-element-view'
+import { pluck } from 'rambdax'
+
+const ids = pluck('id')
 
 describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
@@ -28,9 +31,9 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(nodes.map(n => n.id)).toEqual(['cloud'])
+    expect(ids(nodes)).toEqual(['cloud'])
 
-    expect(edges.map(e => e.id)).toEqual([])
+    expect(edges).toEqual([])
   })
 
   it('should return landscape view on top `include *`', () => {
@@ -51,8 +54,8 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(nodes.map(n => n.id)).toEqual(['customer', 'support', 'cloud', 'amazon'])
-    expect(edges.map(e => e.id)).toEqual(['cloud:amazon', 'customer:cloud', 'support:cloud'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
+    expect(ids(edges)).toEqual(['cloud:amazon', 'customer:cloud', 'support:cloud'])
   })
 
   it('should return landscape view on top `include *, -> cloud.*`', () => {
@@ -77,7 +80,7 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(nodes.map(n => n.id)).toEqual([
+    expect(ids(nodes)).toEqual([
       'customer',
       'support',
       'cloud',
@@ -85,7 +88,7 @@ describe('compute-element-view', () => {
       'amazon',
       'cloud.frontend'
     ])
-    expect(edges.map(e => e.id)).toEqual([
+    expect(ids(edges)).toEqual([
       'cloud.backend:amazon',
       'customer:cloud.frontend',
       'support:cloud.frontend'
@@ -113,7 +116,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(nodes.map(n => n.id)).toEqual([
+    expect(ids(nodes)).toEqual([
       'customer',
       'support',
       'cloud',
@@ -122,7 +125,7 @@ describe('compute-element-view', () => {
       'amazon'
     ])
 
-    expect(edges.map(e => e.id)).toEqual([
+    expect(ids(edges)).toEqual([
       'cloud.frontend:cloud.backend',
       'cloud.backend:amazon',
       'customer:cloud.frontend',
@@ -132,6 +135,46 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
+  it('view of cloud.backend', () => {
+    const view = computeElementView(
+      {
+        id: 'cloudbackend' as ViewID,
+        title: '',
+        viewOf: 'cloud.backend' as Fqn,
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                wildcard: true
+              },
+              {
+                element: 'customer' as Fqn, isDescedants: false
+              }
+            ]
+          },
+        ]
+      },
+      fakeModel()
+    )
+    const { nodes, edges } = view
+
+    expect(ids(nodes)).toEqual([
+      "customer",
+      "cloud.frontend",
+      "cloud.backend",
+      "cloud.backend.graphql",
+      "cloud.backend.storage",
+      "amazon",
+    ])
+
+    expect(ids(edges)).toEqual([
+      "cloud.backend.graphql:cloud.backend.storage",
+      "cloud.backend.storage:amazon",
+      "cloud.frontend:cloud.backend.graphql",
+      "customer:cloud.frontend",
+    ])
+  })
 
   it('view of cloud.frontend', () => {
     const view = computeElementView(
@@ -154,7 +197,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(nodes.map(n => n.id)).toEqual([
+    expect(ids(nodes)).toEqual([
       'customer',
       'support',
       'cloud.frontend',
@@ -163,7 +206,7 @@ describe('compute-element-view', () => {
       'cloud.backend'
     ])
 
-    expect(edges.map(e => e.id)).toEqual([
+    expect(ids(edges)).toEqual([
       "cloud.frontend.adminPanel:cloud.backend",
       "cloud.frontend.dashboard:cloud.backend",
       "customer:cloud.frontend.dashboard",
@@ -198,7 +241,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(nodes.map(n => n.id)).toEqual([
+    expect(ids(nodes)).toEqual([
       'customer',
       'support',
       'cloud',
@@ -208,7 +251,7 @@ describe('compute-element-view', () => {
       'cloud.backend'
     ])
 
-    expect(edges.map(e => e.id)).toEqual([
+    expect(ids(edges)).toEqual([
       "cloud.frontend.adminPanel:cloud.backend",
       "cloud.frontend.dashboard:cloud.backend",
       "customer:cloud.frontend.dashboard",
@@ -244,9 +287,14 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(nodes.map(n => n.id)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
+    expect(ids(nodes)).toEqual([
+      'customer',
+      'support',
+      'cloud.frontend',
+      'cloud.backend'
+    ])
 
-    expect(edges.map(e => e.id)).toEqual([
+    expect(ids(edges)).toEqual([
       'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend'
@@ -326,9 +374,9 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(nodes.map(n => n.id)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
+    expect(ids(nodes)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
 
-    expect(edges.map(e => e.id)).toEqual(['cloud.backend:amazon.s3'])
+    expect(ids(edges)).toEqual(['cloud.backend:amazon.s3'])
   })
 
   it('index view with applied styles', () => {
