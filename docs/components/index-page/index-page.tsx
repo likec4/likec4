@@ -36,7 +36,7 @@ export const Hero = () => (
       'text-transparent bg-clip-text bg-gradient-to-r from-[#F8F3D4] to-[#5E98AF]',
       heroFont.className
     )}>
-      Visualize, collaborate, and evolve the software architecture with always actual and live diagrams
+      Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
     </div>
   </section>
 )
@@ -84,11 +84,11 @@ type IndexPageSectionProps = PropsWithChildren<{
 export const IndexPageSection = ({title, children}: IndexPageSectionProps) => (
   <section className={cn(
     'w-full max-w-5xl mx-auto',
-    'mt-20 md:mt-44',
+    'mt-16 md:mt-28',
   )}>
-    {title && <div className="mx-auto max-w-[42rem] my-10 md:my-16 text-">
+    {title && <div className="mx-auto max-w-[42rem] my-8 md:my-12 text-">
         <h2 className={cn(
-        'text-center text-[min(3rem,max(4vw,1.875rem))]',
+        'text-center text-[min(2.25rem,max(3vw,1.5rem))]',
         'leading-tight',
         'text-transparent bg-clip-text bg-gradient-to-r from-[#F8F3D4] to-[#5E98AF]',
         heroFont.className

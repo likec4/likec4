@@ -1,33 +1,52 @@
-import { Bleed, Tab, Tabs, Callout } from 'nextra-theme-docs'
+import { Bleed, Tab, Tabs, Callout, FileTree } from 'nextra-theme-docs'
 
 # Workspace
 
-Structuring your workspace to fit your needs.
+Workspace is a directory with LikeC4 files considered as a single model.  
+You split and organize the workspace as you want.
 
-## Multiple sources
+## Example
 
-Maybe split into multiple files.
+<FileTree>
+  <FileTree.Folder name="backend" open>
+    <FileTree.File name="service1.c4" />
+    <FileTree.File name="service2.c4" />
+  </FileTree.Folder>
+  <FileTree.Folder name="externals" open>
+    <FileTree.File name="amazon.c4" />
+    <FileTree.File name="amazon-views.c4" />
+  </FileTree.Folder>
+  <FileTree.File name="landscape.c4" />
+  <FileTree.File name="specs.c4" />  
+</FileTree>
 
-<Tabs items={['single', 'multiple']}>
+<Tabs items={['specs.c4', 'landscape.c4', 'backend/service1.c4', 'externals/amazon.c4']}>
   <Tab>
-    ```likec4 filename="single-file.c4"
+    ```likec4    
     specification {
-
+      element actor {
+        style {
+          shape person
+        }
+      }
       element system
-      
+      element service
+      element externals
     }
-  
+    ```  
+  </Tab>
+  <Tab>
+    ```likec4  
     model {
+      customer = actor 'Customer'
+      cloud = system 'Cloud'
 
-      system1 = system "System 1" {
-        // ...
-      }
-
-      system2 = system "System 2" {
-        // ...
-      }
-
+      customer -> cloud 'uses cloud services'
     }  
+    ```  
+  </Tab>
+  <Tab>
+    ```likec4    
     ```  
   </Tab>
   <Tab>
@@ -63,8 +82,14 @@ Maybe split into multiple files.
   </Tab>
 </Tabs>
 
-## Extends
+## Extend element
 
 <Callout>
   TODO: Document extend element
+</Callout>
+
+## References
+
+<Callout>
+  TODO: Document workspace references
 </Callout>

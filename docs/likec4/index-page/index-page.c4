@@ -92,7 +92,7 @@ views {
   }
 
   view backend of backend {
-    include *, infra
+    include *, saas
     style backend.* {
       color sky
     }

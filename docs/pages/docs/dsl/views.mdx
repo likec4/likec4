@@ -2,11 +2,11 @@ import { Bleed, Cards, Card, Callout } from 'nextra-theme-docs'
 
 # Views
 
-Views are the visualizations of the same model from different perspectives, with different level of details, like:
+Views are the architecture diagrams, projections of the model from different perspectives, with different level of details, like:
 
-- System / service overviews, internal structure
-- Interactions between components in the context of some use case
-- Incoming and outgoing data flows
+- System / service overviews
+- Components interactions in specific use case
+- Data flows
 
 ## View Definition
 
@@ -35,7 +35,7 @@ views {
 }
 ```
 
-View may have a root element, then it inherits the scope (for references)
+View may have a root element (`view of ..`) and inherit its scope:
 
 ```likec4 filename="views.c4"
 views {
@@ -64,29 +64,35 @@ include cloud.backend
 // or exclude
 exclude cloud.backend
 
-// children of cloud.backend
+// include children of cloud.backend
 include cloud.backend.*
 
-// incoming relations
+// all incoming relations
 include -> cloud.backend
 
-// outgoing relations
+// all outgoing relations from cloud children
 include cloud.* ->
 
-// relations between
+// all relations from customer to cloud children
 include customer -> cloud.*
 ```
+
+<Callout type="info" emoji="ℹ️">
+  **Current limitation:**  
+  Relations with container elements are not shown.
+</Callout>
 
 Wildcard may be used to reference "everything", but depends on the context.
 
 ```likec4 
 view {
-  // include all top level elements
+  // include all top level elements and their relations
   include *
 }
 
 view of cloud.backend {
-  // include root element and all its children
+  // include 'cloud.backend', its children and all the incomings/outgoings
+  // (relations with the rest of the architecture)
   include *
 }
 ```
@@ -99,20 +105,15 @@ view {
   // rules may be merged
   include
     customer,
-    bigbank.*
-
-  // exclude webApplication being included with `bigbank.*`
-  exclude bigbank.webApplication
-
-  include
     bigbank,
     customer -> bigbank.*
+
+  // include all children of bigbank
+  include bigbank.*  
+  // but exclude webApplication
+  exclude bigbank.webApplication
 }
 ```
-
-<Callout type="info" emoji="ℹ️">
-  Relations with container elements are not shown.
-</Callout>
 
 
 ## Style rules

@@ -2,10 +2,9 @@ import { Callout } from 'nextra-theme-docs'
 
 # Relations
 
-## Relation Definition
+Relations are used to describe the connections and interactions of architecture elements.
 
-Relations are used to describe the connections and/or interactions between elements.  
-They are defined with the **`->`** operator.
+Relation between elements is created with the **`->`**:
 
 ```likec4 filename="relations.c4"
 model {
@@ -48,7 +47,7 @@ model {
 }
 ```
 
-Nested relation may be "source-less" or use `it` or `this` as source.  
+Nested relation may be "sourceless" (or use `it` or `this`).  
 Then the source is the parent element.
 
 
@@ -60,21 +59,14 @@ model {
   service cloud {
     component backend
     component frontend {
-      -> backend 'requests data' 
+      -> backend 'requests data'  // same as frontend -> backend
     }
   }
 
-  // also valid to use 'it' or 'this'
+  // or use 'it' or 'this'
   customer = actor {
     it -> frontend 'opens in browser'
     this -> frontend 'opens in browser'
   }    
 }
 ```
-
-
-## Implicit Relations
-
-<Callout>
-  TODO: Document implicit relations
-</Callout>

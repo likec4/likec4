@@ -3,7 +3,7 @@ import { Tab, Tabs } from 'nextra-theme-docs'
 
 # Model
 
-It is a set of architecture elements and relations/interactions between them.
+Model describes the software architecture as a set of various elements and relations/interactions between them.
 
 ## Element
 
@@ -71,19 +71,16 @@ These properties may be defined in nested block:
 
 
 ```likec4 copy filename="element.c4"
-specification {
-  element actor
-  element service
-}
 model {
   // only description inside
-  customer = actor 'Customer' 
-    description 'Uses the Cloud service'
+  customer = actor 'Customer' {
+    description 'Uses the Mobile Application'
   }
   // or even title inside
-  cloud = service {
-    title 'Cloud'
+  mobile = application {
+    title 'Mobile Application'
     description 'Provides services to customers'
+    technology 'React Native'
   }
 }
 ```
@@ -93,13 +90,8 @@ model {
 Any element is a container and can contain other elements.  
 This way you define the structure, the internals of the element.
 
-```likec4 copy filename="nested-elements.c4"
-specification {
-  element service
-  element component
-}
+```likec4 filename="nested-elements.c4"
 model {
-
   // service1 has backend and frontend
   service service1 {
     component backend {
@@ -136,17 +128,9 @@ and:
 - `service2.backend.api`
 - `service2.frontend`
 
-<Callout>
-  Full qualified name may be used in references.
-</Callout>
-
 It is not possible to have elements with the same name on the same hierarchy level.
 
 ```likec4 filename="nested-elements.c4"
-specification {
-  element service
-  element component
-}
 model {
 
   service service1 'Service 1' {

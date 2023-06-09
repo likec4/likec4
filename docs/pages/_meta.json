@@ -5,6 +5,7 @@
     "display": "hidden",
     "theme": {
       "layout": "full",
+      "typesetting": "article",
       "breadcrumb": false,
       "footer": true,
       "sidebar": false,
