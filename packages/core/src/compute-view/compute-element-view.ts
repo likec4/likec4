@@ -1,4 +1,4 @@
-import { anyPass, difference, filter, head, uniq, type Predicate } from 'rambdax'
+import { anyPass, filter, head, uniq, type Predicate } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import {
   type Fqn,

@@ -34,8 +34,8 @@
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "run -T vitest run",
+    "test:watch": "run -T vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.0.4",
-    "vitest": "^0.31.4"
+    "typescript": "^5.1.3"
   }
 }

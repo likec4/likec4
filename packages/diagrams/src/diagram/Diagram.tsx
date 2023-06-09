@@ -502,15 +502,17 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
       y={stageProps.y}
       scaleX={stageProps.scale}
       scaleY={stageProps.scale}
-      onPointerClick={onStageClick ? (e) => {
-        if (KonvaCore.isDragging() || !stageRef.current) {
-          return
+      {...(onStageClick && {
+        onPointerClick: (e) => {
+          if (KonvaCore.isDragging() || !stageRef.current) {
+            return
+          }
+          if (e.target === stageRef.current || !onNodeClick) {
+            e.cancelBubble = true
+            onStageClick(stageRef.current, e)
+          }
         }
-        if (e.target === stageRef.current || !onNodeClick) {
-          e.cancelBubble = true
-          onStageClick(stageRef.current, e)
-        }
-      } : undefined}
+      })}
       onPointerDblClick={e => {
         if (KonvaCore.isDragging() || !stageRef.current) {
           return
@@ -543,13 +545,15 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
             edge={edge}
             theme={theme}
             springs={springs}
-            onPointerClick={onEdgeClick ? (e) => {
-              if (KonvaCore.isDragging()) {
-                return
+            {...(onEdgeClick && {
+              onPointerClick: (e) => {
+                if (KonvaCore.isDragging()) {
+                  return
+                }
+                e.cancelBubble = true
+                onEdgeClick(edge)
               }
-              e.cancelBubble = true
-              onEdgeClick(edge)
-            } : undefined}
+            })}
             {...(onEdgeClick || interactive ? {
               onPointerEnter: (e: OnPointerEvent) => {
                 mousePointer(e)

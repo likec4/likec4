@@ -1,13 +1,24 @@
-import { defineConfig } from 'vitest/config'
 import GithubActionsReporter from 'vitest-github-actions-reporter'
+import { mergeConfig, defineProject, defineConfig } from 'vitest/config'
 
-export default defineConfig({
+const configShared = defineConfig({
   test: {
-    reporters: process.env.GITHUB_ACTIONS
-      ? ['default', new GithubActionsReporter()]
-      : 'default',
+    reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'default',
     snapshotFormat: {
       escapeString: false
     }
   }
 })
+
+export default configShared
+
+export function vitestProject(name: string) {
+  return mergeConfig(
+    configShared,
+    defineProject({
+      test: {
+        name
+      }
+    })
+  )
+}

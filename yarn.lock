@@ -360,10 +360,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/graphlib@npm:^2.1.12, @dagrejs/graphlib@npm:^2.1.4":
+"@dagrejs/graphlib@npm:^2.1.12":
   version: 2.1.12
   resolution: "@dagrejs/graphlib@npm:2.1.12"
   checksum: a94ac17505743dee1593b281b2b2320c3cf863771c19b0c402c6cd8b6c6d7ebc1439b47f74eca1d859af768627c6dc3cc5b1d1f5da56fd992d66916ea9eac6b7
+  languageName: node
+  linkType: hard
+
+"@dagrejs/graphlib@npm:^2.1.4":
+  version: 2.1.13
+  resolution: "@dagrejs/graphlib@npm:2.1.13"
+  checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
   languageName: node
   linkType: hard
 
@@ -880,7 +887,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    typescript: ^5.0.4
+    typescript: ^5.1.3
     vscode-uri: 3.0.7
   bin:
     likec4: dist/likec4.js
@@ -894,9 +901,7 @@ __metadata:
     "@dagrejs/graphlib": ^2.1.12
     rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
-    typescript: ^5.0.4
-    vite: ^4.3.9
-    vitest: ^0.31.4
+    typescript: ^5.1.3
   languageName: unknown
   linkType: soft
 
@@ -922,7 +927,7 @@ __metadata:
     tailwindcss: ^3.3.2
     tilg: ^0.1.1
     tiny-invariant: ^1.3.1
-    typescript: ^5.0.4
+    typescript: ^5.1.3
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -972,7 +977,7 @@ __metadata:
     tailwind-merge: ^1.13.0
     tailwindcss: ^3.3.2
     tailwindcss-animate: ^1.0.5
-    typescript: ^5.0.4
+    typescript: ^5.1.3
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
@@ -999,7 +1004,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     tilg: ^0.1.1
-    typescript: ^5.0.4
+    typescript: ^5.1.3
     vite: ^4.3.9
   languageName: unknown
   linkType: soft
@@ -1013,8 +1018,7 @@ __metadata:
     json5: ^2.2.3
     langium: ^1.2.0
     rambdax: ^9.1.1
-    typescript: ^5.0.4
-    vitest: ^0.31.4
+    typescript: ^5.1.3
   languageName: unknown
   linkType: soft
 
@@ -1035,9 +1039,7 @@ __metadata:
     strip-indent: ^4.0.0
     tiny-invariant: ^1.3.1
     type-fest: ^3.11.1
-    typescript: ^5.0.4
-    vite: ^4.3.9
-    vitest: ^0.31.4
+    typescript: ^5.1.3
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
   languageName: unknown
@@ -1055,9 +1057,7 @@ __metadata:
     rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
     ts-graphviz: ^1.8.0
-    typescript: ^5.0.4
-    vite: ^4.3.9
-    vitest: ^0.31.4
+    typescript: ^5.1.3
     word-wrap: ^1.2.3
   languageName: unknown
   linkType: soft
@@ -1082,7 +1082,7 @@ __metadata:
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.9
     type-fest: ^3.11.1
-    typescript: ^5.0.4
+    typescript: ^5.1.3
     vite: ^4.3.9
   languageName: unknown
   linkType: soft
@@ -2443,54 +2443,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/expect@npm:0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/expect@npm:0.31.4"
+"@vitest/expect@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/expect@npm:0.32.0"
   dependencies:
-    "@vitest/spy": 0.31.4
-    "@vitest/utils": 0.31.4
+    "@vitest/spy": 0.32.0
+    "@vitest/utils": 0.32.0
     chai: ^4.3.7
-  checksum: 589d438b0a6daade1e26c219f9eff5113efc8e0ab465eb2fb8483449c83e5e59e60956286db631afac41060c96dd1c880d4a29781bcd57466e452c4a7cc154b0
+  checksum: 0f5740057faf1a45be00b7e06ad8dd7e5b37d9f436e29701a8577d42bdff930ce958bc9a7732eb88fb71a3ab5009a72f2ed11c02b2095a4173fa69f69897e7b4
   languageName: node
   linkType: hard
 
-"@vitest/runner@npm:0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/runner@npm:0.31.4"
+"@vitest/runner@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/runner@npm:0.32.0"
   dependencies:
-    "@vitest/utils": 0.31.4
+    "@vitest/utils": 0.32.0
     concordance: ^5.0.4
     p-limit: ^4.0.0
     pathe: ^1.1.0
-  checksum: c85dee7570cba7caf7cbfcc9292848291a802e14b76b7dc2ff962e9b34c280197f8d83facf9b6278a2ca7d8a71d98598236fa400ca70371865e2c1a4f15c326f
+  checksum: d7a63a9a80d90a48e706fcf8bc1c2171ee0395f60241c1f0bb67854d246b68a472805d6abe33ce9a7250768c0b27af882e4beb7a5ba9eea2b3e085a54ed978e0
   languageName: node
   linkType: hard
 
-"@vitest/snapshot@npm:0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/snapshot@npm:0.31.4"
+"@vitest/snapshot@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/snapshot@npm:0.32.0"
   dependencies:
     magic-string: ^0.30.0
     pathe: ^1.1.0
     pretty-format: ^27.5.1
-  checksum: c60b91d02fb3b1907c47c472cd1e77deca6191259b86a7e68fcd85a2fc2084064ce50bbecd176abddf8539d06b6e9b35b0dfb0e491061ed0753f5f4e9c037a90
+  checksum: 2017d461b8492ae16b15f4f3725e1e3dc7bd18e24f1db788f151f9435af620ee711114edc4bd6ad88ba047f47dc4104b7db87d7f7b29363537272c0353ceb71d
   languageName: node
   linkType: hard
 
-"@vitest/spy@npm:0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/spy@npm:0.31.4"
+"@vitest/spy@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/spy@npm:0.32.0"
   dependencies:
     tinyspy: ^2.1.0
-  checksum: 9e904d42a5eac1c8679047014e65584abb6b7e1862fef0f8829559e79173f7f8c350b253bd7771d806921eff959fc124a57a9016a71574bd2ff43215e5cdd3f8
+  checksum: 1c418f4064f4357e972e99d20e2b7b65b8cde3a8280a8e06a41fa81517efe335ca176c21a6644a6f490b565fb0ed6df0ed4ab8097813be3d0f4ec625b7fd3451
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:^0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/ui@npm:0.31.4"
+"@vitest/ui@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/ui@npm:0.32.0"
   dependencies:
-    "@vitest/utils": 0.31.4
+    "@vitest/utils": 0.32.0
     fast-glob: ^3.2.12
     fflate: ^0.7.4
     flatted: ^3.2.7
@@ -2499,18 +2499,18 @@ __metadata:
     sirv: ^2.0.3
   peerDependencies:
     vitest: ">=0.30.1 <1"
-  checksum: 8cb467f9d55d3226f74d7b78edaee2d8e0c43320a0b81770df22482392f083f20b67682f0c8a8b662791baf563b27b2a3218868d87e34458eb4a315e763007e4
+  checksum: 0a0ac067ef667dfdd60e89c8a554cd2056cd5c39874940a0ed13cd4b27e04755aa2df56bbb19dcbf8eff7c458d84b7832ce9e817a5671319bb46019d3473c98d
   languageName: node
   linkType: hard
 
-"@vitest/utils@npm:0.31.4":
-  version: 0.31.4
-  resolution: "@vitest/utils@npm:0.31.4"
+"@vitest/utils@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@vitest/utils@npm:0.32.0"
   dependencies:
     concordance: ^5.0.4
     loupe: ^2.3.6
     pretty-format: ^27.5.1
-  checksum: 769e1620e34c05b35fd58453403f5abd7775160dbb9ed908e9a12c65e740d5415f9a9ddeab42b9641a771e0d57bc0ce44abc70330b2ca36be073a0f509e1ab4b
+  checksum: f27df1e7066a310cd43a7261f2b1f668e32b7443f9b90af4a6e49575ee2d65b019192833ddbd0f51eb5690130b5b1bd2459cb83397860941308eeb122983427a
   languageName: node
   linkType: hard
 
@@ -5781,7 +5781,7 @@ __metadata:
     rambdax: ^9.1.1
     shx: ^0.3.4
     typed-inject: ^4.0.0
-    typescript: ^5.0.4
+    typescript: ^5.1.3
     vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
     vscode-languageserver: 8.1.0
@@ -5800,15 +5800,15 @@ __metadata:
     "@types/prettier": ^2.7.2
     "@typescript-eslint/eslint-plugin": ^5.59.7
     "@typescript-eslint/parser": ^5.59.7
-    "@vitest/ui": ^0.31.4
+    "@vitest/ui": ^0.32.0
     eslint: ^8.42.0
     eslint-config-prettier: ^8.8.0
     prettier: ^2.8.8
     rimraf: ^5.0.1
-    turbo: ^1.10.1
-    typescript: ^5.0.4
+    turbo: ^1.10.2
+    typescript: ^5.1.3
     vite: ^4.3.9
-    vitest: ^0.31.4
+    vitest: ^0.32.0
     vitest-github-actions-reporter: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -9521,58 +9521,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-darwin-64@npm:1.10.1"
+"turbo-darwin-64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-darwin-64@npm:1.10.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-darwin-arm64@npm:1.10.1"
+"turbo-darwin-arm64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-darwin-arm64@npm:1.10.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-linux-64@npm:1.10.1"
+"turbo-linux-64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-linux-64@npm:1.10.2"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-linux-arm64@npm:1.10.1"
+"turbo-linux-arm64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-linux-arm64@npm:1.10.2"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-windows-64@npm:1.10.1"
+"turbo-windows-64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-windows-64@npm:1.10.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.10.1":
-  version: 1.10.1
-  resolution: "turbo-windows-arm64@npm:1.10.1"
+"turbo-windows-arm64@npm:1.10.2":
+  version: 1.10.2
+  resolution: "turbo-windows-arm64@npm:1.10.2"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.10.1":
-  version: 1.10.1
-  resolution: "turbo@npm:1.10.1"
+"turbo@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "turbo@npm:1.10.2"
   dependencies:
-    turbo-darwin-64: 1.10.1
-    turbo-darwin-arm64: 1.10.1
-    turbo-linux-64: 1.10.1
-    turbo-linux-arm64: 1.10.1
-    turbo-windows-64: 1.10.1
-    turbo-windows-arm64: 1.10.1
+    turbo-darwin-64: 1.10.2
+    turbo-darwin-arm64: 1.10.2
+    turbo-linux-64: 1.10.2
+    turbo-linux-arm64: 1.10.2
+    turbo-windows-64: 1.10.2
+    turbo-windows-arm64: 1.10.2
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -9588,7 +9588,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 3551c57be67e833583de549d74d5ec991e0f1e38047e25600b8acc085a1a8a4007992259a015eb9f2c0abd68156545800bd34e7b5ad337d1998b32461952d3fb
+  checksum: ec40ddbc6914aa04562a924df9e1a344d027c4bd32a2185b24df486c716726c90109fa22608c85eea05f2e9fec3145a0e893e16d2848e8f9eff5515ee54cd2a7
   languageName: node
   linkType: hard
 
@@ -9658,23 +9658,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.0.4":
-  version: 5.0.4
-  resolution: "typescript@npm:5.0.4"
+"typescript@npm:^5.1.3":
+  version: 5.1.3
+  resolution: "typescript@npm:5.1.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 82b94da3f4604a8946da585f7d6c3025fff8410779e5bde2855ab130d05e4fd08938b9e593b6ebed165bda6ad9292b230984f10952cf82f0a0ca07bbeaa08172
+  checksum: d9d51862d98efa46534f2800a1071a613751b1585dc78884807d0c179bcd93d6e9d4012a508e276742f5f33c480adefc52ffcafaf9e0e00ab641a14cde9a31c7
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
-  version: 5.0.4
-  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
+"typescript@patch:typescript@^5.1.3#~builtin<compat/typescript>":
+  version: 5.1.3
+  resolution: "typescript@patch:typescript@npm%3A5.1.3#~builtin<compat/typescript>::version=5.1.3&hash=77c9e2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: d26b6ba97b6d163c55dbdffd9bbb4c211667ebebc743accfeb2c8c0154aace7afd097b51165a72a5bad2cf65a4612259344ff60f8e642362aa1695c760d303ac
+  checksum: 32a25b2e128a4616f999d4ee502aabb1525d5647bc8955e6edf05d7fbc53af8aa98252e2f6ba80bcedfc0260c982b885f3c09cfac8bb65d2924f3133ad1e1e62
   languageName: node
   linkType: hard
 
@@ -10086,9 +10086,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-node@npm:0.31.4":
-  version: 0.31.4
-  resolution: "vite-node@npm:0.31.4"
+"vite-node@npm:0.32.0":
+  version: 0.32.0
+  resolution: "vite-node@npm:0.32.0"
   dependencies:
     cac: ^6.7.14
     debug: ^4.3.4
@@ -10098,7 +10098,7 @@ __metadata:
     vite: ^3.0.0 || ^4.0.0
   bin:
     vite-node: vite-node.mjs
-  checksum: 822457481fd58915eb41f18237d99ce163f7a45cc57ba0739876f6201f287c904ed00439c351a1a0fef82e4f256db06f4ae238c0519d4121e1ad14bc5dd4a39f
+  checksum: ce1c45e7d903afc001a08b3bc3159d268e8422e28ec7ffa8e4a4f99d18c9f4e447db989a6e0a8e168d3a4f4e6eb0b954f2b51ef1a85f29cc3f7f561045ff0bbe
   languageName: node
   linkType: hard
 
@@ -10150,18 +10150,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^0.31.4":
-  version: 0.31.4
-  resolution: "vitest@npm:0.31.4"
+"vitest@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "vitest@npm:0.32.0"
   dependencies:
     "@types/chai": ^4.3.5
     "@types/chai-subset": ^1.3.3
     "@types/node": "*"
-    "@vitest/expect": 0.31.4
-    "@vitest/runner": 0.31.4
-    "@vitest/snapshot": 0.31.4
-    "@vitest/spy": 0.31.4
-    "@vitest/utils": 0.31.4
+    "@vitest/expect": 0.32.0
+    "@vitest/runner": 0.32.0
+    "@vitest/snapshot": 0.32.0
+    "@vitest/spy": 0.32.0
+    "@vitest/utils": 0.32.0
     acorn: ^8.8.2
     acorn-walk: ^8.2.0
     cac: ^6.7.14
@@ -10177,7 +10177,7 @@ __metadata:
     tinybench: ^2.5.0
     tinypool: ^0.5.0
     vite: ^3.0.0 || ^4.0.0
-    vite-node: 0.31.4
+    vite-node: 0.32.0
     why-is-node-running: ^2.2.2
   peerDependencies:
     "@edge-runtime/vm": "*"
@@ -10207,7 +10207,7 @@ __metadata:
       optional: true
   bin:
     vitest: vitest.mjs
-  checksum: 61493711e349d33b0b42eb7ea2b0c348683256d87aeddb6df266da66193666b737d03c0ea74bb9bf2cd79ee1ecca5a034aabad3bba6ff66898bfdd2b473d8663
+  checksum: a752f7a2290e08cc4033936b1b9e1fe6adcb156bccff6404d4950b4f913c01a8015768f8dbd35267752331311dc55e218d56c5271c56e5ca9c848a36a5dc5b55
   languageName: node
   linkType: hard
 
