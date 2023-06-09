@@ -976,7 +976,7 @@ __metadata:
     swr: ^2.1.5
     tailwind-merge: ^1.13.0
     tailwindcss: ^3.3.2
-    tailwindcss-animate: ^1.0.5
+    tailwindcss-animate: ^1.0.6
     typescript: ^5.1.3
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: 8.1.0
@@ -9229,12 +9229,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss-animate@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "tailwindcss-animate@npm:1.0.5"
+"tailwindcss-animate@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "tailwindcss-animate@npm:1.0.6"
   peerDependencies:
     tailwindcss: "*"
-  checksum: 6b558f85a6af0780f018e1d23736d56dd59795f051df413bc2cf2fc2a021d6b1a3b78066f93e1045f3a39c11ee191c728db79e606d9a1def07fdf6a10f045312
+  checksum: 01471cb5e64d0936b3dc90bdb1d4b379e8b73b3d285553337d8576e5d458e868ddff99c6db0ae454c1be69ce8f88dc0eed44ea62e4d7bca10d7d2479fc4c8ee0
   languageName: node
   linkType: hard
 

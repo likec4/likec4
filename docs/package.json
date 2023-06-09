@@ -53,7 +53,7 @@
     "react-icons": "^4.9.0",
     "swr": "^2.1.5",
     "tailwind-merge": "^1.13.0",
-    "tailwindcss-animate": "^1.0.5",
+    "tailwindcss-animate": "^1.0.6",
     "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
     "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
