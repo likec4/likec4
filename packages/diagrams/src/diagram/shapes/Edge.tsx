@@ -13,6 +13,7 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
   theme: DiagramTheme
   springs: SpringValues<{
+    width: number
     opacity: number
   }>
 }
@@ -27,20 +28,19 @@ export function EdgeShape({
   return <Fragment>
     {/* @ts-ignore */}
     <AnimatedLine
-      {...springs}
       {...listeners}
+      opacity={springs.opacity}
       points={points.flat()}
       bezier={points.length > 2}
-      // width={2}
       fill={theme.relation.lineColor}
       stroke={theme.relation.lineColor}
-      strokeWidth={2}
+      strokeWidth={springs.width}
       hitStrokeWidth={20}
       perfectDrawEnabled={false} />
     {headArrow && (
       <AnimatedLine
-        {...springs}
         {...listeners}
+        opacity={springs.opacity}
         points={headArrow.flat()}
         closed={true}
         fill={theme.relation.lineColor}

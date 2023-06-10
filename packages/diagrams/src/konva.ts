@@ -37,4 +37,4 @@ export const AnimatedGroup: KonvaNodeComponent<Konva.Group, AnimatedProps<Konva.
 export const AnimatedText: KonvaNodeComponent<Konva.Text, AnimatedProps<Konva.TextConfig>> = animated(Text) as any
 export const AnimatedPath: KonvaNodeComponent<Konva.Path, AnimatedProps<Konva.PathConfig>> = animated(Path) as any
 export const AnimatedLine: KonvaNodeComponent<Konva.Line, AnimatedProps<Konva.LineConfig>> = animated(Line) as any
-// export const AnimatedCircle: KonvaNodeComponent<Konva.Circle, AnimatedProps<Konva.CircleConfig>> = animated(Circle) as any
+export const AnimatedCircle: KonvaNodeComponent<Konva.Circle, AnimatedProps<Konva.CircleConfig>> = animated(Circle) as any

@@ -442,10 +442,12 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
 
   const edgeTransitions = useTransition(diagram.edges, {
     initial: {
-      opacity: 1
+      opacity: 1,
+      width: 2
     },
     from: {
-      opacity: 0
+      opacity: 0,
+      width: 2
     },
     enter: {
       opacity: 1
@@ -539,7 +541,7 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
             onNodeClick={onNodeClick}
           />
         ))}
-        {edgeTransitions((springs, edge, { key }) => (
+        {edgeTransitions((springs, edge, {key, ctrl}) => (
           <EdgeShape
             key={key}
             edge={edge}
@@ -556,9 +558,20 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
             })}
             {...(onEdgeClick || interactive ? {
               onPointerEnter: (e: OnPointerEvent) => {
+                void ctrl.start({
+                  to: {
+                    width: 4
+                  },
+                  delay: 100
+                })
                 mousePointer(e)
               },
               onPointerLeave: (e: OnPointerEvent) => {
+                void ctrl.start({
+                  to: {
+                    width: 2
+                  }
+                })
                 mouseDefault(e)
               }
             } : undefined)}

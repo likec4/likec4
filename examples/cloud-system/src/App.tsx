@@ -41,13 +41,13 @@ function App() {
     width={window.innerWidth}
     height={window.innerHeight}
     padding={40}
-    onStageClick={() => {
-      const uri = apiRef.current.toDataURL({
-        pixelRatio: 2,
-        mimeType: 'image/png',
-      })
-      downloadURI(uri, 'diagram.png')
-    }}
+    // onStageClick={() => {
+    //   const uri = apiRef.current.toDataURL({
+    //     pixelRatio: 2,
+    //     mimeType: 'image/png',
+    //   })
+    //   downloadURI(uri, 'diagram.png')
+    // }}
   // onNodeClick={onNodeClick}
   // padding={40}
   />
