@@ -7,7 +7,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "vitest.commandLine": "yarn exec vitest",
   "search.exclude": {
     "node_modules/**": true,
     "docs/.next/**": true,

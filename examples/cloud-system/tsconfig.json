@@ -16,7 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsxdev"
   },
-  "include": ["src"],
+  "include": [
+    "./src/**/*.{ts,tsx}"
+  ],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../packages/core" },
