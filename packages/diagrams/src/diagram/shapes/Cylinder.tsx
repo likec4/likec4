@@ -34,15 +34,14 @@ export function CylinderShape({
   const {
     size: { width, height }, color, labels
   } = node
-  const { fill, stroke, shadow: shadowColor } = theme.colors[color]
+  const { fill, stroke } = theme.colors[color]
 
   const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
   // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
   const cylinderProps = useSpring({
     to: {
       fill,
-      stroke,
-      shadowColor
+      stroke
     }
   })
 
@@ -60,6 +59,7 @@ export function CylinderShape({
         shadowOffsetX={0}
         shadowOffsetY={8}
         shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowColor={theme.shadow}
         data={path}
         width={springs.width}
         height={springs.height}

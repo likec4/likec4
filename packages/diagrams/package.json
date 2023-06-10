@@ -17,7 +17,6 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -25,7 +24,7 @@
       "types": "./dist/index.d.ts",
       "module": "./dist/index.js",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.cjs"
     },
     "./src": "./src/index.ts",
     "./src/diagram": "./src/diagram/index.ts",
@@ -76,7 +75,6 @@
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwindcss": "^3.3.2",
     "tilg": "^0.1.1",
     "typescript": "^5.1.3"
   }

@@ -19,8 +19,7 @@ export function RectangleShape({
 
   const rectProps = useSpring({
     to: {
-      fill: colors.fill,
-      shadowColor: colors.shadow
+      fill: colors.fill
     }
   })
 
@@ -47,6 +46,7 @@ export function RectangleShape({
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowColor={theme.shadow}
         shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
         perfectDrawEnabled={false}
         strokeEnabled={false}

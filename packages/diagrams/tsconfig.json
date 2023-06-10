@@ -13,6 +13,7 @@
     "rootDir": "src",
     "composite": true,
     "declaration": true,
+    "declarationDir": "dist",
     "declarationMap": true,
     "jsx": "react-jsx"
   },

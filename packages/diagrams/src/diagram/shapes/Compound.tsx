@@ -57,7 +57,7 @@ export function CompoundShape({
   return <AnimatedGroup id={id} {...springs}>
     <AnimatedRect
       cornerRadius={4}
-      shadowColor={colors.shadow}
+      shadowColor={theme.shadow}
       shadowBlur={12}
       shadowOpacity={0.2}
       shadowOffsetX={0}

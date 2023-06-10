@@ -43,7 +43,7 @@ export function BrowserShape({
         width={springs.width}
         height={springs.height}
         fill={stroke}
-        shadowColor={colors.shadow} />
+        shadowColor={theme.shadow} />
       <Circle
         x={16}
         y={15}

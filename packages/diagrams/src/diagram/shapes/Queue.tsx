@@ -16,7 +16,7 @@ export function QueueShape({
   const {
     size: { width, height }, color, labels
   } = node
-  const { fill, stroke, shadow: shadowColor } = theme.colors[color]
+  const { fill, stroke } = theme.colors[color]
 
   const path = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
   const rx = Math.round(2 * 0.1 * (height / 2) * 1000) / 1000
@@ -24,8 +24,7 @@ export function QueueShape({
   const queueProps = useSpring({
     to: {
       fill,
-      stroke,
-      shadowColor
+      stroke
     }
   })
 
@@ -42,6 +41,7 @@ export function QueueShape({
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
+        shadowColor={theme.shadow}
         rotation={90}
         data={path}
         width={springs.height}
