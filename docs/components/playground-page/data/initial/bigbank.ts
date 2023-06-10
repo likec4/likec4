@@ -17,6 +17,7 @@ specification {
   element person {
     style {
       color secondary
+      shape person
     }
   }
 
