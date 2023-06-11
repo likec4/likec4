@@ -1,6 +1,13 @@
 version: '3'
 
 tasks:
+  sync-main:
+    cmds:
+      - git checkout main
+      - git merge develop
+      - git push
+      - git checkout develop
+
   release:
     dotenv: ['.env']
     cmds:
