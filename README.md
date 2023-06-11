@@ -12,7 +12,6 @@
 
 </div>
 
-
 ## What is LikeC4? Why "like"?
 
 LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
@@ -43,7 +42,7 @@ import { LikeC4View } from "$/likec4-generated"
 <LikeC4View viewId="index"/>
 ```
 
-And this is rendered: 
+And this is rendered:
 
 <div align="center">
   <img width="700px" src="https://github.com/likec4/.github/assets/824903/7408651f-e7ee-4d12-881e-49a4284337cb"/>

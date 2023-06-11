@@ -4,7 +4,7 @@
   </h3>
   <p>
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
-  </p> 
+  </p>
   <p>
     <a href="https://likec4.dev/docs/">docs</a> |
     <a href="https://likec4.dev/playground/">playground</a> |
@@ -45,7 +45,7 @@ import { LikeC4View } from "$/likec4-generated"
 <LikeC4View viewId="index"/>
 ```
 
-And this is rendered: 
+And this is rendered:
 
 ![index-view](https://github.com/likec4/.github/assets/824903/7408651f-e7ee-4d12-881e-49a4284337cb)
 
@@ -56,7 +56,7 @@ The extension provides (via [language server protocol](https://microsoft.github.
 - Validation and error reporting
 - Semantic syntax highlighting
 - Live Previews
-- Code completion and navigation 
+- Code completion and navigation
 - Resolve references (like `find all references`, `go to definition` .. )
 - "Safe" renames
 - Hover information
