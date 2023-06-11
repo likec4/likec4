@@ -53,6 +53,8 @@ And this is rendered:
   <img src="https://github.com/likec4/.github/assets/824903/954093f2-c164-4aa9-9ba6-3627206eeb4e" width="1048px">
 </div>
 
+Check the [Tutorial](https://likec4.dev/docs/#tutorial) - a bit better overview of LikeC4.
+
 ---
 
 The extension provides (via [language server protocol](https://microsoft.github.io/language-server-protocol)):

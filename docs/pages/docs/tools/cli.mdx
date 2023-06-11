@@ -18,3 +18,54 @@ The `likec4` CLI is a tool for managing and validating your LikeC4 projects and 
     ```
   </Tab>
 </Tabs>
+
+```ansi
+[0;35mlikec4[0m [0;36mhelp[0m
+
+Usage: likec4 [options] [command]
+
+Options:
+  -h, --help                    display help for command
+
+Commands:
+  codegen                       codegenerator for likec4
+  export [options] [sourcedir]  export views to png
+  help [command]                display help for command
+```
+
+## Commands
+
+### Codegen
+
+```ansi
+Usage: likec4 codegen [options] [command]
+
+generates various artifacts from likec4 sources
+
+Options:
+  -h, --help                        display help for command
+
+Commands:
+  react [options] [sourcedir]       generates react components (typescript)
+  views-data [options] [sourcedir]  dumps views data (typescript)
+  dot [options] [sourcedir]         generates graphviz dot files for each view
+  d2 [options] [sourcedir]          generates d2 files for each view
+  help [command]                    display help for command
+```
+
+React code-generator and components usage explained [here](./react).
+
+### Export
+
+```ansi
+Usage: likec4 export [options] [sourcedir]
+
+export likec4 views to png
+
+Arguments:
+  sourcedir                 directory with likec4 sources (default: ".")
+
+Options:
+  -o, --output <directory>  output directory generated png (default: ".")
+  -h, --help                display help for command
+```  

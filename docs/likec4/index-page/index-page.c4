@@ -78,10 +78,6 @@ views {
 
   view customer of customer {
     include *, saas.ui
-
-    style customer {
-      color sky
-    }
   }
 
   view saas of saas {
@@ -129,8 +125,7 @@ views {
   view backendServices of services {
     include
       *,
-      backend,
-      infra.*
+      backend
 
     style services {
       color sky

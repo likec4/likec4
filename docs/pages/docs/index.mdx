@@ -41,7 +41,7 @@ Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [
 
 <Steps>
 
-### Tailor your model
+### Tailor specification
 
 We start with defining the element kinds we want in our model.  
 For now we need only two - `actor` and `system`
@@ -91,8 +91,6 @@ model {
 ```
 
 ### Add relationships
-
-We have at least these relationships:
 
 ```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4" 
 specification {
@@ -336,7 +334,10 @@ We made changes and all views are updated automatically.
 
 ![landscape view after changes](/getting-started/05.png)
 
-You can play with [this tutorial in playground](/playground/getting-started/), for example, try to change the [shape](/docs/dsl/specification/#shapes) of the `customer` element.
+You can play with [this tutorial in playground](/playground/getting-started/) and, for example, add the following:
+- change [shape](/docs/dsl/specification/#shapes) of the `customer` element
+- add database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
+- add external system, like Stripe, and show how the backend interacts with it.
 
 </Steps>
 

@@ -49,3 +49,5 @@ And this is rendered:
 <div align="center">
   <img src="https://github.com/likec4/.github/assets/824903/954093f2-c164-4aa9-9ba6-3627206eeb4e" width="1048px">
 </div>
+
+Check the [Tutorial](https://likec4.dev/docs/#tutorial) - a bit better overview of LikeC4.
