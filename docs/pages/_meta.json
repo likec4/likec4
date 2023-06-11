@@ -44,5 +44,19 @@
       "toc": false,
       "pagination": false
     }
+  },
+  "404": {
+    "title": "Page Not Found",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw",
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "timestamp": false
+    }
   }
 }
