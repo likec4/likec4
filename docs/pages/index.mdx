@@ -8,39 +8,18 @@ import { Hero, HeroVideo, GetStartedButton, IndexPageWhy, IndexPageSection, Inde
 <GetStartedButton/>
 <HeroVideo/>
 
-<div className="flex flex-wrap w-full mb-20">
-  <div className="lg:w-1/2 w-full mb-6 lg:mb-0">
-    <h1 className="sm:text-3xl text-2xl font-medium title-font mb-2 text-white">Pitchfork Kickstarter Taxidermy</h1>
-    <div className="h-1 w-20 bg-purple-500 rounded"></div>
-  </div>
-  <p className="lg:w-1/2 w-full leading-relaxed text-gray-400 text-opacity-90">Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical gentrify, subway tile poke farm-to-table. Franzen you probably haven't heard of them man bun deep jianbing selfies heirloom prism food truck ugh squid celiac humblebrag.</p>
-</div>
+<IndexPageSection title={'What is LikeC4? Why "like"?'}>  
+  LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
 
-<IndexPageSection title="What is C4 Model?">  
-The [C4 Model](https://c4model.com/) is a lightweight and practical approach for visualizing the architecture of a software system.  
-It was developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.  
-C4 provides a set of diagrams that enable software architects and developers to communicate and document the structure, key elements, and interactions of the system.
+  LikeC4 is inspired by [C4 Model](https://c4model.com/), but provides some flexibility.
+  You can define your own notation, element types, and any number of nested levels in your architecture model.
+  This allows you to create a perfectly tailored system design.
 
-If you never heard about C4 - check the [C4 Model website](https://c4model.com/), you get the idea very quickly.
-
-</IndexPageSection>
-
-
-<IndexPageSection title={'What is LikeC4? Why "like"?'}>    
-  C4 is great. But sometimes we need to go futher suggested levels and even have custom ones with our semantics.  
-  This is where LikeC4 comes in.
-
-  LikeC4 is a modeling language for describing software architecture. It might look like [Structurizr DSL](https://github.com/structurizr/dsl), though it is not
-  fully compatible.
-
-  With LikeC4 you have more flexibility, you can define your own notation, element types, and any number of nested levels in your architecture model.  
-  This allows you to create a system design that is tailored to your specific needs and requirements.
 </IndexPageSection>
 
 <IndexPageSection title={'What does LikeC4 look like?'}>   
-
-  LikeC4 is a modeling language and tooling to generate diagrams from the model.  
-  Example ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
+  
+  LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
 
   ```likec4 filename="example.c4"
   // customise model
@@ -74,13 +53,13 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
   }
   ```  
 
-  CLI to generate react components (or export to any other format):
+  CLI to generate react components (or export to other format):
 
   ```bash
   likec4 codegen react -o likec4-generated.tsx
   ```
 
-  Import component:
+  Website:
 
   ```jsx
   import { LikeC4View } from "$/likec4-generated"
@@ -90,7 +69,7 @@ If you never heard about C4 - check the [C4 Model website](https://c4model.com/)
   <LikeC4View viewId="index"/>
   ```
 
-  And this is what we get (click to explore):   
+  And this is rendered (click to explore):   
 
   <IndexPageDiagram/>
 
