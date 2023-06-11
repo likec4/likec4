@@ -3,7 +3,8 @@ import { dotLayouter } from '@likec4/layouts'
 import chalk from 'chalk'
 import { execa } from 'execa'
 import { mkdirp } from 'mkdirp'
-import { copyFile, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { copyFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path/posix'
 import { mapAsync, values } from 'rambdax'
@@ -11,7 +12,16 @@ import { generateExportScript, generateViewsData } from './export'
 import { initLanguageServices } from './language-services'
 
 async function createProject() {
-  const dir = await mkdtemp(join(tmpdir(), 'likec4-'))
+  const dir = join(tmpdir(), 'likec4-export')
+
+  if (existsSync(dir)) {
+    console.log('  ' + chalk.green('exists:') + ' ' + chalk.dim(dir))
+    return dir
+  }
+
+  console.log('  ' + chalk.dim('mkdir: ' + dir))
+
+  await mkdirp(dir)
 
   await writeFile(
     join(dir, 'package.json'),
@@ -24,7 +34,7 @@ async function createProject() {
           start: 'node export.js'
         },
         engines: {
-          "node": ">=16"
+          node: '>=16'
         },
         engineStrict: true,
         dependencies: {
@@ -39,7 +49,7 @@ async function createProject() {
   await execa('npm', ['install', '--no-audit', '--no-fund'], {
     cwd: dir,
     env: {
-      'NODE_ENV': 'production'
+      NODE_ENV: 'production'
     },
     stdio: 'inherit'
   })
@@ -78,33 +88,26 @@ export const exportCommand = () => {
 
       console.log(chalk.green(`Prepare temporary node project...`))
       const dir = await createProject()
-      console.log('  ' + chalk.dim(dir))
 
-      try {
-        const outputdir = output ? resolve(process.cwd(), output) : workspace
+      const outputdir = output ? resolve(process.cwd(), output) : workspace
 
-        await mkdirp(outputdir)
+      await mkdirp(outputdir)
 
-        await copyFile(join(__dirname, 'puppeteer-page.js'), join(dir, 'puppeteer-page.js'))
-        await writeFile(join(dir, 'likec4views.js'), generateViewsData(diagrams))
-        await writeFile(join(dir, 'export.js'), generateExportScript(diagrams, outputdir))
+      await copyFile(join(__dirname, 'puppeteer-page.js'), join(dir, 'puppeteer-page.js'))
+      await writeFile(join(dir, 'likec4views.js'), generateViewsData(diagrams))
+      await writeFile(join(dir, 'export.js'), generateExportScript(diagrams, outputdir))
 
-        console.log('')
-        console.log('🏋️‍♀️ ' + chalk.green('Run export script...'))
-        console.log('  ' + chalk.dim('cwd: ' + dir))
-        console.log('  ' + chalk.dim('node export.js'))
-        console.log('')
+      console.log('')
 
-        await execa('node', ['export.js'], {
-          cwd: dir,
-          stdio: 'inherit'
-        })
-      } finally {
-        console.log('')
-        console.log(chalk.dim('Cleaning up...'))
-        console.log('  ' + chalk.dim(dir))
-        await rm(dir, { recursive: true, force: true })
-      }
+      console.log('🧑‍🎨 ' + chalk.green('Run export script...'))
+      console.log('  ' + chalk.dim('cwd: ' + dir))
+      console.log('  ' + chalk.dim('node export.js'))
+      console.log('')
+
+      await execa('node', ['export.js'], {
+        cwd: dir,
+        stdio: 'inherit'
+      })
 
       console.log('\n' + chalk.green('✅ Done'))
     })

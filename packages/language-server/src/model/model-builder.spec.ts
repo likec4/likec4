@@ -70,6 +70,34 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toMatchSnapshot()
   })
 
+  it('builds model and give default name for index view', async () => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element system
+    }
+    model {
+      system system1
+    }
+    views {
+      view index {
+        include *
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.views).toHaveProperty('index')
+
+    const indexView = model.views['index' as ViewID]!
+    expect(indexView.id).toEqual('index')
+    expect(indexView.title).toEqual('Landscape view')
+    expect(indexView.nodes).to.be.an('array').that.has.length(1)
+    expect(indexView.edges).to.be.an('array').that.is.empty
+    expect(indexView.rules).to.be.an('array').that.is.not.empty
+  })
+
   it('builds model with extend', async () => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`

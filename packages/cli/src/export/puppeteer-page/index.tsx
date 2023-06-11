@@ -4,8 +4,8 @@ import { createRoot, type Root } from 'react-dom/client'
 import type { DiagramView, DiagramApi } from '@likec4/diagrams';
 import { Diagram } from '@likec4/diagrams/src/diagram'
 
-const rootDiv = document.createElement('div')
-document.body.appendChild(rootDiv)
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const rootDiv = document.getElementById('root')!
 
 let root: Root | null = null
 const apiRef = createRef<DiagramApi>();
@@ -28,9 +28,9 @@ window.renderView = (viewId: string) => {
     root = null
   }
   root = createRoot(rootDiv)
-  root.render(
+  root.render(<React.Fragment>
     <Diagram ref={apiRef} interactive={false} animate={false} diagram={diagram} width={diagram.width} height={diagram.height} padding={0}/>
-  )
+  </React.Fragment>)
   apiRef.current?.resetStageZoom()
 }
 

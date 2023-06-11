@@ -51,7 +51,6 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
       width: 1000,
       height: 1000,
       deviceScaleFactor: 2,
-      isMobile: false,
     });
 
     await page.setContent(\`
@@ -65,7 +64,7 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
             width: 100%;
             height: 100%;
           }
-          *,:before,:after{
+          *,:before,:after {
             box-sizing:border-box;
             outline:none;
             border-width:0;
@@ -74,9 +73,19 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
             padding:0;
             margin:0;
           }
+          body {
+            padding: 40px 50px 60px 50px;
+          }
+          #root {
+            padding: 40px;
+            background-color: #1C1C1C;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.4) 0px 16px 40px;
+          }
         </style>
       </head>
       <body>
+        <div id="root"></div>
       </body>
     </html>
     \`)
@@ -112,11 +121,11 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
       await page.evaluate((id) => window.renderView(id), viewId)
       await new Promise(resolve => setTimeout(resolve, 50))
       await page.waitForSelector('.konvajs-content')
-      await writeFile(
-        output,
-        await page.evaluate(() => window.exportToPngBase64(2)),
-        'base64'
-      );
+      await page.screenshot({
+        path: output,
+        omitBackground: true,
+        fullPage: true
+      })
     }
 
   `
@@ -125,7 +134,7 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
       joinToNode(
         views,
         view =>
-          expandToNode`await exportView('${view.id}', {width: ${view.width + 100}, height: ${view.height + 100}});`,
+          expandToNode`await exportView('${view.id}', {width: ${view.width + 180}, height: ${view.height + 180}});`,
         {
           appendNewLineIfNotEmpty: true
         }

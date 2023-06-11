@@ -152,9 +152,12 @@ export class LikeC4ModelBuilder {
         if (!title && view.viewOf) {
           title = elements[view.viewOf]?.title
         }
+        if (!title && view.id === 'index') {
+          title = 'Landscape view'
+        }
         return {
           ...model,
-          ...(!!title ? { title } : {}),
+          ...(title && { title }),
           rules: clone(rules)
         }
       }

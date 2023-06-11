@@ -1,12 +1,16 @@
+// customise model
 specification {
   element actor {
     style {
       shape person
+      color indigo
     }
   }
   element system
   element component
 }
+
+// describe architecture
 model {
   customer = actor 'Customer' {
     description 'A user of our product with active subscription'
@@ -63,6 +67,8 @@ model {
   customer -> saas 'uses to manage data'
   customer -> ui 'opens in browser'
 }
+
+// generate diagrams
 views {
 
   view index {
