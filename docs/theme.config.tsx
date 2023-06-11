@@ -13,9 +13,12 @@ const logo = (
   </span>
 )
 
-const config: DocsThemeConfig = {
+export default {
   logo,
   darkMode: true,
+  nextThemes: {
+    defaultTheme: 'dark',
+  },
   primaryHue: 195,
   sidebar: {
     toggleButton: true,
@@ -24,13 +27,9 @@ const config: DocsThemeConfig = {
   project: {
     link: 'https://github.com/likec4/likec4',
   },
-  docsRepositoryBase: 'https://github.com/likec4/likec4/blob/main/docs',
+  docsRepositoryBase: 'https://github.com/likec4/likec4/blob/develop/docs',
   themeSwitch: {
     component: () => null
-  },
-  nextThemes: {
-    defaultTheme: 'dark',
-    forcedTheme: 'dark'
   },
   footer: {
     // component: () => null,
@@ -49,7 +48,7 @@ const config: DocsThemeConfig = {
             ? 'Example Big Bank: %s'
             : '%s – LikeC4',
       }),
-      description: 'Live diagrams from the "like c4" model, managed by open-source tooling as code in your repository.',
+      description: 'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
       themeColor: '#111',
       openGraph: {
         url,
@@ -74,41 +73,4 @@ const config: DocsThemeConfig = {
       )}
     </>)
   }
-  // useNextSeoProps: () => ({ titleTemplate: '%s – LikeC4' })
-  // head: function useHead() {
-  //   const { title } = useConfig()
-  //   const { route } = useRouter()
-  //   const socialCard = 'https://likec4.dev/logo.png'
-
-  //   const isZoomDisabled = route.startsWith('/examples') || route.startsWith('/playground')
-
-  //   return (
-  //     <>
-  //       <meta name="msapplication-TileColor" content="#111" />
-  //       <meta name="theme-color" content="#111" />
-  //       {isZoomDisabled ? (
-  //         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-  //       ): (
-  //         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  //       )}
-  //       <meta httpEquiv="Content-Language" content="en" />
-  //       <meta
-  //         name="description"
-  //         content="Architecture diagrams from the code - always consistent, up-to-date and with the history"
-  //       />
-  //       <meta
-  //         name="og:description"
-  //         content="Architecture diagrams from the code - always consistent, up-to-date and with the history"
-  //       />
-  //       <meta name="twitter:card" content="summary_large_image" />
-  //       <meta name="twitter:image" content={socialCard} />
-  //       <meta name="twitter:site:domain" content="likec4.dev" />
-  //       <meta name="twitter:url" content="https://likec4.dev" />
-  //       <meta name="og:image" content={socialCard} />
-  //       <link rel="icon" href="/favicon.png" type="image/png" />
-  //     </>
-  //   )
-  // },
-}
-
-export default config
+} satisfies DocsThemeConfig

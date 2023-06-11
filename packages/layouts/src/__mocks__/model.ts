@@ -98,13 +98,15 @@ const fakeElements = {
   customer: {
     id: 'customer' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'customer'
+    title: 'customer',
+    shape: 'person'
   },
   support: {
     id: 'support' as Fqn,
     kind: 'actor' as ElementKind,
     title: 'Support Engineer',
-    description: 'Support engineers are responsible for supporting customers'
+    description: 'Support engineers are responsible for supporting customers',
+    shape: 'person'
   },
   'amazon.s3': {
     id: 'amazon.s3' as Fqn,
@@ -120,7 +122,8 @@ const fakeElements = {
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'Frontend'
+    title: 'Frontend',
+    shape: 'browser'
   },
   'cloud.backend.graphql': {
     id: 'cloud.backend.graphql' as Fqn,

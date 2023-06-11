@@ -89,17 +89,20 @@ export const fakeElements = {
   customer: {
     id: 'customer' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'customer'
+    title: 'customer',
+    shape: 'person'
   },
   support: {
     id: 'support' as Fqn,
     kind: 'actor' as ElementKind,
-    title: 'support'
+    title: 'support',
+    shape: 'person'
   },
   'amazon.s3': {
     id: 'amazon.s3' as Fqn,
     kind: 'component' as ElementKind,
-    title: 's3'
+    title: 's3',
+    shape: 'storage'
   },
   'cloud.backend': {
     id: 'cloud.backend' as Fqn,
@@ -109,7 +112,8 @@ export const fakeElements = {
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'frontend'
+    title: 'frontend',
+    shape: 'browser'
   },
   'cloud.backend.graphql': {
     id: 'cloud.backend.graphql' as Fqn,

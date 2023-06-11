@@ -69,7 +69,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.style]: 'filled,rounded',
     [_.color]: Colors.primary.stroke,
     [_.fillcolor]: Colors.primary.fill,
-    [_.margin]: '0.4,0.3',
+    [_.margin]: `${pxToInch(32)},${pxToInch(20)}`,
   })
 
   G.attributes.edge.apply({

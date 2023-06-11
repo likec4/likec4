@@ -5,7 +5,7 @@ import wrap from 'word-wrap'
 
 export const pointToPx = (pt: number) => Math.ceil((pt * 96) / 72)
 export const inchToPx = (inch: number) => Math.ceil(inch * 96)
-export const pxToInch = (px: number) => px / 96
+export const pxToInch = (px: number) => Math.round((px / 96) * 10000) / 10000
 export const pxToPoints = (px: number) => px * 0.75
 
 export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
