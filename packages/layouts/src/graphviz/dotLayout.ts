@@ -95,10 +95,20 @@ function parseLabelDraws(
   return labels
 }
 
-function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
-  const b = _draw_.find(propEq('op', 'b'))
-  invariant(b, 'edge should have a bezier curve')
-  return b.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
+// Discussion:
+//   https://forum.graphviz.org/t/how-to-interpret-graphviz-edge-coordinates-from-xdot-or-json/879/11
+// Example:
+//   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
+function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
+  invariant(pos, 'edge should pos')
+  const posStr = pos.substring(2)
+  const points = posStr.split(" ").map((p: string): Point => {
+    const { x, y } = parsePos(p)
+    return [x, y]
+  })
+  const endpoint = points.shift()
+  invariant(endpoint, 'edge should have endpoint')
+  return [...points, endpoint];
 }
 
 function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {

@@ -51,6 +51,10 @@ exports[`dotLayout: >  computedAmazonView 1`] = `
           198,
           361,
         ],
+        [
+          198,
+          375,
+        ],
       ],
       "relations": [
         "cloud.backend.storage:amazon.s3",
@@ -275,6 +279,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
           224,
           313,
         ],
+        [
+          224,
+          326,
+        ],
       ],
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -328,6 +336,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
         [
           644,
           313,
+        ],
+        [
+          644,
+          326,
         ],
       ],
       "relations": [
@@ -393,6 +405,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
           361,
           642,
         ],
+        [
+          350,
+          651,
+        ],
       ],
       "relations": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
@@ -447,6 +463,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
           234,
           638,
         ],
+        [
+          234,
+          651,
+        ],
       ],
       "relations": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -488,6 +508,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
         ],
         [
           484,
+          741,
+        ],
+        [
+          498,
           741,
         ],
       ],
@@ -543,6 +567,10 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
         [
           658,
           965,
+        ],
+        [
+          658,
+          978,
         ],
       ],
       "relations": [
@@ -1019,6 +1047,10 @@ exports[`dotLayout: >  computedCloudView 1`] = `
           302,
           302,
         ],
+        [
+          310,
+          312,
+        ],
       ],
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -1073,6 +1105,10 @@ exports[`dotLayout: >  computedCloudView 1`] = `
           438,
           302,
         ],
+        [
+          430,
+          312,
+        ],
       ],
       "relations": [
         "support:cloud.frontend.adminPanel",
@@ -1125,6 +1161,10 @@ exports[`dotLayout: >  computedCloudView 1`] = `
         ],
         [
           692,
+          403,
+        ],
+        [
+          705,
           403,
         ],
       ],
@@ -1181,6 +1221,10 @@ exports[`dotLayout: >  computedCloudView 1`] = `
         [
           866,
           600,
+        ],
+        [
+          866,
+          613,
         ],
       ],
       "relations": [
@@ -1467,6 +1511,10 @@ exports[`dotLayout: >  computedIndexView 1`] = `
           300,
           290,
         ],
+        [
+          307,
+          301,
+        ],
       ],
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -1521,6 +1569,10 @@ exports[`dotLayout: >  computedIndexView 1`] = `
           440,
           290,
         ],
+        [
+          433,
+          301,
+        ],
       ],
       "relations": [
         "support:cloud.frontend.adminPanel",
@@ -1574,6 +1626,10 @@ exports[`dotLayout: >  computedIndexView 1`] = `
         [
           370,
           588,
+        ],
+        [
+          370,
+          601,
         ],
       ],
       "relations": [
