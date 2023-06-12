@@ -961,7 +961,7 @@ __metadata:
     langium: ^1.2.0
     lucide-react: ^0.241.0
     monaco-editor: 0.36.1
-    monaco-languageclient: 5.0.1
+    monaco-languageclient: 6.0.3
     next: 13.4.2
     nextra: ^2.7.1
     nextra-theme-docs: ^2.7.1
@@ -7708,15 +7708,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-languageclient@npm:5.0.1":
-  version: 5.0.1
-  resolution: "monaco-languageclient@npm:5.0.1"
+"monaco-editor@npm:~0.37.1":
+  version: 0.37.1
+  resolution: "monaco-editor@npm:0.37.1"
+  checksum: f2ac123d3044a1386d36ba52bb617ad18fb1c745d515a63258858b41c91bb68b71b57c7e5aff3fc2b3226b22c12ca3ad5b14c117babc85eebcf80317cb10691b
+  languageName: node
+  linkType: hard
+
+"monaco-languageclient@npm:6.0.3":
+  version: 6.0.3
+  resolution: "monaco-languageclient@npm:6.0.3"
   dependencies:
+    monaco-editor: ~0.37.1
+    vscode: "npm:@codingame/monaco-vscode-api@~1.78.8"
     vscode-jsonrpc: ~8.1.0
     vscode-languageclient: ~8.1.0
   peerDependencies:
+    monaco-editor: ~0.37.1
     vscode: "*"
-  checksum: 6c2f2dc57f64e0089696f087c811a0396df623eccd194539d22c47e545f0d7401a9a86b0adf9ca28e0e191c2fd90637eb620f38cf80d7672fc7c0785d451f418
+  peerDependenciesMeta:
+    monaco-editor:
+      optional: false
+    vscode:
+      optional: false
+  checksum: 60ba099325fa579dcf46e7c0669800be6d43e8b0e6b0dfb167174c92bc0e91ab27ebb30c4e35cf54f41863ec3eda7993010f3ebaefe2275f2c059b4b2705273a
   languageName: node
   linkType: hard
 
@@ -11085,6 +11100,20 @@ __metadata:
     vscode-oniguruma: ^1.7.0
     vscode-textmate: ^9.0.0
   checksum: 4f44a6dc696ba17a0903829295cafae673ae0eaaf646e4087042b7a6106589f418ec33f240bd9c04b1833e348f4ee4327a548dd537f781c7e41d2ce44569e143
+  languageName: node
+  linkType: hard
+
+"vscode@npm:@codingame/monaco-vscode-api@~1.78.8":
+  version: 1.78.8
+  resolution: "@codingame/monaco-vscode-api@npm:1.78.8"
+  peerDependencies:
+    monaco-editor: 0.37.1
+    vscode-oniguruma: ^1.7.0
+    vscode-textmate: ^9.0.0
+    yauzl: ^2.10.0
+  bin:
+    monaco-treemending: monaco-treemending.js
+  checksum: 84a01cfd0746190a11aadd802960c20963d8fb8e7cd18722076590bb096411476cee869524e39d826398ef38e1ad91aa425ebf07337790baae160cb3dd076f87
   languageName: node
   linkType: hard
 
