@@ -6,7 +6,7 @@ import chalk from 'chalk'
 import { mkdirp } from 'mkdirp'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { mapParallelAsyncWithLimit, values } from 'rambdax'
+import { mapAsync, values } from 'rambdax'
 import { initLanguageServices } from './language-services'
 
 async function codegenAction(
@@ -20,7 +20,7 @@ async function codegenAction(
   console.log(chalk.dim`🔍 Layouting...`)
 
   const layout = await dotLayouter()
-  const diagrams = await mapParallelAsyncWithLimit(layout, 2, values(model.views))
+  const diagrams = await mapAsync(layout, values(model.views))
 
   const generated = generator(diagrams)
 
@@ -72,7 +72,7 @@ async function codegenD2Action(
   console.log(chalk.dim`🔍 Layouting...`)
 
   const layout = await dotLayouter()
-  const diagrams = await mapParallelAsyncWithLimit(layout, 2, values(model.views))
+  const diagrams = await mapAsync(layout, values(model.views))
 
   if (diagrams.length === 0) {
     console.log(chalk.red`No views found`)

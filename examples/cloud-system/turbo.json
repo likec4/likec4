@@ -3,28 +3,18 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
-      "outputMode": "new-only",
       "dependsOn": ["@likec4/cli#build"],
       "outputs": [
         "src/**/*.generated.ts",
         "src/**/*.generated.tsx"
       ],
       "inputs": [
-        "likec4/**"
+        "**/*.c4"
       ]
     },
     "compile": {
-      "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
-      "outputs": [],
-      "inputs": [
-        "**/*",
-        "!node_modules/**",
-        "!dist/**",
-        "!likec4/**",
-        "!src/**/*.generated.ts",
-        "!src/**/*.generated.tsx"
-      ]
+      "outputs": []
     }
   }
 }

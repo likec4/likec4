@@ -3,7 +3,6 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
-      "outputMode": "new-only",
       "outputs": [
         "contrib/**",
         "src/generated/**"
@@ -14,27 +13,12 @@
       ]
     },
     "compile": {
-      "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
-      "outputs": [],
-      "inputs": [
-        "**/*",
-        "!dist/**",
-        "!contrib/**",
-        "!*.langium",
-        "!src/generated/**"
-      ]
+      "outputs": []
     },
     "build": {
       "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
-      "inputs": [
-        "**/*",
-        "!dist/**",
-        "!contrib/**",
-        "!*.langium",
-        "!src/generated/**"
-      ],
       "outputs": [
         "dist/**"
       ]
