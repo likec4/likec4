@@ -42,7 +42,7 @@
     "jotai-devtools": "^0.5.3",
     "langium": "^1.2.0",
     "lucide-react": "^0.241.0",
-    "monaco-editor": "0.36.1",
+    "monaco-editor": "0.39.0",
     "monaco-languageclient": "5.0.1",
     "next": "13.4.2",
     "nextra": "^2.7.1",
