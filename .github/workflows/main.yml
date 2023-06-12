@@ -79,3 +79,12 @@ jobs:
       - name: Build NextJS
         working-directory: docs
         run: yarn turbo-build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: likec4-docs
+          workingDirectory: docs
+          directory: out
