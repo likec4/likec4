@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Colors, RelationColors, compareFqnHierarchically } from '@likec4/core'
 import type { ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
-import { groupBy, values } from 'rambdax'
-import { attribute as _, digraph, toDot, type GraphBaseModel, type NodeModel, type SubgraphModel } from 'ts-graphviz'
+import { groupBy, sortObject, values } from 'rambdax'
+import {
+  attribute as _,
+  digraph,
+  toDot,
+  type GraphBaseModel,
+  type NodeModel,
+  type SubgraphModel
+} from 'ts-graphviz'
 import type { DotSource } from './graphviz-types'
 import { generateEdgeLabel, generateNodeLabel, pxToInch, pxToPoints } from './graphviz-utils'
-import { Colors, RelationColors } from '@likec4/core'
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
   const gvSubgraphs = new Map<Fqn, SubgraphModel>()
@@ -19,7 +26,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         [_.labeljust]: 'l',
         [_.fontsize]: pxToPoints(12),
         [_.label]: `<<B>${node.title.toUpperCase()}</B>>`,
-        [_.margin]: node.children.length > 2 ? 30 : 20,
+        [_.margin]: node.children.length > 2 ? 30 : 20
       })
       gvSubgraphs.set(node.id, subgraph)
 
@@ -29,7 +36,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     } else {
       const gNode = parent.createNode('nd' + sequence++, {
         [_.id]: node.id,
-        [_.label]: generateNodeLabel(node),
+        [_.label]: generateNodeLabel(node)
       })
       if (node.color !== 'primary') {
         gNode.attributes.set(_.color, Colors[node.color].stroke)
@@ -42,7 +49,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
           break
         }
         default:
-          break;
+          break
       }
       gvNodes.set(node.id, gNode)
     }
@@ -57,7 +64,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.layout]: 'dot',
     [_.TBbalance]: 'min',
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(16),
+    [_.fontsize]: pxToPoints(16)
   })
 
   G.attributes.node.apply({
@@ -69,7 +76,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.style]: 'filled,rounded',
     [_.color]: Colors.primary.stroke,
     [_.fillcolor]: Colors.primary.fill,
-    [_.margin]: `${pxToInch(32)},${pxToInch(20)}`,
+    [_.margin]: `${pxToInch(32)},${pxToInch(20)}`
   })
 
   G.attributes.edge.apply({
@@ -79,21 +86,31 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.arrowsize]: 0.7,
     [_.color]: RelationColors.lineColor,
     [_.fontcolor]: RelationColors.labelColor,
-    [_.nojustify]: true,
+    [_.nojustify]: true
   })
 
   for (const root of nodes.filter(n => n.parent === null)) {
     processNode(root, G)
   }
 
-  for (const edgesPerContainer of values(groupBy(e => e.parent ?? '', edges))) {
+  const sortedEdges = values(
+    sortObject(
+      (parentA, parentB) => compareFqnHierarchically(parentA, parentB),
+      groupBy(
+        e => e.parent ?? '',
+        edges
+      )
+    )
+  )
+
+  for (const edgesPerContainer of sortedEdges) {
     for (const edge of edgesPerContainer) {
+      const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
       const source = gvNodes.get(edge.source)
       const target = gvNodes.get(edge.target)
       if (source && target) {
-        const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
-        const e = G.edge([source, target], {
-          [_.id]: edge.id,
+        const e = container.edge([source, target], {
+          [_.id]: edge.id
         })
         const label = generateEdgeLabel(edge)
         if (label) {
@@ -102,8 +119,12 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         // this is the only edge in the container
         // and the container has no subgraphs
         // so we can remove the constraint
-        if (edgesPerContainer.length === 1 && container.subgraphs.length === 0) {
-          e.attributes.set(_.minlen, 0)
+        if (edgesPerContainer.length === 1) {
+          const sourceNd = nodes.find(n => n.id === source.id)
+          const targetNd = nodes.find(n => n.id === target.id)
+          if (sourceNd && targetNd && sourceNd.parent === targetNd.parent) {
+            e.attributes.set(_.minlen, 0)
+          }
         }
       }
     }

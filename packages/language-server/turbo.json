@@ -17,7 +17,6 @@
       "outputs": []
     },
     "build": {
-      "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
       "outputs": [
         "dist/**"

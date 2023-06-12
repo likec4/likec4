@@ -56,7 +56,7 @@ function wrapToHTMLLabel({
 export function generateNodeLabel(node: ComputedNode) {
   let label = wrapToHTMLLabel({
     text: node.title,
-    maxChars: 30,
+    maxChars: 34,
     fontSize: 18,
     lineHeight: 20,
     color: Colors[node.color].hiContrast
@@ -65,7 +65,7 @@ export function generateNodeLabel(node: ComputedNode) {
     label += `<FONT point-size="${pxToPoints(14)}"> <BR/></FONT>`
     label += wrapToHTMLLabel({
       text: node.description,
-      maxChars: 40,
+      maxChars: 45,
       fontSize: 14,
       lineHeight: 16,
       color: Colors[node.color].loContrast
