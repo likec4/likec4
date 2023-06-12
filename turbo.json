@@ -6,7 +6,6 @@
       "outputs": []
     },
     "build": {
-      "outputMode": "new-only",
       "dependsOn": ["^build"],
       "outputs": [
         "dist/**"
@@ -20,8 +19,8 @@
       "dependsOn": ["^build"]
     },
     "test:watch": {
-      "outputs": [],
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false

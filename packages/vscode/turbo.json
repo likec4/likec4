@@ -3,7 +3,6 @@
   "extends": ["//"],
   "pipeline": {
     "copy": {
-      "outputMode": "new-only",
       "dependsOn": [
         "@likec4/language-server#generate",
         "@likec4/vscode-preview#build"
@@ -14,7 +13,6 @@
       ]
     },
     "build": {
-      "outputMode": "new-only",
       "dependsOn": ["copy", "^build"],
       "outputs": [
         "dist/**",

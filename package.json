@@ -13,8 +13,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "compile": "turbo run compile",
-    "build": "turbo run build --filter='./packages/*'",
+    "compile:all": "turbo run compile",
+    "build": "turbo run build compile --filter='./packages/*'",
     "release": "run clean && turbo run build compile --filter='./packages/*'",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",

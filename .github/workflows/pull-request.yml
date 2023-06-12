@@ -1,0 +1,75 @@
+name: pull-request
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - '**/*'
+
+env:
+  TURBO_API: 'http://127.0.0.1:9080'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: 'likec4'
+
+permissions:
+  actions: read
+  checks: write
+  contents: read
+  statuses: write
+  pull-requests: read
+
+jobs:
+
+  build:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Typescript Compile
+        run: yarn compile:all
+
+      - name: Test
+        run: yarn test
+
+  dependency-review:
+    name: dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
+
+  # compile:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Bootstrap
+  #       uses: ./.github/actions/bootstrap
+  #       with:
+  #         turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Compile all sources
+  #       run: yarn compile:all
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Bootstrap
+  #       uses: ./.github/actions/bootstrap
+  #       with:
+  #         turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Test
+  #       run: yarn test
