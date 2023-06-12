@@ -11,7 +11,6 @@ permissions:
   checks: write
   contents: read
   statuses: write
-  pull-requests: read
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
@@ -24,7 +23,6 @@ concurrency:
 
 jobs:
   build:
-    name: build packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,7 +36,6 @@ jobs:
         run: yarn build
 
   compile:
-    name: compile all sources
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -67,7 +64,7 @@ jobs:
         run: yarn test
 
   build-docs:
-    name: build docs websites
+    name: build docs
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
