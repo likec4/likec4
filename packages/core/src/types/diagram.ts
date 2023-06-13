@@ -31,4 +31,10 @@ export interface DiagramEdge extends ComputedEdge {
 export interface DiagramView extends ComputedView<DiagramNode, DiagramEdge> {
   width: number
   height: number
+  boundingBox: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
 }

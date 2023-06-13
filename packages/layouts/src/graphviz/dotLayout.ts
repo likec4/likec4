@@ -132,12 +132,13 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
 
   const graphvizJson = JSON.parse(rawjson) as GraphvizJson
 
-  const pageBBox = parseBB(graphvizJson.bb)
+  const page = parseBB(graphvizJson.bb)
 
   const diagram: DiagramView = {
     ...view,
-    width: pageBBox.width,
-    height: pageBBox.height,
+    width: page.x + page.width,
+    height: page.y + page.height,
+    boundingBox: page,
     nodes: [],
     edges: []
   }
