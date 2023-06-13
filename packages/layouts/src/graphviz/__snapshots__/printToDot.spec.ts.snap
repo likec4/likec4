@@ -132,20 +132,16 @@ exports[`printToDot: computedCloud3levels 1`] = `
         label = <<FONT color="#eff6ff" point-size="13.5">Backend Storage<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">The backend storage is a component that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>stores data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
         shape = "cylinder";
       ];
-      "nd7" -> "nd8" [
-        id = "cloud.backend.graphql:cloud.backend.storage";
-        minlen = 0;
-      ];
     }
-    "nd4" -> "nd7" [
-      id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-      label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
-    ];
-    "nd5" -> "nd7" [
-      id = "cloud.frontend.dashboard:cloud.backend.graphql";
-      label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
-    ];
   }
+  "nd4" -> "nd7" [
+    id = "cloud.frontend.adminPanel:cloud.backend.graphql";
+    label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+  ];
+  "nd5" -> "nd7" [
+    id = "cloud.frontend.dashboard:cloud.backend.graphql";
+    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+  ];
   "nd8" -> "nd9" [
     id = "cloud.backend.storage:amazon";
     label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
@@ -157,6 +153,10 @@ exports[`printToDot: computedCloud3levels 1`] = `
   "nd2" -> "nd4" [
     id = "support:cloud.frontend.adminPanel";
     label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+  ];
+  "nd7" -> "nd8" [
+    id = "cloud.backend.graphql:cloud.backend.storage";
+    minlen = 0;
   ];
 }"
 `;
@@ -218,12 +218,12 @@ exports[`printToDot: computedCloudView 1`] = `
       id = "cloud.backend";
       label = <<FONT color="#eff6ff" point-size="13.5">Backend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
     ];
-    "nd4" -> "nd5" [
-      id = "cloud.frontend:cloud.backend";
-      label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
-      minlen = 0;
-    ];
   }
+  "nd4" -> "nd5" [
+    id = "cloud.frontend:cloud.backend";
+    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    minlen = 0;
+  ];
   "nd5" -> "nd6" [
     id = "cloud.backend:amazon";
     label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;

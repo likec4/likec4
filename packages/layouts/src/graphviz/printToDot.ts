@@ -105,11 +105,11 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
 
   for (const edgesPerContainer of sortedEdges) {
     for (const edge of edgesPerContainer) {
-      const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
+      // const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
       const source = gvNodes.get(edge.source)
       const target = gvNodes.get(edge.target)
       if (source && target) {
-        const e = container.edge([source, target], {
+        const e = G.edge([source, target], {
           [_.id]: edge.id
         })
         const label = generateEdgeLabel(edge)

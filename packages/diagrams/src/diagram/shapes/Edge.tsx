@@ -31,8 +31,8 @@ export function EdgeShape({
     <AnimatedLine
       {...listeners}
       opacity={springs.opacity}
+      bezier
       points={points.flat()}
-      bezier={points.length > 2}
       fill={theme.relation.lineColor}
       stroke={theme.relation.lineColor}
       strokeWidth={springs.width}

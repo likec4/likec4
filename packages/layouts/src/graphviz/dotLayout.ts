@@ -108,7 +108,7 @@ function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
   })
   const endpoint = points.shift()
   invariant(endpoint, 'edge should have endpoint')
-  return [...points, endpoint];
+  return points;
 }
 
 function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {
@@ -120,9 +120,7 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dotSource = printToDot(computedView)
-
-  const dot = graphviz.unflatten(dotSource)
+  const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 

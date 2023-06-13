@@ -1,7 +1,7 @@
 import { equals, head, keys, pluck, reject } from 'rambdax'
 import type { Fqn, Relation } from '../types'
 import type { ComputedEdge, EdgeId } from '../types/computed-view'
-import { commonAncestor, compareFqnHierarchically } from '../utils/fqn'
+import { commonAncestor } from '../utils/fqn'
 import { compareRelations } from '../utils/relations'
 
 type ResolvedRelationsObj = Record<Fqn, Record<Fqn, Relation[]>>
