@@ -134,6 +134,7 @@ exports[`printToDot: computedCloud3levels 1`] = `
       ];
       "nd7" -> "nd8" [
         id = "cloud.backend.graphql:cloud.backend.storage";
+        minlen = 0;
       ];
     }
     "nd4" -> "nd7" [
@@ -220,6 +221,7 @@ exports[`printToDot: computedCloudView 1`] = `
     "nd4" -> "nd5" [
       id = "cloud.frontend:cloud.backend";
       label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+      minlen = 0;
     ];
   }
   "nd5" -> "nd6" [

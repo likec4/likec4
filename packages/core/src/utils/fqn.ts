@@ -42,6 +42,15 @@ export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
 }
 
 export function commonAncestor(first: Fqn, second: Fqn) {
+  const parentA = parentFqn(first)
+  const parentB = parentFqn(second)
+  if (parentA === parentB) {
+    return parentA
+  }
+  if (!parentA || !parentB) {
+    return null
+  }
+
   const a = first.split('.')
   const b = second.split('.')
   let ancestor: Fqn | null = null

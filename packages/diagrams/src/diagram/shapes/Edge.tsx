@@ -25,6 +25,7 @@ export function EdgeShape({
   ...listeners
 }: EdgeShapeProps): JSX.Element {
   const { points, headArrow, labels } = edge
+
   return <Fragment>
     {/* @ts-ignore */}
     <AnimatedLine

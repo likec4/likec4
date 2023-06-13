@@ -120,8 +120,8 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         // and the container has no subgraphs
         // so we can remove the constraint
         if (edgesPerContainer.length === 1) {
-          const sourceNd = nodes.find(n => n.id === source.id)
-          const targetNd = nodes.find(n => n.id === target.id)
+          const sourceNd = nodes.find(n => n.id === edge.source)
+          const targetNd = nodes.find(n => n.id === edge.target)
           if (sourceNd && targetNd && sourceNd.parent === targetNd.parent) {
             e.attributes.set(_.minlen, 0)
           }

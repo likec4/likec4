@@ -372,7 +372,7 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
       e.cancelBubble = true
       e.evt.preventDefault()
 
-      const zoomStep = 1 + clamp(0.01, .2, Math.abs(e.evt.deltaY) / 120)
+      const zoomStep = 1 + clamp(0.01, .3, Math.abs(e.evt.deltaY) / 100)
 
       let direction = e.evt.deltaY > 0 ? 1 : -1
 
@@ -555,7 +555,7 @@ export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
               onPointerEnter: (e: OnPointerEvent) => {
                 void ctrl.start({
                   to: {
-                    width: 4
+                    width: 3
                   },
                   delay: 100
                 })
