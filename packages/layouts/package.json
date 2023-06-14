@@ -37,7 +37,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@dagrejs/dagre": "^0.8.0",
+    "@dagrejs/dagre": "^1.0.2",
     "@dagrejs/graphlib": "^2.1.12",
     "@hpcc-js/wasm": "^2.13.0",
     "@likec4/core": "workspace:*",
