@@ -73,11 +73,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bootstrap
-        uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: NextJS cache
         if: github.ref == 'refs/heads/main'
         uses: actions/cache@v3
@@ -87,6 +82,11 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build NextJS
         working-directory: docs

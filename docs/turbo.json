@@ -23,7 +23,8 @@
         ".next/**",
         "out/**",
         "!.next/cache/**"
-      ]
+      ],
+      "cache": false
     }
   }
 }
