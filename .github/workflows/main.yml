@@ -64,17 +64,28 @@ jobs:
         run: yarn test
 
   build-docs:
-    name: build docs
-    if: github.ref == 'refs/heads/main'
+    name: build docs    
     runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
         with:
           turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: NextJS cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache@v3
+        with:
+          path: docs/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('docs/**/*.tsx?', 'docs/**/*.mdx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
 
       - name: Build NextJS
         working-directory: docs
@@ -82,6 +93,7 @@ jobs:
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
+        if: github.ref == 'refs/heads/main'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
