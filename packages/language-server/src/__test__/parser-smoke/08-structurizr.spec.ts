@@ -1,3 +1,6 @@
+import { describe, test } from 'vitest'
+import { valid } from './asserts'
+
 const model = `
 specification {
   element person
@@ -7,9 +10,11 @@ specification {
   element component
 }
 `
-export const valid_08_Structurizr =
-  model +
-  `
+
+describe('08_Structurizr', () => {
+  test(
+    'valid',
+    valid`${model}
 model {
   u = person "User"
   s = softwareSystem "Software System" {
@@ -21,3 +26,5 @@ model {
   webapp -> database "Reads from and writes to"
 }
 `
+  )
+})

@@ -1,4 +1,11 @@
-export const valid_01_Specification = `
+import { describe, test } from 'vitest'
+import { valid } from './asserts'
+
+describe('01-Specification', () => {
+
+  test(
+    '01-Specification',
+    valid`
 specification {
   element container
   element component {
@@ -16,7 +23,11 @@ specification {
   tag lightgray
 }
 `
-export const valid_01_Specification_ElementKindStyle = `
+  )
+
+  test(
+    'ElementKindStyle',
+    valid`
 specification {
   element frontend {
     style {
@@ -31,7 +42,10 @@ specification {
   }
 }
 `
-export const valid_01_Specification_StyleColor = `
+  )
+  test(
+    'StyleColor',
+    valid`
 specification {
   element green {
     style {
@@ -45,6 +59,8 @@ specification {
   }
 }
 `
+  )
+})
 // export const invalid_01_Specification_BuiltinElementKind = `
 // specification {
 //   element element {

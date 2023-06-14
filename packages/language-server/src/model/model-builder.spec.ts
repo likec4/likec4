@@ -1,9 +1,72 @@
 import { describe, expect, it } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
-import type { Fqn, ViewID } from '@likec4/core/types'
+import type { Element, Fqn, ViewID } from '@likec4/core/types'
 
 describe('LikeC4ModelBuilder', () => {
+
+  it('builds model with shapes', async () => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      element user {
+        style {
+          shape person
+        }
+      }
+    }
+    model {
+      customer = user 'Customer'
+      component system
+      spa = component 'SPA' {
+        style {
+          shape browser
+        }
+      }
+      mobile = component 'Mobile' {
+        style {
+          color green
+          shape mobile
+        }
+      }
+    }
+    `)
+    expect(diagnostics).to.be.empty
+
+    const model = await buildModel()
+    expect(model).to.be.an('object').and.to.haveOwnProperty('elements')
+
+    const elements = model.elements as Record<string, Element>
+    expect(elements).toMatchObject({
+      'customer': {
+        kind: 'user',
+        shape: 'person',
+        title: 'Customer',
+      },
+      'system': {
+        kind: 'component',
+        title: 'system',
+      },
+      'spa': {
+        kind: 'component',
+        shape: 'browser',
+        title: 'SPA',
+      },
+      'mobile': {
+        kind: 'component',
+        shape: 'mobile',
+        color: 'green',
+        title: 'Mobile',
+      },
+    })
+    // Ignore defaults
+    expect(elements['system']).not.toHaveProperty('shape')
+    expect(elements['system']).not.toHaveProperty('color')
+    expect(elements['customer']).not.toHaveProperty('color')
+    expect(elements['spa']).not.toHaveProperty('color')
+  })
+
   it('builds model', async () => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
