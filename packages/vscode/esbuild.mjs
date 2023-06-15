@@ -69,7 +69,7 @@ const webCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  sourcesContent: true,
+  sourcesContent: false,
   treeShaking: true,
   keepNames: true,
   minify: true

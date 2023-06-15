@@ -1,7 +1,7 @@
 // Monarch syntax highlighting for the likec4 language.
 export default {
     keywords: [
-        'BottomTop','LeftRight','RightLeft','TopBottom','autoLayout','browser','color','cylinder','description','element','exclude','extend','include','it','model','muted','of','person','primary','queue','rectangle','secondary','shape','specification','storage','style','tag','technology','this','title','view','views'
+        'BottomTop','LeftRight','RightLeft','TopBottom','autoLayout','browser','mobile','color','cylinder','description','element','exclude','extend','include','it','model','muted','of','person','primary','queue','rectangle','secondary','shape','specification','storage','style','tag','technology','this','title','view','views'
     ],
     operators: [
         '.*', '*','->'

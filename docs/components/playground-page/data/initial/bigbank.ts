@@ -70,12 +70,15 @@ model {
         description: "Provides all of the Internet banking functionality to customers via their web browser."
         technology: "JavaScript and Angular"
         style {
-          shape: browser
+          shape browser
         }
       }
       mobileApp = container "Mobile App" {
         description: "Provides a limited subset of the Internet banking functionality to customers via their mobile device."
         technology: "Xamarin"
+        style {
+          shape mobile
+        }
       }
       webApplication = container "Web Application" {
         description: "Delivers the static content and the Internet banking single page application."

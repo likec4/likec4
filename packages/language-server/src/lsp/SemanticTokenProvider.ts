@@ -140,46 +140,9 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     if (ast.isElement(node)) {
       return this.highlightAstElement(node, acceptor)
     }
-    // if (ast.isExtendElement(node)) {
-    //   keyword('extend')
-    //   return
-    // }
-    //   if (ast.isElementProperty(node) || ast.isRelationProperty(node) || ast.isViewProperty(node)) {
-    //     acceptor({
-    //       node,
-    //       property: 'key',
-    //       type: SemanticTokenTypes.property,
-    //       modifier: [SemanticTokenModifiers.definition]
-    //     })
-    //     if ('value' in node) {
-    //       acceptor({
-    //         node,
-    //         property: 'value',
-    //         type: SemanticTokenTypes.string
-    //       })
-    //     }
-    //     return
-    //   }
     if (ast.isView(node)) {
       return this.highlightView(node, acceptor)
     }
-    //   if (ast.isDynamicViewSteps(node)) {
-    //     keyword('steps')
-    //     return
-    //   }
-    // if (ast.isViewRuleAutoLayout(node)) {
-    //   keyword('autoLayout')
-    //   return
-    // }
-    // if (ast.isViewRuleStyle(node)) {
-    //   keyword('style')
-    //   return
-    // }
-    // if (ast.isViewRuleExpression(node)) {
-    //   keyword(node.isInclude ? 'include' : 'exclude')
-    //   return
-    // }
-    // //
   }
 
   private highlightAstElement(node: ast.Element, acceptor: SemanticTokenAcceptor) {
@@ -206,13 +169,21 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
   }
 
   private highlightView(node: ast.ElementView, acceptor: SemanticTokenAcceptor) {
+    acceptor({
+      node,
+      keyword: 'view',
+      type: SemanticTokenTypes.keyword
+    })
+
     if (node.name) {
       acceptor({
         node,
         property: 'name',
-        type: SemanticTokenTypes.variable
+        type: SemanticTokenTypes.variable,
+        modifier: [SemanticTokenModifiers.declaration]
       })
     }
+
     if (node.viewOf) {
       acceptor({
         node,
@@ -220,10 +191,5 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.keyword
       })
     }
-    acceptor({
-      node,
-      keyword: 'view',
-      type: SemanticTokenTypes.keyword
-    })
   }
 }
