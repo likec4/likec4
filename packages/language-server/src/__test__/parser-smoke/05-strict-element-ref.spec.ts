@@ -1,4 +1,9 @@
-export const valid_05_StrictElementRef = `
+import { describe, test } from 'vitest'
+import { valid, invalid } from './asserts'
+
+describe('05_StrictElementRef', () => {
+
+test('StrictElementRef', valid`
 specification {
   element component
 }
@@ -15,8 +20,8 @@ model {
   extend system.sub1.sub2 {
   }
 }
-`
-export const invalid_05_StrictElementRefScope = `
+`)
+test('StrictElementRefScope invalid', invalid`
 specification {
   element component
 }
@@ -29,9 +34,9 @@ model {
   extend sub1 {
   }
 }
-`
+`)
 
-export const invalid_05_StrictElementChildRefScope = `
+test('StrictElementChildRefScope invalid', invalid`
 specification {
   element component
 }
@@ -44,4 +49,6 @@ model {
   extend system.sub2 {
   }
 }
-`
+`)
+
+})

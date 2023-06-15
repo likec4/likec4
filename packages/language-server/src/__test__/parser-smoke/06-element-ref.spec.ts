@@ -1,4 +1,11 @@
-export const valid_06_ElementRef = `
+import { describe, test } from 'vitest'
+import { valid, invalid } from './asserts'
+
+describe('06_ElementRef', () => {
+
+  test(
+    'valid elementRef',
+    valid`
 specification {
   element component
 }
@@ -15,8 +22,11 @@ model {
   }
 }
 `
+  )
 
-export const invalid_06_ElementRef = `
+  test(
+    'invalid elementRef',
+    invalid`
 specification {
   element component
 }
@@ -30,7 +40,9 @@ model {
   user -> sub2.sub1
 }
 `
-// export const invalid_06_ElementRefScope = `
+  )
+})
+// test('06_ElementRefScope', invalid`
 // specification {
 //   element component
 // }
@@ -45,7 +57,7 @@ model {
 // }
 // `
 
-// export const invalid_06_ElementChildRefScope = `
+// test('06_ElementChildRefScope', invalid`
 // specification {
 //   element component
 // }

@@ -38,10 +38,10 @@ export function isElementProperty(item: unknown): item is ElementProperty {
     return reflection.isInstance(item, ElementProperty);
 }
 
-export type ElementShape = 'browser' | 'cylinder' | 'person' | 'queue' | 'rectangle' | 'storage';
+export type ElementShape = 'browser' | 'cylinder' | 'mobile' | 'person' | 'queue' | 'rectangle' | 'storage';
 
 export function isElementShape(item: unknown): item is ElementShape {
-    return item === 'rectangle' || item === 'person' || item === 'browser' || item === 'cylinder' || item === 'storage' || item === 'queue';
+    return item === 'rectangle' || item === 'person' || item === 'browser' || item === 'mobile' || item === 'cylinder' || item === 'storage' || item === 'queue';
 }
 
 export type Expression = ElementExpression | InOutExpression | IncomingExpression | OutgoingExpression | RelationExpression;

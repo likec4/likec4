@@ -1,4 +1,10 @@
-export const valid_03_Relation = `
+import { describe, test } from 'vitest'
+import { valid } from './asserts'
+
+describe('03_Relation', () => {
+  test(
+    'valid',
+    valid`
 specification {
   element person
 }
@@ -8,7 +14,10 @@ model {
   user1 -> user2
 }
 `
-export const valid_03_Relation2 = `
+  )
+  test(
+    'valid 2',
+    valid`
 specification {
   element person
 }
@@ -19,7 +28,10 @@ model {
   }
 }
 `
-export const valid_03_Relation3 = `
+  )
+  test(
+    'valid 3',
+    valid`
 specification {
   element person
 }
@@ -30,8 +42,11 @@ model {
   person user2
 }
 `
+  )
 
-export const valid_03_Relation4 = `
+  test(
+    'valid 4',
+    valid`
 specification {
   element person
   element component
@@ -52,8 +67,11 @@ model {
   user -> api
 }
 `
+  )
 
-export const valid_03_Relation_with_title = `
+  test(
+    'Relation_with_title',
+    valid`
 specification {
   element person
 }
@@ -65,8 +83,11 @@ model {
   user1 -> user2 'responds to'
 }
 `
+  )
 
-export const valid_03_Relation_with_props = `
+  test(
+    'Relation_with_props',
+    valid`
 specification {
   element person
 }
@@ -82,3 +103,5 @@ model {
   }
 }
 `
+  )
+})

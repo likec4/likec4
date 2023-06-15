@@ -2124,6 +2124,10 @@ export const LikeC4Grammar = (): Grammar => loadedLikeC4Grammar ?? (loadedLikeC4
           },
           {
             "$type": "Keyword",
+            "value": "mobile"
+          },
+          {
+            "$type": "Keyword",
             "value": "cylinder"
           },
           {

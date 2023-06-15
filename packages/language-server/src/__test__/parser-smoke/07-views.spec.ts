@@ -1,0 +1,176 @@
+import { describe, test } from 'vitest'
+import { valid, invalid } from './asserts'
+
+const model = `
+specification {
+  element component
+}
+model {
+  component user
+  component system {
+    component backend {
+      component model
+      component api
+    }
+    component auth {
+      component api
+    }
+    component frontend
+  }
+  component infra {
+    component database
+  }
+
+  backend.model -> infra.database
+  backend.api -> backend.model
+  auth.api -> backend.api
+  frontend -> auth.api
+  frontend -> backend.api
+  user -> frontend
+}
+`
+describe('07_View', () => {
+  test(
+    'view',
+    valid`${model}
+      views {
+        view index {
+          include *
+        }
+      }
+      `
+  )
+  test(
+    'viewOf',
+    valid`${model}
+      views {
+        view index of system.backend {
+          include *
+        }
+      }
+      `
+  )
+  test(
+    'viewRules',
+    valid`${model}
+      views {
+        view {
+          include *,
+            infra.*,
+            backend.*
+          exclude frontend
+        }
+      }
+      `
+  )
+  // Two api: in backend and auth
+  test(
+    'viewRules inambiqutes',
+    invalid`${model}
+      views {
+        view of system {
+          include api
+        }
+      }
+      `
+  )
+  test(
+    'viewRules IncludeScopeOf',
+    valid`${model}
+      views {
+        view of system.backend {
+          include api, auth.api
+        }
+      }
+      `
+  )
+
+  test(
+    'ViewProperties',
+    valid`${model}
+      views {
+        view {
+          title 'User view'
+          description "
+            View description
+          "
+          include *
+          exclude -> user
+        }
+      }
+      `
+  )
+
+  test(
+    'ViewRules Relations',
+    valid`${model}
+      views {
+        view {
+          include
+            -> backend,
+            -> backend.*,
+            -> backend ->,
+            -> backend.* ->,
+            backend ->,
+            backend.* ->
+          exclude
+            * -> infra,
+            * -> infra.*,
+            * -> *
+        }
+      }
+      `
+  )
+
+  test(
+    'ViewStyleRules - valid',
+    valid`${model}
+      views {
+        view {
+          include *
+          style * {
+            color: secondary
+          }
+          style backend, infra {
+            color: muted
+          }
+          exclude -> frontend
+        }
+      }
+      `
+  )
+
+  test(
+    'ViewStyleRules - invalid',
+    invalid`${model}
+      views {
+        view {
+          include *
+          style backend, {
+            color muted
+          }
+        }
+      }
+      `
+  )
+
+  test(
+    'ViewLayoutRules',
+    valid`${model}
+      views {
+        view {
+          include *
+          style * {
+            color: secondary
+          }
+          autoLayout BottomTop
+          exclude -> frontend
+        }
+        view {
+          autoLayout LeftRight
+          include *
+        }
+      }
+      `
+  )
+})

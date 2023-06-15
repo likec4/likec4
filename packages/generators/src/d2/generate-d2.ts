@@ -31,6 +31,7 @@ const d2shape = ({ shape }: ComputedNode) => {
     case 'storage': {
       return 'stored_data' as const
     }
+    case 'mobile':
     case 'browser': {
       return 'rectangle' as const
     }

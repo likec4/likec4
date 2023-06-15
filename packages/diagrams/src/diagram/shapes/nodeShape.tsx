@@ -6,6 +6,7 @@ import { unexhaustive } from './utils'
 import { BrowserShape } from './Browser'
 import { PersonShape } from './Person'
 import type { NodeShapeProps } from './types'
+import { MobileShape } from './Mobile'
 
 type ShapeComponent = (props: NodeShapeProps) => JSX.Element
 
@@ -26,6 +27,9 @@ export function nodeShape({ shape }: DiagramNode): ShapeComponent {
     }
     case 'rectangle': {
       return RectangleShape
+    }
+    case 'mobile': {
+      return MobileShape
     }
   }
   // @ts-expect-error - this should be unreachable

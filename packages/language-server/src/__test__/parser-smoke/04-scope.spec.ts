@@ -1,4 +1,9 @@
-export const valid_04_Scope = `
+import { describe, test } from 'vitest'
+import { valid, invalid } from './asserts'
+
+describe('04_Scope', () => {
+
+test('valid', valid`
 specification {
   element person
   element component
@@ -15,8 +20,8 @@ model {
     user -> api
   }
 }
-`
-export const invalid_04_DuplicateNameInScope = `
+`)
+test('04_DuplicateNameInScope', invalid`
 specification {
   element person
   element component
@@ -35,4 +40,6 @@ model {
     user -> api
   }
 }
-`
+`)
+
+})

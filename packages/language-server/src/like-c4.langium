@@ -209,7 +209,7 @@ ElementKind: name=Name;
 Tag: name=Name;
 
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
-ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'cylinder' | 'storage' | 'queue';
+ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
 
 // -------------------------
