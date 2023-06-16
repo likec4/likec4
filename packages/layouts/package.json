@@ -7,7 +7,10 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
+    "src",
+    "!**/__mocks__/",
     "!**/*.spec.*",
+    "!**/*.snap",
     "!**/*.map"
   ],
   "repository": {
