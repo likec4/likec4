@@ -1,11 +1,11 @@
-*
-!contrib/*
-!dist/*
-!data/*
+**/*
+
+!contrib/
+!dist/**/*.js
+!dist/**/*.css
+!data/
 !package.json
 !package.*.json
 !LICENSE
 !README.md
 !language-configuration.json
-*.map
-*.metafile.json
