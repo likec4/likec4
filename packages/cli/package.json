@@ -20,7 +20,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
-    "directory": "packages/core"
+    "directory": "packages/cli"
   },
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='cli'",

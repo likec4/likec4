@@ -35,11 +35,23 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - name: Typescript Compile
-        run: yarn compile:all
-
       - name: Test
         run: yarn test
+
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compile
+        run: yarn compile:all
 
   dependency-review:
     name: dependency review
@@ -47,29 +59,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
+
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
-
-  # compile:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Bootstrap
-  #       uses: ./.github/actions/bootstrap
-  #       with:
-  #         turborepo-token: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Compile all sources
-  #       run: yarn compile:all
-
-  # test:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Bootstrap
-  #       uses: ./.github/actions/bootstrap
-  #       with:
-  #         turborepo-token: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Test
-  #       run: yarn test

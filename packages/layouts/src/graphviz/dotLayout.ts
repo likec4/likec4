@@ -119,7 +119,7 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
   return undefined
 }
 
-function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
+export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
@@ -195,7 +195,7 @@ function layout(graphviz: Graphviz, computedView: ComputedView): DiagramView {
 
 export const dotLayout: DiagramLayoutFn = async computedView => {
   const graphviz = await Graphviz.load()
-  return layout(graphviz, computedView)
+  return dotLayoutFn(graphviz, computedView)
 }
 
 export async function dotLayouter(): Promise<DiagramLayoutFn> {
@@ -203,7 +203,7 @@ export async function dotLayouter(): Promise<DiagramLayoutFn> {
   return computedView =>
     new Promise<DiagramView>((resolve, reject) => {
       try {
-        resolve(layout(graphviz, computedView))
+        resolve(dotLayoutFn(graphviz, computedView))
       } catch (e) {
         reject(e)
       }

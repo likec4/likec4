@@ -1,13 +1,13 @@
 import { createArgument, createCommand } from '@commander-js/extra-typings'
 import type { DiagramView } from '@likec4/core/types'
 import { generateReact, generateViewsDataTs, generateD2 } from '@likec4/generators'
-import { dotLayouter, printToDot } from '@likec4/layouts'
+import { printToDot } from '@likec4/layouts'
 import chalk from 'chalk'
 import { mkdirp } from 'mkdirp'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { mapAsync, values } from 'rambdax'
-import { initLanguageServices } from './language-services'
+import { values } from 'rambdax'
+import { initLanguageServices, layoutViews } from './language-services'
 
 async function codegenAction(
   generator: (views: DiagramView[]) => string,
@@ -17,10 +17,9 @@ async function codegenAction(
 ) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
 
-  console.log(chalk.dim`🔍 Layouting...`)
+  console.log(chalk.dim`🔍\tLayouting...`)
 
-  const layout = await dotLayouter()
-  const diagrams = await mapAsync(layout, values(model.views))
+  const diagrams = await layoutViews(values(model.views))
 
   const generated = generator(diagrams)
 
@@ -69,10 +68,11 @@ async function codegenD2Action(
   outputdir?: string
 ) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
-  console.log(chalk.dim`🔍 Layouting...`)
+  console.log(chalk.dim`🔍\tLayouting...`)
 
-  const layout = await dotLayouter()
-  const diagrams = await mapAsync(layout, values(model.views))
+  // const layout = await dotLayouter()
+  // const diagrams = await mapAsync(layout, values(model.views))
+  const diagrams = await layoutViews(values(model.views))
 
   if (diagrams.length === 0) {
     console.log(chalk.red`No views found`)

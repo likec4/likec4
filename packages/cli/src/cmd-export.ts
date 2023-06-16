@@ -1,5 +1,4 @@
 import { createArgument, createCommand } from '@commander-js/extra-typings'
-import { dotLayouter } from '@likec4/layouts'
 import chalk from 'chalk'
 import { execa } from 'execa'
 import { mkdirp } from 'mkdirp'
@@ -7,9 +6,9 @@ import { existsSync } from 'node:fs'
 import { copyFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path/posix'
-import { mapAsync, values } from 'rambdax'
+import { values } from 'rambdax'
 import { generateExportScript, generateViewsData } from './export'
-import { initLanguageServices } from './language-services'
+import { initLanguageServices, layoutViews } from './language-services'
 
 async function createProject() {
   const dir = join(tmpdir(), 'likec4-export')
@@ -79,8 +78,7 @@ export const exportCommand = () => {
 
       console.log(chalk.dim`🔍 Layouting...`)
 
-      const layout = await dotLayouter()
-      const diagrams = await mapAsync(layout, modelViews)
+      const diagrams = await layoutViews(values(model.views))
 
       console.log(chalk.green('✅ LikeC4 parsed'))
 

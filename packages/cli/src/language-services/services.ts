@@ -33,7 +33,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   const modelBuilder = services.likec4.ModelBuilder
 
   console.log(chalk.dim('🔍 Searching for likec4 files in:'))
-  console.log(chalk.dim('   ' + workspace))
+  console.log('\t' + chalk.dim(workspace))
 
   await services.shared.workspace.WorkspaceManager.initializeWorkspace([
     {
