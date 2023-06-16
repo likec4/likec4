@@ -1013,7 +1013,7 @@ __metadata:
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
     langium: ^1.2.0
-    langium-cli: ^1.2.0
+    langium-cli: ^1.2.1
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
@@ -6368,9 +6368,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "langium-cli@npm:1.2.0"
+"langium-cli@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "langium-cli@npm:1.2.1"
   dependencies:
     chalk: ~4.1.2
     commander: ~10.0.0
@@ -6380,7 +6380,7 @@ __metadata:
     lodash: ~4.17.21
   bin:
     langium: bin/langium.js
-  checksum: ea9b85a5030cd3570fe19cd9d625f8fbd95897248baa92e6ab126efd14264ce86205ca439187a0eee1ad187beec21cb1f4eeee48bc19ad64dbac4b34ebadd4fa
+  checksum: 0b1317a248964859788992899f10b4ad86cb6d28712462c90750aa2264bfec1b02cb379bd23c3805a1f5f47ad788b72246cf51e519d64048ce631ef54d7614e7
   languageName: node
   linkType: hard
 
