@@ -27,7 +27,7 @@ function wrapToHTMLLabel({
   fontSize,
   lineHeight,
   color,
-  align = 'center'
+  align
 }: {
   text: string
   maxChars: number
@@ -36,6 +36,8 @@ function wrapToHTMLLabel({
   color?: string,
   align?: 'left' | 'right' | 'center'
 }) {
+  const br = align ? `<br align="${align.toUpperCase()}"/>` : '<br/>'
+
   const lines = wrap(text, {
     width: maxChars,
     indent: '',
@@ -48,24 +50,26 @@ function wrapToHTMLLabel({
     }
   })
   .split('\n')
-  .map(line => `${line}<FONT point-size="${pxToPoints(lineHeight)}"> <BR ALIGN="${align.toUpperCase()}"/></FONT>`)
+  // emulate line height
+  .map(line => `${line}<font point-size="${pxToPoints(lineHeight)}"> ${br}</font>`)
   .join('')
-  return `<FONT ${color ? `color="${color}" `: ``}point-size="${pxToPoints(fontSize)}">${lines}</FONT>`
+  return `<font ${color ? `color="${color}" `: ``}point-size="${pxToPoints(fontSize)}">${lines}</font>`
 }
 
 export function generateNodeLabel(node: ComputedNode) {
   let label = wrapToHTMLLabel({
     text: node.title,
-    maxChars: 34,
+    maxChars: 35,
     fontSize: 18,
     lineHeight: 20,
     color: Colors[node.color].hiContrast
   })
   if (node.description) {
-    label += `<FONT point-size="${pxToPoints(14)}"> <BR/></FONT>`
+    // padding
+    label += `<font point-size="${pxToPoints(14)}"> <br/></font>`
     label += wrapToHTMLLabel({
       text: node.description,
-      maxChars: 45,
+      maxChars: 50,
       fontSize: 14,
       lineHeight: 16,
       color: Colors[node.color].loContrast
@@ -80,7 +84,7 @@ export function generateEdgeLabel(edge: ComputedEdge) {
   }
   const label = wrapToHTMLLabel({
     text: edge.label,
-    maxChars: 40,
+    maxChars: 50,
     fontSize: 14,
     lineHeight: 16,
     align: 'left',

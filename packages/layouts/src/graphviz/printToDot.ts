@@ -39,12 +39,12 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         [_.label]: generateNodeLabel(node)
       })
       if (node.color !== 'primary') {
-        gNode.attributes.set(_.color, Colors[node.color].stroke)
         gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
       }
       switch (node.shape) {
         case 'cylinder':
         case 'storage': {
+          gNode.attributes.set(_.color, Colors[node.color].stroke)
           gNode.attributes.set(_.shape, 'cylinder')
           break
         }
@@ -74,7 +74,6 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
     [_.style]: 'filled,rounded',
-    [_.color]: Colors.primary.stroke,
     [_.fillcolor]: Colors.primary.fill,
     [_.margin]: `${pxToInch(32)},${pxToInch(20)}`
   })

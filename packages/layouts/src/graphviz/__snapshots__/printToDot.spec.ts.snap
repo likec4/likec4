@@ -27,7 +27,6 @@ exports[`printToDot: computedAmazonView 1`] = `
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
-    color = "#2563eb";
     fillcolor = "#3b82f6";
     margin = "0.3333,0.2083";
   ];
@@ -39,7 +38,7 @@ exports[`printToDot: computedAmazonView 1`] = `
     margin = 20;
     "nd2" [
       id = "cloud.backend";
-      label = <<FONT color="#eff6ff" point-size="13.5">Backend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">Backend<font point-size="15"> <br/></font></font>>;
     ];
   }
   subgraph "cluster_3" {
@@ -50,12 +49,12 @@ exports[`printToDot: computedAmazonView 1`] = `
     margin = 20;
     "nd4" [
       id = "amazon.s3";
-      label = <<FONT color="#eff6ff" point-size="13.5">S3<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">S3 is a storage service<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">S3<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">S3 is a storage service<font point-size="12"> <br/></font></font>>;
     ];
   }
   "nd2" -> "nd4" [
     id = "cloud.backend:amazon.s3";
-    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">persists artifacts<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
 }"
 `;
@@ -87,21 +86,20 @@ exports[`printToDot: computedCloud3levels 1`] = `
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
-    color = "#2563eb";
     fillcolor = "#3b82f6";
     margin = "0.3333,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT color="#eff6ff" point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">customer<font point-size="15"> <br/></font></font>>;
   ];
   "nd2" [
     id = "support";
-    label = <<FONT color="#eff6ff" point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Support Engineer<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Support engineers are responsible for supporting<font point-size="12"> <br/></font>customers<font point-size="12"> <br/></font></font>>;
   ];
   "nd9" [
     id = "amazon";
-    label = <<FONT color="#eff6ff" point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Amazon<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Amazon is a cloud provider<font point-size="12"> <br/></font></font>>;
   ];
   subgraph "cluster_3" {
     id = "cloud";
@@ -111,11 +109,11 @@ exports[`printToDot: computedCloud3levels 1`] = `
     margin = 30;
     "nd4" [
       id = "cloud.frontend.adminPanel";
-      label = <<FONT color="#eff6ff" point-size="13.5">Admin Panel Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">The admin panel is a webapp that allows<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>support staff to manage customer data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">Admin Panel Webapp<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">The admin panel is a webapp that allows support<font point-size="12"> <br/></font>staff to manage customer data.<font point-size="12"> <br/></font></font>>;
     ];
     "nd5" [
       id = "cloud.frontend.dashboard";
-      label = <<FONT color="#eff6ff" point-size="13.5">Customer Dashboard Webapp<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">The customer dashboard is a webapp that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>allows customers to view their data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">Customer Dashboard Webapp<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">The customer dashboard is a webapp that allows<font point-size="12"> <br/></font>customers to view their data.<font point-size="12"> <br/></font></font>>;
     ];
     subgraph "cluster_6" {
       id = "cloud.backend";
@@ -125,34 +123,35 @@ exports[`printToDot: computedCloud3levels 1`] = `
       margin = 20;
       "nd7" [
         id = "cloud.backend.graphql";
-        label = <<FONT color="#eff6ff" point-size="13.5">Graphql API<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Component that allows to query data via<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>GraphQL.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+        label = <<font color="#eff6ff" point-size="13.5">Graphql API<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Component that allows to query data via GraphQL.<font point-size="12"> <br/></font></font>>;
       ];
       "nd8" [
         id = "cloud.backend.storage";
-        label = <<FONT color="#eff6ff" point-size="13.5">Backend Storage<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">The backend storage is a component that<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>stores data.<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+        label = <<font color="#eff6ff" point-size="13.5">Backend Storage<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">The backend storage is a component that stores<font point-size="12"> <br/></font>data.<font point-size="12"> <br/></font></font>>;
+        color = "#2563eb";
         shape = "cylinder";
       ];
     }
   }
   "nd4" -> "nd7" [
     id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-    label = <<FONT point-size="10.5">fetches data in zero trust network with<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT>sso authentification<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">fetches data in zero trust network with sso<font point-size="12"> <br align="LEFT"/></font>authentification<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd5" -> "nd7" [
     id = "cloud.frontend.dashboard:cloud.backend.graphql";
-    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">fetches data<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd8" -> "nd9" [
     id = "cloud.backend.storage:amazon";
-    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">persists artifacts<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd1" -> "nd5" [
     id = "customer:cloud.frontend.dashboard";
-    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">opens in browser<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd2" -> "nd4" [
     id = "support:cloud.frontend.adminPanel";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">manages<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd7" -> "nd8" [
     id = "cloud.backend.graphql:cloud.backend.storage";
@@ -188,21 +187,20 @@ exports[`printToDot: computedCloudView 1`] = `
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
-    color = "#2563eb";
     fillcolor = "#3b82f6";
     margin = "0.3333,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT color="#eff6ff" point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">customer<font point-size="15"> <br/></font></font>>;
   ];
   "nd2" [
     id = "support";
-    label = <<FONT color="#eff6ff" point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Support Engineer<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Support engineers are responsible for supporting<font point-size="12"> <br/></font>customers<font point-size="12"> <br/></font></font>>;
   ];
   "nd6" [
     id = "amazon";
-    label = <<FONT color="#eff6ff" point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Amazon<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Amazon is a cloud provider<font point-size="12"> <br/></font></font>>;
   ];
   subgraph "cluster_3" {
     id = "cloud";
@@ -212,29 +210,29 @@ exports[`printToDot: computedCloudView 1`] = `
     margin = 20;
     "nd4" [
       id = "cloud.frontend";
-      label = <<FONT color="#eff6ff" point-size="13.5">Frontend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">Frontend<font point-size="15"> <br/></font></font>>;
     ];
     "nd5" [
       id = "cloud.backend";
-      label = <<FONT color="#eff6ff" point-size="13.5">Backend<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+      label = <<font color="#eff6ff" point-size="13.5">Backend<font point-size="15"> <br/></font></font>>;
     ];
   }
   "nd4" -> "nd5" [
     id = "cloud.frontend:cloud.backend";
-    label = <<FONT point-size="10.5">fetches data<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">fetches data<font point-size="12"> <br align="LEFT"/></font></font>>;
     minlen = 0;
   ];
   "nd5" -> "nd6" [
     id = "cloud.backend:amazon";
-    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">persists artifacts<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd1" -> "nd4" [
     id = "customer:cloud.frontend";
-    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">opens in browser<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd2" -> "nd4" [
     id = "support:cloud.frontend";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">manages<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
 }"
 `;
@@ -266,37 +264,36 @@ exports[`printToDot: computedIndexView 1`] = `
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
-    color = "#2563eb";
     fillcolor = "#3b82f6";
     margin = "0.3333,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT color="#eff6ff" point-size="13.5">customer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">customer<font point-size="15"> <br/></font></font>>;
   ];
   "nd2" [
     id = "support";
-    label = <<FONT color="#eff6ff" point-size="13.5">Support Engineer<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Support engineers are responsible for<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT>supporting customers<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Support Engineer<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Support engineers are responsible for supporting<font point-size="12"> <br/></font>customers<font point-size="12"> <br/></font></font>>;
   ];
   "nd3" [
     id = "cloud";
-    label = <<FONT color="#eff6ff" point-size="13.5">cloud<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">cloud<font point-size="15"> <br/></font></font>>;
   ];
   "nd4" [
     id = "amazon";
-    label = <<FONT color="#eff6ff" point-size="13.5">Amazon<FONT point-size="15"> <BR ALIGN="CENTER"/></FONT></FONT><FONT point-size="10.5"> <BR/></FONT><FONT color="#dbeafe" point-size="10.5">Amazon is a cloud provider<FONT point-size="12"> <BR ALIGN="CENTER"/></FONT></FONT>>;
+    label = <<font color="#eff6ff" point-size="13.5">Amazon<font point-size="15"> <br/></font></font><font point-size="10.5"> <br/></font><font color="#dbeafe" point-size="10.5">Amazon is a cloud provider<font point-size="12"> <br/></font></font>>;
   ];
   "nd3" -> "nd4" [
     id = "cloud:amazon";
-    label = <<FONT point-size="10.5">persists artifacts<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">persists artifacts<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd1" -> "nd3" [
     id = "customer:cloud";
-    label = <<FONT point-size="10.5">opens in browser<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">opens in browser<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
   "nd2" -> "nd3" [
     id = "support:cloud";
-    label = <<FONT point-size="10.5">manages<FONT point-size="12"> <BR ALIGN="LEFT"/></FONT></FONT>>;
+    label = <<font point-size="10.5">manages<font point-size="12"> <br align="LEFT"/></font></font>>;
   ];
 }"
 `;
