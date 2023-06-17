@@ -1,9 +1,13 @@
+import { Callout } from 'nextra-theme-docs'
 import { LikeC4View } from "$/components"
 
 # Personal Banking Customer
 
-LikeC4 has no view types limiting us.
+<Callout type="info" emoji="ℹ️">
+  The original model does not have customer views.
+</Callout>
 
+LikeC4 has no view types and limits on it.  
 We can define a view from the customer perspective to explain interactions with the system.
 
 ```likec4
@@ -11,12 +15,9 @@ views {
 
   view customer of customer {
     include
-      customer,
-      bigbank,
-      internetBankingSystem,
+      *,
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
-    
     exclude webApplication
   }
 

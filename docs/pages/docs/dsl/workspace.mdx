@@ -2,13 +2,13 @@ import { Bleed, Tab, Tabs, Callout, FileTree } from 'nextra-theme-docs'
 
 # Workspace
 
-Workspace is a directory with LikeC4 files considered as a single model.  
+Workspace is a directory with LikeC4 files, that are merged into single model.  
 You split and organize the workspace as you want.
 
 ## Example
 
 <FileTree>
-  <FileTree.Folder name="backend" open>
+  <FileTree.Folder name="cloud" open>
     <FileTree.File name="service1.c4" />
     <FileTree.File name="service2.c4" />
   </FileTree.Folder>
@@ -20,8 +20,10 @@ You split and organize the workspace as you want.
   <FileTree.File name="specs.c4" />  
 </FileTree>
 
-<Tabs items={['specs.c4', 'landscape.c4', 'backend/service1.c4', 'externals/amazon.c4']}>
+<Tabs items={['specs.c4', 'landscape.c4', 'cloud/service1.c4', 'externals/amazon.c4']}>
   <Tab>
+    This file defines only the specification.
+
     ```likec4    
     specification {
       element actor {
@@ -36,6 +38,8 @@ You split and organize the workspace as you want.
     ```  
   </Tab>
   <Tab>
+    This file describes only top-level elements.
+
     ```likec4  
     model {
       customer = actor 'Customer'
@@ -46,6 +50,9 @@ You split and organize the workspace as you want.
     ```  
   </Tab>
   <Tab>
+    This file _extends_ the model of `cloud` and adds `service1`.  
+    We use separate file to describe the internals of `cloud`.
+
     ```likec4    
     model {
       extend cloud {
@@ -55,6 +62,8 @@ You split and organize the workspace as you want.
     ```  
   </Tab>
   <Tab>
+    Here we are referencing the `cloud.service1` defined at `cloud/service1.c4`.
+
     ```likec4    
     model {
       amazon = externals 'Amazon Web Services' {

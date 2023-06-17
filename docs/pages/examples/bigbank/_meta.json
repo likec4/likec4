@@ -4,17 +4,17 @@
       "timestamp": false
     }
   },
-  "index": "Original Code",
+  "index": "About",
+  "structurizr": "Structurizr DSL",
   "likec4": "LikeC4 Code",
-  "landscape": "Landscape",
-  "context": "Context",
+  "---": {
+    "type": "separator"
+  },
+  "landscape": "System Landscape",
+  "context": "System Context",
   "containers": "Containers",
   "components": "Components",
   "customer": {
     "title": "Customer"
-  },
-  "playground": {
-    "title": "Open in playground",
-    "href": "/playground/"
   }
 }

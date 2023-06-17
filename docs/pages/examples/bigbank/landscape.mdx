@@ -1,40 +1,31 @@
 import { LikeC4View } from "$/components"
 import { Tab, Tabs, Bleed } from 'nextra-theme-docs'
 
-# Landscape
+# System Landscape
 
 The landscape view is a high-level overview of the system, showing the major systems and how they relate to each other.
 Structurizr uses the `systemlandscape` for this view.
 
 There is no special view types in LikeC4.  
-Just define predicates, like `include *` to include all elements.
+Views are defined by predicates, like `include *` to include all elements ([more about views](/docs/dsl/views/)).
 
 <Tabs items={['likec4', 'structurizr']}>
   <Tab>
     ```likec4
     views {
 
-      view landscape of bigbank {
-        title "Big Bank plc"
+      view index of bigbank {
+        title "Big Bank - Landscape"
         include *
       }
 
     }
     ```
 
-    Generated react components:
+    The diagram:
 
-    ```tsx  filename="your-page.tsx"
-    import { LikeC4View } from "$/components"
+    <LikeC4View viewId="index"/>
 
-    // ...
-
-    <LikeC4View viewId="landscape"/>
-    ```
-
-    Result:
-
-    <LikeC4View viewId="landscape"/>
   </Tab>
   <Tab>
     ```structurizr

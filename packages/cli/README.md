@@ -10,12 +10,30 @@ Options:
 
 Commands:
  * `codegen` &mdash; generates various artifacts from likec4 sources
+ * `export` &mdash; export views to png
  * `help [command]` &mdash; display help for command
 
 ## Install
 
 ```bash
 npm install --save-dev @likec4/cli
+```
+
+## Export
+
+Usage: `likec4 export [sourcedir]`
+
+```bash
+$ likec4 export -o ./views-png ./likec4-sources
+
+export likec4 views to png
+
+Arguments:
+  sourcedir                 directory with likec4 sources (default: ".")
+
+Options:
+  -o, --output <directory>  output directory
+  -h, --help                display help for command
 ```
 
 ## Codegen

@@ -8,7 +8,7 @@ export async function layoutViews(views: ComputedView[]) {
     const diagrams = [] as DiagramView[]
     const graphviz = await Graphviz.load()
     for (const view of views) {
-      console.debug(`\t\tview: ${view.id}`)
+      console.debug(`\tview: ${view.id}`)
       diagrams.push(dotLayoutFn(graphviz, view))
     }
     return diagrams

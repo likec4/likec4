@@ -26,7 +26,7 @@
       }
     },
     {
-      "match": "\\b(actor|component|service|include|exclude)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
+      "match": "\\b(actor|component|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"

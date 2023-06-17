@@ -64,7 +64,11 @@ export default withNextra({
     'jotai-devtools',
     'monaco-editor',
     'monaco-languageclient',
-    '@likec4/language-server'
+    '@likec4/core',
+    '@likec4/diagrams',
+    '@likec4/generators',
+    '@likec4/language-server',
+    '@likec4/layouts',
   ],
   typescript: {
     tsconfigPath: './tsconfig.next.json',

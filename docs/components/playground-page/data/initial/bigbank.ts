@@ -158,12 +158,9 @@ model {
 
 views {
 
-  view index {
+  view index of bigbank {
     title "Big Bank - Landscape"
-
-    include
-      *,
-      customer -> bigbank.*
+    include *
   }
 
   view context of bigbank {
@@ -193,9 +190,7 @@ views {
 
   view customer of customer {
     include
-      customer,
-      bigbank,
-      internetBankingSystem,
+      *,
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
     exclude webApplication
@@ -259,6 +254,18 @@ views {
       internetBankingSystem,
       internetBankingSystem.apiApplication,
       mobileApp -> internetBankingSystem.apiApplication.*
+
+    style * {
+      color muted
+    }
+
+    style apiApplication.*, mobileApp {
+      color primary
+    }
+
+    style customer {
+      color secondary
+    }
   }
 
 }
