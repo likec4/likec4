@@ -8,7 +8,7 @@ const watch = process.argv.includes('--watch')
  */
 const cli = {
   entryPoints: ['src/cli.ts'],
-  outfile: 'dist/likec4.js',
+  outfile: 'dist/cli.js',
   logLevel: 'info',
   bundle: true,
   format: 'iife',

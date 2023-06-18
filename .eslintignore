@@ -6,6 +6,7 @@ dist
 .turbo
 **/*.d.ts
 packages/*/esbuild.*
+packages/cli/likec4.js
 vite.config.*
 vitest.config.*
 vitest.shared.*

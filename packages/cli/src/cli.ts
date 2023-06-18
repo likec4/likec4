@@ -5,4 +5,5 @@ import { exportCommand } from './cmd-export'
 const program = createCommand()
   .addCommand(codegenCommand())
   .addCommand(exportCommand())
-void program.parseAsync()
+
+program.parse()
