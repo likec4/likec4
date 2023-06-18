@@ -1,27 +1,24 @@
 {
   "name": "@likec4/cli",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "license": "MIT",
-  "bin": {
-    "likec4": "dist/likec4.js"
-  },
-  "main": "dist/likec4.js",
-  "engines": {
-    "node": ">=16"
-  },
-  "engineStrict": true,
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/cli"
   },
+  "bin": {
+    "likec4": "./likec4.js"
+  },
+  "main": "dist/cli.js",
+  "engines": {
+    "node": ">=16"
+  },
+  "engineStrict": true,
+  "files": [
+    "dist",
+    "likec4.js"
+  ],
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='cli'",
     "compile": "tsc --noEmit",
