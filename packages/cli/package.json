@@ -36,7 +36,7 @@
     "@likec4/layouts": "workspace:*",
     "@types/node": "^18.15.11",
     "chalk": "^5.2.0",
-    "commander": "^10.0.1",
+    "commander": "^11.0.0",
     "esbuild": "^0.17.19",
     "execa": "^7.1.1",
     "fast-glob": "^3.2.12",
