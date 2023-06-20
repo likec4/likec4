@@ -348,12 +348,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commander-js/extra-typings@npm:^10.0.3":
-  version: 10.0.3
-  resolution: "@commander-js/extra-typings@npm:10.0.3"
+"@commander-js/extra-typings@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "@commander-js/extra-typings@npm:11.0.0"
   peerDependencies:
-    commander: 10.0.x
-  checksum: a9ab69c4a69c65649cc4c6735e9ad6cfe1ed54785f86d718db8897a4695206bc9fcb8f8de1a1f61be629ad97212e9a024d74ac5755558676d5251cfe493459af
+    commander: 11.0.x
+  checksum: c17c60f5044b8ff8891ee94913c1bec64147895a876b5ebf2f7e960efeab61170ce9122eff0f84688bc9db08b520429cdac6c0f3d627e2ef76ebd010461f66cb
   languageName: node
   linkType: hard
 
@@ -852,7 +852,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/cli@workspace:packages/cli"
   dependencies:
-    "@commander-js/extra-typings": ^10.0.3
+    "@commander-js/extra-typings": ^11.0.0
     "@likec4/core": "workspace:*"
     "@likec4/diagrams": "workspace:*"
     "@likec4/generators": "workspace:*"
