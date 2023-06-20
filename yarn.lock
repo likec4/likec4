@@ -2711,11 +2711,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:^0.32.0":
-  version: 0.32.0
-  resolution: "@vitest/ui@npm:0.32.0"
+"@vitest/ui@npm:^0.32.2":
+  version: 0.32.2
+  resolution: "@vitest/ui@npm:0.32.2"
   dependencies:
-    "@vitest/utils": 0.32.0
+    "@vitest/utils": 0.32.2
     fast-glob: ^3.2.12
     fflate: ^0.7.4
     flatted: ^3.2.7
@@ -2724,7 +2724,7 @@ __metadata:
     sirv: ^2.0.3
   peerDependencies:
     vitest: ">=0.30.1 <1"
-  checksum: 0a0ac067ef667dfdd60e89c8a554cd2056cd5c39874940a0ed13cd4b27e04755aa2df56bbb19dcbf8eff7c458d84b7832ce9e817a5671319bb46019d3473c98d
+  checksum: c8d11a0446644c4ab90a7f75519f947fc78c0937ce2a215dc55914fb0a662fc7cf778d9ffc2665fabbdbf9d4e041c4e74ec012eabb0bcef8839493b73916e57e
   languageName: node
   linkType: hard
 
@@ -2736,6 +2736,17 @@ __metadata:
     loupe: ^2.3.6
     pretty-format: ^27.5.1
   checksum: f27df1e7066a310cd43a7261f2b1f668e32b7443f9b90af4a6e49575ee2d65b019192833ddbd0f51eb5690130b5b1bd2459cb83397860941308eeb122983427a
+  languageName: node
+  linkType: hard
+
+"@vitest/utils@npm:0.32.2":
+  version: 0.32.2
+  resolution: "@vitest/utils@npm:0.32.2"
+  dependencies:
+    diff-sequences: ^29.4.3
+    loupe: ^2.3.6
+    pretty-format: ^27.5.1
+  checksum: d4bc065875edf235b0c6b1f8648c10e9655ac45f5c7e89dc892b02e7f96f9bd58a97a4c3fcb3bc7026d6b350e752fb02cb7dcf5690c40792ff361fb6ac433e66
   languageName: node
   linkType: hard
 
@@ -4272,6 +4283,13 @@ __metadata:
   version: 1.2.2
   resolution: "didyoumean@npm:1.2.2"
   checksum: d5d98719d58b3c2fa59663c4c42ba9716f1fd01245c31d5fce31915bd3aa26e6aac149788e007358f778ebbd68a2256eb5973e8ca6f221df221ba060115acf2e
+  languageName: node
+  linkType: hard
+
+"diff-sequences@npm:^29.4.3":
+  version: 29.4.3
+  resolution: "diff-sequences@npm:29.4.3"
+  checksum: 28b265e04fdddcf7f9f814effe102cc95a9dec0564a579b5aed140edb24fc345c611ca52d76d725a3cab55d3888b915b5e8a4702e0f6058968a90fa5f41fcde7
   languageName: node
   linkType: hard
 
@@ -6468,7 +6486,7 @@ __metadata:
     "@types/prettier": ^2.7.2
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.59.9
-    "@vitest/ui": ^0.32.0
+    "@vitest/ui": ^0.32.2
     eslint: ^8.42.0
     eslint-config-prettier: ^8.8.0
     prettier: ^2.8.8
