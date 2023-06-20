@@ -75,6 +75,7 @@ exports[`dotLayout: >  computedAmazonView 1`] = `
       "color": "primary",
       "description": "Amazon is a cloud provider",
       "id": "amazon",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -106,6 +107,7 @@ exports[`dotLayout: >  computedAmazonView 1`] = `
       ],
       "color": "primary",
       "id": "cloud",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -136,6 +138,7 @@ exports[`dotLayout: >  computedAmazonView 1`] = `
       "children": [],
       "color": "primary",
       "id": "cloud.backend",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -165,6 +168,7 @@ exports[`dotLayout: >  computedAmazonView 1`] = `
       "color": "primary",
       "description": "S3 is a storage service",
       "id": "amazon.s3",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -575,6 +579,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       ],
       "color": "primary",
       "id": "cloud",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -608,6 +613,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       ],
       "color": "primary",
       "id": "cloud.backend",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -637,6 +643,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "children": [],
       "color": "primary",
       "id": "customer",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -666,6 +673,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
       "id": "support",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -715,6 +723,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "Amazon is a cloud provider",
       "id": "amazon",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -755,6 +764,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "The admin panel is a webapp that allows support staff to manage customer data.",
       "id": "cloud.frontend.adminPanel",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -804,6 +814,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "The customer dashboard is a webapp that allows customers to view their data.",
       "id": "cloud.frontend.dashboard",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -853,6 +864,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "Component that allows to query data via GraphQL.",
       "id": "cloud.backend.graphql",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -892,6 +904,7 @@ exports[`dotLayout: >  computedCloud3levels 1`] = `
       "color": "primary",
       "description": "The backend storage is a component that stores data.",
       "id": "cloud.backend.storage",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -1208,6 +1221,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       ],
       "color": "primary",
       "id": "cloud",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -1238,6 +1252,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       "children": [],
       "color": "primary",
       "id": "customer",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -1267,6 +1282,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
       "id": "support",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -1316,6 +1332,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       "color": "primary",
       "description": "Amazon is a cloud provider",
       "id": "amazon",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -1355,6 +1372,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       "children": [],
       "color": "primary",
       "id": "cloud.frontend",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -1383,6 +1401,7 @@ exports[`dotLayout: >  computedCloudView 1`] = `
       "children": [],
       "color": "primary",
       "id": "cloud.backend",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
@@ -1604,6 +1623,7 @@ exports[`dotLayout: >  computedIndexView 1`] = `
       "children": [],
       "color": "primary",
       "id": "customer",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -1633,6 +1653,7 @@ exports[`dotLayout: >  computedIndexView 1`] = `
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
       "id": "support",
+      "kind": "actor",
       "labels": [
         {
           "align": "left",
@@ -1681,6 +1702,7 @@ exports[`dotLayout: >  computedIndexView 1`] = `
       "children": [],
       "color": "primary",
       "id": "cloud",
+      "kind": "system",
       "labels": [
         {
           "align": "left",
@@ -1711,6 +1733,7 @@ exports[`dotLayout: >  computedIndexView 1`] = `
       "color": "primary",
       "description": "Amazon is a cloud provider",
       "id": "amazon",
+      "kind": "system",
       "labels": [
         {
           "align": "left",

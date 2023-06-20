@@ -306,6 +306,20 @@ export class LikeC4ModelBuilder {
         wildcard: true
       }
     }
+    if (ast.isElementKindExpression(astNode)) {
+      invariant(astNode.kind.ref, 'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text)
+      return {
+        elementKind: astNode.kind.ref.name as c4.ElementKind,
+        isEqual: astNode.isEqual
+      }
+    }
+    if (ast.isElementTagExpression(astNode)) {
+      invariant(astNode.tag.ref, 'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text)
+      return {
+        elementTag: astNode.tag.ref.name as c4.Tag,
+        isEqual: astNode.isEqual
+      }
+    }
     if (ast.isElementRefExpression(astNode)) {
       const element = elementRef(astNode.id)
       invariant(element, 'Element not found ' + astNode.id.$cstNode?.text)

@@ -1,8 +1,5 @@
 {
   "recommendations": [
-    "langium.langium-vscode",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "eliostruyf.vscode-typescript-exportallmodules"
+    "langium.langium-vscode"
   ]
 }

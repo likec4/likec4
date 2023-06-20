@@ -1,4 +1,4 @@
-import { anyPass, filter, head, uniq, type Predicate } from 'rambdax'
+import { anyPass, filter, head, uniq, type Predicate, isNil } from 'rambdax'
 import type { ModelIndex } from '../model-index'
 import {
   type Fqn,
@@ -49,7 +49,7 @@ function transformToNodes(
 ) {
   return Array.from(elementsIterator)
     .sort(compareByFqnHierarchically)
-    .reduce((map, { id, title, color, shape, description }) => {
+    .reduce((map, { id, kind, title, color, shape, description }) => {
       let parent = parentFqn(id)
       while (parent) {
         if (map.has(parent)) {
@@ -65,6 +65,7 @@ function transformToNodes(
       }
       const node: ComputedNode = {
         id,
+        kind,
         parent,
         title,
         color: color ?? DefaultThemeColor,
@@ -89,6 +90,20 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
       if (Expression.isWildcard(target)) {
         predicates.push(() => true)
         break
+      }
+      if (Expression.isElementKindExpr(target)) {
+        predicates.push(
+          target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
+        )
+        continue
+      }
+      if (Expression.isElementTagExpr(target)) {
+        predicates.push(
+          target.isEqual
+            ? ({ tags }) => !!tags && tags.includes(target.elementTag)
+            : ({ tags }) => isNil(tags) || !tags.includes(target.elementTag)
+        )
+        continue
       }
       if (Expression.isElementRef(target)) {
         const { element, isDescedants } = target
@@ -122,9 +137,7 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
 
   for (const el of elements) {
     if (ctx.root && ctx.root !== el.id && !isAncestor(el.id, ctx.root)) {
-      excludeImplicits.push(
-        ...[...ctx.implicits].filter(impl => isAncestor(el.id, impl.id))
-      )
+      excludeImplicits.push(...[...ctx.implicits].filter(impl => isAncestor(el.id, impl.id)))
     }
     for (const ctxEl of ctxElements) {
       if (!isSameHierarchy(el, ctxEl)) {
@@ -152,6 +165,49 @@ const excludeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
   return ctx.exclude({ elements, relations })
 }
 
+const asElementPredicate = (
+  expr: Expr.ElementKindExpr | Expr.ElementTagExpr
+): Predicate<Element> => {
+  if (expr.isEqual) {
+    if (Expression.isElementKindExpr(expr)) {
+      return e => e.kind === expr.elementKind
+    } else {
+      return ({ tags }) => !!tags && tags.includes(expr.elementTag)
+    }
+  } else {
+    if (Expression.isElementKindExpr(expr)) {
+      return e => e.kind !== expr.elementKind
+    } else {
+      return ({ tags }) => isNil(tags) || tags.length === 0 || !tags.includes(expr.elementTag)
+    }
+  }
+}
+
+const includeElementKindOrTag = (
+  ctx: ComputeCtx,
+  expr: Expr.ElementKindExpr | Expr.ElementTagExpr
+) => {
+  const elements = ctx.index.elements.filter(asElementPredicate(expr))
+  return elements.reduce(
+    (accCtx, el) =>
+      includeElementRef(accCtx, {
+        element: el.id,
+        isDescedants: false
+      }),
+    ctx
+  )
+}
+
+const excludeElementKindOrTag = (
+  ctx: ComputeCtx,
+  expr: Expr.ElementKindExpr | Expr.ElementTagExpr
+) => {
+  const predicate = asElementPredicate(expr)
+  const elements = [...ctx.elements].filter(predicate)
+  const implicits = [...ctx.implicits].filter(predicate)
+  return ctx.exclude({ elements, implicits })
+}
+
 const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
   const { root } = ctx
   if (root) {
@@ -177,20 +233,13 @@ const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
 
     return ctx.include({
       elements,
-      relations: [
-        ...ctx.index.filterRelations(isInside(root)),
-        ...relations,
-      ],
+      relations: [...ctx.index.filterRelations(isInside(root)), ...relations],
       implicits: implicits
     })
   } else {
     const elements = ctx.index.rootElements()
     if (elements.length <= 1) {
-      return new ComputeCtx(
-        ctx.index,
-        ctx.root,
-        new Set(elements),
-      )
+      return new ComputeCtx(ctx.index, ctx.root, new Set(elements))
     }
 
     const predicates = [] as Predicate<Relation>[]
@@ -199,12 +248,7 @@ const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
     }
     const relations = predicates.length ? ctx.index.filterRelations(anyPass(predicates)) : []
 
-    return new ComputeCtx(
-      ctx.index,
-      ctx.root,
-      new Set(elements),
-      new Set(relations)
-    )
+    return new ComputeCtx(ctx.index, ctx.root, new Set(elements), new Set(relations))
   }
 }
 
@@ -231,12 +275,29 @@ const resolveElements = (ctx: ComputeCtx, expr: Expr.ElementExpression): Element
     } else {
       return ctx.index.rootElements()
     }
+  }
+  if (Expression.isElementKindExpr(expr)) {
+    return ctx.index.elements.filter(el => {
+      if (expr.isEqual) {
+        return el.kind === expr.elementKind
+      }
+      return el.kind !== expr.elementKind
+    })
+  }
+  if (Expression.isElementTagExpr(expr)) {
+    return ctx.index.elements.filter(el => {
+      const tags = el.tags
+      if (expr.isEqual) {
+        return !!tags && tags.includes(expr.elementTag)
+      }
+      return isNil(tags) || tags.length === 0 || !tags.includes(expr.elementTag)
+    })
+  }
+
+  if (expr.isDescedants) {
+    return ctx.index.children(expr.element)
   } else {
-    if (expr.isDescedants) {
-      return ctx.index.children(expr.element)
-    } else {
-      return [ctx.index.find(expr.element)]
-    }
+    return [ctx.index.find(expr.element)]
   }
 }
 
@@ -440,6 +501,10 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
   }
   for (const { isInclude, exprs } of rulesInclude) {
     for (const expr of exprs) {
+      if (Expression.isElementKindExpr(expr) || Expression.isElementTagExpr(expr)) {
+        ctx = isInclude ? includeElementKindOrTag(ctx, expr) : excludeElementKindOrTag(ctx, expr)
+        continue
+      }
       if (Expression.isElementRef(expr)) {
         ctx = isInclude ? includeElementRef(ctx, expr) : excludeElementRef(ctx, expr)
         continue

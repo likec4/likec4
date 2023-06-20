@@ -1,7 +1,10 @@
-import type { Fqn } from './element'
+import type { ElementKind, Fqn, Tag } from './element'
 
 interface BaseExr {
   element?: never
+  elementKind?: never
+  elementTag?: never
+  isEqual?: never
   isDescedants?: never
   wildcard?: never
   source?: never
@@ -25,10 +28,25 @@ export interface WildcardExpr extends Omit<BaseExr, 'wildcard'> {
 export function isWildcard(expr: Expression): expr is WildcardExpr {
   return 'wildcard' in expr
 }
+export interface ElementKindExpr extends Omit<BaseExr, 'elementKind' | 'isEqual'> {
+  elementKind: ElementKind
+  isEqual: boolean
+}
+export function isElementKindExpr(expr: Expression): expr is ElementKindExpr {
+  return 'elementKind' in expr && 'isEqual' in expr
+}
 
-export type ElementExpression = ElementRefExpr | WildcardExpr
+export interface ElementTagExpr extends Omit<BaseExr, 'elementTag' | 'isEqual'> {
+  elementTag: Tag
+  isEqual: boolean
+}
+export function isElementTagExpr(expr: Expression): expr is ElementTagExpr {
+  return 'elementTag' in expr && 'isEqual' in expr
+}
+
+export type ElementExpression = ElementRefExpr | WildcardExpr | ElementKindExpr | ElementTagExpr
 export function isElement(expr: Expression): expr is ElementExpression {
-  return isElementRef(expr) || isWildcard(expr)
+  return isElementRef(expr) || isWildcard(expr) || isElementKindExpr(expr) || isElementTagExpr(expr)
 }
 
 export interface RelationExpr extends Omit<BaseExr, 'source' | 'target'> {
