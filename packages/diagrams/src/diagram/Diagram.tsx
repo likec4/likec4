@@ -104,15 +104,19 @@ export interface DiagramProps extends
   onEdgeClick?: ((edge: DiagramEdge) => void) | undefined
 }
 
-const isCompound = (node: DiagramNode) => node.children.length > 0
-const isNotCompound = (node: DiagramNode) => node.children.length == 0
+function isCompound(node: DiagramNode) {
+  return node.children.length > 0
+}
+function isNotCompound(node: DiagramNode) {
+  return node.children.length == 0
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const notImplemented: any = () => {
   throw new Error('Not implemented')
 }
 
-export const Diagram = forwardRef<DiagramApi, DiagramProps>(({
+export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(({
   diagram,
   interactive = true,
   padding = 0,

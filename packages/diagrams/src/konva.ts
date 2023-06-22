@@ -31,10 +31,10 @@ export {
   Rect
 }
 
-export const AnimatedStage: KonvaNodeComponent<Konva.Stage, AnimatedProps<StageProps>> = animated(Stage) as any
-export const AnimatedRect: KonvaNodeComponent<Konva.Rect, AnimatedProps<Konva.RectConfig>> = animated(Rect) as any
-export const AnimatedGroup: KonvaNodeComponent<Konva.Group, AnimatedProps<Konva.GroupConfig>> = animated(Group) as any
-export const AnimatedText: KonvaNodeComponent<Konva.Text, AnimatedProps<Konva.TextConfig>> = animated(Text) as any
-export const AnimatedPath: KonvaNodeComponent<Konva.Path, AnimatedProps<Konva.PathConfig>> = animated(Path) as any
-export const AnimatedLine: KonvaNodeComponent<Konva.Line, AnimatedProps<Konva.LineConfig>> = animated(Line) as any
-export const AnimatedCircle: KonvaNodeComponent<Konva.Circle, AnimatedProps<Konva.CircleConfig>> = animated(Circle) as any
+export const AnimatedStage: KonvaNodeComponent<Konva.Stage, AnimatedProps<StageProps>> = /* @__PURE__ */ animated(Stage) as any
+export const AnimatedRect: KonvaNodeComponent<Konva.Rect, AnimatedProps<Konva.RectConfig>> = /* @__PURE__ */ animated(Rect) as any
+export const AnimatedGroup: KonvaNodeComponent<Konva.Group, AnimatedProps<Konva.GroupConfig>> = /* @__PURE__ */ animated(Group) as any
+export const AnimatedText: KonvaNodeComponent<Konva.Text, AnimatedProps<Konva.TextConfig>> = /* @__PURE__ */ animated(Text) as any
+export const AnimatedPath: KonvaNodeComponent<Konva.Path, AnimatedProps<Konva.PathConfig>> = /* @__PURE__ */ animated(Path) as any
+export const AnimatedLine: KonvaNodeComponent<Konva.Line, AnimatedProps<Konva.LineConfig>> = /* @__PURE__ */ animated(Line) as any
+export const AnimatedCircle: KonvaNodeComponent<Konva.Circle, AnimatedProps<Konva.CircleConfig>> = /* @__PURE__ */ animated(Circle) as any
