@@ -75,6 +75,13 @@ include cloud.* ->
 
 // all relations from customer to cloud children
 include customer -> cloud.*
+
+// elements by kind
+include element.kind = container
+include element.kind != system
+
+// elements by tag
+include element.tag = #next
 ```
 
 <Callout type="info" emoji="ℹ️">

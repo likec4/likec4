@@ -36,6 +36,29 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       keyword('->')
       return
     }
+    if (ast.isElementKindExpression(node) || ast.isElementTagExpression(node)) {
+      keyword('element')
+      if (ast.isElementKindExpression(node)) {
+        keyword('kind')
+        acceptor({
+          node,
+          property: 'kind',
+          type: SemanticTokenTypes.type,
+          modifier: [SemanticTokenModifiers.definition]
+        })
+        return
+      }
+      if (ast.isElementTagExpression(node)) {
+        keyword('tag')
+        acceptor({
+          node,
+          property: 'tag',
+          type: SemanticTokenTypes.type,
+          modifier: [SemanticTokenModifiers.definition]
+        })
+        return
+      }
+    }
     if (ast.isInOutExpression(node)) {
       keyword('->', 0)
       keyword('->', 1)
@@ -61,37 +84,12 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
-    //   if (ast.isElementKindSpec(node)) {
-    //     keyword('element')
-    //     // keyword('nested')
-    //     // if (node.nested.length > 0) {
-    //     //   acceptor({
-    //     //     node,
-    //     //     property: 'nested',
-    //     //     type: SemanticTokenTypes.type,
-    //     //   })
-    //     // }
-    //     // acceptor({
-    //     //   node,
-    //     //   property: 'kind',
-    //     //   type: SemanticTokenTypes.type,
-    //     // })
-    //     return
-    //   }
-    //   if (ast.isTagSpec(node)) {
-    //     keyword('tag')
-    //     acceptor({
-    //       node,
-    //       property: 'tag',
-    //       type: SemanticTokenTypes.enumMember
-    //     })
-    //     return
-    //   }
     if (ast.isTags(node)) {
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.macro
+        type: SemanticTokenTypes.type,
+        modifier: [SemanticTokenModifiers.definition]
       })
       return
     }
@@ -99,7 +97,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'name',
-        type: SemanticTokenTypes.macro
+        type: SemanticTokenTypes.type,
+        modifier: [SemanticTokenModifiers.definition]
       })
       return
     }

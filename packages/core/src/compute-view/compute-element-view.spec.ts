@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fakeModel } from '../__test__'
-import type { Fqn, ViewID } from '../types'
+import type { ElementKind, Fqn, Tag, ViewID } from '../types'
 import { computeElementView } from './compute-element-view'
 import { pluck } from 'rambdax'
 
@@ -442,4 +442,112 @@ describe('compute-element-view', () => {
       shape: 'browser'
     })
   })
+
+  it('should include by element kind', () => {
+    const { nodes, edges } = computeElementView(
+      {
+        id: 'elementKind' as ViewID,
+        title: '',
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                elementKind: 'system' as ElementKind,
+                isEqual: true
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+
+    expect(ids(nodes)).toEqual(['cloud', 'amazon'])
+
+    expect(ids(edges)).toEqual([
+      'cloud:amazon'
+    ])
+  })
+
+  it('should include by element tag', () => {
+    const { nodes, edges } = computeElementView(
+      {
+        id: 'elementTag' as ViewID,
+        title: '',
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              {
+                elementTag: 'old' as Tag,
+                isEqual: true
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+
+    expect(ids(nodes)).toEqual([
+      "cloud.backend.storage",
+      "cloud.frontend.adminPanel",
+    ])
+
+    expect(ids(edges)).toEqual([])
+  })
+
+  it('should exclude by element tag and kind', () => {
+    const { nodes, edges } = computeElementView(
+      {
+        id: '' as ViewID,
+        title: '',
+        viewOf: 'cloud' as Fqn,
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              // include *
+              { wildcard: true },
+              // include cloud.backend.*
+              { element: 'cloud.backend' as Fqn, isDescedants: true },
+              // include cloud.frontend.*
+              { element: 'cloud.frontend' as Fqn, isDescedants: true },
+            ]
+          },
+          {
+            isInclude: false,
+            exprs: [
+              {
+                elementKind: 'actor' as ElementKind,
+                isEqual: true
+              },
+              {
+                elementTag: 'old' as Tag,
+                isEqual: true
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+
+    expect(ids(nodes)).toEqual([
+      "cloud",
+      "cloud.frontend",
+      "cloud.frontend.dashboard",
+      "cloud.backend",
+      "amazon",
+      "cloud.backend.graphql"
+    ])
+
+    expect(ids(edges)).toEqual([
+      "cloud.frontend.dashboard:cloud.backend.graphql",
+      "cloud.frontend:cloud.backend.graphql",
+      "cloud.backend:amazon",
+    ])
+  })
+
 })

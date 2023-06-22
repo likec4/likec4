@@ -28,7 +28,15 @@ SpecificationElementKindStyle: 'style' OpenBlock
   CloseBlock;
 
 SpecificationTag:
-  'tag' tag=Tag;
+  'tag' tag=Tag (OpenBlock
+    style=SpecificationTagStyle?
+  CloseBlock)?;
+
+SpecificationTagStyle: 'style' OpenBlock
+    (props+=(
+      ColorProperty | ShapeProperty
+    ))*
+  CloseBlock;
 
 // Model -------------------------------------
 
@@ -91,7 +99,7 @@ ElementRef:
   el=[Element:Name] (Dot next=ElementRef)?;
 
 Tags:
-  value+=[Tag:TagID];
+  value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
 
 Relation: RelationWithSource | RelationWithoutSource;
 
@@ -178,6 +186,10 @@ Expression:
 
 ElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
+  'element' Dot (
+    {infer ElementTagExpression} 'tag' IsEqual tag=[Tag:TagID] |
+    {infer ElementKindExpression} 'kind' IsEqual kind=[ElementKind:Name]
+  ) |
   ElementRefExpression
   // {infer IdentifierExpression} id=ElementRef isDescedants?='.*'?
   // 'element' '.' (
@@ -212,6 +224,9 @@ ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' 
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
 
+fragment IsEqual:
+  (NotEqual | isEqual?=Eq);
+
 // -------------------------
 
 terminal fragment HASH      : '#';
@@ -223,6 +238,7 @@ terminal fragment NEWLINE: /[\t\r\n\v\f]/;
 terminal fragment SPACE: /[^\S\r\n]/;
 
 terminal Dot: '.';
+terminal NotEqual: '!=';
 terminal Eq: '=';
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';

@@ -4,13 +4,16 @@ import { valid, invalid } from './asserts'
 const model = `
 specification {
   element component
+  tag next
 }
 model {
   component user
   component system {
     component backend {
       component model
-      component api
+      component api {
+        #next
+      }
     }
     component auth {
       component api
@@ -59,6 +62,21 @@ describe('07_View', () => {
             infra.*,
             backend.*
           exclude frontend
+        }
+      }
+      `
+  ),
+  test(
+    'viewRules: element.kind and element.tag',
+    valid`${model}
+      views {
+        view {
+          include *,
+            element.kind = component,
+            element.kind != component
+          exclude
+            element.tag = #next,
+            element.tag != #next
         }
       }
       `

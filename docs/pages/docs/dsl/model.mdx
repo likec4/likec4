@@ -11,11 +11,12 @@ Element is a basic building block.
 It represents a logical or physical part of the architecture.  
 The element kind must be [specified](./specification) first.
 
-```likec4 copy filename="element.c4"
+```likec4 copy
 specification {
   element actor
   element service
 }
+
 model {
   actor customer
   service cloud
@@ -38,11 +39,12 @@ It can contain letters, digits and underscore, but can't start with a digit.
 
 Element name is also used as a title when rendered. To customize it:
 
-```likec4 copy filename="element.c4"
+```likec4 copy
 specification {
   element actor
   element service
 }
+
 model {
   actor customer 'Customer'
   service cloud 'Cloud'
@@ -53,10 +55,11 @@ model {
 
 Element may have description and technology. 
 
-```likec4 copy filename="element.c4"
+```likec4 copy
 specification {
   element service
 }
+
 model {
   cloud = service 'Cloud' 'Provides services to customers'
 }
@@ -70,7 +73,7 @@ model {
 These properties may be defined in nested block:
 
 
-```likec4 copy filename="element.c4"
+```likec4 copy
 model {
   // only description inside
   customer = actor 'Customer' {
@@ -81,6 +84,38 @@ model {
     title 'Mobile Application'
     description 'Provides services to customers'
     technology 'React Native'
+  }
+}
+```
+
+Element may have tags:
+
+
+```likec4 copy
+model {
+  appV1 = application 'App v1' {
+    #deprecated 
+    description 'Old version of the application'
+  }
+
+  // multiple tags
+  appV2 = application 'App v2' {
+    #next, #serverless, #team2
+  }  
+}
+```
+
+Element may be styled:
+
+```likec4 copy
+model {
+  customer = actor 'Customer' {
+    description 'Uses the Mobile Application'
+    
+    style {
+      shape person
+      color green
+    }    
   }
 }
 ```

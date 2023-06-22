@@ -8,6 +8,7 @@
   "structurizr": "Structurizr DSL",
   "likec4": "LikeC4 Code",
   "---": {
+    "title": "---",
     "type": "separator"
   },
   "landscape": "System Landscape",

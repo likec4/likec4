@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
+import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, Tag, ViewID } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -37,7 +37,10 @@ import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, View
 specification {
   element actor
   element system
+  element container
   element component
+
+  tag old
 }
 
 model {
@@ -46,18 +49,21 @@ model {
   actor support
 
   system cloud {
-    component backend {
+    container backend {
       component graphql
-      component storage
+      component storage {
+        #old
+      }
 
       graphql -> storage
     }
 
-    component frontend {
+    container frontend {
       component dashboard {
         -> graphql
       }
       component adminPanel {
+        #old
         -> graphql
       }
     }
@@ -106,12 +112,12 @@ export const fakeElements = {
   },
   'cloud.backend': {
     id: 'cloud.backend' as Fqn,
-    kind: 'component' as ElementKind,
+    kind: 'container' as ElementKind,
     title: 'backend'
   },
   'cloud.frontend': {
     id: 'cloud.frontend' as Fqn,
-    kind: 'component' as ElementKind,
+    kind: 'container' as ElementKind,
     title: 'frontend',
     shape: 'browser'
   },
@@ -123,12 +129,14 @@ export const fakeElements = {
   'cloud.backend.storage': {
     id: 'cloud.backend.storage' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'storage'
+    title: 'storage',
+    tags: ['old' as Tag]
   },
   'cloud.frontend.adminPanel': {
     id: 'cloud.frontend.adminPanel' as Fqn,
     kind: 'component' as ElementKind,
-    title: 'adminPanel'
+    title: 'adminPanel',
+    tags: ['old' as Tag]
   },
   'cloud.frontend.dashboard': {
     id: 'cloud.frontend.dashboard' as Fqn,

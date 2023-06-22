@@ -15,13 +15,30 @@
       "match": "\\b(specification|model|views)\\b"
     },
     {
-      "match": "\\b(element)\\s+([^\\W]+)\\b",
+      "match": "\\b(element|tag)\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
           "name": "entity.name.type.likec4"
+        }
+      }
+    },
+    {
+      "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s*(!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "keyword.control.likec4"
+        },
+        "3": {
+          "name": "storage.type.function.likec4"
+        },
+        "4": {
+          "name": "variable.other.constant.likec4"
         }
       }
     },

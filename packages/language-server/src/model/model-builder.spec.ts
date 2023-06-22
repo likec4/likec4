@@ -77,7 +77,6 @@ describe('LikeC4ModelBuilder', () => {
           shape: person
         }
       }
-      tag deprecated
     }
     model {
       user client {
@@ -92,7 +91,6 @@ describe('LikeC4ModelBuilder', () => {
           }
         }
         component frontend {
-          #deprecated
           description 'Frontend description'
 
           style {
@@ -131,6 +129,35 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.elements['system.backend' as Fqn]).not.toHaveProperty('description')
 
     expect(model).toMatchSnapshot()
+  })
+  
+  it('builds model with tags', async () => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      tag deprecated
+    }
+    model {
+      component system1
+      component system2 {
+        #deprecated
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+      },
+      'system2': {
+        kind: 'component',
+        tags: ['deprecated'],
+      },
+    })
+    expect(model.elements['system1' as Fqn]).not.toHaveProperty('tags')
   })
 
   it('builds model and give default name for index view', async () => {
