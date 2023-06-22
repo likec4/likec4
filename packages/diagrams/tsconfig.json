@@ -14,11 +14,11 @@
     "composite": true,
     "declaration": true,
     "declarationDir": "dist",
-    "declarationMap": true,
+    "sourceMap": true,
     "jsx": "react-jsx"
   },
   "include": [
-    "./src/**/*"
+    "src/**/*"
   ],
   "exclude": ["node_modules"],
   "references": [

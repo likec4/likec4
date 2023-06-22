@@ -2,10 +2,12 @@ import { Bleed, Tab, Tabs, Callout, FileTree } from 'nextra-theme-docs'
 
 # Workspace
 
-Workspace is a directory with LikeC4 files, that are merged into single model.  
+Workspace is a directory with LikeC4 files. Files are merged into single model.  
 You split and organize the workspace as you want.
 
 ## Example
+
+Assume we have the following workspace:
 
 <FileTree>
   <FileTree.Folder name="cloud" open>
@@ -14,13 +16,12 @@ You split and organize the workspace as you want.
   </FileTree.Folder>
   <FileTree.Folder name="externals" open>
     <FileTree.File name="amazon.c4" />
-    <FileTree.File name="amazon-views.c4" />
   </FileTree.Folder>
   <FileTree.File name="landscape.c4" />
   <FileTree.File name="specs.c4" />  
 </FileTree>
 
-<Tabs items={['specs.c4', 'landscape.c4', 'cloud/service1.c4', 'externals/amazon.c4']}>
+<Tabs items={['specs.c4', 'landscape.c4', 'amazon.c4']}>
   <Tab>
     This file defines only the specification.
 
@@ -50,27 +51,11 @@ You split and organize the workspace as you want.
     ```  
   </Tab>
   <Tab>
-    This file _extends_ the model of `cloud` and adds `service1`.  
-    We use separate file to describe the internals of `cloud`.
-
-    ```likec4    
-    model {
-      extend cloud {
-        service1 = service 'Service 1'
-      }
-    }
-    ```  
-  </Tab>
-  <Tab>
-    Here we are referencing the `cloud.service1` defined at `cloud/service1.c4`.
-
     ```likec4    
     model {
       amazon = externals 'Amazon Web Services' {
         rds = service 'Database'
       }
-
-      cloud.service1 -> amazon.rds
     }
     ```  
   </Tab>
@@ -78,12 +63,45 @@ You split and organize the workspace as you want.
 
 ## Extend element
 
-<Callout>
-  TODO: Document extend element
-</Callout>
+`extend` is a way to describe the nested elements in a separate file.  
 
-## References
+We describe the `cloud.service1` separately, because, for instance, we don't want to mess the landscape file with the internals of the `cloud`.
 
-<Callout>
-  TODO: Document workspace references
-</Callout>
+```likec4   filename="cloud / service1.c4" 
+model {
+  extend cloud {
+    service1 = service 'Service 1'
+  }
+}
+```  
+
+The target must be referenced with full qualified name.
+
+```likec4
+model {
+  extend rds        // ⛔️ Error: rds not found in the global scope
+  extend amazon.rds // ✅ Resolved by full qualified name
+}
+```
+
+Element extension inherits the scope.  
+Here is what inside `service2.c4` file:
+
+```likec4 filename="cloud / service2.c4"
+model {
+
+  // extend cloud again
+  extend cloud {    
+    // define service2
+    service2 = service 'Some Service 2' {
+
+      -> service1 'delegates some work' // ✅ service1 is known inside cloud
+                                        //    even defined in an another file
+    }
+  }
+
+  service2 -> service1       // ⛔️ Error: service1 not found inside 'service2.c4'
+
+  service2 -> cloud.service1 // ✅ but resolved by full qualified name
+}
+```

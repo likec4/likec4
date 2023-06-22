@@ -1,7 +1,7 @@
 import { easings, useSpring } from '@react-spring/konva'
 import { useCallback, useMemo } from 'react'
 
-export const useNodeToolbarSpring = () => {
+export const useNodeToolbarSpring =  () => {
 
   const from = {
     opacity: 0.6,
