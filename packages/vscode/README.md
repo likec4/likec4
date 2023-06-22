@@ -8,7 +8,7 @@
   <p>
     <a href="https://likec4.dev/docs/">docs</a> |
     <a href="https://likec4.dev/playground/">playground</a> |
-    <a href="https://likec4.dev/examples/bigbank/likec4/">example</a>
+    <a href="https://likec4.dev/examples/bigbank/">example</a>
   </p>
 
   ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
@@ -18,9 +18,9 @@
 ## What is LikeC4? Why "like"?
 
 LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
+Inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but with some flexibility.
 
-LikeC4 is inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but provides some flexibility.
-You customize or define your own notation, element types, and any number of nested levels in architecture model.  
+You define your own notation, custom element types and any number of nested levels in architecture model.  
 Perfectly tailored to your needs.
 
 ## What does LikeC4 look like?
@@ -68,7 +68,7 @@ The extension provides (via [language server protocol](https://microsoft.github.
 - Hover information
 
 Extension is universal and can run as web-version.  
-Open [example-cloud-system](https://github.dev/likec4/example-cloud-system) in the browser using any of:
+Open [example-cloud-system](https://github.com/likec4/example-cloud-system) in the browser using any of:
 
 - [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
 - [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
