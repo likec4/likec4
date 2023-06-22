@@ -99,7 +99,7 @@ ElementRef:
   el=[Element:Name] (Dot next=ElementRef)?;
 
 Tags:
-  value+=[Tag:TagID];
+  value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
 
 Relation: RelationWithSource | RelationWithoutSource;
 

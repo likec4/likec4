@@ -58,6 +58,27 @@ model {
   )
 
   test(
+    '02_Model_Element_Tags',
+    valid`
+      specification {
+        element person
+        tag one
+        tag two
+      }
+      model {
+        user1 = person {
+          #one
+        }
+        user2 = person {
+          #one #two
+        }
+        user3 = person {
+          #one, #two
+        }
+      }`
+  )
+
+  test(
     '02_Model invalid',
     invalid`
 specification {
@@ -116,10 +137,11 @@ model {
       specification {
         element component
         tag one
+        tag two
       }
       model {
         component system {
-          #one
+          #one #two
 
           component subsystem {
             title: 'SubSystem'
