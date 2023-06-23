@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "0.20.1",
+  "version": "0.20.2",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -23,8 +23,8 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@likec4/core": "0.20.1",
-    "@likec4/diagrams": "0.20.1",
+    "@likec4/core": "0.20.2",
+    "@likec4/diagrams": "0.20.2",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
