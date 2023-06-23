@@ -28,8 +28,8 @@ Options:
   -h, --help                    display help for command
 
 Commands:
-  codegen                       codegenerator for likec4
-  export [options] [sourcedir]  export views to png
+  codegen [command]             code generator
+  export [options] [workspace]  export views to png
   help [command]                display help for command
 ```
 
@@ -40,16 +40,16 @@ Commands:
 ```ansi
 Usage: likec4 codegen [options] [command]
 
-generates various artifacts from likec4 sources
+Generate various artifacts from LikeC4 sources
 
 Options:
   -h, --help                        display help for command
 
 Commands:
-  react [options] [sourcedir]       generates react components (typescript)
-  views-data [options] [sourcedir]  dumps views data (typescript)
-  dot [options] [sourcedir]         generates graphviz dot files for each view
-  d2 [options] [sourcedir]          generates d2 files for each view
+  react [options] [workspace]       generates react components
+  views-data [options] [workspace]  dumps views data
+  dot [options] [workspace]         generates graphviz dot files
+  d2 [options] [workspace]          generates d2 files
   help [command]                    display help for command
 ```
 
@@ -58,14 +58,17 @@ React code-generator and components usage explained [here](./react).
 ### Export
 
 ```ansi
-Usage: likec4 export [options] [sourcedir]
+Usage: likec4 export [options] [workspace]
 
-export likec4 views to png
+Export LikeC4 views to PNG, rendering in Headless Chrome
 
 Arguments:
-  sourcedir                 directory with likec4 sources (default: ".")
+  workspace                 directory with likec4 sources (default: ".")
 
 Options:
-  -o, --output <directory>  output directory generated png (default: ".")
+  -o, --output <directory>  output directory
+                            if not defined, outputs to workspace
+  --no-temp-project         do not create temporary folder with node project,
+                            i.e. dont install puppeteer
   -h, --help                display help for command
 ```  

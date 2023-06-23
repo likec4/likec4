@@ -1,4 +1,5 @@
 .eslintrc.cjs
+ship.config.cjs
 .yarn/
 .vscode
 node_modules

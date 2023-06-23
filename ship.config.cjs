@@ -8,11 +8,11 @@ module.exports = {
       'packages/diagrams',
       'packages/generators',
       'packages/language-server',
-      'packages/layouts',
-    ],
+      'packages/layouts'
+    ]
   },
   updateChangelog: false,
   draftPullRequest: true,
-  publishCommand: ({ defaultCommand }) =>
-    `${defaultCommand} --access public`
-};
+  installCommand: () => 'yarn install --immutable',
+  publishCommand: ({ defaultCommand }) => `${defaultCommand} --access public`
+}

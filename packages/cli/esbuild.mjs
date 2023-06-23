@@ -52,7 +52,8 @@ const exportPage = {
   color: true,
   allowOverwrite: true,
   treeShaking: true,
-  minify: true
+  minify: true,
+  legalComments: "none"
 }
 
 /**

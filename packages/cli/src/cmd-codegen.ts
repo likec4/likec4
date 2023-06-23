@@ -96,18 +96,18 @@ async function codegenD2Action(
 
 export const codegenCommand = () => {
   return createCommand('codegen')
-    .summary('codegenerator for likec4')
-    .description('generates various artifacts from likec4 sources')
+    .summary('code-generator')
+    .description('Generate various artifacts from LikeC4 sources')
     .addCommand(
       createCommand('react')
         .summary('generates react components')
         .description('generates react components to render likec4 views')
         .addArgument(
-          createArgument('sourcedir', 'directory with likec4 sources')
+          createArgument('workspace', 'directory with likec4 sources')
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <file>', 'output file')
+        .option('-o, --output <file>', 'output file\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) =>
           codegenAction(generateReact, sourcedir, '.tsx', output)
         )
@@ -117,11 +117,11 @@ export const codegenCommand = () => {
         .summary('dumps views data')
         .description('generates ts file with computed data of likec4 views')
         .addArgument(
-          createArgument('sourcedir', 'directory with likec4 sources')
+          createArgument('workspace', 'directory with likec4 sources')
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <file>', 'output file')
+        .option('-o, --output <file>', 'output file\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) =>
           codegenAction(generateViewsDataTs, sourcedir, '.ts', output)
         )
@@ -131,11 +131,11 @@ export const codegenCommand = () => {
         .summary('generates graphviz dot files')
         .description('generates graphviz dot files for each likec4 view')
         .addArgument(
-          createArgument('sourcedir', 'directory with likec4 sources')
+          createArgument('workspace', 'directory with likec4 sources')
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory')
+        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) =>
           codegenDotAction(sourcedir, output)
         )
@@ -145,11 +145,11 @@ export const codegenCommand = () => {
         .summary('generates d2 files')
         .description('generates d2 files for each likec4 view')
         .addArgument(
-          createArgument('sourcedir', 'directory with likec4 sources')
+          createArgument('workspace', 'directory with likec4 sources')
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory')
+        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) =>
           codegenD2Action(sourcedir, output)
         )

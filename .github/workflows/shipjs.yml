@@ -1,0 +1,32 @@
+name: shipjs
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  shipjs-trigger:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Test
+        run: yarn test
+
+      - run: yarn shipjs trigger
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
