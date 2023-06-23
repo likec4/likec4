@@ -1,21 +1,13 @@
 {
-  "*": {
-    "theme": {
-      "timestamp": false
-    }
-  },
   "index": "About",
   "structurizr": "Structurizr DSL",
   "likec4": "LikeC4 Code",
   "---": {
-    "title": "---",
     "type": "separator"
   },
   "landscape": "System Landscape",
   "context": "System Context",
   "containers": "Containers",
   "components": "Components",
-  "customer": {
-    "title": "Customer"
-  }
+  "customer": "Customer"
 }
