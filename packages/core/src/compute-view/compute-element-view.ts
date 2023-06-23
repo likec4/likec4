@@ -490,7 +490,7 @@ const excludeRelationExpr = (ctx: ComputeCtx, expr: Expr.RelationExpr): ComputeC
   })
 }
 
-export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
+export function computeElementView<V extends ElementView>(view: V, index: ModelIndex): V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'> {
   const rootElement = view.viewOf ?? null
   let ctx = new ComputeCtx(index, rootElement)
   const rulesInclude = view.rules.filter(isViewRuleExpression)

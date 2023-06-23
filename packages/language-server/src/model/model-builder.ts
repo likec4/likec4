@@ -1,4 +1,4 @@
-import { computeViews } from '@likec4/core/compute-view'
+import { computeViews } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
@@ -7,6 +7,7 @@ import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
 import { clone, isNil, mergeDeepRight, reduce } from 'rambdax'
+import * as R from 'remeda'
 import invariant from 'tiny-invariant'
 import type {
   ParsedAstElement,
@@ -162,23 +163,33 @@ export class LikeC4ModelBuilder {
         }
       }
 
-      const views = pipe(
-        docs.flatMap(d => d.c4Views),
-        A.filterMap(
-          flow(
-            toModelView,
-            O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
-          )
-        ),
-        A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
-          if (v.id in acc) {
-            logger.warn(`Duplicate view id: ${v.id}`)
-            return acc
-          }
-          acc[v.id] = v
-          return acc
-        })
-      )
+
+      const views = R.flatMapToObj(docs, d => {
+        const docUri = d.uri.toString()
+        return d.c4Views
+          .map(toModelView)
+          .filter(v => isNil(v.viewOf) || v.viewOf in elements)
+          .map(v => [v.id, R.addProp(v, 'docUri', docUri)
+        ])
+      })
+
+      // const views = pipe(
+      //   docs.flatMap(d => d.c4Views),
+      //   A.filterMap(
+      //     flow(
+      //       toModelView,
+      //       O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
+      //     )
+      //   ),
+      //   A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
+      //     if (v.id in acc) {
+      //       logger.warn(`Duplicate view id: ${v.id}`)
+      //       return acc
+      //     }
+      //     acc[v.id] = v
+      //     return acc
+      //   })
+      // )
 
       return computeViews({
         elements,
