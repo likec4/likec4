@@ -14,7 +14,8 @@
   },
   "scripts": {
     "compile:all": "turbo run compile",
-    "build": "turbo run build compile --filter='./packages/*'",
+    "compile": "turbo run compile --filter='./packages/*'",
+    "build": "turbo run build --filter='./packages/*'",
     "release": "run clean && turbo run build compile --filter='./packages/*'",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
@@ -32,7 +33,6 @@
     "@typescript-eslint/parser": "^5.59.9",
     "@vitest/ui": "^0.32.2",
     "eslint": "^8.42.0",
-    "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "turbo": "^1.10.3",

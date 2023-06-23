@@ -1,19 +1,21 @@
 /** @type {import('eslint').ESLint.Options} */
 module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: [
+      './packages/*/tsconfig.json',
+      './docs/tsconfig.json',
+      './examples/*/tsconfig.json',
+    ],
+  },
+  plugins: ['@typescript-eslint'],
+  root: true,
   extends: [
+    "eslint:recommended",
     "plugin:@typescript-eslint/strict",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "prettier"
   ],
-  plugins: [
-    "@typescript-eslint",
-  ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: "latest",
-    project: true
-  },
   rules: {
     "@typescript-eslint/ban-types": "error",
     "@typescript-eslint/camelcase": "off",
