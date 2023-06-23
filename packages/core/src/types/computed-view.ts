@@ -38,3 +38,5 @@ export interface ComputedView<
   nodes: Node[]
   edges: Edge[]
 }
+
+export type ComputeResult<V extends ElementView> = V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>

@@ -1,12 +1,13 @@
-import { computeViews } from '@likec4/core/compute-view'
+import { computeViews } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
-import { A, O, flow, pipe } from '@mobily/ts-belt'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
-import { clone, isNil, mergeDeepRight, reduce } from 'rambdax'
+import { clone, isNil } from 'rambdax'
+import * as R from 'remeda'
+
 import invariant from 'tiny-invariant'
 import type {
   ParsedAstElement,
@@ -55,7 +56,7 @@ export class LikeC4ModelBuilder {
               countOfChangedDocs++
             }
           } catch (e) {
-            logger.warn(`Error parsing document ${doc.uri.toString()}`)
+            logger.error(`Error parsing document ${doc.uri.toString()}`)
           }
         }
         if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
@@ -81,18 +82,13 @@ export class LikeC4ModelBuilder {
     }
     // TODO:
     try {
-      const c4Specification = reduce(
-        (acc: ParsedAstSpecification, doc) => mergeDeepRight(acc, doc.c4Specification),
-        {
-          kinds: {}
-        },
-        docs
+      const c4Specification: ParsedAstSpecification = {
+        kinds: {}
+      }
+      R.pipe(
+        R.map(docs, R.prop('c4Specification')),
+        R.forEach(spec => Object.assign(c4Specification.kinds, spec.kinds))
       )
-      // const c4Specification = docs.reduce<ParsedAstSpecification>((acc, doc) => {
-      //   return mergeDeepRight(acc, doc.c4Specification)
-      // }, {
-      //   kinds: {}
-      // })
 
       const toModelElement = (el: ParsedAstElement): c4.Element | null => {
         const kind = c4Specification.kinds[el.kind]
@@ -112,11 +108,12 @@ export class LikeC4ModelBuilder {
         return model
       }
 
-      const elements = pipe(
-        docs.flatMap(d => d.c4Elements),
-        A.filterMap(flow(toModelElement, O.fromNullable)),
-        A.sort(compareByFqnHierarchically),
-        A.reduce({} as c4.LikeC4Model['elements'], (acc, el) => {
+      const elements = R.pipe(
+        R.flatMap(docs, d => d.c4Elements),
+        R.map(toModelElement),
+        R.compact,
+        R.sort(compareByFqnHierarchically),
+        R.reduce((acc, el) => {
           const parent = parentFqn(el.id)
           if (!parent || parent in acc) {
             if (el.id in acc) {
@@ -126,26 +123,16 @@ export class LikeC4ModelBuilder {
             acc[el.id] = el
           }
           return acc
-        })
+        }, {} as c4.LikeC4Model['elements'])
       )
 
-      const relations = pipe(
-        docs.flatMap(d => d.c4Relations),
-        A.filterMap(
-          flow(
-            toModelRelation,
-            O.fromPredicate(({ source, target }) => source in elements && target in elements)
-          )
-        ),
-        A.reduce({} as c4.LikeC4Model['relations'], (acc, el) => {
-          if (el.id in acc) {
-            logger.warn(`Duplicate relation id: ${el.id}`)
-            return acc
-          }
-          acc[el.id] = el
-          return acc
-        })
+      const relations = R.pipe(
+        R.flatMap(docs, d => d.c4Relations),
+        R.map(toModelRelation),
+        R.filter(({ source, target }) => source in elements && target in elements),
+        R.mapToObj(r => [r.id, r])
       )
+
       const toModelView = (view: ParsedAstElementView): c4.ElementView => {
         // eslint-disable-next-line prefer-const
         let { astPath, rules, title, ...model } = view
@@ -162,22 +149,12 @@ export class LikeC4ModelBuilder {
         }
       }
 
-      const views = pipe(
-        docs.flatMap(d => d.c4Views),
-        A.filterMap(
-          flow(
-            toModelView,
-            O.fromPredicate(v => isNil(v.viewOf) || v.viewOf in elements)
-          )
-        ),
-        A.reduce({} as Record<c4.ViewID, c4.ElementView>, (acc, v) => {
-          if (v.id in acc) {
-            logger.warn(`Duplicate view id: ${v.id}`)
-            return acc
-          }
-          acc[v.id] = v
-          return acc
-        })
+      const views = R.pipe(
+        docs,
+        R.flatMap(d => d.c4Views),
+        R.map(toModelView),
+        R.filter(v => isNil(v.viewOf) || v.viewOf in elements),
+        R.mapToObj(v => [v.id, v])
       )
 
       return computeViews({
@@ -307,14 +284,20 @@ export class LikeC4ModelBuilder {
       }
     }
     if (ast.isElementKindExpression(astNode)) {
-      invariant(astNode.kind.ref, 'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text)
+      invariant(
+        astNode.kind.ref,
+        'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text
+      )
       return {
         elementKind: astNode.kind.ref.name as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
     if (ast.isElementTagExpression(astNode)) {
-      invariant(astNode.tag.ref, 'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text)
+      invariant(
+        astNode.tag.ref,
+        'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text
+      )
       return {
         elementTag: astNode.tag.ref.name as c4.Tag,
         isEqual: astNode.isEqual

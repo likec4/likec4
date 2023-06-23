@@ -16,6 +16,7 @@ const cli = {
   platform: 'node',
   alias: {
     'langium/node': 'langium/src/node/index.ts',
+    'langium/lib/workspace': 'langium/src/workspace/index.ts',
     'langium/lib/generator': 'langium/src/generator/index.ts',
     'langium': 'langium/src/index.ts',
     "@likec4/core/compute-view": '../core/src/compute-view/index.ts',

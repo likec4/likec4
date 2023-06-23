@@ -2,9 +2,10 @@ import { createLanguageServices, type LikeC4Services } from '@likec4/language-se
 import chalk from 'chalk'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
-import type { LikeC4Model } from '@likec4/core/types'
+import type { LikeC4Model, ViewID } from '@likec4/core/types'
 import { existsSync, statSync } from 'node:fs'
 import path from 'node:path'
+import * as R from 'remeda'
 import { URI } from 'vscode-uri'
 
 function resolveWorkspaceDir(workspaceDir: string): string {
@@ -25,12 +26,14 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   metaData: LanguageMetaData
   services: LikeC4Services
   model: LikeC4Model
+  viewSourcePaths: Record<ViewID, string>
 }> {
   const workspace = props?.workspaceDir ? resolveWorkspaceDir(props.workspaceDir) : process.cwd()
 
   const services = createLanguageServices(NodeFileSystem).likec4
   const metaData = services.LanguageMetaData
   const modelBuilder = services.likec4.ModelBuilder
+  const modelLocator = services.likec4.ModelLocator
 
   console.log(chalk.dim('🔍 Searching for likec4 files in:'))
   console.log('\t' + chalk.dim(workspace))
@@ -84,10 +87,19 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
     process.exit(1)
   }
 
+  const viewSourcePaths = R.mapValues(model.views, v => {
+    const loc = modelLocator.locateView(v.id)
+    if (!loc) {
+      throw new Error(`No location found for view ${v.id}`)
+    }
+    return path.relative(workspace, URI.parse(loc.uri).fsPath)
+  })
+
   return {
     workspace,
     metaData,
     services,
-    model
+    model,
+    viewSourcePaths
   }
 }
