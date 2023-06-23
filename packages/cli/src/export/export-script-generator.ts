@@ -1,6 +1,8 @@
 import type { DiagramView } from '@likec4/core/types'
 
 import JSON5 from 'json5'
+import { mkdirp } from 'mkdirp'
+import { join, dirname } from 'node:path/posix'
 import {
   CompositeGeneratorNode,
   NL,
@@ -33,7 +35,9 @@ export function generateViewsData(views: DiagramView[]) {
   return toString(out)
 }
 
-export function generateExportScript(views: DiagramView[], outputdir: string) {
+type DiagramViewWithSourcePath = DiagramView & { sourcePath: string }
+
+export function generateExportScript(views: DiagramViewWithSourcePath[], outputdir: string) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     const puppeteer = require('puppeteer');
@@ -110,8 +114,7 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
 
     console.info('Export:')
 
-    async function exportView(viewId, viewport) {
-      const output = join('${outputdir}', viewId + '.png')
+    async function exportView(viewId, output, viewport) {
       console.info('  - ' + output)
       await page.setViewport({
         width: viewport.width,
@@ -133,8 +136,17 @@ export function generateExportScript(views: DiagramView[], outputdir: string) {
     .append(
       joinToNode(
         views,
-        view =>
-          expandToNode`await exportView('${view.id}', {width: ${view.width + 180}, height: ${view.height + 180}});`,
+        view => {
+          const output = join(
+            outputdir,
+            dirname(view.sourcePath),
+            `${view.id}.png`
+          )
+          // TODO: remove side effect
+          mkdirp.sync(dirname(output))
+
+          return expandToNode`await exportView('${view.id}', '${output}', {width: ${view.width + 180}, height: ${view.height + 180}});`
+        },
         {
           appendNewLineIfNotEmpty: true
         }

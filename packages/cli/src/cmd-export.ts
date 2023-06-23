@@ -7,13 +7,14 @@ import { copyFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path/posix'
 import { values } from 'rambdax'
+import { map, addProp } from 'remeda'
 import { generateExportScript, generateViewsData } from './export'
 import { initLanguageServices, layoutViews } from './language-services'
 
 async function createProject() {
   const dir = join(tmpdir(), 'likec4-export')
 
-  if (existsSync(dir)) {
+  if (existsSync(join(dir, 'package.json'))) {
     console.log('  ' + chalk.green('exists:') + ' ' + chalk.dim(dir))
     return dir
   }
@@ -67,7 +68,7 @@ export const exportCommand = () => {
     )
     .option('-o, --output <directory>', 'output directory')
     .action(async (workspaceDir, { output }) => {
-      const { workspace, model } = await initLanguageServices({ workspaceDir })
+      const { workspace, model, viewSourcePaths } = await initLanguageServices({ workspaceDir })
 
       const modelViews = values(model.views)
 
@@ -78,7 +79,16 @@ export const exportCommand = () => {
 
       console.log(chalk.dim`🔍 Layouting...`)
 
-      const diagrams = await layoutViews(values(model.views))
+      const diagrams = map(
+        await layoutViews(values(model.views)),
+        d => {
+          const sourcePath = viewSourcePaths[d.id]
+          if (!sourcePath) {
+            throw new Error(`No source path for view ${d.id}`)
+          }
+          return addProp(d, 'sourcePath', sourcePath)
+        }
+      )
 
       console.log(chalk.green('✅ LikeC4 parsed'))
 
