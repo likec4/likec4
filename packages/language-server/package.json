@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "langium": "^1.2.0",
+    "langium": "^1.2.1",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.1",
@@ -66,7 +66,7 @@
     "vscode-languageserver-protocol": "~3.17.3"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.16.18",
     "@types/object-hash": "^3.0.2",
     "langium-cli": "^1.2.1",
     "npm-run-all": "^4.1.5",

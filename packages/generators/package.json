@@ -40,11 +40,11 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
-    "langium": "^1.2.0",
+    "langium": "^1.2.1",
     "rambdax": "^9.1.1"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.16.18",
     "typescript": "^5.1.3"
   }
 }
