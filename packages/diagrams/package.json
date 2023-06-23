@@ -10,6 +10,10 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/diagrams"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "type": "module",
   "sideEffects": false,
   "main": "dist/index.js",
