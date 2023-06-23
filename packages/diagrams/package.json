@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -10,10 +10,7 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/diagrams"
   },
-  "files": [
-    "dist",
-    "src"
-  ],
+  "files": ["dist", "src"],
   "type": "module",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -28,13 +25,7 @@
     },
     "./src": "./src/index.ts",
     "./src/diagram": "./src/diagram/index.ts",
-    "./src/*": [
-      "./src/*",
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*/index.ts",
-      "./src/*/index.tsx"
-    ]
+    "./src/*": ["./src/*", "./src/*.ts", "./src/*.tsx", "./src/*/index.ts", "./src/*/index.tsx"]
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -49,7 +40,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@likec4/core": "workspace:*",
+    "@likec4/core": "0.20.1",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "@react-spring/konva": "^9.7.2",

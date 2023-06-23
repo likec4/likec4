@@ -1,19 +1,13 @@
 {
   "name": "likec4-vscode",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "publisher": "likec4",
   "displayName": "LikeC4",
   "description": "Support for the LikeC4 modeling language",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "license": "MIT",
-  "files": [
-    "contrib",
-    "dist",
-    "data",
-    "./language-configuration.json",
-    "!**/*.map"
-  ],
+  "files": ["contrib", "dist", "data", "./language-configuration.json", "!**/*.map"],
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
@@ -47,16 +41,8 @@
     "vscode": "^1.74.0",
     "node": ">=17"
   },
-  "keywords": [
-    "architecture",
-    "architecture-as-code",
-    "diagrams",
-    "c4"
-  ],
-  "categories": [
-    "Programming Languages",
-    "Visualization"
-  ],
+  "keywords": ["architecture", "architecture-as-code", "diagrams", "c4"],
+  "categories": ["Programming Languages", "Visualization"],
   "icon": "./data/logo256.png",
   "galleryBanner": {
     "color": "#111111",
@@ -72,15 +58,8 @@
     "languages": [
       {
         "id": "likec4",
-        "aliases": [
-          "LikeC4",
-          "Like C4"
-        ],
-        "extensions": [
-          ".c4",
-          ".likec4",
-          ".like-c4"
-        ],
+        "aliases": ["LikeC4", "Like C4"],
+        "extensions": [".c4", ".likec4", ".like-c4"],
         "configuration": "language-configuration.json",
         "icon": {
           "light": "./data/icon.png",
@@ -100,10 +79,7 @@
       "properties": {
         "likec4.trace.extension": {
           "type": "string",
-          "enum": [
-            "off",
-            "verbose"
-          ],
+          "enum": ["off", "verbose"],
           "default": "off",
           "description": "Enable debug logging for the LikeC4 extension.",
           "scope": "window"
@@ -111,11 +87,7 @@
         "likec4.trace.server": {
           "type": "string",
           "scope": "window",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
+          "enum": ["off", "messages", "verbose"],
           "default": "off",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
@@ -144,11 +116,11 @@
   "main": "./dist/node.js",
   "browser": "./dist/web.js",
   "devDependencies": {
-    "@likec4/core": "workspace:*",
-    "@likec4/generators": "workspace:*",
-    "@likec4/language-server": "workspace:*",
-    "@likec4/layouts": "workspace:*",
-    "@likec4/vscode-preview": "workspace:*",
+    "@likec4/core": "0.20.1",
+    "@likec4/generators": "0.20.1",
+    "@likec4/language-server": "0.20.1",
+    "@likec4/layouts": "0.20.1",
+    "@likec4/vscode-preview": "0.20.1",
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^2.19.0",

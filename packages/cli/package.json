@@ -1,6 +1,6 @@
 {
   "name": "@likec4/cli",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,10 +15,7 @@
     "node": ">=16"
   },
   "engineStrict": true,
-  "files": [
-    "dist",
-    "likec4.js"
-  ],
+  "files": ["dist", "likec4.js"],
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='cli'",
     "compile": "tsc --noEmit",
@@ -29,11 +26,11 @@
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^11.0.0",
-    "@likec4/core": "workspace:*",
-    "@likec4/diagrams": "workspace:*",
-    "@likec4/generators": "workspace:*",
-    "@likec4/language-server": "workspace:*",
-    "@likec4/layouts": "workspace:*",
+    "@likec4/core": "0.20.1",
+    "@likec4/diagrams": "0.20.1",
+    "@likec4/generators": "0.20.1",
+    "@likec4/language-server": "0.20.1",
+    "@likec4/layouts": "0.20.1",
     "@types/node": "^18.15.11",
     "chalk": "^5.2.0",
     "commander": "^11.0.0",
