@@ -13,6 +13,5 @@ module.exports = {
   },
   updateChangelog: false,
   draftPullRequest: true,
-  installCommand: () => 'yarn install --immutable',
   publishCommand: ({ defaultCommand }) => `${defaultCommand} --access public`
 }
