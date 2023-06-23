@@ -39,20 +39,8 @@ jobs:
       - name: Test
         run: yarn test
 
-  compile:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Bootstrap
-        uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Compile all sources
         run: yarn compile:all
-
 
   build-docs:
     name: build docs website
