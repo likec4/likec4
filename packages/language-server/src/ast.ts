@@ -1,15 +1,13 @@
-import * as ast from './generated/ast'
-import type { LangiumDocument, MultiMap } from 'langium'
-import { DocumentState } from 'langium'
-import type { LikeC4Document } from './generated/ast'
 import type * as c4 from '@likec4/core/types'
+import type { LangiumDocument, MultiMap } from 'langium'
+import { DocumentState } from 'langium/lib/workspace'
 import objectHash from 'object-hash'
 import { elementRef } from './elementRef'
+import type { LikeC4Document } from './generated/ast'
+import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
-
-
 
 export function c4hash({
   c4Specification,
@@ -147,19 +145,33 @@ export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocum
 
 export function* streamModel(doc: LikeC4LangiumDocument) {
   const elements = doc.parseResult.value.model?.elements ?? []
-  const traverseStack: (ast.Element | ast.ExtendElement | ast.Relation)[] = [...elements]
+  const traverseStack = [...elements]
+  const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {
+    if (ast.isRelationWithSource(el)) {
+      relations.push(el)
+      continue
+    }
     if (ast.isExtendElement(el)) {
-      if (!!el.body) {
+      if (el.body && el.body.elements.length > 0) {
         traverseStack.push(...el.body.elements)
       }
       continue
     }
-    if (ast.isElement(el) && el.body) {
-      traverseStack.push(...el.body.elements)
+    if (ast.isElement(el) && el.body && el.body.elements.length > 0) {
+      for (const nested of el.body.elements) {
+        if (ast.isRelation(nested)) {
+          relations.push(nested)
+        } else {
+          traverseStack.push(nested)
+        }
+      }
     }
     yield el
+  }
+  for (const relation of relations) {
+    yield relation
   }
 }
 
