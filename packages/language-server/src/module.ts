@@ -7,7 +7,6 @@ import type {
   PartialLangiumSharedServices
 } from 'langium'
 import { createDefaultModule, createDefaultSharedModule, EmptyFileSystem, inject } from 'langium'
-import type { Constructor } from 'type-fest'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import {
   LikeC4DocumentSymbolProvider,
@@ -19,6 +18,9 @@ import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 import { LikeC4CodeLensProvider, LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T;
 
 /**
  * Declaration of custom services - add your own service classes here.

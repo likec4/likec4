@@ -1,9 +1,9 @@
 import { map } from 'rambdax'
 import { ModelIndex } from '../model-index'
-import type { Element, ElementView, Fqn, LikeC4Model, Relation, ComputedView, RelationID, ViewID } from '../types'
+import type { Element, ElementView, Fqn, Relation, RelationID, ViewID, ComputeResult } from '../types'
 import { computeElementView } from './compute-element-view'
 
-export function computeView(view: ElementView, index: ModelIndex): ComputedView {
+export function computeView<V extends ElementView>(view: V, index: ModelIndex): ComputeResult<V> {
   return computeElementView(view, index)
 }
 
@@ -16,7 +16,7 @@ type InputModel<V extends ElementView> = {
 type OutputModel<V extends ElementView> = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  views: Record<ViewID, V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>>
+  views: Record<ViewID, ComputeResult<V>>
 }
 
 export function computeViews<V extends ElementView>(model: InputModel<V>): OutputModel<V> {
@@ -24,6 +24,6 @@ export function computeViews<V extends ElementView>(model: InputModel<V>): Outpu
   return {
     elements: model.elements,
     relations: model.relations,
-    views: map(v => computeElementView<V>(v, index), model.views)
+    views: map(v => computeElementView(v, index), model.views)
   }
 }

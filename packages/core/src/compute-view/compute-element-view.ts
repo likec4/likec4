@@ -8,7 +8,7 @@ import {
   DefaultThemeColor,
   DefaultElementShape,
   type ComputedNode,
-  type ComputedView
+  type ComputeResult,
 } from '../types'
 import type * as Expr from '../types/expression'
 import * as Expression from '../types/expression'
@@ -490,7 +490,7 @@ const excludeRelationExpr = (ctx: ComputeCtx, expr: Expr.RelationExpr): ComputeC
   })
 }
 
-export function computeElementView<V extends ElementView>(view: V, index: ModelIndex): V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'> {
+export function computeElementView<V extends ElementView>(view: V, index: ModelIndex): ComputeResult<V> {
   const rootElement = view.viewOf ?? null
   let ctx = new ComputeCtx(index, rootElement)
   const rulesInclude = view.rules.filter(isViewRuleExpression)

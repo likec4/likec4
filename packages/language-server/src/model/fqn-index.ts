@@ -2,15 +2,16 @@ import type { Fqn } from '@likec4/core/types'
 import { nameFromFqn, parentFqn } from '@likec4/core/utils'
 import type { LangiumDocument, LangiumDocuments } from 'langium'
 import { DocumentState, DONE_RESULT, getDocument, MultiMap, StreamImpl } from 'langium'
-import { isNil } from 'rambdax'
-import type { SetNonNullable, SetRequired } from 'type-fest'
+import { isNil } from 'remeda'
 import type { ast } from '../ast'
 import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { computeDocumentFqn } from './fqn-computation'
 
-type FqnIndexedDocument = SetNonNullable<SetRequired<LikeC4LangiumDocument, 'c4fqns'>, 'c4fqns'>
+type FqnIndexedDocument = Omit<LikeC4LangiumDocument,'c4fqns'> &  {
+  c4fqns: NonNullable<LikeC4LangiumDocument['c4fqns']>
+}
 
 const isFqnIndexedDocument = (doc: LangiumDocument): doc is FqnIndexedDocument =>
   isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)

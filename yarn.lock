@@ -1007,7 +1007,6 @@ __metadata:
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@mobily/ts-belt": ^3.13.1
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
     langium: ^1.2.0
@@ -1019,7 +1018,6 @@ __metadata:
     remeda: ^1.19.0
     strip-indent: ^4.0.0
     tiny-invariant: ^1.3.1
-    type-fest: ^3.11.1
     typescript: ^5.1.3
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
@@ -1207,13 +1205,6 @@ __metadata:
   dependencies:
     exenv-es6: ^1.1.1
   checksum: 303e87847f962944f474e3716c3eb305668243916ca9e0719e26bb9a32346144bc958d915c103776b3e552cea0f0f6233f839fad66adfdf96a8436b947288ca7
-  languageName: node
-  linkType: hard
-
-"@mobily/ts-belt@npm:^3.13.1":
-  version: 3.13.1
-  resolution: "@mobily/ts-belt@npm:3.13.1"
-  checksum: 507417608ddf4ecadf6f4f5dbdc32083000727d1a7a3604dc22670861f617d8bbb53622348649eab36d4d5c81b4331da7c4a3707b610866ebfadea3af27c60de
   languageName: node
   linkType: hard
 
