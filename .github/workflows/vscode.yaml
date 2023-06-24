@@ -1,6 +1,8 @@
+name: vscode
+
 on:
   release:
-    types: [created]
+    types: [released]
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
@@ -8,15 +10,10 @@ env:
   TURBO_TEAM: 'likec4'
 
 jobs:
-  vsce:
+  publish-extension:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      actions: read
-      checks: write
-      contents: read
-      statuses: write
-      pull-requests: read
+    permissions: read-all
     steps:
       - uses: actions/checkout@v3
 
