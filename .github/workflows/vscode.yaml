@@ -1,0 +1,42 @@
+on:
+  release:
+    types: [created]
+
+env:
+  TURBO_API: 'http://127.0.0.1:9080'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: 'likec4'
+
+jobs:
+  vsce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      checks: write
+      contents: read
+      statuses: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: build vscode
+      #   working-directory: packages/vscode
+      #   run: yarn turbo-build
+
+      # - name: get release version
+      #   run: |
+      #     VERSION=$(node -e "console.log(require('./package.json').version)")
+      #     echo "Release version: $VERSION"
+      #     echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: publish
+        run: yarn vsce:publish
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

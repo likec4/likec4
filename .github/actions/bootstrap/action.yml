@@ -27,6 +27,7 @@ runs:
 
     - uses: actions/cache@v3
       id: yarn-cache
+      if: ${{ !github.event.act }}
       with:
         path: ${{ steps.yarn-cachedir.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

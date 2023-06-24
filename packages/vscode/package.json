@@ -32,6 +32,7 @@
     "dependencies": false
   },
   "scripts": {
+    "vscode:prepublish": "yarn turbo-build",
     "turbo-build": "run -T turbo run build --filter='likec4-vscode'",
     "open-web": "yarn turbo-build && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/bigbank",
     "compile": "tsc --noEmit",
@@ -41,7 +42,8 @@
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf contrib dist src/generated"
+    "clean": "run -T rimraf contrib dist src/generated",
+    "vsce:publish": "vsce publish"
   },
   "engines": {
     "vscode": "^1.74.0",
