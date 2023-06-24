@@ -12,11 +12,5 @@ module.exports = {
     ]
   },
   updateChangelog: false,
-  afterPublish: ({ exec }) => {
-    exec('git checkout main');
-    exec('git merge develop');
-    exec('git push origin main');
-    exec('git checkout develop');
-  },
-  publishCommand: ({ defaultCommand }) => `${defaultCommand} --access public`
+  publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public`
 }
