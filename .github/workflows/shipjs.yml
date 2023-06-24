@@ -4,6 +4,12 @@ on:
     types:
       - closed
 
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  statuses: write
+
 jobs:
   shipjs-trigger:
     name: shipjs-trigger
@@ -28,8 +34,8 @@ jobs:
 
       - name: Configure git user
         run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Release
         run: yarn shipjs trigger
