@@ -4,17 +4,13 @@ on:
     types:
       - closed
 
-permissions:
-  actions: write
-  checks: write
-  contents: write
-  statuses: write
-
 jobs:
   shipjs-trigger:
     name: shipjs-trigger
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
+    permissions: write-all
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
         with:
