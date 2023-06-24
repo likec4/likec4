@@ -1,7 +1,7 @@
 {
   "name": "@likec4/example-cloud-system",
   "private": true,
-  "version": "0.20.10",
+  "version": "0.20.11",
   "packageManager": "yarn@3.4.1",
   "scripts": {
     "turbo-build": "run -T turbo run compile build --filter='example-cloud-system'",
@@ -10,7 +10,7 @@
     "dev": "run generate && vite"
   },
   "dependencies": {
-    "@likec4/diagrams": "0.20.10",
+    "@likec4/diagrams": "0.20.11",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "rambdax": "^9.1.1",
@@ -18,7 +18,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/cli": "0.20.10",
+    "@likec4/cli": "0.20.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.0.0",
