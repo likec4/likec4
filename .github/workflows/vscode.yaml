@@ -1,8 +1,9 @@
 name: vscode
 
 on:
-  release:
-    types: [released]
+  push:
+    tags:
+      - 'v**'
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'

@@ -19,6 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ssh-key: "${{ secrets.DEPLOY_KEY }}"
           fetch-depth: 0
           ref: develop
 
