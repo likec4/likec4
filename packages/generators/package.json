@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "0.20.9",
+  "version": "0.20.10",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -38,7 +38,7 @@
     "test:watch": "run -T vitest"
   },
   "dependencies": {
-    "@likec4/core": "0.20.9",
+    "@likec4/core": "0.20.10",
     "json5": "^2.2.3",
     "langium": "^1.2.0",
     "rambdax": "^9.1.1"
