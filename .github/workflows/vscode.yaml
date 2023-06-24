@@ -23,18 +23,17 @@ jobs:
         with:
           turborepo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: build vscode
-      #   working-directory: packages/vscode
-      #   run: yarn turbo-build
-
       # - name: get release version
       #   run: |
       #     VERSION=$(node -e "console.log(require('./package.json').version)")
       #     echo "Release version: $VERSION"
       #     echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: publish
-        run: yarn vsce:publish
+      - name: Publish VSCode extension
+        run: |
+          VERSION=$(node -e "console.log(require('./package.json').version)")
+          echo " version: $VERSION"
+          yarn vsce publish $VERSION
         working-directory: packages/vscode
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
