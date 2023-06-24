@@ -12,6 +12,5 @@ module.exports = {
     ]
   },
   updateChangelog: false,
-  draftPullRequest: true,
   publishCommand: ({ defaultCommand }) => `${defaultCommand} --access public`
 }
