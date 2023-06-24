@@ -6,7 +6,7 @@ on:
 
 jobs:
   shipjs-trigger:
-    name: Release
+    name: shipjs-trigger
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
     steps:
@@ -26,7 +26,13 @@ jobs:
       - name: Test
         run: yarn test
 
-      - run: yarn shipjs trigger
+      - name: Configure git user
+        run: -|
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Release
+        run: yarn shipjs trigger
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
