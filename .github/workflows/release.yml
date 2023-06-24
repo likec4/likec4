@@ -1,4 +1,4 @@
-name: shipjs
+name: release
 on:
   pull_request:
     types:
@@ -10,8 +10,8 @@ env:
   TURBO_TEAM: 'likec4'
 
 jobs:
-  shipjs-trigger:
-    name: shipjs-trigger
+  ship:
+    name: ship
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
     permissions: write-all
@@ -31,9 +31,6 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - name: Test
-        run: yarn test
-
       - name: Configure git user
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -44,3 +41,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Publish vscode extension
+        run: yarn vsce:publish
+        working-directory: packages/vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
