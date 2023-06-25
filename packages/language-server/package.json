@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "0.20.11",
+  "version": "0.21.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -54,7 +54,7 @@
     "test:watch": "run -T vitest"
   },
   "dependencies": {
-    "@likec4/core": "0.20.11",
+    "@likec4/core": "0.21.0",
     "langium": "^1.2.0",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",

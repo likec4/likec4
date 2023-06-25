@@ -1,6 +1,6 @@
 {
   "name": "@likec4/docs-website",
-  "version": "0.20.11",
+  "version": "0.21.0",
   "private": true,
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -26,11 +26,11 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
-    "@likec4/core": "0.20.11",
-    "@likec4/diagrams": "0.20.11",
-    "@likec4/generators": "0.20.11",
-    "@likec4/language-server": "0.20.11",
-    "@likec4/layouts": "0.20.11",
+    "@likec4/core": "0.21.0",
+    "@likec4/diagrams": "0.21.0",
+    "@likec4/generators": "0.21.0",
+    "@likec4/language-server": "0.21.0",
+    "@likec4/layouts": "0.21.0",
     "@monaco-editor/react": "^4.5.0",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-scroll-area": "^1.0.4",
@@ -64,7 +64,7 @@
     "vscode-uri": "~3.0.7"
   },
   "devDependencies": {
-    "@likec4/cli": "0.20.11",
+    "@likec4/cli": "0.21.0",
     "@swc-jotai/debug-label": "^0.0.10",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
