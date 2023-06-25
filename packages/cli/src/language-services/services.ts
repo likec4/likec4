@@ -4,19 +4,22 @@ import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import type { LikeC4Model, ViewID } from '@likec4/core/types'
 import { existsSync, statSync } from 'node:fs'
-import path from 'node:path'
+import { resolve, relative, isAbsolute, basename } from 'node:path/posix'
 import * as R from 'remeda'
 import { URI } from 'vscode-uri'
 
-function resolveWorkspaceDir(workspaceDir: string): string {
-  if (!path.isAbsolute(workspaceDir)) {
-    workspaceDir = path.resolve(process.cwd(), workspaceDir)
+export function resolveDir(workspaceDir: string): string {
+  if (workspaceDir === '.') {
+    return process.cwd()
+  }
+  if (!isAbsolute(workspaceDir)) {
+    workspaceDir = resolve(process.cwd(), workspaceDir)
   }
   if (!existsSync(workspaceDir)) {
-    throw new Error(`Workspace '${workspaceDir}' does not exist`)
+    throw new Error(`Directory '${workspaceDir}' does not exist`)
   }
   if (!statSync(workspaceDir).isDirectory()) {
-    throw new Error(`Workspace '${workspaceDir}' is not a directory.`)
+    throw new Error(`'${workspaceDir}' is not a directory.`)
   }
   return workspaceDir
 }
@@ -28,7 +31,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   model: LikeC4Model
   viewSourcePaths: Record<ViewID, string>
 }> {
-  const workspace = props?.workspaceDir ? resolveWorkspaceDir(props.workspaceDir) : process.cwd()
+  const workspace = props?.workspaceDir ? resolveDir(props.workspaceDir) : process.cwd()
 
   const services = createLanguageServices(NodeFileSystem).likec4
   const metaData = services.LanguageMetaData
@@ -40,7 +43,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
 
   await services.shared.workspace.WorkspaceManager.initializeWorkspace([
     {
-      name: path.basename(workspace),
+      name: basename(workspace),
       uri: URI.file(workspace).toString()
     }
   ])
@@ -57,7 +60,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   let hasErrors = false
   for (const doc of documents) {
     const errors = doc.diagnostics?.filter(e => e.severity === 1)
-    const docPath = path.relative(workspace, doc.uri.fsPath)
+    const docPath = relative(workspace, doc.uri.fsPath)
     if (errors && errors.length > 0) {
       hasErrors = true
       console.log(chalk.red('   ⛔️ ' + docPath))
@@ -92,7 +95,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
     if (!loc) {
       throw new Error(`No location found for view ${v.id}`)
     }
-    return path.relative(workspace, URI.parse(loc.uri).fsPath)
+    return relative(workspace, URI.parse(loc.uri).fsPath)
   })
 
   return {
