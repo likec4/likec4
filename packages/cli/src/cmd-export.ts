@@ -14,8 +14,9 @@ import { initLanguageServices, layoutViews } from './language-services'
 async function createProject() {
   const dir = join(tmpdir(), 'likec4-export')
 
-  if (existsSync(join(dir, 'package-lock.json'))) {
-    console.log('  ' + chalk.green('exists:') + ' ' + chalk.dim(dir))
+  const packageLock = join(dir, 'package-lock.json')
+  if (existsSync(packageLock)) {
+    console.log(chalk.green('exists:') + ' ' + packageLock)
     return dir
   }
 
@@ -65,7 +66,8 @@ export const exportCommand = () => {
     )
     .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
     .option('--no-temp-project', 'do not create temporary folder with node project\ni.e. dont install puppeteer')
-    .action(async (workspaceDir, { tempProject, output }) => {
+    .option('--keep-script', 'keep generated puppeeter script')
+    .action(async (workspaceDir, { tempProject, output, keepScript }) => {
       const { workspace, model, viewSourcePaths } = await initLanguageServices({ workspaceDir })
 
       const modelViews = values(model.views)
@@ -91,46 +93,50 @@ export const exportCommand = () => {
 
       const outputdir = output ? resolve(process.cwd(), output) : workspace
 
-      let dir = outputdir
+      let cwd = process.cwd()
 
       if (tempProject) {
         console.log(chalk.green(`Prepare temporary node project...`))
-        dir = await createProject()
+        cwd = await createProject()
       } else {
         console.log(chalk.dim(`Skip temporary node project...`))
       }
-
-      console.log(chalk.dim(` working dir: ${dir}`))
+      console.log('  ' + chalk.dim('cwd: ' + cwd))
 
       await mkdirp(outputdir)
 
       let puppeteerPage = await readFile(join(__dirname, 'puppeteer-page.js'), 'utf-8')
       puppeteerPage += '\n\n' + generateViewsData(diagrams)
 
-      const puppeteerPageJS = join(dir, 'puppeteer-page.js')
-      const exportJS = join(dir, 'run-export.js')
+      const puppeteerPageJS = join(cwd, 'puppeteer-page.js')
+      const exportJS = join(cwd, 'run-export.js')
 
       await Promise.all([
         writeFile(puppeteerPageJS, puppeteerPage),
         writeFile(exportJS, generateExportScript(diagrams, outputdir))
       ])
+      console.log(`puppeteerPageJS: ${puppeteerPageJS}`)
+      console.log(`exportJS: ${exportJS}`)
+
 
       console.log('')
 
-      console.log('🧑‍🎨 ' + chalk.green('Run export script...'))
-      console.log('  ' + chalk.dim('cwd: ' + dir))
+      console.log('🎨 ' + chalk.green('Run puppeteer export script...'))
       console.log('  ' + chalk.dim('node run-export.js'))
       console.log('')
 
       await execa('node', ['run-export.js'], {
-        cwd: dir,
+        cwd,
         stdio: 'inherit'
       })
 
-      await Promise.allSettled([
-        rm(puppeteerPageJS, { force: true }),
-        rm(exportJS, { force: true }),
-      ])
+      if (keepScript !== true) {
+        console.log('🗑️ ' + chalk.dim('remove scripts...'))
+        await Promise.allSettled([
+          rm(puppeteerPageJS, { force: true }),
+          rm(exportJS, { force: true }),
+        ])
+      }
 
       console.log('\n' + chalk.green('✅ Done'))
     })
