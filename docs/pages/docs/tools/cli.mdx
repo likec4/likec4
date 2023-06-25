@@ -68,7 +68,8 @@ Arguments:
 Options:
   -o, --output <directory>  output directory
                             if not defined, outputs to workspace
-  --no-temp-project         do not create temporary folder with node project,
-                            i.e. dont install puppeteer
+  -S, --script-cwd [path]   use current folder or path to run export scripts in.
+                            Expects npm project with puppeteer installed.
+                            If not defined, generates temporary one and installs puppeteer.
   -h, --help                display help for command
 ```  

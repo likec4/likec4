@@ -36,7 +36,7 @@ async function createProject() {
         },
         engineStrict: true,
         dependencies: {
-          puppeteer: '^20.5.0'
+          puppeteer: "20.7.3"
         }
       },
       null,
@@ -44,7 +44,7 @@ async function createProject() {
     )
   )
 
-  await execa('npm', ['install', '--no-audit'], {
+  await execa('npm', ['install'], {
     cwd: dir,
     env: {
       NODE_ENV: 'production'
@@ -64,83 +64,82 @@ export const exportCommand = () => {
         .argOptional()
         .default(process.cwd(), '"."')
     )
-    .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
+    .option('-o, --output <directory>', 'output directory for generated png\nif not defined, outputs to workspace')
     .addOption(
       createOption(
         '-S, --script-cwd [path]',
         'use current folder or path to run export scripts in.\nExpects npm project with puppeteer installed.\nIf not defined, generates temporary one and installs puppeteer.'
       )
-        .env('LIKEC4_SCRIPT_CWD')
     )
-    .action(
-      async (workspaceDir, { output, scriptCwd }) => {
-        const { workspace, model, viewSourcePaths } = await initLanguageServices({ workspaceDir })
+    .option('--keep-scripts', 'keep generated scripts')
+    .action(async (workspaceDir, { output, scriptCwd, keepScripts }) => {
+      const { workspace, model, viewSourcePaths } = await initLanguageServices({ workspaceDir })
 
-        const modelViews = values(model.views)
+      const modelViews = values(model.views)
 
-        if (modelViews.length === 0) {
-          console.error(chalk.red(' ⛔️  No views found'))
-          process.exit(1)
-        }
-
-        console.log(chalk.dim`🔍 Layouting...`)
-
-        const diagrams = map(await layoutViews(values(model.views)), d => {
-          const sourcePath = viewSourcePaths[d.id]
-          if (!sourcePath) {
-            throw new Error(`No source path for view ${d.id}`)
-          }
-          return addProp(d, 'sourcePath', sourcePath)
-        })
-
-        console.log(chalk.green('✅ LikeC4 parsed'))
-
-        console.log('')
-
-        const outputdir = output ? resolve(process.cwd(), output) : workspace
-
-        let cwd = scriptCwd ? resolveDir(scriptCwd === true ? '.' : scriptCwd) : null
-        if (cwd === null) {
-          console.log(chalk.green(`Prepare temporary node project...`))
-          cwd = await createProject()
-        } else {
-          console.log(chalk.dim(`Skip temporary node project...`))
-        }
-        console.log('  ' + chalk.dim('scripts cwd: ' + cwd))
-
-        await mkdirp(outputdir)
-
-        let puppeteerPage = await readFile(join(__dirname, 'puppeteer-page.js'), 'utf-8')
-        puppeteerPage += '\n\n' + generateViewsData(diagrams)
-
-        const puppeteerPageJS = join(cwd, 'puppeteer-page.js')
-        const exportJS = join(cwd, 'puppeteer-script.js')
-
-        await Promise.all([
-          writeFile(puppeteerPageJS, puppeteerPage),
-          writeFile(exportJS, generateExportScript(diagrams, outputdir))
-        ])
-        console.log(`puppeteer page: ${puppeteerPageJS}`)
-        console.log(`puppeteer script: ${exportJS}`)
-
-        console.log('')
-
-        console.log('🎨 ' + chalk.green('Run export script...'))
-        console.log('  ' + chalk.dim('node puppeteer-script.js'))
-        console.log('')
-
-        await execa('node', ['puppeteer-script.js'], {
-          cwd,
-          stdio: 'inherit'
-        })
-
-          console.log('🗑️ ' + chalk.dim('remove scripts...'))
-          await Promise.allSettled([
-            rm(puppeteerPageJS, { force: true }),
-            rm(exportJS, { force: true })
-          ])
-
-        console.log('\n' + chalk.green('✅ Done'))
+      if (modelViews.length === 0) {
+        console.error(chalk.red(' ⛔️  No views found'))
+        process.exit(1)
       }
-    )
+
+      console.log(chalk.dim`🔍 Layout views...`)
+
+      const diagrams = map(await layoutViews(values(model.views)), d => {
+        const sourcePath = viewSourcePaths[d.id]
+        if (!sourcePath) {
+          throw new Error(`No source path for view ${d.id}`)
+        }
+        return addProp(d, 'sourcePath', sourcePath)
+      })
+
+      console.log(chalk.green('✅ LikeC4 parsed'))
+
+      console.log('')
+
+      const outputdir = output ? resolve(process.cwd(), output) : workspace
+
+      let cwd = scriptCwd ? resolveDir(scriptCwd === true ? '.' : scriptCwd) : null
+      if (cwd === null) {
+        console.log(chalk.green(`Prepare temporary node project...`))
+        cwd = await createProject()
+      }
+      console.log(chalk.dim('Scripts cwd: ' + cwd))
+
+      await mkdirp(outputdir)
+
+      let puppeteerPage = await readFile(join(__dirname, 'puppeteer-page.js'), 'utf-8')
+      puppeteerPage += '\n\n' + generateViewsData(diagrams)
+
+      const puppeteerPageJS = join(cwd, 'puppeteer-page.js')
+      const exportJS = join(cwd, 'puppeteer-script.js')
+
+      await Promise.all([
+        writeFile(puppeteerPageJS, puppeteerPage),
+        writeFile(exportJS, generateExportScript(diagrams, outputdir))
+      ])
+      console.log(`Puppeteer scripts:`)
+      console.log(`  ${puppeteerPageJS}`)
+      console.log(`  ${exportJS}`)
+
+      console.log('')
+
+      console.log('🎨 ' + chalk.green('Run export script...'))
+      console.log('  ' + chalk.dim('node puppeteer-script.js'))
+      console.log('')
+
+      await execa('node', ['puppeteer-script.js'], {
+        cwd,
+        stdio: 'inherit'
+      })
+
+      if (keepScripts !== true) {
+        console.log('🗑️ ' + chalk.dim('remove scripts...'))
+        await Promise.allSettled([
+          rm(puppeteerPageJS, { force: true }),
+          rm(exportJS, { force: true })
+        ])
+      }
+
+      console.log('\n' + chalk.green('✅ Done'))
+    })
 }

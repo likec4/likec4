@@ -24,15 +24,21 @@ npm install --save-dev @likec4/cli
 Usage: `likec4 export [sourcedir]`
 
 ```bash
-$ likec4 export -o ./views-png ./likec4-sources
+$ likec4 export -o ./generated/png ./likec4-sources
 
-export likec4 views to png
+Usage: likec4 export [options] [workspace]
+
+Export LikeC4 views to PNG, rendering in Headless Chrome
 
 Arguments:
-  sourcedir                 directory with likec4 sources (default: ".")
+  workspace                 directory with likec4 sources (default: ".")
 
 Options:
   -o, --output <directory>  output directory
+                            if not defined, outputs to workspace
+  -S, --script-cwd [path]   use current folder or path to run export scripts in.
+                            Expects npm project with puppeteer installed.
+                            If not defined, generates temporary one and installs puppeteer.
   -h, --help                display help for command
 ```
 

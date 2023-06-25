@@ -1,7 +1,8 @@
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 
 import JSON5 from 'json5'
 import { mkdirp } from 'mkdirp'
+import process from 'process'
 import { join, dirname } from 'node:path/posix'
 import {
   CompositeGeneratorNode,
@@ -10,6 +11,8 @@ import {
   joinToNode,
   toString
 } from 'langium/lib/generator'
+
+const isNoSanbox = 'LIKEC4_NO_SANDBOX' in process.env
 
 export function generateViewsData(views: DiagramView[]) {
   const out = new CompositeGeneratorNode()
@@ -50,7 +53,10 @@ export function generateExportScript(views: DiagramViewWithSourcePath[], outputd
         .appendTemplate`
       console.info('Launch puppeteer...')
 
-      const browser = await puppeteer.launch({headless: 'new'});
+      const browser = await puppeteer.launch({
+        headless: 'new',
+        ${ isNoSanbox ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],` : '' }
+      });
       const page = await browser.newPage();
       await page.setViewport({
         width: 1000,
@@ -101,7 +107,7 @@ export function generateExportScript(views: DiagramViewWithSourcePath[], outputd
         process.exit(1)
       });
 
-      console.info('Load scripts...')
+      console.info('Load puppeteer-page...')
 
       await page.addScriptTag({
         content: readFileSync('puppeteer-page.js').toString(),
@@ -111,20 +117,23 @@ export function generateExportScript(views: DiagramViewWithSourcePath[], outputd
       console.info('Export:')
 
       async function exportView(viewId, output, viewport) {
-        console.info('  - ' + output)
-        await page.setViewport({
-          width: viewport.width,
-          height: viewport.height,
-          deviceScaleFactor: 2
-        });
-        await page.evaluate((id) => window.renderView(id), viewId)
-        await new Promise(resolve => setTimeout(resolve, 50))
-        await page.waitForSelector('.konvajs-content')
-        await page.screenshot({
-          path: output,
-          omitBackground: true,
-          fullPage: true
-        })
+        try {
+          await page.setViewport({
+            width: viewport.width,
+            height: viewport.height,
+            deviceScaleFactor: 2
+          });
+          await page.evaluate((id) => window.renderView(id), viewId)
+          await page.waitForSelector('.konvajs-content')
+          await page.screenshot({
+            path: output,
+            omitBackground: true,
+            fullPage: true
+          })
+          console.info('  - ' + output)
+        } catch (err) {
+          console.error(' fail ' + output, err)
+        }
       }
     `
           .append(NL, NL)

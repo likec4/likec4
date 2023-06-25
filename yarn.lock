@@ -864,7 +864,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@likec4/cli@0.21.0, @likec4/cli@workspace:packages/cli":
+"@likec4/cli@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@likec4/cli@npm:0.21.0"
+  bin:
+    likec4: ./likec4.js
+  checksum: 200a8d42645bca082c52e775eb7490ebedb163d1de2dec9df51fa19a3bef75007ebeadd67e29d8385b0e6408a37ddd3bbafe82d39edc45d838658b063f8cde6d
+  languageName: node
+  linkType: hard
+
+"@likec4/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@likec4/cli@workspace:packages/cli"
   dependencies:
