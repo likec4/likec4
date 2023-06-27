@@ -2,6 +2,9 @@
   "cli": {
     "title": "CLI"
   },
+  "github-actions": {
+    "title": "Github Actions"
+  },
   "react": {
     "title": "React"
   },
