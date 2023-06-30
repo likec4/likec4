@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@likec4/core": "0.22.0",
-    "langium": "^1.2.0",
+    "langium": "^1.2.1",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.1",

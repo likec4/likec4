@@ -40,7 +40,7 @@
   "dependencies": {
     "@likec4/core": "0.22.0",
     "json5": "^2.2.3",
-    "langium": "^1.2.0",
+    "langium": "^1.2.1",
     "rambdax": "^9.1.1"
   },
   "devDependencies": {
