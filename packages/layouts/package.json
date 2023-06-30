@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "^0.8.0",
-    "@dagrejs/graphlib": "^2.1.12",
+    "@dagrejs/graphlib": "^2.1.13",
     "@hpcc-js/wasm": "^2.13.0",
     "@likec4/core": "0.23.0",
     "rambdax": "^9.1.1",
