@@ -2646,7 +2646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.7.2":
+"@types/prettier@npm:^2.7.3":
   version: 2.7.3
   resolution: "@types/prettier@npm:2.7.3"
   checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
@@ -7392,7 +7392,7 @@ __metadata:
   dependencies:
     "@types/eslint": ^8.40.1
     "@types/node": ^18.15.11
-    "@types/prettier": ^2.7.2
+    "@types/prettier": ^2.7.3
     "@typescript-eslint/eslint-plugin": ^5.59.9
     "@typescript-eslint/parser": ^5.60.0
     "@vitest/ui": ^0.32.2
