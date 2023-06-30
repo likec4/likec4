@@ -4,7 +4,7 @@
     "config:base",
     "helpers:disableTypesNodeMajor"
   ],
-  "prHourlyLimit": 0,
+  "prHourlyLimit": 5,
   "prConcurrentLimit": 10,
   "packageRules": [
     {

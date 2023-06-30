@@ -7,8 +7,8 @@ on:
       - 'renovate/**'
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
-      - '**/*'
+    branches-ignore:
+      - 'renovate/**'
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
