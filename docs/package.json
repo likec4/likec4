@@ -40,7 +40,7 @@
     "clsx": "^1.2.1",
     "jotai": "^2.2.0",
     "jotai-devtools": "^0.5.3",
-    "langium": "^1.2.0",
+    "langium": "^1.2.1",
     "lucide-react": "^0.241.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
