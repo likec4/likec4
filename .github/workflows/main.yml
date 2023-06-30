@@ -17,6 +17,7 @@ env:
   TURBO_API: 'http://127.0.0.1:9080'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: 'likec4'
+  NODE_ENV: 'production'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,6 +26,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
 
@@ -39,12 +41,13 @@ jobs:
       - name: Test
         run: yarn test
 
-      - name: Compile all sources
-        run: yarn compile:all
+      - name: Compile sources
+        run: yarn compile
 
   build-docs:
     name: build docs website
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: build
     steps:
       - uses: actions/checkout@v3
@@ -60,6 +63,7 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
+            ${{ runner.os }}-nextjs-
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap

@@ -4,6 +4,8 @@
     "config:base",
     "helpers:disableTypesNodeMajor"
   ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
   "packageRules": [
     {
       "groupName": "vitest",
@@ -14,10 +16,10 @@
       "matchPackagePatterns": [
         "^@vitest/"
       ]
-    },  
+    },
     {
       "enabled": false,
-      "matchPackageNames": [        
+      "matchPackageNames": [
         "@types/vscode",
         "vscode",
         "next"
@@ -27,6 +29,12 @@
         "^@monaco-editor",
         "^vscode-"
       ]
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchPackagePatterns": ["eslint", "prettier"],
+      "automerge": true,
+      "automergeType": "branch"
     }
   ]
 }

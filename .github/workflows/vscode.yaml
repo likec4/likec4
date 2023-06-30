@@ -9,6 +9,7 @@ env:
   TURBO_API: 'http://127.0.0.1:9080'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: 'likec4'
+  NODE_ENV: 'production'
 
 jobs:
   publish-extension:

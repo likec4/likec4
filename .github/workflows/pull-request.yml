@@ -2,6 +2,9 @@ name: pull-request
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'renovate/**'
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
@@ -11,6 +14,7 @@ env:
   TURBO_API: 'http://127.0.0.1:9080'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: 'likec4'
+  NODE_ENV: 'production'
 
 permissions:
   actions: read
@@ -44,13 +48,3 @@ jobs:
 
       - name: Compile
         run: yarn compile:all
-
-  dependency-review:
-    name: dependency review
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
