@@ -944,7 +944,7 @@ __metadata:
     "@types/vscode": ~1.77.0
     autoprefixer: ^10.4.14
     body-scroll-lock-upgrade: ^1.0.3
-    class-variance-authority: ^0.6.0
+    class-variance-authority: ^0.6.1
     clsx: ^1.2.1
     jotai: ^2.2.0
     jotai-devtools: ^0.5.3
@@ -3842,17 +3842,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-variance-authority@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "class-variance-authority@npm:0.6.0"
+"class-variance-authority@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "class-variance-authority@npm:0.6.1"
   dependencies:
     clsx: 1.2.1
-  peerDependencies:
-    typescript: ">= 4.5.5 < 6"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: c86fe9d208b33afbd82e3349739f8be9bfceb17e78f2ee689039029de016c5547883b41ac8ab69630f433cf4d4c9159a3c82072e9d8b7225f63cd31c01d6c9b8
+  checksum: 9be6b27998489c7af4535399ff00289c3347756209bb5405ca115e51bef7159f057f02532a53132299a3e26925552894ff1018bd8cc10807130b063039e82d8d
   languageName: node
   linkType: hard
 
