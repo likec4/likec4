@@ -6,6 +6,8 @@
   ],
   "prHourlyLimit": 5,
   "prConcurrentLimit": 10,
+  "rangeStrategy": "bump",
+  "updateInternalDeps": true,
   "packageRules": [
     {
       "groupName": "vitest",
