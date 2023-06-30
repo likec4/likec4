@@ -7321,15 +7321,15 @@ __metadata:
   linkType: hard
 
 "langium@npm:^1.2.0, langium@npm:~1.2.0":
-  version: 1.2.0
-  resolution: "langium@npm:1.2.0"
+  version: 1.2.1
+  resolution: "langium@npm:1.2.1"
   dependencies:
     chevrotain: ~10.4.2
     chevrotain-allstar: ~0.1.4
     vscode-languageserver: ~8.0.2
     vscode-languageserver-textdocument: ~1.0.8
     vscode-uri: ~3.0.7
-  checksum: ed51840579928ebe3a6399dd75a0e1722f2aa9039183d5fbb943233596dcd98ecca01f6b1a60efcc5f8238a0448bd62e869a3360a86a67bf34848a5fd1e144bd
+  checksum: 3f13b9dcd88ef2507459fe0002e68b73b985a492e064fd5d71c740e2f597f5c4fd76b524a3fb483f7d1670778b55b8853a11edd894eeba9d8b0d206e3de5e69e
   languageName: node
   linkType: hard
 
