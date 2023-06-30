@@ -1062,7 +1062,7 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
-    "@vitejs/plugin-react": ^4.0.0
+    "@vitejs/plugin-react": ^4.0.1
     "@vscode/webview-ui-toolkit": ^1.2.2
     rambdax: ^9.1.1
     react: ^18.2.0
@@ -2890,7 +2890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:^4.0.0":
+"@vitejs/plugin-react@npm:^4.0.0, @vitejs/plugin-react@npm:^4.0.1":
   version: 4.0.1
   resolution: "@vitejs/plugin-react@npm:4.0.1"
   dependencies:
