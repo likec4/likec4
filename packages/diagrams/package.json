@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -49,7 +49,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@likec4/core": "0.22.0",
+    "@likec4/core": "0.23.0",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "@react-spring/konva": "^9.7.2",
