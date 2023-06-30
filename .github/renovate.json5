@@ -4,10 +4,6 @@
     "config:base",
     "helpers:disableTypesNodeMajor"
   ],
-  "baseBranches": [
-    "main",
-    "develop"
-  ],
   "packageRules": [
     {
       "groupName": "vitest",
@@ -18,16 +14,17 @@
       "matchPackagePatterns": [
         "^@vitest/"
       ]
-    },
+    },  
     {
       "enabled": false,
-      "matchPackageNames": [
-        "@monaco-editor/react",
+      "matchPackageNames": [        
         "@types/vscode",
-        "vscode"
+        "vscode",
+        "next"
       ],
       "matchPackagePatterns": [
         "^monaco-",
+        "^@monaco-editor",
         "^vscode-"
       ]
     }
