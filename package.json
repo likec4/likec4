@@ -43,7 +43,7 @@
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "18.16.0",
+    "node": "18.16.1",
     "yarn": "1.22.19"
   },
   "resolutions": {
