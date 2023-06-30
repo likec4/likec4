@@ -11741,9 +11741,9 @@ __metadata:
   linkType: hard
 
 "ts-graphviz@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "ts-graphviz@npm:1.8.0"
-  checksum: 4539d658263800bb5e70e8e2c74b3a5368d74e5ea6ce7d66d51f10148e7f28a046b3fed96557f813090b2f667d93dc498acae93086fe89a181ced4b0196dafc6
+  version: 1.8.1
+  resolution: "ts-graphviz@npm:1.8.1"
+  checksum: c560fc3a70fc7743bb1cacd21fdeb68661e78132cad4c0cb53c071d2485b1e5975350f0a754c2a797912e9d9022dc375b47e6b023a2eafe4b824c0bb9b7d58ed
   languageName: node
   linkType: hard
 
