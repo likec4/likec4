@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
     "@types/vscode": "^1.74.0",
     "@types/vscode-webview": "^1.57.1",
     "@vitejs/plugin-react": "^4.0.1",
