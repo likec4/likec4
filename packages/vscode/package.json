@@ -47,7 +47,7 @@
   },
   "engines": {
     "vscode": "^1.74.0",
-    "node": ">=17"
+    "node": ">=v17.9.1"
   },
   "keywords": [
     "architecture",
