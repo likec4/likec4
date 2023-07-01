@@ -1,12 +1,40 @@
 import { describe, expect, it } from 'vitest'
-import { fakeModel } from '../__test__'
-import type { ElementKind, Fqn, Tag, ViewID } from '../types'
+import { fakeModel, type FakeElementIds } from '../__test__'
+import type { ComputedView, ElementKind, Fqn, Tag, ViewID, ViewRule } from '../types'
 import { computeElementView } from './compute-element-view'
 import { pluck } from 'rambdax'
 
 const ids = pluck('id')
 
 describe('compute-element-view', () => {
+  function computeView(...args: [FakeElementIds, ViewRule[]] | [ViewRule[]]) {
+    let result: ComputedView
+    if (args.length === 1) {
+      result = computeElementView(
+        {
+          id: 'index' as ViewID,
+          title: '',
+          rules: args[0]
+        },
+        fakeModel()
+      )
+    } else {
+      result = computeElementView(
+        {
+          id: 'index' as ViewID,
+          title: '',
+          viewOf: args[0] as Fqn,
+          rules: args[1]
+        },
+        fakeModel()
+      )
+    }
+    return Object.assign(result, {
+      nodeIds: ids(result.nodes),
+      edgeIds: ids(result.edges)
+    })
+  }
+
   it('should be empty if no root and no rules', () => {
     const { nodes, edges } = computeElementView(
       {
@@ -149,10 +177,11 @@ describe('compute-element-view', () => {
                 wildcard: true
               },
               {
-                element: 'customer' as Fqn, isDescedants: false
+                element: 'customer' as Fqn,
+                isDescedants: false
               }
             ]
-          },
+          }
         ]
       },
       fakeModel()
@@ -160,19 +189,19 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      "customer",
-      "cloud.frontend",
-      "cloud.backend",
-      "cloud.backend.graphql",
-      "cloud.backend.storage",
-      "amazon",
+      'customer',
+      'cloud.frontend',
+      'cloud.backend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
+      'amazon'
     ])
 
     expect(ids(edges)).toEqual([
-      "cloud.backend.graphql:cloud.backend.storage",
-      "cloud.backend.storage:amazon",
-      "cloud.frontend:cloud.backend.graphql",
-      "customer:cloud.frontend",
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.backend.storage:amazon',
+      'cloud.frontend:cloud.backend.graphql',
+      'customer:cloud.frontend'
     ])
   })
 
@@ -207,10 +236,10 @@ describe('compute-element-view', () => {
     ])
 
     expect(ids(edges)).toEqual([
-      "cloud.frontend.adminPanel:cloud.backend",
-      "cloud.frontend.dashboard:cloud.backend",
-      "customer:cloud.frontend.dashboard",
-      "support:cloud.frontend.adminPanel",
+      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.dashboard:cloud.backend',
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel'
     ])
 
     expect(view).toMatchSnapshot()
@@ -231,7 +260,8 @@ describe('compute-element-view', () => {
               },
               // including parent cloud should not remove implicit cloud.backend
               {
-                element: 'cloud' as Fqn, isDescedants: false
+                element: 'cloud' as Fqn,
+                isDescedants: false
               }
             ]
           }
@@ -252,10 +282,10 @@ describe('compute-element-view', () => {
     ])
 
     expect(ids(edges)).toEqual([
-      "cloud.frontend.adminPanel:cloud.backend",
-      "cloud.frontend.dashboard:cloud.backend",
-      "customer:cloud.frontend.dashboard",
-      "support:cloud.frontend.adminPanel",
+      'cloud.frontend.adminPanel:cloud.backend',
+      'cloud.frontend.dashboard:cloud.backend',
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel'
     ])
   })
 
@@ -287,12 +317,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(ids(nodes)).toEqual([
-      'customer',
-      'support',
-      'cloud.frontend',
-      'cloud.backend'
-    ])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
 
     expect(ids(edges)).toEqual([
       'cloud.frontend:cloud.backend',
@@ -380,43 +405,37 @@ describe('compute-element-view', () => {
   })
 
   it('index view with applied styles', () => {
-    const { nodes } = computeElementView(
+    const { nodes } = computeView([
       {
-        id: 'index' as ViewID,
-        rules: [
-          {
-            isInclude: true,
-            exprs: [{ wildcard: true }, { element: 'cloud.frontend' as Fqn, isDescedants: false }]
-          },
-          // all elements
-          // color: secondary
-          {
-            targets: [{ wildcard: true }],
-            style: {
-              color: 'secondary',
-              shape: 'storage'
-            }
-          },
-          // cloud
-          // color: muted
-          {
-            targets: [{ element: 'cloud' as Fqn, isDescedants: false }],
-            style: {
-              color: 'muted'
-            }
-          },
-          // cloud.*
-          // shape: browser
-          {
-            targets: [{ element: 'cloud' as Fqn, isDescedants: true }],
-            style: {
-              shape: 'browser'
-            }
-          }
-        ]
+        isInclude: true,
+        exprs: [{ wildcard: true }, { element: 'cloud.frontend' as Fqn, isDescedants: false }]
       },
-      fakeModel()
-    )
+      // all elements
+      // color: secondary
+      {
+        targets: [{ wildcard: true }],
+        style: {
+          color: 'secondary',
+          shape: 'storage'
+        }
+      },
+      // cloud
+      // color: muted
+      {
+        targets: [{ element: 'cloud' as Fqn, isDescedants: false }],
+        style: {
+          color: 'muted'
+        }
+      },
+      // cloud.*
+      // shape: browser
+      {
+        targets: [{ element: 'cloud' as Fqn, isDescedants: true }],
+        style: {
+          shape: 'browser'
+        }
+      }
+    ])
 
     const amazon = nodes.find(n => n.id === 'amazon')!
     const customer = nodes.find(n => n.id === 'customer')!
@@ -444,110 +463,81 @@ describe('compute-element-view', () => {
   })
 
   it('should include by element kind', () => {
-    const { nodes, edges } = computeElementView(
+    const { nodeIds, edgeIds } = computeView([
       {
-        id: 'elementKind' as ViewID,
-        title: '',
-        rules: [
+        isInclude: true,
+        exprs: [
           {
-            isInclude: true,
-            exprs: [
-              {
-                elementKind: 'system' as ElementKind,
-                isEqual: true
-              }
-            ]
+            elementKind: 'system' as ElementKind,
+            isEqual: true
           }
         ]
-      },
-      fakeModel()
-    )
-
-    expect(ids(nodes)).toEqual(['cloud', 'amazon'])
-
-    expect(ids(edges)).toEqual([
-      'cloud:amazon'
+      }
     ])
+
+    expect(nodeIds).toEqual(['cloud', 'amazon'])
+    expect(edgeIds).toEqual(['cloud:amazon'])
   })
 
   it('should include by element tag', () => {
-    const { nodes, edges } = computeElementView(
+    const { nodeIds, edgeIds } = computeView([
       {
-        id: 'elementTag' as ViewID,
-        title: '',
-        rules: [
+        isInclude: true,
+        exprs: [
           {
-            isInclude: true,
-            exprs: [
-              {
-                elementTag: 'old' as Tag,
-                isEqual: true
-              }
-            ]
+            elementTag: 'old' as Tag,
+            isEqual: true
           }
         ]
-      },
-      fakeModel()
-    )
-
-    expect(ids(nodes)).toEqual([
-      "cloud.backend.storage",
-      "cloud.frontend.adminPanel",
+      }
     ])
 
-    expect(ids(edges)).toEqual([])
+    expect(nodeIds).toEqual(['cloud.backend.storage', 'cloud.frontend.adminPanel'])
+
+    expect(edgeIds).toEqual([])
   })
 
   it('should exclude by element tag and kind', () => {
-    const { nodes, edges } = computeElementView(
+    const { nodes, edges } = computeView('cloud', [
       {
-        id: '' as ViewID,
-        title: '',
-        viewOf: 'cloud' as Fqn,
-        rules: [
-          {
-            isInclude: true,
-            exprs: [
-              // include *
-              { wildcard: true },
-              // include cloud.backend.*
-              { element: 'cloud.backend' as Fqn, isDescedants: true },
-              // include cloud.frontend.*
-              { element: 'cloud.frontend' as Fqn, isDescedants: true },
-            ]
-          },
-          {
-            isInclude: false,
-            exprs: [
-              {
-                elementKind: 'actor' as ElementKind,
-                isEqual: true
-              },
-              {
-                elementTag: 'old' as Tag,
-                isEqual: true
-              }
-            ]
-          }
+        isInclude: true,
+        exprs: [
+          // include *
+          { wildcard: true },
+          // include cloud.backend.*
+          { element: 'cloud.backend' as Fqn, isDescedants: true },
+          // include cloud.frontend.*
+          { element: 'cloud.frontend' as Fqn, isDescedants: true }
         ]
       },
-      fakeModel()
-    )
+      {
+        isInclude: false,
+        exprs: [
+          {
+            elementKind: 'actor' as ElementKind,
+            isEqual: true
+          },
+          {
+            elementTag: 'old' as Tag,
+            isEqual: true
+          }
+        ]
+      }
+    ])
 
     expect(ids(nodes)).toEqual([
-      "cloud",
-      "cloud.frontend",
-      "cloud.frontend.dashboard",
-      "cloud.backend",
-      "amazon",
-      "cloud.backend.graphql"
+      'cloud',
+      'cloud.frontend',
+      'cloud.frontend.dashboard',
+      'cloud.backend',
+      'amazon',
+      'cloud.backend.graphql'
     ])
 
     expect(ids(edges)).toEqual([
-      "cloud.frontend.dashboard:cloud.backend.graphql",
-      "cloud.frontend:cloud.backend.graphql",
-      "cloud.backend:amazon",
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend:cloud.backend.graphql',
+      'cloud.backend:amazon'
     ])
   })
-
 })

@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, Tag, ViewID } from '../types'
+import type { Element, ElementKind, ElementView, Fqn, Opaque, Relation, RelationID, Tag, ViewID } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -144,6 +144,7 @@ export const fakeElements = {
     title: 'dashboard'
   }
 } satisfies Record<string, Element>
+export type FakeElementIds = keyof typeof fakeElements
 
 export const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
@@ -183,6 +184,8 @@ export const fakeRelations = {
     title: ''
   }
 } satisfies Record<string, Relation>
+
+export type FakeRelationIds = keyof typeof fakeRelations
 
 export const fakeElementView: ElementView = {
   id: 'fakeView' as ViewID,
