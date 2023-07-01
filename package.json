@@ -10,7 +10,7 @@
     "examples/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=v18.16.1"
   },
   "scripts": {
     "compile:all": "turbo run compile",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.40.2",
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.16.19",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",

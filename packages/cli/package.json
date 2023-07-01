@@ -12,7 +12,7 @@
   },
   "main": "dist/cli.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=v18.16.1"
   },
   "engineStrict": true,
   "files": [
