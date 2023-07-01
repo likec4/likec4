@@ -25,16 +25,30 @@ model {
       -> amazon.aurora.tblUsers "reads users from the database"
     }
 
+    mobile = mobileApp {
+      title 'Customer Mobile App'
+      description '
+        Native iOS Application
+        written in Swift
+      '
+
+      -> cloud.graphql.myAccount "fetches via GraphQL"
+      -> cloud.graphql.updateAccount "mutates via GraphQL"
+      -> cloud.legacy.services "fetches via REST"
+    }
   }
 
   customer -> dashboard "opens in the browser"
+  customer -> mobile {
+    title 'using mobile device'
+  }
   cloud.supportUser -> supportPanel "accesses via browser with encrypted VPN connection"
 
 }
 
 views {
 
-  view ui of cloud.ui {
+  view cloud_ui of cloud.ui {
     include *
     include cloud
 
@@ -49,7 +63,19 @@ views {
     }
   }
 
-  view dashboard of dashboard {
+  view mobile of mobile {
+    include *
+    include cloud
+
+    style * {
+      color secondary
+    }
+    style mobile {
+      color primary
+    }
+  }
+
+  view cloud_ui_dashboard of dashboard {
     include *
     exclude * -> dashboard
     include cloud.ui
@@ -63,7 +89,7 @@ views {
     }
   }
 
-  view supportPanel of supportPanel {
+  view cloud_ui_supportPanel of supportPanel {
     include
       *,
       cloud.ui,

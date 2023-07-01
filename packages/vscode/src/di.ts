@@ -1,15 +1,15 @@
 import type { ExtensionContext } from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
-import type { DiagramLayoutFn } from '@likec4/layouts'
 import type { C4ModelImpl } from './c4model'
 import type { Logger } from './logger'
+import type { LayoutFn } from './layout'
 import type { PreviewPanel } from './panels/PreviewPanel'
 
 export type {
   ExtensionContext,
   LanguageClient,
   Logger,
-  DiagramLayoutFn as LayoutFn,
+  LayoutFn,
   C4ModelImpl as C4Model,
   PreviewPanel
 }

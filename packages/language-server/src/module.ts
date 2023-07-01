@@ -18,6 +18,7 @@ import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 import { LikeC4CodeLensProvider, LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
+import { logger } from './logger'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T;
@@ -76,15 +77,25 @@ export function createLanguageServices(context?: LanguageServicesContext): {
   shared: LangiumSharedServices
   likec4: LikeC4Services
 } {
-  // const connection = context.connection
-  // if (connection) {
-  //   logger.log = connection.console.log.bind(connection.console)
-  //   logger.info = connection.console.info.bind(connection.console)
-  //   logger.warn = connection.console.warn.bind(connection.console)
-  //   logger.error = connection.console.error.bind(connection.console)
-  //   logger.debug = connection.tracer.log.bind(connection.tracer)
-  //   logger.trace = connection.tracer.log.bind(connection.tracer)
-  // }
+  const connection = context?.connection
+  if (connection) {
+    const log = (method: 'log' | 'info' | 'warn' | 'error') => (message: unknown) => {
+      try {
+        console[method](message)
+        connection.console[method](String(message))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    logger.log = log('log')
+    logger.info = log('info')
+    logger.warn = log('warn')
+    logger.error = log('error')
+    logger.trace = logger.debug = (message: string) => {
+      console.debug(message)
+      connection.tracer.log(message)
+    }
+  }
 
   const moduleContext: DefaultSharedModuleContext = {
     ...EmptyFileSystem,

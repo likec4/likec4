@@ -5,9 +5,8 @@ import { Rpc } from './protocol'
 import type { ComputedView, ViewID, DiagramView as LayoutedView } from '@likec4/core/types'
 import { equals } from 'rambdax'
 import { tokens } from 'typed-inject'
-import xs from 'xstream'
+import xs, { type Subscription } from 'xstream'
 import debounce from 'xstream/extra/debounce'
-import flattenSequentially from 'xstream/extra/flattenSequentially'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import type * as vscode from 'vscode'
 
@@ -49,45 +48,55 @@ export class C4ModelImpl extends ADisposable {
     })
     .startWith(0)
     .compose(debounce(200))
-    .map(() =>
-      this.fetchModel().replaceError(err => {
-        this.logger.logError(err)
-        return xs.empty()
-      })
-    )
+    .map(() => this.fetchModel())
     .flatten()
     .remember()
 
   public fetchModel() {
+    this.logger.logDebug('fetchModel')
     return xs
       .fromPromise(this.client.sendRequest(Rpc.fetchModel))
       .map(s => s.model)
       .filter(isNotNullish)
-  }
-
-  public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
-    this.logger.logDebug(`subscribeToView: ${viewId}`)
-    const subscription = this.modelStream
-      .map(({ views }) => (viewId in views ? views[viewId] : null))
-      .filter(isNotNullish)
-      .compose(dropRepeats<ComputedView>(equals))
-      .map(view => xs.fromPromise(this.layout(view)))
       .replaceError(err => {
         this.logger.logError(err)
         return xs.empty()
       })
-      .compose(flattenSequentially)
+  }
+
+  private layoutView(view: ComputedView) {
+    this.logger.logDebug(`layoutView: ${view.id}`)
+    return xs
+      .fromPromise(this.layout(view))
+      .replaceError(err => {
+        this.logger.logError(err)
+        return xs.empty()
+      })
+  }
+
+  public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
+    this.logger.logDebug(`subscribeToView: ${viewId}`)
+    let subscription = this.modelStream
+      .map(({ views }) => (viewId in views ? views[viewId] : null))
+      .filter(isNotNullish)
+      .compose(dropRepeats<ComputedView>(equals))
+      .map(view => this.layoutView(view))
+      .flatten()
       .subscribe({
         next: diagram => {
           callback(diagram)
+        },
+        error: err => {
+          this.logger.logError(err)
         }
-      })
+      }) as (Subscription | null)
 
     return this._register(
       disponsable(() => {
         queueMicrotask(() => {
           this.logger.logDebug(`--unsubscribe: ${viewId}`)
-          subscription.unsubscribe()
+          subscription?.unsubscribe()
+          subscription = null
         })
       })
     )

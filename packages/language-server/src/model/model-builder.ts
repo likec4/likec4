@@ -18,10 +18,9 @@ import type {
 import {
   ElementViewOps,
   ast,
-  c4hash,
   cleanParsedModel,
   isLikeC4LangiumDocument,
-  isParsedLikeC4LangiumDocument,
+  isValidLikeC4LangiumDocument,
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
@@ -51,16 +50,19 @@ export class LikeC4ModelBuilder {
           if (cancelToken.isCancellationRequested) {
             break
           }
+          if (!isLikeC4LangiumDocument(doc)) {
+            continue
+          }
+          countOfChangedDocs++
           try {
-            if (isLikeC4LangiumDocument(doc) && this.parseDocument(doc)) {
-              countOfChangedDocs++
-            }
+            this.parseDocument(doc)
           } catch (e) {
             logger.error(`Error parsing document ${doc.uri.toString()}`)
+            logger.error(e)
           }
         }
         if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
-          void this.notifyClient()
+          this.notifyClient()
         }
       }
     )
@@ -71,7 +73,7 @@ export class LikeC4ModelBuilder {
   }
 
   private documents() {
-    return this.langiumDocuments.all.toArray().filter(isParsedLikeC4LangiumDocument)
+    return this.langiumDocuments.all.toArray().filter(isValidLikeC4LangiumDocument)
   }
 
   public buildModel(): c4.LikeC4Model | undefined {
@@ -85,9 +87,9 @@ export class LikeC4ModelBuilder {
       const c4Specification: ParsedAstSpecification = {
         kinds: {}
       }
-      R.pipe(
+      R.forEach(
         R.map(docs, R.prop('c4Specification')),
-        R.forEach(spec => Object.assign(c4Specification.kinds, spec.kinds))
+        spec => Object.assign(c4Specification.kinds, spec.kinds)
       )
 
       const toModelElement = (el: ParsedAstElement): c4.Element | null => {
@@ -220,9 +222,9 @@ export class LikeC4ModelBuilder {
         }
       }
     }
-    const prevHash = doc.c4hash ?? ''
-    doc.c4hash = c4hash(doc)
-    return prevHash !== doc.c4hash
+    // const prevHash = doc.c4hash ?? ''
+    // doc.c4hash = c4hash(doc)
+    // return prevHash !== doc.c4hash
   }
 
   private parseElement(astNode: ast.Element): ParsedAstElement {
@@ -411,11 +413,20 @@ export class LikeC4ModelBuilder {
     return el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag) ?? []
   }
 
-  private async notifyClient() {
+  private scheduledCb: NodeJS.Timeout | null = null
+  private notifyClient() {
     const connection = this.connection
     if (!connection) {
       return
     }
-    await connection.sendNotification(Rpc.onDidChangeModel)
+    if (this.scheduledCb) {
+      logger.debug('debounce scheduled onDidChangeModel')
+      clearTimeout(this.scheduledCb)
+    }
+    this.scheduledCb = setTimeout(() => {
+      this.scheduledCb = null
+      logger.debug('send onDidChangeModel')
+      void connection.sendNotification(Rpc.onDidChangeModel)
+    }, 300)
   }
 }

@@ -74,7 +74,7 @@ views {
     }
   }
 
-  view sqs of sqs {
+  view amazon_sqs of sqs {
     title: 'Overview Amazon SQS'
 
     include
@@ -82,11 +82,37 @@ views {
       amazon
   }
 
-  view lambdas of lambdas {
+  view amazon_lambdas of lambdas {
+    title: 'Overview Amazon Lambdas'
+
     include
       *,
       amazon.sqs,
       amazon.sqs.*
+  }
+
+  view amazon_rds of amazon.rds {
+    title: 'Overview Amazon RDS'
+
+    include
+      *,
+      pg.*,
+      aurora.*,
+      cloud.next.* -> amazon.rds,
+      cloud.legacy.* -> amazon.rds,
+      cloud,
+      cloud.next,
+      cloud.legacy
+
+    style * {
+      color: muted
+    }
+    style cloud.* {
+      color: primary
+    }
+    style amazon.rds.* {
+      color: secondary
+    }
   }
 
 }

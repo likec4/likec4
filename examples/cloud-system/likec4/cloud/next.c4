@@ -20,16 +20,17 @@ model {
         }
       }
     }
-  }
+  } 
 
   extend cloud.next {
 
     backend = app 'Backend V2' {
+      #api
       description 'The next version of backend'
     }
 
     graphql = component 'GraphQL' {
-      #next
+      #next, #api
       description '
         GraphQL API for the backend
         Uses Apollo Server
@@ -37,15 +38,17 @@ model {
 
       gqlQuery myAccount {
         description '
-          Returns the account of the authenticated user
+          Returns the accggggount of
+          the authenticated user
         '
 
         -> backend 'reads'
       }
       gqlMutation updateAccount {
-        description '
-          If requested by customer, updates only its own account
-          Support user updates any account
+        description '          
+          If requested by customer,
+          updates only its own account.
+          Support User updates any account
         '
 
         -> backend 'writes'
@@ -66,29 +69,26 @@ model {
 
 views {
 
-  view rds of amazon.rds {
-    include
-      *,
-      pg.*,
-      aurora.*,
-      cloud.next.* -> amazon.rds,
-      cloud.legacy.* -> amazon.rds,
-      cloud,
-      cloud.next,
-      cloud.legacy
+
+  view cloud_next of cloud.next {
+    title 'Cloud Next'
+
+    include *
+    include cloud
+    exclude
+      amazon.* -> cloud,
+      cloud.ui.supportPanel -> amazon,
+      cloud.next.backend -> amazon.*
 
     style * {
-      color: muted
+      color slate
     }
-    style cloud.* {
-      color: primary
+    style cloud.next.* {
+      color primary
     }
-    style amazon.rds.* {
-      color: secondary
-    }
-  }
+  }  
 
-  view nextbackend of backend {
+  view backend of backend {
     include
       *,
       cloud,
@@ -103,9 +103,9 @@ views {
 
     style backend {
       color primary
-    }
-  }
-
+    }       
+  } 
+  
   view graphql of graphql {
     include *, cloud.next
 
@@ -115,6 +115,7 @@ views {
 
     style graphql, graphql.* {
       color primary
-    }
+    }    
   }
+
 }

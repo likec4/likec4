@@ -31,6 +31,7 @@ const nodeCfg = {
   entryPoints: ['src/node.ts', 'src/lsp/node.ts'],
   metafile: true,
   logLevel: 'info',
+  outbase: 'src',
   outdir: 'dist',
   bundle: true,
   external: ['vscode'],
