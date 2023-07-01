@@ -54,10 +54,7 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual([  "amazon",
-    "cloud",
-    "customer",
-    "support"])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
     expect(ids(edges)).toEqual(['cloud:amazon', 'customer:cloud', 'support:cloud'])
   })
 
@@ -84,12 +81,12 @@ describe('compute-element-view', () => {
       fakeModel()
     )
     expect(ids(nodes)).toEqual([
-      "amazon",
-      "cloud",
-      "customer",
-      "support",
-      "cloud.backend",
-      "cloud.frontend"
+      'customer',
+      'support',
+      'cloud',
+      'cloud.backend',
+      'amazon',
+      'cloud.frontend'
     ])
     expect(ids(edges)).toEqual([
       'cloud.backend:amazon',
@@ -120,12 +117,12 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      "cloud",
-      "amazon",
-      "support",
-      "customer",
-      "cloud.backend",
-      "cloud.frontend",
+      'customer',
+      'support',
+      'cloud',
+      'cloud.frontend',
+      'cloud.backend',
+      'amazon'
     ])
 
     expect(ids(edges)).toEqual([
@@ -164,11 +161,11 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual([
       "customer",
-      "amazon",
-      "cloud.backend",
       "cloud.frontend",
+      "cloud.backend",
       "cloud.backend.graphql",
       "cloud.backend.storage",
+      "amazon",
     ])
 
     expect(ids(edges)).toEqual([
@@ -201,12 +198,12 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      "support",
-      "customer",
-      "cloud.frontend",
-      "cloud.backend",
-      "cloud.frontend.adminPanel",
-      "cloud.frontend.dashboard",
+      'customer',
+      'support',
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend'
     ])
 
     expect(ids(edges)).toEqual([
@@ -245,13 +242,13 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      "cloud",
-      "support",
-      "customer",
-      "cloud.frontend",
-      "cloud.backend",
-      "cloud.frontend.adminPanel",
-      "cloud.frontend.dashboard",
+      'customer',
+      'support',
+      'cloud',
+      'cloud.frontend',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend'
     ])
 
     expect(ids(edges)).toEqual([
@@ -291,10 +288,10 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      "support",
-      "customer",
-      "cloud.backend",
-      "cloud.frontend",
+      'customer',
+      'support',
+      'cloud.frontend',
+      'cloud.backend'
     ])
 
     expect(ids(edges)).toEqual([
@@ -337,15 +334,15 @@ describe('compute-element-view', () => {
     )
 
     expect(view.nodes.map(n => n.id)).toEqual([
-      "cloud",
-      "amazon",
-      "support",
-      "customer",
-      "cloud.backend",
-      "cloud.frontend.adminPanel",
-      "cloud.frontend.dashboard",
-      "cloud.backend.graphql",
-      "cloud.backend.storage",
+      'customer',
+      'support',
+      'cloud',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
+      'cloud.backend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
+      'amazon'
     ])
 
     expect(view).toMatchSnapshot()
@@ -377,12 +374,7 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(ids(nodes)).toEqual([
-      "amazon",
-      "cloud",
-      "amazon.s3",
-      "cloud.backend",
-    ])
+    expect(ids(nodes)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
 
     expect(ids(edges)).toEqual(['cloud.backend:amazon.s3'])
   })
@@ -471,7 +463,7 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(ids(nodes)).toEqual(['amazon', 'cloud'])
+    expect(ids(nodes)).toEqual(['cloud', 'amazon'])
 
     expect(ids(edges)).toEqual([
       'cloud:amazon'
@@ -544,11 +536,11 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual([
       "cloud",
-      "amazon",
-      "cloud.backend",
       "cloud.frontend",
-      "cloud.backend.graphql",
       "cloud.frontend.dashboard",
+      "cloud.backend",
+      "amazon",
+      "cloud.backend.graphql"
     ])
 
     expect(ids(edges)).toEqual([

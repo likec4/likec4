@@ -37,6 +37,7 @@ import {
   isOutgoing
 } from '../utils/relations'
 import { EdgeBuilder } from './EdgeBuilder'
+import { sortNodes } from './utils/sortNodes'
 import { ComputeCtx } from './compute-ctx'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
 import invariant from 'tiny-invariant'
@@ -565,7 +566,7 @@ export function computeElementView<V extends ElementView>(view: V, index: ModelI
     return edge
   })
 
-  const nodes = applyViewRuleStyles(view.rules.filter(isViewRuleStyle), [...nodesreg.values()].sort(compareByFqnHierarchically))
+  const nodes = applyViewRuleStyles(view.rules.filter(isViewRuleStyle), sortNodes(nodesreg, edges))
 
   const autoLayoutRule = view.rules.find(isViewRuleAutoLayout)
 
