@@ -3,7 +3,7 @@
   "version": "0.23.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@3.6.0",
+  "packageManager": "yarn@3.6.1",
   "workspaces": [
     "docs",
     "packages/*",
