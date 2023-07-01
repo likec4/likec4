@@ -913,7 +913,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-konva: ^18.2.9
+    react-konva: ^18.2.10
     tiny-invariant: ^1.3.1
     typescript: ^5.1.3
   peerDependencies:
@@ -10019,7 +10019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-konva@npm:^18.2.9":
+"react-konva@npm:^18.2.10":
   version: 18.2.10
   resolution: "react-konva@npm:18.2.10"
   dependencies:
