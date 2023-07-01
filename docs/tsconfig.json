@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.next.json",
   "compilerOptions": {
-    "noEmit": true,
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
@@ -20,8 +19,5 @@
     {
       "path": "../packages/language-server"
     }
-  ],
-  "exclude": [
-    "node_modules",
   ]
 }

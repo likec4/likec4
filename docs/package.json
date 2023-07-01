@@ -21,7 +21,7 @@
     "dev": "run generate && next dev",
     "build": "next build",
     "start": "next start",
-    "clean": "run -T rimraf -v .next out",
+    "clean": "run -T rimraf -v .next out .turbo",
     "shadcn-ui": "yarn dlx shadcn-ui -- "
   },
   "dependencies": {
@@ -44,7 +44,7 @@
     "lucide-react": "^0.241.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
-    "next": "13.4.2",
+    "next": "13.4.6",
     "nextra": "^2.8.0",
     "nextra-theme-docs": "^2.8.0",
     "rambdax": "^9.1.1",
@@ -65,7 +65,6 @@
   },
   "devDependencies": {
     "@likec4/cli": "0.24.0",
-    "@swc-jotai/debug-label": "^0.0.10",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

@@ -38,9 +38,9 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   trailingSlash: true,
-  experimental: {
-    swcPlugins: [['@swc-jotai/debug-label', {}]],
-  },
+  // experimental: {
+  // swcPlugins: [['@swc-jotai/debug-label', {}]],
+  // },
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
     // console.log('config.experiments', config.experiments)

@@ -15,12 +15,14 @@ const logo = (
 
 export default {
   logo,
-  darkMode: true,
+  // Show or hide the dark mode toggle button.
+  darkMode: false,
   nextThemes: {
     defaultTheme: 'dark',
   },
   primaryHue: 195,
   sidebar: {
+    autoCollapse: true,
     toggleButton: true,
   },
   // main: Main,
@@ -28,9 +30,6 @@ export default {
     link: 'https://github.com/likec4/likec4',
   },
   docsRepositoryBase: 'https://github.com/likec4/likec4/blob/develop/docs',
-  themeSwitch: {
-    component: () => null
-  },
   footer: {
     // component: () => null,
     text: `${new Date().getFullYear()} MIT License © LikeC4`
@@ -50,6 +49,7 @@ export default {
       }),
       description: 'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
       themeColor: '#111',
+      noindex: route.startsWith('/playground'),
       openGraph: {
         url,
         images: [{
@@ -59,19 +59,19 @@ export default {
       },
       additionalMetaTags: [
         {name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4'},
-        route.startsWith('/playground') ? {name: 'robots', content: 'noindex'} : []
-      ].flat()
+      ]
     }
   },
-  head: function () {
+  head: function useHead() {
     const { route } = useRouter()
     const isZoomDisabled = route.startsWith('/playground')
-    return (<>
-      {isZoomDisabled ? (
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
-      ) : (
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      )}
-    </>)
+
+    const viewport = isZoomDisabled ? 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' : 'width=device-width, initial-scale=1.0'
+
+    return (
+      <>
+        <meta name="viewport" content={viewport} />
+      </>
+    )
   }
 } satisfies DocsThemeConfig
