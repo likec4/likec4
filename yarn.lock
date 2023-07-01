@@ -1074,7 +1074,6 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.10
-    type-fest: ^3.11.1
     typescript: ^5.1.6
     vite: ^4.3.9
   languageName: unknown
@@ -11904,13 +11903,6 @@ __metadata:
   version: 1.4.0
   resolution: "type-fest@npm:1.4.0"
   checksum: b011c3388665b097ae6a109a437a04d6f61d81b7357f74cbcb02246f2f5bd72b888ae33631b99871388122ba0a87f4ff1c94078e7119ff22c70e52c0ff828201
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^3.11.1":
-  version: 3.11.1
-  resolution: "type-fest@npm:3.11.1"
-  checksum: 33be49e3b671c2ff3b5e320ef8c160c488205b08ab7631369116909a1baf2aebfcf45234c045e6902b8aa35730ac2bfd0655ea9e0fe3f8d26af9d99a16b07abd
   languageName: node
   linkType: hard
 
