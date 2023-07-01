@@ -39,7 +39,7 @@
     "commander": "^11.0.0",
     "esbuild": "^0.17.19",
     "execa": "^7.1.1",
-    "fast-glob": "^3.2.12",
+    "fast-glob": "^3.3.0",
     "json5": "^2.2.3",
     "langium": "^1.2.1",
     "mkdirp": "^3.0.1",
