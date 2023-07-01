@@ -154,7 +154,7 @@
     "@types/node": "^18.15.11",
     "@types/vscode": "^1.74.0",
     "@vscode/vsce": "^2.19.0",
-    "esbuild": "^0.17.19",
+    "esbuild": "^0.18.11",
     "froebel": "^0.23.2",
     "langium": "^1.2.1",
     "nanoid": "^4.0.2",
