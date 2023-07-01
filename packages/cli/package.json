@@ -35,7 +35,7 @@
     "@likec4/language-server": "0.24.0",
     "@likec4/layouts": "0.24.0",
     "@types/node": "^16.11.16",
-    "chalk": "^5.2.0",
+    "chalk": "^5.3.0",
     "commander": "^11.0.0",
     "esbuild": "^0.17.19",
     "execa": "^7.1.1",
