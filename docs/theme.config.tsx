@@ -58,8 +58,9 @@ export default {
         }]
       },
       additionalMetaTags: [
-        {name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4'}
-      ]
+        {name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4'},
+        route.startsWith('/playground') ? {name: 'robots', content: 'noindex'} : []
+      ].flat()
     }
   },
   head: function () {
