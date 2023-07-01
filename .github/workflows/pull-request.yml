@@ -7,8 +7,6 @@ on:
       - 'renovate/**'
   pull_request:
     types: [opened, synchronize, reopened]
-    branches-ignore:
-      - 'renovate/**'
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
@@ -32,6 +30,7 @@ jobs:
   build:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || !startsWith(github.head_ref, 'renovate/')
     steps:
       - uses: actions/checkout@v3
 
