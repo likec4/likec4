@@ -8,6 +8,7 @@
         "src/generated/**"
       ],
       "inputs": [
+        "package.json",
         "src/**/*.langium",
         "langium-config.json"
       ]
