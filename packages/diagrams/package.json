@@ -51,7 +51,7 @@
   "dependencies": {
     "@likec4/core": "0.24.0",
     "@react-hookz/deep-equal": "^1.0.4",
-    "@react-hookz/web": "^23.0.1",
+    "@react-hookz/web": "^23.1.0",
     "@react-spring/konva": "^9.7.3",
     "khroma": "^2.0.0",
     "konva": "^9.2.0",
