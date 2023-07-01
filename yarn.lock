@@ -903,7 +903,7 @@ __metadata:
     "@likec4/core": 0.23.0
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.1
-    "@react-spring/konva": ^9.7.2
+    "@react-spring/konva": ^9.7.3
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
     clsx: ^1.2.1
@@ -2335,7 +2335,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spring/konva@npm:^9.7.2":
+"@react-spring/konva@npm:^9.7.3":
   version: 9.7.3
   resolution: "@react-spring/konva@npm:9.7.3"
   dependencies:
