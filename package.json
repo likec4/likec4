@@ -26,13 +26,13 @@
     "vitest:ui": "vitest --ui"
   },
   "devDependencies": {
-    "@types/eslint": "^8.40.1",
+    "@types/eslint": "^8.40.2",
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "@vitest/ui": "^0.32.2",
-    "eslint": "^8.42.0",
+    "eslint": "^8.44.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "shipjs": "^0.26.3",
