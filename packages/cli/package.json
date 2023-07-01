@@ -12,7 +12,7 @@
   },
   "main": "dist/cli.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=v16.20.1"
   },
   "engineStrict": true,
   "files": [
@@ -34,7 +34,7 @@
     "@likec4/generators": "0.24.0",
     "@likec4/language-server": "0.24.0",
     "@likec4/layouts": "0.24.0",
-    "@types/node": "^16.11.16",
+    "@types/node": "^16.18.38",
     "chalk": "^5.3.0",
     "commander": "^11.0.0",
     "esbuild": "^0.17.19",

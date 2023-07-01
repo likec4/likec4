@@ -872,7 +872,7 @@ __metadata:
     "@likec4/generators": 0.24.0
     "@likec4/language-server": 0.24.0
     "@likec4/layouts": 0.24.0
-    "@types/node": ^16.11.16
+    "@types/node": ^16.18.38
     chalk: ^5.3.0
     commander: ^11.0.0
     esbuild: ^0.17.19
@@ -2625,7 +2625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.16":
+"@types/node@npm:^16.18.38":
   version: 16.18.38
   resolution: "@types/node@npm:16.18.38"
   checksum: a3baa141e49ce94486f083eea1240cf38479a73ba663e1bf3f52f85b466125821b6e3ea85ded38fde3901530aca4601291395a50eefcea533a4f3b45171bda28
