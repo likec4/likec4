@@ -26,7 +26,7 @@
     "@likec4/core": "0.24.0",
     "@likec4/diagrams": "0.24.0",
     "@react-hookz/deep-equal": "^1.0.4",
-    "@react-hookz/web": "^23.0.1",
+    "@react-hookz/web": "^23.1.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",

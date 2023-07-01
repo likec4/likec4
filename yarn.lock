@@ -909,7 +909,7 @@ __metadata:
   dependencies:
     "@likec4/core": 0.24.0
     "@react-hookz/deep-equal": ^1.0.4
-    "@react-hookz/web": ^23.0.1
+    "@react-hookz/web": ^23.1.0
     "@react-spring/konva": ^9.7.3
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
@@ -943,7 +943,7 @@ __metadata:
     "@monaco-editor/react": ^4.5.0
     "@radix-ui/react-dropdown-menu": ^2.0.5
     "@radix-ui/react-scroll-area": ^1.0.4
-    "@react-hookz/web": ^23.0.1
+    "@react-hookz/web": ^23.1.0
     "@swc-jotai/debug-label": ^0.0.10
     "@types/node": ^18.15.11
     "@types/react": ^18.2.0
@@ -1063,7 +1063,7 @@ __metadata:
     "@likec4/core": 0.24.0
     "@likec4/diagrams": 0.24.0
     "@react-hookz/deep-equal": ^1.0.4
-    "@react-hookz/web": ^23.0.1
+    "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
@@ -2314,6 +2314,22 @@ __metadata:
     js-cookie:
       optional: true
   checksum: 321770570c947321ba44de6ecee17337e4bb0c2a0c9d0dff5cf29e999faa2b7c1132c72a15aface46da9a709b715042ab48a30085d2a8feefba91aac96e82037
+  languageName: node
+  linkType: hard
+
+"@react-hookz/web@npm:^23.1.0":
+  version: 23.1.0
+  resolution: "@react-hookz/web@npm:23.1.0"
+  dependencies:
+    "@react-hookz/deep-equal": ^1.0.4
+  peerDependencies:
+    js-cookie: ^3.0.5
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  peerDependenciesMeta:
+    js-cookie:
+      optional: true
+  checksum: bf28241ccbf0c139d4cc843ebe04a963c74935abf9846ae1d64964ecc96b7c214441835a6ad82d9b00ebbd36c7f74a8b193f8035dfc9f2ab49055ff3d035d8b8
   languageName: node
   linkType: hard
 
