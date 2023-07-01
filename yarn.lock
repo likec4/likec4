@@ -966,7 +966,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-icons: ^4.9.0
+    react-icons: ^4.10.1
     remark-code-import: ^1.2.0
     swr: ^2.1.5
     tailwind-merge: ^1.13.1
@@ -10012,12 +10012,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-icons@npm:^4.9.0":
-  version: 4.9.0
-  resolution: "react-icons@npm:4.9.0"
+"react-icons@npm:^4.10.1":
+  version: 4.10.1
+  resolution: "react-icons@npm:4.10.1"
   peerDependencies:
     react: "*"
-  checksum: 69d1000d02349cf4baa78a0882aff09723d348d910256ea7489dea777abf10f158b27c1b5d3b1d2ec030e21320eae0afcc13f9c9d11afb85a8809c59a23a923c
+  checksum: b6c8d4fe482b112e1041515d93ef7670a0af128855c926052a076b64d0b991cdd4391394b26467100f8da3859db1ebd8f9c6b7614fa5969fde83de45c71031a3
   languageName: node
   linkType: hard
 
