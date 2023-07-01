@@ -36,7 +36,7 @@
     "@radix-ui/react-scroll-area": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "body-scroll-lock-upgrade": "^1.0.3",
-    "class-variance-authority": "^0.6.0",
+    "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
     "jotai": "^2.2.0",
     "jotai-devtools": "^0.5.3",
