@@ -4,7 +4,7 @@ model {
 
     backend = app 'Legacy Backend' {
       description 'The legacy version of backend'
-
+    
       services = component 'Legacy Backend Services' {
         #deprecated
         description "Description of Legacy Backend Services"
@@ -17,7 +17,7 @@ model {
 
 views {
 
-  view legacy of cloud.legacy {
+  view cloud_legacy of cloud.legacy {
 
     include
       *,
@@ -34,7 +34,7 @@ views {
     }
   }
 
-  view legacybackend of cloud.legacy.backend {
+  view cloud_legacy_backend of cloud.legacy.backend {
     include
       *,
       cloud.legacy
@@ -45,11 +45,21 @@ views {
 
     style cloud.legacy, cloud.legacy.* {
       color primary
-    }
+    }    
   }
 
-  view legacyservices of cloud.legacy.backend.services {
-    include *, cloud.legacy.backend
+  view legacy_services of cloud.legacy.backend.services {
+    include
+      *,
+      cloud.legacy.backend
+
+      style cloud.* {
+        color muted
+      }
+  
+      style cloud.legacy, cloud.legacy.* {
+        color primary
+      }        
   }
 
 }

@@ -1,1 +1,3 @@
-export const queueMicrotask = (cb: () => void) => void Promise.resolve().then(cb)
+export function queueMicrotask(cb: () => void) {
+  return void Promise.resolve().then(cb)
+}

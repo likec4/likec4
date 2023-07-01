@@ -18,6 +18,12 @@ specification {
   element app
   element component
 
+  element mobileApp {
+    style {
+      shape mobile
+    }
+  }
+
   element queue {
     style {
       shape queue
@@ -41,6 +47,7 @@ specification {
 
   tag deprecated
   tag next
+  tag api
   tag db
 
 }

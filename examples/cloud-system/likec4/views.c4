@@ -18,29 +18,18 @@ views {
     exclude
       amazon -> *
 
-    style * {
-      color muted
+    style amazon {
+      color indigo
     }
-
-    style cloud, cloud.* {
+    style customer {
+      color green
+    } 
+    style cloud {
+      color sky
+    }     
+    style cloud.* {
       color primary
-    }
-  }
-
-  view next of cloud.next {
-    include *
-    include cloud
-    exclude amazon.* -> cloud
-    exclude cloud.next.backend -> amazon.*
-
-
-    style * {
-      color muted
-    }
-
-    style cloud.next, cloud.next.* {
-      color primary
-    }
+    }      
   }
 
 }

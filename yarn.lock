@@ -865,7 +865,7 @@ __metadata:
     "@likec4/generators": 0.23.0
     "@likec4/language-server": 0.23.0
     "@likec4/layouts": 0.23.0
-    "@types/node": ^18.15.11
+    "@types/node": ^16.11.16
     chalk: ^5.2.0
     commander: ^11.0.0
     esbuild: ^0.17.19
@@ -2615,6 +2615,13 @@ __metadata:
   version: 20.3.1
   resolution: "@types/node@npm:20.3.1"
   checksum: 63a393ab6d947be17320817b35d7277ef03728e231558166ed07ee30b09fd7c08861be4d746f10fdc63ca7912e8cd023939d4eab887ff6580ff704ff24ed810c
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.11.16":
+  version: 16.18.38
+  resolution: "@types/node@npm:16.18.38"
+  checksum: a3baa141e49ce94486f083eea1240cf38479a73ba663e1bf3f52f85b466125821b6e3ea85ded38fde3901530aca4601291395a50eefcea533a4f3b45171bda28
   languageName: node
   linkType: hard
 
@@ -7322,6 +7329,7 @@ __metadata:
     langium: ^1.2.1
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
+    p-timeout: ^6.1.2
     path-browserify: ^1.0.1
     rambdax: ^9.1.1
     shx: ^0.3.4
@@ -9303,6 +9311,13 @@ __metadata:
   dependencies:
     aggregate-error: ^3.0.0
   checksum: cb0ab21ec0f32ddffd31dfc250e3afa61e103ef43d957cc45497afe37513634589316de4eb88abdfd969fe6410c22c0b93ab24328833b8eb1ccc087fc0442a1c
+  languageName: node
+  linkType: hard
+
+"p-timeout@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "p-timeout@npm:6.1.2"
+  checksum: 887b805eb72c217dbc3c55a60a7f3b89a46cab14f04af62224f253ec84716cbd0880758be13b35444a4fa12d64d37d4c8a300f0b12a57c004d289f0a574cfe91
   languageName: node
   linkType: hard
 

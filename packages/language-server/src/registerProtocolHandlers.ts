@@ -72,23 +72,23 @@ We rebuild: [
 
   connection.onRequest(Rpc.locateElement, async ({ element, property }, _cancelToken) => {
     try {
-      return Promise.resolve(modelLocator.locateElement(element, property ?? 'name'))
+      return modelLocator.locateElement(element, property ?? 'name')
     } catch (e) {
       return Promise.reject(e) as never
     }
   })
 
-  connection.onRequest(Rpc.locateRelation, ({ id }, _cancelToken) => {
+  connection.onRequest(Rpc.locateRelation, async ({ id }, _cancelToken) => {
     try {
-      return Promise.resolve(modelLocator.locateRelation(id))
+      return modelLocator.locateRelation(id)
     } catch (e) {
       return Promise.reject(e) as never
     }
   })
 
-  connection.onRequest(Rpc.locateView, ({ id }, _cancelToken) => {
+  connection.onRequest(Rpc.locateView, async ({ id }, _cancelToken) => {
     try {
-      return Promise.resolve(modelLocator.locateView(id))
+      return modelLocator.locateView(id)
     } catch (e) {
       return Promise.reject(e) as never
     }

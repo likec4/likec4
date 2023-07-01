@@ -97,7 +97,7 @@ export const ElementOps = {
 }
 
 export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
-  c4hash?: string
+  // c4hash?: string
   c4Specification: ParsedAstSpecification
   c4Elements: ParsedAstElement[]
   c4Relations: ParsedAstRelation[]
@@ -133,8 +133,8 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Like
   )
 }
 
-export const isValidDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {
-  if (!isLikeC4LangiumDocument(doc)) return false
+export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {
+  if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
     state === DocumentState.Validated &&
@@ -159,7 +159,7 @@ export function* streamModel(doc: LikeC4LangiumDocument) {
       }
       continue
     }
-    if (ast.isElement(el) && el.body && el.body.elements.length > 0) {
+    if (el.body && el.body.elements.length > 0) {
       for (const nested of el.body.elements) {
         if (ast.isRelation(nested)) {
           relations.push(nested)
@@ -196,9 +196,8 @@ export function resolveRelationPoints(node: ast.Relation): {
   if (!ast.isElementBody(node.$container)) {
     throw new Error('Skip relation due to invalid reference to source')
   }
-  const source = node.$container.$container
   return {
-    source,
+    source: node.$container.$container,
     target
   }
 }

@@ -4,7 +4,9 @@
     "outDir": "./dist",
     "composite": true,
     "incremental": true,
+    "sourceMap": true,
     "declarationMap": true,
+    "skipLibCheck": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "rootDir": "src"
   },

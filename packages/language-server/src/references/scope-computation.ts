@@ -32,20 +32,19 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
     }
 
+    // Filled later by FqnIndex (on IndexedContent phase)
     document.c4fqns = undefined
-    if (model) {
+
+    // Only root model elements are exported
+    if (model && model.elements.length > 0) {
       for (const elAst of model.elements) {
         if (ast.isElement(elAst)) {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
         }
       }
     }
-    // const c4fqns = document.c4fqns
-    // logger.debug(`doc ${document.uri.path}:
-    //  fqns: ${c4fqns ? Array.from(c4fqns.keys()).join(', ') : '--'}
-    // `)
 
-    if (views) {
+    if (views && views.views.length > 0) {
       for (const viewAst of views.views) {
         if ('name' in viewAst) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
@@ -80,7 +79,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         continue
       }
 
-      let subcontainer: ast.ElementBody | ast.ExtendElementBody | undefined
+      let subcontainer
       if (ast.isElement(el)) {
         localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
         subcontainer = el.body

@@ -40,5 +40,6 @@ export function parentStrictElementRef(node: ast.StrictElementRef): c4.Fqn {
     path.unshift(parent.el.$refText)
     parent = parent.$container
   }
+  invariant(path.length > 0, 'Expected non-empty parent path')
   return path.join('.') as c4.Fqn
 }

@@ -6,7 +6,7 @@ import { Rpc } from '../protocol'
 
 export async function initWorkspace(client: LanguageClient, logger: Logger) {
   // TODO: find a better way to wait for the workspace to be ready
-  await delay(1000)
+  await delay(500)
   const c2pConverter = client.code2ProtocolConverter;
   const extensions = fileExtensions.map(s => s.substring(1)).join(',')
   const globPattern = `**/*.{${extensions}}`

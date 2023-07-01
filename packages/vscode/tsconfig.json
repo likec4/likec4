@@ -2,6 +2,7 @@
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "lib": ["ESNext", "WebWorker"],
+    "skipLibCheck": true,
     "paths": {
       "src/*": [
         "./src/*"
@@ -9,7 +10,9 @@
     },
   },
   "include": ["./src/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules"
+  ],
   "references": [
     { "path": "../core" },
     { "path": "../generators" },
