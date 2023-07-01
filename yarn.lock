@@ -374,7 +374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/graphlib@npm:^2.1.12, @dagrejs/graphlib@npm:^2.1.4":
+"@dagrejs/graphlib@npm:^2.1.13, @dagrejs/graphlib@npm:^2.1.4":
   version: 2.1.13
   resolution: "@dagrejs/graphlib@npm:2.1.13"
   checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
@@ -896,7 +896,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
-    "@dagrejs/graphlib": ^2.1.12
+    "@dagrejs/graphlib": ^2.1.13
     rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
     typescript: ^5.1.3
@@ -1044,7 +1044,7 @@ __metadata:
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
     "@dagrejs/dagre": ^0.8.0
-    "@dagrejs/graphlib": ^2.1.12
+    "@dagrejs/graphlib": ^2.1.13
     "@hpcc-js/wasm": ^2.13.0
     "@likec4/core": 0.24.0
     "@types/node": ^18.15.11
