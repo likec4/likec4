@@ -911,8 +911,8 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@react-spring/konva": ^9.7.3
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.14
+    "@types/react-dom": ^18.2.6
     clsx: ^1.2.1
     esbuild: ^0.17.19
     khroma: ^2.0.0
@@ -945,8 +945,8 @@ __metadata:
     "@radix-ui/react-scroll-area": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.14
+    "@types/react-dom": ^18.2.6
     "@types/vscode": ~1.77.0
     autoprefixer: ^10.4.14
     body-scroll-lock-upgrade: ^1.0.3
@@ -1064,8 +1064,8 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.14
+    "@types/react-dom": ^18.2.6
     "@types/vscode": ~1.77.0
     "@types/vscode-webview": ^1.57.1
     "@vitejs/plugin-react": ^4.0.1
@@ -2690,6 +2690,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^18.2.6":
+  version: 18.2.6
+  resolution: "@types/react-dom@npm:18.2.6"
+  dependencies:
+    "@types/react": "*"
+  checksum: b56e42efab121a3a8013d2eb8c1688e6028a25ea6d33c4362d2846f0af3760b164b4d7c34846614024cfb8956cca70dd1743487f152e32ff89a00fe6fbd2be54
+  languageName: node
+  linkType: hard
+
 "@types/react-reconciler@npm:^0.28.0, @types/react-reconciler@npm:^0.28.2":
   version: 0.28.2
   resolution: "@types/react-reconciler@npm:0.28.2"
@@ -2707,6 +2716,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: db3d92b423150222a666329f7aa3023e3e942044700557b8a7d161530847e621aec9f56c9e7f71761b06dd164c8a7b17ad52355863efe80963dffa5537e8e5fd
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.14":
+  version: 18.2.14
+  resolution: "@types/react@npm:18.2.14"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: a6a5e8cc78f486b9020d1ad009aa6c56943c68c7c6376e0f8399e9cbcd950b7b8f5d73f00200f5379f5e58d31d57d8aed24357f301d8e86108cd438ce6c8b3dd
   languageName: node
   linkType: hard
 
