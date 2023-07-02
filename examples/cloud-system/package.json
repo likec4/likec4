@@ -10,7 +10,7 @@
     "dev": "run generate && vite"
   },
   "dependencies": {
-    "@likec4/diagrams": "0.24.0",
+    "@likec4/diagrams": "workspace:0.24.0",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.0.1",
     "rambdax": "^9.1.1",
@@ -18,7 +18,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/cli": "0.24.0",
+    "@likec4/cli": "workspace:0.24.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.0.0",

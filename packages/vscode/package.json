@@ -46,8 +46,8 @@
     "vsce:publish": "vsce publish"
   },
   "engines": {
-    "vscode": "^1.74.0",
-    "node": ">=17"
+    "vscode": "^1.77.0",
+    "node": ">=16"
   },
   "keywords": [
     "architecture",
@@ -140,25 +140,25 @@
     "workspaceContains:**/*.c4",
     "workspaceContains:**/*.likec4",
     "workspaceContains:**/*.like-c4",
-    "onLanguage:likec4",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "./dist/node.js",
   "browser": "./dist/web.js",
   "devDependencies": {
-    "@likec4/core": "0.24.0",
-    "@likec4/generators": "0.24.0",
-    "@likec4/language-server": "0.24.0",
-    "@likec4/layouts": "0.24.0",
-    "@likec4/vscode-preview": "0.24.0",
-    "@types/node": "^18.15.11",
-    "@types/vscode": "^1.74.0",
+    "@likec4/core": "workspace:0.24.0",
+    "@likec4/generators": "workspace:0.24.0",
+    "@likec4/language-server": "workspace:0.24.0",
+    "@likec4/layouts": "workspace:0.24.0",
+    "@likec4/vscode-preview": "workspace:0.24.0",
+    "@types/node": "^16.11.16",
+    "@types/vscode": "~1.77.0",
     "@vscode/vsce": "^2.19.0",
     "esbuild": "^0.17.19",
     "froebel": "^0.23.2",
     "langium": "^1.2.1",
     "nanoid": "^4.0.2",
     "npm-run-all": "^4.1.5",
+    "p-timeout": "^6.1.2",
     "path-browserify": "^1.0.1",
     "rambdax": "^9.1.1",
     "shx": "^0.3.4",
@@ -171,8 +171,5 @@
     "vscode-uri": "~3.0.7",
     "xstream": "^11.14.0"
   },
-  "packageManager": "yarn@3.6.1",
-  "dependencies": {
-    "p-timeout": "^6.1.2"
-  }
+  "packageManager": "yarn@3.6.1"
 }

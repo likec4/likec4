@@ -26,11 +26,11 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
-    "@likec4/core": "0.24.0",
-    "@likec4/diagrams": "0.24.0",
-    "@likec4/generators": "0.24.0",
-    "@likec4/language-server": "0.24.0",
-    "@likec4/layouts": "0.24.0",
+    "@likec4/core": "workspace:0.24.0",
+    "@likec4/diagrams": "workspace:0.24.0",
+    "@likec4/generators": "workspace:0.24.0",
+    "@likec4/language-server": "workspace:0.24.0",
+    "@likec4/layouts": "workspace:0.24.0",
     "@monaco-editor/react": "^4.5.0",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-scroll-area": "^1.0.4",
@@ -64,7 +64,7 @@
     "vscode-uri": "~3.0.7"
   },
   "devDependencies": {
-    "@likec4/cli": "0.24.0",
+    "@likec4/cli": "workspace:0.24.0",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

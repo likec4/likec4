@@ -38,7 +38,7 @@
     "test:watch": "run -T vitest"
   },
   "dependencies": {
-    "@likec4/core": "0.24.0",
+    "@likec4/core": "workspace:0.24.0",
     "json5": "^2.2.3",
     "langium": "^1.2.1",
     "rambdax": "^9.1.1"
