@@ -38,24 +38,24 @@ jobs:
       - name: Build packages
         run: yarn build
 
+      - name: Compile
+        run: yarn compile:all
+
       - name: Test
         run: yarn test
 
-      - name: Compile sources
-        run: yarn compile
-
-  build-docs:
-    name: build docs website
+  publish-docs:
+    name: publish docs website
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: build
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: NextJS cache
-        if: github.ref == 'refs/heads/main'
         uses: actions/cache@v3
         with:
           path: docs/.next/cache
@@ -76,7 +76,6 @@ jobs:
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
-        if: github.ref == 'refs/heads/main'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
