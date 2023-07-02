@@ -82,10 +82,11 @@ export const ElementViewOps = {
 
 export const ElementOps = {
   writeId(node: ast.Element, id: c4.Fqn | null) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (id === null) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-dynamic-delete
       delete (node as any)[idattr]
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (node as any)[idattr] = id
     }
     return node

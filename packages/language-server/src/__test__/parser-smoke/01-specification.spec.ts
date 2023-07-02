@@ -26,6 +26,15 @@ specification {
   )
 
   test(
+    'Allow element with kind "element"',
+    valid`
+      specification {
+        element element
+        element component
+      }
+  `)
+
+  test(
     'ElementKindStyle',
     valid`
 specification {

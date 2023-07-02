@@ -33,6 +33,7 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
+import stripIndent from 'strip-indent'
 
 export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
@@ -253,7 +254,7 @@ export class LikeC4ModelBuilder {
       astPath,
       title: title ?? astNode.name,
       ...(technology && { technology }),
-      ...(description && { description }),
+      ...(description && { description: stripIndent(description).trim() }),
       ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
       ...(color && color !== DefaultThemeColor ? { color } : {})

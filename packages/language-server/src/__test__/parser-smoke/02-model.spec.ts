@@ -15,6 +15,19 @@ describe('02_Model', () => {
   )
 
   test(
+    'Allow element with kind "element"',
+    valid`
+      specification {
+        element element
+      }
+      model {
+        element el1
+        element el2
+      }
+  `)
+
+
+  test(
     '02_Model_Element_2',
     valid`
       specification {

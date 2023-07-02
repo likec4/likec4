@@ -1,5 +1,5 @@
 import { AbstractSemanticTokenProvider, type AstNode, type SemanticTokenAcceptor } from 'langium'
-import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver'
+import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
 import { isElementRefHead } from '../elementRef'
 
@@ -9,7 +9,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         keyword,
-        type: SemanticTokenTypes.keyword
+        type: SemanticTokenTypes.keyword,
+        modifier: [SemanticTokenModifiers.defaultLibrary]
       })
 
     if (ast.isElementRef(node) || ast.isStrictElementRef(node)) {
@@ -29,12 +30,18 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return
     }
     if (
+      ast.isRelation(node) ||
       ast.isRelationExpression(node) ||
       ast.isIncomingExpression(node) ||
+      ast.isInOutExpression(node) ||
       ast.isOutgoingExpression(node)
     ) {
-      keyword('->')
-      return
+      acceptor({
+        node,
+        property: 'arr',
+        type: SemanticTokenTypes.keyword,
+        modifier: [SemanticTokenModifiers.defaultLibrary]
+      })
     }
     if (ast.isElementKindExpression(node) || ast.isElementTagExpression(node)) {
       keyword('element')
@@ -59,13 +66,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         return
       }
     }
-    if (ast.isInOutExpression(node)) {
-      keyword('->', 0)
-      keyword('->', 1)
-      return
-    }
     if (ast.isRelation(node)) {
-      keyword('->')
       if ('title' in node) {
         acceptor({
           node,
@@ -107,11 +108,16 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'key',
         type: SemanticTokenTypes.keyword
+        // type: SemanticTokenTypes.property,
+        // modifier: [
+        //   SemanticTokenModifiers.readonly,
+        //   SemanticTokenModifiers.declaration
+        // ]
       })
       acceptor({
         node,
         property: 'value',
-        type: SemanticTokenTypes.enumMember
+        type: SemanticTokenTypes.enum
       })
       return
     }
@@ -120,6 +126,11 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         node,
         property: 'key',
         type: SemanticTokenTypes.keyword
+        // type: SemanticTokenTypes.property,
+        // modifier: [
+        //   SemanticTokenModifiers.readonly,
+        //   SemanticTokenModifiers.declaration
+        // ]
       })
       acceptor({
         node,
@@ -157,23 +168,9 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       type: SemanticTokenTypes.keyword,
       modifier: []
     })
-
-    if ('title' in node) {
-      acceptor({
-        node,
-        property: 'title',
-        type: SemanticTokenTypes.string
-      })
-    }
   }
 
   private highlightView(node: ast.ElementView, acceptor: SemanticTokenAcceptor) {
-    acceptor({
-      node,
-      keyword: 'view',
-      type: SemanticTokenTypes.keyword
-    })
-
     if (node.name) {
       acceptor({
         node,

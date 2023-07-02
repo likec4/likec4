@@ -110,10 +110,10 @@ fragment RelationFragment:
 ;
 
 RelationWithoutSource infers Relation:
-  ('this' | 'it')? '->' RelationFragment;
+  ('this' | 'it')? arr=RArrow RelationFragment;
 
 RelationWithSource:
-  source=ElementRef '->' RelationFragment;
+  source=ElementRef arr=RArrow RelationFragment;
 
 // RelationWithSource: {infer RelationWithSource2} RelationWithSourceRule;
 
@@ -175,12 +175,12 @@ CloseBlock;
 //   source=ElementRef (isReverse?='<-' | '->') target=ElementRef (title=STRING)? SEMI?;
 
 Expression:
-  {infer IncomingExpression} '->' target=ElementExpression (
-    {infer InOutExpression.inout=current} '->'
+  {infer IncomingExpression} arr=RArrow target=ElementExpression (
+    {infer InOutExpression.inout=current} arr=RArrow
   )? |
   ElementExpression (
-    {infer RelationExpression.source=current} '->' target=ElementExpression |
-    {infer OutgoingExpression.source=current} '->'
+    {infer RelationExpression.source=current} arr=RArrow target=ElementExpression |
+    {infer OutgoingExpression.source=current} arr=RArrow
   )?
 ;
 
@@ -224,19 +224,15 @@ ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' 
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
 
+RArrow returns string: RARROW;
+
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);
 
-// -------------------------
+// -----------------------------------
+// Terminals
 
-terminal fragment HASH      : '#';
-terminal fragment UNDERSCORE: '_';
-// terminal fragment LowerLetter  : /a-z/;
-terminal fragment LETTER       : /[^\W\d_]/;
-terminal fragment DIGIT        : /[0-9]/;
-terminal fragment NEWLINE: /[\t\r\n\v\f]/;
-terminal fragment SPACE: /[^\S\r\n]/;
-
+terminal RARROW: '->';
 terminal Dot: '.';
 terminal NotEqual: '!=';
 terminal Eq: '=';
@@ -249,8 +245,19 @@ terminal Comma: ',';
 // terminal EOL: (WS+)? NL;
 
 terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
-terminal STRING: /"[^"]*"|'[^']*'/;
 terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
+terminal STRING: /"[^"]*"|'[^']*'/;
+
+
+// -----------------------------------
+// Symbols
+terminal fragment HASH      : '#';
+terminal fragment UNDERSCORE: '_';
+// terminal fragment LowerLetter  : /a-z/;
+terminal fragment LETTER       : /[^\W\d_]/;
+terminal fragment DIGIT        : /[0-9]/;
+terminal fragment NEWLINE: /[\t\r\n\v\f]/;
+terminal fragment SPACE: /[^\S\r\n]/;
 
 hidden terminal WS: (NEWLINE | SPACE)+;
 
