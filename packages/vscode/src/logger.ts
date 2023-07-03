@@ -1,16 +1,23 @@
-import type * as vscode from "vscode"
+import type * as vscode from 'vscode'
+import type { Telemetry } from './di'
 
-type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR" | "NONE";
+type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE'
+
+function stringify(data: unknown) {
+  try {
+    return JSON.stringify(data, null, 2)
+  } catch (e) {
+    return `${e}`
+  }
+}
 
 export class Logger {
+  constructor(protected outputChannel: vscode.OutputChannel, protected telemetry: Telemetry) {}
 
-  constructor(protected outputChannel: vscode.OutputChannel) {
-  }
-
-  protected logLevel: LogLevel = "DEBUG";
+  protected logLevel: LogLevel = 'DEBUG'
 
   public setOutputLevel(logLevel: LogLevel) {
-    this.logLevel = logLevel;
+    this.logLevel = logLevel
   }
 
   /**
@@ -20,16 +27,16 @@ export class Logger {
    */
   public logDebug(message: string, data?: unknown): void {
     if (
-      this.logLevel === "NONE" ||
-      this.logLevel === "INFO" ||
-      this.logLevel === "WARN" ||
-      this.logLevel === "ERROR"
+      this.logLevel === 'NONE' ||
+      this.logLevel === 'INFO' ||
+      this.logLevel === 'WARN' ||
+      this.logLevel === 'ERROR'
     ) {
-      return;
+      return
     }
-    this.logMessage(message, "DEBUG");
+    this.logMessage(message, 'DEBUG')
     if (data) {
-      this.logObject(data);
+      this.logObject(data)
     }
   }
 
@@ -39,16 +46,12 @@ export class Logger {
    * @param message The message to append to the output channel
    */
   public logInfo(message: string, data?: unknown): void {
-    if (
-      this.logLevel === "NONE" ||
-      this.logLevel === "WARN" ||
-      this.logLevel === "ERROR"
-    ) {
-      return;
+    if (this.logLevel === 'NONE' || this.logLevel === 'WARN' || this.logLevel === 'ERROR') {
+      return
     }
-    this.logMessage(message, "INFO");
+    this.logMessage(message, 'INFO')
     if (data) {
-      this.logObject(data);
+      this.logObject(data)
     }
   }
 
@@ -58,38 +61,42 @@ export class Logger {
    * @param message The message to append to the output channel
    */
   public logWarn(message: string, data?: unknown): void {
-    if (this.logLevel === "NONE" || this.logLevel === "ERROR") {
-      return;
+    if (this.logLevel === 'NONE' || this.logLevel === 'ERROR') {
+      return
     }
-    this.logMessage(message, "WARN");
+    this.logMessage(message, 'WARN')
     if (data) {
-      this.logObject(data);
+      this.logObject(data)
     }
   }
 
   public logError(message: string, error?: unknown) {
-    if (this.logLevel === "NONE") {
-      return;
+    if (this.logLevel === 'NONE') {
+      return
     }
-    this.logMessage(message, "ERROR");
-    if (typeof error === "string") {
+    this.logMessage(message, 'ERROR')
+    this.telemetry.sendTelemetryErrorEvent('logError', {
+      message,
+      error: `${error}`
+    })
+    if (typeof error === 'string') {
       // Errors as a string usually only happen with
       // plugins that don't return the expected error.
-      this.outputChannel.appendLine(error);
+      this.outputChannel.appendLine(error)
     } else if (error instanceof Error) {
-      if (error?.message) {
-        this.logMessage(error.message, "ERROR");
+      if (error.message) {
+        this.logMessage(error.message, 'ERROR')
       }
-      if (error?.stack) {
-        this.outputChannel.appendLine(error.stack);
+      if (error.stack) {
+        this.outputChannel.appendLine(error.stack)
       }
     } else if (error) {
-      this.logObject(error);
+      this.logObject(error)
     }
   }
 
   public show() {
-    this.outputChannel.show();
+    this.outputChannel.show()
   }
 
   private logObject(data: unknown): void {
@@ -98,9 +105,7 @@ export class Logger {
     //     parser: "json",
     //   })
     //   .trim();
-    const message = JSON.stringify(data, null, 2); // dont use prettier to keep it simple
-
-    this.outputChannel.appendLine(message);
+    this.outputChannel.appendLine(stringify(data))
   }
 
   /**
@@ -109,7 +114,7 @@ export class Logger {
    * @param message The message to append to the output channel
    */
   private logMessage(message: string, logLevel: LogLevel): void {
-    const title = new Date().toLocaleTimeString();
-    this.outputChannel.appendLine(`["${logLevel}" - ${title}] ${message}`);
+    const title = new Date().toLocaleTimeString()
+    this.outputChannel.appendLine(`["${logLevel}" - ${title}] ${message}`)
   }
 }

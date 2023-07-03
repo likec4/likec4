@@ -83,6 +83,9 @@ export function createLanguageServices(context?: LanguageServicesContext): {
       try {
         console[method](message)
         connection.console[method](String(message))
+        if (method === 'error') {
+          connection.telemetry.logEvent({ eventName: 'error', message})
+        }
       } catch (error) {
         console.error(error)
       }

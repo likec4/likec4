@@ -70,27 +70,15 @@ We rebuild: [
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })
 
-  connection.onRequest(Rpc.locateElement, async ({ element, property }, _cancelToken) => {
-    try {
-      return modelLocator.locateElement(element, property ?? 'name')
-    } catch (e) {
-      return Promise.reject(e) as never
-    }
+  connection.onRequest(Rpc.locateElement, ({ element, property }) => {
+    return modelLocator.locateElement(element, property ?? 'name')
   })
 
-  connection.onRequest(Rpc.locateRelation, async ({ id }, _cancelToken) => {
-    try {
-      return modelLocator.locateRelation(id)
-    } catch (e) {
-      return Promise.reject(e) as never
-    }
+  connection.onRequest(Rpc.locateRelation, ({ id }) => {
+    return modelLocator.locateRelation(id)
   })
 
-  connection.onRequest(Rpc.locateView, async ({ id }, _cancelToken) => {
-    try {
-      return modelLocator.locateView(id)
-    } catch (e) {
-      return Promise.reject(e) as never
-    }
+  connection.onRequest(Rpc.locateView, ({ id }) => {
+    return modelLocator.locateView(id)
   })
 }

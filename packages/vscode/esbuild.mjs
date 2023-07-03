@@ -34,7 +34,10 @@ const nodeCfg = {
   outbase: 'src',
   outdir: 'dist',
   bundle: true,
-  external: ['vscode'],
+  external: [
+    'vscode',
+    'is-core-module/package.json'
+  ],
   format: 'cjs',
   target: 'node16',
   platform: 'node',
@@ -44,7 +47,7 @@ const nodeCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  sourcesContent: false,
+  sourcesContent: true,
   treeShaking: true,
   keepNames: true,
   minify: true
@@ -63,7 +66,11 @@ const webCfg = {
   format: 'cjs',
   target: 'es2020',
   platform: 'browser',
-  external: ['vscode'],
+  mainFields: ['browser', 'module', 'main'],
+  external: [
+    'vscode',
+    'is-core-module/package.json'
+  ],
   alias: {
     path: 'path-browserify',
     ...alias
@@ -71,7 +78,7 @@ const webCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  sourcesContent: false,
+  sourcesContent: true,
   treeShaking: true,
   keepNames: true,
   minify: true

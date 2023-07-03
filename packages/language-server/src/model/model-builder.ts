@@ -425,9 +425,9 @@ export class LikeC4ModelBuilder {
       clearTimeout(this.scheduledCb)
     }
     this.scheduledCb = setTimeout(() => {
-      this.scheduledCb = null
       logger.debug('send onDidChangeModel')
-      void connection.sendNotification(Rpc.onDidChangeModel)
-    }, 300)
+      this.scheduledCb = null
+      void connection.sendNotification(Rpc.onDidChangeModel, '')
+    }, 350)
   }
 }

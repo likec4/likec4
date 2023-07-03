@@ -1,11 +1,11 @@
 import { Disposable as VSDisposable } from 'vscode'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export class MultiDisposeError extends Error {
-  constructor(public readonly errors: any[]) {
-    super(`Encountered errors while disposing of store. Errors: [${errors.join(', ')}]`)
-  }
-}
+// export class MultiDisposeError extends Error {
+//   constructor(public readonly errors: any[]) {
+//     super(`Encountered errors while disposing of store. Errors: [${errors.join(', ')}]`)
+//   }
+// }
 
 export interface Disposable {
   dispose(): any
@@ -23,21 +23,14 @@ export function disponsable(callOnDispose: () => void) {
   })
 }
 
-export function disposeAll(disposables: Iterable<Disposable>) {
-  const errors: any[] = []
-  const localCopy = Array.from(disposables)
-  for (const disposable of localCopy) {
+export async function disposeAll(disposables: Disposable[]) {
+  // const localCopy = Array.from(disposables)
+  for (const disposable of disposables) {
     try {
-      void disposable.dispose()
+      await Promise.resolve(disposable.dispose())
     } catch (e) {
-      errors.push(e)
+      console.error(e)
     }
-  }
-
-  if (errors.length === 1) {
-    throw errors[0]
-  } else if (errors.length > 1) {
-    throw new MultiDisposeError(errors)
   }
 }
 
@@ -51,7 +44,9 @@ export abstract class ADisposable implements Disposable {
       return
     }
     this._isDisposed = true
-    disposeAll(this._disposables)
+    if (this._disposables.length > 0) {
+      void disposeAll([...this._disposables])
+    }
     this._disposables = []
   }
 
