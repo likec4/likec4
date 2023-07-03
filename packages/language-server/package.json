@@ -54,7 +54,7 @@
     "test:watch": "run -T vitest"
   },
   "dependencies": {
-    "@likec4/core": "workspace:0.24.0",
+    "@likec4/core": "workspace:*",
     "langium": "^1.2.1",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",

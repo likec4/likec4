@@ -960,16 +960,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@likec4/cli@workspace:0.24.0, @likec4/cli@workspace:packages/cli":
+"@likec4/cli@workspace:*, @likec4/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@likec4/cli@workspace:packages/cli"
   dependencies:
     "@commander-js/extra-typings": ^11.0.0
-    "@likec4/core": "workspace:0.24.0"
-    "@likec4/diagrams": "workspace:0.24.0"
-    "@likec4/generators": "workspace:0.24.0"
-    "@likec4/language-server": "workspace:0.24.0"
-    "@likec4/layouts": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
+    "@likec4/diagrams": "workspace:*"
+    "@likec4/generators": "workspace:*"
+    "@likec4/language-server": "workspace:*"
+    "@likec4/layouts": "workspace:*"
     "@types/node": ^16.11.16
     chalk: ^5.3.0
     commander: ^11.0.0
@@ -990,7 +990,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/core@workspace:0.24.0, @likec4/core@workspace:packages/core":
+"@likec4/core@workspace:*, @likec4/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
@@ -1001,11 +1001,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/diagrams@workspace:0.24.0, @likec4/diagrams@workspace:packages/diagrams":
+"@likec4/diagrams@workspace:*, @likec4/diagrams@workspace:packages/diagrams":
   version: 0.0.0-use.local
   resolution: "@likec4/diagrams@workspace:packages/diagrams"
   dependencies:
-    "@likec4/core": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@react-spring/konva": ^9.7.3
@@ -1032,12 +1032,12 @@ __metadata:
   resolution: "@likec4/docs-website@workspace:docs"
   dependencies:
     "@emotion/react": ^11.11.1
-    "@likec4/cli": "workspace:0.24.0"
-    "@likec4/core": "workspace:0.24.0"
-    "@likec4/diagrams": "workspace:0.24.0"
-    "@likec4/generators": "workspace:0.24.0"
-    "@likec4/language-server": "workspace:0.24.0"
-    "@likec4/layouts": "workspace:0.24.0"
+    "@likec4/cli": "workspace:*"
+    "@likec4/core": "workspace:*"
+    "@likec4/diagrams": "workspace:*"
+    "@likec4/generators": "workspace:*"
+    "@likec4/language-server": "workspace:*"
+    "@likec4/layouts": "workspace:*"
     "@monaco-editor/react": ^4.5.0
     "@radix-ui/react-dropdown-menu": ^2.0.5
     "@radix-ui/react-scroll-area": ^1.0.4
@@ -1085,8 +1085,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/example-cloud-system@workspace:examples/cloud-system"
   dependencies:
-    "@likec4/cli": "workspace:0.24.0"
-    "@likec4/diagrams": "workspace:0.24.0"
+    "@likec4/cli": "workspace:*"
+    "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.0.1
     "@types/react": ^18.2.0
@@ -1101,11 +1101,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/generators@workspace:0.24.0, @likec4/generators@workspace:packages/generators":
+"@likec4/generators@workspace:*, @likec4/generators@workspace:packages/generators":
   version: 0.0.0-use.local
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
-    "@likec4/core": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     json5: ^2.2.3
     langium: ^1.2.1
@@ -1114,11 +1114,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/language-server@workspace:0.24.0, @likec4/language-server@workspace:packages/language-server":
+"@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
-    "@likec4/core": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.2
     langium: ^1.2.1
@@ -1136,14 +1136,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/layouts@workspace:0.24.0, @likec4/layouts@workspace:packages/layouts":
+"@likec4/layouts@workspace:*, @likec4/layouts@workspace:packages/layouts":
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
     "@dagrejs/dagre": ^0.8.0
     "@dagrejs/graphlib": ^2.1.13
     "@hpcc-js/wasm": ^2.13.0
-    "@likec4/core": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     rambdax: ^9.1.1
     tiny-invariant: ^1.3.1
@@ -1153,12 +1153,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/vscode-preview@workspace:0.24.0, @likec4/vscode-preview@workspace:packages/vscode-preview":
+"@likec4/vscode-preview@workspace:*, @likec4/vscode-preview@workspace:packages/vscode-preview":
   version: 0.0.0-use.local
   resolution: "@likec4/vscode-preview@workspace:packages/vscode-preview"
   dependencies:
-    "@likec4/core": "workspace:0.24.0"
-    "@likec4/diagrams": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
+    "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
@@ -7783,11 +7783,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
-    "@likec4/core": "workspace:0.24.0"
-    "@likec4/generators": "workspace:0.24.0"
-    "@likec4/language-server": "workspace:0.24.0"
-    "@likec4/layouts": "workspace:0.24.0"
-    "@likec4/vscode-preview": "workspace:0.24.0"
+    "@likec4/core": "workspace:*"
+    "@likec4/generators": "workspace:*"
+    "@likec4/language-server": "workspace:*"
+    "@likec4/layouts": "workspace:*"
+    "@likec4/vscode-preview": "workspace:*"
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
     "@vscode/extension-telemetry": ^0.8.0
