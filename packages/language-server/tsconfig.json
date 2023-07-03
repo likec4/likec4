@@ -5,16 +5,17 @@
     "importsNotUsedAsValues": "preserve",
     "outDir": "dist",
     "ignoreDeprecations": "5.0",
+    "rootDir": "src",
     "sourceMap": true,
     "composite": true,
     "declarationMap": true,
     "skipLibCheck": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
-    "rootDir": "src"
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
-  "include": ["./src/**/*"],
+  "include": ["src/**/*"],
   "exclude": [
-    "node_modules"
+    "./node_modules/**",
+    "../../node_modules/**"
   ],
   "references": [
     { "path": "../core" },
