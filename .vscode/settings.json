@@ -2,10 +2,18 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "prettier.enable": true,
-  "eslint.packageManager": "yarn",
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "search.exclude": {
     "node_modules/**": true,
@@ -22,5 +30,6 @@
   "exportall.config.folderListener": [
     "/packages/language-server/src/model",
     "/packages/language-server/src/lsp"
-  ]
+  ],
+  "mdx.experimentalLanguageServer": true
 }
