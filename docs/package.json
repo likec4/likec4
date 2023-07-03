@@ -51,7 +51,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
-    "swr": "^2.1.5",
+    "swr": "^2.2.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
     "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
