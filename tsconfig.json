@@ -1,7 +1,17 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "./packages/tsconfig/base.json",
   "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "es2022",
+    "target": "es2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Bundler",
+    "checkJs": false
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules/*"
+  ]
 }

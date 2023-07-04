@@ -5,9 +5,10 @@ import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
-import { clone, isNil } from 'rambdax'
+import { clone } from 'rambdax'
 import * as R from 'remeda'
 
+import stripIndent from 'strip-indent'
 import invariant from 'tiny-invariant'
 import type {
   ParsedAstElement,
@@ -33,7 +34,6 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import stripIndent from 'strip-indent'
 
 export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
