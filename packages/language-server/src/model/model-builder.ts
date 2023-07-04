@@ -1,4 +1,4 @@
-import { computeViews } from '@likec4/core'
+import { ModelIndex, assignNavigateTo, computeView } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
@@ -74,7 +74,7 @@ export class LikeC4ModelBuilder {
   }
 
   private documents() {
-    return this.langiumDocuments.all.toArray().filter(isValidLikeC4LangiumDocument)
+    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
   }
 
   public buildModel(): c4.LikeC4Model | undefined {
@@ -88,9 +88,8 @@ export class LikeC4ModelBuilder {
       const c4Specification: ParsedAstSpecification = {
         kinds: {}
       }
-      R.forEach(
-        R.map(docs, R.prop('c4Specification')),
-        spec => Object.assign(c4Specification.kinds, spec.kinds)
+      R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
+        Object.assign(c4Specification.kinds, spec.kinds)
       )
 
       const toModelElement = (el: ParsedAstElement): c4.Element | null => {
@@ -104,11 +103,6 @@ export class LikeC4ModelBuilder {
           }
         }
         return null
-      }
-
-      const toModelRelation = (rel: ParsedAstRelation): c4.Relation => {
-        const { astPath, ...model } = rel
-        return model
       }
 
       const elements = R.pipe(
@@ -129,14 +123,32 @@ export class LikeC4ModelBuilder {
         }, {} as c4.LikeC4Model['elements'])
       )
 
+      const toModelRelation = ({
+        astPath,
+        source,
+        target,
+        ...model
+      }: ParsedAstRelation): c4.Relation | null => {
+        if (source in elements && target in elements) {
+          return {
+            source,
+            target,
+            ...model
+          }
+        }
+        return null
+      }
+
       const relations = R.pipe(
         R.flatMap(docs, d => d.c4Relations),
         R.map(toModelRelation),
-        R.filter(({ source, target }) => source in elements && target in elements),
+        R.compact,
         R.mapToObj(r => [r.id, r])
       )
 
-      const toModelView = (view: ParsedAstElementView): c4.ElementView => {
+      const modelIndex = ModelIndex.from({ elements, relations })
+
+      const toModelView = (view: ParsedAstElementView): c4.ComputedView | null => {
         // eslint-disable-next-line prefer-const
         let { astPath, rules, title, ...model } = view
         if (!title && view.viewOf) {
@@ -145,26 +157,29 @@ export class LikeC4ModelBuilder {
         if (!title && view.id === 'index') {
           title = 'Landscape view'
         }
-        return {
-          ...model,
-          ...(title && { title }),
-          rules: clone(rules)
-        }
+        return computeView(
+          {
+            ...model,
+            ...(title && { title }),
+            rules: clone(rules)
+          },
+          modelIndex
+        )
       }
 
       const views = R.pipe(
-        docs,
-        R.flatMap(d => d.c4Views),
+        R.flatMap(docs, d => d.c4Views),
         R.map(toModelView),
-        R.filter(v => isNil(v.viewOf) || v.viewOf in elements),
-        R.mapToObj(v => [v.id, v])
+        R.compact
       )
 
-      return computeViews({
+      assignNavigateTo(views)
+
+      return {
         elements,
         relations,
-        views
-      })
+        views: R.mapToObj(views, v => [v.id, v])
+      }
     } catch (e) {
       logger.error(e)
       return
@@ -425,9 +440,9 @@ export class LikeC4ModelBuilder {
       clearTimeout(this.scheduledCb)
     }
     this.scheduledCb = setTimeout(() => {
-      this.scheduledCb = null
       logger.debug('send onDidChangeModel')
-      void connection.sendNotification(Rpc.onDidChangeModel)
-    }, 300)
+      this.scheduledCb = null
+      void connection.sendNotification(Rpc.onDidChangeModel, '')
+    }, 350)
   }
 }

@@ -1,5 +1,9 @@
 {
   "recommendations": [
-    "langium.langium-vscode"
+    "langium.langium-vscode",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ZixuanChen.vitest-explorer",
+    "unifiedjs.vscode-mdx"
   ]
 }

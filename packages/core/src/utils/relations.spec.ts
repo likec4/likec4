@@ -48,6 +48,7 @@ const relations = [
 ] satisfies Relation[]
 
 describe('relation predicates', () => {
+
   const expectRelations = (predicate: (relation: Relation) => boolean) =>
     expect(relations.filter(predicate).map(r => r.id))
 

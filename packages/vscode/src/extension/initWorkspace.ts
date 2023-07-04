@@ -4,9 +4,11 @@ import { fileExtensions } from 'src/meta'
 import * as vscode from 'vscode'
 import { Rpc } from '../protocol'
 
+// LSP web extensions does not have access to the file system (even virtual)
+  // so we do this trick (find all files and open them)
 export async function initWorkspace(client: LanguageClient, logger: Logger) {
   // TODO: find a better way to wait for the workspace to be ready
-  await delay(500)
+  await delay(1000)
   const c2pConverter = client.code2ProtocolConverter;
   const extensions = fileExtensions.map(s => s.substring(1)).join(',')
   const globPattern = `**/*.{${extensions}}`

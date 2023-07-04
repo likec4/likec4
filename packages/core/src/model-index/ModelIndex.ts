@@ -1,7 +1,6 @@
-import type { Predicate } from 'rambdax'
-import { values } from 'rambdax'
+import { values } from 'remeda'
 import invariant from 'tiny-invariant'
-import type { Element, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
+import type { Element, Fqn, Relation, RelationID } from '../types'
 import { parentFqn } from '../utils/fqn'
 
 interface ElementTrie {
@@ -31,49 +30,42 @@ function asPath(id: Fqn) {
 type ModelInput = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  views: Record<ViewID, ElementView>
 }
 
-export class ModelIndex {
+export default class ModelIndex {
   private root: ElementTrie = {
     children: {}
   }
 
-  private _elements = new Set<Element>()
+  private _elements = new Map<Fqn, Element>()
 
   private _relations = new Map<RelationID, Relation>()
-  private _defaultElementView = new Map<Fqn, ViewID[]>()
-
   // private _taggedElements = new Map<Tag, Set<Element>>()
   // private _taggedRelations = new Map<Tag, Set<Relation>>()
 
   get relations(): Relation[] {
-    return [...this._relations.values()]
+    return Array.from(this._relations.values())
   }
 
-  filterRelations = (predicate: Predicate<Relation>): Relation[] => {
-    return [...this._relations.values()].filter(predicate)
+  filterRelations = (predicate: (r: Relation) => boolean): Relation[] => {
+    return this.relations.filter(predicate)
   }
 
-  static from({ elements, relations, views }: ModelInput): ModelIndex {
+  static from({ elements, relations }: ModelInput): ModelIndex {
     const index = new ModelIndex()
-    for (const el of Object.values(elements)) {
+    for (const el of values(elements)) {
       index.addElement(el)
     }
-    for (const rel of Object.values(relations)) {
+    for (const rel of values(relations)) {
       index.addRelation(rel)
-    }
-    for (const { id, viewOf } of Object.values(views)) {
-      if (viewOf) {
-        const viewsOf = index._defaultElementView.get(viewOf) ?? []
-        viewsOf.push(id)
-        index._defaultElementView.set(viewOf, viewsOf)
-      }
     }
     return index
   }
 
   addElement(el: Element) {
+    if (this._elements.has(el.id)) {
+      throw new Error(`Element already exists with id ${el.id}`)
+    }
     const path = asPath(el.id)
     let scope = this.root
     for (const name of path) {
@@ -84,7 +76,7 @@ export class ModelIndex {
       scope = next
     }
     scope.el = el
-    this._elements.add(el)
+    this._elements.set(el.id, el)
   }
 
   private locateTrie = (id: Fqn) => {
@@ -98,11 +90,11 @@ export class ModelIndex {
   }
 
   find = (id: Fqn): Element => {
-    const trie = this.locateTrie(id)
-    if (!trie.el) {
-      throw new Error(`Invalid index, element not found at path ${id}`)
+    const el = this._elements.get(id)
+    if (!el) {
+      throw new Error(`Element not found ${id}`)
     }
-    return trie.el
+    return el
   }
 
   children = (id: Fqn): Element[] => {
@@ -131,7 +123,9 @@ export class ModelIndex {
     let trie = this.root
     while (name) {
       const next = trie.children[name]
-      invariant(next, `Invalid index, Element not found at path ${name} of ${id}`)
+      if (!next) {
+        throw new Error(`Invalid index, Element not found at path ${name} of ${id}`)
+      }
       trie = next
       if (!trie.el) {
         throw new Error(`invalid index, no element ${name} found in ${id}`)
@@ -157,7 +151,7 @@ export class ModelIndex {
   }
 
   get elements(): Element[] {
-    return [...this._elements]
+    return Array.from(this._elements.values())
   }
 
   // hasElement(fqn: Fqn): boolean {
@@ -166,8 +160,12 @@ export class ModelIndex {
 
   addRelation(rel: Relation) {
     // Validate source and target
-    this.locateTrie(rel.source)
-    this.locateTrie(rel.target)
+    if (!this._elements.has(rel.source)) {
+      throw new Error(`Invalid index, source of relation not found ${rel.source}`)
+    }
+    if (!this._elements.has(rel.target)) {
+      throw new Error(`Invalid index, target of relation not found ${rel.target}`)
+    }
     this._relations.set(rel.id, rel)
     // for (const tag of rel.tags) {
     //   const tagged = this._taggedRelations.get(tag) ?? new Set()
@@ -176,7 +174,4 @@ export class ModelIndex {
     // }
   }
 
-  defaultViewOf = (id: Fqn): ViewID[] => {
-    return this._defaultElementView.get(id) ?? []
-  }
 }

@@ -8,18 +8,23 @@ import {
   type LanguageClientOptions,
   type ServerOptions
 } from 'vscode-languageclient/node'
+import { mkReporter } from './telemetry'
+import type TelemetryReporter from '@vscode/extension-telemetry'
 
+let reporter: TelemetryReporter | undefined
 let client: NodeLanguageClient | undefined
 
 // this method is called when vs code is activated
 export function activate(context: ExtensionContext) {
+  reporter = mkReporter(context)
   client = createLanguageClient(context)
 
-  void activateExtension({ client, context })
+  void activateExtension({ client, context, reporter })
 }
 
 // This function is called when the extension is deactivated.
 export function deactivate(): Thenable<void> | undefined {
+  void reporter?.dispose()
   return client?.dispose()
 }
 
@@ -65,5 +70,5 @@ function createLanguageClient(context: ExtensionContext) {
   }
 
   // Create the language client and start the client.
-  return new NodeLanguageClient(languageId, 'LikeC4 Extension', serverOptions, clientOptions)
+  return  new NodeLanguageClient(languageId, 'LikeC4 Extension', serverOptions, clientOptions)
 }

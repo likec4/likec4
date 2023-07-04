@@ -1,4 +1,4 @@
-import { either } from 'rambdax'
+import { anyPass } from 'remeda'
 import type { Fqn, Element } from '../types'
 import { compareFqnHierarchically, isAncestor } from './fqn'
 
@@ -7,20 +7,22 @@ type Relation = {
   target: Fqn
 }
 
+type RelationPredicate = (rel: Relation) => boolean
+
 export const compareRelations = <T extends { source: Fqn; target: Fqn }>(a: T, b: T) => {
   return (
     compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
   )
 }
 
-export const isInside = (parent: Fqn) => {
+export const isInside = (parent: Fqn): RelationPredicate => {
   const prefix = parent + '.'
   return (rel: Relation) => {
     return rel.source.startsWith(prefix) && rel.target.startsWith(prefix)
   }
 }
 
-export const isBetween = (source: Fqn, target: Fqn) => {
+export const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {
@@ -31,11 +33,11 @@ export const isBetween = (source: Fqn, target: Fqn) => {
   }
 }
 
-export const isAnyBetween = (source: Fqn, target: Fqn) => {
-  return either(isBetween(source, target), isBetween(target, source))
+export const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
+  return anyPass([isBetween(source, target), isBetween(target, source)])
 }
 
-export const isIncoming = (target: Fqn) => {
+export const isIncoming = (target: Fqn): RelationPredicate => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
@@ -46,7 +48,7 @@ export const isIncoming = (target: Fqn) => {
   }
 }
 
-export const isOutgoing = (source: Fqn) => {
+export const isOutgoing = (source: Fqn): RelationPredicate => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
     return (
@@ -57,8 +59,8 @@ export const isOutgoing = (source: Fqn) => {
   }
 }
 
-export const isAnyInOut = (source: Fqn) => {
-  return either(isIncoming(source), isOutgoing(source))
+export const isAnyInOut = (source: Fqn): RelationPredicate => {
+  return anyPass([isIncoming(source), isOutgoing(source)])
 }
 
 export const hasRelation = (rel: Relation) => {

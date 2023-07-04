@@ -3,23 +3,21 @@
 {
   "name": "LikeC4 Dev Container",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "configureZshAsDefaultShell": true
-    },
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/enricosecondulfo/devcontainer-features/volta:1": {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
+  "forwardPorts": [
+    3000
+  ],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": [
     "yarn install",
     "yarn build"
   ],
+  "waitFor": "postCreateCommand",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -28,11 +26,7 @@
       "extensions": [
         "langium.langium-vscode",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "eliostruyf.vscode-typescript-exportallmodules",
-        "meganrogge.template-string-converter",
-        "ZixuanChen.vitest-explorer",
-        "unifiedjs.vscode-mdx"
+        "esbenp.prettier-vscode"
       ]
     }
   }

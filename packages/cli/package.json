@@ -1,6 +1,6 @@
 {
   "name": "@likec4/cli",
-  "version": "0.24.0",
+  "version": "0.26.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -29,11 +29,11 @@
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^11.0.0",
-    "@likec4/core": "workspace:0.24.0",
-    "@likec4/diagrams": "workspace:0.24.0",
-    "@likec4/generators": "workspace:0.24.0",
-    "@likec4/language-server": "workspace:0.24.0",
-    "@likec4/layouts": "workspace:0.24.0",
+    "@likec4/core": "workspace:*",
+    "@likec4/diagrams": "workspace:*",
+    "@likec4/generators": "workspace:*",
+    "@likec4/language-server": "workspace:*",
+    "@likec4/layouts": "workspace:*",
     "@types/node": "^16.11.16",
     "chalk": "^5.3.0",
     "commander": "^11.0.0",

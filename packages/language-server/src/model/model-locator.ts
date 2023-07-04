@@ -3,7 +3,7 @@ import type { LangiumDocuments } from 'langium'
 import { findNodeForKeyword, findNodeForProperty, getDocument } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
-import { ast, isParsedLikeC4LangiumDocument } from '../ast'
+import { ElementOps, ast, isParsedLikeC4LangiumDocument, isValidLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
 
@@ -17,22 +17,22 @@ export class LikeC4ModelLocator {
   }
 
   private documents() {
-    return this.langiumDocuments.all.toArray().filter(isParsedLikeC4LangiumDocument)
+    return this.langiumDocuments.all.filter(isParsedLikeC4LangiumDocument)
   }
 
   public getParsedElement(astNode: ast.Element): ParsedAstElement | null {
+    const fqn = ElementOps.readId(astNode) ?? null
+    if (!fqn) return null
     const doc = getDocument(astNode)
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return null
     }
-    const fqn = this.fqnIndex.get(astNode)
-    if (!fqn) return null
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
   public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {
     for (const doc of this.documents()) {
-      if (doc.c4fqns && !doc.c4fqns.has(fqn)) {
+      if (!doc.c4fqns?.has(fqn)) {
         continue
       }
       const element = doc.c4Elements.find(e => e.id === fqn)
@@ -83,7 +83,7 @@ export class LikeC4ModelLocator {
           }
         }
       }
-      const targetNode = findNodeForKeyword(node.$cstNode, '->')
+      const targetNode = findNodeForProperty(node.$cstNode, 'arr')
       if (!targetNode) {
         return null
       }

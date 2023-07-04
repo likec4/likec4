@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "0.24.0",
+  "version": "0.26.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -72,6 +72,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
     "rambdax": "^9.1.1",
+    "remeda": "^1.23.0",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {

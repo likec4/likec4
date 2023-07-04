@@ -3,8 +3,6 @@ on:
   pull_request:
     types:
       - closed
-    branches:
-      - 'releases/**'
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
@@ -14,7 +12,7 @@ env:
 
 jobs:
   ship:
-    name: ship
+    name: shipjs trigger
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
     permissions: write-all
@@ -23,7 +21,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ssh-key: "${{ secrets.DEPLOY_KEY }}"
-          ref: develop
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
@@ -44,11 +41,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-      - name: Publish VSCode extension
-        run: |
-          VERSION=$(node -e "console.log(require('./package.json').version)")
-          echo " version: $VERSION"
-          yarn vsce publish $VERSION
-        working-directory: packages/vscode
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  PublishVSCode:
+    uses: ./.github/workflows/vscode.yaml
+    needs: ship
+    permissions:
+      actions: write
+      contents: read
+    secrets: inherit

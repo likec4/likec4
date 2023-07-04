@@ -3,7 +3,7 @@ import type { Fqn, RelationID, ViewID, DiagramView } from '@likec4/core/types'
 import * as vscode from 'vscode'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import { ADisposable, getNonce } from 'src/util'
-import type { ExtensionContext, C4Model, LanguageClient, Logger } from 'src/di'
+import type { ExtensionContext, C4Model, LanguageClient, Logger, Telemetry } from 'src/di'
 import { di } from 'src/di'
 import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
@@ -20,12 +20,13 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   private currentViewId: ViewID | null = null
 
   static ViewType = 'likec4-preview' as const
-  static inject = tokens(di.c4model, di.client, di.context, di.logger)
+  static inject = tokens(di.c4model, di.client, di.context, di.logger, di.telemetry)
   constructor(
     private c4model: C4Model,
     private client: LanguageClient,
     private context: ExtensionContext,
-    private logger: Logger
+    private logger: Logger,
+    private telemetry: Telemetry
   ) {
     super()
   }
@@ -40,14 +41,13 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   public open(viewId: ViewID) {
-    this.logger.logDebug('open', { viewId })
-    this.logger.logDebug('open', { viewId })
+    this.logger.logDebug('PreviewPanel.open', { viewId })
     if (this.panel) {
       this.panel.reveal(undefined, true)
       this.subscribeToModel(viewId)
       return
     }
-
+    this.telemetry.sendTelemetryEvent('PreviewPanel.open')
     this.currentViewId = viewId
     this.setupPanel(this.createWebviewPanel())
     // Subscribe to model happends on "ready" from webview
@@ -94,6 +94,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
   }
 
   private close() {
+    this.telemetry.sendTelemetryEvent('PreviewPanel.close')
     this.listener?.dispose()
     this.listener = null
     this.panel?.dispose()

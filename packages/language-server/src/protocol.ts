@@ -1,9 +1,9 @@
 import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core'
 import type { DocumentUri, Location,  } from 'vscode-languageserver-protocol'
-import { NotificationType0, RequestType0, RequestType } from 'vscode-languageserver-protocol'
+import { NotificationType, RequestType0, RequestType } from 'vscode-languageserver-protocol'
 
 //#region From server
-const onDidChangeModel = new NotificationType0('likec4/onDidChangeModel')
+const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 //#endregion
 
 //#region To server

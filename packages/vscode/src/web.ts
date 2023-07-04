@@ -6,15 +6,22 @@ import {
   LanguageClient as BrowserLanguageClient,
   type LanguageClientOptions
 } from 'vscode-languageclient/browser'
+import { mkReporter } from './telemetry'
 
 let worker: Worker | undefined
 let client: BrowserLanguageClient | undefined
 
 // this method is called when vs code is activated
 export function activate(context: ExtensionContext) {
+  const reporter = mkReporter(context)
   client = createLanguageClient(context)
 
-  void activateExtension({ client, context }, true)
+  // const output = vscode.window.createOutputChannel('LikeC4 Logs', {
+  //   log: true
+  // })
+  // context.subscriptions.push(output)
+
+  void activateExtension({ client, context, reporter }, true)
 }
 
 // This function is called when the extension is deactivated.
@@ -50,7 +57,7 @@ function createLanguageClient(context: ExtensionContext) {
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
       fileEvents: fileSystemWatcher
-    }
+    },
   }
 
   // Create the language client and start the client.

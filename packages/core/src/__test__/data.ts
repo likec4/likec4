@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Element, ElementKind, ElementView, Fqn, Opaque, Relation, RelationID, Tag, ViewID } from '../types'
+import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, Tag, ViewID } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -187,23 +187,8 @@ export const fakeRelations = {
 
 export type FakeRelationIds = keyof typeof fakeRelations
 
-export const fakeElementView: ElementView = {
-  id: 'fakeView' as ViewID,
-  title: '',
-  viewOf: 'cloud' as Fqn,
-  rules: [
-    {
-      isInclude: true,
-      exprs: [{ wildcard: true }]
-    }
-  ]
-}
-
 export const fakeModel = () =>
   ModelIndex.from({
     elements: fakeElements,
     relations: fakeRelations,
-    views: {
-      [fakeElementView.id]: fakeElementView
-    }
   })
