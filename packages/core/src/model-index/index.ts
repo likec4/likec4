@@ -1,1 +1,1 @@
-export * from './ModelIndex'
+export { default as ModelIndex } from './ModelIndex'

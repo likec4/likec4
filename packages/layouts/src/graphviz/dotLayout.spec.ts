@@ -9,22 +9,22 @@ import { dotLayout } from './dotLayout'
 
 describe('dotLayout:', () => {
 
-  it(' computedIndexView', async () => {
+  it('computedIndexView', async () => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()
   })
 
-  it(' computedAmazonView', async () => {
+  it('computedAmazonView', async () => {
     const diagram = await dotLayout(computedAmazonView)
     expect(diagram).toMatchSnapshot()
   })
 
-  it(' computedCloud3levels', async () => {
+  it('computedCloud3levels', async () => {
     const diagram = await dotLayout(computedCloud3levels)
     expect(diagram).toMatchSnapshot()
   })
 
-  it(' computedCloudView', async () => {
+  it('computedCloudView', async () => {
     const diagram = await dotLayout(computedCloudView)
     expect(diagram).toMatchSnapshot()
   })

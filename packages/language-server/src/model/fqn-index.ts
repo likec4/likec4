@@ -9,12 +9,13 @@ import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { computeDocumentFqn } from './fqn-computation'
 
-type FqnIndexedDocument = Omit<LikeC4LangiumDocument,'c4fqns'> &  {
+type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
   c4fqns: NonNullable<LikeC4LangiumDocument['c4fqns']>
 }
 
-const isFqnIndexedDocument = (doc: LangiumDocument): doc is FqnIndexedDocument =>
-  isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
+export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
+  return isLikeC4LangiumDocument(doc) && !isNil(doc.c4fqns)
+}
 
 export interface FqnIndexEntry {
   fqn: Fqn
@@ -24,7 +25,6 @@ export interface FqnIndexEntry {
 }
 
 export class FqnIndex {
-
   protected langiumDocuments: LangiumDocuments
 
   constructor(private services: LikeC4Services) {
@@ -50,36 +50,61 @@ export class FqnIndex {
   }
 
   private entries() {
-    return this.documents().flatMap(doc => doc.c4fqns.entries().map(([fqn, path]) => ({ fqn, path, doc })))
+    return this.documents().flatMap(doc =>
+      doc.c4fqns.entries().map(([fqn, path]) => ({ fqn, path, doc }))
+    )
   }
 
   public get(el: ast.Element): Fqn | null {
-    let fqn = ElementOps.readId(el) ?? null
-    if (fqn) {
-      const doc = getDocument(el)
-      if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
-        return fqn
-      }
-      const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
-      logger.error(`Clean cached FQN ${fqn} at ${path}`)
-      ElementOps.writeId(el, null)
-      fqn = null
-    }
-    return fqn
+    return ElementOps.readId(el) ?? null
+    // if (fqn) {
+    //   const doc = getDocument(el)
+    //   if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
+    //     return fqn
+    //   }
+    //   const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
+    //   logger.error(`Clean cached FQN ${fqn} at ${path}`)
+    //   ElementOps.writeId(el, null)
+    //   fqn = null
+    // }
+    // return fqn
   }
 
   public byFqn(fqn: Fqn) {
-    return this.documents()
-      .flatMap(doc => {
-        return doc.c4fqns.get(fqn).map(path => ({ path, doc }))
-      })
+    return this.documents().flatMap(doc => {
+      return doc.c4fqns.get(fqn).map(path => ({ path, doc }))
+    })
   }
 
   public directChildrenOf(parent: Fqn) {
-    return this
-      .entries()
-      .filter(e => parentFqn(e.fqn) === parent)
-      .map((e): FqnIndexEntry => ({ ...e, name: nameFromFqn(e.fqn) }))
+    return new StreamImpl(
+      () => {
+        const children = new MultiMap<string, FqnIndexEntry>(
+          this.entries()
+            .filter(e => parentFqn(e.fqn) === parent)
+            .map((e): [string, FqnIndexEntry] => {
+              const name = nameFromFqn(e.fqn)
+              const entry = { ...e, name }
+              return [name, entry]
+            })
+            .toArray()
+        )
+
+        if (children.size === 0) {
+          return null
+        }
+        return children
+          .entriesGroupedByKey()
+          .flatMap(([_name, descrs]) => (descrs.length === 1 ? descrs : []))
+          .iterator()
+      },
+      iterator => {
+        if (iterator) {
+          return iterator.next()
+        }
+        return DONE_RESULT as IteratorResult<FqnIndexEntry>
+      }
+    )
   }
 
   public uniqueDescedants(parent: Fqn) {
@@ -87,37 +112,34 @@ export class FqnIndex {
       () => {
         const prefix = `${parent}.`
 
-        const children = [] as FqnIndexEntry[]
         const childrenNames = new Set<string>()
-
         const descedants = [] as FqnIndexEntry[]
 
-        this.entries().forEach(e => {
-          if (e.fqn.startsWith(prefix)) {
+        const nested = new MultiMap<string, FqnIndexEntry>()
+
+        this.entries()
+          .filter(e => e.fqn.startsWith(prefix))
+          .forEach(e => {
             const name = nameFromFqn(e.fqn)
             const entry = { ...e, name }
             if (parentFqn(e.fqn) === parent) {
               childrenNames.add(name)
-              children.push(entry)
+              nested.add(name, entry)
             } else {
               descedants.push(entry)
             }
-          }
-        })
+          })
 
-        if (children.length + descedants.length === 0) {
+        if (nested.size + descedants.length === 0) {
           return null
         }
-
-        const nested = new MultiMap<string, FqnIndexEntry>(
-          children.map(entry => [entry.name, entry])
-        )
 
         for (const descedant of descedants) {
           if (!childrenNames.has(descedant.name)) {
             nested.add(descedant.name, descedant)
           }
         }
+
         return nested
           .entriesGroupedByKey()
           .flatMap(([_name, descrs]) => (descrs.length === 1 ? descrs : []))

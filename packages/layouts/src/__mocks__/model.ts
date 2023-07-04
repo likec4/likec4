@@ -276,6 +276,5 @@ export const views = {
 export const fakeModel = () =>
   ModelIndex.from({
     elements: fakeElements,
-    relations: fakeRelations,
-    views
+    relations: fakeRelations
   })

@@ -10,13 +10,11 @@ import {
   type ComputedNode,
   type ComputeResult,
 } from '../types'
-import type * as Expr from '../types/expression'
-import * as Expression from '../types/expression'
+import * as Expr from '../types/expression'
 import {
   isViewRuleAutoLayout,
   isViewRuleExpression,
   isViewRuleStyle,
-  type ViewID,
   type ViewRuleStyle
 } from '../types/view'
 import {
@@ -42,11 +40,7 @@ import { ComputeCtx } from './compute-ctx'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
 import invariant from 'tiny-invariant'
 
-function transformToNodes(
-  elementsIterator: Iterable<Element>,
-  index: ModelIndex,
-  currentViewid?: ViewID
-) {
+function transformToNodes(elementsIterator: Iterable<Element>) {
   return Array.from(elementsIterator)
     .sort(compareByFqnHierarchically)
     .reduce((map, { id, kind, title, color, shape, description }) => {
@@ -57,7 +51,6 @@ function transformToNodes(
         }
         parent = parentFqn(parent)
       }
-      const navigateTo = head(index.defaultViewOf(id).filter(v => v !== currentViewid))
       if (parent) {
         const parentNd = map.get(parent)
         invariant(parentNd, `parent node ${parent} not found`)
@@ -72,7 +65,6 @@ function transformToNodes(
         shape: shape ?? DefaultElementShape,
         children: [],
         ...(description ? { description } : {}),
-        ...(navigateTo ? { navigateTo } : {})
       }
       map.set(id, node)
       return map
@@ -87,17 +79,17 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
       continue
     }
     for (const target of rule.targets) {
-      if (Expression.isWildcard(target)) {
+      if (Expr.isWildcard(target)) {
         predicates.push(() => true)
         break
       }
-      if (Expression.isElementKindExpr(target)) {
+      if (Expr.isElementKindExpr(target)) {
         predicates.push(
           target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
         )
         continue
       }
-      if (Expression.isElementTagExpr(target)) {
+      if (Expr.isElementTagExpr(target)) {
         predicates.push(
           target.isEqual
             ? ({ tags }) => !!tags && tags.includes(target.elementTag)
@@ -105,7 +97,7 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
         )
         continue
       }
-      if (Expression.isElementRef(target)) {
+      if (Expr.isElementRef(target)) {
         const { element, isDescedants } = target
         predicates.push(
           isDescedants ? n => n.id.startsWith(element + '.') : n => (n.id as string) === element
@@ -169,13 +161,13 @@ const asElementPredicate = (
   expr: Expr.ElementKindExpr | Expr.ElementTagExpr
 ): Predicate<Element> => {
   if (expr.isEqual) {
-    if (Expression.isElementKindExpr(expr)) {
+    if (Expr.isElementKindExpr(expr)) {
       return e => e.kind === expr.elementKind
     } else {
       return ({ tags }) => !!tags && tags.includes(expr.elementTag)
     }
   } else {
-    if (Expression.isElementKindExpr(expr)) {
+    if (Expr.isElementKindExpr(expr)) {
       return e => e.kind !== expr.elementKind
     } else {
       return ({ tags }) => isNil(tags) || tags.length === 0 || !tags.includes(expr.elementTag)
@@ -269,14 +261,14 @@ const excludeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
 }
 
 const resolveElements = (ctx: ComputeCtx, expr: Expr.ElementExpression): Element[] => {
-  if (Expression.isWildcard(expr)) {
+  if (Expr.isWildcard(expr)) {
     if (ctx.root) {
       return [ctx.index.find(ctx.root)]
     } else {
       return ctx.index.rootElements()
     }
   }
-  if (Expression.isElementKindExpr(expr)) {
+  if (Expr.isElementKindExpr(expr)) {
     return ctx.index.elements.filter(el => {
       if (expr.isEqual) {
         return el.kind === expr.elementKind
@@ -284,7 +276,7 @@ const resolveElements = (ctx: ComputeCtx, expr: Expr.ElementExpression): Element
       return el.kind !== expr.elementKind
     })
   }
-  if (Expression.isElementTagExpr(expr)) {
+  if (Expr.isElementTagExpr(expr)) {
     return ctx.index.elements.filter(el => {
       const tags = el.tags
       if (expr.isEqual) {
@@ -302,7 +294,7 @@ const resolveElements = (ctx: ComputeCtx, expr: Expr.ElementExpression): Element
 }
 
 const includeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.incoming) && !ctx.root) {
+  if (Expr.isWildcard(expr.incoming) && !ctx.root) {
     return ctx
   }
   const elements = resolveElements(ctx, expr.incoming)
@@ -327,7 +319,7 @@ const includeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeC
 }
 
 const excludeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.incoming) && !ctx.root) {
+  if (Expr.isWildcard(expr.incoming) && !ctx.root) {
     return ctx
   }
   const elements = resolveElements(ctx, expr.incoming)
@@ -347,7 +339,7 @@ const excludeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeC
 }
 
 const includeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.outgoing) && !ctx.root) {
+  if (Expr.isWildcard(expr.outgoing) && !ctx.root) {
     return ctx
   }
   const elements = resolveElements(ctx, expr.outgoing)
@@ -372,7 +364,7 @@ const includeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeC
 }
 
 const excludeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.outgoing) && !ctx.root) {
+  if (Expr.isWildcard(expr.outgoing) && !ctx.root) {
     return ctx
   }
   const elements = resolveElements(ctx, expr.outgoing)
@@ -392,7 +384,7 @@ const excludeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeC
 }
 
 const includeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.inout) && !ctx.root) {
+  if (Expr.isWildcard(expr.inout) && !ctx.root) {
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
@@ -418,7 +410,7 @@ const includeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
 }
 
 const excludeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => {
-  if (Expression.isWildcard(expr.inout) && !ctx.root) {
+  if (Expr.isWildcard(expr.inout) && !ctx.root) {
     return ctx
   }
   const targets = resolveElements(ctx, expr.inout)
@@ -501,31 +493,31 @@ export function computeElementView<V extends ElementView>(view: V, index: ModelI
   }
   for (const { isInclude, exprs } of rulesInclude) {
     for (const expr of exprs) {
-      if (Expression.isElementKindExpr(expr) || Expression.isElementTagExpr(expr)) {
+      if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
         ctx = isInclude ? includeElementKindOrTag(ctx, expr) : excludeElementKindOrTag(ctx, expr)
         continue
       }
-      if (Expression.isElementRef(expr)) {
+      if (Expr.isElementRef(expr)) {
         ctx = isInclude ? includeElementRef(ctx, expr) : excludeElementRef(ctx, expr)
         continue
       }
-      if (Expression.isWildcard(expr)) {
+      if (Expr.isWildcard(expr)) {
         ctx = isInclude ? includeWildcardRef(ctx, expr) : excludeWildcardRef(ctx, expr)
         continue
       }
-      if (Expression.isIncoming(expr)) {
+      if (Expr.isIncoming(expr)) {
         ctx = isInclude ? includeIncomingExpr(ctx, expr) : excludeIncomingExpr(ctx, expr)
         continue
       }
-      if (Expression.isOutgoing(expr)) {
+      if (Expr.isOutgoing(expr)) {
         ctx = isInclude ? includeOutgoingExpr(ctx, expr) : excludeOutgoingExpr(ctx, expr)
         continue
       }
-      if (Expression.isInOut(expr)) {
+      if (Expr.isInOut(expr)) {
         ctx = isInclude ? includeInOutExpr(ctx, expr) : excludeInOutExpr(ctx, expr)
         continue
       }
-      if (Expression.isRelation(expr)) {
+      if (Expr.isRelation(expr)) {
         ctx = isInclude ? includeRelationExpr(ctx, expr) : excludeRelationExpr(ctx, expr)
         continue
       }
@@ -554,7 +546,7 @@ export function computeElementView<V extends ElementView>(view: V, index: ModelI
     }
   }
 
-  const nodesreg = transformToNodes(elements, index, view.id)
+  const nodesreg = transformToNodes(elements)
 
   const edges = edgeBuilder.build().map(edge => {
     while (edge.parent) {

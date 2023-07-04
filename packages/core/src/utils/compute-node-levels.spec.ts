@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { fakeModel } from '../__test__'
 import type { Fqn, ViewID } from '../types'
 import { computeElementView } from '../compute-view/compute-element-view'
-import { computeNodeLevels } from '.'
+import { computeNodeLevels } from './compute-node-levels'
 
 describe('compute-node-levels', () => {
   it('view of cloud', () => {
