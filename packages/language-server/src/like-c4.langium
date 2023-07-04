@@ -65,7 +65,7 @@ Element:
 
 ElementBody: OpenBlock
   tags=Tags?
-  (props+=ElementProperty)*
+  (props+=(ElementProperty | LinkProperty))*
 
   elements+=(
     Element |
@@ -81,6 +81,23 @@ ElementProperty: (
     ))*
   CloseBlock
 );
+
+
+// ElementProperty:
+//   LinkProperty |
+//   ElementStringProperty |
+//   ElementStyleProperty
+// ;
+
+// ElementStringProperty infers AnyStringProperty:
+//   {infer ElementStringProperty} key=('title' | 'description' | 'technology') Colon? value=STRING;
+
+// ElementStyleProperty:
+//   key='style' OpenBlock
+//     (props+=(
+//       ColorProperty | ShapeProperty
+//     ))*
+//   CloseBlock;
 
 ExtendElement:
   'extend' element=StrictElementRef body=ExtendElementBody;
@@ -209,10 +226,12 @@ ElementRefExpression: id=ElementRef (isDescedants?='.*')?;
 
 // Common -------------------------------------
 
+LinkProperty: key='link' Colon? value=Uri;
+
 ColorProperty: key='color' Colon? value=ThemeColor;
 ShapeProperty: key='shape' Colon? value=ElementShape;
 
-type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty;
+type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
 type AStyleProperty = ColorProperty | ShapeProperty;
 
 // -------------------------
@@ -223,6 +242,7 @@ Tag: name=Name;
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
+Uri returns string: URI_WITH_SCHEMA | Dot* URI_RELATIVE;
 
 RArrow returns string: RARROW;
 
@@ -233,17 +253,21 @@ fragment IsEqual:
 // Terminals
 
 terminal RARROW: '->';
-terminal Dot: '.';
+terminal Dot: DOT;
 terminal NotEqual: '!=';
 terminal Eq: '=';
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
-terminal Colon: ':';
+terminal Colon: COLON;
 terminal Comma: ',';
 // terminal Star: '*';
 // terminal Semi: ';';
 // terminal EOL: (WS+)? NL;
 
+terminal URI_WITH_SCHEMA: /(\w+:\/\/)[^\s]+/;
+terminal URI_RELATIVE: /\/[^\s]+/;
+
+// terminal URI_WITH_SCHEMA: LETTER+ COLON SLASH SLASH LETTER+;
 terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
 terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
 terminal STRING: /"[^"]*"|'[^']*'/;
@@ -251,8 +275,12 @@ terminal STRING: /"[^"]*"|'[^']*'/;
 
 // -----------------------------------
 // Symbols
+// terminal fragment NON_SPACE: DOT | LETTER | DIGIT | UNDERSCORE | SLASH;
+terminal fragment DOT       :  '.';
+// terminal fragment SLASH     : '/';
 terminal fragment HASH      : '#';
 terminal fragment UNDERSCORE: '_';
+terminal fragment COLON: ':';
 // terminal fragment LowerLetter  : /a-z/;
 terminal fragment LETTER       : /[^\W\d_]/;
 terminal fragment DIGIT        : /[0-9]/;

@@ -1,46 +1,41 @@
-import { describe, test } from 'vitest'
-import { valid, invalid } from './asserts'
+import { describe } from 'vitest'
+import { test } from './asserts'
 
 describe('06_ElementRef', () => {
 
-  test(
-    'valid elementRef',
-    valid`
-specification {
-  element component
-}
-model {
-  component user
-  component system {
-    component sub1 {
-      component sub2
+  test('valid elementRef').valid`
+    specification {
+      element component
     }
-  }
-  user -> sub1.sub2
-  component system2 {
-    it -> system.sub2
-  }
-}
-`
-  )
+    model {
+      component user
+      component system {
+        component sub1 {
+          component sub2
+        }
+      }
+      user -> sub1.sub2
+      component system2 {
+        it -> system.sub2
+      }
+    }
+  `
 
-  test(
-    'invalid elementRef',
-    invalid`
-specification {
-  element component
-}
-model {
-  component user
-  component system {
-    component sub1 {
-      component sub2
+  test('invalid elementRef').invalid`
+    specification {
+      element component
     }
-  }
-  user -> sub2.sub1
-}
-`
-  )
+    model {
+      component user
+      component system {
+        component sub1 {
+          component sub2
+        }
+      }
+      user -> sub2.sub1
+    }
+  `
+
 })
 // test('06_ElementRefScope', invalid`
 // specification {
