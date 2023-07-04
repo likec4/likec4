@@ -31,10 +31,6 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         docExports.push(this.descriptions.createDescription(tag, '#' + tag.name, document))
       }
     }
-
-    // Filled later by FqnIndex (on IndexedContent phase)
-    document.c4fqns = undefined
-
     // Only root model elements are exported
     if (model && model.elements.length > 0) {
       for (const elAst of model.elements) {
