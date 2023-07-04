@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "0.25.0",
+  "version": "0.26.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
