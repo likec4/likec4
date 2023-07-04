@@ -27,21 +27,21 @@ runs:
 
     - name: yarn caches
       uses: actions/cache@v3
-      if: github.ref_protected == true
+      # if: github.ref_protected == true
       with:
         path: ${{ steps.yarn-cachedir.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: restore only caches
-      uses: actions/cache/restore@v3
-      if: github.ref_protected == false
-      with:
-        path: ${{ steps.yarn-cachedir.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+    # - name: restore only caches
+    #   uses: actions/cache/restore@v3
+    #   if: github.ref_protected == false
+    #   with:
+    #     path: ${{ steps.yarn-cachedir.outputs.dir }}
+    #     key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-yarn-
 
     - name: install dependencies
       shell: bash

@@ -1,9 +1,9 @@
 name: vscode
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_call:
+  release:
+    types: [published]
 
 env:
   TURBO_API: 'http://127.0.0.1:9080'
@@ -24,17 +24,12 @@ jobs:
         with:
           turborepo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: get release version
-      #   run: |
-      #     VERSION=$(node -e "console.log(require('./package.json').version)")
-      #     echo "Release version: $VERSION"
-      #     echo "VERSION=${VERSION}" >> $GITHUB_ENV
-
       - name: Publish VSCode extension
         run: |
           VERSION=$(node -e "console.log(require('./package.json').version)")
           echo " version: $VERSION"
           yarn vsce publish $VERSION
         working-directory: packages/vscode
+        continue-on-error: true
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}

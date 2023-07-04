@@ -1,17 +1,15 @@
-name: cleanup
+name: cleanup caches
 on:
   pull_request:
     types:
       - closed
 
-permissions:
-  actions: write
-
 jobs:
   cleanup:
-    name: cleanup caches
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      actions: write
     steps:
       - name: Check out code
         uses: actions/checkout@v3

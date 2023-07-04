@@ -15,7 +15,7 @@ env:
   NODE_ENV: 'production'
 
 permissions:
-  actions: read
+  actions: write
   checks: write
   contents: read
   statuses: write
