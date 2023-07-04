@@ -44,4 +44,7 @@ jobs:
   PublishVSCode:
     uses: ./.github/workflows/vscode.yaml
     needs: ship
+    permissions:
+      actions: write
+      contents: read
     secrets: inherit

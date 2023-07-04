@@ -11,11 +11,14 @@ env:
   TURBO_TEAM: 'likec4'
   NODE_ENV: 'production'
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   publish-extension:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions: read-all
     steps:
       - uses: actions/checkout@v3
 
