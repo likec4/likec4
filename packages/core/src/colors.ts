@@ -1,10 +1,12 @@
 import type { ThemeColor } from './types/element'
 
+type Color = `#${string}`
+
 export interface ElementColors {
-  fill: string
-  stroke: string
-  hiContrast: string
-  loContrast: string
+  fill: Color
+  stroke: Color
+  hiContrast: Color
+  loContrast: Color
 }
 
 const blue = {

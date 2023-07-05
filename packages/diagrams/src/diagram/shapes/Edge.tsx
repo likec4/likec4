@@ -61,7 +61,7 @@ export function EdgeShape({
       // offsetX={label  .width / 2}
       // width={label.width}
       fill={theme.relation.labelColor}
-      fontFamily='Helvetica'
+      fontFamily={theme.font}
       fontSize={label.fontSize}
       fontStyle={label.fontStyle ?? 'normal'}
       align={label.align}

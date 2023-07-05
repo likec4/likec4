@@ -40,7 +40,7 @@ export function NodeLabels({
         // offsetX={label.width / 2}
         // width={label.width}
         fill={color}
-        fontFamily='Helvetica'
+        fontFamily={theme.font}
         fontSize={label.fontSize}
         padding={0}
         fontStyle={label.fontStyle ?? 'normal'}

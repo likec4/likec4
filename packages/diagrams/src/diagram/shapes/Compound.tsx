@@ -74,7 +74,7 @@ export function CompoundShape({
       offsetY={label.fontSize / 2}
       width={node.size.width - 2 * label.pt[0]}
       fill={loContrast}
-      fontFamily='Helvetica'
+      fontFamily={theme.font}
       fontSize={label.fontSize}
       fontStyle={label.fontStyle ?? 'normal'}
       letterSpacing={0.8}
