@@ -8,6 +8,9 @@
   "dsl": {
     "title": "LikeC4 Language"
   },
+  "themes": {
+    "title": "Themes"
+  },
   "tools": {
     "title": "Tooling"
   },

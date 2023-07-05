@@ -36,6 +36,8 @@ model {
   }
 
   bigbank = enterprise "Big Bank plc" {
+    // Original
+    link https://structurizr.com/dsl?example=big-bank-plc
 
     supportStaff = person "Customer Service Staff" {
       description: "Customer service staff within the bank."
