@@ -120,7 +120,8 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = printToDot(computedView)
+  const dot = graphviz.unflatten(printToDot(computedView), 2, true, 2)
+  // const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -173,6 +174,9 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
 
   const graphvizEdges = graphvizJson.edges ?? []
   for (const e of graphvizEdges) {
+    if (!('id' in e)) {
+      continue
+    }
     const edgeData = computedEdges.find(i => i.id === e.id)
     if (!edgeData) {
       console.warn(`Edge ${e.id} not found, how did it get into the graphviz output?`)

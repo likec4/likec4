@@ -5,7 +5,9 @@ import {
   computedCloud3levels,
   computedIndexView
 } from '../__mocks__/data'
-import { dotLayout } from './dotLayout'
+import { dotLayouter } from './dotLayout'
+
+const dotLayout = await dotLayouter()
 
 describe('dotLayout:', () => {
 

@@ -90,7 +90,7 @@ export namespace GraphvizJson {
   export interface GvNodeObject {
     _draw_: Draw[]
     _ldraw_?: Ldraw[]
-    id: NodeId
+    id?: NodeId
     _gvid: GvId
     height: string
     pos: string
@@ -122,7 +122,7 @@ export namespace GraphvizJson {
     _ldraw_?: Ldraw[]
     fontname: string
     fontsize: string
-    id: EdgeId
+    id?: EdgeId
     label: string
     lp: string
     nojustify?: 'true' | 'false'

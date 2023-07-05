@@ -1,57 +1,57 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Colors, RelationColors, compareFqnHierarchically } from '@likec4/core'
-import type { ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
-import { groupBy, sortObject, values } from 'rambdax'
+import {
+  Colors,
+  RelationColors
+} from '@likec4/core'
+import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
+import { isTruthy } from 'remeda'
+import invariant from 'tiny-invariant'
 import {
   attribute as _,
   digraph,
   toDot,
   type GraphBaseModel,
-  type NodeModel,
-  type SubgraphModel
+  type NodeModel
 } from 'ts-graphviz'
+import { edgeLabel, nodeLabel } from './dot-labels'
 import type { DotSource } from './graphviz-types'
-import { generateEdgeLabel, generateNodeLabel, pxToInch, pxToPoints } from './graphviz-utils'
+import { pxToInch, pxToPoints } from './graphviz-utils'
+
+function isLeaf(value: ComputedNode) {
+  return value.children.length === 0
+}
+function isRootCluster(value: ComputedNode) {
+  return value.parent === null && value.children.length > 0
+}
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
-  const gvSubgraphs = new Map<Fqn, SubgraphModel>()
+
   const gvNodes = new Map<Fqn, NodeModel>()
 
   let sequence = 1
 
-  const processNode = (node: ComputedNode, parent: GraphBaseModel) => {
-    if (node.children.length > 0) {
-      const subgraph = parent.createSubgraph('cluster_' + sequence++, {
-        [_.id]: node.id,
-        [_.labeljust]: 'l',
-        [_.fontsize]: pxToPoints(12),
-        [_.label]: `<<B>${node.title.toUpperCase()}</B>>`,
-        [_.margin]: node.children.length > 2 ? 30 : 20
-      })
-      gvSubgraphs.set(node.id, subgraph)
+  const processCluster = (node: ComputedNode, parent: GraphBaseModel) => {
+    if (node.children.length === 0) {
+      const gNode = gvNodes.get(node.id)
+      invariant(gNode, 'Node not found')
+      parent.node(gNode.id)
+      return
+    }
 
-      for (const child of nodes.filter(n => n.parent === node.id)) {
-        processNode(child, subgraph)
-      }
-    } else {
-      const gNode = parent.createNode('nd' + sequence++, {
-        [_.id]: node.id,
-        [_.label]: generateNodeLabel(node)
-      })
-      if (node.color !== 'primary') {
-        gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
-      }
-      switch (node.shape) {
-        case 'cylinder':
-        case 'storage': {
-          gNode.attributes.set(_.color, Colors[node.color].stroke)
-          gNode.attributes.set(_.shape, 'cylinder')
-          break
-        }
-        default:
-          break
-      }
-      gvNodes.set(node.id, gNode)
+    const subgraph = parent.createSubgraph('cluster_' + sequence++, {
+      [_.id]: node.id,
+      [_.labeljust]: 'l',
+      [_.fontsize]: pxToPoints(12),
+      [_.label]: `<<B>${node.title.toUpperCase()}</B>>`,
+      [_.margin]: node.children.length > 2 ? 30 : 20
+    })
+
+    for (const child of nodes.filter(n => n.parent === node.id)) {
+      processCluster(child, subgraph)
+    }
+
+    for (const edge of edges.filter(e => e.parent === node.id)) {
+      addEdge(edge, subgraph)
     }
   }
 
@@ -62,9 +62,9 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.nodesep]: pxToInch(100),
     [_.ranksep]: pxToInch(100),
     [_.layout]: 'dot',
-    [_.TBbalance]: 'min',
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(16)
+    [_.fontsize]: pxToPoints(16),
+    [_.packmode]: 'array'
   })
 
   G.attributes.node.apply({
@@ -88,45 +88,58 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.nojustify]: true
   })
 
-  for (const root of nodes.filter(n => n.parent === null)) {
-    processNode(root, G)
-  }
+  const leafs = nodes.filter(isLeaf)
 
-  const sortedEdges = values(
-    sortObject(
-      (parentA, parentB) => compareFqnHierarchically(parentA, parentB),
-      groupBy(
-        e => e.parent ?? '',
-        edges
-      )
-    )
-  )
+  leafs.forEach((node, i) => {
+    const gNode = G.createNode('nd' + sequence++, {
+      [_.id]: node.id,
+      [_.label]: nodeLabel(node),
+      [_.sortv]: i,
+    })
+    if (node.color !== 'primary') {
+      gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
+    }
+    switch (node.shape) {
+      case 'cylinder':
+      case 'storage': {
+        gNode.attributes.set(_.color, Colors[node.color].stroke)
+        gNode.attributes.set(_.shape, 'cylinder')
+        break
+      }
+      default:
+        break
+    }
+    gvNodes.set(node.id, gNode)
+  })
 
-  for (const edgesPerContainer of sortedEdges) {
-    for (const edge of edgesPerContainer) {
-      // const container = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
-      const source = gvNodes.get(edge.source)
-      const target = gvNodes.get(edge.target)
-      if (source && target) {
-        const e = G.edge([source, target], {
-          [_.id]: edge.id
-        })
-        const label = generateEdgeLabel(edge)
-        if (label) {
-          e.attributes.set(_.label, label)
-        }
-        // this is the only edge in the container
-        // and the container has no subgraphs
-        // so we can remove the constraint
-        if (edgesPerContainer.length === 1) {
-          const sourceNd = nodes.find(n => n.id === edge.source)
-          const targetNd = nodes.find(n => n.id === edge.target)
-          if (sourceNd && targetNd && sourceNd.parent === targetNd.parent) {
-            e.attributes.set(_.minlen, 0)
-          }
-        }
+  function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
+    const source = gvNodes.get(edge.source)
+    // if (!source) {
+    //   const firstleaf = leafs.find(n => isAncestor(edge.source, n.id))
+    //   source = firstleaf && gvNodes.get(firstleaf.id)
+    // }
+    const target = gvNodes.get(edge.target)
+    // if (!target) {
+    //   const firstleaf = leafs.find(n => isAncestor(edge.target, n.id))
+    //   target = firstleaf && gvNodes.get(firstleaf.id)
+    // }
+    if (source && target) {
+      const e = parent.edge([source, target], {
+        [_.id]: edge.id
+      })
+      const { label } = edge
+      if (isTruthy(label)) {
+        e.attributes.set(_.label, edgeLabel(label))
       }
     }
+  }
+
+  for (const rootEdge of edges.filter(e => e.parent === null)) {
+    addEdge(rootEdge, G)
+  }
+
+  for (const cluster of nodes.filter(isRootCluster)) {
+    processCluster(cluster, G)
   }
 
   return toDot(G) as DotSource
