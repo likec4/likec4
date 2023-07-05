@@ -11,9 +11,10 @@ import {
   digraph,
   toDot,
   type GraphBaseModel,
-  type NodeModel
+  type NodeModel,
+  type SubgraphModel
 } from 'ts-graphviz'
-import { edgeLabel, nodeLabel } from './dot-labels'
+import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import type { DotSource } from './graphviz-types'
 import { pxToInch, pxToPoints } from './graphviz-utils'
 
@@ -26,35 +27,6 @@ function isRootCluster(value: ComputedNode) {
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
 
-  const gvNodes = new Map<Fqn, NodeModel>()
-
-  let sequence = 1
-
-  const processCluster = (node: ComputedNode, parent: GraphBaseModel) => {
-    if (node.children.length === 0) {
-      const gNode = gvNodes.get(node.id)
-      invariant(gNode, 'Node not found')
-      parent.node(gNode.id)
-      return
-    }
-
-    const subgraph = parent.createSubgraph('cluster_' + sequence++, {
-      [_.id]: node.id,
-      [_.labeljust]: 'l',
-      [_.fontsize]: pxToPoints(12),
-      [_.label]: `<<B>${node.title.toUpperCase()}</B>>`,
-      [_.margin]: node.children.length > 2 ? 30 : 20
-    })
-
-    for (const child of nodes.filter(n => n.parent === node.id)) {
-      processCluster(child, subgraph)
-    }
-
-    for (const edge of edges.filter(e => e.parent === node.id)) {
-      addEdge(edge, subgraph)
-    }
-  }
-
   const G = digraph({
     [_.compound]: true,
     [_.pad]: 0.08,
@@ -64,7 +36,6 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.layout]: 'dot',
     [_.fontname]: 'Helvetica',
     [_.fontsize]: pxToPoints(16),
-    [_.packmode]: 'array'
   })
 
   G.attributes.node.apply({
@@ -88,13 +59,40 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.nojustify]: true
   })
 
-  const leafs = nodes.filter(isLeaf)
+  const gvSubgraphs = new Map<Fqn, SubgraphModel>()
+  const gvNodes = new Map<Fqn, NodeModel>()
 
-  leafs.forEach((node, i) => {
+  let sequence = 1
+
+  const traverseNodes = (node: ComputedNode, parent: GraphBaseModel) => {
+    if (node.children.length === 0) {
+      const gNode = gvNodes.get(node.id)
+      invariant(gNode, 'Node not found')
+      parent.node(gNode.id)
+      return
+    }
+
+    const subgraph = parent.createSubgraph('cluster_' + sequence++, {
+      [_.id]: node.id,
+      [_.labeljust]: 'l',
+      [_.fontsize]: pxToPoints(12),
+      [_.margin]: node.children.length > 2 ? 30 : 20
+    })
+    const label = sanitize(node.title.toUpperCase())
+    if (isTruthy(label)) {
+      subgraph.set(_.label, `<<B>${label}</B>>`)
+    }
+    gvSubgraphs.set(node.id, subgraph)
+
+    for (const child of nodes.filter(n => n.parent === node.id)) {
+      traverseNodes(child, subgraph)
+    }
+  }
+
+  nodes.filter(isLeaf).forEach((node) => {
     const gNode = G.createNode('nd' + sequence++, {
       [_.id]: node.id,
-      [_.label]: nodeLabel(node),
-      [_.sortv]: i,
+      [_.label]: nodeLabel(node)
     })
     if (node.color !== 'primary') {
       gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
@@ -134,12 +132,13 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     }
   }
 
-  for (const rootEdge of edges.filter(e => e.parent === null)) {
-    addEdge(rootEdge, G)
+  for (const cluster of nodes.filter(isRootCluster)) {
+    traverseNodes(cluster, G)
   }
 
-  for (const cluster of nodes.filter(isRootCluster)) {
-    processCluster(cluster, G)
+  for (const edge of edges) {
+    const parent = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
+    addEdge(edge, parent)
   }
 
   return toDot(G) as DotSource

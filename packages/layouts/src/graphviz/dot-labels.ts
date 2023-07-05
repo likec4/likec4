@@ -1,17 +1,19 @@
-import { Colors, type ComputedEdge, type ComputedNode } from '@likec4/core'
+import { Colors, type ComputedNode } from '@likec4/core'
 import indentString from 'indent-string'
 import { isEmpty, isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import wordWrap from 'word-wrap'
 import { pxToPoints } from './graphviz-utils'
 
+export function sanitize(text: string) {
+  return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+}
+
 function wrap(text: string, maxChars: number) {
   return wordWrap(text, {
     width: maxChars,
     indent: '',
-    escape: line => {
-      return line.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-    }
+    escape: sanitize
   }).split('\n')
 }
 

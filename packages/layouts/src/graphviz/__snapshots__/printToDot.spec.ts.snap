@@ -10,7 +10,6 @@ exports[`printToDot: computedAmazonView 1`] = `
   layout = "dot";
   fontname = "Helvetica";
   fontsize = 12;
-  packmode = "array";
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -33,7 +32,6 @@ exports[`printToDot: computedAmazonView 1`] = `
   "nd1" [
     id = "cloud.backend";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Backend</FONT>>;
-    sortv = 0;
   ];
   "nd2" [
     id = "amazon.s3";
@@ -45,22 +43,21 @@ exports[`printToDot: computedAmazonView 1`] = `
         <FONT POINT-SIZE="10.5" COLOR="#dbeafe">S3 is a storage service</FONT>
       </TD></TR>
     </TABLE>>;
-    sortv = 1;
   ];
   subgraph "cluster_3" {
     id = "cloud";
     labeljust = "l";
     fontsize = 9;
-    label = <<B>CLOUD</B>>;
     margin = 20;
+    label = <<B>CLOUD</B>>;
     "nd1";
   }
   subgraph "cluster_4" {
     id = "amazon";
     labeljust = "l";
     fontsize = 9;
-    label = <<B>AMAZON</B>>;
     margin = 20;
+    label = <<B>AMAZON</B>>;
     "nd2";
   }
   "nd1" -> "nd2" [
@@ -80,7 +77,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
   layout = "dot";
   fontname = "Helvetica";
   fontsize = 12;
-  packmode = "array";
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -103,7 +99,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
   "nd1" [
     id = "customer";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
-    sortv = 0;
   ];
   "nd2" [
     id = "support";
@@ -118,7 +113,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 1;
   ];
   "nd3" [
     id = "cloud.frontend.adminPanel";
@@ -133,7 +127,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 2;
   ];
   "nd4" [
     id = "cloud.frontend.dashboard";
@@ -148,7 +141,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 3;
   ];
   "nd5" [
     id = "cloud.backend.graphql";
@@ -160,7 +152,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
         <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Component that allows to query data via GraphQL.</FONT>
       </TD></TR>
     </TABLE>>;
-    sortv = 4;
   ];
   "nd6" [
     id = "cloud.backend.storage";
@@ -175,7 +166,6 @@ exports[`printToDot: computedCloud3levels 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 5;
     color = "#2563eb";
     shape = "cylinder";
   ];
@@ -189,22 +179,21 @@ exports[`printToDot: computedCloud3levels 1`] = `
         <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
       </TD></TR>
     </TABLE>>;
-    sortv = 6;
   ];
   subgraph "cluster_8" {
     id = "cloud";
     labeljust = "l";
     fontsize = 9;
-    label = <<B>CLOUD</B>>;
     margin = 30;
+    label = <<B>CLOUD</B>>;
     "nd3";
     "nd4";
     subgraph "cluster_9" {
       id = "cloud.backend";
       labeljust = "l";
       fontsize = 9;
-      label = <<B>BACKEND</B>>;
       margin = 20;
+      label = <<B>BACKEND</B>>;
       "nd5";
       "nd6";
       "nd5" -> "nd6" [
@@ -248,7 +237,6 @@ exports[`printToDot: computedCloudView 1`] = `
   layout = "dot";
   fontname = "Helvetica";
   fontsize = 12;
-  packmode = "array";
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -271,7 +259,6 @@ exports[`printToDot: computedCloudView 1`] = `
   "nd1" [
     id = "customer";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
-    sortv = 0;
   ];
   "nd2" [
     id = "support";
@@ -286,17 +273,14 @@ exports[`printToDot: computedCloudView 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 1;
   ];
   "nd3" [
     id = "cloud.frontend";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Frontend</FONT>>;
-    sortv = 2;
   ];
   "nd4" [
     id = "cloud.backend";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Backend</FONT>>;
-    sortv = 3;
   ];
   "nd5" [
     id = "amazon";
@@ -308,14 +292,13 @@ exports[`printToDot: computedCloudView 1`] = `
         <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
       </TD></TR>
     </TABLE>>;
-    sortv = 4;
   ];
   subgraph "cluster_6" {
     id = "cloud";
     labeljust = "l";
     fontsize = 9;
-    label = <<B>CLOUD</B>>;
     margin = 20;
+    label = <<B>CLOUD</B>>;
     "nd3";
     "nd4";
     "nd3" -> "nd4" [
@@ -348,7 +331,6 @@ exports[`printToDot: computedIndexView 1`] = `
   layout = "dot";
   fontname = "Helvetica";
   fontsize = 12;
-  packmode = "array";
   edge [
     fontname = "Helvetica";
     style = "solid";
@@ -371,7 +353,6 @@ exports[`printToDot: computedIndexView 1`] = `
   "nd1" [
     id = "customer";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
-    sortv = 0;
   ];
   "nd2" [
     id = "support";
@@ -386,12 +367,10 @@ exports[`printToDot: computedIndexView 1`] = `
          </TABLE>
       </TD></TR>
     </TABLE>>;
-    sortv = 1;
   ];
   "nd3" [
     id = "cloud";
     label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">cloud</FONT>>;
-    sortv = 2;
   ];
   "nd4" [
     id = "amazon";
@@ -403,7 +382,6 @@ exports[`printToDot: computedIndexView 1`] = `
         <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
       </TD></TR>
     </TABLE>>;
-    sortv = 3;
   ];
   "nd3" -> "nd4" [
     id = "cloud:amazon";

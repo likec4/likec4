@@ -1,4 +1,4 @@
-import { Graphviz } from "@hpcc-js/wasm/graphviz";
+import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
   ComputedView,
   DiagramEdge,
@@ -52,10 +52,9 @@ function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingB
   }
 }
 
-
 function parseLabelDraws(
   { _ldraw_ = [] }: GraphvizJson.GvObject | GraphvizJson.Edge,
-  [containerX, containerY]: Point = [0,0]
+  [containerX, containerY]: Point = [0, 0]
 ): DiagramLabel[] {
   const labels = [] as DiagramLabel[]
 
@@ -81,10 +80,7 @@ function parseLabelDraws(
           fontSize,
           ...(fontStyle ? { fontStyle } : {}),
           text: draw.text,
-          pt: [
-            pointToPx(draw.pt[0]) - containerX,
-            pointToPx(draw.pt[1]) - containerY,
-          ],
+          pt: [pointToPx(draw.pt[0]) - containerX, pointToPx(draw.pt[1]) - containerY],
           align: toKonvaAlign(draw.align),
           width: pointToPx(draw.width)
         })
@@ -102,13 +98,13 @@ function parseLabelDraws(
 function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
   invariant(pos, 'edge should pos')
   const posStr = pos.substring(2)
-  const points = posStr.split(" ").map((p: string): Point => {
+  const points = posStr.split(' ').map((p: string): Point => {
     const { x, y } = parsePos(p)
     return [x, y]
   })
   const endpoint = points.shift()
   invariant(endpoint, 'edge should have endpoint')
-  return points;
+  return points
 }
 
 function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {
@@ -155,10 +151,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       continue
     }
 
-    const {
-      x, y,
-      ...size
-    } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+    const { x, y, ...size } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
     const position = [x, y] as Point
 
@@ -199,12 +192,23 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
 
 export const dotLayout: DiagramLayoutFn = async computedView => {
   const graphviz = await Graphviz.load()
-  return dotLayoutFn(graphviz, computedView)
+  try {
+    return dotLayoutFn(graphviz, computedView)
+  } finally {
+    Graphviz.unload()
+  }
 }
 
-export async function dotLayouter(): Promise<DiagramLayoutFn> {
+export async function dotLayouter() {
   const graphviz = await Graphviz.load()
-  return computedView =>
+  // return {
+  //   dotLayout: (computedView: ComputedView) => dotLayoutFn(graphviz, computedView),
+  //   dispose: () => {
+  //     Graphviz.unload()
+  //   }
+  // }
+  // Graphviz.unload()
+  return (computedView: ComputedView) =>
     new Promise<DiagramView>((resolve, reject) => {
       try {
         resolve(dotLayoutFn(graphviz, computedView))

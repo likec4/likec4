@@ -70,6 +70,39 @@ exports[`dotLayout: > computedAmazonView 1`] = `
   "nodes": [
     {
       "children": [
+        "cloud.backend",
+      ],
+      "color": "primary",
+      "id": "cloud",
+      "kind": "system",
+      "labels": [
+        {
+          "align": "left",
+          "fontSize": 12,
+          "fontStyle": "bold",
+          "pt": [
+            11,
+            15,
+          ],
+          "text": "CLOUD",
+          "width": 43,
+        },
+      ],
+      "navigateTo": "cloudView",
+      "parent": null,
+      "position": [
+        11,
+        11,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 259,
+        "width": 373,
+      },
+      "title": "cloud",
+    },
+    {
+      "children": [
         "amazon.s3",
       ],
       "color": "primary",
@@ -102,37 +135,33 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "title": "Amazon",
     },
     {
-      "children": [
-        "cloud.backend",
-      ],
+      "children": [],
       "color": "primary",
-      "id": "cloud",
-      "kind": "system",
+      "id": "cloud.backend",
+      "kind": "component",
       "labels": [
         {
           "align": "left",
-          "fontSize": 12,
-          "fontStyle": "bold",
+          "fontSize": 18,
           "pt": [
-            11,
-            15,
+            126,
+            95,
           ],
-          "text": "CLOUD",
-          "width": 43,
+          "text": "Backend",
+          "width": 68,
         },
       ],
-      "navigateTo": "cloudView",
-      "parent": null,
+      "parent": "cloud",
       "position": [
-        11,
-        11,
+        38,
+        63,
       ],
       "shape": "rectangle",
       "size": {
-        "height": 259,
-        "width": 373,
+        "height": 180,
+        "width": 320,
       },
-      "title": "cloud",
+      "title": "Backend",
     },
     {
       "children": [],
@@ -173,35 +202,6 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "width": 320,
       },
       "title": "S3",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "id": "cloud.backend",
-      "kind": "component",
-      "labels": [
-        {
-          "align": "left",
-          "fontSize": 18,
-          "pt": [
-            126,
-            95,
-          ],
-          "text": "Backend",
-          "width": 68,
-        },
-      ],
-      "parent": "cloud",
-      "position": [
-        38,
-        63,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 180,
-        "width": 320,
-      },
-      "title": "Backend",
     },
   ],
   "rules": [
