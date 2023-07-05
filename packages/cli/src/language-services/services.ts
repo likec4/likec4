@@ -1,5 +1,5 @@
 import { createLanguageServices, type LikeC4Services } from '@likec4/language-server'
-import chalk from 'chalk'
+import { dim, red, green} from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import type { LikeC4Model, ViewID } from '@likec4/core/types'
@@ -38,8 +38,8 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   const modelBuilder = services.likec4.ModelBuilder
   const modelLocator = services.likec4.ModelLocator
 
-  console.log(chalk.dim('🔍 Searching for likec4 files in:'))
-  console.log('\t' + chalk.dim(workspace))
+  console.log(dim('🔍 Searching for likec4 files in:'))
+  console.log('\t' + dim(workspace))
 
   await services.shared.workspace.WorkspaceManager.initializeWorkspace([
     {
@@ -50,11 +50,11 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
 
   const documents = services.shared.workspace.LangiumDocuments.all.toArray()
   if (documents.length === 0) {
-    console.log(chalk.red`No likec4 files found`)
+    console.log(red(`No likec4 files found`))
     process.exit(1)
   }
 
-  console.log(chalk.dim('🔍 Validating...'))
+  console.log(dim('🔍 Validating...'))
   await services.shared.workspace.DocumentBuilder.build(documents, { validationChecks: 'all' })
 
   let hasErrors = false
@@ -63,10 +63,10 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
     const docPath = relative(workspace, doc.uri.fsPath)
     if (errors && errors.length > 0) {
       hasErrors = true
-      console.log(chalk.red('   ⛔️ ' + docPath))
+      console.log(red('   ⛔️ ' + docPath))
       for (const validationError of errors) {
         console.log(
-          chalk.red(
+          red(
             `      line ${validationError.range.start.line}: ${validationError.message
             } [${doc.textDocument.getText(validationError.range)}]`
           )
@@ -74,19 +74,19 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
       }
       continue
     }
-    console.log(chalk.green('   ✅ ' + docPath))
+    console.log(green('   ✅ ' + docPath))
   }
 
   if (hasErrors) {
     process.exit(1)
   }
 
-  console.log(chalk.dim`🔍 Building model`)
+  console.log(dim(`🔍 Building model`))
 
   const model = modelBuilder.buildModel()
 
   if (!model) {
-    console.log(chalk.red`Failed to build model`)
+    console.log(red(`Failed to build model`))
     process.exit(1)
   }
 

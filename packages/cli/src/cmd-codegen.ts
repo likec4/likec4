@@ -2,7 +2,7 @@ import { createArgument, createCommand } from '@commander-js/extra-typings'
 import type { DiagramView } from '@likec4/core/types'
 import { generateReact, generateViewsDataTs, generateD2 } from '@likec4/generators'
 import { printToDot } from '@likec4/layouts'
-import chalk from 'chalk'
+import { red, green, dim } from 'kleur/colors'
 import { mkdirp } from 'mkdirp'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -17,7 +17,7 @@ async function codegenAction(
 ) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
 
-  console.log(chalk.dim`🔍\tLayouting...`)
+  console.log(dim(`🔍\tLayouting...`))
 
   const diagrams = await layoutViews(values(model.views))
 
@@ -33,7 +33,7 @@ async function codegenAction(
     output = output.substring(0, output.length - extname.length) + extension
   }
   await writeFile(output, generated)
-  console.log('\nGenerated:\n   ' + chalk.green(path.relative(process.cwd(), output)))
+  console.log('\nGenerated:\n   ' + green(path.relative(process.cwd(), output)))
 }
 
 async function codegenDotAction(
@@ -43,7 +43,7 @@ async function codegenDotAction(
   const { workspace, model } = await initLanguageServices({ workspaceDir })
   const diagrams = values(model.views)
   if (diagrams.length === 0) {
-    console.log(chalk.red`No views found`)
+    console.log(red(`No views found`))
     process.exit(1)
   }
 
@@ -53,12 +53,12 @@ async function codegenDotAction(
 
   await mkdirp(outputdir)
 
-  console.log(chalk.green('\nGenerated:'))
+  console.log(green('\nGenerated:'))
   for (const diagram of diagrams) {
     const generated = printToDot(diagram)
     const output = path.resolve(outputdir, diagram.id + '.dot')
     await writeFile(output, generated)
-    console.log(' - ' + chalk.green(path.relative(process.cwd(), output)))
+    console.log(' - ' + green(path.relative(process.cwd(), output)))
   }
 }
 
@@ -68,14 +68,14 @@ async function codegenD2Action(
   outputdir?: string
 ) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
-  console.log(chalk.dim`🔍\tLayouting...`)
+  console.log(dim(`🔍\tLayouting...`))
 
   // const layout = await dotLayouter()
   // const diagrams = await mapAsync(layout, values(model.views))
   const diagrams = await layoutViews(values(model.views))
 
   if (diagrams.length === 0) {
-    console.log(chalk.red`No views found`)
+    console.log(red(`No views found`))
     process.exit(1)
   }
 
@@ -85,12 +85,12 @@ async function codegenD2Action(
 
   await mkdirp(outputdir)
 
-  console.log(chalk.green('\nGenerated:'))
+  console.log(green('\nGenerated:'))
   for (const diagram of diagrams) {
     const generated = generateD2(diagram)
     const output = path.resolve(outputdir, diagram.id + '.d2')
     await writeFile(output, generated)
-    console.log(' - ' + chalk.green(path.relative(process.cwd(), output)))
+    console.log(' - ' + green(path.relative(process.cwd(), output)))
   }
 }
 
