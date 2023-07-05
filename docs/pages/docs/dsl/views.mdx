@@ -85,8 +85,9 @@ include element.tag = #next
 ```
 
 <Callout type="info" emoji="ℹ️">
-  **Current limitation:**  
-  Relations with container elements are not shown.
+  **Limitation**  
+  Relations with container elements are not rendered, i.e. only among leaf elements.  
+  Working on it...
 </Callout>
 
 Wildcard may be used to reference "everything", but depends on the context.
@@ -148,9 +149,10 @@ view apiApp of internetBankingSystem.apiApplication {
   style apiApplication, apiApplication.* {
     color primary
   }
-}
-```  
 
-<Callout>
-  TODO: Document style rules
-</Callout>
+  // apply only to tagged elements
+  style element.tag = #deprecated {
+    color muted
+  }
+}
+``` 

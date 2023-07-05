@@ -1,5 +1,5 @@
-import { describe, test } from 'vitest'
-import { valid, invalid } from './asserts'
+import { describe } from 'vitest'
+import { test } from './asserts'
 
 const model = `
 specification {
@@ -33,29 +33,23 @@ model {
 }
 `
 describe('07_View', () => {
-  test(
-    'view',
-    valid`${model}
+  test('view').valid`${model}
       views {
         view index {
           include *
         }
       }
       `
-  )
-  test(
-    'viewOf',
-    valid`${model}
+
+  test('viewOf').valid`${model}
       views {
         view index of system.backend {
           include *
         }
       }
       `
-  )
-  test(
-    'viewRules',
-    valid`${model}
+
+  test('viewRules').valid`${model}
       views {
         view {
           include *,
@@ -65,10 +59,8 @@ describe('07_View', () => {
         }
       }
       `
-  ),
-  test(
-    'viewRules: element.kind and element.tag',
-    valid`${model}
+
+  test('viewRules: element.kind and element.tag').valid`${model}
       views {
         view {
           include *,
@@ -80,32 +72,25 @@ describe('07_View', () => {
         }
       }
       `
-  )
+
   // Two api: in backend and auth
-  test(
-    'viewRules inambiqutes',
-    invalid`${model}
+  test('viewRules inambiqutes').invalid`${model}
       views {
         view of system {
           include api
         }
       }
       `
-  )
-  test(
-    'viewRules IncludeScopeOf',
-    valid`${model}
+
+  test('viewRules IncludeScopeOf').valid`${model}
       views {
         view of system.backend {
           include api, auth.api
         }
       }
       `
-  )
 
-  test(
-    'ViewProperties',
-    valid`${model}
+  test('ViewProperties').valid`${model}
       views {
         view {
           title 'User view'
@@ -117,11 +102,8 @@ describe('07_View', () => {
         }
       }
       `
-  )
 
-  test(
-    'ViewRules Relations',
-    valid`${model}
+  test('ViewRules Relations').valid`${model}
       views {
         view {
           include
@@ -138,11 +120,8 @@ describe('07_View', () => {
         }
       }
       `
-  )
 
-  test(
-    'ViewStyleRules - valid',
-    valid`${model}
+  test('ViewStyleRules - valid').valid`${model}
       views {
         view {
           include *
@@ -156,11 +135,8 @@ describe('07_View', () => {
         }
       }
       `
-  )
 
-  test(
-    'ViewStyleRules - invalid',
-    invalid`${model}
+  test('ViewStyleRules - invalid').invalid`${model}
       views {
         view {
           include *
@@ -170,11 +146,8 @@ describe('07_View', () => {
         }
       }
       `
-  )
 
-  test(
-    'ViewLayoutRules',
-    valid`${model}
+  test('ViewLayoutRules').valid`${model}
       views {
         view {
           include *
@@ -190,5 +163,4 @@ describe('07_View', () => {
         }
       }
       `
-  )
 })

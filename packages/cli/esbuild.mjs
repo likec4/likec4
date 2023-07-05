@@ -16,6 +16,7 @@ const cli = {
   platform: 'node',
   alias: {
     'langium/node': 'langium/src/node/index.ts',
+    'langium/lib/utils': 'langium/src/utils/index.ts',
     'langium/lib/workspace': 'langium/src/workspace/index.ts',
     'langium/lib/generator': 'langium/src/generator/index.ts',
     'langium': 'langium/src/index.ts',

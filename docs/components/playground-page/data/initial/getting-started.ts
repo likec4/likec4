@@ -4,6 +4,9 @@ export const GettingStartedPlayground = {
   current: 'file:///getting-started.c4',
   files: {
     'file:///getting-started.c4': `
+// Tutorial:
+// https://likec4.dev/docs/#tutorial
+
 specification {
   element actor
   element system

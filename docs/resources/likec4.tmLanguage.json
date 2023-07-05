@@ -8,6 +8,17 @@
   ],
   "patterns": [
     {
+      "match": "\\b(link):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "string.quoted.single.likec4"
+        }
+      }
+    },
+    {
       "include": "#comments"
     },
     {
@@ -15,7 +26,7 @@
       "match": "\\b(specification|model|views)\\b"
     },
     {
-      "match": "\\b(element|tag)\\s+([^\\W]+)\\b",
+      "match": "\\b(element|tag)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -68,7 +79,7 @@
         }
       }
     },
-     {
+    {
       "match": "\\b([^\\W]+)\\s*(=)\\s*([^\\W]+)\\b",
       "captures": {
         "1": {
@@ -81,7 +92,8 @@
           "name": "keyword.control.likec4"
         }
       }
-    },{
+    },
+    {
       "match": "\\b(view)\\s+([^\\W]+)\\s+(of)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
@@ -112,7 +124,7 @@
         }
       }
     },
-        {
+    {
       "match": "\\b(view)\\s+([_\\.\\w]*)\\b",
       "captures": {
         "1": {
@@ -163,9 +175,13 @@
       }
     },
     {
-			"name": "storage.type.function.likec4",
-			"match": "->"
-		},
+      "name": "entity.name.type.likec4",
+      "match": "#[^\\s]+\\b"
+    },
+    {
+      "name": "storage.type.function.likec4",
+      "match": "->"
+    },
     {
       "name": "keyword.control.likec4",
       "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"

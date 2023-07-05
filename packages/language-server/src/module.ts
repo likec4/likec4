@@ -3,6 +3,7 @@ import type {
   LangiumServices,
   LangiumSharedServices,
   Module,
+  streamAllContents,
   PartialLangiumServices,
   PartialLangiumSharedServices
 } from 'langium'
@@ -16,7 +17,7 @@ import {
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
-import { LikeC4CodeLensProvider, LikeC4WorkspaceManager } from './shared'
+import { LikeC4CodeLensProvider, LikeC4DocumentLinkProvider, LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
 import { logger } from './logger'
 
@@ -67,7 +68,8 @@ const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServ
     WorkspaceManager: services => new LikeC4WorkspaceManager(services)
   },
   lsp: {
-    CodeLensProvider: services => new LikeC4CodeLensProvider(services)
+    CodeLensProvider: services => new LikeC4CodeLensProvider(services),
+    DocumentLinkProvider: services => new LikeC4DocumentLinkProvider(services)
   }
 }
 

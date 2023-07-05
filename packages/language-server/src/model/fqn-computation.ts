@@ -4,7 +4,7 @@ import { Fqn } from '@likec4/core/types'
 import {
   MultiMap
 } from 'langium'
-import { isEmpty, isNil } from 'rambdax'
+import { isEmpty, isNil } from 'remeda'
 import { ElementOps, ast, type LikeC4LangiumDocument } from '../ast'
 import { strictElementRefFqn } from '../elementRef'
 import type { LikeC4Services } from '../module'

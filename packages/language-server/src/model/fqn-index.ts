@@ -1,7 +1,7 @@
 import type { Fqn } from '@likec4/core/types'
 import { nameFromFqn, parentFqn } from '@likec4/core/utils'
 import type { LangiumDocument, LangiumDocuments } from 'langium'
-import { DocumentState, DONE_RESULT, getDocument, MultiMap, StreamImpl } from 'langium'
+import { DONE_RESULT, DocumentState, MultiMap, StreamImpl } from 'langium'
 import { isNil } from 'remeda'
 import type { ast } from '../ast'
 import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
@@ -14,7 +14,7 @@ type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
 }
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && !isNil(doc.c4fqns)
+  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent  && !isNil(doc.c4fqns)
 }
 
 export interface FqnIndexEntry {

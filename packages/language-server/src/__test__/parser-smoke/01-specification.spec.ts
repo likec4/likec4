@@ -1,74 +1,63 @@
-import { describe, test } from 'vitest'
-import { valid } from './asserts'
+import { describe } from 'vitest'
+import { test } from './asserts'
 
 describe('01-Specification', () => {
+  test('01-Specification').valid`
+    specification {
+      element container
+      element component {
+        style {
+          shape: rectangle
+        }
+      }
+      element person {
+        style {
+          shape: person
+        }
+      }
 
-  test(
-    '01-Specification',
-    valid`
-specification {
-  element container
-  element component {
-    style {
-      shape: rectangle
+      tag gray
+      tag lightgray
     }
-  }
-  element person {
-    style {
-      shape: person
-    }
-  }
+    `
 
-  tag gray
-  tag lightgray
-}
-`
-  )
-
-  test(
-    'Allow element with kind "element"',
-    valid`
+  test('Allow element with kind "element"').valid`
       specification {
         element element
         element component
       }
-  `)
+  `
 
-  test(
-    'ElementKindStyle',
-    valid`
-specification {
-  element frontend {
-    style {
-      shape browser
-      color secondary
+  test('ElementKindStyle').valid`
+    specification {
+      element frontend {
+        style {
+          shape browser
+          color secondary
+        }
+      }
+      element person {
+        style {
+          shape: person
+        }
+      }
     }
-  }
-  element person {
-    style {
-      shape: person
+    `
+
+  test('StyleColor').valid`
+    specification {
+      element green {
+        style {
+          color green
+        }
+      }
+      element red {
+        style {
+          color red
+        }
+      }
     }
-  }
-}
-`
-  )
-  test(
-    'StyleColor',
-    valid`
-specification {
-  element green {
-    style {
-      color green
-    }
-  }
-  element red {
-    style {
-      color red
-    }
-  }
-}
-`
-  )
+    `
 })
 // export const invalid_01_Specification_BuiltinElementKind = `
 // specification {

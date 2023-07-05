@@ -22,7 +22,6 @@ export default {
   },
   primaryHue: 195,
   sidebar: {
-    autoCollapse: true,
     toggleButton: true,
   },
   // main: Main,
@@ -47,9 +46,17 @@ export default {
             ? 'Example Big Bank: %s'
             : '%s – LikeC4',
       }),
+      ...(frontMatter.description ? {
+        description: frontMatter.description,
+      } : {
+        titleTemplate: route.startsWith('/examples/bigbank')
+            ? 'Example Big Bank: %s'
+            : '%s – LikeC4',
+      }),
       description: 'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
       themeColor: '#111',
       noindex: route.startsWith('/playground'),
+      nofollow: route.startsWith('/playground'),
       openGraph: {
         url,
         images: [{

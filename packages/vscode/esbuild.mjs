@@ -8,9 +8,10 @@ const watch = process.argv.includes('--watch')
 const alias = {
   // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
   'langium/node': 'langium/src/node/index.ts',
+  'langium/lib/utils': 'langium/src/utils/index.ts',
   'langium/lib/workspace': 'langium/src/workspace/index.ts',
   'langium/lib/generator': 'langium/src/generator/index.ts',
-  langium: 'langium/src/index.ts',
+  'langium': 'langium/src/index.ts',
   // "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
   // "@likec4/core/utils": '../core/src/utils/index.ts',
   // "@likec4/core/types": '../core/src/types/index.ts',
