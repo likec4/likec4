@@ -3282,15 +3282,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/extension-telemetry@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "@vscode/extension-telemetry@npm:0.8.0"
+"@vscode/extension-telemetry@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@vscode/extension-telemetry@npm:0.8.1"
   dependencies:
     "@microsoft/1ds-core-js": ^3.2.10
     "@microsoft/1ds-post-js": ^3.2.10
     "@microsoft/applicationinsights-web-basic": ^3.0.0
-    applicationinsights: 2.6.0
-  checksum: 8a47c5028cd578fd6fb796ba27c7a010b9c97c3225aac5cc7da761868d4130580a09fc9265f39c9eda5fc2a8a7b66e2d5bc2e9387d04a162b57549174c66488a
+    applicationinsights: ^2.7.0
+  checksum: 98e8e7ed1dab7749c331221ab4f50efee9e9cae8d14dded7e2a93b9e710a0b962f21e144057894bf04daf130a172aac0e614536db8df31630053fd1d2a9dc805
   languageName: node
   linkType: hard
 
@@ -3508,9 +3508,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"applicationinsights@npm:2.6.0":
-  version: 2.6.0
-  resolution: "applicationinsights@npm:2.6.0"
+"applicationinsights@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "applicationinsights@npm:2.7.0"
   dependencies:
     "@azure/core-auth": ^1.4.0
     "@azure/core-rest-pipeline": 1.10.1
@@ -3530,7 +3530,7 @@ __metadata:
   peerDependenciesMeta:
     applicationinsights-native-metrics:
       optional: true
-  checksum: c72361fcc523a8568da8377b67445a01ed3f95a86647e36ed1d8b8f87626b4646d12ab75ea33753a51469f245e5683623ac6350fa8ae70b17ac081949c47c9e2
+  checksum: c4644ecd2e4871eb63604bc7294d9b6e7a3c0a8ae03304733627f61a5b993273adfc78b9f083da0c8503786396b70f47a106df3061dc97867e5b50fcc518968a
   languageName: node
   linkType: hard
 
@@ -7777,7 +7777,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
-    "@vscode/extension-telemetry": ^0.8.0
+    "@vscode/extension-telemetry": ^0.8.1
     "@vscode/vsce": ^2.19.0
     esbuild: ^0.17.19
     froebel: ^0.23.2
