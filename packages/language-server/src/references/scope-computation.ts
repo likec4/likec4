@@ -8,6 +8,7 @@ import {
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
+import { isEmpty } from 'remeda'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
@@ -22,19 +23,23 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<AstNodeDescription[]> {
     const { specification, model, views } = document.parseResult.value
     const docExports: AstNodeDescription[] = []
-    if (specification) {
-      for (const { kind } of specification.elementKinds) {
-        docExports.push(this.descriptions.createDescription(kind, kind.name, document))
-      }
-      for (const { tag } of specification.tags) {
-        docExports.push(this.descriptions.createDescription(tag, tag.name, document))
-        docExports.push(this.descriptions.createDescription(tag, '#' + tag.name, document))
+    if (specification && specification.specs.length > 0) {
+      for (const spec of specification.specs) {
+        if (ast.isSpecificationElementKind(spec) && spec.kind && !isEmpty(spec.kind.name)) {
+          docExports.push(this.descriptions.createDescription(spec.kind , spec.kind.name, document))
+          continue
+        }
+        if (ast.isSpecificationTag(spec) && spec.tag && !isEmpty(spec.tag.name)) {
+          docExports.push(this.descriptions.createDescription(spec.tag , spec.tag.name, document))
+          docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+          continue
+        }
       }
     }
     // Only root model elements are exported
     if (model && model.elements.length > 0) {
       for (const elAst of model.elements) {
-        if (ast.isElement(elAst)) {
+        if (ast.isElement(elAst) && !isEmpty(elAst.name)) {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
         }
       }
@@ -42,7 +47,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
 
     if (views && views.views.length > 0) {
       for (const viewAst of views.views) {
-        if ('name' in viewAst) {
+        if (viewAst.name && !isEmpty(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
         }
       }
@@ -76,7 +81,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
 
       let subcontainer
-      if (ast.isElement(el)) {
+      if (ast.isElement(el) && !isEmpty(el.name)) {
         localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
         subcontainer = el.body
       } else if (ast.isExtendElement(el)) {

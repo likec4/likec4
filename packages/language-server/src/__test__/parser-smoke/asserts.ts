@@ -3,6 +3,7 @@ import type { TestFunction} from 'vitest';
 import { vi, test as viTest } from 'vitest'
 import '../../logger'
 import { createTestServices } from '../../test'
+import stripIndent from 'strip-indent'
 vi.mock('../../logger')
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
@@ -13,7 +14,7 @@ export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
       result.push(expr[i]!)
     }
   }
-  return result.join('')
+  return stripIndent(result.join(''))
 }
 
 export const valid = (strings: TemplateStringsArray, ...expr: string[]): TestFunction =>

@@ -52,6 +52,16 @@ describe('02_Model Links', () => {
         link https://sub.domain.com/segment1/segment2.html?query=1&query2=%20
       }
     `
+
+    test('not interfere with comments')`
+      // Here is a comment
+      component tst1 {
+
+        // And here is a comment
+        link https://sub.domain.com/segment1/segment2.html?query=1&query2=%20
+      }
+    `
+
   })
 
   describe('relative', () => {

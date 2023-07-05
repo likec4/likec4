@@ -10,10 +10,7 @@ entry LikeC4Document:
 
 SpecificationRule:
   name='specification' OpenBlock
-  (
-    elementKinds+=SpecificationElementKind |
-    tags+=SpecificationTag
-  )*
+    (specs+=(SpecificationElementKind | SpecificationTag))*
   CloseBlock;
 
 SpecificationElementKind:
@@ -265,7 +262,7 @@ terminal Comma: ',';
 // terminal EOL: (WS+)? NL;
 
 terminal URI_WITH_SCHEMA: /(\w+:\/\/)[^\s]+/;
-terminal URI_RELATIVE: /\/[^\s]+/;
+terminal URI_RELATIVE: /\/[^\s\/][^\s]*/;
 
 // terminal URI_WITH_SCHEMA: LETTER+ COLON SLASH SLASH LETTER+;
 terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;

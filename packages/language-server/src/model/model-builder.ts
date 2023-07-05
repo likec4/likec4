@@ -192,9 +192,9 @@ export class LikeC4ModelBuilder {
   protected parseDocument(doc: LikeC4LangiumDocument) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
-    const spec = doc.parseResult.value.specification
-    if (spec) {
-      for (const { kind, style } of spec.elementKinds) {
+    const specs = doc.parseResult.value.specification?.specs.filter(ast.isSpecificationElementKind)
+    if (specs) {
+      for (const { kind, style } of specs) {
         try {
           const styleProps = toElementStyle(style?.props)
           specification.kinds[kind.name as c4.ElementKind] = {

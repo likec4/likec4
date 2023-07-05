@@ -4,15 +4,15 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import invariant from 'tiny-invariant'
 import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { type LikeC4LangiumDocument, ast } from '../ast'
 import type { LikeC4Services } from '../module'
 import { logger } from '../logger'
+import { isEmpty } from 'remeda'
 
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
-  constructor(private services: LikeC4Services) { }
+  constructor(private services: LikeC4Services) {}
 
   getSymbols(document: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     const { specification, model, views } = document.parseResult.value
@@ -29,11 +29,18 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const specKeywordNode = findNodeForProperty(cstModel, 'name')
     if (!specKeywordNode) return []
 
-    const specSymbols: DocumentSymbol[] = []
+    const specSymbols: DocumentSymbol[] = astSpec.specs.flatMap(nd => {
+      if (ast.isSpecificationElementKind(nd)) {
+        return getElementKindSymbol(nd) ?? []
+      } else if (ast.isSpecificationTag(nd)) {
+        return getTagSymbol(nd) ?? []
+      } else {
+        return []
+      }
+    })
 
-    const getElementKindSymbol = (astKind: ast.SpecificationElementKind): DocumentSymbol => {
-      invariant(astKind.$cstNode, 'SpecificationElementKind must have a CST node')
-      invariant(astKind.kind.$cstNode, 'SpecificationElementKind name must have a CST node')
+    const getElementKindSymbol = (astKind: ast.SpecificationElementKind): DocumentSymbol | null => {
+      if (!astKind.$cstNode || !astKind.kind.$cstNode || isEmpty(astKind.kind.name)) return null
 
       return {
         kind: SymbolKind.Class,
@@ -42,31 +49,14 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         selectionRange: astKind.kind.$cstNode.range
       }
     }
-    for (const astKind of astSpec.elementKinds) {
-      try {
-        specSymbols.push(getElementKindSymbol(astKind))
-      } catch (e) {
-        logger.error(e)
-      }
-    }
 
-    const getTagSymbol = (astTag: ast.SpecificationTag): DocumentSymbol => {
-      invariant(astTag.$cstNode, 'TagSpec must have a CST node')
-      invariant(astTag.tag.$cstNode, 'Tag name must have a CST node')
-
+    const getTagSymbol = (astTag: ast.SpecificationTag): DocumentSymbol | null => {
+      if (!astTag.$cstNode || !astTag.tag.$cstNode || isEmpty(astTag.tag.name)) return null
       return {
         kind: SymbolKind.EnumMember,
         name: '#' + astTag.tag.name,
         range: astTag.$cstNode.range,
         selectionRange: astTag.tag.$cstNode.range
-      }
-    }
-
-    for (const astTag of astSpec.tags) {
-      try {
-        specSymbols.push(getTagSymbol(astTag))
-      } catch (e) {
-        logger.error(e)
       }
     }
 
