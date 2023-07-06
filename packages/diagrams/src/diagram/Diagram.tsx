@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useCallback, useMemo, useRef, useEffect, forwardRef } from 'react'
+import { useCallback, useMemo, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import { clamp, isNil } from 'rambdax'
 import { AnimatedStage, Layer, KonvaCore } from '../konva'
@@ -13,7 +13,6 @@ import type { OnDragEvent, OnNodeClick, OnPointerEvent, OnStageClick } from './s
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DefaultDiagramTheme } from './theme'
 import type { DiagramPaddings } from './types'
-import { useIsomorphicLayoutEffect } from '@react-hookz/web/esm'
 import invariant from 'tiny-invariant'
 
 interface IRect {
@@ -221,22 +220,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(({
     })
   }
 
-  useIsomorphicLayoutEffect(() => {
-    if (!ref) {
-      return
-    }
-    const setRef = (refVal: DiagramApi | null) => {
-      if (typeof ref === 'function') {
-        ref(refVal)
-      } else {
-        ref.current = refVal
-      }
-    }
-    setRef(diagramApiRef.current)
-    return () => {
-      setRef(null)
-    }
-  }, [])
+  useImperativeHandle(ref, () => diagramApiRef.current, [diagramApiRef.current])
 
   useEffect(() => {
     const el = stageRef.current?.container()
