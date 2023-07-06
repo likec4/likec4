@@ -1,9 +1,8 @@
 import type { ComputedView, Fqn, RelationID } from '@likec4/core'
 import type { ViewID } from '@likec4/diagrams'
-import { dotLayout } from '@likec4/layouts'
 import { atom } from 'jotai'
 import { loadable, selectAtom } from 'jotai/utils'
-import { equals, head, keys } from 'rambdax'
+import { equals, head, keys, once } from 'rambdax'
 
 export interface FilesStore {
   current: string
@@ -77,9 +76,16 @@ export const currentViewAtom = selectAtom(
   equals
 )
 
+const getOrCreateLayoutFn = once(async () => {
+  console.debug('Loading dot layouter')
+  const { dotLayouter } = await import('@likec4/layouts')
+  return await dotLayouter()
+})
+
 export const diagramAtom = atom(async get => {
   const view = get(currentViewAtom)
   if (!view) return null
+  const dotLayout = await getOrCreateLayoutFn()
   const diagram = await dotLayout(view)
   return diagram
 })

@@ -1,7 +1,7 @@
 import { C4ModelImpl } from 'src/c4model'
 import type { ExtensionRequirements } from 'src/di'
 import { di } from 'src/di'
-import { layoutFn } from 'src/layout'
+import { createLayoutFn } from 'src/layout'
 import { Logger } from 'src/logger'
 import { PreviewPanel } from 'src/panels/PreviewPanel'
 import { createInjector } from 'typed-inject'
@@ -25,6 +25,9 @@ export async function activateExtension(
     }))
 
     const logger = new Logger(client.outputChannel, reporter)
+
+
+    const layoutFn = await createLayoutFn(logger)
 
     const injector = createInjector()
       .provideValue(di.logger, logger)

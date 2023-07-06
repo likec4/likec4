@@ -33,7 +33,8 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
 
   deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
     this.currentViewId = null
-    this.setupPanel(webviewPanel)
+    this.panel = webviewPanel
+    this.initPanel()
     if (typeof state === 'object' && 'view' in state && typeof state.view === 'object') {
       this.currentViewId = state.view.id
     }
@@ -49,28 +50,33 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     }
     this.telemetry.sendTelemetryEvent('PreviewPanel.open')
     this.currentViewId = viewId
-    this.setupPanel(this.createWebviewPanel())
+    this.panel = this.createWebviewPanel()
+    this.initPanel()
     // Subscribe to model happends on "ready" from webview
     // this.subscribeToModel(viewId)
   }
 
   private subscribeToModel(viewId: ViewID) {
-    this.listener?.dispose()
+    this.unsubscribe()
     this.currentViewId = viewId
     this.listener = this.c4model.subscribeToView(viewId, data => {
       this.sendUpdate(data)
     })
   }
 
-  private setupPanel(panel: WebviewPanel) {
-    if (this.panel) {
-      throw new Error('PreviewPanel is initialized')
+  private unsubscribe() {
+    this.listener?.dispose()
+    this.listener = null
+  }
+
+  private initPanel() {
+    if (!this.panel) {
+      throw new Error('PreviewPanel is not initialized')
     }
-    this.panel = panel
 
-    panel.webview.onDidReceiveMessage(this.onWebviewMessage, this, this._disposables)
+    this.panel.webview.onDidReceiveMessage(this.onWebviewMessage, this, this._disposables)
 
-    panel.onDidDispose(
+    this.panel.onDidDispose(
       () => {
         this.logger.logDebug('panel.onDidDispose')
         this.panel = null
@@ -79,24 +85,22 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       this,
       this._disposables
     )
-    // panel.onDidChangeViewState(
-    //   ({webviewPanel}) => {
-
-
-    //     this.panel = null
-    //     this.close()
-    //   },
-    //   this,
-    //   this._disposables
-    // )
+    this.panel.onDidChangeViewState(
+      ({webviewPanel}) => {
+        if (!webviewPanel.visible) {
+          this.unsubscribe()
+        }
+      },
+      this,
+      this._disposables
+    )
 
     this.updateWebviewContent()
   }
 
   private close() {
     this.telemetry.sendTelemetryEvent('PreviewPanel.close')
-    this.listener?.dispose()
-    this.listener = null
+    this.unsubscribe()
     this.panel?.dispose()
     this.panel = null
     this.currentViewId = null
@@ -190,9 +194,9 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
 
   private getWebviewOptions(): vscode.WebviewOptions & vscode.WebviewPanelOptions {
     return {
-      retainContextWhenHidden: true,
+      // retainContextWhenHidden: true,
       // Enable javascript in the webview
-      enableScripts: true,
+      enableScripts: true
 
       // And restrict the webview to only loading content from our extension's `dist` directory.
       // localResourceRoots: [
@@ -239,6 +243,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'none';
       style-src 'unsafe-inline' ${cspSource};
+      img-src ${cspSource} https:;
       script-src 'nonce-${nonce}' ${cspSource};
     ">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
