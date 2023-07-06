@@ -2,6 +2,7 @@ import { createLanguageServices } from '../module'
 import { EmptyFileSystem } from 'langium'
 import { URI } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
+import stripIndent from 'strip-indent'
 
 export function createTestServices() {
   const services = createLanguageServices(EmptyFileSystem).likec4
@@ -17,7 +18,7 @@ export function createTestServices() {
     await initPromise
     uri = uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`
     const document = services.shared.workspace.LangiumDocumentFactory.fromString(
-      input,
+      stripIndent(input),
       URI.file(uri)
     )
     langiumDocuments.addDocument(document)

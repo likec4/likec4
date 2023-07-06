@@ -3,12 +3,12 @@ import type {
   LangiumServices,
   LangiumSharedServices,
   Module,
-  streamAllContents,
   PartialLangiumServices,
   PartialLangiumSharedServices
 } from 'langium'
-import { createDefaultModule, createDefaultSharedModule, EmptyFileSystem, inject } from 'langium'
+import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
+import { logger } from './logger'
 import {
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
@@ -19,7 +19,6 @@ import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 import { LikeC4CodeLensProvider, LikeC4DocumentLinkProvider, LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
-import { logger } from './logger'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T;
@@ -32,6 +31,9 @@ export interface LikeC4AddedServices {
     FqnIndex: FqnIndex
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
+  },
+  lsp: {
+    DocumentSymbolProvider: LikeC4DocumentSymbolProvider
   }
 }
 
