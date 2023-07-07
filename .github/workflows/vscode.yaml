@@ -9,7 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  vsce-publish:
+  publish:
+    name: Publish VSCode Extension
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

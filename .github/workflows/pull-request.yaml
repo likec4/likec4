@@ -1,22 +1,12 @@
 name: pull-request
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - 'renovate/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
-env:
-  TURBO_API: 'http://127.0.0.1:9080'
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: 'likec4'
-  NODE_ENV: 'production'
-
 permissions:
   actions: write
-  checks: write
+  checks: read
   contents: read
   statuses: write
   pull-requests: read
@@ -30,20 +20,21 @@ jobs:
   build:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || !startsWith(github.head_ref, 'renovate/')
+    if: "!startsWith(github.head_ref, 'renovate/')"
     steps:
       - uses: actions/checkout@v3
 
-      - name: Bootstrap
+      - name: setup
         uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build packages
         run: yarn build
 
-      - name: Test
-        run: yarn test
-
       - name: Compile
         run: yarn compile:all
+
+      - name: Test
+        run: yarn test

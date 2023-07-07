@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  publish-docs:
-    name: publish docs
+  publish:
+    name: Publish docs
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

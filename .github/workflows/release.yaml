@@ -11,7 +11,7 @@ permissions:
   statuses: write
 
 jobs:
-  ship:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -23,8 +23,10 @@ jobs:
       - name: turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build
-        run: yarn build
+      - name: Configure git user
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Release
         run: yarn shipjs trigger
@@ -34,7 +36,7 @@ jobs:
 
   vscode:
     uses: ./.github/workflows/vscode.yaml
-    needs: ship
+    needs: release
     permissions:
       actions: write
       contents: read
