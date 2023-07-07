@@ -1,4 +1,4 @@
-name: vscode
+name: VSCode
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish VSCode Extension
+    name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -22,7 +22,7 @@ jobs:
       - name: turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Publish VSCode extension
+      - name: vsce publish
         run: |
           VERSION=$(node -e "console.log(require('./package.json').version)")
           echo " version: $VERSION"

@@ -1,4 +1,4 @@
-name: release
+name: Release
 
 on:
   workflow_call:
@@ -11,7 +11,8 @@ permissions:
   statuses: write
 
 jobs:
-  release:
+  publish:
+    name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -35,8 +36,9 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
   vscode:
+    name: VSCode
     uses: ./.github/workflows/vscode.yaml
-    needs: release
+    needs: publish
     permissions:
       actions: write
       contents: read

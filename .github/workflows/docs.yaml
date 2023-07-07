@@ -1,4 +1,4 @@
-name: docs
+name: Docs
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish docs
+    name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

@@ -1,4 +1,4 @@
-name: main
+name: Main
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
     secrets: inherit
 
   docs:
-    name: Update docs website
+    name: Docs
     uses: ./.github/workflows/docs.yaml
     if: "github.ref == 'refs/heads/main'"
     needs: build
