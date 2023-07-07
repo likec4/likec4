@@ -1,39 +1,30 @@
 name: release
-on:
-  pull_request:
-    types:
-      - closed
 
-env:
-  TURBO_API: 'http://127.0.0.1:9080'
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: 'likec4'
-  NODE_ENV: 'production'
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  statuses: write
 
 jobs:
   ship:
-    name: shipjs trigger
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/v')
-    permissions: write-all
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-        with:
-          ssh-key: "${{ secrets.DEPLOY_KEY }}"
 
-      - name: Bootstrap
+      - name: setup
         uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build
         run: yarn build
-
-      - name: Configure git user
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Release
         run: yarn shipjs trigger
@@ -41,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-  PublishVSCode:
+  vscode:
     uses: ./.github/workflows/vscode.yaml
     needs: ship
     permissions:

@@ -5,7 +5,11 @@ on:
   push:
     branches:
       - 'main'
-      - 'develop'
+    paths-ignore:
+      - README.md
+      - .github/**
+      - '!.github/workflows/build.yml'
+      - '!.github/actions/**'
 
 permissions:
   actions: write
@@ -13,27 +17,22 @@ permissions:
   contents: read
   statuses: write
 
-env:
-  TURBO_API: 'http://127.0.0.1:9080'
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: 'likec4'
-  NODE_ENV: 'production'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  build:
+  build-main:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
 
-      - name: Bootstrap
+      - name: setup
         uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build packages
         run: yarn build
@@ -44,41 +43,21 @@ jobs:
       - name: Test
         run: yarn test
 
+  release:
+    uses: ./.github/workflows/release.yaml
+    if: "contains(github.event.head_commit.message, 'chore: release')"
+    needs: build-main
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      statuses: write
+    secrets: inherit
+
   publish-docs:
-    name: publish docs website
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: NextJS cache
-        uses: actions/cache@v3
-        with:
-          path: docs/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*.tsx?', 'docs/**/*.mdx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-
-            ${{ runner.os }}-nextjs-
-
-      - name: Bootstrap
-        uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build NextJS
-        working-directory: docs
-        run: yarn turbo-build
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: likec4-docs
-          workingDirectory: docs
-          directory: out
+    uses: ./.github/workflows/docs.yaml
+    needs: build-main
+    permissions:
+      actions: write
+      contents: read
+    secrets: inherit

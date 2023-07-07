@@ -2,31 +2,24 @@ name: vscode
 
 on:
   workflow_call:
-  release:
-    types: [published]
-
-env:
-  TURBO_API: 'http://127.0.0.1:9080'
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: 'likec4'
-  NODE_ENV: 'production'
-
+  workflow_dispatch:
 
 permissions:
   actions: write
   contents: read
 
 jobs:
-  publish-extension:
+  vsce-publish:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
 
-      - name: bootstrap
+      - name: setup
         uses: ./.github/actions/bootstrap
-        with:
-          turborepo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Publish VSCode extension
         run: |
@@ -34,6 +27,5 @@ jobs:
           echo " version: $VERSION"
           yarn vsce publish $VERSION
         working-directory: packages/vscode
-        continue-on-error: true
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}

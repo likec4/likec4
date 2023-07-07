@@ -1,42 +1,30 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    "helpers:disableTypesNodeMajor"
-  ],
-  "prHourlyLimit": 5,
-  "prConcurrentLimit": 10,
-  "rangeStrategy": "bump",
-  "updateInternalDeps": true,
-  "packageRules": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:base', 'schedule:earlyMondays', 'helpers:disableTypesNodeMajor'],
+  prHourlyLimit: 5,
+  prConcurrentLimit: 10,
+  rangeStrategy: 'bump',
+  updateInternalDeps: true,
+  labels: ['dependencies'],
+  rebaseWhen: 'conflicted',
+  packageRules: [
     {
-      "groupName": "vitest",
-      "matchPackageNames": [
-        "vite-node",
-        "vitest"
-      ],
-      "matchPackagePatterns": [
-        "^@vitest/"
-      ]
+      groupName: 'vitest',
+      matchPackageNames: ['vite-node', 'vitest'],
+      matchPackagePatterns: ['^@vitest/']
     },
     {
-      "enabled": false,
-      "matchPackageNames": [
-        "@types/vscode",
-        "vscode",
-        "next"
-      ],
-      "matchPackagePatterns": [
-        "^monaco-",
-        "^@monaco-editor",
-        "^vscode-"
-      ]
+      groupName: 'react',
+      matchPackageNames: ['react', 'react-dom']
     },
     {
-      "matchDepTypes": ["devDependencies"],
-      "matchPackagePatterns": ["eslint", "prettier"],
-      "automerge": true,
-      "automergeType": "branch"
+      enabled: false,
+      matchPackageNames: ['@types/vscode', 'vscode', 'next'],
+      matchPackagePatterns: ['^monaco-', '^@monaco-editor', '^vscode-']
+    },
+    {
+      matchPackagePatterns: ['eslint*', 'prettier'],
+      automerge: true
     }
   ]
 }

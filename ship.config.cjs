@@ -12,6 +12,5 @@ module.exports = {
       'packages/layouts'
     ]
   },
-  updateChangelog: false,
   publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public`
 }

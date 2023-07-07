@@ -1,0 +1,38 @@
+name: docs
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  publish-docs:
+    name: publish docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: setup
+        uses: ./.github/actions/bootstrap
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build NextJS
+        working-directory: docs
+        run: yarn turbo-build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: likec4-docs
+          workingDirectory: docs
+          directory: out

@@ -1,24 +1,12 @@
 name: Bootstrap
 description: Checkout the project and install dependencies
 
-inputs:
-  turborepo-token:
-    description: 'Github Token for turborepo to access the repo'
-    default: ''
-    required: false
-
 runs:
   using: 'composite'
   steps:
     - uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-
-    - name: turborepo local server
-      uses: felixmosh/turborepo-gh-artifacts@v2
-      if: ${{ inputs.turborepo-token != '' }}
-      with:
-        repo-token: ${{ inputs.turborepo-token }}
 
     - name: get yarn cache directory
       shell: bash
@@ -27,21 +15,21 @@ runs:
 
     - name: yarn caches
       uses: actions/cache@v3
-      # if: github.ref_protected == true
+      if: github.ref == 'refs/heads/main'
       with:
         path: ${{ steps.yarn-cachedir.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    # - name: restore only caches
-    #   uses: actions/cache/restore@v3
-    #   if: github.ref_protected == false
-    #   with:
-    #     path: ${{ steps.yarn-cachedir.outputs.dir }}
-    #     key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-yarn-
+    - name: restore only caches
+      uses: actions/cache/restore@v3
+      if: github.ref != 'refs/heads/main'
+      with:
+        path: ${{ steps.yarn-cachedir.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
 
     - name: install dependencies
       shell: bash

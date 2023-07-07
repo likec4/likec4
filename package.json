@@ -13,19 +13,23 @@
     "node": ">=18"
   },
   "scripts": {
+    "prepare": "husky install",
     "compile:all": "turbo run compile",
     "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
+    "git:pre-commit": "lint-staged",
     "dev": "turbo run dev --filter='./packages/*'",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "turbo run lint --continue --filter='./packages/*'",
     "vitest:ui": "vitest --ui"
   },
-  "devDependencies": {
+  "dependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
     "@types/eslint": "^8.40.2",
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.3",
@@ -33,6 +37,8 @@
     "@typescript-eslint/parser": "^5.61.0",
     "@vitest/ui": "^0.33.0",
     "eslint": "^8.44.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
     "prettier": "^3.0.0",
     "rimraf": "^5.0.1",
     "shipjs": "^0.26.3",
@@ -51,5 +57,13 @@
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
     "vscode-languageserver-protocol": "3.17.3"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx}": [
+      "prettier --write"
+    ],
+    "**/*.{md,mdx,yml,json,babelrc,eslintrc,prettierrc}": [
+      "prettier --write"
+    ]
   }
 }
