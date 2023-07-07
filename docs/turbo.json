@@ -3,28 +3,17 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
-      "dependsOn": [
-        "@likec4/cli#build"
-      ],
-      "outputs": [
-        "components/**/generated.tsx"
-      ],
-      "inputs": [
-        "**/*.c4"
-      ]
+      "dependsOn": ["@likec4/cli#build"],
+      "outputs": ["components/**/generated.tsx"],
+      "inputs": ["package.json", "**/*.c4"]
     },
     "compile": {
       "dependsOn": ["^build", "generate"],
       "outputs": []
     },
     "build": {
-      "dependsOn": ["generate", "^build"],
-      "outputs": [
-        ".next/**",
-        "out/**",
-        "!.next/cache/**"
-      ],
-      "cache": false
+      "dependsOn": ["^build", "generate"],
+      "outputs": [".next/**", "out/**", "!.next/cache/**"]
     }
   }
 }

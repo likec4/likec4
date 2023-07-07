@@ -7,14 +7,13 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "dist/**"
-      ]
+      "outputs": ["dist/**"]
     },
     "lint": {
       "outputs": []
     },
     "test": {
+      "cache": false,
       "outputs": [],
       "dependsOn": ["^build"]
     },
@@ -30,8 +29,5 @@
       "persistent": true
     }
   },
-  "globalDependencies": [
-    "yarn.lock",
-    "packages/tsconfig/*"
-  ]
+  "globalDependencies": ["yarn.lock", "packages/tsconfig/*"]
 }

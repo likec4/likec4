@@ -3,21 +3,13 @@
   "extends": ["//"],
   "pipeline": {
     "copy": {
-      "dependsOn": [
-        "@likec4/language-server#generate",
-        "@likec4/vscode-preview#build"
-      ],
-      "outputs": [
-        "contrib/**",
-        "dist/preview/**"
-      ]
+      "cache": false,
+      "dependsOn": ["@likec4/language-server#generate", "@likec4/vscode-preview#build"],
+      "outputs": ["contrib/**", "dist/preview/**"]
     },
     "build": {
       "dependsOn": ["copy", "^build"],
-      "outputs": [
-        "dist/**",
-        "!dist/preview/**"
-      ]
+      "outputs": ["dist/**"]
     }
   }
 }

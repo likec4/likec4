@@ -1,3 +1,4 @@
 node_modules
 dist
-src/likec4.*
+src/**/*.generated.ts
+src/**/*.generated.tsx
