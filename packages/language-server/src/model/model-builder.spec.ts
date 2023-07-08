@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
 import type { Element, Fqn, ViewID } from '@likec4/core/types'
 
-describe('LikeC4ModelBuilder', () => {
+import '../logger'
+vi.mock('../logger')
 
+describe('LikeC4ModelBuilder', () => {
   it('builds model with shapes', async () => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -39,26 +41,26 @@ describe('LikeC4ModelBuilder', () => {
 
     const elements = model.elements as Record<string, Element>
     expect(elements).toMatchObject({
-      'customer': {
+      customer: {
         kind: 'user',
         shape: 'person',
-        title: 'Customer',
+        title: 'Customer'
       },
-      'system': {
+      system: {
         kind: 'component',
-        title: 'system',
+        title: 'system'
       },
-      'spa': {
+      spa: {
         kind: 'component',
         shape: 'browser',
-        title: 'SPA',
+        title: 'SPA'
       },
-      'mobile': {
+      mobile: {
         kind: 'component',
         shape: 'mobile',
         color: 'green',
-        title: 'Mobile',
-      },
+        title: 'Mobile'
+      }
     })
     // Ignore defaults
     expect(elements['system']).not.toHaveProperty('shape')
@@ -130,7 +132,7 @@ describe('LikeC4ModelBuilder', () => {
 
     expect(model).toMatchSnapshot()
   })
-  
+
   it('builds model with tags', async () => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
@@ -150,12 +152,12 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
-        kind: 'component',
+        kind: 'component'
       },
-      'system2': {
+      system2: {
         kind: 'component',
-        tags: ['deprecated'],
-      },
+        tags: ['deprecated']
+      }
     })
     expect(model.elements['system1' as Fqn]).not.toHaveProperty('tags')
   })
