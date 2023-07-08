@@ -1,5 +1,5 @@
 import { values } from 'remeda'
-import invariant from 'tiny-invariant'
+import { invariant } from '../errors'
 import type { Element, Fqn, Relation, RelationID } from '../types'
 import { parentFqn } from '../utils/fqn'
 
@@ -173,5 +173,4 @@ export default class ModelIndex {
     //   this._taggedRelations.set(tag, tagged)
     // }
   }
-
 }

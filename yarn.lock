@@ -1225,9 +1225,9 @@ __metadata:
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
     "@dagrejs/graphlib": ^2.1.13
+    modern-errors: ^6.0.0
     rambdax: ^9.1.1
     remeda: ^1.23.0
-    tiny-invariant: ^1.3.1
     typescript: ^5.1.6
   languageName: unknown
   linkType: soft
@@ -1250,7 +1250,6 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-konva: ^18.2.10
-    tiny-invariant: ^1.3.1
     typescript: ^5.1.6
   peerDependencies:
     react: ^18.2.0
@@ -1360,7 +1359,6 @@ __metadata:
     rambdax: ^9.1.1
     remeda: ^1.23.0
     strip-indent: ^4.0.0
-    tiny-invariant: ^1.3.1
     typescript: ^5.1.6
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
@@ -1380,7 +1378,6 @@ __metadata:
     rambdax: ^9.1.1
     remeda: ^1.23.0
     strip-indent: ^4.0.0
-    tiny-invariant: ^1.3.1
     ts-graphviz: ^1.8.1
     typescript: ^5.1.6
     word-wrap: ^1.2.3
@@ -5828,6 +5825,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"error-class-utils@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "error-class-utils@npm:3.0.0"
+  checksum: eebe6f4cb9cdead1a61a1343470a3f425035397041e26591808ab45cea522ec7ff6eb947161515b0d38cd1844a8b7c2cdf0f56926f786b29dd47328cb1be7941
+  languageName: node
+  linkType: hard
+
+"error-custom-class@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "error-custom-class@npm:9.0.0"
+  dependencies:
+    error-class-utils: ^3.0.0
+  checksum: 0fb3de55fe540dff94d9f6051b909553eae124d1a80584fbfd6f049261e5590493a44c63d6ac8d0f023b1b1c1b080c144d1b8332cced5cfa5823438e0ca77c1c
+  languageName: node
+  linkType: hard
+
 "error-ex@npm:^1.3.1":
   version: 1.3.2
   resolution: "error-ex@npm:1.3.2"
@@ -6425,6 +6438,13 @@ __metadata:
   dependencies:
     to-regex-range: ^5.0.1
   checksum: cc283f4e65b504259e64fd969bcf4def4eb08d85565e906b7d36516e87819db52029a76b6363d0f02d0d532f0033c9603b9e2d943d56ee3b0d4f7ad3328ff917
+  languageName: node
+  linkType: hard
+
+"filter-obj@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "filter-obj@npm:5.1.0"
+  checksum: ba7c24d9b2c0552ee87d268e07eca74483af61fb740545ffa809f7e9e5294de38cf163ecc55af0e8a40020af9a49512c32f4022de2a858b110420fc8bffa7c9c
   languageName: node
   linkType: hard
 
@@ -7643,6 +7663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-error-instance@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "is-error-instance@npm:2.0.0"
+  checksum: 5278020cff9bfcbe0078be93041deeac1ca5ed0545d7172fe7209ff18f2d2e66b970e24630fd0647476e49124e7fc16bcdf67b6db787e599d3e17c25b88727f0
+  languageName: node
+  linkType: hard
+
 "is-extendable@npm:^0.1.0":
   version: 0.1.1
   resolution: "is-extendable@npm:0.1.1"
@@ -7752,7 +7779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-plain-obj@npm:^4.0.0":
+"is-plain-obj@npm:^4.0.0, is-plain-obj@npm:^4.1.0":
   version: 4.1.0
   resolution: "is-plain-obj@npm:4.1.0"
   checksum: 6dc45da70d04a81f35c9310971e78a6a3c7a63547ef782e3a07ee3674695081b6ca4e977fbb8efc48dae3375e0b34558d2bcd722aec9bddfa2d7db5b041be8ce
@@ -8983,6 +9010,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge-error-cause@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "merge-error-cause@npm:4.0.1"
+  dependencies:
+    normalize-exception: ^3.0.0
+    set-error-class: ^2.0.0
+    set-error-props: ^5.0.0
+    wrap-error-message: ^2.0.1
+  checksum: ea45177e61192649eb6899a9d1a8c3e565c72de94b8685d3294ff0ebaa75b22d6810ed80be4f624b9622e1bc20b3576e09f353013031428d5f98c007fdbc2ca8
+  languageName: node
+  linkType: hard
+
 "merge-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-stream@npm:2.0.0"
@@ -9720,6 +9759,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"modern-errors@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "modern-errors@npm:6.0.0"
+  dependencies:
+    error-class-utils: ^3.0.0
+    error-custom-class: ^9.0.0
+    filter-obj: ^5.1.0
+    is-plain-obj: ^4.1.0
+    merge-error-cause: ^4.0.1
+    normalize-exception: ^3.0.0
+    set-error-message: ^2.0.1
+    set-error-props: ^5.0.0
+    set-error-stack: ^2.0.0
+  checksum: 47b22d6615ddce3553473d4b4f415df094817102d1a66e68930b9112ac81f2e8bfe437c09f4c81258b1dddbfe52b43fa4aa9fd5f7c4cb8c649438da43dd068ee
+  languageName: node
+  linkType: hard
+
 "modify-values@npm:^1.0.0":
   version: 1.0.1
   resolution: "modify-values@npm:1.0.1"
@@ -10099,6 +10155,16 @@ __metadata:
   bin:
     nopt: bin/nopt.js
   checksum: 82149371f8be0c4b9ec2f863cc6509a7fd0fa729929c009f3a58e4eb0c9e4cae9920e8f1f8eb46e7d032fec8fb01bede7f0f41a67eb3553b7b8e14fa53de1dac
+  languageName: node
+  linkType: hard
+
+"normalize-exception@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "normalize-exception@npm:3.0.0"
+  dependencies:
+    is-error-instance: ^2.0.0
+    is-plain-obj: ^4.1.0
+  checksum: e0b7585437c1b057f2d0bceea086410a9e905a367fb663c8a547ab4a72fd3fc40dbeed2a931062f569fa176530cd474383d5e201b88aa73e3945843af1d3b49e
   languageName: node
   linkType: hard
 
@@ -11381,6 +11447,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"redefine-property@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "redefine-property@npm:2.0.0"
+  dependencies:
+    is-plain-obj: ^4.1.0
+  checksum: 12308be081399166282353b6b6cf6381405216e0cedbda9348e8c2d645ca1d88684a4ceb529eef9acc34d9cab9c16c7c478801f43a814939a9393d179ed300c1
+  languageName: node
+  linkType: hard
+
 "redent@npm:^3.0.0":
   version: 3.0.0
   resolution: "redent@npm:3.0.0"
@@ -11866,6 +11941,44 @@ __metadata:
   version: 2.0.0
   resolution: "set-blocking@npm:2.0.0"
   checksum: 6e65a05f7cf7ebdf8b7c75b101e18c0b7e3dff4940d480efed8aad3a36a4005140b660fa1d804cb8bce911cac290441dc728084a30504d3516ac2ff7ad607b02
+  languageName: node
+  linkType: hard
+
+"set-error-class@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "set-error-class@npm:2.0.0"
+  dependencies:
+    normalize-exception: ^3.0.0
+  checksum: e476f455df805d8455356dc60e1bb49e813deb168e80f4b51b52c49ee5f71a4a67710de7fd1fa0050fe16e6f54ed9fe8db94f4e86b50dfef69eca11e17fc4f8e
+  languageName: node
+  linkType: hard
+
+"set-error-message@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "set-error-message@npm:2.0.1"
+  dependencies:
+    normalize-exception: ^3.0.0
+  checksum: ec17ab6ee59c2a24e898d731cc147210adfa1d3adb361c84f7784c3b9ed28102093a07596cf06fcd0c092fefc740f7f16f6322251d65c0a94d5bf5bbb26f28eb
+  languageName: node
+  linkType: hard
+
+"set-error-props@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "set-error-props@npm:5.0.0"
+  dependencies:
+    is-error-instance: ^2.0.0
+    is-plain-obj: ^4.1.0
+    redefine-property: ^2.0.0
+  checksum: f9670c54751959b0a8facf547ffbf729ee226cbd8ff2e9d8d9b9e5bf446f2c0f163b5d4027d817c94a716359cababd8c9b9aa5e4f4c4460b44472a0598edbd76
+  languageName: node
+  linkType: hard
+
+"set-error-stack@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "set-error-stack@npm:2.0.0"
+  dependencies:
+    normalize-exception: ^3.0.0
+  checksum: b987d8d2db4935b3470a2fba59467db6b1aeead55d249af76463558985747464701de9ffaac84d4eef3104cb0fe925dd7522e9795ccd799c587fa711aa07d33c
   languageName: node
   linkType: hard
 
@@ -12794,13 +12907,6 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^17.0.0
   checksum: cde2590679f4519e81d0d8e6459a922c7f1fc345b2943b81b43bd92d1853485cfcaee02e5fb0a64eb095c169328b5c057acee76ed3aaf0a6cc10bed063e592ed
-  languageName: node
-  linkType: hard
-
-"tiny-invariant@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "tiny-invariant@npm:1.3.1"
-  checksum: 872dbd1ff20a21303a2fd20ce3a15602cfa7fcf9b228bd694a52e2938224313b5385a1078cb667ed7375d1612194feaca81c4ecbe93121ca1baebe344de4f84c
   languageName: node
   linkType: hard
 
@@ -14091,6 +14197,16 @@ __metadata:
     string-width: ^4.1.0
     strip-ansi: ^6.0.0
   checksum: a790b846fd4505de962ba728a21aaeda189b8ee1c7568ca5e817d85930e06ef8d1689d49dbf0e881e8ef84436af3a88bc49115c2e2788d841ff1b8b5b51a608b
+  languageName: node
+  linkType: hard
+
+"wrap-error-message@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "wrap-error-message@npm:2.0.1"
+  dependencies:
+    normalize-exception: ^3.0.0
+    set-error-message: ^2.0.1
+  checksum: 94f926b21c61c070bd1a19c936d3b047b8112ffc90eca5e16550528e430f634c621e62d1f130d2db9612100a3b147d0399a477212728a1a8445ee128fd8ad646
   languageName: node
   linkType: hard
 

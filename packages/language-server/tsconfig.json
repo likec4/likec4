@@ -1,10 +1,7 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "verbatimModuleSyntax": false,
-    "importsNotUsedAsValues": "preserve",
     "outDir": "dist",
-    "ignoreDeprecations": "5.0",
     "rootDir": "src",
     "sourceMap": true,
     "composite": true,
@@ -12,12 +9,6 @@
     "skipLibCheck": true,
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "./node_modules/**",
-    "../../node_modules/**"
-  ],
-  "references": [
-    { "path": "../core" },
-  ]
+  "include": ["./src/"],
+  "references": [{ "path": "../core" }]
 }

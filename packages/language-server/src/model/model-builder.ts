@@ -1,4 +1,4 @@
-import { ModelIndex, assignNavigateTo, computeView } from '@likec4/core'
+import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
@@ -9,7 +9,7 @@ import { clone } from 'rambdax'
 import * as R from 'remeda'
 
 import stripIndent from 'strip-indent'
-import invariant from 'tiny-invariant'
+
 import type {
   ParsedAstElement,
   ParsedAstElementView,

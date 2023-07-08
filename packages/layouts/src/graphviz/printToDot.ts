@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  Colors,
-  RelationColors
-} from '@likec4/core'
+import { Colors, RelationColors } from '@likec4/core'
 import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
 import { isTruthy } from 'remeda'
-import invariant from 'tiny-invariant'
+import { invariant } from '@likec4/core'
 import {
   attribute as _,
   digraph,
@@ -26,7 +23,6 @@ function isRootCluster(value: ComputedNode) {
 }
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
-
   const G = digraph({
     [_.compound]: true,
     [_.pad]: 0.08,
@@ -35,7 +31,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.ranksep]: pxToInch(100),
     [_.layout]: 'dot',
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(16),
+    [_.fontsize]: pxToPoints(16)
   })
 
   G.attributes.node.apply({
@@ -89,7 +85,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     }
   }
 
-  nodes.filter(isLeaf).forEach((node) => {
+  nodes.filter(isLeaf).forEach(node => {
     const gNode = G.createNode('nd' + sequence++, {
       [_.id]: node.id,
       [_.label]: nodeLabel(node)
