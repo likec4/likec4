@@ -1,6 +1,6 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:base', 'schedule:earlyMondays', 'helpers:disableTypesNodeMajor'],
+  "$schema": 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:base', 'helpers:disableTypesNodeMajor'],
   prHourlyLimit: 5,
   prConcurrentLimit: 10,
   rangeStrategy: 'bump',
@@ -10,21 +10,31 @@
   packageRules: [
     {
       groupName: 'vitest',
-      matchPackageNames: ['vite-node', 'vitest'],
-      matchPackagePatterns: ['^@vitest/']
+      matchSourceUrls: [
+        "https://github.com/vitest-dev/vitest"
+      ]
     },
     {
-      groupName: 'react',
-      matchPackageNames: ['react', 'react-dom']
+      matchPackagePatterns: ['eslint', 'prettier'],
+      automerge: true
     },
     {
       enabled: false,
-      matchPackageNames: ['@types/vscode', 'vscode', 'next'],
-      matchPackagePatterns: ['^monaco-', '^@monaco-editor', '^vscode-']
+      groupName: 'react',
+      matchSourceUrls: [
+        "https://github.com/facebook/react"
+      ]
     },
     {
-      matchPackagePatterns: ['eslint*', 'prettier'],
-      automerge: true
-    }
+      enabled: false,
+      groupName: 'monaco',
+      matchPackagePatterns: ['^monaco', '^@monaco']
+    },
+    {
+      enabled: false,
+      groupName: 'vscode',
+      matchPackageNames: ['@types/vscode', 'vscode'],
+      matchPackagePatterns: ['^vscode-']
+    },
   ]
 }
