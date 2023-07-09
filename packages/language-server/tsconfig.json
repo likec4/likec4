@@ -5,9 +5,7 @@
     "rootDir": "src",
     "sourceMap": true,
     "composite": true,
-    "declarationMap": true,
-    "skipLibCheck": true,
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+    "declarationMap": true
   },
   "include": ["./src/"],
   "references": [{ "path": "../core" }]

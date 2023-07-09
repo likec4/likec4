@@ -1,5 +1,5 @@
-import { LikeC4Error } from './_base'
-export const InvariantError = LikeC4Error.subclass('InvariantError')
+import { BaseError } from './_base'
+export const InvariantError = BaseError.subclass('InvariantError')
 
 // Throw an error if the condition fails
 // > Not providing an inline default argument for message as the result is smaller

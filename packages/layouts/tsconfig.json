@@ -7,16 +7,12 @@
     "sourceMap": true,
     "declarationMap": true,
     "skipLibCheck": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "rootDir": "src"
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": ["node_modules"],
+  "include": ["./src/"],
   "references": [
     {
       "path": "../core"
-    },
+    }
   ]
 }
