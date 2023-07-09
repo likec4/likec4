@@ -18,6 +18,11 @@
       matchPackagePatterns: ['eslint', 'prettier'],
       automerge: true
     },
+    // Update manually
+    {
+      enabled: false,
+      matchPackageNames: ['next'],
+    },
     {
       enabled: false,
       groupName: 'react',
