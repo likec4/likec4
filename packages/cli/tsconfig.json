@@ -10,8 +10,5 @@
     { "path": "../layouts" },
     { "path": "../core" }
   ],
-  "exclude": [
-    "node_modules",
-    "src/export/puppeteer-page/**",
-  ]
+  "exclude": ["src/export/puppeteer-page/**"]
 }

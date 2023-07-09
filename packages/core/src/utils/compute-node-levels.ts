@@ -1,4 +1,4 @@
-import invariant from 'tiny-invariant'
+import { invariant } from '../errors'
 import type { ComputedNode, ComputedView, NodeId } from '../types/computed-view'
 
 type NodeLevelDepth = {

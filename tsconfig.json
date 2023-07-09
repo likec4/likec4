@@ -4,14 +4,13 @@
     "lib": ["ESNext"],
     "module": "es2022",
     "target": "es2022",
+    "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "NodeNext",
     "checkJs": false
   },
-  "exclude": [
-    "node_modules/*"
-  ]
+  "exclude": ["node_modules", "packages/*/dist"]
 }

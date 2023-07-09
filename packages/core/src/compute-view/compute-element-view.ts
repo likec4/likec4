@@ -8,7 +8,7 @@ import {
   DefaultThemeColor,
   DefaultElementShape,
   type ComputedNode,
-  type ComputeResult,
+  type ComputeResult
 } from '../types'
 import * as Expr from '../types/expression'
 import {
@@ -38,7 +38,7 @@ import { EdgeBuilder } from './EdgeBuilder'
 import { sortNodes } from './utils/sortNodes'
 import { ComputeCtx } from './compute-ctx'
 import { anyPossibleRelations } from './utils/anyPossibleRelations'
-import invariant from 'tiny-invariant'
+import { invariant } from '../errors'
 
 function transformToNodes(elementsIterator: Iterable<Element>) {
   return Array.from(elementsIterator)
@@ -64,7 +64,7 @@ function transformToNodes(elementsIterator: Iterable<Element>) {
         color: color ?? DefaultThemeColor,
         shape: shape ?? DefaultElementShape,
         children: [],
-        ...(description ? { description } : {}),
+        ...(description ? { description } : {})
       }
       map.set(id, node)
       return map
@@ -482,7 +482,10 @@ const excludeRelationExpr = (ctx: ComputeCtx, expr: Expr.RelationExpr): ComputeC
   })
 }
 
-export function computeElementView<V extends ElementView>(view: V, index: ModelIndex): ComputeResult<V> {
+export function computeElementView<V extends ElementView>(
+  view: V,
+  index: ModelIndex
+): ComputeResult<V> {
   const rootElement = view.viewOf ?? null
   let ctx = new ComputeCtx(index, rootElement)
   const rulesInclude = view.rules.filter(isViewRuleExpression)

@@ -4,19 +4,14 @@
     "lib": ["ESNext", "WebWorker"],
     "skipLibCheck": true,
     "paths": {
-      "src/*": [
-        "./src/*"
-      ]
-    },
+      "src/*": ["./src/*"]
+    }
   },
-  "include": ["./src/**/*"],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["./src/"],
   "references": [
     { "path": "../core" },
     { "path": "../generators" },
     { "path": "../layouts" },
-    { "path": "../language-server" },
+    { "path": "../language-server" }
   ]
 }

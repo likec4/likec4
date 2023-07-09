@@ -4,7 +4,6 @@ import { SymbolKind } from 'vscode-languageserver-protocol'
 import { createTestServices } from '../test'
 
 describe('LikeC4DocumentSymbolProvider', () => {
-
   it('should show all specification symbols', async ({ expect }) => {
     const { validate, services } = createTestServices()
     const { document, diagnostics } = await validate(`
@@ -18,7 +17,6 @@ describe('LikeC4DocumentSymbolProvider', () => {
       document,
       textDocumentParams(document)
     )
-    console.log(JSON.stringify(symbols, null, 2))
     expect(symbols).toStrictEqual([
       {
         name: 'specification',
@@ -96,5 +94,4 @@ describe('LikeC4DocumentSymbolProvider', () => {
       }
     ])
   })
-
 })

@@ -1,4 +1,4 @@
-import { ModelIndex, assignNavigateTo, computeView } from '@likec4/core'
+import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
@@ -9,7 +9,7 @@ import { clone } from 'rambdax'
 import * as R from 'remeda'
 
 import stripIndent from 'strip-indent'
-import invariant from 'tiny-invariant'
+
 import type {
   ParsedAstElement,
   ParsedAstElementView,
@@ -39,18 +39,18 @@ export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
   private langiumDocuments: LangiumDocuments
 
+  private readonly cachedModel: {
+    last?: ReturnType<LikeC4ModelBuilder['buildModel']>
+  } = {}
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      (docs, cancelToken) => {
+      (docs, _cancelToken) => {
         let countOfChangedDocs = 0
         for (const doc of docs) {
-          if (cancelToken.isCancellationRequested) {
-            break
-          }
           if (!isLikeC4LangiumDocument(doc)) {
             continue
           }
@@ -62,11 +62,16 @@ export class LikeC4ModelBuilder {
             logger.error(e)
           }
         }
-        if (countOfChangedDocs > 0 && !cancelToken.isCancellationRequested) {
+        if (countOfChangedDocs > 0) {
+          this.cleanCache()
           this.notifyClient()
         }
       }
     )
+  }
+
+  private cleanCache() {
+    delete this.cachedModel.last
   }
 
   private get connection() {
@@ -77,11 +82,20 @@ export class LikeC4ModelBuilder {
     return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
   }
 
-  public buildModel(): c4.LikeC4Model | undefined {
+  public buildModel(): c4.LikeC4Model | null {
+    if ('last' in this.cachedModel) {
+      logger.debug('returning cached model')
+      return this.cachedModel.last
+    }
+    return (this.cachedModel.last = this._buildModel())
+  }
+
+  private _buildModel(): c4.LikeC4Model | null {
+    logger.debug('_buildModel')
     const docs = this.documents()
     if (docs.length === 0) {
       logger.debug('No documents to build model from')
-      return
+      return null
     }
     // TODO:
     try {
@@ -110,17 +124,20 @@ export class LikeC4ModelBuilder {
         R.map(toModelElement),
         R.compact,
         R.sort(compareByFqnHierarchically),
-        R.reduce((acc, el) => {
-          const parent = parentFqn(el.id)
-          if (!parent || parent in acc) {
-            if (el.id in acc) {
-              logger.warn(`Duplicate element id: ${el.id}`)
-              return acc
+        R.reduce(
+          (acc, el) => {
+            const parent = parentFqn(el.id)
+            if (!parent || parent in acc) {
+              if (el.id in acc) {
+                logger.warn(`Duplicate element id: ${el.id}`)
+                return acc
+              }
+              acc[el.id] = el
             }
-            acc[el.id] = el
-          }
-          return acc
-        }, {} as c4.LikeC4Model['elements'])
+            return acc
+          },
+          {} as c4.LikeC4Model['elements']
+        )
       )
 
       const toModelRelation = ({
@@ -182,7 +199,7 @@ export class LikeC4ModelBuilder {
       }
     } catch (e) {
       logger.error(e)
-      return
+      return null
     }
   }
 

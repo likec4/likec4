@@ -24,12 +24,13 @@
     "verbatimModuleSyntax": true,
     "checkJs": true,
 
+    "noEmitOnError": true,
+
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true
-  },
-  "exclude": ["node_modules", "dist"]
+  }
 }

@@ -9,7 +9,7 @@ import type {
   Point
 } from '@likec4/core/types'
 import { propEq } from 'rambdax'
-import invariant from 'tiny-invariant'
+import { invariant } from '@likec4/core'
 import type { DiagramLayoutFn } from '../types'
 import type { BoundingBox, GVPos, GraphvizJson } from './graphviz-types'
 import { inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
