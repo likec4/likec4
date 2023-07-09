@@ -1,10 +1,10 @@
-name: Main
+name: main
 
 on:
   push:
     branches:
       - 'main'
-      - 'renovate/**'
+      - 'develop'
 
 permissions:
   actions: write
@@ -44,6 +44,8 @@ jobs:
     uses: ./.github/workflows/release.yaml
     if: "github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')"
     needs: build
+    concurrency:
+      group: ${{ github.workflow }}-release
     permissions:
       actions: write
       checks: write
@@ -56,6 +58,9 @@ jobs:
     uses: ./.github/workflows/docs.yaml
     if: "github.ref == 'refs/heads/main'"
     needs: build
+    concurrency:
+      group: ${{ github.workflow }}-docs
+      cancel-in-progress: true
     permissions:
       actions: write
       contents: read

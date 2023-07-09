@@ -1,4 +1,4 @@
-name: VSCode
+name: vscode
 
 on:
   workflow_call:
