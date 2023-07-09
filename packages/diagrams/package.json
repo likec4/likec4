@@ -55,7 +55,7 @@
     "@react-spring/konva": "^9.7.3",
     "khroma": "^2.0.0",
     "konva": "^9.2.0",
-    "rambdax": "^9.1.1",
+    "rambdax": "^10.0.0",
     "react-konva": "^18.2.10"
   },
   "peerDependencies": {
