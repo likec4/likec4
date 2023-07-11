@@ -1404,7 +1404,7 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@types/vscode": ~1.77.0
     "@types/vscode-webview": ^1.57.1
-    "@vitejs/plugin-react": ^4.0.1
+    "@vitejs/plugin-react": ^4.0.3
     "@vscode/webview-ui-toolkit": ^1.2.2
     rambdax: ^9.1.1
     react: ^18.2.0
@@ -3474,7 +3474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:^4.0.0, @vitejs/plugin-react@npm:^4.0.1":
+"@vitejs/plugin-react@npm:^4.0.0":
   version: 4.0.1
   resolution: "@vitejs/plugin-react@npm:4.0.1"
   dependencies:
@@ -3485,6 +3485,20 @@ __metadata:
   peerDependencies:
     vite: ^4.2.0
   checksum: a0ec9349204fbe19ae301ffbe5734cb83e22fb4e8717b4b563a1edcec71796cc6194a9a39bccfc28d9531e83b0cf85949df57329f4063b21a06bfd2b0f0d31eb
+  languageName: node
+  linkType: hard
+
+"@vitejs/plugin-react@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@vitejs/plugin-react@npm:4.0.3"
+  dependencies:
+    "@babel/core": ^7.22.5
+    "@babel/plugin-transform-react-jsx-self": ^7.22.5
+    "@babel/plugin-transform-react-jsx-source": ^7.22.5
+    react-refresh: ^0.14.0
+  peerDependencies:
+    vite: ^4.2.0
+  checksum: dd9136aec8f30b0251b88f390c60b8ee5472454884c4f82720725c213f8988bf8e202cc2430e575a268d413c1dc7257a51b342ac431a43c02d923de932c5707c
   languageName: node
   linkType: hard
 
