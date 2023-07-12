@@ -1,7 +1,5 @@
 import { Colors, type ComputedNode } from '@likec4/core'
-import indentString from 'indent-string'
 import { isEmpty, isTruthy } from 'remeda'
-import stripIndent from 'strip-indent'
 import wordWrap from 'word-wrap'
 import { pxToPoints } from './graphviz-utils'
 
@@ -21,68 +19,80 @@ function wrapToHTML({
   text,
   maxchars,
   fontsize,
-  lineHeight = fontsize * 1.25,
-  color
+  bold,
+  color,
+  align = 'center'
 }: {
   text: string
   maxchars: number
   fontsize: number
-  lineHeight?: number
+  bold?: boolean
   color?: string
+  align?: 'left' | 'right' | 'center'
 }) {
-  const pointSize = pxToPoints(fontsize)
-  const font = (text: string) => `<FONT POINT-SIZE="${pointSize}"${color ? ` COLOR="${color}"` : ''}>${isEmpty(text) ? ' ' : text}</FONT>`
-  const lines = wrap(text, maxchars)
-
-  const head = lines.at(0)
-  if (head && lines.length === 1) {
-    return font(head)
+  const br = align ? `<BR ALIGN="${align.toUpperCase()}"/>` : '<BR/>'
+  let html = wrap(text, maxchars)
+    .map(text => (isEmpty(text) ? ' ' : text))
+    .map((line, idx, arr) => {
+      if (arr.length === 1) {
+        return line
+      }
+      if (idx === 0) {
+        return line + '<BR/>'
+      }
+      return line + br
+    })
+    .join('')
+  if (bold) {
+    html = `<B>${html}</B>`
   }
-  const height = `HEIGHT="${pxToPoints(lineHeight)}"`
-  const rows = indentString(
-    lines.map(line => `<TR><TD ${height} VALIGN="BOTTOM">${font(line)}</TD></TR>`).join('\n'),
-    2
-  )
-  return `<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">\n${rows}\n</TABLE>`
+  return `<FONT ${color ? `COLOR="${color}" ` : ``}POINT-SIZE="${pxToPoints(
+    fontsize
+  )}">${html}</FONT>`
 }
 
 export function nodeLabel(node: ComputedNode) {
-  // const lines = wrap(node.title, 35)
-  //   .map(line => `<tr><td height="${pxToPoints(20)}"><font point-size="${pxToPoints(18)}">${line}</font></td></tr>`)\
-  const title = wrapToHTML({
-    text: node.title,
-    fontsize: 18,
-    maxchars: 35,
-    color: Colors[node.color].hiContrast
-  })
-
-  if (isTruthy(node.description)) {
-    const desc = wrapToHTML({
-      text: node.description,
-      fontsize: 14,
-      maxchars: 50,
-      color: Colors[node.color].loContrast
+  const lines = [
+    wrapToHTML({
+      text: node.title,
+      fontsize: 18,
+      maxchars: 35,
+      color: Colors[node.color].hiContrast
     })
-    return stripIndent(`
-    <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        ${indentString(title, 9).trimStart()}
-      </TD></TR>
-      <TR><TD>
-        ${indentString(desc, 9).trimStart()}
-      </TD></TR>
-    </TABLE>>`)
+  ]
+  if (isTruthy(node.technology)) {
+    lines.push(
+      wrapToHTML({
+        text: node.technology,
+        fontsize: 12,
+        maxchars: 45,
+        color: Colors[node.color].loContrast
+      })
+    )
   }
-
-  return `<${title}>`
+  if (isTruthy(node.description)) {
+    lines.push(
+      wrapToHTML({
+        text: node.description,
+        fontsize: 14,
+        maxchars: 45,
+        color: Colors[node.color].loContrast
+      })
+    )
+  }
+  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`).join('')
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">${rows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {
-  const label = wrapToHTML({
-    text,
-    maxchars: 50,
-    fontsize: 14,
-    lineHeight: 16
-  })
-  return `<${label}>`
+  const lines = [
+    wrapToHTML({
+      text,
+      maxchars: 40,
+      fontsize: 14,
+      align: 'left'
+    })
+  ]
+  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`).join('')
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0">${rows}</TABLE>>`
 }

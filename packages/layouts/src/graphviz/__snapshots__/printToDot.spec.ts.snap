@@ -27,22 +27,15 @@ exports[`printToDot: computedAmazonView 1`] = `
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.3333,0.2083";
+    margin = "0.2083,0.2083";
   ];
   "nd1" [
     id = "cloud.backend";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Backend</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
     id = "amazon.s3";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">S3</FONT>
-      </TD></TR>
-      <TR><TD>
-        <FONT POINT-SIZE="10.5" COLOR="#dbeafe">S3 is a storage service</FONT>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">S3</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">S3 is a storage service</FONT></TD></TR></TABLE>>;
   ];
   subgraph "cluster_3" {
     id = "cloud";
@@ -62,7 +55,7 @@ exports[`printToDot: computedAmazonView 1`] = `
   }
   "nd1" -> "nd2" [
     id = "cloud.backend:amazon.s3";
-    label = <<FONT POINT-SIZE="10.5">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
@@ -94,91 +87,37 @@ exports[`printToDot: computedCloud3levels 1`] = `
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.3333,0.2083";
+    margin = "0.2083,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
     id = "support";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Support Engineer</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">Support engineers are responsible for supporting</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">customers</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud.frontend.adminPanel";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Admin Panel Webapp</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">The admin panel is a webapp that allows support</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">staff to manage customer data.</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Admin Panel Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The admin panel is a webapp that allows<BR/>support staff to manage customer data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd4" [
     id = "cloud.frontend.dashboard";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Customer Dashboard Webapp</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">The customer dashboard is a webapp that allows</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">customers to view their data.</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The customer dashboard is a webapp that<BR/>allows customers to view their data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd5" [
     id = "cloud.backend.graphql";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Graphql API</FONT>
-      </TD></TR>
-      <TR><TD>
-        <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Component that allows to query data via GraphQL.</FONT>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Graphql API</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Component that allows to query data via<BR/>GraphQL.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd6" [
     id = "cloud.backend.storage";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Backend Storage</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">The backend storage is a component that stores</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">data.</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend Storage</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The backend storage is a component that<BR/>stores data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
     color = "#2563eb";
     shape = "cylinder";
   ];
   "nd7" [
     id = "amazon";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Amazon</FONT>
-      </TD></TR>
-      <TR><TD>
-        <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   subgraph "cluster_8" {
     id = "cloud";
@@ -202,27 +141,24 @@ exports[`printToDot: computedCloud3levels 1`] = `
     }
     "nd3" -> "nd5" [
       id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-      label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-        <TR><TD HEIGHT="12" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5">fetches data in zero trust network with sso</FONT></TD></TR>
-        <TR><TD HEIGHT="12" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5">authentification</FONT></TD></TR>
-      </TABLE>>;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data in zero trust network with<BR/>sso authentification<BR ALIGN="LEFT"/></FONT></TD></TR></TABLE>>;
     ];
     "nd4" -> "nd5" [
       id = "cloud.frontend.dashboard:cloud.backend.graphql";
-      label = <<FONT POINT-SIZE="10.5">fetches data</FONT>>;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
     ];
   }
   "nd6" -> "nd7" [
     id = "cloud.backend.storage:amazon";
-    label = <<FONT POINT-SIZE="10.5">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd4" [
     id = "customer:cloud.frontend.dashboard";
-    label = <<FONT POINT-SIZE="10.5">opens in browser</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "nd2" -> "nd3" [
     id = "support:cloud.frontend.adminPanel";
-    label = <<FONT POINT-SIZE="10.5">manages</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
@@ -254,44 +190,27 @@ exports[`printToDot: computedCloudView 1`] = `
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.3333,0.2083";
+    margin = "0.2083,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
     id = "support";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Support Engineer</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">Support engineers are responsible for supporting</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">customers</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud.frontend";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Frontend</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Frontend</FONT></TD></TR></TABLE>>;
   ];
   "nd4" [
     id = "cloud.backend";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">Backend</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT></TD></TR></TABLE>>;
   ];
   "nd5" [
     id = "amazon";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Amazon</FONT>
-      </TD></TR>
-      <TR><TD>
-        <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   subgraph "cluster_6" {
     id = "cloud";
@@ -303,20 +222,20 @@ exports[`printToDot: computedCloudView 1`] = `
     "nd4";
     "nd3" -> "nd4" [
       id = "cloud.frontend:cloud.backend";
-      label = <<FONT POINT-SIZE="10.5">fetches data</FONT>>;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
     ];
   }
   "nd4" -> "nd5" [
     id = "cloud.backend:amazon";
-    label = <<FONT POINT-SIZE="10.5">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd3" [
     id = "customer:cloud.frontend";
-    label = <<FONT POINT-SIZE="10.5">opens in browser</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "nd2" -> "nd3" [
     id = "support:cloud.frontend";
-    label = <<FONT POINT-SIZE="10.5">manages</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
@@ -348,52 +267,35 @@ exports[`printToDot: computedIndexView 1`] = `
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.3333,0.2083";
+    margin = "0.2083,0.2083";
   ];
   "nd1" [
     id = "customer";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">customer</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
     id = "support";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Support Engineer</FONT>
-      </TD></TR>
-      <TR><TD>
-        <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">Support engineers are responsible for supporting</FONT></TD></TR>
-           <TR><TD HEIGHT="13.125" VALIGN="BOTTOM"><FONT POINT-SIZE="10.5" COLOR="#dbeafe">customers</FONT></TD></TR>
-         </TABLE>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud";
-    label = <<FONT POINT-SIZE="13.5" COLOR="#eff6ff">cloud</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">cloud</FONT></TD></TR></TABLE>>;
   ];
   "nd4" [
     id = "amazon";
-    label = <<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">
-      <TR><TD>
-        <FONT POINT-SIZE="13.5" COLOR="#eff6ff">Amazon</FONT>
-      </TD></TR>
-      <TR><TD>
-        <FONT POINT-SIZE="10.5" COLOR="#dbeafe">Amazon is a cloud provider</FONT>
-      </TD></TR>
-    </TABLE>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   "nd3" -> "nd4" [
     id = "cloud:amazon";
-    label = <<FONT POINT-SIZE="10.5">persists artifacts</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd3" [
     id = "customer:cloud";
-    label = <<FONT POINT-SIZE="10.5">opens in browser</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "nd2" -> "nd3" [
     id = "support:cloud";
-    label = <<FONT POINT-SIZE="10.5">manages</FONT>>;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
