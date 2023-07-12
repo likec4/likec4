@@ -2,7 +2,6 @@ import { describe } from 'vitest'
 import { test } from './asserts'
 
 describe('06_ElementRef', () => {
-
   test('valid elementRef').valid`
     specification {
       element component
@@ -36,6 +35,17 @@ describe('06_ElementRef', () => {
     }
   `
 
+  test('fail if has spaces').invalid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system {
+        component sub1
+      }
+      user -> system. sub1
+    }`
 })
 // test('06_ElementRefScope', invalid`
 // specification {

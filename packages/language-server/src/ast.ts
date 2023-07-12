@@ -1,7 +1,8 @@
 import type * as c4 from '@likec4/core/types'
+import { RelationRefError } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium/lib/workspace'
-import objectHash from 'object-hash'
+// import objectHash from 'object-hash'
 import { elementRef } from './elementRef'
 import type { LikeC4Document } from './generated/ast'
 import * as ast from './generated/ast'
@@ -9,24 +10,24 @@ import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
 
-export function c4hash({
-  c4Specification,
-  c4Elements,
-  c4Relations,
-  c4Views
-}: LikeC4LangiumDocument) {
-  return objectHash(
-    {
-      c4Specification,
-      c4Elements,
-      c4Relations,
-      c4Views
-    },
-    {
-      respectType: false
-    }
-  )
-}
+// export function c4hash({
+//   c4Specification,
+//   c4Elements,
+//   c4Relations,
+//   c4Views
+// }: LikeC4LangiumDocument) {
+//   return objectHash(
+//     {
+//       c4Specification,
+//       c4Elements,
+//       c4Relations,
+//       c4Views
+//     },
+//     {
+//       respectType: false
+//     }
+//   )
+// }
 
 export interface ParsedAstSpecification {
   kinds: Record<
@@ -71,7 +72,7 @@ const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (node as any)[idattr] = id
+    ;(node as any)[idattr] = id
     return node
   },
   readId(node: ast.ElementView) {
@@ -87,7 +88,7 @@ export const ElementOps = {
       delete (node as any)[idattr]
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (node as any)[idattr] = id
+      ;(node as any)[idattr] = id
     }
     return node
   },
@@ -134,7 +135,9 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Like
   )
 }
 
-export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is LikeC4LangiumDocument => {
+export const isValidLikeC4LangiumDocument = (
+  doc: LangiumDocument
+): doc is LikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -150,7 +153,7 @@ export function* streamModel(doc: LikeC4LangiumDocument) {
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {
-    if (ast.isRelationWithSource(el)) {
+    if (ast.isRelation(el)) {
       relations.push(el)
       continue
     }
@@ -182,12 +185,12 @@ export function resolveRelationPoints(node: ast.Relation): {
 } {
   const target = elementRef(node.target)
   if (!target) {
-    throw new Error('Skip relation due to invalid reference to target')
+    throw new RelationRefError('Invalid reference to target')
   }
-  if (ast.isRelationWithSource(node)) {
+  if ('source' in node) {
     const source = elementRef(node.source)
     if (!source) {
-      throw new Error('Skip relation due to invalid reference to source')
+      throw new RelationRefError('Invalid reference to source')
     }
     return {
       source,
@@ -195,7 +198,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
   }
   if (!ast.isElementBody(node.$container)) {
-    throw new Error('Skip relation due to invalid reference to source')
+    throw new RelationRefError('Invalid relation parent')
   }
   return {
     source: node.$container.$container,
@@ -220,7 +223,9 @@ export function toElementStyle(props?: ast.AStyleProperty[]) {
   return result
 }
 
-export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
+export function toAutoLayout(
+  direction: ast.ViewRuleLayoutDirection
+): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {
       return 'TB'

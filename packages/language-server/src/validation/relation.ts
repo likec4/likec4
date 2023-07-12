@@ -1,7 +1,8 @@
+import { BaseError } from '@likec4/core'
+import { isSameHierarchy } from '@likec4/core/utils'
 import type { ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import { resolveRelationPoints } from '../ast'
-import { isSameHierarchy } from '@likec4/core/utils'
 import type { LikeC4Services } from '../module'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
@@ -10,25 +11,29 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
     try {
       const coupling = resolveRelationPoints(el)
       const target = fqnIndex.get(coupling.target)
-      if (!target) {
-        return accept('error', 'Invalid target', {
-          node: el,
-          property: 'target'
-        })
-      }
       const source = fqnIndex.get(coupling.source)
-      if (!source) {
-        return accept('error', 'Invalid source', {
-          node: el
-        })
+      if (!target || !source) {
+        if (!target) {
+          accept('error', 'Target not found', {
+            node: el,
+            property: 'target'
+          })
+        }
+        if (!source) {
+          accept('error', 'Source not found', {
+            node: el,
+            property: 'source'
+          })
+        }
+        return
       }
       if (isSameHierarchy(source, target)) {
-        return accept('error', 'Invalid relation (same hierarchy)', {
+        return accept('error', 'Invalid parent-child relation', {
           node: el
         })
       }
     } catch (e) {
-      if (e instanceof Error) {
+      if (e instanceof BaseError) {
         return accept('error', e.message, {
           node: el
         })
@@ -37,20 +42,5 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
         node: el
       })
     }
-    // const fqn = fqnIndex.get(el)
-    // if (!fqn) {
-    //   accept('error', 'Not indexed', {
-    //     node: el,
-    //     property: 'name',
-    //   })
-    //   return
-    // }
-    // const withSameFqn = fqnIndex.byFqn(fqn)
-    // if (withSameFqn.length > 1) {
-    //   accept('error', `Duplicate element name ${el.name !== fqn ? el.name +' (' + fqn + ')' : el.name}`, {
-    //     node: el,
-    //     property: 'name',
-    //   })
-    // }
   }
 }
