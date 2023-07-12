@@ -11,7 +11,7 @@ const cli = {
   outfile: 'dist/cli.js',
   logLevel: 'info',
   bundle: true,
-  format: 'iife',
+  format: 'cjs',
   target: 'node16',
   platform: 'node',
   alias: {
@@ -32,8 +32,6 @@ const cli = {
   color: true,
   allowOverwrite: true,
   sourcemap: false,
-  sourcesContent: false,
-  treeShaking: true,
   keepNames: true,
   legalComments: 'eof',
   minify: true

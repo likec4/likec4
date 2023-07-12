@@ -4,12 +4,12 @@ import { mkdirp } from 'mkdirp'
 import { existsSync } from 'node:fs'
 import { readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path/posix'
+import { join, resolve } from 'node:path'
 import { values } from 'rambdax'
 import { addProp, map } from 'remeda'
 import { generateExportScript, generateViewsData } from './export'
 import { initLanguageServices, layoutViews, resolveDir } from './language-services'
-import { dim, red, green, yellow} from 'kleur/colors'
+import { dim, red, green, yellow } from 'kleur/colors'
 
 async function createProject() {
   const dir = join(tmpdir(), 'likec4-export')
@@ -36,7 +36,7 @@ async function createProject() {
         },
         engineStrict: true,
         dependencies: {
-          puppeteer: "20.7.3"
+          puppeteer: '20.7.3'
         }
       },
       null,
@@ -64,7 +64,10 @@ export const exportCommand = () => {
         .argOptional()
         .default(process.cwd(), 'current directory')
     )
-    .option('-o, --output <directory>', 'directory to output generated png\n(default: workspace next to sources)')
+    .option(
+      '-o, --output <directory>',
+      'directory to output generated png\n(default: workspace next to sources)'
+    )
     .addOption(
       createOption(
         '-S, --script-cwd [path]',
@@ -104,7 +107,7 @@ export const exportCommand = () => {
 
       await mkdirp(outputdir)
 
-      let puppeteerPage = await readFile(join(__dirname, 'puppeteer-page.js'), 'utf-8')
+      let puppeteerPage = await readFile(resolve(__dirname, 'puppeteer-page.js'), 'utf-8')
       puppeteerPage += '\n\n' + generateViewsData(diagrams)
 
       const puppeteerPageJS = join(cwd, 'puppeteer-page.js')
@@ -112,7 +115,7 @@ export const exportCommand = () => {
 
       await Promise.all([
         writeFile(puppeteerPageJS, puppeteerPage),
-        writeFile(exportJS, generateExportScript(diagrams, outputdir))
+        writeFile(exportJS, generateExportScript(diagrams, puppeteerPageJS, outputdir))
       ])
       console.log(`Puppeteer scripts:`)
       console.log(`  ${puppeteerPageJS}`)

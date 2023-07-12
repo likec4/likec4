@@ -3,7 +3,7 @@ import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import { mkdirp } from 'mkdirp'
 import process from 'process'
-import { join, dirname } from 'node:path/posix'
+import { join, dirname } from 'node:path'
 import {
   CompositeGeneratorNode,
   NL,
@@ -35,27 +35,32 @@ export function generateViewsData(views: DiagramView[]) {
 
 type DiagramViewWithSourcePath = DiagramView & { sourcePath: string }
 
-export function generateExportScript(views: DiagramViewWithSourcePath[], outputdir: string) {
+export function generateExportScript(
+  views: DiagramViewWithSourcePath[],
+  puppeteerPageJSPath: string,
+  outputdir: string
+) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     const puppeteer = require('puppeteer');
     const { readFileSync } = require('node:fs');
-    const { writeFile } = require('node:fs/promises');
-    const { join } = require('node:path/posix');
+    const { join } = require('node:path');
 
     ;(async () => {
   `
     .indent({
       indentation: 2,
       indentedChildren(out) {
-        out
-        .appendNewLine()
-        .appendTemplate`
+        out.appendNewLine().appendTemplate`
       console.info('Launch puppeteer...')
 
       const browser = await puppeteer.launch({
         headless: 'new',
-        ${ isNoSanbox ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],` : '' }
+        ${
+          isNoSanbox
+            ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],`
+            : ''
+        }
       });
       const page = await browser.newPage();
       await page.setViewport({
@@ -110,7 +115,7 @@ export function generateExportScript(views: DiagramViewWithSourcePath[], outputd
       console.info('Load puppeteer-page...')
 
       await page.addScriptTag({
-        content: readFileSync('puppeteer-page.js').toString(),
+        content: readFileSync('${puppeteerPageJSPath}').toString(),
         type: 'module'
       })
 
