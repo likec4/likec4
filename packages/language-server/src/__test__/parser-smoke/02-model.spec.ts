@@ -3,7 +3,7 @@ import { valid, invalid } from './asserts'
 
 describe('02_Model', () => {
   test(
-    '02_Model_Element',
+    'name on the right side',
     valid`
       specification {
         element person
@@ -15,20 +15,7 @@ describe('02_Model', () => {
   )
 
   test(
-    'Allow element with kind "element"',
-    valid`
-      specification {
-        element element
-      }
-      model {
-        element el1
-        element el2
-      }
-  `)
-
-
-  test(
-    '02_Model_Element_2',
+    'name on the left side',
     valid`
       specification {
         element person
@@ -40,38 +27,50 @@ describe('02_Model', () => {
   )
 
   test(
-    '02_Model_ElementWithTitle',
+    'allow element with kind "element"',
+    valid`
+      specification {
+        element element
+      }
+      model {
+        element el1
+        element el2
+      }
+  `
+  )
+
+  test(
+    'element with title',
     valid`
       specification {
         element person
       }
       model {
-        person user1
+        person user1 'Person1'
         user2 = person 'Person2'
-        user3 = person
+        user3 = person // unnamed
       }`
   )
 
   test(
-    '02_Model_Element_Style',
+    'element with style',
     valid`
-specification {
-  element person
-}
-model {
-  user1 = person {
-    style {
-      shape person
-      color secondary
-    }
-  }
-  user2 = person
-}
-`
+      specification {
+        element person
+      }
+      model {
+        user1 = person {
+          style {
+            shape person
+            color secondary
+          }
+        }
+        user2 = person
+      }`
   )
 
   test(
-    '02_Model_Element_Tags',
+    'element with tags',
     valid`
       specification {
         element person
@@ -92,43 +91,67 @@ model {
   )
 
   test(
-    '02_Model invalid',
+    'fail if name is string',
     invalid`
-specification {
-  element person
-}
-model {
-  user = person
-  person 'Person2'
-}
-`
+      specification {
+        element person
+      }
+      model {
+        person 'Person2'
+      }
+      `
   )
 
   test(
-    '02_Model_NestedElemenets',
+    'fail if name starts with number',
+    invalid`
+      specification {
+        element person
+      }
+      model {
+        person 1person
+      }
+      `
+  )
+
+  test(
+    'fail if space after dash',
+    invalid`
+      specification {
+        element person
+        tag one
+      }
+      model {
+        user1 = person {
+          # one
+        }
+      }`
+  )
+
+  test(
+    'element with nested elements',
     valid`
-specification {
-  element person
-  element system
-  element component
-}
-model {
-  person user1
-  user2 = person {
-  }
-  user3 = person 'Person3'
-  component system {
-    subsystem = component
-    backend = component {
-      api = component 'API'
-    }
-  }
-}
-`
+      specification {
+        element person
+        element system
+        element component
+      }
+      model {
+        person user1
+        user2 = person {
+        }
+        user3 = person 'Person3'
+        component system {
+          subsystem = component
+          backend = component {
+            api = component 'API'
+          }
+        }
+      }`
   )
 
   test(
-    '02_Model_NestedElemenets - invalid',
+    'fail if nested element name is string',
     invalid`
       specification {
         element person
@@ -145,20 +168,20 @@ model {
   )
 
   test(
-    '02_ModelElementProps',
+    'element with properties',
     valid`
       specification {
         element component
         tag one
-        tag two
       }
       model {
         component system {
-          #one #two
+          #one
 
           component subsystem {
             title: 'SubSystem'
           }
+
           component storage {
             title 'Storage'
             style {

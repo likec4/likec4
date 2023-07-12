@@ -18,10 +18,25 @@ describe('05_StrictElementRef', () => {
       }
       extend system.sub1.sub2 {
       }
-    }
-    `
+    }`
 
-  test('StrictElementRefScope invalid').invalid`
+  test('fail if has spaces').invalid`
+    specification {
+      element component
+    }
+    model {
+      component system {
+        component sub1 {
+          component sub2
+        }
+      }
+      extend system. sub1 {
+      }
+      extend system.sub1. sub2 {
+      }
+    }`
+
+  test('fail if head is not a global ref').invalid`
     specification {
       element component
     }
@@ -36,7 +51,7 @@ describe('05_StrictElementRef', () => {
     }
     `
 
-  test('StrictElementChildRefScope invalid').invalid`
+  test('fail if not a FQN').invalid`
     specification {
       element component
     }

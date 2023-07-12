@@ -34,6 +34,7 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
+import type { CancellationToken } from 'vscode-languageserver-protocol'
 
 export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
@@ -48,7 +49,7 @@ export class LikeC4ModelBuilder {
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      (docs, _cancelToken) => {
+      (docs, cancelToken) => {
         let countOfChangedDocs = 0
         for (const doc of docs) {
           if (!isLikeC4LangiumDocument(doc)) {
@@ -64,7 +65,7 @@ export class LikeC4ModelBuilder {
         }
         if (countOfChangedDocs > 0) {
           this.cleanCache()
-          this.notifyClient()
+          this.notifyClient(cancelToken)
         }
       }
     )
@@ -72,10 +73,6 @@ export class LikeC4ModelBuilder {
 
   private cleanCache() {
     delete this.cachedModel.last
-  }
-
-  private get connection() {
-    return this.services.shared.lsp.Connection
   }
 
   private documents() {
@@ -265,7 +262,7 @@ export class LikeC4ModelBuilder {
     invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
     const kind = astNode.kind.ref.name as c4.ElementKind
     const tags = (astNode.body && this.convertTags(astNode.body)) ?? []
-    const styleProps = astNode.body?.props.find(ast.isElementStyleProperty)?.props
+    const styleProps = astNode.body?.props.find(ast.isElementStyleProperties)?.props
     const { color, shape } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
 
@@ -303,8 +300,7 @@ export class LikeC4ModelBuilder {
       target
     }
     const id = objectHash(hashdata) as c4.RelationID
-    const title =
-      astNode.title ?? astNode.definition?.props.find(p => p.key === 'title')?.value ?? ''
+    const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
     return {
       id,
       ...hashdata,
@@ -447,8 +443,8 @@ export class LikeC4ModelBuilder {
   }
 
   private scheduledCb: NodeJS.Timeout | null = null
-  private notifyClient() {
-    const connection = this.connection
+  private notifyClient(cancelToken: CancellationToken) {
+    const connection = this.services.shared.lsp.Connection
     if (!connection) {
       return
     }
@@ -459,7 +455,9 @@ export class LikeC4ModelBuilder {
     this.scheduledCb = setTimeout(() => {
       logger.debug('send onDidChangeModel')
       this.scheduledCb = null
-      void connection.sendNotification(Rpc.onDidChangeModel, '')
-    }, 350)
+      if (!cancelToken.isCancellationRequested) {
+        void connection.sendNotification(Rpc.onDidChangeModel, '')
+      }
+    }, 300)
   }
 }

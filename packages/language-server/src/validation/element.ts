@@ -7,7 +7,7 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
   return (el, accept) => {
     const fqn = fqnIndex.get(el)
     if (!fqn) {
-      accept('error', 'Not indexed', {
+      accept('error', 'Not indexed element', {
         node: el,
         property: 'name'
       })

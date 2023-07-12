@@ -8,32 +8,28 @@ entry LikeC4Document:
 
 // Specification -------------------------------------
 
+ElementKind: name=Name;
+Tag: name=Name;
+
 SpecificationRule:
   name='specification' OpenBlock
     (specs+=(SpecificationElementKind | SpecificationTag))*
   CloseBlock;
 
+SpecificationStyleProperties:
+  'style' OpenBlock
+    StylePropertiesFragment
+  CloseBlock;
+
 SpecificationElementKind:
   'element' kind=ElementKind (OpenBlock
-    style=SpecificationElementKindStyle?
+    style=SpecificationStyleProperties?
   CloseBlock)?;
-
-SpecificationElementKindStyle: 'style' OpenBlock
-    (props+=(
-      ColorProperty | ShapeProperty
-    ))*
-  CloseBlock;
 
 SpecificationTag:
   'tag' tag=Tag (OpenBlock
-    style=SpecificationTagStyle?
+    style=SpecificationStyleProperties?
   CloseBlock)?;
-
-SpecificationTagStyle: 'style' OpenBlock
-    (props+=(
-      ColorProperty | ShapeProperty
-    ))*
-  CloseBlock;
 
 // Model -------------------------------------
 
@@ -42,7 +38,7 @@ Model:
     elements+=(
       Element |
       ExtendElement |
-      RelationWithSource
+      ExplicitRelation
     )*
   CloseBlock;
 
@@ -70,31 +66,13 @@ ElementBody: OpenBlock
   )*
 CloseBlock;
 
-ElementProperty: (
-  {infer ElementStringProperty} key=('title' | 'description' | 'technology') Colon? value=STRING |
-  {infer ElementStyleProperty} key='style' OpenBlock
-    (props+=(
-      ColorProperty | ShapeProperty
-    ))*
-  CloseBlock
-);
+ElementProperty: ElementStringProperty | ElementStyleProperties;
 
+ElementStringProperty:
+  key=('title' | 'technology' | 'description') Colon? value=STRING;
 
-// ElementProperty:
-//   LinkProperty |
-//   ElementStringProperty |
-//   ElementStyleProperty
-// ;
-
-// ElementStringProperty infers AnyStringProperty:
-//   {infer ElementStringProperty} key=('title' | 'description' | 'technology') Colon? value=STRING;
-
-// ElementStyleProperty:
-//   key='style' OpenBlock
-//     (props+=(
-//       ColorProperty | ShapeProperty
-//     ))*
-//   CloseBlock;
+ElementStyleProperties:
+  key='style' OpenBlock StylePropertiesFragment CloseBlock;
 
 ExtendElement:
   'extend' element=StrictElementRef body=ExtendElementBody;
@@ -102,7 +80,7 @@ ExtendElement:
 ExtendElementBody: OpenBlock
   elements+=(
     Element |
-    RelationWithSource
+    ExplicitRelation
   )*
 CloseBlock ;
 
@@ -115,21 +93,19 @@ ElementRef:
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
 
-Relation: RelationWithSource | RelationWithoutSource;
+Relation: ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
   target=ElementRef
   (title=STRING)?
-  definition=RelationBody?
+  body=RelationBody?
 ;
 
-RelationWithoutSource infers Relation:
+ImplicitRelation infers Relation:
   ('this' | 'it')? arr=RArrow RelationFragment;
 
-RelationWithSource:
+ExplicitRelation infers Relation:
   source=ElementRef arr=RArrow RelationFragment;
-
-// RelationWithSource: {infer RelationWithSource2} RelationWithSourceRule;
 
 RelationBody: OpenBlock
   tags=Tags?
@@ -172,10 +148,8 @@ ViewRuleAutoLayout:
 
 ViewRuleStyle:
   'style' targets+=ElementExpression (Comma targets+=ElementExpression)* OpenBlock
-    (props+=(
-      ColorProperty | ShapeProperty
-    ))*
-CloseBlock;
+    StylePropertiesFragment
+  CloseBlock;
 //   'style' targets+=ElementExpression (COMMA? targets+=ElementExpression)* OPEN_BLOCK
 //   (styleProps+=StyleProperty)*
 // CLOSE_BLOCK;
@@ -228,18 +202,21 @@ LinkProperty: key='link' Colon? value=Uri;
 ColorProperty: key='color' Colon? value=ThemeColor;
 ShapeProperty: key='shape' Colon? value=ElementShape;
 
-type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
+fragment StylePropertiesFragment:
+  (props+=(
+    ColorProperty | ShapeProperty
+  ))*
+;
+
+// type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
 type AStyleProperty = ColorProperty | ShapeProperty;
 
 // -------------------------
 
-ElementKind: name=Name;
-Tag: name=Name;
-
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
 Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
-Uri returns string: URI_WITH_SCHEMA | Dot* URI_RELATIVE;
+Uri returns string: URI_WITH_SCHEMA | URI_RELATIVE;
 
 RArrow returns string: RARROW;
 
@@ -247,42 +224,33 @@ fragment IsEqual:
   (NotEqual | isEqual?=Eq);
 
 // -----------------------------------
-// Terminals
-
-terminal RARROW: '->';
-terminal Dot: DOT;
-terminal NotEqual: '!=';
-terminal Eq: '=';
-terminal OpenBlock: '{';
-terminal CloseBlock: '}';
-terminal Colon: COLON;
-terminal Comma: ',';
-// terminal Star: '*';
-// terminal Semi: ';';
-// terminal EOL: (WS+)? NL;
-
-terminal URI_WITH_SCHEMA: /(\w+:\/\/)[^\s]+/;
-terminal URI_RELATIVE: /\/[^\s\/][^\s]*/;
-
-// terminal URI_WITH_SCHEMA: LETTER+ COLON SLASH SLASH LETTER+;
-terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
-terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
-terminal STRING: /"[^"]*"|'[^']*'/;
-
-
-// -----------------------------------
 // Symbols
-// terminal fragment NON_SPACE: DOT | LETTER | DIGIT | UNDERSCORE | SLASH;
-terminal fragment DOT       :  '.';
-// terminal fragment SLASH     : '/';
 terminal fragment HASH      : '#';
 terminal fragment UNDERSCORE: '_';
-terminal fragment COLON: ':';
-// terminal fragment LowerLetter  : /a-z/;
 terminal fragment LETTER       : /[^\W\d_]/;
 terminal fragment DIGIT        : /[0-9]/;
 terminal fragment NEWLINE: /[\t\r\n\v\f]/;
 terminal fragment SPACE: /[^\S\r\n]/;
+
+
+// -----------------------------------
+// Terminals
+
+terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
+terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
+
+terminal RARROW: '->';
+terminal Dot: /\b\.\b/;
+terminal NotEqual: '!=';
+terminal Eq: '=';
+terminal OpenBlock: '{';
+terminal CloseBlock: '}';
+terminal Colon: ':';
+terminal Comma: ',';
+
+terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
+terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
+terminal STRING: /"[^"]*"|'[^']*'/;
 
 hidden terminal WS: (NEWLINE | SPACE)+;
 

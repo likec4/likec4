@@ -2,7 +2,7 @@ import { describe } from 'vitest'
 import { test } from './asserts'
 
 describe('01-Specification', () => {
-  test('01-Specification').valid`
+  test('valid').valid`
     specification {
       element container
       element component {
@@ -21,14 +21,25 @@ describe('01-Specification', () => {
     }
     `
 
-  test('Allow element with kind "element"').valid`
+  test('valid with uppercase').valid`
+    specification {
+      element Container
+      element softwareSystem
+    }`
+
+  test('fail if starts with number').invalid`
+    specification {
+      element 1container
+    }`
+
+  test('allow element with kind "element"').valid`
       specification {
         element element
         element component
       }
   `
 
-  test('ElementKindStyle').valid`
+  test('kind with style').valid`
     specification {
       element frontend {
         style {
@@ -44,7 +55,7 @@ describe('01-Specification', () => {
     }
     `
 
-  test('StyleColor').valid`
+  test('kind the same name as color').valid`
     specification {
       element green {
         style {
@@ -58,13 +69,14 @@ describe('01-Specification', () => {
       }
     }
     `
+
+  test('kind the same name as shape').valid`
+    specification {
+      element storage {
+        style {
+          shape storage
+        }
+      }
+    }
+    `
 })
-// export const invalid_01_Specification_BuiltinElementKind = `
-// specification {
-//   element element {
-//     style {
-//       shape browser
-//     }
-//   }
-// }
-// `
