@@ -8,16 +8,16 @@
     "directory": "packages/cli"
   },
   "bin": {
-    "likec4": "./likec4.js"
+    "likec4": "bin/likec4"
   },
-  "main": "dist/cli.js",
   "engines": {
     "node": ">=16"
   },
+  "preferGlobal": true,
   "engineStrict": true,
   "files": [
-    "dist",
-    "likec4.js"
+    "bin",
+    "dist"
   ],
   "scripts": {
     "turbo-build": "run -T turbo run build --filter='cli'",

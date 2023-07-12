@@ -1223,7 +1223,7 @@ __metadata:
     typescript: ^5.1.6
     vscode-uri: 3.0.7
   bin:
-    likec4: ./likec4.js
+    likec4: bin/likec4
   languageName: unknown
   linkType: soft
 

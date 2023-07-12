@@ -1,10 +1,10 @@
 import { createLanguageServices, type LikeC4Services } from '@likec4/language-server'
-import { dim, red, green} from 'kleur/colors'
+import { dim, red, green } from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import type { LikeC4Model, ViewID } from '@likec4/core/types'
 import { existsSync, statSync } from 'node:fs'
-import { resolve, relative, isAbsolute, basename } from 'node:path/posix'
+import { resolve, relative, basename } from 'node:path'
 import * as R from 'remeda'
 import { URI } from 'vscode-uri'
 
@@ -12,9 +12,7 @@ export function resolveDir(workspaceDir: string): string {
   if (workspaceDir === '.') {
     return process.cwd()
   }
-  if (!isAbsolute(workspaceDir)) {
-    workspaceDir = resolve(process.cwd(), workspaceDir)
-  }
+  workspaceDir = resolve(process.cwd(), workspaceDir)
   if (!existsSync(workspaceDir)) {
     throw new Error(`Directory '${workspaceDir}' does not exist`)
   }
@@ -67,7 +65,8 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
       for (const validationError of errors) {
         console.log(
           red(
-            `      line ${validationError.range.start.line}: ${validationError.message
+            `      line ${validationError.range.start.line}: ${
+              validationError.message
             } [${doc.textDocument.getText(validationError.range)}]`
           )
         )
