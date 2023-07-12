@@ -1,4 +1,4 @@
-import { BaseError } from './_base.js'
+import { BaseError } from './_base'
 export const InvalidModelError = BaseError.subclass('InvalidModelError')
 
 export function ensureModel(

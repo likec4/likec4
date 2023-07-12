@@ -5,12 +5,9 @@ import {
   computedCloud3levels,
   computedIndexView
 } from '../__mocks__/data'
-import { dotLayouter } from './dotLayout'
-
-const dotLayout = await dotLayouter()
+import { dotLayout } from './dotLayout'
 
 describe('dotLayout:', () => {
-
   it('computedIndexView', async () => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()

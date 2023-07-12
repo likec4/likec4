@@ -12,6 +12,7 @@ model {
     '
 
     ui = container 'Frontends' {
+      technology 'React'
       description 'All the frontend applications of the cloud system'
     }
 
