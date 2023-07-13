@@ -73,7 +73,7 @@
     "@dagrejs/graphlib": "^2.1.13",
     "modern-errors": "^6.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.23.0"
+    "remeda": "^1.24.0"
   },
   "devDependencies": {
     "typescript": "^5.1.6"

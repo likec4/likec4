@@ -46,7 +46,7 @@
     "@likec4/core": "workspace:*",
     "indent-string": "^5.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.23.0",
+    "remeda": "^1.24.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
     "word-wrap": "^1.2.4"
