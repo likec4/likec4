@@ -60,7 +60,7 @@
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.23.0",
+    "remeda": "^1.24.0",
     "strip-indent": "^4.0.0",
     "vscode-languageserver": "~8.1.0",
     "vscode-languageserver-protocol": "~3.17.3"

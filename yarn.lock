@@ -1219,7 +1219,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    remeda: ^1.23.0
+    remeda: ^1.24.0
     typescript: ^5.1.6
     vscode-uri: 3.0.7
   bin:
@@ -1234,7 +1234,7 @@ __metadata:
     "@dagrejs/graphlib": ^2.1.13
     modern-errors: ^6.0.0
     rambdax: ^9.1.1
-    remeda: ^1.23.0
+    remeda: ^1.24.0
     typescript: ^5.1.6
   languageName: unknown
   linkType: soft
@@ -1364,7 +1364,7 @@ __metadata:
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
     rambdax: ^9.1.1
-    remeda: ^1.23.0
+    remeda: ^1.24.0
     strip-indent: ^4.0.0
     typescript: ^5.1.6
     vscode-languageserver: ~8.1.0
@@ -1383,7 +1383,7 @@ __metadata:
     "@types/node": ^18.15.11
     indent-string: ^5.0.0
     rambdax: ^9.1.1
-    remeda: ^1.23.0
+    remeda: ^1.24.0
     strip-indent: ^4.0.0
     ts-graphviz: ^1.8.1
     typescript: ^5.1.6
@@ -11623,10 +11623,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.23.0":
-  version: 1.23.0
-  resolution: "remeda@npm:1.23.0"
-  checksum: 6127fd8c13569850aad8898bf25742d8889b24a35bbf3261d11ef932b596ca0c2c9d2e679ed948dfd256e256de9ea85077958de887bd3e325b4b12e0faf4c925
+"remeda@npm:^1.24.0":
+  version: 1.24.0
+  resolution: "remeda@npm:1.24.0"
+  checksum: 1354f45585e201506653d6f4b6a5965d299cf5f9cf2ac8a8e6efc51dc813771cce1b6f4330cc61faa8f1c95d3268b855e200c399cba6b40facbdf7af29bd2786
   languageName: node
   linkType: hard
 
