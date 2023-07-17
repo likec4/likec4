@@ -3,7 +3,7 @@ import type { ComputedView, DiagramView } from '@likec4/core/types'
 import { dotLayoutFn } from '@likec4/layouts'
 import { red, grey } from 'kleur/colors'
 
-export async function layoutViews(views: ComputedView[]) {
+export async function layoutViews(views: ComputedView[]): Promise<DiagramView[]> {
   try {
     const diagrams = [] as DiagramView[]
     const graphviz = await Graphviz.load()
