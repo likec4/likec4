@@ -103,14 +103,16 @@ export class LikeC4ModelBuilder {
         Object.assign(c4Specification.kinds, spec.kinds)
       )
 
-      const toModelElement = (el: ParsedAstElement): c4.Element | null => {
-        const kind = c4Specification.kinds[el.kind]
+      const toModelElement = ({ astPath, ...parsed }: ParsedAstElement): c4.Element | null => {
+        const kind = c4Specification.kinds[parsed.kind]
         if (kind) {
-          const { astPath, ...model } = el
           return {
-            ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
-            ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
-            ...model
+            shape: kind.shape,
+            color: kind.color,
+            description: null,
+            technology: null,
+            tags: [],
+            ...parsed
           }
         }
         return null
@@ -124,13 +126,16 @@ export class LikeC4ModelBuilder {
         R.reduce(
           (acc, el) => {
             const parent = parentFqn(el.id)
-            if (!parent || parent in acc) {
-              if (el.id in acc) {
-                logger.warn(`Duplicate element id: ${el.id}`)
-                return acc
-              }
-              acc[el.id] = el
+            if (parent && R.isNil(acc[parent])) {
+              logger.warn(`No parent found for ${el.id}`)
+              return acc
             }
+            if (el.id in acc) {
+              // should not happen, as validated
+              logger.warn(`Duplicate element id: ${el.id}`)
+              return acc
+            }
+            acc[el.id] = el
             return acc
           },
           {} as c4.LikeC4Model['elements']
@@ -429,7 +434,7 @@ export class LikeC4ModelBuilder {
     if (ast.isExtendElement(node)) {
       return strictElementRefFqn(node.element)
     }
-    const fqn = this.fqnIndex.get(node)
+    const fqn = this.fqnIndex.getFqn(node)
     invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)
     return fqn
   }

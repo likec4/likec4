@@ -73,6 +73,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "cloud.backend",
       ],
       "color": "primary",
+      "description": null,
       "id": "cloud",
       "kind": "system",
       "labels": [
@@ -99,6 +100,8 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "height": 259,
         "width": 373,
       },
+      "tags": [],
+      "technology": null,
       "title": "cloud",
     },
     {
@@ -132,11 +135,14 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "height": 259,
         "width": 373,
       },
+      "tags": [],
+      "technology": null,
       "title": "Amazon",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "cloud.backend",
       "kind": "component",
       "labels": [
@@ -161,6 +167,8 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Backend",
     },
     {
@@ -201,6 +209,8 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "S3",
     },
   ],
@@ -578,6 +588,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "cloud.backend",
       ],
       "color": "primary",
+      "description": null,
       "id": "cloud",
       "kind": "system",
       "labels": [
@@ -604,6 +615,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 919,
         "width": 924,
       },
+      "tags": [],
+      "technology": null,
       "title": "cloud",
     },
     {
@@ -612,6 +625,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "cloud.backend.storage",
       ],
       "color": "primary",
+      "description": null,
       "id": "cloud.backend",
       "kind": "component",
       "labels": [
@@ -637,6 +651,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 541,
         "width": 501,
       },
+      "tags": [],
+      "technology": null,
       "title": "Backend",
     },
     {
@@ -677,6 +693,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 448,
       },
+      "tags": [],
+      "technology": null,
       "title": "Graphql API",
     },
     {
@@ -727,6 +745,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 361,
       },
+      "tags": [],
+      "technology": null,
       "title": "Backend Storage",
     },
     {
@@ -777,6 +797,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 364,
       },
+      "tags": [],
+      "technology": null,
       "title": "Admin Panel Webapp",
     },
     {
@@ -827,11 +849,14 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 382,
       },
+      "tags": [],
+      "technology": null,
       "title": "Customer Dashboard Webapp",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "customer",
       "kind": "actor",
       "labels": [
@@ -856,6 +881,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "customer",
     },
     {
@@ -906,6 +933,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 364,
       },
+      "tags": [],
+      "technology": null,
       "title": "Support Engineer",
     },
     {
@@ -947,6 +976,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Amazon",
     },
   ],
@@ -1220,6 +1251,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "cloud.backend",
       ],
       "color": "primary",
+      "description": null,
       "id": "cloud",
       "kind": "system",
       "labels": [
@@ -1246,11 +1278,14 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 556,
         "width": 373,
       },
+      "tags": [],
+      "technology": null,
       "title": "cloud",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "cloud.frontend",
       "kind": "component",
       "labels": [
@@ -1275,11 +1310,14 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Frontend",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "cloud.backend",
       "kind": "component",
       "labels": [
@@ -1304,11 +1342,14 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Backend",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "customer",
       "kind": "actor",
       "labels": [
@@ -1333,6 +1374,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "customer",
     },
     {
@@ -1383,6 +1426,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 180,
         "width": 364,
       },
+      "tags": [],
+      "technology": null,
       "title": "Support Engineer",
     },
     {
@@ -1424,6 +1469,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Amazon",
     },
   ],
@@ -1622,6 +1669,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "customer",
       "kind": "actor",
       "labels": [
@@ -1646,11 +1694,14 @@ exports[`dotLayout: > computedIndexView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "customer",
     },
     {
       "children": [],
       "color": "primary",
+      "description": null,
       "id": "cloud",
       "kind": "system",
       "labels": [
@@ -1676,6 +1727,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "cloud",
     },
     {
@@ -1726,6 +1779,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
         "height": 180,
         "width": 364,
       },
+      "tags": [],
+      "technology": null,
       "title": "Support Engineer",
     },
     {
@@ -1767,6 +1822,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
         "height": 180,
         "width": 320,
       },
+      "tags": [],
+      "technology": null,
       "title": "Amazon",
     },
   ],

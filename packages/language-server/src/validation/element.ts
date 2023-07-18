@@ -5,7 +5,7 @@ import type { LikeC4Services } from '../module'
 export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   const fqnIndex = services.likec4.FqnIndex
   return (el, accept) => {
-    const fqn = fqnIndex.get(el)
+    const fqn = fqnIndex.getFqn(el)
     if (!fqn) {
       accept('error', 'Not indexed element', {
         node: el,
@@ -15,12 +15,6 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
     }
     const withSameFqn = fqnIndex.byFqn(fqn).limit(2).count()
     if (withSameFqn > 1) {
-      // console.error(withSameFqn.map(e => ({
-      //   fqn,
-      //   name: el.name,
-      //   path: e.path,
-      //   doc: e.doc.uri.toString()
-      // })))
       accept(
         'error',
         `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,

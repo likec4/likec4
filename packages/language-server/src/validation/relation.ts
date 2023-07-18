@@ -10,8 +10,8 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
   return (el, accept) => {
     try {
       const coupling = resolveRelationPoints(el)
-      const target = fqnIndex.get(coupling.target)
-      const source = fqnIndex.get(coupling.source)
+      const target = fqnIndex.getFqn(coupling.target)
+      const source = fqnIndex.getFqn(coupling.source)
       if (!target || !source) {
         if (!target) {
           accept('error', 'Target not found', {
