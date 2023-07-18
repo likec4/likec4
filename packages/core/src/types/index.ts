@@ -1,6 +1,8 @@
-export { Fqn, DefaultThemeColor, DefaultElementShape } from './element'
+export { AsFqn, DefaultThemeColor, DefaultElementShape } from './element'
 
-export { isViewRuleExpression, isViewRuleStyle } from './view'
+export { isViewRuleExpression, isViewRuleAutoLayout, isViewRuleStyle } from './view'
+
+export * as Expr from './expression'
 
 export type * from './opaque'
 export type * from './element'
