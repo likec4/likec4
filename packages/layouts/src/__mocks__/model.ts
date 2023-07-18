@@ -6,7 +6,8 @@ import type {
   Fqn,
   Opaque,
   Relation,
-  RelationID
+  RelationID,
+  Tag
 } from '@likec4/core/types'
 
 /**
@@ -83,74 +84,91 @@ model {
 }
 
  */
-const fakeElements = {
-  amazon: {
-    id: 'amazon' as Fqn,
-    kind: 'system' as ElementKind,
+const el = ({
+  id,
+  kind,
+  title,
+  ...props
+}: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
+  id: id as Fqn,
+  kind: kind as ElementKind,
+  title: title ?? id,
+  description: null,
+  technology: null,
+  tags: [],
+  ...props
+})
+
+export const fakeElements = {
+  amazon: el({
+    id: 'amazon',
+    kind: 'system',
     title: 'Amazon',
     description: 'Amazon is a cloud provider'
-  },
-  cloud: {
-    id: 'cloud' as Fqn,
-    kind: 'system' as ElementKind,
+  }),
+  cloud: el({
+    id: 'cloud',
+    kind: 'system',
     title: 'cloud'
-  },
-  customer: {
-    id: 'customer' as Fqn,
-    kind: 'actor' as ElementKind,
+  }),
+  customer: el({
+    id: 'customer',
+    kind: 'actor',
     title: 'customer',
     shape: 'person'
-  },
-  support: {
-    id: 'support' as Fqn,
-    kind: 'actor' as ElementKind,
+  }),
+  support: el({
+    id: 'support',
+    kind: 'actor',
     title: 'Support Engineer',
     description: 'Support engineers are responsible for supporting customers',
     shape: 'person'
-  },
-  'amazon.s3': {
-    id: 'amazon.s3' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'amazon.s3': el({
+    id: 'amazon.s3',
+    kind: 'component',
     title: 'S3',
     description: 'S3 is a storage service'
-  },
-  'cloud.backend': {
-    id: 'cloud.backend' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.backend': el({
+    id: 'cloud.backend',
+    kind: 'component',
     title: 'Backend'
-  },
-  'cloud.frontend': {
-    id: 'cloud.frontend' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.frontend': el({
+    id: 'cloud.frontend',
+    kind: 'component',
     title: 'Frontend',
     shape: 'browser'
-  },
-  'cloud.backend.graphql': {
-    id: 'cloud.backend.graphql' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.backend.graphql': el({
+    id: 'cloud.backend.graphql',
+    kind: 'component',
     title: 'Graphql API',
     description: 'Component that allows to query data via GraphQL.'
-  },
-  'cloud.backend.storage': {
-    id: 'cloud.backend.storage' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.backend.storage': el({
+    id: 'cloud.backend.storage',
+    kind: 'component',
     title: 'Backend Storage',
     description: 'The backend storage is a component that stores data.',
     shape: 'storage'
-  },
-  'cloud.frontend.adminPanel': {
-    id: 'cloud.frontend.adminPanel' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.frontend.adminPanel': el({
+    id: 'cloud.frontend.adminPanel',
+    kind: 'component',
     title: 'Admin Panel Webapp',
     description: 'The admin panel is a webapp that allows support staff to manage customer data.'
-  },
-  'cloud.frontend.dashboard': {
-    id: 'cloud.frontend.dashboard' as Fqn,
-    kind: 'component' as ElementKind,
+  }),
+  'cloud.frontend.dashboard': el({
+    id: 'cloud.frontend.dashboard',
+    kind: 'component',
     title: 'Customer Dashboard Webapp',
     description: 'The customer dashboard is a webapp that allows customers to view their data.'
-  }
+  })
 } satisfies Record<string, Element>
+
+export type FakeElementIds = keyof typeof fakeElements
 
 const fakeRelations = {
   'customer:cloud.frontend.dashboard': {

@@ -51,9 +51,9 @@ export interface Element {
   readonly id: Fqn
   readonly kind: ElementKind
   readonly title: string
-  readonly description?: string
-  readonly technology?: string
-  readonly tags?: Tag[]
+  readonly description: string | null
+  readonly technology: string | null
+  readonly tags: ReadonlyArray<Tag>
   readonly shape?: ElementShape
   readonly color?: ThemeColor
 }

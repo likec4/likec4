@@ -7,7 +7,7 @@ import '../logger'
 vi.mock('../logger')
 
 describe('LikeC4ModelBuilder', () => {
-  it('builds model with shapes', async () => {
+  it('builds model with colors and shapes', async () => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -44,16 +44,20 @@ describe('LikeC4ModelBuilder', () => {
       customer: {
         kind: 'user',
         shape: 'person',
-        title: 'Customer'
+        title: 'Customer',
+        color: 'primary' //defaults
       },
       system: {
         kind: 'component',
-        title: 'system'
+        title: 'system',
+        shape: 'rectangle', //defaults
+        color: 'primary' //defaults
       },
       spa: {
         kind: 'component',
         shape: 'browser',
-        title: 'SPA'
+        title: 'SPA',
+        color: 'primary' //defaults
       },
       mobile: {
         kind: 'component',
@@ -62,14 +66,9 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Mobile'
       }
     })
-    // Ignore defaults
-    expect(elements['system']).not.toHaveProperty('shape')
-    expect(elements['system']).not.toHaveProperty('color')
-    expect(elements['customer']).not.toHaveProperty('color')
-    expect(elements['spa']).not.toHaveProperty('color')
   })
 
-  it('builds model', async () => {
+  it('builds model with description and technology', async () => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -111,25 +110,23 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       client: {
         kind: 'user',
-        shape: 'person'
+        shape: 'person',
+        description: null,
+        technology: null
       },
       'system.backend': {
         color: 'secondary',
         title: 'Backend',
+        description: null,
         technology: 'NodeJS'
       },
       'system.frontend': {
         color: 'muted',
         shape: 'browser',
-        description: 'Frontend description'
+        description: 'Frontend description',
+        technology: null
       }
     })
-    expect(model.elements['client' as Fqn]).not.toHaveProperty('color')
-    expect(model.elements['system' as Fqn]).not.toHaveProperty('color')
-    expect(model.elements['system' as Fqn]).not.toHaveProperty('shape')
-    expect(model.elements['system.backend' as Fqn]).toHaveProperty('color', 'secondary')
-    expect(model.elements['system.backend' as Fqn]).not.toHaveProperty('description')
-
     expect(model).toMatchSnapshot()
   })
 
@@ -152,14 +149,14 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
-        kind: 'component'
+        kind: 'component',
+        tags: []
       },
       system2: {
         kind: 'component',
         tags: ['deprecated']
       }
     })
-    expect(model.elements['system1' as Fqn]).not.toHaveProperty('tags')
   })
 
   it('builds model and give default name for index view', async () => {

@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Element, Relation, Tag } from '../types'
+import type { Element, ElementKind, Fqn, Relation, Tag } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -81,75 +81,85 @@ model {
 }
 
  */
+const el = ({
+  id,
+  kind,
+  title,
+  ...props
+}: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
+  id: id as Fqn,
+  kind: kind as ElementKind,
+  title: title ?? id,
+  description: null,
+  technology: null,
+  tags: [],
+  ...props
+})
+
 export const fakeElements = {
-  amazon: {
+  amazon: el({
     id: 'amazon',
     kind: 'system',
     title: 'amazon'
-  },
-  cloud: {
+  }),
+  cloud: el({
     id: 'cloud',
     kind: 'system',
     title: 'cloud'
-  },
-  customer: {
+  }),
+  customer: el({
     id: 'customer',
     kind: 'actor',
     title: 'customer',
     shape: 'person'
-  },
-  support: {
+  }),
+  support: el({
     id: 'support',
     kind: 'actor',
     title: 'support',
     shape: 'person'
-  },
-  'amazon.s3': {
+  }),
+  'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 's3',
     shape: 'storage'
-  },
-  'cloud.backend': {
+  }),
+  'cloud.backend': el({
     id: 'cloud.backend',
     kind: 'container',
     title: 'backend'
-  },
-  'cloud.frontend': {
+  }),
+  'cloud.frontend': el({
     id: 'cloud.frontend',
     kind: 'container',
     title: 'frontend',
     shape: 'browser'
-  },
-  'cloud.backend.graphql': {
+  }),
+  'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
     title: 'graphql'
-  },
-  'cloud.backend.storage': {
+  }),
+  'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
     title: 'storage',
     tags: ['old' as Tag]
-  },
-  'cloud.frontend.adminPanel': {
+  }),
+  'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
     title: 'adminPanel',
     tags: ['old' as Tag]
-  },
-  'cloud.frontend.dashboard': {
+  }),
+  'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard'
-  }
-} satisfies Record<
-  string,
-  Omit<Element, 'id' | 'kind'> & {
-    id: string
-    kind: string
-  }
->
+  })
+} satisfies Record<string, Element>
+
 export type FakeElementIds = keyof typeof fakeElements
 
 export const fakeRelations = {

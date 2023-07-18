@@ -12,9 +12,9 @@ export interface ComputedNode {
   kind: ElementKind
   parent: NodeId | null
   title: string
-  description?: string
-  technology?: string
-  tags?: Tag[]
+  description: string | null
+  technology: string | null
+  tags: Tag[]
   children: NodeId[]
   shape: ElementShape
   color: ThemeColor
@@ -39,4 +39,5 @@ export interface ComputedView<
   edges: Edge[]
 }
 
-export type ComputeResult<V extends ElementView> = V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>
+export type ComputeResult<V extends ElementView> = V &
+  Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>

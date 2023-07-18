@@ -1,6 +1,6 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments } from 'langium'
+import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
 import { DONE_RESULT, DocumentState, MultiMap, StreamImpl } from 'langium'
 import { isNil } from 'remeda'
 import type { ast } from '../ast'
@@ -29,7 +29,7 @@ export interface FqnIndexEntry {
 export class FqnIndex {
   protected langiumDocuments: LangiumDocuments
 
-  constructor(private services: LikeC4Services) {
+  constructor(services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.IndexedContent,
@@ -57,7 +57,7 @@ export class FqnIndex {
     )
   }
 
-  public get(el: ast.Element): Fqn | null {
+  public getFqn(el: ast.Element): Fqn | null {
     return ElementOps.readId(el) ?? null
     // if (fqn) {
     //   const doc = getDocument(el)
@@ -72,13 +72,16 @@ export class FqnIndex {
     // return fqn
   }
 
-  public byFqn(fqn: Fqn) {
+  public byFqn(fqn: Fqn): Stream<{
+    path: string
+    doc: LikeC4LangiumDocument
+  }> {
     return this.documents().flatMap(doc => {
       return doc.c4fqns.get(fqn).map(path => ({ path, doc }))
     })
   }
 
-  public directChildrenOf(parent: Fqn) {
+  public directChildrenOf(parent: Fqn): Stream<FqnIndexEntry> {
     return new StreamImpl(
       () => {
         const children = new MultiMap<string, FqnIndexEntry>(
@@ -109,7 +112,10 @@ export class FqnIndex {
     )
   }
 
-  public uniqueDescedants(parent: Fqn) {
+  /**
+   * Returns descedant elements with unique names in the scope
+   */
+  public uniqueDescedants(parent: Fqn): Stream<FqnIndexEntry> {
     return new StreamImpl(
       () => {
         const prefix = `${parent}.`
@@ -124,6 +130,7 @@ export class FqnIndex {
           .forEach(e => {
             const name = nameFromFqn(e.fqn)
             const entry = { ...e, name }
+            // To keep direct children always
             if (parentFqn(e.fqn) === parent) {
               childrenNames.add(name)
               nested.add(name, entry)

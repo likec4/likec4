@@ -14,11 +14,7 @@ import {
   type Stream
 } from 'langium'
 import { ast } from '../ast'
-import {
-  elementRef,
-  isElementRefHead,
-  parentStrictElementRef
-} from '../elementRef'
+import { elementRef, isElementRefHead, parentStrictElementRef } from '../elementRef'
 import { logger } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
@@ -41,20 +37,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   private directChildrenOf(parent: c4.Fqn): Stream<AstNodeDescription> {
-    return this.fqnIndex
-      .directChildrenOf(parent)
-      .map(toAstNodeDescription)
+    return this.fqnIndex.directChildrenOf(parent).map(toAstNodeDescription)
   }
 
-  private uniqueDescedants(of: () => (ast.Element | undefined)): Stream<AstNodeDescription> {
+  // we need lazy resolving here
+  private uniqueDescedants(of: () => ast.Element | undefined): Stream<AstNodeDescription> {
     return new StreamImpl(
       () => {
         const element = of()
-        const fqn = element && this.fqnIndex.get(element)
+        const fqn = element && this.fqnIndex.getFqn(element)
         if (fqn) {
-          return this.fqnIndex.uniqueDescedants(fqn)
-            .map(toAstNodeDescription)
-            .iterator()
+          return this.fqnIndex.uniqueDescedants(fqn).map(toAstNodeDescription).iterator()
         }
         return null
       },
@@ -89,21 +82,21 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   override getScope(context: ReferenceInfo): Scope {
     const referenceType = this.reflection.getReferenceType(context)
     try {
-      const node = context.container
+      const container = context.container
       // const path = this.services.workspace.AstNodeLocator.getAstNodePath(node)
       if (referenceType === ast.Element) {
-        if (ast.isStrictElementRef(node)) {
-          if (isElementRefHead(node)) {
+        if (ast.isStrictElementRef(container)) {
+          if (isElementRefHead(container)) {
             return this.getGlobalScope(referenceType)
           }
-          const parent = parentStrictElementRef(node)
+          const parent = parentStrictElementRef(container)
           return new StreamScope(this.directChildrenOf(parent))
         }
-        if (ast.isElementRef(node) && !isElementRefHead(node)) {
-          return new StreamScope(this.scopeElementRef(node))
+        if (ast.isElementRef(container) && !isElementRefHead(container)) {
+          return new StreamScope(this.scopeElementRef(container))
         }
       }
-      return this.computeScope(node, referenceType)
+      return this.computeScope(container, referenceType)
     } catch (e) {
       // console.error(e)
       logger.error(e)
