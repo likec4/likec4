@@ -1,22 +1,33 @@
 # LikeC4 CLI
 
-
 This package provides a command line interface for [LikeC4](https://likec4.dev/).
 
 Usage: `likec4 [options] [command]`
 
 Options:
- * `-h`, `--help` &mdash; display help for command
+
+- `-h`, `--help` &mdash; display help for command
 
 Commands:
- * `codegen` &mdash; generates various artifacts from likec4 sources
- * `export` &mdash; export views to png
- * `help [command]` &mdash; display help for command
+
+- `codegen` &mdash; generates various artifacts from likec4 sources
+- `export` &mdash; export views to png
+- `help [command]` &mdash; display help for command
 
 ## Install
 
 ```bash
+# globally
+npm install -g @likec4/cli
+
+# or as dev dependency
 npm install --save-dev @likec4/cli
+```
+
+To use with `npx`:
+
+```bash
+npx @likec4/cli [command]
 ```
 
 ## Export
@@ -58,7 +69,7 @@ Arguments:
 
 Options:
   -o, --output <file>  output file
-  -h, --help           display help for command  
+  -h, --help           display help for command
 ```
 
 ### Codegen target: Views Data
