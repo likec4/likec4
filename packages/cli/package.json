@@ -7,6 +7,9 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/cli"
   },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "bin": {
     "likec4": "bin/likec4"
   },
