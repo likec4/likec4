@@ -2,6 +2,8 @@ export { Fqn, DefaultThemeColor, DefaultElementShape } from './element'
 
 export { isViewRuleExpression, isViewRuleStyle } from './view'
 
+export * as expression from './expression'
+
 export type * from './opaque'
 export type * from './element'
 export type * from './relation'
