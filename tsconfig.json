@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "NodeNext",
-    "checkJs": false
+    "checkJs": false,
+    "types": [""]
   },
   "exclude": ["node_modules", "packages/*/dist"]
 }

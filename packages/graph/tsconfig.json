@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "composite": true,
+    "incremental": true,
+    "sourceMap": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "rootDir": "src",
+    "typeRoots": ["../../node_modules/@types"]
+  },
+  "include": ["./src/"],
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
+}

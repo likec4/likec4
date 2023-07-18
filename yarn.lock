@@ -1351,6 +1351,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/graph@workspace:packages/graph":
+  version: 0.0.0-use.local
+  resolution: "@likec4/graph@workspace:packages/graph"
+  dependencies:
+    "@likec4/core": "workspace:*"
+    "@types/cytoscape": ^3
+    "@types/node": ^18.15.11
+    cytoscape: ^3.25.0
+    remeda: ^1.23.0
+    typescript: ^5.1.6
+  languageName: unknown
+  linkType: soft
+
 "@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
@@ -3086,6 +3099,13 @@ __metadata:
   version: 4.3.5
   resolution: "@types/chai@npm:4.3.5"
   checksum: c8f26a88c6b5b53a3275c7f5ff8f107028e3cbb9ff26795fff5f3d9dea07106a54ce9e2dce5e40347f7c4cc35657900aaf0c83934a25a1ae12e61e0f5516e431
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape@npm:^3":
+  version: 3.19.10
+  resolution: "@types/cytoscape@npm:3.19.10"
+  checksum: f8ac379f07e06135d62d399a40f5949f7678c2eea5a4600257532d769b9c7f06602a0f1afbe4c7c8ada54fa8736c42df6b68f4066967fbf68d2349077069c3a8
   languageName: node
   linkType: hard
 
@@ -5089,7 +5109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.23.0":
+"cytoscape@npm:^3.23.0, cytoscape@npm:^3.25.0":
   version: 3.25.0
   resolution: "cytoscape@npm:3.25.0"
   dependencies:

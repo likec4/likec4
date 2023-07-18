@@ -1,0 +1,48 @@
+{
+  "name": "@likec4/graph",
+  "license": "MIT",
+  "version": "0.29.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "src",
+    "!**/__mocks__/",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/graph"
+  },
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "run -T eslint src/ --fix",
+    "test": "run -T vitest run",
+    "test:watch": "run -T vitest",
+    "clean": "run -T rimraf dist"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "cytoscape": "^3.25.0",
+    "remeda": "^1.23.0"
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3",
+    "@types/node": "^18.15.11",
+    "typescript": "^5.1.6"
+  }
+}
