@@ -2,20 +2,14 @@
   "name": "@likec4/core",
   "version": "0.29.0",
   "license": "MIT",
-  "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
-  "files": [
-    "dist",
-    "!dist/__test__",
-    "!**/*.spec.*",
-    "!**/*.map"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/core"
   },
+  "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "compile": "tsc --noEmit",
     "build": "tsc",
@@ -25,6 +19,12 @@
     "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist"
   },
+  "files": [
+    "dist",
+    "!dist/__test__",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
   "module": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",

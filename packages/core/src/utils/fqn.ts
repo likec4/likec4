@@ -35,7 +35,6 @@ export function isDescendantOf(ancestors: Element[]): (e: Element) => boolean {
   return anyPass(predicates)
 }
 
-
 export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {
   const isDescendant = isDescendantOf(ancestors)
   return (e: Element) => !isDescendant(e)
@@ -71,7 +70,17 @@ export function parentFqn(fqn: Fqn): Fqn | null {
   return null
 }
 
-export const compareFqnHierarchically = (a: string, b: string) => {
+/**
+ * Compares two fully qualified names (fqns) hierarchically based on their depth.
+ * From parent nodes to leaves
+ *
+ * @param {string} a - The first fqn to compare.
+ * @param {string} b - The second fqn to compare.
+ * @returns {number} - 0 if the fqns have the same depth.
+ *                    - Positive number if a is deeper than b.
+ *                    - Negative number if b is deeper than a.
+ */
+export const compareFqnHierarchically = (a: string, b: string): number => {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   if (depthA === depthB) {

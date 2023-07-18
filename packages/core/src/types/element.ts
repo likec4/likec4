@@ -3,14 +3,35 @@ import type { Opaque } from './opaque'
 // Full-qualified-name
 export type Fqn = Opaque<string, 'Fqn'>
 
-export function Fqn(name: string, parent?: Fqn | null) {
+export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
 }
 
 export type ElementKind = Opaque<string, 'ElementKind'>
 
-export type ThemeColor = 'amber' | 'blue' | 'gray' | 'slate' | 'green' | 'indigo' | 'muted' | 'primary' | 'red' | 'secondary' | 'sky'
-export type ElementShape = 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue'
+/**
+ * TailwindCSS based color palette
+ */
+export type ThemeColor =
+  | 'amber'
+  | 'blue'
+  | 'gray'
+  | 'slate'
+  | 'green'
+  | 'indigo'
+  | 'muted'
+  | 'primary'
+  | 'red'
+  | 'secondary'
+  | 'sky'
+export type ElementShape =
+  | 'rectangle'
+  | 'person'
+  | 'browser'
+  | 'mobile'
+  | 'cylinder'
+  | 'storage'
+  | 'queue'
 
 export const DefaultThemeColor: ThemeColor = 'primary'
 export const DefaultElementShape: ElementShape = 'rectangle'

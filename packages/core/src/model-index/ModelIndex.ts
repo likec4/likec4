@@ -1,7 +1,7 @@
-import { values } from 'remeda'
-import { invariant } from '../errors'
+import { pipe, sort, values } from 'remeda'
+import { InvalidModelError, ensureModel } from '../errors'
 import type { Element, Fqn, Relation, RelationID } from '../types'
-import { parentFqn } from '../utils/fqn'
+import { compareByFqnHierarchically, parentFqn } from '../utils/fqn'
 
 interface ElementTrie {
   el?: Element
@@ -47,13 +47,14 @@ export default class ModelIndex {
     return Array.from(this._relations.values())
   }
 
-  filterRelations = (predicate: (r: Relation) => boolean): Relation[] => {
+  filterRelations(predicate: (r: Relation) => boolean): Relation[] {
     return this.relations.filter(predicate)
   }
 
   static from({ elements, relations }: ModelInput): ModelIndex {
     const index = new ModelIndex()
-    for (const el of values(elements)) {
+    const sortedElements = pipe(values(elements), sort(compareByFqnHierarchically))
+    for (const el of sortedElements) {
       index.addElement(el)
     }
     for (const rel of values(relations)) {
@@ -63,8 +64,8 @@ export default class ModelIndex {
   }
 
   addElement(el: Element) {
-    if (this._elements.has(el.id)) {
-      throw new Error(`Element already exists with id ${el.id}`)
+    if (this.hasElement(el.id)) {
+      throw new InvalidModelError(`Element already exists with id ${el.id}`)
     }
     const path = asPath(el.id)
     let scope = this.root
@@ -83,7 +84,7 @@ export default class ModelIndex {
     let scope = this.root
     for (const name of asPath(id)) {
       const next = scope.children[name]
-      invariant(next, `Invalid index, Element not found at path ${name} of ${id}`)
+      ensureModel(next, `Invalid index, Element not found at path ${name} of ${id}`)
       scope = next
     }
     return scope
@@ -92,7 +93,7 @@ export default class ModelIndex {
   find = (id: Fqn): Element => {
     const el = this._elements.get(id)
     if (!el) {
-      throw new Error(`Element not found ${id}`)
+      throw new InvalidModelError(`Element not found ${id}`)
     }
     return el
   }
@@ -110,7 +111,7 @@ export default class ModelIndex {
   /**
    * Ancestors from closest parent to root
    */
-  ancestors = (id: Fqn): Element[] => {
+  ancestors(id: Fqn): Element[] {
     const path = asPath(id)
     const ancestors = [] as Element[]
     // The root
@@ -123,13 +124,9 @@ export default class ModelIndex {
     let trie = this.root
     while (name) {
       const next = trie.children[name]
-      if (!next) {
-        throw new Error(`Invalid index, Element not found at path ${name} of ${id}`)
-      }
+      ensureModel(next, `Invalid index, Element not found at path ${name} of ${id}`)
       trie = next
-      if (!trie.el) {
-        throw new Error(`invalid index, no element ${name} found in ${id}`)
-      }
+      ensureModel(trie.el, `invalid index, no element ${name} found in ${id}`)
       ancestors.unshift(trie.el)
       name = path.shift()
     }
@@ -154,17 +151,17 @@ export default class ModelIndex {
     return Array.from(this._elements.values())
   }
 
-  // hasElement(fqn: Fqn): boolean {
-  //   return fqn in this._elements
-  // }
+  hasElement(fqn: Fqn): boolean {
+    return this._elements.has(fqn)
+  }
 
   addRelation(rel: Relation) {
     // Validate source and target
-    if (!this._elements.has(rel.source)) {
-      throw new Error(`Invalid index, source of relation not found ${rel.source}`)
+    if (!this.hasElement(rel.source)) {
+      throw new InvalidModelError(`Source of relation not found ${rel.source}`)
     }
-    if (!this._elements.has(rel.target)) {
-      throw new Error(`Invalid index, target of relation not found ${rel.target}`)
+    if (!this.hasElement(rel.target)) {
+      throw new InvalidModelError(`Target of relation not found ${rel.target}`)
     }
     this._relations.set(rel.id, rel)
     // for (const tag of rel.tags) {

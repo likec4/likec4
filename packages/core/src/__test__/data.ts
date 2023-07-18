@@ -1,5 +1,5 @@
 import { ModelIndex } from '../model-index'
-import type { Element, ElementKind, ElementView, Fqn, Relation, RelationID, Tag, ViewID } from '../types'
+import type { Element, Relation, Tag } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -83,112 +83,125 @@ model {
  */
 export const fakeElements = {
   amazon: {
-    id: 'amazon' as Fqn,
-    kind: 'system' as ElementKind,
+    id: 'amazon',
+    kind: 'system',
     title: 'amazon'
   },
   cloud: {
-    id: 'cloud' as Fqn,
-    kind: 'system' as ElementKind,
+    id: 'cloud',
+    kind: 'system',
     title: 'cloud'
   },
   customer: {
-    id: 'customer' as Fqn,
-    kind: 'actor' as ElementKind,
+    id: 'customer',
+    kind: 'actor',
     title: 'customer',
     shape: 'person'
   },
   support: {
-    id: 'support' as Fqn,
-    kind: 'actor' as ElementKind,
+    id: 'support',
+    kind: 'actor',
     title: 'support',
     shape: 'person'
   },
   'amazon.s3': {
-    id: 'amazon.s3' as Fqn,
-    kind: 'component' as ElementKind,
+    id: 'amazon.s3',
+    kind: 'component',
     title: 's3',
     shape: 'storage'
   },
   'cloud.backend': {
-    id: 'cloud.backend' as Fqn,
-    kind: 'container' as ElementKind,
+    id: 'cloud.backend',
+    kind: 'container',
     title: 'backend'
   },
   'cloud.frontend': {
-    id: 'cloud.frontend' as Fqn,
-    kind: 'container' as ElementKind,
+    id: 'cloud.frontend',
+    kind: 'container',
     title: 'frontend',
     shape: 'browser'
   },
   'cloud.backend.graphql': {
-    id: 'cloud.backend.graphql' as Fqn,
-    kind: 'component' as ElementKind,
+    id: 'cloud.backend.graphql',
+    kind: 'component',
     title: 'graphql'
   },
   'cloud.backend.storage': {
-    id: 'cloud.backend.storage' as Fqn,
-    kind: 'component' as ElementKind,
+    id: 'cloud.backend.storage',
+    kind: 'component',
     title: 'storage',
     tags: ['old' as Tag]
   },
   'cloud.frontend.adminPanel': {
-    id: 'cloud.frontend.adminPanel' as Fqn,
-    kind: 'component' as ElementKind,
+    id: 'cloud.frontend.adminPanel',
+    kind: 'component',
     title: 'adminPanel',
     tags: ['old' as Tag]
   },
   'cloud.frontend.dashboard': {
-    id: 'cloud.frontend.dashboard' as Fqn,
-    kind: 'component' as ElementKind,
+    id: 'cloud.frontend.dashboard',
+    kind: 'component',
     title: 'dashboard'
   }
-} satisfies Record<string, Element>
+} satisfies Record<
+  string,
+  Omit<Element, 'id' | 'kind'> & {
+    id: string
+    kind: string
+  }
+>
 export type FakeElementIds = keyof typeof fakeElements
 
 export const fakeRelations = {
   'customer:cloud.frontend.dashboard': {
-    id: 'customer:cloud.frontend.dashboard' as RelationID,
-    source: 'customer' as Fqn,
-    target: 'cloud.frontend.dashboard' as Fqn,
+    id: 'customer:cloud.frontend.dashboard',
+    source: 'customer',
+    target: 'cloud.frontend.dashboard',
     title: ''
   },
   'support:cloud.frontend.adminPanel': {
-    id: 'support:cloud.frontend.adminPanel' as RelationID,
-    source: 'support' as Fqn,
-    target: 'cloud.frontend.adminPanel' as Fqn,
+    id: 'support:cloud.frontend.adminPanel',
+    source: 'support',
+    target: 'cloud.frontend.adminPanel',
     title: ''
   },
   'cloud.backend.storage:amazon.s3': {
-    id: 'cloud.backend.storage:amazon.s3' as RelationID,
-    source: 'cloud.backend.storage' as Fqn,
-    target: 'amazon.s3' as Fqn,
+    id: 'cloud.backend.storage:amazon.s3',
+    source: 'cloud.backend.storage',
+    target: 'amazon.s3',
     title: ''
   },
   'cloud.backend.graphql:cloud.backend.storage': {
-    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationID,
-    source: 'cloud.backend.graphql' as Fqn,
-    target: 'cloud.backend.storage' as Fqn,
+    id: 'cloud.backend.graphql:cloud.backend.storage',
+    source: 'cloud.backend.graphql',
+    target: 'cloud.backend.storage',
     title: ''
   },
   'cloud.frontend.dashboard:cloud.backend.graphql': {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationID,
-    source: 'cloud.frontend.dashboard' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    id: 'cloud.frontend.dashboard:cloud.backend.graphql',
+    source: 'cloud.frontend.dashboard',
+    target: 'cloud.backend.graphql',
     title: ''
   },
   'cloud.frontend.adminPanel:cloud.backend.graphql': {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationID,
-    source: 'cloud.frontend.adminPanel' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
+    id: 'cloud.frontend.adminPanel:cloud.backend.graphql',
+    source: 'cloud.frontend.adminPanel',
+    target: 'cloud.backend.graphql',
     title: ''
   }
-} satisfies Record<string, Relation>
+} satisfies Record<
+  string,
+  Omit<Relation, 'id' | 'source' | 'target'> & {
+    id: string
+    source: string
+    target: string
+  }
+>
 
 export type FakeRelationIds = keyof typeof fakeRelations
 
 export const fakeModel = () =>
   ModelIndex.from({
     elements: fakeElements,
-    relations: fakeRelations,
+    relations: fakeRelations
   })
