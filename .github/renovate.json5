@@ -15,7 +15,7 @@
       ]
     },
     {
-      matchPackagePatterns: ['eslint', 'prettier'],
+      matchPackagePatterns: ['eslint', 'prettier', '^@commitlint'],
       automerge: true
     },
     // Update manually
