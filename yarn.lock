@@ -1284,13 +1284,13 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@types/vscode": ~1.77.0
     autoprefixer: ^10.4.14
-    body-scroll-lock-upgrade: ^1.0.3
+    body-scroll-lock-upgrade: ^1.0.4
     class-variance-authority: ^0.6.1
     clsx: ^1.2.1
     jotai: ^2.2.2
     jotai-devtools: ^0.6.0
     langium: ^1.2.1
-    lucide-react: ^0.259.0
+    lucide-react: ^0.262.0
     monaco-editor: 0.36.1
     monaco-languageclient: 5.0.1
     next: 13.4.6
@@ -4110,10 +4110,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-scroll-lock-upgrade@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "body-scroll-lock-upgrade@npm:1.0.3"
-  checksum: d942d6a7ae45403f01b8e601e3068076d4f066acff4cd2794a944aa24820e56bceb96a8270774d155b628f4f0e40ecd496e0a7a01b953906e2499a6961b6fb72
+"body-scroll-lock-upgrade@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "body-scroll-lock-upgrade@npm:1.0.4"
+  checksum: a0eb25756b244d78a65bd7d6e52dcda186e610063020477152b12c4decf50ee702fd46f187be0903c2b12e481731b2117a63cc076d8a5ccbad9e9700d79c0fbe
   languageName: node
   linkType: hard
 
@@ -6064,9 +6064,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.44.0":
-  version: 8.44.0
-  resolution: "eslint@npm:8.44.0"
+"eslint@npm:^8.45.0":
+  version: 8.45.0
+  resolution: "eslint@npm:8.45.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
@@ -6093,7 +6093,6 @@ __metadata:
     globals: ^13.19.0
     graphemer: ^1.4.0
     ignore: ^5.2.0
-    import-fresh: ^3.0.0
     imurmurhash: ^0.1.4
     is-glob: ^4.0.0
     is-path-inside: ^3.0.3
@@ -6105,11 +6104,10 @@ __metadata:
     natural-compare: ^1.4.0
     optionator: ^0.9.3
     strip-ansi: ^6.0.1
-    strip-json-comments: ^3.1.0
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: d06309ce4aafb9d27d558c8e5e5aa5cba3bbec3ce8ceccbc7d4b7a35f2b67fd40189159155553270e2e6febeb69bd8a3b60d6241c8f5ddc2ef1702ccbd328501
+  checksum: 3e6dcce5cc43c5e301662db88ee26d1d188b22c177b9f104d7eefd1191236980bd953b3670fe2fac287114b26d7c5420ab48407d7ea1c3a446d6313c000009da
   languageName: node
   linkType: hard
 
@@ -8327,13 +8325,13 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^6.0.0
     "@typescript-eslint/parser": ^6.0.0
     "@vitest/ui": ^0.33.0
-    eslint: ^8.44.0
+    eslint: ^8.45.0
     husky: ^8.0.3
     lint-staged: ^13.2.3
     prettier: ^3.0.0
     rimraf: ^5.0.1
     shipjs: ^0.26.3
-    turbo: ^1.10.7
+    turbo: ^1.10.9
     typescript: ^5.1.6
     vite: ^4.3.9
     vitest: ^0.33.0
@@ -8650,12 +8648,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.259.0":
-  version: 0.259.0
-  resolution: "lucide-react@npm:0.259.0"
+"lucide-react@npm:^0.262.0":
+  version: 0.262.0
+  resolution: "lucide-react@npm:0.262.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: d760b2af40e36393e2f72beca3162eb8ab264e09fba8660649b7f955ecee38d2d7242ea513f7249c3d97a937b02257c3ee20af5d82d4f77509e3f143da7d009d
+  checksum: ff64ced6f67de2674b41d775f7fd216d2bcf952a9c133a32e8838a349f2726deeb52885f6ecb221e12884ad12565b0516c2557712bf8800c88eb2f7e12182c4b
   languageName: node
   linkType: hard
 
@@ -12603,7 +12601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-json-comments@npm:^3.1.0, strip-json-comments@npm:^3.1.1":
+"strip-json-comments@npm:^3.1.1":
   version: 3.1.1
   resolution: "strip-json-comments@npm:3.1.1"
   checksum: 492f73e27268f9b1c122733f28ecb0e7e8d8a531a6662efbd08e22cccb3f9475e90a1b82cab06a392f6afae6d2de636f977e231296400d0ec5304ba70f166443
@@ -13169,58 +13167,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-darwin-64@npm:1.10.7"
+"turbo-darwin-64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-darwin-64@npm:1.10.9"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-darwin-arm64@npm:1.10.7"
+"turbo-darwin-arm64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-darwin-arm64@npm:1.10.9"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-linux-64@npm:1.10.7"
+"turbo-linux-64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-linux-64@npm:1.10.9"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-linux-arm64@npm:1.10.7"
+"turbo-linux-arm64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-linux-arm64@npm:1.10.9"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-windows-64@npm:1.10.7"
+"turbo-windows-64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-windows-64@npm:1.10.9"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.10.7":
-  version: 1.10.7
-  resolution: "turbo-windows-arm64@npm:1.10.7"
+"turbo-windows-arm64@npm:1.10.9":
+  version: 1.10.9
+  resolution: "turbo-windows-arm64@npm:1.10.9"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.10.7":
-  version: 1.10.7
-  resolution: "turbo@npm:1.10.7"
+"turbo@npm:^1.10.9":
+  version: 1.10.9
+  resolution: "turbo@npm:1.10.9"
   dependencies:
-    turbo-darwin-64: 1.10.7
-    turbo-darwin-arm64: 1.10.7
-    turbo-linux-64: 1.10.7
-    turbo-linux-arm64: 1.10.7
-    turbo-windows-64: 1.10.7
-    turbo-windows-arm64: 1.10.7
+    turbo-darwin-64: 1.10.9
+    turbo-darwin-arm64: 1.10.9
+    turbo-linux-64: 1.10.9
+    turbo-linux-arm64: 1.10.9
+    turbo-windows-64: 1.10.9
+    turbo-windows-arm64: 1.10.9
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -13236,7 +13234,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 58329caf13b5fef284ccfc21bd1f841023122371d75d2202be809a385aade84fd886cf5c2093323c115c497d503c9c34e1f7ae09e13d06d1dcb4b649883f60dd
+  checksum: 667867c3ea6ecf59cafe494e1bd4da8564bdae4ea735a14813656b2784a909fb69f12f8c6cdb140ca490c602fd11dc186b5d426af6a451ba51a487e73b742731
   languageName: node
   linkType: hard
 
