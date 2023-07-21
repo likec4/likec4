@@ -21,6 +21,7 @@ jobs:
     name: Build
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    if: "!startsWith(github.head_ref, 'releases/')"
     steps:
       - uses: actions/checkout@v3
 

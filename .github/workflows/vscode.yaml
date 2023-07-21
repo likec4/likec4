@@ -13,6 +13,7 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: "github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v3
 
