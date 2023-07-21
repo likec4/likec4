@@ -1247,8 +1247,8 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@react-spring/konva": ^9.7.3
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.15
+    "@types/react-dom": ^18.2.7
     clsx: ^1.2.1
     esbuild: ^0.17.19
     khroma: ^2.0.0
@@ -1280,8 +1280,8 @@ __metadata:
     "@radix-ui/react-scroll-area": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.15
+    "@types/react-dom": ^18.2.7
     "@types/vscode": ~1.77.0
     autoprefixer: ^10.4.14
     body-scroll-lock-upgrade: ^1.0.3
@@ -1400,8 +1400,8 @@ __metadata:
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
-    "@types/react": ^18.2.0
-    "@types/react-dom": ^18.2.0
+    "@types/react": ^18.2.15
+    "@types/react-dom": ^18.2.7
     "@types/vscode": ~1.77.0
     "@types/vscode-webview": ^1.57.1
     "@vitejs/plugin-react": ^4.0.1
@@ -3287,6 +3287,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:^18.2.7":
+  version: 18.2.7
+  resolution: "@types/react-dom@npm:18.2.7"
+  dependencies:
+    "@types/react": "*"
+  checksum: e02ea908289a7ad26053308248d2b87f6aeafd73d0e2de2a3d435947bcea0422599016ffd1c3e38ff36c42f5e1c87c7417f05b0a157e48649e4a02f21727d54f
+  languageName: node
+  linkType: hard
+
 "@types/react-reconciler@npm:^0.28.0, @types/react-reconciler@npm:^0.28.2":
   version: 0.28.2
   resolution: "@types/react-reconciler@npm:0.28.2"
@@ -3304,6 +3313,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: db3d92b423150222a666329f7aa3023e3e942044700557b8a7d161530847e621aec9f56c9e7f71761b06dd164c8a7b17ad52355863efe80963dffa5537e8e5fd
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.15":
+  version: 18.2.15
+  resolution: "@types/react@npm:18.2.15"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 36989f638201bfe2f4110b06c119180f6df9c0e13d7060481e82e7a745f81745a01ae543c478a25b61e0767cb52e82da2ad5b0dedacabf99339e523d06176705
   languageName: node
   linkType: hard
 
