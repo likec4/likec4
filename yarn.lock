@@ -1284,7 +1284,7 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@types/vscode": ~1.77.0
     autoprefixer: ^10.4.14
-    body-scroll-lock-upgrade: ^1.0.3
+    body-scroll-lock-upgrade: ^1.0.4
     class-variance-authority: ^0.6.1
     clsx: ^1.2.1
     jotai: ^2.2.2
@@ -4110,10 +4110,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-scroll-lock-upgrade@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "body-scroll-lock-upgrade@npm:1.0.3"
-  checksum: d942d6a7ae45403f01b8e601e3068076d4f066acff4cd2794a944aa24820e56bceb96a8270774d155b628f4f0e40ecd496e0a7a01b953906e2499a6961b6fb72
+"body-scroll-lock-upgrade@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "body-scroll-lock-upgrade@npm:1.0.4"
+  checksum: a0eb25756b244d78a65bd7d6e52dcda186e610063020477152b12c4decf50ee702fd46f187be0903c2b12e481731b2117a63cc076d8a5ccbad9e9700d79c0fbe
   languageName: node
   linkType: hard
 
