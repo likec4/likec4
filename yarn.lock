@@ -1303,7 +1303,7 @@ __metadata:
     react-icons: ^4.10.1
     remark-code-import: ^1.2.0
     swr: ^2.2.0
-    tailwind-merge: ^1.13.2
+    tailwind-merge: ^1.14.0
     tailwindcss: ^3.3.3
     tailwindcss-animate: ^1.0.6
     typescript: ^5.1.6
@@ -12751,10 +12751,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:^1.13.2":
-  version: 1.13.2
-  resolution: "tailwind-merge@npm:1.13.2"
-  checksum: 8f9de3bd1e6271f5980f863ab85e0103f062bf84d814d3188bf6870af7eb43725ea40493ef0693dedd652b668cbdfcd6544235b16b70d438ed20bca6118a9066
+"tailwind-merge@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "tailwind-merge@npm:1.14.0"
+  checksum: 8cf5d37f51b3b32e4bdd5544feaed34357bfba2f64f14834cc4a21ac29b0ae22d7255386467a0f1dadb3e38499389efbbabeddcd0b16571af5a0d346a4921877
   languageName: node
   linkType: hard
 
