@@ -4,7 +4,7 @@ import { useMeasure } from '@react-hookz/web/esm'
 import { Diagram, type DiagramProps } from '../diagram'
 
 export interface EmbeddedDiagramProps<
-  Views extends Record<any, DiagramView>,
+  Views extends Record<string, DiagramView>,
   Id = keyof Views & string
 > extends Omit<DiagramProps, 'diagram' | 'width' | 'height'> {
   views: Views
@@ -12,7 +12,7 @@ export interface EmbeddedDiagramProps<
   diagramClassName?: string | undefined
 }
 
-export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
+export function EmbeddedDiagram<Views extends Record<string, DiagramView>>({
   animate = false,
   interactive = false,
   zoomable = false,
@@ -31,7 +31,8 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
   const h = Math.ceil(diagram?.height ?? 10)
 
   return (
-    <div className={className}
+    <div
+      className={className}
       style={{
         position: 'relative',
         display: 'flex',
@@ -40,22 +41,30 @@ export function EmbeddedDiagram<Views extends Record<any, DiagramView>>({
         height: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: w
-      }}>
+        maxWidth: w,
+        boxSizing: 'border-box'
+      }}
+    >
       <div ref={containerRef} style={{ flex: '1 1 100%', overflow: 'hidden' }}>
-        {!diagram && <div style={{ margin: '1rem 0', padding: '1rem', background: '#AA00005b' }}>Diagram not found</div>}
-        {measures && diagram && (<Diagram
-          interactive={interactive}
-          animate={animate}
-          className={diagramClassName}
-          diagram={diagram}
-          width={Math.ceil(measures.width)}
-          height={Math.ceil(measures.height)}
-          pannable={pannable}
-          zoomable={zoomable}
-          padding={padding}
-          {...props}
-        />)}
+        {!diagram && (
+          <div style={{ margin: '1rem 0', padding: '1rem', background: '#AA00005b' }}>
+            Diagram not found
+          </div>
+        )}
+        {measures && diagram && (
+          <Diagram
+            interactive={interactive}
+            animate={animate}
+            className={diagramClassName}
+            diagram={diagram}
+            width={Math.ceil(measures.width)}
+            height={Math.ceil(measures.height)}
+            pannable={pannable}
+            zoomable={zoomable}
+            padding={padding}
+            {...props}
+          />
+        )}
       </div>
     </div>
   )
