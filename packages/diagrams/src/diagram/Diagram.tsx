@@ -429,12 +429,13 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       leave: {
         opacity: 0
       },
-      exitBeforeEnter: true,
       expires: true,
       immediate: !animate,
       config: {
         duration: 150
       },
+      // unique edge key, scoped to this diagram
+      // to avoid any issues with diagram-to-diagram transitions
       keys: e => e.id + id
     })
 

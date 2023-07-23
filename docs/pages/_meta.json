@@ -24,12 +24,7 @@
   },
   "examples": {
     "title": "Examples",
-    "type": "menu",
-    "items": {
-      "bigbank": {
-        "title": "Big Bank plc"
-      }
-    }
+    "type": "page"
   },
   "about": {
     "title": "About",

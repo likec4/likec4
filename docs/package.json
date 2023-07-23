@@ -16,7 +16,7 @@
     "compile": "tsc --noEmit",
     "turbo-build": "run -T turbo run build --filter='docs-website'",
     "generate:indexpage": "likec4 codegen react --output components/index-page/generated.tsx ./likec4/index-page",
-    "generate:bigbank": "likec4 codegen react --output components/likec4/generated.tsx ./likec4/bigbank",
+    "generate:bigbank": "likec4 codegen react --output components/example-big-bank/generated.tsx ./likec4/bigbank",
     "generate": "run generate:bigbank && run generate:indexpage",
     "dev": "run generate && next dev",
     "build": "next build",

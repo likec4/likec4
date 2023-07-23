@@ -1,11 +1,14 @@
+---
+title: LikeC4 - Getting Started
+description: Introduction and Tutorial
+---
+
 import { Card, Cards, Steps, Callout } from 'nextra-theme-docs'
-import { Button } from '$/components/ui/button'
 import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
 
 # Getting Started
 
-Software systems evolve and architecture diagrams become outdated quite quickly, especially if drawn manually.  
+Software systems evolve and architecture diagrams become outdated quite quickly, especially if drawn manually.
 
 LikeC4 allows to describe architecture in a single model
 and generate multiple architecture diagrams from different perspectives, like per use-case.
@@ -15,7 +18,7 @@ keeping diagrams up-to-date and synchronised with the actual state.
 ## C4 Model
 
 The [C4 Model](https://c4model.com/) is a lightweight and practical approach for visualizing the architecture of a software system.  
-It was developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.  
+It was developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.
 
 C4 provides a set of diagrams that enable software architects and developers to communicate and document the structure, key elements, and interactions of the system.
 
@@ -28,7 +31,7 @@ LikeC4 inherits the simplicity of the C4 Model, with focus on Architecture as Co
 Better to follow the [tutorial](#tutorial) to get the idea, but if you are impatient and want to try:
 
 - Online playgrounds:
-  - [Blank](/playground/blank/)  
+  - [Blank](/playground/blank/)
   - [Tutorial](/playground/getting-started/)
   - [BigBank Architecture](/playground/)
 - Online with [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
@@ -46,7 +49,7 @@ Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [
 We start with defining the element kinds we want in our model.  
 For now we need only two - `actor` and `system`
 
-```likec4 showLineNumbers copy filename="getting-started.c4" 
+```likec4 showLineNumbers copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -57,7 +60,7 @@ specification {
 
 Start with top-level architecture elements
 
-```likec4 showLineNumbers copy {7-8} filename="getting-started.c4" 
+```likec4 showLineNumbers copy {7-8} filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -74,7 +77,7 @@ model {
 Assume our system has two main components - `ui` and `backend`.  
 We add new kind to the specification and update the model.
 
-```likec4 showLineNumbers {4,10-11} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {4,10-11} copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -92,7 +95,7 @@ model {
 
 ### Add relationships
 
-```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -102,7 +105,7 @@ specification {
 model {
   customer = actor 'Customer'
   saas = system 'Our SaaS' {
-    component ui 
+    component ui
     component backend
 
     // UI requests data from the Backend
@@ -119,7 +122,7 @@ model {
 View is a projection, a slice of the model defined by predicates (what to include/exclude).  
 Let's add the Landscape view, i.e bird's eye view of the architecture.
 
-```likec4 showLineNumbers {23-25} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {23-25} copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -129,7 +132,7 @@ specification {
 model {
   customer = actor 'Customer'
   saas = system 'Our SaaS' {
-    component ui 
+    component ui
     component backend
 
     // UI requests data from the Backend
@@ -142,7 +145,7 @@ model {
 
 views {
 
-  view index { 
+  view index {
     include *
   }
 
@@ -156,8 +159,9 @@ We got this:
 <Callout type="info">
   **Why there is a relationship?**
 
-  The relationships are implied from the nested elements.  
-  `customer` has the relationship with the nested `saas.ui` element
+The relationships are implied from the nested elements.  
+ `customer` has the relationship with the nested `saas.ui` element
+
 </Callout>
 
 ### Add more views
@@ -166,7 +170,7 @@ View may have a root element `view of ...` as initial scope.
 Then predicate `include *` is applied to the root element and includes nested elements.  
 This covered in more details in [LikeC4 Language - Views](/docs/dsl/views).
 
-```likec4 showLineNumbers copy {29-31} filename="getting-started.c4" 
+```likec4 showLineNumbers copy {29-31} filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -176,7 +180,7 @@ specification {
 model {
   customer = actor 'Customer'
   saas = system 'Our SaaS' {
-    component ui 
+    component ui
     component backend
 
     // UI requests data from the Backend
@@ -195,9 +199,9 @@ views {
     include *
   }
 
-  view of saas {    
+  view of saas {
     include *
-  }  
+  }
 
 }
 ```
@@ -210,7 +214,7 @@ Imagine, we zoom in the `saas` element, see nested elements and their relationsh
 
 Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
 
-```likec4 showLineNumbers {9,13-24,27,45-47} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {9,13-24,27,45-47} copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -252,13 +256,13 @@ views {
     include *
   }
 
-  view of saas {    
+  view of saas {
     include *
 
     style customer {
       color muted
     }
-  }  
+  }
 
 }
 ```
@@ -271,7 +275,7 @@ The `saas` view after changes:
 
 Let's change the description of the `customer` and the label of `customer -> ui`
 
-```likec4 showLineNumbers {9,31} copy filename="getting-started.c4" 
+```likec4 showLineNumbers {9,31} copy filename="getting-started.c4"
 specification {
   element actor
   element system
@@ -309,17 +313,17 @@ views {
 
   view index {
     title 'Landscape view'
-    
+
     include *
   }
 
-  view of saas {    
+  view of saas {
     include *
 
     style customer {
       color muted
     }
-  }  
+  }
 
 }
 ```
@@ -335,6 +339,7 @@ We made changes and all views are updated automatically.
 ![landscape view after changes](/getting-started/05.png)
 
 You can play with [this tutorial in playground](/playground/getting-started/) and, for example, add the following:
+
 - change [shape](/docs/dsl/specification/#shapes) of the `customer` element
 - add database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
 - add external system, like Stripe, and show how the backend interacts with it.
@@ -343,7 +348,6 @@ You can play with [this tutorial in playground](/playground/getting-started/) an
 
 ## Next steps
 
-
 <Cards>
-  <Card title="LikeC4 Language" href={`/docs/dsl/introduction/`} arrow/>
+  <Card title='LikeC4 Language' href={`/docs/dsl/introduction/`} arrow />
 </Cards>
