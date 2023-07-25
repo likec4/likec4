@@ -1,7 +1,7 @@
 import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
-import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
+import { compareByFqnHierarchically, isNonEmptyArray, parentFqn } from '@likec4/core/utils'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
@@ -103,7 +103,7 @@ export class LikeC4ModelBuilder {
         Object.assign(c4Specification.kinds, spec.kinds)
       )
 
-      const toModelElement = ({ astPath, ...parsed }: ParsedAstElement): c4.Element | null => {
+      const toModelElement = ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
         const kind = c4Specification.kinds[parsed.kind]
         if (kind) {
           return {
@@ -111,7 +111,8 @@ export class LikeC4ModelBuilder {
             color: kind.color,
             description: null,
             technology: null,
-            tags: [],
+            tags: tags ?? null,
+            links: links ?? null,
             ...parsed
           }
         }
@@ -169,7 +170,7 @@ export class LikeC4ModelBuilder {
 
       const toModelView = (view: ParsedAstElementView): c4.ComputedView | null => {
         // eslint-disable-next-line prefer-const
-        let { astPath, rules, title, ...model } = view
+        let { astPath, rules, title, description, tags, links, ...model } = view
         if (!title && view.viewOf) {
           title = elements[view.viewOf]?.title
         }
@@ -179,7 +180,10 @@ export class LikeC4ModelBuilder {
         return computeView(
           {
             ...model,
-            ...(title && { title }),
+            title: title ?? null,
+            description: description ?? null,
+            tags: tags ?? null,
+            links: links ?? null,
             rules: clone(rules)
           },
           modelIndex
@@ -266,7 +270,7 @@ export class LikeC4ModelBuilder {
     const id = this.resolveFqn(astNode)
     invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
     const kind = astNode.kind.ref.name as c4.ElementKind
-    const tags = (astNode.body && this.convertTags(astNode.body)) ?? []
+    const tags = (astNode.body && this.convertTags(astNode.body))
     const styleProps = astNode.body?.props.find(ast.isElementStyleProperties)?.props
     const { color, shape } = toElementStyle(styleProps)
     const astPath = this.getAstNodePath(astNode)
@@ -282,14 +286,17 @@ export class LikeC4ModelBuilder {
     description = description ?? bodyProps.find(p => p.key === 'description')?.value
     technology = technology ?? bodyProps.find(p => p.key === 'technology')?.value
 
+    const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
+
     return {
       id,
       kind,
       astPath,
       title: title ?? astNode.name,
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
       ...(technology && { technology }),
       ...(description && { description: stripIndent(description).trim() }),
-      ...(tags.length > 0 ? { tags } : {}),
       ...(shape && shape !== DefaultElementShape ? { shape } : {}),
       ...(color && color !== DefaultThemeColor ? { color } : {})
     }
@@ -417,8 +424,11 @@ export class LikeC4ModelBuilder {
       }) as c4.ViewID
     }
 
-    const title = astNode.properties.find(p => p.key === 'title')?.value
-    const description = astNode.properties.find(p => p.key === 'description')?.value
+    const title = astNode.props.find(p => p.key === 'title')?.value
+    const description = astNode.props.find(p => p.key === 'description')?.value
+
+    const tags = this.convertTags(astNode)
+    const links = astNode.props.filter(ast.isLinkProperty).map(p => p.value)
 
     return {
       id,
@@ -426,6 +436,8 @@ export class LikeC4ModelBuilder {
       ...(viewOf && { viewOf }),
       ...(title && { title }),
       ...(description && { description }),
+      ...(tags && { tags }),
+      ...(links && isNonEmptyArray(links) && { links }),
       rules: astNode.rules.map(n => this.parseViewRule(n))
     }
   }
@@ -444,7 +456,8 @@ export class LikeC4ModelBuilder {
   }
 
   private convertTags(el: { tags?: ast.Tags }) {
-    return el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag) ?? []
+    const tags = el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag)
+    return tags && isNonEmptyArray(tags) ? tags : null
   }
 
   private scheduledCb: NodeJS.Timeout | null = null

@@ -10,6 +10,9 @@ describe('compute-node-levels', () => {
       {
         id: 'cloud' as ViewID,
         title: '',
+        description: null,
+        tags: null,
+        links: null,
         viewOf: 'cloud' as Fqn,
         rules: [
           {
@@ -59,6 +62,9 @@ describe('compute-node-levels', () => {
       {
         id: 'cloud3levels' as ViewID,
         title: '',
+        description: null,
+        tags: null,
+        links: null,
         viewOf: 'cloud' as Fqn,
         rules: [
           {

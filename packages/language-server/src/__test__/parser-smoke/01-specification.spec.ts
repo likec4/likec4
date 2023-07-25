@@ -27,17 +27,21 @@ describe('01-Specification', () => {
       element softwareSystem
     }`
 
-  test('fail if starts with number').invalid`
+  test('fail if element kinds starts with number').invalid`
     specification {
       element 1container
     }`
 
+  test('fail if tag starts with number').invalid`
+    specification {
+      tag 1tag
+    }`
+
   test('allow element with kind "element"').valid`
-      specification {
-        element element
-        element component
-      }
-  `
+    specification {
+      element element
+      element component
+    }`
 
   test('kind with style').valid`
     specification {
@@ -77,6 +81,20 @@ describe('01-Specification', () => {
           shape storage
         }
       }
-    }
-    `
+    }`
+
+  test('tags with dash').valid`
+    specification {
+      tag epic-123
+    }`
+
+  test('fail if element starts with dash').invalid`
+    specification {
+      element -service
+    }`
+
+  test('fail if tag starts with dash').invalid`
+    specification {
+      tag -gray
+    }`
 })

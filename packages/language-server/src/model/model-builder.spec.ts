@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
-import type { Element, Fqn, ViewID } from '@likec4/core/types'
+import type { Element, ViewID } from '@likec4/core/types'
 
 import '../logger'
 vi.mock('../logger')
@@ -150,7 +150,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.elements).toMatchObject({
       system1: {
         kind: 'component',
-        tags: []
+        tags: null
       },
       system2: {
         kind: 'component',
@@ -260,5 +260,70 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
 
     expect(model).toMatchSnapshot()
+  })
+
+  it('builds model and views with links', async () => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      tag v2
+    }
+    model {
+      component system1 {
+        #v2
+      }
+      component system2 {
+        link ./relative
+        link https://example1.com
+
+        -> system1
+      }
+    }
+    views {
+      view index {
+        title 'Index'
+        include *
+      }
+      view withLinks {
+        #v2
+        description 'View with links'
+        link https://example1.com
+        link https://example2.com
+        include *
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+        tags: ['v2'],
+        links: null
+      },
+      system2: {
+        kind: 'component',
+        tags: null,
+        links: ['./relative', 'https://example1.com']
+      }
+    })
+    expect(model.views).toMatchObject({
+      index: {
+        id: 'index',
+        title: 'Index',
+        description: null,
+        tags: null,
+        links: null
+      },
+      withLinks: {
+        id: 'withLinks',
+        title: null,
+        description: 'View with links',
+        tags: ['v2'],
+        links: ['https://example1.com', 'https://example2.com']
+      }
+    })
   })
 })

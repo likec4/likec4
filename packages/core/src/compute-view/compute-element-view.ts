@@ -43,7 +43,7 @@ import { invariant } from '../errors'
 function transformToNodes(elementsIterator: Iterable<Element>) {
   return Array.from(elementsIterator)
     .sort(compareByFqnHierarchically)
-    .reduce((map, { id, color, shape, tags, ...el }) => {
+    .reduce((map, { id, color, shape, ...el }) => {
       let parent = parentFqn(id)
       while (parent) {
         if (map.has(parent)) {
@@ -62,8 +62,7 @@ function transformToNodes(elementsIterator: Iterable<Element>) {
         parent,
         color: color ?? DefaultThemeColor,
         shape: shape ?? DefaultElementShape,
-        children: [],
-        tags: [...tags]
+        children: []
       }
       map.set(id, node)
       return map
