@@ -6,7 +6,8 @@ LikeC4 uses the lexical scope, with hoisting, almost like in JavaScript.
 
 ## Scope
 
-Lets consider the following example:
+To understand references, we need to understand scopes first.  
+Example:
 
 ```likec4 filename="references.c4"
 model {
@@ -29,9 +30,9 @@ model {
 }
 ```
 
-But if we add another `service` with `api`:
+But if we add another `service2` with `api`:
 
-```likec4 {6-9} filename="references.c4"
+```likec4 {6-8} filename="references.c4"
 model {
   service service1 {
     component api
@@ -40,22 +41,23 @@ model {
   service service2 {
     component api
   }
+
   frontend -> api // ⛔️ Error: 'api' not found
 }
 ```
 
 The reference is ambiguous - now there are two `api` components in the model.
 
-Every element creates a new scope with nested elements, so `api` is unique in the scope of `service1` and `service2`,
-but not in the scope of `model`.  
+Every element creates a new scope inside `{...}`, so `api` is unique in the scope of `service1` and `service2`,
+but not in the scope of `model`.
 
-We can fix it by moving the relation to the scope of `service2`:
+We can resolve this problem by moving the relation to the scope of `service2`:
 
-```likec4 {9-11} filename="references.c4" 
+```likec4 {9-11} filename="references.c4"
 model {
   service service1 {
     component api
-    component frontend  
+    component frontend
   }
   service service2 {
     component api
@@ -63,13 +65,13 @@ model {
     frontend -> api // ✅ This is OK,
                     //    'api' is unique in 'service2'
                     //    'frontend' is unique in 'model'
-  }  
+  }
 }
 ```
 
 ## Hoisting
 
-<Callout type="info" emoji="ℹ️">
+<Callout type='info' emoji='ℹ️'>
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
 </Callout>
 
@@ -80,14 +82,14 @@ The relation from `frontend` referencing not yet defined `graphql`:
 
 ```likec4 showLineNumbers copy filename="hoisting.c4"
 model {
-  
+
   service service1 {
     component api
     component frontend
 
     frontend -> api // ✅ This is OK, references to 'api' from 'service1'
     frontend -> graphql // ✅ This is OK, references to unique 'graphql' defined later
-  }  
+  }
 
   frontend -> api // ⛔️ Error: 'api' is ambiguous
 
@@ -96,23 +98,24 @@ model {
     component graphql
 
     frontend -> api  // ✅ This is OK, references to 'api' from 'service2'
-  }  
-  
+  }
+
 }
 ```
 
 <Callout type="info" emoji="ℹ️">
   Line 7 and line 17 the same:  
-  `frontend -> api`  
+  `frontend -> api`
 
-  But they refer different elements:  
-  Line 7 refers to `service1.api`  
-  Line 17 refers to `service2.api`
+But they refer different elements:  
+ Line 7 refers to `service1.api`  
+ Line 17 refers to `service2.api`
+
 </Callout>
 
-## Full qualified names
+## Fully qualified names
 
-Full qualified name is a unique "path" to the element if we traverse all the parents.
+Fully qualified name is a global name, a "unique path" to an element if we traverse it's parents.
 
 Example:
 
@@ -139,7 +142,7 @@ model {
   service service1 {
     component api
     component frontend {
-      -> service2.api 
+      -> service2.api
     }
   }
   service service2 {
@@ -159,10 +162,10 @@ model {
     component backend2  {
       component api
       component graphql
-    }  
+    }
   }
 
-  frontend -> service.backend1.api // ✅ Non-ambiguous full qualified name
+  frontend -> service.backend1.api // ✅ Non-ambiguous fully qualified name
 
   frontend -> backend1.api  // ✅ This is OK, backend1 is unique in the scope of model
   frontend -> backend2.api  // ✅ This is also OK

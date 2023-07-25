@@ -8,14 +8,14 @@ Views are the architecture diagrams, projections of the model from different per
 - Components interactions in specific use case
 - Data flows
 
-## View Definition
+## View definition
 
-View may be named (must be unique) or unnamed (can't be referenced).
+View may be named (must be unique) or unnamed (can't be referenced):
 
 ```likec4 filename="views.c4"
 views {
   // with name
-  view index {  
+  view index {
   }
   // unnamed
   view {
@@ -23,7 +23,7 @@ views {
 }
 ```
 
-View may have a title 
+View may have a title:
 
 ```likec4 filename="views.c4"
 views {
@@ -35,7 +35,7 @@ views {
 }
 ```
 
-View may have a root element (`view of ..`) and inherit its scope:
+View may have a root element (`view of ..`) and inherits its scope:
 
 ```likec4 filename="views.c4"
 views {
@@ -55,9 +55,9 @@ views {
 
 ## View predicates
 
-View predicates define what elements/relations should be included/excluded.
+View predicates define what elements/relationships to include/exclude.
 
-```likec4 
+```likec4
 // include element
 include cloud.backend
 
@@ -67,13 +67,13 @@ exclude cloud.backend
 // include children of cloud.backend
 include cloud.backend.*
 
-// all incoming relations
+// all incoming relationships
 include -> cloud.backend
 
-// all outgoing relations from cloud children
+// all outgoing relationships from cloud children
 include cloud.* ->
 
-// all relations from customer to cloud children
+// all relationships from customer to cloud children
 include customer -> cloud.*
 
 // elements by kind
@@ -82,34 +82,33 @@ include element.kind != system
 
 // elements by tag
 include element.tag = #next
+include element.tag != #V2
 ```
 
-<Callout type="info" emoji="ℹ️">
-  **Limitation**  
-  Relations with container elements are not rendered, i.e. only among leaf elements.  
+<Callout type='info' emoji='ℹ️'>
+  **Limitation** Relations with container elements are not rendered, i.e. only among leaf elements.
   Working on it...
 </Callout>
 
-Wildcard may be used to reference "everything", but depends on the context.
+Wildcard may be used to reference "everything", but it depends on the context.
 
-```likec4 
+```likec4
 view {
-  // include all top level elements and their relations
+  // include all top level elements and their relationships
   include *
 }
 
 view of cloud.backend {
   // include 'cloud.backend', its children and all the incomings/outgoings
-  // (relations with the rest of the architecture)
+  // (relationships with the rest of the architecture)
   include *
 }
 ```
 
 Predicates are applied in same the order as defined in view.  
-`exclude` applies only to elements/relations included before.
+`exclude` applies only to elements/relationships included before.
 
-
-```likec4 
+```likec4
 view {
   // rules may be merged
   include
@@ -118,19 +117,18 @@ view {
     customer -> bigbank.*
 
   // include all children of bigbank
-  include bigbank.*  
+  include bigbank.*
   // but exclude webApplication
   exclude bigbank.webApplication
 }
 ```
-
 
 ## Style rules
 
 Style predicates define how elements are rendered.  
 Example from [BigBank](/examples/bigbank/components/):
 
-```likec4 
+```likec4
 view apiApp of internetBankingSystem.apiApplication {
 
   include *
@@ -155,4 +153,4 @@ view apiApp of internetBankingSystem.apiApplication {
     color muted
   }
 }
-``` 
+```

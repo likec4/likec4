@@ -1,23 +1,14 @@
-import { Tab, Tabs } from 'nextra-theme-docs'
-
 # CLI
 
-The `likec4` CLI is a tool for managing and validating your LikeC4 projects and generating the diagrams
+The `likec4` CLI is a tool for managing and validating your LikeC4 projects, and generating artifacts (PNG, React Components...)
 
 ## Install
 
-<Tabs items={['npm', 'yarn']}>
-  <Tab>
-    ```bash
-    npm install --save-dev @likec4/cli
-    ```
-  </Tab>
-  <Tab>
-    ```bash
-    yarn add -D @likec4/cli
-    ```
-  </Tab>
-</Tabs>
+```sh npm2yarn
+npm install -D @likec4/cli
+```
+
+## Commands
 
 ```ansi
 [0;35mlikec4[0m [0;36mhelp[0m
@@ -32,8 +23,6 @@ Commands:
   export [options] [workspace]  export views to png
   help [command]                display help for command
 ```
-
-## Commands
 
 ### Codegen
 
@@ -72,4 +61,4 @@ Options:
                             Expects npm project with puppeteer installed.
                             If not defined, generates temporary one and installs puppeteer.
   -h, --help                display help for command
-```  
+```

@@ -21,21 +21,21 @@ model {
   actor customer
   service cloud
   // or use '='
-  cloud = service  
+  cloud = service
 }
 ```
 
 Element must have a name. It is used for references.  
 It can contain letters, digits and underscore, but can't start with a digit.
 
-| identifier        | |
-| :------------ | :--------- |
-| api | ✅ |
-| Api | ✅ |
-| _api | ✅ |
-| _1api | ✅ |
-| 1api | ⛔️ |
-| a.pi | ⛔️ |
+| identifier |     |
+| :--------- | :-- |
+| api        | ✅  |
+| Api        | ✅  |
+| \_api      | ✅  |
+| \_1api     | ✅  |
+| 1api       | ⛔️ |
+| a.pi       | ⛔️ |
 
 Element name is also used as a title when rendered. To customize it:
 
@@ -55,7 +55,7 @@ model {
 
 ### Element properties
 
-Element may have description and technology. 
+Element may have description and technology.
 
 ```likec4 copy
 model {
@@ -68,14 +68,12 @@ model {
 Partial support of Structurizr DSL makes it easier to migrate from it.  
 Check the [Big Bank example](/examples/bigbank).
 
-
-{/* | Abstract grammar |
-| :--------|
-| _{'<'}element_kind{'>'}_ **NAME** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
-| **NAME** **'='** _{'<'}element_kind{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  | */}
+| {/\*                                                                                                          | Abstract grammar |
+| :------------------------------------------------------------------------------------------------------------ | ---------------- |
+| _{'<'}element_kind{'>'}_ **NAME** [ title=_string_ [ description=_string_ [ technology=_string_ ] ] ]         |
+| **NAME** **'='** _{'<'}element_kind{'>'}_ [ title=_string_ [ description=_string_ [ technology=_string_ ] ] ] | \*/}             |
 
 These properties may be defined in nested block:
-
 
 ```likec4 copy
 model {
@@ -96,25 +94,23 @@ model {
 
 Element may have tags:
 
-
 ```likec4 copy
 model {
   appV1 = application 'App v1' {
-    #deprecated 
+    #deprecated
     description 'Old version of the application'
   }
 
   // multiple tags
   appV2 = application 'App v2' {
     #next, #serverless, #team2
-  }  
+  }
 }
 ```
 
 Tags will be explained later...
 
 #### Links
-
 
 ```likec4 copy
 model {
@@ -141,7 +137,7 @@ model {
     style {
       shape person
       color green
-    }    
+    }
   }
 }
 ```
@@ -163,23 +159,23 @@ model {
   }
 
   // or use '='
-  service2 = service {    
+  service2 = service {
     backend = component {
       api = component
     }
-    frontend = component 
+    frontend = component
   }
 }
 ```
 
-Element name must be unique within the container.  
+Element name must be unique within the container.
 
 Nested elements are _"namespaced"_, the parent name is used as a prefix for the children.  
-So the model above has the elements with these full qualified names:
+So the model above has the elements with these fully qualified names:
 
-- `service1`  
+- `service1`
 - `service1.backend`
-- `service1.backend.api` 
+- `service1.backend.api`
 - `service1.frontend`
 
 and:
@@ -195,11 +191,11 @@ It is not possible to have elements with the same name on the same hierarchy lev
 model {
 
   service service1 'Service 1' {
-    component backend 
+    component backend
 
     component backend // ⛔️ Error: 'service1.backend' already defined
   }
-  
+
   service service2 'Service 2' {
     component backend // ✅ This is OK - 'service2.backend'
 
