@@ -125,7 +125,8 @@ ModelViews:
 
 View:
   {infer ElementView} 'view' name=Name? ('of' viewOf=ElementRef)? OpenBlock
-    properties+=ViewProperty*
+    tags=Tags?
+    (props+=(ViewProperty | LinkProperty))*
     rules+=(
       ViewRuleExpression |
       ViewRuleStyle |
@@ -227,6 +228,7 @@ fragment IsEqual:
 // Symbols
 terminal fragment HASH      : '#';
 terminal fragment UNDERSCORE: '_';
+terminal fragment DASH: '-';
 terminal fragment LETTER       : /[^\W\d_]/;
 terminal fragment DIGIT        : /[0-9]/;
 terminal fragment NEWLINE: /[\t\r\n\v\f]/;
@@ -248,8 +250,8 @@ terminal CloseBlock: '}';
 terminal Colon: ':';
 terminal Comma: ',';
 
-terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
-terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
+terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal STRING: /"[^"]*"|'[^']*'/;
 
 hidden terminal WS: (NEWLINE | SPACE)+;

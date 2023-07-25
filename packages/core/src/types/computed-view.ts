@@ -2,6 +2,7 @@ import type { Opaque } from './opaque'
 import type { ElementKind, ElementShape, Fqn, Tag, ThemeColor } from './element'
 import type { RelationID } from './relation'
 import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
+import type { NonEmptyArray } from './_common'
 
 export type NodeId = Fqn
 
@@ -14,7 +15,8 @@ export interface ComputedNode {
   title: string
   description: string | null
   technology: string | null
-  tags: Tag[]
+  tags: NonEmptyArray<Tag> | null
+  links: NonEmptyArray<string> | null
   children: NodeId[]
   shape: ElementShape
   color: ThemeColor

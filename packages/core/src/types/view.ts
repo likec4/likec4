@@ -1,6 +1,7 @@
 import type { Opaque } from './opaque'
-import type { ElementShape, Fqn, ThemeColor } from './element'
+import type { ElementShape, Fqn, Tag, ThemeColor } from './element'
 import type { ElementExpression, Expression } from './expression'
+import type { NonEmptyArray } from './_common'
 
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
@@ -36,7 +37,9 @@ export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 export interface ElementView {
   readonly id: ViewID
   readonly viewOf?: Fqn
-  readonly title?: string
-  readonly description?: string
+  readonly title: string | null
+  readonly description: string | null
+  readonly tags: NonEmptyArray<Tag> | null
+  readonly links: NonEmptyArray<string> | null
   readonly rules: ViewRule[]
 }

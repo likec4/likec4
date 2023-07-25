@@ -6,8 +6,7 @@ import type {
   Fqn,
   Opaque,
   Relation,
-  RelationID,
-  Tag
+  RelationID
 } from '@likec4/core/types'
 
 /**
@@ -95,7 +94,8 @@ const el = ({
   title: title ?? id,
   description: null,
   technology: null,
-  tags: [],
+  tags: null,
+  links: null,
   ...props
 })
 
@@ -212,6 +212,9 @@ const fakeRelations = {
 export const indexView = {
   id: 'index' as Opaque<'index', 'ViewID'>,
   title: '',
+  description: null,
+  tags: null,
+  links: null,
   rules: [
     {
       isInclude: true,
@@ -227,6 +230,9 @@ export const indexView = {
 export const cloudView = {
   id: 'cloudView' as Opaque<'cloudView', 'ViewID'>,
   title: '',
+  description: null,
+  tags: null,
+  links: null,
   viewOf: 'cloud' as Fqn,
   rules: [
     {
@@ -240,6 +246,9 @@ export const cloud3levels = {
   id: 'cloud3levels' as Opaque<'cloud3levels', 'ViewID'>,
   title: '',
   viewOf: 'cloud' as Fqn,
+  description: null,
+  tags: null,
+  links: null,
   rules: [
     {
       isInclude: true,
@@ -266,6 +275,9 @@ export const amazonView = {
   id: 'amazon' as Opaque<'amazon', 'ViewID'>,
   title: '',
   viewOf: 'amazon' as Fqn,
+  description: null,
+  tags: null,
+  links: null,
   rules: [
     {
       isInclude: true,

@@ -92,7 +92,8 @@ const el = ({
   title: title ?? id,
   description: null,
   technology: null,
-  tags: [],
+  tags: null,
+  links: null,
   ...props
 })
 

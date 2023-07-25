@@ -4,6 +4,7 @@ export { isViewRuleExpression, isViewRuleAutoLayout, isViewRuleStyle } from './v
 
 export * as Expr from './expression'
 
+export type * from './_common'
 export type * from './opaque'
 export type * from './element'
 export type * from './relation'

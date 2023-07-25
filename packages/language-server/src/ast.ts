@@ -46,7 +46,8 @@ export interface ParsedAstElement {
   title: string
   description?: string
   technology?: string
-  tags?: c4.Tag[]
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<string>
   shape?: c4.ElementShape
   color?: c4.ThemeColor
 }
@@ -65,13 +66,15 @@ export interface ParsedAstElementView {
   viewOf?: c4.Fqn
   title?: string
   description?: string
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<string>
   rules: c4.ViewRule[]
 }
 
 const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
     ;(node as any)[idattr] = id
     return node
   },
@@ -87,7 +90,7 @@ export const ElementOps = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-dynamic-delete
       delete (node as any)[idattr]
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
       ;(node as any)[idattr] = id
     }
     return node

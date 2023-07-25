@@ -4,6 +4,7 @@ import { test } from './asserts'
 const model = `
 specification {
   element component
+  tag epic-123
   tag next
 }
 model {
@@ -42,23 +43,43 @@ describe('07_View', () => {
       `
 
   test('viewOf').valid`${model}
-      views {
-        view index of system.backend {
-          include *
-        }
+    views {
+      view index of system.backend {
+        include *
       }
-      `
+    }`
+
+  test('view properties: title, link, description').valid`${model}
+    views {
+      view index {
+        title "Index"
+        description "
+          Index view description
+        "
+        link https://domain.com/path
+
+        include *
+      }
+    }`
+
+  test('view tags').valid`${model}
+    views {
+      view index {
+        #epic-123 #next
+        title "Index"
+        include *
+      }
+    }`
 
   test('viewRules').valid`${model}
-      views {
-        view {
-          include *,
-            infra.*,
-            backend.*
-          exclude frontend
-        }
+    views {
+      view {
+        include *,
+          infra.*,
+          backend.*
+        exclude frontend
       }
-      `
+    }`
 
   test('viewRules: element.kind and element.tag').valid`${model}
       views {
@@ -148,19 +169,18 @@ describe('07_View', () => {
       `
 
   test('ViewLayoutRules').valid`${model}
-      views {
-        view {
-          include *
-          style * {
-            color: secondary
-          }
-          autoLayout BottomTop
-          exclude -> frontend
+    views {
+      view {
+        include *
+        style * {
+          color: secondary
         }
-        view {
-          autoLayout LeftRight
-          include *
-        }
+        autoLayout BottomTop
+        exclude -> frontend
       }
-      `
+      view {
+        autoLayout LeftRight
+        include *
+      }
+    }`
 })

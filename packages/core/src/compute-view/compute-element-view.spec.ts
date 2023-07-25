@@ -6,21 +6,31 @@ import { pluck } from 'rambdax'
 
 const ids = pluck('id')
 
+const emptyView = {
+  title: null,
+  description: null,
+  tags: null,
+  links: null,
+  rules: []
+}
+
 describe('compute-element-view', () => {
   function computeView(...args: [FakeElementIds, ViewRule[]] | [ViewRule[]]) {
     let result: ComputedView
     if (args.length === 1) {
       result = computeElementView(
         {
+          ...emptyView,
           id: 'index' as ViewID,
           title: '',
-          rules: args[0]
+          rules: args[0],
         },
         fakeModel()
       )
     } else {
       result = computeElementView(
         {
+          ...emptyView,
           id: 'index' as ViewID,
           title: '',
           viewOf: args[0] as Fqn,
@@ -38,9 +48,8 @@ describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
-        title: '',
-        rules: []
       },
       fakeModel()
     )
@@ -51,6 +60,7 @@ describe('compute-element-view', () => {
   it('should show only root if no rules', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -67,6 +77,7 @@ describe('compute-element-view', () => {
   it('should return landscape view on top `include *`', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         rules: [
@@ -89,6 +100,7 @@ describe('compute-element-view', () => {
   it('should return landscape view on top `include *, -> cloud.*`', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         rules: [
@@ -126,6 +138,7 @@ describe('compute-element-view', () => {
   it('view of cloud', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -166,6 +179,7 @@ describe('compute-element-view', () => {
   it('view of cloud.backend', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudbackend' as ViewID,
         title: '',
         viewOf: 'cloud.backend' as Fqn,
@@ -208,6 +222,7 @@ describe('compute-element-view', () => {
   it('view of cloud.frontend', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudfrontend' as ViewID,
         title: '',
         viewOf: 'cloud.frontend' as Fqn,
@@ -248,6 +263,7 @@ describe('compute-element-view', () => {
   it('view of cloud.frontend (and include parent cloud)', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudfrontend2' as ViewID,
         title: '',
         viewOf: 'cloud.frontend' as Fqn,
@@ -292,6 +308,7 @@ describe('compute-element-view', () => {
   it('view of cloud (exclude cloud, amazon.*)', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -331,6 +348,7 @@ describe('compute-element-view', () => {
   it('view with 3 levels', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud3levels' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -376,6 +394,7 @@ describe('compute-element-view', () => {
   it('view of amazon', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'amazon' as ViewID,
         title: '',
         viewOf: 'amazon' as Fqn,

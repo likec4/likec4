@@ -1,3 +1,4 @@
+import type { NonEmptyArray } from '.'
 import type { Opaque } from './opaque'
 
 // Full-qualified-name
@@ -53,7 +54,8 @@ export interface Element {
   readonly title: string
   readonly description: string | null
   readonly technology: string | null
-  readonly tags: ReadonlyArray<Tag>
+  readonly tags: NonEmptyArray<Tag> | null
+  readonly links: NonEmptyArray<string> | null
   readonly shape?: ElementShape
   readonly color?: ThemeColor
 }
