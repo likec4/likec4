@@ -18,7 +18,7 @@ model {
 }
 ```
 
-Every element is unique in the model, so we can add relation referencing them, like:
+Every element is unique in the model, so we can add relationships referencing them, like:
 
 ```likec4 {6} filename="references.c4"
 model {
@@ -51,7 +51,7 @@ The reference is ambiguous - now there are two `api` components in the model.
 Every element creates a new scope inside `{...}`, so `api` is unique in the scope of `service1` and `service2`,
 but not in the scope of `model`.
 
-We can resolve this problem by moving the relation to the scope of `service2`:
+We can resolve ambiguity by moving the relationship to the nested scope of `service2`:
 
 ```likec4 {9-11} filename="references.c4"
 model {
@@ -75,10 +75,10 @@ model {
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
 </Callout>
 
-The element name is hoisted (_"bubbles"_) to the upper scope if it stays unique.  
-We even may reference something that is not yet defined as it will be hoisted later.
+The element name is hoisted (or _"bubbles"_) to the upper scope while it stays unique.  
+We even may reference something that is not yet defined but will be hoisted later.
 
-The relation from `frontend` referencing not yet defined `graphql`:
+The relationship from `frontend` referencing to not yet defined `graphql`:
 
 ```likec4 showLineNumbers copy filename="hoisting.c4"
 model {
@@ -104,10 +104,10 @@ model {
 ```
 
 <Callout type="info" emoji="ℹ️">
-  Line 7 and line 17 the same:  
-  `frontend -> api`
+Line 7 and line 17 are the same:  
+`frontend -> api`
 
-But they refer different elements:  
+But they refer to different elements:  
  Line 7 refers to `service1.api`  
  Line 17 refers to `service2.api`
 
@@ -115,7 +115,7 @@ But they refer different elements:
 
 ## Fully qualified names
 
-Fully qualified name is a global name, a "unique path" to an element if we traverse it's parents.
+Fully qualified name is a global name, a "unique path" to an element if we traverse its parents.
 
 Example:
 
@@ -151,7 +151,7 @@ model {
 }
 ```
 
-Middle-parts may be omitted, if target element is already unique in the scope:
+Middle parts may be omitted, if the target element is unique:
 
 ```likec4 showLineNumbers filename="references.c4"
 model {

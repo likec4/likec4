@@ -10,10 +10,9 @@ import Link from 'next/link'
 
 Software systems evolve and architecture diagrams become outdated quite quickly, especially if drawn manually.
 
-LikeC4 allows to describe architecture in a single model
-and generate multiple architecture diagrams from different perspectives, like per use-case.
-And any change, any refinement or deprecation in the model is automatically reflected,
-keeping diagrams up-to-date and synchronised with the actual state.
+LikeC4 allows describe architecture in a single model and generates multiple architecture diagrams from different perspectives, like per use-case.
+And any change, refinement or deprecation in the model is reflected automatically,
+keeping diagrams up-to-date and synchronized with the actual state.
 
 ## C4 Model
 
@@ -24,7 +23,7 @@ C4 provides a set of diagrams that enable software architects and developers to 
 
 If you never heard about it, check the [C4 Model website](https://c4model.com/), you get the idea very quickly.
 
-LikeC4 inherits the simplicity of the C4 Model, with focus on Architecture as Code approach, importing/exporting to various formats and documentation tools.
+LikeC4 inherits the simplicity of the C4 Model, with a focus on Architecture as Code approach, importing/exporting to various formats and documentation tools.
 
 ## What does LikeC4 look like?
 
@@ -47,7 +46,7 @@ Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [
 ### Tailor specification
 
 We start with defining the element kinds we want in our model.  
-For now we need only two - `actor` and `system`
+For now, we need only two - `actor` and `system`
 
 ```likec4 showLineNumbers copy filename="getting-started.c4"
 specification {
@@ -56,7 +55,7 @@ specification {
 }
 ```
 
-### Define first elements
+### Define the first elements
 
 Start with top-level architecture elements
 
@@ -75,7 +74,7 @@ model {
 ### Add nested elements
 
 Assume our system has two main components - `ui` and `backend`.  
-We add new kind to the specification and update the model.
+We add a new kind to the specification and update the model.
 
 ```likec4 showLineNumbers {4,10-11} copy filename="getting-started.c4"
 specification {
@@ -120,7 +119,7 @@ model {
 ### Landscape view
 
 View is a projection, a slice of the model defined by predicates (what to include/exclude).  
-Let's add the Landscape view, i.e bird's eye view of the architecture.
+Let's add the Landscape view, i.e. bird's eye view of the architecture.
 
 ```likec4 showLineNumbers {23-25} copy filename="getting-started.c4"
 specification {
@@ -160,15 +159,15 @@ We got this:
   **Why there is a relationship?**
 
 The relationships are implied from the nested elements.  
- `customer` has the relationship with the nested `saas.ui` element
+`customer` has a relationship with the nested `saas.ui` element
 
 </Callout>
 
 ### Add more views
 
-View may have a root element `view of ...` as initial scope.  
+A View may have a root element `view of ...` as the initial scope.  
 Then predicate `include *` is applied to the root element and includes nested elements.  
-This covered in more details in [LikeC4 Language - Views](/docs/dsl/views).
+This is covered in more detail in [LikeC4 Language - Views](/docs/dsl/views).
 
 ```likec4 showLineNumbers copy {29-31} filename="getting-started.c4"
 specification {
@@ -206,13 +205,13 @@ views {
 }
 ```
 
-Imagine, we zoom in the `saas` element, see nested elements and their relationships:
+Imagine, we zoom in on the `saas` element, and see nested elements and their relationships:
 
 ![saas view](/getting-started/02.png)
 
 ### Enrich model
 
-Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
+Let's add descriptions, define the shape of the `ui` and add a label to the relationship `ui -> backend`
 
 ```likec4 showLineNumbers {9,13-24,27,45-47} copy filename="getting-started.c4"
 specification {
@@ -341,8 +340,8 @@ We made changes and all views are updated automatically.
 You can play with [this tutorial in playground](/playground/getting-started/) and, for example, add the following:
 
 - change [shape](/docs/dsl/specification/#shapes) of the `customer` element
-- add database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
-- add external system, like Stripe, and show how the backend interacts with it.
+- add a database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
+- add an external system, like Stripe, and show how the backend interacts with it.
 
 </Steps>
 

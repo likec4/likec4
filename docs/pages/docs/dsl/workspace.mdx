@@ -2,8 +2,8 @@ import { Bleed, Tab, Tabs, Callout, FileTree } from 'nextra-theme-docs'
 
 # Workspace
 
-Workspace is a directory with LikeC4 files. Files are merged into single model.  
-You split and organize the workspace as you want.
+Workspace is a directory with LikeC4 source files. During the parsing, these files are "_merged_" into a single architecture model.  
+You are free to organize the workspace as you want.
 
 {/* TODO: Why no imports? */}
 
@@ -42,7 +42,7 @@ Assume we have the following workspace:
 
   </Tab>
   <Tab>
-    This file describes only top-level elements.
+    This file describes only the top-level elements.
 
     ```likec4
     model {
@@ -55,6 +55,8 @@ Assume we have the following workspace:
 
   </Tab>
   <Tab>
+    This file keeps the externals separately.
+
     ```likec4    
     model {
       amazon = externals 'Amazon Web Services' {
@@ -67,9 +69,9 @@ Assume we have the following workspace:
 
 ## Extend element
 
-`extend` is a way to describe the nested elements in a separate file.
+`extend` is a way to enrich and define nested elements in a separate file.
 
-We describe the `cloud.service1` separately, because, for instance, we don't want to mess the landscape file with the internals of the `cloud`.
+Below we define the `cloud.service1` separately, for instance, we don't want to mess up the `landscape.c4` file with the internals of the `cloud`.
 
 ```likec4 filename="cloud / service1.c4"
 model {
@@ -79,7 +81,7 @@ model {
 }
 ```
 
-The target must be referenced with fully qualified name.
+The target element (or better say _parent_) must be referenced by a fully qualified name.
 
 ```likec4
 model {
@@ -88,7 +90,7 @@ model {
 }
 ```
 
-Element extension inherits the scope.  
+The element extension inherits the scope of the parent. 
 Here is what inside `service2.c4` file:
 
 ```likec4 filename="cloud / service2.c4"
@@ -100,7 +102,7 @@ model {
     service2 = service 'Some Service 2' {
 
       -> service1 'delegates some work' // ✅ service1 is known inside cloud
-                                        //    even defined in an another file
+                                        //    even defined in another file
     }
   }
 

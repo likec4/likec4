@@ -2,25 +2,18 @@ import { Card, Cards } from "nextra-theme-docs"
 
 # LikeC4 Code
 
-This is the model defined with LikeC4.
-
-Start with specification and element kinds.  
+This is the same Big Bank C4 model defined with LikeC4.  
+The specification with similar element kinds:  
 
 ```likec4 showLineNumbers file=<rootDir>/likec4/bigbank/_spec.c4 filename="_spec.c4" 
 ```
 
-Copy-paste model and views sections from Structurizr DSL.  
-LikeC4 does not support the deployment views at the moment, so skip them.  
-
-`views` section requires some additional work, that is covered in the next sections:
+LikeC4 language is partially compatible with Structurizr DSL.  
+So we may copy-paste the `model` and `views` from it.  
+Deployments are skipped as LikeC4 currently does not support that.  
+`views` requires some additional work, this is covered in the next sections:
 
 ```likec4 showLineNumbers file=<rootDir>/likec4/bigbank/bigbank.c4 filename="bigbank.c4" showLineNumbers
 ```
 
-You can open this example in playground:
-
-<Cards>
-  <Card title="Open in playground" href={`/playground/`} arrow/>
-</Cards>
-
-Or start with [System Landscape](./landscape) diagram.
+Let's start with the [System Landscape](./landscape) diagram.

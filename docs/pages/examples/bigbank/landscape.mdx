@@ -6,19 +6,19 @@ import { Tab, Tabs, Bleed } from 'nextra-theme-docs'
 The landscape view is a high-level overview of the system, showing the major systems and how they relate to each other.
 Structurizr uses the `systemlandscape` for this view.
 
-There is no special view types in LikeC4.  
-Views are defined by predicates, like `include *` to include all elements ([more about views](/docs/dsl/views/)).
+There are no special view types in LikeC4.  
+Each view is defined by the [predicates](/docs/dsl/views/) what to include/exclude, like `include *` below.
+
+We create `index` view _"of bigbank"_, as this is the top-level system which landscape we want to visualize.
 
 <Tabs items={['likec4', 'structurizr']}>
   <Tab>
     ```likec4
     views {
-
       view index of bigbank {
         title "Big Bank - Landscape"
         include *
       }
-
     }
     ```
 
@@ -30,12 +30,10 @@ Views are defined by predicates, like `include *` to include all elements ([more
   <Tab>
     ```structurizr
     views {
-
       systemlandscape "SystemLandscape" {
         include *
         autoLayout
       }
-
     }
     ```
 

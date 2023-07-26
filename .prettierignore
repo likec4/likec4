@@ -1,5 +1,6 @@
 **/.git
 **/node_modules
+**/*.mdx
 
 .yarn/*
 .turbo

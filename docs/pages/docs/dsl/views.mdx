@@ -68,12 +68,16 @@ exclude cloud.backend
 include cloud.backend.*
 
 // all incoming relationships
+// if any found - includes cloud.backend and source elements
 include -> cloud.backend
+include * -> cloud.backend
 
-// all outgoing relationships from cloud children
+// all outgoing relationships
+// if found - includes cloud children and target elements
 include cloud.* ->
 
 // all relationships from customer to cloud children
+// if found - includes customer and targeted children
 include customer -> cloud.*
 
 // elements by kind
@@ -86,8 +90,9 @@ include element.tag != #V2
 ```
 
 <Callout type='info' emoji='ℹ️'>
-  **Limitation** Relations with container elements are not rendered, i.e. only among leaf elements.
-  Working on it...
+**Limitation**  
+Relations with container elements are not rendered, i.e. only among leaf elements.  
+Working on it...
 </Callout>
 
 Wildcard may be used to reference "everything", but it depends on the context.

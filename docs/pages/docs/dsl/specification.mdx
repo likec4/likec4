@@ -2,11 +2,11 @@ import { Table, Callout } from 'nextra-theme-docs'
 
 # Specification
 
-In `specification` you customize your model.
+In the `specification` section you customize your model.
 
 ## Element kind
 
-`element` defines the kind that can be used in the model.
+The `element` defines the kind that can be used across the model.
 
 ```likec4 copy
 specification {
@@ -21,15 +21,16 @@ specification {
   element microservice
   element queue
   element restapi
-  element graphqlmutation
+  element graphqlMutation
   element repository
   element database
-  element pgtable
+  element pgTable
 
 }
 ```
 
-Definition may have a nested `style` - defaults for all elements of this kind.
+The definition may have a nested `style` block with properties.
+These properties are defaults for all elements of this kind.
 
 ```likec4 copy
 specification {
@@ -42,8 +43,8 @@ specification {
 
   element spa {
     style {
-      shape browser
-      color amber
+      shape: browser // ':' is optional, as you prefer
+      color: amber
     }
   }
 
@@ -59,7 +60,7 @@ specification {
 
 ### Shapes
 
-The following element shapes are available:
+Available element shapes:
 
 | shape     | example |
 | :-------- | :-----: |
@@ -71,7 +72,7 @@ The following element shapes are available:
 | person    |   ..    |
 | queue     |   ..    |
 
-By default, the shape is `rectangle`.
+If not set, the default shape is `rectangle`.
 
 ### Colors
 
@@ -86,11 +87,11 @@ By default, the shape is `rectangle`.
 | indigo         | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>  |
 | red            |   <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
 
-By default, the color is `primary`.
+If not set, the default color is `primary`.
 
 ## Tag
 
-Tags are used to mark elements in the model, like `#deprecated`, `#epic123` or `#team2`.
+Tags may be used to mark, group, filter elements/relationships/views, or give some additional semantics, like `#deprecated`, `#epic123` or `#team2`.
 
 ```likec4
 specification {
@@ -101,5 +102,3 @@ specification {
 
 }
 ```
-
-<Callout>TODO: Document tags</Callout>
