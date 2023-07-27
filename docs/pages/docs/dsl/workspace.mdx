@@ -2,7 +2,7 @@ import { Bleed, Tab, Tabs, Callout, FileTree } from 'nextra-theme-docs'
 
 # Workspace
 
-Workspace is a directory with LikeC4 source files. During the parsing, these files are "_merged_" into a single architecture model.  
+Workspace is a directory with LikeC4 source files. When parsed these files are "_merged_" into a single architecture model.  
 You are free to organize the workspace as you want.
 
 {/* TODO: Why no imports? */}
@@ -23,9 +23,9 @@ Assume we have the following workspace:
   <FileTree.File name='specs.c4' />
 </FileTree>
 
-<Tabs items={['specs.c4', 'landscape.c4', 'amazon.c4']}>
+<Tabs items={['specs.c4', 'landscape.c4', 'externals/amazon.c4']}>
   <Tab>
-    This file defines only the specification.
+    This file defines the specification:
 
     ```likec4
     specification {
@@ -36,30 +36,33 @@ Assume we have the following workspace:
       }
       element system
       element service
-      element externals
     }
     ```
 
   </Tab>
   <Tab>
-    This file describes only the top-level elements.
+    This file defines the top-level elements and landscape view:
 
     ```likec4
     model {
       customer = actor 'Customer'
-      cloud = system 'Cloud'
-
-      customer -> cloud 'uses cloud services'
+      cloud = system 'Cloud System'
+    }
+    views {
+      view index of cloud {
+        title "Cloud System - Landscape"
+        include *
+      }
     }
     ```
 
   </Tab>
   <Tab>
-    This file keeps the externals separately.
-
+    We keep definitions of external systems separate, inside the `externals/` folder:
+    
     ```likec4    
     model {
-      amazon = externals 'Amazon Web Services' {
+      amazon = system 'Amazon Web Services' {
         rds = service 'Database'
       }
     }
@@ -69,45 +72,49 @@ Assume we have the following workspace:
 
 ## Extend element
 
-`extend` is a way to enrich and define nested elements in a separate file.
+`extend` is a way to enrich the model and define nested elements in a separate file.
 
-Below we define the `cloud.service1` separately, for instance, we don't want to mess up the `landscape.c4` file with the internals of the `cloud`.
+For instance, we don't want to mess up the _landscape.c4_ file with the internals of the `cloud`.  
+In a separate _cloud/service1.c4_ file we define `cloud.service1`:
 
-```likec4 filename="cloud / service1.c4"
+```likec4 filename="cloud/service1.c4"
 model {
+  // cloud is defined in landscape.c4
   extend cloud {
+    // here we define cloud.service1
     service1 = service 'Service 1'
   }
 }
 ```
 
-The target element (or better say _parent_) must be referenced by a fully qualified name.
+The element extension inherits the scope of the target (or better say _**parent**_).  
+For example, _cloud/service2.c4_ file:
+
+```likec4 filename="cloud/service2.c4"
+model {
+  // cloud is defined in landscape.c4
+  extend cloud {
+    // define cloud.service2
+    service2 = service 'Some Service 2' {
+
+      -> service1 'delegates some work' // ✅ service1 is known inside 'cloud', 
+                                        //    and resolved even defined in another file 
+    }
+  }
+
+  // service2 unique inside the file
+  service2 -> service1       // ⛔️ Error: service1 not found
+                             //    as can't be resolved from this file
+
+  service2 -> cloud.service1 // ✅ OK: Resolved by fully qualified name
+}
+```
+
+The target element must be referenced by a fully qualified name.  
 
 ```likec4
 model {
   extend rds        // ⛔️ Error: rds not found in the global scope
   extend amazon.rds // ✅ Resolved by fully qualified name
-}
-```
-
-The element extension inherits the scope of the parent. 
-Here is what inside `service2.c4` file:
-
-```likec4 filename="cloud / service2.c4"
-model {
-
-  // extend cloud again
-  extend cloud {
-    // define service2
-    service2 = service 'Some Service 2' {
-
-      -> service1 'delegates some work' // ✅ service1 is known inside cloud
-                                        //    even defined in another file
-    }
-  }
-
-  service2 -> service1       // ⛔️ Error: service1 not found inside 'service2.c4'
-
-  service2 -> cloud.service1 // ✅ but resolved by fully qualified name
 }
 ```
