@@ -9,7 +9,8 @@ The model describes the software architecture as a set of various elements and r
 
 Element is a basic building block.
 It represents a logical or physical part of the architecture.  
-The element kind must be [specified](./specification) first.
+Element has a kind and a name (identifier).
+A kind must be defined in [specification](./specification):
 
 ```likec4 copy
 specification {
@@ -18,14 +19,16 @@ specification {
 }
 
 model {
+  // actor element with name 'customer'
   actor customer
+  // service element with name 'cloud'
   service cloud
-  // or use '='
+  // or use '=' to set the name
   cloud = service
 }
 ```
 
-Element must have a name. It is used for references.  
+Element name is used for references.  
 It can contain letters, digits and underscore, but can't start with a digit.
 
 | identifier |     |
@@ -37,36 +40,38 @@ It can contain letters, digits and underscore, but can't start with a digit.
 | 1api       | ⛔️ |
 | a.pi       | ⛔️ |
 
-Element name is also used as a title when rendered. To customize it:
-
-```likec4 copy
-specification {
-  element actor
-  element service
-}
-
-model {
-  actor customer 'Customer'
-  service cloud 'Cloud'
-  // or use '='
-  cloud = service 'Cloud'
-}
-```
 
 ### Element properties
 
-An Element may have description and technology.
+Element may have title, description and technology.  
+For example, Structurizr DSL style:
 
 ```likec4 copy
 model {
   // Structurizr DSL style:
   // <name> = softwareSystem [title] [description] [technology]
-  cloud = softwareSystem 'Cloud' 'Provides services to customers'
+  cloud = softwareSystem 'Cloud' 'Provides services to customers' 'SaaS'
 }
 ```
 
+<Callout type='info' emoji='ℹ️'>
 Partial support of Structurizr DSL makes it easier to migrate from it.  
 Check the [Big Bank example](/examples/bigbank).
+</Callout>
+
+When title is not set, the name is used instead.  
+To set the title:
+
+```likec4
+model {
+  // actor element with name 'customer' and title 'customer'
+  actor customer
+  // service element with name 'cloud' and title 'Cloud'
+  service cloud 'Cloud'
+  // or with '='
+  cloud = service 'Cloud'
+}
+```
 
 These properties may be defined in nested blocks:
 
@@ -76,7 +81,7 @@ model {
   customer = actor 'Customer' {
     description 'Uses the Mobile Application'
   }
-  // or even the title inside
+  // All properties inside
   mobile = application {
     title 'Mobile Application'
     description 'Provides services to customers'
@@ -103,9 +108,11 @@ model {
 }
 ```
 
-Tags will be explained later...
+Tags have to be defined first, before any properties.
 
 #### Links
+
+Element may have multiple links:
 
 ```likec4 copy
 model {
@@ -124,7 +131,7 @@ model {
 
 #### Inline styling
 
-Element may be styled:
+Element may be styled (overrides the kind styling):
 
 ```likec4 copy
 model {
@@ -140,7 +147,7 @@ model {
 ## Structure
 
 Any element is a container and can contain other elements.  
-This way you define the structure, the internals of the element.
+This way you define the structure and internals of the element.
 
 ```likec4 filename="nested-elements.c4"
 model {
