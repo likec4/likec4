@@ -1,5 +1,6 @@
 import { Bleed, Callout } from 'nextra-theme-docs'
 import { Tab, Tabs } from 'nextra-theme-docs'
+import { Info, Warning } from '$/components'
 
 # Model
 
@@ -9,12 +10,11 @@ The model describes the software architecture as a set of various elements and r
 
 Element is a basic building block.
 It represents a logical or physical part of the architecture.  
-Element has a kind and a name (identifier).
-A kind must be defined in [specification](./specification):
+Any Element must have a [kind](./specification#kind) and a name (_identifier_):
 
 ```likec4 copy
 specification {
-  element actor
+  element actor // define a kind
   element service
 }
 
@@ -28,10 +28,10 @@ model {
 }
 ```
 
-Element name is used for references.  
+Element name is required for references.  
 It can contain letters, digits and underscore, but can't start with a digit.
 
-| identifier |     |
+| name       |     |
 | :--------- | :-- |
 | api        | ✅  |
 | Api        | ✅  |
@@ -43,10 +43,13 @@ It can contain letters, digits and underscore, but can't start with a digit.
 
 ### Element properties
 
-Element may have title, description and technology.  
+Elements may have properties: _title_, _description_ and _technology_.  
 For example, Structurizr DSL style:
 
 ```likec4 copy
+specification {
+  element softwareSystem
+}
 model {
   // Structurizr DSL style:
   // <name> = softwareSystem [title] [description] [technology]
@@ -54,38 +57,47 @@ model {
 }
 ```
 
-<Callout type='info' emoji='ℹ️'>
-Partial support of Structurizr DSL makes it easier to migrate from it.  
+<Info>
+LikeC4 supports Structurizr DSL syntax ("_partially_") allowing just copy-paste from it.  
 Check the [Big Bank example](/examples/bigbank).
-</Callout>
+</Info>
 
-When title is not set, the name is used instead.  
-To set the title:
+Element's name is used as a title by default.  
+But you can specify your own:
 
 ```likec4
 model {
-  // actor element with name 'customer' and title 'customer'
+  // actor element with name='customer' and title='customer'
   actor customer
-  // service element with name 'cloud' and title 'Cloud'
+  // service element with name='cloud' and title='Cloud'
   service cloud 'Cloud'
   // or with '='
   cloud = service 'Cloud'
 }
 ```
 
-These properties may be defined in nested blocks:
+These properties may be defined as nested:
 
 ```likec4 copy
 model {
   // Only description inside
   customer = actor 'Customer' {
-    description 'Uses the Mobile Application'
+     // ':' is optional, but if you prefer
+    description: 'Uses the Mobile Application'
   }
   // All properties inside
   mobile = application {
     title 'Mobile Application'
     description 'Provides services to customers'
     technology 'React Native'
+  }
+  // Multiline
+  web = application {
+    title 'Web Application'
+    description '
+      Provides services to customers through
+      the web interface.
+    '
   }
 }
 ```
@@ -102,13 +114,15 @@ model {
   }
 
   // multiple tags
-  appV2 = application 'App v2' {
+  appV2 = application {
     #next, #serverless, #team2
+
+    title 'App v2'
   }
 }
 ```
 
-Tags have to be defined first, before any properties.
+Tags are defined before any properties.
 
 #### Links
 
@@ -170,10 +184,13 @@ model {
 }
 ```
 
-Element name must be unique within the container.
+<Warning>
+Element name must be unique within the container.  
+We learn this in detail with [references](./references)
+</Warning>
 
-Nested elements are _"namespaced"_, the parent name is used as a prefix for the children.  
-So the model above has the elements with these fully qualified names:
+Nested elements are _"namespaced"_, the parent name is used as a prefix.  
+So, the model above has the elements with these fully qualified names:
 
 - `service1`
 - `service1.backend`

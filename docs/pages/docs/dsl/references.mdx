@@ -1,4 +1,4 @@
-import { Callout } from 'nextra-theme-docs'
+import { Info, Warning } from '$/components'
 
 # References
 
@@ -71,14 +71,14 @@ model {
 
 ## Hoisting
 
-<Callout type='info' emoji='ℹ️'>
+<Info>
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
-</Callout>
+</Info>
 
-The element name is hoisted (or _"bubbles"_) to the upper scope while it stays unique.  
-We even may reference something that is not yet defined but will be hoisted later.
+In LikeC4, the element name besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, if it stays unique.
+We may reference something that is not yet defined but will be hoisted later.
 
-The relationship from `frontend` referencing to not yet defined `graphql`:
+The relationship from `frontend` referencing to `graphql` defined later:
 
 ```likec4 showLineNumbers copy filename="hoisting.c4"
 model {
@@ -88,7 +88,7 @@ model {
     component frontend
 
     frontend -> api // ✅ This is OK, references to 'api' from 'service1'
-    frontend -> graphql // ✅ This is OK, references to unique 'graphql' defined later
+    frontend -> graphql // ✅ This is OK, references to unique 'graphql'
   }
 
   frontend -> api // ⛔️ Error: 'api' is ambiguous
@@ -103,19 +103,17 @@ model {
 }
 ```
 
-<Callout type="info" emoji="ℹ️">
-Line 7 and line 17 are the same:  
-`frontend -> api`
+<Info>
+Lines 7 and 17 are the same: `frontend -> api`  
+But they reference to different elements:  
+- Line 7 to `service1.api`  
+- Line 17 to `service2.api`
+</Info>
 
-But they refer to different elements:  
- Line 7 refers to `service1.api`  
- Line 17 refers to `service2.api`
+## Fully qualified names [#fqn]
 
-</Callout>
-
-## Fully qualified names
-
-Fully qualified name is a global name, a "unique path" to an element if we traverse its parents.
+Top-level elements (placed directly in the `model` block) are available globally.  
+To reference nested elements we use their fully qualified names (FQN).
 
 Example:
 
@@ -151,7 +149,7 @@ model {
 }
 ```
 
-Middle parts may be omitted, if the target element is unique:
+Some parts may be omitted, if FQN stays unique:
 
 ```likec4 showLineNumbers filename="references.c4"
 model {
@@ -167,13 +165,21 @@ model {
 
   frontend -> service.backend1.api // ✅ Non-ambiguous fully qualified name
 
-  frontend -> backend1.api  // ✅ This is OK, backend1 is unique in the scope of model
+  frontend -> backend1.api  // ✅ This is OK, 'api' is unique in 'backend1',
+                            //    and 'backend1' is unique in the model
+                            //    We may omit 'service'
+
   frontend -> backend2.api  // ✅ This is also OK
 
-  frontend -> service.api   // ⛔️ Error: api is ambiguous in the scope of service
+  frontend -> service.api   // ⛔️ Error: 'api' is ambiguous in 'service'
 
-  frontend -> service.graphql // ✅ This is also OK
-                              //    we omit backend2 as
-                              //    graphql is unique in the scope of service
+  frontend -> service.graphql // ✅ This is also OK, we omit 'backend2'
+                              //    as 'graphql' is unique in 'service'
 }
 ```
+
+<Warning>
+Even if this approach reduces boilerplate, makes code better looking and references shorter,
+it may become a bit harder to maintain or refactor your model
+(if it has many nested same-named elements).
+</Warning>
