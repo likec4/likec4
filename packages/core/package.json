@@ -72,7 +72,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
     "modern-errors": "^6.0.0",
-    "rambdax": "^9.1.1",
+    "rambdax": "^10.0.0",
     "remeda": "^1.24.0"
   },
   "devDependencies": {

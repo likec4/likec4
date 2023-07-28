@@ -1216,7 +1216,7 @@ __metadata:
     kleur: ^4.1.5
     langium: ^1.2.1
     mkdirp: ^3.0.1
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     remeda: ^1.24.0
@@ -1233,7 +1233,7 @@ __metadata:
   dependencies:
     "@dagrejs/graphlib": ^2.1.13
     modern-errors: ^6.0.0
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     remeda: ^1.24.0
     typescript: ^5.1.6
   languageName: unknown
@@ -1253,7 +1253,7 @@ __metadata:
     esbuild: ^0.17.19
     khroma: ^2.0.0
     konva: ^9.2.0
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     react-konva: ^18.2.10
@@ -1297,7 +1297,7 @@ __metadata:
     nextra: ^2.10.0
     nextra-theme-docs: ^2.10.0
     postcss: ^8.4.27
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     react-icons: ^4.10.1
@@ -1346,7 +1346,7 @@ __metadata:
     "@types/node": ^18.15.11
     json5: ^2.2.3
     langium: ^1.2.1
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     typescript: ^5.1.6
   languageName: unknown
   linkType: soft
@@ -1363,7 +1363,7 @@ __metadata:
     nanoid: ^4.0.2
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     remeda: ^1.24.0
     strip-indent: ^4.0.0
     typescript: ^5.1.6
@@ -1382,7 +1382,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     indent-string: ^5.0.0
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     remeda: ^1.24.0
     strip-indent: ^4.0.0
     ts-graphviz: ^1.8.1
@@ -1406,7 +1406,7 @@ __metadata:
     "@types/vscode-webview": ^1.57.1
     "@vitejs/plugin-react": ^4.0.1
     "@vscode/webview-ui-toolkit": ^1.2.2
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.10
@@ -8290,7 +8290,7 @@ __metadata:
     npm-run-all: ^4.1.5
     p-timeout: ^6.1.2
     path-browserify: ^1.0.1
-    rambdax: ^9.1.1
+    rambdax: ^10.0.0
     shx: ^0.3.4
     tslib: ^2.6.0
     typed-inject: ^4.0.0
@@ -11111,6 +11111,13 @@ __metadata:
   version: 4.0.1
   resolution: "quick-lru@npm:4.0.1"
   checksum: bea46e1abfaa07023e047d3cf1716a06172c4947886c053ede5c50321893711577cb6119360f810cc3ffcd70c4d7db4069c3cee876b358ceff8596e062bd1154
+  languageName: node
+  linkType: hard
+
+"rambdax@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "rambdax@npm:10.0.0"
+  checksum: 289749e0cc5d8754382d6096cbf57a0290cf373e3a3acca534ffc761ff5c0ddb9f18449957ef2ddc071efbad6885367e56b8d37537adc711ff383477d04116ba
   languageName: node
   linkType: hard
 

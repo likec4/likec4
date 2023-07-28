@@ -45,7 +45,7 @@
     "@hpcc-js/wasm": "^2.13.0",
     "@likec4/core": "workspace:*",
     "indent-string": "^5.0.0",
-    "rambdax": "^9.1.1",
+    "rambdax": "^10.0.0",
     "remeda": "^1.24.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",

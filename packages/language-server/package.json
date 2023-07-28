@@ -59,7 +59,7 @@
     "langium": "^1.2.1",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
-    "rambdax": "^9.1.1",
+    "rambdax": "^10.0.0",
     "remeda": "^1.24.0",
     "strip-indent": "^4.0.0",
     "vscode-languageserver": "~8.1.0",
