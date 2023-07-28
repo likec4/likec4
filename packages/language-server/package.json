@@ -51,8 +51,8 @@
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
-    "test": "run -T vitest run",
-    "test:watch": "run -T vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
@@ -70,6 +70,7 @@
     "@types/object-hash": "^3.0.2",
     "langium-cli": "^1.2.1",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0"
   }
 }

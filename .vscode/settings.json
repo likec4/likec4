@@ -31,5 +31,4 @@
     "/packages/language-server/src/lsp"
   ],
   "mdx.experimentalLanguageServer": true,
-  "testing.automaticallyOpenPeekView": "never"
 }

@@ -11,27 +11,24 @@ export function nameFromFqn(fqn: Fqn) {
   }
 }
 
-export function isAncestor(
-  ...args: [ancestor: Fqn, another: Fqn] | [ancestor: Element, another: Element]
+export function isAncestor<E extends { id: Fqn }>(
+  ...args: [ancestor: Fqn, another: Fqn] | [ancestor: E, another: E]
 ) {
   const ancestor = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id
   return another.startsWith(ancestor + '.')
 }
 
-export function isSameHierarchy(
-  ...args: [one: Fqn, another: Fqn] | [one: Element, another: Element]
+export function isSameHierarchy<E extends { id: Fqn }>(
+  ...args: [one: Fqn, another: Fqn] | [one: E, another: E]
 ) {
   const one = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id
   return one === another || another.startsWith(one + '.') || one.startsWith(another + '.')
 }
 
-export function isDescendantOf(ancestors: Element[]): (e: Element) => boolean {
-  const predicates = ancestors.flatMap(a => [
-    (e: Element) => e.id === a.id,
-    (e: Element) => isAncestor(a, e)
-  ])
+export function isDescendantOf<E extends { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
+  const predicates = ancestors.flatMap(a => [(e: E) => e.id === a.id, (e: E) => isAncestor(a, e)])
   return anyPass(predicates)
 }
 

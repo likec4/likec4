@@ -92,9 +92,7 @@ export default class ModelIndex {
 
   find = (id: Fqn): Element => {
     const el = this._elements.get(id)
-    if (!el) {
-      throw new InvalidModelError(`Element not found ${id}`)
-    }
+    ensureModel(el, `Element not found with id ${id}`)
     return el
   }
 

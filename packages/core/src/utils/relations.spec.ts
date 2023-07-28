@@ -48,7 +48,6 @@ const relations = [
 ] satisfies Relation[]
 
 describe('relation predicates', () => {
-
   const expectRelations = (predicate: (relation: Relation) => boolean) =>
     expect(relations.filter(predicate).map(r => r.id))
 
@@ -104,14 +103,12 @@ describe('relation predicates', () => {
   })
 
   it('isOutgoing: cloud', () => {
-    expectRelations(isOutgoing(cloud)).toEqual([
-      'cloud.backend.storage:amazon.s3',
-    ])
+    expectRelations(isOutgoing(cloud)).toEqual(['cloud.backend.storage:amazon.s3'])
   })
 
   it('isOutgoing: cloud.backend.storage', () => {
     expectRelations(isOutgoing('cloud.backend.storage' as Fqn)).toEqual([
-      'cloud.backend.storage:amazon.s3',
+      'cloud.backend.storage:amazon.s3'
     ])
   })
 
@@ -142,4 +139,6 @@ describe('relation predicates', () => {
       'amazon.api:cloud.backend.graphql'
     ])
   })
+
+  it.todo('hasRelation')
 })

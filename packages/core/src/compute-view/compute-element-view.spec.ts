@@ -23,7 +23,7 @@ describe('compute-element-view', () => {
           ...emptyView,
           id: 'index' as ViewID,
           title: '',
-          rules: args[0],
+          rules: args[0]
         },
         fakeModel()
       )
@@ -49,7 +49,7 @@ describe('compute-element-view', () => {
     const { nodes, edges } = computeElementView(
       {
         ...emptyView,
-        id: 'index' as ViewID,
+        id: 'index' as ViewID
       },
       fakeModel()
     )
@@ -93,8 +93,8 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
-    expect(ids(edges)).toEqual(['cloud:amazon', 'customer:cloud', 'support:cloud'])
+    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud', 'amazon'])
+    expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
   })
 
   it('should return landscape view on top `include *, -> cloud.*`', () => {
@@ -120,16 +120,9 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual([
-      'customer',
-      'support',
-      'cloud',
-      'cloud.backend',
-      'amazon',
-      'cloud.frontend'
-    ])
-    expect(ids(edges)).toEqual([
-      'cloud.backend:amazon',
+    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud', 'amazon', 'cloud.frontend'])
+    expect(ids(edges)).to.have.same.members([
+      'cloud:amazon',
       'customer:cloud.frontend',
       'support:cloud.frontend'
     ])
@@ -158,15 +151,15 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      'customer',
       'support',
+      'customer',
       'cloud',
       'cloud.frontend',
       'cloud.backend',
       'amazon'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
       'cloud.backend:amazon',
       'customer:cloud.frontend',
@@ -211,7 +204,7 @@ describe('compute-element-view', () => {
       'amazon'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.backend.graphql:cloud.backend.storage',
       'cloud.backend.storage:amazon',
       'cloud.frontend:cloud.backend.graphql',
@@ -242,15 +235,15 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      'customer',
       'support',
+      'customer',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
       'cloud.backend'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
@@ -288,8 +281,8 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      'customer',
       'support',
+      'customer',
       'cloud',
       'cloud.frontend',
       'cloud.frontend.adminPanel',
@@ -297,7 +290,7 @@ describe('compute-element-view', () => {
       'cloud.backend'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
@@ -334,9 +327,9 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
+    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud.frontend', 'cloud.backend'])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend'
@@ -377,8 +370,8 @@ describe('compute-element-view', () => {
     )
 
     expect(view.nodes.map(n => n.id)).toEqual([
-      'customer',
       'support',
+      'customer',
       'cloud',
       'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
@@ -420,7 +413,7 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
 
-    expect(ids(edges)).toEqual(['cloud.backend:amazon.s3'])
+    expect(ids(edges)).to.have.same.members(['cloud.backend:amazon.s3'])
   })
 
   it('index view with applied styles', () => {
@@ -553,7 +546,7 @@ describe('compute-element-view', () => {
       'cloud.backend.graphql'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend:cloud.backend.graphql',
       'cloud.backend:amazon'

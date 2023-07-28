@@ -90,12 +90,12 @@ exports[`printToDot: computedCloud3levels 1`] = `
     margin = "0.2083,0.2083";
   ];
   "nd1" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" [
     id = "support";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" [
+    id = "customer";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud.frontend.adminPanel";
@@ -152,13 +152,13 @@ exports[`printToDot: computedCloud3levels 1`] = `
     id = "cloud.backend.storage:amazon";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
-  "nd1" -> "nd4" [
-    id = "customer:cloud.frontend.dashboard";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" -> "nd3" [
+  "nd1" -> "nd3" [
     id = "support:cloud.frontend.adminPanel";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" -> "nd4" [
+    id = "customer:cloud.frontend.dashboard";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
@@ -193,12 +193,12 @@ exports[`printToDot: computedCloudView 1`] = `
     margin = "0.2083,0.2083";
   ];
   "nd1" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" [
     id = "support";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" [
+    id = "customer";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud.frontend";
@@ -230,12 +230,12 @@ exports[`printToDot: computedCloudView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd3" [
-    id = "customer:cloud.frontend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" -> "nd3" [
     id = "support:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" -> "nd3" [
+    id = "customer:cloud.frontend";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
@@ -270,12 +270,12 @@ exports[`printToDot: computedIndexView 1`] = `
     margin = "0.2083,0.2083";
   ];
   "nd1" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" [
     id = "support";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" [
+    id = "customer";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
   ];
   "nd3" [
     id = "cloud";
@@ -290,12 +290,12 @@ exports[`printToDot: computedIndexView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd3" [
-    id = "customer:cloud";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" -> "nd3" [
     id = "support:cloud";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" -> "nd3" [
+    id = "customer:cloud";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;

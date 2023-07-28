@@ -35,8 +35,8 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "test": "run -T vitest run",
-    "test:watch": "run -T vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0"
   }
 }
