@@ -1,3 +1,4 @@
+import { isSameHierarchy } from '../..'
 import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 
 import { Graph, alg } from '@dagrejs/graphlib'
@@ -22,7 +23,7 @@ export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[])
     const source = _nodes.get(edge.source)
     let target = _nodes.get(edge.target)
     while (source && target) {
-      if (!g.hasEdge(source.id, target.id)) {
+      if (!isSameHierarchy(source, target) && !g.hasEdge(source.id, target.id)) {
         g.setEdge(source.id, target.id)
         // console.log(`${source.id} -> ${target.id}`)
         if (!alg.isAcyclic(g)) {

@@ -1,14 +1,16 @@
-import { anyPass, filter, uniq, type Predicate, isNil } from 'rambdax'
+import { anyPass, filter, isNil, uniq, type Predicate, both } from 'rambdax'
+import { allPass, find } from 'remeda'
+import { invariant } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
-  type Fqn,
+  DefaultElementShape,
+  DefaultThemeColor,
+  type ComputeResult,
+  type ComputedNode,
   type Element,
   type ElementView,
-  type Relation,
-  DefaultThemeColor,
-  DefaultElementShape,
-  type ComputedNode,
-  type ComputeResult
+  type Fqn,
+  type Relation
 } from '../types'
 import * as Expr from '../types/expression'
 import {
@@ -18,13 +20,14 @@ import {
   type ViewRuleStyle
 } from '../types/view'
 import {
+  Relations,
+  commonAncestor,
   compareByFqnHierarchically,
   failExpectedNever,
   ignoreNeverInRuntime,
   isAncestor,
   isSameHierarchy,
-  parentFqn,
-  Relations
+  parentFqn
 } from '../utils'
 import {
   hasRelation,
@@ -35,10 +38,8 @@ import {
   isOutgoing
 } from '../utils/relations'
 import { EdgeBuilder } from './EdgeBuilder'
-import { sortNodes } from './utils/sortNodes'
 import { ComputeCtx } from './compute-ctx'
-import { anyPossibleRelations } from './utils/anyPossibleRelations'
-import { invariant } from '../errors'
+import { sortNodes } from './utils/sortNodes'
 
 function transformToNodes(elementsIterator: Iterable<Element>) {
   return Array.from(elementsIterator)
@@ -119,7 +120,9 @@ const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
     : [ctx.index.find(expr.element)]
   const filters = [] as Predicate<Relation>[]
   if (expr.isDescedants) {
-    filters.push(Relations.isInside(expr.element))
+    elements.forEach(child => {
+      filters.push(both(Relations.isInside(expr.element), Relations.isAnyInOut(child.id)))
+    })
   }
 
   const ctxElements = uniq([...ctx.elements, ...ctx.implicits])
@@ -232,11 +235,9 @@ const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
       return new ComputeCtx(ctx.index, ctx.root, new Set(elements))
     }
 
-    const predicates = [] as Predicate<Relation>[]
-    for (const [source, target] of anyPossibleRelations(elements)) {
-      predicates.push(Relations.isAnyBetween(source.id, target.id))
-    }
-    const relations = predicates.length ? ctx.index.filterRelations(anyPass(predicates)) : []
+    const relations = ctx.index.filterRelations(rel =>
+      isNil(commonAncestor(rel.source, rel.target))
+    )
 
     return new ComputeCtx(ctx.index, ctx.root, new Set(elements), new Set(relations))
   }
@@ -249,7 +250,7 @@ const excludeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
       anyPass([isInside(root), isIncoming(root), isOutgoing(root)])
     )
     return ctx.exclude({
-      elements: [...ctx.elements].filter(e => isAncestor(root, e.id)),
+      elements: [...ctx.elements].filter(e => e.id === root || isAncestor(root, e.id)),
       relations,
       implicits: [...ctx.implicits].filter(anyPass(relations.map(r => hasRelation(r))))
     })
@@ -299,11 +300,18 @@ const includeIncomingExpr = (ctx: ComputeCtx, expr: Expr.IncomingExpr): ComputeC
   if (elements.length === 0) {
     return ctx
   }
+  // '-> element.*' should include only "outside" relations.
+  // From the outside to the element descendants,
+  let allrelations = ctx.index.relations
+  if (Expr.isElementRef(expr.incoming)) {
+    allrelations = allrelations.filter(isIncoming(expr.incoming.element))
+  }
+
   const implicits = [] as Element[]
   const relations = [] as Relation[]
 
   for (const el of elements) {
-    const elRelations = ctx.index.filterRelations(isIncoming(el.id))
+    const elRelations = allrelations.filter(isIncoming(el.id))
     if (elRelations.length > 0) {
       relations.push(...elRelations)
       implicits.push(el)
@@ -344,11 +352,17 @@ const includeOutgoingExpr = (ctx: ComputeCtx, expr: Expr.OutgoingExpr): ComputeC
   if (elements.length === 0) {
     return ctx
   }
+  // 'element.* -> ' should include only "outside" relations.
+  // From element descendants to outside of 'element.*'
+  let allrelations = ctx.index.relations
+  if (Expr.isElementRef(expr.outgoing)) {
+    allrelations = allrelations.filter(isOutgoing(expr.outgoing.element))
+  }
   const implicits = [] as Element[]
   const relations = [] as Relation[]
 
   for (const el of elements) {
-    const elRelations = ctx.index.filterRelations(isOutgoing(el.id))
+    const elRelations = allrelations.filter(isOutgoing(el.id))
     if (elRelations.length > 0) {
       relations.push(...elRelations)
       implicits.push(el)
@@ -389,12 +403,17 @@ const includeInOutExpr = (ctx: ComputeCtx, expr: Expr.InOutExpr): ComputeCtx => 
   if (targets.length === 0) {
     return ctx
   }
+  // '-> element.* -> ' should include only "outside" relations.
+  let allrelations = ctx.index.relations
+  if (Expr.isElementRef(expr.inout)) {
+    allrelations = allrelations.filter(isAnyInOut(expr.inout.element))
+  }
 
   const implicits = [] as Element[]
   const relations = [] as Relation[]
 
   for (const target of targets) {
-    const foundRelations = ctx.index.filterRelations(isAnyInOut(target.id))
+    const foundRelations = allrelations.filter(isAnyInOut(target.id))
     if (foundRelations.length > 0) {
       relations.push(...foundRelations)
       implicits.push(target)
@@ -525,27 +544,69 @@ export function computeElementView<V extends ElementView>(
       ignoreNeverInRuntime(expr)
     }
   }
-  const elements = new Set([...ctx.elements])
+  const includedElements = [...ctx.elements, ...ctx.implicits]
+    .sort(compareByFqnHierarchically)
+    .reverse()
+  const elementsWithRelations = new Set<Element>()
 
   const edgeBuilder = new EdgeBuilder()
-  const resolvedRelations = [...ctx.relations]
 
-  for (const [source, target] of anyPossibleRelations([...elements, ...ctx.implicits])) {
-    if (!elements.has(source) && !elements.has(target)) {
+  const anscestorOf = (id: Fqn) => (e: Element) => e.id === id || isAncestor(e.id, id)
+
+  // Step 1: Add explicit relations
+  for (const rel of ctx.relations) {
+    const source = find(includedElements, anscestorOf(rel.source))
+    if (!source) {
       continue
     }
-    const findPredicate = Relations.isBetween(source.id, target.id)
-    let idx = resolvedRelations.findIndex(findPredicate)
-    while (idx >= 0) {
-      const [rel] = resolvedRelations.splice(idx, 1)
-      if (rel) {
-        elements.add(source)
-        elements.add(target)
-        edgeBuilder.add(source.id, target.id, rel)
-      }
-      idx = resolvedRelations.findIndex(findPredicate)
+    const target = find(
+      includedElements,
+      allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)])
+    )
+    if (!target) {
+      continue
     }
+    elementsWithRelations.add(source)
+    elementsWithRelations.add(target)
+    edgeBuilder.add(source.id, target.id, rel)
   }
+
+  const elements = new Set([...elementsWithRelations, ...ctx.elements])
+
+  // Step 2: Add implicit relations
+  // if (relationsWithImplicits.length > 0) {
+  //   elmnts = [...ctx.elements, ...ctx.implicits].sort(compareByFqnHierarchically).reverse()
+  //   for (const rel of relationsWithImplicits) {
+  //     const source = find(elmnts, anscestorOf(rel.source))
+  //     if (!source) {
+  //       continue
+  //     }
+  //     const target = find(elmnts, anscestorOf(rel.target))
+  //     if (!target || isSameHierarchy(source, target)) {
+  //       continue
+  //     }
+  //     elements.add(source)
+  //     elements.add(target)
+  //     edgeBuilder.add(source.id, target.id, rel)
+  //   }
+  // }
+
+  // for (const [source, target] of anyPossibleRelations([...elements, ...ctx.implicits])) {
+  //   if (!elements.has(source) && !elements.has(target)) {
+  //     continue
+  //   }
+  //   const findPredicate = Relations.isBetween(source.id, target.id)
+  //   let idx = resolvedRelations.findIndex(findPredicate)
+  //   while (idx >= 0) {
+  //     const [rel] = resolvedRelations.splice(idx, 1)
+  //     if (rel) {
+  //       elements.add(source)
+  //       elements.add(target)
+  //       edgeBuilder.add(source.id, target.id, rel)
+  //     }
+  //     idx = resolvedRelations.findIndex(findPredicate)
+  //   }
+  // }
 
   const nodesreg = transformToNodes(elements)
 
