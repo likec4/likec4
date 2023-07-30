@@ -1,4 +1,4 @@
-import { anyPass, filter, isNil, uniq, type Predicate, both } from 'rambdax'
+import { anyPass, filter, isNil, uniq, type Predicate, both, either } from 'rambdax'
 import { allPass, find } from 'remeda'
 import { invariant } from '../errors'
 import type { ModelIndex } from '../model-index'
@@ -30,7 +30,7 @@ import {
   parentFqn
 } from '../utils'
 import {
-  hasRelation,
+  compareRelations,
   isAnyInOut,
   isBetween,
   isIncoming,
@@ -210,49 +210,49 @@ const includeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
       ...ctx.index.siblings(root),
       ...ctx.index.ancestors(root).flatMap(a => [...ctx.index.siblings(a.id)])
     ]
-    const allInOut = ctx.index.filterRelations(isAnyInOut(root))
+    const inOut = ctx.index.filterRelations(isAnyInOut(root))
 
     // Neighbors that have relations with root or its children
     const implicits = [] as Element[]
-    const relations = [] as Relation[]
 
     for (const implicit of allImplicits) {
-      const relationsWithImplicit = allInOut.filter(isAnyInOut(implicit.id))
-      if (relationsWithImplicit.length) {
+      if (inOut.some(isAnyInOut(implicit.id))) {
         implicits.push(implicit)
-        relations.push(...relationsWithImplicit)
       }
     }
 
     return ctx.include({
       elements,
-      relations: [...ctx.index.filterRelations(isInside(root)), ...relations],
+      relations: [...ctx.index.filterRelations(isInside(root)), ...inOut],
       implicits: implicits
     })
   } else {
+    // Take root elements
     const elements = ctx.index.rootElements()
     if (elements.length <= 1) {
       return new ComputeCtx(ctx.index, ctx.root, new Set(elements))
     }
 
+    // Only relations without common ancenstors, i.e. between hierarchies
     const relations = ctx.index.filterRelations(rel =>
       isNil(commonAncestor(rel.source, rel.target))
     )
 
-    return new ComputeCtx(ctx.index, ctx.root, new Set(elements), new Set(relations))
+    return ctx.include({
+      elements,
+      relations
+    })
   }
 }
 
 const excludeWildcardRef = (ctx: ComputeCtx, _expr: Expr.WildcardExpr) => {
   const { root } = ctx
   if (root) {
-    const relations = [...ctx.relations].filter(
-      anyPass([isInside(root), isIncoming(root), isOutgoing(root)])
-    )
+    const relations = [...ctx.relations].filter(either(isInside(root), isAnyInOut(root)))
     return ctx.exclude({
       elements: [...ctx.elements].filter(e => e.id === root || isAncestor(root, e.id)),
       relations,
-      implicits: [...ctx.implicits].filter(anyPass(relations.map(r => hasRelation(r))))
+      implicits: [...ctx.implicits].filter(e => relations.some(isAnyInOut(e.id)))
     })
   } else {
     return new ComputeCtx(ctx.index, ctx.root)
@@ -544,9 +544,10 @@ export function computeElementView<V extends ElementView>(
       ignoreNeverInRuntime(expr)
     }
   }
-  const includedElements = [...ctx.elements, ...ctx.implicits]
-    .sort(compareByFqnHierarchically)
-    .reverse()
+  // All "predicated" elements (including implicit ones)
+  const allElements = [...ctx.elements, ...ctx.implicits].sort(compareByFqnHierarchically).reverse()
+
+  // Filtered "allElements", only with relations
   const elementsWithRelations = new Set<Element>()
 
   const edgeBuilder = new EdgeBuilder()
@@ -554,13 +555,14 @@ export function computeElementView<V extends ElementView>(
   const anscestorOf = (id: Fqn) => (e: Element) => e.id === id || isAncestor(e.id, id)
 
   // Step 1: Add explicit relations
-  for (const rel of ctx.relations) {
-    const source = find(includedElements, anscestorOf(rel.source))
+  const sortedRelations = [...ctx.relations].sort(compareRelations)
+  for (const rel of sortedRelations) {
+    const source = find(allElements, anscestorOf(rel.source))
     if (!source) {
       continue
     }
     const target = find(
-      includedElements,
+      allElements,
       allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)])
     )
     if (!target) {

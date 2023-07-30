@@ -5,6 +5,7 @@ const configShared = defineConfig({
   test: {
     reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'default',
     snapshotFormat: {
+      highlight: true,
       escapeString: false
     }
   }

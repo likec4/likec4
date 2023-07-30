@@ -1,15 +1,16 @@
 import { anyPass } from 'remeda'
 import type { Fqn } from '../types'
 import { compareFqnHierarchically, isAncestor } from './fqn'
+import { either } from 'rambdax'
 
 type Relation = {
-  source: Fqn
-  target: Fqn
+  source: string
+  target: string
 }
 
 type RelationPredicate = (rel: Relation) => boolean
 
-export const compareRelations = <T extends { source: Fqn; target: Fqn }>(a: T, b: T) => {
+export const compareRelations = <T extends { source: string; target: string }>(a: T, b: T) => {
   return (
     compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
   )
@@ -58,7 +59,7 @@ export const isOutgoing = (source: Fqn): RelationPredicate => {
 }
 
 export const isAnyInOut = (source: Fqn): RelationPredicate => {
-  return anyPass([isIncoming(source), isOutgoing(source)])
+  return either(isIncoming(source), isOutgoing(source))
 }
 
 export const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
