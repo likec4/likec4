@@ -3576,15 +3576,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/extension-telemetry@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@vscode/extension-telemetry@npm:0.8.1"
+"@vscode/extension-telemetry@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@vscode/extension-telemetry@npm:0.8.2"
   dependencies:
     "@microsoft/1ds-core-js": ^3.2.10
     "@microsoft/1ds-post-js": ^3.2.10
     "@microsoft/applicationinsights-web-basic": ^3.0.0
     applicationinsights: ^2.7.0
-  checksum: 98e8e7ed1dab7749c331221ab4f50efee9e9cae8d14dded7e2a93b9e710a0b962f21e144057894bf04daf130a172aac0e614536db8df31630053fd1d2a9dc805
+  checksum: b41286c8122d43fc36014eb036fdbb806666ee840010c1a29bce22448c4fc49002a6341f47440b1dfec3e8f260b74a205e0b87cdcef76c2b2241a119865e5ac5
   languageName: node
   linkType: hard
 
@@ -8284,7 +8284,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
-    "@vscode/extension-telemetry": ^0.8.1
+    "@vscode/extension-telemetry": ^0.8.2
     "@vscode/vsce": ^2.19.0
     esbuild: ^0.17.19
     froebel: ^0.23.2
