@@ -153,7 +153,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^16.11.16",
     "@types/vscode": "~1.77.0",
-    "@vscode/extension-telemetry": "^0.8.1",
+    "@vscode/extension-telemetry": "^0.8.2",
     "@vscode/vsce": "^2.19.0",
     "esbuild": "^0.17.19",
     "froebel": "^0.23.2",
