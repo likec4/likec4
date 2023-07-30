@@ -2,7 +2,7 @@ name: release
 
 on:
   workflow_call:
-  workflow_dispatch:
+  # workflow_dispatch:
 
 permissions:
   actions: write
