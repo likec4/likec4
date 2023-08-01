@@ -179,7 +179,8 @@ describe('02_Model', () => {
           #one
 
           component subsystem {
-            title: 'SubSystem'
+            title: 'SubSystem';
+            description 'Handles subsystem logic';
           }
 
           component storage {
@@ -187,6 +188,21 @@ describe('02_Model', () => {
             style {
               shape: storage
             }
+          }
+        }
+      }`
+  )
+
+  test(
+    'element with icon',
+    valid`
+      specification {
+        element component
+      }
+      model {
+        component system {
+          style {
+            icon: https://icons.terrastruct.com/dev%2Ftypescript.svg
           }
         }
       }`

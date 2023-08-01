@@ -1,4 +1,4 @@
-import type { NonEmptyArray } from '.'
+import type { IconUrl, NonEmptyArray } from './_common'
 import type { Opaque } from './opaque'
 
 // Full-qualified-name
@@ -56,6 +56,7 @@ export interface Element {
   readonly technology: string | null
   readonly tags: NonEmptyArray<Tag> | null
   readonly links: NonEmptyArray<string> | null
+  readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: ThemeColor
 }

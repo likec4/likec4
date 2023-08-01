@@ -44,20 +44,16 @@ describe('LikeC4ModelBuilder', () => {
       customer: {
         kind: 'user',
         shape: 'person',
-        title: 'Customer',
-        color: 'primary' //defaults
+        title: 'Customer'
       },
       system: {
         kind: 'component',
-        title: 'system',
-        shape: 'rectangle', //defaults
-        color: 'primary' //defaults
+        title: 'system'
       },
       spa: {
         kind: 'component',
         shape: 'browser',
-        title: 'SPA',
-        color: 'primary' //defaults
+        title: 'SPA'
       },
       mobile: {
         kind: 'component',
@@ -66,6 +62,9 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Mobile'
       }
     })
+    expect(elements['customer']).not.toHaveProperty('color')
+    expect(elements['system']).not.toHaveProperty('shape')
+    expect(elements['system']).not.toHaveProperty('color')
   })
 
   it('builds model with description and technology', async () => {
@@ -155,6 +154,51 @@ describe('LikeC4ModelBuilder', () => {
       system2: {
         kind: 'component',
         tags: ['deprecated']
+      }
+    })
+  })
+
+  it('builds model with icon', async () => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      element system {
+        style {
+          icon https://system1.png
+        }
+      }
+    }
+    model {
+      system system1
+      system system2 {
+        // override icon
+        style {
+          icon https://system2.png
+        }
+      }
+      component component1 {
+        style {
+          icon https://component.png
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toHaveProperty('elements', expect.any(Object))
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'system',
+        icon: 'https://system1.png'
+      },
+      system2: {
+        kind: 'system',
+        icon: 'https://system2.png'
+      },
+      component1: {
+        kind: 'component',
+        icon: 'https://component.png'
       }
     })
   })

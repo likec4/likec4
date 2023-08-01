@@ -59,6 +59,25 @@ describe('01-Specification', () => {
     }
     `
 
+  test('kind with style with colon and semicolon').valid`
+    specification {
+      element frontend {
+        style {
+          shape: browser;
+          color secondary;
+        }
+      }
+    }`
+
+  test('kind with icon').valid`
+    specification {
+      element frontend {
+        style {
+          icon https://icons.terrastruct.com/dev%2Ftypescript.svg
+        }
+      }
+    }`
+
   test('kind the same name as color').valid`
     specification {
       element green {

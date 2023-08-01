@@ -1,3 +1,7 @@
+import { UnexhaustiveError } from '@likec4/core'
+
+export const IconSize = '40'
+
 export const pointToPx = (pt: number) => Math.ceil((pt * 96) / 72)
 export const inchToPx = (inch: number) => Math.ceil(inch * 96)
 export const pxToInch = (px: number) => Math.round((px / 96) * 10000) / 10000
@@ -13,5 +17,5 @@ export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
       return 'center'
   }
   // @ts-expect-error - Unexhaustive match
-  throw new Error(`Invalid align: ${align}`)
+  throw new UnexhaustiveError(`Invalid align: ${align}`)
 }

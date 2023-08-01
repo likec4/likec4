@@ -84,21 +84,19 @@ export class FqnIndex {
   public directChildrenOf(parent: Fqn): Stream<FqnIndexEntry> {
     return new StreamImpl(
       () => {
-        const children = new MultiMap<string, FqnIndexEntry>(
-          this.entries()
-            .filter(e => parentFqn(e.fqn) === parent)
-            .map((e): [string, FqnIndexEntry] => {
-              const name = nameFromFqn(e.fqn)
-              const entry = { ...e, name }
-              return [name, entry]
-            })
-            .toArray()
-        )
+        const children = this.entries()
+          .filter(e => parentFqn(e.fqn) === parent)
+          .map((e): [string, FqnIndexEntry] => {
+            const name = nameFromFqn(e.fqn)
+            const entry = { ...e, name }
+            return [name, entry]
+          })
+          .toArray()
 
-        if (children.size === 0) {
+        if (children.length === 0) {
           return null
         }
-        return children
+        return new MultiMap(children)
           .entriesGroupedByKey()
           .flatMap(([_name, descrs]) => (descrs.length === 1 ? descrs : []))
           .iterator()

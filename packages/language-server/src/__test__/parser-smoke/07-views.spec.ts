@@ -52,10 +52,10 @@ describe('07_View', () => {
   test('view properties: title, link, description').valid`${model}
     views {
       view index {
-        title "Index"
-        description "
+        title 'Index'
+        description: "
           Index view description
-        "
+        ";
         link https://domain.com/path
 
         include *
@@ -66,7 +66,7 @@ describe('07_View', () => {
     views {
       view index {
         #epic-123 #next
-        title "Index"
+        title "Index";
         include *
       }
     }`
@@ -156,6 +156,16 @@ describe('07_View', () => {
         }
       }
       `
+
+  test('ViewStyleRules - with icon').valid`${model}
+    views {
+      view {
+        include *
+        style backend, infra {
+          icon https://icons.terrastruct.com/dev%2Ftypescript.svg
+        }
+      }
+    }`
 
   test('ViewStyleRules - invalid').invalid`${model}
       views {

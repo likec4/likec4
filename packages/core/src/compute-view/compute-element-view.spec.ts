@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fakeModel, type FakeElementIds } from '../__test__'
-import type { ComputedView, ElementKind, Fqn, Tag, ViewID, ViewRule } from '../types'
+import type { ComputedView, ElementKind, Fqn, IconUrl, Tag, ViewID, ViewRule } from '../types'
 import { computeElementView } from './compute-element-view'
 import { pluck } from 'rambdax'
 
@@ -420,7 +420,13 @@ describe('compute-element-view', () => {
     const { nodes } = computeView([
       {
         isInclude: true,
-        exprs: [{ wildcard: true }, { element: 'cloud.frontend' as Fqn, isDescedants: false }]
+        exprs: [
+          // include customer, amazon, cloud, cloud.frontend
+          { element: 'customer' as Fqn, isDescedants: false },
+          { element: 'amazon' as Fqn, isDescedants: false },
+          { element: 'cloud' as Fqn, isDescedants: false },
+          { element: 'cloud.frontend' as Fqn, isDescedants: false }
+        ]
       },
       // all elements
       // color: secondary
@@ -436,7 +442,8 @@ describe('compute-element-view', () => {
       {
         targets: [{ element: 'cloud' as Fqn, isDescedants: false }],
         style: {
-          color: 'muted'
+          color: 'muted',
+          icon: 'http://some-icon' as IconUrl
         }
       },
       // cloud.*
@@ -458,20 +465,24 @@ describe('compute-element-view', () => {
       color: 'secondary',
       shape: 'storage'
     })
+    expect(amazon).not.toHaveProperty('icon')
     expect(customer).toMatchObject({
       color: 'secondary',
       shape: 'storage'
     })
+    expect(customer).not.toHaveProperty('icon')
 
     expect(cloud).toMatchObject({
       color: 'muted',
-      shape: 'storage'
+      shape: 'storage',
+      icon: 'http://some-icon'
     })
     expect(frontend).toMatchObject({
       parent: 'cloud',
       color: 'secondary',
       shape: 'browser'
     })
+    expect(frontend).not.toHaveProperty('icon')
   })
 
   it('should include by element kind', () => {

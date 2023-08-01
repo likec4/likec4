@@ -10,4 +10,6 @@ export const BaseError = ModernError.subclass('BaseError')
  */
 export const UnknownError = BaseError.subclass('UnknownError')
 
+export const UnexhaustiveError = BaseError.subclass('UnexhaustiveError')
+
 export const RelationRefError = BaseError.subclass('RelationRefError')

@@ -20,7 +20,7 @@ describe('LikeC4DocumentSymbolProvider', () => {
     expect(symbols).toStrictEqual([
       {
         name: 'specification',
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         range: {
           start: {
             character: 0,

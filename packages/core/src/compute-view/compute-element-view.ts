@@ -1,5 +1,5 @@
 import { anyPass, filter, isNil, uniq, type Predicate, both, either } from 'rambdax'
-import { allPass, find } from 'remeda'
+import { allPass, find, isDefined } from 'remeda'
 import { invariant } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
@@ -108,6 +108,9 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
     filter(anyPass(predicates), nodes).forEach(n => {
       n.shape = rule.style.shape ?? n.shape
       n.color = rule.style.color ?? n.color
+      if (isDefined.strict(rule.style.icon)) {
+        n.icon = rule.style.icon
+      }
     })
   }
 

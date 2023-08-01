@@ -1,18 +1,18 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
+import { invariant } from '@likec4/core'
 import type {
   ComputedView,
   DiagramEdge,
-  DiagramNode,
   DiagramLabel,
+  DiagramNode,
   DiagramView,
   NodeId,
   Point
 } from '@likec4/core/types'
-import { propEq } from 'rambdax'
-import { invariant } from '@likec4/core'
+import { dropRepeats, propEq } from 'rambdax'
 import type { DiagramLayoutFn } from '../types'
 import type { BoundingBox, GVPos, GraphvizJson } from './graphviz-types'
-import { inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
+import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -117,11 +117,13 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
   const dot = graphviz.unflatten(printToDot(computedView), 2, true, 2)
-  // const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
+  const icons = dropRepeats(computedNodes.flatMap(node => (node.icon ? [node.icon] : [])))
+
   const rawjson = graphviz.dot(dot, 'json', {
+    images: icons.map(path => ({ path, width: IconSize, height: IconSize })),
     yInvert: true
   })
 

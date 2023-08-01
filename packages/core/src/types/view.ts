@@ -1,7 +1,7 @@
 import type { Opaque } from './opaque'
 import type { ElementShape, Fqn, Tag, ThemeColor } from './element'
 import type { ElementExpression, Expression } from './expression'
-import type { NonEmptyArray } from './_common'
+import type { IconUrl, NonEmptyArray } from './_common'
 
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
@@ -19,6 +19,7 @@ export interface ViewRuleStyle {
   style: {
     color?: ThemeColor
     shape?: ElementShape
+    icon?: IconUrl
   }
 }
 export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {

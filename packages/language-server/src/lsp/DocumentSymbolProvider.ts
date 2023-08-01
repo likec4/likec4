@@ -1,8 +1,4 @@
-import {
-  findNodeForProperty,
-  type DocumentSymbolProvider,
-  type MaybePromise
-} from 'langium'
+import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
 import { compact, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
@@ -87,7 +83,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astSpec.name,
         range: cstModel.range,
         selectionRange: specKeywordNode.range,
@@ -103,7 +99,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!nameNode) return []
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
@@ -174,7 +170,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!nameNode) return []
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,
