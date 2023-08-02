@@ -32,6 +32,7 @@
     ".": "./src/index.ts",
     "./colors": "./src/colors.ts",
     "./types": "./src/types/index.ts",
+    "./errors": "./src/errors/index.ts",
     "./utils": "./src/utils/index.ts",
     "./compute-view": "./src/compute-view/index.ts"
   },
@@ -56,6 +57,11 @@
         "types": "./dist/colors.d.ts",
         "import": "./dist/colors.js",
         "default": "./dist/colors.js"
+      },
+      "./errors": {
+        "types": "./dist/errors/index.d.ts",
+        "import": "./dist/errors/index.js",
+        "default": "./dist/errors/index.js"
       },
       "./utils": {
         "types": "./dist/utils/index.d.ts",

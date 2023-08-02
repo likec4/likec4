@@ -1,6 +1,6 @@
 import { anyPass, filter, isNil, uniq, type Predicate, both, either } from 'rambdax'
 import { allPass, find, isDefined } from 'remeda'
-import { invariant } from '../errors'
+import { invariant, nonexhaustive } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
   DefaultElementShape,
@@ -23,7 +23,7 @@ import {
   Relations,
   commonAncestor,
   compareByFqnHierarchically,
-  failExpectedNever,
+  failUnexpected,
   ignoreNeverInRuntime,
   isAncestor,
   isSameHierarchy,
@@ -103,7 +103,7 @@ function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
         )
         continue
       }
-      failExpectedNever(target)
+      failUnexpected(target)
     }
     filter(anyPass(predicates), nodes).forEach(n => {
       n.shape = rule.style.shape ?? n.shape
@@ -544,7 +544,7 @@ export function computeElementView<V extends ElementView>(
         ctx = isInclude ? includeRelationExpr(ctx, expr) : excludeRelationExpr(ctx, expr)
         continue
       }
-      ignoreNeverInRuntime(expr)
+      nonexhaustive(expr)
     }
   }
   // All "predicated" elements (including implicit ones)
