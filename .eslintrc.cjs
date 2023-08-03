@@ -6,6 +6,7 @@ module.exports = {
       './packages/*/tsconfig.json',
       './docs/tsconfig.json',
       './examples/*/tsconfig.json',
+      './packages/cli/src/export/puppeteer-page/tsconfig.json'
     ],
   },
   plugins: ['@typescript-eslint'],

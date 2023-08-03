@@ -13,6 +13,7 @@ export default {
   },
   primaryHue: 195,
   sidebar: {
+    autoCollapse: true,
     toggleButton: true
   },
   // main: Main,

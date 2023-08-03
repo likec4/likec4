@@ -89,6 +89,23 @@ If not set, the default shape is `rectangle`.
 
 If not set, the default color is `primary`.
 
+### Icon
+
+Element kind may have an icon: any image, publicly available with `https://`.  
+Some examples - [https://icons.terrastruct.com/](https://icons.terrastruct.com/)
+
+```likec4 copy
+specification {
+
+  element k8sService {
+    style {
+      icon https://icons.terrastruct.com/azure%2F_Companies%2FKubernetes.svg
+    }
+  }
+
+}
+```
+
 ## Tag
 
 Tags may be used to mark, group, filter elements/relationships/views, or give some additional semantics, like `#deprecated`, `#epic123` or `#team2`.

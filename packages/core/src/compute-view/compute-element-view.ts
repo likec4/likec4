@@ -1,4 +1,4 @@
-import { anyPass, filter, isNil, uniq, type Predicate, both, either } from 'rambdax'
+import { anyPass, both, either, filter, isNil, uniq, type Predicate } from 'rambdax'
 import { allPass, find, isDefined } from 'remeda'
 import { invariant, nonexhaustive } from '../errors'
 import type { ModelIndex } from '../model-index'
@@ -24,7 +24,6 @@ import {
   commonAncestor,
   compareByFqnHierarchically,
   failUnexpected,
-  ignoreNeverInRuntime,
   isAncestor,
   isSameHierarchy,
   parentFqn

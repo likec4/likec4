@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSpring } from '@react-spring/konva'
 import { useMemo } from 'react'
 import { AnimatedGroup, AnimatedPath } from '../../konva'
@@ -12,7 +11,7 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   const ry = Math.round(tilt * radius * 1000) / 1000
   const tiltAdjustedHeight = height - 2 * ry
 
-  const d = `   M 0,${ry}
+  const path = `   M 0,${ry}
         a ${rx},${ry} 0,0,0 ${diameter} 0
         a ${rx},${ry} 0,0,0 ${-diameter} 0
         l 0,${tiltAdjustedHeight}
@@ -21,7 +20,11 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
         `
     .replace(/\s+/g, ' ')
     .trim()
-  return d
+  return {
+    path,
+    ry,
+    rx
+  }
 }
 
 export function CylinderShape({
@@ -32,11 +35,12 @@ export function CylinderShape({
   ...listeners
 }: NodeShapeProps): JSX.Element {
   const {
-    size: { width, height }, color, labels
+    size: { width, height },
+    color
   } = node
   const { fill, stroke } = theme.colors[color]
 
-  const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
+  const { path, ry } = useMemo(() => cylinderSVGPath(width, height), [width, height])
   // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
   const cylinderProps = useSpring({
     to: {
@@ -48,11 +52,7 @@ export function CylinderShape({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      {...springs}
-      {...listeners}
-    >
+    <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
@@ -67,13 +67,9 @@ export function CylinderShape({
         shadowForStrokeEnabled={false}
         strokeWidth={2}
         hitStrokeWidth={8}
-        {...cylinderProps} />
-      <NodeTitle
-        labels={labels}
-        // offsetY={-ry}
-        width={width}
-        color={color}
-        theme={theme} />
+        {...cylinderProps}
+      />
+      <NodeTitle node={node} offsetY={-2 * ry + 4} theme={theme} />
     </AnimatedGroup>
   )
 }

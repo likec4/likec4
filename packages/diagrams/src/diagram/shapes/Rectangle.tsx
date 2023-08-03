@@ -1,6 +1,4 @@
-import {
-  useSpring
-} from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
@@ -12,10 +10,7 @@ export function RectangleShape({
   springs,
   ...listeners
 }: NodeShapeProps): JSX.Element {
-  const {
-    color, labels
-  } = node
-  const colors = theme.colors[color]
+  const colors = theme.colors[node.color]
 
   const rectProps = useSpring({
     to: {
@@ -27,17 +22,7 @@ export function RectangleShape({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      x={springs.x}
-      y={springs.y}
-      offsetX={springs.offsetX}
-      offsetY={springs.offsetY}
-      opacity={springs.opacity}
-      scaleX={springs.scaleX}
-      scaleY={springs.scaleY}
-      {...listeners}
-    >
+    <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedRect
         width={springs.width}
         height={springs.height}
@@ -55,12 +40,9 @@ export function RectangleShape({
         // strokeScaleEnabled={false}
         // strokeWidth={1}
         // hitStrokeWidth={25}
-        {...rectProps} />
-      <NodeLabels
-        labels={labels}
-        width={node.size.width}
-        color={color}
-        theme={theme} />
+        {...rectProps}
+      />
+      <NodeLabels node={node} theme={theme} />
       {/* <ExternalLink
               x={-2}
               y={30}

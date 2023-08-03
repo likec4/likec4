@@ -1,26 +1,21 @@
-import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
-import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
 import {
+  ModelIndex,
+  assignNavigateTo,
   compareByFqnHierarchically,
+  computeView,
+  invariant,
   isNonEmptyArray,
-  parentFqn,
-  unexhaustive
-} from '@likec4/core/utils'
+  nonexhaustive,
+  parentFqn
+} from '@likec4/core'
+import type * as c4 from '@likec4/core/types'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
 import { clone } from 'rambdax'
 import * as R from 'remeda'
-
 import stripIndent from 'strip-indent'
-
-import type {
-  ParsedAstElement,
-  ParsedAstElementView,
-  ParsedAstRelation,
-  ParsedAstSpecification
-} from '../ast'
+import type { CancellationToken } from 'vscode-languageserver-protocol'
 import {
   ElementViewOps,
   ast,
@@ -31,8 +26,14 @@ import {
   streamModel,
   toAutoLayout,
   toElementStyle,
-  type LikeC4LangiumDocument,
   toElementStyleExcludeDefaults
+} from '../ast'
+import type {
+  ParsedAstElement,
+  ParsedAstElementView,
+  ParsedAstRelation,
+  ParsedAstSpecification,
+  LikeC4LangiumDocument
 } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
@@ -40,7 +41,6 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
 
 export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
@@ -255,7 +255,7 @@ export class LikeC4ModelBuilder {
         }
         continue
       }
-      unexhaustive(el)
+      nonexhaustive(el)
     }
     const docviews = doc.parseResult.value.views?.views
     if (docviews) {

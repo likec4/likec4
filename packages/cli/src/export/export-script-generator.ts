@@ -2,7 +2,7 @@ import type { DiagramView } from '@likec4/core'
 
 import JSON5 from 'json5'
 import { mkdirp } from 'mkdirp'
-import process from 'process'
+import process from 'node:process'
 import { join, dirname } from 'node:path'
 import {
   CompositeGeneratorNode,
@@ -130,6 +130,10 @@ export function generateExportScript(
           });
           await page.evaluate((id) => window.renderView(id), viewId)
           await page.waitForSelector('.konvajs-content')
+          await page.waitForNetworkIdle({
+            idleTime: 200,
+            timeout: 5000
+          })
           await page.screenshot({
             path: output,
             omitBackground: true,

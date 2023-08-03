@@ -46,7 +46,7 @@ export const RelationColors = {
   // lineColor: colors.neutral[400],
   // labelColor: colors.neutral[300],
   lineColor: '#a3a3a3',
-  labelColor: '#d4d4d4',
+  labelColor: '#d4d4d4'
 } as const
 
 export const Colors = {
@@ -73,8 +73,10 @@ export const Colors = {
     // loContrast: colors.red[200],
     fill: '#ef4444',
     stroke: '#dc2626',
-    hiContrast: '#fef2f2',
-    loContrast: '#fecaca'
+    // hiContrast: '#fef2f2',
+    // loContrast: '#fecaca',
+    hiContrast: '#111827', // colors.gray[900],
+    loContrast: '#1f2937' // colors.gray[800],
   },
   green: {
     // fill: colors.green[600],
@@ -83,8 +85,10 @@ export const Colors = {
     // loContrast: colors.green[200],
     fill: '#16a34a',
     stroke: '#15803d',
-    hiContrast: '#f0fdf4',
-    loContrast: '#bbf7d0'
+    hiContrast: '#111827', // colors.gray[900],
+    // hiContrast: '#f0fdf4',
+    loContrast: '#1f2937' // colors.gray[800],
+    // loContrast: '#bbf7d0'
   },
   amber: {
     // fill: colors.amber[600],
@@ -93,8 +97,10 @@ export const Colors = {
     // loContrast: colors.amber[200],
     fill: '#d97706',
     stroke: '#b45309',
-    hiContrast: '#fffbeb',
-    loContrast: '#fde68a'
+    // hiContrast: '#fffbeb',
+    // loContrast: '#fde68a',
+    hiContrast: '#111827', // colors.gray[900],
+    loContrast: '#1f2937' // colors.gray[800],
   },
   indigo: {
     // fill: colors.indigo[500],

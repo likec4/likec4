@@ -4,7 +4,6 @@ import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
-import React from 'react'
 
 export function QueueShape({
   id,
@@ -14,12 +13,11 @@ export function QueueShape({
   ...listeners
 }: NodeShapeProps): JSX.Element {
   const {
-    size: { width, height }, color, labels
+    size: { width, height }
   } = node
-  const { fill, stroke } = theme.colors[color]
+  const { fill, stroke } = theme.colors[node.color]
 
-  const path = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
-  const rx = Math.round(2 * 0.1 * (height / 2) * 1000) / 1000
+  const { path, ry } = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
 
   const queueProps = useSpring({
     to: {
@@ -31,11 +29,7 @@ export function QueueShape({
   return (
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      {...springs}
-      {...listeners}
-    >
+    <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
@@ -55,12 +49,9 @@ export function QueueShape({
         shadowForStrokeEnabled={false}
         strokeWidth={2}
         hitStrokeWidth={8}
-        {...queueProps} />
-      <NodeLabels
-        labels={labels}
-        width={width - rx}
-        color={color}
-        theme={theme} />
+        {...queueProps}
+      />
+      <NodeLabels node={node} maxWidth={width - ry * 2} theme={theme} />
     </AnimatedGroup>
   )
 }

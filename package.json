@@ -17,6 +17,7 @@
     "compile:all": "turbo run compile",
     "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
+    "turbo": "turbo",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
@@ -25,7 +26,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "turbo run lint --continue --filter='./packages/*'",
-    "vitest:ui": "vitest --ui"
+    "vitest:ui": "vitest --ui",
+    "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped"
   },
   "dependencies": {
     "@commitlint/cli": "^17.6.7",

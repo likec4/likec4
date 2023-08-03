@@ -86,8 +86,8 @@
         ],
         "configuration": "language-configuration.json",
         "icon": {
-          "light": "./data/icon.png",
-          "dark": "./data/icon.png"
+          "light": "./data/icon-256-light.png",
+          "dark": "./data/icon-256-dark.png"
         }
       }
     ],

@@ -3,7 +3,7 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
   RelationRefError,
-  unexhaustive
+  nonexhaustive
 } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium/lib/workspace'
@@ -219,7 +219,7 @@ export function toElementStyle(props?: ast.StyleProperties['props']) {
       result.icon = prop.value as c4.IconUrl
       continue
     }
-    unexhaustive(prop)
+    nonexhaustive(prop)
   }
   return result
 }

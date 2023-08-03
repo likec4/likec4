@@ -1,7 +1,7 @@
 import { Colors, type ComputedNode } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
-import { IconSize, pxToPoints } from './graphviz-utils'
+import { IconSizePoints, pxToPoints } from './graphviz-utils'
 
 export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -51,7 +51,7 @@ function wrapToHTML({
   )}">${html}</FONT>`
 }
 export function nodeIcon(src: string) {
-  return `<IMG SRC="${src}" SCALE="TRUE" WIDTH="${IconSize}" HEIGHT="${IconSize}"/>`
+  return `<IMG SRC="${src}" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}"/>`
 }
 
 export function nodeLabel(node: ComputedNode) {

@@ -1,4 +1,5 @@
-import { failExpectedNever, AsFqn } from '@likec4/core'
+import { nonexhaustive } from '@likec4/core/errors'
+import { AsFqn } from '@likec4/core/types'
 import type * as c4 from '@likec4/core/types'
 import { MultiMap } from 'langium'
 import { isEmpty, isNil } from 'remeda'
@@ -39,6 +40,6 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
       }
       continue
     }
-    failExpectedNever(el)
+    nonexhaustive(el)
   }
 }

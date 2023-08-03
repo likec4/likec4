@@ -1,7 +1,7 @@
-import { isSameHierarchy } from '../..'
+import { isSameHierarchy } from '../../utils'
 import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
-
 import { Graph, alg } from '@dagrejs/graphlib'
+import { nonNullable } from '../../errors/invariant'
 
 export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
   const g = new Graph({
@@ -40,7 +40,7 @@ export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[])
   }
 
   const sorted = alg.topsort(g) as Fqn[]
-  const nodes = sorted.map(id => _nodes.get(id)!)
+  const nodes = sorted.map(id => nonNullable(_nodes.get(id)))
 
   for (const node of nodes) {
     node.children = nodes.flatMap(n => (n.parent === node.id ? n.id : []))
