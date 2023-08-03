@@ -3,7 +3,6 @@ import { createTestServices } from '../test'
 import { keys } from 'rambdax'
 import type { Element, ViewID } from '@likec4/core/types'
 
-import '../logger'
 vi.mock('../logger')
 
 describe('LikeC4ModelBuilder', () => {
@@ -107,7 +106,7 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      client: {
+      'client': {
         kind: 'user',
         shape: 'person',
         description: null,
@@ -278,7 +277,7 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      client: {
+      'client': {
         kind: 'user'
       },
       'system.backend.api': {

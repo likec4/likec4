@@ -1,7 +1,7 @@
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe('01-Specification', () => {
+describe('specification', () => {
   test('valid').valid`
     specification {
       element container
@@ -27,7 +27,12 @@ describe('01-Specification', () => {
       element softwareSystem
     }`
 
-  test('fail if element kinds starts with number').invalid`
+  test('element kind starts with underscore').valid`
+    specification {
+      element _container
+    }`
+
+  test('fail if element kind starts with number').invalid`
     specification {
       element 1container
     }`
@@ -36,6 +41,12 @@ describe('01-Specification', () => {
     specification {
       tag 1tag
     }`
+
+  // TODO: fix this
+  // test('fail if tag starts with underscore').invalid`
+  //   specification {
+  //     tag _tag
+  //   }`
 
   test('allow element with kind "element"').valid`
     specification {

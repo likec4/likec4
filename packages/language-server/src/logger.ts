@@ -18,3 +18,5 @@ export const logger = {
     console.debug(message)
   }
 }
+
+export type Logger = typeof logger

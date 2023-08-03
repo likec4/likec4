@@ -1,45 +1,42 @@
-import { describe, test } from 'vitest'
-import { valid, invalid } from './asserts'
+import { describe } from 'vitest'
+import { test } from './asserts'
 
-describe('04_Scope', () => {
+describe('scope', () => {
+  test('valid').valid`
+    specification {
+      element person
+      element component
+    }
+    model {
+      person user
+      component system {
+        component subsystem {
+          -> backend
+        }
+        backend = component {
+          api = component 'API'
+        }
+        user -> api
+      }
+    }`
 
-test('valid', valid`
-specification {
-  element person
-  element component
-}
-model {
-  person user
-  component system {
-    component subsystem {
-      -> backend
+  test('fail if duplicate name in scope').invalid`
+    specification {
+      element person
+      element component
     }
-    backend = component {
-      api = component 'API'
-    }
-    user -> api
-  }
-}
-`)
-test('04_DuplicateNameInScope', invalid`
-specification {
-  element person
-  element component
-}
-model {
-  person user
-  component system {
-    component subsystem {
-    }
-    backend1 = component {
-      api = component 'API 1'
-    }
-    backend2 = component {
-      api = component 'API 2'
-    }
-    user -> api
-  }
-}
-`)
-
+    model {
+      person user
+      component system {
+        component subsystem {
+        }
+        backend1 = component {
+          api = component 'API 1'
+        }
+        backend2 = component {
+          api = component 'API 2'
+        }
+        user -> api
+      }
+    }`
 })

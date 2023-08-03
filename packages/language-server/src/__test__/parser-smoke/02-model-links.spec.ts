@@ -21,7 +21,8 @@ function test(name: string) {
     invalid: (strings: TemplateStringsArray, ...expr: string[]) => {
       viTest.concurrent(
         `invalid: ${name}`,
-        invalid`${spec}
+        invalid`
+      ${spec}
       model {
         ${likec4(strings, ...expr)}
       }`
@@ -30,7 +31,7 @@ function test(name: string) {
   }
 }
 
-describe('02_Model Links', () => {
+describe.concurrent('02_Model Links', () => {
   describe('with schema', () => {
     test('https and vscode').valid`
       component tst1 {
