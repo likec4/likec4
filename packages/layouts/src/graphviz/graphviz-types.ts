@@ -1,4 +1,4 @@
-import type { EdgeId, NodeId, Opaque } from '@likec4/core/types'
+import type { EdgeId, Fqn, NodeId, Opaque } from '@likec4/core/types'
 
 export type DotSource = Opaque<string, 'DotSource'>
 
@@ -81,7 +81,9 @@ export namespace GraphvizJson {
     bb: string
     compound: 'true'
     _ldraw_?: Ldraw[]
-    id?: NodeId
+    likec4_id?: Fqn
+    likec4_level?: number;
+    likec4_depth?: number;
     _gvid: GvId
     nodes: GvId[]
     edges: GvId[]
@@ -90,7 +92,8 @@ export namespace GraphvizJson {
   export interface GvNodeObject {
     _draw_: Draw[]
     _ldraw_?: Ldraw[]
-    id?: NodeId
+    likec4_id?: Fqn
+    likec4_level?: number;
     _gvid: GvId
     height: string
     pos: string

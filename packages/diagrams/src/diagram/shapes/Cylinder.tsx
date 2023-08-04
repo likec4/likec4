@@ -69,7 +69,7 @@ export function CylinderShape({
         hitStrokeWidth={8}
         {...cylinderProps}
       />
-      <NodeTitle node={node} offsetY={-2 * ry + 4} theme={theme} />
+      <NodeTitle node={node} offsetY={node.icon ? (-2 * ry + 4) :  -0.5 * ry} theme={theme} />
     </AnimatedGroup>
   )
 }

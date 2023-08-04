@@ -1,0 +1,99 @@
+model {
+
+  customer = actor 'Cloud System Customer' {
+    description 'The regular customer of the system'
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = container 'Frontend' {
+      description 'All the frontend applications of the cloud system'
+      style {
+        shape browser
+      }
+
+      dashboard = app 'Customer Dashboard' {
+        technology 'Nextjs'
+        description 'Web application, that allows customers to interact with the cloud system'
+        style {
+          shape browser
+        }
+
+        -> amazon.cognito 'authenticates'
+        -> graphql 'fetches data'
+      }
+      customer -> dashboard 'opens in browser'
+
+      mobile = mobileApp 'Mobile App' {
+        description 'The mobile app of the cloud system'
+        -> amazon.cognito 'authenticates'
+        -> graphql 'fetches data'
+      }
+      customer -> mobile 'opens on mobile device'
+    }
+
+
+    backend = container 'Backend' {
+      description 'The backend services of the cloud system'
+
+      graphql = app 'GraphQL API' {
+        description 'The GraphQL API of the cloud system'
+      }
+      cms = app 'CMS' {
+        description 'The CMS of the cloud system'
+      }
+
+      graphql -> cms
+      graphql -> amazon.cognito 'authenticates'
+      graphql -> amazon.rds.pg 'reads and writes'
+
+      cms -> amazon.rds.mysql 'stores media'
+    }
+  }
+
+  customer -> cloud 'uses and pays'
+  cloud -> amazon 'hosted on'
+
+}
+
+views {
+
+  view index {
+    title "Landscape"
+    include *
+  }
+
+  view customer of customer {
+    title "Overview Customer"
+    include *,
+            -> ui.*,
+            -> backend
+  }
+
+  view cloud of cloud {
+    title "Overview Cloud System"
+    include *
+  }
+
+  view cloud_ui of ui {
+    title "Overview UI"
+    include *
+  }
+
+  view cloud_backend of backend {
+    title "Overview Backend"
+    include
+      *,
+      ui, ui.* -> backend,
+      backend -> amazon.*
+
+    exclude
+      ui -> amazon
+  }
+
+}

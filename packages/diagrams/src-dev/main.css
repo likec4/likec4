@@ -1,0 +1,21 @@
+*,
+:before,
+:after {
+  box-sizing: border-box;
+  outline: none;
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overscroll-behavior: none;
+  background-color: hsl(60, 3.7%, 10.6%);
+}
+
+#root {
+}

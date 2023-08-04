@@ -116,7 +116,13 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = graphviz.unflatten(printToDot(computedView), 2, true, 2)
+  // const dot = graphviz.unflatten(printToDot(computedView), 3, true, 2)
+  const dot = printToDot(computedView)
+  if (computedView.id.includes('cloud_backend')) {
+    console.log('DOT ------------------------- ')
+    console.log(dot)
+    console.log('-------------------------')
+  }
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -144,12 +150,13 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
 
   const graphvizObjects = graphvizJson.objects ?? []
   for (const obj of graphvizObjects) {
-    if (!('id' in obj)) {
+    const likec4Id = obj.likec4_id
+    if (!likec4Id) {
       continue
     }
-    const computed = computedNodes.find(n => n.id === obj.id)
+    const computed = computedNodes.find(n => n.id === likec4Id)
     if (!computed) {
-      console.warn(`Node ${obj.id} not found, how did it get into the graphviz output?`)
+      console.warn(`Node ${likec4Id} not found, how did it get into the graphviz output?`)
       continue
     }
 
@@ -163,7 +170,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       size,
       labels: parseLabelDraws(obj, position)
     }
-    diagramNodes.set(computed.id, node)
+    diagramNodes.set(likec4Id, node)
     diagram.nodes.push(node)
   }
 

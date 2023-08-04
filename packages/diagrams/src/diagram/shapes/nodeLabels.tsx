@@ -14,7 +14,7 @@ type NodeIconProps = {
 
 function NodeIcon({ icon, maxWidth, maxHeight, offsetX = 0, offsetY = 0 }: NodeIconProps) {
   const [image] = useImageLoader(icon)
-  const padding = 12
+  const padding = 16
   const maxIconWidth = Math.round(maxWidth - padding * 2)
   const maxIconHeight = Math.round(maxHeight - padding * 2)
   if (!image) {
@@ -86,11 +86,8 @@ export function NodeLabels({
             key={i}
             x={8}
             width={width - 16}
-            y={Math.ceil(label.pt[1] - label.fontSize / 2)}
-            // y={label.pt[1]}
-            // verticalAlign='top'
-            // height={label.fontSize}
-            offsetY={offsetY}
+            y={label.pt[1]}
+            offsetY={offsetY + label.fontSize / 2}
             offsetX={offsetX}
             fill={color}
             fontFamily={theme.font}

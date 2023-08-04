@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
+    "generate": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]

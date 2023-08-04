@@ -5,7 +5,7 @@ export const inchToPx = (inch: number) => Math.ceil(inch * 96)
 export const pxToInch = (px: number) => Math.round((px / 96) * 10000) / 10000
 export const pxToPoints = (px: number) => Math.round(px * 0.75 * 10000) / 10000
 
-export const IconSize = '40'
+export const IconSize = '40px'
 export const IconSizePoints = pxToPoints(40).toString()
 
 export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
