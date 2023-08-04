@@ -37,7 +37,7 @@
     "@react-hookz/web": "^23.1.0",
     "body-scroll-lock-upgrade": "^1.0.4",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^1.2.1",
+    "clsx": "^2.0.0",
     "jotai": "^2.2.2",
     "jotai-devtools": "^0.6.0",
     "langium": "^1.2.1",
