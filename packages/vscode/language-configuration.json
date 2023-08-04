@@ -36,16 +36,12 @@
       "notIn": ["string"]
     },
     {
-      "open": "`",
-      "close": "`",
-      "notIn": ["string", "comment"]
-    },
-    {
       "open": "/*",
-      "close": " */",
+      "close": "*/",
       "notIn": ["string"]
     }
   ],
+  "autoCloseBefore": "}])`\n\t",
   // symbols that can be used to surround a selection
   "surroundingPairs": [
     ["{", "}"],
@@ -54,9 +50,39 @@
     ["\"", "\""],
     ["'", "'"]
   ],
-  "colorizedBracketPairs": [["{", "}"]],
-  "indentationRules": {
-    "increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
-    "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$"
-  }
+  "colorizedBracketPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+    ["'", "'"],
+    ["\"", "\""]
+  ],
+  "onEnterRules": [
+    {
+      "beforeText": {
+        "pattern": "\\s*\"$"
+      },
+      "afterText": {
+        "pattern": "^\"\\s*$"
+      },
+      "action": {
+        "indent": "indentOutdent"
+      }
+    },
+    {
+      "": "// e.g. ... include| ",
+      "beforeText": {
+        "pattern": "^\\s*(include|exclude)\\s*$"
+      },
+      "action": {
+        "indent": "indent"
+      }
+    },
+    {
+      "beforeText": ":\\s*$",
+      "action": {
+        "indent": "indent"
+      }
+    }
+  ]
 }

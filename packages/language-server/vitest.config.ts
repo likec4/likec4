@@ -1,8 +1,13 @@
-import { mergeConfig, defineProject } from 'vitest/config'
-import configShared from '../../vitest.shared'
+import { mergeConfig, defineConfig, defineProject } from 'vitest/config'
 
 export default mergeConfig(
-  configShared,
+  defineConfig({
+    test: {
+      snapshotFormat: {
+        escapeString: false
+      }
+    }
+  }),
   defineProject({
     resolve: {
       alias: {
@@ -10,7 +15,6 @@ export default mergeConfig(
       }
     },
     test: {
-      includeSource: ['src/__test__/**/*.ts'],
       name: 'language-server'
     }
   })

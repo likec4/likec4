@@ -9,6 +9,7 @@ import { tokens } from 'typed-inject'
 import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
 import type { Location } from 'vscode-languageclient/lib/common/api'
 import { Rpc } from '../protocol'
+import { nonexhaustive } from '@likec4/core/errors'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
@@ -31,12 +32,21 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
     super()
   }
 
-  deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
+  async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: unknown) {
     this.currentViewId = null
     this.panel = webviewPanel
     this.initPanel()
-    if (typeof state === 'object' && 'view' in state && typeof state.view === 'object') {
-      this.currentViewId = state.view.id
+    // TODO: refactor guard
+    if (
+      state != null &&
+      typeof state === 'object' &&
+      'view' in state &&
+      state.view != null &&
+      typeof state.view === 'object' &&
+      'id' in state.view &&
+      typeof state.view.id === 'string'
+    ) {
+      this.currentViewId = state.view.id as ViewID
     }
     return Promise.resolve()
   }
@@ -86,7 +96,7 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
       this._disposables
     )
     this.panel.onDidChangeViewState(
-      ({webviewPanel}) => {
+      ({ webviewPanel }) => {
         if (!webviewPanel.visible) {
           this.unsubscribe()
         }
@@ -188,8 +198,8 @@ export class PreviewPanel extends ADisposable implements vscode.WebviewPanelSeri
         return
       }
     }
-    // @ts-expect-error - exhaustive switch
-    throw new Error(`Unexchaustive switch for ${message.kind}`)
+    // @ts-expect-error - nonexhaustive
+    nonexhaustive(message)
   }
 
   private getWebviewOptions(): vscode.WebviewOptions & vscode.WebviewPanelOptions {

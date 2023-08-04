@@ -29,65 +29,7 @@ specification {
 }
 ```
 
-The definition may have a nested `style` block with properties.
-These properties are defaults for all elements of this kind.
-
-```likec4 copy
-specification {
-
-  element user {
-    style {
-      shape person
-    }
-  }
-
-  element spa {
-    style {
-      shape: browser // ':' is optional, but if you prefer
-      color: amber
-    }
-  }
-
-  element queue {
-    style {
-      shape queue
-      color gray
-    }
-  }
-
-}
-```
-
-### Shapes
-
-Available element shapes:
-
-| shape     | example |
-| :-------- | :-----: |
-| rectangle |   ..    |
-| storage   |   ..    |
-| cylinder  |   ..    |
-| browser   |   ..    |
-| mobile    |   ..    |
-| person    |   ..    |
-| queue     |   ..    |
-
-If not set, the default shape is `rectangle`.
-
-### Colors
-
-| color          |                                                           |
-| :------------- | :-------------------------------------------------------: |
-| primary, blue  |  <div className="bg-blue-500 rounded-sm w-8 h-6"></div>   |
-| secondary, sky |   <div className="bg-sky-600 rounded-sm w-8 h-6"></div>   |
-| muted, slate   |  <div className="bg-slate-600 rounded-sm w-8 h-6"></div>  |
-| amber          |  <div className="bg-amber-600 rounded-sm w-8 h-6"></div>  |
-| gray           | <div className="bg-neutral-500 rounded-sm w-8 h-6"></div> |
-| green          |  <div className="bg-green-600 rounded-sm w-8 h-6"></div>  |
-| indigo         | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>  |
-| red            |   <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
-
-If not set, the default color is `primary`.
+Element kinds are required for the [model](./model).
 
 ## Tag
 

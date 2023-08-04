@@ -2,7 +2,7 @@ import type { Opaque } from './opaque'
 import type { ElementKind, ElementShape, Fqn, Tag, ThemeColor } from './element'
 import type { RelationID } from './relation'
 import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
-import type { NonEmptyArray } from './_common'
+import type { IconUrl, NonEmptyArray } from './_common'
 
 export type NodeId = Fqn
 
@@ -20,6 +20,7 @@ export interface ComputedNode {
   children: NodeId[]
   shape: ElementShape
   color: ThemeColor
+  icon?: IconUrl
   navigateTo?: ViewID
 }
 

@@ -1,0 +1,126 @@
+import { Info } from '$/components'
+
+# Styling
+
+LikeC4 allows you to style elements.
+
+## Element
+
+There are multiple ways to style elements:
+- Style all elements of a kind in `specification`
+- Specific for an element in `model`
+- Override styles in `view`
+
+### Elements of a kind
+
+To style all elements of a kind, use the `style` block in `specification`:
+
+```likec4 copy
+specification {
+  element user {
+    style {
+      // every element of 'user' kind
+      shape person // have 'person' shape
+      color amber  // and amber color
+    }
+  }
+
+  element frontend {    
+    style {
+      // every 'frontend' displayed as browser
+      shape: browser // ':' is optional, but if you prefer
+    }
+  }
+}
+```
+
+### Single element
+
+To style a specific element, use the nested `style` block in `model`.  
+Element styles override the kind ones:
+
+```likec4 copy
+specification {
+  element actor {
+    style {
+      shape person
+      color red
+    }
+  }
+}
+
+model {
+  customer = actor 'Customer' {
+    style {
+      // inherits shape from kind
+      // and overrides color
+      color green                   
+    }
+  }
+}
+```
+
+### Custom for a View
+
+LikeC4 allows you to customize styles inside the view definitions.  
+For example, change the color for all elements with `#deprecated` tag.
+
+<Info>
+This is covered later on the [views](./views/#style-rules) page
+</Info>
+
+## Style properties
+
+Every `style` block may contain the following properties:
+- shape
+- color
+- icon
+
+### Shape
+
+Available element shapes:
+
+| shape     | example |
+| :-------- | :-----: |
+| rectangle |   ..    |
+| storage   |   ..    |
+| cylinder  |   ..    |
+| browser   |   ..    |
+| mobile    |   ..    |
+| person    |   ..    |
+| queue     |   ..    |
+
+If not set, the default shape is `rectangle`.
+
+### Color
+
+| color          |                                                           |
+| :------------- | :-------------------------------------------------------: |
+| primary, blue  |  <div className="bg-blue-500 rounded-sm w-8 h-6"></div>   |
+| secondary, sky |   <div className="bg-sky-600 rounded-sm w-8 h-6"></div>   |
+| muted, slate   |  <div className="bg-slate-600 rounded-sm w-8 h-6"></div>  |
+| amber          |  <div className="bg-amber-600 rounded-sm w-8 h-6"></div>  |
+| gray           | <div className="bg-neutral-500 rounded-sm w-8 h-6"></div> |
+| green          |  <div className="bg-green-600 rounded-sm w-8 h-6"></div>  |
+| indigo         | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>  |
+| red            |   <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
+
+If not set, the default color is `primary`.
+
+### Icon
+
+Element may have an icon - any browser-supported image and publicly available with `https://`:
+
+```likec4 copy
+model {
+  k8s = service 'K8s Service' {
+    style {
+      icon https://icons.terrastruct.com/azure%2F_Companies%2FKubernetes.svg
+    }
+  }
+}
+```
+
+Check these icons:
+
+- [icons.terrastruct.com](https://icons.terrastruct.com/)

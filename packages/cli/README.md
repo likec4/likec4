@@ -1,5 +1,7 @@
 # LikeC4 CLI
 
+[docs](https://likec4.dev/docs/) | [example](https://likec4.dev/examples/bigbank/likec4/)
+
 This package provides a command line interface for [LikeC4](https://likec4.dev/).
 
 Usage: `likec4 [options] [command]`
@@ -10,7 +12,7 @@ Options:
 
 Commands:
 
-- `codegen` &mdash; generates various artifacts from likec4 sources
+- `codegen` &mdash; generate various artifacts from likec4 sources
 - `export` &mdash; export views to png
 - `help [command]` &mdash; display help for command
 

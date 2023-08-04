@@ -12,10 +12,11 @@ const alias = {
   'langium/lib/workspace': 'langium/src/workspace/index.ts',
   'langium/lib/generator': 'langium/src/generator/index.ts',
   'langium': 'langium/src/index.ts',
-  // "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
-  // "@likec4/core/utils": '../core/src/utils/index.ts',
-  // "@likec4/core/types": '../core/src/types/index.ts',
-  // "@likec4/core": '../core/src/index.ts',
+  '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
+  '@likec4/core/utils': '../core/src/utils/index.ts',
+  '@likec4/core/types': '../core/src/types/index.ts',
+  '@likec4/core/errors': '../core/src/errors/index.ts',
+  '@likec4/core': '../core/src/index.ts'
   // "@likec4/generators": '../generators/src/index.ts',
   // "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
   // "@likec4/language-server/protocol": '../language-server/src/protocol.ts',
@@ -35,10 +36,7 @@ const nodeCfg = {
   outbase: 'src',
   outdir: 'dist',
   bundle: true,
-  external: [
-    'vscode',
-    'is-core-module/package.json'
-  ],
+  external: ['vscode', 'is-core-module/package.json'],
   format: 'cjs',
   target: 'node16',
   platform: 'node',
@@ -68,10 +66,7 @@ const webCfg = {
   target: 'es2020',
   platform: 'browser',
   mainFields: ['browser', 'module', 'main'],
-  external: [
-    'vscode',
-    'is-core-module/package.json'
-  ],
+  external: ['vscode', 'is-core-module/package.json'],
   alias: {
     path: 'path-browserify',
     ...alias

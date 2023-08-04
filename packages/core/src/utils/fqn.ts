@@ -77,7 +77,7 @@ export function parentFqn(fqn: Fqn): Fqn | null {
  *                    - Positive number if a is deeper than b.
  *                    - Negative number if b is deeper than a.
  */
-export const compareFqnHierarchically = (a: string, b: string): number => {
+export function compareFqnHierarchically(a: string, b: string): number {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   if (depthA === depthB) {
@@ -88,6 +88,6 @@ export const compareFqnHierarchically = (a: string, b: string): number => {
   }
 }
 
-export const compareByFqnHierarchically = <T extends { id: Fqn }>(a: T, b: T) => {
+export function compareByFqnHierarchically<T extends { id: Fqn }>(a: T, b: T) {
   return compareFqnHierarchically(a.id, b.id)
 }

@@ -1,5 +1,5 @@
 import { Bleed, Callout } from 'nextra-theme-docs'
-import { Tab, Tabs } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra/components'
 import { Info, Warning } from '$/components'
 
 # Model
@@ -104,7 +104,7 @@ model {
 
 #### Element Tags
 
-Element may have tags:
+Tags are defined in nested block and before any properties:
 
 ```likec4 copy
 model {
@@ -116,13 +116,16 @@ model {
   // multiple tags
   appV2 = application {
     #next, #serverless, #team2
-
     title 'App v2'
   }
+
+  appV3 = application {        
+    title 'App v3'
+    #team3 // ⛔️ Error: tag must be defined 
+           //           before any properties or elements
+  }  
 }
 ```
-
-Tags are defined before any properties.
 
 #### Links
 
@@ -139,21 +142,6 @@ model {
 
     // or relative link to navigate to sources
     link ../src/index.ts#L1-L10
-  }
-}
-```
-
-#### Inline styling
-
-Element may be styled (overrides the kind styling):
-
-```likec4 copy
-model {
-  customer = actor 'Customer' {
-    style {
-      shape person
-      color green
-    }
   }
 }
 ```

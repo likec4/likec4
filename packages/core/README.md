@@ -1,3 +1,14 @@
-# @likec4/core
+# LikeC4 Core
 
-Core likec4 types, errors, functions and utilities.
+[docs](https://likec4.dev/docs/) | [example](https://likec4.dev/examples/bigbank/likec4/)
+
+```bash
+npm install @likec4/core
+```
+
+Package contains:
+
+- types
+- view computation
+- utilities and guards
+- errors

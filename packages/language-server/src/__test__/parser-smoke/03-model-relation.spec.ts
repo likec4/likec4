@@ -136,7 +136,7 @@ describe('03_Relation', () => {
         }
       }
       user1 -> user2 'responds to' {
-        title 'some description'
+        title: 'some description';
       }
     }`
   )

@@ -1,8 +1,12 @@
 import type * as c4 from '@likec4/core/types'
-import { RelationRefError } from '@likec4/core'
+import {
+  DefaultElementShape,
+  DefaultThemeColor,
+  RelationRefError,
+  nonexhaustive
+} from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium/lib/workspace'
-// import objectHash from 'object-hash'
 import { elementRef } from './elementRef'
 import type { LikeC4Document } from './generated/ast'
 import * as ast from './generated/ast'
@@ -10,33 +14,13 @@ import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
 
-// export function c4hash({
-//   c4Specification,
-//   c4Elements,
-//   c4Relations,
-//   c4Views
-// }: LikeC4LangiumDocument) {
-//   return objectHash(
-//     {
-//       c4Specification,
-//       c4Elements,
-//       c4Relations,
-//       c4Views
-//     },
-//     {
-//       respectType: false
-//     }
-//   )
-// }
-
 export interface ParsedAstSpecification {
-  kinds: Record<
-    c4.ElementKind,
-    {
-      shape: c4.ElementShape
-      color: c4.ThemeColor
-    }
-  >
+  // prettier-ignore
+  kinds: Record<c4.ElementKind, {
+    shape?: c4.ElementShape
+    color?: c4.ThemeColor
+    icon?: c4.IconUrl
+  }>
 }
 
 export interface ParsedAstElement {
@@ -46,6 +30,7 @@ export interface ParsedAstElement {
   title: string
   description?: string
   technology?: string
+  icon?: c4.IconUrl
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<string>
   shape?: c4.ElementShape
@@ -102,7 +87,6 @@ export const ElementOps = {
 }
 
 export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
-  // c4hash?: string
   c4Specification: ParsedAstSpecification
   c4Elements: ParsedAstElement[]
   c4Relations: ParsedAstRelation[]
@@ -134,7 +118,11 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
 export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
-    ['c4Specification', 'c4Elements', 'c4Relations', 'c4Views'].every(key => key in doc)
+    doc.state >= DocumentState.Validated &&
+    'c4Specification' in doc &&
+    'c4Elements' in doc &&
+    'c4Relations' in doc &&
+    'c4Views' in doc
   )
 }
 
@@ -209,21 +197,39 @@ export function resolveRelationPoints(node: ast.Relation): {
   }
 }
 
-export function toElementStyle(props?: ast.AStyleProperty[]) {
+export function toElementStyle(props?: ast.StyleProperties['props']) {
   const result: {
     color?: c4.ThemeColor
     shape?: c4.ElementShape
+    icon?: c4.IconUrl
   } = {}
-  const color = props?.find(ast.isColorProperty)?.value
-  if (color) {
-    result.color = color
+  if (!props || props.length === 0) {
+    return result
   }
-  const shape = props?.find(ast.isShapeProperty)?.value
-  if (shape) {
-    result.shape = shape
+  for (const prop of props) {
+    if (ast.isColorProperty(prop)) {
+      result.color = prop.value
+      continue
+    }
+    if (ast.isShapeProperty(prop)) {
+      result.shape = prop.value
+      continue
+    }
+    if (ast.isIconProperty(prop)) {
+      result.icon = prop.value as c4.IconUrl
+      continue
+    }
+    nonexhaustive(prop)
   }
-
   return result
+}
+export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props']) {
+  const { color, shape, ...rest } = toElementStyle(props)
+  return {
+    ...rest,
+    ...(color && color !== DefaultThemeColor ? { color } : {}),
+    ...(shape && shape !== DefaultElementShape ? { shape } : {})
+  }
 }
 
 export function toAutoLayout(

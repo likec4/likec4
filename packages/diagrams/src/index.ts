@@ -9,7 +9,7 @@ export type {
   EdgeId,
   ViewID,
   DiagramView
-} from '@likec4/core'
+} from '@likec4/core/types'
 
 export { Diagram } from './diagram'
 export { EmbeddedDiagram, FlexDiagram } from './embedded'

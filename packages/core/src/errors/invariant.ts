@@ -15,3 +15,9 @@ export function invariant(
   }
   throw new InvariantError(message ?? 'Invariant failed')
 }
+
+// Throws an error if the value is null or undefined
+export function nonNullable<T>(value: T): NonNullable<T> {
+  invariant(value != null, 'Expected value to exist')
+  return value
+}

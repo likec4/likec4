@@ -20,21 +20,23 @@ const cli = {
     'langium/lib/workspace': 'langium/src/workspace/index.ts',
     'langium/lib/generator': 'langium/src/generator/index.ts',
     'langium': 'langium/src/index.ts',
-    "@likec4/core/compute-view": '../core/src/compute-view/index.ts',
-    "@likec4/core/utils": '../core/src/utils/index.ts',
-    "@likec4/core/types": '../core/src/types/index.ts',
-    "@likec4/core": '../core/src/index.ts',
-    "@likec4/generators": '../generators/src/index.ts',
-    "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
-    "@likec4/language-server": '../language-server/src/index.ts',
-    "@likec4/layouts": '../layouts/src/index.ts'
+    '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
+    '@likec4/core/utils': '../core/src/utils/index.ts',
+    '@likec4/core/errors': '../core/src/errors/index.ts',
+    '@likec4/core/types': '../core/src/types/index.ts',
+    '@likec4/core': '../core/src/index.ts',
+    '@likec4/generators': '../generators/src/index.ts',
+    '@likec4/language-protocol': '../language-protocol/src/protocol.ts',
+    '@likec4/language-server': '../language-server/src/index.ts',
+    '@likec4/layouts': '../layouts/src/index.ts'
   },
   color: true,
   allowOverwrite: true,
   sourcemap: false,
   keepNames: true,
   legalComments: 'eof',
-  minify: true
+  minify: true,
+  treeShaking: true,
 }
 
 /**
@@ -52,7 +54,7 @@ const exportPage = {
   allowOverwrite: true,
   treeShaking: true,
   minify: true,
-  legalComments: "none"
+  legalComments: 'none'
 }
 
 /**

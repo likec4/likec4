@@ -1,11 +1,12 @@
-import type { NonEmptyArray } from "../types"
+import { NonExhaustiveError } from '../errors/nonexhaustive'
+import type { NonEmptyArray } from '../types'
 
 export function isString(value: unknown): value is string {
   return typeof value === 'string'
 }
 
-export function failExpectedNever(arg: never): never {
-  throw new Error(`Unexpected value: ${JSON.stringify(arg)}`)
+export function failUnexpected(arg: never): never {
+  throw new NonExhaustiveError(`Unexpected value: ${JSON.stringify(arg)}`)
 }
 
 export function ignoreNeverInRuntime(arg: never): void {
@@ -13,6 +14,6 @@ export function ignoreNeverInRuntime(arg: never): void {
   // throw new Error(`Unexpected value: ${arg}`);
 }
 
-export function isNonEmptyArray<A>(arr: ArrayLike<A>): arr is NonEmptyArray<A>{
+export function isNonEmptyArray<A>(arr: ArrayLike<A>): arr is NonEmptyArray<A> {
   return arr.length > 0
 }

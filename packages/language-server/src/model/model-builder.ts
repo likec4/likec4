@@ -1,21 +1,21 @@
-import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
+import {
+  ModelIndex,
+  assignNavigateTo,
+  compareByFqnHierarchically,
+  computeView,
+  invariant,
+  isNonEmptyArray,
+  nonexhaustive,
+  parentFqn
+} from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
-import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
-import { compareByFqnHierarchically, isNonEmptyArray, parentFqn } from '@likec4/core/utils'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
 import { clone } from 'rambdax'
 import * as R from 'remeda'
-
 import stripIndent from 'strip-indent'
-
-import type {
-  ParsedAstElement,
-  ParsedAstElementView,
-  ParsedAstRelation,
-  ParsedAstSpecification
-} from '../ast'
+import type { CancellationToken } from 'vscode-languageserver-protocol'
 import {
   ElementViewOps,
   ast,
@@ -26,7 +26,14 @@ import {
   streamModel,
   toAutoLayout,
   toElementStyle,
-  type LikeC4LangiumDocument
+  toElementStyleExcludeDefaults
+} from '../ast'
+import type {
+  ParsedAstElement,
+  ParsedAstElementView,
+  ParsedAstRelation,
+  ParsedAstSpecification,
+  LikeC4LangiumDocument
 } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
 import { logger } from '../logger'
@@ -34,7 +41,6 @@ import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
 
 export class LikeC4ModelBuilder {
   private fqnIndex: FqnIndex
@@ -103,12 +109,16 @@ export class LikeC4ModelBuilder {
         Object.assign(c4Specification.kinds, spec.kinds)
       )
 
-      const toModelElement = ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
+      const toModelElement = ({
+        astPath,
+        tags,
+        links,
+        ...parsed
+      }: ParsedAstElement): c4.Element | null => {
         const kind = c4Specification.kinds[parsed.kind]
         if (kind) {
           return {
-            shape: kind.shape,
-            color: kind.color,
+            ...kind,
             description: null,
             technology: null,
             tags: tags ?? null,
@@ -219,11 +229,9 @@ export class LikeC4ModelBuilder {
     if (specs) {
       for (const { kind, style } of specs) {
         try {
-          const styleProps = toElementStyle(style?.props)
-          specification.kinds[kind.name as c4.ElementKind] = {
-            color: styleProps.color ?? DefaultThemeColor,
-            shape: styleProps.shape ?? DefaultElementShape
-          }
+          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
+            style?.props
+          )
         } catch (e) {
           logger.warn(e)
         }
@@ -247,7 +255,7 @@ export class LikeC4ModelBuilder {
         }
         continue
       }
-      failExpectedNever(el)
+      nonexhaustive(el)
     }
     const docviews = doc.parseResult.value.views?.views
     if (docviews) {
@@ -270,9 +278,9 @@ export class LikeC4ModelBuilder {
     const id = this.resolveFqn(astNode)
     invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
     const kind = astNode.kind.ref.name as c4.ElementKind
-    const tags = (astNode.body && this.convertTags(astNode.body))
-    const styleProps = astNode.body?.props.find(ast.isElementStyleProperties)?.props
-    const { color, shape } = toElementStyle(styleProps)
+    const tags = this.convertTags(astNode.body)
+    const stylePropsAst = astNode.body?.props.find(ast.isStyleProperties)?.props
+    const styleProps = toElementStyleExcludeDefaults(stylePropsAst)
     const astPath = this.getAstNodePath(astNode)
 
     let [title, description, technology] = astNode.props
@@ -292,13 +300,12 @@ export class LikeC4ModelBuilder {
       id,
       kind,
       astPath,
-      title: title ?? astNode.name,
+      title: title ? stripIndent(title).trim() : astNode.name,
       ...(tags && { tags }),
       ...(links && isNonEmptyArray(links) && { links }),
       ...(technology && { technology }),
       ...(description && { description: stripIndent(description).trim() }),
-      ...(shape && shape !== DefaultElementShape ? { shape } : {}),
-      ...(color && color !== DefaultThemeColor ? { color } : {})
+      ...styleProps
     }
   }
 
@@ -455,8 +462,11 @@ export class LikeC4ModelBuilder {
     return this.services.workspace.AstNodeLocator.getAstNodePath(node)
   }
 
-  private convertTags(el: { tags?: ast.Tags }) {
-    const tags = el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag)
+  private convertTags<E extends { tags?: ast.Tags }>(withTags?: E) {
+    if (!withTags) {
+      return null
+    }
+    const tags = withTags.tags?.value.flatMap(({ ref }) => (ref ? (ref.name as c4.Tag) : []))
     return tags && isNonEmptyArray(tags) ? tags : null
   }
 

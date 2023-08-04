@@ -16,19 +16,14 @@ SpecificationRule:
     (specs+=(SpecificationElementKind | SpecificationTag))*
   CloseBlock;
 
-SpecificationStyleProperties:
-  'style' OpenBlock
-    StylePropertiesFragment
-  CloseBlock;
-
 SpecificationElementKind:
   'element' kind=ElementKind (OpenBlock
-    style=SpecificationStyleProperties?
+    style=StyleProperties?
   CloseBlock)?;
 
 SpecificationTag:
   'tag' tag=Tag (OpenBlock
-    style=SpecificationStyleProperties?
+    style=StyleProperties?
   CloseBlock)?;
 
 // Model -------------------------------------
@@ -66,13 +61,10 @@ ElementBody: OpenBlock
   )*
 CloseBlock;
 
-ElementProperty: ElementStringProperty | ElementStyleProperties;
+ElementProperty: ElementStringProperty | StyleProperties;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') Colon? value=STRING;
-
-ElementStyleProperties:
-  key='style' OpenBlock StylePropertiesFragment CloseBlock;
+  key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
 
 ExtendElement:
   'extend' element=StrictElementRef body=ExtendElementBody;
@@ -113,7 +105,7 @@ RelationBody: OpenBlock
 CloseBlock;
 
 RelationStringProperty:
-  key=('title') Colon? value=STRING;
+  key='title' Colon? value=STRING SemiColon?;
 
 
 // Views -------------------------------------
@@ -135,7 +127,7 @@ View:
   CloseBlock;
 
 ViewProperty:
-  key=('title' | 'description') Colon? value=STRING;
+  key=('title' | 'description') Colon? value=STRING SemiColon?;
 
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
@@ -198,19 +190,25 @@ ElementRefExpression: id=ElementRef (isDescedants?='.*')?;
 
 // Common -------------------------------------
 
-LinkProperty: key='link' Colon? value=Uri;
+LinkProperty: key='link' Colon? value=Uri SemiColon?;
+IconProperty: key='icon' Colon? value=Uri SemiColon?;
 
-ColorProperty: key='color' Colon? value=ThemeColor;
-ShapeProperty: key='shape' Colon? value=ElementShape;
+ColorProperty: key='color' Colon? value=ThemeColor SemiColon?;
+ShapeProperty: key='shape' Colon? value=ElementShape SemiColon?;
+
+StyleProperties:
+  key='style' OpenBlock
+    StylePropertiesFragment
+  CloseBlock;
 
 fragment StylePropertiesFragment:
   (props+=(
-    ColorProperty | ShapeProperty
+    ColorProperty | ShapeProperty | IconProperty
   ))*
 ;
 
 // type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
-type AStyleProperty = ColorProperty | ShapeProperty;
+// type AStyleProperty = ColorProperty | ShapeProperty | IconProperty;
 
 // -------------------------
 
@@ -248,6 +246,7 @@ terminal Eq: '=';
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
 terminal Colon: ':';
+terminal SemiColon: ';';
 terminal Comma: ',';
 
 terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;

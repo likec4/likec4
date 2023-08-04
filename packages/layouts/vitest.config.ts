@@ -1,3 +1,16 @@
-import { vitestProject } from '../../vitest.shared'
+import { mergeConfig, defineConfig, defineProject } from 'vitest/config'
 
-export default vitestProject('layouts')
+export default mergeConfig(
+  defineConfig({
+    test: {
+      snapshotFormat: {
+        escapeString: false
+      }
+    }
+  }),
+  defineProject({
+    test: {
+      name: 'layouts'
+    }
+  })
+)
