@@ -42,7 +42,7 @@
   "dependencies": {
     "@dagrejs/dagre": "^0.8.0",
     "@dagrejs/graphlib": "^2.1.13",
-    "@hpcc-js/wasm": "^2.13.0",
+    "@hpcc-js/wasm": "^2.13.1",
     "@likec4/core": "workspace:*",
     "indent-string": "^5.0.0",
     "rambdax": "^9.1.1",
