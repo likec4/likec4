@@ -38,7 +38,7 @@
     "body-scroll-lock-upgrade": "^1.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
-    "jotai": "^2.2.2",
+    "jotai": "^2.2.3",
     "jotai-devtools": "^0.6.0",
     "langium": "^1.2.1",
     "lucide-react": "^0.263.1",
