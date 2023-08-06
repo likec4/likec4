@@ -18,6 +18,8 @@ export interface ComputedNode {
   tags: NonEmptyArray<Tag> | null
   links: NonEmptyArray<string> | null
   children: NodeId[]
+  inEdges: EdgeId[]
+  outEdges: EdgeId[]
   shape: ElementShape
   color: ThemeColor
   icon?: IconUrl

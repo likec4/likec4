@@ -95,6 +95,23 @@ describe('compute-element-view', () => {
     )
     expect(ids(nodes)).toEqual(['support', 'customer', 'cloud', 'amazon'])
     expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
+    const [support, customer, cloud, amazon] = nodes
+    expect(support).toMatchObject({
+      outEdges: ['support:cloud'],
+      inEdges: []
+    })
+    expect(customer).toMatchObject({
+      outEdges: ['customer:cloud'],
+      inEdges: []
+    })
+    expect(cloud).toMatchObject({
+      outEdges: ['cloud:amazon'],
+      inEdges: ['support:cloud', 'customer:cloud']
+    })
+    expect(amazon).toMatchObject({
+      outEdges: [],
+      inEdges: ['cloud:amazon']
+    })
   })
 
   it('should return landscape view on top `include *, -> cloud.*`', () => {

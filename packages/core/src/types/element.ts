@@ -34,8 +34,8 @@ export type ElementShape =
   | 'storage'
   | 'queue'
 
-export const DefaultThemeColor: ThemeColor = 'primary'
-export const DefaultElementShape: ElementShape = 'rectangle'
+export const DefaultThemeColor = 'primary' satisfies ThemeColor
+export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
 export interface ElementStyle {
   shape?: ElementShape

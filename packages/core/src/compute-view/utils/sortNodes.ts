@@ -1,7 +1,7 @@
 import { isSameHierarchy } from '../../utils'
 import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 import { Graph, alg } from '@dagrejs/graphlib'
-import { nonNullable } from '../../errors/invariant'
+import { nonNullable } from '../../errors'
 
 export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
   const g = new Graph({
