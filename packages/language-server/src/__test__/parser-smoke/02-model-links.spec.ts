@@ -31,7 +31,7 @@ function test(name: string) {
   }
 }
 
-describe.concurrent('02_Model Links', () => {
+describe('02 Model Links', () => {
   describe('with schema', () => {
     test('https and vscode').valid`
       component tst1 {
@@ -84,6 +84,12 @@ describe.concurrent('02_Model Links', () => {
       }
     `
 
+    test('with query and hash').valid`
+      component tst1 {
+        link https://sub.domain.com/?query=1&query2=%20#hash
+      }
+    `
+
     test('not interfere with comments').valid`
       // Here is a comment
       component tst1 {
@@ -107,9 +113,15 @@ describe.concurrent('02_Model Links', () => {
       }
     `
 
-    test('from root with query').valid`
+    test('with query').valid`
       component tst2 {
         link /segment1/segment2.html?query=1&query2=%20
+      }
+    `
+
+    test('with query and hash').valid`
+      component tst2 {
+        link /segment1/segment2.html?query=1&query2=%20#hash2
       }
     `
 
@@ -150,24 +162,4 @@ describe.concurrent('02_Model Links', () => {
       }
     `
   })
-  // test(
-  //   'link with schema',
-  //   valid`${spec}
-  //     model {
-  //       person user1 {
-  //         link https://jjjjj
-  //       }
-  //     }`
-  // )
-
-  // test(
-  //   'relative link from root',
-  //   valid`${spec}
-  //   model {
-  //     person user1 {
-  //       link ./jjjjj
-  //     }
-  //   }
-  // `
-  // )
 })

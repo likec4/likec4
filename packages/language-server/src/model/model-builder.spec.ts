@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
 import type { Element, ViewID } from '@likec4/core/types'
@@ -6,7 +6,7 @@ import type { Element, ViewID } from '@likec4/core/types'
 vi.mock('../logger')
 
 describe('LikeC4ModelBuilder', () => {
-  it('builds model with colors and shapes', async () => {
+  it.concurrent('builds model with colors and shapes', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -66,7 +66,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(elements['system']).not.toHaveProperty('color')
   })
 
-  it('builds model with description and technology', async () => {
+  it('builds model with description and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -128,7 +128,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toMatchSnapshot()
   })
 
-  it('builds model with tags', async () => {
+  it.concurrent('builds model with tags', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -157,7 +157,7 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with icon', async () => {
+  it.concurrent('builds model with icon', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -202,7 +202,7 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model and give default name for index view', async () => {
+  it.concurrent('builds model and give default name for index view', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -230,7 +230,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.rules).to.be.an('array').that.is.not.empty
   })
 
-  it('builds model with extend', async () => {
+  it('builds model with extend', async ({ expect }) => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
     specification {
@@ -305,7 +305,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toMatchSnapshot()
   })
 
-  it('builds model and views with links', async () => {
+  it.concurrent('builds model and views with links', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {

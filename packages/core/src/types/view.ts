@@ -1,7 +1,8 @@
 import type { Opaque } from './opaque'
-import type { ElementShape, Fqn, Tag, ThemeColor } from './element'
+import type { ElementShape, Fqn, Tag } from './element'
 import type { ElementExpression, Expression } from './expression'
 import type { IconUrl, NonEmptyArray } from './_common'
+import type { ThemeColor } from './theme'
 
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>

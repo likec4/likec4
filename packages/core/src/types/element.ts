@@ -1,5 +1,6 @@
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { Opaque } from './opaque'
+import type { ThemeColor } from './theme'
 
 // Full-qualified-name
 export type Fqn = Opaque<string, 'Fqn'>
@@ -9,22 +10,6 @@ export function AsFqn(name: string, parent?: Fqn | null) {
 }
 
 export type ElementKind = Opaque<string, 'ElementKind'>
-
-/**
- * TailwindCSS based color palette
- */
-export type ThemeColor =
-  | 'amber'
-  | 'blue'
-  | 'gray'
-  | 'slate'
-  | 'green'
-  | 'indigo'
-  | 'muted'
-  | 'primary'
-  | 'red'
-  | 'secondary'
-  | 'sky'
 export type ElementShape =
   | 'rectangle'
   | 'person'

@@ -24,6 +24,7 @@ const cli = {
     '@likec4/core/utils': '../core/src/utils/index.ts',
     '@likec4/core/errors': '../core/src/errors/index.ts',
     '@likec4/core/types': '../core/src/types/index.ts',
+    '@likec4/core/colors': '../core/src/colors.ts',
     '@likec4/core': '../core/src/index.ts',
     '@likec4/generators': '../generators/src/index.ts',
     '@likec4/language-protocol': '../language-protocol/src/protocol.ts',
