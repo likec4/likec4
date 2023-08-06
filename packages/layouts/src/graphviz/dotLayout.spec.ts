@@ -4,7 +4,7 @@ import {
   computedCloudView,
   computedCloud3levels,
   computedIndexView
-} from '../__mocks__/data'
+} from './__fixtures__'
 import { dotLayout } from './dotLayout'
 
 describe('dotLayout:', () => {

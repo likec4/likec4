@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Colors, RelationColors } from '@likec4/core'
-import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn } from '@likec4/core/types'
+import { Colors, RelationColors } from '@likec4/core/colors'
+import { DefaultThemeColor } from '@likec4/core/types'
+import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
 import { isTruthy } from 'remeda'
-import { invariant } from '@likec4/core'
 import {
   attribute as _,
   digraph,
@@ -14,12 +14,11 @@ import {
   type SubgraphModel
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
-import type { DotSource } from './graphviz-types'
+import type { DotSource } from './types'
 import { pxToInch, pxToPoints } from './graphviz-utils'
 
-// 1. Declare the 'ts-graphviz' module.
+// Declare custom attributes.
 declare module 'ts-graphviz' {
-
   export namespace ClusterSubgraphAttributeKey {
     export interface $values extends $keywords<'likec4_id' | 'likec4_level' | 'likec4_depth'> {}
   }
@@ -29,30 +28,18 @@ declare module 'ts-graphviz' {
   }
 
   export namespace EdgeAttributeKey {
-    export interface $values extends $keywords<'likec4_edge_id'> {}
+    export interface $values extends $keywords<'likec4_id'> {}
   }
 
   export namespace Attribute {
-    // 4. Define the $keys interface in the Attribute namespace.
-    // 5. Inherit from $keywords<'hoge'> and specify the name of the new attribute in <...>.
-    export interface $keys extends $keywords<'likec4_id' | 'likec4_level' | 'likec4_edge_id' | 'likec4_depth'> {}
+    export interface $keys extends $keywords<'likec4_id' | 'likec4_level' | 'likec4_depth'> {}
 
-    // 6. Define the $types interface in the Attribute namespace.
-    // 7. Specify the new attribute in the key and define its corresponding value in the value.
     export interface $types {
-      likec4_id: Fqn;
-      likec4_edge_id: EdgeId;
-      likec4_level: number;
-      likec4_depth: number;
+      likec4_id: string
+      likec4_level: number
+      likec4_depth: number
     }
   }
-}
-
-function isLeaf(value: ComputedNode) {
-  return value.children.length === 0
-}
-function isRootCluster(value: ComputedNode) {
-  return value.parent === null && value.children.length > 0
 }
 
 export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
@@ -63,11 +50,11 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.nodesep]: pxToInch(80),
     [_.ranksep]: pxToInch(80),
     [_.layout]: 'dot',
+    [_.outputorder]: 'nodesfirst'
   })
-
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(16)
+    [_.fontsize]: pxToPoints(12)
   })
 
   G.attributes.node.apply({
@@ -78,12 +65,13 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
     [_.style]: 'filled,rounded',
-    [_.fillcolor]: Colors.primary.fill,
+    [_.fillcolor]: Colors[DefaultThemeColor].fill,
     [_.margin]: pxToInch(16)
   })
 
   G.attributes.edge.apply({
     [_.fontname]: 'Helvetica',
+    [_.fontsize]: pxToPoints(14),
     [_.style]: 'solid',
     [_.penwidth]: 2,
     [_.arrowsize]: 0.7,
@@ -102,16 +90,20 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
       const gNode = parent.createNode('nd' + sequence++, {
         [_.likec4_id]: node.id,
         [_.likec4_level]: level,
-        [_.label]: nodeLabel(node),
+        [_.label]: nodeLabel(node)
       })
-      if (node.color !== 'primary') {
-        gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
+      if (node.color !== DefaultThemeColor) {
+        gNode.attributes.apply({
+          [_.fillcolor]: Colors[node.color].fill
+        })
       }
       switch (node.shape) {
         case 'cylinder':
         case 'storage': {
-          gNode.attributes.set(_.color, Colors[node.color].stroke)
-          gNode.attributes.set(_.shape, 'cylinder')
+          gNode.attributes.apply({
+            [_.color]: Colors[node.color].stroke,
+            [_.shape]: 'cylinder'
+          })
           break
         }
         default:
@@ -121,18 +113,18 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
       return 0
     }
 
-    const subgraph = parent.createSubgraph('cluster_' + sequence++)
-
-    subgraph.attributes.graph.apply({
+    const subgraph = parent.createSubgraph('cluster_' + sequence++, {
       [_.likec4_id]: node.id,
       [_.likec4_level]: level,
       [_.margin]: node.children.length > 2 ? 32 : 24
     })
+
     const label = sanitize(node.title.toUpperCase())
     if (isTruthy(label)) {
       subgraph.attributes.graph.apply({
-        [_.labeljust]: 'l',
+        [_.fontname]: 'Helvetica',
         [_.fontsize]: pxToPoints(12),
+        [_.labeljust]: 'l',
         [_.label]: `<<B>${label}</B>>`
       })
     }
@@ -143,52 +135,31 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     for (const child of nodes.filter(n => n.parent === node.id)) {
       depth = Math.max(traverseNodes(child, subgraph, level + 1) + 1, depth)
     }
-    subgraph.attributes.graph.apply({
-      [_.likec4_depth]: depth
-    })
+    subgraph.set(_.likec4_depth, depth)
+
+    // TODO: calculate color here
     return depth
   }
 
-  // nodes.filter(isLeaf).forEach(node => {
-  //   const gNode = G.createNode('nd' + sequence++, {
-  //     [_.id]: node.id,
-  //     [_.label]: nodeLabel(node)
-  //   })
-  //   if (node.color !== 'primary') {
-  //     gNode.attributes.set(_.fillcolor, Colors[node.color].fill)
-  //   }
-  //   switch (node.shape) {
-  //     case 'cylinder':
-  //     case 'storage': {
-  //       gNode.attributes.set(_.color, Colors[node.color].stroke)
-  //       gNode.attributes.set(_.shape, 'cylinder')
-  //       break
-  //     }
-  //     default:
-  //       break
-  //   }
-  //   gvNodes.set(node.id, gNode)
-  // })
-
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
     const source = gvNodes.get(edge.source)
+    const target = gvNodes.get(edge.target)
+    // TODO: Edge with cluster?
     // if (!source) {
     //   const firstleaf = leafs.find(n => isAncestor(edge.source, n.id))
     //   source = firstleaf && gvNodes.get(firstleaf.id)
     // }
-    const target = gvNodes.get(edge.target)
     // if (!target) {
     //   const firstleaf = leafs.find(n => isAncestor(edge.target, n.id))
     //   target = firstleaf && gvNodes.get(firstleaf.id)
     // }
     if (source && target) {
       const e = parent.edge([source, target], {
-        [_.likec4_edge_id]: edge.id
+        [_.likec4_id]: edge.id
       })
-      const { label } = edge
-      if (isTruthy(label)) {
+      if (isTruthy(edge.label)) {
         e.attributes.apply({
-          [_.label]: edgeLabel(label)
+          [_.label]: edgeLabel(edge.label)
         })
       }
     }

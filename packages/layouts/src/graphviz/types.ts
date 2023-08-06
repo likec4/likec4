@@ -1,4 +1,4 @@
-import type { EdgeId, Fqn, NodeId, Opaque } from '@likec4/core/types'
+import type { EdgeId, Fqn, Opaque } from '@likec4/core/types'
 
 export type DotSource = Opaque<string, 'DotSource'>
 
@@ -58,23 +58,27 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
-  export type Ldraw = {
-    op: 'F'
-    size: number
-    face: string
-  } |  {
-    op: 'c'
-    color: string
-  } | {
-    op: 't'
-    fontchar: number
-  } | {
-    op: 'T'
-    pt: Point
-    align: 'l' | 'r' | 'c'
-    width: number
-    text: string
-  }
+  export type Ldraw =
+    | {
+        op: 'F'
+        size: number
+        face: string
+      }
+    | {
+        op: 'c'
+        color: string
+      }
+    | {
+        op: 't'
+        fontchar: number
+      }
+    | {
+        op: 'T'
+        pt: Point
+        align: 'l' | 'r' | 'c'
+        width: number
+        text: string
+      }
 
   export type GvObject = GvNodeObject | GvSubgraph
   export interface GvSubgraph {
@@ -82,8 +86,8 @@ export namespace GraphvizJson {
     compound: 'true'
     _ldraw_?: Ldraw[]
     likec4_id?: Fqn
-    likec4_level?: number;
-    likec4_depth?: number;
+    likec4_level?: number
+    likec4_depth?: number
     _gvid: GvId
     nodes: GvId[]
     edges: GvId[]
@@ -93,11 +97,11 @@ export namespace GraphvizJson {
     _draw_: Draw[]
     _ldraw_?: Ldraw[]
     likec4_id?: Fqn
-    likec4_level?: number;
+    likec4_level?: number
     _gvid: GvId
     height: string
     pos: string
-    shape: "rect"
+    shape: 'rect'
     width: string
   }
 
@@ -125,7 +129,7 @@ export namespace GraphvizJson {
     _ldraw_?: Ldraw[]
     fontname: string
     fontsize: string
-    id?: EdgeId
+    likec4_id?: EdgeId
     label: string
     lp: string
     nojustify?: 'true' | 'false'
