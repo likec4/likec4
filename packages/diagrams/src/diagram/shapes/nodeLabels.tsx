@@ -1,8 +1,7 @@
-import { type DiagramNode } from '@likec4/core/types'
 import { Fragment } from 'react'
 import useImageLoader from '../../hooks/useImageLoader'
 import { Image, Text } from '../../konva'
-import type { DiagramTheme } from '../types'
+import type { DiagramTheme, DiagramNode } from '../types'
 
 type NodeIconProps = {
   icon: string

@@ -1,23 +1,16 @@
 import { useSpring } from '@react-spring/konva'
-import { useMemo } from 'react'
 import { AnimatedGroup, AnimatedPath } from '../../konva'
 import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function QueueShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function QueueShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const {
     size: { width, height }
   } = node
   const { fill, stroke } = theme.colors[node.color]
 
-  const { path, ry } = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
+  const { path, ry } = cylinderSVGPath(height, width, 0.1)
 
   const queueProps = useSpring({
     to: {
@@ -27,8 +20,6 @@ export function QueueShape({
   })
 
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedPath
         shadowBlur={16}

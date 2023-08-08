@@ -6,6 +6,7 @@ model {
     rds = container 'RDS' {
       description: 'Relational Databases'
       style {
+        shape cylinder
         icon https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS_Amazon-RDS_instance_light-bg.svg
       }
 
@@ -22,7 +23,7 @@ model {
         description: 'Database for storing relational data'
         style {
           icon https://icons.terrastruct.com/dev%2Fmysql.svg
-          color secondary
+          color indigo
         }
       }
 
@@ -31,6 +32,12 @@ model {
     cognito = component 'Cognito' {
       description: 'User management and authentication'
     }
+
+    ses = component 'SES' {
+      description: 'Email sending'
+    }
+
+    ses -> customer 'sends emails'
   }
 
 }

@@ -1,8 +1,7 @@
+import type { Controller, FrameValue, SpringValue, SpringValues } from '@react-spring/konva'
 import type Konva from 'konva'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
-import type { DiagramTheme } from '../types'
-import type { Controller, FrameValue, SpringValue, SpringValues } from '@react-spring/konva'
-import type { DiagramNode } from '@likec4/core'
+import type { DiagramNode, DiagramTheme } from '../types'
 
 export interface NodeSprings {
   x: number
@@ -30,6 +29,8 @@ export interface NodeShapeProps extends KonvaNodeEvents {
   theme: DiagramTheme
   springs: InterporatedNodeSprings
 }
+
+export type ShapeComponent = (props: NodeShapeProps) => JSX.Element
 
 export type OnDragEvent = Konva.KonvaEventObject<DragEvent>
 export type OnMouseEvent = Konva.KonvaEventObject<MouseEvent>

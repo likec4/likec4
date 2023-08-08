@@ -32,4 +32,5 @@
   ],
   "mdx.experimentalLanguageServer": true,
   "vitest.commandLine": "yarn vitest",
+  "unocss.root": "packages/diagrams"
 }

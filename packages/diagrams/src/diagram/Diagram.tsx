@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useCallback, useMemo, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
-import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
-import { invariant } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import { invariant } from '@likec4/core/errors'
 import { clamp, isNil } from 'rambdax'
 import { AnimatedStage, Layer, KonvaCore } from '../konva'
 import type Konva from 'konva'
@@ -12,7 +12,7 @@ import { nodeListeners } from './shapes/nodeEvents'
 import { interpolateNodeSprings } from './shapes/nodeSprings'
 import type { OnDragEvent, OnNodeClick, OnPointerEvent, OnStageClick } from './shapes/types'
 import { mouseDefault, mousePointer } from './shapes/utils'
-import { DefaultDiagramTheme } from './theme'
+import DefaultDiagramTheme from './theme'
 import type { DiagramPaddings } from './types'
 
 interface IRect {
@@ -404,7 +404,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       expires: true,
       immediate: !animate,
       keys: g => g.id,
-      config: (node, item, state) => {
+      config: (_node, _item, state) => {
         if (state === 'leave') {
           return {
             duration: 150
@@ -457,7 +457,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       expires: true,
       immediate: !animate,
       keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape,
-      config: (node, item, state) => {
+      config: (_node, _item, state) => {
         if (state === 'leave') {
           return {
             duration: 130
@@ -467,10 +467,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
     })
     return (
-      // @ts-ignore
       <AnimatedStage
         ref={stageRef}
-        onWheel={zoomable ? handleWheelZoom : undefined}
         width={width}
         height={height}
         offsetX={width / 2}
@@ -479,6 +477,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         y={stageProps.y}
         scaleX={stageProps.scale}
         scaleY={stageProps.scale}
+        {...(zoomable && {
+          onWheel: handleWheelZoom
+        })}
         {...(onStageClick && {
           onPointerClick: e => {
             if (KonvaCore.isDragging() || !stageRef.current) {

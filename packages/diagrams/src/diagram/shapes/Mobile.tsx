@@ -2,15 +2,8 @@ import { useSpring } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
-import React from 'react'
 
-export function MobileShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({
@@ -22,8 +15,6 @@ export function MobileShape({
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedRect
         cornerRadius={10}

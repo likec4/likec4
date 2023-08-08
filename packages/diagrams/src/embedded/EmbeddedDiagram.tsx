@@ -32,18 +32,34 @@ export function EmbeddedDiagram<Views extends Record<string, DiagramView>>({
 
   return (
     <div
-      className={className}
+      un-position='relative'
+      un-w='100%'
+      un-h='auto'
+      un-display='flex'
+      un-mx='auto'
+      un-box='border-box'
       style={{
-        position: 'relative',
-        display: 'flex',
         aspectRatio: `${w} / ${h}`,
-        width: '100%',
-        height: 'auto',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        maxWidth: w,
-        boxSizing: 'border-box'
+        maxWidth: w
       }}
+      // uno-position="relative"
+      // uno-display="flex"
+      // uno-w="full"
+      // uno-h="auto"
+      // uno-aspectratio={`${w} / ${h}`}
+
+      // style={{
+      //   position: 'relative',
+      //   display: 'flex',
+      //   aspectRatio: `${w} / ${h}`,
+      //   width: '100%',
+      //   height: 'auto',
+      //   marginLeft: 'auto',
+      //   marginRight: 'auto',
+      //   maxWidth: w,
+      //   boxSizing: 'border-box'
+      // }}
+      // className={className}
     >
       <div ref={containerRef} style={{ flex: '1 1 100%', overflow: 'hidden' }}>
         {!diagram && (

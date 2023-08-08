@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Diagram, type DiagramNode } from '../src'
+import { Diagram, EmbeddedDiagram, type DiagramNode } from '../src'
 import * as likec4 from './likec4'
 
 function readViewId(initial: likec4.LikeC4ViewId = 'index') {
@@ -39,8 +39,6 @@ function useViewId(initial: likec4.LikeC4ViewId) {
   return [viewId, setViewId] as const
 }
 
-
-
 export default function DevApp() {
   const [viewId, setViewId] = useViewId('index')
 
@@ -63,11 +61,13 @@ export default function DevApp() {
   // console.count('DevApp: render')
 
   return (
-    <Diagram
-      diagram={likec4.LikeC4ViewsData[viewId]}
+    <EmbeddedDiagram
+      views={likec4.LikeC4ViewsData}
+      viewId={viewId}
+      // diagram={likec4.LikeC4ViewsData[viewId]}
       onNodeClick={onNodeClick}
-      width={window.innerWidth}
-      height={window.innerHeight}
+      // width={window.innerWidth}
+      // height={window.innerHeight}
       padding={40}
     />
   )

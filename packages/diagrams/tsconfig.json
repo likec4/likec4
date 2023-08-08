@@ -16,13 +16,18 @@
 
     /* Linting */
     "strict": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src", "src-dev"],
-  "references": [
-    { "path": "../core" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "../core" }, { "path": "./tsconfig.node.json" }]
 }

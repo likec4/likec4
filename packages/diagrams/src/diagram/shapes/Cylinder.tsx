@@ -1,7 +1,6 @@
 import { useSpring } from '@react-spring/konva'
-import { useMemo } from 'react'
 import { AnimatedGroup, AnimatedPath } from '../../konva'
-import { NodeLabels as NodeTitle } from './nodeLabels'
+import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
 export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
@@ -27,21 +26,15 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   }
 }
 
-export function CylinderShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const {
     size: { width, height },
     color
   } = node
   const { fill, stroke } = theme.colors[color]
 
-  const { path, ry } = useMemo(() => cylinderSVGPath(width, height), [width, height])
-  // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
+  const { path, ry } = cylinderSVGPath(width, height)
+
   const cylinderProps = useSpring({
     to: {
       fill,
@@ -50,8 +43,6 @@ export function CylinderShape({
   })
 
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedPath
         shadowBlur={16}
@@ -69,7 +60,7 @@ export function CylinderShape({
         hitStrokeWidth={8}
         {...cylinderProps}
       />
-      <NodeTitle node={node} offsetY={node.icon ? (-2 * ry + 4) :  -0.5 * ry} theme={theme} />
+      <NodeLabels node={node} offsetY={node.icon ? -2 * ry + 4 : -0.5 * ry} theme={theme} />
     </AnimatedGroup>
   )
 }

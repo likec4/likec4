@@ -3,13 +3,7 @@ import { AnimatedGroup, AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function RectangleShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function RectangleShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const rectProps = useSpring({
@@ -20,8 +14,6 @@ export function RectangleShape({
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedRect
         width={springs.width}

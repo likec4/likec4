@@ -13,7 +13,3 @@ export const mouseDefault = (e: OnPointerEvent) => {
     container.style.cursor = 'auto'
   }
 }
-
-export function unexhaustive(arg: never, message = 'Unexhaustive value: '): never {
-  throw new Error(message + ': ' + JSON.stringify(arg))
-}

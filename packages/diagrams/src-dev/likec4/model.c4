@@ -43,12 +43,17 @@ model {
 
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
+        style {
+          icon https://upload.wikimedia.org/wikipedia/commons/1/17/GraphQL_Logo.svg
+        }
       }
       cms = app 'CMS' {
         description 'The CMS of the cloud system'
       }
 
       graphql -> cms
+      graphql -> amazon.cognito 'authorizes'
+      graphql -> amazon.ses 'schedule emails'
       graphql -> amazon.cognito 'authenticates'
       graphql -> amazon.rds.pg 'reads and writes'
 
@@ -88,12 +93,37 @@ views {
   view cloud_backend of backend {
     title "Overview Backend"
     include
-      *,
-      ui, ui.* -> backend,
-      backend -> amazon.*
+      ui, amazon, backend, cloud,
+      ui.* -> backend,
+      backend.* -> amazon.*
 
     exclude
       ui -> amazon
+
+    style * {
+      color muted
+    }
+
+    style ui.*, amazon.* {
+      color secondary
+    }
+
+    style backend, backend.* {
+      color primary
+    }
+  }
+
+  view cloud_graphql of graphql {
+    include
+      *, backend
+    exclude
+      -> amazon
+    include
+      graphql -> amazon
+  }
+
+  view cloud_cms of cms {
+    include *, backend
   }
 
 }

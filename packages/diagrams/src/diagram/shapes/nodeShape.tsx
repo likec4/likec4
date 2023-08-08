@@ -1,14 +1,11 @@
-import type { DiagramNode } from '@likec4/core'
+import type { DiagramNode } from '../types'
 import { RectangleShape } from './Rectangle'
 import { CylinderShape } from './Cylinder'
 import { QueueShape } from './Queue'
-import { unexhaustive } from './utils'
 import { BrowserShape } from './Browser'
 import { PersonShape } from './Person'
-import type { NodeShapeProps } from './types'
+import type { ShapeComponent } from './types'
 import { MobileShape } from './Mobile'
-
-type ShapeComponent = (props: NodeShapeProps) => JSX.Element
 
 export function nodeShape({ shape }: DiagramNode): ShapeComponent {
   switch (shape) {
@@ -32,6 +29,6 @@ export function nodeShape({ shape }: DiagramNode): ShapeComponent {
       return MobileShape
     }
   }
-  // @ts-expect-error - this should be unreachable
-  unexhaustive(shape)
+  // @ts-expect-error - this should be unreachable code if all shapes are handled
+  throw new Error(`Unknown shape: ${shape}`)
 }
