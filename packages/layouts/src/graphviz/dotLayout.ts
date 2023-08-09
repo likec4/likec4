@@ -1,5 +1,5 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { invariant } from '@likec4/core'
+import { invariant } from '@likec4/core/errors'
 import type {
   ComputedView,
   DiagramEdge,
@@ -58,11 +58,16 @@ function parseLabelDraws(
   const labels = [] as DiagramLabel[]
 
   let fontSize: number | undefined
+  let color: DiagramLabel['color']
   let fontStyle: DiagramLabel['fontStyle']
 
   for (const draw of _ldraw_) {
     if (draw.op === 'F') {
       fontSize = pointToPx(draw.size)
+      continue
+    }
+    if (draw.op === 'c') {
+      color = draw.color as DiagramLabel['color']
       continue
     }
     if (draw.op === 't') {
@@ -78,6 +83,7 @@ function parseLabelDraws(
         labels.push({
           fontSize,
           ...(fontStyle ? { fontStyle } : {}),
+          ...(color ? { color } : {}),
           text: draw.text,
           pt: [pointToPx(draw.pt[0]) - containerX, pointToPx(draw.pt[1]) - containerY],
           align: toKonvaAlign(draw.align),

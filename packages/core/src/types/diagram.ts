@@ -1,3 +1,4 @@
+import type { ColorLiteral } from '.'
 import type { ComputedEdge, ComputedNode, ComputedView } from './computed-view'
 
 export type Point = [x: number, y: number]
@@ -5,6 +6,7 @@ export type Point = [x: number, y: number]
 export interface DiagramLabel {
   align: 'left' | 'right' | 'center'
   fontStyle?: 'bold' | 'normal'
+  color?: ColorLiteral
   fontSize: number
   pt: Point
   width: number

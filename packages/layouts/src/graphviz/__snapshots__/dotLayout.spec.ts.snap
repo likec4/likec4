@@ -31,6 +31,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             207,
@@ -82,6 +83,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#000000",
           "fontSize": 12,
           "fontStyle": "bold",
           "pt": [
@@ -121,6 +123,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#000000",
           "fontSize": 12,
           "fontStyle": "bold",
           "pt": [
@@ -157,6 +160,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             126,
@@ -196,6 +200,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             150,
@@ -206,6 +211,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             93,
@@ -337,6 +343,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             247,
@@ -347,6 +354,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             247,
@@ -413,6 +421,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             539,
@@ -479,6 +488,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             418,
@@ -533,6 +543,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             218,
@@ -587,6 +598,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             618,
@@ -640,6 +652,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#000000",
           "fontSize": 12,
           "fontStyle": "bold",
           "pt": [
@@ -680,6 +693,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#000000",
           "fontSize": 12,
           "fontStyle": "bold",
           "pt": [
@@ -716,6 +730,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             92,
@@ -726,6 +741,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             48,
@@ -736,6 +752,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             96,
@@ -773,6 +790,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             124,
@@ -812,6 +830,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             128,
@@ -822,6 +841,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             79,
@@ -860,6 +880,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             76,
@@ -870,6 +891,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             39,
@@ -880,6 +902,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             44,
@@ -919,6 +942,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             43,
@@ -929,6 +953,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             35,
@@ -939,6 +964,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             55,
@@ -979,6 +1005,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             113,
@@ -989,6 +1016,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             41,
@@ -999,6 +1027,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             131,
@@ -1038,6 +1067,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             93,
@@ -1048,6 +1078,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             37,
@@ -1058,6 +1089,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             125,
@@ -1151,6 +1183,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             364,
@@ -1206,6 +1239,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             364,
@@ -1260,6 +1294,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             259,
@@ -1314,6 +1349,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             476,
@@ -1366,6 +1402,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#000000",
           "fontSize": 12,
           "fontStyle": "bold",
           "pt": [
@@ -1403,6 +1440,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             93,
@@ -1413,6 +1451,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             49,
@@ -1423,6 +1462,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             97,
@@ -1460,6 +1500,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             125,
@@ -1499,6 +1540,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             129,
@@ -1509,6 +1551,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             80,
@@ -1548,6 +1591,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             126,
@@ -1587,6 +1631,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             127,
@@ -1663,6 +1708,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             364,
@@ -1717,6 +1763,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             271,
@@ -1771,6 +1818,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#d4d4d4",
           "fontSize": 14,
           "pt": [
             470,
@@ -1820,6 +1868,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             93,
@@ -1830,6 +1879,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             49,
@@ -1840,6 +1890,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             97,
@@ -1877,6 +1928,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             125,
@@ -1917,6 +1969,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             140,
@@ -1957,6 +2010,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
+          "color": "#eff6ff",
           "fontSize": 18,
           "pt": [
             129,
@@ -1967,6 +2021,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
         },
         {
           "align": "left",
+          "color": "#dbeafe",
           "fontSize": 14,
           "pt": [
             80,
