@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Diagram, EmbeddedDiagram, type DiagramNode } from '../src'
+import type { LikeC4DiagramApi } from '../src'
+import { LikeC4Diagram, type DiagramNode } from '../src'
 import * as likec4 from './likec4'
 
 function readViewId(initial: likec4.LikeC4ViewId = 'index') {
@@ -49,6 +50,8 @@ export default function DevApp() {
     }
   }, [])
 
+  const apiRef = useRef<LikeC4DiagramApi>(null)
+
   // useEffect(() => {
   //   console.log('DevApp: mount')
   //   return () => {
@@ -61,13 +64,16 @@ export default function DevApp() {
   // console.count('DevApp: render')
 
   return (
-    <EmbeddedDiagram
-      views={likec4.LikeC4ViewsData}
-      viewId={viewId}
-      // diagram={likec4.LikeC4ViewsData[viewId]}
+    <LikeC4Diagram
+      ref={apiRef}
+      className='likec4-diagram'
+      diagram={likec4.LikeC4ViewsData[viewId]}
       onNodeClick={onNodeClick}
-      // width={window.innerWidth}
-      // height={window.innerHeight}
+      onStageClick={() => {
+        apiRef.current?.centerAndFit()
+      }}
+      width={window.innerWidth}
+      height={window.innerHeight}
       padding={40}
     />
   )

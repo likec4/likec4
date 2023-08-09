@@ -1487,6 +1487,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-konva: ^18.2.10
+    tilg: ^0.1.1
     typescript: ^5.1.6
     unocss: ^0.54.1
     vite: ^4.4.8

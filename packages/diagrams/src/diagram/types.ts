@@ -1,3 +1,6 @@
+import type Konva from 'konva'
+import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+
 export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
 
 export type {
@@ -8,3 +11,62 @@ export type {
   DiagramLabel,
   DiagramView
 } from '@likec4/core/types'
+
+type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
+
+export type OnNodeClick = (node: DiagramNode, event: KonvaPointerEvent) => void
+export type OnEdgeClick = (node: DiagramEdge, event: KonvaPointerEvent) => void
+export type OnStageClick = (stage: Konva.Stage, event: KonvaPointerEvent) => void
+
+export interface LikeC4DiagramApi {
+  stage(): Konva.Stage
+  container(): HTMLDivElement
+  diagramView(): DiagramView
+  /**
+   * Reset stage position and zoom
+   */
+  resetStageZoom(immediate?: boolean): void
+  centerOnNode(node: DiagramNode): void
+  centerAndFit(): void
+}
+
+// prettier-ignore
+export interface LikeC4DiagramProps extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
+  diagram: DiagramView
+  /**
+   * If true, the diagram will be animated when nodes are added or removed
+   * @default true
+   */
+  animate?: boolean
+  /**
+   * If true, the diagram will be pannable
+   * @default true
+   */
+  pannable?: boolean
+  /**
+   * If true, the diagram will be zoomable
+   * @default true
+   */
+  zoomable?: boolean
+
+  width?: number
+  height?: number
+  /**
+   * The padding inside the diagram canvas
+   */
+  padding?: DiagramPaddings | undefined
+
+  /**
+   * Internal use
+   * When render to React portal
+   */
+  initialPosition?: {
+    x: number
+    y: number
+    scale: number
+  }
+
+  onNodeClick?: OnNodeClick | undefined
+  onStageClick?: OnStageClick | undefined
+  onEdgeClick?: OnEdgeClick | undefined
+}
