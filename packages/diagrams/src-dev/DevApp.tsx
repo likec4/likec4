@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { LikeC4DiagramApi } from '../src'
+import type { DiagramApi } from '../src'
 import { LikeC4Diagram, type DiagramNode } from '../src'
 import * as likec4 from './likec4'
 
@@ -50,7 +50,7 @@ export default function DevApp() {
     }
   }, [])
 
-  const apiRef = useRef<LikeC4DiagramApi>(null)
+  const apiRef = useRef<DiagramApi>(null)
 
   // useEffect(() => {
   //   console.log('DevApp: mount')

@@ -21,7 +21,7 @@ function getCenter(p1: Point, p2: Point): Point {
   }
 }
 
-export function useMultitouchHandlers(
+export function useTouchHandlers(
   pannable: boolean,
   stageSpringApi: SpringRef<{
     x: number

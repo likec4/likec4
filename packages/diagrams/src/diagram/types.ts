@@ -1,24 +1,17 @@
 import type Konva from 'konva'
-import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core/types'
+import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 
 export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
 
-export type {
-  LikeC4Theme,
-  LikeC4Theme as DiagramTheme,
-  DiagramNode,
-  DiagramEdge,
-  DiagramLabel,
-  DiagramView
-} from '@likec4/core/types'
+export type { LikeC4Theme, DiagramNode, DiagramEdge, DiagramLabel, DiagramView } from '@likec4/core'
 
-type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
+export type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
 
 export type OnNodeClick = (node: DiagramNode, event: KonvaPointerEvent) => void
 export type OnEdgeClick = (node: DiagramEdge, event: KonvaPointerEvent) => void
 export type OnStageClick = (stage: Konva.Stage, event: KonvaPointerEvent) => void
 
-export interface LikeC4DiagramApi {
+export interface DiagramApi {
   stage(): Konva.Stage
   container(): HTMLDivElement
   diagramView(): DiagramView
@@ -31,7 +24,7 @@ export interface LikeC4DiagramApi {
 }
 
 // prettier-ignore
-export interface LikeC4DiagramProps extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
+export interface DiagramProps extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
   diagram: DiagramView
   /**
    * If true, the diagram will be animated when nodes are added or removed

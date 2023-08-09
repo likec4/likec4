@@ -1,9 +1,8 @@
 import { KonvaCore } from '../../konva'
-import { config } from '@react-spring/konva'
-import type { OnNodeClick, OnPointerEvent } from './types'
-import type { DiagramNode } from '../types'
+import type { OnNodeClick, KonvaPointerEvent, DiagramNode } from '../types'
 import { mouseDefault, mousePointer } from './utils'
 import type { NodeSpringsCtrl } from '../springs'
+import { config } from '@react-spring/konva'
 
 export function nodeListeners({
   node,
@@ -18,7 +17,7 @@ export function nodeListeners({
     return {} as const
   }
   return {
-    onPointerEnter: (e: OnPointerEvent) => {
+    onPointerEnter: (e: KonvaPointerEvent) => {
       mousePointer(e)
       void ctrl.start({
         to: {
@@ -28,7 +27,7 @@ export function nodeListeners({
         config: config.stiff
       })
     },
-    onPointerLeave: (e: OnPointerEvent) => {
+    onPointerLeave: (e: KonvaPointerEvent) => {
       mouseDefault(e)
       void ctrl.start({
         to: {
@@ -39,7 +38,7 @@ export function nodeListeners({
         config: config.slow
       })
     },
-    onPointerClick: (e: OnPointerEvent) => {
+    onPointerClick: (e: KonvaPointerEvent) => {
       if (KonvaCore.isDragging()) {
         return
       }

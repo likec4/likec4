@@ -1,24 +1,24 @@
-import { defineConfig } from 'vite'
-import path from 'node:path'
 import react from '@vitejs/plugin-react'
+import { resolve, isAbsolute } from 'node:path'
+import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 import watchAndRun from 'vite-plugin-watch-and-run'
-import UnoCSS from 'unocss/vite'
 
-const isExternal = (id: string) => !id.startsWith('.') && !path.isAbsolute(id)
+const isExternal = (id: string) => !id.startsWith('.') && !isAbsolute(id)
 
 export default defineConfig(env => {
   return {
     resolve: {
-      dedupe: ['react', 'react-dom']
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime']
     },
     build: {
       minify: false,
       emptyOutDir: true,
       lib: {
         entry: {
-          index: path.resolve(__dirname, 'src/index.ts')
+          index: resolve(__dirname, 'src', 'index.ts')
         },
-        formats: ['es', 'cjs']
+        formats: ['es']
       },
       rollupOptions: {
         external: isExternal,
@@ -29,16 +29,20 @@ export default defineConfig(env => {
       }
     },
     plugins: [
-      UnoCSS(),
+      // UnoCSS(),
       react(),
       watchAndRun([
         {
           name: 'likec4',
-          watch: path.resolve('src-dev/**/*.c4'),
+          watch: 'src-dev/**/*.c4',
           run: 'yarn run generate',
           delay: 300
         }
-      ])
+      ]),
+      dts({
+        entryRoot: resolve(__dirname, 'src'),
+        exclude: ['src-dev']
+      })
     ]
   }
 })

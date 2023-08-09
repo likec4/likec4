@@ -3,7 +3,7 @@ import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { useMemo } from 'react'
 
-export function useZoomHandlers(
+export function useMouseWheel(
   zoomable: boolean,
   stageSpringApi: SpringRef<{
     x: number

@@ -1,7 +1,7 @@
 import { AnimatedGroup, AnimatedRect, KonvaCore, Text } from '../../konva'
 import { scale } from 'khroma'
 import type { DiagramTheme, DiagramNode } from '../types'
-import type { InterporatedNodeSprings, OnNodeClick, OnPointerEvent } from './types'
+import type { InterporatedNodeSprings, OnNodeClick, KonvaPointerEvent } from './types'
 import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
@@ -30,13 +30,13 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
   const listeners = {}
   if (onNodeClick) {
     Object.assign(listeners, {
-      onPointerEnter: (e: OnPointerEvent) => {
+      onPointerEnter: (e: KonvaPointerEvent) => {
         mousePointer(e)
       },
-      onPointerLeave: (e: OnPointerEvent) => {
+      onPointerLeave: (e: KonvaPointerEvent) => {
         mouseDefault(e)
       },
-      onPointerClick: (evt: OnPointerEvent) => {
+      onPointerClick: (evt: KonvaPointerEvent) => {
         if (KonvaCore.isDragging()) {
           return
         }
