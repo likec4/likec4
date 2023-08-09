@@ -1,33 +1,34 @@
-import type { Controller, FrameValue, SpringValue, SpringValues } from '@react-spring/konva'
+import type { SpringValues } from '@react-spring/konva'
 import type Konva from 'konva'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
+import type { NodeSprings } from '../springs'
 import type { DiagramNode, DiagramTheme } from '../types'
 
-export interface NodeSprings {
-  x: number
-  y: number
-  opacity: number
-  scale: number
-  width: number
-  height: number
-}
+// export interface NodeSprings {
+//   x: number
+//   y: number
+//   opacity: number
+//   scale: number
+//   width: number
+//   height: number
+// }
 
-export type NodeSpringsCtrl = Controller<NodeSprings>
+// export type NodeSpringsCtrl = Controller<NodeSprings>
 
-export type InterporatedNodeSprings = SpringValues<Omit<NodeSprings, 'x' | 'y' | 'scale'>> & {
-  scaleX: SpringValue<number>
-  scaleY: SpringValue<number>
-  x: FrameValue<number>
-  y: FrameValue<number>
-  offsetX: FrameValue<number>
-  offsetY: FrameValue<number>
-}
+// export type InterporatedNodeSprings = SpringValues<Omit<NodeSprings, 'x' | 'y' | 'scale'>> & {
+//   scaleX: SpringValue<number>
+//   scaleY: SpringValue<number>
+//   x: FrameValue<number>
+//   y: FrameValue<number>
+//   offsetX: FrameValue<number>
+//   offsetY: FrameValue<number>
+// }
 
 export interface NodeShapeProps extends KonvaNodeEvents {
   id?: string
   node: DiagramNode
   theme: DiagramTheme
-  springs: InterporatedNodeSprings
+  springs: SpringValues<NodeSprings>
 }
 
 export type ShapeComponent = (props: NodeShapeProps) => JSX.Element

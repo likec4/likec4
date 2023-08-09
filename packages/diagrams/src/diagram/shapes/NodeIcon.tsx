@@ -17,7 +17,7 @@ export function NodeIcon({ icon, maxWidth, maxHeight, offsetX = 0, offsetY = 0 }
   const padding = 16
   const maxIconWidth = Math.round(maxWidth - padding * 2)
   const maxIconHeight = Math.round(maxHeight - padding * 2)
-  const scale = Math.min(maxIconWidth / image.width, maxIconHeight / image.height)
+  const scale = Math.min(maxIconWidth / image.width, maxIconHeight / image.height, 1)
   const iconWidth = Math.floor(image.width * scale)
   const iconHeight = Math.floor(image.height * scale)
   return (

@@ -1,8 +1,9 @@
 import { KonvaCore } from '../../konva'
 import { config } from '@react-spring/konva'
-import type { NodeSpringsCtrl, OnNodeClick, OnPointerEvent } from './types'
+import type { OnNodeClick, OnPointerEvent } from './types'
 import type { DiagramNode } from '../types'
 import { mouseDefault, mousePointer } from './utils'
+import type { NodeSpringsCtrl } from '../springs'
 
 export function nodeListeners({
   node,
@@ -21,7 +22,8 @@ export function nodeListeners({
       mousePointer(e)
       void ctrl.start({
         to: {
-          scale: 1.08
+          scaleX: 1.08,
+          scaleY: 1.08
         },
         config: config.stiff
       })
@@ -30,7 +32,8 @@ export function nodeListeners({
       mouseDefault(e)
       void ctrl.start({
         to: {
-          scale: 1
+          scaleX: 1,
+          scaleY: 1
         },
         delay: 100,
         config: config.slow

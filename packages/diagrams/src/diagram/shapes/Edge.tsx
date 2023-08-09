@@ -55,7 +55,7 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           // offsetY={label.fontSize / 2}
           // offsetX={label  .width / 2}
           // width={label.width}
-          fill={theme.relation.labelColor}
+          fill={label.color ?? theme.relation.labelColor}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
