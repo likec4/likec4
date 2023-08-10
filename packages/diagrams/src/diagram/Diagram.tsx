@@ -1,14 +1,14 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, KonvaCore, Layer } from '../konva'
-import { nonNullable } from '@likec4/core/errors'
-import type { DiagramNode } from '@likec4/core/types'
+import { nonNullable } from '@likec4/core'
+import type { DiagramNode } from '@likec4/core'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { Compounds } from './Compounds'
 import { Edges } from './Edges'
 import { Nodes } from './Nodes'
-import { defaultTheme as theme } from '@likec4/core/colors'
+import { defaultTheme as theme } from '@likec4/core'
 import type { DiagramPaddings, DiagramApi, DiagramProps } from './types'
 import { useTouchHandlers } from './useTouchHandlers'
 import { useMouseWheel } from './useMouseWheel'
@@ -28,7 +28,7 @@ const useSyncedRef = <T extends object>(value: T) => {
   }
 }
 
-const NoPadding: DiagramPaddings = [0, 0, 0, 0]
+const NoPadding = [0, 0, 0, 0] satisfies DiagramPaddings
 
 export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
@@ -42,22 +42,23 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       onEdgeClick,
       onNodeClick,
       onStageClick,
-      width = diagram.width,
-      height = diagram.height,
+      width: _width,
+      height: _height,
       ...props
     },
     ref
   ) => {
+    const immediate = !animate
     const id = diagram.id
     const stageRef = useRef<Konva.Stage>(null)
 
-    // "pin" references
-    const padding: DiagramPaddings = Array.isArray(_padding)
-      ? _padding
-      : [_padding, _padding, _padding, _padding]
+    const width = _width ?? diagram.width
+    const height = _height ?? diagram.height
 
-    const whereToCenterOnRect = (centerTo: IRect) => {
-      const [paddingTop, paddingRight, paddingBottom, paddingLeft] = padding
+    const toCenterOnRect = (centerTo: IRect) => {
+      const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(_padding)
+        ? _padding
+        : ([_padding, _padding, _padding, _padding] as const)
       const container = stageRef.current?.container()
 
       const // Get the space we can see in the web page = size of div containing stage
@@ -82,37 +83,55 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           x: Math.ceil(paddingLeft + centeringAjustment.x - centerTo.x * scale),
           y: Math.ceil(paddingTop + centeringAjustment.y - centerTo.y * scale)
         }
+      // console.log(`centerTo: \n${JSON.stringify(centerTo, null, 4)}`)
+      // console.log(`viewRect: \n${JSON.stringify(viewRect, null, 4)}`)
+      // console.log(`finalPosition: \n${JSON.stringify(finalPosition, null, 4)}`)
       return {
         ...finalPosition,
         scale
       }
     }
 
-    const whereToFitDiagram = () => whereToCenterOnRect(diagram.boundingBox)
+    const toFitDiagram = () => toCenterOnRect(diagram.boundingBox)
 
     const [stageProps, stageSpringApi] = useSpring(() => ({
-      from: initialPosition ?? whereToFitDiagram()
+      from: initialPosition ?? toFitDiagram(),
+      immediate
     }))
 
     const centerOnRect = (centerTo: IRect) => {
       stageSpringApi.stop(true).start({
-        to: whereToCenterOnRect(centerTo)
+        to: toCenterOnRect(centerTo),
+        immediate
       })
     }
 
     const centerAndFit = () => {
       stageSpringApi.stop(true).start({
-        to: whereToFitDiagram()
+        to: toFitDiagram(),
+        delay: 70,
+        immediate
+      })
+    }
+
+    const resetStageZoom = (_immediate?: boolean) => {
+      stageSpringApi.stop(true).start({
+        to: {
+          x: 0,
+          y: 0,
+          scale: 1
+        },
+        immediate
       })
     }
 
     const refs = useSyncedRef({
       diagram,
-      padding,
       width,
       height,
       centerOnRect,
-      centerAndFit
+      centerAndFit,
+      resetStageZoom
     })
 
     useImperativeHandle(
@@ -123,7 +142,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           diagramView: () => refs.current.diagram,
           container: () => nonNullable(stageRef.current?.container()),
           resetStageZoom: (_immediate?: boolean) => {
-            throw new Error('Not implemented')
+            refs.current.resetStageZoom(_immediate)
           },
           centerOnNode: (node: DiagramNode): void => {
             refs.current.centerOnRect({
@@ -135,22 +154,22 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           },
           centerAndFit: () => refs.current.centerAndFit()
         }) satisfies DiagramApi,
-      [refs.current, stageRef]
+      [refs, stageRef]
     )
 
-    useEffect(() => {
-      const el = stageRef.current?.container()
-      if (!el) return
-      if (!pannable && !zoomable) {
-        el.style.touchAction = 'none'
-        return
-      }
-      el.style.touchAction = `${pannable ? 'pan-x pan-y ' : ''}${zoomable ? 'pinch-zoom' : ''}`
-    }, [pannable, zoomable])
+    // useEffect(() => {
+    //   const el = stageRef.current?.container()
+    //   if (!el) return
+    //   if (!pannable && !zoomable) {
+    //     el.style.touchAction = 'none'
+    //     return
+    //   }
+    //   el.style.touchAction = `${pannable ? 'pan-x pan-y ' : ''}${zoomable ? 'pinch-zoom' : ''}`
+    // }, [pannable, zoomable])
 
     useEffect(() => {
-      centerAndFit()
-    }, [id, height, width])
+      refs.current.centerAndFit()
+    }, [id, height, width, _padding])
 
     const sharedProps = {
       animate,
@@ -180,20 +199,18 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }
           }
         })}
+        onPointerDblClick={e => {
+          if (KonvaCore.isDragging() || !stageRef.current) {
+            return
+          }
+          if (e.target === stageRef.current || !onNodeClick) {
+            e.cancelBubble = true
+            centerAndFit()
+          }
+        }}
         {...useTouchHandlers(pannable, stageSpringApi)}
-        {...useMouseWheel(pannable, stageSpringApi)}
+        {...useMouseWheel(zoomable, stageSpringApi)}
         {...props}
-        // onPointerDblClick={e => {
-        //   if (KonvaCore.isDragging() || !stageRef.current) {
-        //     return
-        //   }
-        //   if (e.target === stageRef.current || !onNodeClick) {
-        //     e.cancelBubble = true
-        //     stageSpringApi.start({
-        //       to: centerAndFitDiagram()
-        //     })
-        //   }
-        // }}
       >
         <Layer>
           <Compounds {...sharedProps} onNodeClick={onNodeClick} />
@@ -206,4 +223,4 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     )
   }
 )
-Diagram.displayName = 'LikeC4Diagram'
+Diagram.displayName = 'Diagram'

@@ -24,7 +24,7 @@ export function RectangleShape({ id, node, theme, springs, ...listeners }: NodeS
         shadowOffsetX={0}
         shadowOffsetY={8}
         shadowColor={theme.shadow}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
         // shadowForStrokeEnabled={false}

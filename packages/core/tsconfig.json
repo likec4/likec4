@@ -3,11 +3,11 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "incremental": true,
-    "composite": true,
+    "noEmit": true,
     "sourceMap": true,
     "declarationMap": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "."
   },
-  "include": ["./src/"]
+  "include": ["src"]
 }

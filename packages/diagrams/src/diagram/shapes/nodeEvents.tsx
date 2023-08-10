@@ -24,6 +24,7 @@ export function nodeListeners({
           scaleX: 1.08,
           scaleY: 1.08
         },
+        default: false,
         config: config.stiff
       })
     },
@@ -34,7 +35,8 @@ export function nodeListeners({
           scaleX: 1,
           scaleY: 1
         },
-        delay: 100,
+        default: false,
+        delay: 120,
         config: config.slow
       })
     },

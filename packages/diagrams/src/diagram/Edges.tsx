@@ -18,26 +18,30 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       width: 2
     },
     from: {
-      opacity: 0,
+      opacity: 0.15,
       width: 2
     },
     enter: {
       opacity: 1
     },
     leave: {
-      opacity: 0
+      opacity: 0.05
     },
     expires: true,
+    exitBeforeEnter: true,
     immediate: !animate,
+    // delay: 30,
     config: {
-      duration: 150
+      duration: 180,
+      precision: 0.005
     },
     // unique edge key, scoped to this diagram
     // to avoid any issues with diagram-to-diagram transitions
     keys: e => e.id + diagram.id
   })
-  return edgeTransitions((springs, edge, { ctrl }) => (
+  return edgeTransitions((springs, edge, { key, ctrl }) => (
     <EdgeShape
+      key={key}
       edge={edge}
       theme={theme}
       springs={springs}

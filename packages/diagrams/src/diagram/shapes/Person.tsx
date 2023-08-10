@@ -31,7 +31,7 @@ export function PersonShape({ id, node, theme, springs, ...listeners }: NodeShap
         shadowOffsetX={0}
         shadowOffsetY={8}
         shadowColor={theme.shadow}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
         fill={rectProps.fill}

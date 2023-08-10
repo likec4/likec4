@@ -38,9 +38,10 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   trailingSlash: true,
-  // experimental: {
+  experimental: {
+    esmExternals: true,
   // swcPlugins: [['@swc-jotai/debug-label', {}]],
-  // },
+  },
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
     // console.log('config.experiments', config.experiments)
@@ -64,11 +65,11 @@ export default withNextra({
     'jotai-devtools',
     'monaco-editor',
     'monaco-languageclient',
-    '@likec4/core',
-    '@likec4/diagrams',
-    '@likec4/generators',
-    '@likec4/language-server',
-    '@likec4/layouts',
+    // '@likec4/core',
+    // '@likec4/diagrams',
+    // '@likec4/generators',
+    // '@likec4/language-server',
+    // '@likec4/layouts',
   ],
   typescript: {
     tsconfigPath: './tsconfig.next.json',

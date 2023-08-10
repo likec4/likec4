@@ -49,7 +49,7 @@ export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeSh
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         shadowColor={theme.shadow}
         data={path}
         width={springs.width}

@@ -1,9 +1,19 @@
 import type Konva from 'konva'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 
+export type DiagramViews<T extends string = string> = Record<T, DiagramView>
+
 export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
 
-export type { LikeC4Theme, DiagramNode, DiagramEdge, DiagramLabel, DiagramView } from '@likec4/core'
+// prettier-ignore
+export type {
+  LikeC4Theme,
+  LikeC4Theme as DiagramTheme,
+  DiagramNode,
+  DiagramEdge,
+  DiagramLabel,
+  DiagramView
+} from '@likec4/core'
 
 export type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
 
@@ -57,7 +67,7 @@ export interface DiagramProps extends Pick<React.HTMLAttributes<HTMLDivElement>,
     x: number
     y: number
     scale: number
-  }
+  } | undefined
 
   onNodeClick?: OnNodeClick | undefined
   onStageClick?: OnStageClick | undefined

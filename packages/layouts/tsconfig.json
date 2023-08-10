@@ -2,17 +2,9 @@
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "composite": true,
-    "incremental": true,
     "sourceMap": true,
     "declarationMap": true,
-    "skipLibCheck": true,
-    "rootDir": "src"
+    "skipLibCheck": true
   },
-  "include": ["./src/"],
-  "references": [
-    {
-      "path": "../core"
-    }
-  ]
+  "include": ["./src/"]
 }

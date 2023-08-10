@@ -3,12 +3,6 @@
   "compilerOptions": {
     "skipLibCheck": true
   },
-  "include": ["./src/**/*"],
-  "references": [
-    { "path": "../language-server" },
-    { "path": "../generators" },
-    { "path": "../layouts" },
-    { "path": "../core" }
-  ],
+  "include": ["./src/"],
   "exclude": ["src/export/puppeteer-page/**"]
 }

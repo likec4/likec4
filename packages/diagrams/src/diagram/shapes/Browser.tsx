@@ -22,7 +22,7 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         width={springs.width}
         height={springs.height}
         fill={stroke}

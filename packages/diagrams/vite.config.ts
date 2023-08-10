@@ -29,12 +29,11 @@ export default defineConfig(env => {
       }
     },
     plugins: [
-      // UnoCSS(),
       react(),
       watchAndRun([
         {
           name: 'likec4',
-          watch: 'src-dev/**/*.c4',
+          watch: resolve(__dirname, 'src-dev/**/*.c4'),
           run: 'yarn run generate',
           delay: 300
         }

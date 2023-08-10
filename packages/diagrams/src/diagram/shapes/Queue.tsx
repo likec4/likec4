@@ -35,7 +35,7 @@ export function QueueShape({ id, node, theme, springs, ...listeners }: NodeShape
         y={springs.offsetY}
         offsetX={springs.offsetY}
         offsetY={springs.offsetX}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
         strokeWidth={2}

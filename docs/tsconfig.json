@@ -5,19 +5,5 @@
     "strictNullChecks": true,
     "moduleResolution": "bundler",
     "noUncheckedIndexedAccess": true
-  },
-  "references": [
-    {
-      "path": "../packages/core"
-    },
-    {
-      "path": "../packages/diagrams"
-    },
-    {
-      "path": "../packages/layouts"
-    },
-    {
-      "path": "../packages/language-server"
-    }
-  ]
+  }
 }

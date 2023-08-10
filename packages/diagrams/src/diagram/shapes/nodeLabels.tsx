@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { Text } from '../../konva'
 import type { DiagramTheme, DiagramNode } from '../types'
 import { NodeIcon } from './NodeIcon'
@@ -42,7 +41,7 @@ export function NodeLabels({
   }
 
   return (
-    <Fragment>
+    <>
       {nodeIcon}
       {labels.map((label, i) => {
         let color = colors.hiContrast
@@ -70,6 +69,7 @@ export function NodeLabels({
           />
         )
       })}
-    </Fragment>
+    </>
   )
 }
+NodeLabels.displayName = 'NodeLabels'
