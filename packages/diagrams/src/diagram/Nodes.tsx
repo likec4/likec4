@@ -1,9 +1,10 @@
+import type { SpringConfig, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
 import { nodeListeners } from './shapes/nodeEvents'
 import { nodeShape } from './shapes/nodeShape'
 import type { NodeSprings } from './springs'
 import { nodeSprings } from './springs'
-import type { DiagramNode, LikeC4Theme, DiagramView, OnNodeClick } from './types'
+import type { DiagramNode, DiagramView, LikeC4Theme, OnNodeClick } from './types'
 
 const hasNoChildren = (node: DiagramNode) => {
   return node.children.length <= 0
@@ -16,37 +17,49 @@ type NodesProps = {
   onNodeClick?: OnNodeClick | undefined
 }
 
+const keyOf = (node: DiagramNode) =>
+  (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
+
 export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
-  const nodeTransitions = useTransition(diagram.nodes.filter(hasNoChildren), {
+  const nodes = diagram.nodes.filter(hasNoChildren)
+  const nodeTransitions = useTransition(nodes, {
     initial: nodeSprings(),
     from: nodeSprings({
-      opacity: 0.55,
-      scale: 0.6
+      opacity: 0.4,
+      scale: 0.7
     }) as unknown as NodeSprings,
     enter: nodeSprings(),
-    leave: {
+    leave: nodeSprings({
       opacity: 0,
-      scaleX: 0.4,
-      scaleY: 0.4
-    },
+      scale: 0.4
+    }),
     update: nodeSprings(),
     expires: true,
     immediate: !animate,
-    keys: node => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape,
-    config: (_node, _index, state) => {
+    keys: keyOf,
+    delay(key) {
+      const isUpdating = nodes.some(n => keyOf(n) === key)
+      return isUpdating ? 30 : 0
+    },
+    config: (_node, _index, state): SpringConfig => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (state === 'leave') {
         return {
-          duration: 130
+          precision: 0.005,
+          duration: 120
         }
       }
-      return {}
+      return {
+        precision: 0.005
+      }
     }
-  })
-  return nodeTransitions((springs, node, { ctrl }) => {
+  } satisfies UseTransitionProps<DiagramNode>)
+
+  return nodeTransitions((springs, node, { key, ctrl }) => {
     const Shape = nodeShape(node)
     return (
       <Shape
+        key={key}
         node={node}
         theme={theme}
         springs={springs}

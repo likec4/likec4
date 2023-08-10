@@ -5,11 +5,11 @@ import type { SpringValues } from '@react-spring/konva'
 import { AnimatedLine, AnimatedText } from '../../konva'
 
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
-import type { DiagramTheme, DiagramEdge } from '../types'
+import type { LikeC4Theme, DiagramEdge } from '../types'
 
 export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
-  theme: DiagramTheme
+  theme: LikeC4Theme
   springs: SpringValues<{
     width: number
     opacity: number

@@ -18,9 +18,5 @@
     "jsx": "react"
   },
   "files": ["./index.tsx"],
-  "references": [
-    { "path": "../../../../diagrams" },
-    { "path": "../../../../core" }
-  ],
   "exclude": ["**/node_modules/**"]
 }

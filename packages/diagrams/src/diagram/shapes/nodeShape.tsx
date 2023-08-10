@@ -6,6 +6,7 @@ import { BrowserShape } from './Browser'
 import { PersonShape } from './Person'
 import type { ShapeComponent } from './types'
 import { MobileShape } from './Mobile'
+import { nonexhaustive } from '@likec4/core'
 
 export function nodeShape({ shape }: DiagramNode): ShapeComponent {
   switch (shape) {
@@ -28,7 +29,8 @@ export function nodeShape({ shape }: DiagramNode): ShapeComponent {
     case 'mobile': {
       return MobileShape
     }
+    default: {
+      return nonexhaustive(shape)
+    }
   }
-  // @ts-expect-error - this should be unreachable code if all shapes are handled
-  throw new Error(`Unknown shape: ${shape}`)
 }

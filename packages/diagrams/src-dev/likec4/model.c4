@@ -78,6 +78,7 @@ views {
     include *,
             -> ui.*,
             -> backend
+    exclude amazon
   }
 
   view cloud of cloud {

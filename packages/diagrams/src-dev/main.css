@@ -15,9 +15,24 @@ body {
   height: 100%;
   overscroll-behavior: none;
   background-color: hsl(60, 3.7%, 10.6%);
+
 }
 
 #root {
   width: 100vw;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+}
+
+
+.dev-app {
+  flex-shrink: 0;
+  width: 400px;
+  background-color: hsl(0deg 0% 37.21%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem;
 }

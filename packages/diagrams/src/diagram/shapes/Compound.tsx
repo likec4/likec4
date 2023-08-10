@@ -1,15 +1,14 @@
 import { AnimatedGroup, AnimatedRect, KonvaCore, Text } from '../../konva'
 import { scale } from 'khroma'
-import type { DiagramTheme, DiagramNode } from '../types'
-import type { InterporatedNodeSprings, OnNodeClick, KonvaPointerEvent } from './types'
+import type { DiagramTheme, DiagramNode, OnNodeClick, KonvaPointerEvent } from '../types'
 import { mouseDefault, mousePointer } from './utils'
+import type { NodeSpringValues } from '../springs'
 
 interface CompoundProps {
   id?: string
-  animate?: boolean
   node: DiagramNode
   theme: DiagramTheme
-  springs: InterporatedNodeSprings
+  springs: NodeSpringValues
   onNodeClick?: OnNodeClick | undefined
 }
 

@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { DiagramApi } from '../src'
-import { LikeC4Diagram, type DiagramNode } from '../src'
-import * as likec4 from './likec4'
+import type { LikeC4ViewId, DiagramNode, DiagramApi } from './likec4'
+import { Diagram, EmbeddedDiagram, isViewId } from './likec4'
 
-function readViewId(initial: likec4.LikeC4ViewId = 'index') {
+// const { isViewId, ResponsiveDiagram, EmbeddedDiagram, Diagram } = LikeC4.create(LikeC4Views)
+
+function readViewId(initial: LikeC4ViewId = 'index'): LikeC4ViewId {
   let hash = window.location.hash
   if (hash.startsWith('#')) {
     hash = hash.slice(1)
   }
-  return likec4.isLikeC4ViewId(hash) ? hash : initial
+  return isViewId(hash) ? hash : initial
 }
 
-function useViewId(initial: likec4.LikeC4ViewId) {
+function useViewId(initial: LikeC4ViewId) {
   const [viewId, setStateViewId] = useState(() => readViewId(initial))
 
   const viewIdRef = useRef(viewId)
@@ -20,7 +21,7 @@ function useViewId(initial: likec4.LikeC4ViewId) {
   useEffect(() => {
     const onHashChange = (ev: HashChangeEvent) => {
       const newViewId = new URL(ev.newURL).hash.slice(1)
-      if (likec4.isLikeC4ViewId(newViewId) && newViewId !== viewIdRef.current) {
+      if (isViewId(newViewId) && newViewId !== viewIdRef.current) {
         setStateViewId(newViewId)
       }
     }
@@ -30,14 +31,14 @@ function useViewId(initial: likec4.LikeC4ViewId) {
     }
   }, [])
 
-  const setViewId = useCallback((nextViewId: likec4.LikeC4ViewId) => {
+  const setViewId = useCallback((nextViewId: LikeC4ViewId) => {
     if (nextViewId !== viewIdRef.current) {
       window.location.hash = nextViewId
       setStateViewId(nextViewId)
     }
   }, [])
 
-  return [viewId, setViewId] as const
+  return [viewId, setViewId] as [LikeC4ViewId, typeof setViewId]
 }
 
 export default function DevApp() {
@@ -45,36 +46,23 @@ export default function DevApp() {
 
   const onNodeClick = useCallback((node: DiagramNode) => {
     const { navigateTo } = node
-    if (likec4.isLikeC4ViewId(navigateTo)) {
+    if (isViewId(navigateTo)) {
       setViewId(navigateTo)
     }
   }, [])
 
   const apiRef = useRef<DiagramApi>(null)
 
-  // useEffect(() => {
-  //   console.log('DevApp: mount')
-  //   return () => {
-  //     console.log('DevApp: unmount')
-  //     console.countReset('DevApp: render')
-  //   }
-  // }, [])
-
-  // console.log('DevApp: viewId =', viewId)
-  // console.count('DevApp: render')
-
   return (
-    <LikeC4Diagram
+    // <div className='dev-app'>
+    <Diagram
       ref={apiRef}
-      className='likec4-diagram'
-      diagram={likec4.LikeC4ViewsData[viewId]}
-      onNodeClick={onNodeClick}
-      onStageClick={() => {
-        apiRef.current?.centerAndFit()
-      }}
+      viewId={viewId}
       width={window.innerWidth}
       height={window.innerHeight}
-      padding={40}
+      onNodeClick={onNodeClick}
+      padding={50}
     />
+    // </div>
   )
 }

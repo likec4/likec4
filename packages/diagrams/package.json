@@ -61,9 +61,9 @@
   "packageManager": "yarn@3.6.1",
   "scripts": {
     "generate:full": "yarn workspace @likec4/cli run build && run generate",
-    "generate": "yarn workspace @likec4/cli run likec4 codegen views-data $INIT_CWD/src-dev/likec4",
+    "generate": "yarn node '../cli/bin/likec4' codegen react $INIT_CWD/src-dev/likec4",
     "turbo-build": "run -T turbo run build --filter='diagrams'",
-    "compile": "tsc --noEmit",
+    "compile": "tsc --noEmit -p tsconfig.build.json",
     "build": "vite build",
     "dev": "run generate && vite",
     "lint": "run -T eslint src/ --fix",
@@ -74,6 +74,7 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.1.0",
     "@react-spring/konva": "^9.7.3",
+    "body-scroll-lock-upgrade": "^1.0.4",
     "khroma": "^2.0.0",
     "konva": "^9.2.0",
     "rambdax": "^9.1.1",
@@ -91,7 +92,6 @@
     "@vitejs/plugin-react": "^4.0.4",
     "tilg": "^0.1.1",
     "typescript": "^5.1.6",
-    "unocss": "^0.54.1",
     "vite": "^4.4.8",
     "vite-plugin-dts": "^3.5.1",
     "vite-plugin-watch-and-run": "^1.1.3"

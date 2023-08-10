@@ -1,6 +1,12 @@
 import type { DiagramView } from '@likec4/core/types'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium/lib/generator'
+import {
+  CompositeGeneratorNode,
+  NL,
+  expandToNode,
+  joinToNode,
+  toString
+} from 'langium/lib/generator'
 
 export function generateViewsDataTs(views: DiagramView[]) {
   const out = new CompositeGeneratorNode()
@@ -11,11 +17,11 @@ export function generateViewsDataTs(views: DiagramView[]) {
        ******************************************************************************/
       /* eslint-disable */
 
-      import type { DiagramView } from '@likec4/diagrams'
+      import type { DiagramView } from '@likec4/core'
     `.append(NL, NL)
 
   out
-    .append('export const LikeC4ViewsData = {', NL)
+    .append('export const LikeC4Views = {', NL)
     .indent({
       indentation: 2,
       indentedChildren: indent => {
@@ -33,11 +39,32 @@ export function generateViewsDataTs(views: DiagramView[]) {
       }
     })
     .append('} as const', NL, NL).appendTemplate`
-      export type LikeC4ViewsData = typeof LikeC4ViewsData
-      export type LikeC4ViewId = keyof LikeC4ViewsData
+      export type LikeC4Views = typeof LikeC4Views
+      export type LikeC4ViewId = keyof LikeC4Views
+
       export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
-        return typeof value === 'string' && value in LikeC4ViewsData
+        return (
+          value != null &&
+          typeof value === 'string' &&
+          Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+        )
       }
-    `.append(NL)
+    `.append(NL, NL).appendTemplate`
+      export type {
+        Fqn,
+        Element,
+        RelationID,
+        Relation,
+        NodeId,
+        EdgeId,
+        ComputedNode,
+        ComputedEdge,
+        ComputedView,
+        DiagramView,
+        DiagramNode,
+        DiagramEdge,
+        DiagramLabel
+      } from '@likec4/core'
+    `.append(NL, NL)
   return toString(out)
 }

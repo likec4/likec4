@@ -31,6 +31,5 @@
     "/packages/language-server/src/lsp"
   ],
   "mdx.experimentalLanguageServer": true,
-  "vitest.commandLine": "yarn vitest",
-  "unocss.root": "packages/diagrams"
+  "vitest.commandLine": "yarn vitest"
 }

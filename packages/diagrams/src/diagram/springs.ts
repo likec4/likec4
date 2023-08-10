@@ -1,4 +1,4 @@
-import type { Controller, GoalValues } from '@react-spring/konva'
+import type { Controller, GoalValues, SpringValues } from '@react-spring/konva'
 import type { DiagramNode } from './types'
 
 function defaultNodeSprings(
@@ -19,7 +19,10 @@ function defaultNodeSprings(
     offsetY
   }
 }
-export type NodeSprings = ReturnType<typeof defaultNodeSprings>
+export interface NodeSprings extends ReturnType<typeof defaultNodeSprings> {
+  // Make as interface for better type inference
+}
+export type NodeSpringValues = SpringValues<NodeSprings>
 export type NodeSpringsFn = (node: DiagramNode, index: number) => GoalValues<NodeSprings>
 
 export type NodeSpringsCtrl = Controller<NodeSprings>

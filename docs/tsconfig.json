@@ -11,9 +11,6 @@
       "path": "../packages/core"
     },
     {
-      "path": "../packages/diagrams"
-    },
-    {
       "path": "../packages/layouts"
     },
     {

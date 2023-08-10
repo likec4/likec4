@@ -1,4 +1,4 @@
-import { anyPass, filter, isNil, type Predicate } from 'rambdax'
+import { anyPass, filter, clone, isNil, type Predicate } from 'rambdax'
 import { isDefined } from 'remeda'
 import { type ComputedNode } from '../../types'
 import * as Expr from '../../types/expression'
@@ -9,7 +9,7 @@ export function applyViewRuleStyles(rules: ViewRuleStyle[], _nodes: ComputedNode
   if (rules.length === 0) {
     return _nodes
   }
-  const nodes = structuredClone(_nodes)
+  const nodes = clone(_nodes)
   for (const rule of rules) {
     const predicates = [] as Predicate<ComputedNode>[]
     if (!rule.style.color && !rule.style.shape) {
