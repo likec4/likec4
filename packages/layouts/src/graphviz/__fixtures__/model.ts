@@ -296,13 +296,6 @@ export const amazonView = {
   ]
 } satisfies ElementView
 
-export const views = {
-  [indexView.id]: indexView,
-  [cloudView.id]: cloudView,
-  [cloud3levels.id]: cloud3levels,
-  [amazonView.id]: amazonView
-} as const
-
 export const fakeModel = () =>
   ModelIndex.from({
     elements: fakeElements,

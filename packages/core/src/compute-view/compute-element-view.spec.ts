@@ -1,8 +1,16 @@
+import { pluck } from 'rambdax'
 import { describe, expect, it } from 'vitest'
 import { fakeModel, type FakeElementIds } from '../__test__'
-import type { ComputedView, ElementKind, Fqn, IconUrl, Tag, ViewID, ViewRule } from '../types'
+import {
+  type ComputedView,
+  type ElementKind,
+  type Fqn,
+  type IconUrl,
+  type Tag,
+  type ViewID,
+  type ViewRule
+} from '../types'
 import { computeElementView } from './compute-element-view'
-import { pluck } from 'rambdax'
 
 const ids = pluck('id')
 

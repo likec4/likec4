@@ -36,14 +36,8 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export interface ComputedView<
-  Node extends ComputedNode = ComputedNode,
-  Edge extends ComputedEdge = ComputedEdge
-> extends ElementView {
+export interface ComputedView extends ElementView {
   autoLayout: ViewRuleAutoLayout['autoLayout']
-  nodes: Node[]
-  edges: Edge[]
+  nodes: ComputedNode[]
+  edges: ComputedEdge[]
 }
-
-export type ComputeResult<V extends ElementView> = V &
-  Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>

@@ -1,9 +1,13 @@
-import { Graph, alg } from '@dagrejs/graphlib'
+import pkg from '@dagrejs/graphlib'
 import { indexBy, pluck, toPairs } from 'rambdax'
 import { describe, expect, it } from 'vitest'
 import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 import { commonAncestor, parentFqn } from '../../utils'
 import { sortNodes } from './sortNodes'
+
+// '@dagrejs/graphlib' is a CommonJS module
+// Here is a workaround to import it
+const { Graph, alg } = pkg
 
 type TestComputedNode = {
   id: string
@@ -63,7 +67,7 @@ describe('sortNodes', () => {
             parent: null,
             children: [],
             ...nd
-          } as ComputedNode)
+          }) as ComputedNode
       )
     )
     const edges = _edges.map(([source, target]) => {
