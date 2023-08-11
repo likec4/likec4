@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
 const LikeC4View = dynamic({
-  loader: () => import('./IndexPageLikeC4View'),
+  loader: () => import('./generated').then(m => m.Embedded),
   loading: () => <div>rendering...</div>,
   ssr: false
 })
@@ -113,7 +113,7 @@ export const IndexPageWhy = () => (
 
 export const IndexPageDiagram = () => (
   <div className='mt-6'>
-    <LikeC4View viewId='index' />
+    <LikeC4View viewId='index' enableBrowser={false} />
   </div>
 )
 // export const IndexPageHero = () => {

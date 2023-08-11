@@ -19,11 +19,7 @@ export default defineBuildConfig([{
   //   format: 'esm',
   // }],
   entries: [
-    'src/index.ts',
-    'src/browser/index.ts',
-    'src/diagram/index.ts',
-    'src/responsive/index.ts',
-    'src/LikeC4.tsx',
+    'src/index.ts'
   ],
   clean: true,
   declaration: 'compatible',

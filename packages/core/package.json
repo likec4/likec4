@@ -23,39 +23,39 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/__cjs/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/__cjs/index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js",
-      "require": "./dist/__cjs/types/index.js"
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.cjs"
     },
     "./colors": {
       "types": "./dist/colors.d.ts",
-      "import": "./dist/colors.js",
-      "require": "./dist/__cjs/colors.js"
+      "import": "./dist/colors.mjs",
+      "require": "./dist/colors.cjs"
     },
     "./errors": {
       "types": "./dist/errors/index.d.ts",
-      "import": "./dist/errors/index.js",
-      "require": "./dist/__cjs/errors/index.js"
+      "import": "./dist/errors/index.mjs",
+      "require": "./dist/errors/index.cjs"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/__cjs/utils/index.js"
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.cjs"
     },
     "./compute-view": {
       "types": "./dist/compute-view/index.d.ts",
-      "import": "./dist/compute-view/index.js",
-      "require": "./dist/__cjs/compute-view/index.js"
+      "import": "./dist/compute-view/index.mjs",
+      "require": "./dist/compute-view/index.cjs"
     }
   },
   "sideEffects": false,

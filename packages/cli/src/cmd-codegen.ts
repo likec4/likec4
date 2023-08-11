@@ -1,5 +1,5 @@
 import { createArgument, createCommand } from '@commander-js/extra-typings'
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 import { generateReact, generateViewsDataTs, generateD2 } from '@likec4/generators'
 import { printToDot } from '@likec4/layouts'
 import { red, green, dim } from 'kleur/colors'
@@ -36,10 +36,7 @@ async function codegenAction(
   console.log('\nGenerated:\n   ' + green(path.relative(process.cwd(), output)))
 }
 
-async function codegenDotAction(
-  workspaceDir: string,
-  outputdir?: string
-) {
+async function codegenDotAction(workspaceDir: string, outputdir?: string) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
   const diagrams = values(model.views)
   if (diagrams.length === 0) {
@@ -47,9 +44,7 @@ async function codegenDotAction(
     process.exit(1)
   }
 
-  outputdir = outputdir
-    ? path.resolve(process.cwd(), outputdir)
-    : workspace
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
 
   await mkdirp(outputdir)
 
@@ -62,11 +57,7 @@ async function codegenDotAction(
   }
 }
 
-
-async function codegenD2Action(
-  workspaceDir: string,
-  outputdir?: string
-) {
+async function codegenD2Action(workspaceDir: string, outputdir?: string) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
   console.log(dim(`🔍\tLayouting...`))
 
@@ -79,9 +70,7 @@ async function codegenD2Action(
     process.exit(1)
   }
 
-  outputdir = outputdir
-    ? path.resolve(process.cwd(), outputdir)
-    : workspace
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
 
   await mkdirp(outputdir)
 
@@ -108,9 +97,7 @@ export const codegenCommand = () => {
             .default(process.cwd(), '"."')
         )
         .option('-o, --output <file>', 'output file\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenAction(generateReact, sourcedir, '.tsx', output)
-        )
+        .action((sourcedir, { output }) => codegenAction(generateReact, sourcedir, '.tsx', output))
     )
     .addCommand(
       createCommand('views-data')
@@ -135,10 +122,11 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenDotAction(sourcedir, output)
+        .option(
+          '-o, --output <directory>',
+          'output directory\nif not defined, outputs to workspace'
         )
+        .action((sourcedir, { output }) => codegenDotAction(sourcedir, output))
     )
     .addCommand(
       createCommand('d2')
@@ -149,9 +137,10 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenD2Action(sourcedir, output)
+        .option(
+          '-o, --output <directory>',
+          'output directory\nif not defined, outputs to workspace'
         )
+        .action((sourcedir, { output }) => codegenD2Action(sourcedir, output))
     )
 }

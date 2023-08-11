@@ -1,7 +1,7 @@
 import { invariant } from '@likec4/core'
 import { useKeyboardEvent, useMeasure, useSyncedRef } from '@react-hookz/web/esm'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
-import type { NamedExoticComponent, ReactElement, ReactNode } from 'react'
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react'
 import { is } from 'rambdax'
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Diagram } from '../diagram/Diagram'
@@ -13,7 +13,7 @@ import { BrowserTitle } from './BrowserTitle'
 export interface DiagramsBrowserProps<
   Views extends DiagramViews,
   Id = keyof Views & string
-> extends React.HTMLAttributes<HTMLDivElement> {
+> extends HTMLAttributes<HTMLDivElement> {
 
   // views: Views | (() => PromiseLike<Views>)
   views: Views

@@ -1,39 +1,25 @@
 /* eslint-disable */
-import { resolve } from 'path'
 import { defineBuildConfig } from 'unbuild'
 
 // prettier-ignore
-const mkdist = {
-  builder: 'mkdist',
-  input: './src/',
-  pattern: [
-    '**/*.ts',
-    '!**/*.spec.*',
-    '!**/__test__',
-  ]
-} as const
-
-// prettier-ignore
-export default defineBuildConfig({
+export default defineBuildConfig([{
   entries: [
-    {
-      ...mkdist,
-      format: 'esm',
-      ext: 'js',
-      distDir: resolve(__dirname, 'dist'),
-      declaration: true
-    },{
-      ...mkdist,
-      format: 'cjs',
-      ext: 'js',
-      distDir: resolve(__dirname, 'dist/__cjs'),
-      declaration: false
-    }
+    'src/index.ts',
+    'src/colors.ts',
+    'src/types/index.ts',
+    'src/compute-view/index.ts',
+    'src/errors/index.ts',
+    'src/utils/index.ts',
   ],
   clean: true,
+  declaration: 'compatible',
   rollup: {
-    commonjs: {
-      esmExternals: true
+    emitCJS: true,
+    output: {
+      preserveModules: true
+    },
+    esbuild: {
+      target: 'es2022'
     }
-  }
-})
+  },
+}])

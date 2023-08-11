@@ -1,7 +1,7 @@
 export { Diagram } from './diagram/Diagram'
 export type { DiagramProps, DiagramApi, DiagramPaddings } from './diagram/types'
 
-export { LikeC4 } from './likec'
+export { LikeC4 } from './likec4'
 
 export { ResponsiveDiagram } from './responsive'
 export type { ResponsiveDiagramProps } from './responsive'

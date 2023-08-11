@@ -1,5 +1,6 @@
 import type Konva from 'konva'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
+import type { HTMLAttributes } from 'react'
 
 export type DiagramViews<T extends string = string> = Record<T, DiagramView>
 
@@ -34,7 +35,7 @@ export interface DiagramApi {
 }
 
 // prettier-ignore
-export interface DiagramProps extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
+export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
   diagram: DiagramView
   /**
    * If true, the diagram will be animated when nodes are added or removed

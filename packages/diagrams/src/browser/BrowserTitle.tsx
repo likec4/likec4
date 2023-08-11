@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, HTMLAttributes } from 'react'
 
 // prettier
 const ContainerStyles = {
@@ -19,7 +19,7 @@ const ContainerStyles = {
   textShadow: '4px 4px 5px rgb(17 17 17)'
 } satisfies CSSProperties
 
-export interface BrowserTitleProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface BrowserTitleProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function BrowserTitle({ children, style, ...props }: BrowserTitleProps) {
   return (

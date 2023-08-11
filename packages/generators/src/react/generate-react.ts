@@ -66,9 +66,9 @@ export function generateReact(views: DiagramView[]) {
       export const {
         isViewId,
         Diagram,
-        ResponsiveDiagram,
-        EmbeddedDiagram,
-        DiagramBrowser
+        Responsive,
+        Embedded,
+        Browser
       } = LikeC4.create(LikeC4Views)
     `.append(NL, NL).appendTemplate`
       export type {

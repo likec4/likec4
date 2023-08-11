@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { invariant } from '@likec4/core'
 import type Konva from 'konva'
-import type { PropsWithoutRef, RefAttributes } from 'react'
+import type { HTMLAttributes, PropsWithoutRef, RefAttributes } from 'react'
 import { forwardRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DiagramViews, DiagramApi, DiagramPaddings } from '../diagram/types'
@@ -9,7 +9,7 @@ import { ResponsiveDiagram } from '../responsive'
 import { DiagramsBrowser, type DiagramsBrowserProps } from './DiagramsBrowser'
 
 export interface EmbeddedDiagramProps<Views extends DiagramViews, Id = keyof Views & string>
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends HTMLAttributes<HTMLDivElement>,
     RefAttributes<DiagramApi> {
   views: Views
 
