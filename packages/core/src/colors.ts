@@ -1,13 +1,4 @@
-import type { ThemeColor } from './types/element'
-
-type Color = `#${string}`
-
-export interface ElementColors {
-  fill: Color
-  stroke: Color
-  hiContrast: Color
-  loContrast: Color
-}
+import type { ThemeColorValues, LikeC4Theme, ThemeColors, ThemeRelationColors } from './types/theme'
 
 const blue = {
   // fill: colors.blue[500],
@@ -18,7 +9,7 @@ const blue = {
   stroke: '#2563eb',
   hiContrast: '#eff6ff',
   loContrast: '#dbeafe'
-} satisfies ElementColors
+} satisfies ThemeColorValues
 
 const sky = {
   // fill: colors.sky[600],
@@ -29,7 +20,7 @@ const sky = {
   stroke: '#0369a1',
   hiContrast: '#f0f9ff',
   loContrast: '#e0f2fe'
-} satisfies ElementColors
+} satisfies ThemeColorValues
 
 const slate = {
   // fill: colors.slate[500],
@@ -40,14 +31,14 @@ const slate = {
   stroke: '#475569',
   hiContrast: '#f8fafc',
   loContrast: '#e2e8f0'
-} satisfies ElementColors
+} satisfies ThemeColorValues
 
 export const RelationColors = {
   // lineColor: colors.neutral[400],
   // labelColor: colors.neutral[300],
   lineColor: '#a3a3a3',
   labelColor: '#d4d4d4'
-} as const
+} as const satisfies ThemeRelationColors
 
 export const Colors = {
   primary: blue,
@@ -112,6 +103,11 @@ export const Colors = {
     hiContrast: '#eef2ff',
     loContrast: '#c7d2fe'
   }
-} as const satisfies {
-  [key in ThemeColor]: ElementColors
-}
+} as const satisfies ThemeColors
+
+export const defaultTheme = {
+  font: 'Helvetica',
+  shadow: '#0a0a0a',
+  relation: RelationColors,
+  colors: Colors
+} as const satisfies LikeC4Theme

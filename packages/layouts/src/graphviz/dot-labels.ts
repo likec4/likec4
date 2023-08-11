@@ -21,7 +21,7 @@ function wrapToHTML({
   fontsize,
   bold,
   color,
-  align = 'center'
+  align
 }: {
   text: string
   maxchars: number
@@ -46,12 +46,12 @@ function wrapToHTML({
   if (bold) {
     html = `<B>${html}</B>`
   }
-  return `<FONT ${color ? `COLOR="${color}" ` : ``}POINT-SIZE="${pxToPoints(
+  return `<FONT${color ? ` COLOR="${color}"` : ``} POINT-SIZE="${pxToPoints(
     fontsize
   )}">${html}</FONT>`
 }
 export function nodeIcon(src: string) {
-  return `<IMG SRC="${src}" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}"/>`
+  return `<IMG SRC="${src}" SCALE="TRUE" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}"/>`
 }
 
 export function nodeLabel(node: ComputedNode) {
@@ -71,7 +71,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.technology,
         fontsize: 12,
-        maxchars: 45,
+        maxchars: 50,
         color: Colors[node.color].loContrast
       })
     )
@@ -86,6 +86,9 @@ export function nodeLabel(node: ComputedNode) {
       })
     )
   }
+  if (lines.length === 1) {
+    return `<${lines[0]}>`
+  }
   const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`).join('')
   return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">${rows}</TABLE>>`
 }
@@ -94,7 +97,7 @@ export function edgeLabel(text: string) {
   const lines = [
     wrapToHTML({
       text,
-      maxchars: 40,
+      maxchars: 45,
       fontsize: 14,
       align: 'left'
     })

@@ -57,7 +57,8 @@ module.exports = {
       "**/*.spec.ts",
       "**/*.spec.tsx",
       "**/__test__/*",
-      "**/__mocks__/*"
+      "**/__mocks__/*",
+      "**/__fixtures__/*"
     ],
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",

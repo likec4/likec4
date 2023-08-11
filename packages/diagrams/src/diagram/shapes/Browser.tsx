@@ -2,15 +2,8 @@ import { useSpring } from '@react-spring/konva'
 import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
-import React from 'react'
 
-export function BrowserShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({
@@ -22,8 +15,6 @@ export function BrowserShape({
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedRect
         cornerRadius={6}
@@ -31,7 +22,7 @@ export function BrowserShape({
         shadowOpacity={0.25}
         shadowOffsetX={0}
         shadowOffsetY={8}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         width={springs.width}
         height={springs.height}
         fill={stroke}

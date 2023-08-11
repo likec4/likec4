@@ -9,13 +9,7 @@ const PersonIcon = {
   path: `M57.9197 0C10.9124 0 33.5766 54.75 33.5766 54.75C38.6131 62.25 45.3285 60.75 45.3285 66C45.3285 70.5 39.4526 72 33.5766 72.75C24.3431 72.75 15.9489 71.25 7.55474 84.75C2.51825 93 0 120 0 120H115C115 120 112.482 93 108.285 84.75C99.8905 70.5 91.4963 72.75 82.2628 72C76.3869 71.25 70.5109 69.75 70.5109 65.25C70.5109 60.75 77.2263 62.25 82.2628 54C82.2628 54.75 104.927 0 57.9197 0V0Z`
 } as const
 
-export function PersonShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function PersonShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const rectProps = useSpring({
@@ -27,19 +21,7 @@ export function PersonShape({
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      x={springs.x}
-      y={springs.y}
-      offsetX={springs.offsetX}
-      offsetY={springs.offsetY}
-      opacity={springs.opacity}
-      scaleX={springs.scaleX}
-      scaleY={springs.scaleY}
-      {...listeners}
-    >
+    <AnimatedGroup id={id} {...springs} {...listeners}>
       <AnimatedRect
         width={springs.width}
         height={springs.height}
@@ -49,7 +31,7 @@ export function PersonShape({
         shadowOffsetX={0}
         shadowOffsetY={8}
         shadowColor={theme.shadow}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
         fill={rectProps.fill}

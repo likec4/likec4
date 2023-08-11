@@ -1,4 +1,5 @@
 export * from './_base'
 export * from './invariant'
+export * from './non-nullable'
 export * from './nonexhaustive'
 export * from './model-index'

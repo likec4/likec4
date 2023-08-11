@@ -17,7 +17,9 @@ export function disponsable(callOnDispose: () => void) {
     dispose() {
       if (!isDisposed) {
         isDisposed = true
-        callOnDispose()
+        Promise.resolve(1)
+          .then(() => callOnDispose())
+          .catch(e => console.error(e))
       }
     }
   })
@@ -27,7 +29,7 @@ export async function disposeAll(disposables: Disposable[]) {
   // const localCopy = Array.from(disposables)
   for (const disposable of disposables) {
     try {
-      await Promise.resolve(disposable.dispose())
+      await Promise.resolve(1).then(() => disposable.dispose())
     } catch (e) {
       console.error(e)
     }

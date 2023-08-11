@@ -1,28 +1,34 @@
-import { expect, test } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   computedAmazonView,
   computedCloudView,
   computedCloud3levels,
   computedIndexView
-} from '../__mocks__/data'
+} from './__fixtures__'
 import { printToDot } from './printToDot'
 
-test('printToDot: computedIndexView', () => {
-  const diagram = printToDot(computedIndexView)
-  expect(diagram).toMatchSnapshot()
-})
+describe('printToDot', () => {
+  it('computedIndexView', () => {
+    expect.hasAssertions()
+    const diagram = printToDot(computedIndexView)
+    expect(diagram).toMatchSnapshot()
+  })
 
-test('printToDot: computedAmazonView', () => {
-  const diagram = printToDot(computedAmazonView)
-  expect(diagram).toMatchSnapshot()
-})
+  it('computedAmazonView', () => {
+    expect.hasAssertions()
+    const diagram = printToDot(computedAmazonView)
+    expect(diagram).toMatchSnapshot()
+  })
 
-test('printToDot: computedCloud3levels', () => {
-  const diagram = printToDot(computedCloud3levels)
-  expect(diagram).toMatchSnapshot()
-})
+  it('computedCloud3levels', () => {
+    expect.hasAssertions()
+    const diagram = printToDot(computedCloud3levels)
+    expect(diagram).toMatchSnapshot()
+  })
 
-test('printToDot: computedCloudView', () => {
-  const diagram = printToDot(computedCloudView)
-  expect(diagram).toMatchSnapshot()
+  it('computedCloudView', () => {
+    expect.hasAssertions()
+    const diagram = printToDot(computedCloudView)
+    expect(diagram).toMatchSnapshot()
+  })
 })

@@ -1,8 +1,9 @@
 import type { Opaque } from './opaque'
-import type { ElementKind, ElementShape, Fqn, Tag, ThemeColor } from './element'
+import type { ElementKind, ElementShape, Fqn, Tag } from './element'
 import type { RelationID } from './relation'
 import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
 import type { IconUrl, NonEmptyArray } from './_common'
+import type { ThemeColor } from './theme'
 
 export type NodeId = Fqn
 
@@ -18,6 +19,8 @@ export interface ComputedNode {
   tags: NonEmptyArray<Tag> | null
   links: NonEmptyArray<string> | null
   children: NodeId[]
+  inEdges: EdgeId[]
+  outEdges: EdgeId[]
   shape: ElementShape
   color: ThemeColor
   icon?: IconUrl

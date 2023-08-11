@@ -8,7 +8,7 @@
   "files": [
     "dist",
     "src",
-    "!**/__mocks__/",
+    "!**/__fixtures__/",
     "!**/*.spec.*",
     "!**/*.snap",
     "!**/*.map"

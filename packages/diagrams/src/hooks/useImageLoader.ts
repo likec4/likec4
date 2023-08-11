@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useIsMounted } from '@react-hookz/web/esm/useIsMounted'
-import { invariant } from '@likec4/core/errors'
+import { invariant } from '@likec4/core'
 
 type UseImageResult = [undefined, 'loading' | 'failed'] | [HTMLImageElement, 'loaded']
 

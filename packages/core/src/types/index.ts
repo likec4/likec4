@@ -6,6 +6,7 @@ export * as Expr from './expression'
 
 export type * from './_common'
 export type * from './opaque'
+export type * from './theme'
 export type * from './element'
 export type * from './relation'
 export type * from './model'

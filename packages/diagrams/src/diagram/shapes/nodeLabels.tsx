@@ -1,41 +1,6 @@
-import { type DiagramNode } from '@likec4/core/types'
-import { Fragment } from 'react'
-import useImageLoader from '../../hooks/useImageLoader'
-import { Image, Text } from '../../konva'
-import type { DiagramTheme } from '../types'
-
-type NodeIconProps = {
-  icon: string
-  maxWidth: number // node width
-  maxHeight: number // available height (Y of the first label)
-  offsetX?: number
-  offsetY?: number
-}
-
-function NodeIcon({ icon, maxWidth, maxHeight, offsetX = 0, offsetY = 0 }: NodeIconProps) {
-  const [image] = useImageLoader(icon)
-  const padding = 12
-  const maxIconWidth = Math.round(maxWidth - padding * 2)
-  const maxIconHeight = Math.round(maxHeight - padding * 2)
-  if (!image) {
-    return null
-  }
-  const scale = Math.min(maxIconWidth / image.width, maxIconHeight / image.height)
-  const iconWidth = Math.floor(image.width * scale)
-  const iconHeight = Math.floor(image.height * scale)
-  return (
-    <Image
-      image={image}
-      x={padding + (maxIconWidth - iconWidth) / 2}
-      y={padding + (maxIconHeight - iconHeight) / 2}
-      offsetX={offsetX}
-      offsetY={offsetY}
-      width={iconWidth}
-      height={iconHeight}
-      listening={false}
-    />
-  )
-}
+import { Text } from '../../konva'
+import type { DiagramTheme, DiagramNode } from '../types'
+import { NodeIcon } from './NodeIcon'
 
 type NodeLabelsProps = {
   node: DiagramNode
@@ -57,6 +22,7 @@ export function NodeLabels({
   const width = maxWidth ?? size.width
   const firstLabel = labels[0]
   const titleFontSize = firstLabel?.fontSize ?? 12
+
   let nodeIcon
   if (icon) {
     // Y of the first label or node height
@@ -73,8 +39,9 @@ export function NodeLabels({
       />
     )
   }
+
   return (
-    <Fragment>
+    <>
       {nodeIcon}
       {labels.map((label, i) => {
         let color = colors.hiContrast
@@ -83,16 +50,13 @@ export function NodeLabels({
         }
         return (
           <Text
-            key={i}
+            key={label.text + i}
             x={8}
             width={width - 16}
-            y={Math.ceil(label.pt[1] - label.fontSize / 2)}
-            // y={label.pt[1]}
-            // verticalAlign='top'
-            // height={label.fontSize}
-            offsetY={offsetY}
+            y={label.pt[1]}
+            offsetY={offsetY + label.fontSize / 2}
             offsetX={offsetX}
-            fill={color}
+            fill={label.color ?? color}
             fontFamily={theme.font}
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
@@ -105,6 +69,7 @@ export function NodeLabels({
           />
         )
       })}
-    </Fragment>
+    </>
   )
 }
+NodeLabels.displayName = 'NodeLabels'

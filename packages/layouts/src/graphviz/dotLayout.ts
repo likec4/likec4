@@ -1,19 +1,18 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { invariant } from '@likec4/core'
+import { invariant } from '@likec4/core/errors'
 import type {
   ComputedView,
   DiagramEdge,
   DiagramLabel,
   DiagramNode,
   DiagramView,
-  NodeId,
   Point
 } from '@likec4/core/types'
 import { dropRepeats, propEq } from 'rambdax'
 import type { DiagramLayoutFn } from '../types'
-import type { BoundingBox, GVPos, GraphvizJson } from './graphviz-types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
+import type { BoundingBox, GVPos, GraphvizJson } from './types'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
@@ -59,11 +58,16 @@ function parseLabelDraws(
   const labels = [] as DiagramLabel[]
 
   let fontSize: number | undefined
+  let color: DiagramLabel['color']
   let fontStyle: DiagramLabel['fontStyle']
 
   for (const draw of _ldraw_) {
     if (draw.op === 'F') {
       fontSize = pointToPx(draw.size)
+      continue
+    }
+    if (draw.op === 'c') {
+      color = draw.color as DiagramLabel['color']
       continue
     }
     if (draw.op === 't') {
@@ -79,6 +83,7 @@ function parseLabelDraws(
         labels.push({
           fontSize,
           ...(fontStyle ? { fontStyle } : {}),
+          ...(color ? { color } : {}),
           text: draw.text,
           pt: [pointToPx(draw.pt[0]) - containerX, pointToPx(draw.pt[1]) - containerY],
           align: toKonvaAlign(draw.align),
@@ -116,7 +121,8 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = graphviz.unflatten(printToDot(computedView), 2, true, 2)
+  // const dot = graphviz.unflatten(printToDot(computedView), 3, true, 2)
+  const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -140,16 +146,18 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
     edges: []
   }
 
-  const diagramNodes = new Map<NodeId, DiagramNode>()
+  // const diagramNodes = new Map<NodeId, DiagramNode>()
 
   const graphvizObjects = graphvizJson.objects ?? []
-  for (const obj of graphvizObjects) {
-    if (!('id' in obj)) {
+  for (const { likec4_id, ...obj } of graphvizObjects) {
+    if (!likec4_id) {
       continue
     }
-    const computed = computedNodes.find(n => n.id === obj.id)
+    const computed = computedNodes.find(n => n.id === likec4_id)
     if (!computed) {
-      console.warn(`Node ${obj.id} not found, how did it get into the graphviz output?`)
+      console.warn(
+        `Node likec4_id=${likec4_id} not found, how did it get into the graphviz output?`
+      )
       continue
     }
 
@@ -163,18 +171,17 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       size,
       labels: parseLabelDraws(obj, position)
     }
-    diagramNodes.set(computed.id, node)
     diagram.nodes.push(node)
   }
 
   const graphvizEdges = graphvizJson.edges ?? []
-  for (const e of graphvizEdges) {
-    if (!('id' in e)) {
+  for (const { likec4_id, ...e } of graphvizEdges) {
+    if (!likec4_id) {
       continue
     }
-    const edgeData = computedEdges.find(i => i.id === e.id)
+    const edgeData = computedEdges.find(i => i.id === likec4_id)
     if (!edgeData) {
-      console.warn(`Edge ${e.id} not found, how did it get into the graphviz output?`)
+      console.warn(`Edge ${likec4_id} not found, how did it get into the graphviz output?`)
       continue
     }
     const edge: DiagramEdge = {

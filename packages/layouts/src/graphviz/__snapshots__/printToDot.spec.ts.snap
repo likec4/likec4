@@ -1,17 +1,21 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`printToDot: computedAmazonView 1`] = `
+exports[`printToDot > computedAmazonView 1`] = `
 "digraph {
   compound = true;
-  pad = 0.08;
+  pad = 0.2083;
   rankdir = "TB";
-  nodesep = 1.0417;
-  ranksep = 1.0417;
+  nodesep = 0.8333;
+  ranksep = 0.8333;
   layout = "dot";
-  fontname = "Helvetica";
-  fontsize = 12;
+  outputorder = "nodesfirst";
+  graph [
+    fontname = "Helvetica";
+    fontsize = 9;
+  ];
   edge [
     fontname = "Helvetica";
+    fontsize = 10.5;
     style = "solid";
     penwidth = 2;
     arrowsize = 0.7;
@@ -21,57 +25,72 @@ exports[`printToDot: computedAmazonView 1`] = `
   ];
   node [
     fontname = "Helvetica";
+    fontsize = 13.5;
     labelloc = "c";
     shape = "rect";
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.2083,0.2083";
+    margin = 0.1667;
   ];
-  "nd1" [
-    id = "cloud.backend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" [
-    id = "amazon.s3";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">S3</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">S3 is a storage service</FONT></TD></TR></TABLE>>;
-  ];
+  subgraph "cluster_1" {
+    likec4_id = "cloud";
+    likec4_level = 0;
+    margin = 24;
+    likec4_depth = 1;
+    graph [
+      fontname = "Helvetica";
+      fontsize = 9;
+      labeljust = "l";
+      label = <<B>CLOUD</B>>;
+    ];
+    "nd2" [
+      likec4_id = "cloud.backend";
+      likec4_level = 1;
+      label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT>>;
+    ];
+  }
   subgraph "cluster_3" {
-    id = "cloud";
-    labeljust = "l";
-    fontsize = 9;
-    margin = 20;
-    label = <<B>CLOUD</B>>;
-    "nd1";
+    likec4_id = "amazon";
+    likec4_level = 0;
+    margin = 24;
+    likec4_depth = 1;
+    graph [
+      fontname = "Helvetica";
+      fontsize = 9;
+      labeljust = "l";
+      label = <<B>AMAZON</B>>;
+    ];
+    "nd4" [
+      likec4_id = "amazon.s3";
+      likec4_level = 1;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">S3</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">S3 is a storage service</FONT></TD></TR></TABLE>>;
+    ];
   }
-  subgraph "cluster_4" {
-    id = "amazon";
-    labeljust = "l";
-    fontsize = 9;
-    margin = 20;
-    label = <<B>AMAZON</B>>;
-    "nd2";
-  }
-  "nd1" -> "nd2" [
-    id = "cloud.backend:amazon.s3";
+  "nd2" -> "nd4" [
+    likec4_id = "cloud.backend:amazon.s3";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
 
-exports[`printToDot: computedCloud3levels 1`] = `
+exports[`printToDot > computedCloud3levels 1`] = `
 "digraph {
   compound = true;
-  pad = 0.08;
+  pad = 0.2083;
   rankdir = "TB";
-  nodesep = 1.0417;
-  ranksep = 1.0417;
+  nodesep = 0.8333;
+  ranksep = 0.8333;
   layout = "dot";
-  fontname = "Helvetica";
-  fontsize = 12;
+  outputorder = "nodesfirst";
+  graph [
+    fontname = "Helvetica";
+    fontsize = 9;
+  ];
   edge [
     fontname = "Helvetica";
+    fontsize = 10.5;
     style = "solid";
     penwidth = 2;
     arrowsize = 0.7;
@@ -81,177 +100,208 @@ exports[`printToDot: computedCloud3levels 1`] = `
   ];
   node [
     fontname = "Helvetica";
+    fontsize = 13.5;
     labelloc = "c";
     shape = "rect";
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.2083,0.2083";
+    margin = 0.1667;
   ];
   "nd1" [
-    id = "support";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
+    likec4_id = "support";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR/></FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
+    likec4_id = "customer";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT>>;
   ];
-  "nd3" [
-    id = "cloud.frontend.adminPanel";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Admin Panel Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The admin panel is a webapp that allows<BR/>support staff to manage customer data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
-  ];
-  "nd4" [
-    id = "cloud.frontend.dashboard";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The customer dashboard is a webapp that<BR/>allows customers to view their data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
-  ];
-  "nd5" [
-    id = "cloud.backend.graphql";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Graphql API</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Component that allows to query data via<BR/>GraphQL.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
-  ];
-  "nd6" [
-    id = "cloud.backend.storage";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend Storage</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The backend storage is a component that<BR/>stores data.<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
-    color = "#2563eb";
-    shape = "cylinder";
-  ];
-  "nd7" [
-    id = "amazon";
+  "nd9" [
+    likec4_id = "amazon";
+    likec4_level = 0;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
-  subgraph "cluster_8" {
-    id = "cloud";
-    labeljust = "l";
-    fontsize = 9;
-    margin = 30;
-    label = <<B>CLOUD</B>>;
-    "nd3";
-    "nd4";
-    subgraph "cluster_9" {
-      id = "cloud.backend";
-      labeljust = "l";
+  subgraph "cluster_3" {
+    likec4_id = "cloud";
+    likec4_level = 0;
+    margin = 32;
+    likec4_depth = 2;
+    graph [
+      fontname = "Helvetica";
       fontsize = 9;
-      margin = 20;
-      label = <<B>BACKEND</B>>;
-      "nd5";
-      "nd6";
-      "nd5" -> "nd6" [
-        id = "cloud.backend.graphql:cloud.backend.storage";
+      labeljust = "l";
+      label = <<B>CLOUD</B>>;
+    ];
+    "nd4" [
+      likec4_id = "cloud.frontend.adminPanel";
+      likec4_level = 1;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Admin Panel Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The admin panel is a webapp that allows<BR/>support staff to manage customer data.<BR/></FONT></TD></TR></TABLE>>;
+    ];
+    "nd5" [
+      likec4_id = "cloud.frontend.dashboard";
+      likec4_level = 1;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The customer dashboard is a webapp that<BR/>allows customers to view their data.<BR/></FONT></TD></TR></TABLE>>;
+    ];
+    subgraph "cluster_6" {
+      likec4_id = "cloud.backend";
+      likec4_level = 1;
+      margin = 24;
+      likec4_depth = 1;
+      graph [
+        fontname = "Helvetica";
+        fontsize = 9;
+        labeljust = "l";
+        label = <<B>BACKEND</B>>;
+      ];
+      "nd7" [
+        likec4_id = "cloud.backend.graphql";
+        likec4_level = 2;
+        label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Graphql API</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Component that allows to query data via<BR/>GraphQL.<BR/></FONT></TD></TR></TABLE>>;
+      ];
+      "nd8" [
+        likec4_id = "cloud.backend.storage";
+        likec4_level = 2;
+        label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend Storage</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">The backend storage is a component that<BR/>stores data.<BR/></FONT></TD></TR></TABLE>>;
+        color = "#2563eb";
+        shape = "cylinder";
+      ];
+      "nd7" -> "nd8" [
+        likec4_id = "cloud.backend.graphql:cloud.backend.storage";
       ];
     }
-    "nd3" -> "nd5" [
-      id = "cloud.frontend.adminPanel:cloud.backend.graphql";
-      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data in zero trust network with<BR/>sso authentification<BR ALIGN="LEFT"/></FONT></TD></TR></TABLE>>;
+    "nd4" -> "nd7" [
+      likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data in zero trust network with sso<BR/>authentification<BR ALIGN="LEFT"/></FONT></TD></TR></TABLE>>;
     ];
-    "nd4" -> "nd5" [
-      id = "cloud.frontend.dashboard:cloud.backend.graphql";
+    "nd5" -> "nd7" [
+      likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
     ];
   }
-  "nd6" -> "nd7" [
-    id = "cloud.backend.storage:amazon";
+  "nd8" -> "nd9" [
+    likec4_id = "cloud.backend.storage:amazon";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
-  "nd1" -> "nd3" [
-    id = "support:cloud.frontend.adminPanel";
+  "nd1" -> "nd4" [
+    likec4_id = "support:cloud.frontend.adminPanel";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" -> "nd5" [
+    likec4_id = "customer:cloud.frontend.dashboard";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
+  ];
+}"
+`;
+
+exports[`printToDot > computedCloudView 1`] = `
+"digraph {
+  compound = true;
+  pad = 0.2083;
+  rankdir = "TB";
+  nodesep = 0.8333;
+  ranksep = 0.8333;
+  layout = "dot";
+  outputorder = "nodesfirst";
+  graph [
+    fontname = "Helvetica";
+    fontsize = 9;
+  ];
+  edge [
+    fontname = "Helvetica";
+    fontsize = 10.5;
+    style = "solid";
+    penwidth = 2;
+    arrowsize = 0.7;
+    color = "#a3a3a3";
+    fontcolor = "#d4d4d4";
+    nojustify = true;
+  ];
+  node [
+    fontname = "Helvetica";
+    fontsize = 13.5;
+    labelloc = "c";
+    shape = "rect";
+    width = 3.3333;
+    height = 1.875;
+    style = "filled,rounded";
+    fillcolor = "#3b82f6";
+    margin = 0.1667;
+  ];
+  "nd1" [
+    likec4_id = "support";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR/></FONT></TD></TR></TABLE>>;
+  ];
+  "nd2" [
+    likec4_id = "customer";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT>>;
+  ];
+  "nd6" [
+    likec4_id = "amazon";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
+  ];
+  subgraph "cluster_3" {
+    likec4_id = "cloud";
+    likec4_level = 0;
+    margin = 24;
+    likec4_depth = 1;
+    graph [
+      fontname = "Helvetica";
+      fontsize = 9;
+      labeljust = "l";
+      label = <<B>CLOUD</B>>;
+    ];
+    "nd4" [
+      likec4_id = "cloud.frontend";
+      likec4_level = 1;
+      label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">Frontend</FONT>>;
+    ];
+    "nd5" [
+      likec4_id = "cloud.backend";
+      likec4_level = 1;
+      label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT>>;
+    ];
+    "nd4" -> "nd5" [
+      likec4_id = "cloud.frontend:cloud.backend";
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
+    ];
+  }
+  "nd5" -> "nd6" [
+    likec4_id = "cloud.backend:amazon";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
+  ];
+  "nd1" -> "nd4" [
+    likec4_id = "support:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
   ];
   "nd2" -> "nd4" [
-    id = "customer:cloud.frontend.dashboard";
+    likec4_id = "customer:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
 }"
 `;
 
-exports[`printToDot: computedCloudView 1`] = `
+exports[`printToDot > computedIndexView 1`] = `
 "digraph {
   compound = true;
-  pad = 0.08;
+  pad = 0.2083;
   rankdir = "TB";
-  nodesep = 1.0417;
-  ranksep = 1.0417;
+  nodesep = 0.8333;
+  ranksep = 0.8333;
   layout = "dot";
-  fontname = "Helvetica";
-  fontsize = 12;
-  edge [
+  outputorder = "nodesfirst";
+  graph [
     fontname = "Helvetica";
-    style = "solid";
-    penwidth = 2;
-    arrowsize = 0.7;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
-    nojustify = true;
-  ];
-  node [
-    fontname = "Helvetica";
-    labelloc = "c";
-    shape = "rect";
-    width = 3.3333;
-    height = 1.875;
-    style = "filled,rounded";
-    fillcolor = "#3b82f6";
-    margin = "0.2083,0.2083";
-  ];
-  "nd1" [
-    id = "support";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
-  ];
-  "nd3" [
-    id = "cloud.frontend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Frontend</FONT></TD></TR></TABLE>>;
-  ];
-  "nd4" [
-    id = "cloud.backend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Backend</FONT></TD></TR></TABLE>>;
-  ];
-  "nd5" [
-    id = "amazon";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
-  ];
-  subgraph "cluster_6" {
-    id = "cloud";
-    labeljust = "l";
     fontsize = 9;
-    margin = 20;
-    label = <<B>CLOUD</B>>;
-    "nd3";
-    "nd4";
-    "nd3" -> "nd4" [
-      id = "cloud.frontend:cloud.backend";
-      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
-    ];
-  }
-  "nd4" -> "nd5" [
-    id = "cloud.backend:amazon";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
-  "nd1" -> "nd3" [
-    id = "support:cloud.frontend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
-  ];
-  "nd2" -> "nd3" [
-    id = "customer:cloud.frontend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
-  ];
-}"
-`;
-
-exports[`printToDot: computedIndexView 1`] = `
-"digraph {
-  compound = true;
-  pad = 0.08;
-  rankdir = "TB";
-  nodesep = 1.0417;
-  ranksep = 1.0417;
-  layout = "dot";
-  fontname = "Helvetica";
-  fontsize = 12;
   edge [
     fontname = "Helvetica";
+    fontsize = 10.5;
     style = "solid";
     penwidth = 2;
     arrowsize = 0.7;
@@ -261,40 +311,45 @@ exports[`printToDot: computedIndexView 1`] = `
   ];
   node [
     fontname = "Helvetica";
+    fontsize = 13.5;
     labelloc = "c";
     shape = "rect";
     width = 3.3333;
     height = 1.875;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
-    margin = "0.2083,0.2083";
+    margin = 0.1667;
   ];
   "nd1" [
-    id = "support";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR ALIGN="CENTER"/></FONT></TD></TR></TABLE>>;
+    likec4_id = "support";
+    likec4_level = 0;
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR/></FONT></TD></TR></TABLE>>;
   ];
   "nd2" [
-    id = "customer";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT></TD></TR></TABLE>>;
+    likec4_id = "customer";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">customer</FONT>>;
   ];
   "nd3" [
-    id = "cloud";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">cloud</FONT></TD></TR></TABLE>>;
+    likec4_id = "cloud";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="13.5">cloud</FONT>>;
   ];
   "nd4" [
-    id = "amazon";
+    likec4_id = "amazon";
+    likec4_level = 0;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="13.5">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#dbeafe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   "nd3" -> "nd4" [
-    id = "cloud:amazon";
+    likec4_id = "cloud:amazon";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
   "nd1" -> "nd3" [
-    id = "support:cloud";
+    likec4_id = "support:cloud";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
   ];
   "nd2" -> "nd3" [
-    id = "customer:cloud";
+    likec4_id = "customer:cloud";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
   ];
 }"

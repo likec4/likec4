@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createRef } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import type { DiagramView, DiagramApi } from '@likec4/diagrams';
-import { Diagram } from '@likec4/diagrams/src/diagram'
+import type { DiagramView, DiagramApi } from '@likec4/diagrams'
+import { Diagram } from '@likec4/diagrams'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rootDiv = document.getElementById('root')!
 
 let root: Root | null = null
-const apiRef = createRef<DiagramApi>();
+const apiRef = createRef<DiagramApi>()
 
 declare global {
   interface Window {
     LikeC4Views: Record<string, DiagramView>
     renderView: (viewId: string) => void
-    exportToPngBase64: (pixelRatio?: number) => string
   }
 }
 
@@ -28,16 +27,23 @@ window.renderView = (viewId: string) => {
     root = null
   }
   root = createRoot(rootDiv)
-  root.render(<React.Fragment>
-    <Diagram ref={apiRef} interactive={false} animate={false} diagram={diagram} width={diagram.width} height={diagram.height} padding={0}/>
-  </React.Fragment>)
-  apiRef.current?.resetStageZoom()
-}
-
-window.exportToPngBase64 = (pixelRatio = 2) => {
-  if (!apiRef.current) {
-    throw Error('No diagram rendered')
-  }
-  const dataUrl = apiRef.current.toDataURL({pixelRatio})
-  return dataUrl.replace(/^data:image\/png;base64,/, '')
+  root.render(
+    <React.Fragment>
+      <Diagram
+        ref={apiRef}
+        animate={false}
+        zoomable={false}
+        pannable={false}
+        diagram={diagram}
+        width={diagram.width}
+        height={diagram.height}
+        initialPosition={{
+          x: 0,
+          y: 0,
+          scale: 1
+        }}
+        padding={0}
+      />
+    </React.Fragment>
+  )
 }

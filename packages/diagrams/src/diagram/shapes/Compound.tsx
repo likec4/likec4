@@ -1,17 +1,14 @@
-import type { DiagramNode } from '@likec4/core/types'
 import { AnimatedGroup, AnimatedRect, KonvaCore, Text } from '../../konva'
-
 import { scale } from 'khroma'
-import type { DiagramTheme } from '../types'
-import type { InterporatedNodeSprings, OnNodeClick, OnPointerEvent } from './types'
+import type { DiagramTheme, DiagramNode, OnNodeClick, KonvaPointerEvent } from '../types'
 import { mouseDefault, mousePointer } from './utils'
+import type { NodeSpringValues } from '../springs'
 
 interface CompoundProps {
   id?: string
-  animate?: boolean
   node: DiagramNode
   theme: DiagramTheme
-  springs: InterporatedNodeSprings
+  springs: NodeSpringValues
   onNodeClick?: OnNodeClick | undefined
 }
 
@@ -32,13 +29,13 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
   const listeners = {}
   if (onNodeClick) {
     Object.assign(listeners, {
-      onPointerEnter: (e: OnPointerEvent) => {
+      onPointerEnter: (e: KonvaPointerEvent) => {
         mousePointer(e)
       },
-      onPointerLeave: (e: OnPointerEvent) => {
+      onPointerLeave: (e: KonvaPointerEvent) => {
         mouseDefault(e)
       },
-      onPointerClick: (evt: OnPointerEvent) => {
+      onPointerClick: (evt: KonvaPointerEvent) => {
         if (KonvaCore.isDragging()) {
           return
         }
@@ -48,8 +45,6 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
     })
   }
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <AnimatedGroup id={id} {...springs}>
       <AnimatedRect
         cornerRadius={4}
