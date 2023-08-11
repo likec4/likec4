@@ -1,4 +1,4 @@
-import { computeView, assignNavigateTo } from '@likec4/core/compute-view'
+import { computeView, assignNavigateTo } from '@likec4/core'
 import { cloudView, cloud3levels, amazonView, fakeModel, indexView } from './model'
 
 const model = fakeModel()
