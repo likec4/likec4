@@ -21,9 +21,9 @@ export type LikeC4ViewId = keyof LikeC4Views
 export const {
   isViewId,
   Diagram,
-  ResponsiveDiagram,
-  EmbeddedDiagram,
-  DiagramBrowser
+  Responsive,
+  Embedded,
+  Browser
 } = LikeC4.create(LikeC4Views)
 
 export type {

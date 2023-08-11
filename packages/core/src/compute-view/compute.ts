@@ -1,7 +1,7 @@
 import { compact, find, map, mapToObj } from 'remeda'
 import { ModelIndex } from '../model-index'
 import type {
-  ComputeResult,
+  ComputedView,
   Element,
   ElementView,
   Fqn,
@@ -11,10 +11,7 @@ import type {
 } from '../types'
 import { computeElementView } from './compute-element-view'
 
-export function computeView<V extends ElementView>(
-  view: V,
-  index: ModelIndex
-): ComputeResult<V> | null {
+export function computeView<V extends ElementView>(view: V, index: ModelIndex) {
   try {
     return computeElementView(view, index)
   } catch (e) {
@@ -23,19 +20,19 @@ export function computeView<V extends ElementView>(
   }
 }
 
-type InputModel<V extends ElementView> = {
+type InputModel = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  views: V[]
+  views: ElementView[]
 }
 
-type OutputModel<V extends ElementView> = {
+type OutputModel = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  views: Record<ViewID, ComputeResult<V>>
+  views: Record<ViewID, ComputedView>
 }
 
-export function computeViews<V extends ElementView>(model: InputModel<V>): OutputModel<V> {
+export function computeViews(model: InputModel): OutputModel {
   const index = ModelIndex.from(model)
   const computedViews = compact(map(model.views, view => computeView(view, index)))
   return {
@@ -45,7 +42,7 @@ export function computeViews<V extends ElementView>(model: InputModel<V>): Outpu
   }
 }
 
-export function assignNavigateTo<V extends ElementView, R extends ComputeResult<V>[]>(views: R): R {
+export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {
   const allElementViews = new Map<Fqn, ViewID[]>()
 
   for (const { id, viewOf } of views) {

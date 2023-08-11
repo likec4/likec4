@@ -1,7 +1,11 @@
 import { isSameHierarchy } from '../../utils'
 import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
-import { Graph, alg } from '@dagrejs/graphlib'
+import pkg from '@dagrejs/graphlib'
 import { nonNullable } from '../../errors'
+
+// '@dagrejs/graphlib' is a CommonJS module
+// Here is a workaround to import it
+const { Graph, alg } = pkg
 
 export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
   const g = new Graph({

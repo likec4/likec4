@@ -4,11 +4,11 @@ import type { ModelIndex } from '../model-index'
 import {
   DefaultElementShape,
   DefaultThemeColor,
-  type ComputeResult,
   type ComputedNode,
   type Element,
   type ElementView,
-  type Fqn
+  type Fqn,
+  type ComputedView
 } from '../types'
 import * as Expr from '../types/expression'
 import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle } from '../types/view'
@@ -69,10 +69,7 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
   )
 }
 
-export function computeElementView<V extends ElementView>(
-  view: V,
-  index: ModelIndex
-): ComputeResult<V> {
+export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
   const rootElement = view.viewOf ?? null
   let ctx = new ComputeCtx(index, rootElement)
   const rulesInclude = view.rules.filter(isViewRuleExpression)
@@ -168,7 +165,6 @@ export function computeElementView<V extends ElementView>(
   )
 
   const autoLayoutRule = view.rules.find(isViewRuleAutoLayout)
-
   return {
     ...view,
     autoLayout: autoLayoutRule?.autoLayout ?? 'TB',

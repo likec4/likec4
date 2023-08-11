@@ -15,14 +15,14 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.js"
     }
   },
   "publishConfig": {
@@ -34,7 +34,7 @@
     "generate:full": "yarn workspace @likec4/cli run build && run generate",
     "generate": "yarn node '../cli/bin/likec4' codegen react $INIT_CWD/src-dev/likec4",
     "turbo-build": "run -T turbo run build --filter='diagrams'",
-    "compile": "tsc -p tsconfig.build.json",
+    "compile": "tsc --noEmit",
     "build": "unbuild",
     "dev": "run generate && vite",
     "lint": "run -T eslint src/ --fix",

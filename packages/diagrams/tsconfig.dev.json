@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src-dev"]
+}
