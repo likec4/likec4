@@ -1,13 +1,13 @@
 export { Diagram } from './diagram/Diagram'
 export type { DiagramProps, DiagramApi, DiagramPaddings } from './diagram/types'
 
-export { LikeC4 } from './LikeC4'
+export { LikeC4 } from './likec'
 
 export { ResponsiveDiagram } from './responsive'
 export type { ResponsiveDiagramProps } from './responsive'
 
-export { LikeC4Browser, LikeC4Embedded, LikeC4BrowserTitle } from './browser'
-export type { LikeC4BrowserProps, LikeC4EmbeddedProps, LikeC4BrowserTitleProps } from './browser'
+export { DiagramsBrowser, EmbeddedDiagram, BrowserTitle } from './browser'
+export type { DiagramsBrowserProps, EmbeddedDiagramProps, BrowserTitleProps } from './browser'
 
 export type {
   Fqn,

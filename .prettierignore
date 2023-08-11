@@ -8,6 +8,7 @@
 .vscode-test-web
 .next
 
+docs/tsconfig.*
 docs/out
 docs/components/ui/
 

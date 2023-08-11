@@ -1,16 +1,16 @@
 import { invariant } from '@likec4/core'
 import { useKeyboardEvent, useMeasure, useSyncedRef } from '@react-hookz/web/esm'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
-import type { ReactElement, ReactNode } from 'react'
+import type { NamedExoticComponent, ReactElement, ReactNode } from 'react'
 import { is } from 'rambdax'
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Diagram } from '../diagram/Diagram'
 import type { DiagramViews, DiagramNode, DiagramPaddings, DiagramView } from '../diagram/types'
 import { CloseButton } from './CloseButton'
-import { LikeC4BrowserTitle } from './LikeC4BrowserTitle'
+import { BrowserTitle } from './BrowserTitle'
 
 // prettier-ignore
-export interface LikeC4BrowserProps<
+export interface DiagramsBrowserProps<
   Views extends DiagramViews,
   Id = keyof Views & string
 > extends React.HTMLAttributes<HTMLDivElement> {
@@ -45,7 +45,7 @@ export interface LikeC4BrowserProps<
   onClose?: (() => void) | undefined
 }
 
-const LikeC4BrowserPadding = [20, 20, 20, 20] satisfies DiagramPaddings
+const BrowserPadding = [20, 20, 20, 20] satisfies DiagramPaddings
 
 const StyleOverlay = {
   position: 'fixed',
@@ -74,11 +74,11 @@ const StyleContainer = {
 } satisfies CSSProperties
 
 function processRenderViewTitle(
-  renderViewTitle: LikeC4BrowserProps<DiagramViews>['renderViewTitle'],
+  renderViewTitle: DiagramsBrowserProps<DiagramViews>['renderViewTitle'],
   view: DiagramView
 ) {
   if (renderViewTitle === undefined) {
-    return <LikeC4BrowserTitle>{view.title}</LikeC4BrowserTitle>
+    return <BrowserTitle>{view.title}</BrowserTitle>
   }
   if (renderViewTitle === null) {
     return null
@@ -88,12 +88,12 @@ function processRenderViewTitle(
     title = renderViewTitle(view)
   }
   if (title !== null && typeof title === 'string') {
-    title = <LikeC4BrowserTitle>{title}</LikeC4BrowserTitle>
+    title = <BrowserTitle>{title}</BrowserTitle>
   }
   return title
 }
 
-export function LikeC4Browser<Views extends DiagramViews>({
+export function DiagramsBrowser<Views extends DiagramViews>({
   views: _views,
   initialViewId,
   initialPosition,
@@ -103,7 +103,7 @@ export function LikeC4Browser<Views extends DiagramViews>({
   renderViewTitle,
   onClose,
   ...props
-}: LikeC4BrowserProps<Views>) {
+}: DiagramsBrowserProps<Views>) {
   type ViewId = keyof Views & string
 
   const views = useSyncedRef(_views)
@@ -169,7 +169,7 @@ export function LikeC4Browser<Views extends DiagramViews>({
             width={measures.width}
             height={measures.height}
             initialPosition={initialPosition}
-            padding={padding ?? LikeC4BrowserPadding}
+            padding={padding ?? BrowserPadding}
             style={styleDiagram}
             onNodeClick={onNodeClick}
           />
@@ -180,3 +180,4 @@ export function LikeC4Browser<Views extends DiagramViews>({
     </div>
   )
 }
+DiagramsBrowser.displayName = 'DiagramsBrowser'

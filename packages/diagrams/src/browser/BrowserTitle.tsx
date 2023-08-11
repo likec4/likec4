@@ -19,9 +19,9 @@ const ContainerStyles = {
   textShadow: '4px 4px 5px rgb(17 17 17)'
 } satisfies CSSProperties
 
-export interface LikeC4BrowserTitleProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface BrowserTitleProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function LikeC4BrowserTitle({ children, style, ...props }: LikeC4BrowserTitleProps) {
+export function BrowserTitle({ children, style, ...props }: BrowserTitleProps) {
   return (
     <div
       style={{
@@ -34,4 +34,4 @@ export function LikeC4BrowserTitle({ children, style, ...props }: LikeC4BrowserT
     </div>
   )
 }
-LikeC4BrowserTitle.displayName = 'LikeC4BrowserTitle'
+BrowserTitle.displayName = 'LikeC4BrowserTitle'

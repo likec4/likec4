@@ -6,9 +6,9 @@ import { forwardRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DiagramViews, DiagramApi, DiagramPaddings } from '../diagram/types'
 import { ResponsiveDiagram } from '../responsive'
-import { LikeC4Browser, type LikeC4BrowserProps } from './LikeC4Browser'
+import { DiagramsBrowser, type DiagramsBrowserProps } from './DiagramsBrowser'
 
-export interface LikeC4EmbeddedProps<Views extends DiagramViews, Id = keyof Views & string>
+export interface EmbeddedDiagramProps<Views extends DiagramViews, Id = keyof Views & string>
   extends React.HTMLAttributes<HTMLDivElement>,
     RefAttributes<DiagramApi> {
   views: Views
@@ -27,17 +27,17 @@ export interface LikeC4EmbeddedProps<Views extends DiagramViews, Id = keyof View
   padding?: DiagramPaddings | undefined
 }
 
-const LikeC4EmbeddedPadding = [0, 0, 0, 0] satisfies DiagramPaddings
+const EmbeddedPadding = [0, 0, 0, 0] satisfies DiagramPaddings
 
-export const LikeC4Embedded = /* @__PURE__ */ forwardRef<
+export const EmbeddedDiagram = /* @__PURE__ */ forwardRef<
   DiagramApi,
-  PropsWithoutRef<LikeC4EmbeddedProps<DiagramViews>>
+  PropsWithoutRef<EmbeddedDiagramProps<DiagramViews>>
 >(({ views, viewId, padding, enableBrowser = true, ...props }, ref) => {
   const diagram = views[viewId]
   invariant(diagram, `View "${viewId}" not found in views`)
 
   const [browserInitialPosition, setBrowserInitialPosition] = useState<NonNullable<
-    LikeC4BrowserProps<any>['initialPosition']
+    DiagramsBrowserProps<any>['initialPosition']
   > | null>(null)
 
   const isOpened = browserInitialPosition !== null
@@ -65,12 +65,12 @@ export const LikeC4Embedded = /* @__PURE__ */ forwardRef<
         zoomable={false}
         pannable={false}
         diagram={diagram}
-        padding={padding ?? LikeC4EmbeddedPadding}
+        padding={padding ?? EmbeddedPadding}
         onStageClick={enableBrowser ? openBrowser : undefined}
       />
       {isOpened &&
         createPortal(
-          <LikeC4Browser
+          <DiagramsBrowser
             views={views}
             initialViewId={viewId}
             initialPosition={browserInitialPosition}
@@ -81,4 +81,4 @@ export const LikeC4Embedded = /* @__PURE__ */ forwardRef<
         )}
     </div>
   )
-}) as <Views extends DiagramViews>(props: LikeC4EmbeddedProps<Views>) => JSX.Element
+}) as <Views extends DiagramViews>(props: EmbeddedDiagramProps<Views>) => JSX.Element

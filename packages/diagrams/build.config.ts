@@ -1,45 +1,41 @@
 /* eslint-disable */
-import { resolve } from 'node:path'
 import { defineBuildConfig } from 'unbuild'
 
 // prettier-ignore
-const mkdist = {
-  builder: 'mkdist',
-  input: './src/',
-  pattern: [
-    '**/*.(ts|tsx)',
-    '!**/*.spec.*',
-    '!**/diagram/icons/*',
-  ]
-} as const
-
-// prettier-ignore
-export default defineBuildConfig({
+export default defineBuildConfig([{
+  // entries: [{
+  //   builder: 'mkdist',
+  //   input: 'src',
+  //   pattern: [
+  //     '**/*',
+  //     '!diagram/icons/*',
+  //   ],
+  //   esbuild: {
+  //     jsx: "automatic",
+  //     platform: 'browser',
+  //     target: 'es2020'
+  //   },
+  //   ext: 'js',
+  //   format: 'esm',
+  // }],
   entries: [
-    {
-      ...mkdist,
-      format: 'esm',
-      ext: 'js',
-      distDir: resolve(__dirname, 'dist'),
-      declaration: true
-    },{
-      ...mkdist,
-      format: 'cjs',
-      ext: 'js',
-      distDir: resolve(__dirname, 'dist/__cjs'),
-      declaration: false
-    }
+    'src/index.ts',
+    'src/browser/index.ts',
+    'src/diagram/index.ts',
+    'src/responsive/index.ts',
+    'src/LikeC4.tsx',
   ],
   clean: true,
+  declaration: 'compatible',
   rollup: {
-    commonjs: {
-      esmExternals: true
-    },
-    resolve: {
-      dedupe: ['react', 'react-dom']
+    emitCJS: true,
+    output: {
+      preserveModules: true
     },
     esbuild: {
-      platform: 'browser'
+      jsx: "automatic",
+      platform: 'browser',
+      target: 'es2022'
     }
-  }
-})
+  },
+}])

@@ -1,3 +1,4 @@
+//  jsx
 import type { HTMLAttributes, SVGProps } from 'react'
 import { forwardRef } from 'react'
 
