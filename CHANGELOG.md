@@ -1,3 +1,24 @@
+# [0.33.0](https://github.com/likec4/likec4/compare/v0.32.0...v0.33.0) (2023-08-12)
+
+### Bug Fixes
+
+- can't infer result type from export `./compute-view` ([#267](https://github.com/likec4/likec4/issues/267)) ([1945a97](https://github.com/likec4/likec4/commit/1945a97c5ecacf9a80d26966bd68ab8a20e4f832))
+- **deps:** update dependency @hpcc-js/wasm to ^2.13.1 ([#254](https://github.com/likec4/likec4/issues/254)) ([3069dab](https://github.com/likec4/likec4/commit/3069dab249b11cfc79d8a22603202ca22d99f864))
+- **deps:** update dependency @types/eslint to ^8.44.2 ([902b17e](https://github.com/likec4/likec4/commit/902b17e66722d369cd14154ace252b8522e96cf3))
+- **deps:** update dependency jotai to ^2.2.3 ([#255](https://github.com/likec4/likec4/issues/255)) ([3179777](https://github.com/likec4/likec4/commit/3179777f20dcf564bf3f2d7e17877ae41089c3b9))
+- **deps:** update dependency prettier to ^3.0.1 ([9cd1024](https://github.com/likec4/likec4/commit/9cd10240fe49d6d2c4172804bbd4b44a72099c71))
+- **deps:** update linters to ^6.2.1 ([a90c0b2](https://github.com/likec4/likec4/commit/a90c0b2fbe5675803770ba1cbb5d5e0eafdb6e5e))
+- **deps:** update linters to ^6.3.0 ([717770f](https://github.com/likec4/likec4/commit/717770f947ccd102e7e57ce0ff7b0a01f5f7a869))
+- **layouts:** disable graphviz.unflatten, requires research ([5379926](https://github.com/likec4/likec4/commit/537992601c2da925cb55f783ea7621970a431290))
+- pin esbuild to 0.17 ([3d6125d](https://github.com/likec4/likec4/commit/3d6125d2311737074be64ec2c5303390e77d4c66))
+
+### Features
+
+- **core:** add color to DiagramLabel ([47b7579](https://github.com/likec4/likec4/commit/47b7579b2c65dd6ba12ce444ae3a05f36acdc83a))
+- **core:** add in/out edges to ComputedNode ([0ddb07c](https://github.com/likec4/likec4/commit/0ddb07c6f173ab1affb46e7e53308e37dff1c6c7))
+- **diagrams:** new react component LikeC4Browser ([2cd5387](https://github.com/likec4/likec4/commit/2cd5387cb21b4fac48f574783045a2fec554b8e2))
+- **diagrams:** new react component LikeC4Browser ([2b0d8e1](https://github.com/likec4/likec4/commit/2b0d8e1951d241cf9c4a3ae64d139dc3e2cc35f1))
+
 # [0.32.0](https://github.com/likec4/likec4/compare/v0.31.0...v0.32.0) (2023-08-04)
 
 ### Features
