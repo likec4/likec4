@@ -1,0 +1,140 @@
+// customise model
+specification {
+  element actor {
+    style {
+      shape person
+      color indigo
+    }
+  }
+  element system
+  element component
+}
+
+// describe architecture
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+  }
+
+  saas = system 'Our SaaS' {
+    description 'Our product allows customers to manage their data'
+
+    backend = component 'Backend' {
+      description '
+        Implements business logic
+        and provides GraphQL API
+      '
+
+      api = component 'GraphQL' {
+        description 'Configured Hasura, provides access to data from database or calls services'
+      }
+
+      services = component 'Services' {
+        description '
+        Serverless Functions
+        Implement business logic and comminucate with external services
+        '
+      }
+
+      api -> services 'calls'
+      api -> db 'reads'
+      services -> db 'writes'
+    }
+
+    ui = component 'Frontend' {
+      description 'NextJs application, hosted on Vercel'
+      style {
+        shape browser
+      }
+
+      -> api 'requests via HTTPS'
+    }
+
+    infra = component 'Infrastructure' {
+      description 'Cloud Infrastructure, managed services'
+
+      db = component 'Database' {
+        description 'PostgreSQL, hosted on DigitalOcean'
+        style {
+          shape storage
+        }
+      }
+    }
+
+    backend -> infra 'uses'
+  }
+
+  customer -> saas 'uses to manage data'
+  customer -> ui 'opens in browser'
+}
+
+// generate diagrams
+views {
+
+  view index {
+    title 'Landscape view'
+    include *
+  }
+
+  view indexLR {
+    title 'Landscape view'
+    include *
+    autoLayout LeftRight
+  }
+
+  view customer of customer {
+    include *, saas.ui
+  }
+
+  view saas of saas {
+    title 'Our Saas - Overview'
+    include *
+
+    style saas.* {
+      color sky
+    }
+  }
+
+  view ui of ui {
+    include *, saas
+
+    style ui {
+      color sky
+    }
+  }
+
+  view backend of backend {
+    include *, saas
+    style backend.* {
+      color sky
+    }
+  }
+
+  view infra of infra {
+    include
+      *,
+      backend.* -> infra
+
+    style infra, infra.* {
+      color sky
+    }
+  }
+
+  view backendApi of api {
+    include *, infra, backend
+
+    style api {
+      color sky
+    }
+  }
+
+  view backendServices of services {
+    include
+      *,
+      backend
+
+    style services {
+      color sky
+    }
+  }
+}

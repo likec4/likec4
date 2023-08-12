@@ -1,0 +1,60 @@
+{
+  "name": "@likec4/layouts",
+  "license": "MIT",
+  "version": "0.33.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "src",
+    "!**/__fixtures__/",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/layouts"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "run -T eslint src/ --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "run -T rimraf dist"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^0.8.0",
+    "@dagrejs/graphlib": "^2.1.13",
+    "@hpcc-js/wasm": "^2.13.1",
+    "@likec4/core": "workspace:*",
+    "indent-string": "^5.0.0",
+    "rambdax": "^9.1.1",
+    "remeda": "^1.24.0",
+    "strip-indent": "^4.0.0",
+    "ts-graphviz": "^1.8.1",
+    "type-fest": "^4.2.0",
+    "word-wrap": "^1.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.1.6",
+    "vitest": "^0.34.1"
+  }
+}

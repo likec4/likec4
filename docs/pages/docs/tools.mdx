@@ -1,0 +1,12 @@
+import { Card, Cards } from "nextra-theme-docs"
+import meta from "./tools/_meta.json"
+
+export const prefix = "/docs/tools"
+
+# LikeC4 Tools
+
+<Cards num={1}>
+  {Object.entries(meta).map(([key, page]) => (
+    <Card arrow key={key} title={page.title} href={`${prefix}/${key}/`}/>
+  ))}
+</Cards>

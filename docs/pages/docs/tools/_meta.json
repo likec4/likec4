@@ -1,0 +1,14 @@
+{
+  "cli": {
+    "title": "CLI"
+  },
+  "react": {
+    "title": "React"
+  },
+  "vscode": {
+    "title": "VSCode Extension"
+  },
+  "github-actions": {
+    "title": "Github Actions"
+  }
+}

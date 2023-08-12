@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generate D2 - fakeComputedView 3 Levels 1`] = `
+"direction: 
+
+Amazon: {
+  label: "amazon"
+}
+Cloud: {
+  label: "cloud"
+
+  Backend: {
+    label: "backend"
+
+    Graphql: {
+      label: "graphql"
+    }
+    Storage: {
+      label: "storage"
+    }
+  }
+  FrontendAdminPanel: {
+    label: "adminPanel"
+  }
+  FrontendDashboard: {
+    label: "dashboard"
+  }
+}
+Customer: {
+  label: "customer"
+}
+Support: {
+  label: "support"
+}
+
+Cloud.FrontendDashboard -> Cloud.Backend.Graphql
+Cloud.FrontendAdminPanel -> Cloud.Backend.Graphql
+Cloud.Backend.Storage -> Amazon
+Cloud.Backend.Graphql -> Cloud.Backend.Storage
+Support -> Cloud.FrontendAdminPanel
+Customer -> Cloud.FrontendDashboard
+"
+`;
+
+exports[`generate D2 - fakeDiagram 1`] = `
+"direction: 
+
+Amazon: {
+  label: "amazon"
+}
+Cloud: {
+  label: "cloud"
+
+  Backend: {
+    label: "backend"
+  }
+  Frontend: {
+    label: "frontend"
+  }
+}
+Customer: {
+  label: "customer"
+}
+Support: {
+  label: "support"
+}
+
+Cloud.Frontend -> Cloud.Backend: requests
+Cloud.Backend -> Amazon
+Support -> Cloud.Frontend
+Customer -> Cloud.Frontend: opens
+"
+`;
+
+exports[`generate D2 - fakeDiagram2 1`] = `
+"direction: 
+
+Client: {
+  label: "client"
+}
+SystemBackend: {
+  label: "backend"
+}
+SystemFrontend: {
+  label: "frontend"
+}
+
+SystemFrontend -> SystemBackend: requests
+Client -> SystemFrontend: opens
+"
+`;

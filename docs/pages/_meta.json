@@ -1,0 +1,57 @@
+{
+  "index": {
+    "title": "LikeC4 - Architecture-as-a-code",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "layout": "full",
+      "typesetting": "article",
+      "breadcrumb": false,
+      "footer": true,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "timestamp": false
+    }
+  },
+  "docs": {
+    "title": "Docs",
+    "type": "page"
+  },
+  "playground": {
+    "title": "Playground",
+    "type": "page"
+  },
+  "examples": {
+    "title": "Examples",
+    "type": "page"
+  },
+  "about": {
+    "title": "About",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "timestamp": false,
+      "typesetting": "article",
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false
+    }
+  },
+  "404": {
+    "title": "Page Not Found",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw",
+      "breadcrumb": false,
+      "footer": false,
+      "sidebar": false,
+      "toc": false,
+      "pagination": false,
+      "timestamp": false
+    }
+  }
+}

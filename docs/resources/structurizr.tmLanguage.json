@@ -1,0 +1,122 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Structurizr",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#types"
+		},
+		{
+			"include": "#relationship"
+		},
+		{
+			"include": "#color_hex"
+		},
+		{
+			"include": "#slash_line_comment"
+		},
+		{
+			"include": "#hash_line_comment"
+		},
+		{
+			"include": "#block_comment"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#properties"
+		},
+		{
+			"string_literal": {
+				"name": "string.quoted.double.structurizer",
+				"begin": "b?\"",
+				"end": "\"",
+				"patterns": [
+					{
+						"include": "#escaped_character"
+					}
+				]
+			}
+		},
+		{
+			"escaped_character": {
+				"name": "constant.character.escape.structurizer",
+				"match": "\\\\(x[0-9A-Fa-f]{2}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.)"
+			}
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"match": "(^|\\s+)(workspace|model|enterprise|views)\\b",
+				"captures": {
+					"2": {
+						"name": "keyword.control.structurizr"
+					}
+				}
+			},
+			{
+				"name": "keyword.control.structurizr",
+				"match": "!include\\s+|!constant\\s+|!docs\\s+|!adrs\\s+|!identifiers\\s+|!impliedRelationships\\s+|!ref\\s+|!plugin\\s+|!script\\s+\""
+			}]
+		},
+		"types": {
+			"patterns": [{
+				"match": "(^|\\s+)(person|software[s,S]ystem|deployment[e,E]nvironment|deployment[n,N]ode|deployment[g,G]roup|infrastructure[n,N]ode|container[i,I]nstance|software[s,S]ystem[i,I]nstance|system[l,L]andscape|system[c,C]ontext|container|component|filtered|dynamic|deployment|styles|themes|branding|element|relationship|group|properties|perspectives)\\b",
+				"captures": {
+					"2": {
+						"name": "support.type.structurizr"
+					}
+				}
+			}]
+		},
+		"properties": {
+			"patterns": [{
+				"match": "(^|\\s+)(include|exclude|auto[l,L]ayout|tags|url|title|shape|icon|width|height|background|colou?r|stroke|font[s,S]ize|border|opacity|metadata|description|thickness|dashed|routing|position|technology)\\b",
+				"captures": {
+					"2": {
+						"name": "variable.other.property.structurizr"
+					}
+				}
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.structurizr",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.structurizr",
+					"match": "\\\\."
+				}
+			]
+		},
+		"color_hex": {
+			"name": "constant.numeric.decimal.structurizr",
+			"match": "#[0-9a-fA-F]{6}"
+		},
+		"slash_line_comment": {
+			"name": "comment.line.double-slash.structurizr",
+			"begin": "//",
+			"end": "$"
+		},
+		"hash_line_comment": {
+			"name": "comment.line.hash.structurizr",
+			"begin": "^( [ \\t]+)?#",
+			"end": "$"
+		},
+		"block_comment": {
+			"name": "comment.block.structurizr",
+			"begin": "/\\*",
+			"end": "\\*/"
+		},
+		"relationship": {
+			"name": "storage.type.function.structurizr",
+			"match": "->"
+		}
+	},
+	"scopeName": "source.structurizr"
+}

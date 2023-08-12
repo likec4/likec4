@@ -1,0 +1,72 @@
+import { Callout } from 'nextra-theme-docs'
+
+# Relationships
+
+Relationships are used to describe the connections and interactions of architecture elements.
+
+Relationship between elements is created with the **`->`**:
+
+```likec4 filename="relations.c4"
+model {
+  customer = actor 'Customer'
+  cloud = service 'Cloud'
+
+  customer -> cloud
+}
+```
+
+Relationship may be nested
+
+```likec4 filename="relations.c4"
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend
+    customer -> frontend
+  }
+}
+```
+
+
+Relationship may have a label (and better to have one)
+
+```likec4 filename="relations.c4"
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend 'requests data'
+  }
+
+  customer -> frontend 'opens in browser'
+}
+```
+
+Nested relationship may be "sourceless" (or use `it` or `this`).  
+Then the source is the parent element.
+
+
+```likec4 filename="relations.c4"
+model {
+  customer = actor {    
+    -> frontend 'opens in browser' // same as customer -> frontend
+  }
+  service cloud {
+    component backend
+    component frontend {
+      -> backend 'requests data'  // same as frontend -> backend
+    }
+  }
+
+  // or use 'it' or 'this'
+  customer = actor {
+    it -> frontend 'opens in browser'
+    this -> frontend 'opens in browser'
+  }    
+}
+```

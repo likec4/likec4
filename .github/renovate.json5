@@ -1,0 +1,48 @@
+{
+  "$schema": 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:base',
+    'npm:unpublishSafe',
+    'group:jsUnitTest',
+    'group:nextraMonorepo',
+    'helpers:disableTypesNodeMajor'
+  ],
+  prHourlyLimit: 3,
+  prConcurrentLimit: 6,
+  rangeStrategy: 'bump',
+  updateInternalDeps: true,
+  labels: ['dependencies'],
+  packageRules: [
+    {
+      "groupName": "linters",
+      "matchPackageNames": [
+        "@types/eslint",
+        "prettier"
+      ],
+      "matchPackagePrefixes": [
+        "@commitlint",
+        "@typescript-eslint/",
+        "eslint"
+      ],
+      automerge: true
+    },
+    // Update manually
+    {
+      enabled: false,
+      matchPackageNames: ['next'],
+    },
+    {
+      enabled: false,
+      matchPackageNames: ['@types/react', '@types/react-dom'],
+    },
+    {
+      enabled: false,
+      matchPackagePatterns: ['^monaco', '^@monaco']
+    },
+    {
+      enabled: false,
+      matchPackageNames: ['@types/vscode', 'vscode'],
+      matchPackagePatterns: ['^vscode-']
+    },
+  ]
+}

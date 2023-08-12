@@ -1,0 +1,364 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LikeC4ModelBuilder > builds model with description and technology 1`] = `
+{
+  "elements": {
+    "client": {
+      "description": null,
+      "id": "client",
+      "kind": "user",
+      "links": null,
+      "shape": "person",
+      "tags": null,
+      "technology": null,
+      "title": "client",
+    },
+    "system": {
+      "description": null,
+      "id": "system",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "system",
+    },
+    "system.backend": {
+      "color": "secondary",
+      "description": null,
+      "id": "system.backend",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": "NodeJS",
+      "title": "Backend",
+    },
+    "system.frontend": {
+      "color": "muted",
+      "description": "Frontend description",
+      "id": "system.frontend",
+      "kind": "component",
+      "links": null,
+      "shape": "browser",
+      "tags": null,
+      "technology": null,
+      "title": "frontend",
+    },
+  },
+  "relations": {
+    "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23": {
+      "id": "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23",
+      "source": "system.frontend",
+      "target": "system.backend",
+      "title": "requests",
+    },
+    "6f3533077304f2e812d6c9cfdb6be977e23efe3d": {
+      "id": "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+      "source": "client",
+      "target": "system.frontend",
+      "title": "",
+    },
+  },
+  "views": {},
+}
+`;
+
+exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
+{
+  "elements": {
+    "client": {
+      "description": null,
+      "id": "client",
+      "kind": "user",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "client",
+    },
+    "system": {
+      "description": null,
+      "id": "system",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "system",
+    },
+    "system.backend": {
+      "description": null,
+      "id": "system.backend",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "backend",
+    },
+    "system.backend.api": {
+      "description": null,
+      "id": "system.backend.api",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "api",
+    },
+    "system.frontend": {
+      "description": null,
+      "id": "system.frontend",
+      "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "frontend",
+    },
+  },
+  "relations": {
+    "671e3db5eb605d5f245f247d95925bd0953e0e4c": {
+      "id": "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+      "source": "system.frontend",
+      "target": "system.backend.api",
+      "title": "requests",
+    },
+    "99bffdfd5c78e024393e6223cd9b19225321a5e3": {
+      "id": "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+      "source": "client",
+      "target": "system.frontend",
+      "title": "opens",
+    },
+  },
+  "views": {
+    "74f5364fa4b064ce9830043b93d4cc6fce9d85b0": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "system.frontend:system.backend",
+          "label": "requests",
+          "parent": null,
+          "relations": [
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend",
+        },
+        {
+          "id": "client:system.frontend",
+          "label": "opens",
+          "parent": null,
+          "relations": [
+            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+          ],
+          "source": "client",
+          "target": "system.frontend",
+        },
+      ],
+      "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "client",
+          "inEdges": [],
+          "kind": "user",
+          "links": null,
+          "outEdges": [
+            "client:system.frontend",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system.frontend",
+          "inEdges": [
+            "client:system.frontend",
+          ],
+          "kind": "component",
+          "links": null,
+          "outEdges": [
+            "system.frontend:system.backend",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "frontend",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system.backend",
+          "inEdges": [
+            "system.frontend:system.backend",
+          ],
+          "kind": "component",
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "backend",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
+      "tags": null,
+      "title": "frontend",
+      "viewOf": "system.frontend",
+    },
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "client:system",
+          "label": "opens",
+          "parent": null,
+          "relations": [
+            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+          ],
+          "source": "client",
+          "target": "system",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "client",
+          "inEdges": [],
+          "kind": "user",
+          "links": null,
+          "outEdges": [
+            "client:system",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system",
+          "inEdges": [
+            "client:system",
+          ],
+          "kind": "component",
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "system",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
+      "tags": null,
+      "title": "Index",
+    },
+    "v1": {
+      "autoLayout": "LR",
+      "description": null,
+      "edges": [
+        {
+          "id": "system.frontend:system.backend.api",
+          "label": "requests",
+          "parent": null,
+          "relations": [
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend.api",
+        },
+      ],
+      "id": "v1",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system.frontend",
+          "inEdges": [],
+          "kind": "component",
+          "links": null,
+          "navigateTo": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+          "outEdges": [
+            "system.frontend:system.backend.api",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "frontend",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system.backend.api",
+          "inEdges": [
+            "system.frontend:system.backend.api",
+          ],
+          "kind": "component",
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "api",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+        {
+          "autoLayout": "LR",
+        },
+      ],
+      "tags": null,
+      "title": "api",
+      "viewOf": "system.backend.api",
+    },
+  },
+}
+`;

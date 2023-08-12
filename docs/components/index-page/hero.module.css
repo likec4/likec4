@@ -1,0 +1,37 @@
+.hero {
+  background-color: rgb(17, 17, 17);
+  overflow: hidden;
+  border-radius: 10px;
+  position: relative;
+  margin: 2rem;
+}
+.hero::after {
+  content: "";
+  width: 200%;
+  height: 200%;
+  bottom: 0px;
+  left: 0px;
+  position: absolute;
+  opacity: 0.2;
+  /* background: radial-gradient(circle, rgb(110 110 110) 0%, rgb(31 31 31) 100%); */
+}
+.hero_ratio {
+  aspect-ratio: 16/9;
+  width: auto;
+  height: auto;
+  max-height: 200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 0;
+  cursor: pointer;
+  padding: 0 1rem;
+}

@@ -1,0 +1,70 @@
+{
+  "name": "likec4-workspaces",
+  "version": "0.33.0",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "yarn@3.6.1",
+  "workspaces": [
+    "docs",
+    "packages/*",
+    "examples/*"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "compile:all": "turbo run compile",
+    "compile": "turbo run compile --filter='./packages/*'",
+    "build": "turbo run build --filter='./packages/*'",
+    "turbo": "turbo",
+    "release": "shipjs prepare",
+    "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
+    "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
+    "git:pre-commit": "lint-staged",
+    "dev": "turbo run dev --filter='./packages/*'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "turbo run lint --continue --filter='./packages/*'",
+    "vitest:ui": "vitest --ui",
+    "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped"
+  },
+  "dependencies": {
+    "@commitlint/cli": "^17.7.1",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@types/eslint": "^8.44.2",
+    "@types/node": "^18.15.11",
+    "@types/prettier": "^2.7.3",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "@vitest/ui": "^0.34.1",
+    "eslint": "^8.47.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.1",
+    "rimraf": "^5.0.1",
+    "shipjs": "^0.26.3",
+    "turbo": "^1.10.12",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.8",
+    "vitest": "^0.34.1",
+    "vitest-github-actions-reporter": "^0.10.0"
+  },
+  "volta": {
+    "node": "18.16.1"
+  },
+  "resolutions": {
+    "vscode-jsonrpc": "8.1.0",
+    "vscode-languageclient": "8.1.0",
+    "vscode-languageserver": "8.1.0",
+    "vscode-languageserver-protocol": "3.17.3"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx}": [
+      "prettier --write"
+    ],
+    "**/*.{md,mdx,yml,json,babelrc,eslintrc,prettierrc}": [
+      "prettier --write"
+    ]
+  }
+}

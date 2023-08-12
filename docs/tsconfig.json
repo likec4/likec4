@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.next.json",
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "moduleResolution": "bundler",
+    "noUncheckedIndexedAccess": true
+  }
+}

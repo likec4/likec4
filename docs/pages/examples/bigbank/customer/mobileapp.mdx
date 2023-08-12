@@ -1,0 +1,35 @@
+import { ExampleLikeC4View } from '$/components/example-big-bank'
+
+# Customer: Mobile application
+
+We may visualize interactions with the mobile application:
+
+```likec4
+views {
+
+  view mobileApp of mobileApp {
+    include
+      *,
+      internetBankingSystem,
+      internetBankingSystem.apiApplication,
+      mobileApp -> internetBankingSystem.apiApplication.*
+
+    style * {
+      color muted
+    }
+
+    style apiApplication.*, mobileApp {
+      color primary
+    }
+
+    style customer {
+      color secondary
+    }
+  }
+
+}
+```
+
+The diagram:
+
+<ExampleLikeC4View viewId='mobileApp' />

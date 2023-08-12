@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  sync-main:
+    cmds:
+      - git checkout main
+      - git merge develop
+      - git push
+      - git checkout develop
+
+  release:
+    dotenv: ['.env']
+    cmds:
+      # - yarn workspaces foreach --topological-dev version minor
+      - yarn version check --interactive
+      - yarn build
+      - yarn version apply --all
+      - yarn workspaces foreach --topological-dev --no-private --exclude=likec4-vscode npm publish
+
+  # publish-vscode:
+  #   dir: packages/vscode
+  #   cmds:
+  #     - yarn vsce publish 0.8.0

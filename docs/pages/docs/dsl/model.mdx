@@ -1,0 +1,216 @@
+import { Bleed, Callout } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra/components'
+import { Info, Warning } from '$/components'
+
+# Model
+
+The model describes the software architecture as a set of various elements and relations/interactions between them.
+
+## Element
+
+Element is a basic building block.
+It represents a logical or physical part of the architecture.  
+Any Element must have a [kind](./specification#kind) and a name (_identifier_):
+
+```likec4 copy
+specification {
+  element actor // define a kind
+  element service
+}
+
+model {
+  // actor element with name 'customer'
+  actor customer
+  // service element with name 'cloud'
+  service cloud
+  // or use '=' to set the name
+  cloud = service
+}
+```
+
+Element name is required for references.  
+It can contain letters, digits and underscore, but can't start with a digit.
+
+| name       |     |
+| :--------- | :-- |
+| api        | ✅  |
+| Api        | ✅  |
+| \_api      | ✅  |
+| \_1api     | ✅  |
+| 1api       | ⛔️ |
+| a.pi       | ⛔️ |
+
+
+### Element properties
+
+Elements may have properties: _title_, _description_ and _technology_.  
+For example, Structurizr DSL style:
+
+```likec4 copy
+specification {
+  element softwareSystem
+}
+model {
+  // Structurizr DSL style:
+  // <name> = softwareSystem [title] [description] [technology]
+  cloud = softwareSystem 'Cloud' 'Provides services to customers' 'SaaS'
+}
+```
+
+<Info>
+LikeC4 supports Structurizr DSL syntax ("_partially_") allowing just copy-paste from it.  
+Check the [Big Bank example](/examples/bigbank).
+</Info>
+
+Element's name is used as a title by default.  
+But you can specify your own:
+
+```likec4
+model {
+  // actor element with name='customer' and title='customer'
+  actor customer
+  // service element with name='cloud' and title='Cloud'
+  service cloud 'Cloud'
+  // or with '='
+  cloud = service 'Cloud'
+}
+```
+
+These properties may be defined as nested:
+
+```likec4 copy
+model {
+  // Only description inside
+  customer = actor 'Customer' {
+     // ':' is optional, but if you prefer
+    description: 'Uses the Mobile Application'
+  }
+  // All properties inside
+  mobile = application {
+    title 'Mobile Application'
+    description 'Provides services to customers'
+    technology 'React Native'
+  }
+  // Multiline
+  web = application {
+    title 'Web Application'
+    description '
+      Provides services to customers through
+      the web interface.
+    '
+  }
+}
+```
+
+#### Element Tags
+
+Tags are defined in nested block and before any properties:
+
+```likec4 copy
+model {
+  appV1 = application 'App v1' {
+    #deprecated
+    description 'Old version of the application'
+  }
+
+  // multiple tags
+  appV2 = application {
+    #next, #serverless, #team2
+    title 'App v2'
+  }
+
+  appV3 = application {        
+    title 'App v3'
+    #team3 // ⛔️ Error: tag must be defined 
+           //           before any properties or elements
+  }  
+}
+```
+
+#### Links
+
+Element may have multiple links:
+
+```likec4 copy
+model {
+  bastion = application 'Bastion' {
+    // External link
+    link https://any-external-link.com
+
+    // or any URI
+    link ssh://bastion.internal
+
+    // or relative link to navigate to sources
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+## Structure
+
+Any element is a container and can contain other elements.  
+This way you define the structure and internals of the element.
+
+```likec4 filename="nested-elements.c4"
+model {
+  // service1 has backend and frontend
+  service service1 {
+    component backend {
+      // backend has api
+      component api
+    }
+    component frontend
+  }
+
+  // or use '='
+  service2 = service {
+    backend = component {
+      api = component
+    }
+    frontend = component
+  }
+}
+```
+
+<Warning>
+Element name must be unique within the container.  
+We learn this in detail with [references](./references)
+</Warning>
+
+Nested elements are _"namespaced"_, the parent name is used as a prefix.  
+So, the model above has the elements with these fully qualified names:
+
+- `service1`
+- `service1.backend`
+- `service1.backend.api`
+- `service1.frontend`
+
+and:
+
+- `service2`
+- `service2.backend`
+- `service2.backend.api`
+- `service2.frontend`
+
+It is not possible to have elements with the same name on the same hierarchy level.
+
+```likec4 filename="nested-elements.c4"
+model {
+
+  service service1 'Service 1' {
+    component backend
+
+    component backend // ⛔️ Error: 'service1.backend' already defined
+  }
+
+  service service2 'Service 2' {
+    component backend // ✅ This is OK - 'service2.backend'
+
+    component legacy {
+      component backend // ✅ This is OK - 'service2.legacy.backend'
+    }
+  }
+
+  component backend // ✅ This is OK - 'backend'
+}
+```

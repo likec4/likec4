@@ -1,0 +1,29 @@
+import { Callout } from 'nextra-theme-docs'
+import { ExampleLikeC4View } from '$/components/example-big-bank'
+
+# Personal Banking Customer
+
+<Callout type='info' emoji='ℹ️'>
+  The original C4 model does not have customer views.
+</Callout>
+
+LikeC4 has no view types and therefore any limits.  
+We may visualize how customers interact with the system.
+
+```likec4
+views {
+
+  view customer of customer {
+    include
+      *,
+      customer -> internetBankingSystem.*,
+      customer -> bigbank.*
+    exclude webApplication
+  }
+
+}
+```
+
+The diagram:
+
+<ExampleLikeC4View viewId='customer' />

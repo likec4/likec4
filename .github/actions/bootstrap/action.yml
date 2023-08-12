@@ -1,0 +1,36 @@
+name: Bootstrap
+description: Checkout the project and install dependencies
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: get yarn cache directory
+      shell: bash
+      id: yarn-cachedir
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+    - name: yarn caches
+      uses: actions/cache@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        path: ${{ steps.yarn-cachedir.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: restore only caches
+      uses: actions/cache/restore@v3
+      if: github.ref != 'refs/heads/main'
+      with:
+        path: ${{ steps.yarn-cachedir.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: install dependencies
+      shell: bash
+      run: yarn install --immutable

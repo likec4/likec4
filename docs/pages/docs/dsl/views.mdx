@@ -1,0 +1,178 @@
+import { Bleed, Cards, Card, Callout } from 'nextra-theme-docs'
+import { Info, Warning } from '$/components'
+
+# Views
+
+Views are the architecture diagrams, projections of the model from different perspectives, with different levels of details, like:
+
+- System / service overviews
+- Components interactions in specific use case
+- Data flows and sequence diagrams
+
+## View definition
+
+Views may be named (must be unique) or unnamed (can't be referenced):
+
+```likec4 filename="views.c4"
+views {
+  // with name
+  view index {
+  }
+  // unnamed
+  view {
+  }
+}
+```
+
+<Info>
+`index` is a special view, and is rendered by default if no view name is specified.  
+If not defined, it will be generated for top-level elements
+</Info>
+
+Views may have a title, description, tags and links (same as [model element](./model#element)):
+
+```likec4 filename="views.c4"
+views {
+
+  view epic12 {
+    #next, #epic-12
+    title "Cloud System - Changes in Epic-12"
+    description "
+      This diagram shows the high-level
+      components and interactions.
+    "
+
+    link https://my.jira/epic/12
+
+    include *
+  }
+
+}
+```
+
+### View Root Element
+
+View may have a root element (`view of ..`).  
+Then it inherits the scope of the root element:
+
+```likec4 filename="views.c4"
+views {
+
+  view {
+    include api // ⛔️ Error: 'api' is not found
+  }
+
+  view of cloud.backend {
+    title 'Backend components'
+
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```
+
+## View predicates
+
+View predicates define what elements/relationships to include/exclude.
+
+```likec4
+// include element
+include cloud.backend
+
+// or exclude
+exclude cloud.backend
+
+// include children of cloud.backend
+include cloud.backend.*
+
+// all incoming relationships
+// if any found - includes cloud.backend and source elements
+include -> cloud.backend
+include * -> cloud.backend
+
+// all outgoing relationships
+// if any found - includes cloud children and target elements
+include cloud.* ->
+
+// all relationships from customer to cloud children
+// if any found - includes customer and targeted children
+include customer -> cloud.*
+
+// elements by kind
+include element.kind = container
+include element.kind != system
+
+// elements by tag
+include element.tag = #next
+include element.tag != #V2
+```
+
+<Info>
+**Limitation**  
+Relations with container elements are not rendered yet. Working on it...
+</Info>
+
+Wildcard may be used to reference "everything", but it depends on the context.
+
+```likec4
+view {
+  // include all top level elements and their relationships
+  include *
+}
+
+view of cloud.backend {
+  // include 'cloud.backend', its children and all the incomings/outgoings
+  // (relationships with the rest of the architecture)
+  include *
+}
+```
+
+Predicates are applied in same the order as defined in view.  
+`exclude` applies only to elements/relationships included before.
+
+```likec4
+view {
+  // rules may be merged
+  include
+    customer,
+    bigbank,
+    customer -> bigbank.*
+
+  // include all children of bigbank
+  include bigbank.*
+  // but exclude webApplication
+  exclude bigbank.webApplication
+}
+```
+
+## Style rules
+
+Style predicates define how elements are rendered.  
+Example from [BigBank](/examples/bigbank/components/):
+
+```likec4
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  // apply to all elements
+  style * {
+    color muted
+  }
+
+  // apply only to these elements
+  style singlePageApplication, mobileApp {
+    color secondary
+  }
+
+  // apply only to apiApplication and its descdendants
+  style apiApplication, apiApplication.* {
+    color primary
+  }
+
+  // apply only to tagged elements
+  style element.tag = #deprecated {
+    color muted
+  }
+}
+```

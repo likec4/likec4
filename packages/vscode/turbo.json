@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "copy": {
+      "cache": false,
+      "dependsOn": ["@likec4/language-server#generate", "@likec4/vscode-preview#build"],
+      "outputs": ["contrib/**", "dist/preview/**"]
+    },
+    "build": {
+      "dependsOn": ["copy", "^build"],
+      "outputs": ["dist/**"]
+    }
+  }
+}

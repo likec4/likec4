@@ -1,0 +1,50 @@
+{
+  "name": "@likec4/generators",
+  "version": "0.33.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "!dist/__mocks__/**",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/generators"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "run -T rimraf dist",
+    "test": "run -T vitest run",
+    "test:watch": "run -T vitest"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "json5": "^2.2.3",
+    "langium": "^1.2.1",
+    "rambdax": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.1.6"
+  }
+}

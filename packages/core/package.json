@@ -1,0 +1,77 @@
+{
+  "name": "@likec4/core",
+  "version": "0.33.0",
+  "license": "MIT",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "unbuild",
+    "dev": "tsc --watch",
+    "lint": "run -T eslint src/ --fix",
+    "test": "run -T vitest run",
+    "test:watch": "run -T vitest",
+    "clean": "run -T rimraf dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js"
+    },
+    "./colors": {
+      "types": "./dist/colors.d.ts",
+      "import": "./dist/colors.mjs",
+      "require": "./dist/colors.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.mjs",
+      "require": "./dist/errors/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    },
+    "./compute-view": {
+      "types": "./dist/compute-view/index.d.ts",
+      "import": "./dist/compute-view/index.mjs",
+      "require": "./dist/compute-view/index.js"
+    }
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "dependencies": {
+    "@dagrejs/graphlib": "^2.1.13",
+    "modern-errors": "^6.0.0",
+    "rambdax": "^9.1.1",
+    "remeda": "^1.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "unbuild": "^2.0.0-rc.0",
+    "vitest": "^0.34.1"
+  }
+}

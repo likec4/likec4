@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "dev",
+      "path": "docs",
+      "problemMatcher": [],
+      "label": "docs: next dev",
+      "detail": "run generate && next dev"
+    },
+    {
+      "label": "build",
+      "type": "npm",
+      "script": "vscode:task:build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "echo": false,
+        "reveal": "silent"
+      }
+    }
+  ]
+}

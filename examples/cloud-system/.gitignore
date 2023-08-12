@@ -1,0 +1,4 @@
+node_modules
+dist
+src/**/*.generated.ts
+src/**/*.generated.tsx

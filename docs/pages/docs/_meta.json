@@ -1,0 +1,21 @@
+{
+  "index": {
+    "title": "Getting Started",
+    "theme": {
+      "pagination": false
+    }
+  },
+  "dsl": {
+    "title": "LikeC4 Language"
+  },
+  "themes": {
+    "title": "Themes"
+  },
+  "tools": {
+    "title": "Tooling"
+  },
+  "playground": {
+    "title": "Open playground",
+    "href": "/playground/"
+  }
+}

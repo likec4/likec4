@@ -1,0 +1,35 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "prettier.enable": true,
+  "npm.packageManager": "yarn",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "search.exclude": {
+    "node_modules/**": true,
+    "docs/.next/**": true,
+    "docs/node_modules/**": true,
+    "packages/*/dist/**": true,
+    "packages/*/node_modules/**": true
+  },
+  "files.exclude": {
+    "**/.turbo": true,
+    "packages/*/.vscode-test-web": true
+  },
+  "exportall.config.folderListener": [
+    "/packages/language-server/src/model",
+    "/packages/language-server/src/lsp"
+  ],
+  "mdx.experimentalLanguageServer": true,
+  "vitest.commandLine": "yarn vitest"
+}

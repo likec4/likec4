@@ -1,0 +1,65 @@
+name: main
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+
+permissions:
+  actions: write
+  checks: write
+  contents: read
+  statuses: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup
+        uses: ./.github/actions/bootstrap
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Compile
+        run: yarn compile:all
+
+      - name: Test
+        run: yarn test
+
+  release:
+    name: Release
+    uses: ./.github/workflows/release.yaml
+    if: "github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')"
+    needs: build
+    concurrency:
+      group: ${{ github.workflow }}-release
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      statuses: write
+    secrets: inherit
+
+  docs:
+    name: Docs
+    uses: ./.github/workflows/docs.yaml
+    if: "github.ref == 'refs/heads/main'"
+    needs: build
+    concurrency:
+      group: ${{ github.workflow }}-docs
+      cancel-in-progress: true
+    permissions:
+      actions: write
+      contents: read
+      checks: write
+      statuses: write
+    secrets: inherit

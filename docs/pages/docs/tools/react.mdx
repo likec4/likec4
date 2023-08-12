@@ -1,0 +1,140 @@
+import { Callout } from 'nextra/components'
+import { Info } from '$/components'
+import { LikeC4View } from '$/components/index-page'
+
+# React Components
+
+[CLI](./cli) parses LikeC4 sources, builds the architecture model, and exports defined views.  
+With codegen task, it generates structured data, like:
+
+```ts filename="generated-code.ts"
+export const LikeC4Views = {
+  indexLR: { 
+    title: 'Landscape View'
+    nodes: [/* ... */],
+    edges: [/* ... */],
+  },
+  cloud: { 
+    title: 'Overview of Cloud'
+    nodes: [/* ... */],
+    edges: [/* ... */],
+  },
+}
+```
+
+This data is used to draw views with `@likec4/diagrams` react component.
+
+```tsx filename="views.tsx"
+import { LikeC4 } from '@likec4/diagrams'
+import { LikeC4Views } from './generated-code'
+
+// Creates components, bound to the data (with type checks).
+// It ensures that only existing views can be rendered.
+const { Embedded } = LikeC4.create(LikeC4Views)
+
+export const IndexView = () => (
+  <Embedded viewId={"indexLR"}/>
+)
+```
+
+This is what it looks like:
+
+<LikeC4View viewId="indexLR"/>
+
+<Info>
+**BTW?**  
+Did you click on the diagram?
+</Info>
+
+This diagram is rendered based on the model from
+[this source](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)
+and inserted into the MDX-page ([mdx source](https://github.com/likec4/likec4/blob/main/docs/pages/docs/tools/react.mdx)).  
+
+**You are free to use any platform or static site generator.**
+
+Even share on [CodeSandbox](https://codesandbox.io/) or [StackBlitz](https://stackblitz.com/).
+
+
+## Install
+
+```sh npm2yarn copy
+npm install @likec4/diagrams
+
+# Most likely, you gonna use it with [CLI](./cli):
+npm install -D @likec4/cli
+```
+
+## Components
+
+These are the base components, which you can use to build your own views.
+
+### Diagram
+
+```tsx
+import { Diagram } from '@likec4/diagrams'
+
+<Diagram
+    diagram={diagram}
+    animate={true}
+    pannable={true}
+    zoomable={true} 
+    width={window.innerWidth}
+    height={window.innerHeight}
+    padding={16}
+    onStageClick={/*  */}
+    onNodeClick={/*  */}
+    onEdgeClick={/*  */}
+  />
+```
+
+The most basic component, which renders a diagram.  
+You have control over the size, as the component is not bound to the page changes.
+
+### ResponseDiagram
+
+```tsx
+import { ResponseDiagram } from '@likec4/diagrams'
+
+<ResponseDiagram
+    diagram={diagram}
+    animate={true}
+    pannable={true}
+    zoomable={true} 
+    padding={16}
+    onStageClick={/*  */}
+    onNodeClick={/*  */}
+    onEdgeClick={/*  */}
+  />
+```
+
+This component keeps the aspect ratio and scales up/down
+to the parent container.  
+I.e, it takes control over the width/height
+
+### EmbeddedDiagram
+
+```tsx
+import { EmbeddedDiagram } from '@likec4/diagrams'
+
+<EmbeddedDiagram
+    views={{
+      ...LikeC4Views
+    }}
+    viewId={'cloud'}`
+  />
+```
+
+
+
+### DiagramsBrowser
+
+```tsx
+import { DiagramsBrowser } from '@likec4/diagrams'
+
+//. ...
+```
+
+
+## Usage
+
+<Callout>TODO: Document react components</Callout>

@@ -1,0 +1,46 @@
+name: release
+
+on:
+  workflow_call:
+  # workflow_dispatch:
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  statuses: write
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: "github.ref == 'refs/heads/main'"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup
+        uses: ./.github/actions/bootstrap
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Configure git user
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Release
+        run: yarn shipjs trigger
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  vscode:
+    name: VSCode
+    uses: ./.github/workflows/vscode.yaml
+    needs: publish
+    permissions:
+      actions: write
+      contents: read
+    secrets: inherit

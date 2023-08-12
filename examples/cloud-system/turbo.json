@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "generate": {
+      "dependsOn": ["@likec4/cli#build"],
+      "outputs": ["src/**/*.generated.ts", "src/**/*.generated.tsx"],
+      "inputs": ["package.json", "**/*.c4"]
+    },
+    "compile": {
+      "dependsOn": ["generate", "^build"],
+      "outputs": []
+    }
+  }
+}

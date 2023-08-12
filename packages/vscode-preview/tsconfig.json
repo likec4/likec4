@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig/vite-react.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "noEmit": true
+  },
+  "include": ["./protocol.ts", "./src/"]
+}

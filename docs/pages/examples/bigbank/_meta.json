@@ -1,0 +1,14 @@
+{
+  "index": "About",
+  "structurizr": "Structurizr DSL",
+  "likec4": "LikeC4 Code",
+  "---": {
+    "type": "separator",
+    "title": ""
+  },
+  "landscape": "System Landscape",
+  "context": "System Context",
+  "containers": "Containers",
+  "components": "Components",
+  "customer": "Customer"
+}

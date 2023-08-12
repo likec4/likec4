@@ -1,0 +1,26 @@
+{
+  "introduction": {
+    "title": "Introduction"
+  },
+  "specification": {
+    "title": "Specification"
+  },
+  "model": {
+    "title": "Model"
+  },
+  "styling": {
+    "title": "Styling"
+  },
+  "relations": {
+    "title": "Relationships"
+  },
+  "references": {
+    "title": "References"
+  },
+  "views": {
+    "title": "Views"
+  },
+  "workspace": {
+    "title": "Workspace"
+  }
+}
