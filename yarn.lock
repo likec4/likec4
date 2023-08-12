@@ -3844,9 +3844,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/vsce@npm:^2.20.0":
-  version: 2.20.0
-  resolution: "@vscode/vsce@npm:2.20.0"
+"@vscode/vsce@npm:^2.20.1":
+  version: 2.20.1
+  resolution: "@vscode/vsce@npm:2.20.1"
   dependencies:
     azure-devops-node-api: ^11.0.1
     chalk: ^2.4.2
@@ -3874,7 +3874,7 @@ __metadata:
       optional: true
   bin:
     vsce: vsce
-  checksum: ffd3824629845692f47ce6ef2016f7b6c87803a360b56c4cb7da48e24abb8b8da029d418c40ff1e9b124429ca0e0f9f979164f9b40fe427992d4074fab0dd227
+  checksum: b0fb3ed03fa09f700ced42986c4a5a5231cb13308e5f10517a3117895a5260854f8d8d38c0805ea7a444d327933482546b65ca5009e85b15e86fba0372cc444f
   languageName: node
   linkType: hard
 
@@ -8721,7 +8721,7 @@ __metadata:
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
     "@vscode/extension-telemetry": ^0.8.2
-    "@vscode/vsce": ^2.20.0
+    "@vscode/vsce": ^2.20.1
     esbuild: ~0.17.0
     froebel: ^0.23.2
     langium: ^1.2.1
