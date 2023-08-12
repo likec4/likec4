@@ -1,10 +1,14 @@
+# [0.33.1](https://github.com/likec4/likec4/compare/v0.33.0...v0.33.1) (2023-08-12)
+
+No changes, just trigger release.
+
 # [0.33.0](https://github.com/likec4/likec4/compare/v0.32.0...v0.33.0) (2023-08-12)
 
 ### Breaking changes
 
 > We do not change major version yet, as the project is in active development.
 
-This release includes breaking changes in `@likec4/diagrams`: 
+This release includes breaking changes in `@likec4/diagrams`:
 
 - **diagrams:** DiagramsBrowser  
   You've already seen this component working on the project website, but it was not back-ported to the npm-module
@@ -15,12 +19,12 @@ With [`codegen`](https://www.likec4.dev/docs/tools/cli/#codegen) command, CLI ge
 
 ```ts
 export const LikeC4Views = {
-  indexLR: { 
+  indexLR: {
     title: 'Landscape View'
     nodes: [/* ... */],
     edges: [/* ... */],
   },
-  cloud: { 
+  cloud: {
     title: 'Overview of Cloud'
     nodes: [/* ... */],
     edges: [/* ... */],
@@ -38,9 +42,7 @@ import { LikeC4Views } from './generated-code'
 // It ensures that only existing views can be rendered.
 const { Diagram, Responsive, Embedded, Browser } = LikeC4.create(LikeC4Views)
 
-export const IndexView = () => (
-  <Embedded viewId={"indexLR"}/>
-)
+export const IndexView = () => <Embedded viewId={'indexLR'} />
 ```
 
 [Documentaion](https://www.likec4.dev/docs/tools/react/) (in progress)
@@ -134,4 +136,3 @@ trigger release
 # [0.28.2](https://github.com/likec4/likec4/compare/v0.28.1...v0.28.2) (2023-07-07)
 
 trigger release
-
