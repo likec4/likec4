@@ -20,13 +20,18 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
+      "runtimeExecutable": "${execPath}",
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**"
+        "${workspaceFolder}/packages/*/dist/**/*",
       ],
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/cloud-system/likec4",
+        "${workspaceFolder}/packages/diagrams/src-dev/likec4",
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
       ],
       "autoAttachChildProcesses": true,
       "preLaunchTask": "npm: turbo-build - packages/vscode",

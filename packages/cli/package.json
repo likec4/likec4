@@ -39,7 +39,7 @@
     "@likec4/layouts": "workspace:*",
     "@types/node": "^16.11.16",
     "commander": "^11.0.0",
-    "esbuild": "^0.18.0",
+    "esbuild": "~0.17.0",
     "execa": "^7.2.0",
     "fast-glob": "^3.3.1",
     "json5": "^2.2.3",

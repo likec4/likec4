@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "jsx": "react",
+    "checkJs": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}
