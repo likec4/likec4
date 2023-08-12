@@ -42,7 +42,11 @@ export interface DiagramsBrowserProps<
     scale: number
   } | undefined,
 
+  closeOnEsc?: boolean | undefined
+  closeOnOutsideClick?: boolean | undefined
+
   onClose?: (() => void) | undefined
+
 }
 
 const BrowserPadding = [20, 20, 20, 20] satisfies DiagramPaddings
@@ -101,6 +105,8 @@ export function DiagramsBrowser<Views extends DiagramViews>({
   style,
   styleDiagram,
   renderViewTitle,
+  closeOnEsc = true,
+  closeOnOutsideClick = true,
   onClose,
   ...props
 }: DiagramsBrowserProps<Views>) {
@@ -128,7 +134,7 @@ export function DiagramsBrowser<Views extends DiagramViews>({
 
   // Close on ESC
   useKeyboardEvent(
-    'Escape',
+    closeOnEsc && 'Escape',
     () => {
       onClose?.()
     },
@@ -172,6 +178,7 @@ export function DiagramsBrowser<Views extends DiagramViews>({
             padding={padding ?? BrowserPadding}
             style={styleDiagram}
             onNodeClick={onNodeClick}
+            onStageClick={closeOnOutsideClick ? onClose : undefined}
           />
         )}
       </div>

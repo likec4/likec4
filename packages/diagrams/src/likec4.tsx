@@ -7,26 +7,59 @@ import type { DiagramsBrowserProps, EmbeddedDiagramProps } from './browser'
 import type { DiagramProps, DiagramViews, DiagramApi } from './diagram/types'
 import type { ResponsiveDiagramProps } from './responsive'
 
+type UnknownRecord = Record<PropertyKey, unknown>
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace LikeC4 {
+  export type inferViewID<Views extends UnknownRecord> = Views extends DiagramViews<
+    infer Id extends string
+  >
+    ? Id
+    : never
+
   export type Props<Id extends string> = Omit<DiagramProps, 'diagram'> &
     RefAttributes<DiagramApi> & {
       viewId: Id
     }
+
+  export type inferProps<Views extends UnknownRecord> = Views extends DiagramViews<
+    infer Id extends string
+  >
+    ? Props<Id>
+    : never
 
   export type ResponsiveProps<Id extends string> = Omit<ResponsiveDiagramProps, 'diagram'> &
     RefAttributes<DiagramApi> & {
       viewId: Id
     }
 
+  export type inferResponsiveProps<Views extends UnknownRecord> = Views extends DiagramViews<
+    infer Id extends string
+  >
+    ? ResponsiveProps<Id>
+    : never
+
   export type EmbeddedProps<Id extends string> = Omit<
     EmbeddedDiagramProps<DiagramViews, Id>,
     'views'
   >
+
+  export type inferEmbeddedProps<Views extends UnknownRecord> = Views extends DiagramViews<
+    infer Id extends string
+  >
+    ? EmbeddedProps<Id>
+    : never
+
   export type BrowserProps<Id extends string> = Omit<
     DiagramsBrowserProps<DiagramViews, Id>,
     'views'
   >
+
+  export type inferBrowserProps<Views extends UnknownRecord> = Views extends DiagramViews<
+    infer Id extends string
+  >
+    ? BrowserProps<Id>
+    : never
 
   export interface Diagram<Id extends string> extends ExoticComponent<Props<Id>> {}
 
@@ -38,14 +71,6 @@ export namespace LikeC4 {
 }
 
 export class LikeC4<Views extends DiagramViews, ViewId extends keyof Views & string> {
-  /**
-   * For type inference.
-   *
-   * const { inferViewId /// } = LikeC4.create(views)
-   * type ViewId = typeof inferViewId
-   */
-  inferViewId!: ViewId
-
   protected constructor(private views: Views) {}
 
   readonly isViewId = (value: unknown): value is ViewId => {

@@ -16,6 +16,11 @@ const componentName = (value: string): string => {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
 
+const generateViewId = (views: DiagramView[]) =>
+  joinToNode(views, view => expandToNode`'${view.id}'`, {
+    separator: ' | '
+  })
+
 export function generateReact(views: DiagramView[]) {
   const components = views.map(({ id }) => {
     return {
@@ -41,8 +46,11 @@ export function generateReact(views: DiagramView[]) {
     return toString(out)
   }
 
-  out
-    .append('export const LikeC4Views = {', NL)
+  out.appendTemplate`
+
+      export type LikeC4ViewId = ${generateViewId(views)};
+      export const LikeC4Views = {
+    `
     .indent({
       indentation: 2,
       indentedChildren: indent => {
@@ -59,9 +67,8 @@ export function generateReact(views: DiagramView[]) {
         )
       }
     })
-    .append('} as const', NL, NL).appendTemplate`
+    .append('}  as const satisfies Record<LikeC4ViewId, DiagramView>', NL, NL).appendTemplate`
       export type LikeC4Views = typeof LikeC4Views
-      export type LikeC4ViewId = keyof LikeC4Views
 
       export const {
         isViewId,
@@ -70,6 +77,12 @@ export function generateReact(views: DiagramView[]) {
         Embedded,
         Browser
       } = LikeC4.create(LikeC4Views)
+
+      export type DiagramProps = LikeC4.Props<LikeC4ViewId>
+      export type ResponsiveProps = LikeC4.ResponsiveProps<LikeC4ViewId>
+      export type EmbeddedProps = LikeC4.EmbeddedProps<LikeC4ViewId>
+      export type BrowserProps = LikeC4.BrowserProps<LikeC4ViewId>
+
     `.append(NL, NL).appendTemplate`
       export type {
         DiagramApi

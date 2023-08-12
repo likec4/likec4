@@ -1,36 +1,22 @@
 /* eslint-disable */
 import { defineBuildConfig } from 'unbuild'
 
+const pattern = ['**/*.ts', '!**/*.spec.ts', '!__test__/']
+
 // prettier-ignore
 export default defineBuildConfig([{
   entries: [{
     builder: 'mkdist',
     input: 'src',
     format: 'esm',
-    pattern: [
-      '**/*.ts',
-      '!**/*.spec.ts',
-      '!__test__/',
-    ]
+    pattern
   },{
     builder: 'mkdist',
     input: 'src',
     format: 'cjs',
-    pattern: [
-      '**/*.ts',
-      '!**/*.spec.ts',
-      '!__test__/',
-    ]
+    pattern
   }],
-  // clean: true,
+  // if clean enabled, TS Language server in VSCode has to be restarted
+  clean: false,
   declaration: 'compatible',
-  // rollup: {
-  //   emitCJS: true,
-  //   output: {
-  //     preserveModules: true
-  //   },
-  //   esbuild: {
-  //     target: 'es2022'
-  //   }
-  // },
 }])

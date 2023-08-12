@@ -1,10 +1,12 @@
 import { cn } from '$/lib'
 import { Noto_Sans } from 'next/font/google'
 import type { PropsWithChildren } from 'react'
+import type { LikeC4ViewId } from './generated'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import styles from './index.module.css'
 
-const LikeC4View = dynamic({
+const LikeC4EmbeddedView = dynamic({
   loader: () => import('./generated').then(m => m.Embedded),
   loading: () => <div>rendering...</div>,
   ssr: false
@@ -113,25 +115,18 @@ export const IndexPageWhy = () => (
 
 export const IndexPageDiagram = () => (
   <div className='mt-6'>
-    <LikeC4View viewId='index' enableBrowser={false} />
+    <LikeC4EmbeddedView viewId='index' noBrowser />
   </div>
 )
-// export const IndexPageHero = () => {
-//   return <>
-//     <div className={styles.hero}>
-//       <div className={styles.hero_ratio}>
-//         <div className={styles.logo}>
-//           <Logo />
-//         </div>
 
-//       </div>
-//     </div>
-//     <div className="my-6 w-full max-w-[1000px] mx-auto">
-//       <div className="p-1 relative overflow-hidden shadow-xl flex bg-neutral-800/60 sm:rounded-xl dark:backdrop-blur dark:ring-neutral-700/80">
-//         <video autoPlay loop playsInline>
-//           <source src="https://github-production-user-asset-6210df.s3.amazonaws.com/824903/238808661-24521327-25d6-44ae-a6b4-6eb492242862.mp4" type="video/mp4" />
-//         </video>
-//       </div>
-//     </div>
-//   </>
-// }
+export const LikeC4View = ({
+  viewId,
+  noBrowser = false
+}: {
+  viewId: LikeC4ViewId
+  noBrowser?: boolean
+}) => (
+  <div className={styles.likec4embedded}>
+    <LikeC4EmbeddedView animate viewId={viewId} noBrowser={noBrowser} />
+  </div>
+)

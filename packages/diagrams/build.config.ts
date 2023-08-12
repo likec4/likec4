@@ -28,20 +28,7 @@ export default defineBuildConfig([{
     },
     format: 'cjs',
   }],
-  // entries: [
-  //   'src/index.ts'
-  // ],
-  clean: true,
-  declaration: 'compatible',
-  // rollup: {
-  //   emitCJS: true,
-  //   output: {
-  //     preserveModules: true
-  //   },
-  //   esbuild: {
-  //     jsx: "automatic",
-  //     platform: 'browser',
-  //     target: 'es2022'
-  //   }
-  // },
+  // if clean enabled, TS Language server in VSCode has to be restarted
+  clean: false,
+  declaration: 'compatible'
 }])

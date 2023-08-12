@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { LikeC4ViewId, DiagramNode, DiagramApi } from './likec4'
 import { Diagram, isViewId } from './likec4'
 
-// const { isViewId, ResponsiveDiagram, EmbeddedDiagram, Diagram } = LikeC4.create(LikeC4Views)
-
 function readViewId(initial: LikeC4ViewId = 'index'): LikeC4ViewId {
   let hash = window.location.hash
   if (hash.startsWith('#')) {

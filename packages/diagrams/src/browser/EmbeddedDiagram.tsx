@@ -4,22 +4,35 @@ import type Konva from 'konva'
 import type { HTMLAttributes, PropsWithoutRef, RefAttributes } from 'react'
 import { forwardRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { DiagramViews, DiagramApi, DiagramPaddings } from '../diagram/types'
+import type { DiagramViews, DiagramApi, DiagramPaddings, KonvaPointerEvent } from '../diagram/types'
 import { ResponsiveDiagram } from '../responsive'
 import { DiagramsBrowser, type DiagramsBrowserProps } from './DiagramsBrowser'
 
 export interface EmbeddedDiagramProps<Views extends DiagramViews, Id = keyof Views & string>
   extends HTMLAttributes<HTMLDivElement>,
     RefAttributes<DiagramApi> {
+  /**
+   * Defined views
+   */
   views: Views
 
+  /**
+   * View to display
+   */
   viewId: Id
 
   /**
-   * Open browser on click
-   * @default true
+   * If true, the diagram will be animated when nodes are added or removed
+   * @default false
    */
-  enableBrowser?: boolean | undefined
+  animate?: boolean
+
+  /**
+   * By default, when diagram is clicked, the browser is opened.
+   * You can disable this behavior by setting this prop to true.
+   * @default false
+   */
+  noBrowser?: boolean | undefined
 
   /**
    * The padding inside the diagram canvas
@@ -27,12 +40,12 @@ export interface EmbeddedDiagramProps<Views extends DiagramViews, Id = keyof Vie
   padding?: DiagramPaddings | undefined
 }
 
-const EmbeddedPadding = [0, 0, 0, 0] satisfies DiagramPaddings
+const EmbeddedPadding = [20, 20, 20, 20] satisfies DiagramPaddings
 
 export const EmbeddedDiagram = /* @__PURE__ */ forwardRef<
   DiagramApi,
   PropsWithoutRef<EmbeddedDiagramProps<DiagramViews>>
->(({ views, viewId, padding, enableBrowser = true, ...props }, ref) => {
+>(({ animate = false, views, viewId, padding, noBrowser = false, ...props }, ref) => {
   const diagram = views[viewId]
   invariant(diagram, `View "${viewId}" not found in views`)
 
@@ -58,15 +71,30 @@ export const EmbeddedDiagram = /* @__PURE__ */ forwardRef<
     })
   }
 
+  const onNodeEdgeClick = (_node: any, e: KonvaPointerEvent) => {
+    const stage = e.target.getStage()
+    if (stage) {
+      e.cancelBubble = true
+      openBrowser(stage)
+    }
+  }
+
+  const enableBrowseClicks = !noBrowser && !isOpened
+
   return (
     <div {...props}>
       <ResponsiveDiagram
         ref={ref}
+        animate={animate}
         zoomable={false}
         pannable={false}
         diagram={diagram}
         padding={padding ?? EmbeddedPadding}
-        onStageClick={enableBrowser ? openBrowser : undefined}
+        {...(enableBrowseClicks && {
+          onStageClick: openBrowser,
+          onEdgeClick: onNodeEdgeClick,
+          onNodeClick: onNodeEdgeClick
+        })}
       />
       {isOpened &&
         createPortal(
