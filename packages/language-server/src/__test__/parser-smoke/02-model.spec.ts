@@ -1,7 +1,7 @@
 import { describe } from 'vitest'
 import { test } from './asserts'
 
-describe('02_Model', () => {
+describe('02 Model', () => {
   test('name on the right side').valid`
     specification {
       element person
@@ -58,6 +58,7 @@ describe('02_Model', () => {
       element person
       tag one
       tag two
+      tag three
     }
     model {
       user1 = person {
@@ -68,6 +69,12 @@ describe('02_Model', () => {
       }
       user3 = person {
         #one, #two
+        title 'Person3'
+      }
+      user4 = person {
+        #one, #two
+        #three
+        title 'Person4'
       }
     }`
 
@@ -97,6 +104,17 @@ describe('02_Model', () => {
     model {
       user1 = person {
         # one
+      }
+    }`
+
+  test('fail if comma left after tag').invalid`
+    specification {
+      element person
+      tag one
+    }
+    model {
+      user1 = person {
+        #one,
       }
     }`
 

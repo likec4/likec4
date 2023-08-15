@@ -5,8 +5,8 @@ export const prefix = "/docs/dsl"
 
 # LikeC4 Language
 
-<Cards>
-  {Object.entries(meta).map(([key, page]) => (
-    <Card key={key} title={page.title} href={`${prefix}/${key}/`}/>
+<Cards num={1}>
+  {Object.entries(meta).map(([key, {title}], i)=> (
+    <Card key={key} title={`${i+1}. ${title}`} href={`${prefix}/${key}/`} arrow/>
   ))}
 </Cards>

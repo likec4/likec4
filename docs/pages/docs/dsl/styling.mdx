@@ -60,10 +60,20 @@ model {
 }
 ```
 
-### Custom for a View
+### Override for a View
 
-LikeC4 allows you to customize styles inside the view definitions.  
-For example, change the color for all elements with `#deprecated` tag.
+You can override styles inside the view definitions.  
+For example, change the color:
+
+```likec4
+view {
+  include *
+
+  style customer {
+    color muted
+  }
+}
+```
 
 <Info>
 This is covered later on the [views](./views/#style-rules) page

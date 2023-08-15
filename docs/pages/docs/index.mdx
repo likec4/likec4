@@ -3,27 +3,33 @@ title: LikeC4 - Getting Started
 description: Introduction and Tutorial
 ---
 
-import { Card, Cards, Steps, Callout } from 'nextra-theme-docs'
+import { Card, Cards, Steps } from 'nextra/components'
+import { Info } from '$/components'
 import Link from 'next/link'
 
 # Getting Started
 
 Software systems evolve and architecture diagrams become outdated quite quickly, especially if drawn manually.
 
-LikeC4 describes architecture as a single model and generates multiple architecture diagrams from different perspectives, like per use-case.
-And any change, refinement or deprecation in the model is reflected automatically,
-keeping diagrams up-to-date and synchronized with the actual state.
-
 ## C4 Model
 
-The [C4 Model](https://c4model.com/) is a lightweight and practical approach for visualizing the architecture of a software system.  
-It was developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.
-
-C4 provides a set of diagrams that enable software architects and developers to communicate and document the structure, key elements, and interactions of the system.
-
+_C4 Model_ is a lightweight and practical approach for visualizing the architecture of software systems.  
+It is developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.  
 If you never heard about it, check the [C4 Model website](https://c4model.com/), you get the idea very quickly.
 
-LikeC4 inherits the simplicity of the C4 Model, with a focus on Architecture as Code approach, importing/exporting to various formats and documentation tools.
+C4 provides a set of diagrams from a single model, that enables software architects and developers to communicate and document the structure, key elements, and interactions of the system.
+
+LikeC4 inherits the simplicity of the C4 Model and in addition:
+
+- allows you to define your own notation, element types and any number of nested levels inside your architecture model
+- architecture-as-a-code with native IDE support
+- interactive and customizable React diagrams _in-the-box_
+- CI/CD automation
+- import/export to various formats, ready to be used with any documentation tool
+
+LikeC4 describes architecture as a single model and generates multiple architecture diagrams from different perspectives, like per use-case.
+Any change, refinement or deprecation in the model is reflected automatically,
+keeping diagrams up-to-date and synchronized with the actual state.
 
 ## What does LikeC4 look like?
 
@@ -45,7 +51,7 @@ Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [
 
 ### Tailor specification
 
-We start with defining the element kinds we want in our model.  
+We start with defining the element kinds we use in our model.  
 For now, we need only two - `actor` and `system`
 
 ```likec4 showLineNumbers copy filename="getting-started.c4"
@@ -94,6 +100,8 @@ model {
 
 ### Add relationships
 
+Relationships describe the connections and interactions of the elements.
+
 ```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4"
 specification {
   element actor
@@ -107,7 +115,7 @@ model {
     component ui
     component backend
 
-    // UI requests data from the Backend
+    // UI fetches data from the Backend
     ui -> backend
   }
 
@@ -134,7 +142,7 @@ model {
     component ui
     component backend
 
-    // UI requests data from the Backend
+    // UI fetches data from the Backend
     ui -> backend
 
     // Customer uses the UI
@@ -155,13 +163,16 @@ We got this:
 
 ![landscape view](/getting-started/01.png)
 
-<Callout type="info">
-  **Why there is a relationship?**
+<Info>
+**Why there is a relationship?**
 
 The relationships are implied from the nested elements.  
-`customer` has a relationship with the nested `saas.ui` element
+- `customer` has a known relationship with the nested `saas.ui` element
 
-</Callout>
+that implies
+- `customer` has _some_ relationship with `saas`.  
+
+</Info>
 
 ### Add more views
 
@@ -239,7 +250,7 @@ model {
       '
     }
 
-    // UI requests data from the Backend
+    // UI fetches data from the Backend
     ui -> backend 'fetches via HTTPS'
   }
 
@@ -327,25 +338,27 @@ views {
 }
 ```
 
-We made changes and all views are updated automatically.
+When we make changes, all views are updated automatically.
 
-`index` view:
+View `index`:
 
 ![landscape view after changes](/getting-started/04.png)
 
-`saas` view:
+View `saas`:
 
-![landscape view after changes](/getting-started/05.png)
+![saas view after changes](/getting-started/05.png)
 
-You can play with [this tutorial in playground](/playground/getting-started/) and, for example, add the following:
+### Try it yourself
+
+Play with [this tutorial in playground](/playground/getting-started/) and try to add the following:
 
 - change [shape](/docs/dsl/styling/#shape) of the `customer` element
 - add a database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
-- add an external system, like Stripe, and show how the backend interacts with it.
+- add an external system, like Stripe, and show how the backend might interact with it
 
 </Steps>
 
-## Next steps
+## Next
 
 <Cards>
   <Card title='LikeC4 Language' href={`/docs/dsl/introduction/`} arrow />

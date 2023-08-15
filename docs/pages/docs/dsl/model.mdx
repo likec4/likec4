@@ -1,16 +1,15 @@
-import { Bleed, Callout } from 'nextra-theme-docs'
 import { Tab, Tabs } from 'nextra/components'
 import { Info, Warning } from '$/components'
 
 # Model
 
-The model describes the software architecture as a set of various elements and relations/interactions between them.
+The model describes the software architecture as a set of various structured elements and relationships.
 
 ## Element
 
-Element is a basic building block.
+Element is a basic building block.  
 It represents a logical or physical part of the architecture.  
-Any Element must have a [kind](./specification#kind) and a name (_identifier_):
+Any element must have a [kind](./specification#kind) and a name (_identifier_):
 
 ```likec4 copy
 specification {
@@ -19,11 +18,12 @@ specification {
 }
 
 model {
-  // actor element with name 'customer'
+  // element of kind 'actor' with the name 'customer'
   actor customer
-  // service element with name 'cloud'
+  // element of kind 'service' named as 'cloud'
   service cloud
-  // or use '=' to set the name
+
+  // also possible with '=', then the name goes first
   cloud = service
 }
 ```
@@ -41,7 +41,7 @@ It can contain letters, digits and underscore, but can't start with a digit.
 | a.pi       | ⛔️ |
 
 
-### Element properties
+### Element Properties
 
 Elements may have properties: _title_, _description_ and _technology_.  
 For example, Structurizr DSL style:
@@ -58,7 +58,7 @@ model {
 ```
 
 <Info>
-LikeC4 supports Structurizr DSL syntax ("_partially_") allowing just copy-paste from it.  
+LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.  
 Check the [Big Bank example](/examples/bigbank).
 </Info>
 
@@ -67,12 +67,13 @@ But you can specify your own:
 
 ```likec4
 model {
-  // actor element with name='customer' and title='customer'
+  // element of kind 'actor'  with name='customer' and title='customer'
   actor customer
-  // service element with name='cloud' and title='Cloud'
-  service cloud 'Cloud'
+  // element of kind 'service' with name='cloud' and title='Cloud Systems'
+  service cloud 'Cloud Systems'
+  
   // or with '='
-  cloud = service 'Cloud'
+  cloud = service 'Cloud Systems'
 }
 ```
 
@@ -81,9 +82,8 @@ These properties may be defined as nested:
 ```likec4 copy
 model {
   // Only description inside
-  customer = actor 'Customer' {
-     // ':' is optional, but if you prefer
-    description: 'Uses the Mobile Application'
+  customer = actor 'Customer' {     
+    description: 'Uses the Mobile Application' // ':' is optional, but if you prefer
   }
   // All properties inside
   mobile = application {
@@ -102,7 +102,7 @@ model {
 }
 ```
 
-#### Element Tags
+### Element Tags
 
 Tags are defined in nested block and before any properties:
 
@@ -115,19 +115,19 @@ model {
 
   // multiple tags
   appV2 = application {
-    #next, #serverless, #team2
+    #next, #serverless
+    #team2
     title 'App v2'
   }
 
   appV3 = application {        
     title 'App v3'
-    #team3 // ⛔️ Error: tag must be defined 
-           //           before any properties or elements
+    #team3 // ⛔️ Error: tags must be defined first
   }  
 }
 ```
 
-#### Links
+### Element Links
 
 Element may have multiple links:
 
