@@ -42,6 +42,6 @@
     "@types/vscode-webview": "^1.57.1",
     "@vitejs/plugin-react": "^4.0.4",
     "typescript": "^5.1.6",
-    "vite": "^4.4.8"
+    "vite": "^4.4.9"
   }
 }
