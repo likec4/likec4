@@ -1539,7 +1539,7 @@ __metadata:
     vitest: ^0.34.1
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
-    vscode-uri: 3.0.7
+    vscode-uri: ~3.0.7
   languageName: unknown
   linkType: soft
 
