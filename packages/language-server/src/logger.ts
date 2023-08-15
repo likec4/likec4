@@ -1,3 +1,6 @@
+import { serializeError } from '@likec4/core'
+
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 export const logger = {
   debug(message: string) {
     console.debug(message)
@@ -12,7 +15,8 @@ export const logger = {
     console.log(message)
   },
   error(message: string | Error | unknown) {
-    console.error(message)
+    const error = serializeError(message)
+    console.error(`${error.name}: ${error.message}\n${error.stack}`)
   },
   trace(message: string) {
     console.debug(message)
@@ -20,3 +24,12 @@ export const logger = {
 }
 
 export type Logger = typeof logger
+
+export function logError(error: Error | unknown): void {
+  logger.error(error)
+}
+
+export function logWarnError(err: Error | unknown): void {
+  const error = serializeError(err)
+  logger.warn(`${error.name}: ${error.message}\n${error.stack}`)
+}

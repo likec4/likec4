@@ -1,5 +1,5 @@
 import ModernError from 'modern-errors'
-import modernErrorsSerialize from 'modern-errors-serialize'
+import modernErrorsSerialize, { type ErrorObject } from 'modern-errors-serialize'
 import type { ErrorInstance } from 'modern-errors'
 
 /**s
@@ -18,6 +18,10 @@ export const RelationRefError = BaseError.subclass('RelationRefError')
 
 export function normalizeError(e: unknown): ErrorInstance {
   return BaseError.normalize(e, UnknownError)
+}
+
+export function serializeError(e: unknown): ErrorObject {
+  return BaseError.serialize(normalizeError(e))
 }
 
 export function throwUnknownError(e: unknown): never {

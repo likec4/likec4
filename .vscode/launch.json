@@ -30,9 +30,6 @@
         "${workspaceFolder}/packages/diagrams/src-dev/likec4",
       ],
       "sourceMaps": true,
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-      ],
       "autoAttachChildProcesses": true,
       "preLaunchTask": "npm: turbo-build - packages/vscode",
     },

@@ -9,3 +9,6 @@ export const logger = {
   error: vi.fn(),
   trace: vi.fn()
 } satisfies Logger
+
+export const logError = vi.fn()
+export const logWarnError = vi.fn()

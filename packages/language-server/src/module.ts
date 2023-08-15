@@ -1,3 +1,4 @@
+import { serializeError } from '@likec4/core'
 import type {
   DefaultSharedModuleContext,
   LangiumServices,
@@ -17,11 +18,15 @@ import {
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
-import { LikeC4CodeLensProvider, LikeC4DocumentLinkProvider, LikeC4WorkspaceManager } from './shared'
+import {
+  LikeC4CodeLensProvider,
+  LikeC4DocumentLinkProvider,
+  LikeC4WorkspaceManager
+} from './shared'
 import { registerValidationChecks } from './validation'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T;
+type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -31,7 +36,7 @@ export interface LikeC4AddedServices {
     FqnIndex: FqnIndex
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
-  },
+  }
   lsp: {
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
   }
@@ -85,11 +90,16 @@ export function createLanguageServices(context?: LanguageServicesContext): {
   if (connection) {
     const log = (method: 'log' | 'info' | 'warn' | 'error') => (message: unknown) => {
       try {
-        console[method](message)
-        connection.console[method](String(message))
+        let msg: string
         if (method === 'error') {
-          connection.telemetry.logEvent({ eventName: 'error', message})
+          const error = serializeError(message)
+          connection.telemetry.logEvent({ eventName: 'error', error })
+          msg = `${error.name}: ${error.message}\n${error.stack}`
+        } else {
+          msg = typeof message === 'string' ? message : JSON.stringify(message)
         }
+        console[method](msg)
+        connection.console[method](msg)
       } catch (error) {
         console.error(error)
       }
