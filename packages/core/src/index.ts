@@ -5,8 +5,6 @@ export * from './compute-view'
 export * from './colors'
 export * from './errors'
 
-export type * from './types'
-export type * from './model-index'
-export type * from './compute-view'
-export type * from './errors'
-export type * from './colors'
+// Type aliases
+export type * as c4 from './types'
+export type * as likec4 from './types'

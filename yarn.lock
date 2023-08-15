@@ -1395,6 +1395,7 @@ __metadata:
   dependencies:
     "@dagrejs/graphlib": ^2.1.13
     modern-errors: ^6.0.0
+    modern-errors-serialize: ^5.0.0
     rambdax: ^9.1.1
     remeda: ^1.24.0
     typescript: ^5.1.6
@@ -1538,6 +1539,7 @@ __metadata:
     vitest: ^0.34.1
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
+    vscode-uri: 3.0.7
   languageName: unknown
   linkType: soft
 
@@ -6196,6 +6198,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"error-serializer@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "error-serializer@npm:6.0.1"
+  dependencies:
+    is-error-instance: ^2.0.0
+    is-plain-obj: ^4.1.0
+    normalize-exception: ^3.0.0
+    safe-json-value: ^2.0.1
+    set-error-class: ^2.0.0
+  checksum: 61f23ad5d2a1fc966a4850e477f731baa612d9efd80037a9363fd1216f9a526d1c94086b32e1d62bff4630d8f7d8a4ee44dae0aa70479bb1c6b906983566ae70
+  languageName: node
+  linkType: hard
+
 "es-abstract@npm:^1.19.0, es-abstract@npm:^1.20.4":
   version: 1.21.2
   resolution: "es-abstract@npm:1.21.2"
@@ -10236,6 +10251,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"modern-errors-serialize@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "modern-errors-serialize@npm:5.0.0"
+  dependencies:
+    error-serializer: ^6.0.1
+    is-plain-obj: ^4.1.0
+  peerDependencies:
+    modern-errors: ^6.0.0
+  checksum: f5a9b6308efd2aab94fe5c550d1104d654f949d60a803098d94f4cdde4e1af9d8ed7adbdaff69d0a3638390940d29a69ef8576373f9f03ebc1a17d68efb19de6
+  languageName: node
+  linkType: hard
+
 "modern-errors@npm:^6.0.0":
   version: 6.0.0
   resolution: "modern-errors@npm:6.0.0"
@@ -12312,6 +12339,16 @@ __metadata:
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
   checksum: f2f1f7943ca44a594893a852894055cf619c1fbcb611237fc39e461ae751187e7baf4dc391a72125e0ac4fb2d8c5c0b3c71529622e6a58f46b960211e704903c
+  languageName: node
+  linkType: hard
+
+"safe-json-value@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "safe-json-value@npm:2.0.1"
+  dependencies:
+    is-plain-obj: ^4.1.0
+    normalize-exception: ^3.0.0
+  checksum: b3ae80c876525c05f37bda025534b3b012e16a9c1ffa76b15c86e57f90cd621fdef84777eb9b8d26d99870fbdfa1ad3aec5215d8d232428d6035ab925e0be275
   languageName: node
   linkType: hard
 
