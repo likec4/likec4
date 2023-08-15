@@ -18,7 +18,7 @@ model {
 }
 ```
 
-Every element is unique in the model, so we can add relationships referencing them, like:
+Every element is unique in the model, so we can add a relationship referencing them, like:
 
 ```likec4 {6} filename="references.c4"
 model {
@@ -30,7 +30,7 @@ model {
 }
 ```
 
-But if we add another `service2` with `api`:
+But if we add `service2` with another `api`:
 
 ```likec4 {6-8} filename="references.c4"
 model {
@@ -46,12 +46,12 @@ model {
 }
 ```
 
-The reference is ambiguous - now there are two `api` components in the model.
+The reference is ambiguous, as there are two `api` components in the model.
 
-Every element creates a new scope inside `{...}`, so `api` is unique in the scope of `service1` and `service2`,
+Every element creates a new scope inside `{...}`, so `api` is unique inside `service1` and `service2`,
 but not in the scope of `model`.
 
-We can resolve ambiguity by moving the relationship to the nested scope of `service2`:
+We can resolve by moving the relationship to the scope of `service2`:
 
 ```likec4 {9-11} filename="references.c4"
 model {
@@ -75,12 +75,12 @@ model {
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
 </Info>
 
-In LikeC4, the element name besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, if it stays unique.
-We may reference something that is not yet defined but will be hoisted later.
+In LikeC4, the element name besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, until it stays unique.
 
-The relationship from `frontend` referencing to `graphql` defined later:
+We may reference something that is not yet defined but will be hoisted later.  
+The relationship on line 8 references `graphql` defined below on line 15:
 
-```likec4 showLineNumbers copy filename="hoisting.c4"
+```likec4 showLineNumbers {8,15} copy filename="hoisting.c4"
 model {
 
   service service1 {
@@ -106,8 +106,8 @@ model {
 <Info>
 Lines 7 and 17 are the same: `frontend -> api`  
 But they reference to different elements:  
-- Line 7 to `service1.api`  
-- Line 17 to `service2.api`
+{'-'} Line 7 to `service1.api`  
+{'-'} Line 17 to `service2.api`
 </Info>
 
 ## Fully qualified names [#fqn]
@@ -179,7 +179,8 @@ model {
 ```
 
 <Warning>
-Even if this approach reduces boilerplate, makes code better looking and references shorter,
-it may become a bit harder to maintain or refactor your model
-(if it has many nested same-named elements).
+While omitting FQN-parts makes code better looking and references shorter,  
+it may be error-prone when you refactor the model
+
+_Sure, only if you have same-named elements_
 </Warning>

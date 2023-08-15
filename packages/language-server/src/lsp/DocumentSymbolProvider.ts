@@ -2,7 +2,7 @@ import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } f
 import { compact, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 function getElementKindSymbol(astKind: ast.SpecificationElementKind): DocumentSymbol | null {
@@ -55,7 +55,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       try {
         return fn() ?? []
       } catch (e) {
-        logger.error(e)
+        logError(e)
         return []
       }
     })
@@ -119,7 +119,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return this.getElementSymbol(el)
       }
     } catch (e) {
-      logger.error(e)
+      logError(e)
     }
     return []
   }

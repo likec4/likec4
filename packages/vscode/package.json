@@ -107,7 +107,7 @@
             "off",
             "verbose"
           ],
-          "default": "verbose",
+          "default": "off",
           "description": "Enable debug logging for the LikeC4 extension.",
           "scope": "window"
         },
@@ -119,7 +119,7 @@
             "messages",
             "verbose"
           ],
-          "default": "verbose",
+          "default": "messages",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
       }

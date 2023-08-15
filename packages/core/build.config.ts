@@ -9,14 +9,17 @@ export default defineBuildConfig([{
     builder: 'mkdist',
     input: 'src',
     format: 'esm',
-    pattern
+    ext: 'js',
+    pattern,
   },{
     builder: 'mkdist',
     input: 'src',
     format: 'cjs',
+    ext: 'cjs' as any,
     pattern
   }],
   // if clean enabled, TS Language server in VSCode has to be restarted
   clean: false,
+  sourcemap: true,
   declaration: 'compatible',
 }])

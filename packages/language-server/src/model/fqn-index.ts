@@ -5,7 +5,7 @@ import { DONE_RESULT, DocumentState, MultiMap, StreamImpl } from 'langium'
 import { isNil } from 'remeda'
 import type { ast } from '../ast'
 import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { computeDocumentFqn } from './fqn-computation'
 
@@ -39,7 +39,7 @@ export class FqnIndex {
             try {
               computeDocumentFqn(doc, services)
             } catch (e) {
-              logger.error(e)
+              logError(e)
             }
           }
         }
@@ -65,7 +65,7 @@ export class FqnIndex {
     //     return fqn
     //   }
     //   const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
-    //   logger.error(`Clean cached FQN ${fqn} at ${path}`)
+    //   logError(`Clean cached FQN ${fqn} at ${path}`)
     //   ElementOps.writeId(el, null)
     //   fqn = null
     // }

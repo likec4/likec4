@@ -43,8 +43,8 @@ export function generateExportScript(
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     const puppeteer = require('puppeteer');
-    const { readFileSync } = require('node:fs');
-    const { join } = require('node:path');
+    const { readFileSync } = require('fs');
+    const { join } = require('path');
 
     ;(async () => {
   `
@@ -153,7 +153,7 @@ export function generateExportScript(
                 const output = join(outputdir, dirname(view.sourcePath), `${view.id}.png`)
                 // TODO: remove side effect
                 mkdirp.sync(dirname(output))
-
+                // 180 = all paddings 40 + 50 + 60 + 40
                 return expandToNode`await exportView('${view.id}', '${output}', {width: ${
                   view.width + 180
                 }, height: ${view.height + 180}});`

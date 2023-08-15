@@ -1,4 +1,5 @@
 import {
+  InvalidModelError,
   ModelIndex,
   assignNavigateTo,
   compareByFqnHierarchically,
@@ -6,9 +7,9 @@ import {
   invariant,
   isNonEmptyArray,
   nonexhaustive,
-  parentFqn
+  parentFqn,
+  type c4
 } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
 import type { AstNode, LangiumDocuments } from 'langium'
 import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
@@ -16,6 +17,13 @@ import { clone } from 'rambdax'
 import * as R from 'remeda'
 import stripIndent from 'strip-indent'
 import type { CancellationToken } from 'vscode-languageserver-protocol'
+import type {
+  LikeC4LangiumDocument,
+  ParsedAstElement,
+  ParsedAstElementView,
+  ParsedAstRelation,
+  ParsedAstSpecification
+} from '../ast'
 import {
   ElementViewOps,
   ast,
@@ -28,15 +36,8 @@ import {
   toElementStyle,
   toElementStyleExcludeDefaults
 } from '../ast'
-import type {
-  ParsedAstElement,
-  ParsedAstElementView,
-  ParsedAstRelation,
-  ParsedAstSpecification,
-  LikeC4LangiumDocument
-} from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
-import { logger } from '../logger'
+import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { failExpectedNever } from '../utils'
@@ -64,9 +65,10 @@ export class LikeC4ModelBuilder {
           countOfChangedDocs++
           try {
             this.parseDocument(doc)
-          } catch (e) {
-            logger.error(`Error parsing document ${doc.uri.toString()}`)
-            logger.error(e)
+          } catch (cause) {
+            logError(
+              new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause })
+            )
           }
         }
         if (countOfChangedDocs > 0) {
@@ -138,12 +140,12 @@ export class LikeC4ModelBuilder {
           (acc, el) => {
             const parent = parentFqn(el.id)
             if (parent && R.isNil(acc[parent])) {
-              logger.warn(`No parent found for ${el.id}`)
+              logWarnError(`No parent found for ${el.id}`)
               return acc
             }
             if (el.id in acc) {
               // should not happen, as validated
-              logger.warn(`Duplicate element id: ${el.id}`)
+              logWarnError(`Duplicate element id: ${el.id}`)
               return acc
             }
             acc[el.id] = el
@@ -214,7 +216,7 @@ export class LikeC4ModelBuilder {
         views: R.mapToObj(views, v => [v.id, v])
       }
     } catch (e) {
-      logger.error(e)
+      logError(e)
       return null
     }
   }
@@ -233,7 +235,7 @@ export class LikeC4ModelBuilder {
             style?.props
           )
         } catch (e) {
-          logger.warn(e)
+          logWarnError(e)
         }
       }
     }
@@ -243,7 +245,7 @@ export class LikeC4ModelBuilder {
         try {
           elements.push(this.parseElement(el))
         } catch (e) {
-          logger.warn(e)
+          logWarnError(e)
         }
         continue
       }
@@ -251,7 +253,7 @@ export class LikeC4ModelBuilder {
         try {
           relations.push(this.parseRelation(el))
         } catch (e) {
-          logger.warn(e)
+          logWarnError(e)
         }
         continue
       }
@@ -265,7 +267,7 @@ export class LikeC4ModelBuilder {
           ElementViewOps.writeId(view, v.id)
           views.push(v)
         } catch (e) {
-          logger.warn(e)
+          logWarnError(e)
         }
       }
     }

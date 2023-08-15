@@ -1,8 +1,13 @@
-import type { LangiumDocument, LangiumSharedServices, MaybePromise, DocumentLinkProvider } from 'langium'
+import type {
+  LangiumDocument,
+  LangiumSharedServices,
+  MaybePromise,
+  DocumentLinkProvider
+} from 'langium'
 import { findNodeForProperty, streamAllContents } from 'langium/lib/utils'
 import type { DocumentLink, DocumentLinkParams } from 'vscode-languageserver-protocol'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { logError } from '../logger'
 
 export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LangiumSharedServices) {
@@ -30,7 +35,7 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
             target: u.toString()
           }
         } catch (e) {
-          logger.error(e)
+          logError(e)
           return []
         }
       })

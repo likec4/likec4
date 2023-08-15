@@ -1,6 +1,6 @@
 import { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
-import { logger } from './logger'
+import { logger, logError } from './logger'
 import { Rpc } from './protocol'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
@@ -18,9 +18,9 @@ export function registerProtocolHandlers(services: LikeC4Services) {
       model = modelBuilder.buildModel() ?? null
     } catch (e) {
       model = null
-      logger.error(e)
+      logError(e)
     }
-    return Promise.resolve({model})
+    return Promise.resolve({ model })
   })
 
   connection.onRequest(Rpc.rebuild, async cancelToken => {
@@ -53,19 +53,21 @@ export function registerProtocolHandlers(services: LikeC4Services) {
           LangiumDocuments.getOrCreateDocument(uri)
         }
       } catch (e) {
-        logger.error(e)
+        logError(e)
       }
     }
     if (changed.length !== docs.length) {
       const all = LangiumDocuments.all.map(d => d.uri.toString()).toArray()
-      logger.warn(`
+      logger.warn(
+        `
 We have in LangiumDocuments: [
   ${all.join('\n  ')}
 ]
 We rebuild: [
   ${changed.join('\n  ')}
 ]
-`.trim())
+`.trim()
+      )
     }
     await services.shared.workspace.DocumentBuilder.update(changed, [], cancelToken)
   })

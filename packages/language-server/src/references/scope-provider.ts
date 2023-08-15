@@ -15,7 +15,7 @@ import {
 } from 'langium'
 import { ast } from '../ast'
 import { elementRef, isElementRefHead, parentStrictElementRef } from '../elementRef'
-import { logger } from '../logger'
+import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
@@ -98,8 +98,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
       }
       return this.computeScope(container, referenceType)
     } catch (e) {
-      // console.error(e)
-      logger.error(e)
+      logError(e)
       return this.getGlobalScope(referenceType)
     }
   }

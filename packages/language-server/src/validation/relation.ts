@@ -1,5 +1,4 @@
-import { BaseError } from '@likec4/core'
-import { isSameHierarchy } from '@likec4/core/utils'
+import { isSameHierarchy, serializeError } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import { resolveRelationPoints } from '../ast'
@@ -33,12 +32,8 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
         })
       }
     } catch (e) {
-      if (e instanceof BaseError) {
-        return accept('error', e.message, {
-          node: el
-        })
-      }
-      accept('error', 'Invalid relation', {
+      const error = serializeError(e)
+      accept('error', error.message, {
         node: el
       })
     }
