@@ -24,68 +24,38 @@
   ],
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      },
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./types": {
-      "require": {
-        "types": "./dist/types/index.d.cts",
-        "default": "./dist/types/index.cjs"
-      },
-      "import": {
-        "types": "./dist/types/index.d.mts",
-        "default": "./dist/types/index.mjs"
-      }
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.cjs"
     },
     "./colors": {
-      "require": {
-        "types": "./dist/colors.d.cts",
-        "default": "./dist/colors.cjs"
-      },
-      "import": {
-        "types": "./dist/colors.d.mts",
-        "default": "./dist/colors.mjs"
-      }
+      "types": "./dist/colors.d.ts",
+      "import": "./dist/colors.js",
+      "require": "./dist/colors.cjs"
     },
     "./errors": {
-      "require": {
-        "types": "./dist/errors/index.d.cts",
-        "default": "./dist/errors/index.cjs"
-      },
-      "import": {
-        "types": "./dist/errors/index.d.mts",
-        "default": "./dist/errors/index.mjs"
-      }
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js",
+      "require": "./dist/errors/index.cjs"
     },
     "./utils": {
-      "require": {
-        "types": "./dist/utils/index.d.cts",
-        "default": "./dist/utils/index.cjs"
-      },
-      "import": {
-        "types": "./dist/utils/index.d.mts",
-        "default": "./dist/utils/index.mjs"
-      }
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
     },
     "./compute-view": {
-      "require": {
-        "types": "./dist/compute-view/index.d.cts",
-        "default": "./dist/compute-view/index.cjs"
-      },
-      "import": {
-        "types": "./dist/compute-view/index.d.mts",
-        "default": "./dist/compute-view/index.mjs"
-      }
+      "types": "./dist/compute-view/index.d.ts",
+      "import": "./dist/compute-view/index.js",
+      "require": "./dist/compute-view/index.cjs"
     }
   },
   "sideEffects": false,
@@ -95,10 +65,10 @@
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
+    "modern-errors": "^6.0.0",
+    "modern-errors-serialize": "^5.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.24.0",
-    "safe-json-value": "^2.0.1",
-    "ts-custom-error": "^3.3.1"
+    "remeda": "^1.24.0"
   },
   "devDependencies": {
     "typescript": "^5.1.6",
