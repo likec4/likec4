@@ -16,14 +16,14 @@ export const compareRelations = <T extends { source: string; target: string }>(a
   )
 }
 
-export const isInside = (parent: Fqn): RelationPredicate => {
+const isInside = (parent: Fqn): RelationPredicate => {
   const prefix = parent + '.'
   return (rel: Relation) => {
     return rel.source.startsWith(prefix) && rel.target.startsWith(prefix)
   }
 }
 
-export const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
+const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
   const sourcePrefix = source + '.'
   const targetPrefix = target + '.'
   return (rel: Relation) => {
@@ -34,11 +34,11 @@ export const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
   }
 }
 
-export const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
+const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
   return anyPass([isBetween(source, target), isBetween(target, source)])
 }
 
-export const isIncoming = (target: Fqn): RelationPredicate => {
+const isIncoming = (target: Fqn): RelationPredicate => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
@@ -48,7 +48,7 @@ export const isIncoming = (target: Fqn): RelationPredicate => {
   }
 }
 
-export const isOutgoing = (source: Fqn): RelationPredicate => {
+const isOutgoing = (source: Fqn): RelationPredicate => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
     return (
@@ -58,11 +58,11 @@ export const isOutgoing = (source: Fqn): RelationPredicate => {
   }
 }
 
-export const isAnyInOut = (source: Fqn): RelationPredicate => {
+const isAnyInOut = (source: Fqn): RelationPredicate => {
   return either(isIncoming(source), isOutgoing(source))
 }
 
-export const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
+const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
   return <E extends { id: Fqn }>(element: E) => {
     return (
       rel.source === element.id ||
@@ -72,3 +72,13 @@ export const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
     )
   }
 }
+
+export const Relations = {
+  isInside,
+  isBetween,
+  isAnyBetween,
+  isIncoming,
+  isOutgoing,
+  isAnyInOut,
+  hasRelation
+} as const

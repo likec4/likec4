@@ -1,7 +1,7 @@
 import { pipe, sort, values } from 'remeda'
 import { InvalidModelError, ensureModel } from '../errors'
 import type { Element, Fqn, Relation, RelationID } from '../types'
-import { compareByFqnHierarchically, parentFqn } from '../utils/fqn'
+import { compareByFqnHierarchically, parentFqn } from '../utils'
 
 interface ElementTrie {
   el?: Element

@@ -11,7 +11,10 @@ import type {
 } from '../types'
 import { computeElementView } from './compute-element-view'
 
-export function computeView<V extends ElementView>(view: V, index: ModelIndex) {
+export function computeView<V extends ElementView>(
+  view: V,
+  index: ModelIndex
+): ComputedView | null {
   try {
     return computeElementView(view, index)
   } catch (e) {

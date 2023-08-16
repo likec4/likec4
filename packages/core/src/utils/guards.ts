@@ -1,4 +1,4 @@
-import { NonExhaustiveError } from '../errors/nonexhaustive'
+import { NonExhaustiveError } from '../errors'
 import type { NonEmptyArray } from '../types'
 
 export function isString(value: unknown): value is string {

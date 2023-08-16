@@ -36,7 +36,7 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 
 export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
-export interface ElementView {
+export type ElementView = {
   readonly id: ViewID
   readonly viewOf?: Fqn
   readonly title: string | null

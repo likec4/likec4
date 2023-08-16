@@ -1,9 +1,10 @@
 import { anyPass, both, either, isNil, uniq, type Predicate } from 'rambdax'
-import { type Element, type Relation } from '../types'
-import * as Expr from '../types/expression'
-import { Relations, commonAncestor, isAncestor, isSameHierarchy } from '../utils'
-import { isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from '../utils/relations'
+import { Expr } from '../types'
+import type { Element, Relation } from '../types'
+import { commonAncestor, isAncestor, isSameHierarchy, Relations } from '../utils'
 import { ComputeCtx } from './compute-ctx'
+
+const { isAnyInOut, isBetween, isIncoming, isInside, isOutgoing, isAnyBetween } = Relations
 
 export const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) => {
   const elements = expr.isDescedants
@@ -12,7 +13,7 @@ export const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) =>
   const filters = [] as Predicate<Relation>[]
   if (expr.isDescedants) {
     elements.forEach(child => {
-      filters.push(both(Relations.isInside(expr.element), Relations.isAnyInOut(child.id)))
+      filters.push(both(isInside(expr.element), isAnyInOut(child.id)))
     })
   }
 
@@ -25,7 +26,7 @@ export const includeElementRef = (ctx: ComputeCtx, expr: Expr.ElementRefExpr) =>
     }
     for (const ctxEl of ctxElements) {
       if (!isSameHierarchy(el, ctxEl)) {
-        filters.push(Relations.isAnyBetween(el.id, ctxEl.id))
+        filters.push(isAnyBetween(el.id, ctxEl.id))
       }
     }
   }
