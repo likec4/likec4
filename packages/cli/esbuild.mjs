@@ -31,7 +31,7 @@ const cli = {
   sourcemap: false,
   keepNames: true,
   legalComments: 'eof',
-  minify: false
+  minify: true
 }
 
 /**
