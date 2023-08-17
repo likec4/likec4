@@ -82,6 +82,7 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
+/* workaround for flashing nav bar */
 .nextra-nav-container-blur.nx-bg-white {
   background-color: hsl(var(--background));
 }
