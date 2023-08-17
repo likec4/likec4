@@ -7,9 +7,6 @@
 
     "outDir": "dist",
     "rootDir": "src",
-    "declarationMap": true,
-    "esModuleInterop": true,
-
     "baseUrl": "."
   },
   "include": ["src"]

@@ -5,15 +5,13 @@
     "lib": ["ESNext"],
     "module": "ES2022",
     "target": "ES2022",
-    "moduleResolution": "Bundler",
-
+    "moduleResolution": "bundler",
     "declaration": true,
-    "declarationMap": false,
-    "sourceMap": false,
 
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
+    "allowArbitraryExtensions": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -22,7 +20,7 @@
     "noUncheckedIndexedAccess": true,
 
     "verbatimModuleSyntax": true,
-    "checkJs": true,
+    "checkJs": false,
 
     "noEmitOnError": true,
 

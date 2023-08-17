@@ -36,7 +36,7 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export type ComputedView = ElementView & {
+export interface ComputedView extends ElementView {
   autoLayout: ViewRuleAutoLayout['autoLayout']
   nodes: ComputedNode[]
   edges: ComputedEdge[]

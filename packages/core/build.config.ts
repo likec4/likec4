@@ -19,7 +19,7 @@ export default defineBuildConfig([{
     pattern
   }],
   // if clean enabled, TS Language server in VSCode has to be restarted
-  clean: false,
+  clean: true,
   sourcemap: true,
   declaration: 'compatible',
 }])

@@ -8,7 +8,7 @@ export interface BaseErrorOptions {
 /**
  * Base class for all errors in the LikeC4 library.
  */
-class BaseError extends CustomError {
+export class BaseError extends CustomError {
   constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
     // Set name explicitly as minification can mangle class names
@@ -19,7 +19,7 @@ class BaseError extends CustomError {
 /**
  * Unknown error, mosly probably a bug, unhandled case or coming from a third-party library.
  */
-class UnknownError extends BaseError {
+export class UnknownError extends BaseError {
   constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
     this.name = 'UnknownError'
@@ -27,7 +27,8 @@ class UnknownError extends BaseError {
     // Object.defineProperty(this, 'name', { value: 'UnknownError' })
   }
 }
-class RelationRefError extends BaseError {
+
+export class RelationRefError extends BaseError {
   public constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
     this.name = 'RelationRefError'
@@ -35,8 +36,6 @@ class RelationRefError extends BaseError {
     // Object.defineProperty(this, 'name', { value: 'RelationRefError' })
   }
 }
-
-export { BaseError, UnknownError, RelationRefError }
 
 export function normalizeError(e: unknown): BaseError {
   if (e instanceof BaseError) {

@@ -8,5 +8,6 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true
   },
-  "exclude": ["node_modules", "**/node_modules/*"]
+  "include": ["**/*.js", "**/*.cjs", "**/*.mjs"],
+  "exclude": ["node_modules", "dist", "packages/*/dist/**/*"]
 }

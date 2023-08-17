@@ -3,11 +3,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: [
-      './packages/*/tsconfig.json',
-      './packages/*/tsconfig.*.json',
-      './docs/tsconfig.json',
-      './examples/*/tsconfig.json',
-      './packages/cli/src/export/puppeteer-page/tsconfig.json'
+      './tsconfig.eslint.json'
     ],
   },
   plugins: ['@typescript-eslint'],

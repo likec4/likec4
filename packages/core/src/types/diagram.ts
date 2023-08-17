@@ -30,7 +30,7 @@ export interface DiagramEdge extends ComputedEdge {
   labels: DiagramLabel[]
 }
 
-export type DiagramView = Omit<ComputedView, 'nodes' | 'edges'> & {
+export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
 
