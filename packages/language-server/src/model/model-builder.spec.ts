@@ -1,7 +1,7 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
-import type { Element, ViewID } from '@likec4/core/types'
+import type { Element, ViewID } from '@likec4/core'
 
 vi.mock('../logger')
 

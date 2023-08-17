@@ -1,10 +1,7 @@
 {
   "extends": "./packages/tsconfig/base.json",
   "compilerOptions": {
-    "strict": true,
-    "strictNullChecks": true,
-    "moduleResolution": "bundler",
-    "noUncheckedIndexedAccess": true
+    "noEmit": true
   },
   "exclude": ["node_modules", "packages/*/node_modules", "packages/*/dist", ".yarn", ".next"]
 }

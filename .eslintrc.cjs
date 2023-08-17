@@ -2,9 +2,8 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: [
-      './tsconfig.eslint.json'
-    ],
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.eslint.json', './packages/*/tsconfig.json'],
   },
   plugins: ['@typescript-eslint'],
   root: true,
@@ -15,6 +14,13 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   rules: {
+    "semi": "off",
+    "@typescript-eslint/semi": "off",
+    "quotes": "off",
+    "@typescript-eslint/quotes": "off",
+    "indent": "off",
+    "@typescript-eslint/indent": "off",
+
     "@typescript-eslint/ban-types": "error",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/member-delimiter-style": "off",

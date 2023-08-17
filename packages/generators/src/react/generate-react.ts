@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import {
   CompositeGeneratorNode,
