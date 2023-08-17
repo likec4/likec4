@@ -22,18 +22,16 @@ export class BaseError extends CustomError {
 export class UnknownError extends BaseError {
   constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
-    this.name = 'UnknownError'
     // Set name explicitly as minification can mangle class names
-    // Object.defineProperty(this, 'name', { value: 'UnknownError' })
+    Object.defineProperty(this, 'name', { value: 'UnknownError' })
   }
 }
 
 export class RelationRefError extends BaseError {
   public constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
-    this.name = 'RelationRefError'
     // Set name explicitly as minification can mangle class names
-    // Object.defineProperty(this, 'name', { value: 'RelationRefError' })
+    Object.defineProperty(this, 'name', { value: 'RelationRefError' })
   }
 }
 

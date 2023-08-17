@@ -1,7 +1,5 @@
-import type * as c4 from '@likec4/core/types'
+import { invariant, nonexhaustive, type c4 } from '@likec4/core'
 import { ast } from './ast'
-import { invariant } from '@likec4/core'
-import { failExpectedNever } from './utils'
 
 export function isElementRefHead(node: ast.ElementRef | ast.StrictElementRef) {
   if (ast.isElementRef(node)) {
@@ -10,7 +8,7 @@ export function isElementRefHead(node: ast.ElementRef | ast.StrictElementRef) {
   if (ast.isStrictElementRef(node)) {
     return !ast.isStrictElementRef(node.$container)
   }
-  failExpectedNever(node)
+  nonexhaustive(node)
 }
 
 export function elementRef(node: ast.ElementRef | ast.StrictElementRef) {

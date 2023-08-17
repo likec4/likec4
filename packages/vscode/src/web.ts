@@ -52,12 +52,18 @@ function createLanguageClient(context: ExtensionContext) {
       { pattern: globPattern, scheme: 'file' },
       { pattern: globPattern, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'file' },
-      { language: languageId, scheme: 'vscode-vfs' },
+      { language: languageId, scheme: 'vscode-vfs' }
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
       fileEvents: fileSystemWatcher
-    },
+    }
+  }
+
+  if ((vscode.workspace.workspaceFolders?.length ?? 0) >= 1) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const w = (clientOptions.workspaceFolder = vscode.workspace.workspaceFolders!.at(0)!)
+    console.debug(`workspace: ${w.name}\n  ${w.uri.toString()}`)
   }
 
   // Create the language client and start the client.

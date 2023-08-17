@@ -18,7 +18,11 @@ export class C4ModelImpl extends ADisposable {
   private onDidChangeSubscription: vscode.Disposable | null = null
 
   static inject = tokens(di.client, di.layout, di.logger)
-  constructor(private client: LanguageClient, private layout: LayoutFn, protected logger: Logger) {
+  constructor(
+    private client: LanguageClient,
+    private layout: LayoutFn,
+    protected logger: Logger
+  ) {
     super()
     this._register(
       disponsable(() => {
@@ -34,6 +38,7 @@ export class C4ModelImpl extends ADisposable {
           throw new Error('modelStream already started')
         }
         this.logger.logDebug('++subscribe: onDidChangeModel')
+        this.client.createDefaultErrorHandler
         this.onDidChangeSubscription = this.client.onNotification(Rpc.onDidChangeModel, () => {
           this.logger.logDebug('receive: onDidChangeModel')
           listener.next(0)
@@ -66,12 +71,10 @@ export class C4ModelImpl extends ADisposable {
 
   private layoutView(view: ComputedView) {
     this.logger.logDebug(`layoutView: ${view.id}`)
-    return xs
-      .fromPromise(this.layout(view))
-      .replaceError(err => {
-        this.logger.logError(err)
-        return xs.empty()
-      })
+    return xs.fromPromise(this.layout(view)).replaceError(err => {
+      this.logger.logError(err)
+      return xs.empty()
+    })
   }
 
   public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
@@ -89,7 +92,7 @@ export class C4ModelImpl extends ADisposable {
         error: err => {
           this.logger.logError(err)
         }
-      }) as (Subscription | null)
+      }) as Subscription | null
 
     return this._register(
       disponsable(() => {

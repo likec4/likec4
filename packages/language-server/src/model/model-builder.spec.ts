@@ -233,47 +233,47 @@ describe('LikeC4ModelBuilder', () => {
   it('builds model with extend', async ({ expect }) => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
-    specification {
-      element component
-      element user
-      tag deprecated
-    }
-    model {
-      user client
-      component system {
-        backend = component
-        component frontend
+      specification {
+        element component
+        element user
+        tag deprecated
       }
-    }
+      model {
+        user client
+        component system {
+          backend = component
+          component frontend
+        }
+      }
     `)
     await parse(`
-    model {
-      extend system.backend {
-        component api
+      model {
+        extend system.backend {
+          component api
+        }
+        system.frontend -> api 'requests'
+        client -> system.frontend {
+          title 'opens'
+        }
       }
-      system.frontend -> api 'requests'
-      client -> system.frontend {
-        title 'opens'
-      }
-    }
-    views {
-      view index {
-        title 'Index'
-        include *
-      }
+      views {
+        view index {
+          title 'Index'
+          include *
+        }
 
-      view v1 of api {
-        include *
-        autoLayout LeftRight
-      }
+        view v1 of api {
+          include *
+          autoLayout LeftRight
+        }
 
-      view of system.frontend {
-        include *
+        view frontend of system.frontend {
+          include *
+        }
       }
-    }
     `)
     const { errors } = await validateAll()
-    expect(errors).toEqual([])
+    expect(errors).to.be.empty
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
@@ -317,7 +317,11 @@ describe('LikeC4ModelBuilder', () => {
         #v2
       }
       component system2 {
-        link ./relative
+        link ./samefolder.js
+        link ./sub/folder.js#L1-2
+        link ../dir/another.js
+        link /workspace-root
+
         link https://example1.com
 
         -> system1
@@ -349,7 +353,13 @@ describe('LikeC4ModelBuilder', () => {
       system2: {
         kind: 'component',
         tags: null,
-        links: ['./relative', 'https://example1.com']
+        links: [
+          'file:///test/workspace/src/samefolder.js',
+          'file:///test/workspace/src/sub/folder.js#L1-2',
+          'file:///test/workspace/dir/another.js',
+          'file:///workspace-root',
+          'https://example1.com/'
+        ]
       }
     })
     expect(model.views).toMatchObject({
@@ -366,6 +376,36 @@ describe('LikeC4ModelBuilder', () => {
         description: 'View with links',
         tags: ['v2'],
         links: ['https://example1.com', 'https://example2.com']
+      }
+    })
+  })
+
+  it.concurrent('builds model with relative links inside virtual workspace', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1 {
+          link ./samefolder.js
+          link ./sub/folder.js#L1-2
+          link ../dir/another.js
+          link /workspace-root
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      sys1: {
+        links: [
+          'vscode-vfs://host/virtual/src/samefolder.js',
+          'vscode-vfs://host/virtual/src/sub/folder.js#L1-2',
+          'vscode-vfs://host/virtual/dir/another.js',
+          'vscode-vfs://host/workspace-root'
+        ]
       }
     })
   })
