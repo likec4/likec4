@@ -1587,7 +1587,6 @@ __metadata:
     react-error-boundary: ^4.0.10
     typescript: ^5.1.6
     vite: ^4.4.9
-    vite-tsconfig-paths: ^4.2.0
   languageName: unknown
   linkType: soft
 
