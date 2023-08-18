@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import {
   CompositeGeneratorNode,
@@ -51,6 +51,7 @@ export function generateReact(views: DiagramView[]) {
       export type LikeC4ViewId = ${generateViewId(views)};
       export const LikeC4Views = {
     `
+    .appendNewLine()
     .indent({
       indentation: 2,
       indentedChildren: indent => {
@@ -72,37 +73,37 @@ export function generateReact(views: DiagramView[]) {
 
       export const {
         isViewId,
+        useViewId,
         Diagram,
         Responsive,
+        Fullscreen,
         Embedded,
-        Browser
-      } = LikeC4.create(LikeC4Views)
+        Browser,
+      } = LikeC4.create<LikeC4ViewId>(LikeC4Views)
 
-      export type DiagramProps = LikeC4.Props<LikeC4ViewId>
+      export type DiagramProps = LikeC4.DiagramProps<LikeC4ViewId>
       export type ResponsiveProps = LikeC4.ResponsiveProps<LikeC4ViewId>
+      export type FullscreenProps = LikeC4.FullscreenProps<LikeC4ViewId>
       export type EmbeddedProps = LikeC4.EmbeddedProps<LikeC4ViewId>
       export type BrowserProps = LikeC4.BrowserProps<LikeC4ViewId>
 
-    `.append(NL, NL).appendTemplate`
+      // Re-export types
       export type {
-        DiagramApi
-      } from '@likec4/diagrams'
-
-      export type {
+        DiagramApi,
         Fqn,
         Element,
         RelationID,
         Relation,
         NodeId,
         EdgeId,
-        ComputedNode,
-        ComputedEdge,
+        ViewID,
         ComputedView,
-        DiagramView,
+        LikeC4Theme,
         DiagramNode,
         DiagramEdge,
-        DiagramLabel
-      } from '@likec4/core'
+        DiagramLabel,
+        DiagramView
+      } from '@likec4/diagrams'
     `.append(NL, NL)
 
   return toString(out)

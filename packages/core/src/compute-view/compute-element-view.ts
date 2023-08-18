@@ -4,14 +4,16 @@ import type { ModelIndex } from '../model-index'
 import {
   DefaultElementShape,
   DefaultThemeColor,
+  Expr,
+  isViewRuleAutoLayout,
+  isViewRuleExpression,
+  isViewRuleStyle,
   type ComputedNode,
   type Element,
   type ElementView,
   type Fqn,
   type ComputedView
 } from '../types'
-import * as Expr from '../types/expression'
-import { isViewRuleAutoLayout, isViewRuleExpression, isViewRuleStyle } from '../types/view'
 import { compareByFqnHierarchically, isAncestor, isSameHierarchy, parentFqn } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import { ComputeCtx } from './compute-ctx'

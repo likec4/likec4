@@ -14,7 +14,7 @@ export const logger = {
   log(message: string) {
     console.log(message)
   },
-  error(message: string | Error | unknown) {
+  error: (message: string | Error | unknown) => {
     const error = serializeError(message)
     console.error(`${error.name}: ${error.message}\n${error.stack}`)
   },

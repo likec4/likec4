@@ -1,6 +1,6 @@
 import { prop, uniqBy } from 'rambdax'
 import type { Element } from '../../types'
-import { compareByFqnHierarchically, isAncestor } from '../../utils/fqn'
+import { compareByFqnHierarchically, isAncestor } from '../../utils'
 
 export function* anyPossibleRelations(
   elements: Element[]

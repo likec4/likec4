@@ -1,5 +1,13 @@
+import type { BaseErrorOptions } from './_base'
 import { BaseError } from './_base'
-export const InvalidModelError = BaseError.subclass('InvalidModelError')
+
+export class InvalidModelError extends BaseError {
+  public constructor(message: string, options?: BaseErrorOptions) {
+    super(message, options)
+    // Set name explicitly as minification can mangle class names
+    Object.defineProperty(this, 'name', { value: 'InvalidModelError' })
+  }
+}
 
 export function ensureModel(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

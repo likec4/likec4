@@ -84,3 +84,16 @@ export function isAnyRelation(expr: Expression): expr is AnyRelationExpression {
 }
 
 export type Expression = ElementExpression | AnyRelationExpression
+
+// export const Expr = {
+//   isElementRef,
+//   isWildcard,
+//   isElementKindExpr,
+//   isElementTagExpr,
+//   isElement,
+//   isRelation,
+//   isInOut,
+//   isIncoming,
+//   isOutgoing,
+//   isAnyRelation,
+// }

@@ -4,6 +4,71 @@ import { LikeC4View } from '$/components/index-page'
 
 # React Components
 
+LikeC4 generates React components, which you can embed anywhere to render your architecture diagrams.
+
+Consider, we have:
+
+```likec4 filename="example.c4"
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+}
+
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+  }
+
+  cloud = system 'Our SaaS' {
+    description 'Our product allows customers to manage their data'
+  }
+
+  customer -> saas 'uses to manage data'
+}
+
+views {
+  view index {
+    include *
+  }
+}
+```
+
+We run CLI to generate react components:
+
+```bash
+likec4 codegen react -o likec4-generated.tsx
+```
+
+Now import the generated:
+
+```jsx
+import { Embedded } from '$/likec4-generated'
+
+// ...
+export const SomeScreen = () => (
+  <Embedded viewId={"index"}/>
+)
+```
+
+And this is rendered:
+
+{' '}
+
+<LikeC4View viewId="indexLR"/>
+
+<Info>
+This diagram is rendered based on the model from
+[this source](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)
+</Info>
+
+
+
+
+
 [CLI](./cli) parses LikeC4 sources, builds the architecture model, and exports defined views.  
 With codegen task, it generates structured data, like:
 
@@ -53,16 +118,6 @@ and inserted into the MDX-page ([mdx source](https://github.com/likec4/likec4/bl
 **You are free to use any platform or static site generator.**
 
 Even share on [CodeSandbox](https://codesandbox.io/) or [StackBlitz](https://stackblitz.com/).
-
-
-## Install
-
-```sh npm2yarn copy
-npm install @likec4/diagrams
-
-# Most likely, you gonna use it with [CLI](./cli):
-npm install -D @likec4/cli
-```
 
 ## Components
 

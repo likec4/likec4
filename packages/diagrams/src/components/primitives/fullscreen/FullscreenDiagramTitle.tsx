@@ -19,9 +19,9 @@ const ContainerStyles = {
   textShadow: '4px 4px 5px rgb(17 17 17)'
 } satisfies CSSProperties
 
-export interface BrowserTitleProps extends HTMLAttributes<HTMLDivElement> {}
+export interface FullscreenDiagramTitleProps extends HTMLAttributes<HTMLDivElement> {}
 
-export function BrowserTitle({ children, style, ...props }: BrowserTitleProps) {
+export function FullscreenDiagramTitle({ children, style, ...props }: FullscreenDiagramTitleProps) {
   return (
     <div
       style={{
@@ -34,4 +34,4 @@ export function BrowserTitle({ children, style, ...props }: BrowserTitleProps) {
     </div>
   )
 }
-BrowserTitle.displayName = 'LikeC4BrowserTitle'
+FullscreenDiagramTitle.displayName = 'FullscreenDiagramTitle'

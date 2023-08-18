@@ -21,9 +21,6 @@
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
-      "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*",
-      ],
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
@@ -31,6 +28,9 @@
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
+      "outFiles": [
+        "${workspaceFolder}/packages/*/dist/**/*",
+      ],
       "preLaunchTask": "npm: turbo-build - packages/vscode",
     },
     {
@@ -42,16 +42,12 @@
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/examples/cloud-system/likec4",
+        "${workspaceFolder}/packages/diagrams/src-dev/likec4",
       ],
       "sourceMaps": true,
+      "autoAttachChildProcesses": true,
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*.js"
-      ],
-      "skipFiles": [
-        "${workspaceFolder}/node_modules/**",
-        "**/vs/workbench/**",
-        "<node_internals>/**"
+        "${workspaceFolder}/packages/*/dist/**/*",
       ],
       "preLaunchTask": "npm: turbo-build - packages/vscode"
     }

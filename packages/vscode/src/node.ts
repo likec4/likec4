@@ -29,17 +29,15 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function createLanguageClient(context: ExtensionContext) {
-  const serverModule = vscode.Uri.joinPath(
-    context.extensionUri,
-    'dist', 'lsp', 'node.js'
-  ).fsPath
+  const serverModule = vscode.Uri.joinPath(context.extensionUri, 'dist', 'lsp', 'node.js').fsPath
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
   // By setting `process.env.DEBUG_BREAK` to a truthy value, the language server will wait until a debugger is attached.
   const debugOptions = {
     execArgv: [
       '--nolazy',
-      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '6009'
+      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${
+        process.env['DEBUG_SOCKET'] || '4711'
       }`
     ]
   }
@@ -53,14 +51,21 @@ function createLanguageClient(context: ExtensionContext) {
 
   const extensions = fileExtensions.map(s => s.substring(1)).join(',')
   const globPattern = `**/*.{${extensions}}`
-  const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
+  const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
+    globPattern,
+    false,
+    false,
+    false
+  )
   context.subscriptions.push(fileSystemWatcher)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
-      { pattern: globPattern },
-      { language: languageId }
+      { pattern: globPattern, scheme: 'file' },
+      { pattern: globPattern, scheme: 'vscode-vfs' },
+      { language: languageId, scheme: 'file' },
+      { language: languageId, scheme: 'vscode-vfs' }
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
@@ -68,7 +73,12 @@ function createLanguageClient(context: ExtensionContext) {
     },
     progressOnInitialization: true
   }
+  if ((vscode.workspace.workspaceFolders?.length ?? 0) >= 1) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const w = (clientOptions.workspaceFolder = vscode.workspace.workspaceFolders!.at(0)!)
+    console.debug(`workspace: ${w.name}\n  ${w.uri.toString()}`)
+  }
 
   // Create the language client and start the client.
-  return  new NodeLanguageClient(languageId, 'LikeC4 Extension', serverOptions, clientOptions)
+  return new NodeLanguageClient(languageId, 'LikeC4 Extension', serverOptions, clientOptions)
 }

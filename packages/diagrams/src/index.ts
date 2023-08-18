@@ -1,14 +1,10 @@
-export { Diagram } from './diagram/Diagram'
-export type { DiagramProps, DiagramApi, DiagramPaddings } from './diagram/types'
+export * from './diagram'
+export * from './components'
+export * from './hooks/useViewId'
 
 export { LikeC4 } from './likec4'
 
-export { ResponsiveDiagram } from './responsive'
-export type { ResponsiveDiagramProps } from './responsive'
-
-export { DiagramsBrowser, EmbeddedDiagram, BrowserTitle } from './browser'
-export type { DiagramsBrowserProps, EmbeddedDiagramProps, BrowserTitleProps } from './browser'
-
+// Re-export types
 export type {
   Fqn,
   Element,

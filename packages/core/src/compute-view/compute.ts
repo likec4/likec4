@@ -11,7 +11,7 @@ import type {
 } from '../types'
 import { computeElementView } from './compute-element-view'
 
-export function computeView<V extends ElementView>(view: V, index: ModelIndex) {
+export function computeView(view: ElementView, index: ModelIndex): ComputedView | null {
   try {
     return computeElementView(view, index)
   } catch (e) {
@@ -20,19 +20,19 @@ export function computeView<V extends ElementView>(view: V, index: ModelIndex) {
   }
 }
 
-type InputModel = {
+export type CmpInputModel = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
   views: ElementView[]
 }
 
-type OutputModel = {
+export type CmpOutputModel = {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
   views: Record<ViewID, ComputedView>
 }
 
-export function computeViews(model: InputModel): OutputModel {
+export function computeViews(model: CmpInputModel): CmpOutputModel {
   const index = ModelIndex.from(model)
   const computedViews = compact(map(model.views, view => computeView(view, index)))
   return {

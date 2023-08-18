@@ -1,8 +1,6 @@
 import { keys, pluck } from 'rambdax'
-import type { Fqn, Relation } from '../types'
-import type { ComputedEdge, EdgeId } from '../types/computed-view'
-import { commonAncestor } from '../utils/fqn'
-import { compareRelations } from '../utils/relations'
+import type { ComputedEdge, EdgeId, Fqn, Relation } from '../types'
+import { commonAncestor, compareRelations } from '../utils'
 
 type ResolvedRelationsObj = Record<Fqn, Record<Fqn, Relation[]>>
 

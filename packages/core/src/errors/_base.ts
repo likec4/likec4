@@ -1,29 +1,64 @@
-import ModernError from 'modern-errors'
-import modernErrorsSerialize, { type ErrorObject } from 'modern-errors-serialize'
-import type { ErrorInstance } from 'modern-errors'
+import { CustomError } from 'ts-custom-error'
+import safeJsonValue from 'safe-json-value'
 
-/**s
+export interface BaseErrorOptions {
+  cause?: unknown
+}
+
+/**
  * Base class for all errors in the LikeC4 library.
  */
-export const BaseError = ModernError.subclass('BaseError', {
-  plugins: [modernErrorsSerialize]
-})
+export class BaseError extends CustomError {
+  constructor(message: string, options?: BaseErrorOptions) {
+    super(message, options)
+    // Set name explicitly as minification can mangle class names
+    Object.defineProperty(this, 'name', { value: 'BaseError' })
+  }
+}
 
 /**
  * Unknown error, mosly probably a bug, unhandled case or coming from a third-party library.
  */
-export const UnknownError = BaseError.subclass('UnknownError')
-
-export const RelationRefError = BaseError.subclass('RelationRefError')
-
-export function normalizeError(e: unknown): ErrorInstance {
-  return BaseError.normalize(e, UnknownError)
+export class UnknownError extends BaseError {
+  constructor(message: string, options?: BaseErrorOptions) {
+    super(message, options)
+    // Set name explicitly as minification can mangle class names
+    Object.defineProperty(this, 'name', { value: 'UnknownError' })
+  }
 }
 
-export function serializeError(e: unknown): ErrorObject {
-  return BaseError.serialize(normalizeError(e))
+export class RelationRefError extends BaseError {
+  public constructor(message: string, options?: BaseErrorOptions) {
+    super(message, options)
+    // Set name explicitly as minification can mangle class names
+    Object.defineProperty(this, 'name', { value: 'RelationRefError' })
+  }
+}
+
+export function normalizeError(e: unknown): BaseError {
+  if (e instanceof BaseError) {
+    return e
+  }
+  if (e instanceof Error) {
+    return new UnknownError(e.message, { cause: e })
+  }
+  try {
+    const message = typeof e === 'string' ? e : JSON.stringify(safeJsonValue(e))
+    throw new UnknownError(message)
+  } catch (e) {
+    return e as UnknownError
+  }
+}
+
+export function serializeError(e: unknown) {
+  const err = normalizeError(e)
+  return {
+    name: err.name,
+    message: err.message,
+    stack: err.stack
+  }
 }
 
 export function throwUnknownError(e: unknown): never {
-  throw BaseError.normalize(e, UnknownError)
+  throw normalizeError(e)
 }

@@ -105,15 +105,14 @@
           "type": "string",
           "enum": [
             "off",
+            "messages",
             "verbose"
           ],
-          "default": "off",
-          "description": "Enable debug logging for the LikeC4 extension.",
-          "scope": "window"
+          "default": "messages",
+          "description": "Enable debug logging for the LikeC4 extension."
         },
         "likec4.trace.server": {
           "type": "string",
-          "scope": "window",
           "enum": [
             "off",
             "messages",

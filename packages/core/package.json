@@ -61,14 +61,25 @@
   "sideEffects": false,
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "main": "./src/index.ts",
+    "module": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+      ".": "./src/index.ts",
+      "./types": "./src/types/index.ts",
+      "./colors": "./src/colors.ts",
+      "./errors": "./src/errors/index.ts",
+      "./utils": "./src/utils/index.ts",
+      "./compute-view": "./src/compute-view/index.ts"
+    }
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
-    "modern-errors": "^6.0.0",
-    "modern-errors-serialize": "^5.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.24.0"
+    "remeda": "^1.24.0",
+    "safe-json-value": "^2.0.1",
+    "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {
     "typescript": "^5.1.6",

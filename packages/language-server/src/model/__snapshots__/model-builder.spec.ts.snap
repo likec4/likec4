@@ -126,7 +126,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "views": {
-    "74f5364fa4b064ce9830043b93d4cc6fce9d85b0": {
+    "frontend": {
       "autoLayout": "TB",
       "description": null,
       "edges": [
@@ -151,7 +151,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.frontend",
         },
       ],
-      "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+      "id": "frontend",
       "links": null,
       "nodes": [
         {
@@ -314,7 +314,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "inEdges": [],
           "kind": "component",
           "links": null,
-          "navigateTo": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+          "navigateTo": "frontend",
           "outEdges": [
             "system.frontend:system.backend.api",
           ],

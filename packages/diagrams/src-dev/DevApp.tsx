@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { LikeC4ViewId, DiagramNode, DiagramApi } from './likec4'
-import { Diagram, isViewId } from './likec4'
+import { Diagram, Embedded, isViewId } from './likec4'
 
 function readViewId(initial: LikeC4ViewId = 'index'): LikeC4ViewId {
   let hash = window.location.hash
@@ -52,15 +52,15 @@ export default function DevApp() {
   const apiRef = useRef<DiagramApi>(null)
 
   return (
-    // <div className='dev-app'>
-    <Diagram
-      ref={apiRef}
-      viewId={viewId}
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onNodeClick={onNodeClick}
-      padding={50}
-    />
-    // </div>
+    <div className='dev-app'>
+      <Embedded
+        ref={apiRef}
+        viewId={viewId}
+        // width={window.innerWidth}
+        // height={window.innerHeight}
+        // onNodeClick={onNodeClick}
+        padding={50}
+      />
+    </div>
   )
 }

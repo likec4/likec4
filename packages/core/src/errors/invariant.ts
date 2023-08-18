@@ -1,5 +1,13 @@
+import type { BaseErrorOptions } from './_base'
 import { BaseError } from './_base'
-export const InvariantError = BaseError.subclass('InvariantError')
+
+export class InvariantError extends BaseError {
+  public constructor(message: string, options?: BaseErrorOptions) {
+    super(message, options)
+    // Set name explicitly as minification can mangle class names
+    Object.defineProperty(this, 'name', { value: 'InvariantError' })
+  }
+}
 
 // Throw an error if the condition fails
 // > Not providing an inline default argument for message as the result is smaller

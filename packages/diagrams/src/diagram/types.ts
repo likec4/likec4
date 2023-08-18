@@ -2,7 +2,9 @@ import type Konva from 'konva'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import type { HTMLAttributes } from 'react'
 
-export type DiagramViews<T extends string = string> = Record<T, DiagramView>
+export type DiagramViews<T extends string = string> = {
+  [key in T]: DiagramView
+}
 
 export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
 
@@ -32,6 +34,12 @@ export interface DiagramApi {
   resetStageZoom(immediate?: boolean): void
   centerOnNode(node: DiagramNode): void
   centerAndFit(): void
+}
+
+export type DiagramInitialPosition = {
+  x: number
+  y: number
+  scale: number
 }
 
 // prettier-ignore
@@ -64,11 +72,7 @@ export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'clas
    * Internal use
    * When render to React portal
    */
-  initialPosition?: {
-    x: number
-    y: number
-    scale: number
-  } | undefined
+  initialPosition?: DiagramInitialPosition | undefined
 
   onNodeClick?: OnNodeClick | undefined
   onStageClick?: OnStageClick | undefined

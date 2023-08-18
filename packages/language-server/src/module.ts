@@ -1,4 +1,4 @@
-import { serializeError } from '@likec4/core'
+import { normalizeError, serializeError } from '@likec4/core'
 import type {
   DefaultSharedModuleContext,
   LangiumServices,
@@ -15,7 +15,7 @@ import {
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider
 } from './lsp'
-import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
+import { FqnIndex, LikeC4ModelParser, LikeC4ModelLocator, LikeC4ModelBuilder } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 import {
@@ -34,6 +34,7 @@ type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: A
 export interface LikeC4AddedServices {
   likec4: {
     FqnIndex: FqnIndex
+    ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
   }
@@ -51,6 +52,7 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
   likec4: {
     FqnIndex: bind(FqnIndex),
+    ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),
     ModelLocator: bind(LikeC4ModelLocator)
   },
@@ -88,30 +90,17 @@ export function createLanguageServices(context?: LanguageServicesContext): {
 } {
   const connection = context?.connection
   if (connection) {
-    const log = (method: 'log' | 'info' | 'warn' | 'error') => (message: unknown) => {
-      try {
-        let msg: string
-        if (method === 'error') {
-          const error = serializeError(message)
-          connection.telemetry.logEvent({ eventName: 'error', error })
-          msg = `${error.name}: ${error.message}\n${error.stack}`
-        } else {
-          msg = typeof message === 'string' ? message : JSON.stringify(message)
-        }
-        console[method](msg)
-        connection.console[method](msg)
-      } catch (error) {
-        console.error(error)
-      }
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const original = logger.error
+    logger.error = (arg: unknown) => {
+      const err = normalizeError(arg)
+      const error = serializeError(err)
+      console.error(`${error.name}: ${error.message}\n${error.stack}`, err)
+      connection.telemetry.logEvent({ eventName: 'error', error })
     }
-    logger.log = log('log')
-    logger.info = log('info')
-    logger.warn = log('warn')
-    logger.error = log('error')
-    logger.trace = logger.debug = (message: string) => {
-      console.debug(message)
-      connection.tracer.log(message)
-    }
+    connection.onShutdown(() => {
+      logger.error = original
+    })
   }
 
   const moduleContext: DefaultSharedModuleContext = {

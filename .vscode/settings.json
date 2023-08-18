@@ -27,9 +27,9 @@
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.folderListener": [
-    "/packages/language-server/src/model",
-    "/packages/language-server/src/lsp"
+    "/packages/core/src/model"
   ],
   "mdx.experimentalLanguageServer": true,
-  "vitest.commandLine": "yarn vitest"
+  "vitest.commandLine": "yarn vitest",
+  "exportall.config.semis": false
 }

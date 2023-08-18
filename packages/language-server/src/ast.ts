@@ -1,9 +1,9 @@
-import type * as c4 from '@likec4/core/types'
 import {
   DefaultElementShape,
   DefaultThemeColor,
   RelationRefError,
-  nonexhaustive
+  nonexhaustive,
+  type c4
 } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium/lib/workspace'
@@ -97,9 +97,9 @@ export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
 }
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  doc.c4Specification = {
+  const specification = (doc.c4Specification = {
     kinds: {}
-  }
+  } as LikeC4LangiumDocument['c4Specification'])
   const elements = (doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements'])
   const relations = (doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations'])
   const views = (doc.c4Views = [] as LikeC4LangiumDocument['c4Views'])
@@ -107,7 +107,7 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     elements,
     relations,
     views,
-    specification: doc.c4Specification
+    specification
   }
 }
 
