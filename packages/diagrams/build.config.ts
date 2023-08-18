@@ -26,7 +26,6 @@ export default defineBuildConfig([{
     ext: 'cjs' as any,
   }],
   // if clean enabled, TS Language server in VSCode has to be restarted
-  clean: false,
-  sourcemap: true,
+  clean: true,
   declaration: 'compatible'
 }])

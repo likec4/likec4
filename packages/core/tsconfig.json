@@ -5,6 +5,8 @@
     "module": "ES2022",
     "target": "ES2022",
 
+    "composite": true,
+
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": "."

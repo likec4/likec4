@@ -1,12 +1,11 @@
 import { useMeasure } from '@react-hookz/web/esm'
 import { forwardRef } from 'react'
-import { Diagram } from '../diagram/Diagram'
-import type { DiagramApi, DiagramProps } from '../diagram/types'
+import { Diagram } from 'src/diagram/Diagram'
+import type { DiagramApi, DiagramProps } from 'src/diagram/types'
 
 export type ResponsiveDiagramProps = Omit<DiagramProps, 'width' | 'height'> & {
   diagramClassName?: string | undefined
 }
-export type { DiagramApi }
 
 /**
  * Automatically resize to fit its container,
