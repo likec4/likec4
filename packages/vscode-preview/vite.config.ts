@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { resolve } from 'node:path'
 
 /** @type {import('vite').UserConfig} */
@@ -7,7 +8,7 @@ export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
   return {
-    plugins: [react()],
+    plugins: [tsconfigPaths(), react()],
     resolve: {
       dedupe: ['react', 'react-dom']
     },

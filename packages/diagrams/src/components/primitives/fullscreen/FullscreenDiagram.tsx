@@ -3,7 +3,7 @@ import { useKeyboardEvent, useMeasure } from '@react-hookz/web/esm'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
 import type { HTMLAttributes } from 'react'
 import { useEffect, useRef, type CSSProperties } from 'react'
-import { Diagram } from 'src/diagram/Diagram'
+import { Diagram } from '../../../diagram/Diagram'
 import type {
   DiagramInitialPosition,
   DiagramPaddings,
@@ -11,7 +11,7 @@ import type {
   OnEdgeClick,
   OnNodeClick,
   OnStageClick
-} from 'src/diagram/types'
+} from '../../../diagram/types'
 import { CloseButton } from './CloseButton'
 
 // prettier-ignore

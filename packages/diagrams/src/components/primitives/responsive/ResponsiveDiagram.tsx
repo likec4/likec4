@@ -1,7 +1,7 @@
 import { useMeasure } from '@react-hookz/web/esm'
 import { forwardRef } from 'react'
-import { Diagram } from 'src/diagram/Diagram'
-import type { DiagramApi, DiagramProps } from 'src/diagram/types'
+import { Diagram } from '../../../diagram'
+import type { DiagramApi, DiagramProps } from '../../../diagram'
 
 export type ResponsiveDiagramProps = Omit<DiagramProps, 'width' | 'height'> & {
   diagramClassName?: string | undefined

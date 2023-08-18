@@ -8,7 +8,7 @@ import type {
   DiagramInitialPosition,
   DiagramPaddings,
   KonvaPointerEvent
-} from 'src/diagram/types'
+} from '../diagram/types'
 import { ResponsiveDiagram } from './primitives'
 import { FullscreenDiagramBrowser } from './FullscreenDiagramBrowser'
 import type { DiagramDiscloseProps, DiagramViewsProps } from './types'

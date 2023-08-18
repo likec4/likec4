@@ -15,6 +15,10 @@ export namespace LikeC4 {
     RefAttributes<Types.DiagramApi> & {
       viewId: Id
     }
+  /**
+   * @deprecated use DiagramProps instead
+   */
+  export type Props<Id extends string> = DiagramProps<Id>
 
   export type ResponsiveProps<Id extends string> = Omit<ResponsiveDiagramProps, 'diagram'> &
     RefAttributes<Types.DiagramApi> & {

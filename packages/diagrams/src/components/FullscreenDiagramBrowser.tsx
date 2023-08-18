@@ -1,11 +1,11 @@
 import { invariant } from '@likec4/core'
 import { useSyncedRef } from '@react-hookz/web/esm'
 import type { HTMLAttributes } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import type { DiagramInitialPosition, DiagramNode, DiagramViews } from '../diagram/types'
-import { FullscreenDiagram, FullscreenDiagramTitle } from './primitives'
 import { useViewId } from '../hooks/useViewId'
+import { FullscreenDiagram, FullscreenDiagramTitle } from './primitives'
 
 export interface FullscreenDiagramBrowserProps<ViewId extends string>
   extends Omit<HTMLAttributes<HTMLDivElement>, 'chilren'> {

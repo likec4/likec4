@@ -3,7 +3,10 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@likec4/diagrams": ["../diagrams/src"]
+    }
   },
   "include": ["./protocol.ts", "./src/"]
 }
