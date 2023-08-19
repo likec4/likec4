@@ -1,4 +1,5 @@
-import { serializeError } from '@likec4/core'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { normalizeError, serializeError } from '@likec4/core'
 
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 export const logger = {
@@ -8,15 +9,18 @@ export const logger = {
   info(message: string) {
     console.info(message)
   },
-  warn(message: string | Error | unknown) {
+  warn(message: string | Error) {
     console.warn(message)
   },
   log(message: string) {
     console.log(message)
   },
-  error: (message: string | Error | unknown) => {
-    const error = serializeError(message)
-    console.error(`${error.name}: ${error.message}\n${error.stack}`)
+  error(message: any) {
+    if (typeof message === 'string') {
+      console.error(message)
+      return
+    }
+    console.error(normalizeError(message))
   },
   trace(message: string) {
     console.debug(message)
@@ -30,6 +34,5 @@ export function logError(error: Error | unknown): void {
 }
 
 export function logWarnError(err: Error | unknown): void {
-  const error = serializeError(err)
-  logger.warn(`${error.name}: ${error.message}\n${error.stack}`)
+  logger.warn(serializeError(err).error)
 }

@@ -1,33 +1,25 @@
-import {
-  ModelIndex,
-  assignNavigateTo,
-  compareByFqnHierarchically,
-  computeView,
-  parentFqn,
-  type c4
-} from '@likec4/core'
+import { ModelIndex, assignNavigateTo, compareByFqnHierarchically, computeView, parentFqn, type c4 } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments } from 'langium'
 import { clone } from 'rambdax'
 import * as R from 'remeda'
 import type {
-  LikeC4LangiumDocument,
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification
+  ParsedAstSpecification,
+  ParsedLikeC4LangiumDocument
 } from '../ast'
 import { isValidLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
+import { printDocs } from '../utils'
 
-function buildModel(docs: LikeC4LangiumDocument[]) {
+function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {}
   }
-  R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
-    Object.assign(c4Specification.kinds, spec.kinds)
-  )
+  R.forEach(R.map(docs, R.prop('c4Specification')), spec => Object.assign(c4Specification.kinds, spec.kinds))
 
   const toModelElement = (doc: LangiumDocument) => {
     const base = new URL(doc.uri.toString())
@@ -76,12 +68,7 @@ function buildModel(docs: LikeC4LangiumDocument[]) {
     )
   )
 
-  const toModelRelation = ({
-    astPath,
-    source,
-    target,
-    ...model
-  }: ParsedAstRelation): c4.Relation | null => {
+  const toModelRelation = ({ astPath, source, target, ...model }: ParsedAstRelation): c4.Relation | null => {
     if (source in elements && target in elements) {
       return {
         source,
@@ -102,25 +89,35 @@ function buildModel(docs: LikeC4LangiumDocument[]) {
   const modelIndex = ModelIndex.from({ elements, relations })
 
   const toModelView = (view: ParsedAstElementView): c4.ComputedView | null => {
-    // eslint-disable-next-line prefer-const
-    let { astPath, rules, title, description, tags, links, ...model } = view
-    if (!title && view.viewOf) {
-      title = elements[view.viewOf]?.title
+    try {
+      // eslint-disable-next-line prefer-const
+      let { astPath, rules, title, description, tags, links, ...model } = view
+      if (!title && view.viewOf) {
+        title = elements[view.viewOf]?.title
+      }
+      if (!title && view.id === 'index') {
+        title = 'Landscape view'
+      }
+      const computeResult = computeView(
+        {
+          ...model,
+          title: title ?? null,
+          description: description ?? null,
+          tags: tags ?? null,
+          links: links ?? null,
+          rules: clone(rules)
+        },
+        modelIndex
+      )
+      if (!computeResult.isSuccess) {
+        logWarnError(computeResult.error)
+        return null
+      }
+      return computeResult.view
+    } catch (e) {
+      logError(e)
+      return null
     }
-    if (!title && view.id === 'index') {
-      title = 'Landscape view'
-    }
-    return computeView(
-      {
-        ...model,
-        title: title ?? null,
-        description: description ?? null,
-        tags: tags ?? null,
-        links: links ?? null,
-        rules: clone(rules)
-      },
-      modelIndex
-    )
   }
 
   const views = R.pipe(
@@ -142,7 +139,7 @@ export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
 
   private readonly cachedModel: {
-    last?: ReturnType<LikeC4ModelBuilder['buildModel']>
+    last?: c4.LikeC4Model | null
   } = {}
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
@@ -163,15 +160,16 @@ export class LikeC4ModelBuilder {
 
   public buildModel(): c4.LikeC4Model | null {
     if ('last' in this.cachedModel) {
-      logger.debug('returning cached model')
+      logger.debug('[ModelBuilder] returning cached model')
       return this.cachedModel.last
     }
     try {
       const docs = this.documents()
       if (docs.length === 0) {
-        logger.debug('No documents to build model from')
+        logger.debug('[ModelBuilder] No documents to build model from')
         return null
       }
+      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
       return (this.cachedModel.last = buildModel(docs))
     } catch (e) {
       logError(e)
@@ -186,12 +184,13 @@ export class LikeC4ModelBuilder {
       return
     }
     if (this.scheduledCb) {
-      logger.debug('debounce scheduled onDidChangeModel')
+      logger.debug('[ModelBuilder] debounce onDidChangeModel')
       clearTimeout(this.scheduledCb)
     }
     this.scheduledCb = setTimeout(() => {
       this.scheduledCb = null
+      logger.debug('[ModelBuilder] send onDidChangeModel')
       void connection.sendNotification(Rpc.onDidChangeModel, '')
-    }, 300)
+    }, 200)
   }
 }

@@ -12,7 +12,8 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "compile": "tsc --noEmit",
-    "build": "unbuild",
+    "build": "tsc",
+    "prepack": "unbuild",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
@@ -23,62 +24,62 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/types/index.js",
-      "require": "./dist/types/index.cjs"
-    },
-    "./colors": {
-      "types": "./dist/colors.d.ts",
-      "import": "./dist/colors.js",
-      "require": "./dist/colors.cjs"
-    },
-    "./errors": {
-      "types": "./dist/errors/index.d.ts",
-      "import": "./dist/errors/index.js",
-      "require": "./dist/errors/index.cjs"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
-    },
-    "./compute-view": {
-      "types": "./dist/compute-view/index.d.ts",
-      "import": "./dist/compute-view/index.js",
-      "require": "./dist/compute-view/index.cjs"
-    }
-  },
   "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts",
+    "./colors": "./src/colors.ts",
+    "./errors": "./src/errors/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./compute-view": "./src/compute-view/index.ts"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "main": "./src/index.ts",
-    "module": "./src/index.ts",
-    "types": "./src/index.ts",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
-      ".": "./src/index.ts",
-      "./types": "./src/types/index.ts",
-      "./colors": "./src/colors.ts",
-      "./errors": "./src/errors/index.ts",
-      "./utils": "./src/utils/index.ts",
-      "./compute-view": "./src/compute-view/index.ts"
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./types": {
+        "types": "./dist/types/index.d.ts",
+        "import": "./dist/types/index.js",
+        "require": "./dist/types/index.cjs"
+      },
+      "./colors": {
+        "types": "./dist/colors.d.ts",
+        "import": "./dist/colors.js",
+        "require": "./dist/colors.cjs"
+      },
+      "./errors": {
+        "types": "./dist/errors/index.d.ts",
+        "import": "./dist/errors/index.js",
+        "require": "./dist/errors/index.cjs"
+      },
+      "./utils": {
+        "types": "./dist/utils/index.d.ts",
+        "import": "./dist/utils/index.js",
+        "require": "./dist/utils/index.cjs"
+      },
+      "./compute-view": {
+        "types": "./dist/compute-view/index.d.ts",
+        "import": "./dist/compute-view/index.js",
+        "require": "./dist/compute-view/index.cjs"
+      }
     }
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
     "rambdax": "^9.1.1",
     "remeda": "^1.24.0",
-    "safe-json-value": "^2.0.1",
+    "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {

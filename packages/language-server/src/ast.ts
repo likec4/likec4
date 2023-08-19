@@ -1,18 +1,18 @@
-import {
-  DefaultElementShape,
-  DefaultThemeColor,
-  RelationRefError,
-  nonexhaustive,
-  type c4
-} from '@likec4/core'
+import { DefaultElementShape, DefaultThemeColor, RelationRefError, nonexhaustive, type c4 } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
-import { DocumentState } from 'langium/lib/workspace'
+import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
 import type { LikeC4Document } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
+
+declare module './generated/ast' {
+  export interface Element {
+    fqn?: c4.Fqn
+  }
+}
 
 export interface ParsedAstSpecification {
   // prettier-ignore
@@ -74,9 +74,11 @@ export const ElementOps = {
     if (id === null) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-dynamic-delete
       delete (node as any)[idattr]
+      delete node.fqn
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
       ;(node as any)[idattr] = id
+      node.fqn = id
     }
     return node
   },
@@ -86,23 +88,33 @@ export const ElementOps = {
   }
 }
 
-export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
-  c4Specification: ParsedAstSpecification
-  c4Elements: ParsedAstElement[]
-  c4Relations: ParsedAstRelation[]
-  c4Views: ParsedAstElementView[]
-
-  // Fqn -> astPath
-  c4fqns?: MultiMap<c4.Fqn, string> | undefined
+export interface DocFqnIndexEntry {
+  name: string
+  el: ast.Element
+  path: string
 }
+
+export interface LikeC4DocumentProps {
+  c4Specification?: ParsedAstSpecification
+  c4Elements?: ParsedAstElement[]
+  c4Relations?: ParsedAstRelation[]
+  c4Views?: ParsedAstElementView[]
+
+  // Fqn -> Element
+  c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
+}
+
+export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document>, LikeC4DocumentProps {}
+export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
+  Required<LikeC4DocumentProps>
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const specification = (doc.c4Specification = {
     kinds: {}
-  } as LikeC4LangiumDocument['c4Specification'])
-  const elements = (doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements'])
-  const relations = (doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations'])
-  const views = (doc.c4Views = [] as LikeC4LangiumDocument['c4Views'])
+  } as ParsedAstSpecification)
+  const elements = (doc.c4Elements = [] as ParsedAstElement[])
+  const relations = (doc.c4Relations = [] as ParsedAstRelation[])
+  const views = (doc.c4Views = [] as ParsedAstElementView[])
   return {
     elements,
     relations,
@@ -115,7 +127,7 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
-export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
+export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
     doc.state >= DocumentState.Validated &&
@@ -126,9 +138,7 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Like
   )
 }
 
-export const isValidLikeC4LangiumDocument = (
-  doc: LangiumDocument
-): doc is LikeC4LangiumDocument => {
+export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -232,9 +242,7 @@ export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props
   }
 }
 
-export function toAutoLayout(
-  direction: ast.ViewRuleLayoutDirection
-): c4.ViewRuleAutoLayout['autoLayout'] {
+export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {
       return 'TB'

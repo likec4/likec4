@@ -1,15 +1,14 @@
-import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import type { ComputedView, DiagramView } from '@likec4/core/types'
-import { dotLayoutFn } from '@likec4/layouts'
+import type { ComputedView, DiagramView } from '@likec4/core'
+import { DotLayouter } from '@likec4/layouts'
 import { red, grey } from 'kleur/colors'
 
 export async function layoutViews(views: ComputedView[]): Promise<DiagramView[]> {
+  const dot = new DotLayouter()
   try {
     const diagrams = [] as DiagramView[]
-    const graphviz = await Graphviz.load()
     for (const view of views) {
       console.debug(grey(`\tview: ${view.id}`))
-      diagrams.push(dotLayoutFn(graphviz, view))
+      diagrams.push(await dot.layout(view))
     }
     return diagrams
   } catch (error) {
@@ -17,6 +16,6 @@ export async function layoutViews(views: ComputedView[]): Promise<DiagramView[]>
     console.error(error)
     throw error
   } finally {
-    Graphviz.unload()
+    dot.dispose()
   }
 }

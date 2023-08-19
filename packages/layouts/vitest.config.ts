@@ -8,6 +8,7 @@ export default mergeConfig(
       }
     }
   }),
+  // @ts-ignore
   defineProject({
     test: {
       name: 'layouts'

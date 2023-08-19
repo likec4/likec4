@@ -4,14 +4,10 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
+const isProduction = process.env.NODE_ENV === 'production'
 
 const alias = {
   // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  'langium/node': 'langium/src/node/index.ts',
-  'langium/lib/utils': 'langium/src/utils/index.ts',
-  'langium/lib/workspace': 'langium/src/workspace/index.ts',
-  'langium/lib/generator': 'langium/src/generator/index.ts',
-  'langium': 'langium/src/index.ts',
   // '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
   // '@likec4/core/utils': '../core/src/utils/index.ts',
   // '@likec4/core/types': '../core/src/types/index.ts',
@@ -31,13 +27,13 @@ const alias = {
  * @type {esbuild.BuildOptions}
  */
 const nodeCfg = {
-  entryPoints: ['src/node.ts', 'src/lsp/node.ts'],
+  entryPoints: ['src/node/extension.ts', 'src/node/language-server.ts'],
   metafile: true,
   logLevel: 'info',
-  outbase: 'src',
   outdir: 'dist',
+  outbase: 'src',
   bundle: true,
-  external: ['vscode', 'is-core-module/package.json'],
+  external: ['vscode'],
   format: 'cjs',
   target: 'node16',
   platform: 'node',
@@ -47,27 +43,28 @@ const nodeCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  // sourcesContent: false,
+  // sourcesContent: true,
   // treeShaking: true,
   keepNames: true,
-  // minify: true
+  minify: isProduction,
+  legalComments: 'none',
 }
 
 /**
  * @type {esbuild.BuildOptions}
  */
 const webCfg = {
-  entryPoints: ['src/web.ts'],
+  entryPoints: ['src/browser/extension.ts'],
   metafile: true,
   logLevel: 'info',
-  outbase: 'src',
   outdir: 'dist',
+  outbase: 'src',
   bundle: true,
   format: 'cjs',
-  target: 'es2020',
+  target: 'es2022',
   platform: 'browser',
   mainFields: ['browser', 'module', 'main'],
-  external: ['vscode', 'is-core-module/package.json'],
+  external: ['vscode'],
   alias: {
     path: 'path-browserify',
     ...alias
@@ -78,14 +75,15 @@ const webCfg = {
   // sourcesContent: false,
   // treeShaking: true,
   keepNames: true,
-  // minify: true
+  minify: isProduction,
+  legalComments: 'none',
 }
 /**
  * @type {esbuild.BuildOptions}
  */
 const webWorkerCfg = {
   ...webCfg,
-  entryPoints: ['src/lsp/web-worker.ts'],
+  entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife'
 }
 
@@ -99,15 +97,15 @@ if (!watch) {
   const [nodeBundle, webBundle, webWorkerBundle] = bundles
 
   if (nodeBundle.metafile) {
-    const metafile = path.resolve('dist', 'node.metafile.json')
+    const metafile = path.resolve('dist', 'node', 'extension.metafile.json')
     await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
   }
   if (webBundle.metafile) {
-    const metafile = path.resolve('dist', 'web.metafile.json')
+    const metafile = path.resolve('dist', 'browser', 'extension.metafile.json')
     await writeFile(metafile, JSON.stringify(webBundle.metafile))
   }
   if (webWorkerBundle.metafile) {
-    const metafile = path.resolve('dist', 'lsp', 'web-worker.metafile.json')
+    const metafile = path.resolve('dist', 'browser', 'web-worker.metafile.json')
     await writeFile(metafile, JSON.stringify(webBundle.metafile))
   }
 

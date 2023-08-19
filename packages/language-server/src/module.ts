@@ -13,16 +13,14 @@ import { logger } from './logger'
 import {
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
-  LikeC4SemanticTokenProvider
+  LikeC4SemanticTokenProvider,
+  LikeC4CodeLensProvider,
+  LikeC4DocumentLinkProvider
 } from './lsp'
 import { FqnIndex, LikeC4ModelParser, LikeC4ModelLocator, LikeC4ModelBuilder } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
-import {
-  LikeC4CodeLensProvider,
-  LikeC4DocumentLinkProvider,
-  LikeC4WorkspaceManager
-} from './shared'
+import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,7 +57,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
     SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
-    HoverProvider: bind(LikeC4HoverProvider)
+    HoverProvider: bind(LikeC4HoverProvider),
+    CodeLensProvider: bind(LikeC4CodeLensProvider),
+    DocumentLinkProvider: bind(LikeC4DocumentLinkProvider)
   },
   //
   //   // Formatter: bind(LikeC4Formatter),
@@ -72,13 +72,8 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 }
 
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
-  ...LikeC4GeneratedSharedModule,
   workspace: {
     WorkspaceManager: services => new LikeC4WorkspaceManager(services)
-  },
-  lsp: {
-    CodeLensProvider: services => new LikeC4CodeLensProvider(services),
-    DocumentLinkProvider: services => new LikeC4DocumentLinkProvider(services)
   }
 }
 
@@ -93,10 +88,14 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const original = logger.error
     logger.error = (arg: unknown) => {
-      const err = normalizeError(arg)
-      const error = serializeError(err)
-      console.error(`${error.name}: ${error.message}\n${error.stack}`, err)
-      connection.telemetry.logEvent({ eventName: 'error', error })
+      if (typeof arg === 'string') {
+        console.error(arg)
+        connection.telemetry.logEvent({ eventName: 'error', error: arg })
+        return
+      }
+      const { message, error } = serializeError(arg)
+      console.error(error)
+      connection.telemetry.logEvent({ eventName: 'error', error: message })
     }
     connection.onShutdown(() => {
       logger.error = original
@@ -108,7 +107,7 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     ...context
   }
 
-  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4SharedModule)
+  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4GeneratedSharedModule, LikeC4SharedModule)
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)

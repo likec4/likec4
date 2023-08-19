@@ -22,14 +22,13 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/packages/diagrams/src-dev/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*",
+        "${workspaceFolder}/packages/**/*",
       ],
       "preLaunchTask": "npm: turbo-build - packages/vscode",
     },
@@ -39,7 +38,6 @@
       "debugWebWorkerHost": true,
       "request": "launch",
       "args": [
-        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/packages/diagrams/src-dev/likec4",
@@ -47,7 +45,7 @@
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*",
+        "${workspaceFolder}/packages/**/*",
       ],
       "preLaunchTask": "npm: turbo-build - packages/vscode"
     }

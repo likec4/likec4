@@ -1,6 +1,6 @@
+import stringify from 'safe-stable-stringify'
 import type { BaseErrorOptions } from './_base'
 import { BaseError } from './_base'
-import safeJsonValue from 'safe-json-value'
 
 export class NonExhaustiveError extends BaseError {
   public constructor(message: string, options?: BaseErrorOptions) {
@@ -10,7 +10,7 @@ export class NonExhaustiveError extends BaseError {
   }
 }
 
-export function nonexhaustive(arg: never): never {
-  const value = typeof arg === 'string' ? arg : JSON.stringify(safeJsonValue(arg))
-  throw new NonExhaustiveError(`NonExhaustive value: ${value}`)
+export function nonexhaustive(value: never): never {
+  const val = typeof value === 'string' ? value : stringify(value as object)
+  throw new NonExhaustiveError(`NonExhaustive value: ${val}`)
 }

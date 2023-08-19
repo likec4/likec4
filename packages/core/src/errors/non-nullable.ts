@@ -1,7 +1,7 @@
 import type { BaseErrorOptions } from './_base'
 import { BaseError } from './_base'
 
-export class UnexpectedNullableError extends BaseError {
+export class NullableError extends BaseError {
   public constructor(message: string, options?: BaseErrorOptions) {
     super(message, options)
     // Set name explicitly as minification can mangle class names
@@ -12,8 +12,8 @@ export class UnexpectedNullableError extends BaseError {
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
 export function nonNullable<T>(value: T): NonNullable<T> {
-  if (value == null) {
-    throw new UnexpectedNullableError(`Expected value, but received ${value}`)
+  if (typeof value === 'undefined' || value == null) {
+    throw new NullableError(`Expected defined value, but received ${value}`)
   }
   return value
 }

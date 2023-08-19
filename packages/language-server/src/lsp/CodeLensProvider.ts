@@ -1,10 +1,10 @@
-import type { LangiumDocument, LangiumSharedServices, MaybePromise } from 'langium'
-import type { CodeLensProvider } from 'langium/lib/lsp/code-lens-provider'
+import type { CodeLensProvider, LangiumDocument, MaybePromise } from 'langium'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
 import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
+import type { LikeC4Services } from '../module'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {
-  constructor(private services: LangiumSharedServices) {
+  constructor(private services: LikeC4Services) {
     //
   }
 

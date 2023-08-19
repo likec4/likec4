@@ -1,7 +1,8 @@
-import { isSameHierarchy, serializeError } from '@likec4/core'
+import { isSameHierarchy } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import { resolveRelationPoints } from '../ast'
+import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Relation> => {
@@ -32,10 +33,7 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
         })
       }
     } catch (e) {
-      const error = serializeError(e)
-      accept('error', error.message, {
-        node: el
-      })
+      logError(e)
     }
   }
 }
