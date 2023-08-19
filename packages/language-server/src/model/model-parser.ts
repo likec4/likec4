@@ -1,15 +1,10 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { DocumentState, getDocument } from 'langium'
+import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
 import { Disposable, type CancellationToken } from 'vscode-languageserver-protocol'
-import type {
-  LikeC4LangiumDocument,
-  ParsedAstElement,
-  ParsedAstElementView,
-  ParsedAstRelation
-} from '../ast'
+import type { LikeC4LangiumDocument, ParsedAstElement, ParsedAstElementView, ParsedAstRelation } from '../ast'
 import {
   ElementViewOps,
   ast,
@@ -22,9 +17,10 @@ import {
   toElementStyleExcludeDefaults
 } from '../ast'
 import { elementRef, strictElementRefFqn } from '../elementRef'
-import { logError, logWarnError } from '../logger'
+import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
+import { printDocs } from '../utils'
 
 export type ModelParsedListener = () => void
 
@@ -34,10 +30,9 @@ export class LikeC4ModelParser {
 
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
-
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      (docs, cancelToken) => this.onValidated(docs, cancelToken)
+      async (docs, cancelToken) => await this.onValidated(docs, cancelToken)
     )
   }
 
@@ -51,18 +46,18 @@ export class LikeC4ModelParser {
     })
   }
 
-  protected onValidated(
-    docs: LangiumDocument[],
-    _cancelToken: CancellationToken
-  ): void | Promise<void> {
+  protected async onValidated(docs: LangiumDocument[], cancelToken: CancellationToken): Promise<void> {
     let countOfChangedDocs = 0
+
+    logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+
     for (const doc of docs) {
       if (!isLikeC4LangiumDocument(doc)) {
         continue
       }
       countOfChangedDocs++
       try {
-        this.parseDocument(doc)
+        await this.parseDocument(doc, cancelToken)
       } catch (cause) {
         logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
@@ -72,21 +67,21 @@ export class LikeC4ModelParser {
     }
   }
 
-  protected parseDocument(doc: LikeC4LangiumDocument) {
+  protected async parseDocument(doc: LikeC4LangiumDocument, cancelToken: CancellationToken) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
     const specs = doc.parseResult.value.specification?.specs.filter(ast.isSpecificationElementKind)
     if (specs) {
       for (const { kind, style } of specs) {
         try {
-          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
-            style?.props
-          )
+          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(style?.props)
         } catch (e) {
           logWarnError(e)
         }
       }
     }
+
+    await interruptAndCheck(cancelToken)
 
     for (const el of streamModel(doc)) {
       if (ast.isElement(el)) {
@@ -107,6 +102,9 @@ export class LikeC4ModelParser {
       }
       nonexhaustive(el)
     }
+
+    await interruptAndCheck(cancelToken)
+
     const docviews = doc.parseResult.value.views?.views
     if (docviews) {
       for (const view of docviews) {
@@ -136,9 +134,7 @@ export class LikeC4ModelParser {
     let [title, description, technology] = astNode.props
 
     const bodyProps =
-      astNode.body?.props.filter((p): p is ast.ElementStringProperty =>
-        ast.isElementStringProperty(p)
-      ) ?? []
+      astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
 
     title = title ?? bodyProps.find(p => p.key === 'title')?.value
     description = description ?? bodyProps.find(p => p.key === 'description')?.value
@@ -184,20 +180,14 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isElementKindExpression(astNode)) {
-      invariant(
-        astNode.kind.ref,
-        'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text
-      )
+      invariant(astNode.kind.ref, 'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementKind: astNode.kind.ref.name as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
     if (ast.isElementTagExpression(astNode)) {
-      invariant(
-        astNode.tag.ref,
-        'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text
-      )
+      invariant(astNode.tag.ref, 'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementTag: astNode.tag.ref.name as c4.Tag,
         isEqual: astNode.isEqual

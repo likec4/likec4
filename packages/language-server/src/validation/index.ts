@@ -1,4 +1,6 @@
+import { Utils } from 'vscode-uri'
 import type { ast } from '../ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
 import { relationChecks } from './relation'
@@ -22,4 +24,25 @@ export function registerValidationChecks(services: LikeC4Services) {
     Relation: relationChecks(services),
     Tag: tagChecks(services)
   })
+
+  const connection = services.shared.lsp.Connection
+  if (connection) {
+    // wokraround for bug in langium
+    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
+      logger.debug('') // empty line to separate batches
+      logger.debug(`[DocumentBuilder.onUpdate]`)
+      if (changed.length > 0) {
+        logger.debug(` changed:\n` + changed.map(u => '  - ' + Utils.basename(u)).join('\n'))
+      }
+      if (deleted.length > 0) {
+        logger.debug(` deleted:\n` + deleted.map(u => '  - ' + Utils.basename(u)).join('\n'))
+      }
+      for (const uri of deleted) {
+        void connection.sendDiagnostics({
+          uri: uri.toString(),
+          diagnostics: []
+        })
+      }
+    })
+  }
 }

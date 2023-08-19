@@ -8,12 +8,8 @@ export default mergeConfig(
       }
     }
   }),
+  // @ts-ignore
   defineProject({
-    resolve: {
-      alias: {
-        'vscode-uri': 'vscode-uri/lib/esm/index.js'
-      }
-    },
     test: {
       name: 'language-server'
     }

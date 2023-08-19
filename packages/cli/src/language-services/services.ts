@@ -53,7 +53,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   }
 
   console.log(dim('🔍 Validating...'))
-  await services.shared.workspace.DocumentBuilder.build(documents, { validationChecks: 'all' })
+  await services.shared.workspace.DocumentBuilder.build(documents, { validation: true })
 
   let hasErrors = false
   for (const doc of documents) {
@@ -65,9 +65,9 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
       for (const validationError of errors) {
         console.log(
           red(
-            `      line ${validationError.range.start.line}: ${
-              validationError.message
-            } [${doc.textDocument.getText(validationError.range)}]`
+            `      line ${validationError.range.start.line}: ${validationError.message} [${doc.textDocument.getText(
+              validationError.range
+            )}]`
           )
         )
       }

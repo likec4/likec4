@@ -6,9 +6,12 @@
     "target": "ES2022",
 
     "composite": true,
+    "declaration": true,
+    "declarationMap": true,
 
     "outDir": "dist",
     "rootDir": "src",
+    "declarationDir": "dist",
     "baseUrl": "."
   },
   "include": ["src"]

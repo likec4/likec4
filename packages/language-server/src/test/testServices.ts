@@ -22,24 +22,17 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   const parse = async (input: string, uri?: string) => {
     await initPromise
-    const docUri = Utils.joinPath(
-      workspaceUri,
-      '/src/',
-      uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`
-    )
-    const document = services.shared.workspace.LangiumDocumentFactory.fromString(
-      stripIndent(input),
-      docUri
-    )
+    const docUri = Utils.joinPath(workspaceUri, '/src/', uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`)
+    const document = services.shared.workspace.LangiumDocumentFactory.fromString(stripIndent(input), docUri)
     langiumDocuments.addDocument(document)
-    await documentBuilder.build([document], { validationChecks: 'none' })
+    await documentBuilder.build([document], { validation: false })
     return document as LikeC4LangiumDocument
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
     await initPromise
     const document = typeof input === 'string' ? await parse(input, uri) : input
-    await documentBuilder.build([document], { validationChecks: 'all' })
+    await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
     const errors = diagnostics.map(d => d.message)
     return {
@@ -52,7 +45,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const validateAll = async () => {
     await initPromise
     const docs = langiumDocuments.all.toArray()
-    await documentBuilder.build(docs, { validationChecks: 'all' })
+    await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
     const errors = diagnostics.map(d => d.message)
     return {

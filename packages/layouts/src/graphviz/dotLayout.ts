@@ -1,13 +1,6 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { invariant } from '@likec4/core/errors'
-import type {
-  ComputedView,
-  DiagramEdge,
-  DiagramLabel,
-  DiagramNode,
-  DiagramView,
-  Point
-} from '@likec4/core/types'
+import { invariant } from '@likec4/core'
+import type { ComputedView, DiagramEdge, DiagramLabel, DiagramNode, DiagramView, Point } from '@likec4/core'
 import { dropRepeats, propEq } from 'rambdax'
 import type { DiagramLayoutFn } from '../types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
@@ -155,9 +148,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
     }
     const computed = computedNodes.find(n => n.id === likec4_id)
     if (!computed) {
-      console.warn(
-        `Node likec4_id=${likec4_id} not found, how did it get into the graphviz output?`
-      )
+      console.warn(`Node likec4_id=${likec4_id} not found, how did it get into the graphviz output?`)
       continue
     }
 

@@ -3,29 +3,31 @@ import { formatMessagesSync } from 'esbuild'
 
 const watch = process.argv.includes('--watch')
 
+const alias = {
+  '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
+  '@likec4/core/utils': '../core/src/utils/index.ts',
+  '@likec4/core/errors': '../core/src/errors/index.ts',
+  '@likec4/core/types': '../core/src/types/index.ts',
+  '@likec4/core/colors': '../core/src/colors.ts',
+  '@likec4/core': '../core/src/index.ts',
+  '@likec4/diagrams': '../diagrams/src/index.ts',
+  '@likec4/generators': '../generators/src/index.ts',
+  '@likec4/language-server': '../language-server/src/index.ts',
+  '@likec4/layouts': '../layouts/src/index.ts'
+}
+
 /**
  * @type {esbuild.BuildOptions}
  */
 const cli = {
   entryPoints: ['src/cli.ts'],
-  outfile: 'dist/cli.js',
+  outdir: 'dist',
   logLevel: 'info',
   bundle: true,
   format: 'cjs',
   target: 'node16',
   platform: 'node',
-  alias: {
-    '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
-    '@likec4/core/utils': '../core/src/utils/index.ts',
-    '@likec4/core/errors': '../core/src/errors/index.ts',
-    '@likec4/core/types': '../core/src/types/index.ts',
-    '@likec4/core/colors': '../core/src/colors.ts',
-    '@likec4/core': '../core/src/index.ts',
-    '@likec4/diagrams': '../diagrams/src/index.ts',
-    '@likec4/generators': '../generators/src/index.ts',
-    '@likec4/language-server': '../language-server/src/index.ts',
-    '@likec4/layouts': '../layouts/src/index.ts'
-  },
+  alias,
   color: true,
   allowOverwrite: true,
   sourcemap: false,
@@ -45,10 +47,8 @@ const exportPage = {
   format: 'iife',
   target: 'es2022',
   platform: 'browser',
-  alias: {
-    '@likec4/core': '../core/src/index.ts',
-    '@likec4/diagrams': '../diagrams/src/index.ts'
-  },
+  mainFields: ['browser', 'module', 'main'],
+  alias,
   color: true,
   allowOverwrite: true,
   minify: true,

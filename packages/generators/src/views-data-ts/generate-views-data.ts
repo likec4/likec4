@@ -1,12 +1,6 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
-import {
-  CompositeGeneratorNode,
-  NL,
-  expandToNode,
-  joinToNode,
-  toString
-} from 'langium/lib/generator'
+import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
 
 export function generateViewsDataTs(views: DiagramView[]) {
   const out = new CompositeGeneratorNode()
@@ -26,15 +20,10 @@ export function generateViewsDataTs(views: DiagramView[]) {
       indentation: 2,
       indentedChildren: indent => {
         indent.append(
-          joinToNode(
-            views,
-            view =>
-              expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`,
-            {
-              separator: ',',
-              appendNewLineIfNotEmpty: true
-            }
-          )
+          joinToNode(views, view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`, {
+            separator: ',',
+            appendNewLineIfNotEmpty: true
+          })
         )
       }
     })

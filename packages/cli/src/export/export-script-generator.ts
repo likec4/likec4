@@ -4,13 +4,7 @@ import JSON5 from 'json5'
 import { mkdirp } from 'mkdirp'
 import process from 'node:process'
 import { join, dirname } from 'node:path'
-import {
-  CompositeGeneratorNode,
-  NL,
-  expandToNode,
-  joinToNode,
-  toString
-} from 'langium/lib/generator'
+import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
 
 const isNoSanbox = 'LIKEC4_NO_SANDBOX' in process.env
 
@@ -56,11 +50,7 @@ export function generateExportScript(
 
       const browser = await puppeteer.launch({
         headless: 'new',
-        ${
-          isNoSanbox
-            ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],`
-            : ''
-        }
+        ${isNoSanbox ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],` : ''}
       });
       const page = await browser.newPage();
       await page.setViewport({
@@ -154,9 +144,9 @@ export function generateExportScript(
                 // TODO: remove side effect
                 mkdirp.sync(dirname(output))
                 // 180 = all paddings 40 + 50 + 60 + 40
-                return expandToNode`await exportView('${view.id}', '${output}', {width: ${
-                  view.width + 180
-                }, height: ${view.height + 180}});`
+                return expandToNode`await exportView('${view.id}', '${output}', {width: ${view.width + 180}, height: ${
+                  view.height + 180
+                }});`
               },
               {
                 appendNewLineIfNotEmpty: true

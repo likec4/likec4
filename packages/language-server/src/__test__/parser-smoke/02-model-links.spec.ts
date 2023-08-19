@@ -1,5 +1,7 @@
-import { describe, test as viTest } from 'vitest'
+import { vi, describe, test as viTest } from 'vitest'
 import { valid, likec4, invalid } from './asserts'
+
+vi.mock('../../logger')
 
 const spec = `
 specification {

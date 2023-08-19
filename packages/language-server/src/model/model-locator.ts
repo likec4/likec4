@@ -5,7 +5,8 @@ import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
 import { ElementOps, ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import type { FqnIndex } from './fqn-index'
+import { isFqnIndexedDocument, type FqnIndex } from './fqn-index'
+import { nonNullable } from '@likec4/core'
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
@@ -32,20 +33,11 @@ export class LikeC4ModelLocator {
 
   public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {
     for (const doc of this.documents()) {
-      if (!doc.c4fqns?.has(fqn)) {
+      const entries = doc.c4fqns.get(fqn)
+      if (entries.length === 0) {
         continue
       }
-      const element = doc.c4Elements.find(e => e.id === fqn)
-      if (!element) {
-        continue
-      }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(
-        doc.parseResult.value,
-        element.astPath
-      )
-      if (!ast.isElement(node)) {
-        continue
-      }
+      const { el: node } = nonNullable(entries[0])
       const propertyNode = findNodeForProperty(node.$cstNode, property) ?? node.$cstNode
       if (!propertyNode) {
         return null
@@ -64,10 +56,7 @@ export class LikeC4ModelLocator {
       if (!relation) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(
-        doc.parseResult.value,
-        relation.astPath
-      )
+      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, relation.astPath)
       if (!ast.isRelation(node)) {
         continue
       }
@@ -104,10 +93,7 @@ export class LikeC4ModelLocator {
       if (!view) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(
-        doc.parseResult.value,
-        view.astPath
-      )
+      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, view.astPath)
       if (!ast.isElementView(node)) {
         continue
       }

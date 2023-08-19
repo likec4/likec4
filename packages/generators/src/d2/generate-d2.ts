@@ -1,9 +1,8 @@
 import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core/types'
-import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium/lib/generator'
+import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium'
 import { isNil } from 'rambdax'
 
-const capitalizeFirstLetter = (value: string) =>
-  value.charAt(0).toLocaleUpperCase() + value.slice(1)
+const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
 const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
 
@@ -13,10 +12,18 @@ const nodeName = (node: ComputedNode): string => {
 
 const d2direction = ({ autoLayout }: ComputedView) => {
   switch (autoLayout) {
-    case "TB": { return "down" }
-    case "BT": { return "up" }
-    case "LR": { return "right" }
-    case "RL": { return "left" }
+    case 'TB': {
+      return 'down'
+    }
+    case 'BT': {
+      return 'up'
+    }
+    case 'LR': {
+      return 'right'
+    }
+    case 'RL': {
+      return 'left'
+    }
   }
 }
 
@@ -56,10 +63,7 @@ export function generateD2<V extends ComputedView>(view: V) {
         indentedChildren: indent =>
           indent
             .append('label: "', label, '"', NL)
-            .appendIf(
-              shape !== 'rectangle',
-              'shape: ', shape, NL
-            )
+            .appendIf(shape !== 'rectangle', 'shape: ', shape, NL)
             .appendIf(
               node.children.length > 0,
               NL,

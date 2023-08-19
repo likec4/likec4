@@ -1,0 +1,19 @@
+model {
+
+  customer2 = actor 'Cloud System Customer' {
+    description 'The regular customer of the system'
+  }
+
+  customer2 -> cloud.ui.dashboard
+}
+
+
+views {
+
+
+  view of customer2 {
+    title "Overview Customer"
+    include *
+  }
+
+}

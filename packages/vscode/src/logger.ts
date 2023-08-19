@@ -1,120 +1,38 @@
-import type * as vscode from 'vscode'
-import type { Telemetry } from './di'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { normalizeError, serializeError } from '@likec4/core'
 
-type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE'
-
-function stringify(data: unknown) {
-  try {
-    return JSON.stringify(data, null, 2)
-  } catch (e) {
-    return `${e}`
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+export const logger = {
+  debug(message: string) {
+    console.debug(message)
+  },
+  info(message: string) {
+    console.info(message)
+  },
+  warn(message: string | Error) {
+    console.warn(message)
+  },
+  log(message: string) {
+    console.log(message)
+  },
+  error(message: any) {
+    if (typeof message === 'string') {
+      console.error(message)
+      return
+    }
+    console.error(normalizeError(message))
+  },
+  trace(message: string) {
+    console.debug(message)
   }
 }
 
-export class Logger {
-  constructor(protected outputChannel: vscode.OutputChannel, protected telemetry: Telemetry) {}
+export type Logger = typeof logger
 
-  protected logLevel: LogLevel = 'DEBUG'
+export function logError(error: Error | unknown): void {
+  logger.error(error)
+}
 
-  public setOutputLevel(logLevel: LogLevel) {
-    this.logLevel = logLevel
-  }
-
-  /**
-   * Append messages to the output channel and format it with a title
-   *
-   * @param message The message to append to the output channel
-   */
-  public logDebug(message: string, data?: unknown): void {
-    if (
-      this.logLevel === 'NONE' ||
-      this.logLevel === 'INFO' ||
-      this.logLevel === 'WARN' ||
-      this.logLevel === 'ERROR'
-    ) {
-      return
-    }
-    this.logMessage(message, 'DEBUG')
-    if (data) {
-      this.logObject(data)
-    }
-  }
-
-  /**
-   * Append messages to the output channel and format it with a title
-   *
-   * @param message The message to append to the output channel
-   */
-  public logInfo(message: string, data?: unknown): void {
-    if (this.logLevel === 'NONE' || this.logLevel === 'WARN' || this.logLevel === 'ERROR') {
-      return
-    }
-    this.logMessage(message, 'INFO')
-    if (data) {
-      this.logObject(data)
-    }
-  }
-
-  /**
-   * Append messages to the output channel and format it with a title
-   *
-   * @param message The message to append to the output channel
-   */
-  public logWarn(message: string, data?: unknown): void {
-    if (this.logLevel === 'NONE' || this.logLevel === 'ERROR') {
-      return
-    }
-    this.logMessage(message, 'WARN')
-    if (data) {
-      this.logObject(data)
-    }
-  }
-
-  public logError(message: string, error?: unknown) {
-    if (this.logLevel === 'NONE') {
-      return
-    }
-    this.logMessage(message, 'ERROR')
-    this.telemetry.sendTelemetryErrorEvent('logError', {
-      message,
-      error: `${error}`
-    })
-    if (typeof error === 'string') {
-      // Errors as a string usually only happen with
-      // plugins that don't return the expected error.
-      this.outputChannel.appendLine(error)
-    } else if (error instanceof Error) {
-      if (error.message) {
-        this.logMessage(error.message, 'ERROR')
-      }
-      if (error.stack) {
-        this.outputChannel.appendLine(error.stack)
-      }
-    } else if (error) {
-      this.logObject(error)
-    }
-  }
-
-  public show() {
-    this.outputChannel.show()
-  }
-
-  private logObject(data: unknown): void {
-    // const message = JSON.parser
-    //   .format(JSON.stringify(data, null, 2), {
-    //     parser: "json",
-    //   })
-    //   .trim();
-    this.outputChannel.appendLine(stringify(data))
-  }
-
-  /**
-   * Append messages to the output channel and format it with a title
-   *
-   * @param message The message to append to the output channel
-   */
-  private logMessage(message: string, logLevel: LogLevel): void {
-    const title = new Date().toLocaleTimeString()
-    this.outputChannel.appendLine(`["${logLevel}" - ${title}] ${message}`)
-  }
+export function logWarnError(err: Error | unknown): void {
+  logger.warn(serializeError(err).error)
 }

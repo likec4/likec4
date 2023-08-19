@@ -1,22 +1,32 @@
 import { compact, find, map, mapToObj } from 'remeda'
 import { ModelIndex } from '../model-index'
-import type {
-  ComputedView,
-  Element,
-  ElementView,
-  Fqn,
-  Relation,
-  RelationID,
-  ViewID
-} from '../types'
+import type { ComputedView, Element, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
 import { computeElementView } from './compute-element-view'
+import { normalizeError, type BaseError } from '..'
 
-export function computeView(view: ElementView, index: ModelIndex): ComputedView | null {
+type ComputeViewResult =
+  | {
+      isSuccess: true
+      view: ComputedView
+    }
+  | {
+      isSuccess: false
+      error: BaseError
+      view: undefined
+    }
+
+export function computeView(view: ElementView, index: ModelIndex): ComputeViewResult {
   try {
-    return computeElementView(view, index)
+    return {
+      isSuccess: true,
+      view: computeElementView(view, index)
+    }
   } catch (e) {
-    console.error(e)
-    return null
+    return {
+      isSuccess: false,
+      error: normalizeError(e),
+      view: undefined
+    }
   }
 }
 
@@ -34,7 +44,7 @@ export type CmpOutputModel = {
 
 export function computeViews(model: CmpInputModel): CmpOutputModel {
   const index = ModelIndex.from(model)
-  const computedViews = compact(map(model.views, view => computeView(view, index)))
+  const computedViews = compact(map(model.views, view => computeView(view, index).view))
   return {
     elements: model.elements,
     relations: model.relations,

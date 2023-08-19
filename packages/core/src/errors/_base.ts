@@ -1,5 +1,5 @@
 import { CustomError } from 'ts-custom-error'
-import safeJsonValue from 'safe-json-value'
+import stringify from 'safe-stable-stringify'
 
 export interface BaseErrorOptions {
   cause?: unknown
@@ -42,23 +42,19 @@ export function normalizeError(e: unknown): BaseError {
   if (e instanceof Error) {
     return new UnknownError(e.message, { cause: e })
   }
-  try {
-    const message = typeof e === 'string' ? e : JSON.stringify(safeJsonValue(e))
-    throw new UnknownError(message)
-  } catch (e) {
-    return e as UnknownError
-  }
+  const message = typeof e === 'string' ? e : stringify(e as object)
+  return new UnknownError(message)
 }
 
 export function serializeError(e: unknown) {
-  const err = normalizeError(e)
+  const error = normalizeError(e)
   return {
-    name: err.name,
-    message: err.message,
-    stack: err.stack
+    name: error.name,
+    message: error.stack ? error.stack : `${error.name}: ${error.message}`,
+    error
   }
 }
 
-export function throwUnknownError(e: unknown): never {
+export function throwNormalizedError(e: unknown): never {
   throw normalizeError(e)
 }
