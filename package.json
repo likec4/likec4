@@ -57,7 +57,8 @@
     "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
-    "vscode-languageserver-protocol": "3.17.3"
+    "vscode-languageserver-protocol": "3.17.3",
+    "chevrotain-allstar@^0.3.0": "patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [

@@ -1357,6 +1357,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jspm/core@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@jspm/core@npm:2.0.1"
+  checksum: 611f37cadd8a76662309e89afb68bf5936d0fed16aacc8886fef0f0af94a9f7e1241ce6c619b650fa1064631374f6fcadad99be04c9cf504a47f5361746b8d7f
+  languageName: node
+  linkType: hard
+
 "@kitql/helper@npm:0.6.1":
   version: 0.6.1
   resolution: "@kitql/helper@npm:0.6.1"
@@ -4741,7 +4748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chevrotain-allstar@npm:^0.3.0":
+"chevrotain-allstar@npm:0.3.0":
   version: 0.3.0
   resolution: "chevrotain-allstar@npm:0.3.0"
   dependencies:
@@ -4749,6 +4756,17 @@ __metadata:
   peerDependencies:
     chevrotain: ^11.0.0
   checksum: eb5140c12f368d5b261f73aff822dc74a9eb04bb3da6ffbe95fa1510baaf09e2febdaeab53e5818e2378459efec420d00776bf7cf57f9f4d027735c90a9a8ea1
+  languageName: node
+  linkType: hard
+
+"chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::locator=likec4-workspaces%40workspace%3A.":
+  version: 0.3.0
+  resolution: "chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::version=0.3.0&hash=19c726&locator=likec4-workspaces%40workspace%3A."
+  dependencies:
+    lodash-es: ^4.17.21
+  peerDependencies:
+    chevrotain: ^11.0.0
+  checksum: cbb5d4d5ee16e39ea91ca87f1687b4a200e895bef1a33cfb016b7c1fa79179cb3eda8b18808bcf4b774bd3055c102b5b4eab79c1e149b64013e276e45ea74936
   languageName: node
   linkType: hard
 
@@ -6246,6 +6264,19 @@ __metadata:
     is-date-object: ^1.0.1
     is-symbol: ^1.0.2
   checksum: 4ead6671a2c1402619bdd77f3503991232ca15e17e46222b0a41a5d81aebc8740a77822f5b3c965008e631153e9ef0580540007744521e72de8e33599fca2eed
+  languageName: node
+  linkType: hard
+
+"esbuild-plugins-node-modules-polyfill@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.4.0"
+  dependencies:
+    "@jspm/core": ^2.0.1
+    local-pkg: ^0.4.3
+    resolve.exports: ^2.0.2
+  peerDependencies:
+    esbuild: ^0.14.0 || ^0.15.0 || ^0.16.0 || ^0.17.0 || ^0.18.0 || ^0.19.0
+  checksum: d8e30621676f096b8cec0bcf2579f65db011d051e9aea12ad93f2b3a9ef30f31d98d11b5cca03b9ad7161db90742e813f38191d3be0046a2ec58290f5df0b2d7
   languageName: node
   linkType: hard
 
@@ -8709,6 +8740,7 @@ __metadata:
     "@vscode/extension-telemetry": ^0.8.2
     "@vscode/vsce": ^2.20.1
     esbuild: ~0.17.0
+    esbuild-plugins-node-modules-polyfill: ^1.4.0
     froebel: ^0.23.2
     langium: ^2.0.0
     nanoid: ^4.0.2
@@ -12069,6 +12101,13 @@ __metadata:
   dependencies:
     global-dirs: ^0.1.1
   checksum: c4e11d33e84bde7516b824503ffbe4b6cce863d5ce485680fd3db997b7c64da1df98321b1fd0703b58be8bc9bc83bc96bd83043f96194386b45eb47229efb6b6
+  languageName: node
+  linkType: hard
+
+"resolve.exports@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "resolve.exports@npm:2.0.2"
+  checksum: 1c7778ca1b86a94f8ab4055d196c7d87d1874b96df4d7c3e67bbf793140f0717fd506dcafd62785b079cd6086b9264424ad634fb904409764c3509c3df1653f2
   languageName: node
   linkType: hard
 
