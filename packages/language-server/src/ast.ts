@@ -131,10 +131,11 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Pars
   return (
     isLikeC4LangiumDocument(doc) &&
     doc.state >= DocumentState.Validated &&
-    'c4Specification' in doc &&
-    'c4Elements' in doc &&
-    'c4Relations' in doc &&
-    'c4Views' in doc
+    !!doc.c4Specification &&
+    !!doc.c4Elements &&
+    !!doc.c4Relations &&
+    !!doc.c4Views &&
+    !!doc.c4fqns
   )
 }
 

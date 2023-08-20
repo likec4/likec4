@@ -2,37 +2,48 @@
 import { normalizeError, serializeError } from '@likec4/core'
 
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+let isSilent = false
+
 export const logger = {
+  trace(message: string) {
+    if (isSilent) return
+    console.trace(message)
+  },
   debug(message: string) {
+    if (isSilent) return
     console.debug(message)
   },
   info(message: string) {
+    if (isSilent) return
     console.info(message)
   },
-  warn(message: string | Error) {
+  warn(message: string) {
+    if (isSilent) return
     console.warn(message)
   },
-  log(message: string) {
-    console.log(message)
-  },
   error(message: any) {
+    if (isSilent) return
     if (typeof message === 'string') {
       console.error(message)
       return
     }
     console.error(normalizeError(message))
   },
-  trace(message: string) {
-    console.debug(message)
+  silent(silent = true) {
+    isSilent = silent
   }
 }
 
 export type Logger = typeof logger
 
-export function logError(error: Error | unknown): void {
+export function logError(error: unknown): void {
   logger.error(error)
 }
 
-export function logWarnError(err: Error | unknown): void {
-  logger.warn(serializeError(err).error)
+export function logWarnError(err: unknown): void {
+  if (typeof err === 'string') {
+    logger.warn(err)
+    return
+  }
+  logger.warn(serializeError(err).message)
 }

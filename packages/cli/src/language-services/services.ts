@@ -1,4 +1,4 @@
-import { createLanguageServices, type LikeC4Services } from '@likec4/language-server'
+import { createLanguageServices, logger as lspLogger, type LikeC4Services } from '@likec4/language-server'
 import { dim, red, green } from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
@@ -7,6 +7,8 @@ import { existsSync, statSync } from 'node:fs'
 import { resolve, relative, basename } from 'node:path'
 import * as R from 'remeda'
 import { URI } from 'vscode-uri'
+
+lspLogger.silent(true)
 
 export function resolveDir(workspaceDir: string): string {
   if (workspaceDir === '.') {

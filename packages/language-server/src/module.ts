@@ -1,4 +1,3 @@
-import { normalizeError, serializeError } from '@likec4/core'
 import type {
   DefaultSharedModuleContext,
   LangiumServices,
@@ -9,19 +8,20 @@ import type {
 } from 'langium'
 import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logger } from './logger'
 import {
+  LikeC4CodeLensProvider,
+  LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
-  LikeC4SemanticTokenProvider,
-  LikeC4CodeLensProvider,
-  LikeC4DocumentLinkProvider
+  LikeC4SemanticTokenProvider
 } from './lsp'
-import { FqnIndex, LikeC4ModelParser, LikeC4ModelLocator, LikeC4ModelBuilder } from './model'
+import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { registerProtocolHandlers } from './registerProtocolHandlers'
 import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
+import { logger } from './logger'
+import { serializeError } from '@likec4/core'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
@@ -86,20 +86,17 @@ export function createLanguageServices(context?: LanguageServicesContext): {
   const connection = context?.connection
   if (connection) {
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    const original = logger.error
+    const original = logger.error.bind(logger)
     logger.error = (arg: unknown) => {
       if (typeof arg === 'string') {
-        console.error(arg)
+        original(arg)
         connection.telemetry.logEvent({ eventName: 'error', error: arg })
         return
       }
       const { message, error } = serializeError(arg)
-      console.error(error)
+      original(error)
       connection.telemetry.logEvent({ eventName: 'error', error: message })
     }
-    connection.onShutdown(() => {
-      logger.error = original
-    })
   }
 
   const moduleContext: DefaultSharedModuleContext = {

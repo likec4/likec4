@@ -1,26 +1,25 @@
 import * as esbuild from 'esbuild'
 import { formatMessagesSync } from 'esbuild'
 import { writeFile } from 'node:fs/promises'
+import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
+
 import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod'
 
 const alias = {
-  // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  // '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
-  // '@likec4/core/utils': '../core/src/utils/index.ts',
-  // '@likec4/core/types': '../core/src/types/index.ts',
-  // '@likec4/core/errors': '../core/src/errors/index.ts',
-  // '@likec4/core/colors': '../core/src/colors.ts',
-  // '@likec4/core': '../core/src/index.ts',
-  // "@likec4/layouts": '../layouts/src/index.ts',
-  // "@likec4/generators": '../generators/src/index.ts',
-  // // "@likec4/language-protocol": '../language-protocol/src/protocol.ts',
-  // // "@likec4/language-server/protocol": '../language-server/src/protocol.ts',
-  // "@likec4/language-server": '../language-server/src/index.ts',
-  // // 'vscode-languageserver-types': 'vscode-languageserver-types/lib/esm/main.js',
-  // // 'vscode-languageserver-textdocument': 'vscode-languageserver-textdocument/lib/esm/main.js'
+  'vscode-uri': 'vscode-uri/lib/esm/index.js',
+  '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
+  '@likec4/core/utils': '../core/src/utils/index.ts',
+  '@likec4/core/errors': '../core/src/errors/index.ts',
+  '@likec4/core/types': '../core/src/types/index.ts',
+  '@likec4/core/colors': '../core/src/colors.ts',
+  '@likec4/core': '../core/src/index.ts',
+  '@likec4/diagrams': '../diagrams/src/index.ts',
+  '@likec4/generators': '../generators/src/index.ts',
+  '@likec4/language-server': '../language-server/src/index.ts',
+  '@likec4/layouts': '../layouts/src/index.ts'
 }
 
 /**
@@ -28,7 +27,7 @@ const alias = {
  */
 const nodeCfg = {
   entryPoints: ['src/node/extension.ts', 'src/node/language-server.ts'],
-  metafile: true,
+  metafile: !isProduction,
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
@@ -55,7 +54,7 @@ const nodeCfg = {
  */
 const webCfg = {
   entryPoints: ['src/browser/extension.ts'],
-  metafile: true,
+  metafile: !isProduction,
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
@@ -66,7 +65,6 @@ const webCfg = {
   mainFields: ['browser', 'module', 'main'],
   external: ['vscode'],
   alias: {
-    path: 'path-browserify',
     ...alias
   },
   color: true,
@@ -77,6 +75,13 @@ const webCfg = {
   keepNames: true,
   minify: isProduction,
   legalComments: 'none',
+  plugins: [
+    nodeModulesPolyfillPlugin({
+      globals: {
+        process: true
+      }
+    })
+  ]
 }
 /**
  * @type {esbuild.BuildOptions}

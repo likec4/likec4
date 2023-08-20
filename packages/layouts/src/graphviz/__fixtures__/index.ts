@@ -3,10 +3,9 @@ import { amazonView, cloud3levels, cloudView, fakeModel, indexView } from './mod
 
 const model = fakeModel()
 
-export const [computedIndexView, computedCloudView, computedCloud3levels, computedAmazonView] =
-  assignNavigateTo([
-    computeView(indexView, model)!,
-    computeView(cloudView, model)!,
-    computeView(cloud3levels, model)!,
-    computeView(amazonView, model)!
-  ])
+export const [computedIndexView, computedCloudView, computedCloud3levels, computedAmazonView] = assignNavigateTo([
+  computeView(indexView, model).view!,
+  computeView(cloudView, model).view!,
+  computeView(cloud3levels, model).view!,
+  computeView(amazonView, model).view!
+])
