@@ -7,9 +7,8 @@ import type { ast } from '../ast'
 import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
 import { logError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { computeDocumentFqn } from './fqn-computation'
 import { printDocs } from '../utils'
-import { Utils } from 'vscode-uri'
+import { computeDocumentFqn } from './fqn-computation'
 
 export type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
   c4fqns: NonNullable<LikeC4LangiumDocument['c4fqns']>

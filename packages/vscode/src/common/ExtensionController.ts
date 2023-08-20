@@ -57,6 +57,7 @@ export default class ExtensionController implements vscode.Disposable {
         console.log(`  ${w.name}: ${w.uri}`)
       })
       console.log(`[Extension] Starting LanguageClient...`)
+      this._client.outputChannel.show(true)
       await this._client.start()
 
       await this.waitClient()

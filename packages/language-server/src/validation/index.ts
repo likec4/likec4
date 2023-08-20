@@ -8,6 +8,7 @@ import { elementKindChecks, tagChecks } from './specification'
 import { viewChecks } from './view'
 
 export function registerValidationChecks(services: LikeC4Services) {
+  logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   // const checks: ValidationChecks = {
   // Element: validator.checkElementNameDuplicates,
@@ -27,16 +28,19 @@ export function registerValidationChecks(services: LikeC4Services) {
 
   const connection = services.shared.lsp.Connection
   if (connection) {
+    logger.info('registerValidationChecks')
     // wokraround for bug in langium
     services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
-      logger.debug('') // empty line to separate batches
-      logger.debug(`[DocumentBuilder.onUpdate]`)
+      const message = [`[DocumentBuilder.onUpdate]`]
       if (changed.length > 0) {
-        logger.debug(` changed:\n` + changed.map(u => '  - ' + Utils.basename(u)).join('\n'))
+        message.push(` changed:`)
+        changed.forEach(u => message.push(`  - ${Utils.basename(u)}`))
       }
       if (deleted.length > 0) {
-        logger.debug(` deleted:\n` + deleted.map(u => '  - ' + Utils.basename(u)).join('\n'))
+        message.push(` deleted:`)
+        deleted.forEach(u => message.push(`  - ${Utils.basename(u)}`))
       }
+      logger.debug(message.join('\n'))
       for (const uri of deleted) {
         void connection.sendDiagnostics({
           uri: uri.toString(),
