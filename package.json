@@ -17,6 +17,7 @@
     "compile:all": "turbo run compile",
     "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
+    "ci:build": "turbo run build compile --filter='./packages/*' --log-prefix=none --log-order=grouped",
     "turbo": "turbo",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",

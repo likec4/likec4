@@ -7,6 +7,8 @@ on:
     branches-ignore:
       - "main"
       - "releases/*"
+    paths:
+      - "packages/**"
 
 concurrency:
   group: ${{ github.ref }}-push-build
@@ -24,23 +26,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - name: setup
+
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: turborepo-cache
+      - name: Init turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: build
-        run: yarn build
+      - name: Build and Compile packages
+        run: |
+          yarn ci:build
 
-      - name: compile
-        run: yarn compile:all
-
-      - name: test
+      - name: Test
         run: yarn test
 
-      - name: build docs
+      - name: Build Docs
         working-directory: docs
         run: yarn turbo-build
