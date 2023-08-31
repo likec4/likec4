@@ -11,6 +11,9 @@ permissions:
   contents: read
   statuses: write
 
+env:
+  NODE_ENV: production
+
 jobs:
   build:
     name: Build

@@ -19,12 +19,17 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
         node-version: [18, 20]
         include:
+
+          - node-version: 20
+            test_cli: true
+
           - os: ubuntu-latest
-            node: 20
+            node-version: 20
             build_docs: true
 
     runs-on: ${{ matrix.os }}
@@ -41,18 +46,14 @@ jobs:
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build and Compile packages
-        run: |
-          yarn ci:build
-
-      # - name: Upload CLI artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: likec4-cli-${{ matrix.os }}-${{ matrix.node-version }}
-      #     path: |
-      #       packages/cli/dist
+        run: yarn ci:build
 
       - name: Test
         run: yarn test
+
+      - if: ${{ matrix.test_cli }}
+        name: Run СLI test
+        run: yarn node integration/like4-cli-tests/run-suit.mjs
 
       - if: ${{ matrix.build_docs }}
         name: Build Docs

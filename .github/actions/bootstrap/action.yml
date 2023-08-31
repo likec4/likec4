@@ -20,8 +20,7 @@ runs:
       with:
         path: |
           .yarn/cache
-          .yarn/install-state.gz
-          node_modules/.cache/turbo
+        # ${{ github.workspace }}/node_modules/.cache/turbo
         key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-${{ inputs.node-version }}-
@@ -42,4 +41,6 @@ runs:
 
     - name: install dependencies
       shell: bash
+      env:
+        YARN_CACHE_FOLDER: .yarn/cache
       run: yarn install --immutable
