@@ -33,6 +33,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Init turborepo-cache
+        if: runner.os != 'Windows'
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build and Compile packages
