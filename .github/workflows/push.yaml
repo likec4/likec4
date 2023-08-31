@@ -22,7 +22,12 @@ jobs:
       fail-fast: true
       matrix:
         os: [windows-latest, ubuntu-latest]
-        node-version: [18]
+        node-version: [18, 20]
+        include:
+          - os: ubuntu-latest
+            node: 20
+            build_docs: true
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -40,9 +45,17 @@ jobs:
         run: |
           yarn ci:build
 
+      # - name: Upload CLI artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: likec4-cli-${{ matrix.os }}-${{ matrix.node-version }}
+      #     path: |
+      #       packages/cli/dist
+
       - name: Test
         run: yarn test
 
-      - name: Build Docs
+      - if: ${{ matrix.build_docs }}
+        name: Build Docs
         working-directory: docs
         run: yarn turbo-build
