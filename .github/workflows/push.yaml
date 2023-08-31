@@ -5,25 +5,31 @@ on:
     tags-ignore:
       - "*"
     branches-ignore:
+      - "main"
       - "releases/*"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
     concurrency:
       group: ${{ github.ref }}-push-build
       cancel-in-progress: true
+    timeout-minutes: 10
     strategy:
       fail-fast: true
       matrix:
+        os: [windows-latest, ubuntu-latest]
         node-version: [18.x]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: setup
         uses: ./.github/actions/bootstrap
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: build
         run: yarn build

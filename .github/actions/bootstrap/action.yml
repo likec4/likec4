@@ -14,16 +14,14 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: get yarn cache directory
-      shell: bash
-      id: yarn-cachedir
-      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
     - name: yarn caches
       uses: actions/cache@v3
       if: github.ref == 'refs/heads/main'
       with:
-        path: ${{ steps.yarn-cachedir.outputs.dir }}
+        path: |
+          .yarn/cache
+          .yarn/install-state.gz
+          node_modules/.cache/turbo
         key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-${{ inputs.node-version }}-
@@ -33,7 +31,10 @@ runs:
       uses: actions/cache/restore@v3
       if: github.ref != 'refs/heads/main'
       with:
-        path: ${{ steps.yarn-cachedir.outputs.dir }}
+        path: |
+          .yarn/cache
+          .yarn/install-state.gz
+          node_modules/.cache/turbo
         key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-${{ inputs.node-version }}-
