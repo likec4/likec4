@@ -1,8 +1,8 @@
 // @ts-check
-import nextra  from 'nextra'
-import  { resolve }  from 'path'
-import { codeImport }  from 'remark-code-import'
-import { getHighlighter, BUNDLED_LANGUAGES }  from 'shiki'
+import nextra from 'nextra'
+import { resolve } from 'path'
+import { codeImport } from 'remark-code-import'
+import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
 
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
@@ -38,9 +38,11 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   trailingSlash: true,
+  // modularizeImports: true,
   experimental: {
     esmExternals: true,
-  // swcPlugins: [['@swc-jotai/debug-label', {}]],
+    //serverComponentsExternalPackages: ['langium','konva']
+    // swcPlugins: [['@swc-jotai/debug-label', {}]],
   },
   webpack: function (config, options) {
     // config.experiments.asyncWebAssembly = true
@@ -65,11 +67,20 @@ export default withNextra({
     'jotai-devtools',
     'monaco-editor',
     'monaco-languageclient',
+    'langium/node',
+    'langium',
+    'chevrotain',
+    'chevrotain-allstar',
+    '@likec4/core/compute-view',
+    '@likec4/core/utils',
+    '@likec4/core/errors',
+    '@likec4/core/types',
+    '@likec4/core/colors',
     '@likec4/core',
     '@likec4/diagrams',
     '@likec4/generators',
     '@likec4/language-server',
-    '@likec4/layouts',
+    '@likec4/layouts'
   ],
   typescript: {
     tsconfigPath: './tsconfig.next.json',
