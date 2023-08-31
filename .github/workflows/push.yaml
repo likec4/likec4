@@ -7,8 +7,8 @@ on:
     branches-ignore:
       - "main"
       - "releases/*"
-    paths:
-      - "packages/**"
+    # paths:
+    #   - "packages/**"
 
 concurrency:
   group: ${{ github.ref }}-push-build
