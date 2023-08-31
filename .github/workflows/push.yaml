@@ -8,12 +8,13 @@ on:
       - "main"
       - "releases/*"
 
+concurrency:
+  group: ${{ github.ref }}-push-build
+  cancel-in-progress: true
+
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
-    concurrency:
-      group: ${{ github.ref }}-push-build
-      cancel-in-progress: true
     timeout-minutes: 10
     strategy:
       fail-fast: true
