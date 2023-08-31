@@ -1,11 +1,11 @@
 name: Bootstrap
-description: Checkout the project and install dependencies
+description: Init Node.js, caches and install dependencies
 
 inputs:
   node-version:
     description: 'The version of Node.js to use'
     required: false
-    default: '18.x'
+    default: '18'
 
 runs:
   using: 'composite'
@@ -16,7 +16,7 @@ runs:
 
     - name: yarn caches
       uses: actions/cache@v3
-      if: github.ref == 'refs/heads/main'
+      # if: github.ref == 'refs/heads/main'
       with:
         path: |
           .yarn/cache
@@ -27,18 +27,18 @@ runs:
           ${{ runner.os }}-yarn-${{ inputs.node-version }}-
           ${{ runner.os }}-yarn-
 
-    - name: restore only caches
-      uses: actions/cache/restore@v3
-      if: github.ref != 'refs/heads/main'
-      with:
-        path: |
-          .yarn/cache
-          .yarn/install-state.gz
-          node_modules/.cache/turbo
-        key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-${{ inputs.node-version }}-
-          ${{ runner.os }}-yarn-
+    # - name: restore only caches
+    #   uses: actions/cache/restore@v3
+    #   if: github.ref != 'refs/heads/main'
+    #   with:
+    #     path: |
+    #       .yarn/cache
+    #       .yarn/install-state.gz
+    #       node_modules/.cache/turbo
+    #     key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-yarn-${{ inputs.node-version }}-
+    #       ${{ runner.os }}-yarn-
 
     - name: install dependencies
       shell: bash
