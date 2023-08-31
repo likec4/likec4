@@ -1,12 +1,18 @@
 name: Bootstrap
 description: Checkout the project and install dependencies
 
+inputs:
+  node-version:
+    description: 'The version of Node.js to use'
+    required: false
+    default: '18.x'
+
 runs:
   using: 'composite'
   steps:
     - uses: actions/setup-node@v3
       with:
-        node-version: '18.x'
+        node-version: ${{ inputs.node-version }}
 
     - name: get yarn cache directory
       shell: bash
@@ -18,8 +24,9 @@ runs:
       if: github.ref == 'refs/heads/main'
       with:
         path: ${{ steps.yarn-cachedir.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
+          ${{ runner.os }}-yarn-${{ inputs.node-version }}-
           ${{ runner.os }}-yarn-
 
     - name: restore only caches
@@ -27,8 +34,9 @@ runs:
       if: github.ref != 'refs/heads/main'
       with:
         path: ${{ steps.yarn-cachedir.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
+          ${{ runner.os }}-yarn-${{ inputs.node-version }}-
           ${{ runner.os }}-yarn-
 
     - name: install dependencies

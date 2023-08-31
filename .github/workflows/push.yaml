@@ -1,0 +1,39 @@
+name: Build and Test [Push]
+
+on:
+  push:
+    tags-ignore:
+      - "*"
+    branches-ignore:
+      - "releases/*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.ref }}-push-build
+      cancel-in-progress: true
+    strategy:
+      fail-fast: true
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup
+        uses: ./.github/actions/bootstrap
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: build
+        run: yarn build
+
+      - name: compile
+        run: yarn compile:all
+
+      - name: test
+        run: yarn test
+
+      - name: build docs
+        working-directory: docs
+        run: yarn turbo-build
