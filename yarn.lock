@@ -67,6 +67,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/core-auth@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@azure/core-auth@npm:1.5.0"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    "@azure/core-util": ^1.1.0
+    tslib: ^2.2.0
+  checksum: 11c5ba072902693435dc2930e2fdfe2ff34836f4c2d6c87c6ac0566d48dc49157ebf49f4478cd3784dc0c4d57b502d3a12d74ea29f416725204a6e1aa937ef78
+  languageName: node
+  linkType: hard
+
 "@azure/core-rest-pipeline@npm:1.10.1":
   version: 1.10.1
   resolution: "@azure/core-rest-pipeline@npm:1.10.1"
@@ -114,6 +125,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/core-util@npm:^1.1.0":
+  version: 1.4.0
+  resolution: "@azure/core-util@npm:1.4.0"
+  dependencies:
+    "@azure/abort-controller": ^1.0.0
+    tslib: ^2.2.0
+  checksum: a6f66d8b162a10c5a012f039cff1d786055e06e20aced07ad2574e5caa1956a3d88c7a2815b0a6f82e3514eb936374db075f91236b3435cea2b4c9cf5ccec7ed
+  languageName: node
+  linkType: hard
+
 "@azure/logger@npm:^1.0.0":
   version: 1.0.4
   resolution: "@azure/logger@npm:1.0.4"
@@ -123,17 +144,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/opentelemetry-instrumentation-azure-sdk@npm:^1.0.0-beta.3":
-  version: 1.0.0-beta.4
-  resolution: "@azure/opentelemetry-instrumentation-azure-sdk@npm:1.0.0-beta.4"
+"@azure/opentelemetry-instrumentation-azure-sdk@npm:^1.0.0-beta.5":
+  version: 1.0.0-beta.5
+  resolution: "@azure/opentelemetry-instrumentation-azure-sdk@npm:1.0.0-beta.5"
   dependencies:
     "@azure/core-tracing": ^1.0.0
     "@azure/logger": ^1.0.0
     "@opentelemetry/api": ^1.4.1
-    "@opentelemetry/core": ^1.14.0
-    "@opentelemetry/instrumentation": ^0.40.0
+    "@opentelemetry/core": ^1.15.2
+    "@opentelemetry/instrumentation": ^0.41.2
     tslib: ^2.2.0
-  checksum: 1b3797a9824b85a4348399cc22db655aa99b371fc84926e9d37d8597a490108850f512f684029398169affe76937df69b8a9d11495989e4e3559478dec53a802
+  checksum: ff7c4b885536d8ce46787b0c1995a4241c86f46dd8869eebb3ba843148ddea9761f229a8415ff4a57bd481c02855b510c8c0af01a96ca3539f12e63ac7acd53a
   languageName: node
   linkType: hard
 
@@ -1706,25 +1727,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/1ds-core-js@npm:3.2.12, @microsoft/1ds-core-js@npm:^3.2.10":
-  version: 3.2.12
-  resolution: "@microsoft/1ds-core-js@npm:3.2.12"
+"@microsoft/1ds-core-js@npm:3.2.13, @microsoft/1ds-core-js@npm:^3.2.13":
+  version: 3.2.13
+  resolution: "@microsoft/1ds-core-js@npm:3.2.13"
   dependencies:
-    "@microsoft/applicationinsights-core-js": 2.8.14
+    "@microsoft/applicationinsights-core-js": 2.8.15
     "@microsoft/applicationinsights-shims": ^2.0.2
     "@microsoft/dynamicproto-js": ^1.1.7
-  checksum: f5e06d22762d203fca46aa3b3d58444e01f9666030cc9e5d0a2392497298f998970c44c379d94b3662c10bfe5bf9817d064a1f4560eb7e4f1fbe51a6c4fbfa86
+  checksum: 5fe74eb8d4432783e3e8247a11651eba89e6454d9621d01818300d38f53b137352a2b5ba86b553bd14f71e6c58fc2d6427a7aaa4cc12497443738b2fdc71f73c
   languageName: node
   linkType: hard
 
-"@microsoft/1ds-post-js@npm:^3.2.10":
-  version: 3.2.12
-  resolution: "@microsoft/1ds-post-js@npm:3.2.12"
+"@microsoft/1ds-post-js@npm:^3.2.13":
+  version: 3.2.13
+  resolution: "@microsoft/1ds-post-js@npm:3.2.13"
   dependencies:
-    "@microsoft/1ds-core-js": 3.2.12
+    "@microsoft/1ds-core-js": 3.2.13
     "@microsoft/applicationinsights-shims": ^2.0.2
     "@microsoft/dynamicproto-js": ^1.1.7
-  checksum: 52a7a714df594c778ecbd25ef13cacef7ab4dfee4426db43c2f3f9e78033d5490056ffb66d7fd05d101818cf136ae3808aea6351eeb54263f454aad2befbacaf
+  checksum: 5c6114dc7a145aa942ebeecc6ecc26f8444910caf462c82b18882c71776edce1b87cd0af69c92949cf54315cfc3a1d40bde7261f21d3b56eac6694191cf2cdb8
   languageName: node
   linkType: hard
 
@@ -1758,15 +1779,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/applicationinsights-core-js@npm:2.8.14":
-  version: 2.8.14
-  resolution: "@microsoft/applicationinsights-core-js@npm:2.8.14"
+"@microsoft/applicationinsights-core-js@npm:2.8.15":
+  version: 2.8.15
+  resolution: "@microsoft/applicationinsights-core-js@npm:2.8.15"
   dependencies:
     "@microsoft/applicationinsights-shims": 2.0.2
     "@microsoft/dynamicproto-js": ^1.1.9
   peerDependencies:
     tslib: "*"
-  checksum: bd441f26a9eb6542e935cb2bd76511d968d05b8f06bd3fa17d2b37148fb81155dcf7d92cf99befc9d97b84dc8c7e142bbdf916aaa3c466131d92e5d6de4fb8ea
+  checksum: 1f0165c9e36f8062f203cdbc5e395196c9ebf13542d671c6f031244e253776d10834fb007f4a1e7c073a46029ef641cc52fbc1e6ec8ba55ffddef70a910fe349
   languageName: node
   linkType: hard
 
@@ -1800,7 +1821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/applicationinsights-web-basic@npm:^3.0.0":
+"@microsoft/applicationinsights-web-basic@npm:^3.0.2":
   version: 3.0.2
   resolution: "@microsoft/applicationinsights-web-basic@npm:3.0.2"
   dependencies:
@@ -2306,68 +2327,68 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.0.4, @opentelemetry/api@npm:^1.4.1":
+"@opentelemetry/api@npm:^1.4.1":
   version: 1.4.1
   resolution: "@opentelemetry/api@npm:1.4.1"
   checksum: e783c40d1a518abf9c4c5d65223237c1392cd9a6c53ac6e2c3ef0c05ff7266e3dfc4fd9874316dae0dcb7a97950878deb513bcbadfaad653d48f0215f2a0911b
   languageName: node
   linkType: hard
 
-"@opentelemetry/core@npm:1.14.0, @opentelemetry/core@npm:^1.12.0, @opentelemetry/core@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@opentelemetry/core@npm:1.14.0"
+"@opentelemetry/core@npm:1.15.2, @opentelemetry/core@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "@opentelemetry/core@npm:1.15.2"
   dependencies:
-    "@opentelemetry/semantic-conventions": 1.14.0
+    "@opentelemetry/semantic-conventions": 1.15.2
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.5.0"
-  checksum: 061e6f3bee492e020915427da94da902846ed6ee922bdb21a70563e5fbd3ebb39e8e3ae6eb1071eb775d27ca31093929ab65fe8abc81228042be8d9a3c96bac8
+  checksum: 0040d1952b13d1cf5c7f428f9b061806023e2d08acd716e9aa72caa0c4bca99059ac4ddfbecebc4f3b993c576b834d4bcf0914586d0020719a1b1c428461a16a
   languageName: node
   linkType: hard
 
-"@opentelemetry/instrumentation@npm:^0.40.0":
-  version: 0.40.0
-  resolution: "@opentelemetry/instrumentation@npm:0.40.0"
+"@opentelemetry/instrumentation@npm:^0.41.2":
+  version: 0.41.2
+  resolution: "@opentelemetry/instrumentation@npm:0.41.2"
   dependencies:
     "@types/shimmer": ^1.0.2
-    import-in-the-middle: 1.3.5
-    require-in-the-middle: ^7.1.0
-    semver: ^7.3.2
+    import-in-the-middle: 1.4.2
+    require-in-the-middle: ^7.1.1
+    semver: ^7.5.1
     shimmer: ^1.2.1
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
-  checksum: 03755fc091ed1659b7353d96de17370dc9d1c4986dfa046e38aeb2962f642055179515ccbb1e24b65a2888a075228a1245a459492a0dd7053e74c66905bda7f7
+  checksum: 73df84c356064aaf2465f691001d6c165877d7204d2c66063b89dfa8b7206bc47442cd6dec88c40af86b104dbe72081c2e234376a63b3afaa529a9648ac016cd
   languageName: node
   linkType: hard
 
-"@opentelemetry/resources@npm:1.14.0":
-  version: 1.14.0
-  resolution: "@opentelemetry/resources@npm:1.14.0"
+"@opentelemetry/resources@npm:1.15.2":
+  version: 1.15.2
+  resolution: "@opentelemetry/resources@npm:1.15.2"
   dependencies:
-    "@opentelemetry/core": 1.14.0
-    "@opentelemetry/semantic-conventions": 1.14.0
+    "@opentelemetry/core": 1.15.2
+    "@opentelemetry/semantic-conventions": 1.15.2
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.5.0"
-  checksum: 4494fcad2a9d8de215149675ce4f16885f6d7d0b3318c44a1f8d2e50009de07853c94b428462f70d1dd3d3681a5738d6b625806b7939839524db49a81eb90a2c
+  checksum: 072d64bee2a073ac3f1218ba9d24bd0a20fc69988d206688c2f53e813c9d84ae325093c3c0e8909c2208cfa583fe5bad71d16af7d6b087a348d866c1d0857396
   languageName: node
   linkType: hard
 
-"@opentelemetry/sdk-trace-base@npm:^1.12.0":
-  version: 1.14.0
-  resolution: "@opentelemetry/sdk-trace-base@npm:1.14.0"
+"@opentelemetry/sdk-trace-base@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "@opentelemetry/sdk-trace-base@npm:1.15.2"
   dependencies:
-    "@opentelemetry/core": 1.14.0
-    "@opentelemetry/resources": 1.14.0
-    "@opentelemetry/semantic-conventions": 1.14.0
+    "@opentelemetry/core": 1.15.2
+    "@opentelemetry/resources": 1.15.2
+    "@opentelemetry/semantic-conventions": 1.15.2
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.5.0"
-  checksum: 4dafee254f61fc18b77320aa201a5c8b0de6ac33996e63eed510da60df83a2fe19bf016e5cd71d3cf739f462a2f7e47767948c74a4cf8dca69575fe23524d646
+  checksum: 3ca9d71919451f8e4a0644434981c7fa6dc29d002da03784578fbe47689625d106c00ab5b35539a8d348e40676ea57d44ba6845a9a604dd6be670911f83835bf
   languageName: node
   linkType: hard
 
-"@opentelemetry/semantic-conventions@npm:1.14.0, @opentelemetry/semantic-conventions@npm:^1.12.0":
-  version: 1.14.0
-  resolution: "@opentelemetry/semantic-conventions@npm:1.14.0"
-  checksum: 0d4f752035ac25d10cfcaf0e16f29bff8fa47877baff61dc4d047f9fe1e70f1459d02f5b70982c579db48584038e4fe263755b35ffa7254385604917337469f3
+"@opentelemetry/semantic-conventions@npm:1.15.2, @opentelemetry/semantic-conventions@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "@opentelemetry/semantic-conventions@npm:1.15.2"
+  checksum: 6de4f8ffa277af18351dff19b821f04438bd4f3917f84816f0bf1577a810424d11ba5f15dca9739a17812a996eeb251048fc7d61b0eef9dc39beb9d4304f57e2
   languageName: node
   linkType: hard
 
@@ -3843,15 +3864,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/extension-telemetry@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "@vscode/extension-telemetry@npm:0.8.2"
+"@vscode/extension-telemetry@npm:^0.8.4":
+  version: 0.8.4
+  resolution: "@vscode/extension-telemetry@npm:0.8.4"
   dependencies:
-    "@microsoft/1ds-core-js": ^3.2.10
-    "@microsoft/1ds-post-js": ^3.2.10
-    "@microsoft/applicationinsights-web-basic": ^3.0.0
-    applicationinsights: ^2.7.0
-  checksum: b41286c8122d43fc36014eb036fdbb806666ee840010c1a29bce22448c4fc49002a6341f47440b1dfec3e8f260b74a205e0b87cdcef76c2b2241a119865e5ac5
+    "@microsoft/1ds-core-js": ^3.2.13
+    "@microsoft/1ds-post-js": ^3.2.13
+    "@microsoft/applicationinsights-web-basic": ^3.0.2
+    applicationinsights: ^2.7.1
+  checksum: 324799911e9c638f73ad287a84b450a756f45609e53e748ff353183b0e7456ab338c0e7ecf609e266416d8fab63059774114f61b263e07d4a23719bec0cac7ec
   languageName: node
   linkType: hard
 
@@ -3918,6 +3939,15 @@ __metadata:
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
   checksum: a4a97ec07d7ea112c517036882b2ac22f3109b7b19077dc656316d07d308438aac28e4d9746dc4d84bf6b1e75b4a7b0a5f3cb30592419f128ca9a8cee3bcfa17
+  languageName: node
+  linkType: hard
+
+"acorn-import-assertions@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "acorn-import-assertions@npm:1.9.0"
+  peerDependencies:
+    acorn: ^8
+  checksum: 944fb2659d0845c467066bdcda2e20c05abe3aaf11972116df457ce2627628a81764d800dd55031ba19de513ee0d43bb771bc679cc0eda66dc8b4fade143bc0c
   languageName: node
   linkType: hard
 
@@ -4086,29 +4116,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"applicationinsights@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "applicationinsights@npm:2.7.0"
+"applicationinsights@npm:^2.7.1":
+  version: 2.7.3
+  resolution: "applicationinsights@npm:2.7.3"
   dependencies:
-    "@azure/core-auth": ^1.4.0
+    "@azure/core-auth": ^1.5.0
     "@azure/core-rest-pipeline": 1.10.1
     "@azure/core-util": 1.2.0
-    "@azure/opentelemetry-instrumentation-azure-sdk": ^1.0.0-beta.3
+    "@azure/opentelemetry-instrumentation-azure-sdk": ^1.0.0-beta.5
     "@microsoft/applicationinsights-web-snippet": ^1.0.1
-    "@opentelemetry/api": ^1.0.4
-    "@opentelemetry/core": ^1.12.0
-    "@opentelemetry/sdk-trace-base": ^1.12.0
-    "@opentelemetry/semantic-conventions": ^1.12.0
+    "@opentelemetry/api": ^1.4.1
+    "@opentelemetry/core": ^1.15.2
+    "@opentelemetry/sdk-trace-base": ^1.15.2
+    "@opentelemetry/semantic-conventions": ^1.15.2
     cls-hooked: ^4.2.2
     continuation-local-storage: ^3.2.1
-    diagnostic-channel: 1.1.0
-    diagnostic-channel-publishers: 1.0.6
+    diagnostic-channel: 1.1.1
+    diagnostic-channel-publishers: 1.0.7
   peerDependencies:
     applicationinsights-native-metrics: "*"
   peerDependenciesMeta:
     applicationinsights-native-metrics:
       optional: true
-  checksum: c4644ecd2e4871eb63604bc7294d9b6e7a3c0a8ae03304733627f61a5b993273adfc78b9f083da0c8503786396b70f47a106df3061dc97867e5b50fcc518968a
+  checksum: 3f5ebc1063b4ca9e69841736f1b31186b2655202d64dcb082d20cebed56e7bf758faeee9bc52e9e01d9e6eaf6cf1de84b8ecd2ee500388bfdcc5792a58bc10e4
   languageName: node
   linkType: hard
 
@@ -4830,6 +4860,13 @@ __metadata:
   dependencies:
     consola: ^3.2.3
   checksum: e3b6b9c1b60c8dc06592643dd34a4dad0bec88ae89d8619eff7baa542a65c505842023bc93de0a4c4400d7d6ea22da6d5b1d1b6a5efc182b568a72f504df5ca9
+  languageName: node
+  linkType: hard
+
+"cjs-module-lexer@npm:^1.2.2":
+  version: 1.2.3
+  resolution: "cjs-module-lexer@npm:1.2.3"
+  checksum: 5ea3cb867a9bb609b6d476cd86590d105f3cfd6514db38ff71f63992ab40939c2feb68967faa15a6d2b1f90daa6416b79ea2de486e9e2485a6f8b66a21b4fb0a
   languageName: node
   linkType: hard
 
@@ -5951,21 +5988,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diagnostic-channel-publishers@npm:1.0.6":
-  version: 1.0.6
-  resolution: "diagnostic-channel-publishers@npm:1.0.6"
+"diagnostic-channel-publishers@npm:1.0.7":
+  version: 1.0.7
+  resolution: "diagnostic-channel-publishers@npm:1.0.7"
   peerDependencies:
     diagnostic-channel: "*"
-  checksum: 66f30470378c6095ee8eae351769f73664e15615b2252d8b0f4adc6b88beb8532328392894861725ff4864f2832767ac321f6a162be403b52ff18a200635439d
+  checksum: 977897d7743c903b7c40e3f3a54a59c4095259cdc77c573d582e3cb65ac3f95f68ee9c9d27767ef1d59f5b39fc2359db9d28c29f36f7902fef23bcc0273e212c
   languageName: node
   linkType: hard
 
-"diagnostic-channel@npm:1.1.0":
-  version: 1.1.0
-  resolution: "diagnostic-channel@npm:1.1.0"
+"diagnostic-channel@npm:1.1.1":
+  version: 1.1.1
+  resolution: "diagnostic-channel@npm:1.1.1"
   dependencies:
-    semver: ^5.3.0
-  checksum: 4298b83d556d45fd411279ca6fb8b05bf73552a8a46ae8d72b2624e3ce3131ce40aedddd8f37633485944776299e4b7dec4e9e267246ff0f97654a36f4272656
+    semver: ^7.5.3
+  checksum: 89a3492aa43ca51febce0fd9875c2cb5df39e347f62888ce940102fe4aae896bd263932d2a7753f2fb7d7d45d7fa86d3deaf5e7c46c2d31f935506400833e191
   languageName: node
   linkType: hard
 
@@ -7884,12 +7921,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-in-the-middle@npm:1.3.5":
-  version: 1.3.5
-  resolution: "import-in-the-middle@npm:1.3.5"
+"import-in-the-middle@npm:1.4.2":
+  version: 1.4.2
+  resolution: "import-in-the-middle@npm:1.4.2"
   dependencies:
+    acorn: ^8.8.2
+    acorn-import-assertions: ^1.9.0
+    cjs-module-lexer: ^1.2.2
     module-details-from-path: ^1.0.3
-  checksum: e8420c863cf0c7eb53647afea6b870357eeb2fa74624827452f94635fea43d022947cd49e3b9404c2cdcd1adf8bac5a61c3bae3321de1aa5d219a3a88297e7b6
+  checksum: 52971f821e9a3c94834cd5cf0ab5178321c07d4f4babd547b3cb24c4de21670d05b42ca1523890e7e90525c3bba6b7db7e54cf45421919b0b2712a34faa96ea5
   languageName: node
   linkType: hard
 
@@ -8775,7 +8815,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
-    "@vscode/extension-telemetry": ^0.8.2
+    "@vscode/extension-telemetry": ^0.8.4
     "@vscode/vsce": ^2.20.1
     esbuild: ~0.17.0
     esbuild-plugins-node-modules-polyfill: ^1.4.0
@@ -12109,14 +12149,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"require-in-the-middle@npm:^7.1.0":
-  version: 7.1.1
-  resolution: "require-in-the-middle@npm:7.1.1"
+"require-in-the-middle@npm:^7.1.1":
+  version: 7.2.0
+  resolution: "require-in-the-middle@npm:7.2.0"
   dependencies:
     debug: ^4.1.1
     module-details-from-path: ^1.0.3
     resolve: ^1.22.1
-  checksum: 00c7e28c271cefc219962b18c1803f6124c761238c1edbf588c68a7143bfeb5779df455d2f0791c2c1f6e841580c50080d4435156e72841fa0bc50c3f383d032
+  checksum: 5ed219d12aec4d0f098029827f9e929d8e0ca4f2fe01f23a9b02169e57c5157cced9e7acaef6a871d3f56646f2cb807b08f2f23d66912ee53eca16cb88eff743
   languageName: node
   linkType: hard
 
@@ -12415,7 +12455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.5.4, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.4":
+"semver@npm:7.5.4, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.1, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4":
   version: 7.5.4
   resolution: "semver@npm:7.5.4"
   dependencies:
