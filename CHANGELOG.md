@@ -1,3 +1,25 @@
+# [0.34.0](https://github.com/likec4/likec4/compare/v0.33.1...v0.34.0) (2023-09-01)
+
+### Bug Fixes
+
+- cli fails to export image on windows ([#281](https://github.com/likec4/likec4/issues/281)) ([cc7e054](https://github.com/likec4/likec4/commit/cc7e0545974019c667c3cf7a22f84a0f07ac0760)), closes [#280](https://github.com/likec4/likec4/issues/280)
+- **core:** modern-errors ([9ac4b19](https://github.com/likec4/likec4/commit/9ac4b19e1463c062ecb7f906630968135927e708))
+- **core:** module exports ([efe2435](https://github.com/likec4/likec4/commit/efe24357fb6e5ffdace9adce61545ab886e1ac03))
+- **deps:** update dependency lucide-react to ^0.265.0 ([#264](https://github.com/likec4/likec4/issues/264)) ([4c0f7c9](https://github.com/likec4/likec4/commit/4c0f7c9307def6f9c48aa83266a07f081d58efd2))
+- **deps:** update dependency lucide-react to ^0.268.0 ([#273](https://github.com/likec4/likec4/issues/273)) ([d58914f](https://github.com/likec4/likec4/commit/d58914f90f484411715a099dc926ef2056ecaa21))
+- improve errors handling ([98735ac](https://github.com/likec4/likec4/commit/98735acd2a7b3c1e58daf3645fcfaa2dcdf16c36))
+- **vscode:** update dark fileicon ([13aceef](https://github.com/likec4/likec4/commit/13aceef685700de7fb8fbbbbb0e5330832345a3b))
+- workaround for a bug in the `chevrotain-allstar@0.3.0` ([2e20b96](https://github.com/likec4/likec4/commit/2e20b9669eea16417683162d45b9ba3b7c78cee4))
+
+### Features
+
+- refactor react components for better customization ([1bdf747](https://github.com/likec4/likec4/commit/1bdf747984641285af87c1f2901e4b539166a6d0))
+- upgrade to langium 2.0.0 ([fc158f1](https://github.com/likec4/likec4/commit/fc158f125905d05c98543f0bb9f03bcd76ad8a81))
+
+### Reverts
+
+- Revert "chore: expermint with unbuld" ([d2407cc](https://github.com/likec4/likec4/commit/d2407cc2b2b1a579deb0e27892b3cf2a6583ee6c))
+
 # [0.33.1](https://github.com/likec4/likec4/compare/v0.33.0...v0.33.1) (2023-08-12)
 
 No changes, just trigger release.
