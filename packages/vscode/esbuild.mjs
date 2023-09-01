@@ -6,7 +6,7 @@ import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill
 import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
-const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'prod'
+const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
 
 const alias = {
   'vscode-uri': 'vscode-uri/lib/esm/index.js',
@@ -27,7 +27,7 @@ const alias = {
  */
 const nodeCfg = {
   entryPoints: ['src/node/extension.ts', 'src/node/language-server.ts'],
-  metafile: !isProduction,
+  metafile: isDev,
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
@@ -40,12 +40,10 @@ const nodeCfg = {
     ...alias
   },
   color: true,
-  allowOverwrite: true,
   sourcemap: true,
-  // sourcesContent: true,
-  // treeShaking: true,
+  sourcesContent: isDev,
   keepNames: true,
-  minify: isProduction,
+  minify: !isDev,
   legalComments: 'none',
 }
 
@@ -54,7 +52,7 @@ const nodeCfg = {
  */
 const webCfg = {
   entryPoints: ['src/browser/extension.ts'],
-  metafile: !isProduction,
+  metafile: isDev,
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
@@ -70,10 +68,9 @@ const webCfg = {
   color: true,
   allowOverwrite: true,
   sourcemap: true,
-  // sourcesContent: false,
-  // treeShaking: true,
+  sourcesContent: isDev,
   keepNames: true,
-  minify: isProduction,
+  minify: !isDev,
   legalComments: 'none',
   plugins: [
     nodeModulesPolyfillPlugin({
