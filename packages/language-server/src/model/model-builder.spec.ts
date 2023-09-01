@@ -230,7 +230,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.rules).to.be.an('array').that.is.not.empty
   })
 
-  it('builds model with extend', async ({ expect }) => {
+  it.concurrent('builds model with extend', async ({ expect }) => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
       specification {

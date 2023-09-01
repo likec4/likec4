@@ -1,3 +1,4 @@
+import { nonNullable } from '@likec4/core'
 import type * as c4 from '@likec4/core/types'
 import type { LangiumDocuments } from 'langium'
 import { findNodeForProperty, getDocument } from 'langium'
@@ -5,8 +6,7 @@ import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
 import { ElementOps, ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import { isFqnIndexedDocument, type FqnIndex } from './fqn-index'
-import { nonNullable } from '@likec4/core'
+import { type FqnIndex } from './fqn-index'
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
