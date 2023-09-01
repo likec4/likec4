@@ -58,6 +58,7 @@ jobs:
         with:
           name: cli-test-artifacts-${{ matrix.os }}-${{ matrix.node-version }}
           path: integration/like4-cli-tests/out/
+          if-no-files-found: error
           retention-days: 5
 
       - if: ${{ matrix.build_docs }}
