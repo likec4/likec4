@@ -22,20 +22,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: setup
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: turborepo-cache
+      - name: Init turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build packages
-        run: yarn build
-
-      - name: Compile
-        run: yarn compile:all
+      - name: Build and Compile packages
+        run: |
+          yarn ci:build
+          yarn compile:all
 
       - name: Test
         run: yarn test
+
+      - name: Run СLI test
+        run: yarn node integration/like4-cli-tests/run-suit.mjs
+
+      - name: Build Docs
+        working-directory: docs
+        run: yarn turbo-build
 
   release:
     name: Release

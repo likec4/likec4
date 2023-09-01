@@ -10,6 +10,9 @@ permissions:
   checks: write
   statuses: write
 
+env:
+  NODE_ENV: production
+
 jobs:
   publish:
     name: Publish
@@ -20,8 +23,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          fetch-tags: true
 
-      - name: setup
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: turborepo-cache

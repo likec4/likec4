@@ -10,6 +10,9 @@ permissions:
   contents: write
   statuses: write
 
+env:
+  NODE_ENV: production
+
 jobs:
   publish:
     name: Publish
