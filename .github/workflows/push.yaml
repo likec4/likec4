@@ -7,8 +7,6 @@ on:
     branches-ignore:
       - "main"
       - "releases/*"
-    # paths:
-    #   - "packages/**"
 
 concurrency:
   group: ${{ github.ref }}-push-build
@@ -54,6 +52,14 @@ jobs:
       - if: ${{ matrix.test_cli }}
         name: Run СLI test
         run: yarn node integration/like4-cli-tests/run-suit.mjs
+
+      - if: ${{ matrix.test_cli }}
+        name: Upload CLI test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli-test-artifacts-${{ matrix.os }}-${{ matrix.node-version }}
+          path: integration/like4-cli-tests/out/
+          retention-days: 5
 
       - if: ${{ matrix.build_docs }}
         name: Build Docs

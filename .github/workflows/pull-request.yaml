@@ -19,7 +19,7 @@ jobs:
 
   build:
     name: Build
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     if: "!startsWith(github.head_ref, 'releases/')"
     steps:
