@@ -3,7 +3,7 @@ import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import { mkdirp } from 'mkdirp'
 import process from 'node:process'
-import { join, dirname } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
 import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
 
 const isNoSanbox = 'LIKEC4_NO_SANDBOX' in process.env
@@ -36,6 +36,8 @@ export function generateExportScript(
 ) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
+    /* eslint-disable */
+
     const puppeteer = require('puppeteer');
     const { readFileSync } = require('fs');
     const { join } = require('path');
@@ -105,7 +107,7 @@ export function generateExportScript(
       console.info('Load puppeteer-page...')
 
       await page.addScriptTag({
-        content: readFileSync('${puppeteerPageJSPath}').toString(),
+        content: readFileSync(${JSON.stringify(puppeteerPageJSPath)}).toString(),
         type: 'module'
       })
 
@@ -140,13 +142,14 @@ export function generateExportScript(
             joinToNode(
               views,
               view => {
-                const output = join(outputdir, dirname(view.sourcePath), `${view.id}.png`)
+                let output = resolve(outputdir, view.sourcePath)
+                output = join(dirname(output), `${view.id}.png`)
                 // TODO: remove side effect
                 mkdirp.sync(dirname(output))
                 // 180 = all paddings 40 + 50 + 60 + 40
-                return expandToNode`await exportView('${view.id}', '${output}', {width: ${view.width + 180}, height: ${
-                  view.height + 180
-                }});`
+                return expandToNode`await exportView('${view.id}', ${JSON.stringify(output)}, {width: ${
+                  view.width + 180
+                }, height: ${view.height + 180}});`
               },
               {
                 appendNewLineIfNotEmpty: true
