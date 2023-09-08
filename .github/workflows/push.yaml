@@ -42,8 +42,11 @@ jobs:
         if: runner.os != 'Windows'
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build and Compile packages
+      - name: Build
         run: yarn ci:build
+
+      - name: TypeCheck
+        run: yarn compile:all
 
       - name: Test
         run: yarn test

@@ -29,10 +29,11 @@ jobs:
       - name: Init turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build and Compile packages
-        run: |
-          yarn ci:build
-          yarn compile:all
+      - name: Build
+        run: yarn ci:build
+
+      - name: TypeCheck
+        run: yarn compile:all
 
       - name: Test
         run: yarn test
@@ -61,7 +62,6 @@ jobs:
   docs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
-    if: "github.ref == 'refs/heads/main'"
     needs: build
     concurrency:
       group: ${{ github.workflow }}-docs
