@@ -32,7 +32,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
-    "@types/vscode-webview": "^1.57.1",
+    "@types/vscode-webview": "^1.57.2",
     "@vitejs/plugin-react": "^4.0.4",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "rambdax": "^9.1.1",
