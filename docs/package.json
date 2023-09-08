@@ -39,7 +39,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "jotai": "^2.2.3",
-    "jotai-devtools": "^0.6.0",
+    "jotai-devtools": "^0.6.2",
     "langium": "^2.0.0",
     "lucide-react": "^0.268.0",
     "monaco-editor": "0.36.1",
