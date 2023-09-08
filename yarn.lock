@@ -1787,7 +1787,7 @@ __metadata:
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
     "@types/vscode": ~1.77.0
-    "@types/vscode-webview": ^1.57.1
+    "@types/vscode-webview": ^1.57.2
     "@vitejs/plugin-react": ^4.0.4
     "@vscode/webview-ui-toolkit": ^1.2.2
     rambdax: ^9.1.1
@@ -3817,10 +3817,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode-webview@npm:^1.57.1":
-  version: 1.57.1
-  resolution: "@types/vscode-webview@npm:1.57.1"
-  checksum: 071ddab841946eeab8054defc33cbcaa0f6ba12d6601ad92b92ccfd2a3e0e8cfc8ac8a5bcaad823d285a17ab2b6efa675769c9f85d0d729ea383e97a8c0416be
+"@types/vscode-webview@npm:^1.57.2":
+  version: 1.57.2
+  resolution: "@types/vscode-webview@npm:1.57.2"
+  checksum: 919ba39ff679eacc73141cb571baaab944fa39a2f3df390004816291aa8353c2e9b92102af51e2dc24cc6588454481f32e9dddbd3612540a4e2d45c77e55eb67
   languageName: node
   linkType: hard
 
