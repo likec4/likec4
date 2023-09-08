@@ -1737,7 +1737,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
-    "@types/object-hash": ^3.0.2
+    "@types/object-hash": ^3.0.4
     langium: ^2.0.0
     langium-cli: ^2.0.0
     nanoid: ^4.0.2
@@ -3718,10 +3718,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/object-hash@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@types/object-hash@npm:3.0.2"
-  checksum: 0332e59074e7df2e74c093a7419c05c1e1c5ae1e12d3779f3240b3031835ff045b4ac591362be0b411ace24d3b5e760386b434761c33af25904f7a3645cb3785
+"@types/object-hash@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@types/object-hash@npm:3.0.4"
+  checksum: 0c9f3c9262a7a4e5e5a5ee6c3bd513e05296f0c5e9c198ec99c5d9a4d9f4a6b2e2f19db7b28beab077de3713e04eb7aea5eb25e54b8f6c85a16753f6f9f463a5
   languageName: node
   linkType: hard
 
