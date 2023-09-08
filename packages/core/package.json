@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "typescript": "^5.1.6",
-    "vitest": "^0.34.1"
+    "vitest": "^0.34.3"
   },
   "packageManager": "yarn@3.6.3"
 }
