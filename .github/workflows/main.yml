@@ -14,16 +14,15 @@ permissions:
 env:
   NODE_ENV: production
 
-concurrency:
-  group: build-main-branch
-  cancel-in-progress: true
-
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    concurrency:
+      group: ${{ github.workflow }}-build
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
 
@@ -54,6 +53,8 @@ jobs:
     uses: ./.github/workflows/release.yaml
     if: "github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')"
     needs: build
+    concurrency:
+      group: ${{ github.workflow }}-release
     permissions:
       actions: write
       checks: write
@@ -65,6 +66,9 @@ jobs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
     needs: build
+    concurrency:
+      group: ${{ github.workflow }}-docs
+      cancel-in-progress: true
     permissions:
       actions: write
       contents: read
