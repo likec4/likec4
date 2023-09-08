@@ -42,7 +42,7 @@
     "eslint": "^8.48.0",
     "execa": "^8.0.1",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
+    "lint-staged": "^14.0.1",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
     "shipjs": "^0.26.3",
