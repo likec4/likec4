@@ -19,14 +19,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
-        node-version: [18, 20]
+        node-version: ['18', '20.5']
         include:
 
-          - node-version: 20
+          - node-version: '20.5'
             test_cli: true
 
           - os: ubuntu-latest
-            node-version: 20
+            node-version: '20.5'
             build_docs: true
 
     runs-on: ${{ matrix.os }}
