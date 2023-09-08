@@ -69,5 +69,10 @@
     "**/*.{md,mdx,yml,json,babelrc,eslintrc,prettierrc}": [
       "prettier --write"
     ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
