@@ -2,22 +2,18 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev Container",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye",
-  // Features to add to the dev container. More info: https://containers.dev/features.
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "features": {
-    "ghcr.io/enricosecondulfo/devcontainer-features/volta:1": {}
+    "ghcr.io/devcontainers/features/git:1": {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    3000
-  ],
+  // "forwardPorts": [
+  //   3000
+  // ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": [
-    "yarn install",
-    "yarn build"
-  ],
-  "waitFor": "postCreateCommand",
+  "postCreateCommand": "yarn install && yarn build",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
