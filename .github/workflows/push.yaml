@@ -6,6 +6,7 @@ on:
       - "*"
     branches-ignore:
       - "main"
+      - "releases/*"
 
 concurrency:
   group: ${{ github.ref }}-push-build
