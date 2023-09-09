@@ -1,5 +1,5 @@
 import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
-import { compact, isEmpty, map, pipe } from 'remeda'
+import { compact, concat, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -68,7 +68,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!specKeywordNode) return []
 
     const specSymbols = pipe(
-      astSpec.specs,
+      concat(astSpec.elements, astSpec.tags),
       map(nd => {
         if (ast.isSpecificationElementKind(nd)) {
           return getElementKindSymbol(nd)
@@ -108,9 +108,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     ]
   }
 
-  protected getElementsSymbol(
-    el: ast.Element | ast.Relation | ast.ExtendElement
-  ): DocumentSymbol[] {
+  protected getElementsSymbol(el: ast.Element | ast.Relation | ast.ExtendElement): DocumentSymbol[] {
     try {
       if (ast.isExtendElement(el)) {
         return this.getExtendElementSymbol(el)

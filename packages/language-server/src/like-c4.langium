@@ -13,7 +13,7 @@ Tag: name=Name;
 
 SpecificationRule:
   name='specification' OpenBlock
-    (specs+=(SpecificationElementKind | SpecificationTag))*
+    (elements+=SpecificationElementKind | tags+=SpecificationTag)*
   CloseBlock;
 
 SpecificationElementKind:
