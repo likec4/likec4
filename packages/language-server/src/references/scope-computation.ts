@@ -9,6 +9,7 @@ import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { isEmpty } from 'remeda'
+import { nonexhaustive } from '@likec4/core'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
@@ -25,15 +26,20 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     const docExports: AstNodeDescription[] = []
     if (specification && specification.specs.length > 0) {
       for (const spec of specification.specs) {
-        if (ast.isSpecificationElementKind(spec) && spec.kind && !isEmpty(spec.kind.name)) {
-          docExports.push(this.descriptions.createDescription(spec.kind , spec.kind.name, document))
+        if (ast.isSpecificationElementKind(spec)) {
+          if (spec.kind && !isEmpty(spec.kind.name)) {
+            docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
+          }
           continue
         }
-        if (ast.isSpecificationTag(spec) && spec.tag && !isEmpty(spec.tag.name)) {
-          docExports.push(this.descriptions.createDescription(spec.tag , spec.tag.name, document))
-          docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+        if (ast.isSpecificationTag(spec)) {
+          if (spec.tag && !isEmpty(spec.tag.name)) {
+            docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
+            docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+          }
           continue
         }
+        nonexhaustive(spec)
       }
     }
     // Only root model elements are exported
@@ -68,11 +74,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     return Promise.resolve(scopes)
   }
 
-  protected processContainer(
-    container: ElementsContainer,
-    scopes: PrecomputedScopes,
-    document: LikeC4LangiumDocument
-  ) {
+  protected processContainer(container: ElementsContainer, scopes: PrecomputedScopes, document: LikeC4LangiumDocument) {
     const localScope = new MultiMap<string, AstNodeDescription>()
     const nestedScopes = new MultiMap<string, AstNodeDescription>()
     for (const el of container.elements) {

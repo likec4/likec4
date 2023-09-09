@@ -90,7 +90,7 @@ export const ElementOps = {
 
 export interface DocFqnIndexEntry {
   name: string
-  el: ast.Element
+  el: WeakRef<ast.Element>
   path: string
 }
 
@@ -200,7 +200,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
   }
   if (!ast.isElementBody(node.$container)) {
-    throw new RelationRefError('Invalid relation parent')
+    throw new RelationRefError('Invalid relation parent, expected Element')
   }
   return {
     source: node.$container.$container,

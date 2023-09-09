@@ -11,7 +11,9 @@ import {
   type AstNodeDescription,
   type ReferenceInfo,
   type Scope,
-  type Stream
+  type Stream,
+  findNodeForProperty,
+  toDocumentSegment
 } from 'langium'
 import { ast } from '../ast'
 import { elementRef, isElementRefHead, parentStrictElementRef } from '../elementRef'
@@ -20,9 +22,16 @@ import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
 function toAstNodeDescription(entry: FqnIndexEntry): AstNodeDescription {
+  const $cstNode = findNodeForProperty(entry.el.$cstNode, 'name')
   return {
     documentUri: entry.doc.uri,
     name: entry.name,
+    ...(entry.el.$cstNode && {
+      selectionSegment: toDocumentSegment(entry.el.$cstNode)
+    }),
+    ...($cstNode && {
+      nameSegment: toDocumentSegment($cstNode)
+    }),
     path: entry.path,
     type: ast.Element
   }
@@ -108,8 +117,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const doc = getDocument(node)
     const precomputed = doc.precomputedScopes
 
-    const byReferenceType = (desc: AstNodeDescription) =>
-      this.reflection.isSubtype(desc.type, referenceType)
+    const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
 
     if (precomputed) {
       const elements = precomputed.get(node).filter(byReferenceType)
