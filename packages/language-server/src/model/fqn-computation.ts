@@ -32,7 +32,7 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
       const fqn = AsFqn(el.name, parent)
       const path = locator.getAstNodePath(el)
       c4fqns.add(fqn, {
-        el,
+        el: new WeakRef(el),
         path,
         name: el.name
       })

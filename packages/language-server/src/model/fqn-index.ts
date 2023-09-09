@@ -73,7 +73,16 @@ export class FqnIndex {
 
   private entries() {
     return this.documents().flatMap(doc =>
-      doc.c4fqns.entries().map(([fqn, el]): FqnIndexEntry => ({ fqn, doc, ...el }))
+      doc.c4fqns
+        .entries()
+        .map(([fqn, entry]): FqnIndexEntry | null => {
+          const el = entry.el.deref()
+          if (el) {
+            return { ...entry, fqn, el, doc }
+          }
+          return null
+        })
+        .nonNullable()
     )
   }
 
@@ -92,9 +101,15 @@ export class FqnIndex {
     // return fqn
   }
 
-  public byFqn(fqn: Fqn) {
+  public byFqn(fqn: Fqn): Stream<FqnIndexEntry> {
     return this.documents().flatMap(doc => {
-      return doc.c4fqns.get(fqn)
+      return doc.c4fqns.get(fqn).flatMap(entry => {
+        const el = entry.el.deref()
+        if (el) {
+          return [{ fqn, el, doc, path: entry.path, name: entry.name }]
+        }
+        return []
+      })
     })
   }
 

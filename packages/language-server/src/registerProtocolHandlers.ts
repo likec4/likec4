@@ -3,6 +3,7 @@ import type { LikeC4Services } from './module'
 import { logger, logError } from './logger'
 import { Rpc } from './protocol'
 import { nonexhaustive } from '@likec4/core'
+import { isLikeC4LangiumDocument } from './ast'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
@@ -25,7 +26,20 @@ export function registerProtocolHandlers(services: LikeC4Services) {
   })
 
   connection.onRequest(Rpc.rebuild, async cancelToken => {
-    const changed = LangiumDocuments.all.map(d => d.uri).toArray()
+    const changed = LangiumDocuments.all
+      .map(d => {
+        // clean up any computed properties
+        if (isLikeC4LangiumDocument(d)) {
+          delete d.c4Specification
+          delete d.c4Elements
+          delete d.c4Relations
+          delete d.c4Views
+          delete d.c4fqns
+        }
+        return d.uri
+      })
+      .toArray()
+
     logger.debug(`[ProtocolHandlers] rebuild all documents: [
       ${changed.map(d => d.toString()).join('\n      ')}
     ]`)

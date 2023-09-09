@@ -73,6 +73,10 @@ export class LikeC4ModelParser {
     const specs = doc.parseResult.value.specification?.specs.filter(ast.isSpecificationElementKind)
     if (specs) {
       for (const { kind, style } of specs) {
+        if (kind.name in specification.kinds) {
+          logger.warn(`Duplicate specification for kind ${kind.name}`)
+          continue
+        }
         try {
           specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(style?.props)
         } catch (e) {
@@ -285,7 +289,14 @@ export class LikeC4ModelParser {
       ...(description && { description }),
       ...(tags && { tags }),
       ...(links && isNonEmptyArray(links) && { links }),
-      rules: astNode.rules.map(n => this.parseViewRule(n))
+      rules: astNode.rules.flatMap(n => {
+        try {
+          return this.parseViewRule(n)
+        } catch (e) {
+          logWarnError(e)
+          return []
+        }
+      })
     }
   }
 

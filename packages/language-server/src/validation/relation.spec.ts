@@ -40,7 +40,7 @@ describe('relationChecks', () => {
         c1 -> c3
       }
     `)
-    expect(errors).toEqual(['Invalid parent-child relation'])
+    expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
   it('should report invalid relation: -> nested child', async () => {
@@ -58,7 +58,7 @@ describe('relationChecks', () => {
         }
       }
     `)
-    expect(errors).toEqual(['Invalid parent-child relation'])
+    expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
   it('should report invalid relation: child -> parent', async () => {
@@ -76,7 +76,7 @@ describe('relationChecks', () => {
         c3 -> c2
       }
     `)
-    expect(errors).toEqual(['Invalid parent-child relation'])
+    expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
   it('should report invalid relation: nested child -> parent', async () => {
@@ -95,6 +95,6 @@ describe('relationChecks', () => {
         }
       }
     `)
-    expect(errors).toEqual(['Invalid parent-child relation'])
+    expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 })

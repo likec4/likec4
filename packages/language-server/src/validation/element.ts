@@ -32,5 +32,12 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
         ]
       })
     }
+    // for (let i = 3; i < el.props.length; i++) {
+    //   accept('error', `Too many properties, max 3 allowed`, {
+    //     node: el,
+    //     property: 'props',
+    //     index: i
+    //   })
+    // }
   }
 }
