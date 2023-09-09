@@ -8,6 +8,9 @@ permissions:
   actions: write
   contents: read
 
+env:
+  NODE_ENV: production
+
 jobs:
   publish:
     name: Publish
