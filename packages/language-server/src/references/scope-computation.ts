@@ -20,11 +20,15 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     const docExports: AstNodeDescription[] = []
     if (specification) {
       for (const spec of specification.elements) {
-        docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
+        if (spec.kind && !isEmpty(spec.kind.name)) {
+          docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
+        }
       }
       for (const spec of specification.tags) {
-        docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
-        docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+        if (spec.tag && !isEmpty(spec.tag.name)) {
+          docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
+          docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+        }
       }
     }
     // Only root model elements are exported
