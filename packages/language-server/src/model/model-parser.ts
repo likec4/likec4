@@ -70,7 +70,7 @@ export class LikeC4ModelParser {
   protected async parseDocument(doc: LikeC4LangiumDocument, cancelToken: CancellationToken) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
-    const specs = doc.parseResult.value.specification?.specs.filter(ast.isSpecificationElementKind)
+    const specs = doc.parseResult.value.specification?.elements
     if (specs) {
       for (const { kind, style } of specs) {
         if (kind.name in specification.kinds) {

@@ -5,41 +5,26 @@ import {
   type AstNodeDescription,
   type PrecomputedScopes
 } from 'langium'
+import { isEmpty } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
-import type { LikeC4Services } from '../module'
-import { isEmpty } from 'remeda'
-import { nonexhaustive } from '@likec4/core'
 
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
-  constructor(private services: LikeC4Services) {
-    super(services)
-  }
-
   override computeExports(
     document: LikeC4LangiumDocument,
     _cancelToken: CancellationToken
   ): Promise<AstNodeDescription[]> {
     const { specification, model, views } = document.parseResult.value
     const docExports: AstNodeDescription[] = []
-    if (specification && specification.specs.length > 0) {
-      for (const spec of specification.specs) {
-        if (ast.isSpecificationElementKind(spec)) {
-          if (spec.kind && !isEmpty(spec.kind.name)) {
-            docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
-          }
-          continue
-        }
-        if (ast.isSpecificationTag(spec)) {
-          if (spec.tag && !isEmpty(spec.tag.name)) {
-            docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
-            docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
-          }
-          continue
-        }
-        nonexhaustive(spec)
+    if (specification) {
+      for (const spec of specification.elements) {
+        docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
+      }
+      for (const spec of specification.tags) {
+        docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
+        docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
       }
     }
     // Only root model elements are exported
