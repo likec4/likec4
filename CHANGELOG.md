@@ -1,3 +1,20 @@
+# [0.35.0](https://github.com/likec4/likec4/compare/v0.34.0...v0.35.0) (2023-09-09)
+
+### Bug Fixes
+
+- babel compatiblity with Node 20.6 ([b35846c](https://github.com/likec4/likec4/commit/b35846c2fe5f0cab5491bb80fb5caf09778efcc5))
+- **deps:** update dependency turbo to ^1.10.13 ([#296](https://github.com/likec4/likec4/issues/296)) ([2ad41d6](https://github.com/likec4/likec4/commit/2ad41d637f9fd8415b30120e97d40fe44019bd8a))
+- **deps:** update lint-staged to v14 ([#294](https://github.com/likec4/likec4/issues/294)) ([840252c](https://github.com/likec4/likec4/commit/840252c45ac8a3b2e5a1e6df1752e54e90fdba2e))
+- **deps:** update linters ([40c8a15](https://github.com/likec4/likec4/commit/40c8a153eb652c5143c506c46a5d2d945a6c6676))
+- **deps:** update vitest ^0.34.3 ([#297](https://github.com/likec4/likec4/issues/297)) ([c4a2dbf](https://github.com/likec4/likec4/commit/c4a2dbf6f6678eab95859788edc8ee10059e9d8d))
+- memory leak on keeping reference to element ([c7e37f4](https://github.com/likec4/likec4/commit/c7e37f4cb24586ed9f8bd3fe406d31acdb079070))
+
+### Features
+
+- **diagrams:** add `resetHashOnUnmount` and `onReturnToInitial` props to `useViewId` hook ([#301](https://github.com/likec4/likec4/issues/301)) ([563b35b](https://github.com/likec4/likec4/commit/563b35bb6afcbc33dcad7228c697b595d6166b88))
+- update typescript to ^5.2.2 ([#298](https://github.com/likec4/likec4/issues/298)) ([956c180](https://github.com/likec4/likec4/commit/956c1804173f884355975e01438fde174cf4898c))
+- use Node 20 ([faf7949](https://github.com/likec4/likec4/commit/faf79493c5e353745e1f48d0405311bfcd7f18f6))
+
 # [0.34.0](https://github.com/likec4/likec4/compare/v0.33.1...v0.34.0) (2023-09-01)
 
 ### Features
