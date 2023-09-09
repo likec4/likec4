@@ -55,7 +55,7 @@ export interface FullscreenDiagramProps extends HTMLAttributes<HTMLDivElement> {
 
 }
 
-const DefaultPadding = [20, 20, 20, 20] satisfies DiagramPaddings
+const DefaultPadding = [30, 30, 30, 30] satisfies DiagramPaddings
 
 const StyleOverlay = {
   position: 'fixed',

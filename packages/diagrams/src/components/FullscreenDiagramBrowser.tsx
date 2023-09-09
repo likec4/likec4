@@ -4,7 +4,7 @@ import type { HTMLAttributes } from 'react'
 import { useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import type { DiagramInitialPosition, DiagramNode, DiagramViews } from '../diagram/types'
-import { useViewId } from '../hooks/useViewId'
+import { useViewIdFromHash } from '../hooks/useViewIdFromHash'
 import { FullscreenDiagram, FullscreenDiagramTitle } from './primitives'
 
 export interface FullscreenDiagramBrowserProps<ViewId extends string>
@@ -36,7 +36,10 @@ export function FullscreenDiagramBrowser<ViewId extends string>({
   ...props
 }: FullscreenDiagramBrowserProps<ViewId>) {
   const viewsRef = useSyncedRef(views)
-  const [viewId, setViewId] = useViewId({ initialViewId })
+  const [viewId, setViewId] = useViewIdFromHash({
+    initialViewId,
+    onReturnToInitial: onClose
+  })
   const diagram = views[viewId]
   invariant(diagram, `View "${viewId}" not found in views`)
 
@@ -47,7 +50,7 @@ export function FullscreenDiagramBrowser<ViewId extends string>({
         setViewId(node.navigateTo as any)
       }
     },
-    [viewsRef]
+    [viewsRef, setViewId]
   )
 
   return createPortal(

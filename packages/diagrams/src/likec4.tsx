@@ -7,7 +7,7 @@ import type { FullscreenDiagramBrowserProps, EmbeddedDiagramProps } from './comp
 import { ResponsiveDiagram, FullscreenDiagram } from './components/primitives'
 import type { ResponsiveDiagramProps, FullscreenDiagramProps } from './components/primitives'
 import type * as Types from './diagram/types'
-import { useViewId as useGenericViewId } from './hooks/useViewId'
+import { useViewIdFromHash } from './hooks/useViewIdFromHash'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace LikeC4 {
@@ -51,7 +51,17 @@ export class LikeC4<ViewId extends string, Views extends Types.DiagramViews<View
     return value != null && typeof value === 'string' && Object.prototype.hasOwnProperty.call(this.views, value)
   }
 
-  readonly useViewId = (initialViewId: ViewId) => useGenericViewId({ initialViewId, isViewId: this.isViewId })
+  /**
+   * React hook to use location hash for ViewId.
+   * When the element with this hook is mounted, hash is set to `...#likec4={initialViewId}`
+   * When element with this hook is unmounted, `likec4` is removed from hash if `resetHashOnUnmount` is true (default: true)
+   * You can also provide `onReturnToInitial` callback to handle back navigation (when user goes beyond the initialViewId)
+   */
+  readonly useViewId = (props: {
+    initialViewId: ViewId
+    resetHashOnUnmount?: boolean
+    onReturnToInitial?: () => void
+  }) => useViewIdFromHash({ ...props, isViewId: this.isViewId })
 
   readonly Diagram: LikeC4.Diagram<ViewId> = forwardRef(({ viewId, ...props }, ref) => {
     const diagram = this.views[viewId]

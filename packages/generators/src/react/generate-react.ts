@@ -10,7 +10,7 @@ const componentName = (value: string): string => {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
 
-const generateViewId = (views: DiagramView[]) =>
+export const generateViewId = (views: DiagramView[]) =>
   joinToNode(views, view => expandToNode`'${view.id}'`, {
     separator: ' | '
   })
@@ -45,19 +45,22 @@ export function generateReact(views: DiagramView[]) {
       export type LikeC4ViewId = ${generateViewId(views)};
       export const LikeC4Views = {
     `
-    .appendNewLine()
     .indent({
       indentation: 2,
-      indentedChildren: indent => {
-        indent.append(
-          joinToNode(views, view => expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`, {
-            separator: ',',
-            appendNewLineIfNotEmpty: true
-          })
+      indentedChildren(indented) {
+        indented.appendNewLineIf(views.length > 1).append(
+          joinToNode(
+            views,
+            view => expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(view)} as unknown) as DiagramView`,
+            {
+              separator: ',',
+              appendNewLineIfNotEmpty: true
+            }
+          )
         )
       }
     })
-    .append('}  as const satisfies Record<LikeC4ViewId, DiagramView>', NL, NL).appendTemplate`
+    .append('} as const satisfies Record<LikeC4ViewId, DiagramView>', NL, NL).appendTemplate`
       export type LikeC4Views = typeof LikeC4Views
 
       export const {

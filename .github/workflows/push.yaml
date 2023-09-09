@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.ref }}-push-build
   cancel-in-progress: true
 
+env:
+  NODE_ENV: production
+
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
