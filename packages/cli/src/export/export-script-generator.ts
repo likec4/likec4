@@ -5,35 +5,21 @@ import { mkdirp } from 'mkdirp'
 import process from 'node:process'
 import { join, resolve, dirname } from 'node:path'
 import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import builtInPageTemplate from './puppeteer-page/template.html'
 
 const isNoSanbox = 'LIKEC4_NO_SANDBOX' in process.env
 
-export function generateViewsData(views: DiagramView[]) {
-  const out = new CompositeGeneratorNode()
-  out
-    .append('window.LikeC4Views = {', NL)
-    .indent({
-      indentation: 2,
-      indentedChildren: indent => {
-        indent.append(
-          joinToNode(views, view => expandToNode`'${view.id}': ${JSON5.stringify(view)}`, {
-            separator: ',',
-            appendNewLineIfNotEmpty: true
-          })
-        )
-      }
-    })
-    .append('}', NL, NL)
-  return toString(out)
-}
-
 type DiagramViewWithSourcePath = DiagramView & { sourcePath: string }
 
-export function generateExportScript(
-  views: DiagramViewWithSourcePath[],
-  puppeteerPageJSPath: string,
+export function generateExportScript({
+  views,
+  outputdir,
+  template = builtInPageTemplate
+}: {
+  views: DiagramViewWithSourcePath[]
   outputdir: string
-) {
+  template?: string
+}) {
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /* eslint-disable */
@@ -44,10 +30,9 @@ export function generateExportScript(
 
     ;(async () => {
   `
-    .indent({
-      indentation: 2,
-      indentedChildren(out) {
-        out.appendNewLine().appendTemplate`
+    .indent(
+      indent =>
+        indent.appendNewLine().appendTemplate`
       console.info('Launch puppeteer...')
 
       const browser = await puppeteer.launch({
@@ -61,66 +46,19 @@ export function generateExportScript(
         deviceScaleFactor: 2,
       });
 
-      await page.setContent(\`
-      <!DOCTYPE html>
-      <html lang="en" class="dark" data-theme="dark">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <style type="text/css">
-            html, body {
-              width: 100%;
-              height: 100%;
-            }
-            *,:before,:after {
-              box-sizing:border-box;
-              outline:none;
-              border-width:0;
-              border-style:solid;
-              border-color:transparent;
-              padding:0;
-              margin:0;
-            }
-            body {
-              padding: 40px 50px 60px 50px;
-            }
-            #root {
-              padding: 40px;
-              background-color: #1C1C1C;
-              border-radius: 8px;
-              box-shadow: rgba(0, 0, 0, 0.4) 0px 16px 40px;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="root"></div>
-        </body>
-      </html>
-      \`)
-
-      page.on('console', msg => console.log(msg.text()));
-      page.on('error', err => {
-        console.error(err)
-        process.exit(1)
-      });
-
-      console.info('Load puppeteer-page...')
-
-      await page.addScriptTag({
-        content: readFileSync(${JSON.stringify(puppeteerPageJSPath)}).toString(),
-        type: 'module'
-      })
+      await page.setContent(${JSON5.stringify(template)})
 
       console.info('Export:')
 
-      async function exportView(viewId, output, viewport) {
+      async function exportView(diagram, output) {
         try {
+          const viewport = await page.evaluate((d) => window.calcRequiredViewport(d), diagram)
           await page.setViewport({
             width: viewport.width,
             height: viewport.height,
             deviceScaleFactor: 2
           });
-          await page.evaluate((id) => window.renderView(id), viewId)
+          await page.evaluate((d) => window.renderLikeC4View(d), diagram)
           await page.waitForSelector('.konvajs-content')
           await page.waitForNetworkIdle({
             idleTime: 200,
@@ -133,7 +71,8 @@ export function generateExportScript(
           })
           console.info('  - ' + output)
         } catch (err) {
-          console.error(' fail ' + output, err)
+          console.error(' fail ' + output)
+          console.error(err)
         }
       }
     `
@@ -146,20 +85,26 @@ export function generateExportScript(
                 output = join(dirname(output), `${view.id}.png`)
                 // TODO: remove side effect
                 mkdirp.sync(dirname(output))
-                // 180 = all paddings 40 + 50 + 60 + 40
-                return expandToNode`await exportView('${view.id}', ${JSON.stringify(output)}, {width: ${
-                  view.width + 180
-                }, height: ${view.height + 180}});`
+                return expandToNode`
+                // render ${view.id}
+                await exportView(${JSON5.stringify(view)}, ${JSON.stringify(output)});
+              `
               },
               {
                 appendNewLineIfNotEmpty: true
               }
             )
           )
-          .appendNewLine()
-          .append('await browser.close();')
-      }
-    })
+          .append(NL).appendTemplate`
+           console.info('Closing browser...')
+           let tm = setTimeout(() => {
+              console.error('Operation Timed out...')
+              process.exit(1)
+           }, 5000)
+           await browser.close();
+           clearTimeout(tm);
+        `
+    )
     .appendNewLine()
     .append('})();')
     .appendNewLine()

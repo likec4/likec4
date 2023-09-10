@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style type="text/css">
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    *,
+    :before,
+    :after {
+      box-sizing: border-box;
+      outline: none;
+      border-width: 0;
+      border-style: solid;
+      border-color: transparent;
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      padding: 40px 50px 60px 50px;
+    }
+
+    #root {
+      padding: 40px;
+      background-color: #1C1C1C;
+      border-radius: 8px;
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 16px 40px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom": "https://esm.sh/react-dom@18.2.0/client",
+          "@likec4/diagrams": "https://esm.sh/@likec4/diagrams?bundle&pin=latest"
+        }
+      }
+  </script>
+  <script type="module">
+    import React from "react"
+    import { createRoot } from "react-dom"
+    import { Diagram } from "@likec4/diagrams"
+
+    window.calcRequiredViewport = (diagram) => {
+      return {
+        width: diagram.width + 180, // body padding 50+50 and root padding 40+40
+        height: diagram.height + 180 // body padding 40+60 and root padding 40+40
+      }
+    }
+
+    let root = null
+    window.renderLikeC4View = (diagram) => {
+      if (root) {
+        root.unmount()
+        root = null
+      }
+      root = createRoot(document.getElementById("root"))
+      root.render(
+        React.createElement(Diagram, {
+          animate: false,
+          zoomable: false,
+          pannable: false,
+          diagram: diagram,
+          width: diagram.width,
+          height: diagram.height,
+          initialPosition: {
+            x: 0,
+            y: 0,
+            scale: 1
+          },
+          padding: 0
+        })
+      )
+    }
+  </script>
+</body>
+</html>

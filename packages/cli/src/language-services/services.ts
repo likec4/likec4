@@ -39,7 +39,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   const modelLocator = services.likec4.ModelLocator
 
   console.log(dim('🔍 Searching for likec4 files in:'))
-  console.log('\t' + dim(workspace))
+  console.log('   ' + dim(workspace))
 
   await services.shared.workspace.WorkspaceManager.initializeWorkspace([
     {

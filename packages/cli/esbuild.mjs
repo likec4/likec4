@@ -24,37 +24,19 @@ const cli = {
   outdir: 'dist',
   logLevel: 'info',
   bundle: true,
+  loader: {
+    '.html': 'text',
+  },
   format: 'cjs',
   target: 'node16',
   platform: 'node',
   alias,
   color: true,
-  allowOverwrite: true,
   sourcemap: false,
   keepNames: true,
   legalComments: 'eof',
   minify: true
 }
-
-/**
- * @type {esbuild.BuildOptions}
- */
-const exportPage = {
-  entryPoints: ['src/export/puppeteer-page/index.tsx'],
-  outfile: 'dist/puppeteer-page.js',
-  logLevel: 'info',
-  bundle: true,
-  format: 'iife',
-  target: 'es2022',
-  platform: 'browser',
-  mainFields: ['browser', 'module', 'main'],
-  alias,
-  color: true,
-  allowOverwrite: true,
-  minify: true,
-  legalComments: 'none'
-}
-
 /**
  *
  * @param {esbuild.BuildResult} bundle
@@ -82,13 +64,9 @@ function failIfError(bundle) {
 
 if (!watch) {
   failIfError(await esbuild.build(cli))
-  failIfError(await esbuild.build(exportPage))
-
   process.exit(0)
 }
 
 const cliCtx = await esbuild.context(cli)
-const exportPageCtx = await esbuild.context(exportPage)
 await cliCtx.watch()
-await exportPageCtx.watch()
 console.info(' 👀 watching...')
