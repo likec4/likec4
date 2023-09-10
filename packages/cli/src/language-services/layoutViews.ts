@@ -7,7 +7,7 @@ export async function layoutViews(views: ComputedView[]): Promise<DiagramView[]>
   try {
     const diagrams = [] as DiagramView[]
     for (const view of views) {
-      console.debug(grey(`\tview: ${view.id}`))
+      console.debug(grey(`    view: ${view.id}`))
       diagrams.push(await dot.layout(view))
     }
     return diagrams

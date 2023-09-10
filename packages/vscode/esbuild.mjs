@@ -39,7 +39,6 @@ const nodeCfg = {
   alias: {
     ...alias
   },
-  color: true,
   sourcemap: true,
   sourcesContent: isDev,
   keepNames: true,
@@ -66,7 +65,6 @@ const webCfg = {
     ...alias
   },
   color: true,
-  allowOverwrite: true,
   sourcemap: true,
   sourcesContent: isDev,
   keepNames: true,
