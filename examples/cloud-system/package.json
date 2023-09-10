@@ -6,7 +6,7 @@
   "scripts": {
     "turbo-build": "run -T turbo run compile build --filter='example-cloud-system'",
     "compile": "tsc --noEmit",
-    "generate": "likec4 codegen views-data --output src/likec4.generated.ts",
+    "generate": "likec4 codegen react --output src/likec4.generated.tsx",
     "dev": "run generate && vite"
   },
   "dependencies": {

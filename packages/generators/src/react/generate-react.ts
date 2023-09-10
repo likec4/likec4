@@ -31,7 +31,7 @@ export function generateReact(views: DiagramView[]) {
        ******************************************************************************/
       /* eslint-disable */
 
-      import type { DiagramView } from '@likec4/core'
+      import type { DiagramView } from '@likec4/diagrams'
       import { LikeC4 } from '@likec4/diagrams'
     `.append(NL, NL)
 

@@ -2,7 +2,7 @@ import type { DiagramApi, DiagramNode } from '@likec4/diagrams'
 import { Diagram } from '@likec4/diagrams'
 import { useCallback, useRef, useState } from 'react'
 import type { LikeC4ViewId } from './likec4.generated'
-import { LikeC4Views, isLikeC4ViewId } from './likec4.generated'
+import { LikeC4Views, isViewId as isLikeC4ViewId } from './likec4.generated'
 import useTilg from 'tilg'
 
 // function from https://stackoverflow.com/a/15832662/512042
