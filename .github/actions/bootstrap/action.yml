@@ -42,5 +42,6 @@ runs:
     - name: install dependencies
       shell: bash
       env:
+        YARN_ENABLE_GLOBAL_CACHE: 'false'
         YARN_CACHE_FOLDER: .yarn/cache
       run: yarn install --immutable
