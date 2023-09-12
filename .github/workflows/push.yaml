@@ -57,7 +57,7 @@ jobs:
 
       - if: ${{ matrix.test_cli }}
         name: Run СLI test
-        run: yarn node integration/like4-cli-tests/run-suit.mjs
+        run: yarn test:integration
 
       - if: ${{ matrix.test_cli }}
         name: Upload CLI test artifacts

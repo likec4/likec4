@@ -103,9 +103,11 @@ export async function exportHandler({ workspaceDir, output, template, dryRun, sc
 
   if (template) {
     template = resolve(process.cwd(), template)
-    console.log(dim(`Custom template:`))
+    console.log(dim(`Use custom template:`))
     console.log(dim(`  ${template}`))
     template = await readFile(template, { encoding: 'utf-8' })
+  } else {
+    console.log(dim(`Use built-in template`))
   }
 
   await writeFile(exportJS, generateExportScript({ views, outputdir, ...(template ? { template } : {}) }))

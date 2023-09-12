@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
 import ExtensionController from '../common/ExtensionController'
 import { extensionTitle, globPattern, languageId } from '../const'
+import { disposable } from '../util'
 
 let controller: ExtensionController | undefined
 
@@ -27,9 +28,17 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
   context.subscriptions.push(fileSystemWatcher)
+  context.subscriptions.push(disposable(() => worker.terminate()))
+
+  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+    log: true
+  })
+  context.subscriptions.push(outputChannel)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
+    outputChannel,
+    traceOutputChannel: outputChannel,
     documentSelector: [
       { pattern: globPattern, scheme: 'file' },
       { pattern: globPattern, scheme: 'vscode-vfs' },

@@ -43,8 +43,15 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
   context.subscriptions.push(fileSystemWatcher)
 
+  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+    log: true
+  })
+  context.subscriptions.push(outputChannel)
+
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
+    outputChannel,
+    traceOutputChannel: outputChannel,
     documentSelector: [
       { pattern: globPattern, scheme: 'file' },
       { pattern: globPattern, scheme: 'vscode-vfs' },

@@ -4,6 +4,7 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
 import { disposeAll } from '../util'
+import { Logger } from '../logger'
 
 //#region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
@@ -46,7 +47,7 @@ export class Rpc implements vscode.Disposable {
   constructor(public readonly client: LanguageClient) {}
 
   dispose() {
-    console.debug(`[Extension.Rpc] dispose`)
+    Logger.info(`[Extension.Rpc] dispose`)
     disposeAll(this._disposables)
   }
 
@@ -63,7 +64,7 @@ export class Rpc implements vscode.Disposable {
 
   async rebuild(): Promise<DocumentUri[]> {
     const { docs } = await this.client.sendRequest(rebuild)
-    console.debug(`[Rpc] rebuild response: ${docs}`)
+    Logger.debug(`[Rpc] rebuild response: ${docs}`)
     return docs
   }
 

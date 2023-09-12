@@ -105,7 +105,7 @@ if (!watch) {
     await writeFile(metafile, JSON.stringify(webBundle.metafile))
   }
   if (webWorkerBundle.metafile) {
-    const metafile = path.resolve('dist', 'browser', 'web-worker.metafile.json')
+    const metafile = path.resolve('dist', 'browser', 'language-server-worker.metafile.json')
     await writeFile(metafile, JSON.stringify(webBundle.metafile))
   }
 

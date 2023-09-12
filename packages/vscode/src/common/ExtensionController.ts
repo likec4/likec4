@@ -3,7 +3,7 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 import { State } from 'vscode-languageclient'
 
 import TelemetryReporter from '@vscode/extension-telemetry'
-import { disposeAll } from '../util'
+import { disposable, disposeAll } from '../util'
 import { cmdOpenPreview, cmdRebuild, telemetryKey } from '../const'
 import { DotLayouter } from '@likec4/layouts'
 import { serializeError, type ViewID } from '@likec4/core'
@@ -11,6 +11,7 @@ import { C4Model } from './C4Model'
 import { Rpc } from './Rpc'
 import { PreviewPanel } from './panel/PreviewPanel'
 import { initWorkspace } from './initWorkspace'
+import { Logger, logError } from '../logger'
 
 export default class ExtensionController implements vscode.Disposable {
   private _disposables: vscode.Disposable[] = []
@@ -25,6 +26,17 @@ export default class ExtensionController implements vscode.Disposable {
 
     this._telemetry = new TelemetryReporter(telemetryKey)
     this._disposables.push(this._telemetry)
+
+    if ('debug' in _client.outputChannel) {
+      Logger.channel = _client.outputChannel as unknown as vscode.LogOutputChannel
+      Logger.telemetry = this._telemetry
+      this._disposables.push(
+        disposable(() => {
+          Logger.channel = null
+          Logger.telemetry = null
+        })
+      )
+    }
   }
 
   /**
@@ -32,16 +44,16 @@ export default class ExtensionController implements vscode.Disposable {
    */
   deactivate(): void {
     this.dispose()
-    console.log('[Extension] extension deactivated')
+    Logger.info('[Extension] extension deactivated')
   }
 
   dispose() {
     disposeAll(this._disposables)
-    console.log(`[Extension] ${this._disposables.length} items disposed`)
+    Logger.info(`[Extension] ${this._disposables.length} items disposed`)
     if (this._client.isRunning()) {
-      console.log(`[Extension] Stopping language client`)
+      Logger.info(`[Extension] Stopping language client`)
       void this._client.stop().finally(() => {
-        console.log(`[Extension] Language client stopped`)
+        Logger.info(`[Extension] Language client stopped`)
       })
     }
   }
@@ -52,30 +64,28 @@ export default class ExtensionController implements vscode.Disposable {
   public async activate() {
     try {
       const workspaceFolders = vscode.workspace.workspaceFolders ?? []
-      console.log(`[Extension] Activate in ${workspaceFolders.length} workspace folders`)
+      Logger.info(`[Extension] Activate in ${workspaceFolders.length} workspace folders`)
       workspaceFolders.forEach(w => {
-        console.log(`  ${w.name}: ${w.uri}`)
+        Logger.info(`  ${w.name}: ${w.uri}`)
       })
-      console.log(`[Extension] Starting LanguageClient...`)
+      Logger.info(`[Extension] Starting LanguageClient...`)
       this._client.outputChannel.show(true)
       await this._client.start()
-
       await this.waitClient()
 
-      console.log(`[Extension] LanguageClient is running`)
       const rpc = new Rpc(this._client)
 
-      await initWorkspace(rpc)
-
       const dot = new DotLayouter()
-      const c4model = new C4Model(this._context, rpc, dot)
+      const c4model = new C4Model(this._context, this._telemetry, rpc, dot)
       const previewPanel = new PreviewPanel(c4model, rpc, this._context)
 
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
         previewPanel.open(viewId ?? ('index' as ViewID))
+        this._telemetry.sendTelemetryEvent('open-preview')
       })
-      this.registerCommand(cmdRebuild, (viewId?: ViewID) => {
-        previewPanel.open(viewId ?? ('index' as ViewID))
+      this.registerCommand(cmdRebuild, () => {
+        rpc.rebuild().catch(e => logError(e))
+        this._telemetry.sendTelemetryEvent('rebuild')
       })
 
       this._disposables.push(
@@ -86,35 +96,43 @@ export default class ExtensionController implements vscode.Disposable {
         dot
       )
 
-      this._telemetry.sendTelemetryEvent('activation')
+      this._telemetry.sendTelemetryEvent(
+        'activation',
+        {},
+        {
+          workspaceFolders: workspaceFolders.length
+        }
+      )
+
+      await initWorkspace(rpc)
       //
     } catch (e) {
       const { message, error } = serializeError(e)
-      console.error(error)
       this._telemetry.sendDangerousTelemetryErrorEvent('activation-failed', { error: message })
+      logError(message)
       throw error
     }
   }
 
   private waitClient() {
-    console.debug(`[Extension] waitClient`)
+    Logger.info(`[Extension] waitClient`)
     return new Promise<void>((resolve, reject) => {
       if (this._client.state === State.Running) {
-        console.debug(`[Extension] LanguageClient is running already`)
+        Logger.info(`[Extension] LanguageClient is running already`)
         return resolve()
       }
       if (this._client.state === State.Stopped) {
         return reject('LanguageClient is stopped')
       }
       const subscription = this._client.onDidChangeState(e => {
-        console.debug(`[Extension] LanguageClient state change ${e.oldState} -> ${e.newState}`)
+        Logger.info(`[Extension] LanguageClient state change ${e.oldState} -> ${e.newState}`)
         if (e.newState === State.Running) {
-          console.debug(`[Extension] LanguageClient is running now`)
+          Logger.info(`[Extension] LanguageClient is running now`)
           subscription.dispose()
           return resolve()
         }
         if (e.newState === State.Stopped) {
-          console.debug(`[Extension] LanguageClient is stopped`)
+          Logger.info(`[Extension] LanguageClient is stopped`)
           subscription.dispose()
           return reject('LanguageClient is stopped')
         }

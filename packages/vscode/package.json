@@ -108,8 +108,8 @@
             "messages",
             "verbose"
           ],
-          "default": "messages",
-          "description": "Enable debug logging for the LikeC4 extension."
+          "default": "off",
+          "description": "Enable trace logging for the LikeC4 extension."
         },
         "likec4.trace.server": {
           "type": "string",
@@ -118,7 +118,7 @@
             "messages",
             "verbose"
           ],
-          "default": "messages",
+          "default": "off",
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
       }
@@ -137,9 +137,7 @@
     ]
   },
   "activationEvents": [
-    "workspaceContains:*.c4",
-    "workspaceContains:*.likec4",
-    "workspaceContains:*.like-c4",
+    "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "dist/node/extension.js",
@@ -154,11 +152,9 @@
     "@types/vscode": "~1.77.0",
     "@vscode/extension-telemetry": "^0.8.4",
     "@vscode/vsce": "^2.20.1",
-    "esbuild": "~0.17.0",
+    "esbuild": "^0.19.2",
     "esbuild-plugins-node-modules-polyfill": "^1.4.0",
-    "froebel": "^0.23.2",
     "langium": "^2.0.2",
-    "nanoid": "^4.0.2",
     "npm-run-all": "^4.1.5",
     "p-timeout": "^6.1.2",
     "path-browserify": "^1.0.1",
