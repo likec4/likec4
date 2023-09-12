@@ -26,6 +26,7 @@
     "dev": "turbo run dev --filter='./packages/*'",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "turbo run lint --continue --filter='./packages/*'",
     "vitest:ui": "vitest --ui",
     "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped"

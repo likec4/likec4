@@ -1,19 +1,23 @@
 model {
 
-  customer2 = actor 'Cloud System Customer' {
-    description 'The regular customer of the system'
+  premium = actor 'Premium Customer' {
+    description '
+      The customer of Cloud system
+      with Premium subscription
+    '
   }
 
-  customer2 -> cloud.ui.dashboard
+  premium -> cloud.ui.dashboard
 }
 
 
 views {
 
-
-  view of customer2 {
-    title "Overview Customer"
-    include *
+  view premium of premium {
+    include
+      *,
+      cloud,
+      premium -> cloud.ui.*
   }
 
 }

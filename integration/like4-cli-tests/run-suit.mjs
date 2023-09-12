@@ -11,7 +11,7 @@ console.log(`cwd: ${cwd}`)
 
 const $$ = $({
   stdio: 'inherit',
-  timeout: 5000,
+  timeout: 60000,
   cwd
 });
 

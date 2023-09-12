@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { globPattern } from '../const'
 import type { Rpc } from './Rpc'
-import { logError } from '../logger'
+import { Logger, logError } from '../logger'
 import { delay } from 'rambdax'
 
 // LSP web extensions does not have access to the file system (even virtual)
@@ -12,10 +12,10 @@ export async function initWorkspace(rpc: Rpc) {
     const uris = await vscode.workspace.findFiles(globPattern)
     const docs = uris.map(d => c2pConverter.asUri(d))
     if (docs.length <= 0) {
-      console.debug(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
+      Logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
       return
     }
-    console.debug(`[InitWorkspace] with pattern "${globPattern}" found:\n` + docs.map(s => '  - ' + s).join('\n'))
+    Logger.info(`[InitWorkspace] with pattern "${globPattern}" found:\n` + docs.map(s => '  - ' + s).join('\n'))
     for (const uri of uris) {
       try {
         // Langium started with EmptyFileSystem
@@ -25,13 +25,12 @@ export async function initWorkspace(rpc: Rpc) {
         logError(e)
       }
     }
-    console.debug(`[InitWorkspace] waiting 1s...`)
+    Logger.info(`[InitWorkspace] waiting 1s...`)
     await delay(1000)
 
-    console.debug(`[InitWorkspace] Send request buildDocuments`)
+    Logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
-    console.error(`[InitWorkspace] failed`)
     logError(e)
   }
 }

@@ -8,7 +8,7 @@ import { logError } from '../logger'
 //   }
 // }
 
-export function disponsable(callOnDispose: () => void) {
+export function disposable(callOnDispose: () => void) {
   let isDisposed = false
   return new vscode.Disposable(() => {
     if (isDisposed) return

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { normalizeError, serializeError } from '@likec4/core'
+import { normalizeError } from '@likec4/core'
 
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 let isSilent = false
@@ -45,5 +45,6 @@ export function logWarnError(err: unknown): void {
     logger.warn(err)
     return
   }
-  logger.warn(serializeError(err).message)
+  const error = normalizeError(err)
+  logger.warn(`${error.name}: ${error.message}`)
 }

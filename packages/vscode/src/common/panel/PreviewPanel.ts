@@ -4,7 +4,7 @@ import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
 import { disposeAll, getNonce } from '../../util'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import * as vscode from 'vscode'
-import { logError } from '../../logger'
+import { Logger, logError } from '../../logger'
 import type { C4Model } from '../C4Model'
 import type { Rpc } from '../Rpc'
 import type { Location } from 'vscode-languageclient'
@@ -27,16 +27,19 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     private rpc: Rpc,
     private context: vscode.ExtensionContext
   ) {}
+
   public dispose() {
-    console.debug(`[Extension.PreviewPanel] dispose`)
+    Logger.debug(`[Extension.PreviewPanel] dispose`)
     this.close()
     disposeAll(this._disposables)
   }
 
   async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: unknown) {
     this.currentViewId = null
-    this.panel = webviewPanel
-    this.initPanel()
+    if (this.panel) {
+      logError(new Error('PreviewPanel is already initialized'))
+      return
+    }
     // TODO: refactor guard
     if (
       state != null &&
@@ -49,17 +52,18 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     ) {
       this.currentViewId = state.view.id as ViewID
     }
+    this.panel = webviewPanel
+    this.initPanel()
     return Promise.resolve()
   }
 
   public open(viewId: ViewID) {
-    console.debug(`[Extension.PreviewPanel] open ${viewId}`)
+    Logger.debug(`[Extension.PreviewPanel] open ${viewId}`)
     if (this.panel) {
       this.panel.reveal(undefined, true)
       this.subscribeToModel(viewId)
       return
     }
-    // this.telemetry.sendTelemetryEvent('PreviewPanel.open')
     this.currentViewId = viewId
     this.panel = this.createWebviewPanel()
     this.initPanel()
@@ -77,7 +81,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
 
   private unsubscribe() {
     if (this.listener) {
-      console.debug(`[Extension.PreviewPanel] unsubscribe`)
+      Logger.debug(`[Extension.PreviewPanel] unsubscribe`)
       this.listener.dispose()
       this.listener = null
     }
@@ -91,7 +95,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     const onDidReceiveMessage = this.panel.webview.onDidReceiveMessage(this.onWebviewMessage)
 
     const onDidChangeViewState = this.panel.onDidChangeViewState(({ webviewPanel }) => {
-      console.debug(`[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`)
+      Logger.debug(`[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`)
       if (!webviewPanel.visible) {
         this.unsubscribe()
       }
@@ -99,7 +103,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
 
     this.panel.onDidDispose(
       () => {
-        console.debug(`[Extension.PreviewPanel.panel] onDidDispose`)
+        Logger.debug(`[Extension.PreviewPanel.panel] onDidDispose`)
         onDidReceiveMessage.dispose()
         onDidChangeViewState.dispose()
         this.panel = null
@@ -113,7 +117,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
   }
 
   private close() {
-    console.debug(`[Extension.PreviewPanel] close`)
+    Logger.debug(`[Extension.PreviewPanel] close`)
     // this.telemetry.sendTelemetryEvent('PreviewPanel.close')
     this.unsubscribe()
     this.panel?.dispose()
@@ -123,15 +127,15 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
 
   private sendUpdate(view: DiagramView) {
     if (!this.panel) {
-      console.warn(`[Extension.PreviewPanel] sendUpdate failed, panel is not initialized`)
+      Logger.warn(`[Extension.PreviewPanel] sendUpdate failed, panel is not initialized`)
       this.unsubscribe()
       return
     }
     if (!this.panel.visible) {
-      console.debug(`[Extension.PreviewPanel] sendUpdate ignore, panel is not visible`)
+      Logger.debug(`[Extension.PreviewPanel] sendUpdate ignore, panel is not visible`)
       return
     }
-    console.debug(`[Extension.PreviewPanel] sendUpdate view=${view.id}`)
+    Logger.debug(`[Extension.PreviewPanel] sendUpdate view=${view.id}`)
     this.panel.title = view.title ?? 'Untitled'
     void this.panel.webview
       .postMessage({
@@ -141,7 +145,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
       .then(
         posted => {
           if (!posted) {
-            console.warn('sendUpdate: message not posted')
+            Logger.warn('[Extension.PreviewPanel] sendUpdate: message not posted')
           }
         },
         err => logError(err)
@@ -173,7 +177,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
   }
 
   private onWebviewMessage = (message: PanelToExtensionProtocol) => {
-    console.debug(`from webview: ${message.kind}`, message)
+    Logger.debug(`[Extension.PreviewPanel] from webview: ${message.kind}`)
     switch (message.kind) {
       case 'close': {
         this.close()
@@ -183,7 +187,7 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
         if (this.currentViewId) {
           this.subscribeToModel(this.currentViewId)
         } else {
-          console.warn('ready: currentViewId is not set')
+          Logger.warn('[Extension.PreviewPanel] on ready: currentViewId is not set')
         }
         return
       }
