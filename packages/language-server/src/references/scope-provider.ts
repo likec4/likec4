@@ -16,7 +16,7 @@ import {
   toDocumentSegment
 } from 'langium'
 import { ast } from '../ast'
-import { elementRef, isElementRefHead, parentStrictElementRef } from '../elementRef'
+import { elementRef, isElementRefHead, parentFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
@@ -104,7 +104,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (isElementRefHead(container)) {
             return this.getGlobalScope(referenceType)
           }
-          const parent = parentStrictElementRef(container)
+          const parent = parentFqnElementRef(container)
           return new StreamScope(this.directChildrenOf(parent))
         }
         if (ast.isElementRef(container) && !isElementRefHead(container)) {

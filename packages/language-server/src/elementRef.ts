@@ -11,6 +11,10 @@ export function isElementRefHead(node: ast.ElementRef | ast.StrictElementRef) {
   nonexhaustive(node)
 }
 
+/**
+ * Returns referenced AST Element
+ *
+ */
 export function elementRef(node: ast.ElementRef | ast.StrictElementRef) {
   invariant(isElementRefHead(node), 'Expected head ElementRef')
   while (node.next) {
@@ -19,7 +23,11 @@ export function elementRef(node: ast.ElementRef | ast.StrictElementRef) {
   return node.el.ref
 }
 
-export function strictElementRefFqn(node: ast.StrictElementRef): c4.Fqn {
+/**
+ * Returns FQN of strictElementRef
+ * a.b.c.d - for c node returns a.b
+ */
+export function fqnElementRef(node: ast.StrictElementRef): c4.Fqn {
   invariant(isElementRefHead(node), 'Expected head StrictElementRef')
   const name = [node.el.$refText]
   let child = node.next
@@ -30,7 +38,11 @@ export function strictElementRefFqn(node: ast.StrictElementRef): c4.Fqn {
   return name.join('.') as c4.Fqn
 }
 
-export function parentStrictElementRef(node: ast.StrictElementRef): c4.Fqn {
+/**
+ * Returns parent FQN
+ * a.b.c.d - for c node returns a.b
+ */
+export function parentFqnElementRef(node: ast.StrictElementRef): c4.Fqn {
   invariant(!isElementRefHead(node), 'Expected next StrictElementRef')
   const path = []
   let parent = node.$container

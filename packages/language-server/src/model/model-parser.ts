@@ -16,7 +16,7 @@ import {
   toElementStyle,
   toElementStyleExcludeDefaults
 } from '../ast'
-import { elementRef, strictElementRefFqn } from '../elementRef'
+import { elementRef, fqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
@@ -265,7 +265,7 @@ export class LikeC4ModelParser {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
-    let id = astNode.name as c4.ViewID | undefined
+    let id = astNode.name
     if (!id) {
       const doc = getDocument(astNode).uri.toString()
       id = objectHash({
@@ -281,12 +281,12 @@ export class LikeC4ModelParser {
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
 
     const basic: ParsedAstElementView = {
-      id,
+      id: id as c4.ViewID,
       astPath,
       ...(title && { title }),
       ...(description && { description }),
       ...(tags && { tags }),
-      ...(links && isNonEmptyArray(links) && { links }),
+      ...(isNonEmptyArray(links) && { links }),
       rules: body.rules.flatMap(n => {
         try {
           return this.parseViewRule(n)
@@ -300,7 +300,7 @@ export class LikeC4ModelParser {
     if ('viewOf' in astNode) {
       const viewOfEl = elementRef(astNode.viewOf)
       const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-      invariant(viewOf, 'StrictElementViews viewOf is not resolved: ' + astNode.$cstNode?.text)
+      invariant(viewOf, ' viewOf is not resolved: ' + astNode.$cstNode?.text)
       return {
         ...basic,
         viewOf
@@ -309,7 +309,7 @@ export class LikeC4ModelParser {
 
     if ('extends' in astNode) {
       const extendsView = astNode.extends.view.ref
-      invariant(extendsView?.name, 'ExtendElementView extends is not resolved: ' + astNode.$cstNode?.text)
+      invariant(extendsView?.name, 'view extends is not resolved: ' + astNode.$cstNode?.text)
       return {
         ...basic,
         extends: extendsView.name as c4.ViewID
@@ -321,7 +321,7 @@ export class LikeC4ModelParser {
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {
     if (ast.isExtendElement(node)) {
-      return strictElementRefFqn(node.element)
+      return fqnElementRef(node.element)
     }
     const fqn = this.fqnIndex.getFqn(node)
     invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)

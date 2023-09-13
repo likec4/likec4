@@ -1,40 +1,20 @@
 import { allPass, find } from 'remeda'
-import { nonNullable, nonexhaustive } from '../errors'
+import { nonNullable } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
   DefaultElementShape,
   DefaultThemeColor,
-  Expr,
-  isStrictElementView,
   isViewRuleAutoLayout,
-  isViewRuleExpression,
   isViewRuleStyle,
-  type BasicElementView,
   type ComputedNode,
   type ComputedView,
   type Element,
-  type Fqn,
-  type StrictElementView
+  type ElementView,
+  type Fqn
 } from '../types'
 import { compareByFqnHierarchically, isAncestor, isSameHierarchy, parentFqn } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
 import { ComputeCtx } from './compute-ctx'
-import {
-  excludeElementKindOrTag,
-  excludeElementRef,
-  excludeInOutExpr,
-  excludeIncomingExpr,
-  excludeOutgoingExpr,
-  excludeRelationExpr,
-  excludeWildcardRef,
-  includeElementKindOrTag,
-  includeElementRef,
-  includeInOutExpr,
-  includeIncomingExpr,
-  includeOutgoingExpr,
-  includeRelationExpr,
-  includeWildcardRef
-} from './compute-predicates'
 import { applyViewRuleStyles } from './utils/applyViewRuleStyles'
 import { sortNodes } from './utils/sortNodes'
 
@@ -73,48 +53,9 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
   )
 }
 
-export function computeElementView(view: BasicElementView | StrictElementView, index: ModelIndex): ComputedView {
-  const rootElement = isStrictElementView(view) ? view.viewOf : null
-  let ctx = new ComputeCtx(index, rootElement)
-  const rulesInclude = view.rules.filter(isViewRuleExpression)
-  if (rootElement && rulesInclude.length == 0) {
-    ctx = ctx.include({
-      elements: [index.find(rootElement)]
-    })
-  }
-  for (const { isInclude, exprs } of rulesInclude) {
-    for (const expr of exprs) {
-      if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
-        ctx = isInclude ? includeElementKindOrTag(ctx, expr) : excludeElementKindOrTag(ctx, expr)
-        continue
-      }
-      if (Expr.isElementRef(expr)) {
-        ctx = isInclude ? includeElementRef(ctx, expr) : excludeElementRef(ctx, expr)
-        continue
-      }
-      if (Expr.isWildcard(expr)) {
-        ctx = isInclude ? includeWildcardRef(ctx, expr) : excludeWildcardRef(ctx, expr)
-        continue
-      }
-      if (Expr.isIncoming(expr)) {
-        ctx = isInclude ? includeIncomingExpr(ctx, expr) : excludeIncomingExpr(ctx, expr)
-        continue
-      }
-      if (Expr.isOutgoing(expr)) {
-        ctx = isInclude ? includeOutgoingExpr(ctx, expr) : excludeOutgoingExpr(ctx, expr)
-        continue
-      }
-      if (Expr.isInOut(expr)) {
-        ctx = isInclude ? includeInOutExpr(ctx, expr) : excludeInOutExpr(ctx, expr)
-        continue
-      }
-      if (Expr.isRelation(expr)) {
-        ctx = isInclude ? includeRelationExpr(ctx, expr) : excludeRelationExpr(ctx, expr)
-        continue
-      }
-      nonexhaustive(expr)
-    }
-  }
+export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
+  const ctx = ComputeCtx.create(view, index)
+
   // All "predicated" elements (including implicit ones)
   // From bottom to top
   const allElements = [...ctx.elements, ...ctx.implicits].sort(compareByFqnHierarchically).reverse()

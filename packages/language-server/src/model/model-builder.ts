@@ -107,25 +107,23 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     }
   }
 
-  const resolveViewExtends = (
-    view: c4.ElementView,
-    all: Record<c4.ViewID, c4.ElementView>
-  ): c4.BasicElementView | c4.StrictElementView | null => {
+  const mergeViewExtends = (view: c4.ElementView, all: Record<c4.ViewID, c4.ElementView>): c4.ElementView | null => {
     if ('extends' in view) {
-      const { extends: extendsFrom, rules, ...rest } = view
       const base = all[view.extends]
       if (!base) {
         logWarnError(`No base view found for ${view.id} (extends ${view.extends})`)
         return null
       }
-      const mergedBase = resolveViewExtends(base, R.omit(all, [base.id, view.id]))
+      const mergedBase = mergeViewExtends(base, R.omit(all, [base.id, view.id]))
       if (!mergedBase) {
+        // Most probably a cycle
+        logWarnError(`No merged base view found for ${view.id} (extends ${view.extends})`)
         return null
       }
       return {
         ...mergedBase,
-        ...rest,
-        rules: [...mergedBase.rules, ...rules]
+        ...view,
+        rules: [...mergedBase.rules, ...view.rules]
       }
     }
     return view
@@ -140,15 +138,15 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     return null
   }
 
-  const elementViews = R.pipe(
+  const allViews = R.pipe(
     R.flatMap(docs, d => d.c4Views),
     R.map(toModelElementView),
     R.compact,
     R.mapToObj(v => [v.id, v])
   )
   const views = R.pipe(
-    R.values(elementViews),
-    R.map(v => resolveViewExtends(v, elementViews)),
+    R.values(allViews),
+    R.map(v => mergeViewExtends(v, allViews)),
     R.compact,
     R.map(toComputedView),
     R.compact
