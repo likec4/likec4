@@ -120,8 +120,8 @@ View:
 
 ElementView:
   'view' name=Name? (
-    {infer ExtendElementView} 'extends' extends=ElementViewRef |
-    {infer StrictElementView} 'of' viewOf=ElementRef
+    'extends' extends=ElementViewRef |
+    'of' viewOf=ElementRef
   )? body=ElementViewBody;
 
 ElementViewRef:

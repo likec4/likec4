@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import stripIndent from 'strip-indent'
 import type { TestFunction } from 'vitest'
-import { vi, test as viTest } from 'vitest'
+import { test as viTest } from 'vitest'
 import { createTestServices } from '../../test'
-
-vi.mock('../../logger')
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   const result = ['']

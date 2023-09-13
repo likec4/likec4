@@ -4,13 +4,7 @@ import { DocumentState, getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
 import { Disposable, type CancellationToken } from 'vscode-languageserver-protocol'
-import type {
-  LikeC4LangiumDocument,
-  ParsedAstBasicElementView,
-  ParsedAstElement,
-  ParsedAstElementView,
-  ParsedAstRelation
-} from '../ast'
+import type { LikeC4LangiumDocument, ParsedAstElement, ParsedAstElementView, ParsedAstRelation } from '../ast'
 import {
   ElementViewOps,
   ast,
@@ -274,28 +268,10 @@ export class LikeC4ModelParser {
     let id = astNode.name as c4.ViewID | undefined
     if (!id) {
       const doc = getDocument(astNode).uri.toString()
-      // if (ast.isStrictElementView(astNode)) {
-      //   const viewOfEl = elementRef(astNode.viewOf)
-      //   const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-      //   invariant(viewOf, 'ElementView viewOf is not resolved: ' + astNode.$cstNode?.text)
-      //   id = objectHash({
-      //     doc,
-      //     astPath,
-      //     viewOf
-      //   }) as c4.ViewID
-      // } else if (ast.isExtendElementView(astNode)) {
-      //   invariant(astNode.extends.ref, 'ExtendElementView extends is not resolved: ' + astNode.$cstNode?.text)
-      //   id = objectHash({
-      //     doc,
-      //     astPath,
-      //     extends: astNode.extends.ref.name as c4.ViewID
-      //   }) as c4.ViewID
-      // } else {
       id = objectHash({
         doc,
         astPath
       }) as c4.ViewID
-      // }
     }
 
     const title = body.props.find(p => p.key === 'title')?.value
@@ -304,7 +280,7 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
 
-    const basic: ParsedAstBasicElementView = {
+    const basic: ParsedAstElementView = {
       id,
       astPath,
       ...(title && { title }),
@@ -321,7 +297,7 @@ export class LikeC4ModelParser {
       })
     }
 
-    if (ast.isStrictElementView(astNode)) {
+    if ('viewOf' in astNode) {
       const viewOfEl = elementRef(astNode.viewOf)
       const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
       invariant(viewOf, 'StrictElementViews viewOf is not resolved: ' + astNode.$cstNode?.text)
@@ -331,8 +307,8 @@ export class LikeC4ModelParser {
       }
     }
 
-    if (ast.isExtendElementView(astNode)) {
-      const extendsView = astNode.extends.ref
+    if ('extends' in astNode) {
+      const extendsView = astNode.extends.view.ref
       invariant(extendsView?.name, 'ExtendElementView extends is not resolved: ' + astNode.$cstNode?.text)
       return {
         ...basic,
