@@ -45,16 +45,24 @@ export interface ParsedAstRelation {
   title: string
 }
 
-export interface ParsedAstElementView {
+export interface ParsedAstBasicElementView {
   id: c4.ViewID
   astPath: string
-  viewOf?: c4.Fqn
   title?: string
   description?: string
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<string>
   rules: c4.ViewRule[]
 }
+
+export interface ParsedAstStrictElementView extends ParsedAstBasicElementView {
+  viewOf: c4.Fqn
+}
+export interface ParsedAstExtendsElementView extends ParsedAstBasicElementView {
+  extends: c4.ViewID
+}
+
+export type ParsedAstElementView = ParsedAstStrictElementView | ParsedAstExtendsElementView | ParsedAstBasicElementView
 
 const idattr = Symbol.for('idattr')
 export const ElementViewOps = {

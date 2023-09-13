@@ -42,9 +42,58 @@ describe('views', () => {
       }
     }`
 
-  test('viewOf').valid`${model}
+  test('view of').valid`${model}
     views {
       view index of system.backend {
+        include *
+      }
+    }`
+
+  test('noname extends').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view extends index {
+        include *
+      }
+      view extends index {
+        include *
+      }
+    }`
+
+  test('named extends').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view index2 extends index {
+        include *
+      }
+      view index3 extends index {
+        include *
+      }
+    }`
+
+  test('extends from view of').valid`${model}
+    views {
+      view index of system.backend {
+        include *
+      }
+      view extends index {
+        include *
+      }
+    }`
+
+  test('chained extends').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view index2 extends index {
+        include *
+      }
+      view index3 extends index2 {
         include *
       }
     }`

@@ -92,7 +92,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     try {
       // eslint-disable-next-line prefer-const
       let { astPath, rules, title, description, tags, links, ...model } = view
-      if (!title && view.viewOf) {
+      if (!title && 'viewOf' in view) {
         title = elements[view.viewOf]?.title
       }
       if (!title && view.id === 'index') {

@@ -203,10 +203,18 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
 
-    if (node.viewOf) {
+    if (ast.isStrictElementView(node)) {
       acceptor({
         node,
         keyword: 'of',
+        type: SemanticTokenTypes.keyword
+      })
+    }
+
+    if (ast.isExtendElementView(node)) {
+      acceptor({
+        node,
+        keyword: 'extends',
         type: SemanticTokenTypes.keyword
       })
     }

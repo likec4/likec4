@@ -81,11 +81,15 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return this.uniqueDescedants(() => elementRef(extend.element))
   }
 
-  private scopeElementView({ viewOf }: ast.ElementView): Stream<AstNodeDescription> {
-    if (!viewOf) {
-      return EMPTY_STREAM
+  private scopeElementView(view: ast.ElementView): Stream<AstNodeDescription> {
+    // if (ast.isExtendElementView(view) && view.extends.ref) {
+    //   return this.scopeElementView(view.extends.ref)
+    // }
+    if (ast.isStrictElementView(view)) {
+      const viewOf = view.viewOf
+      return this.uniqueDescedants(() => elementRef(viewOf))
     }
-    return this.uniqueDescedants(() => elementRef(viewOf))
+    return EMPTY_STREAM
   }
 
   override getScope(context: ReferenceInfo): Scope {
@@ -135,7 +139,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (ast.isExtendElementBody(container)) {
             scopes.push(this.scopeExtendElement(container.$container))
           }
-          if (ast.isViewRule(container)) {
+          if (ast.isElementViewBody(container)) {
             scopes.push(this.scopeElementView(container.$container))
           }
         }
@@ -152,6 +156,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
    * Create a global scope filtered for the given reference type.
    */
   protected override getGlobalScope(referenceType: string): Scope {
-    return new StreamScope(this.indexManager.allElements(referenceType))
+    const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
+    return new StreamScope(this.indexManager.allElements().filter(byReferenceType))
   }
 }

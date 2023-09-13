@@ -5,14 +5,16 @@ import {
   DefaultElementShape,
   DefaultThemeColor,
   Expr,
+  isStrictElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
   isViewRuleStyle,
+  type BasicElementView,
   type ComputedNode,
+  type ComputedView,
   type Element,
-  type ElementView,
   type Fqn,
-  type ComputedView
+  type StrictElementView
 } from '../types'
 import { compareByFqnHierarchically, isAncestor, isSameHierarchy, parentFqn } from '../utils'
 import { EdgeBuilder } from './EdgeBuilder'
@@ -71,8 +73,8 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
   )
 }
 
-export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
-  const rootElement = view.viewOf ?? null
+export function computeElementView(view: BasicElementView | StrictElementView, index: ModelIndex): ComputedView {
+  const rootElement = isStrictElementView(view) ? view.viewOf : null
   let ctx = new ComputeCtx(index, rootElement)
   const rulesInclude = view.rules.filter(isViewRuleExpression)
   if (rootElement && rulesInclude.length == 0) {
@@ -132,10 +134,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     if (!source) {
       continue
     }
-    const target = find(
-      allElements,
-      allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)])
-    )
+    const target = find(allElements, allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)]))
     if (!target) {
       continue
     }

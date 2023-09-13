@@ -99,7 +99,7 @@ export class LikeC4ModelLocator {
       let targetNode = node.$cstNode
       if (node.name) {
         targetNode = findNodeForProperty(node.$cstNode, 'name') ?? targetNode
-      } else if (node.viewOf) {
+      } else if (ast.isStrictElementView(node)) {
         targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
       }
       if (!targetNode) {

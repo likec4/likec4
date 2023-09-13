@@ -36,12 +36,26 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 
 export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
-export interface ElementView {
+export interface BasicElementView {
   readonly id: ViewID
-  readonly viewOf?: Fqn
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag> | null
   readonly links: NonEmptyArray<string> | null
   readonly rules: ViewRule[]
 }
+export interface StrictElementView extends BasicElementView {
+  readonly viewOf: Fqn
+}
+export function isStrictElementView(view: ElementView): view is StrictElementView {
+  return 'viewOf' in view
+}
+
+export interface ExtendsElementView extends BasicElementView {
+  readonly extends: ViewID
+}
+export function isExtendsElementView(view: ElementView): view is ExtendsElementView {
+  return 'extends' in view
+}
+
+export type ElementView = StrictElementView | ExtendsElementView | BasicElementView
