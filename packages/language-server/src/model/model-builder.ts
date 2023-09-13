@@ -88,44 +88,71 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
 
   const modelIndex = ModelIndex.from({ elements, relations })
 
-  const toModelView = (view: ParsedAstElementView): c4.ComputedView | null => {
-    try {
-      // eslint-disable-next-line prefer-const
-      let { astPath, rules, title, description, tags, links, ...model } = view
-      if (!title && 'viewOf' in view) {
-        title = elements[view.viewOf]?.title
-      }
-      if (!title && view.id === 'index') {
-        title = 'Landscape view'
-      }
-      const computeResult = computeView(
-        {
-          ...model,
-          title: title ?? null,
-          description: description ?? null,
-          tags: tags ?? null,
-          links: links ?? null,
-          rules: clone(rules)
-        },
-        modelIndex
-      )
-      if (!computeResult.isSuccess) {
-        logWarnError(computeResult.error)
-        return null
-      }
-      return computeResult.view
-    } catch (e) {
-      logError(e)
-      return null
+  const toModelElementView = (view: ParsedAstElementView): c4.ElementView | null => {
+    // eslint-disable-next-line prefer-const
+    let { astPath, rules, title, description, tags, links, ...model } = view
+    if (!title && 'viewOf' in view) {
+      title = elements[view.viewOf]?.title
+    }
+    if (!title && view.id === 'index') {
+      title = 'Landscape view'
+    }
+    return {
+      ...model,
+      title: title ?? null,
+      description: description ?? null,
+      tags: tags ?? null,
+      links: links ?? null,
+      rules: clone(rules)
     }
   }
 
-  const views = R.pipe(
+  const resolveViewExtends = (
+    view: c4.ElementView,
+    all: Record<c4.ViewID, c4.ElementView>
+  ): c4.BasicElementView | c4.StrictElementView | null => {
+    if ('extends' in view) {
+      const { extends: extendsFrom, rules, ...rest } = view
+      const base = all[view.extends]
+      if (!base) {
+        logWarnError(`No base view found for ${view.id} (extends ${view.extends})`)
+        return null
+      }
+      const mergedBase = resolveViewExtends(base, R.omit(all, [base.id, view.id]))
+      if (!mergedBase) {
+        return null
+      }
+      return {
+        ...mergedBase,
+        ...rest,
+        rules: [...mergedBase.rules, ...rules]
+      }
+    }
+    return view
+  }
+
+  const toComputedView = (view: c4.BasicElementView | c4.StrictElementView): c4.ComputedView | null => {
+    const result = computeView(view, modelIndex)
+    if (result.isSuccess) {
+      return result.view
+    }
+    logWarnError(result.error)
+    return null
+  }
+
+  const elementViews = R.pipe(
     R.flatMap(docs, d => d.c4Views),
-    R.map(toModelView),
+    R.map(toModelElementView),
+    R.compact,
+    R.mapToObj(v => [v.id, v])
+  )
+  const views = R.pipe(
+    R.values(elementViews),
+    R.map(v => resolveViewExtends(v, elementViews)),
+    R.compact,
+    R.map(toComputedView),
     R.compact
   )
-
   assignNavigateTo(views)
 
   return {
