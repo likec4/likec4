@@ -1473,7 +1473,7 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.4
     class-variance-authority: ^0.7.0
     clsx: ^1.2.1
-    jotai: ^2.2.3
+    jotai: ^2.4.2
     jotai-devtools: ^0.6.0
     langium: ^2.0.2
     lucide-react: ^0.268.0
@@ -8500,9 +8500,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.2.3":
-  version: 2.2.3
-  resolution: "jotai@npm:2.2.3"
+"jotai@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "jotai@npm:2.4.2"
   peerDependencies:
     "@types/react": ">=17.0.0"
     react: ">=17.0.0"
@@ -8511,7 +8511,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 41f6c65bd115c92679047aaff47dfe99f8ec27cb4517144bf82b0fdd10b3b6a8b12c5101a80d9147c4660f5c2207aef13df138c8dc24e739f89cb15062ff2bdd
+  checksum: b0f77afa692435ae922c8ad25f8642b98759127d686c6b3a6e8944b64f351be63e08b14bbcf7f6d2becdf68f2f5c1005b19c853271fc22052db783a2bce25efc
   languageName: node
   linkType: hard
 
