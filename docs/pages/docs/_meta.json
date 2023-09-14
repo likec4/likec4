@@ -1,9 +1,9 @@
 {
   "index": {
-    "title": "Getting Started",
-    "theme": {
-      "pagination": false
-    }
+    "title": "Getting Started"
+  },
+  "tutorial": {
+    "title": "Tutorial"
   },
   "dsl": {
     "title": "LikeC4 Language"
@@ -13,9 +13,5 @@
   },
   "tools": {
     "title": "Tooling"
-  },
-  "playground": {
-    "title": "Open playground",
-    "href": "/playground/"
   }
 }

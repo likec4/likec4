@@ -58,7 +58,74 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "title": "",
     },
   },
-  "views": {},
+  "views": {
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "client:system",
+          "label": null,
+          "parent": null,
+          "relations": [
+            "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+          ],
+          "source": "client",
+          "target": "system",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "client",
+          "inEdges": [],
+          "kind": "user",
+          "links": null,
+          "outEdges": [
+            "client:system",
+          ],
+          "parent": null,
+          "shape": "person",
+          "tags": null,
+          "technology": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system",
+          "inEdges": [
+            "client:system",
+          ],
+          "kind": "component",
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "system",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
 }
 `;
 

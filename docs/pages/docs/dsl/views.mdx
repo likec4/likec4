@@ -50,10 +50,10 @@ views {
 }
 ```
 
-### View Root Element
+### View Of ...
 
-View may have a root element (`view of ..`).  
-Then it inherits the scope of the root element:
+View may be defined for some element (`view of ..`).  
+Then it inherits the scope of this element:
 
 ```likec4 filename="views.c4"
 views {
@@ -131,17 +131,18 @@ Predicates are applied in same the order as defined in view.
 `exclude` applies only to elements/relationships included before.
 
 ```likec4
-view {
+view of bigbank {
   // rules may be merged
   include
     customer,
     bigbank,
     customer -> bigbank.*
 
-  // include all children of bigbank
-  include bigbank.*
-  // but exclude webApplication
-  exclude bigbank.webApplication
+  // exclude all children of bigbank
+  exclude bigbank.*
+
+  // but include webApplication
+  include bigbank.webApplication
 }
 ```
 
@@ -210,7 +211,7 @@ views {
 
 The predicates and style rules of extended views are merged with the ones from ancestors.
 
-Extended view also inherits the scope of the parent:
+Extended views also inherit the scope:
 
 ```likec4 filename="views.c4"
 views {

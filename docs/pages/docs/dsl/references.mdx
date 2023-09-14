@@ -75,7 +75,7 @@ model {
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
 </Info>
 
-In LikeC4, the element name besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, until it stays unique.
+In LikeC4, the element, besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, if it stays unique.
 
 We may reference something that is not yet defined but will be hoisted later.  
 The relationship on line 8 references `graphql` defined below on line 15:
