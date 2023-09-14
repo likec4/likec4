@@ -165,14 +165,63 @@ view apiApp of internetBankingSystem.apiApplication {
     color secondary
   }
 
-  // apply only to apiApplication and its descdendants
+  // apply only to apiApplication and its descendants
   style apiApplication, apiApplication.* {
     color primary
   }
 
-  // apply only to tagged elements
+  // apply only to the tagged elements
   style element.tag = #deprecated {
     color muted
   }
+}
+```
+
+## Extend views
+
+It is possible to extend views, to avoid duplication or, for example, create "slides" for a presentation:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+  
+  view view2 extends view1 {  
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+  
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+    
+    include * -> some.backend
+  }
+
+}
+```
+
+The predicates and style rules of extended views are merged with the ones from ancestors.
+
+Extended view also inherits the scope of the parent:
+
+```likec4 filename="views.c4"
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {  
+    include api // ✅ This is OK, references 'cloud.backend.api'  
+  }
+
 }
 ```
