@@ -1385,7 +1385,7 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@types/node": ^16.11.16
+    "@types/node": ^16.18.50
     commander: ^11.0.0
     esbuild: ^0.19.2
     execa: ^8.0.1
@@ -3504,10 +3504,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.16":
-  version: 16.18.38
-  resolution: "@types/node@npm:16.18.38"
-  checksum: a3baa141e49ce94486f083eea1240cf38479a73ba663e1bf3f52f85b466125821b6e3ea85ded38fde3901530aca4601291395a50eefcea533a4f3b45171bda28
+"@types/node@npm:^16.18.50":
+  version: 16.18.50
+  resolution: "@types/node@npm:16.18.50"
+  checksum: 8aec1eaf83407197ec2fe947182c238f49b82a7aace867cee1f81f72eb8a76c3c8b2adb1fd356e7443317cffb2546708da8934299a579edd25e3160bf7af30a1
   languageName: node
   linkType: hard
 
@@ -8887,7 +8887,7 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": ^16.11.16
+    "@types/node": ^16.18.50
     "@types/vscode": ~1.77.0
     "@vscode/extension-telemetry": ^0.8.4
     "@vscode/vsce": ^2.20.1

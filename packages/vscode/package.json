@@ -48,7 +48,7 @@
   },
   "engines": {
     "vscode": "^1.77.0",
-    "node": ">=16"
+    "node": ">=v16.20.2"
   },
   "keywords": [
     "architecture",
@@ -148,7 +148,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^16.11.16",
+    "@types/node": "^16.18.50",
     "@types/vscode": "~1.77.0",
     "@vscode/extension-telemetry": "^0.8.4",
     "@vscode/vsce": "^2.20.1",
