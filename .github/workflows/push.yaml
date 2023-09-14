@@ -1,11 +1,8 @@
-name: Build and Test [Push]
+name: Build and Test
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches-ignore:
-      - "releases/*"
-      - "renovate/*"
   push:
     tags-ignore:
       - "**"
@@ -22,7 +19,14 @@ env:
 
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    # If on pull request, don't run for releases or renovate branches
+    if: |
+      !contains(github.event.head_commit.message, 'ci skip') && (
+        github.event_name == 'push' || (
+          !startsWith(github.head_ref, 'releases/') &&
+          !startsWith(github.head_ref, 'renovate/')
+        )
+      )
     timeout-minutes: 10
     strategy:
       fail-fast: false
