@@ -121,6 +121,26 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     R.compact,
     R.mapToObj(v => [v.id, v])
   )
+  // add index view if not present
+  if (!('index' in views)) {
+    views['index' as ViewID] = {
+      id: 'index' as ViewID,
+      title: 'Landscape',
+      description: null,
+      tags: null,
+      links: null,
+      rules: [
+        {
+          isInclude: true,
+          exprs: [
+            {
+              wildcard: true
+            }
+          ]
+        }
+      ]
+    }
+  }
 
   return {
     elements,
