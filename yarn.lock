@@ -1231,14 +1231,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "@hpcc-js/wasm@npm:2.13.1"
+"@hpcc-js/wasm@npm:^2.14.0":
+  version: 2.14.0
+  resolution: "@hpcc-js/wasm@npm:2.14.0"
   dependencies:
     yargs: 17.7.2
   bin:
     dot-wasm: bin/dot-wasm.js
-  checksum: bdc290a118d4a191d9136b1be6c10bc1d4d1d8325e85c4e9786f6a644845d237ac43a8a452ab74b880a8ec16e645dea629734205e051eb91620dd932a9f59ae2
+  checksum: 672330257ceb70fa4da088cbcc7d6488bfd13ccc4e2323963216a71dfa9f0375189049c96d3ead5ffcb7a8429dcce1227191347a37e3a421f2c314a9989341f8
   languageName: node
   linkType: hard
 
@@ -1567,7 +1567,7 @@ __metadata:
   dependencies:
     "@dagrejs/dagre": ^0.8.0
     "@dagrejs/graphlib": ^2.1.13
-    "@hpcc-js/wasm": ^2.13.1
+    "@hpcc-js/wasm": ^2.14.0
     "@likec4/core": "workspace:*"
     "@types/node": ^18.15.11
     indent-string: ^5.0.0
