@@ -2,8 +2,6 @@ name: auto assign
 on:
   issues:
     types: [opened]
-  pull_request:
-    types: [opened]
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -16,4 +14,3 @@ jobs:
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: davydkov
-          
