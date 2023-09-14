@@ -30,7 +30,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.3",
   "scripts": {
     "generate:full": "yarn workspace @likec4/cli run build && run generate",
     "generate": "yarn node '../cli/bin/likec4' codegen react $INIT_CWD/src-dev/likec4",
