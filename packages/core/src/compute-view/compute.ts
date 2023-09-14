@@ -57,25 +57,6 @@ export function computeView(view: ElementView, index: ModelIndex): ComputeViewRe
 //       return []
 //     }
 //   })
-
-//   const mergeExtends = (view: ExtendsElementView): [ExtendsElementView, ComputeCtx] => {
-//     const base = allViews[view.extends]
-//     invariant(base, `Cannot find base view ${view.extends} for ${view.id}`)
-//     let baseCtx = cache.get(base)
-//     if (!baseCtx) {
-//       if (isExtendsElementView(base)) {
-//         const [baseView, baseCtx] = mergeExtends(base)
-//         cache.set(base, baseCtx)
-//       } else {
-//         throw new InvalidModelError(`Cannot find ComputeCtx of base view ${view.extends} for ${view.id}`)
-//       }
-//     }
-//     const [baseView, baseCtx] = isExtendsElementView(base) ? mergeExtends(base) : [base, cache.get(base)]
-//     invariant(baseCtx, `Cannot find ComputeCtx of base view ${view.extends} for ${view.id}`)
-//     const ctx = baseCtx.processViewRules(view.rules.filter(isViewRuleExpression))
-//     return [{...baseView, ...view, rules: baseView.rules.concat(view.rules)}, ctx]
-//   }
-
 // }
 
 export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {

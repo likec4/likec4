@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type { BaseErrorOptions } from './_base'
 import { BaseError } from './_base'
 
@@ -11,9 +12,9 @@ export class NullableError extends BaseError {
 
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
-export function nonNullable<T>(value: T): T & {} {
+export function nonNullable<T>(value: T, message?: string): T & {} {
   if (typeof value === 'undefined' || value == null) {
-    throw new NullableError(`Expected defined value, but received ${value}`)
+    throw new NullableError(message ?? `Expected defined value, but received ${value}`)
   }
   return value
 }

@@ -1,6 +1,6 @@
-import { isExtendsElementView, type ElementView, type ViewID } from '../types'
-import { InvalidModelError, invariant, nonNullable } from '../errors'
 import pkg from '@dagrejs/graphlib'
+import { invariant, nonNullable } from '../errors'
+import { isExtendsElementView, type ElementView, type ViewID } from '../types'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
@@ -8,6 +8,7 @@ const { Graph, alg } = pkg
 
 /**
  * Resolve rules of extended views
+ * (Removes invalid views)
  */
 export function resolveRulesExtendedViews<V extends Record<ViewID, ElementView>>(unresolvedViews: V): V {
   const g = new Graph({
@@ -16,20 +17,25 @@ export function resolveRulesExtendedViews<V extends Record<ViewID, ElementView>>
     compound: false
   })
   for (const view of Object.values(unresolvedViews)) {
-    g.setNode(view.id)
-    if ('extends' in view) {
-      invariant(unresolvedViews[view.extends], `Cannot find base view '${view.extends}' for '${view.id}'`)
-      // g.setNode(view.extends)
+    if (!isExtendsElementView(view)) {
+      g.setNode(view.id)
+      continue
+    }
+    // this is an extends view
+    if (unresolvedViews[view.extends]) {
       g.setEdge(view.extends, view.id)
     }
   }
 
   if (!alg.isAcyclic(g)) {
-    throw new InvalidModelError('Circular view extends detected')
+    alg
+      .findCycles(g)
+      .flat()
+      .map(id => g.removeNode(id))
   }
 
   return alg.topsort(g).reduce((acc, id) => {
-    const view = nonNullable(unresolvedViews[id as ViewID])
+    const view = nonNullable(unresolvedViews[id as ViewID], `Cannot find view ${id}`)
     if (isExtendsElementView(view)) {
       const extendsFrom = acc[view.extends]
       invariant(extendsFrom, `Cannot find base view '${view.extends}' for '${view.id}'`)

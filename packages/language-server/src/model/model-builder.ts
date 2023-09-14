@@ -1,6 +1,16 @@
-import { ModelIndex, assignNavigateTo, compareByFqnHierarchically, computeView, parentFqn, type c4 } from '@likec4/core'
+import {
+  ModelIndex,
+  compareByFqnHierarchically,
+  parentFqn,
+  resolveRulesExtendedViews,
+  computeView,
+  type ViewID,
+  type c4,
+  assignNavigateTo,
+  type StrictElementView,
+  isStrictElementView
+} from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments } from 'langium'
-import { clone } from 'rambdax'
 import * as R from 'remeda'
 import type {
   ParsedAstElement,
@@ -86,9 +96,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     R.mapToObj(r => [r.id, r])
   )
 
-  const modelIndex = ModelIndex.from({ elements, relations })
-
-  const toModelElementView = (view: ParsedAstElementView): c4.ElementView | null => {
+  const toElementView = (view: ParsedAstElementView): c4.ElementView | null => {
     // eslint-disable-next-line prefer-const
     let { astPath, rules, title, description, tags, links, ...model } = view
     if (!title && 'viewOf' in view) {
@@ -103,60 +111,21 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
       description: description ?? null,
       tags: tags ?? null,
       links: links ?? null,
-      rules: clone(rules)
+      rules
     }
   }
 
-  const mergeViewExtends = (view: c4.ElementView, all: Record<c4.ViewID, c4.ElementView>): c4.ElementView | null => {
-    if ('extends' in view) {
-      const base = all[view.extends]
-      if (!base) {
-        logWarnError(`No base view found for ${view.id} (extends ${view.extends})`)
-        return null
-      }
-      const mergedBase = mergeViewExtends(base, R.omit(all, [base.id, view.id]))
-      if (!mergedBase) {
-        // Most probably a cycle
-        logWarnError(`No merged base view found for ${view.id} (extends ${view.extends})`)
-        return null
-      }
-      return {
-        ...mergedBase,
-        ...view,
-        rules: [...mergedBase.rules, ...view.rules]
-      }
-    }
-    return view
-  }
-
-  const toComputedView = (view: c4.BasicElementView | c4.StrictElementView): c4.ComputedView | null => {
-    const result = computeView(view, modelIndex)
-    if (result.isSuccess) {
-      return result.view
-    }
-    logWarnError(result.error)
-    return null
-  }
-
-  const allViews = R.pipe(
+  const views = R.pipe(
     R.flatMap(docs, d => d.c4Views),
-    R.map(toModelElementView),
+    R.map(toElementView),
     R.compact,
     R.mapToObj(v => [v.id, v])
   )
-  const views = R.pipe(
-    R.values(allViews),
-    R.map(v => mergeViewExtends(v, allViews)),
-    R.compact,
-    R.map(toComputedView),
-    R.compact
-  )
-  assignNavigateTo(views)
 
   return {
     elements,
     relations,
-    views: R.mapToObj(views, v => [v.id, v])
+    views: resolveRulesExtendedViews(views)
   }
 }
 
@@ -164,7 +133,7 @@ export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
 
   private readonly cachedModel: {
-    last?: c4.LikeC4Model | null
+    last?: c4.LikeC4RawModel | null
   } = {}
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
@@ -183,7 +152,7 @@ export class LikeC4ModelBuilder {
     return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
   }
 
-  public buildModel(): c4.LikeC4Model | null {
+  public buildRawModel(): c4.LikeC4RawModel | null {
     if ('last' in this.cachedModel) {
       logger.debug('[ModelBuilder] returning cached model')
       return this.cachedModel.last
@@ -200,6 +169,56 @@ export class LikeC4ModelBuilder {
       logError(e)
       return null
     }
+  }
+
+  public buildModel(): c4.LikeC4Model | null {
+    const model = this.buildRawModel()
+    if (!model) {
+      return null
+    }
+    const index = ModelIndex.from(model)
+
+    const views = R.pipe(
+      R.values(model.views),
+      R.map(view => computeView(view, index).view),
+      R.compact
+    )
+    assignNavigateTo(views)
+    return {
+      elements: model.elements,
+      relations: model.relations,
+      views: R.mapToObj(views, v => [v.id, v])
+    }
+  }
+
+  public computeView(viewId: ViewID): c4.ComputedView | null {
+    const model = this.buildRawModel()
+    const view = model?.views[viewId]
+    if (!view) {
+      logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+      return null
+    }
+    const result = computeView(view, ModelIndex.from(model))
+    if (!result.isSuccess) {
+      logError(result.error)
+      return null
+    }
+
+    const allElementViews = R.values(model.views).filter(
+      (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
+    )
+
+    const computedView = result.view
+
+    computedView.nodes.forEach(node => {
+      // find first element view that is not the current one
+      const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+      if (navigateTo) {
+        node.navigateTo = navigateTo.id
+      }
+    })
+
+    return computedView
   }
 
   private scheduledCb: NodeJS.Timeout | null = null

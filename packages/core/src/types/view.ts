@@ -38,6 +38,7 @@ export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
 export interface BasicElementView {
   readonly id: ViewID
+  readonly viewOf?: Fqn
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag> | null

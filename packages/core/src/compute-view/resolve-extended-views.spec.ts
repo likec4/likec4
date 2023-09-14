@@ -97,25 +97,43 @@ describe('resolveRulesExtendedViews', () => {
     })
   })
 
-  it('should throw on circular extends', () => {
-    const index: ElementView = {
-      id: 'index',
+  it('should skip circular extends', () => {
+    const index3: ElementView = {
+      id: 'index3',
+      extends: 'index4'
+    } as any
+    const index4: ElementView = {
+      id: 'index4',
       extends: 'index3'
     } as any
 
-    expect(() => {
-      resolveRulesExtendedViews(views(index3, index, index2))
-    }).toThrow('Circular view extends detected')
+    const result = resolveRulesExtendedViews(views(index3, index4, index, index2))
+
+    expect(result).toEqual({
+      index,
+      index2: {
+        id: 'index2',
+        extends: 'index',
+        rules: [viewRule1, viewRule2]
+      }
+    })
   })
 
-  it('should throw on non-existing base', () => {
-    const index4: ElementView = {
-      id: 'index4',
+  it('should skip with non-existing base', () => {
+    const index3: ElementView = {
+      id: 'index3',
       extends: 'oops'
     } as any
 
-    expect(() => {
-      resolveRulesExtendedViews(views(index3, index4, index, index2))
-    }).toThrow(`Cannot find base view 'oops' for 'index4'`)
+    const result = resolveRulesExtendedViews(views(index3, index, index2))
+
+    expect(result).toEqual({
+      index,
+      index2: {
+        id: 'index2',
+        extends: 'index',
+        rules: [viewRule1, viewRule2]
+      }
+    })
   })
 })

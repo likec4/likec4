@@ -25,6 +25,23 @@ export function registerProtocolHandlers(services: LikeC4Services) {
     return Promise.resolve({ model })
   })
 
+  connection.onRequest(Rpc.fetchRawModel, async _cancelToken => {
+    let rawmodel
+    try {
+      rawmodel = modelBuilder.buildRawModel() ?? null
+    } catch (e) {
+      rawmodel = null
+      logError(e)
+    }
+    return Promise.resolve({ rawmodel })
+  })
+
+  connection.onRequest(Rpc.computeView, ({ viewId }) => {
+    return {
+      view: modelBuilder.computeView(viewId)
+    }
+  })
+
   connection.onRequest(Rpc.rebuild, async cancelToken => {
     const changed = LangiumDocuments.all
       .map(d => {
