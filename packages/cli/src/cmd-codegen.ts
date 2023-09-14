@@ -1,6 +1,6 @@
 import { createArgument, createCommand } from '@commander-js/extra-typings'
 import type { DiagramView } from '@likec4/core'
-import { generateReact, generateViewsDataTs, generateD2 } from '@likec4/generators'
+import { generateReact, generateViewsDataTs, generateD2, generateMermaid } from '@likec4/generators'
 import { printToDot } from '@likec4/layouts'
 import { red, green, dim } from 'kleur/colors'
 import { mkdirp } from 'mkdirp'
@@ -81,6 +81,32 @@ async function codegenD2Action(workspaceDir: string, outputdir?: string) {
   }
 }
 
+async function codegenMermaidAction(workspaceDir: string, outputdir?: string) {
+  const { workspace, model } = await initLanguageServices({ workspaceDir })
+  console.log(dim(`🔍\tLayouting...`))
+
+  // const layout = await dotLayouter()
+  // const diagrams = await mapAsync(layout, values(model.views))
+  const diagrams = await layoutViews(values(model.views))
+
+  if (diagrams.length === 0) {
+    console.log(red(`No views found`))
+    process.exit(1)
+  }
+
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
+
+  await mkdirp(outputdir)
+
+  console.log(green('\nGenerated:'))
+  for (const diagram of diagrams) {
+    const generated = generateMermaid(diagram)
+    const output = path.resolve(outputdir, diagram.id + '.mmd')
+    await writeFile(output, generated)
+    console.log(' - ' + green(path.relative(process.cwd(), output)))
+  }
+}
+
 export const codegenCommand = () => {
   return createCommand('codegen')
     .summary('code-generator')
@@ -124,6 +150,17 @@ export const codegenCommand = () => {
         )
         .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) => codegenD2Action(sourcedir, output))
+    )
+    .addCommand(
+      createCommand('mermaid')
+      .alias('mmd')
+        .summary('generates Mermaid (.mmd) files')
+        .description('generates mmd files for each likec4 view')
+        .addArgument(
+          createArgument('workspace', 'directory with likec4 sources').argOptional().default(process.cwd(), '"."')
+        )
+        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
+        .action((sourcedir, { output }) => codegenMermaidAction(sourcedir, output))
     )
     .addHelpText(
       'afterAll',
