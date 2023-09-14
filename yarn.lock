@@ -1416,7 +1416,7 @@ __metadata:
     ts-custom-error: ^3.3.1
     typescript: ^5.2.2
     unbuild: ^2.0.0
-    vitest: ^0.34.3
+    vitest: ^0.34.4
   languageName: unknown
   linkType: soft
 
@@ -1534,7 +1534,7 @@ __metadata:
     langium: ^2.0.2
     rambdax: ^9.1.1
     typescript: ^5.2.2
-    vitest: ^0.34.3
+    vitest: ^0.34.4
   languageName: unknown
   linkType: soft
 
@@ -1554,7 +1554,7 @@ __metadata:
     remeda: ^1.24.0
     strip-indent: ^4.0.0
     typescript: ^5.2.2
-    vitest: ^0.34.3
+    vitest: ^0.34.4
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
     vscode-uri: ~3.0.7
@@ -1577,7 +1577,7 @@ __metadata:
     ts-graphviz: ^1.8.1
     type-fest: ^4.2.0
     typescript: ^5.2.2
-    vitest: ^0.34.3
+    vitest: ^0.34.4
     word-wrap: ^1.2.5
   languageName: unknown
   linkType: soft
@@ -3823,7 +3823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:^0.34.3":
+"@vitest/ui@npm:^0.34.4":
   version: 0.34.4
   resolution: "@vitest/ui@npm:0.34.4"
   dependencies:
@@ -8921,7 +8921,7 @@ __metadata:
     "@types/prettier": ^2.7.3
     "@typescript-eslint/eslint-plugin": ^6.6.0
     "@typescript-eslint/parser": ^6.6.0
-    "@vitest/ui": ^0.34.3
+    "@vitest/ui": ^0.34.4
     eslint: ^8.48.0
     execa: ^8.0.1
     husky: ^8.0.3
@@ -8932,7 +8932,7 @@ __metadata:
     turbo: ^1.10.13
     typescript: ^5.2.2
     vite: ^4.4.9
-    vitest: ^0.34.3
+    vitest: ^0.34.4
     vitest-github-actions-reporter: ^0.10.0
   languageName: unknown
   linkType: soft
@@ -14705,7 +14705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^0.34.3":
+"vitest@npm:^0.34.4":
   version: 0.34.4
   resolution: "vitest@npm:0.34.4"
   dependencies:
