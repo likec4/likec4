@@ -73,10 +73,14 @@ export default class ExtensionController implements vscode.Disposable {
       await this._client.start()
       await this.waitClient()
 
+      Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
+
       const rpc = new Rpc(this._client)
 
       const dot = new DotLayouter()
       const c4model = new C4Model(this._context, this._telemetry, rpc, dot)
+      c4model.turnOnTelemetry()
+
       const previewPanel = new PreviewPanel(c4model, rpc, this._context)
 
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
