@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import type { Fqn } from '../types'
+import { describe, expect, it } from 'vitest'
 import { fakeModel } from '../__test__'
+import type { Fqn } from '../types'
 import { ComputeCtx } from './compute-ctx'
 
 describe('ComputeCtx', () => {
@@ -17,18 +17,8 @@ describe('ComputeCtx', () => {
     support: index.find('support' as Fqn)
   }
 
-  beforeEach(() => {
-    ctx = new ComputeCtx(index, 'cloud' as Fqn)
-  })
-
   it('include elements', () => {
-    ctx = new ComputeCtx(
-      index,
-      null,
-      new Set([E.cloudBackendGraph]),
-      new Set(),
-      new Set([E.support, E.cloudFrontend]),
-    )
+    ctx = new ComputeCtx(index, null, new Set([E.cloudBackendGraph]), new Set(), new Set([E.support, E.cloudFrontend]))
     const newCtx = ctx.include({
       elements: [E.customer, E.cloud]
     })

@@ -16,7 +16,7 @@ import {
   toDocumentSegment
 } from 'langium'
 import { ast } from '../ast'
-import { elementRef, isElementRefHead, parentStrictElementRef } from '../elementRef'
+import { elementRef, isElementRefHead, parentFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
@@ -81,11 +81,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return this.uniqueDescedants(() => elementRef(extend.element))
   }
 
-  private scopeElementView({ viewOf }: ast.ElementView): Stream<AstNodeDescription> {
-    if (!viewOf) {
-      return EMPTY_STREAM
+  private scopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
+    if (ext) {
+      return stream([ext]).flatMap(v => {
+        const view = v.view.ref
+        return view ? this.scopeElementView(view) : EMPTY_STREAM
+      })
     }
-    return this.uniqueDescedants(() => elementRef(viewOf))
+    if (viewOf) {
+      return this.uniqueDescedants(() => elementRef(viewOf))
+    }
+    return EMPTY_STREAM
   }
 
   override getScope(context: ReferenceInfo): Scope {
@@ -98,7 +104,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (isElementRefHead(container)) {
             return this.getGlobalScope(referenceType)
           }
-          const parent = parentStrictElementRef(container)
+          const parent = parentFqnElementRef(container)
           return new StreamScope(this.directChildrenOf(parent))
         }
         if (ast.isElementRef(container) && !isElementRefHead(container)) {
@@ -135,7 +141,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (ast.isExtendElementBody(container)) {
             scopes.push(this.scopeExtendElement(container.$container))
           }
-          if (ast.isViewRule(container)) {
+          if (ast.isElementViewBody(container)) {
             scopes.push(this.scopeElementView(container.$container))
           }
         }

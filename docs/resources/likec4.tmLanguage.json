@@ -90,7 +90,7 @@
       }
     },
     {
-      "match": "\\b(view)\\s+([^\\W]+)\\s+(of)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\b(view)\\s+([^\\W]+)\\s+(of|extends)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -180,7 +180,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"
     },
     {
       "name": "variable.other.constant.likec4",

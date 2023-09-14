@@ -1,8 +1,9 @@
-import { compact, find, map, mapToObj } from 'remeda'
-import { ModelIndex } from '../model-index'
-import type { ComputedView, Element, ElementView, Fqn, Relation, RelationID, ViewID } from '../types'
+import { find } from 'rambdax'
+import type { BaseError } from '../errors'
+import { normalizeError } from '../errors'
+import type { ModelIndex } from '../model-index'
+import { type ComputedView, type ElementView, type Fqn, type ViewID } from '../types'
 import { computeElementView } from './compute-element-view'
-import { normalizeError, type BaseError } from '..'
 
 type ComputeViewResult =
   | {
@@ -30,36 +31,42 @@ export function computeView(view: ElementView, index: ModelIndex): ComputeViewRe
   }
 }
 
-export type CmpInputModel = {
-  elements: Record<Fqn, Element>
-  relations: Record<RelationID, Relation>
-  views: ElementView[]
-}
+// export type CmpInputModel = {
+//   elements: Record<Fqn, Element>
+//   relations: Record<RelationID, Relation>
+//   views: ElementView[]
+// }
 
-export type CmpOutputModel = {
-  elements: Record<Fqn, Element>
-  relations: Record<RelationID, Relation>
-  views: Record<ViewID, ComputedView>
-}
+// export type CmpOutputModel = {
+//   elements: Record<Fqn, Element>
+//   relations: Record<RelationID, Relation>
+//   views: Record<ViewID, ComputedView>
+// }
 
-export function computeViews(model: CmpInputModel): CmpOutputModel {
-  const index = ModelIndex.from(model)
-  const computedViews = compact(map(model.views, view => computeView(view, index).view))
-  return {
-    elements: model.elements,
-    relations: model.relations,
-    views: mapToObj(computedViews, view => [view.id, view])
-  }
-}
+// export function computeViews(allViews: Record<ViewID, ElementView>, index: ModelIndex): Record<ViewID, ComputedView> {
+//   const [viewExtends, views] = partition(values(allViews), isExtendsElementView)
+
+//   const cache = new WeakMap<ElementView, ComputeCtx>()
+
+//   const computedViews = views.flatMap(view => {
+//     const ctx = ComputeCtx.create(view, index)
+//     cache.set(view, ctx)
+//     try {
+//       return computeElementView(view, index, ctx)
+//     } catch (e) {
+//       return []
+//     }
+//   })
+// }
 
 export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R {
   const allElementViews = new Map<Fqn, ViewID[]>()
 
-  for (const { id, viewOf } of views) {
-    if (viewOf) {
-      const viewsOf = allElementViews.get(viewOf) ?? []
-      viewsOf.push(id)
-      allElementViews.set(viewOf, viewsOf)
+  for (const v of views) {
+    if (v.viewOf && !v.extends) {
+      const viewsOf = allElementViews.get(v.viewOf) ?? []
+      viewsOf.push(v.id)
+      allElementViews.set(v.viewOf, viewsOf)
     }
   }
 
@@ -67,7 +74,7 @@ export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R 
   for (const { id, nodes } of views) {
     for (const node of nodes) {
       // find first element view that is not the current one
-      const navigateTo = find(allElementViews.get(node.id) ?? [], v => v !== id)
+      const navigateTo = find(v => v !== id, allElementViews.get(node.id) ?? [])
       if (navigateTo) {
         node.navigateTo = navigateTo
       }

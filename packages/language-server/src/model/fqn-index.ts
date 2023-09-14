@@ -71,10 +71,11 @@ export class FqnIndex {
     return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
-  private entries() {
+  private entries(filterByFqn: (fqn: Fqn) => boolean = () => true): Stream<FqnIndexEntry> {
     return this.documents().flatMap(doc =>
       doc.c4fqns
         .entries()
+        .filter(([fqn]) => filterByFqn(fqn))
         .map(([fqn, entry]): FqnIndexEntry | null => {
           const el = entry.el.deref()
           if (el) {
@@ -115,8 +116,7 @@ export class FqnIndex {
 
   public directChildrenOf(parent: Fqn): Stream<FqnIndexEntry> {
     return stream([parent]).flatMap(_parent => {
-      const children = this.entries()
-        .filter(e => parentFqn(e.fqn) === _parent)
+      const children = this.entries(fqn => parentFqn(fqn) === _parent)
         .map((entry): [string, FqnIndexEntry] => [entry.name, entry])
         .toArray()
       if (children.length === 0) {
@@ -142,19 +142,17 @@ export class FqnIndex {
 
         const nested = new MultiMap<string, FqnIndexEntry>()
 
-        this.entries()
-          .filter(e => e.fqn.startsWith(prefix))
-          .forEach(e => {
-            const name = nameFromFqn(e.fqn)
-            const entry = { ...e, name }
-            // To keep direct children always
-            if (parentFqn(e.fqn) === parent) {
-              childrenNames.add(name)
-              nested.add(name, entry)
-            } else {
-              descedants.push(entry)
-            }
-          })
+        this.entries(f => f.startsWith(prefix)).forEach(e => {
+          const name = nameFromFqn(e.fqn)
+          const entry = { ...e, name }
+          // To keep direct children always
+          if (parentFqn(e.fqn) === parent) {
+            childrenNames.add(name)
+            nested.add(name, entry)
+          } else {
+            descedants.push(entry)
+          }
+        })
 
         if (nested.size + descedants.length === 0) {
           return null

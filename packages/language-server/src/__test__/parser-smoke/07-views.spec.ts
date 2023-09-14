@@ -1,37 +1,39 @@
-import { describe } from 'vitest'
+import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-const model = `
-    specification {
-      element component
-      tag epic-123
-      tag next
-    }
-    model {
-      component user
-      component system {
-        component backend {
-          component model
-          component api {
-            #next
-          }
-        }
-        component auth {
-          component api
-        }
-        component frontend
-      }
-      component infra {
-        component database
-      }
+vi.mock('../../logger')
 
-      backend.model -> infra.database
-      backend.api -> backend.model
-      auth.api -> backend.api
-      frontend -> auth.api
-      frontend -> backend.api
-      user -> frontend
+const model = `
+  specification {
+    element component
+    tag epic-123
+    tag next
+  }
+  model {
+    component user
+    component system {
+      component backend {
+        component model
+        component api {
+          #next
+        }
+      }
+      component auth {
+        component api
+      }
+      component frontend
     }
+    component infra {
+      component database
+    }
+
+    backend.model -> infra.database
+    backend.api -> backend.model
+    auth.api -> backend.api
+    frontend -> auth.api
+    frontend -> backend.api
+    user -> frontend
+  }
 `
 
 describe('views', () => {
@@ -42,9 +44,61 @@ describe('views', () => {
       }
     }`
 
-  test('viewOf').valid`${model}
+  test('view of').valid`${model}
     views {
       view index of system.backend {
+        include *
+      }
+    }`
+
+  test('extends without names').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view extends index {
+        include *
+      }
+      view extends index {
+        include *
+      }
+    }`
+
+  test('extends without name').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view index2 extends index {
+        include *
+      }
+      view index3 extends index {
+        include *
+      }
+    }`
+
+  test('extends from view of').valid`${model}
+    views {
+      view index of system.backend {
+        include *
+      }
+      view extends index {
+        include *
+      }
+      view index2 extends index {
+        include *
+      }
+    }`
+
+  test('chained extends').valid`${model}
+    views {
+      view index {
+        include *
+      }
+      view index2 extends index {
+        include *
+      }
+      view index3 extends index2 {
         include *
       }
     }`

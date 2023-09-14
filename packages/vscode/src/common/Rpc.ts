@@ -1,4 +1,4 @@
-import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core'
+import type { ComputedView, Fqn, LikeC4RawModel, RelationID, ViewID } from '@likec4/core'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -11,7 +11,8 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 //#endregion
 
 //#region To server
-const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
+const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>('likec4/fetchRaw')
+const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>('likec4/computeView')
 
 const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
 
@@ -58,8 +59,13 @@ export class Rpc implements vscode.Disposable {
   }
 
   async fetchModel() {
-    const { model } = await this.client.sendRequest(fetchModel)
-    return model
+    const { rawmodel } = await this.client.sendRequest(fetchRawModel)
+    return rawmodel
+  }
+
+  async computeView(viewId: ViewID) {
+    const { view } = await this.client.sendRequest(computeView, { viewId })
+    return view
   }
 
   async rebuild(): Promise<DocumentUri[]> {

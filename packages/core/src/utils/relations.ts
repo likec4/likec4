@@ -11,9 +11,7 @@ type Relation = {
 type RelationPredicate = (rel: Relation) => boolean
 
 export const compareRelations = <T extends { source: string; target: string }>(a: T, b: T) => {
-  return (
-    compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
-  )
+  return compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
 }
 
 const isInside = (parent: Fqn): RelationPredicate => {
@@ -35,7 +33,7 @@ const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
 }
 
 const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
-  return anyPass([isBetween(source, target), isBetween(target, source)])
+  return either(isBetween(source, target), isBetween(target, source))
 }
 
 const isIncoming = (target: Fqn): RelationPredicate => {

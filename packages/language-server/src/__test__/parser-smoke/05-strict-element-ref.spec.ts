@@ -1,5 +1,7 @@
-import { describe } from 'vitest'
+import { describe, vi } from 'vitest'
 import { test } from './asserts'
+
+vi.mock('../../logger')
 
 describe('05_StrictElementRef', () => {
   test('StrictElementRef').valid`
