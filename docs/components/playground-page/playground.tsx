@@ -30,6 +30,7 @@ import { diagramIdAtom, viewsReadyAtom } from './data'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
+import PlaygroundViewMermaid from './view-mmd'
 import { keys } from 'rambdax'
 import PlaygroundViewNotReady from './view-not-ready'
 
@@ -49,6 +50,8 @@ const renderView = (viewMode: Omit<ViewMode, 'diagram'>, diagram: DiagramView) =
       return <PlaygroundViewD2 diagram={diagram} />
     case 'dot':
       return <PlaygroundViewDot diagram={diagram} />
+    case 'mermaid':
+      return <PlaygroundViewMermaid diagram={diagram} />
     default:
       return <PlaygroundViewNotReady diagram={diagram} />
   }
