@@ -116,15 +116,26 @@ ModelViews:
   CloseBlock;
 
 View:
-  {infer ElementView} 'view' name=Name? ('of' viewOf=ElementRef)? OpenBlock
-    tags=Tags?
-    (props+=(ViewProperty | LinkProperty))*
-    rules+=(
-      ViewRuleExpression |
-      ViewRuleStyle |
-      ViewRuleAutoLayout
-    )*
-  CloseBlock;
+  ElementView;
+
+ElementView:
+  'view' name=Name? (
+    'extends' extends=ElementViewRef |
+    'of' viewOf=ElementRef
+  )? body=ElementViewBody;
+
+ElementViewRef:
+  view=[ElementView:Name];
+
+ElementViewBody: OpenBlock
+  tags=Tags?
+  (props+=(ViewProperty | LinkProperty))*
+  rules+=(
+    ViewRuleExpression |
+    ViewRuleStyle |
+    ViewRuleAutoLayout
+  )*
+CloseBlock;
 
 ViewProperty:
   key=('title' | 'description') Colon? value=STRING SemiColon?;

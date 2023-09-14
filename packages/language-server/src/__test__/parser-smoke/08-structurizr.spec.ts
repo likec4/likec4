@@ -1,5 +1,7 @@
-import { describe, test } from 'vitest'
+import { describe, test, vi } from 'vitest'
 import { valid } from './asserts'
+
+vi.mock('../../logger')
 
 const model = `
 specification {

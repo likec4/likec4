@@ -47,8 +47,9 @@ export interface ParsedAstRelation {
 
 export interface ParsedAstElementView {
   id: c4.ViewID
-  astPath: string
   viewOf?: c4.Fqn
+  extends?: c4.ViewID
+  astPath: string
   title?: string
   description?: string
   tags?: c4.NonEmptyArray<c4.Tag>

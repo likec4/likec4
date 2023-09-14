@@ -14,23 +14,28 @@ model {
     }
   }
 }
+views {
+  view v1 of system {
+    include *
+  }
+}
 `
 const document2 = `
-model {
-  extend system.sub {
-    component sub2 {
-      -> sub1
-    }
+views {
+  view v2 extends v1 {
+    include sub1
   }
 }
 `
 const document3 = `
-model {
-  system.sub1 -> system.sub2
+views {
+  view v3 extends v2 {
+    exclude sub
+  }
 }
 `
 
-test('parser smoke: ExtendsElement Scope', async () => {
+test('parser smoke: ExtendView Scope', async () => {
   const { parse, validateAll } = createTestServices()
   await parse(document1)
   await parse(document2)

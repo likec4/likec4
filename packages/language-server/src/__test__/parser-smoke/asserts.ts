@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import stripIndent from 'strip-indent'
 import type { TestFunction } from 'vitest'
-import { vi, test as viTest } from 'vitest'
+import { test as viTest } from 'vitest'
 import { createTestServices } from '../../test'
-
-vi.mock('../../logger')
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   const result = ['']
@@ -23,8 +21,8 @@ export const valid =
     expect.hasAssertions()
     const { validate } = createTestServices()
     const { diagnostics } = await validate(likec4(strings, ...expr))
-    const errors = diagnostics.map(d => d.message).join('\n')
-    expect(errors).to.be.empty
+    const errors = diagnostics.map(d => d.message)
+    expect(errors).toEqual([])
   }
 
 export const invalid =

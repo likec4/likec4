@@ -1,7 +1,8 @@
-import { invariant } from '@likec4/core'
 import type { ComputedView, DiagramView as LayoutedView, LikeC4Model, ViewID } from '@likec4/core'
+import { invariant } from '@likec4/core'
 import type { DotLayouter } from '@likec4/layouts'
-import { equals, debounce as debounceFn } from 'rambdax'
+import type TelemetryReporter from '@vscode/extension-telemetry'
+import { equals } from 'rambdax'
 import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
@@ -10,13 +11,12 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 import { Logger, logError } from '../logger'
 import { disposable, disposeAll } from '../util'
 import type { Rpc } from './Rpc'
-import type TelemetryReporter from '@vscode/extension-telemetry'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
   return x !== undefined && x !== null
 }
 
-const StateKeyLikeC4Model = 'c4model:last'
+const StateKeyLikeC4Model = 'c4model:last:views'
 
 export class C4Model implements vscode.Disposable {
   #activeSubscription: vscode.Disposable | null = null
@@ -25,7 +25,7 @@ export class C4Model implements vscode.Disposable {
 
   private _disposables: vscode.Disposable[] = []
 
-  private modelStream: MemoryStream<LikeC4Model>
+  private changesStream: MemoryStream<number>
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -33,39 +33,33 @@ export class C4Model implements vscode.Disposable {
     private rpc: Rpc,
     private dot: DotLayouter
   ) {
-    const fetchModelStream = xs
-      .create<number>({
-        start: listener => {
-          invariant(this.#activeSubscription == null, 'modelStream already started')
-          Logger.info('[Extension.C4Model.modelStream] subscribe onDidChangeModel')
-          const unsubscribe = this.rpc.onDidChangeModel(() => {
-            listener.next(1)
-          })
-          this.#activeSubscription = disposable(() => {
-            this.#activeSubscription = null
-            Logger.info('[Extension.C4Model.modelStream] unsubscribe onDidChangeModel')
-            unsubscribe.dispose()
-            listener.complete()
-          })
-          listener.next(0)
-        },
-        stop: () => {
-          Logger.info('[Extension.C4Model.modelStream] stop')
-          this.#activeSubscription?.dispose()
+    this.changesStream = xs.createWithMemory<number>({
+      start: listener => {
+        invariant(this.#activeSubscription == null, 'changesStream already started')
+        Logger.info('[Extension.C4Model.changesStream] subscribe onDidChangeModel')
+        let changes = 0
+        const unsubscribe = this.rpc.onDidChangeModel(() => {
+          listener.next(changes++)
+        })
+        this.#activeSubscription = disposable(() => {
           this.#activeSubscription = null
-        }
-      })
-      .compose(debounce(200))
-      .map(() => this.fetchModel())
-      .flatten()
+          Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
+          unsubscribe.dispose()
+          listener.complete()
+        })
+        listener.next(changes++)
+      },
+      stop: () => {
+        Logger.info('[Extension.C4Model.changesStream] stop')
+        this.#activeSubscription?.dispose()
+        this.#activeSubscription = null
+      }
+    })
 
-    this.#lastKnownModel = context.workspaceState.get<LikeC4Model>(StateKeyLikeC4Model) ?? null
-    if (this.#lastKnownModel) {
-      Logger.info('[Extension.C4Model.modelStream] startWith persisted from workspaceState')
-      this.modelStream = xs.merge(xs.of(this.#lastKnownModel), fetchModelStream).remember()
-    } else {
-      this.modelStream = fetchModelStream.remember()
+    if (telemetry.telemetryLevel === 'all') {
+      this._disposables.push(this.subscribeForTelemetry())
     }
+
     Logger.info(`[Extension.C4Model] created`)
   }
 
@@ -75,20 +69,20 @@ export class C4Model implements vscode.Disposable {
     this.#activeSubscription?.dispose()
   }
 
-  private persistToWorkspaceState = debounceFn((model: LikeC4Model) => {
-    if (equals(this.#lastKnownModel, model)) {
-      Logger.debug('[Extension.C4Model.fetchModel] skip persisting to workspaceState')
-      return
-    }
-    this.#lastKnownModel = model
-    this.context.workspaceState.update(StateKeyLikeC4Model, model).then(
-      () => Logger.debug('[Extension.C4Model.fetchModel] persist to workspaceState'),
-      err => logError(err)
-    )
-  }, 5000)
+  // private persistToWorkspaceState = debounceFn((model: LikeC4RawModel) => {
+  //   if (equals(this.#lastKnownModel, model)) {
+  //     Logger.debug('[Extension.C4Model.fetchModel] skip persisting to workspaceState')
+  //     return
+  //   }
+  //   this.#lastKnownModel = model
+  //   this.context.workspaceState.update(StateKeyLikeC4Model, model).then(
+  //     () => Logger.debug('[Extension.C4Model.fetchModel] persist to workspaceState'),
+  //     err => logError(err)
+  //   )
+  // }, 5000)
 
   private fetchModel() {
-    Logger.debug(`[Extension.C4Model] fetchModel`)
+    Logger.info(`[Extension.C4Model] fetchModel`)
     return xs
       .fromPromise(this.rpc.fetchModel())
       .filter(isNotNullish)
@@ -96,18 +90,16 @@ export class C4Model implements vscode.Disposable {
         logError(err)
         return xs.empty()
       })
-      .map(model => {
-        this.telemetry.sendTelemetryEvent(
-          'fetchModel',
-          {},
-          {
-            elements: Object.keys(model.elements).length,
-            relationships: Object.keys(model.relations).length,
-            views: Object.keys(model.views).length
-          }
-        )
-        this.persistToWorkspaceState(model)
-        return model
+  }
+
+  private fetchView(viewId: ViewID) {
+    Logger.info(`[Extension.C4Model] fetchView ${viewId}`)
+    return xs
+      .fromPromise(this.rpc.computeView(viewId))
+      .filter(isNotNullish)
+      .replaceError(err => {
+        logError(err)
+        return xs.empty()
       })
   }
 
@@ -121,9 +113,10 @@ export class C4Model implements vscode.Disposable {
 
   public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
     Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
-    const subscription = this.modelStream
-      .map(({ views }) => (viewId in views ? views[viewId] : null))
-      .filter(isNotNullish)
+    const subscription = this.changesStream
+      .compose(debounce(200))
+      .map(() => this.fetchView(viewId))
+      .flatten()
       .compose(dropRepeats<ComputedView>(equals))
       .map(view => this.layoutView(view))
       .flatten()
@@ -140,5 +133,29 @@ export class C4Model implements vscode.Disposable {
       Logger.info(`[Extension.C4Model.unsubscribe] -- ${viewId}`)
       subscription.unsubscribe()
     })
+  }
+
+  private subscribeForTelemetry() {
+    const fetchModel = xs
+      .periodic(5 * 60 * 1000)
+      .map(() => this.fetchModel())
+      .flatten()
+      .subscribe({
+        next: model => {
+          this.telemetry.sendTelemetryEvent(
+            'fetchModel',
+            {},
+            {
+              elements: Object.keys(model.elements).length,
+              relationships: Object.keys(model.relations).length,
+              views: Object.keys(model.views).length
+            }
+          )
+        },
+        error: err => {
+          logError(err)
+        }
+      })
+    return disposable(() => fetchModel.unsubscribe())
   }
 }

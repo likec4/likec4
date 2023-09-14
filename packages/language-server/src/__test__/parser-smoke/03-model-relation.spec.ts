@@ -1,5 +1,7 @@
-import { describe, test } from 'vitest'
+import { describe, test, vi } from 'vitest'
 import { invalid, valid } from './asserts'
+
+vi.mock('../../logger')
 
 describe('03_Relation', () => {
   test(
