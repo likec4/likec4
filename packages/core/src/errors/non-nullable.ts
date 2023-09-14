@@ -11,7 +11,7 @@ export class NullableError extends BaseError {
 
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
-export function nonNullable<T>(value: T): NonNullable<T> {
+export function nonNullable<T>(value: T): T & {} {
   if (typeof value === 'undefined' || value == null) {
     throw new NullableError(`Expected defined value, but received ${value}`)
   }
