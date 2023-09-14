@@ -1,15 +1,20 @@
 name: Build and Test [Push]
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches-ignore:
+      - "releases/*"
+      - "renovate/*"
   push:
     tags-ignore:
-      - "*"
+      - "**"
     branches-ignore:
       - "main"
       - "releases/*"
 
 concurrency:
-  group: ${{ github.ref }}-push-build
+  group:  ${{ github.workflow }}-${{github.event_name}}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -43,7 +48,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Init turborepo-cache
-        if: runner.os != 'Windows'
+        if: ${{ runner.os != 'Windows' && github.repository == 'like4/like4' }}
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build
