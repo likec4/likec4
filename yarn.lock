@@ -1547,7 +1547,7 @@ __metadata:
     "@types/object-hash": ^3.0.2
     langium: ^2.0.2
     langium-cli: ^2.0.1
-    nanoid: ^4.0.2
+    nanoid: ^5.0.1
     npm-run-all: ^4.1.5
     object-hash: ^3.0.0
     rambdax: ^9.1.1
@@ -10534,12 +10534,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "nanoid@npm:4.0.2"
+"nanoid@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "nanoid@npm:5.0.1"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 747c399cea4664dd0be1d0ec498ffd1ef8f1f5221676fc8b577e3f46f66d9afcddb9595d63d19a2e78d0bc6cc33984f65e66bf1682c850b9e26288883d96b53f
+  checksum: fb5a57ec0563f12f101129b2f11fe50505e5f1219760c43e6ae30fc0a0d2aa269985f6d07ddea15e3bd4b24751c9ef14fa8117cbc80d410726429e2b37a4b13f
   languageName: node
   linkType: hard
 

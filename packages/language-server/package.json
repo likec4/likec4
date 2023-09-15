@@ -44,7 +44,7 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "langium": "^2.0.2",
-    "nanoid": "^4.0.2",
+    "nanoid": "^5.0.1",
     "object-hash": "^3.0.0",
     "rambdax": "^9.1.1",
     "remeda": "^1.24.0",
