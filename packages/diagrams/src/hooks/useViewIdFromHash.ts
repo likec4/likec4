@@ -1,5 +1,4 @@
 import { isString } from '@likec4/core'
-import { useDebouncedEffect } from '@react-hookz/web/esm'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 function readViewIdFromUrl(url: string): string | null {
@@ -22,8 +21,10 @@ function writeViewId(viewId: string | null) {
   }
   const hashParams = new URLSearchParams(hash)
   if (viewId != null) {
-    hashParams.set('likec4', viewId)
-    window.location.hash = hashParams.toString()
+    if (hashParams.get('likec4') !== viewId) {
+      hashParams.set('likec4', viewId)
+      window.location.hash = hashParams.toString()
+    }
     return
   }
   if (viewId === null && hashParams.has('likec4')) {
@@ -46,7 +47,11 @@ export function useViewIdFromHash<ViewId extends string>({
   onReturnToInitial?: () => void
   isViewId?: (value: unknown) => value is ViewId
 }) {
-  const [viewId, setStateViewId] = useState(initialViewId)
+  const [viewId, setStateViewId] = useState(() => {
+    const id = readViewId()
+    // either from HASH or from props
+    return isViewId(id) ? id : initialViewId
+  })
 
   const viewIdRef = useRef(viewId)
   const prevIdRef = useRef<ViewId>()
@@ -59,19 +64,19 @@ export function useViewIdFromHash<ViewId extends string>({
   const onReturnRef = useRef(onReturnToInitial)
   onReturnRef.current = onReturnToInitial
 
-  useDebouncedEffect(
-    () => {
-      writeViewId(initialViewId)
-    },
-    [initialViewId],
-    300
-  )
+  // Write initial view id to HASH
+  useEffect(() => {
+    const tm = setTimeout(() => {
+      writeViewId(viewIdRef.current)
+    }, 300)
+    return () => clearTimeout(tm)
+  }, [])
 
   useEffect(() => {
     const onHashChange = (ev: HashChangeEvent) => {
       const newViewId = readViewIdFromUrl(ev.newURL)
       if (newViewId === null) {
-        // If we have any forwards, then we are going back
+        // If we had viewId on old URL, but not on new URL - we returned to initial
         const oldViewId = readViewIdFromUrl(ev.oldURL)
         if (oldViewId != null && onReturnRef.current) {
           onReturnRef.current?.()
@@ -82,19 +87,15 @@ export function useViewIdFromHash<ViewId extends string>({
         setStateViewId(newViewId)
       }
     }
-    window.addEventListener('hashchange', onHashChange, {
-      capture: true
-    })
+    window.addEventListener('hashchange', onHashChange)
 
     return () => {
-      window.removeEventListener('hashchange', onHashChange, {
-        capture: true
-      })
+      window.removeEventListener('hashchange', onHashChange)
       if (resetHashOnUnmount) {
         writeViewId(null)
       }
     }
-  }, [initialViewId])
+  }, [])
 
   const setViewId = useCallback((nextViewId: ViewId) => {
     if (isViewId(nextViewId) && nextViewId !== viewIdRef.current) {
