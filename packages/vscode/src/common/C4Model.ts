@@ -1,8 +1,8 @@
-import type { ComputedView, DiagramView as LayoutedView, LikeC4Model, ViewID } from '@likec4/core'
+import type { ComputedView, DiagramView as LayoutedView, LikeC4Model, LikeC4RawModel, ViewID } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import type { DotLayouter } from '@likec4/layouts'
 import type TelemetryReporter from '@vscode/extension-telemetry'
-import { equals, set } from 'rambdax'
+import { equals } from 'rambdax'
 import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
@@ -11,12 +11,13 @@ import dropRepeats from 'xstream/extra/dropRepeats'
 import { Logger, logError } from '../logger'
 import { disposable, disposeAll } from '../util'
 import type { Rpc } from './Rpc'
+import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
   return x !== undefined && x !== null
 }
 
-const StateKeyLikeC4Model = 'c4model:last:views'
+// const StateKeyLikeC4Model = 'c4model:last:views'
 
 export class C4Model implements vscode.Disposable {
   #activeSubscription: vscode.Disposable | null = null
@@ -121,37 +122,52 @@ export class C4Model implements vscode.Disposable {
   public turnOnTelemetry() {
     Logger.info(`[Extension.C4Model] turnOnTelemetry`)
 
-    // First send telemetry event after 1 minute
-    const first = setTimeout(() => void this.sendTelemetry(), 1000 * 60)
+    // Send telemetry event every 20 minutes
+    const TenMinutes = 1000 * 60 * 20
+    const telemetry = xs
+      .periodic(TenMinutes)
+      .startWith(0)
+      .map(() => xs.from(this.fetchTelemetry()))
+      .flatten()
+      .compose(dropRepeats((a, b) => equals(a.metrics, b.metrics)))
+      .map(({ metrics, ms }) => (metrics ? { ...metrics, ms } : null))
+      .filter(isNotNullish)
+      .subscribe({
+        next: metrics => {
+          this.sendTelemetry(metrics)
+        },
+        error: err => {
+          logError(err)
+        }
+      })
 
-    // Send telemetry event every 10 minutes
-    const TenMinutes = 1000 * 60 * 10
-    const interval = setInterval(() => void this.sendTelemetry(), TenMinutes)
     const stop = disposable(() => {
-      // Just in case we stop early
-      clearTimeout(first)
-      clearInterval(interval)
+      telemetry.unsubscribe()
     })
     this._disposables.push(stop)
     return stop
   }
 
-  private async sendTelemetry() {
-    Logger.info(`[Extension.C4Model.telemetry] fetchModel`)
-    try {
-      const model = await this.rpc.fetchModel()
-      if (model) {
-        this.telemetry.sendTelemetryEvent(
-          'model-metrics',
-          {},
-          {
+  private async fetchTelemetry() {
+    const t0 = performance.now()
+    const model = await this.rpc.fetchModel()
+    const t1 = performance.now()
+    return {
+      metrics: model
+        ? {
             elements: Object.keys(model.elements).length,
             relationships: Object.keys(model.relations).length,
             views: Object.keys(model.views).length
           }
-        )
-        Logger.info(`[Extension.C4Model.telemetry] send`)
-      }
+        : null,
+      ms: t1 - t0
+    }
+  }
+
+  private sendTelemetry(measurements: TelemetryEventMeasurements) {
+    try {
+      this.telemetry.sendTelemetryEvent('model-metrics', {}, measurements)
+      Logger.info(`[Extension.C4Model] send telemetry`)
     } catch (e) {
       logError(e)
     }
