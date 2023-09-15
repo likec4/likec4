@@ -1,7 +1,8 @@
-import { nonexhaustive, type DiagramEdge, type DiagramNode } from '@likec4/core'
+import { nonexhaustive, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
 import { Diagram } from '@likec4/diagrams'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
+import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ExtensionToPanelProtocol } from '../protocol'
 import {
@@ -27,6 +28,8 @@ const App = () => {
     }
   })
 
+  const viewsHistoryRef = useRef<DiagramView[]>(view ? [view] : [])
+
   useEffect(() => {
     if (view) {
       openView(view.id)
@@ -34,6 +37,24 @@ const App = () => {
       imReady()
     }
   }, [])
+
+  if (view) {
+    const [head, prev] = viewsHistoryRef.current
+    if (head && prev) {
+      if (view.id === prev.id) {
+        viewsHistoryRef.current.shift()
+      } else if (view.id !== head.id) {
+        viewsHistoryRef.current.unshift(view)
+      }
+      if (viewsHistoryRef.current.length > 20) {
+        viewsHistoryRef.current.pop()
+      }
+    } else {
+      if (!head || head.id !== view.id) {
+        viewsHistoryRef.current.unshift(view)
+      }
+    }
+  }
 
   useEventListener(window, 'message', ({ data }: MessageEvent<ExtensionToPanelProtocol>) => {
     switch (data.kind) {
@@ -123,6 +144,28 @@ const App = () => {
             <VSCodeProgressRing />
           </div>
         </>
+      )}
+      {viewsHistoryRef.current.length > 1 && (
+        <div className='likec4-toolbar'>
+          <VSCodeButton
+            appearance='icon'
+            onClick={e => {
+              e.stopPropagation()
+              const [_, prev] = viewsHistoryRef.current
+              if (prev) {
+                goToViewSource(prev.id)
+                openView(prev.id)
+                // optimistic update
+                updateState({
+                  view: prev,
+                  loading: false
+                })
+              }
+            }}
+          >
+            <ArrowLeftIcon />
+          </VSCodeButton>
+        </div>
       )}
     </div>
   )

@@ -32,10 +32,8 @@ body,
 
 .likec4-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  z-index: 1;
 }
 
 .likec4-diagram-loading-overlay {
@@ -57,4 +55,23 @@ div.likec4-diagram-loading {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+
+.likec4-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  justify-content: start;
+  /* background-color: var(--vscode-editor-background); */
+  opacity: 0.5;
+  display: grid;
+  padding: 0.25rem 0.5rem;
+  justify-content: start;
+  transition: all 0.15s ease-in-out;
+}
+.likec4-toolbar:hover {
+  opacity: 1;
 }
