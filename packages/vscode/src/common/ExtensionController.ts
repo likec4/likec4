@@ -4,7 +4,7 @@ import { State } from 'vscode-languageclient'
 
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { disposable, disposeAll } from '../util'
-import { cmdLocateElement, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
+import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { DotLayouter } from '@likec4/layouts'
 import { serializeError, type ViewID } from '@likec4/core'
 import { C4Model } from './C4Model'
