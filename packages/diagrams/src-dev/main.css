@@ -29,10 +29,12 @@ body {
 
 
 .dev-app {
-  flex-shrink: 0;
+  position: fixed;
+  inset: 0;
+  /* flex-shrink: 0;
   width: 400px;
   background-color: hsl(0deg 0% 37.21%);
   border-radius: 0.75rem;
   padding: 2rem;
-  margin: 2rem;
+  margin: 2rem; */
 }

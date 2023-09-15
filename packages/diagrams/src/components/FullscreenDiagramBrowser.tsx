@@ -23,9 +23,18 @@ export interface FullscreenDiagramBrowserProps<ViewId extends string>
    * render diagram at this initial position
    * and animate to fill the screen
    */
-  initialPosition: DiagramInitialPosition
+  initialPosition?: DiagramInitialPosition | undefined
 
-  onClose: () => void
+  /**
+   * @default true
+   */
+  closeOnEsc?: boolean | undefined
+  /**
+   * @default true
+   */
+  closeOnOutsideClick?: boolean | undefined
+
+  onClose?: (() => void) | undefined
 }
 
 export function FullscreenDiagramBrowser<ViewId extends string>({
@@ -33,12 +42,16 @@ export function FullscreenDiagramBrowser<ViewId extends string>({
   views,
   initialPosition,
   onClose,
+  closeOnEsc,
+  closeOnOutsideClick,
   ...props
 }: FullscreenDiagramBrowserProps<ViewId>) {
   const viewsRef = useSyncedRef(views)
   const [viewId, setViewId] = useViewIdFromHash({
     initialViewId,
-    onReturnToInitial: onClose
+    onReturnToInitial: () => {
+      onClose?.()
+    }
   })
   const diagram = views[viewId]
   invariant(diagram, `View "${viewId}" not found in views`)

@@ -9,10 +9,8 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true,
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
 
     /* Linting */
@@ -28,7 +26,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": "."
+    "baseUrl": ".",
+
+    "composite": true
   },
   "include": ["src/"],
   "exclude": ["node_modules", "dist"],

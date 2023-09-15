@@ -43,7 +43,7 @@ export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeSh
   })
 
   return (
-    <AnimatedGroup id={id} {...springs} {...listeners}>
+    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
