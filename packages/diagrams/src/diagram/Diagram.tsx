@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, KonvaCore, Layer } from '../konva'
 import { nonNullable } from '@likec4/core'
-import type { DiagramNode } from '@likec4/core'
+import type { DiagramNode, NodeId } from '@likec4/core'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
@@ -29,6 +29,21 @@ const useSyncedRef = <T extends object>(value: T) => {
 }
 
 const NoPadding = [0, 0, 0, 0] satisfies DiagramPaddings
+
+/**
+ * Returns NodeId of the DiagramNode that contains the given shape.
+ */
+function diagramNodeId(konvaNode: Konva.Node): NodeId | null {
+  let shape: Konva.Node | null = konvaNode
+  while (shape && shape.nodeType !== 'Stage') {
+    const name = shape.name()
+    if (name !== '') {
+      return name as NodeId
+    }
+    shape = shape.parent
+  }
+  return null
+}
 
 export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
@@ -180,8 +195,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     }
     const nodeSharedProps = {
       ...sharedProps,
-      onNodeClick,
-      onNodeContextMenu
+      onNodeClick
     }
 
     return (
@@ -195,20 +209,30 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         y={stageProps.y}
         scaleX={stageProps.scale}
         scaleY={stageProps.scale}
-        {...(onStageContextMenu && {
+        {...((onStageContextMenu || onNodeContextMenu) && {
           onContextMenu: e => {
             if (KonvaCore.isDragging() || !stageRef.current) {
               return
             }
-            if (e.target === stageRef.current) {
+            if (e.target === stageRef.current || !onNodeContextMenu) {
               e.cancelBubble = true
-              onStageContextMenu(stageRef.current, e)
+              onStageContextMenu?.(stageRef.current, e)
+              return
+            }
+            if (onNodeContextMenu) {
+              const nodeId = diagramNodeId(e.target)
+              const node = nodeId && refs.current.diagram.nodes.find(n => n.id === nodeId)
+              if (node) {
+                e.cancelBubble = true
+                onNodeContextMenu(node, e)
+                return
+              }
             }
           }
         })}
         {...(onStageClick && {
           onPointerClick: e => {
-            if (KonvaCore.isDragging() || !stageRef.current) {
+            if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
               return
             }
             if (e.target === stageRef.current || !onNodeClick) {
@@ -217,15 +241,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }
           }
         })}
-        onPointerDblClick={e => {
-          if (KonvaCore.isDragging() || !stageRef.current) {
-            return
+        {...(zoomable && {
+          onPointerDblClick: e => {
+            if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
+              return
+            }
+            if (e.target === stageRef.current || !onNodeClick) {
+              e.cancelBubble = true
+              centerAndFit()
+            }
           }
-          if (e.target === stageRef.current || !onNodeClick) {
-            e.cancelBubble = true
-            centerAndFit()
-          }
-        }}
+        })}
         {...useTouchHandlers(pannable, stageSpringApi)}
         {...useMouseWheel(zoomable, stageSpringApi)}
         {...props}

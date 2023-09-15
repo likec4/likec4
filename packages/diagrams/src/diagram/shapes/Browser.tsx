@@ -15,7 +15,7 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    <AnimatedGroup id={id} {...springs} {...listeners}>
+    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
       <AnimatedRect
         cornerRadius={6}
         shadowBlur={16}
@@ -31,14 +31,7 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
       <Circle x={16} y={15} radius={7} fill={colors.fill} />
       <Circle x={36} y={15} radius={7} fill={colors.fill} />
       <Circle x={56} y={15} radius={7} fill={colors.fill} />
-      <AnimatedRect
-        cornerRadius={5}
-        x={70}
-        y={7}
-        width={springs.width.to(w => w - 80)}
-        height={16}
-        fill={fill}
-      />
+      <AnimatedRect cornerRadius={5} x={70} y={7} width={springs.width.to(w => w - 80)} height={16} fill={fill} />
       <AnimatedRect
         cornerRadius={5}
         x={9}

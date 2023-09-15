@@ -39,7 +39,10 @@ export function useTouchHandlers(
     let lastDist = 0
     return {
       draggable: true,
-      dragDistance: 5,
+      dragDistance: 4,
+      onTouchStart: (e: Konva.KonvaEventObject<TouchEvent>) => {
+        e.evt.preventDefault()
+      },
       onTouchMove: (e: Konva.KonvaEventObject<TouchEvent>) => {
         const touch1 = e.evt.touches[0]
         const touch2 = e.evt.touches[1]
@@ -114,12 +117,14 @@ export function useTouchHandlers(
         lastDist = 0
       },
       onDragStart: (e: KonvaDragEvent) => {
-        if (e.target.getStage() === e.target) {
+        if (e.target.nodeType === 'Stage') {
           e.cancelBubble = true
+          e.evt.preventDefault()
         }
       },
       onDragMove: (e: KonvaDragEvent) => {
-        if (e.target.getStage() === e.target) {
+        if (e.target.nodeType === 'Stage') {
+          e.cancelBubble = true
           stageSpringApi.set({
             x: e.target.x(),
             y: e.target.y()
@@ -127,8 +132,9 @@ export function useTouchHandlers(
         }
       },
       onDragEnd: (e: KonvaDragEvent) => {
-        if (e.target.getStage() === e.target) {
+        if (e.target.nodeType === 'Stage') {
           e.cancelBubble = true
+          e.evt.preventDefault()
           lastCenter = null
           lastDist = 0
         }

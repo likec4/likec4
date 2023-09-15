@@ -15,7 +15,7 @@ export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShap
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    <AnimatedGroup id={id} {...springs} {...listeners}>
+    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
       <AnimatedRect
         cornerRadius={10}
         shadowBlur={16}

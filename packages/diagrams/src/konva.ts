@@ -25,7 +25,7 @@ import type { ForwardRefExoticComponent, RefAttributes } from 'react'
 // so it triggers touchmove correctly
 KonvaCore.hitOnDragEnabled = true
 KonvaCore.capturePointerEventsEnabled = true
-// KonvaCore.dragButtons = [0, 2]
+KonvaCore.dragButtons = [0, 2]
 
 export { KonvaCore, Stage, Group, Layer, Text, Circle, Rect, Image }
 

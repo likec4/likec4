@@ -1,8 +1,10 @@
-import { LikeC4 } from 'src/likec4'
+import { LikeC4 } from '../../src/likec4'
 import { LikeC4Views, type LikeC4ViewId } from './likec4.generated'
 
-export const { isViewId, Diagram, Responsive, Embedded, Browser } =
+export const { isViewId, useViewId, Diagram, Responsive, Fullscreen, Embedded, Browser } =
   LikeC4.create<LikeC4ViewId>(LikeC4Views)
+
+export { LikeC4Views } from './likec4.generated'
 
 export type DiagramProps = LikeC4.DiagramProps<LikeC4ViewId>
 export type ResponsiveProps = LikeC4.ResponsiveProps<LikeC4ViewId>
