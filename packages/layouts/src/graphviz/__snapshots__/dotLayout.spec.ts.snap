@@ -327,11 +327,11 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           288,
-          639,
+          638,
         ],
         [
-          293,
-          648,
+          292,
+          647,
         ],
         [
           284,
@@ -405,15 +405,15 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           481,
-          642,
+          641,
         ],
         [
-          473,
-          648,
+          474,
+          647,
         ],
         [
-          475,
-          638,
+          476,
+          637,
         ],
       ],
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -1277,15 +1277,15 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
+          298,
           299,
-          300,
         ],
         [
-          302,
+          301,
           309,
         ],
         [
-          294,
+          293,
           303,
         ],
       ],
@@ -1332,16 +1332,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          427,
+          428,
           303,
         ],
         [
-          419,
+          420,
           309,
         ],
         [
-          422,
-          300,
+          423,
+          299,
         ],
       ],
       "id": "customer:cloud.frontend",
@@ -1726,11 +1726,11 @@ exports[`dotLayout: > computedIndexView 1`] = `
         ],
         [
           360,
-          494,
+          493,
         ],
         [
           360,
-          526,
+          525,
         ],
         [
           360,
@@ -1746,16 +1746,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          293,
-          272,
+          292,
+          271,
         ],
         [
-          296,
-          282,
+          295,
+          281,
         ],
         [
-          288,
-          276,
+          287,
+          275,
         ],
       ],
       "id": "support:cloud",
@@ -1801,16 +1801,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          433,
-          276,
+          434,
+          275,
         ],
         [
-          425,
-          282,
+          426,
+          281,
         ],
         [
-          428,
-          272,
+          429,
+          271,
         ],
       ],
       "id": "customer:cloud",
