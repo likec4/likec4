@@ -1575,7 +1575,7 @@ __metadata:
     remeda: ^1.24.0
     strip-indent: ^4.0.0
     ts-graphviz: ^1.8.1
-    type-fest: ^4.2.0
+    type-fest: ^4.3.1
     typescript: ^5.2.2
     vitest: ^0.34.4
     word-wrap: ^1.2.5
@@ -13919,10 +13919,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "type-fest@npm:4.2.0"
-  checksum: 76c5dfde9293b1b185b266a07df669f68d58ae3e19c06e33f0ff0dd0ba68628f05389bc26bcee8476e29a79ab7da054653670b9778399ceb079c4c259bac29f0
+"type-fest@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "type-fest@npm:4.3.1"
+  checksum: 04e0f073dcc31c113c1b8856c089b388e7e9f4383a9ed72cc1466a89ec50d9d67678844eeec342b5a1ce71b21e817764d4f067aa148f6bcb5df9005ff3803382
   languageName: node
   linkType: hard
 
