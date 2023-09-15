@@ -17,8 +17,6 @@ import {
 
 const App = () => {
   const windowSize = useWindowSize(undefined, false)
-
-  const divRef = useRef<HTMLDivElement>(null)
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
   const [{ view, loading }, updateState] = useState(() => {
