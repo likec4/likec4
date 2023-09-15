@@ -2,17 +2,7 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Rect,
-  Stage,
-  Text,
-  Group,
-  Path,
-  Circle,
-  Line,
-  Layer,
-  Image
-} from 'react-konva/es/ReactKonvaCore'
+import { Rect, Stage, Text, Group, Path, Circle, Line, Layer, Image } from 'react-konva/es/ReactKonvaCore'
 import KonvaCore from 'konva/lib/Core'
 
 import 'konva/lib/shapes/Rect'
@@ -35,7 +25,7 @@ import type { ForwardRefExoticComponent, RefAttributes } from 'react'
 // so it triggers touchmove correctly
 KonvaCore.hitOnDragEnabled = true
 KonvaCore.capturePointerEventsEnabled = true
-KonvaCore.dragButtons = [0, 2]
+// KonvaCore.dragButtons = [0, 2]
 
 export { KonvaCore, Stage, Group, Layer, Text, Circle, Rect, Image }
 
@@ -68,10 +58,9 @@ type AnimatedProps<Props extends object> = {
   [P in keyof Props]: P extends 'ref' | 'key' ? Props[P] : AnimatedProp<Props[P]>
 }
 
-type AnimatedNode<
-  Node extends Konva.Node,
-  Props extends Konva.NodeConfig
-> = ForwardRefExoticComponent<KonvaNodeEvents & AnimatedProps<Props> & RefAttributes<Node>>
+type AnimatedNode<Node extends Konva.Node, Props extends Konva.NodeConfig> = ForwardRefExoticComponent<
+  KonvaNodeEvents & AnimatedProps<Props> & RefAttributes<Node>
+>
 
 export type AnimatedStageComponent = AnimatedNode<Konva.Stage, StageProps>
 export type AnimatedGroupComponent = AnimatedNode<Konva.Group, Konva.GroupConfig>

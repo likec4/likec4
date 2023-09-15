@@ -14,13 +14,13 @@ type NodesProps = {
   animate: boolean
   diagram: DiagramView
   theme: LikeC4Theme
+  onNodeContextMenu?: OnNodeClick | undefined
   onNodeClick?: OnNodeClick | undefined
 }
 
-const keyOf = (node: DiagramNode) =>
-  (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
+const keyOf = (node: DiagramNode) => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
 
-export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
+export function Nodes({ animate, theme, diagram, onNodeClick, onNodeContextMenu }: NodesProps) {
   const nodes = diagram.nodes.filter(hasNoChildren)
   const nodeTransitions = useTransition(nodes, {
     initial: nodeSprings(),
@@ -66,7 +66,8 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
         {...nodeListeners({
           node,
           ctrl,
-          onNodeClick
+          onNodeClick,
+          onNodeContextMenu
         })}
       />
     )

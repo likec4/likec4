@@ -4,7 +4,7 @@ import { State } from 'vscode-languageclient'
 
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { disposable, disposeAll } from '../util'
-import { cmdOpenPreview, cmdRebuild, telemetryKey } from '../const'
+import { cmdLocateElement, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { DotLayouter } from '@likec4/layouts'
 import { serializeError, type ViewID } from '@likec4/core'
 import { C4Model } from './C4Model'
@@ -90,6 +90,9 @@ export default class ExtensionController implements vscode.Disposable {
       this.registerCommand(cmdRebuild, () => {
         rpc.rebuild().catch(e => logError(e))
         this._telemetry.sendTelemetryEvent('rebuild')
+      })
+      this.registerCommand(cmdPreviewContextOpenSource, () => {
+        previewPanel.onContextMenuOpenSource()
       })
 
       this._disposables.push(

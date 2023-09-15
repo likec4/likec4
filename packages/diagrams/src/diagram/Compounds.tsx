@@ -13,12 +13,13 @@ type CompoundsProps = {
   animate: boolean
   diagram: DiagramView
   theme: LikeC4Theme
+  onNodeContextMenu?: OnNodeClick | undefined
   onNodeClick?: OnNodeClick | undefined
 }
 
 const keyOf = (node: DiagramNode) => node.id
 
-export function Compounds({ animate, theme, diagram, onNodeClick }: CompoundsProps) {
+export function Compounds({ animate, theme, diagram, onNodeClick, onNodeContextMenu }: CompoundsProps) {
   const nodes = diagram.nodes.filter(isCompound)
   const compoundTransitions = useTransition(nodes, {
     initial: nodeSprings(),
@@ -60,6 +61,7 @@ export function Compounds({ animate, theme, diagram, onNodeClick }: CompoundsPro
       theme={theme}
       springs={springs}
       onNodeClick={onNodeClick}
+      onNodeContextMenu={onNodeContextMenu}
     />
   ))
 }

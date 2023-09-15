@@ -1,9 +1,13 @@
 import type { DiagramView, Fqn, RelationID, ViewID } from '@likec4/core/types'
 
-export type ExtensionToPanelProtocol = {
-  kind: 'update'
-  view: DiagramView
-}
+export type ExtensionToPanelProtocol =
+  | {
+      kind: 'update'
+      view: DiagramView
+    }
+  | {
+      kind: 'onContextMenuOpenSource'
+    }
 
 export type PanelToExtensionProtocol =
   | {

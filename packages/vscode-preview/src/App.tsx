@@ -1,8 +1,8 @@
-import type { DiagramEdge, DiagramNode } from '@likec4/core'
+import { nonexhaustive, type DiagramEdge, type DiagramNode } from '@likec4/core'
 import { Diagram } from '@likec4/diagrams'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ExtensionToPanelProtocol } from '../protocol'
 import {
   closePreviewWindow,
@@ -17,6 +17,9 @@ import {
 
 const App = () => {
   const windowSize = useWindowSize(undefined, false)
+
+  const divRef = useRef<HTMLDivElement>(null)
+  const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
   const [{ view, loading }, updateState] = useState(() => {
     const view = getPreviewWindowState()
@@ -37,6 +40,7 @@ const App = () => {
   useEventListener(window, 'message', ({ data }: MessageEvent<ExtensionToPanelProtocol>) => {
     switch (data.kind) {
       case 'update': {
+        lastNodeContextMenuRef.current = null
         savePreviewWindowState(data.view)
         updateState({
           view: data.view,
@@ -44,9 +48,16 @@ const App = () => {
         })
         return
       }
+      case 'onContextMenuOpenSource': {
+        const nd = lastNodeContextMenuRef.current
+        if (nd) {
+          lastNodeContextMenuRef.current = null
+          goToElement(nd.id)
+        }
+        return
+      }
       default: {
-        // Other messages come from the preview iframe.
-        // vscode.postMessage(msg)
+        nonexhaustive(data)
       }
     }
   })
@@ -86,13 +97,20 @@ const App = () => {
   }
 
   return (
-    <>
+    <div data-vscode-context='{"preventDefaultContextMenuItems": true}'>
       <Diagram
         className={'likec4-layer likec4-diagram'}
         diagram={view}
         width={windowSize.width}
         height={windowSize.height}
         onNodeClick={onNodeClick}
+        onNodeContextMenu={(nd, e) => {
+          e.cancelBubble = true
+          lastNodeContextMenuRef.current = nd
+        }}
+        onStageContextMenu={(stage, e) => {
+          e.evt.stopPropagation()
+        }}
         onEdgeClick={onEdgeClick}
         onStageClick={() => {
           goToViewSource(view.id)
@@ -108,7 +126,7 @@ const App = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   )
 }
 

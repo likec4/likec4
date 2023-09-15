@@ -75,6 +75,8 @@ export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'clas
   initialPosition?: DiagramInitialPosition | undefined
 
   onNodeClick?: OnNodeClick | undefined
+  onNodeContextMenu?: OnNodeClick | undefined
   onStageClick?: OnStageClick | undefined
+  onStageContextMenu?: OnStageClick | undefined
   onEdgeClick?: OnEdgeClick | undefined
 }

@@ -41,7 +41,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       initialPosition,
       onEdgeClick,
       onNodeClick,
+      onNodeContextMenu,
       onStageClick,
+      onStageContextMenu,
       width: _width,
       height: _height,
       ...props
@@ -176,6 +178,11 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       theme,
       diagram
     }
+    const nodeSharedProps = {
+      ...sharedProps,
+      onNodeClick,
+      onNodeContextMenu
+    }
 
     return (
       <AnimatedStage
@@ -188,6 +195,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         y={stageProps.y}
         scaleX={stageProps.scale}
         scaleY={stageProps.scale}
+        {...(onStageContextMenu && {
+          onContextMenu: e => {
+            if (KonvaCore.isDragging() || !stageRef.current) {
+              return
+            }
+            if (e.target === stageRef.current) {
+              e.cancelBubble = true
+              onStageContextMenu(stageRef.current, e)
+            }
+          }
+        })}
         {...(onStageClick && {
           onPointerClick: e => {
             if (KonvaCore.isDragging() || !stageRef.current) {
@@ -213,11 +231,11 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         {...props}
       >
         <Layer>
-          <Compounds {...sharedProps} onNodeClick={onNodeClick} />
+          <Compounds {...nodeSharedProps} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
         <Layer>
-          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
+          <Nodes {...nodeSharedProps} />
         </Layer>
       </AnimatedStage>
     )

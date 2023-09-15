@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { nonexhaustive, type DiagramView, type Fqn, type RelationID, type ViewID } from '@likec4/core'
-import type { PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
+import type { ExtensionToPanelProtocol, PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
 import { disposeAll, getNonce } from '../../util'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import * as vscode from 'vscode'
@@ -116,6 +116,12 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     this.updateWebviewContent()
   }
 
+  public onContextMenuOpenSource() {
+    this.sendToPanel({
+      kind: 'onContextMenuOpenSource'
+    })
+  }
+
   private close() {
     Logger.debug(`[Extension.PreviewPanel] close`)
     // this.telemetry.sendTelemetryEvent('PreviewPanel.close')
@@ -131,25 +137,31 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
       this.unsubscribe()
       return
     }
-    if (!this.panel.visible) {
-      Logger.debug(`[Extension.PreviewPanel] sendUpdate ignore, panel is not visible`)
+    this.panel.title = view.title ?? 'Untitled'
+    this.sendToPanel({
+      kind: 'update',
+      view
+    })
+  }
+
+  private sendToPanel(message: ExtensionToPanelProtocol) {
+    if (!this.panel) {
+      Logger.warn(`[Extension.PreviewPanel] sendToPanel failed, panel is not initialized`)
+      this.unsubscribe()
       return
     }
-    Logger.debug(`[Extension.PreviewPanel] sendUpdate view=${view.id}`)
-    this.panel.title = view.title ?? 'Untitled'
-    void this.panel.webview
-      .postMessage({
-        kind: 'update',
-        view
-      })
-      .then(
-        posted => {
-          if (!posted) {
-            Logger.warn('[Extension.PreviewPanel] sendUpdate: message not posted')
-          }
-        },
-        err => logError(err)
-      )
+    if (!this.panel.visible) {
+      Logger.debug(`[Extension.PreviewPanel] sendToPanel ignore, panel is not visible`)
+      return
+    }
+    void this.panel.webview.postMessage(message).then(
+      posted => {
+        if (!posted) {
+          Logger.warn('[Extension.PreviewPanel] sendToPanel: message not posted')
+        }
+      },
+      err => logError(err)
+    )
   }
 
   private goToSource = async (element: Fqn) => {

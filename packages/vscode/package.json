@@ -123,6 +123,20 @@
         }
       }
     },
+    "menus": {
+      "webview/context": [
+        {
+          "command": "likec4.preview-context-open-source",
+          "when": "webviewId == 'likec4-preview'"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "likec4.preview-context-open-source",
+          "when": "webviewId == 'likec4-preview'"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "likec4.open-preview",
@@ -132,6 +146,11 @@
       {
         "command": "likec4.rebuild",
         "title": "%ext.cmd.rebuild%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.preview-context-open-source",
+        "title": "%ext.cmd.preview-context-open-source%",
         "category": "%ext.title%"
       }
     ]

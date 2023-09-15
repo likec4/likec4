@@ -9,10 +9,11 @@ interface CompoundProps {
   node: DiagramNode
   theme: DiagramTheme
   springs: NodeSpringValues
+  onNodeContextMenu?: OnNodeClick | undefined
   onNodeClick?: OnNodeClick | undefined
 }
 
-export function CompoundShape({ id, node, theme, springs, onNodeClick }: CompoundProps) {
+export function CompoundShape({ id, node, theme, springs, onNodeClick, onNodeContextMenu }: CompoundProps) {
   const { color, labels } = node
   const colors = theme.colors[color]
 
@@ -26,9 +27,17 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
     l: -15
   })
 
-  const listeners = {}
-  if (onNodeClick) {
-    Object.assign(listeners, {
+  const listeners = Object.assign(
+    {},
+    onNodeContextMenu && {
+      onContextMenu: (e: KonvaPointerEvent) => {
+        if (KonvaCore.isDragging()) {
+          return
+        }
+        onNodeContextMenu(node, e)
+      }
+    },
+    onNodeClick && {
       onPointerEnter: (e: KonvaPointerEvent) => {
         mousePointer(e)
       },
@@ -42,8 +51,9 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
         evt.cancelBubble = true
         onNodeClick(node, evt)
       }
-    })
-  }
+    }
+  )
+
   return (
     <AnimatedGroup id={id} {...springs}>
       <AnimatedRect
@@ -58,6 +68,14 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
         height={springs.height}
         fill={fill}
         strokeEnabled={false}
+        {...(onNodeContextMenu && {
+          onContextMenu: (e: KonvaPointerEvent) => {
+            if (KonvaCore.isDragging()) {
+              return
+            }
+            onNodeContextMenu(node, e)
+          }
+        })}
       />
       {labels.map(label => (
         <Text
