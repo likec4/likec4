@@ -28,10 +28,18 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
         fill={stroke}
         shadowColor={theme.shadow}
       />
-      <Circle x={16} y={15} radius={7} fill={colors.fill} />
-      <Circle x={36} y={15} radius={7} fill={colors.fill} />
-      <Circle x={56} y={15} radius={7} fill={colors.fill} />
-      <AnimatedRect cornerRadius={5} x={70} y={7} width={springs.width.to(w => w - 80)} height={16} fill={fill} />
+      <Circle x={16} y={15} radius={7} fill={colors.fill} listening={false} />
+      <Circle x={36} y={15} radius={7} fill={colors.fill} listening={false} />
+      <Circle x={56} y={15} radius={7} fill={colors.fill} listening={false} />
+      <AnimatedRect
+        cornerRadius={5}
+        x={70}
+        y={7}
+        width={springs.width.to(w => w - 80)}
+        height={16}
+        fill={fill}
+        listening={false}
+      />
       <AnimatedRect
         cornerRadius={5}
         x={9}
@@ -39,6 +47,7 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
         width={springs.width.to(w => w - 18)}
         height={springs.height.to(h => h - 40)}
         fill={fill}
+        listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetY={-8} />
       {/* <ExternalLink

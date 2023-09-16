@@ -1,24 +1,27 @@
 import { config } from '@react-spring/konva'
-import { KonvaCore } from '../../konva'
 import type { NodeSpringsCtrl } from '../springs'
 import type { DiagramNode, KonvaPointerEvent, OnNodeClick } from '../types'
 import { mouseDefault, mousePointer } from './utils'
 import type { KonvaNodeEvents } from 'react-konva'
+import { DiagramGesture } from '../state'
 
 export function nodeListeners({
   node,
   ctrl,
-  onNodeClick
+  onNodeClick,
+  setHoveredNode
 }: {
   node: DiagramNode
   ctrl: NodeSpringsCtrl
   onNodeClick?: OnNodeClick | undefined
+  setHoveredNode: (node: DiagramNode | null) => void
 }): KonvaNodeEvents {
   if (!onNodeClick) {
     return {}
   }
   return {
     onPointerEnter: (e: KonvaPointerEvent) => {
+      setHoveredNode(node)
       mousePointer(e)
       void ctrl.start({
         to: {
@@ -30,6 +33,7 @@ export function nodeListeners({
       })
     },
     onPointerLeave: (e: KonvaPointerEvent) => {
+      setHoveredNode(null)
       mouseDefault(e)
       void ctrl.start({
         to: {
@@ -42,9 +46,11 @@ export function nodeListeners({
       })
     },
     onPointerClick: (e: KonvaPointerEvent) => {
-      if (KonvaCore.isDragging() || e.evt.button !== 0) {
+      if (DiagramGesture.isDragging || e.evt.button !== 0) {
+        console.log('DiagramGesture.isDragging = true')
         return
       }
+      console.log('onPointerClick', e)
       e.cancelBubble = true
       onNodeClick(node, e)
     }

@@ -5,6 +5,7 @@ export const { isViewId, useViewId, Diagram, Responsive, Fullscreen, Embedded, B
   LikeC4.create<LikeC4ViewId>(LikeC4Views)
 
 export { LikeC4Views } from './likec4.generated'
+export { DiagramStateProvider } from '../../src/diagram/state'
 
 export type DiagramProps = LikeC4.DiagramProps<LikeC4ViewId>
 export type ResponsiveProps = LikeC4.ResponsiveProps<LikeC4ViewId>

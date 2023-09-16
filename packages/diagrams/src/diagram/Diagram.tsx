@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import { AnimatedStage, KonvaCore, Layer } from '../konva'
+import { AnimatedGroup, AnimatedRect, AnimatedStage, KonvaCore, Layer } from '../konva'
 import { nonNullable } from '@likec4/core'
 import type { DiagramNode, NodeId } from '@likec4/core'
-import { useSpring } from '@react-spring/konva'
+import { useSpring, useTransition } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { Compounds } from './Compounds'
@@ -12,6 +12,19 @@ import { defaultTheme as theme } from '@likec4/core'
 import type { DiagramPaddings, DiagramApi, DiagramProps } from './types'
 import { useTouchHandlers } from './useTouchHandlers'
 import { useMouseWheel } from './useMouseWheel'
+import { useDrag } from '@use-gesture/react'
+import { useHookableRef } from '@react-hookz/web/esm'
+
+import { createUseGesture, dragAction, pinchAction, moveAction } from '@use-gesture/react'
+import { Provider, useStore } from 'jotai'
+import { DiagramGesture, setHoveredNode, useHoveredNode } from './state'
+import type { NodeSprings } from './springs'
+import { nodeSprings } from './springs'
+import { scale } from 'khroma'
+import { ExternalLink } from './icons'
+import { NodeHover } from './NodeHover'
+
+const useGesture = createUseGesture([dragAction, pinchAction])
 
 interface IRect {
   x: number
@@ -45,6 +58,90 @@ function diagramNodeId(konvaNode: Konva.Node): NodeId | null {
   return null
 }
 
+const NodeHoverLayer = () => {
+  const [hoveredNode, setHoveredNode] = useHoveredNode()
+  const transitions = useTransition(hoveredNode ? [hoveredNode] : [], {
+    from: nodeSprings({
+      opacity: 0.4
+    }) as unknown as NodeSprings,
+    enter: nodeSprings(),
+    leave: nodeSprings({
+      opacity: 0
+    }),
+    update: nodeSprings(),
+    delay: 50,
+    expires: true,
+    keys(item) {
+      return item.id
+    }
+    // keys: (n: DiagramNode) => n.id,
+    // delay(key) {
+    //   const isUpdating = nodes.some(n => keyOf(n) === key)
+    //   return isUpdating ? 30 : 0
+    // },
+    // config: (_node, _index, state): SpringConfig => {
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+    //   if (state === 'leave') {
+    //     return {
+    //       precision: 0.005,
+    //       duration: 120
+    //     }
+    //   }
+    //   return {
+    //     precision: 0.005
+    //   }
+    // }
+  })
+  return (
+    <Layer>
+      {transitions((springs, item, { key, ctrl }) => {
+        return (
+          <NodeHover
+            key={key}
+            node={item}
+            theme={theme}
+            springs={springs}
+            ctrl={ctrl}
+            // onPointerEnter={e => {
+            //   e.cancelBubble = true
+            //   setHoveredNode(item)
+            // }}
+            // onPointerLeave={() => {
+            //   setHoveredNode(null)
+            // }}
+          />
+        )
+        // return (
+        //   <AnimatedGroup
+        //     x={springs.x}
+        //     y={springs.y}
+        //     width={springs.width}
+        //     height={springs.height}
+        //     offsetX={springs.offsetX}
+        //     offsetY={springs.offsetY}
+        //     name={item.id}
+        //     onPointerEnter={(e) => {
+        //       e.cancelBubble = true
+        //       setHoveredNode(item)
+        //     }}
+        //     onPointerLeave={() => {
+        //       setHoveredNode(null)
+        //     }}
+        //   >
+        //     {/* <AnimatedRect x={0} y={0} width={springs.width} height={springs.height} fill={fill} listening={false} /> */}
+        //     <ExternalLink
+        //        fill={'#000'}
+        //        x={0}
+        //        y={0}
+        //        opacity={springs.opacity}
+        //        />
+        //   </AnimatedGroup>
+        // )
+      })}
+    </Layer>
+  )
+}
+
 export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
     {
@@ -67,7 +164,12 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   ) => {
     const immediate = !animate
     const id = diagram.id
-    const stageRef = useRef<Konva.Stage>(null)
+
+    const containerRef = useRef<HTMLDivElement | null>(null)
+    const stageRef = useHookableRef<Konva.Stage | null>(null, value => {
+      containerRef.current = value?.container() ?? null
+      return value
+    })
 
     const width = _width ?? diagram.width
     const height = _height ?? diagram.height
@@ -174,28 +276,95 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       [refs, stageRef]
     )
 
-    // useEffect(() => {
-    //   const el = stageRef.current?.container()
-    //   if (!el) return
-    //   if (!pannable && !zoomable) {
-    //     el.style.touchAction = 'none'
-    //     return
-    //   }
-    //   el.style.touchAction = `${pannable ? 'pan-x pan-y ' : ''}${zoomable ? 'pinch-zoom' : ''}`
-    // }, [pannable, zoomable])
-
     useEffect(() => {
       refs.current.centerAndFit()
     }, [id, height, width, _padding])
+
+    useEffect(() => {
+      const handler = (e: Event) => e.preventDefault()
+      document.addEventListener('gesturestart', handler)
+      document.addEventListener('gesturechange', handler)
+      document.addEventListener('gestureend', handler)
+      return () => {
+        document.removeEventListener('gesturestart', handler)
+        document.removeEventListener('gesturechange', handler)
+        document.removeEventListener('gestureend', handler)
+      }
+    }, [])
+
+    useGesture(
+      {
+        onDragEnd: () => {
+          DiagramGesture.isDragging = false
+        },
+        onDrag: state => {
+          const {
+            pinching,
+            active,
+            down,
+            cancel,
+            intentional,
+            offset: [x, y]
+          } = state
+          if (pinching) {
+            return cancel()
+          }
+          if (intentional) {
+            DiagramGesture.isDragging = true
+            stageSpringApi.start({
+              to: {
+                x,
+                y
+              },
+              immediate: active && down
+            })
+          }
+        },
+        onPinch: ({ memo, first, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
+          if (first) {
+            const { width, height, x, y } = containerRef.current!.getBoundingClientRect()
+            const tx = ox - (x + width / 2)
+            const ty = oy - (y + height / 2)
+            memo = [stageRef.current!.x(), stageRef.current!.y(), tx, ty]
+          }
+
+          const x = memo[0] - (ms - 1) * memo[2]
+          const y = memo[1] - (ms - 1) * memo[3]
+          stageSpringApi.start({
+            to: {
+              x,
+              y,
+              scale
+            }
+          })
+
+          return memo
+        }
+      },
+      {
+        target: containerRef,
+        drag: {
+          enabled: pannable,
+          threshold: 4,
+          from: () => [stageProps.x.get(), stageProps.y.get()],
+          pointer: {
+            buttons: -1,
+            keys: false
+          }
+        },
+        pinch: {
+          enabled: zoomable,
+          modifierKey: null,
+          scaleBounds: { min: 0.3, max: 1.2 },
+          pinchOnWheel: true
+        }
+      }
+    )
 
     const sharedProps = {
       animate,
       theme,
       diagram
-    }
-    const nodeSharedProps = {
-      ...sharedProps,
-      onNodeClick
     }
 
     return (
@@ -209,6 +378,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         y={stageProps.y}
         scaleX={stageProps.scale}
         scaleY={stageProps.scale}
+        // onPointerMove={e => {
+        //   console.log('onPointerMove')
+        // }}
         {...((onStageContextMenu || onNodeContextMenu) && {
           onContextMenu: e => {
             if (KonvaCore.isDragging() || !stageRef.current) {
@@ -230,39 +402,40 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }
           }
         })}
-        {...(onStageClick && {
-          onPointerClick: e => {
-            if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
-              return
-            }
-            if (e.target === stageRef.current || !onNodeClick) {
-              e.cancelBubble = true
-              onStageClick(stageRef.current, e)
-            }
-          }
-        })}
-        {...(zoomable && {
-          onPointerDblClick: e => {
-            if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
-              return
-            }
-            if (e.target === stageRef.current || !onNodeClick) {
-              e.cancelBubble = true
-              centerAndFit()
-            }
-          }
-        })}
-        {...useTouchHandlers(pannable, stageSpringApi)}
-        {...useMouseWheel(zoomable, stageSpringApi)}
+        // {...(onStageClick && {
+        //   onPointerClick: e => {
+        //     if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
+        //       return
+        //     }
+        //     if (e.target === stageRef.current || !onNodeClick) {
+        //       e.cancelBubble = true
+        //       onStageClick(stageRef.current, e)
+        //     }
+        //   }
+        // })}
+        // {...(zoomable && {
+        //   onPointerDblClick: e => {
+        //     if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
+        //       return
+        //     }
+        //     if (e.target === stageRef.current || !onNodeClick) {
+        //       e.cancelBubble = true
+        //       centerAndFit()
+        //     }
+        //   }
+        // })}
+        // {...useTouchHandlers(pannable, stageSpringApi)}
+        // {...useMouseWheel(zoomable, stageSpringApi)}
         {...props}
       >
         <Layer>
-          <Compounds {...nodeSharedProps} />
+          <Compounds {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
         <Layer>
-          <Nodes {...nodeSharedProps} />
+          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
         </Layer>
+        <NodeHoverLayer />
       </AnimatedStage>
     )
   }

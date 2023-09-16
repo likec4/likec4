@@ -5,6 +5,7 @@ import { nodeShape } from './shapes/nodeShape'
 import type { NodeSprings } from './springs'
 import { nodeSprings } from './springs'
 import type { DiagramNode, DiagramView, LikeC4Theme, OnNodeClick } from './types'
+import { useSetHoveredNode } from './state'
 
 const hasNoChildren = (node: DiagramNode) => {
   return node.children.length <= 0
@@ -53,6 +54,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
       }
     }
   } satisfies UseTransitionProps<DiagramNode>)
+  const setHoveredNode = useSetHoveredNode()
 
   return nodeTransitions((springs, node, { key, ctrl }) => {
     const Shape = nodeShape(node)
@@ -65,6 +67,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
         {...nodeListeners({
           node,
           ctrl,
+          setHoveredNode,
           onNodeClick
         })}
       />

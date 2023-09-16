@@ -52,6 +52,7 @@ export function PersonShape({ id, node, theme, springs, ...listeners }: NodeShap
         perfectDrawEnabled={false}
         offsetX={PersonIcon.width}
         offsetY={PersonIcon.height}
+        listening={false}
         // scaleX={1.1}
         // scaleY={1.1}
       />

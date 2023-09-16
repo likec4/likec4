@@ -1,3 +1,5 @@
+@import '@radix-ui/themes/styles.css';
+
 *,
 :before,
 :after {
@@ -31,10 +33,19 @@ body {
 .dev-app {
   position: fixed;
   inset: 0;
+  touch-action: none;
   /* flex-shrink: 0;
   width: 400px;
   background-color: hsl(0deg 0% 37.21%);
   border-radius: 0.75rem;
   padding: 2rem;
   margin: 2rem; */
+}
+
+.dev-app-toolbar {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  touch-action: none;
+  color: aliceblue;
 }
