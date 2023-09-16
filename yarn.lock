@@ -3864,14 +3864,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/vsce@npm:^2.20.1":
-  version: 2.20.1
-  resolution: "@vscode/vsce@npm:2.20.1"
+"@vscode/vsce@npm:^2.21.0":
+  version: 2.21.0
+  resolution: "@vscode/vsce@npm:2.21.0"
   dependencies:
     azure-devops-node-api: ^11.0.1
     chalk: ^2.4.2
     cheerio: ^1.0.0-rc.9
-    commander: ^6.1.0
+    commander: ^6.2.1
     glob: ^7.0.6
     hosted-git-info: ^4.0.2
     jsonc-parser: ^3.2.0
@@ -3894,7 +3894,7 @@ __metadata:
       optional: true
   bin:
     vsce: vsce
-  checksum: b0fb3ed03fa09f700ced42986c4a5a5231cb13308e5f10517a3117895a5260854f8d8d38c0805ea7a444d327933482546b65ca5009e85b15e86fba0372cc444f
+  checksum: 1618059f53d8b56c65e67a1aaf0af9b5eb666a3031c5ab0bfb761794110627fc0ff59d1641effcbce57104f2b27013cfcc2a6c40b9a9629965fadb1706b6f35b
   languageName: node
   linkType: hard
 
@@ -5073,7 +5073,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^6.1.0":
+"commander@npm:^6.2.1":
   version: 6.2.1
   resolution: "commander@npm:6.2.1"
   checksum: d7090410c0de6bc5c67d3ca41c41760d6d268f3c799e530aafb73b7437d1826bbf0d2a3edac33f8b57cc9887b4a986dce307fa5557e109be40eadb7c43b21742
@@ -8891,7 +8891,7 @@ __metadata:
     "@types/node": ^16.11.16
     "@types/vscode": ~1.77.0
     "@vscode/extension-telemetry": ^0.8.4
-    "@vscode/vsce": ^2.20.1
+    "@vscode/vsce": ^2.21.0
     esbuild: ^0.19.2
     esbuild-plugins-node-modules-polyfill: ^1.4.0
     langium: ^2.0.2
