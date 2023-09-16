@@ -1,19 +1,15 @@
 ## [0.37.1](https://github.com/likec4/likec4/compare/v0.37.0...v0.37.1) (2023-09-16)
 
+### Features
+
+- **vscode:** "Open source" from element context menu in preview panel ([8b19661](https://github.com/likec4/likec4/commit/8b196615af7180435cd894a2ec39bc6083280994))
+- **vscode:** Back button in preview panel 
+
 ### Bug Fixes
 
-- **deps:** update dependency @hpcc-js/wasm to ^2.14.0 ([8185482](https://github.com/likec4/likec4/commit/818548269a38b567e64b704007ccfe1ac6a8714b))
-- **deps:** update dependency type-fest to ^4.3.1 ([2fa7ae1](https://github.com/likec4/likec4/commit/2fa7ae160964e20f014d04fc00e5f09d7ba8a116))
-- **deps:** update js unit test packages to ^0.34.4 ([7c714ac](https://github.com/likec4/likec4/commit/7c714ace9e204d1aa42ec3e2fcbcc8e31f9e8157))
-- **deps:** update linters ([ff43090](https://github.com/likec4/likec4/commit/ff430902fc58bd24a5d0efb1bb94c5b60133b636))
 - **diagrams:** improve contextmenu ([487972a](https://github.com/likec4/likec4/commit/487972a52e720e7891dfab0fdd9ceab5346165ff))
 - **diagrams:** use value from hash as initialViewId, if available ([2145de6](https://github.com/likec4/likec4/commit/2145de66726e9ef68b326998aedb3dc4e2c994a7))
 - **language:** add index view if not present ([836a05e](https://github.com/likec4/likec4/commit/836a05e5e7a55a14e8e7bc3a372e363fe470118e))
-- **vscode:** compilation error ([6eaa379](https://github.com/likec4/likec4/commit/6eaa379f392be3edd8c1f1719d073abcf6a02343))
-
-### Features
-
-- **vscode:** add context menu in preview panel ([8b19661](https://github.com/likec4/likec4/commit/8b196615af7180435cd894a2ec39bc6083280994))
 
 # [0.37.0](https://github.com/likec4/likec4/compare/v0.36.0...v0.37.0) (2023-09-14)
 
