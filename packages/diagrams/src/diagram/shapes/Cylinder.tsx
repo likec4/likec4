@@ -1,5 +1,5 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedPath } from '../../konva'
+import { AnimatedPath } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
@@ -26,7 +26,7 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
   }
 }
 
-export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
+export function CylinderShape({ node, theme, springs }: NodeShapeProps) {
   const {
     size: { width, height },
     color
@@ -43,7 +43,7 @@ export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeSh
   })
 
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
+    <>
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
@@ -57,10 +57,9 @@ export function CylinderShape({ id, node, theme, springs, ...listeners }: NodeSh
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
         strokeWidth={2}
-        hitStrokeWidth={8}
         {...cylinderProps}
       />
-      <NodeLabels node={node} offsetY={node.icon ? -2 * ry + 4 : -0.5 * ry} theme={theme} />
-    </AnimatedGroup>
+      <NodeLabels node={node} offsetY={3 - ry * (node.icon ? 1.8 : 0.8)} theme={theme} />
+    </>
   )
 }

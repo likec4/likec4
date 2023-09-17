@@ -2,15 +2,17 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import { Fragment } from 'react'
 import type { SpringValues } from '@react-spring/konva'
-import { AnimatedLine, AnimatedText } from '../../konva'
+import { AnimatedCircle, AnimatedLine, AnimatedText, Circle } from '../../konva'
 
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { LikeC4Theme, DiagramEdge } from '../types'
+import { invariant } from '@likec4/core'
 
 export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
   theme: LikeC4Theme
   springs: SpringValues<{
+    lineColor: string
     width: number
     opacity: number
   }>
@@ -19,17 +21,28 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
 export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps) {
   const { points, headArrow, labels } = edge
 
+  const startPoint = points[0]
+  invariant(startPoint, 'Edge must have at least one point')
+
   return (
     <Fragment>
       <AnimatedLine
         opacity={springs.opacity}
         bezier={true}
         points={points.flat()}
-        fill={theme.relation.lineColor}
-        stroke={theme.relation.lineColor}
-        strokeWidth={springs.width}
-        hitStrokeWidth={20}
+        // fill={springs.lineColor}
+        stroke={springs.lineColor}
+        // strokeWidth={springs.width}
+        hitStrokeWidth={25}
         perfectDrawEnabled={false}
+        width={springs.width}
+        {...listeners}
+      />
+      <AnimatedCircle
+        x={startPoint[0]}
+        y={startPoint[1]}
+        radius={springs.width.to(v => v + 1)}
+        fill={springs.lineColor}
       />
       {headArrow && (
         <AnimatedLine
@@ -37,8 +50,8 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           opacity={springs.opacity}
           points={headArrow.flat()}
           closed={true}
-          fill={theme.relation.lineColor}
-          stroke={theme.relation.lineColor}
+          fill={springs.lineColor}
+          stroke={springs.lineColor}
           strokeWidth={1}
           perfectDrawEnabled={false}
           hitStrokeWidth={0}

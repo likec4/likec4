@@ -1,7 +1,8 @@
 import { KonvaCore } from '../konva'
 import { EdgeShape } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
-import type { LikeC4Theme, DiagramView, OnEdgeClick } from './types'
+import { useHoveredEdgeId, useSetHoveredEdge } from './state'
+import type { LikeC4Theme, DiagramView, OnEdgeClick, DiagramEdge } from './types'
 import { useTransition } from '@react-spring/konva'
 
 type EdgesProps = {
@@ -12,20 +13,34 @@ type EdgesProps = {
 }
 
 export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
+  const hoveredEdgeId = useHoveredEdgeId()
+  const setHoveredEdge = useSetHoveredEdge()
   const edgeTransitions = useTransition(diagram.edges, {
     initial: {
       opacity: 1,
-      width: 2
+      width: 2,
+      lineColor: theme.relation.lineColor as string
     },
     from: {
       opacity: 0.15,
-      width: 2
+      width: 2,
+      lineColor: theme.relation.lineColor as string
+    },
+    update: edge => {
+      const isHovered = hoveredEdgeId === edge.id
+      return {
+        width: isHovered ? 5 : 2,
+        opacity: 1,
+        lineColor: (isHovered ? '#F8F3D4' : theme.relation.lineColor) as string
+      }
     },
     enter: {
       opacity: 1
     },
     leave: {
-      opacity: 0.05
+      opacity: 0.05,
+      width: 2,
+      lineColor: theme.relation.lineColor as string
     },
     expires: true,
     exitBeforeEnter: true,
@@ -39,38 +54,37 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     // to avoid any issues with diagram-to-diagram transitions
     keys: e => e.id + diagram.id
   })
-  return edgeTransitions((springs, edge, { key, ctrl }) => (
-    <EdgeShape
-      key={key}
-      edge={edge}
-      theme={theme}
-      springs={springs}
-      {...(onEdgeClick && {
-        onPointerClick: e => {
-          if (KonvaCore.isDragging()) {
-            return
-          }
-          e.cancelBubble = true
-          onEdgeClick(edge, e)
-        },
-        onPointerEnter: e => {
-          void ctrl.start({
-            to: {
-              width: 3
-            },
-            delay: 100
-          })
-          mousePointer(e)
-        },
-        onPointerLeave: e => {
-          void ctrl.start({
-            to: {
-              width: 2
+  return edgeTransitions((springs, edge, { key }) => {
+    return (
+      <EdgeShape
+        key={key}
+        edge={edge}
+        theme={theme}
+        springs={springs}
+        {...(onEdgeClick && {
+          onPointerClick: e => {
+            if (KonvaCore.isDragging()) {
+              return
             }
-          })
-          mouseDefault(e)
-        }
-      })}
-    />
-  ))
+            e.cancelBubble = true
+            onEdgeClick(edge, e)
+          },
+          onPointerEnter: e => {
+            setHoveredEdge(edge)
+            // void ctrl.start({
+            //   to: {
+            //     width: 3
+            //   },
+            //   delay: 100
+            // })
+            mousePointer(e)
+          },
+          onPointerLeave: e => {
+            setHoveredEdge(null)
+            mouseDefault(e)
+          }
+        })}
+      />
+    )
+  })
 }

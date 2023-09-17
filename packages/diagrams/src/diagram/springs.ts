@@ -1,10 +1,7 @@
 import type { Controller, GoalValues, SpringValues } from '@react-spring/konva'
 import type { DiagramNode } from './types'
 
-function defaultNodeSprings(
-  { position: [x, y], size: { width, height } }: DiagramNode,
-  _index: number
-) {
+export function defaultNodeSprings({ position: [x, y], size: { width, height } }: DiagramNode, _index: number) {
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
   return {

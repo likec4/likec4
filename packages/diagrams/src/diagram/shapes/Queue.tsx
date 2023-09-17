@@ -1,10 +1,10 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedPath } from '../../konva'
+import { AnimatedPath } from '../../konva'
 import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function QueueShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
+export function QueueShape({ id, node, theme, springs }: NodeShapeProps) {
   const {
     size: { width, height }
   } = node
@@ -20,7 +20,7 @@ export function QueueShape({ id, node, theme, springs, ...listeners }: NodeShape
   })
 
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
+    <>
       <AnimatedPath
         shadowBlur={16}
         shadowOpacity={0.25}
@@ -40,9 +40,10 @@ export function QueueShape({ id, node, theme, springs, ...listeners }: NodeShape
         shadowForStrokeEnabled={false}
         strokeWidth={2}
         hitStrokeWidth={8}
+        listening={false}
         {...queueProps}
       />
       <NodeLabels node={node} maxWidth={width - ry * 2} theme={theme} />
-    </AnimatedGroup>
+    </>
   )
 }

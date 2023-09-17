@@ -25,7 +25,7 @@ model {
         }
 
         -> amazon.cognito 'authenticates'
-        -> graphql 'fetches data'
+        -> graphql 'fetches xcgdata'
       }
       customer -> dashboard 'opens in browser'
 

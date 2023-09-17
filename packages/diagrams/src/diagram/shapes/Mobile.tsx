@@ -15,7 +15,7 @@ export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShap
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
+    <>
       <AnimatedRect
         cornerRadius={10}
         shadowBlur={16}
@@ -28,7 +28,7 @@ export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShap
         fill={stroke}
         shadowColor={theme.shadow}
       />
-      <Circle x={16} y={node.size.height / 2} radius={10} fill={colors.fill} />
+      <Circle x={16} y={node.size.height / 2} radius={10} fill={colors.fill} listening={false} />
       <AnimatedRect
         cornerRadius={4}
         x={31}
@@ -36,6 +36,7 @@ export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShap
         width={springs.width.to(w => w - 43)}
         height={springs.height.to(h => h - 24)}
         fill={fill}
+        listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetX={-6} />
       {/* <ExternalLink
@@ -45,6 +46,6 @@ export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShap
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
-    </AnimatedGroup>
+    </>
   )
 }

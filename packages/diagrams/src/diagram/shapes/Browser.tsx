@@ -1,9 +1,9 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
+import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
+export function BrowserShape({ id, node, theme, springs }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({
@@ -15,7 +15,7 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
+    <>
       <AnimatedRect
         cornerRadius={6}
         shadowBlur={16}
@@ -57,6 +57,6 @@ export function BrowserShape({ id, node, theme, springs, ...listeners }: NodeSha
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
-    </AnimatedGroup>
+    </>
   )
 }

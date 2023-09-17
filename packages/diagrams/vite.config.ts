@@ -6,6 +6,11 @@ import watchAndRun from 'vite-plugin-watch-and-run'
 
 export default defineConfig(env => {
   return {
+    resolve: {
+      alias: {
+        '@likec4/diagrams': resolve(__dirname, 'src')
+      }
+    },
     plugins: [
       tsconfigPaths(),
       react(),

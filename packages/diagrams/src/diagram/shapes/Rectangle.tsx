@@ -3,7 +3,7 @@ import { AnimatedGroup, AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function RectangleShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
+export function RectangleShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const rectProps = useSpring({
@@ -14,23 +14,23 @@ export function RectangleShape({ id, node, theme, springs, ...listeners }: NodeS
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs} {...listeners}>
+    <>
       <AnimatedRect
         width={springs.width}
         height={springs.height}
         cornerRadius={6}
-        shadowBlur={16}
-        shadowOpacity={0.25}
+        shadowBlur={isHovered ? 20 : 16}
+        shadowOpacity={isHovered ? 0.35 : 0.25}
         shadowOffsetX={0}
-        shadowOffsetY={8}
+        shadowOffsetY={isHovered ? 10 : 8}
         shadowColor={theme.shadow}
         shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
-        strokeEnabled={false}
+        // strokeEnabled={isHovered === true}
         // shadowForStrokeEnabled={false}
-        // stroke={rectProps.fill}
+        // stroke={'#F8F3D4'}
         // strokeScaleEnabled={false}
-        // strokeWidth={1}
+        // strokeWidth={2}
         // hitStrokeWidth={25}
         {...rectProps}
       />
@@ -42,6 +42,6 @@ export function RectangleShape({ id, node, theme, springs, ...listeners }: NodeS
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
-    </AnimatedGroup>
+    </>
   )
 }

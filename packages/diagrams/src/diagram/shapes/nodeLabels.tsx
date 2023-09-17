@@ -26,18 +26,8 @@ export function NodeLabels({
   let nodeIcon
   if (icon) {
     // Y of the first label or node height
-    const maxHeight = firstLabel
-      ? Math.floor(firstLabel.pt[1] - firstLabel.fontSize / 2)
-      : size.height
-    nodeIcon = (
-      <NodeIcon
-        icon={icon}
-        maxWidth={width}
-        maxHeight={maxHeight}
-        offsetX={offsetX}
-        offsetY={offsetY}
-      />
-    )
+    const maxHeight = firstLabel ? Math.floor(firstLabel.pt[1] - firstLabel.fontSize / 2) : size.height
+    nodeIcon = <NodeIcon icon={icon} maxWidth={width} maxHeight={maxHeight} offsetX={offsetX} offsetY={offsetY} />
   }
 
   return (
@@ -64,7 +54,6 @@ export function NodeLabels({
             text={label.text}
             strokeEnabled={false}
             perfectDrawEnabled={false}
-            hitStrokeWidth={0}
             listening={false}
           />
         )

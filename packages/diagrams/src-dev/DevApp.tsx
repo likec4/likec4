@@ -28,6 +28,9 @@ export default function DevApp() {
             setViewId(navigateTo)
           }
         }}
+        onEdgeClick={() => {
+          console.log('onEdgeClick')
+        }}
         onStageContextMenu={(_stage, e) => {
           console.log('onStageContextMenu', _stage)
           e.evt.preventDefault()

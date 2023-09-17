@@ -3,7 +3,7 @@ import { defineBuildConfig } from 'unbuild'
 import type { MkdistOptions } from 'mkdist'
 
 const opts = {
-  pattern: ['**/*', '!diagram/icons/*'],
+  pattern: ['**/*', '!**/*.stories.tsx'],
   esbuild: {
     jsx: 'automatic',
     platform: 'browser'

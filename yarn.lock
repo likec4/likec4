@@ -1381,7 +1381,6 @@ __metadata:
   dependencies:
     "@commander-js/extra-typings": ^11.0.0
     "@likec4/core": "workspace:*"
-    "@likec4/diagrams": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
@@ -1424,6 +1423,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/diagrams@workspace:packages/diagrams"
   dependencies:
+    "@likec4/cli": "workspace:*"
     "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0

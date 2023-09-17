@@ -1,28 +1,18 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import { AnimatedGroup, AnimatedRect, AnimatedStage, KonvaCore, Layer } from '../konva'
-import { nonNullable } from '@likec4/core'
 import type { DiagramNode, NodeId } from '@likec4/core'
-import { useSpring, useTransition } from '@react-spring/konva'
+import { nonNullable, defaultTheme as theme } from '@likec4/core'
+import { useHookableRef } from '@react-hookz/web/esm'
+import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { AnimatedStage, Layer } from '../konva'
 import { Compounds } from './Compounds'
 import { Edges } from './Edges'
 import { Nodes } from './Nodes'
-import { defaultTheme as theme } from '@likec4/core'
-import type { DiagramPaddings, DiagramApi, DiagramProps } from './types'
-import { useTouchHandlers } from './useTouchHandlers'
-import { useMouseWheel } from './useMouseWheel'
-import { useDrag } from '@use-gesture/react'
-import { useHookableRef } from '@react-hookz/web/esm'
+import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
 
-import { createUseGesture, dragAction, pinchAction, moveAction } from '@use-gesture/react'
-import { Provider, useStore } from 'jotai'
-import { DiagramGesture, setHoveredNode, useHoveredNode } from './state'
-import type { NodeSprings } from './springs'
-import { nodeSprings } from './springs'
-import { scale } from 'khroma'
-import { ExternalLink } from './icons'
-import { NodeHover } from './NodeHover'
+import { createUseGesture, dragAction, pinchAction } from '@use-gesture/react'
+import { DiagramGesture } from './state'
 
 const useGesture = createUseGesture([dragAction, pinchAction])
 
@@ -56,90 +46,6 @@ function diagramNodeId(konvaNode: Konva.Node): NodeId | null {
     shape = shape.parent
   }
   return null
-}
-
-const NodeHoverLayer = () => {
-  const [hoveredNode, setHoveredNode] = useHoveredNode()
-  const transitions = useTransition(hoveredNode ? [hoveredNode] : [], {
-    from: nodeSprings({
-      opacity: 0.4
-    }) as unknown as NodeSprings,
-    enter: nodeSprings(),
-    leave: nodeSprings({
-      opacity: 0
-    }),
-    update: nodeSprings(),
-    delay: 50,
-    expires: true,
-    keys(item) {
-      return item.id
-    }
-    // keys: (n: DiagramNode) => n.id,
-    // delay(key) {
-    //   const isUpdating = nodes.some(n => keyOf(n) === key)
-    //   return isUpdating ? 30 : 0
-    // },
-    // config: (_node, _index, state): SpringConfig => {
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    //   if (state === 'leave') {
-    //     return {
-    //       precision: 0.005,
-    //       duration: 120
-    //     }
-    //   }
-    //   return {
-    //     precision: 0.005
-    //   }
-    // }
-  })
-  return (
-    <Layer>
-      {transitions((springs, item, { key, ctrl }) => {
-        return (
-          <NodeHover
-            key={key}
-            node={item}
-            theme={theme}
-            springs={springs}
-            ctrl={ctrl}
-            // onPointerEnter={e => {
-            //   e.cancelBubble = true
-            //   setHoveredNode(item)
-            // }}
-            // onPointerLeave={() => {
-            //   setHoveredNode(null)
-            // }}
-          />
-        )
-        // return (
-        //   <AnimatedGroup
-        //     x={springs.x}
-        //     y={springs.y}
-        //     width={springs.width}
-        //     height={springs.height}
-        //     offsetX={springs.offsetX}
-        //     offsetY={springs.offsetY}
-        //     name={item.id}
-        //     onPointerEnter={(e) => {
-        //       e.cancelBubble = true
-        //       setHoveredNode(item)
-        //     }}
-        //     onPointerLeave={() => {
-        //       setHoveredNode(null)
-        //     }}
-        //   >
-        //     {/* <AnimatedRect x={0} y={0} width={springs.width} height={springs.height} fill={fill} listening={false} /> */}
-        //     <ExternalLink
-        //        fill={'#000'}
-        //        x={0}
-        //        y={0}
-        //        opacity={springs.opacity}
-        //        />
-        //   </AnimatedGroup>
-        // )
-      })}
-    </Layer>
-  )
 }
 
 export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
@@ -280,6 +186,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       refs.current.centerAndFit()
     }, [id, height, width, _padding])
 
+    // Recommended by @use-gesture/react
     useEffect(() => {
       const handler = (e: Event) => e.preventDefault()
       document.addEventListener('gesturestart', handler)
@@ -355,7 +262,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         pinch: {
           enabled: zoomable,
           modifierKey: null,
-          scaleBounds: { min: 0.3, max: 1.2 },
+          scaleBounds: { min: 0.2, max: 1.15 },
           pinchOnWheel: true
         }
       }
@@ -378,12 +285,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         y={stageProps.y}
         scaleX={stageProps.scale}
         scaleY={stageProps.scale}
-        // onPointerMove={e => {
-        //   console.log('onPointerMove')
-        // }}
         {...((onStageContextMenu || onNodeContextMenu) && {
           onContextMenu: e => {
-            if (KonvaCore.isDragging() || !stageRef.current) {
+            if (DiagramGesture.isDragging || !stageRef.current) {
               return
             }
             if (e.target === stageRef.current || !onNodeContextMenu) {
@@ -402,30 +306,28 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }
           }
         })}
-        // {...(onStageClick && {
-        //   onPointerClick: e => {
-        //     if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
-        //       return
-        //     }
-        //     if (e.target === stageRef.current || !onNodeClick) {
-        //       e.cancelBubble = true
-        //       onStageClick(stageRef.current, e)
-        //     }
-        //   }
-        // })}
-        // {...(zoomable && {
-        //   onPointerDblClick: e => {
-        //     if (KonvaCore.isDragging() || e.evt.button !== 0 || !stageRef.current) {
-        //       return
-        //     }
-        //     if (e.target === stageRef.current || !onNodeClick) {
-        //       e.cancelBubble = true
-        //       centerAndFit()
-        //     }
-        //   }
-        // })}
-        // {...useTouchHandlers(pannable, stageSpringApi)}
-        // {...useMouseWheel(zoomable, stageSpringApi)}
+        {...(onStageClick && {
+          onPointerClick: e => {
+            if (DiagramGesture.isDragging || e.evt.button !== 0 || !stageRef.current) {
+              return
+            }
+            if (e.target === stageRef.current) {
+              e.cancelBubble = true
+              onStageClick(stageRef.current, e)
+            }
+          }
+        })}
+        {...(zoomable && {
+          onPointerDblClick: e => {
+            if (DiagramGesture.isDragging || e.evt.button !== 0 || !stageRef.current) {
+              return
+            }
+            if (e.target === stageRef.current) {
+              e.cancelBubble = true
+              centerAndFit()
+            }
+          }
+        })}
         {...props}
       >
         <Layer>
@@ -435,7 +337,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         <Layer>
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
         </Layer>
-        <NodeHoverLayer />
+        {/* <NodeHoverLayer /> */}
       </AnimatedStage>
     )
   }

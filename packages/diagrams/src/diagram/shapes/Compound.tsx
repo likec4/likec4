@@ -1,9 +1,10 @@
-import { AnimatedGroup, AnimatedRect, KonvaCore, Text } from '../../konva'
 import { scale } from 'khroma'
-import type { DiagramTheme, DiagramNode, OnNodeClick, KonvaPointerEvent } from '../types'
-import { mouseDefault, mousePointer } from './utils'
-import type { NodeSpringValues } from '../springs'
 import type { KonvaNodeEvents } from 'react-konva'
+import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
+import type { NodeSpringValues } from '../springs'
+import { DiagramGesture, useSetHoveredNode } from '../state'
+import type { DiagramNode, DiagramTheme, KonvaPointerEvent, OnNodeClick } from '../types'
+import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
   id?: string
@@ -14,6 +15,7 @@ interface CompoundProps {
 }
 
 export function CompoundShape({ id, node, theme, springs, onNodeClick }: CompoundProps) {
+  const setHoveredNode = useSetHoveredNode()
   const { color, labels } = node
   const colors = theme.colors[color]
 
@@ -31,16 +33,18 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
     ? {
         onPointerEnter: (e: KonvaPointerEvent) => {
           mousePointer(e)
+          setHoveredNode(node)
         },
         onPointerLeave: (e: KonvaPointerEvent) => {
           mouseDefault(e)
+          setHoveredNode(null)
         },
-        onPointerClick: (evt: KonvaPointerEvent) => {
-          if (KonvaCore.isDragging() || evt.evt.button !== 0) {
+        onPointerClick: (e: KonvaPointerEvent) => {
+          if (DiagramGesture.isDragging || e.evt.button !== 0) {
             return
           }
-          evt.cancelBubble = true
-          onNodeClick(node, evt)
+          e.cancelBubble = true
+          onNodeClick(node, e)
         }
       }
     : {}
@@ -59,6 +63,7 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
         height={springs.height}
         fill={fill}
         strokeEnabled={false}
+        listening={false}
       />
       {labels.map(label => (
         <Text
@@ -77,7 +82,7 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
           wrap={'none'}
           ellipsis={true}
           perfectDrawEnabled={false}
-          padding={0}
+          padding={3}
           {...listeners}
         />
       ))}

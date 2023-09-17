@@ -5,6 +5,9 @@ model {
       The customer of Cloud system
       with Premium subscription
     '
+    style {
+      color indigo
+    }
   }
 
   premium -> cloud.ui.dashboard

@@ -3,6 +3,9 @@ model {
   amazon = system 'Amazon' {
     description: 'Cloud and managed services provider'
 
+    style {
+      color gray
+    }
 
     rds = container 'RDS' {
       description: 'Relational Databases'
@@ -47,7 +50,27 @@ views {
 
   view amazon of amazon {
     title: "Overview Amazon"
-    include *, cloud, cloud.* -> amazon
+    include
+      *,
+      cloud,
+      cloud.* -> amazon
+
+    style * {
+      color muted
+    }
+
+    style cloud, cloud.* {
+      color sky
+    }
+
+    style amazon, amazon.* {
+      color primary
+    }
+
+    style rds {
+      color indigo
+    }
+
   }
 
   view amazon_rds of rds {

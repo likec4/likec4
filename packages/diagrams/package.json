@@ -33,7 +33,7 @@
   "packageManager": "yarn@3.6.1",
   "scripts": {
     "generate:full": "yarn workspace @likec4/cli run build && run generate",
-    "generate": "yarn node '../cli/bin/likec4' codegen react $INIT_CWD/src-dev/likec4",
+    "generate": "likec4 codegen react $INIT_CWD/src-dev/likec4",
     "turbo-build": "run -T turbo run build --filter='diagrams'",
     "compile": "tsc --noEmit",
     "build": "unbuild",
@@ -61,6 +61,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@likec4/cli": "workspace:*",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.0.4",
