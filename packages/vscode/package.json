@@ -171,7 +171,7 @@
     "@types/vscode": "~1.77.0",
     "@vscode/extension-telemetry": "^0.8.4",
     "@vscode/vsce": "^2.21.0",
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.19.3",
     "esbuild-plugins-node-modules-polyfill": "^1.4.0",
     "langium": "^2.0.2",
     "npm-run-all": "^4.1.5",
