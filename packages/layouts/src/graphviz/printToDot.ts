@@ -47,10 +47,13 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.compound]: true,
     [_.pad]: pxToInch(20),
     [_.rankdir]: autoLayout,
-    [_.nodesep]: pxToInch(80),
-    [_.ranksep]: pxToInch(80),
     [_.layout]: 'dot',
     [_.outputorder]: 'nodesfirst'
+  })
+  G.apply({
+    [_.nodesep]: pxToInch(90),
+    //@ts-expect-error - ts-graphviz does not support ranksep equally
+    [_.ranksep]: `${pxToInch(90)} equally`
   })
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',
@@ -59,14 +62,15 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
 
   G.attributes.node.apply({
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(18),
+    [_.fontsize]: pxToPoints(19),
     [_.labelloc]: 'c',
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
     [_.style]: 'filled,rounded',
     [_.fillcolor]: Colors[DefaultThemeColor].fill,
-    [_.margin]: pxToInch(16)
+    [_.margin]: pxToInch(20),
+    [_.penwidth]: 0
   })
 
   G.attributes.edge.apply({
@@ -74,7 +78,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.fontsize]: pxToPoints(14),
     [_.style]: 'solid',
     [_.penwidth]: 2,
-    [_.arrowsize]: 0.7,
+    [_.arrowsize]: 0.75,
     [_.color]: RelationColors.lineColor,
     [_.fontcolor]: RelationColors.labelColor,
     [_.nojustify]: true
@@ -102,6 +106,7 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         case 'storage': {
           gNode.attributes.apply({
             [_.color]: Colors[node.color].stroke,
+            [_.penwidth]: 2,
             [_.shape]: 'cylinder'
           })
           break
@@ -115,15 +120,18 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
 
     const subgraph = parent.createSubgraph('cluster_' + sequence++, {
       [_.likec4_id]: node.id,
-      [_.likec4_level]: level,
-      [_.margin]: node.children.length > 2 ? 32 : 24
+      [_.likec4_level]: level
+    })
+    subgraph.attributes.graph.apply({
+      [_.style]: 'rounded',
+      [_.margin]: pxToPoints(40)
     })
 
     const label = sanitize(node.title.toUpperCase())
     if (isTruthy(label)) {
       subgraph.attributes.graph.apply({
         [_.fontname]: 'Helvetica',
-        [_.fontsize]: pxToPoints(12),
+        [_.fontsize]: pxToPoints(13),
         [_.labeljust]: 'l',
         [_.label]: `<<B>${label}</B>>`
       })
