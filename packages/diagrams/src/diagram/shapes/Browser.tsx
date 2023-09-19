@@ -3,7 +3,7 @@ import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function BrowserShape({ id, node, theme, springs }: NodeShapeProps) {
+export function BrowserShape({ node, theme, springs }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({

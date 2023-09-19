@@ -4,7 +4,7 @@ import { cylinderSVGPath } from './Cylinder'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function QueueShape({ id, node, theme, springs }: NodeShapeProps) {
+export function QueueShape({ node, theme, springs }: NodeShapeProps) {
   const {
     size: { width, height }
   } = node

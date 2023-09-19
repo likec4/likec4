@@ -10,6 +10,9 @@ npm install @likec4/diagrams
 
 > > TODO: Document
 
-### Development
+### Local Development
 
-Folder `src-dev` contains a Vite app for development.
+```bash
+yarn turbo-build
+yarn dev
+```

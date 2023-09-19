@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
-import { Fragment } from 'react'
 import type { SpringValues } from '@react-spring/konva'
-import { AnimatedCircle, AnimatedLine, AnimatedText, Circle } from '../../konva'
+import { Fragment } from 'react'
+import { AnimatedCircle, AnimatedLine, AnimatedText } from '../../konva'
 
-import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
-import type { LikeC4Theme, DiagramEdge } from '../types'
 import { invariant } from '@likec4/core'
+import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
+import type { DiagramEdge, LikeC4Theme } from '../types'
 
 export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
@@ -26,6 +26,13 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
 
   return (
     <Fragment>
+      <AnimatedCircle
+        opacity={springs.opacity}
+        x={startPoint[0]}
+        y={startPoint[1]}
+        radius={springs.width.to(v => v + 1)}
+        fill={springs.lineColor}
+      />
       <AnimatedLine
         opacity={springs.opacity}
         bezier={true}
@@ -37,12 +44,6 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
         perfectDrawEnabled={false}
         width={springs.width}
         {...listeners}
-      />
-      <AnimatedCircle
-        x={startPoint[0]}
-        y={startPoint[1]}
-        radius={springs.width.to(v => v + 1)}
-        fill={springs.lineColor}
       />
       {headArrow && (
         <AnimatedLine
@@ -64,6 +65,9 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           x={label.pt[0]}
           y={label.pt[1] - label.fontSize / 2}
           opacity={springs.opacity}
+          // padding={2}
+          // offsetX={2}
+          // offsetY={2}
           // offsetY={label.fontSize / 2}
           // offsetY={label.fontSize / 2}
           // offsetX={label  .width / 2}
@@ -75,7 +79,7 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           align={label.align}
           text={label.text}
           perfectDrawEnabled={false}
-          hitStrokeWidth={0}
+          // hitStrokeWidth={2}
         />
       ))}
     </Fragment>

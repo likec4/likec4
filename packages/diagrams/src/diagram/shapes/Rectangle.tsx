@@ -1,5 +1,5 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect } from '../../konva'
+import { AnimatedRect } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 

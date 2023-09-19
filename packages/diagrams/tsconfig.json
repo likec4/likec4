@@ -26,11 +26,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
-
-    "composite": true
+    "baseUrl": "."
   },
-  "include": ["./src/"],
+  "include": ["./src/", "./.ladle/"],
   "exclude": ["node_modules/", "dist/"],
   "references": [{ "path": "../core" }]
 }

@@ -1,8 +1,8 @@
 import { KonvaCore } from '../konva'
 import { EdgeShape } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
-import { useHoveredEdgeId, useSetHoveredEdge } from './state'
-import type { LikeC4Theme, DiagramView, OnEdgeClick, DiagramEdge } from './types'
+import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
+import type { LikeC4Theme, DiagramView, OnEdgeClick } from './types'
 import { useTransition } from '@react-spring/konva'
 
 type EdgesProps = {
@@ -29,8 +29,8 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     update: edge => {
       const isHovered = hoveredEdgeId === edge.id
       return {
-        width: isHovered ? 5 : 2,
         opacity: 1,
+        width: isHovered ? 5 : 2,
         lineColor: (isHovered ? '#F8F3D4' : theme.relation.lineColor) as string
       }
     },
@@ -63,7 +63,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
         springs={springs}
         {...(onEdgeClick && {
           onPointerClick: e => {
-            if (KonvaCore.isDragging()) {
+            if (DiagramGesture.isDragging || e.evt.button !== 0) {
               return
             }
             e.cancelBubble = true

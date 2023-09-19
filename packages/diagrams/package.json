@@ -32,12 +32,15 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
-    "generate:full": "yarn workspace @likec4/cli run build && run generate",
-    "generate": "likec4 codegen react $INIT_CWD/src-dev/likec4",
+    "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
+    "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
+    "generate": "likec4 codegen views-data src/stories/likec4",
     "turbo-build": "run -T turbo run build --filter='diagrams'",
     "compile": "tsc --noEmit",
     "build": "unbuild",
-    "dev": "run generate && vite",
+    "dev": "run generate && ladle serve",
+    "stories:generate": "node ./.scripts/generate-view-stories.mjs",
+    "stories:build": "node ./.scripts/generate-view-stories.mjs",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },
@@ -61,6 +64,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@ladle/react": "^2.17.2",
     "@likec4/cli": "workspace:*",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

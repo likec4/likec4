@@ -1,9 +1,9 @@
 import { useSpring } from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect, Circle } from '../../konva'
+import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function MobileShape({ id, node, theme, springs, ...listeners }: NodeShapeProps) {
+export function MobileShape({ node, theme, springs }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({

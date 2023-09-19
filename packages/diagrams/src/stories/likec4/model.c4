@@ -71,6 +71,7 @@ views {
   view index {
     title "Landscape"
     include *
+    exclude element.kind = themecolor
   }
 
   view customer of customer {

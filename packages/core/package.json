@@ -34,7 +34,8 @@
     "./colors": "./src/colors.ts",
     "./errors": "./src/errors/index.ts",
     "./utils": "./src/utils/index.ts",
-    "./compute-view": "./src/compute-view/index.ts"
+    "./compute-view": "./src/compute-view/index.ts",
+    "./dist/*": "./dist/*"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -72,7 +73,8 @@
         "types": "./dist/compute-view/index.d.ts",
         "import": "./dist/compute-view/index.js",
         "require": "./dist/compute-view/index.cjs"
-      }
+      },
+      "./dist/*": "./dist/*"
     }
   },
   "dependencies": {

@@ -1,16 +1,12 @@
 import type { SpringConfig, UseTransitionProps } from '@react-spring/konva'
-import { useSpring, useTransition } from '@react-spring/konva'
-import { nodeListeners } from './shapes/nodeEvents'
+import { useTransition } from '@react-spring/konva'
+import { AnimatedGroup } from '../konva'
 import { nodeShape } from './shapes/nodeShape'
-import type { NodeSprings, NodeSpringsCtrl } from './springs'
-import { defaultNodeSprings, nodeSprings } from './springs'
-import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
-import { DiagramGesture, useGetNodeState, useHoveredNodeId, useSetHoveredNode } from './state'
-import { AnimatedGroup, AnimatedRect, Rect, Text } from '../konva'
-import { useSyncedRef } from '@react-hookz/web/esm'
-import type { PropsWithChildren } from 'react'
 import { mouseDefault, mousePointer } from './shapes/utils'
-import { scale } from 'khroma'
+import type { NodeSprings, NodeSpringsCtrl } from './springs'
+import { nodeSprings } from './springs'
+import { DiagramGesture, useHoveredNodeId, useSetHoveredNode } from './state'
+import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
 
 const hasNoChildren = (node: DiagramNode) => {
   return node.children.length <= 0
@@ -43,7 +39,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
     }),
     update: (node: DiagramNode, _index) => {
       return nodeSprings({
-        scale: hoveredNodeId === node.id ? 1.08 : 1
+        scale: onNodeClick && hoveredNodeId === node.id ? 1.08 : 1
       })(node, _index)
     },
     expires: true,

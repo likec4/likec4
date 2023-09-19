@@ -1,4 +1,5 @@
 node_modules
 dist
-src-dev/**/*.generated.ts
-src-dev/**/*.generated.tsx
+build
+src*/**/*.generated.ts
+src*/**/*.generated.tsx

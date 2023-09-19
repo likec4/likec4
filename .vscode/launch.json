@@ -23,7 +23,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/packages/diagrams/src-dev/likec4",
+        "${workspaceFolder}/packages/diagrams/src/stories/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
@@ -40,7 +40,7 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/packages/diagrams/src-dev/likec4",
+        "${workspaceFolder}/packages/diagrams/src/stories/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,

@@ -1,5 +1,5 @@
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
-import type { NodeSpringValues, NodeSpringsCtrl } from '../springs'
+import type { NodeSpringValues } from '../springs'
 import type { DiagramNode, DiagramTheme } from '../types'
 
 export interface NodeShapeProps extends KonvaNodeEvents {

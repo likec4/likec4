@@ -1,11 +1,11 @@
+import { useTransition } from '@react-spring/konva'
 import type { KonvaNodeEvents } from 'react-konva'
 import { AnimatedGroup, Layer } from '../konva'
 import { KonvaHtml } from '../konva-html'
 import { BrainIcon } from './icons'
 import { nodeSprings, type NodeSprings, type NodeSpringsCtrl } from './springs'
+import { useHoveredNode } from './state'
 import type { DiagramNode, DiagramTheme } from './types'
-import { useHoveredNode, useHoveredNodeId } from './state'
-import { useTransition } from '@react-spring/konva'
 
 interface NodeHoverProps extends KonvaNodeEvents {
   node: DiagramNode
@@ -62,7 +62,7 @@ export const NodeHoverLayer = ({ theme }: { theme: DiagramTheme }) => {
   })
   return (
     <Layer>
-      {transitions((springs, item, { key, ctrl }) => {
+      {transitions((_, item, { key, ctrl }) => {
         return <NodeHover key={key} node={item} theme={theme} ctrl={ctrl} />
       })}
     </Layer>

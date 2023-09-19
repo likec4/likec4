@@ -16,13 +16,6 @@ specification {
       shape mobile
     }
   }
-
-  element queue {
-    style {
-      shape queue
-    }
-  }
-
   element database {
     style {
       shape storage
