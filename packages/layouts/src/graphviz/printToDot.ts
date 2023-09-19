@@ -3,7 +3,7 @@
 import { Colors, RelationColors } from '@likec4/core/colors'
 import { DefaultThemeColor } from '@likec4/core/types'
 import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
-import { isTruthy } from 'remeda'
+import { countBy, isTruthy } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -11,11 +11,13 @@ import {
   type $keywords,
   type GraphBaseModel,
   type NodeModel,
-  type SubgraphModel
+  type SubgraphModel,
+  type RootGraphModel
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import type { DotSource } from './types'
 import { pxToInch, pxToPoints } from './graphviz-utils'
+import { nameFromFqn } from '@likec4/core'
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -42,28 +44,30 @@ declare module 'ts-graphviz' {
   }
 }
 
-export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSource {
+export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): RootGraphModel {
   const G = digraph({
+    [_.layout]: 'dot',
     [_.compound]: true,
     [_.pad]: pxToInch(20),
     [_.rankdir]: autoLayout,
-    [_.layout]: 'dot',
-    [_.outputorder]: 'nodesfirst'
+    [_.outputorder]: 'nodesfirst',
+    [_.nodesep]: pxToInch(90)
+    // [_.pack]: pxToPoints(30),
+    // [_.packmode]: packmode({autoLayout, nodes}),
   })
   G.apply({
-    [_.nodesep]: pxToInch(90),
     //@ts-expect-error - ts-graphviz does not support ranksep equally
     [_.ranksep]: `${pxToInch(90)} equally`
   })
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',
+    [_.labeljust]: 'l',
     [_.fontsize]: pxToPoints(12)
   })
 
   G.attributes.node.apply({
     [_.fontname]: 'Helvetica',
     [_.fontsize]: pxToPoints(19),
-    [_.labelloc]: 'c',
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
@@ -84,28 +88,41 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
     [_.nojustify]: true
   })
 
-  const gvSubgraphs = new Map<Fqn, SubgraphModel>()
-  const gvNodes = new Map<Fqn, NodeModel>()
+  const subgraphs = new Map<Fqn, SubgraphModel>()
+  const graphvizNodes = new Map<Fqn, NodeModel>()
 
   let sequence = 1
 
-  const traverseNodes = (node: ComputedNode, parent: GraphBaseModel, level = 0): number => {
-    if (node.children.length === 0) {
-      const gNode = parent.createNode('nd' + sequence++, {
-        [_.likec4_id]: node.id,
+  /**
+   * returns recursion depth
+   */
+  const traverseNodes = (elementNode: ComputedNode, parent: GraphBaseModel, level = 0): number => {
+    if (elementNode.children.length === 0) {
+      let name = nameFromFqn(elementNode.id).toLowerCase()
+      if (name.startsWith('cluster')) {
+        name = 'nd_' + name
+      }
+      let id = name
+      let uniqueNumber = 1
+      while (G.getNode(id)) {
+        id = name + '_' + uniqueNumber++
+      }
+
+      const node = G.createNode(id, {
+        [_.likec4_id]: elementNode.id,
         [_.likec4_level]: level,
-        [_.label]: nodeLabel(node)
+        [_.label]: nodeLabel(elementNode)
       })
-      if (node.color !== DefaultThemeColor) {
-        gNode.attributes.apply({
-          [_.fillcolor]: Colors[node.color].fill
+      if (elementNode.color !== DefaultThemeColor) {
+        node.attributes.apply({
+          [_.fillcolor]: Colors[elementNode.color].fill
         })
       }
-      switch (node.shape) {
+      switch (elementNode.shape) {
         case 'cylinder':
         case 'storage': {
-          gNode.attributes.apply({
-            [_.color]: Colors[node.color].stroke,
+          node.attributes.apply({
+            [_.color]: Colors[elementNode.color].stroke,
             [_.penwidth]: 2,
             [_.shape]: 'cylinder'
           })
@@ -114,33 +131,32 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
         default:
           break
       }
-      gvNodes.set(node.id, gNode)
+      if (parent !== G) {
+        parent.node(id)
+      }
+      graphvizNodes.set(elementNode.id, node)
       return 0
     }
 
     const subgraph = parent.createSubgraph('cluster_' + sequence++, {
-      [_.likec4_id]: node.id,
-      [_.likec4_level]: level
-    })
-    subgraph.attributes.graph.apply({
+      [_.likec4_id]: elementNode.id,
+      [_.likec4_level]: level,
       [_.style]: 'rounded',
       [_.margin]: pxToPoints(40)
     })
 
-    const label = sanitize(node.title.toUpperCase())
+    const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
-      subgraph.attributes.graph.apply({
-        [_.fontname]: 'Helvetica',
+      subgraph.apply({
         [_.fontsize]: pxToPoints(13),
-        [_.labeljust]: 'l',
         [_.label]: `<<B>${label}</B>>`
       })
     }
 
-    gvSubgraphs.set(node.id, subgraph)
+    subgraphs.set(elementNode.id, subgraph)
 
     let depth = 1
-    for (const child of nodes.filter(n => n.parent === node.id)) {
+    for (const child of nodes.filter(n => n.parent === elementNode.id)) {
       depth = Math.max(traverseNodes(child, subgraph, level + 1) + 1, depth)
     }
     subgraph.set(_.likec4_depth, depth)
@@ -150,8 +166,8 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
   }
 
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
-    const source = gvNodes.get(edge.source)
-    const target = gvNodes.get(edge.target)
+    const source = graphvizNodes.get(edge.source)
+    const target = graphvizNodes.get(edge.target)
     // TODO: Edge with cluster?
     // if (!source) {
     //   const firstleaf = leafs.find(n => isAncestor(edge.source, n.id))
@@ -180,9 +196,13 @@ export function printToDot({ autoLayout, nodes, edges }: ComputedView): DotSourc
   }
 
   for (const edge of edges) {
-    const parent = (edge.parent && gvSubgraphs.get(edge.parent)) ?? G
+    const parent = (edge.parent && subgraphs.get(edge.parent)) ?? G
     addEdge(edge, parent)
   }
 
-  return toDot(G) as DotSource
+  return G
+}
+
+export function printToDot(view: ComputedView): DotSource {
+  return toDot(toGraphvisModel(view)) as DotSource
 }

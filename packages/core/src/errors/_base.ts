@@ -1,5 +1,6 @@
 import { CustomError } from 'ts-custom-error'
 import stringify from 'safe-stable-stringify'
+import { isString } from '../utils'
 
 export interface BaseErrorOptions {
   cause?: unknown
@@ -42,7 +43,10 @@ export function normalizeError(e: unknown): BaseError {
   if (e instanceof Error) {
     return new UnknownError(e.message, { cause: e })
   }
-  const message = typeof e === 'string' ? e : stringify(e as object)
+  if (e === null || e === undefined) {
+    return new UnknownError('Undefined error')
+  }
+  const message = isString(e) ? e : stringify(e as object, null, 2)
   return new UnknownError(message)
 }
 

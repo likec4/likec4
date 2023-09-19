@@ -821,56 +821,6 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Amazon is a cloud provider",
-      "id": "amazon",
-      "inEdges": [
-        "cloud.backend.storage:amazon",
-      ],
-      "kind": "system",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 19,
-          "pt": [
-            127,
-            83,
-          ],
-          "text": "Amazon",
-          "width": 69,
-        },
-        {
-          "align": "left",
-          "color": "#dbeafe",
-          "fontSize": 14,
-          "pt": [
-            81,
-            110,
-          ],
-          "text": "Amazon is a cloud provider",
-          "width": 161,
-        },
-      ],
-      "links": null,
-      "navigateTo": "amazon",
-      "outEdges": [],
-      "parent": null,
-      "position": [
-        255,
-        1542,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 180,
-        "width": 321,
-      },
-      "tags": null,
-      "technology": null,
-      "title": "Amazon",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "description": "The admin panel is a webapp that allows support staff to manage customer data.",
       "id": "cloud.frontend.adminPanel",
       "inEdges": [
@@ -1116,6 +1066,56 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "tags": null,
       "technology": null,
       "title": "Backend Storage",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Amazon is a cloud provider",
+      "id": "amazon",
+      "inEdges": [
+        "cloud.backend.storage:amazon",
+      ],
+      "kind": "system",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 19,
+          "pt": [
+            127,
+            83,
+          ],
+          "text": "Amazon",
+          "width": 69,
+        },
+        {
+          "align": "left",
+          "color": "#dbeafe",
+          "fontSize": 14,
+          "pt": [
+            81,
+            110,
+          ],
+          "text": "Amazon is a cloud provider",
+          "width": 161,
+        },
+      ],
+      "links": null,
+      "navigateTo": "amazon",
+      "outEdges": [],
+      "parent": null,
+      "position": [
+        255,
+        1542,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 180,
+        "width": 321,
+      },
+      "tags": null,
+      "technology": null,
+      "title": "Amazon",
     },
   ],
   "rules": [
@@ -1531,56 +1531,6 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "children": [],
       "color": "primary",
-      "description": "Amazon is a cloud provider",
-      "id": "amazon",
-      "inEdges": [
-        "cloud.backend:amazon",
-      ],
-      "kind": "system",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 19,
-          "pt": [
-            127,
-            83,
-          ],
-          "text": "Amazon",
-          "width": 69,
-        },
-        {
-          "align": "left",
-          "color": "#dbeafe",
-          "fontSize": 14,
-          "pt": [
-            80,
-            110,
-          ],
-          "text": "Amazon is a cloud provider",
-          "width": 161,
-        },
-      ],
-      "links": null,
-      "navigateTo": "amazon",
-      "outEdges": [],
-      "parent": null,
-      "position": [
-        205,
-        1074,
-      ],
-      "shape": "rectangle",
-      "size": {
-        "height": 180,
-        "width": 321,
-      },
-      "tags": null,
-      "technology": null,
-      "title": "Amazon",
-    },
-    {
-      "children": [],
-      "color": "primary",
       "description": null,
       "id": "cloud.frontend",
       "inEdges": [
@@ -1658,6 +1608,56 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "tags": null,
       "technology": null,
       "title": "Backend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Amazon is a cloud provider",
+      "id": "amazon",
+      "inEdges": [
+        "cloud.backend:amazon",
+      ],
+      "kind": "system",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 19,
+          "pt": [
+            127,
+            83,
+          ],
+          "text": "Amazon",
+          "width": 69,
+        },
+        {
+          "align": "left",
+          "color": "#dbeafe",
+          "fontSize": 14,
+          "pt": [
+            80,
+            110,
+          ],
+          "text": "Amazon is a cloud provider",
+          "width": 161,
+        },
+      ],
+      "links": null,
+      "navigateTo": "amazon",
+      "outEdges": [],
+      "parent": null,
+      "position": [
+        205,
+        1074,
+      ],
+      "shape": "rectangle",
+      "size": {
+        "height": 180,
+        "width": 321,
+      },
+      "tags": null,
+      "technology": null,
+      "title": "Amazon",
     },
   ],
   "rules": [

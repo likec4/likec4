@@ -1,9 +1,13 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type { ComputedView, DiagramView } from '@likec4/core'
 import { dotLayoutFn } from './dotLayout'
+import { delay } from 'rambdax'
 
 export class DotLayouter {
+  #loadPromise: Promise<Graphviz> | null = null
+
   dispose() {
+    this.#loadPromise = null
     Graphviz.unload()
   }
 
@@ -12,7 +16,17 @@ export class DotLayouter {
     return dotLayoutFn(graphviz, computedView)
   }
 
-  #loadPromise: Promise<Graphviz> | null = null
+  /**
+   * Workaround for some memory issues with Graphviz  WASM
+   */
+  async restart() {
+    this.#loadPromise = null
+    Graphviz.unload()
+    await delay(100)
+    await this.load()
+    return this
+  }
+
   private async load() {
     if (!this.#loadPromise) {
       this.#loadPromise = Graphviz.load()
