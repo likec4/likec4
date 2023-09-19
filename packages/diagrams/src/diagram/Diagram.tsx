@@ -223,7 +223,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
                 x,
                 y
               },
-              immediate: active && down
+              immediate: immediate || (active && down)
             })
           }
         },
@@ -242,7 +242,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               x,
               y,
               scale
-            }
+            },
+            immediate
           })
 
           return memo

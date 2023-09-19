@@ -47,7 +47,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
     keys: keyOf,
     delay(key) {
       const isUpdating = nodes.some(n => keyOf(n) === key)
-      return isUpdating ? 30 : 0
+      return isUpdating && animate ? 30 : 0
     },
     config: (_node, _index, state): SpringConfig => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -109,6 +109,7 @@ const NodeSnape = ({ node, ctrl, theme, isHovered, onNodeClick }: NodeShapeProps
 
   return (
     <AnimatedGroup
+      name={node.id}
       onPointerEnter={e => {
         setHoveredNode(node)
         onNodeClick && mousePointer(e)
@@ -117,7 +118,6 @@ const NodeSnape = ({ node, ctrl, theme, isHovered, onNodeClick }: NodeShapeProps
         setHoveredNode(null)
         mouseDefault(e)
       }}
-      name={node.id}
       {...(onNodeClick && {
         onPointerClick: e => {
           if (DiagramGesture.isDragging || e.evt.button !== 0) {

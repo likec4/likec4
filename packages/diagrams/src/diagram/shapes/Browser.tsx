@@ -3,7 +3,7 @@ import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function BrowserShape({ node, theme, springs }: NodeShapeProps) {
+export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({
@@ -18,15 +18,17 @@ export function BrowserShape({ node, theme, springs }: NodeShapeProps) {
     <>
       <AnimatedRect
         cornerRadius={6}
-        shadowBlur={16}
-        shadowOpacity={0.25}
+        shadowBlur={isHovered ? 20 : 16}
+        shadowOpacity={isHovered ? 0.35 : 0.25}
         shadowOffsetX={0}
-        shadowOffsetY={8}
+        shadowOffsetY={isHovered ? 10 : 8}
+        shadowColor={theme.shadow}
         shadowEnabled={springs.opacity.to(v => v > 0.9)}
+        perfectDrawEnabled={false}
+        strokeEnabled={false}
         width={springs.width}
         height={springs.height}
         fill={stroke}
-        shadowColor={theme.shadow}
       />
       <Circle x={16} y={15} radius={7} fill={colors.fill} listening={false} />
       <Circle x={36} y={15} radius={7} fill={colors.fill} listening={false} />

@@ -37,12 +37,10 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
         opacity={springs.opacity}
         bezier={true}
         points={points.flat()}
-        // fill={springs.lineColor}
         stroke={springs.lineColor}
-        // strokeWidth={springs.width}
+        strokeWidth={springs.width}
         hitStrokeWidth={25}
         perfectDrawEnabled={false}
-        width={springs.width}
         {...listeners}
       />
       {headArrow && (
@@ -53,21 +51,19 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           closed={true}
           fill={springs.lineColor}
           stroke={springs.lineColor}
-          strokeWidth={1}
+          strokeWidth={2}
           perfectDrawEnabled={false}
-          hitStrokeWidth={0}
+          hitStrokeWidth={5}
         />
       )}
       {labels.map((label, i) => (
         <AnimatedText
           key={i}
           {...listeners}
-          x={label.pt[0]}
-          y={label.pt[1] - label.fontSize / 2}
+          x={label.pt[0] - 4}
+          y={label.pt[1] - label.fontSize / 2 - 4}
           opacity={springs.opacity}
-          // padding={2}
-          // offsetX={2}
-          // offsetY={2}
+          padding={4}
           // offsetY={label.fontSize / 2}
           // offsetY={label.fontSize / 2}
           // offsetX={label  .width / 2}
@@ -79,7 +75,7 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           align={label.align}
           text={label.text}
           perfectDrawEnabled={false}
-          // hitStrokeWidth={2}
+          hitStrokeWidth={2}
         />
       ))}
     </Fragment>

@@ -3,7 +3,7 @@ import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './nodeLabels'
 import type { NodeShapeProps } from './types'
 
-export function MobileShape({ node, theme, springs }: NodeShapeProps) {
+export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
   const { fill, stroke } = useSpring({
@@ -17,16 +17,16 @@ export function MobileShape({ node, theme, springs }: NodeShapeProps) {
   return (
     <>
       <AnimatedRect
-        cornerRadius={10}
-        shadowBlur={16}
-        shadowOpacity={0.25}
+        cornerRadius={6}
+        shadowBlur={isHovered ? 20 : 16}
+        shadowOpacity={isHovered ? 0.35 : 0.25}
         shadowOffsetX={0}
-        shadowOffsetY={8}
+        shadowOffsetY={isHovered ? 10 : 8}
+        shadowColor={theme.shadow}
         shadowEnabled={springs.opacity.to(v => v > 0.9)}
         width={springs.width}
         height={springs.height}
         fill={stroke}
-        shadowColor={theme.shadow}
       />
       <Circle x={16} y={node.size.height / 2} radius={10} fill={colors.fill} listening={false} />
       <AnimatedRect

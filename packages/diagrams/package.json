@@ -40,7 +40,8 @@
     "build": "unbuild",
     "dev": "run generate && ladle serve",
     "stories:generate": "node ./.scripts/generate-view-stories.mjs",
-    "stories:build": "node ./.scripts/generate-view-stories.mjs",
+    "stories:build": "ladle build",
+    "stories:preview": "ladle preview -p 61107",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },
@@ -55,8 +56,6 @@
     "khroma": "^2.0.0",
     "konva": "^9.2.0",
     "rambdax": "^9.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-konva": "^18.2.10"
   },
   "peerDependencies": {
@@ -69,6 +68,8 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",

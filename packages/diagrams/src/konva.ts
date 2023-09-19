@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Rect, Stage, Text, Group, Path, Circle, Line, Layer, Image } from 'react-konva/es/ReactKonvaCore'
+import { Rect, Stage, Text, Group, Path, Circle, Line, Layer, Image, Ellipse } from 'react-konva/es/ReactKonvaCore'
 import KonvaCore from 'konva/lib/Core'
 
 import 'konva/lib/shapes/Rect'
@@ -11,6 +11,7 @@ import 'konva/lib/shapes/Path'
 import 'konva/lib/shapes/Circle'
 import 'konva/lib/shapes/Line'
 import 'konva/lib/shapes/Image'
+import 'konva/lib/shapes/Ellipse'
 
 import type Konva from 'konva'
 import type { KonvaNodeEvents, StageProps } from 'react-konva'
@@ -27,7 +28,7 @@ KonvaCore.hitOnDragEnabled = true
 KonvaCore.capturePointerEventsEnabled = true
 KonvaCore.dragButtons = [0, 2]
 
-export { KonvaCore, Stage, Group, Layer, Path, Text, Circle, Rect, Image }
+export { KonvaCore, Stage, Group, Layer, Path, Text, Circle, Rect, Image, Ellipse }
 
 /**
  * Partially copied from @react-spring/konva
@@ -69,6 +70,7 @@ export type AnimatedCircleComponent = AnimatedNode<Konva.Circle, Konva.CircleCon
 export type AnimatedLineComponent = AnimatedNode<Konva.Line, Konva.LineConfig>
 export type AnimatedTextComponent = AnimatedNode<Konva.Text, Konva.TextConfig>
 export type AnimatedPathComponent = AnimatedNode<Konva.Path, Konva.PathConfig>
+export type AnimatedEllipseComponent = AnimatedNode<Konva.Ellipse, Konva.EllipseConfig>
 
 // @ts-ignore
 export const AnimatedStage: AnimatedStageComponent = /* @__PURE__ */ animated(Stage)
@@ -78,3 +80,4 @@ export const AnimatedText: AnimatedTextComponent = /* @__PURE__ */ animated(Text
 export const AnimatedPath: AnimatedPathComponent = /* @__PURE__ */ animated(Path)
 export const AnimatedLine: AnimatedLineComponent = /* @__PURE__ */ animated(Line)
 export const AnimatedCircle: AnimatedCircleComponent = /* @__PURE__ */ animated(Circle)
+export const AnimatedEllipse: AnimatedEllipseComponent = /* @__PURE__ */ animated(Ellipse)

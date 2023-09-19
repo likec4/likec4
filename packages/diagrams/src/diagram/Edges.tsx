@@ -1,4 +1,3 @@
-import { KonvaCore } from '../konva'
 import { EdgeShape } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
@@ -30,7 +29,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       const isHovered = hoveredEdgeId === edge.id
       return {
         opacity: 1,
-        width: isHovered ? 5 : 2,
+        width: isHovered ? 3 : 2,
         lineColor: (isHovered ? '#F8F3D4' : theme.relation.lineColor) as string
       }
     },

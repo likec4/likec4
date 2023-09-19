@@ -4,66 +4,6 @@ import { equals } from 'rambdax'
 import type { DiagramEdge, DiagramNode } from '../types'
 import { selectAtom } from 'jotai/utils'
 
-// const prevTimeoutAtom = atom<ReturnType<typeof setTimeout> | undefined>(
-//   undefined
-// )
-
-// // DO NOT EXPORT currentValueAtom as using this atom to set state can cause
-// // inconsistent state between currentValueAtom and debouncedValueAtom
-// const _currentValueAtom = atom(initialValue)
-// const isDebouncingAtom = atom(false)
-
-// const debouncedValueAtom = atom(
-//   initialValue,
-//   (get, set, update: SetStateAction<T>) => {
-//     clearTimeout(get(prevTimeoutAtom))
-
-//     const prevValue = get(_currentValueAtom)
-//     const nextValue =
-//       typeof update === 'function'
-//         ? (update as (prev: T) => T)(prevValue)
-//         : update
-
-//     const onDebounceStart = () => {
-//       set(_currentValueAtom, nextValue)
-//       set(isDebouncingAtom, true)
-//     }
-
-//     const onDebounceEnd = () => {
-//       set(debouncedValueAtom, nextValue)
-//       set(isDebouncingAtom, false)
-//     }
-
-//     onDebounceStart()
-
-//     if (!shouldDebounceOnReset && nextValue === initialValue) {
-//       onDebounceEnd()
-//       return
-//     }
-
-//     const nextTimeoutId = setTimeout(() => {
-//       onDebounceEnd()
-//     }, delayMilliseconds)
-
-//     // set previous timeout atom in case it needs to get cleared
-//     set(prevTimeoutAtom, nextTimeoutId)
-//   }ll)
-// )
-
-// // exported atom setter to clear timeout if needed
-// const clearTimeoutAtom = atom(null, (get, set, _arg) => {
-//   clearTimeout(get(prevTimeoutAtom))
-//   set(isDebouncingAtom, false)
-// })
-
-// return {
-//   currentValueAtom: atom((get) => get(_currentValueAtom)),
-//   isDebouncingAtom,
-//   clearTimeoutAtom,
-//   debouncedValueAtom,
-// }
-// }
-
 type HoveredNode = DiagramNode | null
 type HoveredEdge = DiagramEdge | null
 const currentHoveredNodeAtom = atom<HoveredNode>(null)
@@ -78,12 +18,23 @@ export const hoveredNodeAtom = atom(
     if (equals(_prev, _next)) {
       return false
     }
+    if (_next != null && _prev == null) {
+      set(
+        nodeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredNodeAtom, _next)
+        }, 180)
+      )
+      return true
+    }
     if (_next == null && _prev != null) {
-      const nextTimeoutId = setTimeout(() => {
-        set(currentHoveredNodeAtom, null)
-      }, 150)
       // set previous timeout atom in case it needs to get cleared
-      set(nodeTimeoutAtom, nextTimeoutId)
+      set(
+        nodeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredNodeAtom, null)
+        }, 180)
+      )
     } else {
       set(currentHoveredNodeAtom, _next)
     }
@@ -105,15 +56,27 @@ export const hoveredEdgeAtom = atom(
     if (equals(_prev, _next)) {
       return false
     }
-    if (_next == null && _prev != null) {
-      const nextTimeoutId = setTimeout(() => {
-        set(currentHoveredEdgeAtom, null)
-      }, 150)
+    if (_next != null && _prev == null) {
       // set previous timeout atom in case it needs to get cleared
-      set(nodeTimeoutAtom, nextTimeoutId)
-    } else {
-      set(currentHoveredEdgeAtom, _next)
+      set(
+        edgeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredEdgeAtom, _next)
+        }, 180)
+      )
+      return true
     }
+    if (_next == null && _prev != null) {
+      // set previous timeout atom in case it needs to get cleared
+      set(
+        edgeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredEdgeAtom, null)
+        }, 180)
+      )
+      return true
+    }
+    set(currentHoveredEdgeAtom, _next)
     return true
   }
 )

@@ -3,6 +3,5 @@ import { useState, type PropsWithChildren } from 'react'
 
 export const DiagramStateProvider = ({ children }: PropsWithChildren) => {
   const [store] = useState(() => createStore())
-
   return <Provider store={store}>{children}</Provider>
 }

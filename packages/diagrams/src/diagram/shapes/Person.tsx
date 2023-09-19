@@ -12,7 +12,7 @@ const PersonIcon = {
 export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
-  const rectProps = useSpring({
+  const { fill, stroke } = useSpring({
     to: {
       fill: colors.fill,
       stroke: colors.stroke
@@ -26,15 +26,15 @@ export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps)
         width={springs.width}
         height={springs.height}
         cornerRadius={6}
-        shadowBlur={16}
-        shadowOpacity={0.25}
+        shadowBlur={isHovered ? 20 : 16}
+        shadowOpacity={isHovered ? 0.35 : 0.25}
         shadowOffsetX={0}
-        shadowOffsetY={8}
+        shadowOffsetY={isHovered ? 10 : 8}
         shadowColor={theme.shadow}
-        shadowEnabled={springs.opacity.to(v => v > 0.9 && !isHovered)}
+        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
-        fill={rectProps.fill}
+        fill={fill}
         // shadowForStrokeEnabled={false}
         // stroke={rectProps.fill}
         // strokeScaleEnabled={false}
@@ -47,7 +47,7 @@ export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps)
         data={PersonIcon.path}
         width={PersonIcon.width}
         height={PersonIcon.height}
-        fill={rectProps.stroke}
+        fill={stroke}
         opacity={0.7}
         perfectDrawEnabled={false}
         offsetX={PersonIcon.width}

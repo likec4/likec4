@@ -8,16 +8,13 @@ export function RectangleShape({ node, theme, springs, isHovered }: NodeShapePro
 
   const rectProps = useSpring({
     to: {
+      ...node.size,
       fill: colors.fill
     }
   })
-
-  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
     <>
       <AnimatedRect
-        width={springs.width}
-        height={springs.height}
         cornerRadius={6}
         shadowBlur={isHovered ? 20 : 16}
         shadowOpacity={isHovered ? 0.35 : 0.25}
@@ -26,12 +23,12 @@ export function RectangleShape({ node, theme, springs, isHovered }: NodeShapePro
         shadowColor={theme.shadow}
         shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
+        strokeEnabled={false}
         // strokeEnabled={isHovered === true}
         // shadowForStrokeEnabled={false}
         // stroke={'#F8F3D4'}
         // strokeScaleEnabled={false}
         // strokeWidth={2}
-        // hitStrokeWidth={25}
         {...rectProps}
       />
       <NodeLabels node={node} theme={theme} />

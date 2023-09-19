@@ -7,14 +7,13 @@ import type { DiagramNode, DiagramTheme, KonvaPointerEvent, OnNodeClick } from '
 import { mouseDefault, mousePointer } from './utils'
 
 interface CompoundProps {
-  id?: string
   node: DiagramNode
   theme: DiagramTheme
   springs: NodeSpringValues
   onNodeClick?: OnNodeClick | undefined
 }
 
-export function CompoundShape({ id, node, theme, springs, onNodeClick }: CompoundProps) {
+export function CompoundShape({ node, theme, springs, onNodeClick }: CompoundProps) {
   const setHoveredNode = useSetHoveredNode()
   const { color, labels } = node
   const colors = theme.colors[color]
@@ -50,7 +49,7 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
     : {}
 
   return (
-    <AnimatedGroup id={id} name={node.id} {...springs}>
+    <AnimatedGroup name={node.id} {...springs}>
       <AnimatedRect
         cornerRadius={4}
         shadowColor={theme.shadow}
@@ -65,14 +64,15 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
         strokeEnabled={false}
         listening={false}
       />
-      {labels.map(label => (
+      {labels.map(({ pt: [x, y], ...label }, i) => (
         <Text
-          key={label.text}
-          x={label.pt[0]}
-          y={label.pt[1]}
-          offsetY={label.fontSize / 2}
-          width={node.size.width - 2 * label.pt[0]}
-          fill={loContrast}
+          key={i}
+          x={x}
+          y={y - label.fontSize / 2}
+          offsetX={4}
+          offsetY={4}
+          width={node.size.width - x - 4}
+          fill={'#AEAEAE'}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
@@ -82,7 +82,9 @@ export function CompoundShape({ id, node, theme, springs, onNodeClick }: Compoun
           wrap={'none'}
           ellipsis={true}
           perfectDrawEnabled={false}
-          padding={3}
+          padding={6}
+          hitStrokeWidth={3}
+          globalCompositeOperation={'luminosity'}
           {...listeners}
         />
       ))}

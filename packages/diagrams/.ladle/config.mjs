@@ -1,11 +1,7 @@
-import { ThemeState, ModeState } from '@ladle/react'
-
-/**
- * @type {import("@ladle/react/typings-for-build/shared/types").UserConfig}
- */
 export default {
   stories: "src/**/*.stories.tsx",
-  outDir: "build",
+  defaultStory: "development--diagram",
+
   addons: {
     a11y: {
       enabled: false,
@@ -23,7 +19,7 @@ export default {
     },
     mode: {
       enabled: true,
-      defaultState: ModeState.Full,
+      defaultState: "full"
     },
     rtl: {
       enabled: false,
@@ -34,7 +30,7 @@ export default {
     },
     theme: {
       enabled: true,
-      defaultState: ThemeState.Dark
+      defaultState: "dark"
     },
     width: {
       enabled: true,

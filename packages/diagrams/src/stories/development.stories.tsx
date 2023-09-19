@@ -1,12 +1,14 @@
-import { ActionType, ModeState, useLadleContext, type Story, type StoryDefault, action } from '@ladle/react'
-import { useMeasure } from '@react-hookz/web/esm'
-import { DiagramStateProvider } from '../diagram/state'
+import { ActionType, action, useLadleContext, type Story, type StoryDefault } from '@ladle/react'
+import { useStoryViewport } from '../../.ladle/components'
+import { Diagram, DiagramStateProvider } from '../diagram'
 import type { LikeC4ViewId } from './likec4'
-import { Diagram, LikeC4ViewIds, isViewId } from './likec4'
+import { LikeC4ViewIds, LikeC4Views, isViewId } from './likec4'
 
 export default {
   args: {
     viewId: 'index',
+    padding: 16,
+    animate: true,
     pannable: true,
     zoomable: true
   },
@@ -20,78 +22,81 @@ export default {
     },
     pannable: {
       control: { type: 'boolean' }
+    },
+    animate: {
+      control: { type: 'boolean' }
+    },
+    zoomable: {
+      control: { type: 'boolean' }
+    },
+    padding: {
+      control: { type: 'number' }
     }
   }
 } as StoryDefault<Props>
 
 type Props = {
   viewId: LikeC4ViewId
+  animate?: boolean
+  padding?: number
   pannable?: boolean
   zoomable?: boolean
 }
 
 export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
+  const measures = useStoryViewport()
   const {
-    globalState: { mode, width: ladleWidth, control: controlState },
-    dispatch
+    dispatch,
+    globalState: { control: controlState }
   } = useLadleContext()
-  // const [viewId, setViewId] = useViewId(
-  const isFullScreen = mode === ModeState.Preview || ladleWidth !== 0
-  const [measures, measuresRef] = useMeasure<HTMLDivElement>()
+  const diagram = LikeC4Views[viewId]
   return (
-    <div
-      ref={measuresRef}
-      style={
-        isFullScreen
-          ? { position: 'fixed', inset: 0 }
-          : {
-              width: '100%',
-              minHeight: '100%',
-              position: 'relative'
-            }
-      }
-    >
-      {measures && (
-        <DiagramStateProvider>
-          <Diagram
-            className='dev-app'
-            viewId={viewId}
-            {...props}
-            width={measures.width}
-            height={measures.height}
-            onNodeClick={({ navigateTo }) => {
-              if (isViewId(navigateTo)) {
-                dispatch({
-                  type: ActionType.UpdateControl,
-                  value: {
-                    ...controlState,
-                    viewId: {
-                      ...controlState['viewId'],
-                      value: navigateTo
-                    }
-                  }
-                })
+    <DiagramStateProvider>
+      <Diagram
+        className='dev-app'
+        diagram={diagram}
+        {...props}
+        width={measures.width}
+        height={measures.height}
+        onNodeClick={(node, event) => {
+          if (isViewId(node.navigateTo)) {
+            dispatch({
+              type: ActionType.UpdateControl,
+              value: {
+                ...controlState,
+                viewId: {
+                  ...controlState['viewId'],
+                  value: node.navigateTo
+                }
               }
-            }}
-            onEdgeClick={action('onEdgeClick')}
-            onStageContextMenu={(_stage, e) => {
-              console.log('onStageContextMenu', _stage)
-              e.evt.preventDefault()
-            }}
-            onNodeContextMenu={(node, e) => {
-              console.log('onNodeContextMenu', node)
-              e.evt.preventDefault()
-            }}
-          />
-        </DiagramStateProvider>
-      )}
-    </div>
+            })
+          }
+          action('onNodeClick')({
+            node,
+            event
+          })
+        }}
+        onEdgeClick={(edge, event) => action('onEdgeClick')({ edge, event })}
+        onStageClick={(stage, event) => action('onStageClick')({ stage, event })}
+        onStageContextMenu={(stage, event) => {
+          event.evt.preventDefault()
+          action('onStageContextMenu')({ stage, event })
+        }}
+        onNodeContextMenu={(node, event) => {
+          event.evt.preventDefault()
+          action('onNodeContextMenu')({ node, event })
+        }}
+      />
+    </DiagramStateProvider>
   )
 }
 DiagramDevelopment.storyName = 'Diagram'
 
-export const ColorsDevelopment = DiagramDevelopment.bind({})
-ColorsDevelopment.storyName = 'Colors'
-ColorsDevelopment.args = {
+export const Colors = DiagramDevelopment.bind({})
+Colors.args = {
   viewId: 'themecolors'
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept()
 }

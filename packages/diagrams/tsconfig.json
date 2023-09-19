@@ -14,6 +14,7 @@
     "jsx": "react-jsx",
 
     /* Linting */
+    "checkJs": true,
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
@@ -24,11 +25,8 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "baseUrl": "."
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["./src/", "./.ladle/"],
-  "exclude": ["node_modules/", "dist/"],
-  "references": [{ "path": "../core" }]
+  "include": ["src/**/*", ".ladle/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
