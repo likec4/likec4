@@ -1,3 +1,4 @@
+import { invariant } from '@likec4/core'
 import vscode from 'vscode'
 import { logError } from '../logger'
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -31,4 +32,30 @@ export function disposeAll(disposables: vscode.Disposable[]) {
     }
   }
   disposables.length = 0
+}
+
+type DisposableLike = vscode.Disposable | (() => void)
+
+export abstract class AbstractDisposable implements vscode.Disposable {
+  private _disposables: vscode.Disposable[] = []
+
+  private _isDisposed = false
+
+  protected onDispose<T extends DisposableLike>(...disposables: T[]) {
+    invariant(!this._isDisposed, 'Is alredy disposed')
+    for (const item of disposables) {
+      if ('dispose' in item) {
+        this._disposables.push(item)
+      } else {
+        this._disposables.push(disposable(item))
+      }
+    }
+  }
+
+  public dispose() {
+    if (this._isDisposed) return
+    this._isDisposed = true
+    disposeAll(this._disposables)
+    this._disposables.length = 0
+  }
 }

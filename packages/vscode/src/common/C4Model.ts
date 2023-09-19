@@ -1,7 +1,8 @@
-import type { ComputedView, DiagramView as LayoutedView, LikeC4Model, LikeC4RawModel, ViewID } from '@likec4/core'
-import { invariant } from '@likec4/core'
-import type { DotLayouter } from '@likec4/layouts'
+import type { ComputedView, DiagramView as LayoutedView, ViewID } from '@likec4/core'
+import { invariant, serializeError } from '@likec4/core'
+import { DotLayouter } from '@likec4/layouts'
 import type TelemetryReporter from '@vscode/extension-telemetry'
+import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
 import { equals } from 'rambdax'
 import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
@@ -9,9 +10,8 @@ import xs from 'xstream'
 import debounce from 'xstream/extra/debounce'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { Logger, logError } from '../logger'
-import { disposable, disposeAll } from '../util'
+import { AbstractDisposable, disposable } from '../util'
 import type { Rpc } from './Rpc'
-import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
   return x !== undefined && x !== null
@@ -19,21 +19,20 @@ function isNotNullish<T>(x: T): x is NonNullable<T> {
 
 // const StateKeyLikeC4Model = 'c4model:last:views'
 
-export class C4Model implements vscode.Disposable {
+export class C4Model extends AbstractDisposable {
   #activeSubscription: vscode.Disposable | null = null
-
-  #lastKnownModel: LikeC4Model | null = null
-
-  private _disposables: vscode.Disposable[] = []
 
   private changesStream: MemoryStream<number>
 
+  private dot: DotLayouter
+
   constructor(
-    private context: vscode.ExtensionContext,
     private telemetry: TelemetryReporter,
-    private rpc: Rpc,
-    private dot: DotLayouter
+    private rpc: Rpc
   ) {
+    super()
+    this.dot = new DotLayouter()
+    this.onDispose(this.dot)
     this.changesStream = xs.createWithMemory<number>({
       start: listener => {
         invariant(this.#activeSubscription == null, 'changesStream already started')
@@ -56,13 +55,15 @@ export class C4Model implements vscode.Disposable {
         this.#activeSubscription = null
       }
     })
+    this.onDispose(() => {
+      this.#activeSubscription?.dispose()
+    })
     Logger.info(`[Extension.C4Model] created`)
   }
 
-  dispose() {
-    Logger.info(`[Extension.C4Model] dispose`)
-    disposeAll(this._disposables)
-    this.#activeSubscription?.dispose()
+  override dispose() {
+    super.dispose()
+    Logger.info(`[Extension.C4Model] disposed`)
   }
 
   private fetchModel() {
@@ -78,8 +79,10 @@ export class C4Model implements vscode.Disposable {
 
   private fetchView(viewId: ViewID) {
     Logger.info(`[Extension.C4Model] fetchView ${viewId}`)
+    // microtask
+    const promise = Promise.resolve().then(() => this.rpc.computeView(viewId))
     return xs
-      .fromPromise(this.rpc.computeView(viewId))
+      .fromPromise(promise)
       .filter(isNotNullish)
       .replaceError(err => {
         logError(err)
@@ -88,8 +91,14 @@ export class C4Model implements vscode.Disposable {
   }
 
   private layoutView(view: ComputedView) {
-    // this.logger.logDebug(`layoutView: ${view.id}`)
-    return xs.fromPromise(this.dot.layout(view)).replaceError(err => {
+    // microtask
+    const promise = Promise.resolve()
+      .then(() => this.dot.layout(view))
+      .catch(err => {
+        Logger.warn(serializeError(err).message)
+        return this.dot.restart().then(dot => dot.layout(view))
+      })
+    return xs.fromPromise(promise).replaceError(err => {
       logError(err)
       return xs.empty()
     })
@@ -105,9 +114,7 @@ export class C4Model implements vscode.Disposable {
       .map(view => this.layoutView(view))
       .flatten()
       .subscribe({
-        next: diagram => {
-          callback(diagram)
-        },
+        next: callback,
         error: err => {
           logError(err)
         }
@@ -140,12 +147,7 @@ export class C4Model implements vscode.Disposable {
           logError(err)
         }
       })
-
-    const stop = disposable(() => {
-      telemetry.unsubscribe()
-    })
-    this._disposables.push(stop)
-    return stop
+    this.onDispose(() => telemetry.unsubscribe())
   }
 
   private async fetchTelemetry() {

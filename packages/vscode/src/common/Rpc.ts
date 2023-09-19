@@ -3,7 +3,7 @@ import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
-import { disposeAll } from '../util'
+import { AbstractDisposable, disposeAll } from '../util'
 import { Logger } from '../logger'
 
 //#region From server
@@ -42,19 +42,19 @@ const locate = new RequestType<LocateParams, Location | null, void>('likec4/loca
 
 // // //#endregion
 
-export class Rpc implements vscode.Disposable {
-  private _disposables: vscode.Disposable[] = []
+export class Rpc extends AbstractDisposable {
+  constructor(public readonly client: LanguageClient) {
+    super()
+  }
 
-  constructor(public readonly client: LanguageClient) {}
-
-  dispose() {
-    Logger.info(`[Extension.Rpc] dispose`)
-    disposeAll(this._disposables)
+  override dispose() {
+    super.dispose()
+    Logger.info(`[Extension.Rpc] disposed`)
   }
 
   onDidChangeModel(cb: () => void): vscode.Disposable {
     const disposable = this.client.onNotification(onDidChangeModel, cb)
-    this._disposables.push(disposable)
+    this.onDispose(() => disposable.dispose())
     return disposable
   }
 

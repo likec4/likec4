@@ -2,40 +2,36 @@ import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { State } from 'vscode-languageclient'
 
-import TelemetryReporter from '@vscode/extension-telemetry'
-import { disposable, disposeAll } from '../util'
-import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
-import { DotLayouter } from '@likec4/layouts'
 import { serializeError, type ViewID } from '@likec4/core'
+import TelemetryReporter from '@vscode/extension-telemetry'
+import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
+import { Logger, logError } from '../logger'
+import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
 import { Rpc } from './Rpc'
-import { PreviewPanel } from './panel/PreviewPanel'
 import { initWorkspace } from './initWorkspace'
-import { Logger, logError } from '../logger'
+import { PreviewPanel } from './panel/PreviewPanel'
 
-export default class ExtensionController implements vscode.Disposable {
-  private _disposables: vscode.Disposable[] = []
-
+export default class ExtensionController extends AbstractDisposable {
   private _telemetry: TelemetryReporter
 
   constructor(
     private _context: vscode.ExtensionContext,
     private _client: LanguageClient
   ) {
+    super()
     this._context.subscriptions.push(this)
 
     this._telemetry = new TelemetryReporter(telemetryKey)
-    this._disposables.push(this._telemetry)
+    this.onDispose(this._telemetry)
 
     if ('debug' in _client.outputChannel) {
       Logger.channel = _client.outputChannel as unknown as vscode.LogOutputChannel
       Logger.telemetry = this._telemetry
-      this._disposables.push(
-        disposable(() => {
-          Logger.channel = null
-          Logger.telemetry = null
-        })
-      )
+      this.onDispose(() => {
+        Logger.channel = null
+        Logger.telemetry = null
+      })
     }
   }
 
@@ -47,9 +43,9 @@ export default class ExtensionController implements vscode.Disposable {
     Logger.info('[Extension] extension deactivated')
   }
 
-  dispose() {
-    disposeAll(this._disposables)
-    Logger.info(`[Extension] ${this._disposables.length} items disposed`)
+  override dispose() {
+    super.dispose()
+    Logger.info('[Extension] disposed')
     if (this._client.isRunning()) {
       Logger.info(`[Extension] Stopping language client`)
       void this._client.stop().finally(() => {
@@ -77,8 +73,7 @@ export default class ExtensionController implements vscode.Disposable {
 
       const rpc = new Rpc(this._client)
 
-      const dot = new DotLayouter()
-      const c4model = new C4Model(this._context, this._telemetry, rpc, dot)
+      const c4model = new C4Model(this._context, this._telemetry, rpc)
       c4model.turnOnTelemetry()
 
       const previewPanel = new PreviewPanel(c4model, rpc, this._context)
@@ -95,12 +90,11 @@ export default class ExtensionController implements vscode.Disposable {
         previewPanel.onContextMenuOpenSource()
       })
 
-      this._disposables.push(
+      this.onDispose(
         vscode.window.registerWebviewPanelSerializer(PreviewPanel.ViewType, previewPanel),
         previewPanel,
         c4model,
-        rpc,
-        dot
+        rpc
       )
 
       this._telemetry.sendTelemetryEvent(
@@ -149,6 +143,6 @@ export default class ExtensionController implements vscode.Disposable {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registerCommand(command: string, callback: (...args: any[]) => any) {
-    this._disposables.push(vscode.commands.registerCommand(command, callback))
+    this.onDispose(vscode.commands.registerCommand(command, callback))
   }
 }
