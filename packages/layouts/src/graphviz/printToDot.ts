@@ -119,6 +119,13 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         })
       }
       switch (elementNode.shape) {
+        case 'queue': {
+          node.attributes.apply({
+            [_.width]: pxToInch(320),
+            [_.height]: pxToInch(160)
+          })
+          break
+        }
         case 'cylinder':
         case 'storage': {
           node.attributes.apply({
