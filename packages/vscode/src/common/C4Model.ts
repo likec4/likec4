@@ -27,34 +27,37 @@ export class C4Model extends AbstractDisposable {
   private dot: DotLayouter
 
   constructor(
-    private telemetry: TelemetryReporter,
-    private rpc: Rpc
+    private rpc: Rpc,
+    private telemetry: TelemetryReporter
   ) {
     super()
     this.dot = new DotLayouter()
     this.onDispose(this.dot)
-    this.changesStream = xs.createWithMemory<number>({
-      start: listener => {
-        invariant(this.#activeSubscription == null, 'changesStream already started')
-        Logger.info('[Extension.C4Model.changesStream] subscribe onDidChangeModel')
-        let changes = 0
-        const unsubscribe = this.rpc.onDidChangeModel(() => {
-          listener.next(changes++)
-        })
-        this.#activeSubscription = disposable(() => {
+    this.changesStream = xs
+      .create<number>({
+        start: listener => {
+          invariant(this.#activeSubscription == null, 'changesStream already started')
+          Logger.info('[Extension.C4Model.changesStream] subscribe onDidChangeModel')
+          let changes = 0
+          const unsubscribe = this.rpc.onDidChangeModel(() => {
+            listener.next(changes++)
+          })
+          this.#activeSubscription = disposable(() => {
+            this.#activeSubscription = null
+            Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
+            unsubscribe.dispose()
+            listener.complete()
+          })
+        },
+        stop: () => {
+          Logger.info('[Extension.C4Model.changesStream] stop')
+          this.#activeSubscription?.dispose()
           this.#activeSubscription = null
-          Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
-          unsubscribe.dispose()
-          listener.complete()
-        })
-        listener.next(changes++)
-      },
-      stop: () => {
-        Logger.info('[Extension.C4Model.changesStream] stop')
-        this.#activeSubscription?.dispose()
-        this.#activeSubscription = null
-      }
-    })
+        }
+      })
+      .compose(debounce(200))
+      .startWith(0)
+
     this.onDispose(() => {
       this.#activeSubscription?.dispose()
     })
@@ -92,13 +95,12 @@ export class C4Model extends AbstractDisposable {
 
   private layoutView(view: ComputedView) {
     // microtask
-    const promise = Promise.resolve()
-      .then(() => this.dot.layout(view))
-      .catch(err => {
-        Logger.warn(serializeError(err).message)
-        return this.dot.restart().then(dot => dot.layout(view))
-      })
-    return xs.fromPromise(promise).replaceError(err => {
+    const promise = Promise.resolve().then(() => this.dot.layout(view))
+    // .catch(err => {
+    //   Logger.warn(serializeError(err).message)
+    //   return this.dot.restart().then(dot => dot.layout(view))
+    // })
+    return xs.from(promise).replaceError(err => {
       logError(err)
       return xs.empty()
     })
@@ -107,14 +109,13 @@ export class C4Model extends AbstractDisposable {
   public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
     Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
     const subscription = this.changesStream
-      .compose(debounce(200))
       .map(() => this.fetchView(viewId))
       .flatten()
       .compose(dropRepeats<ComputedView>(equals))
       .map(view => this.layoutView(view))
       .flatten()
       .subscribe({
-        next: callback,
+        next: diagram => callback(diagram),
         error: err => {
           logError(err)
         }
@@ -128,13 +129,14 @@ export class C4Model extends AbstractDisposable {
 
   public turnOnTelemetry() {
     Logger.info(`[Extension.C4Model] turnOnTelemetry`)
-
-    // Send telemetry event every 20 minutes
-    const TenMinutes = 1000 * 60 * 20
+    const Minutes = 1000 * 60
     const telemetry = xs
-      .periodic(TenMinutes)
-      .startWith(0)
+      .merge(xs.periodic(3 * Minutes).take(1), xs.periodic(10 * Minutes).drop(1))
       .map(() => xs.from(this.fetchTelemetry()))
+      .replaceError(err => {
+        logError(err)
+        return xs.empty()
+      })
       .flatten()
       .compose(dropRepeats((a, b) => equals(a.metrics, b.metrics)))
       .map(({ metrics, ms }) => (metrics ? { ...metrics, ms } : null))

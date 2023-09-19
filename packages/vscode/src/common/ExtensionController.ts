@@ -73,7 +73,7 @@ export default class ExtensionController extends AbstractDisposable {
 
       const rpc = new Rpc(this._client)
 
-      const c4model = new C4Model(this._context, this._telemetry, rpc)
+      const c4model = new C4Model(rpc, this._telemetry)
       c4model.turnOnTelemetry()
 
       const previewPanel = new PreviewPanel(c4model, rpc, this._context)
