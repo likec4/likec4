@@ -1,8 +1,12 @@
 // @ts-check
 import nextra from 'nextra'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
 import { codeImport } from 'remark-code-import'
 import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
+
+
+const __filename = new URL(import.meta.url).pathname
+const __dirname = dirname(__filename)
 
 const withNextra = nextra({
   theme: 'nextra-theme-docs',
@@ -51,12 +55,10 @@ export default withNextra({
       test: /\.(mp3|wasm)$/i,
       type: 'asset/resource'
     })
-    // config.resolve.alias = {
-    //   ...config.resolve.alias,
-    //   '@likec4/core': '@likec4/core/dist',
-    //   '@likec4/layouts': '@likec4/layouts/dist',
-    //   '@likec4/language-server': '@likec4/language-server/dist',
-    // }
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@likec4/diagrams': resolve(__dirname, '../packages/diagrams/src')
+    }
     return config
   },
   eslint: {

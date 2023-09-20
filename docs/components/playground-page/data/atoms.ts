@@ -69,18 +69,25 @@ export const currentViewAtom = selectAtom(
   equals
 )
 
-const getOrCreateLayoutFn = once(async () => {
+const getDotLayouter = once(async () => {
   console.debug('Loading dot layouter')
-  const { dotLayouter } = await import('@likec4/layouts')
-  return await dotLayouter()
+  const { DotLayouter } = await import('@likec4/layouts')
+  return new DotLayouter()
 })
 
 export const diagramAtom = atom(async get => {
   const view = get(currentViewAtom)
   if (!view) return null
-  const dotLayout = await getOrCreateLayoutFn()
-  const diagram = await dotLayout(view)
-  return diagram
+  const layouter = await getDotLayouter()
+  try {
+    const diagram = await layouter.layout(view)
+    return diagram
+  } catch (e) {
+    console.error(e)
+    console.debug('Restart DotLayouter....')
+    await layouter.restart()
+    return await layouter.layout(view)
+  }
 })
 
 export const loadableDiagramAtom = loadable(diagramAtom)

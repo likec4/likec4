@@ -4,6 +4,7 @@
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "allowArbitraryExtensions": true
   }
 }
