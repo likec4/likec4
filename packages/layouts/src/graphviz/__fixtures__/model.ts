@@ -1,13 +1,5 @@
 import { ModelIndex } from '@likec4/core'
-import type {
-  Element,
-  ElementKind,
-  ElementView,
-  Fqn,
-  Opaque,
-  Relation,
-  RelationID
-} from '@likec4/core/types'
+import type { Element, ElementKind, ElementView, Fqn, Opaque, Relation, RelationID } from '@likec4/core/types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -100,12 +92,6 @@ const el = ({
 })
 
 export const fakeElements = {
-  'amazon': el({
-    id: 'amazon',
-    kind: 'system',
-    title: 'Amazon',
-    description: 'Amazon is a cloud provider'
-  }),
   'cloud': el({
     id: 'cloud',
     kind: 'system',
@@ -123,12 +109,6 @@ export const fakeElements = {
     title: 'Support Engineer',
     description: 'Support engineers are responsible for supporting customers',
     shape: 'person'
-  }),
-  'amazon.s3': el({
-    id: 'amazon.s3',
-    kind: 'component',
-    title: 'S3',
-    description: 'S3 is a storage service'
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
@@ -165,6 +145,18 @@ export const fakeElements = {
     kind: 'component',
     title: 'Customer Dashboard Webapp',
     description: 'The customer dashboard is a webapp that allows customers to view their data.'
+  }),
+  'amazon': el({
+    id: 'amazon',
+    kind: 'system',
+    title: 'Amazon',
+    description: 'Amazon is a cloud provider'
+  }),
+  'amazon.s3': el({
+    id: 'amazon.s3',
+    kind: 'component',
+    title: 'S3',
+    description: 'S3 is a storage service'
   })
 } satisfies Record<string, Element>
 
@@ -256,9 +248,9 @@ export const cloud3levels = {
         // include *
         { wildcard: true },
         // include cloud.frontend.*
-        { element: 'cloud.frontend' as Fqn, isDescedants: true },
+        { element: fakeElements['cloud.frontend'].id, isDescedants: true },
         // include cloud.backend.*
-        { element: 'cloud.backend' as Fqn, isDescedants: true }
+        { element: fakeElements['cloud.backend'].id, isDescedants: true }
       ]
     },
     {

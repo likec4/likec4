@@ -80,6 +80,21 @@ export namespace GraphvizJson {
         text: string
       }
 
+  export type _EdgeDraw_ =
+    | {
+        op: 'S'
+        style: string
+      }
+    | {
+        op: 'c'
+        grad: string
+        color: string
+      }
+    | {
+        op: 'b' | 'B'
+        points: Point[]
+      }
+
   export type GvObject = GvNodeObject | GvSubgraph
   export interface GvSubgraph {
     bb: string
@@ -124,7 +139,7 @@ export namespace GraphvizJson {
     _gvid: GvId
     tail: number
     head: number
-    _draw_: Draw3[]
+    _draw_: _EdgeDraw_[]
     _hdraw_?: Hdraw[]
     _ldraw_?: Ldraw[]
     fontname: string

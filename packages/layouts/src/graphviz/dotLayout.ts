@@ -1,6 +1,6 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { invariant } from '@likec4/core'
 import type { ComputedView, DiagramEdge, DiagramLabel, DiagramNode, DiagramView, Point } from '@likec4/core'
+import { invariant } from '@likec4/core'
 import { dropRepeats, propEq } from 'rambdax'
 import type { DiagramLayoutFn } from '../types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
@@ -95,14 +95,16 @@ function parseLabelDraws(
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
 function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
   invariant(pos, 'edge should pos')
+  invariant(pos.startsWith('e,'), 'edge should start with e,')
   const posStr = pos.substring(2)
-  const points = posStr.split(' ').map((p: string): Point => {
+  const posParts = posStr.split(' ')
+  const points = posParts.map((p: string): Point => {
     const { x, y } = parsePos(p)
     return [x, y]
   })
   const endpoint = points.shift()
   invariant(endpoint, 'edge should have endpoint')
-  return points
+  return [...points, endpoint]
 }
 
 function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {

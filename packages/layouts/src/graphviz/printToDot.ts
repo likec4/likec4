@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { invariant, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
 import { Colors, RelationColors } from '@likec4/core/colors'
+import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn } from '@likec4/core/types'
 import { DefaultThemeColor } from '@likec4/core/types'
-import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core/types'
-import { countBy, isTruthy } from 'remeda'
+import { isTruthy } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -11,13 +12,13 @@ import {
   type $keywords,
   type GraphBaseModel,
   type NodeModel,
-  type SubgraphModel,
-  type RootGraphModel
+  type RootGraphModel,
+  type SubgraphModel
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
-import type { DotSource } from './types'
 import { pxToInch, pxToPoints } from './graphviz-utils'
-import { nameFromFqn } from '@likec4/core'
+import type { DotSource } from './types'
+import { head } from 'rambdax'
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -44,6 +45,10 @@ declare module 'ts-graphviz' {
   }
 }
 
+function isCompound(node: ComputedNode) {
+  return node.children.length > 0
+}
+
 export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): RootGraphModel {
   const G = digraph({
     [_.layout]: 'dot',
@@ -51,13 +56,11 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.pad]: pxToInch(20),
     [_.rankdir]: autoLayout,
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(90)
+    [_.nodesep]: pxToInch(90),
+    [_.ranksep]: pxToInch(90)
+    // [_.newrank]: true,
     // [_.pack]: pxToPoints(30),
     // [_.packmode]: packmode({autoLayout, nodes}),
-  })
-  G.apply({
-    //@ts-expect-error - ts-graphviz does not support ranksep equally
-    [_.ranksep]: `${pxToInch(90)} equally`
   })
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',
@@ -82,72 +85,81 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.fontsize]: pxToPoints(14),
     [_.style]: 'solid',
     [_.penwidth]: 2,
-    [_.arrowsize]: 0.75,
+    [_.arrowsize]: 0.8,
     [_.color]: RelationColors.lineColor,
-    [_.fontcolor]: RelationColors.labelColor,
-    [_.nojustify]: true
+    [_.fontcolor]: RelationColors.labelColor
   })
 
   const subgraphs = new Map<Fqn, SubgraphModel>()
   const graphvizNodes = new Map<Fqn, NodeModel>()
 
-  let sequence = 1
+  const addNode = (elementNode: ComputedNode) => {
+    let name = nameFromFqn(elementNode.id).toLowerCase()
+    if (name.startsWith('cluster')) {
+      name = 'nd_' + name
+    }
+    let id = name
+    let uniqueNumber = 1
+    while (G.getNode(id)) {
+      id = name + '_' + uniqueNumber++
+    }
+    const node = G.createNode(id, {
+      [_.likec4_id]: elementNode.id,
+      [_.likec4_level]: elementNode.level,
+      [_.label]: nodeLabel(elementNode)
+    })
+    if (elementNode.color !== DefaultThemeColor) {
+      node.attributes.apply({
+        [_.fillcolor]: Colors[elementNode.color].fill
+      })
+    }
+    switch (elementNode.shape) {
+      case 'queue': {
+        node.attributes.apply({
+          [_.width]: pxToInch(320),
+          [_.height]: pxToInch(160)
+        })
+        break
+      }
+      case 'cylinder':
+      case 'storage': {
+        node.attributes.apply({
+          [_.color]: Colors[elementNode.color].stroke,
+          [_.penwidth]: 2,
+          [_.shape]: 'cylinder'
+        })
+        break
+      }
+      default:
+        break
+    }
+    graphvizNodes.set(elementNode.id, node)
+    return node
+  }
 
   /**
    * returns recursion depth
    */
-  const traverseNodes = (elementNode: ComputedNode, parent: GraphBaseModel, level = 0): number => {
-    if (elementNode.children.length === 0) {
-      let name = nameFromFqn(elementNode.id).toLowerCase()
-      if (name.startsWith('cluster')) {
-        name = 'nd_' + name
-      }
-      let id = name
-      let uniqueNumber = 1
-      while (G.getNode(id)) {
-        id = name + '_' + uniqueNumber++
-      }
-
-      const node = G.createNode(id, {
-        [_.likec4_id]: elementNode.id,
-        [_.likec4_level]: level,
-        [_.label]: nodeLabel(elementNode)
-      })
-      if (elementNode.color !== DefaultThemeColor) {
-        node.attributes.apply({
-          [_.fillcolor]: Colors[elementNode.color].fill
-        })
-      }
-      switch (elementNode.shape) {
-        case 'queue': {
-          node.attributes.apply({
-            [_.width]: pxToInch(320),
-            [_.height]: pxToInch(160)
-          })
-          break
-        }
-        case 'cylinder':
-        case 'storage': {
-          node.attributes.apply({
-            [_.color]: Colors[elementNode.color].stroke,
-            [_.penwidth]: 2,
-            [_.shape]: 'cylinder'
-          })
-          break
-        }
-        default:
-          break
-      }
-      if (parent !== G) {
-        parent.node(id)
-      }
-      graphvizNodes.set(elementNode.id, node)
+  const traverseClusters = (elementNode: ComputedNode, parent: GraphBaseModel, level = 0): number => {
+    if (!isCompound(elementNode)) {
+      const node = nonNullable(graphvizNodes.get(elementNode.id), "graphviz node doesn't exist")
+      parent.node(node.id)
       return 0
     }
+    const name = 'cluster_' + nameFromFqn(elementNode.id).toLowerCase()
+    let id = name
+    let uniqueNumber = 1
+    while (G.getSubgraph(id)) {
+      id = name + '_' + uniqueNumber++
+    }
 
-    const subgraph = parent.createSubgraph('cluster_' + sequence++, {
+    const subgraph = parent.createSubgraph(id, {
       [_.likec4_id]: elementNode.id,
-      [_.likec4_level]: level,
+      [_.likec4_level]: level
+    })
+
+    subgraph.attributes.graph.apply({
+      [_.fontsize]: pxToPoints(13),
       [_.style]: 'rounded',
       [_.margin]: pxToPoints(40)
     })
@@ -155,19 +167,17 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
       subgraph.apply({
-        [_.fontsize]: pxToPoints(13),
         [_.label]: `<<B>${label}</B>>`
       })
     }
 
     subgraphs.set(elementNode.id, subgraph)
 
-    let depth = 1
+    let depth = 0
     for (const child of nodes.filter(n => n.parent === elementNode.id)) {
-      depth = Math.max(traverseNodes(child, subgraph, level + 1) + 1, depth)
+      depth = Math.max(traverseClusters(child, subgraph, level + 1) + 1, depth)
     }
     subgraph.set(_.likec4_depth, depth)
-
     // TODO: calculate color here
     return depth
   }
@@ -175,31 +185,92 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
     const source = graphvizNodes.get(edge.source)
     const target = graphvizNodes.get(edge.target)
+
+    if (!source && !target) {
+      return
+    }
+    let lhead, ltail: string | undefined
     // TODO: Edge with cluster?
-    // if (!source) {
-    //   const firstleaf = leafs.find(n => isAncestor(edge.source, n.id))
-    //   source = firstleaf && gvNodes.get(firstleaf.id)
-    // }
     // if (!target) {
-    //   const firstleaf = leafs.find(n => isAncestor(edge.target, n.id))
-    //   target = firstleaf && gvNodes.get(firstleaf.id)
+    //   const targetSubgraph = subgraphs.get(edge.target)
+    //   if (!targetSubgraph?.id) {
+    //     return
+    //   }
+    //   lhead = targetSubgraph.id
+    //   const firstNode = head(
+    //     nodes
+    //       .filter(n => !isCompound(n) && isAncestor(edge.target, n.id))
+    //       .sort((a, b) => b.inEdges.length - a.inEdges.length)
+    //   )
+    //   target = firstNode && graphvizNodes.get(firstNode.id)
     // }
+    // if (!source) {
+    //   const sourceSubgraph = subgraphs.get(edge.source)
+    //   if (!sourceSubgraph?.id) {
+    //     return
+    //   }
+    //   ltail = sourceSubgraph.id
+    //   const firstNode = head(
+    //     nodes
+    //       .filter(n => !isCompound(n) && isAncestor(edge.source, n.id))
+    //       .sort((a, b) => b.inEdges.length - a.inEdges.length)
+    //   )
+    //   source = firstNode && graphvizNodes.get(firstNode.id)
+    // }
+
     if (source && target) {
       const e = parent.edge([source, target], {
         [_.likec4_id]: edge.id
+        // [_.weight]: 20
       })
-      if (isTruthy(edge.label)) {
+
+      const sourceLevel = source.attributes.get(_.likec4_level) ?? 0
+      const targetLevel = target.attributes.get(_.likec4_level) ?? 0
+      if (parent !== G) {
         e.attributes.apply({
-          [_.label]: edgeLabel(edge.label)
+          [_.weight]: sourceLevel === targetLevel ? 10 : 5
+        })
+      } else if (sourceLevel > 0 && sourceLevel == targetLevel) {
+        // More weight for same level
+        e.attributes.apply({
+          [_.weight]: 5
+        })
+      }
+      if (lhead) {
+        e.attributes.apply({
+          [_.lhead]: lhead
+          // [_.weight]: 5
+        })
+      }
+      if (ltail) {
+        e.attributes.apply({
+          [_.ltail]: ltail
+          // [_.weight]: 5
+        })
+      }
+      if (isTruthy(edge.label)) {
+        const attr = lhead || ltail ? _.xlabel : _.label
+        e.attributes.apply({
+          [attr]: edgeLabel(edge.label),
+          [_.nojustify]: true
         })
       }
     }
   }
 
+  const clusters = [] as ComputedNode[]
   for (const node of nodes) {
-    if (!node.parent) {
-      traverseNodes(node, G)
+    if (isCompound(node)) {
+      if (!node.parent) {
+        clusters.push(node)
+      }
+      continue
     }
+    addNode(node)
+  }
+  let cluster
+  while ((cluster = clusters.shift())) {
+    traverseClusters(cluster, G)
   }
 
   for (const edge of edges) {
