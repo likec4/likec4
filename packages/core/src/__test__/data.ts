@@ -99,27 +99,27 @@ const el = ({
 })
 
 export const fakeElements = {
-  amazon: el({
-    id: 'amazon',
-    kind: 'system',
-    title: 'amazon'
-  }),
-  cloud: el({
+  'cloud': el({
     id: 'cloud',
     kind: 'system',
     title: 'cloud'
   }),
-  customer: el({
+  'customer': el({
     id: 'customer',
     kind: 'actor',
     title: 'customer',
     shape: 'person'
   }),
-  support: el({
+  'support': el({
     id: 'support',
     kind: 'actor',
     title: 'support',
     shape: 'person'
+  }),
+  'amazon': el({
+    id: 'amazon',
+    kind: 'system',
+    title: 'amazon'
   }),
   'amazon.s3': el({
     id: 'amazon.s3',

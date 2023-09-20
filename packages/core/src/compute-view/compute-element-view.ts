@@ -1,4 +1,4 @@
-import { allPass, find } from 'remeda'
+import { allPass, find, sort } from 'remeda'
 import { nonNullable } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
@@ -26,6 +26,7 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
       .sort(compareByFqnHierarchically)
       .reduce((map, { id, color, shape, ...el }) => {
         let parent = parentFqn(id)
+        let level = 0
         // Find the first ancestor that is already in the map
         while (parent) {
           if (map.has(parent)) {
@@ -36,11 +37,13 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
         if (parent) {
           const parentNd = nonNullable(map.get(parent))
           parentNd.children.push(id)
+          level = parentNd.level + 1
         }
         const node: ComputedNode = {
           ...el,
           id,
           parent,
+          level,
           color: color ?? DefaultThemeColor,
           shape: shape ?? DefaultElementShape,
           children: [],
@@ -49,16 +52,24 @@ function reduceToMap(elementsIterator: Iterable<Element>) {
         }
         map.set(id, node)
         return map
-      }, new Map<Fqn, ComputedNode>())
+      }, new Map<Fqn, ComputedNode>()) as ReadonlyMap<Fqn, ComputedNode>
   )
+}
+
+const keepOriginalSortFromView = (_nodes: ReadonlyMap<Fqn, ComputedNode>, ctx: ComputeCtx) => {
+  const nodes = [...ctx.allElements].flatMap(e => _nodes.get(e.id) || [])
+  for (const node of nodes) {
+    node.children = nodes.flatMap(n => (n.parent === node.id ? n.id : []))
+  }
+  return nodes
 }
 
 export function computeElementView(view: ElementView, index: ModelIndex): ComputedView {
   const ctx = ComputeCtx.create(view, index)
 
   // All "predicated" elements (including implicit ones)
-  // From bottom to top
-  const allElements = [...ctx.elements, ...ctx.implicits].sort(compareByFqnHierarchically).reverse()
+  // Sorted from bottom to top
+  const leafsFirst = [...ctx.allElements].sort((a, b) => -1 * compareByFqnHierarchically(a, b))
 
   // Elements from allElements, that have relatioships (edges)
   const elementsWithRelations = new Set<Element>()
@@ -71,11 +82,11 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
   // Process relations from bottom to top
   const sortedRelations = [...ctx.relations]
   for (const rel of sortedRelations) {
-    const source = find(allElements, anscestorOf(rel.source))
+    const source = find(leafsFirst, anscestorOf(rel.source))
     if (!source) {
       continue
     }
-    const target = find(allElements, allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)]))
+    const target = find(leafsFirst, allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)]))
     if (!target) {
       continue
     }
@@ -84,9 +95,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     edgeBuilder.add(source.id, target.id, rel)
   }
 
-  const elements = new Set([...ctx.elements, ...elementsWithRelations])
-
-  const nodesMap = reduceToMap(elements)
+  const nodesMap = reduceToMap(new Set([...ctx.elements, ...elementsWithRelations]))
 
   const edges = edgeBuilder.build().map(edge => {
     while (edge.parent) {
@@ -102,7 +111,7 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
 
   const nodes = applyViewRuleStyles(
     view.rules.filter(isViewRuleStyle),
-    sortNodes(nodesMap, edges)
+    sortNodes(keepOriginalSortFromView(nodesMap, ctx), edges)
     // map(e => nodesMap.get(e.id)!, Array.from(elements))
   )
 

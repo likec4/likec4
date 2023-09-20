@@ -1,7 +1,10 @@
-import { defineProject } from 'vitest/config'
+import { defineProject, defineConfig } from 'vitest/config'
 
 export default defineProject({
   test: {
-    name: 'core'
+    name: 'core',
+    chaiConfig: {
+      truncateThreshold: 300
+    }
   }
 })

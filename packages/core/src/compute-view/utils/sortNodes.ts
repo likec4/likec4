@@ -1,54 +1,47 @@
-import { isSameHierarchy } from '../../utils'
-import type { ComputedEdge, ComputedNode, Fqn } from '../../types'
 import pkg from '@dagrejs/graphlib'
-import { nonNullable } from '../../errors'
+import type { ComputedEdge, ComputedNode } from '../../types'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
 const { Graph, alg } = pkg
 
-export function sortNodes(_nodes: Map<Fqn, ComputedNode>, edges: ComputedEdge[]) {
+function fillChildren(nodes: ComputedNode[]) {
+  return nodes.map(node => ({
+    ...node,
+    children: nodes.flatMap(n => (n.parent === node.id ? n.id : []))
+  }))
+}
+
+export function sortNodes(_nodes: ComputedNode[], edges: ComputedEdge[]) {
+  if (edges.length === 0) {
+    return fillChildren(_nodes)
+  }
+
   const g = new Graph({
     compound: true,
     directed: true,
     multigraph: false
   })
 
-  for (const nd of _nodes.values()) {
-    g.setNode(nd.id)
-    // console.log(`add ${nd.id}`)
-    if (nd.parent) {
-      g.setEdge(nd.parent, nd.id)
-      // console.log(`${nd.parent} -> ${nd.id}`)
+  for (const e of edges) {
+    g.setEdge(e.source, e.target)
+  }
+  for (const n of _nodes) {
+    g.setNode(n.id)
+    if (n.parent) {
+      g.setEdge(n.id, n.parent)
     }
   }
 
-  for (const edge of edges) {
-    const source = _nodes.get(edge.source)
-    let target = _nodes.get(edge.target)
-    while (source && target) {
-      if (!isSameHierarchy(source, target) && !g.hasEdge(source.id, target.id)) {
-        g.setEdge(source.id, target.id)
-        // console.log(`${source.id} -> ${target.id}`)
-        if (!alg.isAcyclic(g)) {
-          g.removeEdge(source.id, target.id)
-          // console.log(`remove ${source.id} -> ${target.id}`)
-        }
-      }
-      if (target.parent && target.parent !== edge.parent) {
-        target = _nodes.get(target.parent)
-      } else {
-        target = undefined
-      }
+  const unprocessed = [..._nodes]
+  const sorted = [] as ComputedNode[]
+
+  const preordered = alg.preorder(g, g.sources())
+  for (const id of preordered) {
+    const inx = unprocessed.findIndex(n => n.id === id)
+    if (inx >= 0) {
+      sorted.push(...unprocessed.splice(inx, 1))
     }
   }
-
-  const sorted = alg.topsort(g) as Fqn[]
-  const nodes = sorted.map(id => nonNullable(_nodes.get(id)))
-
-  for (const node of nodes) {
-    node.children = nodes.flatMap(n => (n.parent === node.id ? n.id : []))
-  }
-
-  return nodes
+  return fillChildren(sorted.concat(unprocessed))
 }

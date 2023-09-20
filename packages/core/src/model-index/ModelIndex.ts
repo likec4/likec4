@@ -1,7 +1,7 @@
-import { pipe, sort, values } from 'remeda'
+import { values } from 'remeda'
 import { InvalidModelError, ensureModel } from '../errors'
 import type { Element, Fqn, Relation, RelationID } from '../types'
-import { compareByFqnHierarchically, parentFqn } from '../utils'
+import { parentFqn } from '../utils'
 
 interface ElementTrie {
   el?: Element
@@ -53,8 +53,8 @@ export default class ModelIndex {
 
   static from({ elements, relations }: ModelInput): ModelIndex {
     const index = new ModelIndex()
-    const sortedElements = pipe(values(elements), sort(compareByFqnHierarchically))
-    for (const el of sortedElements) {
+    // const sortedElements = pipe(values(elements), sort(compareByFqnHierarchically))
+    for (const el of values(elements)) {
       index.addElement(el)
     }
     for (const rel of values(relations)) {

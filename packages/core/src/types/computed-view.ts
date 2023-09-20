@@ -25,6 +25,7 @@ export interface ComputedNode {
   color: ThemeColor
   icon?: IconUrl
   navigateTo?: ViewID
+  level: number
 }
 
 export interface ComputedEdge {

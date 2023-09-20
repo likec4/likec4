@@ -7,8 +7,10 @@ import {
   RelationRefError,
   UnknownError,
   InvariantError,
-  NullableError
-} from './index'
+  NullableError,
+  InvalidArgError,
+  invariant
+} from '.'
 
 describe('errors', () => {
   describe('normalizeError', () => {
@@ -19,7 +21,8 @@ describe('errors', () => {
       { error: new InvariantError('InvariantError') },
       { error: new NonExhaustiveError('NonExhaustiveError') },
       { error: new InvalidModelError('InvalidModelError') },
-      { error: new NullableError('NullableError') }
+      { error: new NullableError('NullableError') },
+      { error: new InvalidArgError('InvalidArgError') }
     ])('should return $error.name as-is', ({ error }) => {
       expect(normalizeError(error)).toBe(error)
     })
@@ -59,5 +62,23 @@ describe('errors', () => {
       expect(error).not.to.have.property('cause')
       expect(error).to.have.property('stack').that.is.a('string')
     })
+  })
+})
+
+describe('invariant', () => {
+  it('should throw an error if the condition fails', () => {
+    expect(() => invariant(false)).toThrow('Invariant failed')
+  })
+
+  it('should throw an error if the condition is null', () => {
+    expect(() => invariant(null)).toThrow(InvariantError)
+  })
+
+  it('should not throw an error if the condition passes', () => {
+    expect(() => invariant(true)).not.toThrow()
+  })
+
+  it('should throw an error with the provided message if the condition fails', () => {
+    expect(() => invariant(false, 'test')).toThrow('test')
   })
 })

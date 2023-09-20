@@ -27,13 +27,17 @@ export type ComputeCtxPatch = {
 }
 
 export class ComputeCtx {
+  public readonly allElements: ReadonlySet<Element>
+
   constructor(
     public index: ModelIndex,
     public root: Fqn | null,
-    public elements: Set<Element> = new Set(),
-    public relations: Set<Relation> = new Set(),
-    public implicits: Set<Element> = new Set()
-  ) {}
+    public elements: ReadonlySet<Element> = new Set(),
+    public relations: ReadonlySet<Relation> = new Set(),
+    public implicits: ReadonlySet<Element> = new Set()
+  ) {
+    this.allElements = new Set([...this.elements, ...this.implicits])
+  }
 
   include({ elements, relations, implicits }: ComputeCtxPatch) {
     return new ComputeCtx(
