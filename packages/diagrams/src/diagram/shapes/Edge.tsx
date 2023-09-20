@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { SpringValues } from '@react-spring/konva'
-import { Fragment } from 'react'
 import { AnimatedCircle, AnimatedLine, AnimatedText } from '../../konva'
 
-import { invariant } from '@likec4/core'
+import { invariant, nonNullable } from '@likec4/core'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { DiagramEdge, LikeC4Theme } from '../types'
 
@@ -13,24 +12,25 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
   theme: LikeC4Theme
   springs: SpringValues<{
     lineColor: string
-    width: number
+    lineWidth: number
     opacity: number
+    labelColor: string
   }>
 }
 
-export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps) {
+export function EdgeShape({ edge, theme, springs }: EdgeShapeProps) {
   const { points, headArrow, labels } = edge
 
-  const startPoint = points[0]
-  invariant(startPoint, 'Edge must have at least one point')
+  invariant(points[0], 'Edge must have at least one point')
+  const [x, y] = nonNullable(points[0])
 
   return (
-    <Fragment>
+    <>
       <AnimatedCircle
         opacity={springs.opacity}
-        x={startPoint[0]}
-        y={startPoint[1]}
-        radius={springs.width.to(v => v + 1)}
+        x={x}
+        y={y}
+        radius={springs.lineWidth.to(v => v + 1)}
         fill={springs.lineColor}
       />
       <AnimatedLine
@@ -38,28 +38,23 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
         bezier={true}
         points={points.flat()}
         stroke={springs.lineColor}
-        strokeWidth={springs.width}
-        hitStrokeWidth={25}
-        perfectDrawEnabled={false}
-        {...listeners}
+        strokeWidth={springs.lineWidth}
+        hitStrokeWidth={20}
       />
       {headArrow && (
         <AnimatedLine
-          {...listeners}
           opacity={springs.opacity}
           points={headArrow.flat()}
           closed={true}
           fill={springs.lineColor}
           stroke={springs.lineColor}
           strokeWidth={2}
-          perfectDrawEnabled={false}
           hitStrokeWidth={5}
         />
       )}
       {labels.map((label, i) => (
         <AnimatedText
           key={i}
-          {...listeners}
           x={label.pt[0] - 4}
           y={label.pt[1] - label.fontSize / 2 - 4}
           opacity={springs.opacity}
@@ -68,16 +63,16 @@ export function EdgeShape({ edge, theme, springs, ...listeners }: EdgeShapeProps
           // offsetY={label.fontSize / 2}
           // offsetX={label  .width / 2}
           // width={label.width}
-          fill={label.color ?? theme.relation.labelColor}
+          fill={springs.labelColor}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
           align={label.align}
           text={label.text}
           perfectDrawEnabled={false}
-          hitStrokeWidth={2}
+          hitStrokeWidth={10}
         />
       ))}
-    </Fragment>
+    </>
   )
 }

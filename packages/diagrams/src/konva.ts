@@ -28,7 +28,7 @@ KonvaCore.hitOnDragEnabled = true
 KonvaCore.capturePointerEventsEnabled = true
 KonvaCore.dragButtons = [0, 2]
 
-export { KonvaCore, Stage, Group, Layer, Path, Text, Circle, Rect, Image, Ellipse }
+export { KonvaCore, Stage, Group, Layer, Path, Text, Line, Circle, Rect, Image, Ellipse }
 
 /**
  * Partially copied from @react-spring/konva
