@@ -213,7 +213,7 @@ describe('compute-element-view', () => {
     expect(view).toMatchSnapshot()
   })
 
-  it.only('view of cloud.backend', () => {
+  it('view of cloud.backend', () => {
     const view = computeElementView(
       {
         ...emptyView,
