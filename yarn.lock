@@ -1828,6 +1828,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/workspaces@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@likec4/workspaces@workspace:."
+  dependencies:
+    "@commitlint/cli": ^17.7.1
+    "@commitlint/config-conventional": ^17.7.0
+    "@types/eslint": ^8.44.2
+    "@types/node": ^18.15.11
+    "@types/prettier": ^2.7.3
+    "@typescript-eslint/eslint-plugin": ^6.7.0
+    "@typescript-eslint/parser": ^6.7.0
+    "@vitest/ui": ^0.34.4
+    eslint: ^8.49.0
+    execa: ^8.0.1
+    husky: ^8.0.3
+    lint-staged: ^14.0.1
+    prettier: ^3.0.3
+    rimraf: ^5.0.1
+    shipjs: ^0.26.3
+    turbo: ^1.10.14
+    typescript: ^5.2.2
+    vite: ^4.4.9
+    vitest: ^0.34.4
+    vitest-github-actions-reporter: ^0.10.0
+  languageName: unknown
+  linkType: soft
+
 "@mantine/core@npm:^6.0.19":
   version: 6.0.20
   resolution: "@mantine/core@npm:6.0.20"
@@ -5256,9 +5283,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::locator=likec4-workspaces%40workspace%3A.":
+"chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::locator=%40likec4%2Fworkspaces%40workspace%3A.":
   version: 0.3.0
-  resolution: "chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::version=0.3.0&hash=19c726&locator=likec4-workspaces%40workspace%3A."
+  resolution: "chevrotain-allstar@patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch::version=0.3.0&hash=19c726&locator=%40likec4%2Fworkspaces%40workspace%3A."
   dependencies:
     lodash-es: ^4.17.21
   peerDependencies:
@@ -5875,6 +5902,14 @@ __metadata:
   checksum: 836d5d8efa750f3fb17b03d6ca74cd3154ed025dffd045304b3ef59637f662bde1e5dc88f8830080d180ec60841719cf4ea2ce73fb21ec694b16865c478ff297
   languageName: node
   linkType: hard
+
+"create-likec4@workspace:packages/create-likec4":
+  version: 0.0.0-use.local
+  resolution: "create-likec4@workspace:packages/create-likec4"
+  dependencies:
+    unbuild: ^2.0.0
+  languageName: unknown
+  linkType: soft
 
 "create-require@npm:^1.1.0":
   version: 1.1.1
@@ -9713,30 +9748,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"likec4-workspaces@workspace:.":
+"likec4@workspace:packages/likec4":
   version: 0.0.0-use.local
-  resolution: "likec4-workspaces@workspace:."
+  resolution: "likec4@workspace:packages/likec4"
   dependencies:
-    "@commitlint/cli": ^17.7.1
-    "@commitlint/config-conventional": ^17.7.0
-    "@types/eslint": ^8.44.2
     "@types/node": ^18.15.11
-    "@types/prettier": ^2.7.3
-    "@typescript-eslint/eslint-plugin": ^6.7.0
-    "@typescript-eslint/parser": ^6.7.0
-    "@vitest/ui": ^0.34.4
-    eslint: ^8.49.0
-    execa: ^8.0.1
-    husky: ^8.0.3
-    lint-staged: ^14.0.1
-    prettier: ^3.0.3
-    rimraf: ^5.0.1
-    shipjs: ^0.26.3
-    turbo: ^1.10.14
     typescript: ^5.2.2
-    vite: ^4.4.9
     vitest: ^0.34.4
-    vitest-github-actions-reporter: ^0.10.0
   languageName: unknown
   linkType: soft
 

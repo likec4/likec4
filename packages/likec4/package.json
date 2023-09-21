@@ -1,0 +1,40 @@
+{
+  "name": "likec4",
+  "version": "0.37.1",
+  "license": "MIT",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/likec4"
+  },
+  "engines": {
+    "node": "^18.0.0 || >=20.0.0"
+  },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --emitDeclarationOnly",
+    "build:watch": "tsc --watch",
+    "build": "tsc",
+    "prepack": "unbuild",
+    "lint": "run -T eslint src/ --fix",
+    "test": "run -T vitest run",
+    "test:watch": "run -T vitest",
+    "clean": "run -T rimraf dist"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "packageManager": "yarn@3.6.3"
+}
