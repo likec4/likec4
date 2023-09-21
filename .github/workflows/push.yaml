@@ -29,7 +29,7 @@ jobs:
       )
     timeout-minutes: 10
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [windows-latest, ubuntu-latest]
         node-version: ['18', '20']
