@@ -101,9 +101,9 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual(['amazon', 'cloud', 'customer', 'support'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
     expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
-    const [amazon, cloud, customer, support] = nodes
+    const [customer, support, cloud, amazon] = nodes
     expect(amazon).toMatchObject({
       outEdges: [],
       inEdges: ['cloud:amazon']
@@ -148,7 +148,7 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual(['customer', 'support', 'amazon', 'cloud'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
     expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
   })
 
@@ -175,7 +175,7 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud', 'amazon', 'cloud.frontend'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud', 'amazon'])
     expect(ids(edges)).to.have.same.members(['cloud:amazon', 'customer:cloud.frontend', 'support:cloud.frontend'])
   })
 
@@ -201,7 +201,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend', 'cloud', 'amazon'])
 
     expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
@@ -244,8 +244,8 @@ describe('compute-element-view', () => {
       'cloud.frontend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
-      'amazon',
-      'cloud.backend'
+      'cloud.backend',
+      'amazon'
     ])
 
     expect(ids(edges)).to.have.same.members([
@@ -279,11 +279,11 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      'support',
       'customer',
-      'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'support',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend',
       'cloud.backend'
     ])
 
@@ -325,13 +325,13 @@ describe('compute-element-view', () => {
     const { nodes, edges } = view
 
     expect(ids(nodes)).toEqual([
-      'support',
       'customer',
-      'cloud',
-      'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
-      'cloud.backend'
+      'support',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend',
+      'cloud.backend',
+      'cloud'
     ])
 
     expect(ids(edges)).to.have.same.members([
@@ -371,7 +371,7 @@ describe('compute-element-view', () => {
     )
     const { nodes, edges } = view
 
-    expect(ids(nodes)).toEqual(['support', 'customer', 'cloud.frontend', 'cloud.backend'])
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
 
     expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
@@ -414,14 +414,14 @@ describe('compute-element-view', () => {
     )
 
     expect(view.nodes.map(n => n.id)).toEqual([
-      'support',
       'customer',
-      'cloud',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
-      'cloud.backend',
+      'support',
+      'cloud.frontend.adminPanel',
       'cloud.backend.graphql',
       'cloud.backend.storage',
+      'cloud.backend',
+      'cloud',
       'amazon'
     ])
 
@@ -455,7 +455,7 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(ids(nodes)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
+    expect(ids(nodes)).toEqual(['cloud.backend', 'cloud', 'amazon.s3', 'amazon'])
 
     expect(ids(edges)).to.have.same.members(['cloud.backend:amazon.s3'])
   })
@@ -593,12 +593,12 @@ describe('compute-element-view', () => {
     ])
 
     expect(ids(nodes)).toEqual([
-      'cloud',
-      'cloud.frontend',
       'cloud.frontend.dashboard',
+      'cloud.frontend',
+      'cloud.backend.graphql',
       'cloud.backend',
-      'amazon',
-      'cloud.backend.graphql'
+      'cloud',
+      'amazon'
     ])
 
     expect(ids(edges)).to.have.same.members([

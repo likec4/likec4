@@ -93,6 +93,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   const subgraphs = new Map<Fqn, SubgraphModel>()
   const graphvizNodes = new Map<Fqn, NodeModel>()
 
+  let sortv = 0
   const addNode = (elementNode: ComputedNode) => {
     let name = nameFromFqn(elementNode.id).toLowerCase()
     if (name.startsWith('cluster')) {
@@ -106,7 +107,8 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     const node = G.createNode(id, {
       [_.likec4_id]: elementNode.id,
       [_.likec4_level]: elementNode.level,
-      [_.label]: nodeLabel(elementNode)
+      [_.label]: nodeLabel(elementNode),
+      [_.sortv]: sortv++
     })
     if (elementNode.color !== DefaultThemeColor) {
       node.attributes.apply({

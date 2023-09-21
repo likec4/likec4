@@ -36,8 +36,8 @@ export function sortNodes(_nodes: ComputedNode[], edges: ComputedEdge[]) {
   const unprocessed = [..._nodes]
   const sorted = [] as ComputedNode[]
 
-  const preordered = alg.preorder(g, g.sources())
-  for (const id of preordered) {
+  const ordered = alg.postorder(g, g.sources()).reverse()
+  for (const id of ordered) {
     const inx = unprocessed.findIndex(n => n.id === id)
     if (inx >= 0) {
       sorted.push(...unprocessed.splice(inx, 1))
