@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "sourceMap": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "composite": true
   },
-  "include": ["./src/"]
+  "include": ["./src/"],
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
 }

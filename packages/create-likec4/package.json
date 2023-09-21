@@ -29,6 +29,8 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.2.2",
     "unbuild": "^2.0.0"
   },
   "packageManager": "yarn@3.6.3"

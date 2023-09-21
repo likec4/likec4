@@ -2,7 +2,7 @@ import { createLanguageServices, logger as lspLogger, type LikeC4Services } from
 import { dim, red, green } from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
-import type { LikeC4Model, ViewID } from '@likec4/core/types'
+import type { LikeC4Model, ViewID } from '@likec4/core'
 import { existsSync, statSync } from 'node:fs'
 import { resolve, relative, basename } from 'node:path'
 import * as R from 'remeda'
