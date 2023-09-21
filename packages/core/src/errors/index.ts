@@ -54,6 +54,7 @@ export class InvariantError extends BaseError {
 
 // Ensure that the value is NonNullable
 // Mostly as safer `value!`
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function nonNullable<T>(value: T, message?: string): T & {} {
   if (typeof value === 'undefined' || value == null) {
     throw new NullableError(message ?? `Expected defined value, but received ${value}`)
