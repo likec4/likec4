@@ -1,15 +1,49 @@
-import type { SpringConfig, UseTransitionProps } from '@react-spring/konva'
+import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
+import { useRef } from 'react'
+import type { Fqn } from '..'
 import { AnimatedGroup } from '../konva'
-import { nodeShape } from './shapes/nodeShape'
+import { Portal } from '../konva-portal'
+import { CompoundShape } from './shapes/Compound'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import type { NodeSprings, NodeSpringsCtrl } from './springs'
-import { nodeSprings } from './springs'
+import { defaultNodeSprings, nodeSprings } from './springs'
 import { DiagramGesture, useHoveredNodeId, useSetHoveredNode } from './state'
 import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
+import { CylinderShape, MobileShape, PersonShape, QueueShape, RectangleShape } from './shapes'
+import { nonexhaustive } from '@likec4/core'
+import type { ShapeComponent } from './shapes'
+import { BrowserShape } from './shapes/Browser'
 
-const hasNoChildren = (node: DiagramNode) => {
-  return node.children.length <= 0
+function nodeShape({ shape }: DiagramNode): ShapeComponent {
+  switch (shape) {
+    case 'cylinder':
+    case 'storage': {
+      return CylinderShape
+    }
+    case 'queue': {
+      return QueueShape
+    }
+    case 'browser': {
+      return BrowserShape
+    }
+    case 'person': {
+      return PersonShape
+    }
+    case 'rectangle': {
+      return RectangleShape
+    }
+    case 'mobile': {
+      return MobileShape
+    }
+    default: {
+      return nonexhaustive(shape)
+    }
+  }
+}
+
+const isCompound = (node: DiagramNode) => {
+  return node.children.length > 0
 }
 
 type NodesProps = {
@@ -19,58 +53,103 @@ type NodesProps = {
   onNodeClick?: OnNodeClick | undefined
 }
 
-const keyOf = (node: DiagramNode) => (node.parent ? node.parent + '-' : '') + node.id + '-' + node.shape
+const keyOf = (node: DiagramNode) => {
+  const key = (node.parent ? node.parent + '-' : '') + node.id
+  if (isCompound(node)) {
+    return 'compound-' + key
+  }
+  return key
+}
 
 export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
-  const nodes = diagram.nodes.filter(hasNoChildren)
+  const _prev = useRef(new Map<Fqn, DiagramNode>())
+  const _last = useRef<DiagramView>(diagram)
+  if (_last.current.id !== diagram.id) {
+    _prev.current = new Map(_last.current.nodes.map(n => [n.id, n]))
+  }
+  _last.current = diagram
 
+  const prevNodes = _prev.current
   const hoveredNodeId = useHoveredNodeId()
 
-  const nodeTransitions = useTransition(nodes, {
+  const nodeTransitions = useTransition<DiagramNode, NodeSprings>(diagram.nodes, {
     initial: nodeSprings(),
-    from: nodeSprings({
-      opacity: 0.4,
-      scale: 0.7
+    from: ((node: DiagramNode) => {
+      const prevNode = prevNodes.get(node.id)
+      if (prevNode) {
+        return defaultNodeSprings(prevNode)
+      }
+      return {
+        ...defaultNodeSprings(node),
+        opacity: 0,
+        scaleX: isCompound(node) ? 0.85 : 0.6,
+        scaleY: isCompound(node) ? 0.85 : 0.6
+      }
+      // return [{
+      //   ...defaultNodeSprings(node),
+      //   opacity: 0,
+      //   scaleX: isCompound(node) ? 0.85 : 0.6,
+      //   scaleY: isCompound(node) ? 0.85 : 0.6
+      // }, {
+      //   opacity: 0.4
+      // }]
     }) as unknown as NodeSprings,
-    enter: nodeSprings(),
-    leave: nodeSprings({
-      opacity: 0,
-      scale: 0.4
-    }),
-    update: (node: DiagramNode, _index) => {
-      return nodeSprings({
-        scale: onNodeClick && hoveredNodeId === node.id ? 1.08 : 1
-      })(node, _index)
+    enter: node => {
+      const isReplacing = prevNodes.has(node.id)
+      return {
+        ...defaultNodeSprings(node),
+        delay: isReplacing ? 0 : 70
+      }
     },
-    expires: true,
-    immediate: !animate,
-    keys: keyOf,
-    delay(key) {
-      const isUpdating = nodes.some(n => keyOf(n) === key)
-      return isUpdating && animate ? 30 : 0
+    // update: nodeSprings(),
+    update: node => {
+      const scale = !isCompound(node) && hoveredNodeId === node.id ? 1.08 : 1
+      return {
+        ...defaultNodeSprings(node),
+        scaleX: scale,
+        scaleY: scale
+      }
     },
-    config: (_node, _index, state): SpringConfig => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-      if (state === 'leave') {
+    leave: (node): ControllerUpdate<NodeSprings, DiagramNode> => {
+      const replacedWith = diagram.nodes.find(n => n.id === node.id)
+      if (replacedWith && keyOf(node) !== keyOf(replacedWith)) {
         return {
-          precision: 0.005,
-          duration: 120
+          ...defaultNodeSprings(replacedWith),
+          opacity: 0,
+          config: {
+            duration: 50
+          }
         }
       }
       return {
-        precision: 0.005
+        opacity: 0,
+        scaleX: isCompound(node) ? 0.6 : 0.4,
+        scaleY: isCompound(node) ? 0.6 : 0.4,
+        config: {
+          duration: 120
+        }
       }
-    }
+    },
+    sort: (a, b) => {
+      if (isCompound(a) === isCompound(b)) {
+        return a.level - b.level
+      }
+      return isCompound(a) ? -1 : 1
+    },
+    expires: true,
+    immediate: !animate,
+    keys: keyOf
   } satisfies UseTransitionProps<DiagramNode>)
 
-  return nodeTransitions((_, node, { key, ctrl }) => (
+  return nodeTransitions((_, node, { key, ctrl, expired }) => (
     <NodeSnape
       key={key}
       node={node}
       theme={theme}
       ctrl={ctrl}
+      expired={expired}
       onNodeClick={onNodeClick}
-      isHovered={hoveredNodeId === node.id}
+      isHovered={node.id === hoveredNodeId}
     />
   ))
 }
@@ -80,12 +159,14 @@ type NodeShapeProps = {
   theme: DiagramTheme
   ctrl: NodeSpringsCtrl
   isHovered: boolean
+  expired: boolean | undefined
   onNodeClick?: OnNodeClick | undefined
 }
 
-const NodeSnape = ({ node, ctrl, theme, isHovered, onNodeClick }: NodeShapeProps) => {
+const NodeSnape = ({ node, ctrl, theme, isHovered, expired, onNodeClick }: NodeShapeProps) => {
   const setHoveredNode = useSetHoveredNode()
-  const Shape = nodeShape(node)
+
+  const Shape = node.children.length > 0 ? CompoundShape : nodeShape(node)
 
   // const offsetX = Math.round(node.size.width / 2)
   // const offsetY = Math.round(node.size.height / 2)
@@ -107,70 +188,42 @@ const NodeSnape = ({ node, ctrl, theme, isHovered, onNodeClick }: NodeShapeProps
   //       }
   // })
 
+  const springs = ctrl.springs
+
   return (
-    <AnimatedGroup
-      name={node.id}
-      onPointerEnter={e => {
-        setHoveredNode(node)
-        onNodeClick && mousePointer(e)
-      }}
-      onPointerLeave={e => {
-        setHoveredNode(null)
-        mouseDefault(e)
-      }}
-      {...(onNodeClick && {
-        onPointerClick: e => {
-          if (DiagramGesture.isDragging || e.evt.button !== 0) {
-            return
+    <Portal selector='.top' enabled={isHovered && !isCompound(node)}>
+      <AnimatedGroup
+        name={node.id}
+        visible={expired !== true}
+        onPointerEnter={e => {
+          setHoveredNode(node)
+          onNodeClick && mousePointer(e)
+        }}
+        onPointerLeave={e => {
+          setHoveredNode(null)
+          mouseDefault(e)
+        }}
+        {...(onNodeClick && {
+          onPointerClick: e => {
+            if (DiagramGesture.isDragging || e.evt.button !== 0) {
+              return
+            }
+            e.cancelBubble = true
+            onNodeClick(node, e)
           }
-          e.cancelBubble = true
-          onNodeClick(node, e)
-        }
-      })}
-      {...ctrl.springs}
-    >
-      {/* <AnimatedRect
-        {...hoveredSprings}
-        cornerRadius={6}
-        visible={hoveredSprings.opacity.to(v => v > 0.1)}
-        fill={hoveredFill}
-        globalCompositeOperation={'hard-light'}
-        stroke={'#000'}
-        strokeScaleEnabled={false}
-        strokeWidth={2}
-      /> */}
-      {/* <AnimatedRect
-      {...hoveredSprings}
-        cornerRadius={6}
-        fill={theme.colors['green'].fill}
-        perfectDrawEnabled={false}
-        strokeEnabled={false}
-        scaleX={scale}
-        scaleY={scale}
-        visible={scale.to(v => v > 0.8)}
-        // shadowForStrokeEnabled={false}
-        // stroke={rectProps.fill}
-        // strokeScaleEnabled={false}
-        // strokeWidth={1}
-        // hitStrokeWidth={25}
-      /> */}
-      <Shape node={node} theme={theme} springs={ctrl.springs} isHovered={isHovered} />
-
-      {/*
-
-
-        <Text
-          x={8}
-          y={node.size.height}
-          offsetY={20}
-          fill={theme.colors[node.color].loContrast}
-          strokeEnabled={true}
-          fontFamily={theme.font}
-          fillEnabled={true}
-          fontSize={11}
-          text={'Open Source'}
-        />
-        <Rect x={8} y={node.size.height} fill={theme.colors[node.color].loContrast}/> */}
-    </AnimatedGroup>
+        })}
+        x={springs.x}
+        y={springs.y}
+        offsetX={springs.offsetX}
+        offsetY={springs.offsetY}
+        width={springs.width}
+        height={springs.height}
+        scaleX={springs.scaleX}
+        scaleY={springs.scaleY}
+        opacity={springs.opacity}
+      >
+        <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
+      </AnimatedGroup>
+    </Portal>
   )
 }

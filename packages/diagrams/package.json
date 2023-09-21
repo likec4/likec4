@@ -32,12 +32,15 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
+    "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
     "generate": "likec4 codegen views-data src/stories/likec4",
-    "turbo-build": "run -T turbo run build --filter='diagrams'",
-    "compile": "tsc --noEmit",
+    "build:deps": "run -T turbo run build --filter='diagrams'",
+    "build:watch": "unbuild",
     "build": "unbuild",
+    "dev:watch": "run -T turbo run build:watch --filter='diagrams^...' & ladle serve",
     "dev": "run generate && ladle serve",
     "stories:generate": "node ./.scripts/generate-view-stories.mjs",
     "stories:build": "ladle build",
@@ -67,14 +70,10 @@
     "@likec4/cli": "workspace:*",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
     "typescript": "^5.2.2",
-    "unbuild": "^2.0.0",
-    "vite": "^4.4.9",
-    "vite-plugin-watch-and-run": "^1.1.3",
-    "vite-tsconfig-paths": "^4.2.1"
+    "unbuild": "^2.0.0"
   }
 }

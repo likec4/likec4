@@ -1,7 +1,6 @@
 export default {
   stories: "src/**/*.stories.tsx",
   defaultStory: "development--diagram",
-
   addons: {
     a11y: {
       enabled: false,

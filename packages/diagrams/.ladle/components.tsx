@@ -23,7 +23,9 @@ export const Provider: GlobalProvider = ({ children, globalState }) => {
             }
       }
     >
-      {measures && <MeasuresContext.Provider value={measures}>{children}</MeasuresContext.Provider>}
+      {measures && measures.width > 0 && measures.height > 0 && (
+        <MeasuresContext.Provider value={measures}>{children}</MeasuresContext.Provider>
+      )}
     </div>
   )
 }

@@ -1,17 +1,16 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
-import { useHookableRef } from '@react-hookz/web/esm'
-import { useSpring } from '@react-spring/konva'
+import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
+import { useSpring, easings } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, Layer } from '../konva'
-import { Compounds } from './Compounds'
 import { Edges } from './Edges'
-import { Nodes } from './Nodes'
 import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
 
 import { createUseGesture, dragAction, pinchAction } from '@use-gesture/react'
+import { Nodes } from './Nodes'
 import { DiagramGesture } from './state'
 
 const useGesture = createUseGesture([dragAction, pinchAction])
@@ -125,22 +124,30 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     }))
 
     const centerOnRect = (centerTo: IRect) => {
-      stageSpringApi.stop(true).start({
+      stageSpringApi.start({
         to: toCenterOnRect(centerTo),
         immediate
       })
+      return
     }
 
-    const centerAndFit = () => {
-      stageSpringApi.stop(true).start({
+    const centerAndFit = (delay = 70, durationMs?: number) => {
+      stageSpringApi.start({
         to: toFitDiagram(),
-        delay: 70,
+        delay,
+        config: durationMs
+          ? {
+              duration: durationMs,
+              easing: easings.easeInOutCubic
+            }
+          : {},
         immediate
       })
+      return
     }
 
     const resetStageZoom = (_immediate?: boolean) => {
-      stageSpringApi.stop(true).start({
+      stageSpringApi.start({
         to: {
           x: 0,
           y: 0,
@@ -148,6 +155,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         },
         immediate
       })
+      return
     }
 
     const refs = useSyncedRef({
@@ -169,22 +177,21 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           resetStageZoom: (_immediate?: boolean) => {
             refs.current.resetStageZoom(_immediate)
           },
-          centerOnNode: (node: DiagramNode): void => {
+          centerOnNode: (node: DiagramNode) =>
             refs.current.centerOnRect({
               x: node.position[0],
               y: node.position[1],
               width: node.size.width,
               height: node.size.height
-            })
-          },
+            }),
           centerAndFit: () => refs.current.centerAndFit()
         }) satisfies DiagramApi,
       [refs, stageRef]
     )
 
-    useEffect(() => {
-      refs.current.centerAndFit()
-    }, [id, height, width, _padding])
+    useUpdateEffect(() => {
+      refs.current.centerAndFit(80, 650)
+    }, [id, height, width])
 
     // Recommended by @use-gesture/react
     useEffect(() => {
@@ -207,7 +214,6 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         onDrag: state => {
           const {
             pinching,
-            active,
             down,
             cancel,
             intentional,
@@ -223,16 +229,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
                 x,
                 y
               },
-              immediate: immediate || (active && down)
+              immediate: immediate || down
             })
           }
         },
         onPinch: ({ memo, first, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
           if (first) {
-            const { width, height, x, y } = containerRef.current!.getBoundingClientRect()
+            const stage = nonNullable(stageRef.current)
+            const { width, height, x, y } = stage.container().getBoundingClientRect()
             const tx = ox - (x + width / 2)
             const ty = oy - (y + height / 2)
-            memo = [stageRef.current!.x(), stageRef.current!.y(), tx, ty]
+            memo = [stage.x(), stage.y(), tx, ty]
           }
 
           const x = memo[0] - (ms - 1) * memo[2]
@@ -332,13 +339,10 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         {...props}
       >
         <Layer>
-          <Compounds {...sharedProps} onNodeClick={onNodeClick} />
+          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
-        <Layer>
-          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
-        </Layer>
-        {/* <NodeHoverLayer /> */}
+        <Layer name='top'>{/* <HoveredNode diagram={diagram} theme={theme} onNodeClick={onNodeClick} /> */}</Layer>
       </AnimatedStage>
     )
   }

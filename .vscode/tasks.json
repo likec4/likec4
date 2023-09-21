@@ -20,10 +20,47 @@
       "problemMatcher": [
         "$tsc"
       ],
+      "promptOnClose": false,
       "presentation": {
         "panel": "dedicated",
+        "close": true,
         "echo": false,
         "reveal": "silent"
+      }
+    },
+    {
+      "label": "vscode:task:build:watch",
+      "type": "npm",
+      "dependsOn": [
+        "npm: build:full - packages/vscode"
+      ],
+      "script": "vscode:task:build:watch",
+      "promptOnClose": false,
+      "isBackground": true,
+      "problemMatcher": [
+        "$tsc",
+        "$tsc-watch"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "close": true,
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "vscode:task:build:extension",
+      "type": "npm",
+      "script": "build:full",
+      "path": "packages/vscode",
+      "promptOnClose": false,
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "close": true,
+        "echo": false,
       }
     }
   ]

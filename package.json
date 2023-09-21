@@ -16,6 +16,7 @@
     "prepare": "husky install",
     "compile": "turbo run compile",
     "build": "turbo run build --filter='./packages/*'",
+    "build:watch": "turbo run build:watch --filter='./packages/*'",
     "ci:build": "turbo run build compile --filter='./packages/*' --log-prefix=none --log-order=grouped",
     "typecheck": "turbo run compile",
     "turbo": "turbo",
@@ -29,7 +30,8 @@
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "turbo run lint --continue --filter='./packages/*'",
     "vitest:ui": "vitest --ui",
-    "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped"
+    "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped",
+    "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
   "dependencies": {
     "@commitlint/cli": "^17.7.1",

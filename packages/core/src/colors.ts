@@ -4,11 +4,11 @@ const blue = {
   // fill: colors.blue[500],
   // stroke: colors.blue[600],
   // hiContrast: colors.blue[50],
-  // loContrast: colors.blue[100],
+  // loContrast: colors.blue[200],
   fill: '#3b82f6',
   stroke: '#2563eb',
   hiContrast: '#eff6ff',
-  loContrast: '#dbeafe'
+  loContrast: '#bfdbfe'
 } satisfies ThemeColorValues
 
 const sky = {

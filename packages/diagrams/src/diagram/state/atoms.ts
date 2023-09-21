@@ -35,9 +35,9 @@ export const hoveredNodeAtom = atom(
           set(currentHoveredNodeAtom, null)
         }, 180)
       )
-    } else {
-      set(currentHoveredNodeAtom, _next)
+      return true
     }
+    set(currentHoveredNodeAtom, _next)
     return true
   }
 )

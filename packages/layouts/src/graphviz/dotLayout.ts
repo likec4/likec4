@@ -162,6 +162,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       ...computed,
       position,
       size,
+      ...('likec4_depth' in obj ? { depth: obj.likec4_depth } : {}),
       labels: parseLabelDraws(obj, position)
     }
     diagram.nodes.push(node)

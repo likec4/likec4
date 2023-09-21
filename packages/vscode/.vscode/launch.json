@@ -20,7 +20,7 @@
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
-      "preLaunchTask": "npm: turbo-build",
+      "preLaunchTask": "npm: build:deps",
     }
   ]
 }

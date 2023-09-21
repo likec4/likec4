@@ -1,6 +1,6 @@
 export * from './diagram'
 export * from './components'
-export * from './hooks/useViewIdFromHash'
+export * from './hooks'
 
 export { LikeC4 } from './likec4'
 

@@ -51,7 +51,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     immediate: !animate,
     // delay: 30,
     config: {
-      duration: 180,
+      duration: 160,
       precision: 0.005
     },
     // unique edge key, scoped to this diagram

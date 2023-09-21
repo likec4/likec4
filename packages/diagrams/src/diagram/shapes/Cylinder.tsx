@@ -1,6 +1,7 @@
 import { useSpring } from '@react-spring/konva'
 import { AnimatedEllipse, AnimatedPath } from '../../konva'
-import { NodeLabels } from './nodeLabels'
+import { NodeLabels } from './Node-Labels'
+import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
@@ -27,42 +28,33 @@ function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
 
 export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const {
-    size: { width, height },
-    color
+    size: { width, height }
   } = node
-  const { fill, stroke } = theme.colors[color]
 
   const { path, rx, ry } = cylinderSVGPath(width, height)
 
   const cylinder = useSpring({
     to: {
-      fill,
       rx,
-      ry,
-      stroke
+      ry
     }
   })
 
   return (
     <>
       <AnimatedPath
-        shadowBlur={isHovered ? 20 : 16}
-        shadowOpacity={isHovered ? 0.35 : 0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={isHovered ? 10 : 8}
-        shadowColor={theme.shadow}
-        shadowEnabled={springs.opacity.to(v => v > 0.9)}
+        {...useShadowSprings(isHovered, springs)}
         data={path}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
-        fill={cylinder.fill}
+        fill={springs.fill}
       />
       <AnimatedEllipse
         x={cylinder.rx}
         y={cylinder.ry}
         radiusX={cylinder.rx}
         radiusY={cylinder.ry}
-        fill={cylinder.stroke}
+        fill={springs.stroke}
       />
       <NodeLabels node={node} offsetY={3 - ry * (node.icon ? 1.8 : 0.8)} theme={theme} />
     </>

@@ -12,9 +12,9 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "compile": "tsc --noEmit",
+    "build:watch": "tsc --watch",
     "build": "tsc",
     "prepack": "unbuild",
-    "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",

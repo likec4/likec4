@@ -30,7 +30,7 @@
       "outFiles": [
         "${workspaceFolder}/packages/**/*",
       ],
-      "preLaunchTask": "npm: turbo-build - packages/vscode",
+      "preLaunchTask": "vscode:task:build:extension"
     },
     {
       "name": "Run Web Extension in VS Code",
@@ -47,7 +47,7 @@
       "outFiles": [
         "${workspaceFolder}/packages/**/*",
       ],
-      "preLaunchTask": "npm: turbo-build - packages/vscode"
+      "preLaunchTask": "vscode:task:build:extension"
     }
   ]
 }

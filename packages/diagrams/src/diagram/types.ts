@@ -23,7 +23,6 @@ export type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
 export type OnNodeClick = (node: DiagramNode, event: KonvaPointerEvent) => void
 export type OnEdgeClick = (node: DiagramEdge, event: KonvaPointerEvent) => void
 export type OnStageClick = (stage: Konva.Stage, event: KonvaPointerEvent) => void
-
 export interface DiagramApi {
   stage(): Konva.Stage
   container(): HTMLDivElement

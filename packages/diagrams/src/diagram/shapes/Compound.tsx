@@ -1,55 +1,18 @@
-import { scale } from 'khroma'
-import type { KonvaNodeEvents } from 'react-konva'
-import { AnimatedGroup, AnimatedRect, Text } from '../../konva'
+import { AnimatedRect, AnimatedText } from '../../konva'
 import type { NodeSpringValues } from '../springs'
-import { DiagramGesture, useSetHoveredNode } from '../state'
-import type { DiagramNode, DiagramTheme, KonvaPointerEvent, OnNodeClick } from '../types'
-import { mouseDefault, mousePointer } from './utils'
+import type { DiagramNode, DiagramTheme } from '../types'
 
 interface CompoundProps {
   node: DiagramNode
   theme: DiagramTheme
   springs: NodeSpringValues
-  onNodeClick?: OnNodeClick | undefined
 }
 
-export function CompoundShape({ node, theme, springs, onNodeClick }: CompoundProps) {
-  const setHoveredNode = useSetHoveredNode()
-  const { color, labels } = node
-  const colors = theme.colors[color]
-
-  const fill = scale(colors.fill, {
-    l: node.parent ? -45 : -55,
-    s: node.parent ? -30 : -35
-  })
-
-  const loContrast = scale(colors.loContrast, {
-    s: -25,
-    l: -15
-  })
-
-  const listeners: KonvaNodeEvents = onNodeClick
-    ? {
-        onPointerEnter: (e: KonvaPointerEvent) => {
-          mousePointer(e)
-          setHoveredNode(node)
-        },
-        onPointerLeave: (e: KonvaPointerEvent) => {
-          mouseDefault(e)
-          setHoveredNode(null)
-        },
-        onPointerClick: (e: KonvaPointerEvent) => {
-          if (DiagramGesture.isDragging || e.evt.button !== 0) {
-            return
-          }
-          e.cancelBubble = true
-          onNodeClick(node, e)
-        }
-      }
-    : {}
+export function CompoundShape({ node, theme, springs }: CompoundProps) {
+  const { labels } = node
 
   return (
-    <AnimatedGroup name={node.id} {...springs}>
+    <>
       <AnimatedRect
         cornerRadius={4}
         shadowColor={theme.shadow}
@@ -60,18 +23,18 @@ export function CompoundShape({ node, theme, springs, onNodeClick }: CompoundPro
         shadowEnabled={!!node.parent}
         width={springs.width}
         height={springs.height}
-        fill={fill}
+        fill={springs.fill}
         strokeEnabled={false}
         listening={false}
       />
       {labels.map(({ pt: [x, y], ...label }, i) => (
-        <Text
+        <AnimatedText
           key={i}
           x={x}
           y={y - label.fontSize / 2}
           offsetX={4}
           offsetY={4}
-          width={node.size.width - x - 4}
+          width={springs.width.to(v => v - x - 4)}
           fill={'#AEAEAE'}
           fontFamily={theme.font}
           fontSize={label.fontSize}
@@ -85,7 +48,6 @@ export function CompoundShape({ node, theme, springs, onNodeClick }: CompoundPro
           padding={6}
           hitStrokeWidth={3}
           globalCompositeOperation={'luminosity'}
-          {...listeners}
         />
       ))}
       {/* <ExternalLink
@@ -95,6 +57,6 @@ export function CompoundShape({ node, theme, springs, onNodeClick }: CompoundPro
           fillIcon={colors.loContrast}
           {...toolbarProps}
         /> */}
-    </AnimatedGroup>
+    </>
   )
 }

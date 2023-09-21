@@ -1,6 +1,7 @@
 import { ActionType, action, useLadleContext, type Story, type StoryDefault } from '@ladle/react'
 import { useStoryViewport } from '../../.ladle/components'
 import { Diagram, DiagramStateProvider } from '../diagram'
+import { useDiagramRef } from '../hooks'
 import type { LikeC4ViewId } from './likec4'
 import { LikeC4ViewIds, LikeC4Views, isViewId } from './likec4'
 
@@ -44,6 +45,7 @@ type Props = {
 }
 
 export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
+  const diagramApi = useDiagramRef()
   const measures = useStoryViewport()
   const {
     dispatch,
@@ -53,6 +55,7 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
   return (
     <DiagramStateProvider>
       <Diagram
+        ref={diagramApi.ref}
         className='dev-app'
         diagram={diagram}
         {...props}

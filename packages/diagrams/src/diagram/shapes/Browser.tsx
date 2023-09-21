@@ -1,34 +1,21 @@
-import { useSpring } from '@react-spring/konva'
+import { useShadowSprings } from '../springs'
 import { AnimatedRect, Circle } from '../../konva'
-import { NodeLabels } from './nodeLabels'
+import { NodeLabels } from './Node-Labels'
 import type { NodeShapeProps } from './types'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.colors[node.color]
 
-  const { fill, stroke } = useSpring({
-    to: {
-      fill: colors.fill,
-      stroke: colors.stroke
-    }
-  })
-
-  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
     <>
       <AnimatedRect
+        {...useShadowSprings(isHovered, springs)}
         cornerRadius={6}
-        shadowBlur={isHovered ? 20 : 16}
-        shadowOpacity={isHovered ? 0.35 : 0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={isHovered ? 10 : 8}
-        shadowColor={theme.shadow}
-        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
         width={springs.width}
         height={springs.height}
-        fill={stroke}
+        fill={springs.stroke}
       />
       <Circle x={16} y={15} radius={7} fill={colors.fill} listening={false} />
       <Circle x={36} y={15} radius={7} fill={colors.fill} listening={false} />
@@ -39,7 +26,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         y={7}
         width={springs.width.to(w => w - 80)}
         height={16}
-        fill={fill}
+        fill={springs.fill}
         listening={false}
       />
       <AnimatedRect
@@ -48,7 +35,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         y={31}
         width={springs.width.to(w => w - 18)}
         height={springs.height.to(h => h - 40)}
-        fill={fill}
+        fill={springs.fill}
         listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetY={-8} />

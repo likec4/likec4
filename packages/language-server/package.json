@@ -28,12 +28,14 @@
     "access": "public"
   },
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='language-server'",
-    "turbo-compile": "run -T turbo run compile --filter='language-server'",
+    "typecheck:deps": "run -T turbo run compile --filter='language-server'",
+    "typecheck": "tsc --noEmit",
     "compile": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
+    "build:watch": "run-p 'watch:*'",
+    "build:deps": "run -T turbo run build --filter='language-server'",
     "build": "tsc",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",

@@ -21,6 +21,7 @@ export interface DiagramNode extends ComputedNode {
   labels: DiagramLabel[]
   position: Point // Absolute position, top left
   // relative: Point // Top left, relative to parent
+  depth?: number
 }
 
 export interface DiagramEdge extends ComputedEdge {

@@ -29,7 +29,9 @@ type HtmlProps = PropsWithChildren<{
 
 /**
  * Original source:
- * https://github.com/konvajs/react-konva-utils/blob/bd03d15c7121421c3018628fa02ec352647855e5/src/html.tsx
+ * https://github.com/konvajs/react-konva-utils
+ *
+ * Ported because, imports from react-konva-utils loads whole konva
  */
 export const KonvaHtml = ({ children, groupProps, divProps, transform, transformFunc }: HtmlProps) => {
   const groupRef = useRef<Konva.Group>(null)

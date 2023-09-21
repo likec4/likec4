@@ -1,5 +1,5 @@
 import { nonexhaustive, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
-import { Diagram } from '@likec4/diagrams'
+import { Diagram, useDiagramRef } from '@likec4/diagrams'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
@@ -16,7 +16,10 @@ import {
   savePreviewWindowState
 } from './vscode'
 
+const Paddings = [30, 20, 20, 20] as [number, number, number, number]
+
 const App = () => {
+  const diagramApi = useDiagramRef()
   const windowSize = useWindowSize(undefined, false)
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
@@ -118,13 +121,16 @@ const App = () => {
   return (
     <div data-vscode-context='{"preventDefaultContextMenuItems": true}'>
       <Diagram
+        ref={diagramApi.ref}
         className={'likec4-layer likec4-diagram'}
         diagram={view}
+        padding={Paddings}
         width={windowSize.width}
         height={windowSize.height}
         onNodeClick={onNodeClick}
         onNodeContextMenu={(nd, e) => {
           e.cancelBubble = true
+          diagramApi.stage().releaseCapture(e.pointerId)
           lastNodeContextMenuRef.current = nd
         }}
         onStageContextMenu={(stage, e) => {
@@ -134,7 +140,6 @@ const App = () => {
         onStageClick={() => {
           goToViewSource(view.id)
         }}
-        padding={16}
       />
       {loading && (
         <>
@@ -147,24 +152,31 @@ const App = () => {
       )}
       {viewsHistoryRef.current.length > 1 && (
         <div className='likec4-toolbar'>
-          <VSCodeButton
-            appearance='icon'
-            onClick={e => {
-              e.stopPropagation()
-              const [_, prev] = viewsHistoryRef.current
-              if (prev) {
-                goToViewSource(prev.id)
-                openView(prev.id)
-                // optimistic update
-                updateState({
-                  view: prev,
-                  loading: false
-                })
-              }
-            }}
-          >
-            <ArrowLeftIcon />
-          </VSCodeButton>
+          <div className='likec4-toolbar-left'>
+            <VSCodeButton
+              appearance='icon'
+              onClick={e => {
+                e.stopPropagation()
+                const [_, prev] = viewsHistoryRef.current
+                if (prev) {
+                  goToViewSource(prev.id)
+                  openView(prev.id)
+                  // optimistic update
+                  updateState({
+                    view: prev,
+                    loading: false
+                  })
+                }
+              }}
+            >
+              <ArrowLeftIcon />
+            </VSCodeButton>
+          </div>
+          {/* <div className='likec4-toolbar-right'>
+            <VSCodeButton appearance='secondary' onClick={closePreviewWindow}>
+              Export
+            </VSCodeButton>
+          </div> */}
         </div>
       )}
     </div>

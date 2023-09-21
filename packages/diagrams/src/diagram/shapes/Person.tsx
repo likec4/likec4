@@ -1,6 +1,6 @@
-import { useSpring } from '@react-spring/konva'
+import { useShadowSprings } from '../springs'
 import { AnimatedPath, AnimatedRect } from '../../konva'
-import { NodeLabels } from './nodeLabels'
+import { NodeLabels } from './Node-Labels'
 import type { NodeShapeProps } from './types'
 
 const PersonIcon = {
@@ -10,31 +10,17 @@ const PersonIcon = {
 } as const
 
 export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps) {
-  const colors = theme.colors[node.color]
-
-  const { fill, stroke } = useSpring({
-    to: {
-      fill: colors.fill,
-      stroke: colors.stroke
-    }
-  })
-
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (
     <>
       <AnimatedRect
-        width={springs.width}
-        height={springs.height}
+        {...useShadowSprings(isHovered, springs)}
         cornerRadius={6}
-        shadowBlur={isHovered ? 20 : 16}
-        shadowOpacity={isHovered ? 0.35 : 0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={isHovered ? 10 : 8}
-        shadowColor={theme.shadow}
-        shadowEnabled={springs.opacity.to(v => v > 0.9)}
         perfectDrawEnabled={false}
         strokeEnabled={false}
-        fill={fill}
+        width={springs.width}
+        height={springs.height}
+        fill={springs.fill}
         // shadowForStrokeEnabled={false}
         // stroke={rectProps.fill}
         // strokeScaleEnabled={false}
@@ -47,7 +33,7 @@ export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps)
         data={PersonIcon.path}
         width={PersonIcon.width}
         height={PersonIcon.height}
-        fill={stroke}
+        fill={springs.stroke}
         opacity={0.7}
         perfectDrawEnabled={false}
         offsetX={PersonIcon.width}

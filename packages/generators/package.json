@@ -30,6 +30,7 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
+    "build:watch": "tsc --watch",
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",

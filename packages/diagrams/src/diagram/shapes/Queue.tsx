@@ -1,7 +1,8 @@
-import { useSpring } from '@react-spring/konva'
+import { useShadowSprings } from '../springs'
 import { AnimatedEllipse, AnimatedPath } from '../../konva'
-import { NodeLabels } from './nodeLabels'
+import { NodeLabels } from './Node-Labels'
 import type { NodeShapeProps } from './types'
+import { useSpring } from '@react-spring/konva'
 
 function queueSVGPath(width: number, height: number, tilt = 0.2) {
   const diameter = height
@@ -29,7 +30,6 @@ export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) 
   const {
     size: { width, height }
   } = node
-  const { fill, stroke } = theme.colors[node.color]
 
   const { path, rx, ry } = queueSVGPath(width, height)
 
@@ -38,26 +38,19 @@ export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) 
       x: width - rx,
       y: ry,
       rx,
-      ry,
-      fill,
-      stroke
+      ry
     }
   })
 
   return (
     <>
       <AnimatedPath
-        shadowBlur={isHovered ? 20 : 16}
-        shadowOpacity={isHovered ? 0.35 : 0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={isHovered ? 10 : 8}
-        shadowColor={theme.shadow}
-        shadowEnabled={springs.opacity.to(v => v > 0.9)}
+        {...useShadowSprings(isHovered, springs)}
         data={path}
         perfectDrawEnabled={false}
-        fill={props.fill}
+        fill={springs.fill}
       />
-      <AnimatedEllipse x={props.x} y={props.y} radiusX={props.rx} radiusY={props.ry} fill={props.stroke} />
+      <AnimatedEllipse x={props.x} y={props.y} radiusX={props.rx} radiusY={props.ry} fill={springs.stroke} />
       <NodeLabels node={node} maxWidth={width - rx * 2} theme={theme} />
     </>
   )

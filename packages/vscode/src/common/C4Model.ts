@@ -95,11 +95,12 @@ export class C4Model extends AbstractDisposable {
 
   private layoutView(view: ComputedView) {
     // microtask
-    const promise = Promise.resolve().then(() => this.dot.layout(view))
-    // .catch(err => {
-    //   Logger.warn(serializeError(err).message)
-    //   return this.dot.restart().then(dot => dot.layout(view))
-    // })
+    const promise = Promise.resolve()
+      .then(() => this.dot.layout(view))
+      .catch(err => {
+        Logger.warn(serializeError(err).message)
+        return this.dot.restart().then(dot => dot.layout(view))
+      })
     return xs.from(promise).replaceError(err => {
       logError(err)
       return xs.empty()
