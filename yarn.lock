@@ -1656,7 +1656,7 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.4
     jotai: ^2.4.2
     khroma: ^2.0.0
-    konva: ^9.2.0
+    konva: ^9.2.1
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -9603,10 +9603,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.2.0":
-  version: 9.2.0
-  resolution: "konva@npm:9.2.0"
-  checksum: 12f8635b54189a8788f9e49e1426b9e80e934769df2750a66b0ae4c88b22ae765e373fec7573411b46e5225086437bb99030ef0497c79e9e199e774bac835845
+"konva@npm:^9.2.1":
+  version: 9.2.1
+  resolution: "konva@npm:9.2.1"
+  checksum: f6813c42732d006d78a289c4954a82b4dcb79e80bf33c5d6b9bc135d268465be6313b2a5df503fd6da18d5ab5deb9c3f96d81f447199f557d36deefe1a702aa9
   languageName: node
   linkType: hard
 
