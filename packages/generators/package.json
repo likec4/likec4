@@ -29,7 +29,7 @@
     "types": "./dist/index.d.ts"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "build:watch": "tsc --watch",
     "build": "tsc",
     "dev": "tsc --watch",

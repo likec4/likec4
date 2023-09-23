@@ -28,9 +28,8 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck:deps": "run -T turbo run compile --filter='language-server'",
+    "typecheck:deps": "run -T turbo run typecheck --filter='language-server'",
     "typecheck": "tsc --noEmit",
-    "compile": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",

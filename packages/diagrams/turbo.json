@@ -7,7 +7,7 @@
       "outputs": ["src/stories/likec4/*.generated.ts"],
       "inputs": ["package.json", "**/*.c4"]
     },
-    "compile": {
+    "typecheck": {
       "dependsOn": ["^build", "generate"],
       "outputs": []
     },

@@ -3,25 +3,16 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
-      "outputs": [
-        "contrib/**",
-        "src/generated/**"
-      ],
-      "inputs": [
-        "package.json",
-        "src/**/*.langium",
-        "langium-config.json"
-      ]
+      "outputs": ["contrib/**", "src/generated/**"],
+      "inputs": ["package.json", "src/**/*.langium", "langium-config.json"]
     },
-    "compile": {
+    "typecheck": {
       "dependsOn": ["generate", "^build"],
       "outputs": []
     },
     "build": {
       "dependsOn": ["generate", "^build"],
-      "outputs": [
-        "dist/**"
-      ]
+      "outputs": ["dist/**"]
     }
   }
 }

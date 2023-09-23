@@ -11,7 +11,6 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "compile": "tsc --emitDeclarationOnly",
     "typecheck": "tsc --emitDeclarationOnly",
     "build:watch": "tsc --watch",
     "build": "tsc",

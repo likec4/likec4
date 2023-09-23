@@ -16,7 +16,7 @@
     "!**/*.map"
   ],
   "scripts": {
-    "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "build:watch": "vite build --watch --mode watch-dev",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",

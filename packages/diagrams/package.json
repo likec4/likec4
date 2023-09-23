@@ -32,7 +32,6 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
-    "compile": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",

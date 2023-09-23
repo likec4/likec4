@@ -25,7 +25,7 @@
   "scripts": {
     "build:watch": "yarn node esbuild.mjs --watch",
     "build:deps": "run -T turbo run build --filter='cli'",
-    "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
