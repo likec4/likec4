@@ -1,10 +1,10 @@
+import { logDebug, logger } from '@/logger'
 import react from '@vitejs/plugin-react-swc'
-import fs from 'fs'
-import { dirname, join, resolve } from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { InlineConfig } from 'vite'
-import { debug } from './debug'
-import { likeC4VitePlugin } from './vite-plugin'
+import { likec4Plugin } from './plugin/plugin'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 export const getAppRoot = () => {
@@ -12,20 +12,20 @@ export const getAppRoot = () => {
     // published/compiled folder of our app
     return join(__dirname, '../../typings-for-build/app')
   }
-  return join(__dirname, '../app')
+  return join(__dirname, '../../app')
 }
 
 export const viteConfig = async (viteConfig?: InlineConfig): Promise<InlineConfig> => {
   const root = getAppRoot()
-  debug('app root: %s', root)
+  if (!fs.existsSync(root)) {
+    throw new Error(`app root does not exist: ${root}`)
+  }
+  logDebug(`app root: ${root}`)
 
   return Promise.resolve({
     ...viteConfig,
     configFile: false,
     root,
-    css: {
-      postcss: process.cwd()
-    },
     envDir: process.cwd(),
     resolve: {
       alias: {
@@ -33,11 +33,20 @@ export const viteConfig = async (viteConfig?: InlineConfig): Promise<InlineConfi
         '@likec4/diagrams': resolve(__dirname, '../../../diagrams/src')
       }
     },
-    logLevel: 'info',
+    customLogger: logger,
     clearScreen: false,
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-inspector']
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-inspector',
+        'konva',
+        '@react-spring/konva',
+        'react-konva'
+      ]
     },
-    plugins: [react(), likeC4VitePlugin()]
+    plugins: [react({}), likec4Plugin({ workspace: process.cwd() })]
   })
 }

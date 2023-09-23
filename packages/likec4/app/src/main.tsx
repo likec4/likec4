@@ -1,12 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { NextUIProvider } from '@nextui-org/react'
+import { Theme, ThemePanel } from '@radix-ui/themes'
 import App from './App'
+import '@radix-ui/themes/styles.css'
 
 ReactDOM.createRoot(document.getElementById('like4-root')!).render(
   <React.StrictMode>
-    <NextUIProvider className='likec4-wrapper'>
+    <Theme panelBackground='translucent' appearance='dark'>
       <App />
-    </NextUIProvider>
+      <ThemePanel />
+    </Theme>
   </React.StrictMode>
 )

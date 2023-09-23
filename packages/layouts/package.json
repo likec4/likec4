@@ -56,7 +56,7 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.4"
+    "vitest": "^0.34.5"
   },
   "packageManager": "yarn@3.6.3"
 }

@@ -85,20 +85,12 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
         scaleX: isCompound(node) ? 0.85 : 0.6,
         scaleY: isCompound(node) ? 0.85 : 0.6
       }
-      // return [{
-      //   ...defaultNodeSprings(node),
-      //   opacity: 0,
-      //   scaleX: isCompound(node) ? 0.85 : 0.6,
-      //   scaleY: isCompound(node) ? 0.85 : 0.6
-      // }, {
-      //   opacity: 0.4
-      // }]
     }) as unknown as NodeSprings,
     enter: node => {
       const isReplacing = prevNodes.has(node.id)
       return {
         ...defaultNodeSprings(node),
-        delay: isReplacing ? 0 : 70
+        delay: isReplacing ? 50 : 70
       }
     },
     // update: nodeSprings(),
@@ -114,11 +106,9 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
       const replacedWith = diagram.nodes.find(n => n.id === node.id)
       if (replacedWith && keyOf(node) !== keyOf(replacedWith)) {
         return {
-          ...defaultNodeSprings(replacedWith),
           opacity: 0,
-          config: {
-            duration: 50
-          }
+          delay: 50,
+          immediate: true
         }
       }
       return {

@@ -1,0 +1,29 @@
+model {
+
+  premium = actor 'Premium Customer' {
+    description '
+      The customer of Cloud system
+      with Premium subscription
+    '
+    style {
+      color indigo
+    }
+  }
+  premium -> cloud.ui.dashboard
+}
+
+views {
+  view premium of premium {
+    include
+      *,
+   //   cloud,
+      premium -> cloud.ui.*
+  }
+
+  view pr111e of premium {
+    include
+      *,
+      cloud,
+      premium -> cloud.ui.*
+  }
+}

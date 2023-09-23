@@ -8,14 +8,14 @@
     "outDir": "dist",
     "noEmit": true,
     "allowJs": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     /* Linting */
     "checkJs": true,
     "strict": true,
@@ -29,24 +29,20 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
     "baseUrl": ".",
-
     "paths": {
+      "@/*": ["./src/*"],
       "@likec4/language-server": ["../language-server/src"]
     }
   },
-  "include": ["src", "tailwind.config.js"],
-  "exclude": ["src/app/src/**/*"],
+  "include": ["src", "app"],
+  "exclude": ["app/src/**/*"],
   "references": [
     {
       "path": "../core"
     },
     {
       "path": "../layouts"
-    },
-    {
-      "path": "../language-server"
     }
   ]
 }

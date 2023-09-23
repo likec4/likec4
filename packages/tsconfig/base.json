@@ -7,6 +7,7 @@
     "target": "ES2022",
     "moduleResolution": "bundler",
     "declaration": true,
+    "resolvePackageJsonExports": true,
 
     "strict": true,
     "allowUnusedLabels": false,

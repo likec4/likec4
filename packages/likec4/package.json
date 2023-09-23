@@ -26,27 +26,38 @@
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist",
-    "dev:serve": "tsx src/cli/cli-serve.ts"
+    "dev:serve": "tsx watch src/cli/serve.ts"
   },
   "type": "module",
+  "exports": "./src/index.ts",
   "dependencies": {
-    "@likec4/diagrams": "workspace:*",
     "@likec4/core": "workspace:*",
+    "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@nanostores/logger": "^0.2.3",
+    "@nanostores/react": "^0.7.1",
+    "@nanostores/router": "^0.11.0",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/themes": "^2.0.0-rc.3",
+    "@react-hookz/web": "^23.1.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "boxen": "^7.1.1",
-    "debug": "^4.3.4",
+    "execa": "^8.0.1",
     "get-port": "^7.0.0",
-    "vite": "^4.4.9"
+    "kleur": "^4.1.5",
+    "nanostores": "^0.9.3",
+    "rambdax": "^9.1.1",
+    "vite": "^4.4.9",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@nextui-org/react": "^2.1.13",
-    "@types/debug": "^4",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@types/yargs": "^17",
     "framer-motion": "^10.16.4",
     "postcss": "^8.4.29",
     "react": "^18.2.0",
@@ -55,7 +66,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^3.12.10",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.4"
+    "vitest": "^0.34.5"
   },
   "peerDependencies": {
     "react": "^18.2.0",

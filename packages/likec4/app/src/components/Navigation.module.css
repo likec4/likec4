@@ -1,0 +1,38 @@
+.navigation {
+  backdrop-filter: blur(12px);
+
+  & > div {
+    position: relative;
+    z-index: 2;
+  }
+
+  &::before {
+    transition: all 0.26s ease-in-out;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: var(--accent-3);
+    opacity: 0;
+    z-index: 1;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    &::before {
+      opacity: 0.7;
+      visibility: visible;
+    }
+  }
+/*
+  &:hover {
+
+  } */
+
+  &[data-opened="true"] {
+    width: 300px;
+  }
+}

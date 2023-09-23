@@ -1,4 +1,4 @@
-import { Utils } from 'vscode-uri'
+import * as vscodeUri from 'vscode-uri'
 import type { ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -34,11 +34,11 @@ export function registerValidationChecks(services: LikeC4Services) {
       const message = [`[DocumentBuilder.onUpdate]`]
       if (changed.length > 0) {
         message.push(` changed:`)
-        changed.forEach(u => message.push(`  - ${Utils.basename(u)}`))
+        changed.forEach(u => message.push(`  - ${vscodeUri.Utils.basename(u)}`))
       }
       if (deleted.length > 0) {
         message.push(` deleted:`)
-        deleted.forEach(u => message.push(`  - ${Utils.basename(u)}`))
+        deleted.forEach(u => message.push(`  - ${vscodeUri.Utils.basename(u)}`))
       }
       logger.debug(message.join('\n'))
       for (const uri of deleted) {

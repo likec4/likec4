@@ -2,11 +2,13 @@
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "declarationMap": true,
-    "composite": true
+    "composite": true,
+    "baseUrl": "."
   },
-  "include": ["./src/"],
+  "include": ["src"],
   "references": [
     {
       "path": "../core"

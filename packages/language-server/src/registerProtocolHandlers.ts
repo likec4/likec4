@@ -1,9 +1,9 @@
-import { URI } from 'vscode-uri'
 import type { LikeC4Services } from './module'
 import { logger, logError } from './logger'
 import { Rpc } from './protocol'
 import { nonexhaustive } from '@likec4/core'
 import { isLikeC4LangiumDocument } from './ast'
+import { URI } from 'langium'
 
 export function registerProtocolHandlers(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
