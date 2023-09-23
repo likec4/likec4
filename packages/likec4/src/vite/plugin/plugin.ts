@@ -1,6 +1,6 @@
 import type { Logger, Plugin, ResolvedConfig } from 'vite'
 import { LanguageServices } from './language-services'
-import { debounce } from 'rambdax'
+import { PluginHookUtils } from 'vite'
 
 export type LikeC4PluginOptions = {
   /**
@@ -54,33 +54,46 @@ export function likec4Plugin(opts: LikeC4PluginOptions = {}): Plugin {
     },
 
     configureServer(server) {
-      const triggerHMR = debounce((_ = '') => {
+      const triggerHMR = () => {
         const md = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (md) {
           ctx.logger.info('triggerHMR')
           void server.reloadModule(md)
         } else {
-          ctx.logger.warnOnce('LikeC4 HMR is not available because the module has not been loaded yet.')
+          ctx.logger.warnOnce(
+            'LikeC4 HMR is not available because the module has not been loaded yet.'
+          )
         }
-      }, 300)
+      }
+
+      let debounced: NodeJS.Timeout
+
+      const handleUpdate = (task: Promise<{ isSuccess: boolean }>) => {
+        let isSuccess = false
+        clearTimeout(debounced)
+        debounced = setTimeout(() => {
+          isSuccess && triggerHMR()
+        }, 300)
+        task.then(
+          result => (isSuccess = result.isSuccess),
+          () => (isSuccess = false)
+        )
+      }
 
       server.watcher
         .on('add', path => {
           if (isTarget(path)) {
-            ctx.likec4.watcher.changed(path)
-            triggerHMR(undefined)
+            handleUpdate(ctx.likec4.watcher.onUpdate({ changed: path }))
           }
         })
         .on('change', path => {
           if (isTarget(path)) {
-            ctx.likec4.watcher.changed(path)
-            triggerHMR(undefined)
+            handleUpdate(ctx.likec4.watcher.onUpdate({ changed: path }))
           }
         })
         .on('unlink', path => {
           if (isTarget(path)) {
-            ctx.likec4.watcher.deleted(path)
-            triggerHMR(undefined)
+            handleUpdate(ctx.likec4.watcher.onUpdate({ removed: path }))
           }
         })
     }

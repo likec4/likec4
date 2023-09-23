@@ -32,10 +32,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "~/*": ["./app/src/*"],
       "@likec4/language-server": ["../language-server/src"]
     }
   },
-  "include": ["src", "app"],
+  "include": ["src", "app", "*.config.ts", "postcss.config.mts"],
   "exclude": ["app/src/**/*"],
   "references": [
     {

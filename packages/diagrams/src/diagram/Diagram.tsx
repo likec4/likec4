@@ -73,6 +73,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const containerRef = useRef<HTMLDivElement | null>(null)
     const stageRef = useHookableRef<Konva.Stage | null>(null, value => {
       containerRef.current = value?.container() ?? null
+      if (containerRef.current) {
+        containerRef.current.style.touchAction = 'none'
+      }
       return value
     })
 
@@ -342,7 +345,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
-        <Layer name='top'>{/* <HoveredNode diagram={diagram} theme={theme} onNodeClick={onNodeClick} /> */}</Layer>
+        <Layer name='top'>
+          {/* <HoveredNode diagram={diagram} theme={theme} onNodeClick={onNodeClick} /> */}
+        </Layer>
       </AnimatedStage>
     )
   }

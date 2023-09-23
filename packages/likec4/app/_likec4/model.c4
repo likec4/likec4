@@ -72,7 +72,7 @@ views {
   }
 
   view customer of customer {
-    title "--Overview Customer"
+    title "Overview Customer"
     include *,
             -> ui.*,
             -> backend

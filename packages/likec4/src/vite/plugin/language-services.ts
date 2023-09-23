@@ -1,6 +1,9 @@
 import type { ComputedView, DiagramView, LikeC4Model } from '@likec4/core'
 import { generateViewsDataJs } from '@likec4/generators'
-import { createLanguageServices as createLangium, logger as lspLogger } from '@likec4/language-server'
+import {
+  createLanguageServices as createLangium,
+  logger as lspLogger
+} from '@likec4/language-server'
 import { DotLayouter } from '@likec4/layouts'
 import k from 'kleur'
 import { DocumentState, MutexLock, URI } from 'langium'
@@ -37,7 +40,9 @@ function createLanguageServices(logger: Logger) {
         errors.forEach(validationError => {
           const errorRange = doc.textDocument.getText(validationError.range)
           const line = validationError.range.start.line
-          logger.error(['   ' + k.dim(`Line ${line}:`) + validationError.message, errorRange].join('\n'))
+          logger.error(
+            ['   ' + k.dim(`Line ${line}:`) + validationError.message, errorRange].join('\n')
+          )
         })
       }
     }
@@ -112,18 +117,40 @@ function createLanguageServices(logger: Logger) {
     return generateViewsDataJs([])
   }
 
-  const mutex = new MutexLock()
   let _generateCodeCache: Promise<string> | undefined
+  const mutex = new MutexLock()
+  // async function updateDocuments({
+  //   changed = [],
+  //   removed = []
+  // }: { changed?: string[]; removed?: string[] }) {
+  //   let isSuccess = true
+  //   await mutex.lock(async token => {
+  //     await DocumentBuilder.update(changed.map(URI.file), removed.map(URI.file), token)
+  //     isSuccess =  LangiumDocuments.all.some(doc => doc.diagnostics?.some(e => e.severity === 1))
+  //   })
+  //   if (isSuccess) {
+  //     _generateCodeCache = undefined
+  //   }
+  //   return { isSuccess }
+  // }
+
   return {
     init,
     watcher: {
-      changed(path: string) {
-        _generateCodeCache = undefined
-        void mutex.lock(token => DocumentBuilder.update([URI.file(path)], [], token))
-      },
-      deleted(path: string) {
-        _generateCodeCache = undefined
-        void mutex.lock(token => DocumentBuilder.update([], [URI.file(path)], token))
+      async onUpdate({ changed, removed }: { changed?: string; removed?: string }) {
+        let isSuccess = true
+        await mutex.lock(async token => {
+          await DocumentBuilder.update(
+            changed ? [URI.file(changed)] : [],
+            removed ? [URI.file(removed)] : [],
+            token
+          )
+          isSuccess = LangiumDocuments.all.some(doc => doc.diagnostics?.some(e => e.severity === 1))
+        })
+        if (isSuccess) {
+          _generateCodeCache = undefined
+        }
+        return { isSuccess }
       }
     } as const,
     generateCode() {

@@ -60,6 +60,8 @@
     "@types/yargs": "^17",
     "framer-motion": "^10.16.4",
     "postcss": "^8.4.29",
+    "postcss-nesting": "^12.0.1",
+    "radix-themes-tw": "^0.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.3.3",
