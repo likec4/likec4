@@ -44,6 +44,10 @@ export interface BasicElementView {
   readonly tags: NonEmptyArray<Tag> | null
   readonly links: NonEmptyArray<string> | null
   readonly rules: ViewRule[]
+  /**
+   * URI to the source file of this view.
+   */
+  readonly docUri?: string
 }
 export interface StrictElementView extends BasicElementView {
   readonly viewOf: Fqn

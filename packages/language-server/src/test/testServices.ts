@@ -11,18 +11,24 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   const documentBuilder = services.shared.workspace.DocumentBuilder
   const modelBuilder = services.likec4.ModelBuilder
   const workspaceUri = URI.parse(workspace)
-  const initPromise = services.shared.workspace.WorkspaceManager.initializeWorkspace([
-    {
-      name: 'test',
-      uri: workspaceUri.toString()
-    }
-  ])
+  const workspaceFolder = {
+    name: 'test',
+    uri: workspaceUri.toString()
+  }
+  const initPromise = services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+
+  // Workaround to set protected folders property
+  void initPromise.finally(() => {
+    Object.assign(services.shared.workspace.WorkspaceManager, {
+      folders: [workspaceFolder]
+    })
+  })
 
   let documentIndex = 1
 
   const parse = async (input: string, uri?: string) => {
     await initPromise
-    const docUri = Utils.joinPath(workspaceUri, '/src/', uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`)
+    const docUri = Utils.resolvePath(workspaceUri, './src/', uri ?? `${documentIndex++}${metaData.fileExtensions[0]}`)
     const document = services.shared.workspace.LangiumDocumentFactory.fromString(stripIndent(input), docUri)
     langiumDocuments.addDocument(document)
     await documentBuilder.build([document], { validation: false })

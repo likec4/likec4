@@ -198,6 +198,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "frontend": {
       "autoLayout": "TB",
       "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "system.frontend:system.backend",
@@ -297,6 +298,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "index": {
       "autoLayout": "TB",
       "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "client:system",
@@ -365,6 +367,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     "v1": {
       "autoLayout": "LR",
       "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "system.frontend:system.backend.api",

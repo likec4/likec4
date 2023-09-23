@@ -8,9 +8,11 @@ import {
   type c4,
   assignNavigateTo,
   type StrictElementView,
-  isStrictElementView
+  isStrictElementView,
+  invariant
 } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments } from 'langium'
+import { UriUtils, type URI } from 'langium'
 import * as R from 'remeda'
 import type {
   ParsedAstElement,
@@ -24,8 +26,10 @@ import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
 import { printDocs } from '../utils'
+import { LikeC4WorkspaceManager } from '../shared'
+import { DocumentSelector } from 'vscode-languageserver-protocol'
 
-function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
+function buildModel(docs: ParsedLikeC4LangiumDocument[], workspaceDir?: URI | string) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {}
   }
@@ -96,28 +100,31 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     R.mapToObj(r => [r.id, r])
   )
 
-  const toElementView = (view: ParsedAstElementView): c4.ElementView | null => {
-    // eslint-disable-next-line prefer-const
-    let { astPath, rules, title, description, tags, links, ...model } = view
-    if (!title && 'viewOf' in view) {
-      title = elements[view.viewOf]?.title
-    }
-    if (!title && view.id === 'index') {
-      title = 'Landscape view'
-    }
-    return {
-      ...model,
-      title: title ?? null,
-      description: description ?? null,
-      tags: tags ?? null,
-      links: links ?? null,
-      rules
+  const toElementView = (doc: LangiumDocument) => {
+    const docUri = doc.uri.toString()
+    return (view: ParsedAstElementView): c4.ElementView | null => {
+      // eslint-disable-next-line prefer-const
+      let { astPath, rules, title, description, tags, links, ...model } = view
+      if (!title && 'viewOf' in view) {
+        title = elements[view.viewOf]?.title
+      }
+      if (!title && view.id === 'index') {
+        title = 'Landscape view'
+      }
+      return {
+        ...model,
+        title: title ?? null,
+        description: description ?? null,
+        tags: tags ?? null,
+        links: links ?? null,
+        docUri,
+        rules
+      }
     }
   }
 
   const views = R.pipe(
-    R.flatMap(docs, d => d.c4Views),
-    R.map(toElementView),
+    R.flatMap(docs, d => R.map(d.c4Views, toElementView(d))),
     R.compact,
     R.mapToObj(v => [v.id, v])
   )
@@ -151,12 +158,15 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
 
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
+  private workspaceManager: LikeC4WorkspaceManager
 
   private readonly cachedModel: {
     last?: c4.LikeC4RawModel | null
   } = {}
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
+    invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
+    this.workspaceManager = services.shared.workspace.WorkspaceManager
 
     services.likec4.ModelParser.onParsed(() => {
       this.cleanCache()

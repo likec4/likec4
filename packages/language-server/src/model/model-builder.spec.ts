@@ -307,7 +307,7 @@ describe('LikeC4ModelBuilder', () => {
 
   it.concurrent('builds model and views with links', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { diagnostics, document } = await validate(`
     specification {
       element component
       tag v2
@@ -368,14 +368,16 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Index',
         description: null,
         tags: null,
-        links: null
+        links: null,
+        docUri: document.uri.toString()
       },
       withLinks: {
         id: 'withLinks',
         title: null,
         description: 'View with links',
         tags: ['v2'],
-        links: ['https://example1.com', 'https://example2.com']
+        links: ['https://example1.com', 'https://example2.com'],
+        docUri: 'file:///test/workspace/src/1.c4'
       }
     })
   })
