@@ -43,9 +43,6 @@ model {
 
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
-        style {
-          icon https://upload.wikimedia.org/wikipedia/commons/1/17/GraphQL_Logo.svg
-        }
       }
       cms = app 'CMS' {
         description 'The CMS of the cloud system'

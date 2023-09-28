@@ -1,15 +1,15 @@
 import type { Controller, GoalValues, SpringValues } from '@react-spring/konva'
-import type { DiagramNode } from './types'
 import { useSpring } from '@react-spring/konva'
-import { defaultTheme as theme } from '@likec4/core'
 import { scale, toHex } from 'khroma'
 import { memoize } from 'rambdax'
+import { useCallback } from 'react'
+import type { DiagramNode, DiagramTheme } from './types'
 
-const compoundColor = memoize((color: string, level: number) =>
+const compoundColor = memoize((color: string, depth: number) =>
   toHex(
     scale(color, {
-      l: level > 0 ? -45 : -55,
-      s: level > 0 ? -30 : -35
+      l: -35 - 5 * depth,
+      s: -15 - 5 * depth
     })
   )
 )
@@ -18,7 +18,7 @@ const isCompound = (node: DiagramNode) => {
   return node.children.length > 0
 }
 
-export function defaultNodeSprings(node: DiagramNode) {
+function nodeSprings(theme: DiagramTheme, node: DiagramNode) {
   const {
     position: [x, y],
     size: { width, height },
@@ -33,15 +33,15 @@ export function defaultNodeSprings(node: DiagramNode) {
     scaleY: 1,
     x: x + offsetX,
     y: y + offsetY,
-    fill: isCompound(node) ? compoundColor(colors.fill, node.level) : colors.fill,
-    stroke: isCompound(node) ? compoundColor(colors.stroke, node.level) : colors.stroke,
+    fill: isCompound(node) ? compoundColor(colors.fill, node.depth ?? 1) : colors.fill,
+    stroke: isCompound(node) ? compoundColor(colors.stroke, node.depth ?? 1) : colors.stroke,
     width,
     height,
     offsetX,
     offsetY
   }
 }
-export interface NodeSprings extends ReturnType<typeof defaultNodeSprings> {
+export interface NodeSprings extends ReturnType<typeof nodeSprings> {
   // Make as interface for better type inference
 }
 export type NodeSpringValues = SpringValues<NodeSprings>
@@ -49,32 +49,24 @@ export type NodeSpringsFn = (node: DiagramNode, index: number) => GoalValues<Nod
 
 export type NodeSpringsCtrl = Controller<NodeSprings>
 
-export function nodeSprings(overrides?: { opacity?: number; scale?: number }): NodeSpringsFn {
-  if (overrides == null) {
-    return defaultNodeSprings
-  }
-  const { opacity, scale } = overrides
-  return (node: DiagramNode) => {
-    const defaults = defaultNodeSprings(node)
-    return {
-      ...defaults,
-      opacity: opacity ?? defaults.opacity,
-      scaleX: scale ?? defaults.scaleX,
-      scaleY: scale ?? defaults.scaleY
-    }
-  }
+export const useNodeSpringsFn = (theme: DiagramTheme) => {
+  return useCallback((node: DiagramNode) => nodeSprings(theme, node), [theme])
 }
 
-export const useShadowSprings = (isHovered = false, springs: NodeSpringValues) => {
+export const useShadowSprings = (
+  isHovered = false,
+  theme: DiagramTheme,
+  springs: NodeSpringValues
+) => {
   const [values] = useSpring(
     {
-      shadowBlur: isHovered ? 22 : 16,
-      shadowOpacity: isHovered ? 0.45 : 0.25,
+      shadowBlur: isHovered ? 30 : 12,
+      shadowOpacity: isHovered ? 0.5 : 0.35,
       shadowOffsetX: 0,
-      shadowOffsetY: isHovered ? 16 : 10,
+      shadowOffsetY: isHovered ? 16 : 4,
       shadowColor: theme.shadow
     },
-    [isHovered]
+    [isHovered, theme]
   )
   return {
     shadowEnabled: springs.opacity.to(v => v > 0.8),

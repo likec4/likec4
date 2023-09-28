@@ -1,9 +1,11 @@
+import { useMemo } from 'react'
 import { Group } from '../konva'
 import { EdgeShape } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
 import type { LikeC4Theme, DiagramView, OnEdgeClick } from './types'
 import { useTransition } from '@react-spring/konva'
+import { scale, toHex } from 'khroma'
 
 type EdgesProps = {
   animate: boolean
@@ -12,29 +14,67 @@ type EdgesProps = {
   onEdgeClick?: OnEdgeClick | undefined
 }
 
+const edgeColors = (
+  { relation: { lineColor, labelColor } }: LikeC4Theme,
+  isHovered = false
+): {
+  lineColor: string
+  labelColor: string
+} => {
+  if (Array.isArray(lineColor)) {
+    lineColor = isHovered ? lineColor[1].onHover : lineColor[0]
+  } else if (isHovered) {
+    lineColor = toHex(
+      scale(lineColor, {
+        l: 35,
+        s: -5
+      })
+    ) as `#${string}`
+  }
+  if (Array.isArray(labelColor)) {
+    labelColor = isHovered ? labelColor[1].onHover : labelColor[0]
+  } else if (isHovered) {
+    labelColor = toHex(
+      scale(labelColor, {
+        l: 50
+      })
+    ) as `#${string}`
+  }
+  return {
+    lineColor,
+    labelColor
+  }
+}
+
 export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
   const hoveredEdgeId = useHoveredEdgeId()
   const setHoveredEdge = useSetHoveredEdge()
+
+  const colors = useMemo(
+    () => ({
+      base: edgeColors(theme),
+      onHover: edgeColors(theme, true)
+    }),
+    [theme]
+  )
+
   const edgeTransitions = useTransition(diagram.edges, {
     initial: {
       opacity: 1,
       lineWidth: 2,
-      lineColor: theme.relation.lineColor as string,
-      labelColor: theme.relation.labelColor as string
+      ...colors.base
     },
     from: {
       opacity: 0.15,
       lineWidth: 2,
-      lineColor: theme.relation.lineColor as string,
-      labelColor: theme.relation.labelColor as string
+      ...colors.base
     },
     update: edge => {
       const isHovered = hoveredEdgeId === edge.id
       return {
         opacity: 1,
         lineWidth: isHovered ? 3 : 2,
-        lineColor: (isHovered ? '#F8F3D4' : theme.relation.lineColor) as string,
-        labelColor: (isHovered ? '#F8F3D4' : theme.relation.labelColor) as string
+        ...(isHovered ? colors.onHover : colors.base)
       }
     },
     enter: {
@@ -43,8 +83,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     leave: {
       opacity: 0.05,
       lineWidth: 2,
-      lineColor: theme.relation.lineColor as string,
-      labelColor: theme.relation.labelColor as string
+      ...colors.base
     },
     expires: true,
     exitBeforeEnter: true,
@@ -79,7 +118,12 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
         }
       })}
     >
-      <EdgeShape edge={edge} theme={theme} springs={springs} />
+      <EdgeShape
+        edge={edge}
+        isHovered={hoveredEdgeId === edge.id}
+        theme={theme}
+        springs={springs}
+      />
     </Group>
   ))
 }

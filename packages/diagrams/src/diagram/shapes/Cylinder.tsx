@@ -1,6 +1,6 @@
 import { useSpring } from '@react-spring/konva'
 import { AnimatedEllipse, AnimatedPath } from '../../konva'
-import { NodeLabels } from './Node-Labels'
+import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
@@ -43,7 +43,7 @@ export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProp
   return (
     <>
       <AnimatedPath
-        {...useShadowSprings(isHovered, springs)}
+        {...useShadowSprings(isHovered, theme, springs)}
         data={path}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}

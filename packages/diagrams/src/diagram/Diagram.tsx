@@ -198,16 +198,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
 
     // Recommended by @use-gesture/react
     useEffect(() => {
+      if (!zoomable) {
+        return
+      }
       const handler = (e: Event) => e.preventDefault()
       document.addEventListener('gesturestart', handler)
       document.addEventListener('gesturechange', handler)
-      document.addEventListener('gestureend', handler)
       return () => {
         document.removeEventListener('gesturestart', handler)
         document.removeEventListener('gesturechange', handler)
-        document.removeEventListener('gestureend', handler)
       }
-    }, [])
+    }, [zoomable])
 
     useGesture(
       {
@@ -236,7 +237,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             })
           }
         },
-        onPinch: ({ memo, first, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
+        onPinch: ({ memo, first, last, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
           if (first) {
             const stage = nonNullable(stageRef.current)
             const { width, height, x, y } = stage.container().getBoundingClientRect()
@@ -253,7 +254,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               y,
               scale
             },
-            immediate
+            immediate: immediate || !last
           })
 
           return memo
@@ -345,9 +346,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
-        <Layer name='top'>
-          {/* <HoveredNode diagram={diagram} theme={theme} onNodeClick={onNodeClick} /> */}
-        </Layer>
+        <Layer name='top'></Layer>
       </AnimatedStage>
     )
   }

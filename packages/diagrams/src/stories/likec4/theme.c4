@@ -33,6 +33,7 @@ specification {
       shape browser
     }
   }
+  element compound
 }
 model {
 
@@ -93,6 +94,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor blue {
       title "BLUE"
@@ -145,6 +148,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor secondary {
       title "SECONDARY"
@@ -197,6 +202,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor sky {
       title "SKY"
@@ -249,6 +256,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor muted {
       title "MUTED"
@@ -301,6 +310,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor slate {
       title "SLATE"
@@ -353,6 +364,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor gray {
       title "GRAY"
@@ -405,6 +418,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor red {
       title "RED"
@@ -457,6 +472,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor green {
       title "GREEN"
@@ -509,6 +526,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor amber {
       title "AMBER"
@@ -561,6 +580,8 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
     themecolor indigo {
       title "INDIGO"
@@ -613,8 +634,25 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }
   }
+
+  themecolor compoundtest {
+    compound1 = compound 'Level 1' {
+      compound2 = compound 'Level 2' {
+        compound3 = compound 'Level 3' {
+          compound4 = compound 'Level 4' {
+            compound5 = compound 'Level 5' {
+              compound6 = compound 'Level 6'
+            }
+          }
+        }
+      }
+    }
+  }
+  colors -> compound1
 
   // Col1
   primary -> secondary
@@ -638,62 +676,118 @@ views {
   view themecolors of colors {
     title "Theme Colors"
     include *
+    exclude compoundtest
   }
 
 
   view themecolor_primary of primary {
     title "Theme Color: primary"
     include colors, primary, primary.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color primary
+    }
   }
 
   view themecolor_blue of blue {
     title "Theme Color: blue"
     include colors, blue, blue.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color blue
+    }
   }
 
   view themecolor_secondary of secondary {
     title "Theme Color: secondary"
     include colors, secondary, secondary.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color secondary
+    }
   }
 
   view themecolor_sky of sky {
     title "Theme Color: sky"
     include colors, sky, sky.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color sky
+    }
   }
 
   view themecolor_muted of muted {
     title "Theme Color: muted"
     include colors, muted, muted.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color muted
+    }
   }
 
   view themecolor_slate of slate {
     title "Theme Color: slate"
     include colors, slate, slate.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color slate
+    }
   }
 
   view themecolor_gray of gray {
     title "Theme Color: gray"
     include colors, gray, gray.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color gray
+    }
   }
 
   view themecolor_red of red {
     title "Theme Color: red"
     include colors, red, red.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color red
+    }
   }
 
   view themecolor_green of green {
     title "Theme Color: green"
     include colors, green, green.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color green
+    }
   }
 
   view themecolor_amber of amber {
     title "Theme Color: amber"
     include colors, amber, amber.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color amber
+    }
   }
 
   view themecolor_indigo of indigo {
     title "Theme Color: indigo"
     include colors, indigo, indigo.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color indigo
+    }
   }
 
 

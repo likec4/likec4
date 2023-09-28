@@ -16,11 +16,11 @@ export function CompoundShape({ node, theme, springs }: CompoundProps) {
       <AnimatedRect
         cornerRadius={4}
         shadowColor={theme.shadow}
-        shadowBlur={12}
-        shadowOpacity={0.2}
+        shadowBlur={node.level > 0 ? 20 : 10}
+        shadowOpacity={node.level > 0 ? 0.35 : 0.8}
         shadowOffsetX={0}
-        shadowOffsetY={8}
-        shadowEnabled={!!node.parent}
+        shadowOffsetY={4}
+        shadowEnabled={springs.opacity.to(v => v > 0.7)}
         width={springs.width}
         height={springs.height}
         fill={springs.fill}
@@ -35,7 +35,7 @@ export function CompoundShape({ node, theme, springs }: CompoundProps) {
           offsetX={4}
           offsetY={4}
           width={springs.width.to(v => v - x - 4)}
-          fill={'#AEAEAE'}
+          fill={'#BABABA'}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
