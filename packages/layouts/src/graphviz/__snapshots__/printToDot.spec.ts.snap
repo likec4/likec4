@@ -20,8 +20,8 @@ exports[`printToDot > computedAmazonView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -99,8 +99,8 @@ exports[`printToDot > computedCloud3levels 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -238,8 +238,8 @@ exports[`printToDot > computedCloudView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -339,8 +339,8 @@ exports[`printToDot > computedIndexView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";

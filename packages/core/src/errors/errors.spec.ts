@@ -10,7 +10,7 @@ import {
   NullableError,
   InvalidArgError,
   invariant
-} from '.'
+} from './index'
 
 describe('errors', () => {
   describe('normalizeError', () => {
@@ -36,7 +36,10 @@ describe('errors', () => {
         message: 'original test'
       })
       expect(error).to.have.property('cause').that.eq(cause)
-      expect(error).to.have.property('stack').that.is.a('string').and.includes('UnknownError: original test')
+      expect(error)
+        .to.have.property('stack')
+        .that.is.a('string')
+        .and.includes('UnknownError: original test')
     })
 
     it('should wrap a string', () => {
