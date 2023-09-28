@@ -1,18 +1,17 @@
 import {
   ModelIndex,
+  assignNavigateTo,
   compareByFqnHierarchically,
+  computeView,
+  invariant,
+  isStrictElementView,
   parentFqn,
   resolveRulesExtendedViews,
-  computeView,
-  type ViewID,
-  type c4,
-  assignNavigateTo,
   type StrictElementView,
-  isStrictElementView,
-  invariant
+  type ViewID,
+  type c4
 } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments } from 'langium'
-import { UriUtils, type URI } from 'langium'
+import type { LangiumDocument, LangiumDocuments, URI } from 'langium'
 import * as R from 'remeda'
 import type {
   ParsedAstElement,
@@ -25,20 +24,29 @@ import { isValidLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { Rpc } from '../protocol'
-import { printDocs } from '../utils'
 import { LikeC4WorkspaceManager } from '../shared'
-import { DocumentSelector } from 'vscode-languageserver-protocol'
+import { printDocs } from '../utils'
 
-function buildModel(docs: ParsedLikeC4LangiumDocument[], workspaceDir?: URI | string) {
+function isRelativeLink(link: string) {
+  return link.startsWith('.') || link.startsWith('/')
+}
+
+function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {}
   }
-  R.forEach(R.map(docs, R.prop('c4Specification')), spec => Object.assign(c4Specification.kinds, spec.kinds))
+  R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
+    Object.assign(c4Specification.kinds, spec.kinds)
+  )
+
+  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
+    const base = new URL(doc.uri.toString())
+    return links.map(l =>
+      isRelativeLink(l) ? new URL(l, base).toString() : l
+    ) as c4.NonEmptyArray<string>
+  }
 
   const toModelElement = (doc: LangiumDocument) => {
-    const base = new URL(doc.uri.toString())
-    const resolveLinks = (links: c4.NonEmptyArray<string>) =>
-      links.map((l: string) => new URL(l, base).toString()) as c4.NonEmptyArray<string>
     return ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
       try {
         const kind = c4Specification.kinds[parsed.kind]
@@ -48,7 +56,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[], workspaceDir?: URI | st
             description: null,
             technology: null,
             tags: tags ?? null,
-            links: links ? resolveLinks(links) : null,
+            links: links ? resolveLinks(doc, links) : null,
             ...parsed
           }
         }
@@ -82,7 +90,12 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[], workspaceDir?: URI | st
     )
   )
 
-  const toModelRelation = ({ astPath, source, target, ...model }: ParsedAstRelation): c4.Relation | null => {
+  const toModelRelation = ({
+    astPath,
+    source,
+    target,
+    ...model
+  }: ParsedAstRelation): c4.Relation | null => {
     if (source in elements && target in elements) {
       return {
         source,
@@ -116,7 +129,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[], workspaceDir?: URI | st
         title: title ?? null,
         description: description ?? null,
         tags: tags ?? null,
-        links: links ?? null,
+        links: links ? resolveLinks(doc, links) : null,
         docUri,
         rules
       }

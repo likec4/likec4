@@ -336,7 +336,8 @@ describe('LikeC4ModelBuilder', () => {
         #v2
         description 'View with links'
         link https://example1.com
-        link https://example2.com
+        link https://example2.com/
+        link ./samefolder.html
         include *
       }
     }
@@ -358,7 +359,7 @@ describe('LikeC4ModelBuilder', () => {
           'file:///test/workspace/src/sub/folder.js#L1-2',
           'file:///test/workspace/dir/another.js',
           'file:///workspace-root',
-          'https://example1.com/'
+          'https://example1.com'
         ]
       }
     })
@@ -376,7 +377,11 @@ describe('LikeC4ModelBuilder', () => {
         title: null,
         description: 'View with links',
         tags: ['v2'],
-        links: ['https://example1.com', 'https://example2.com'],
+        links: [
+          'https://example1.com',
+          'https://example2.com/',
+          'file:///test/workspace/src/samefolder.html'
+        ],
         docUri: 'file:///test/workspace/src/1.c4'
       }
     })
@@ -396,6 +401,12 @@ describe('LikeC4ModelBuilder', () => {
           link /workspace-root
         }
       }
+      views {
+        view index {
+          link ./samefolder.html
+          include *
+        }
+      }
     `)
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
@@ -409,6 +420,10 @@ describe('LikeC4ModelBuilder', () => {
           'vscode-vfs://host/workspace-root'
         ]
       }
+    })
+    expect(model.views['index' as ViewID]).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/samefolder.html'],
+      docUri: 'vscode-vfs://host/virtual/src/1.c4'
     })
   })
 })
