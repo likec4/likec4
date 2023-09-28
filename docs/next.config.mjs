@@ -1,9 +1,8 @@
 // @ts-check
 import nextra from 'nextra'
-import { resolve, dirname } from 'path'
+import { resolve, dirname } from 'node:path'
 import { codeImport } from 'remark-code-import'
 import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
-
 
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
@@ -44,7 +43,7 @@ export default withNextra({
   trailingSlash: true,
   // modularizeImports: true,
   experimental: {
-    esmExternals: true,
+    esmExternals: true
     //serverComponentsExternalPackages: ['langium','konva']
     // swcPlugins: [['@swc-jotai/debug-label', {}]],
   },
