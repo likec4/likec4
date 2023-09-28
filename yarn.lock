@@ -7051,16 +7051,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-plugins-node-modules-polyfill@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.4.0"
+"esbuild-plugins-node-modules-polyfill@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "esbuild-plugins-node-modules-polyfill@npm:1.6.1"
   dependencies:
     "@jspm/core": ^2.0.1
     local-pkg: ^0.4.3
     resolve.exports: ^2.0.2
   peerDependencies:
     esbuild: ^0.14.0 || ^0.15.0 || ^0.16.0 || ^0.17.0 || ^0.18.0 || ^0.19.0
-  checksum: d8e30621676f096b8cec0bcf2579f65db011d051e9aea12ad93f2b3a9ef30f31d98d11b5cca03b9ad7161db90742e813f38191d3be0046a2ec58290f5df0b2d7
+  checksum: 5275f6515084f0f10f004e16c8a2f07fa02a85707ce7fe27f23365865b9541b0225a0b526b9b5f931667ac19070b8764cab8d6d3672bce6ddb154d807a10f61b
   languageName: node
   linkType: hard
 
@@ -9926,7 +9926,7 @@ __metadata:
     "@vscode/extension-telemetry": ^0.8.4
     "@vscode/vsce": ^2.21.0
     esbuild: ^0.19.3
-    esbuild-plugins-node-modules-polyfill: ^1.4.0
+    esbuild-plugins-node-modules-polyfill: ^1.6.1
     langium: ^2.0.2
     npm-run-all: ^4.1.5
     p-timeout: ^6.1.2
