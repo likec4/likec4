@@ -96,7 +96,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
     },
     // update: nodeSprings(),
     update: node => {
-      const scale = !isCompound(node) && hoveredNodeId === node.id ? 1.08 : 1
+      const scale = !isCompound(node) && hoveredNodeId === node.id && animate ? 1.08 : 1
       return {
         ...nodeSprings(node),
         scaleX: scale,
@@ -134,6 +134,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
   return nodeTransitions((_, node, { key, ctrl, expired }) => (
     <NodeSnape
       key={key}
+      animate={animate}
       node={node}
       theme={theme}
       ctrl={ctrl}
@@ -145,6 +146,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
 }
 
 type NodeShapeProps = {
+  animate: boolean
   node: DiagramNode
   theme: DiagramTheme
   ctrl: NodeSpringsCtrl
@@ -153,7 +155,15 @@ type NodeShapeProps = {
   onNodeClick?: OnNodeClick | undefined
 }
 
-const NodeSnape = ({ node, ctrl, theme, isHovered, expired, onNodeClick }: NodeShapeProps) => {
+const NodeSnape = ({
+  animate,
+  node,
+  ctrl,
+  theme,
+  isHovered,
+  expired,
+  onNodeClick
+}: NodeShapeProps) => {
   const setHoveredNode = useSetHoveredNode()
 
   const Shape = isCompound(node) ? CompoundShape : nodeShape(node)
@@ -167,7 +177,7 @@ const NodeSnape = ({ node, ctrl, theme, isHovered, expired, onNodeClick }: NodeS
         visible={expired !== true}
         onPointerEnter={e => {
           setHoveredNode(node)
-          onNodeClick && mousePointer(e)
+          onNodeClick && animate && mousePointer(e)
         }}
         onPointerLeave={e => {
           setHoveredNode(null)
