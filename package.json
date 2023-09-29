@@ -41,7 +41,7 @@
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "@vitest/ui": "^0.34.4",
+    "@vitest/ui": "^0.34.5",
     "eslint": "^8.49.0",
     "execa": "^8.0.1",
     "husky": "^8.0.3",
@@ -52,7 +52,7 @@
     "turbo": "^1.10.14",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vitest": "^0.34.4",
+    "vitest": "^0.34.5",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
