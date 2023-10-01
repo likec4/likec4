@@ -11,19 +11,27 @@ export class DotLayouter {
     Graphviz.unload()
   }
 
-  layout = async (computedView: ComputedView): Promise<DiagramView> => {
-    const graphviz = await this.load()
-    return dotLayoutFn(graphviz, computedView)
+  async layout(computedView: ComputedView): Promise<DiagramView> {
+    const graphviz = await Graphviz.load()
+    try {
+      return dotLayoutFn(graphviz, computedView)
+    } catch (err) {
+      // Attempt to recover from memory issues
+      Graphviz.unload()
+      await delay(10)
+      const graphviz = await Graphviz.load()
+      return dotLayoutFn(graphviz, computedView)
+    } finally {
+      Graphviz.unload()
+    }
   }
 
   /**
    * Workaround for some memory issues with Graphviz  WASM
    */
   async restart() {
-    this.#loadPromise = null
     Graphviz.unload()
-    await delay(100)
-    await this.load()
+    await delay(10 + Math.trunc(Math.random() * 300))
     return this
   }
 

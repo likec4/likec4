@@ -119,7 +119,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
     }
 
-    const toFitDiagram = () => toCenterOnRect(diagram.boundingBox)
+    const toFitDiagram = () =>
+      toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
 
     const [stageProps, stageSpringApi] = useSpring(() => ({
       from: initialPosition ?? toFitDiagram(),

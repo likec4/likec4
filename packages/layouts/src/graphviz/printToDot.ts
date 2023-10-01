@@ -18,7 +18,6 @@ import {
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import { pxToInch, pxToPoints } from './graphviz-utils'
 import type { DotSource } from './types'
-import { head } from 'rambdax'
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -53,14 +52,14 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   const G = digraph({
     [_.layout]: 'dot',
     [_.compound]: true,
-    [_.pad]: pxToInch(20),
+    [_.pad]: pxToInch(10),
     [_.rankdir]: autoLayout,
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(90),
-    [_.ranksep]: pxToInch(90)
+    [_.nodesep]: pxToInch(70),
+    [_.ranksep]: pxToInch(90),
     // [_.newrank]: true,
-    // [_.pack]: pxToPoints(30),
-    // [_.packmode]: packmode({autoLayout, nodes}),
+    [_.pack]: pxToPoints(20),
+    [_.packmode]: 'array_t'
   })
   G.attributes.graph.apply({
     [_.fontname]: 'Helvetica',
@@ -142,7 +141,11 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   /**
    * returns recursion depth
    */
-  const traverseClusters = (elementNode: ComputedNode, parent: GraphBaseModel, level = 0): number => {
+  const traverseClusters = (
+    elementNode: ComputedNode,
+    parent: GraphBaseModel,
+    level = 0
+  ): number => {
     if (!isCompound(elementNode)) {
       const node = nonNullable(graphvizNodes.get(elementNode.id), "graphviz node doesn't exist")
       parent.node(node.id)

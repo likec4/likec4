@@ -34,13 +34,6 @@ export interface DiagramEdge extends ComputedEdge {
 export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
   readonly nodes: DiagramNode[]
   readonly edges: DiagramEdge[]
-
   width: number
   height: number
-  boundingBox: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }
 }
