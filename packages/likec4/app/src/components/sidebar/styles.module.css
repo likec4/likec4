@@ -1,0 +1,85 @@
+.trigger {
+
+  cursor: pointer;
+
+  &::before {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0, 0.31, 0, 1.03);
+    transition-duration: 140ms;
+
+    position: absolute;
+    content: '';
+    inset: 0;
+    background: var(--gray-7);
+    opacity: 0;
+    z-index: 1;
+    /* visibility: hidden; */
+  }
+
+  &:hover::before {
+    visibility: visible;
+    opacity: 0.7;
+  }
+
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.navsidebar {
+  backdrop-filter: blur(6px);
+
+  &::before {
+    transition: all 0.26s ease-in-out;
+    position: absolute;
+    content: '';
+    inset: 0;
+    background: var(--gray-7);
+    opacity: 0.7;
+    z-index: 1;
+  }
+
+  & > div {
+    position: relative;
+    z-index: 2;
+  }
+
+  transition: transform 0.21s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-100%);
+
+  &[data-opened='true'] {
+    transform: translateX(0);
+  }
+}
+
+:global(.rt-variant-soft),
+:global(.rt-variant-solid) {
+  &.navitem {
+    @apply transition-colors;
+    /* color: var(--accent-10); */
+    /* background-color: transparent; */
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    /*
+  &:hover, &[data-current="true"] {
+    color: var(--accent-11);
+    background-color: var(--accent-a3);
+  } */
+
+    .icon {
+      visibility: hidden;
+      transform: translateX(-25%);
+      opacity: 0.7;
+    }
+
+    &:hover .icon {
+      visibility: visible;
+      transition: all 0.15s ease-out;
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}

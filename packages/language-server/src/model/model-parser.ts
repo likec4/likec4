@@ -1,10 +1,15 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { DocumentState, getDocument, interruptAndCheck } from 'langium'
+import { getDocument, interruptAndCheck } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
-import { Disposable, type CancellationToken } from 'vscode-languageserver-protocol'
-import type { LikeC4LangiumDocument, ParsedAstElement, ParsedAstElementView, ParsedAstRelation } from '../ast'
+import { type CancellationToken } from 'vscode-languageserver-protocol'
+import type {
+  LikeC4LangiumDocument,
+  ParsedAstElement,
+  ParsedAstElementView,
+  ParsedAstRelation
+} from '../ast'
 import {
   ElementViewOps,
   ast,
@@ -19,55 +24,72 @@ import {
 import { elementRef, fqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import type { FqnIndex } from './fqn-index'
 import { printDocs } from '../utils'
+import type { FqnIndex } from './fqn-index'
 
 export type ModelParsedListener = () => void
 
 export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
-  protected readonly listeners: ModelParsedListener[] = []
-
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Validated,
-      async (docs, cancelToken) => await this.onValidated(docs, cancelToken)
-    )
+    // services.shared.workspace.DocumentBuilder.onBuildPhase(
+    //   DocumentState.Validated,
+    //   async (docs, cancelToken) => await this.onValidated(docs, cancelToken)
+    // )
   }
 
-  public onParsed(callback: ModelParsedListener): Disposable {
-    this.listeners.push(callback)
-    return Disposable.create(() => {
-      const index = this.listeners.indexOf(callback)
-      if (index >= 0) {
-        this.listeners.splice(index, 1)
-      }
-    })
-  }
+  // public onParsed(callback: ModelParsedListener): Disposable {
+  //   this.listeners.push(callback)
+  //   return Disposable.create(() => {
+  //     const index = this.listeners.indexOf(callback)
+  //     if (index >= 0) {
+  //       this.listeners.splice(index, 1)
+  //     }
+  //   })
+  // }
 
-  protected async onValidated(docs: LangiumDocument[], cancelToken: CancellationToken): Promise<void> {
-    let countOfChangedDocs = 0
+  // protected async onValidated(docs: LangiumDocument[], cancelToken: CancellationToken): Promise<void> {
+  //   let countOfChangedDocs = 0
 
+  //   logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+
+  //   for (const doc of docs) {
+  //     if (!isLikeC4LangiumDocument(doc)) {
+  //       continue
+  //     }
+  //     countOfChangedDocs++
+  //     try {
+  //       await this.parseDocument(doc, cancelToken)
+  //     } catch (cause) {
+  //       logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
+  //     }
+  //   }
+  //   if (countOfChangedDocs > 0) {
+  //     this.notifyListeners()
+  //   }
+  // }
+
+  async parse(doc: LangiumDocument | LangiumDocument[], cancelToken: CancellationToken) {
+    const docs = Array.isArray(doc) ? doc : [doc]
     logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-
     for (const doc of docs) {
       if (!isLikeC4LangiumDocument(doc)) {
         continue
       }
-      countOfChangedDocs++
       try {
-        await this.parseDocument(doc, cancelToken)
+        this.parseLikeC4Document(doc)
       } catch (cause) {
         logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
+      await interruptAndCheck(cancelToken)
     }
-    if (countOfChangedDocs > 0) {
-      this.notifyListeners()
-    }
+    // if (countOfChangedDocs > 0) {
+    //   this.notifyListeners()
+    // }
   }
 
-  protected async parseDocument(doc: LikeC4LangiumDocument, cancelToken: CancellationToken) {
+  protected parseLikeC4Document(doc: LikeC4LangiumDocument) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
     const specs = doc.parseResult.value.specification?.elements
@@ -78,14 +100,14 @@ export class LikeC4ModelParser {
           continue
         }
         try {
-          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(style?.props)
+          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
+            style?.props
+          )
         } catch (e) {
           logWarnError(e)
         }
       }
     }
-
-    await interruptAndCheck(cancelToken)
 
     for (const el of streamModel(doc)) {
       if (ast.isElement(el)) {
@@ -106,8 +128,6 @@ export class LikeC4ModelParser {
       }
       nonexhaustive(el)
     }
-
-    await interruptAndCheck(cancelToken)
 
     const docviews = doc.parseResult.value.views?.views
     if (docviews) {
@@ -138,7 +158,9 @@ export class LikeC4ModelParser {
     let [title, description, technology] = astNode.props
 
     const bodyProps =
-      astNode.body?.props.filter((p): p is ast.ElementStringProperty => ast.isElementStringProperty(p)) ?? []
+      astNode.body?.props.filter((p): p is ast.ElementStringProperty =>
+        ast.isElementStringProperty(p)
+      ) ?? []
 
     title = title ?? bodyProps.find(p => p.key === 'title')?.value
     description = description ?? bodyProps.find(p => p.key === 'description')?.value
@@ -184,14 +206,20 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isElementKindExpression(astNode)) {
-      invariant(astNode.kind.ref, 'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text)
+      invariant(
+        astNode.kind.ref,
+        'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text
+      )
       return {
         elementKind: astNode.kind.ref.name as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
     if (ast.isElementTagExpression(astNode)) {
-      invariant(astNode.tag.ref, 'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text)
+      invariant(
+        astNode.tag.ref,
+        'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text
+      )
       return {
         elementTag: astNode.tag.ref.name as c4.Tag,
         isEqual: astNode.isEqual
@@ -338,15 +366,5 @@ export class LikeC4ModelParser {
     }
     const tags = withTags.tags?.value.flatMap(({ ref }) => (ref ? (ref.name as c4.Tag) : []))
     return tags && isNonEmptyArray(tags) ? tags : null
-  }
-
-  private notifyListeners() {
-    for (const listener of this.listeners) {
-      try {
-        listener()
-      } catch (e) {
-        logError(e)
-      }
-    }
   }
 }

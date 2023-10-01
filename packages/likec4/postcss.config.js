@@ -1,5 +1,6 @@
 import autoprefixer from 'autoprefixer'
-import nesting from 'tailwindcss/nesting'
+// @ts-ignore
+import nesting from 'tailwindcss/nesting/index.js'
 import tailwindcss from 'tailwindcss'
 
 const config = {

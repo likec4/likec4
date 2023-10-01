@@ -1,30 +1,56 @@
 // stores/router.ts
 import { logger } from '@nanostores/logger'
 import { useStore } from '@nanostores/react'
-import { createRouter, openPage } from '@nanostores/router'
+import { createSearchParams } from '@nanostores/router'
+import { computed } from 'nanostores'
 
-export const $router = createRouter({
-  index: '/',
-  view: '/view/:viewId'
+const $searchParams = createSearchParams()
+
+const $route = computed($searchParams, v => {
+  if ('export' in v) {
+    return {
+      route: 'export' as const,
+      params: {
+        viewId: v.export
+      },
+      showUI: false
+    }
+  }
+  if ('view' in v) {
+    return {
+      route: 'view' as const,
+      params: {
+        viewId: v.view
+      },
+      showUI: 'showUI' in v ? v.showUI === 'true' : true
+    }
+  }
+  return {
+    route: 'index' as const,
+    showUI: 'showUI' in v ? v.showUI === 'true' : true
+  }
 })
 
-export const useRoute = () => useStore($router)
+export const useRoute = () => useStore($route)
+export type Route = NonNullable<ReturnType<typeof useRoute>>
+
+export const isCurrentDiagram = <V extends { id: string }>(view: V) => {
+  const r = $route.get()
+  return (r.route === 'view' || r.route === 'export') && r.params.viewId === view.id
+}
 
 export const $pages = {
   index: {
-    open: () => openPage($router, 'index')
+    open: () => $searchParams.open({})
   },
   view: {
-    open: (viewId: string) => openPage($router, 'view', { viewId })
+    open: (viewId: string) => $searchParams.open({ view: viewId })
   }
 } as const
 
-const destroyLogger = logger({
-  $router: $router
-})
-if (import.meta.hot) {
-  import.meta.hot.prune(() => {
-    console.log('prune')
-    destroyLogger()
+if (import.meta.env.DEV) {
+  logger({
+    $searchParams,
+    $route
   })
 }

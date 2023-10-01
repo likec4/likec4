@@ -1,10 +1,11 @@
-import type {
-  DefaultSharedModuleContext,
-  LangiumServices,
-  LangiumSharedServices,
-  Module,
-  PartialLangiumServices,
-  PartialLangiumSharedServices
+import {
+  WorkspaceCache,
+  type DefaultSharedModuleContext,
+  type LangiumServices,
+  type LangiumSharedServices,
+  type Module,
+  type PartialLangiumServices,
+  type PartialLangiumSharedServices
 } from 'langium'
 import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
@@ -22,6 +23,7 @@ import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
 import { logger } from './logger'
 import { serializeError } from '@likec4/core'
+import type { W } from 'vitest/dist/reporters-5f784f42.js'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
@@ -30,6 +32,8 @@ type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: A
  * Declaration of custom services - add your own service classes here.
  */
 export interface LikeC4AddedServices {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  WorkspaceCache: WorkspaceCache<string, any>
   likec4: {
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
@@ -48,6 +52,7 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
+  WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
   likec4: {
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
@@ -104,7 +109,11 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     ...context
   }
 
-  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4GeneratedSharedModule, LikeC4SharedModule)
+  const shared = inject(
+    createDefaultSharedModule(moduleContext),
+    LikeC4GeneratedSharedModule,
+    LikeC4SharedModule
+  )
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)

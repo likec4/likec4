@@ -38,11 +38,11 @@ model {
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
 
-      graphql = app 'GraphQL API' {
-        description 'The GraphQL API of the cloud system'
-        style {
-          icon https://upload.wikimedia.org/wikipedia/commons/1/17/GraphQL_Logo.svg
-        }
+      graphql = app 'GraphQL' {
+        description '
+          The GraphQL API
+          of the cloud system
+        '
       }
       cms = app 'CMS' {
         description 'The CMS of the cloud system'

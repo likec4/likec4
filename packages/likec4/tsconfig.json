@@ -3,11 +3,12 @@
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ES2022",
+    "module": "ESNext",
     "skipLibCheck": true,
     "outDir": "dist",
     "noEmit": true,
     "allowJs": true,
+    "checkJs": false,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true,
@@ -16,8 +17,8 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     /* Linting */
-    "checkJs": true,
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
@@ -33,10 +34,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./app/src/*"],
+      "@likec4/core": ["../core/src"],
       "@likec4/language-server": ["../language-server/src"]
     }
   },
-  "include": ["src", "app", "*.config.ts", "postcss.config.mts"],
+  "include": ["src", "app", "*.config.ts", "postcss.config.js"],
   "exclude": ["app/src/**/*"],
   "references": [
     {
@@ -44,6 +46,9 @@
     },
     {
       "path": "../layouts"
+    },
+    {
+      "path": "../language-server"
     }
   ]
 }

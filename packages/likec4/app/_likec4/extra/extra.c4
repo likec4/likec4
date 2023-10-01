@@ -6,7 +6,7 @@ model {
       with Premium subscription
     '
     style {
-      color indigo
+      color red
     }
   }
   premium -> cloud.ui.dashboard
@@ -14,16 +14,10 @@ model {
 
 views {
   view premium of premium {
+    title: 'Premium Customer Use-cases'
     include
-      *,
-   //   cloud,
-      premium -> cloud.ui.*
-  }
-
-  view pr111e of premium {
-    include
-      *,
-      cloud,
-      premium -> cloud.ui.*
+      *
+      ,cloud.ui
+      ,premium -> cloud.ui.*
   }
 }

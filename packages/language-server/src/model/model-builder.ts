@@ -11,7 +11,8 @@ import {
   type ViewID,
   type c4
 } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments, URI } from 'langium'
+import type { WorkspaceCache } from 'langium'
+import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
 import * as R from 'remeda'
 import type {
   ParsedAstElement,
@@ -169,26 +170,30 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   }
 }
 
+const RAW_MODEL_CACHE = 'LikeC4RawModel'
+const MODEL_CACHE = 'LikeC4Model'
+
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
   private workspaceManager: LikeC4WorkspaceManager
 
-  private readonly cachedModel: {
-    last?: c4.LikeC4RawModel | null
-  } = {}
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
     this.workspaceManager = services.shared.workspace.WorkspaceManager
 
-    services.likec4.ModelParser.onParsed(() => {
-      this.cleanCache()
-      this.notifyClient()
-    })
-  }
+    const parser = services.likec4.ModelParser
+    const workspaceCache = services.WorkspaceCache
 
-  private cleanCache() {
-    delete this.cachedModel.last
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Validated,
+      async (docs, cancelToken) => {
+        await parser.parse(docs, cancelToken)
+        workspaceCache.delete(RAW_MODEL_CACHE)
+        workspaceCache.delete(MODEL_CACHE)
+        this.notifyClient()
+      }
+    )
   }
 
   private documents() {
@@ -196,42 +201,44 @@ export class LikeC4ModelBuilder {
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {
-    if ('last' in this.cachedModel) {
-      logger.debug('[ModelBuilder] returning cached model')
-      return this.cachedModel.last
-    }
-    try {
-      const docs = this.documents()
-      if (docs.length === 0) {
-        logger.debug('[ModelBuilder] No documents to build model from')
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
+    return cache.get(RAW_MODEL_CACHE, () => {
+      try {
+        const docs = this.documents()
+        if (docs.length === 0) {
+          logger.debug('[ModelBuilder] No documents to build model from')
+          return null
+        }
+        logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+        return buildModel(docs)
+      } catch (e) {
+        logError(e)
         return null
       }
-      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
-      return (this.cachedModel.last = buildModel(docs))
-    } catch (e) {
-      logError(e)
-      return null
-    }
+    })
   }
 
   public buildModel(): c4.LikeC4Model | null {
-    const model = this.buildRawModel()
-    if (!model) {
-      return null
-    }
-    const index = ModelIndex.from(model)
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    return cache.get(MODEL_CACHE, () => {
+      const model = this.buildRawModel()
+      if (!model) {
+        return null
+      }
+      const index = ModelIndex.from(model)
 
-    const views = R.pipe(
-      R.values(model.views),
-      R.map(view => computeView(view, index).view),
-      R.compact
-    )
-    assignNavigateTo(views)
-    return {
-      elements: model.elements,
-      relations: model.relations,
-      views: R.mapToObj(views, v => [v.id, v])
-    }
+      const views = R.pipe(
+        R.values(model.views),
+        R.map(view => computeView(view, index).view),
+        R.compact
+      )
+      assignNavigateTo(views)
+      return {
+        elements: model.elements,
+        relations: model.relations,
+        views: R.mapToObj(views, v => [v.id, v])
+      }
+    })
   }
 
   public computeView(viewId: ViewID): c4.ComputedView | null {
@@ -264,18 +271,15 @@ export class LikeC4ModelBuilder {
     return computedView
   }
 
-  private scheduledCb: NodeJS.Timeout | null = null
+  private scheduledCb: NodeJS.Timeout | undefined
   private notifyClient() {
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       return
     }
-    if (this.scheduledCb) {
-      logger.debug('[ModelBuilder] debounce onDidChangeModel')
-      clearTimeout(this.scheduledCb)
-    }
+    logger.debug('[ModelBuilder] debounce onDidChangeModel')
+    clearTimeout(this.scheduledCb)
     this.scheduledCb = setTimeout(() => {
-      this.scheduledCb = null
       logger.debug('[ModelBuilder] send onDidChangeModel')
       void connection.sendNotification(Rpc.onDidChangeModel, '')
     }, 200)

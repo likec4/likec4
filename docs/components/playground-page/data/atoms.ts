@@ -23,33 +23,36 @@ export const updateCurrentFileAtom = atom(null, (get, set, value: string) => {
 
 export const viewsReadyAtom = atom(false)
 
-export const viewsAtom = atom({} as Record<string, ComputedView>, (get, set, update: Record<string, ComputedView>) => {
-  const wasReady = get(viewsReadyAtom)
-  set(viewsReadyAtom, true)
-  // const currentViews = get(viewsAtom)
-  // let hasChanges = false
-  // const views = map(
-  //   (next, id) => {
-  //     const current = currentViews[id]
-  //     if (!!current && equals(current, next)) {
-  //       return current
-  //     } else {
-  //       hasChanges = true
-  //       return next
-  //     }
-  //   },
-  //   update
-  // )
-  // if (hasChanges) {
-  set(viewsAtom, update)
-  if (!wasReady) {
-    const viewId = 'index' in update ? 'index' : head(keys(update))
-    if (viewId) {
-      set(diagramIdAtom, viewId as ViewID)
+export const viewsAtom = atom(
+  {} as Record<string, ComputedView>,
+  (get, set, update: Record<string, ComputedView>) => {
+    const wasReady = get(viewsReadyAtom)
+    set(viewsReadyAtom, true)
+    // const currentViews = get(viewsAtom)
+    // let hasChanges = false
+    // const views = map(
+    //   (next, id) => {
+    //     const current = currentViews[id]
+    //     if (!!current && equals(current, next)) {
+    //       return current
+    //     } else {
+    //       hasChanges = true
+    //       return next
+    //     }
+    //   },
+    //   update
+    // )
+    // if (hasChanges) {
+    set(viewsAtom, update)
+    if (!wasReady) {
+      const viewId = 'index' in update ? 'index' : head(keys(update))
+      if (viewId) {
+        set(diagramIdAtom, viewId as ViewID)
+      }
     }
+    // }
   }
-  // }
-})
+)
 
 export const diagramIdAtom = atom<ViewID | null>(null)
 
@@ -84,9 +87,7 @@ export const diagramAtom = atom(async get => {
     return diagram
   } catch (e) {
     console.error(e)
-    console.debug('Restart DotLayouter....')
-    await layouter.restart()
-    return await layouter.layout(view)
+    throw e
   }
 })
 

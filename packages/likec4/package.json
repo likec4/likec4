@@ -15,9 +15,12 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "files": [
     "bin",
+    "app",
     "dist"
   ],
   "scripts": {
+    "typecheck:deps": "run -T turbo run typecheck --filter='likec4'",
+    "build:deps": "run -T turbo run build --filter='likec4'",
     "typecheck": "tsc --emitDeclarationOnly",
     "build:watch": "tsc --watch",
     "build": "tsc",
@@ -26,11 +29,13 @@
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist",
-    "dev:serve": "tsx watch src/cli/serve.ts"
+    "dev:serve": "tsx watch src/cli/serve.ts",
+    "dev:build": "tsx src/cli/build.ts"
   },
   "type": "module",
   "exports": "./src/index.ts",
   "dependencies": {
+    "@fontsource-variable/rubik": "^5.0.14",
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -46,21 +51,25 @@
     "boxen": "^7.1.1",
     "execa": "^8.0.1",
     "get-port": "^7.0.0",
+    "jotai": "^2.4.2",
+    "jotai-location": "^0.5.1",
     "kleur": "^4.1.5",
     "nanostores": "^0.9.3",
     "rambdax": "^9.1.1",
+    "react-accessible-treeview": "^2.8.0",
+    "remeda": "^1.27.0",
     "vite": "^4.4.9",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@nextui-org/react": "^2.1.13",
+    "@swc-jotai/debug-label": "^0.1.0",
+    "@swc-jotai/react-refresh": "^0.1.0",
     "@types/node": "^18.15.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/yargs": "^17",
-    "framer-motion": "^10.16.4",
+    "jotai-devtools": "^0.6.2",
     "postcss": "^8.4.29",
-    "postcss-nesting": "^12.0.1",
     "radix-themes-tw": "^0.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

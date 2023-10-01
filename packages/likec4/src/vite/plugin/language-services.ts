@@ -1,4 +1,4 @@
-import type { ComputedView, DiagramView, LikeC4Model } from '@likec4/core'
+import { normalizeError, type ComputedView, type DiagramView, type LikeC4Model } from '@likec4/core'
 import { generateViewsDataJs } from '@likec4/generators'
 import {
   createLanguageServices as createLangium,
@@ -9,10 +9,12 @@ import k from 'kleur'
 import { DocumentState, MutexLock, URI } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import { existsSync } from 'node:fs'
-import { basename } from 'node:path'
+import { basename, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { equals, mapObject, mapParallelAsyncWithLimit, values } from 'rambdax'
+import { equals, mapObject, mapParallelAsyncWithLimit, values, delay } from 'rambdax'
 import { type Logger } from 'vite'
+import { logDebug, logError, logInfo, logWarn } from '../../logger'
+import { addDocPaths } from './utils'
 
 export type LanguageServices = ReturnType<typeof createLanguageServices>
 
@@ -22,8 +24,6 @@ export namespace LanguageServices {
     return createLanguageServices(logger)
   }
 }
-
-const ERROR = k.bgRed().white().bold('ERROR')
 
 function createLanguageServices(logger: Logger) {
   lspLogger.silent(true)
@@ -36,7 +36,7 @@ function createLanguageServices(logger: Logger) {
     for (const doc of docs) {
       const errors = doc.diagnostics?.filter(e => e.severity === 1)
       if (errors && errors.length > 0) {
-        logger.error(`${ERROR}: ${doc.uri.fsPath}`)
+        logError(`${doc.uri.fsPath}`)
         errors.forEach(validationError => {
           const errorRange = doc.textDocument.getText(validationError.range)
           const line = validationError.range.start.line
@@ -64,15 +64,22 @@ function createLanguageServices(logger: Logger) {
         uri: pathToFileURL(workspace).toString()
       }
     ])
+    await delay(50)
     const documents = LangiumDocuments.all.toArray()
+    if (documents.length === 0) {
+      logWarn(`No LikeC4 files found`)
+      return
+    }
+    const found = documents.map(d => '  - ' + relative(workspace, d.uri.path)).join('\n')
+    logInfo(`LikeC4: workspace ${workspace}:\n` + found)
     await DocumentBuilder.build(documents, { validation: true })
-    logger.info(`LanguageServices initialized`)
+    logInfo(`LikeC4: initialized`)
   }
 
   const buildModel = (() => {
     let cachedmodel: LikeC4Model | null = null
     return () => {
-      logger.info(`updating model`)
+      logDebug(`LikeC4: build model`)
       const freshmodel = modelBuilder.buildModel()
       if (!cachedmodel || !freshmodel) {
         return (cachedmodel = freshmodel)
@@ -96,56 +103,56 @@ function createLanguageServices(logger: Logger) {
       const diagram = DiagramsCache.get(view) ?? (await dot.layout(view))
       DiagramsCache.set(view, diagram)
       return diagram
-    } catch (error) {
-      logger.error(`${ERROR}: failed layout ${view.id}`, error instanceof Error ? { error } : {})
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(`Unknown Error: ${err}`, { cause: err })
+      logWarn(`failed layout ${view.id}: ${error.message}${error.stack ? `\n${error.stack}` : ''}`)
       if (restartsCount++ < 10) {
-        logger.info(`restarting dot layouter`)
-        await dot.restart()
-        return await layout(view)
+        logWarn(`restart graphviz wasm`)
+        // await dot.restart()
+        const diagram = await layout(view)
+        logInfo(`succeed layout ${view.id}`)
+        restartsCount = 0
+        return diagram
       }
-      logger.error(`${ERROR}: Please restart Vite....`)
+      logError(`please restart Vite....`)
       throw error
     }
   }
 
   async function generateCode() {
     const { views } = buildModel() ?? {}
+    logDebug(`LikeC4: generate code...`)
     if (views) {
-      const diagrams = await mapParallelAsyncWithLimit(layout, 1, values(views))
-      return generateViewsDataJs(diagrams)
+      const diagrams = [] as DiagramView[]
+      for (const view of values(views)) {
+        const diagram = await layout(view)
+        diagrams.push(diagram)
+      }
+      // const diagrams = await mapParallelAsyncWithLimit(layout, 1, values(views))
+      return generateViewsDataJs(addDocPaths(diagrams))
     }
     return generateViewsDataJs([])
   }
 
   let _generateCodeCache: Promise<string> | undefined
   const mutex = new MutexLock()
-  // async function updateDocuments({
-  //   changed = [],
-  //   removed = []
-  // }: { changed?: string[]; removed?: string[] }) {
-  //   let isSuccess = true
-  //   await mutex.lock(async token => {
-  //     await DocumentBuilder.update(changed.map(URI.file), removed.map(URI.file), token)
-  //     isSuccess =  LangiumDocuments.all.some(doc => doc.diagnostics?.some(e => e.severity === 1))
-  //   })
-  //   if (isSuccess) {
-  //     _generateCodeCache = undefined
-  //   }
-  //   return { isSuccess }
-  // }
 
   return {
     init,
+
     watcher: {
       async onUpdate({ changed, removed }: { changed?: string; removed?: string }) {
-        let isSuccess = true
+        let isSuccess = false
         await mutex.lock(async token => {
           await DocumentBuilder.update(
             changed ? [URI.file(changed)] : [],
             removed ? [URI.file(removed)] : [],
             token
           )
-          isSuccess = LangiumDocuments.all.some(doc => doc.diagnostics?.some(e => e.severity === 1))
+          isSuccess = LangiumDocuments.all.every(
+            doc => !doc.diagnostics || !doc.diagnostics.some(e => e.severity === 1)
+          )
+          logDebug(`update success=${isSuccess} ${changed ?? removed}`)
         })
         if (isSuccess) {
           _generateCodeCache = undefined
@@ -153,6 +160,7 @@ function createLanguageServices(logger: Logger) {
         return { isSuccess }
       }
     } as const,
+
     generateCode() {
       return (_generateCodeCache ??= generateCode())
     }

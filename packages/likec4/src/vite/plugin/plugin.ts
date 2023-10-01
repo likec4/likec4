@@ -1,12 +1,9 @@
-import type { Logger, Plugin, ResolvedConfig } from 'vite'
-import { LanguageServices } from './language-services'
-import { PluginHookUtils } from 'vite'
+import { generateViewsDataJs } from '@likec4/generators'
+import type { Plugin } from 'vite'
+import type { LanguageServices } from '../../language-services'
 
 export type LikeC4PluginOptions = {
-  /**
-   * likec4 workspace or current directory
-   */
-  workspace?: string
+  languageServices: LanguageServices
 }
 
 const moduleId = '~likec4'
@@ -18,26 +15,16 @@ const isTarget = (path: string) => {
   return p.endsWith('.c4') || p.endsWith('.likec4')
 }
 
-type LikeC4PluginContext = {
-  logger: Logger
-  likec4: LanguageServices
-}
+export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions): Plugin {
+  let _generatedCode: string | null = null
 
-export function likec4Plugin(opts: LikeC4PluginOptions = {}): Plugin {
-  let ctx: LikeC4PluginContext
+  async function generateCode() {
+    const views = await likec4.getViews()
+    return generateViewsDataJs(views)
+  }
 
   return {
     name: 'vite-plugin-likec4',
-    configResolved: {
-      order: 'pre',
-      async handler(config: ResolvedConfig) {
-        ctx = {
-          logger: config.logger,
-          likec4: LanguageServices.create(config.logger)
-        }
-        await ctx.likec4.init(opts.workspace || config.root)
-      }
-    },
 
     resolveId(id) {
       if (id === moduleId) {
@@ -48,52 +35,53 @@ export function likec4Plugin(opts: LikeC4PluginOptions = {}): Plugin {
 
     async load(id) {
       if (id === resolvedVirtualModuleId) {
-        return await ctx.likec4.generateCode()
+        const code = (_generatedCode ??= await generateCode())
+        return code
       }
       return null
     },
 
     configureServer(server) {
       const triggerHMR = () => {
+        _generatedCode = null
         const md = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
         if (md) {
-          ctx.logger.info('triggerHMR')
+          // logDebug(`trigger HMR: ${md.url}`)
           void server.reloadModule(md)
         } else {
-          ctx.logger.warnOnce(
-            'LikeC4 HMR is not available because the module has not been loaded yet.'
-          )
+          // ctx.logger.warnOnce(
+          //   'LikeC4 HMR is not available because the module has not been loaded yet.'
+          // )
         }
       }
+      let pending: NodeJS.Timeout
+      const scheduleHMR = () => {
+        clearTimeout(pending)
+        pending = setTimeout(triggerHMR, 300)
+      }
 
-      let debounced: NodeJS.Timeout
-
-      const handleUpdate = (task: Promise<{ isSuccess: boolean }>) => {
-        let isSuccess = false
-        clearTimeout(debounced)
-        debounced = setTimeout(() => {
-          isSuccess && triggerHMR()
-        }, 300)
+      const handleUpdate = (task: Promise<boolean>) => {
+        clearTimeout(pending)
         task.then(
-          result => (isSuccess = result.isSuccess),
-          () => (isSuccess = false)
+          result => result && scheduleHMR(),
+          () => ({})
         )
       }
 
       server.watcher
         .on('add', path => {
           if (isTarget(path)) {
-            handleUpdate(ctx.likec4.watcher.onUpdate({ changed: path }))
+            handleUpdate(likec4.notifyUpdate({ changed: path }))
           }
         })
         .on('change', path => {
           if (isTarget(path)) {
-            handleUpdate(ctx.likec4.watcher.onUpdate({ changed: path }))
+            handleUpdate(likec4.notifyUpdate({ changed: path }))
           }
         })
         .on('unlink', path => {
           if (isTarget(path)) {
-            handleUpdate(ctx.likec4.watcher.onUpdate({ removed: path }))
+            handleUpdate(likec4.notifyUpdate({ removed: path }))
           }
         })
     }
