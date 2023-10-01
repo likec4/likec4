@@ -4,8 +4,8 @@
   "version": "0.37.1",
   "packageManager": "yarn@3.4.1",
   "scripts": {
-    "turbo-build": "run -T turbo run compile build --filter='example-cloud-system'",
-    "compile": "tsc --noEmit",
+    "turbo-build": "run -T turbo run typecheck build --filter='example-cloud-system'",
+    "typecheck": "tsc --noEmit",
     "generate": "likec4 codegen react --output src/likec4.generated.tsx",
     "dev": "run generate && vite"
   },

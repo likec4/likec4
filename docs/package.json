@@ -12,8 +12,8 @@
     "url": "https://github.com/likec4/likec4.git"
   },
   "scripts": {
-    "turbo-compile": "run -T turbo run compile --filter='docs-website'",
-    "compile": "tsc --noEmit",
+    "turbo-typecheck": "run -T turbo run typecheck --filter='docs-website'",
+    "typecheck": "tsc --noEmit",
     "turbo-build": "run -T turbo run build --filter='docs-website'",
     "generate:indexpage": "likec4 codegen react --output components/index-page/generated.tsx ./likec4/index-page",
     "generate:bigbank": "likec4 codegen react --output components/example-big-bank/generated.tsx ./likec4/bigbank",

@@ -7,7 +7,7 @@
       "outputs": ["src/**/*.generated.ts", "src/**/*.generated.tsx"],
       "inputs": ["package.json", "**/*.c4"]
     },
-    "compile": {
+    "typecheck": {
       "dependsOn": ["generate", "^build"],
       "outputs": []
     }
