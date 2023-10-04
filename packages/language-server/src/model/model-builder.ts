@@ -11,9 +11,15 @@ import {
   type ViewID,
   type c4
 } from '@likec4/core'
-import type { WorkspaceCache } from 'langium'
-import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
+import type { URI, WorkspaceCache } from 'langium'
+import {
+  DocumentState,
+  interruptAndCheck,
+  type LangiumDocument,
+  type LangiumDocuments
+} from 'langium'
 import * as R from 'remeda'
+import { Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
   ParsedAstElementView,
@@ -24,9 +30,8 @@ import type {
 import { isValidLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { Rpc } from '../protocol'
 import { LikeC4WorkspaceManager } from '../shared'
-import { printDocs } from '../utils'
+import { printDocs, queueMicrotask } from '../utils'
 
 function isRelativeLink(link: string) {
   return link.startsWith('.') || link.startsWith('/')
@@ -173,31 +178,37 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
 const RAW_MODEL_CACHE = 'LikeC4RawModel'
 const MODEL_CACHE = 'LikeC4Model'
 
+type ModelParsedListener = (docs: URI[]) => void
+
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
   private workspaceManager: LikeC4WorkspaceManager
+
+  private listeners: ModelParsedListener[] = []
+  // public onParsed(callback: ModelParsedListener): Disposable {
+  //   this.listeners.push(callback)
+  //   return Disposable.create(() => {
+  //     const index = this.listeners.indexOf(callback)
+  //     if (index >= 0) {
+  //       this.listeners.splice(index, 1)
+  //     }
+  //   })
+  // }
 
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
     this.workspaceManager = services.shared.workspace.WorkspaceManager
-
     const parser = services.likec4.ModelParser
-    const workspaceCache = services.WorkspaceCache
-
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
       async (docs, cancelToken) => {
-        await parser.parse(docs, cancelToken)
-        workspaceCache.delete(RAW_MODEL_CACHE)
-        workspaceCache.delete(MODEL_CACHE)
-        this.notifyClient()
+        await queueMicrotask(() => parser.parse(docs))
+        // Only allow interrupting the execution after all documents have been parsed
+        await interruptAndCheck(cancelToken)
+        this.notifyListeners(docs.map(d => d.uri))
       }
     )
-  }
-
-  private documents() {
-    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {
@@ -271,17 +282,27 @@ export class LikeC4ModelBuilder {
     return computedView
   }
 
-  private scheduledCb: NodeJS.Timeout | undefined
-  private notifyClient() {
-    const connection = this.services.shared.lsp.Connection
-    if (!connection) {
-      return
+  public onModelParsed(callback: ModelParsedListener): Disposable {
+    this.listeners.push(callback)
+    return Disposable.create(() => {
+      const index = this.listeners.indexOf(callback)
+      if (index >= 0) {
+        this.listeners.splice(index, 1)
+      }
+    })
+  }
+
+  private documents() {
+    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
+  }
+
+  private notifyListeners(docs: URI[]) {
+    for (const listener of this.listeners) {
+      try {
+        listener(docs)
+      } catch (e) {
+        logError(e)
+      }
     }
-    logger.debug('[ModelBuilder] debounce onDidChangeModel')
-    clearTimeout(this.scheduledCb)
-    this.scheduledCb = setTimeout(() => {
-      logger.debug('[ModelBuilder] send onDidChangeModel')
-      void connection.sendNotification(Rpc.onDidChangeModel, '')
-    }, 200)
   }
 }

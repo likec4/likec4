@@ -20,9 +20,12 @@
     "directory": "packages/language-server"
   },
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -47,6 +50,8 @@
     "langium": "^2.0.2",
     "nanoid": "^4.0.2",
     "object-hash": "^3.0.0",
+    "p-debounce": "^4.0.0",
+    "p-throttle": "^5.1.0",
     "rambdax": "^9.1.1",
     "remeda": "^1.24.0",
     "strip-indent": "^4.0.0",

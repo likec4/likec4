@@ -31,5 +31,11 @@
   ],
   "mdx.experimentalLanguageServer": true,
   "vitest.commandLine": "yarn vitest",
-  "exportall.config.semis": false
+  "exportall.config.semis": false,
+  "json.schemas": [
+    {
+      "url": "https://cdn.jsdelivr.net/npm/tsup/schema.json",
+      "fileMatch": ["package.json", "tsup.config.json"]
+    }
+  ]
 }

@@ -1,9 +1,8 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { getDocument, interruptAndCheck } from 'langium'
+import { getDocument } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
-import { type CancellationToken } from 'vscode-languageserver-protocol'
 import type {
   LikeC4LangiumDocument,
   ParsedAstElement,
@@ -70,7 +69,7 @@ export class LikeC4ModelParser {
   //   }
   // }
 
-  async parse(doc: LangiumDocument | LangiumDocument[], cancelToken: CancellationToken) {
+  parse(doc: LangiumDocument | LangiumDocument[]) {
     const docs = Array.isArray(doc) ? doc : [doc]
     logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
     for (const doc of docs) {
@@ -82,11 +81,7 @@ export class LikeC4ModelParser {
       } catch (cause) {
         logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
-      await interruptAndCheck(cancelToken)
     }
-    // if (countOfChangedDocs > 0) {
-    //   this.notifyListeners()
-    // }
   }
 
   protected parseLikeC4Document(doc: LikeC4LangiumDocument) {
