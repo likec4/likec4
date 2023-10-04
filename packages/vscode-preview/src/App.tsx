@@ -16,7 +16,7 @@ import {
   savePreviewWindowState
 } from './vscode'
 
-const Paddings = [30, 20, 20, 20] as [number, number, number, number]
+const Paddings = [30, 20, 20, 20] as const
 
 const App = () => {
   const diagramApi = useDiagramRef()

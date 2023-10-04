@@ -8,5 +8,5 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true
   },
-  "exclude": ["node_modules", "dist", "packages/*/dist/**/*"]
+  "exclude": ["node_modules", "dist", "packages/*/dist/**/*", "packages/*/bin/*"]
 }

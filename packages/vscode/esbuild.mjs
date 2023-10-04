@@ -1,6 +1,6 @@
 import * as esbuild from 'esbuild'
-import { formatMessagesSync } from 'esbuild'
-import { writeFile } from 'node:fs/promises'
+import { build, formatMessagesSync, analyzeMetafileSync } from 'esbuild'
+import { writeFileSync } from 'node:fs'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
 
 import path from 'node:path'
@@ -25,20 +25,21 @@ const alias = {
 /**
  * @type {esbuild.BuildOptions}
  */
-const nodeCfg = {
-  entryPoints: ['src/node/extension.ts', 'src/node/language-server.ts'],
+const base = {
   metafile: isDev,
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
+  color: true,
   bundle: true,
   external: ['vscode'],
-  format: 'cjs',
-  target: 'node16',
-  platform: 'node',
+  define: {
+    'process.env.NODE_ENV': '"production"'
+  },
   alias: {
     ...alias
   },
+  format: 'cjs',
   sourcemap: true,
   sourcesContent: isDev,
   keepNames: true,
@@ -49,31 +50,30 @@ const nodeCfg = {
 /**
  * @type {esbuild.BuildOptions}
  */
-const webCfg = {
-  entryPoints: ['src/browser/extension.ts'],
-  metafile: isDev,
-  logLevel: 'info',
-  outdir: 'dist',
-  outbase: 'src',
-  bundle: true,
+const extensionNodeCfg = {
+  ...base,
+  entryPoints: ['src/node/extension.ts'],
   format: 'cjs',
+  target: 'node16',
+  platform: 'node'
+}
+const serverNodeCfg = {
+  ...extensionNodeCfg,
+  entryPoints: ['src/node/language-server.ts'],
+}
+
+/**
+ * @type {esbuild.BuildOptions}
+ */
+const extensionWebCfg = {
+  ...base,
+  entryPoints: ['src/browser/extension.ts'],
   target: 'es2022',
   platform: 'browser',
-  mainFields: ['browser', 'module', 'main'],
-  external: ['vscode'],
-  alias: {
-    ...alias
-  },
-  color: true,
-  sourcemap: true,
-  sourcesContent: isDev,
-  keepNames: true,
-  minify: !isDev,
-  legalComments: 'none',
   plugins: [
     nodeModulesPolyfillPlugin({
       globals: {
-        process: true
+        process: true,
       }
     })
   ]
@@ -81,63 +81,94 @@ const webCfg = {
 /**
  * @type {esbuild.BuildOptions}
  */
-const webWorkerCfg = {
-  ...webCfg,
+const serverWebCfg = {
+  ...base,
   entryPoints: ['src/browser/language-server-worker.ts'],
-  format: 'iife'
+  format: 'iife',
+  target: 'es2022',
+  platform: 'browser',
+  plugins: [
+    nodeModulesPolyfillPlugin({
+      globals: {
+        process: true,
+      }
+    })
+  ]
 }
 
-if (!watch) {
-  const bundles = await Promise.all([
-    esbuild.build(nodeCfg),
-    esbuild.build(webCfg),
-    esbuild.build(webWorkerCfg)
-  ])
+const builds = [
+  extensionNodeCfg,
+  serverNodeCfg,
+  extensionWebCfg,
+  serverWebCfg
+]
 
-  const [nodeBundle, webBundle, webWorkerBundle] = bundles
+const bundles = await Promise.all(builds.map(cfg => build(cfg)))
+bundles.forEach((bundle) => {
+  if (bundle.metafile) {
+    const out = Object.keys(bundle.metafile.outputs).find(k => k.endsWith('.js'))
+    if (out) {
+      const metafilepath = path.resolve(out + '.metafile.json')
+      writeFileSync(metafilepath, JSON.stringify(bundle.metafile))
+      console.log(metafilepath)
+    }
+    // bundle.warnings
+    // console.log(analyzeMetafileSync(bundle.metafile))
+  }
+})
 
-  if (nodeBundle.metafile) {
-    const metafile = path.resolve('dist', 'node', 'extension.metafile.json')
-    await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
-  }
-  if (webBundle.metafile) {
-    const metafile = path.resolve('dist', 'browser', 'extension.metafile.json')
-    await writeFile(metafile, JSON.stringify(webBundle.metafile))
-  }
-  if (webWorkerBundle.metafile) {
-    const metafile = path.resolve('dist', 'browser', 'language-server-worker.metafile.json')
-    await writeFile(metafile, JSON.stringify(webBundle.metafile))
-  }
+// if (!watch) {
+//   const bundles = await Promise.all([
+//     esbuild.build(extensionNodeCfg),
+//     esbuild.build(extensionWebCfg),
+//     esbuild.build(webWorkerCfg)
+//   ])
 
-  const errors = bundles.flatMap(b => b.errors)
-  const warnings = bundles.flatMap(b => b.warnings)
-  if (errors.length || warnings.length) {
-    console.error(
-      [
-        ...formatMessagesSync(warnings, {
-          kind: 'warning',
-          color: true,
-          terminalWidth: process.stdout.columns
-        }),
-        ...formatMessagesSync(errors, {
-          kind: 'error',
-          color: true,
-          terminalWidth: process.stdout.columns
-        })
-      ].join('\n')
-    )
-    console.error('\n ⛔️ Build failed')
-    process.exit(1)
-  }
-  process.exit(0)
-}
+//   const [nodeBundle, webBundle, webWorkerBundle] = bundles
+//   nodeBundle.outputFiles
 
-const [nodeCtx, webCtx, webWorkerCtx] = await Promise.all([
-  esbuild.context(nodeCfg),
-  esbuild.context(webCfg),
-  esbuild.context(webWorkerCfg)
-])
-await nodeCtx.watch()
-await webCtx.watch()
-await webWorkerCtx.watch()
-console.info(' 👀 watching...')
+//   if (nodeBundle.metafile) {
+//     const metafile = path.resolve('dist', 'node', 'extension.metafile.json')
+//     await writeFile(metafile, JSON.stringify(nodeBundle.metafile))
+//   }
+//   if (webBundle.metafile) {
+//     const metafile = path.resolve('dist', 'browser', 'extension.metafile.json')
+//     await writeFile(metafile, JSON.stringify(webBundle.metafile))
+//   }
+//   if (webWorkerBundle.metafile) {
+//     const metafile = path.resolve('dist', 'browser', 'language-server-worker.metafile.json')
+//     await writeFile(metafile, JSON.stringify(webBundle.metafile))
+//   }
+
+//   const errors = bundles.flatMap(b => b.errors)
+//   const warnings = bundles.flatMap(b => b.warnings)
+//   if (errors.length || warnings.length) {
+//     console.error(
+//       [
+//         ...formatMessagesSync(warnings, {
+//           kind: 'warning',
+//           color: true,
+//           terminalWidth: process.stdout.columns
+//         }),
+//         ...formatMessagesSync(errors, {
+//           kind: 'error',
+//           color: true,
+//           terminalWidth: process.stdout.columns
+//         })
+//       ].join('\n')
+//     )
+//     console.error('\n ⛔️ Build failed')
+//     process.exit(1)
+//   }
+//   process.exit(0)
+// }
+
+// const [nodeCtx, webCtx, webWorkerCtx] = await Promise.all([
+//   esbuild.context(extensionNodeCfg),
+//   esbuild.context(extensionWebCfg),
+//   esbuild.context(webWorkerCfg)
+// ])
+// await nodeCtx.watch()
+// await webCtx.watch()
+// await webWorkerCtx.watch()
+// console.info(' 👀 watching...')

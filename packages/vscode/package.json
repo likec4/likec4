@@ -109,7 +109,7 @@
             "messages",
             "verbose"
           ],
-          "default": "off",
+          "default": "messages",
           "description": "Enable trace logging for the LikeC4 extension."
         },
         "likec4.trace.server": {
@@ -157,7 +157,9 @@
     ]
   },
   "activationEvents": [
-    "workspaceContains:**/*.{c4,likec4,like-c4}",
+    "workspaceContains:**/*.c4",
+    "workspaceContains:**/*.likec4",
+    "workspaceContains:**/*.like-c4",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "dist/node/extension.js",
