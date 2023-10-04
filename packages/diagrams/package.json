@@ -35,7 +35,7 @@
     "typecheck": "tsc --noEmit",
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
-    "generate": "likec4 codegen views-data src/stories/likec4",
+    "generate": "../cli/bin/likec4 codegen views-data src/stories/likec4",
     "build:deps": "run -T turbo run build --filter='diagrams'",
     "build:watch": "unbuild",
     "build": "unbuild",
@@ -66,7 +66,6 @@
   },
   "devDependencies": {
     "@ladle/react": "^3.0.0",
-    "@likec4/cli": "workspace:*",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "react": "^18.2.0",

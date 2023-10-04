@@ -3,9 +3,9 @@
   "display": "Base Strictest",
   "compilerOptions": {
     "lib": ["ESNext"],
-    "module": "ES2022",
+    "module": "ESNext",
     "target": "ES2022",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "declaration": true,
     "resolvePackageJsonExports": true,
 
@@ -13,6 +13,7 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "allowArbitraryExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -21,6 +22,7 @@
     "noUncheckedIndexedAccess": true,
 
     "verbatimModuleSyntax": true,
+    "allowJs": true,
     "checkJs": false,
 
     "noEmitOnError": true,
