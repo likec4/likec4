@@ -13,6 +13,6 @@ npm install @likec4/diagrams
 ### Local Development
 
 ```bash
-yarn build:deps
+yarn build:turbo
 yarn dev
 ```

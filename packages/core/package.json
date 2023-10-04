@@ -80,7 +80,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
     "rambdax": "^9.1.1",
-    "remeda": "^1.24.0",
+    "remeda": "^1.27.0",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },

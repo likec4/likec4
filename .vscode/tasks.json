@@ -32,7 +32,7 @@
       "label": "vscode:task:build:watch",
       "type": "npm",
       "dependsOn": [
-        "npm: build:full - packages/vscode"
+        "npm: build:turbo - packages/vscode"
       ],
       "script": "vscode:task:build:watch",
       "promptOnClose": false,
@@ -51,7 +51,7 @@
     {
       "label": "vscode:task:build:extension",
       "type": "npm",
-      "script": "build:full",
+      "script": "build:turbo",
       "path": "packages/vscode",
       "promptOnClose": false,
       "problemMatcher": [

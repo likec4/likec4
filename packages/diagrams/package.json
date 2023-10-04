@@ -36,7 +36,7 @@
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
     "generate": "../cli/bin/likec4 codegen views-data src/stories/likec4",
-    "build:deps": "run -T turbo run build --filter='diagrams'",
+    "build:turbo": "run -T turbo run build --filter='diagrams'",
     "build:watch": "unbuild",
     "build": "unbuild",
     "dev:watch": "run -T turbo run build:watch --filter='diagrams^...' & ladle serve",

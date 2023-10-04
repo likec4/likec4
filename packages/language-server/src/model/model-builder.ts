@@ -9,7 +9,8 @@ import {
   resolveRulesExtendedViews,
   type StrictElementView,
   type ViewID,
-  type c4
+  type c4,
+  resolveRelativePaths
 } from '@likec4/core'
 import type { URI, WorkspaceCache } from 'langium'
 import {
@@ -121,7 +122,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
 
   const toElementView = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
-    return (view: ParsedAstElementView): c4.ElementView | null => {
+    return (view: ParsedAstElementView): c4.ElementView => {
       // eslint-disable-next-line prefer-const
       let { astPath, rules, title, description, tags, links, ...model } = view
       if (!title && 'viewOf' in view) {
@@ -144,8 +145,9 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
 
   const views = R.pipe(
     R.flatMap(docs, d => R.map(d.c4Views, toElementView(d))),
-    R.compact,
-    R.mapToObj(v => [v.id, v])
+    resolveRelativePaths,
+    R.mapToObj(v => [v.id, v]),
+    resolveRulesExtendedViews
   )
   // add index view if not present
   if (!('index' in views)) {
@@ -171,7 +173,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   return {
     elements,
     relations,
-    views: resolveRulesExtendedViews(views)
+    views
   }
 }
 
@@ -183,17 +185,7 @@ type ModelParsedListener = (docs: URI[]) => void
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
   private workspaceManager: LikeC4WorkspaceManager
-
   private listeners: ModelParsedListener[] = []
-  // public onParsed(callback: ModelParsedListener): Disposable {
-  //   this.listeners.push(callback)
-  //   return Disposable.create(() => {
-  //     const index = this.listeners.indexOf(callback)
-  //     if (index >= 0) {
-  //       this.listeners.splice(index, 1)
-  //     }
-  //   })
-  // }
 
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
@@ -209,6 +201,10 @@ export class LikeC4ModelBuilder {
         this.notifyListeners(docs.map(d => d.uri))
       }
     )
+  }
+
+  public get workspaceUri() {
+    return this.workspaceManager.workspace()?.uri ?? null
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {
@@ -270,7 +266,6 @@ export class LikeC4ModelBuilder {
     )
 
     const computedView = result.view
-
     computedView.nodes.forEach(node => {
       // find first element view that is not the current one
       const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)

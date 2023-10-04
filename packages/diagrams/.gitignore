@@ -3,3 +3,4 @@ dist
 build
 src*/**/*.generated.ts
 src*/**/*.generated.tsx
+.vscode/
