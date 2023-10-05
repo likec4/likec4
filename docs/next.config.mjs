@@ -54,10 +54,6 @@ export default withNextra({
       test: /\.(mp3|wasm)$/i,
       type: 'asset/resource'
     })
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@likec4/diagrams': resolve(__dirname, '../packages/diagrams/src')
-    }
     return config
   },
   eslint: {
@@ -65,18 +61,17 @@ export default withNextra({
   },
   output: 'export',
   transpilePackages: [
-    'jotai-devtools',
     'monaco-editor',
     'monaco-languageclient',
-    'langium/node',
-    'langium',
-    'chevrotain',
-    'chevrotain-allstar',
-    '@likec4/core/compute-view',
-    '@likec4/core/utils',
-    '@likec4/core/errors',
-    '@likec4/core/types',
-    '@likec4/core/colors',
+    // 'langium/node',
+    // 'langium',
+    // 'chevrotain',
+    // 'chevrotain-allstar',
+    // '@likec4/core/compute-view',
+    // '@likec4/core/utils',
+    // '@likec4/core/errors',
+    // '@likec4/core/types',
+    // '@likec4/core/colors',
     '@likec4/core',
     '@likec4/diagrams',
     '@likec4/generators',
