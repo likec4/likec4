@@ -48,7 +48,7 @@
     "indent-string": "^5.0.0",
     "p-limit": "^4.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.24.0",
+    "remeda": "^1.27.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
     "type-fest": "^4.3.1",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.5"
+    "vitest": "^0.34.6"
   },
   "packageManager": "yarn@3.6.3"
 }

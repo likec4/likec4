@@ -87,7 +87,7 @@
   "devDependencies": {
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
-    "vitest": "^0.34.5"
+    "vitest": "^0.34.6"
   },
   "packageManager": "yarn@3.6.3"
 }
