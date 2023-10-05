@@ -233,6 +233,13 @@ RArrow returns string: RARROW;
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);
 
+
+// -------------------------
+// Comments
+hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
+hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
+hidden terminal WS: (NEWLINE | SPACE)+;
+
 // -----------------------------------
 // Symbols
 terminal fragment HASH      : '#';
@@ -260,13 +267,7 @@ terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';
 
-terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal STRING: /"[^"]*"|'[^']*'/;
 
-hidden terminal WS: (NEWLINE | SPACE)+;
-
-// -------------------------
-// Comments
-hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
-hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
+terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;
