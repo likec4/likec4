@@ -7,6 +7,7 @@
     "target": "ES2022",
     "moduleResolution": "Bundler",
     "declaration": true,
+    "declarationMap": true,
     "resolvePackageJsonExports": true,
 
     "strict": true,
@@ -24,8 +25,6 @@
     "verbatimModuleSyntax": true,
     "allowJs": true,
     "checkJs": false,
-
-    "noEmitOnError": true,
 
     "isolatedModules": true,
     "esModuleInterop": true,

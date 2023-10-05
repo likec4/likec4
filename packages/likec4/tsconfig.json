@@ -4,19 +4,12 @@
     "outDir": "dist",
     "allowJs": true,
     "checkJs": false,
-    "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@likec4/core": ["../core/src"],
-      "@likec4/layouts": ["../layouts/src"],
-      "@likec4/generators": ["../generators/src"],
-      "@likec4/language-server": ["../language-server/src"]
+      "@/*": ["./src/*"]
     }
   },
-  "files": ["esbuild.mjs"],
-  "include": ["src", "app"],
-  "exclude": ["app/src/**/*"],
+  "include": ["src"],
   "references": [
     {
       "path": "../core"

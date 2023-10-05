@@ -29,7 +29,7 @@
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
-    "clean": "run -T rimraf dist",
+    "clean": "run -T rimraf dist app/dist dev/.export dev/dist",
     "cli:serve": "tsx watch src/cli/index.ts serve ./dev",
     "cli:build": "tsx src/cli/index.ts build ./dev",
     "cli:preview": "tsx src/cli/index.ts preview ./dev",

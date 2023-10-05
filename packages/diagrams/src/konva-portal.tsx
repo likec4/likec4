@@ -1,7 +1,6 @@
 import type Konva from 'konva'
-import { useRef, type PropsWithChildren, useLayoutEffect, useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef, type PropsWithChildren } from 'react'
 import { Group } from './konva'
-import { nonNullable } from '@likec4/core'
 
 type Props = PropsWithChildren<{
   selector: string

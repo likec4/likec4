@@ -6,7 +6,8 @@
     "module": "ES2022",
     "skipLibCheck": true,
     "outDir": "dist",
-    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
     "allowJs": true,
 
     /* Bundler mode */
@@ -32,7 +33,7 @@
 
     "baseUrl": "."
   },
-  "include": ["src/**/*", ".ladle/**/*"],
+  "include": ["src", ".ladle"],
   "exclude": ["node_modules", "dist"],
   "references": [{ "path": "../core" }]
 }

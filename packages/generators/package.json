@@ -37,7 +37,7 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --emitDeclarationOnly",
     "build:watch": "tsc --watch",
     "build": "tsc",
     "dev": "tsc --watch",

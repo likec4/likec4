@@ -22,17 +22,23 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "scripts": {
     "typecheck:turbo": "run -T turbo run typecheck --filter='language-server'",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --emitDeclarationOnly",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
