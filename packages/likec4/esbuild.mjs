@@ -7,7 +7,7 @@ import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
-console.log(`LikecC4 build isDev=${isDev}`)
+console.log(`LikeC4 build isDev=${isDev}`)
 
 const alias = {
   // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
