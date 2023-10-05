@@ -1,12 +1,13 @@
 import * as esbuild from 'esbuild'
 import { build, formatMessagesSync, analyzeMetafileSync } from 'esbuild'
 import { writeFileSync } from 'node:fs'
-import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill';
+import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 
 import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
-const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
+console.log(`VSCode build isDev=${isDev}`)
 
 const alias = {
   'vscode-uri': 'vscode-uri/lib/esm/index.js',
@@ -39,12 +40,11 @@ const base = {
   alias: {
     ...alias
   },
-  format: 'cjs',
   sourcemap: true,
   sourcesContent: isDev,
   keepNames: true,
   minify: !isDev,
-  legalComments: 'none',
+  legalComments: 'none'
 }
 
 /**
@@ -59,7 +59,7 @@ const extensionNodeCfg = {
 }
 const serverNodeCfg = {
   ...extensionNodeCfg,
-  entryPoints: ['src/node/language-server.ts'],
+  entryPoints: ['src/node/language-server.ts']
 }
 
 /**
@@ -68,12 +68,13 @@ const serverNodeCfg = {
 const extensionWebCfg = {
   ...base,
   entryPoints: ['src/browser/extension.ts'],
+  format: 'cjs',
   target: 'es2022',
   platform: 'browser',
   plugins: [
     nodeModulesPolyfillPlugin({
       globals: {
-        process: true,
+        process: true
       }
     })
   ]
@@ -90,21 +91,16 @@ const serverWebCfg = {
   plugins: [
     nodeModulesPolyfillPlugin({
       globals: {
-        process: true,
+        process: true
       }
     })
   ]
 }
 
-const builds = [
-  extensionNodeCfg,
-  serverNodeCfg,
-  extensionWebCfg,
-  serverWebCfg
-]
+const builds = [extensionNodeCfg, serverNodeCfg, extensionWebCfg, serverWebCfg]
 
 const bundles = await Promise.all(builds.map(cfg => build(cfg)))
-bundles.forEach((bundle) => {
+bundles.forEach(bundle => {
   if (bundle.metafile) {
     const out = Object.keys(bundle.metafile.outputs).find(k => k.endsWith('.js'))
     if (out) {
@@ -112,10 +108,29 @@ bundles.forEach((bundle) => {
       writeFileSync(metafilepath, JSON.stringify(bundle.metafile))
       console.log(metafilepath)
     }
-    // bundle.warnings
-    // console.log(analyzeMetafileSync(bundle.metafile))
   }
 })
+
+const errors = bundles.flatMap(b => b.errors)
+const warnings = bundles.flatMap(b => b.warnings)
+if (errors.length || warnings.length) {
+  console.error(
+    [
+      ...formatMessagesSync(warnings, {
+        kind: 'warning',
+        color: true,
+        terminalWidth: process.stdout.columns
+      }),
+      ...formatMessagesSync(errors, {
+        kind: 'error',
+        color: true,
+        terminalWidth: process.stdout.columns
+      })
+    ].join('\n')
+  )
+  console.error('\n ⛔️ Build failed')
+  process.exit(1)
+}
 
 // if (!watch) {
 //   const bundles = await Promise.all([

@@ -3,7 +3,6 @@ import { useAtomsDevtools } from 'jotai-devtools'
 import type { PropsWithChildren } from 'react'
 import { Fragment } from 'react'
 import { Sidebar } from './components'
-import { ThemeButton } from './components/ThemeButton'
 import { ExportPage, IndexPage, ViewPage } from './pages'
 import { useRoute } from './router'
 
@@ -13,11 +12,12 @@ const Routes = () => {
     <>
       {r.route === 'index' && <IndexPage key='index' />}
       {r.route === 'view' && <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />}
-      {r.route === 'export' && <ExportPage key='export' viewId={r.params.viewId} />}
+      {r.route === 'export' && (
+        <ExportPage key='export' viewId={r.params.viewId} padding={r.params.padding} />
+      )}
       {r.showUI && (
         <Fragment key='ui'>
           <Sidebar />
-          <ThemeButton />
         </Fragment>
       )}
     </>

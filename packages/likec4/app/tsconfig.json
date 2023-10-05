@@ -9,14 +9,12 @@
     "noEmit": true,
     "allowJs": true,
     "checkJs": false,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-
     /* Linting */
     "strict": true,
     "allowUnusedLabels": false,
@@ -30,12 +28,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
-
     "paths": {
       "~/*": ["./src/*"]
     },
-
     "types": ["vite/client"]
   },
-  "include": ["./src"]
+  "include": ["src"]
 }

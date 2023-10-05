@@ -16,11 +16,11 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "${workspaceFolder}/../diagrams/src-dev/likec4",
+        "${workspaceFolder}/../diagrams/src/stories/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
-      "preLaunchTask": "npm: build:deps",
+      "preLaunchTask": "npm: build:turbo",
     }
   ]
 }

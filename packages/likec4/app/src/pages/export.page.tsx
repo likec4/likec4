@@ -2,11 +2,13 @@ import { Diagram } from '@likec4/diagrams'
 import { useLikeC4View } from '../data'
 import { useLayoutEffect } from 'react'
 import styles from './export.module.css'
+import { DiagramNotFound } from '../components'
 
 type ExportPageProps = {
   viewId: string
+  padding: number
 }
-export function ExportPage({ viewId }: ExportPageProps) {
+export function ExportPage({ viewId, padding }: ExportPageProps) {
   const diagram = useLikeC4View(viewId)
 
   useLayoutEffect(() => {
@@ -17,15 +19,19 @@ export function ExportPage({ viewId }: ExportPageProps) {
     }
   }, [])
 
+  if (!diagram) {
+    return <DiagramNotFound />
+  }
+
   return (
     <Diagram
       animate={false}
       pannable={false}
       zoomable={false}
       diagram={diagram}
-      padding={0}
-      width={diagram.width}
-      height={diagram.height}
+      padding={padding}
+      width={diagram.width + padding * 2}
+      height={diagram.height + padding * 2}
     />
   )
 }

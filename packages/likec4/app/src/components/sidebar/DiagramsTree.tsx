@@ -1,15 +1,22 @@
 import { DashboardIcon, TriangleRightIcon } from '@radix-ui/react-icons'
 import { Box, Flex, Text } from '@radix-ui/themes'
-import TreeView from 'react-accessible-treeview'
+import TreeView, { type INode } from 'react-accessible-treeview'
 import { useDiagramsTree } from '../../data'
 import { $pages, useRoute } from '../../router'
 import { cn } from '../../utils'
 import styles from './DiagramsTree.module.css'
 
+function inTree(id: string, data: INode[]): boolean {
+  return data.some(d => d.id === id)
+}
+
 export function DiagramsTree() {
   const data = useDiagramsTree()
   const r = useRoute()
-  const selectedId = r?.route === 'view' ? [r.params.viewId] : []
+
+  const viewId = r.route === 'view' || r.route === 'export' ? r.params.viewId : null
+  const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
+
   return (
     <Box className={styles.treeview}>
       <TreeView

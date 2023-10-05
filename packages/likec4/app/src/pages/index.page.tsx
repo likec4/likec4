@@ -93,9 +93,6 @@ export const IndexPage = memo(() => {
           sm: 'row'
         }}
         align='stretch'
-        // // columns={'2'}
-        // width={'auto'}
-        // align={'start'}
       >
         {tiles.map(tile => (
           <DashboardTile key={tile.toString()} atom={tile} />

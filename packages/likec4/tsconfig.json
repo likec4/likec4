@@ -1,44 +1,21 @@
 {
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "skipLibCheck": true,
     "outDir": "dist",
-    "noEmit": true,
     "allowJs": true,
     "checkJs": false,
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowArbitraryExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    /* Linting */
-    "strict": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "~/*": ["./app/src/*"],
       "@likec4/core": ["../core/src"],
+      "@likec4/layouts": ["../layouts/src"],
+      "@likec4/generators": ["../generators/src"],
       "@likec4/language-server": ["../language-server/src"]
     }
   },
-  "include": ["src", "app", "*.config.ts", "postcss.config.js"],
+  "files": ["esbuild.mjs"],
+  "include": ["src", "app"],
   "exclude": ["app/src/**/*"],
   "references": [
     {
@@ -46,6 +23,9 @@
     },
     {
       "path": "../layouts"
+    },
+    {
+      "path": "../generators"
     },
     {
       "path": "../language-server"

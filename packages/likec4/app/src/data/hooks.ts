@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 import { diagramsTreeAtom, indexPageTilesAtomsAtom, selectLikeC4ViewAtom } from './atoms'
 
 export const useLikeC4View = (viewId: string) => {
-  const atom = useMemo(() => selectLikeC4ViewAtom(viewId), [viewId])
-  return useAtomValue(atom)
+  const anAtom = useMemo(() => selectLikeC4ViewAtom(viewId), [viewId])
+  return useAtomValue(anAtom)
 }
 
 export const useIndexPageTileAtoms = () => {

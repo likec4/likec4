@@ -1,6 +1,6 @@
 import { groupBy } from 'rambdax'
 import { flattenTree } from 'react-accessible-treeview'
-import type { DiagramView } from '~likec4'
+import type { DiagramView } from '@likec4/core'
 
 interface ITreeNode {
   id: string
@@ -9,7 +9,7 @@ interface ITreeNode {
 }
 
 export function buildDiagramTreeAtom(views: DiagramView[]) {
-  const byPath = groupBy(v => v.docPath.join('/'), views)
+  const byPath = groupBy(v => v.relativePath ?? '', views)
 
   const folders = Object.keys(byPath)
     .filter(path => path !== '')

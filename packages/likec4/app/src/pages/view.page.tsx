@@ -1,9 +1,8 @@
 import { Diagram, useDiagramRef } from '@likec4/diagrams'
 import { Box, Flex, Heading, Text } from '@radix-ui/themes'
-import { useRenderCount, useWindowSize } from '@react-hookz/web/esm'
-import { useEffect } from 'react'
+import { useWindowSize } from '@react-hookz/web/esm'
 import { $pages } from '~/router'
-import Navbar from '../components/Navbar'
+import { DiagramNotFound, ViewActionsToolbar } from '../components'
 import { useLikeC4View } from '../data'
 
 const Paddings = [60, 20, 20, 20] as const
@@ -17,16 +16,9 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   const diagramApi = useDiagramRef()
   const diagram = useLikeC4View(viewId)
 
-  const render = useRenderCount()
-
-  useEffect(() => {
-    console.log('ViewPage: mount')
-    return () => {
-      console.log('ViewPage: unmount')
-    }
-  }, [])
-
-  console.log(`ViewPage: ${render}`)
+  if (!diagram) {
+    return <DiagramNotFound />
+  }
 
   return (
     <Box position={'fixed'} inset='0' className='overflow-hidden'>
@@ -67,7 +59,7 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
               {diagram.title || 'Untitled'}
             </Heading>
           </Flex>
-          <Navbar diagramApi={diagramApi} />
+          <ViewActionsToolbar diagramApi={diagramApi} diagram={diagram} />
         </>
       )}
     </Box>
