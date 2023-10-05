@@ -12,7 +12,7 @@
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^build", "generate"],
+      "dependsOn": ["^build"],
       "outputs": ["dist"]
     }
   }
