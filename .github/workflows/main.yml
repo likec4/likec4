@@ -54,7 +54,7 @@ jobs:
 
       - name: Build Docs
         working-directory: docs
-        run: yarn turbo-build
+        run: yarn build:turbo
 
   release:
     name: Release

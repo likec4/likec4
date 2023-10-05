@@ -16,7 +16,7 @@
     "prepare": "husky install",
     "build": "turbo run build --filter='./packages/*'",
     "build:watch": "turbo run build:watch --filter='./packages/*'",
-    "ci:build": "turbo run build typecheck --filter='./packages/*' --log-prefix=none --log-order=grouped",
+    "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",
     "typecheck": "turbo run typecheck",
     "turbo": "turbo",
     "release": "shipjs prepare",
