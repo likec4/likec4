@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "0.37.1",
+  "version": "0.40.0-build.1",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -28,7 +28,7 @@
     "typecheck": "tsc --emitDeclarationOnly && run 'typecheck:app'",
     "build:watch": "tsc --watch",
     "build": "$npm_node_execpath esbuild.mjs",
-    "prepack": "unbuild",
+    "prepack": "run -T rimraf dist && $npm_node_execpath esbuild.mjs",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
@@ -39,7 +39,6 @@
     "cli:export": "tsx src/cli/index.ts export png -o dev/.export dev"
   },
   "type": "module",
-  "exports": "./src/index.ts",
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
