@@ -1,6 +1,6 @@
+import { useStoryViewport } from '@/ladle/components'
 import type { Story } from '@ladle/react'
 import { keys } from 'rambdax'
-import { useStoryViewport } from '../../../.ladle/components'
 import { DiagramStateProvider } from '../../diagram/state'
 import { LikeC4 } from '../../likec4'
 import type { LikeC4ViewId } from './likec4.generated'

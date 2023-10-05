@@ -30,10 +30,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
+    "paths": {
+      "@/ladle/*": [".ladle/*"]
+    },
     "baseUrl": "."
   },
   "include": ["src", ".ladle"],
-  "exclude": ["node_modules", "dist"],
   "references": [{ "path": "../core" }]
 }

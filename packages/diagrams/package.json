@@ -16,16 +16,19 @@
   ],
   "type": "module",
   "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "module": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "exports": {
       ".": {
@@ -37,7 +40,7 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
-    "typecheck": "tsc --emitDeclarationOnly",
+    "typecheck": "unbuild && tsc --noEmit",
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
     "generate": "../cli/bin/likec4 codegen views-data src/stories/likec4",

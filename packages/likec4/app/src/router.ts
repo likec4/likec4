@@ -7,11 +7,21 @@ import { computed } from 'nanostores'
 const $searchParams = createSearchParams()
 
 const $route = computed($searchParams, v => {
-  if ('export' in v || 'embed' in v) {
+  if ('embed' in v) {
     return {
       route: 'export' as const,
       params: {
-        viewId: v.export || v.embed,
+        viewId: v.embed,
+        padding: 'padding' in v ? parseInt(v.padding) : 20
+      },
+      showUI: false
+    }
+  }
+  if ('export' in v) {
+    return {
+      route: 'export' as const,
+      params: {
+        viewId: v.export,
         padding: 'padding' in v ? parseInt(v.padding) : 20
       },
       showUI: false

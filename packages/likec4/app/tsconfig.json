@@ -6,9 +6,8 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "outDir": "dist",
-    "noEmit": true,
+    "declaration": true,
     "allowJs": true,
-    "checkJs": false,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowArbitraryExtensions": true,
@@ -33,5 +32,10 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../core/"
+    }
+  ]
 }

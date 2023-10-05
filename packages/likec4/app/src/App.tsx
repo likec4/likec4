@@ -24,10 +24,12 @@ const Routes = () => {
   )
 }
 
-const AtomsDevTools = ({ children }: PropsWithChildren) => {
-  useAtomsDevtools('demo')
-  return <>{children}</>
-}
+const AtomsDevTools = import.meta.env.DEV
+  ? ({ children }: PropsWithChildren) => {
+      useAtomsDevtools('demo')
+      return <>{children}</>
+    }
+  : Fragment
 
 export default function App() {
   return (

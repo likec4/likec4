@@ -2,7 +2,6 @@ import type { DiagramApi, DiagramView } from '@likec4/diagrams'
 import { CaretDownIcon, Share1Icon as ShareIcon } from '@radix-ui/react-icons'
 import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
 import type { PropsWithChildren } from 'react'
-import { cn } from '~/utils'
 import { ThemePanelToggle } from '../ThemePanelToggle'
 import { ShareDialog } from './ShareDialog'
 

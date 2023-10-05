@@ -1,5 +1,5 @@
+import { useStoryViewport } from '@/ladle/components'
 import { ActionType, action, useLadleContext, type Story, type StoryDefault } from '@ladle/react'
-import { useStoryViewport } from '../../.ladle/components'
 import { Diagram, DiagramStateProvider } from '../diagram'
 import { useDiagramRef } from '../hooks'
 import type { LikeC4ViewId } from './likec4'

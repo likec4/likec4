@@ -1,4 +1,4 @@
-import type { DiagramApi, DiagramView } from '@likec4/diagrams'
+import type { DiagramView } from '@likec4/diagrams'
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -8,17 +8,15 @@ import {
   Box,
   Button,
   Callout,
-  Checkbox,
   Code,
   Dialog,
   Flex,
   Link,
   Select,
-  Switch,
   Tabs,
   Text
 } from '@radix-ui/themes'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const embedCode = (diagram: DiagramView, theme: string) => {
   const padding = 20
