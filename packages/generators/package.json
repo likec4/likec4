@@ -20,7 +20,6 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./src/index.ts",
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     }

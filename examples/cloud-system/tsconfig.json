@@ -14,8 +14,23 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsxdev"
+    "jsx": "react-jsxdev",
+    "outDir": "dist",
+    "baseUrl": "."
   },
-  "include": ["./src/"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/layouts"
+    },
+    {
+      "path": "../../packages/generators"
+    },
+    {
+      "path": "../../packages/language-server"
+    }
+  ]
 }

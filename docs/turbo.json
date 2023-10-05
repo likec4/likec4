@@ -8,11 +8,11 @@
       "inputs": ["package.json", "**/*.c4"]
     },
     "typecheck": {
-      "dependsOn": ["^build", "generate"],
+      "dependsOn": ["generate", "^typecheck"],
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^build", "generate"],
+      "dependsOn": ["generate", "^build"],
       "outputs": [".next/**", "out/**", "!.next/cache/**"]
     }
   }
