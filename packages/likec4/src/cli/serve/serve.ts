@@ -4,6 +4,7 @@ import { viteDev } from '@/vite/vite-dev'
 
 type HandlerParams = {
   path: string
+  sourceMaps: boolean
 }
 
 export async function handler({ path }: HandlerParams) {

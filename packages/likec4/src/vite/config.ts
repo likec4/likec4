@@ -4,12 +4,12 @@ import fs from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { isNil } from 'remeda'
 // import { createRequire } from 'module'
+import k from 'kleur'
 import { fileURLToPath } from 'node:url'
 import type { InlineConfig } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { mkLanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-import k from 'kleur'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -78,6 +78,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       assetsInlineLimit: 500 * 1000,
       cssMinify: true,
       minify: true,
+      sourcemap: false,
       cssCodeSplit: false,
       chunkSizeWarningLimit: 5 * 1000 * 1000
     },

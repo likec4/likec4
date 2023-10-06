@@ -1,9 +1,6 @@
-import { build, formatMessagesSync, analyzeMetafileSync } from 'esbuild'
-import { writeFileSync } from 'node:fs'
+import { build } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 
-import path from 'node:path'
 
 const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'

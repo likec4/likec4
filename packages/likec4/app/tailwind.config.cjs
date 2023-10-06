@@ -1,11 +1,11 @@
 const { radixThemePreset } = require('radix-themes-tw');
 const tailwindcssAnimate = require('tailwindcss-animate');
-const { resolve } = require('path');
+const { resolve } = require('node:path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   presets: [radixThemePreset],
-  darkMode: ['class'],
+  darkMode: ['class', '[data-mode="dark"]'],
   content: [
     resolve(__dirname, './src') + '/**/*.{js,jsx,ts,tsx,md,mdx}',
     resolve(__dirname, './index.html'),

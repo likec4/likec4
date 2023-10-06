@@ -10545,10 +10545,10 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@types/yargs": ^17
     "@vitejs/plugin-react": ^4.1.0
+    autoprefixer: ^10.4.15
     boxen: ^7.1.1
     esbuild: ^0.19.2
     esbuild-node-externals: ^1.9.0
-    esbuild-plugins-node-modules-polyfill: ^1.6.1
     execa: ^8.0.1
     get-port: ^7.0.0
     jotai: ^2.4.2
