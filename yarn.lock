@@ -1736,9 +1736,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/example-cloud-system@workspace:examples/cloud-system":
+"@likec4/example-cloud-system-vite@workspace:examples/cloud-system-vite":
   version: 0.0.0-use.local
-  resolution: "@likec4/example-cloud-system@workspace:examples/cloud-system"
+  resolution: "@likec4/example-cloud-system-vite@workspace:examples/cloud-system-vite"
   dependencies:
     "@likec4/cli": "workspace:*"
     "@likec4/diagrams": "workspace:*"
@@ -1756,6 +1756,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/example-cloud-system@workspace:examples/cloud-system":
+  version: 0.0.0-use.local
+  resolution: "@likec4/example-cloud-system@workspace:examples/cloud-system"
+  dependencies:
+    likec4: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@likec4/generators@workspace:*, @likec4/generators@workspace:packages/generators":
   version: 0.0.0-use.local
   resolution: "@likec4/generators@workspace:packages/generators"
@@ -1766,6 +1774,7 @@ __metadata:
     langium: ^2.0.2
     rambdax: ^9.1.1
     typescript: ^5.2.2
+    unbuild: ^2.0.0
     vitest: ^0.34.6
   languageName: unknown
   linkType: soft
@@ -1788,6 +1797,7 @@ __metadata:
     remeda: ^1.27.0
     strip-indent: ^4.0.0
     typescript: ^5.2.2
+    unbuild: ^2.0.0
     vitest: ^0.34.6
     vscode-languageserver: ~8.1.0
     vscode-languageserver-protocol: ~3.17.3
@@ -1812,6 +1822,7 @@ __metadata:
     ts-graphviz: ^1.8.1
     type-fest: ^4.3.1
     typescript: ^5.2.2
+    unbuild: ^2.0.0
     vitest: ^0.34.6
     word-wrap: ^1.2.5
   languageName: unknown
@@ -10525,7 +10536,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"likec4@workspace:packages/likec4":
+"likec4@workspace:*, likec4@workspace:packages/likec4":
   version: 0.0.0-use.local
   resolution: "likec4@workspace:packages/likec4"
   dependencies:

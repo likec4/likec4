@@ -1,9 +1,9 @@
 import * as esbuild from 'esbuild'
-import { build, formatMessagesSync, analyzeMetafileSync } from 'esbuild'
-import { writeFileSync } from 'node:fs'
+import { build, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
+import { writeFileSync } from 'node:fs'
 
-import path from 'node:path'
+import path, { resolve } from 'node:path'
 
 const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
@@ -11,16 +11,20 @@ console.log(`VSCode build isDev=${isDev}`)
 
 const alias = {
   'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
-  '@likec4/core/utils': '../core/src/utils/index.ts',
-  '@likec4/core/errors': '../core/src/errors/index.ts',
-  '@likec4/core/types': '../core/src/types/index.ts',
-  '@likec4/core/colors': '../core/src/colors.ts',
-  '@likec4/core': '../core/src/index.ts',
-  '@likec4/diagrams': '../diagrams/src/index.ts',
-  '@likec4/generators': '../generators/src/index.ts',
-  '@likec4/language-server': '../language-server/src/index.ts',
-  '@likec4/layouts': '../layouts/src/index.ts'
+  '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
+  '@likec4/core/errors': resolve('../core/src/errors/index.ts'),
+  '@likec4/core/types': resolve('../core/src/types/index.ts'),
+  '@likec4/core/colors': resolve('../core/src/colors.ts'),
+  '@likec4/core': resolve('../core/src/index.ts'),
+  '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
+  '@likec4/generators': resolve('../generators/src/index.ts'),
+  '@likec4/language-server': resolve('../language-server/src/index.ts'),
+  '@likec4/layouts': resolve('../layouts/src/index.ts')
+}
+
+if (isDev) {
+  console.info(' ⚠️  Using local packages:')
+  console.dir(alias)
 }
 
 /**

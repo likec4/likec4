@@ -4,14 +4,18 @@ model {
     description 'The regular customer of the system'
   }
 
-  cloud = system 'Cloud System' {
+  cloud = softwareSystem 'Cloud System' {
     description '
       Our SaaS platfrom that allows
       customers to interact with
       the latest technologies
     '
+
     ui = container 'Frontend' {
-      description 'All the frontend applications of the cloud system'
+      description '
+        All the frontend applications
+        of the cloud system
+      '
       style {
         shape browser
       }
@@ -23,44 +27,63 @@ model {
           shape browser
         }
 
-        -> amazon.cognito 'authenticates'
-        -> graphql 'fetches xcgdata'
+        -> amazon.cognito 'authenticate'
+        -> backend.graphql 'fetch data'
       }
-      customer -> dashboard 'opens in browser'
+      customer -> dashboard 'open in browser'
 
-      mobile = mobileApp 'Mobile App' {
+      mobile = mobile 'Mobile App' {
         description 'The mobile app of the cloud system'
-        -> amazon.cognito 'authenticates'
-        -> graphql 'fetches data'
+        -> amazon.cognito 'authenticate'
+        -> backend.graphql 'fetch data'
       }
-      customer -> mobile 'opens on mobile device'
+      customer -> mobile 'open on mobile device'
     }
+
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
+    }
 
-      graphql = app 'GraphQL' {
-        description '
-          The GraphQL API
-          of the cloud system
-        '
+    reporting = service 'Reporting' {
+      technology 'PowerBI'
+      description 'Reporting services'
+    }
+
+    data = container 'Data Services' {
+      description '
+        Data storage
+        and data processing
+      '
+    }
+
+    integration = container 'Integration Services' {
+      description '
+        Integration with
+        Third-Party services
+      '
+    }
+
+    billing = service 'Billing' {
+      description '
+        Billing services, process
+        payments and subscriptions
+      '
+    }
+
+    backoffice = service 'Back Office' {
+      description '
+        Back office services,
+        providing tenant management,
+        customer support and billing
+      '
+      style {
+        shape browser
       }
-      cms = app 'CMS' {
-        description 'The CMS of the cloud system'
-      }
-
-      graphql -> cms
-      graphql -> amazon.cognito 'authorizes'
-      graphql -> amazon.ses 'schedule emails'
-      graphql -> amazon.cognito 'authenticates'
-      graphql -> amazon.rds.pg 'reads and writes'
-
-      cms -> amazon.rds.mysql 'stores media'
     }
   }
 
-  customer -> cloud 'uses and pays'
-  cloud -> amazon 'hosted on'
-
+  customer -> cloud 'use and pay'
+  cloud -> amazon 'use services'
 }
 
 views {
@@ -68,29 +91,46 @@ views {
   view index {
     title "Landscape"
     include *
-    exclude element.kind = themecolor
   }
 
   view customer of customer {
-    title "Overview Customer"
-    include *,
-            -> ui.*,
-            -> backend
-    exclude amazon
+    title "Customer Context"
+    include
+        *,
+        ui,
+        customer -> ui.*,
+        backend
+
+    style * {
+      color muted
+    }
+    style customer, ui, ui.* {
+      color primary
+    }
+    style backend {
+      color secondary
+    }
   }
 
   view cloud of cloud {
-    title "Overvew 11 Cloud System"
-    include *
+    title "[system context] Cloud System"
+    include
+      *
+    exclude
+      ui.* -> amazon
+
+    style cloud, cloud.* {
+      color primary
+    }
   }
 
   view cloud_ui of ui {
-    title "Overview xxx UI"
-    include *
+    title "[container context] Cloud UI"
+    include *, cloud
   }
 
   view cloud_backend of backend {
-    title "Overview Backend"
+    title "[container context] Cloud Backend"
     include
       ui, amazon, backend, cloud,
       ui.* -> backend,
@@ -110,19 +150,6 @@ views {
     style backend, backend.* {
       color primary
     }
-  }
-
-  view cloud_graphqsl of graphql {
-    include
-      *, backend
-    exclude
-      -> amazon
-    include
-      graphql -> amazon
-  }
-
-  view cloud_cms of cms {
-    include *, backend
   }
 
 }

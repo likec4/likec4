@@ -4,7 +4,6 @@ import { formatMessagesSync } from 'esbuild'
 const watch = process.argv.includes('--watch')
 
 const alias = {
-  '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
   '@likec4/core/utils': '../core/src/utils/index.ts',
   '@likec4/core/errors': '../core/src/errors/index.ts',
   '@likec4/core/types': '../core/src/types/index.ts',

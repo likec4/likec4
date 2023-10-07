@@ -22,25 +22,19 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --emitDeclarationOnly",
     "build:watch": "tsc --watch",
-    "build": "tsc",
+    "prepack": "run clean && run build",
+    "build": "unbuild",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
@@ -64,6 +58,7 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
   "packageManager": "yarn@3.6.3"

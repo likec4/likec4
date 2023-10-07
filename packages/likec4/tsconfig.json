@@ -2,8 +2,6 @@
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "allowJs": true,
-    "checkJs": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

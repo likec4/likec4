@@ -1,4 +1,4 @@
-import type { ThemeColorValues, LikeC4Theme, ThemeColors, ThemeRelationColors } from './types'
+import type { LikeC4Theme, ThemeColorValues, ThemeColors, ThemeRelationColors } from './types/theme'
 
 const blue = {
   // fill: colors.blue[500],

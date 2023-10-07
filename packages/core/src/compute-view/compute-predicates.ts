@@ -1,7 +1,7 @@
 import { anyPass, both, either, isNil, uniq, type Predicate } from 'rambdax'
-import { Expr } from '../types'
 import type { Element, Relation } from '../types'
-import { commonAncestor, isAncestor, isSameHierarchy, Relations } from '../utils'
+import { Expr } from '../types'
+import { Relations, commonAncestor, isAncestor, isSameHierarchy } from '../utils'
 import { ComputeCtx } from './compute-ctx'
 
 const { isAnyInOut, isBetween, isIncoming, isInside, isOutgoing, isAnyBetween } = Relations

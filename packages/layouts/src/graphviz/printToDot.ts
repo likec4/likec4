@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { invariant, isAncestor, nameFromFqn, nonNullable } from '@likec4/core'
-import { Colors, RelationColors } from '@likec4/core/colors'
-import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn } from '@likec4/core/types'
-import { DefaultThemeColor } from '@likec4/core/types'
+import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core'
+import { Colors, DefaultThemeColor, RelationColors, nameFromFqn, nonNullable } from '@likec4/core'
 import { isTruthy } from 'remeda'
 import {
   attribute as _,
@@ -55,7 +53,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.pad]: pxToInch(10),
     [_.rankdir]: autoLayout,
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(70),
+    [_.nodesep]: pxToInch(80),
     [_.ranksep]: pxToInch(90),
     // [_.newrank]: true,
     [_.pack]: pxToPoints(20),

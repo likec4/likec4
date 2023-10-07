@@ -23,7 +23,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/packages/diagrams/src/stories/likec4",
+        "${workspaceFolder}/packages/likec4/dev",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,

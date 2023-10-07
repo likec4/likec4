@@ -1,5 +1,6 @@
 import { build } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
+import { cp, mkdir, rm } from 'node:fs/promises'
 
 
 const watch = process.argv.includes('--watch')
@@ -63,3 +64,7 @@ await build({
     })
   ]
 })
+
+await rm('dist/__app__', { recursive: true, force: true })
+await mkdir('dist/__app__')
+await cp('app/', 'dist/__app__/', { recursive: true })

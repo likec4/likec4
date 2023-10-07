@@ -1,7 +1,7 @@
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { isNil } from 'remeda'
 // import { createRequire } from 'module'
 import k from 'kleur'
@@ -13,12 +13,15 @@ import { likec4Plugin } from './plugin'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
-export const getAppRoot = () => {
-  // if (fs.existsSync(join(_dirname, '../../typings-for-build/app/index.html'))) {
-  //   // published/compiled folder of our app
-  //   return join(_dirname, '../../typings-for-build/app')
-  // }
-  return join(_dirname, '../../app')
+const getAppRoot = (): [path: string, isDev: boolean] => {
+  /* @see packages/likec4/app/tsconfig.json */
+  const root = resolve(_dirname, '../__app__')
+  if (fs.existsSync(root)) {
+    // we are bundled
+    return [root, false]
+  }
+  // we are in dev
+  return [resolve(_dirname, '../../app'), true]
 }
 
 export type LikeC4ViteConfig =
@@ -34,11 +37,13 @@ export type LikeC4ViteConfig =
     }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
-  const root = getAppRoot()
+  const customLogger = createLikeC4Logger('c4:vite')
+
+  const [root, isDev] = getAppRoot()
   if (!fs.existsSync(root)) {
+    customLogger.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
   }
-  const customLogger = createLikeC4Logger('c4:vite')
 
   customLogger.info(`${k.dim('app root')} ${root}`)
 
@@ -57,6 +62,19 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     })
   }
 
+  const aliases = {}
+  if (isDev) {
+    const diagramsSrc = resolve(_dirname, '../../../diagrams/src/index.ts')
+    if (!fs.existsSync(diagramsSrc)) {
+      customLogger.error(`@likec4/diagrams does not exist: ${diagramsSrc}`)
+    } else {
+      customLogger.info(`${k.dim('resolve @likec4/diagrams to')} ${diagramsSrc}`)
+      Object.assign(aliases, {
+        '@likec4/diagrams': diagramsSrc
+      })
+    }
+  }
+
   return {
     root,
     languageServices,
@@ -69,7 +87,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'react-inspector'
       ],
       alias: {
-        '~': resolve(root, './src')
+        '~': resolve(root, './src'),
+        ...aliases
       }
     },
     build: {

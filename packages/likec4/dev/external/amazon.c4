@@ -1,17 +1,12 @@
 model {
 
-  amazon = system 'Amazon' {
+  amazon = externalSystem 'Amazon' {
     description: 'Cloud and managed services provider'
-
-    style {
-      color gray
-    }
 
     rds = container 'RDS' {
       description: 'Relational Databases'
       style {
         shape cylinder
-        icon https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS_Amazon-RDS_instance_light-bg.svg
       }
 
       pg = database 'PostgreSQL' {
@@ -36,11 +31,38 @@ model {
       description: 'User management and authentication'
     }
 
-    ses = component 'SES' {
-      description: 'Email sending'
+    kinesis = component 'Kinesis' {
+      description: 'Streaming data'
+      style {
+        shape queue
+      }
+
+      hits = stream 'Hits' {
+        description '
+          Stream of page hits from Dashboard app.
+          Data is sent via GoogleTagManager
+        '
+
+        -> sqs.hits 'send in batches'
+      }
+
+      cloud.ui.dashboard -> hits "send page hits via GoogleTagManager"
     }
 
-    ses -> customer 'sends emails'
+    sqs = component 'SQS' {
+      description 'Message queues'
+      style {
+        shape queue
+      }
+
+      hits = queue 'Hits' {
+        description '
+          Filtered data from stream of page hits.
+          Ready to be processed.
+        '
+      }
+    }
+
   }
 
 }
@@ -48,7 +70,7 @@ model {
 views {
 
   view amazon of amazon {
-    title: "Overview Amazon"
+    title "Overview Amazon"
     include
       *,
       cloud,
@@ -58,16 +80,12 @@ views {
       color muted
     }
 
-    style cloud, cloud.* {
-      color sky
+    style cloud.* {
+      color secondary
     }
 
-    style amazon, amazon.* {
+    style amazon.* {
       color primary
-    }
-
-    style rds {
-      color indigo
     }
 
   }
@@ -85,6 +103,22 @@ views {
     title: 'Overview Amazon Cognito'
 
     include *, amazon
+  }
+
+
+  view amazon_sqs of sqs {
+    include
+      *,
+      amazon,
+      cloud,
+      kinesis,
+      cloud.* -> kinesis.*,
+      cloud.* -> sqs.*,
+      kinesis.* -> sqs
+
+    style cloud, cloud.*, kinesis, kinesis.* {
+      color secondary
+    }
   }
 
 }

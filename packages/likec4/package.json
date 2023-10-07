@@ -15,21 +15,20 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "files": [
     "bin",
-    "app",
     "dist",
-    "!app/dist/",
     "!**/*.map"
   ],
+  "type": "module",
   "bin": "./bin/likec4.mjs",
   "scripts": {
     "typecheck:turbo": "run -T turbo run typecheck --filter='likec4'",
     "build:turbo": "run -T turbo run build --filter='likec4'",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
-    "typecheck": "tsc --emitDeclarationOnly && run 'typecheck:app'",
+    "typecheck:cli": "tsc --noEmit",
+    "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "build:watch": "tsc --watch",
     "build": "$npm_node_execpath esbuild.mjs",
-    "prepublish": "run clean",
-    "prepack": "NODE_ENV=production run build",
+    "prepack": "NODE_ENV=production run clean && run build",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
@@ -39,7 +38,6 @@
     "cli:preview": "tsx src/cli/index.ts preview ./dev",
     "cli:export": "tsx src/cli/index.ts export png -o dev/.export dev"
   },
-  "type": "module",
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",

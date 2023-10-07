@@ -1,8 +1,8 @@
 // @ts-check
 import nextra from 'nextra'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { codeImport } from 'remark-code-import'
-import { getHighlighter, BUNDLED_LANGUAGES } from 'shiki'
+import { BUNDLED_LANGUAGES, getHighlighter } from 'shiki'
 
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
@@ -54,6 +54,18 @@ export default withNextra({
       test: /\.(mp3|wasm)$/i,
       type: 'asset/resource'
     })
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@likec4/core/colors': resolve(__dirname, '../packages/core/src/colors.ts'),
+      '@likec4/core/utils': resolve(__dirname, '../packages/core/src/utils/index.ts'),
+      '@likec4/core/errors': resolve(__dirname, '../packages/core/src/errors/index.ts'),
+      '@likec4/core/types': resolve(__dirname, '../packages/core/src/types/index.ts'),
+      '@likec4/core': resolve(__dirname, '../packages/core/src/index.ts'),
+      '@likec4/diagrams': resolve(__dirname, '../packages/diagrams/src/index.ts'),
+      '@likec4/generators': resolve(__dirname, '../packages/generators/src/index.ts'),
+      '@likec4/layouts': resolve(__dirname, '../packages/layouts/src/index.ts'),
+      '@likec4/language-server': resolve(__dirname, '../packages/language-server/src/index.ts'),
+    }
     return config
   },
   eslint: {

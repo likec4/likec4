@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core/types'
+import type { likec4 as c4 } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   DONE_RESULT,
@@ -123,7 +123,8 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const doc = getDocument(node)
     const precomputed = doc.precomputedScopes
 
-    const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
+    const byReferenceType = (desc: AstNodeDescription) =>
+      this.reflection.isSubtype(desc.type, referenceType)
 
     if (precomputed) {
       const elements = precomputed.get(node).filter(byReferenceType)

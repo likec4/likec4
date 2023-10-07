@@ -1,6 +1,4 @@
 node_modules
 dist
 build
-src*/**/*.generated.ts
-src*/**/*.generated.tsx
 .vscode/

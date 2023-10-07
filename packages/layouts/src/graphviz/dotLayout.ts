@@ -123,8 +123,8 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  // const dot = graphviz.unflatten(printToDot(computedView), 2, false, 2)
-  const dot = printToDot(computedView)
+  const dot = graphviz.unflatten(printToDot(computedView), 1, true, 2)
+  // const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 

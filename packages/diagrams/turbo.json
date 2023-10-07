@@ -7,8 +7,16 @@
       "outputs": ["src/stories/likec4/*.generated.ts"],
       "inputs": ["package.json", "**/*.c4"]
     },
+    "typecheck:diagrams": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "typecheck:stories": {
+      "dependsOn": ["typecheck:diagrams", "generate"],
+      "outputs": []
+    },
     "typecheck": {
-      "dependsOn": ["^typecheck", "generate"],
+      "dependsOn": ["^typecheck"],
       "outputs": []
     },
     "build": {

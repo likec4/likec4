@@ -1,0 +1,29 @@
+{
+  "name": "@likec4/example-cloud-system-vite",
+  "private": true,
+  "version": "0.37.1",
+  "packageManager": "yarn@3.4.1",
+  "scripts": {
+    "build:turbo": "run -T turbo run build --filter='example-cloud-system'",
+    "typecheck": "tsc --noEmit",
+    "generate": "likec4 codegen react --output src/likec4.generated.tsx",
+    "dev": "run generate && vite"
+  },
+  "dependencies": {
+    "@likec4/diagrams": "workspace:*",
+    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/web": "^23.1.0",
+    "rambdax": "^9.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@likec4/cli": "workspace:*",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.1.0",
+    "tilg": "^0.1.1",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.10"
+  }
+}

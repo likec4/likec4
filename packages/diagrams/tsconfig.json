@@ -5,7 +5,6 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ES2022",
     "skipLibCheck": true,
-    "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
     "allowJs": true,
@@ -30,11 +29,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/ladle/*": [".ladle/*"]
-    },
-    "baseUrl": "."
+
+    "baseUrl": ".",
+    "outDir": "dist/esm"
   },
-  "include": ["src", ".ladle"],
+  "include": ["src"],
+  "exclude": ["src/stories/"],
   "references": [{ "path": "../core" }]
 }

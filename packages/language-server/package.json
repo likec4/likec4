@@ -22,19 +22,13 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
     "typecheck:turbo": "run -T turbo run typecheck --filter='language-server'",
@@ -42,9 +36,10 @@
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
+    "prepack": "run clean && run build",
     "build:watch": "run-p 'watch:*'",
     "build:turbo": "run -T turbo run build --filter='language-server'",
-    "build": "tsc",
+    "build": "unbuild",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
@@ -71,6 +66,7 @@
     "langium-cli": "^2.0.1",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
   "packageManager": "yarn@3.6.3"

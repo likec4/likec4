@@ -1,0 +1,50 @@
+model {
+
+  extend cloud.backoffice {
+
+    billingDashboard = app 'Billing Dashboard' {
+      description 'Billing Backoffice'
+      style {
+        shape browser
+      }
+
+      -> cloud.billing.subscriptions 'manage subscriptions'
+    }
+
+    tenantsDashboard = app 'Tenants Dashboard' {
+      description 'Manage users and tenants'
+      style {
+        shape browser
+      }
+
+      -> cloud.backend.cms 'manage users'
+    }
+
+    reports = app 'Reports Dashboard' {
+      description 'Show reports from Power BI'
+
+      style {
+        shape browser
+      }
+
+      -> cloud.report_subscriptions 'display subscriptions report'
+    }
+  }
+
+}
+
+views {
+
+  view backoffice of cloud.backoffice {
+    title "[context] Back Office"
+    include
+        *,
+        cloud
+
+    style cloud {
+      color muted
+    }
+  }
+
+
+}

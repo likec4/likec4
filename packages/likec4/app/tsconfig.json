@@ -5,37 +5,24 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "outDir": "dist",
-    "declaration": true,
+    "outDir": "../dist/__app__",
     "allowJs": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "esModuleInterop": true,
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     /* Linting */
     "strict": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": false,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "~/*": ["./src/*"]
     },
     "types": ["vite/client"]
   },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../../core/"
-    }
-  ]
+  "include": ["src"]
 }

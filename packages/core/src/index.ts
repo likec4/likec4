@@ -1,10 +1,11 @@
+export * from './colors'
+export * from './compute-view'
+export * from './errors'
+export * from './model-index'
 export * from './types'
 export * from './utils'
-export * from './model-index'
-export * from './compute-view'
-export * from './colors'
-export * from './errors'
 
-// Type aliases
-export type * as c4 from './types'
+// Type aliases 1
 export type * as likec4 from './types'
+// Type aliases 2
+export type * as c4 from './types'

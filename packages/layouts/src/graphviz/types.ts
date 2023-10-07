@@ -1,4 +1,4 @@
-import type { EdgeId, Fqn, Opaque } from '@likec4/core/types'
+import type { EdgeId, Fqn, Opaque } from '@likec4/core'
 
 export type DotSource = Opaque<string, 'DotSource'>
 
