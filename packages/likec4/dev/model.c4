@@ -125,15 +125,28 @@ views {
   }
 
   view cloud_ui of ui {
-    title "[container context] Cloud UI"
+    title "[context] Cloud UI"
     include *, cloud
+
+    style * {
+      color secondary
+    }
+    style cloud {
+      color muted
+    }
+    style ui, ui.* {
+      color primary
+    }
   }
 
   view cloud_backend of backend {
-    title "[container context] Cloud Backend"
+    title "[context] Cloud Backend"
     include
-      ui, amazon, backend, cloud,
+      *,
+      ui, amazon, backend, cloud, backoffice, billing,
       ui.* -> backend,
+      billing.* -> backend,
+      backoffice.* -> backend,
       backend.* -> amazon.*
 
     exclude
@@ -143,7 +156,7 @@ views {
       color muted
     }
 
-    style ui.*, amazon.* {
+    style ui.*, amazon.*, backoffice.*, billing.* {
       color secondary
     }
 
