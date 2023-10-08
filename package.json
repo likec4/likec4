@@ -46,7 +46,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "prettier": "^3.0.3",
-    "rimraf": "^5.0.1",
+    "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
     "turbo": "^1.10.15",
     "typescript": "^5.2.2",
