@@ -1,5 +1,5 @@
 import boxen from 'boxen'
-import k from 'kleur'
+import k from 'picocolors'
 import type { PreviewServer, ViteDevServer } from 'vite'
 
 export function printServerUrls(server: ViteDevServer | PreviewServer) {

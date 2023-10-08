@@ -2,11 +2,10 @@ import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { isNil } from 'remeda'
-// import { createRequire } from 'module'
-import k from 'kleur'
 import { fileURLToPath } from 'node:url'
-import type { InlineConfig } from 'vite'
+import k from 'picocolors'
+import { isNil } from 'remeda'
+import type { InlineConfig, Logger } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { mkLanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
@@ -22,6 +21,19 @@ const getAppRoot = (): [path: string, isDev: boolean] => {
   }
   // we are in dev
   return [resolve(_dirname, '../../app'), true]
+}
+
+function resolveAliases(aliases: Record<string, string>, logger: Logger): Record<string, string> {
+  const resolved = {}
+  Array.from(Object.entries(aliases)).forEach(([key, src]) => {
+    if (!fs.existsSync(src)) {
+      logger.error(`${k.bgRed(k.white(key))} does not exist ${src}`)
+      return
+    }
+    logger.info(`${key} ${k.dim('resolve to')} ${src}`)
+    Object.assign(resolved, { [key]: src })
+  })
+  return resolved
 }
 
 export type LikeC4ViteConfig =
@@ -62,30 +74,29 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     })
   }
 
-  const aliases = {}
+  let coreSrc, diagramsSrc
+
   if (isDev) {
-    const diagramsSrc = resolve(_dirname, '../../../diagrams/src/index.ts')
-    if (!fs.existsSync(diagramsSrc)) {
-      customLogger.error(`@likec4/diagrams does not exist: ${diagramsSrc}`)
-    } else {
-      customLogger.info(`${k.dim('resolve @likec4/diagrams to')} ${diagramsSrc}`)
-      Object.assign(aliases, {
-        '@likec4/diagrams': diagramsSrc
-      })
-    }
+    coreSrc = resolve(_dirname, '../../../core/src/index.ts')
+    diagramsSrc = resolve(_dirname, '../../../diagrams/src/index.ts')
+  } else {
+    coreSrc = resolve(_dirname, '../@likec4/core/index.js')
+    diagramsSrc = resolve(_dirname, '../@likec4/diagrams/index.js')
   }
+
+  const aliases = resolveAliases(
+    {
+      ['@likec4/core']: coreSrc,
+      ['@likec4/diagrams']: diagramsSrc
+    },
+    customLogger
+  )
 
   return {
     root,
     languageServices,
     resolve: {
-      dedupe: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-inspector'
-      ],
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
       alias: {
         '~': resolve(root, './src'),
         ...aliases
@@ -99,25 +110,49 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       minify: true,
       sourcemap: false,
       cssCodeSplit: false,
-      chunkSizeWarningLimit: 5 * 1000 * 1000
+      chunkSizeWarningLimit: 5 * 1000 * 1000,
+      commonjsOptions: {
+        esmExternals: true,
+        sourceMap: false
+      }
     },
     css: {
-      postcss: resolve(root, 'postcss.config.cjs')
+      postcss: resolve(root, 'postcss.config.cjs'),
+      modules: {
+        localsConvention: 'camelCaseOnly'
+      }
     },
     customLogger,
     optimizeDeps: {
-      // TODO this is wrong, should be fullpartghs
-      include: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-inspector',
-        'konva',
-        'konva/lib',
-        '@react-spring/konva',
-        'react-konva'
-      ]
+      include: isDev
+        ? []
+        : [
+            '@radix-ui/react-icons',
+            '@radix-ui/themes',
+            '@react-spring/konva',
+            '@use-gesture/react',
+            'classnames',
+            'remeda',
+            'rambdax',
+            'jotai',
+            'konva',
+            'react-accessible-treeview',
+            'react-dom',
+            'react-dom/client',
+            'react-konva',
+            'react-konva/es/ReactKonvaCore',
+            'konva/lib/Core',
+            'konva/lib/shapes/Rect',
+            'konva/lib/shapes/Text',
+            'konva/lib/shapes/Path',
+            'konva/lib/shapes/Circle',
+            'konva/lib/shapes/Line',
+            'konva/lib/shapes/Image',
+            'konva/lib/shapes/Ellipse',
+            'react',
+            'react/jsx-dev-runtime',
+            'react/jsx-runtime'
+          ]
     },
     plugins: [
       react({

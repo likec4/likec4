@@ -38,7 +38,7 @@ const DashboardTile = ({ atom }: { atom: Atom<IDashboardTile> }) => {
   return (
     <Card
       asChild
-      className={styles.DashboardTile}
+      className={styles.dashboardTile}
       variant='classic'
       size={{
         initial: '1',

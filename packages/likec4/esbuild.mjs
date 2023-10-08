@@ -1,70 +1,102 @@
 import { build } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import { cp, mkdir, rm } from 'node:fs/promises'
-
+import { $ } from 'execa'
+import json5 from 'json5'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 
 const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
-console.log(`LikeC4 build isDev=${isDev}`)
+console.info(`⚠️ likec4 build isDev=${isDev}`)
 
-const alias = {
-  // 'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  // 'vscode-rpc/node': 'vscode-uri/lib/browser/main.js',
-  // 'vscode-rpc': 'vscode-uri/lib/browser/main.js',
-  // '@likec4/core/compute-view': '../core/src/compute-view/index.ts',
-  // '@likec4/core/utils': '../core/src/utils/index.ts',
-  // '@likec4/core/errors': '../core/src/errors/index.ts',
-  // '@likec4/core/types': '../core/src/types/index.ts',
-  // '@likec4/core/colors': '../core/src/colors.ts',
-  // '@likec4/core': '../core/src/index.ts',
-  // '@likec4/diagrams': '../diagrams/src/index.ts',
-  // '@likec4/generators': '../generators/src/index.ts',
-  // '@likec4/language-server': '../language-server/src/index.ts',
-  // '@likec4/layouts': '../layouts/src/index.ts'
+async function buildCli() {
+  const alias = {
+    '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
+    '@likec4/core/errors': resolve('../core/src/errors/index.ts'),
+    '@likec4/core/types': resolve('../core/src/types/index.ts'),
+    '@likec4/core/colors': resolve('../core/src/colors.ts'),
+    '@likec4/core': resolve('../core/src/index.ts'),
+    '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
+    '@likec4/generators': resolve('../generators/src/index.ts'),
+    '@likec4/language-server': resolve('../language-server/src/index.ts'),
+    '@likec4/layouts': resolve('../layouts/src/index.ts')
+  }
+
+  /**
+   * @type {import('esbuild').BuildOptions}
+   */
+  const cfg = {
+    metafile: isDev,
+    logLevel: 'info',
+    outdir: 'dist',
+    outbase: 'src',
+    color: true,
+    bundle: true,
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
+    alias,
+    sourcemap: true,
+    sourcesContent: isDev,
+    keepNames: true,
+    minify: !isDev,
+    treeShaking: true,
+    legalComments: 'none',
+    entryPoints: ['src/cli/index.ts'],
+    format: 'esm',
+    target: 'esnext',
+    platform: 'node',
+    banner: {
+      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
+    },
+    plugins: [
+      nodeExternalsPlugin({
+        devDependencies: false
+      })
+    ]
+  }
+
+  const bundle = await build(cfg)
+  if (bundle.errors.length || bundle.warnings.length) {
+    console.error(
+      [
+        ...formatMessagesSync(warnings, {
+          kind: 'warning',
+          color: true,
+          terminalWidth: process.stdout.columns
+        }),
+        ...formatMessagesSync(errors, {
+          kind: 'error',
+          color: true,
+          terminalWidth: process.stdout.columns
+        })
+      ].join('\n')
+    )
+    console.error('\n ⛔️ Build failed')
+    process.exit(1)
+  }
 }
 
-/**
- * @type {import('esbuild').BuildOptions}
- */
-const base = {
-  metafile: isDev,
-  logLevel: 'info',
-  outdir: 'dist',
-  outbase: 'src',
-  color: true,
-  bundle: true,
-  define: {
-    'process.env.NODE_ENV': '"production"'
-  },
-  alias,
-  // alias: {
-  //   ...alias
-  // },
-  sourcemap: true,
-  sourcesContent: isDev,
-  keepNames: true,
-  minify: !isDev,
-  treeShaking: true,
-  legalComments: 'none'
-}
-
-await build({
-  ...base,
-  entryPoints: ['src/cli/index.ts'],
-  format: 'esm',
-  target: 'esnext',
-  platform: 'node',
-  banner: {
-    js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
-  },
-  plugins: [
-    nodeExternalsPlugin({
-      devDependencies: false,
-      allowList: ['@likec4/core']
-    })
-  ]
-})
-
-await rm('dist/__app__', { recursive: true, force: true })
+await rm('dist', { recursive: true, force: true })
+await buildCli()
 await mkdir('dist/__app__')
-await cp('app/', 'dist/__app__/', { recursive: true })
+await cp('app/', 'dist/__app__/', {
+  recursive: true,
+  filter: src => !src.endsWith('.ts') && !src.endsWith('.tsx')
+})
+await $({ all: true })`tsc -p ./app/tsconfig.json`
+
+const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
+tsconfig.compilerOptions.plugins = []
+tsconfig.compilerOptions.outDir = 'dist'
+await writeFile('dist/__app__/tsconfig.json', JSON.stringify(tsconfig, null, 2))
+
+console.info(`✔️ copied app files to dist/__app__`)
+
+await mkdir('dist/@likec4/core', { recursive: true })
+await cp('../core/dist/esm/', 'dist/@likec4/core/', { recursive: true })
+console.info(`✔️ copied @likec4/core to dist`)
+
+await mkdir('dist/@likec4/diagrams')
+await cp('../diagrams/dist/esm/', 'dist/@likec4/diagrams/', { recursive: true })
+console.info(`✔️ copied @likec4/diagrams to dist`)

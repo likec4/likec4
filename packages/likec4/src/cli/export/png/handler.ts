@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import PQueue from 'p-queue'
-import { resolve } from 'node:path'
+import type { DiagramView } from '@likec4/core'
+import { rm } from 'fs/promises'
 import { availableParallelism } from 'node:os'
+import { resolve } from 'node:path'
+import PQueue from 'p-queue'
+import k from 'picocolors'
 import { chromium } from 'playwright-core'
+import prettyMilliseconds from 'pretty-ms'
 import { LanguageServicesInstance } from '../../../language-services'
 import { createLikeC4Logger } from '../../../logger'
 import { viteBuild } from '../../../vite/vite-build'
 import { vitePreview } from '../../../vite/vite-preview'
 import { mkTakeScreenshotFn } from '../utils/takeScreenshot'
-import { rm } from 'fs/promises'
-import type { DiagramView } from '@likec4/core'
-import k from 'kleur'
-import prettyMilliseconds from 'pretty-ms'
 
 const NS_PER_MS = 1e6
 

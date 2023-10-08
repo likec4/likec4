@@ -22,7 +22,17 @@
     "paths": {
       "~/*": ["./src/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "camelCaseOnly",
+          "postcssOptions": {},
+          "rendererOptions": {}
+        }
+      }
+    ]
   },
   "include": ["src"]
 }

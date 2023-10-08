@@ -52,34 +52,3 @@
     transform: translateX(0);
   }
 }
-
-:global(.rt-variant-soft),
-:global(.rt-variant-solid) {
-  &.navitem {
-    @apply transition-colors;
-    /* color: var(--accent-10); */
-    /* background-color: transparent; */
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-
-    /*
-  &:hover, &[data-current="true"] {
-    color: var(--accent-11);
-    background-color: var(--accent-a3);
-  } */
-
-    .icon {
-      visibility: hidden;
-      transform: translateX(-25%);
-      opacity: 0.7;
-    }
-
-    &:hover .icon {
-      visibility: visible;
-      transition: all 0.15s ease-out;
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-}

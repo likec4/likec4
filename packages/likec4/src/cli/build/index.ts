@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { CommandModule } from 'yargs'
-import k from 'kleur'
+import k from 'picocolors'
 import { resolve } from 'node:path'
 
 export const buildCmd = {

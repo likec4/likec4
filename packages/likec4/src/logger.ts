@@ -1,10 +1,10 @@
+import k from 'picocolors'
 import type { LogErrorOptions, LogOptions, Logger } from 'vite'
 import { createLogger } from 'vite'
-import k from 'kleur'
 
-const ERROR = k.red().bold('ERROR')
-const WARN = k.yellow().bold('WARN')
-const INFO = k.green().bold('INFO')
+const ERROR = k.bold(k.bgRed(k.white('ERROR')))
+const WARN = k.bold(k.yellow('WARN'))
+const INFO = k.bold(k.green('INFO'))
 
 export function createLikeC4Logger(prefix: string): Logger {
   const logger = createLogger('info', {

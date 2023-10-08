@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import k from 'kleur'
+import k from 'picocolors'
 import { clamp } from 'rambdax'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'

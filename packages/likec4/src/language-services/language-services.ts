@@ -5,12 +5,12 @@ import {
   type LikeC4Services
 } from '@likec4/language-server'
 import { DotLayouter } from '@likec4/layouts'
-import k from 'kleur'
 import type { LangiumDocument, WorkspaceCache } from 'langium'
 import { DocumentState, MutexLock, URI, interruptAndCheck } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import k from 'picocolors'
 import type { IdentityFunction } from 'rambdax'
 import { equals, keys } from 'rambdax'
 import * as R from 'remeda'

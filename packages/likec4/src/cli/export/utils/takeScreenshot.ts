@@ -3,7 +3,7 @@ import type { Browser } from 'playwright-core'
 import type { Logger } from 'vite'
 import { resolve } from 'node:path'
 import type { DiagramView } from '@likec4/core'
-import k from 'kleur'
+import k from 'picocolors'
 
 type TakeScreenshotParams = {
   browser: Browser

@@ -1,6 +1,6 @@
+import k from 'picocolors'
 import type { CommandModule } from 'yargs'
 import pngCmd from './png'
-import k from 'kleur'
 
 export const exportCmd = {
   command: 'export <format> [path]',

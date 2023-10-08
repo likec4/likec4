@@ -1,4 +1,4 @@
-import k from 'kleur'
+import k from 'picocolors'
 import { resolve } from 'path'
 import type { CommandModule } from 'yargs'
 
