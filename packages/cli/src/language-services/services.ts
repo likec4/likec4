@@ -1,8 +1,12 @@
-import { createLanguageServices, logger as lspLogger, type LikeC4Services } from '@likec4/language-server'
+import {
+  createLanguageServices,
+  logger as lspLogger,
+  type LikeC4Services
+} from '@likec4/language-server'
 import { dim, red, green } from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
-import type { LikeC4Model, ViewID } from '@likec4/core/types'
+import type { DiagramView, LikeC4Model, ViewID } from '@likec4/core'
 import { existsSync, statSync } from 'node:fs'
 import { resolve, relative, basename } from 'node:path'
 import * as R from 'remeda'
@@ -67,9 +71,9 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
       for (const validationError of errors) {
         console.log(
           red(
-            `      line ${validationError.range.start.line}: ${validationError.message} [${doc.textDocument.getText(
-              validationError.range
-            )}]`
+            `      line ${validationError.range.start.line}: ${
+              validationError.message
+            } [${doc.textDocument.getText(validationError.range)}]`
           )
         )
       }
@@ -91,7 +95,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
     process.exit(1)
   }
 
-  const viewSourcePaths = R.mapValues(model.views, v => {
+  const viewSourcePaths = R.mapValues(model.views as Record<string, DiagramView>, v => {
     const loc = modelLocator.locateView(v.id)
     if (!loc) {
       throw new Error(`No location found for view ${v.id}`)

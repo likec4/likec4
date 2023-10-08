@@ -1,4 +1,4 @@
-import type { DiagramView, Fqn, RelationID, ViewID } from '@likec4/core/types'
+import type { DiagramView, Fqn, RelationID, ViewID } from '@likec4/core'
 
 export type ExtensionToPanelProtocol =
   | {

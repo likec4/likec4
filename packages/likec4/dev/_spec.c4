@@ -1,0 +1,43 @@
+specification {
+
+  element actor {
+    style {
+      shape person
+    }
+  }
+
+  element softwareSystem
+  element container
+  element component
+  element service
+  element app
+  element lambdaFn
+
+  element externalSystem {
+    style {
+      color gray
+    }
+  }
+
+  element mobile {
+    style {
+      shape mobile
+    }
+  }
+  element database {
+    style {
+      shape storage
+    }
+  }
+  element stream {
+    style {
+      shape queue
+    }
+  }
+  element queue {
+    style {
+      shape queue
+    }
+  }
+
+}

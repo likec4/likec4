@@ -23,7 +23,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/packages/diagrams/src/stories/likec4",
+        "${workspaceFolder}/packages/likec4/dev",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
@@ -48,6 +48,17 @@
         "${workspaceFolder}/packages/**/*",
       ],
       "preLaunchTask": "vscode:task:build:extension"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run likec4 serve",
+      "runtimeArgs": [
+        "dev:serve"
+      ],
+      "runtimeExecutable": "yarn",
+      "cwd": "${workspaceFolder}/packages/likec4",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

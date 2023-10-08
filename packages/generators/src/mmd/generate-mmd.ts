@@ -1,8 +1,9 @@
-import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core/types'
+import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
 import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium'
 import { isNil } from 'rambdax'
 
-const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
+const capitalizeFirstLetter = (value: string) =>
+  value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
 const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
 
@@ -75,7 +76,15 @@ export function generateMermaid<V extends ComputedView>(view: V) {
 
   return toString(
     new CompositeGeneratorNode()
-      .appendIf(view.title !== null && view.title.length > 0, '---', NL, `title: ${view.title}`, NL, '---', NL)
+      .appendIf(
+        view.title !== null && view.title.length > 0,
+        '---',
+        NL,
+        `title: ${view.title}`,
+        NL,
+        '---',
+        NL
+      )
       .append('graph ', view.autoLayout, NL, NL)
       .append(
         joinToNode(

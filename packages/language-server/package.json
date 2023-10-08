@@ -20,23 +20,26 @@
     "directory": "packages/language-server"
   },
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
   "scripts": {
-    "typecheck:deps": "run -T turbo run compile --filter='language-server'",
-    "typecheck": "tsc --noEmit",
-    "compile": "tsc --noEmit",
+    "typecheck:turbo": "run -T turbo run typecheck --filter='language-server'",
+    "typecheck": "tsc --emitDeclarationOnly",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
+    "prepack": "run clean && run build",
     "build:watch": "run-p 'watch:*'",
-    "build:deps": "run -T turbo run build --filter='language-server'",
-    "build": "tsc",
+    "build:turbo": "run -T turbo run build --filter='language-server'",
+    "build": "unbuild",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
@@ -46,10 +49,11 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "langium": "^2.0.2",
-    "nanoid": "^5.0.1",
     "object-hash": "^3.0.0",
+    "p-debounce": "^4.0.0",
+    "p-throttle": "^5.1.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.24.0",
+    "remeda": "^1.27.0",
     "strip-indent": "^4.0.0",
     "vscode-languageserver": "~8.1.0",
     "vscode-languageserver-protocol": "~3.17.3",
@@ -61,7 +65,8 @@
     "langium-cli": "^2.0.1",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.5"
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
   },
   "packageManager": "yarn@3.6.3"
 }

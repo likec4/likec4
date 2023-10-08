@@ -25,6 +25,16 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/docs/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
+
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
@@ -33,7 +43,7 @@ jobs:
 
       - name: Build NextJS
         working-directory: docs
-        run: yarn turbo-build
+        run: yarn build:turbo
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1

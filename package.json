@@ -1,5 +1,5 @@
 {
-  "name": "likec4-workspaces",
+  "name": "@likec4/workspaces",
   "version": "0.37.1",
   "private": true,
   "license": "MIT",
@@ -14,11 +14,10 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "compile": "turbo run compile",
     "build": "turbo run build --filter='./packages/*'",
     "build:watch": "turbo run build:watch --filter='./packages/*'",
-    "ci:build": "turbo run build compile --filter='./packages/*' --log-prefix=none --log-order=grouped",
-    "typecheck": "turbo run compile",
+    "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",
+    "typecheck": "turbo run typecheck",
     "turbo": "turbo",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
@@ -30,7 +29,7 @@
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "turbo run lint --continue --filter='./packages/*'",
     "vitest:ui": "vitest --ui",
-    "vscode:task:build": "turbo run compile --log-prefix=none --log-order=grouped",
+    "vscode:task:build": "turbo run typecheck --log-prefix=none --log-order=grouped",
     "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
   "dependencies": {
@@ -39,10 +38,10 @@
     "@types/eslint": "^8.44.2",
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "@vitest/ui": "^0.34.5",
-    "eslint": "^8.49.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "@vitest/ui": "^0.34.7",
+    "eslint": "^8.50.0",
     "execa": "^8.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
@@ -51,8 +50,8 @@
     "shipjs": "^0.26.3",
     "turbo": "^1.10.14",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9",
-    "vitest": "^0.34.5",
+    "vite": "^4.4.10",
+    "vitest": "^0.34.6",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {

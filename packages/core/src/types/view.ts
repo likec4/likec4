@@ -44,6 +44,21 @@ export interface BasicElementView {
   readonly tags: NonEmptyArray<Tag> | null
   readonly links: NonEmptyArray<string> | null
   readonly rules: ViewRule[]
+  /**
+   * URI to the source file of this view.
+   * Undefined if the view is auto-generated.
+   */
+  readonly docUri?: string
+  /**
+   * For all views we find common ancestor path.
+   * This is used to generate relative paths, i.e.:
+   * - "" for views in the common ancestor directory (or root)
+   * - "subdir" for views in "<root>/subdir"
+   * - "subdir/subdir1" for views in "<root>/subdir/subdir1"
+   *
+   * Undefined if the view is auto-generated.
+   */
+  readonly relativePath?: string
 }
 export interface StrictElementView extends BasicElementView {
   readonly viewOf: Fqn

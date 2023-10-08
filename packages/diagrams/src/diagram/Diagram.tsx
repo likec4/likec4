@@ -73,6 +73,9 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const containerRef = useRef<HTMLDivElement | null>(null)
     const stageRef = useHookableRef<Konva.Stage | null>(null, value => {
       containerRef.current = value?.container() ?? null
+      if (containerRef.current) {
+        containerRef.current.style.touchAction = 'none'
+      }
       return value
     })
 
@@ -116,12 +119,20 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
     }
 
-    const toFitDiagram = () => toCenterOnRect(diagram.boundingBox)
+    const toFitDiagram = () =>
+      toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
 
-    const [stageProps, stageSpringApi] = useSpring(() => ({
-      from: initialPosition ?? toFitDiagram(),
-      immediate
-    }))
+    const [stageProps, stageSpringApi] = useSpring(() =>
+      initialPosition
+        ? {
+            from: initialPosition,
+            to: toFitDiagram()
+          }
+        : {
+            from: toFitDiagram(),
+            immediate
+          }
+    )
 
     const centerOnRect = (centerTo: IRect) => {
       stageSpringApi.start({
@@ -195,16 +206,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
 
     // Recommended by @use-gesture/react
     useEffect(() => {
+      if (!zoomable) {
+        return
+      }
       const handler = (e: Event) => e.preventDefault()
       document.addEventListener('gesturestart', handler)
       document.addEventListener('gesturechange', handler)
-      document.addEventListener('gestureend', handler)
       return () => {
         document.removeEventListener('gesturestart', handler)
         document.removeEventListener('gesturechange', handler)
-        document.removeEventListener('gestureend', handler)
       }
-    }, [])
+    }, [zoomable])
 
     useGesture(
       {
@@ -233,7 +245,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             })
           }
         },
-        onPinch: ({ memo, first, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
+        onPinch: ({ memo, first, last, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
           if (first) {
             const stage = nonNullable(stageRef.current)
             const { width, height, x, y } = stage.container().getBoundingClientRect()
@@ -250,7 +262,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               y,
               scale
             },
-            immediate
+            immediate: immediate || !last
           })
 
           return memo
@@ -342,7 +354,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
-        <Layer name='top'>{/* <HoveredNode diagram={diagram} theme={theme} onNodeClick={onNodeClick} /> */}</Layer>
+        <Layer name='top'></Layer>
       </AnimatedStage>
     )
   }

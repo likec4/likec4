@@ -5,6 +5,8 @@
 !.yarn/sdks
 !.yarn/versions
 
+.swc/
+
 .turbo
 .vscode-test-web
 

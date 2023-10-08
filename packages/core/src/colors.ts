@@ -1,4 +1,4 @@
-import type { ThemeColorValues, LikeC4Theme, ThemeColors, ThemeRelationColors } from './types'
+import type { LikeC4Theme, ThemeColorValues, ThemeColors, ThemeRelationColors } from './types/theme'
 
 const blue = {
   // fill: colors.blue[500],
@@ -34,10 +34,8 @@ const slate = {
 } satisfies ThemeColorValues
 
 export const RelationColors = {
-  // lineColor: colors.neutral[400],
-  // labelColor: colors.neutral[300],
-  lineColor: '#a3a3a3',
-  labelColor: '#d4d4d4'
+  lineColor: '#b1b1b1',
+  labelColor: '#b1b1b1'
 } as const satisfies ThemeRelationColors
 
 export const Colors = {
@@ -62,24 +60,22 @@ export const Colors = {
     // stroke: colors.red[600],
     // hiContrast: colors.red[50],
     // loContrast: colors.red[200],
-    fill: '#ef4444',
-    stroke: '#dc2626',
+    fill: '#b54548',
+    stroke: '#8c333a',
     // hiContrast: '#fef2f2',
     // loContrast: '#fecaca',
-    hiContrast: '#111827', // colors.gray[900],
-    loContrast: '#1f2937' // colors.gray[800],
+    // hiContrast: '#191111', // colors.gray[900],
+    // loContrast: '#3b1219' // colors.gray[800],
+    hiContrast: '#f8fafc',
+    // hiContrast: '#f8fafc',
+    // loContrast: '#fdd8d8' // radix black red 12
+    loContrast: '#F9C6C6'
   },
   green: {
-    // fill: colors.green[600],
-    // stroke: colors.green[700],
-    // hiContrast: colors.green[50],
-    // loContrast: colors.green[200],
-    fill: '#16a34a',
-    stroke: '#15803d',
-    hiContrast: '#111827', // colors.gray[900],
-    // hiContrast: '#f0fdf4',
-    loContrast: '#1f2937' // colors.gray[800],
-    // loContrast: '#bbf7d0'
+    fill: '#428a4f',
+    stroke: '#2d5d39',
+    hiContrast: '#f8fafc',
+    loContrast: '#c2f0c2'
   },
   amber: {
     // fill: colors.amber[600],
@@ -90,8 +86,8 @@ export const Colors = {
     stroke: '#b45309',
     // hiContrast: '#fffbeb',
     // loContrast: '#fde68a',
-    hiContrast: '#111827', // colors.gray[900],
-    loContrast: '#1f2937' // colors.gray[800],
+    hiContrast: '#f8fafc', // colors.gray[900],
+    loContrast: '#ffe0c2' // colors.gray[800],
   },
   indigo: {
     // fill: colors.indigo[500],

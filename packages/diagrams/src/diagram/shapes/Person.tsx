@@ -1,6 +1,6 @@
 import { useShadowSprings } from '../springs'
 import { AnimatedPath, AnimatedRect } from '../../konva'
-import { NodeLabels } from './Node-Labels'
+import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 
 const PersonIcon = {
@@ -14,7 +14,7 @@ export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps)
   return (
     <>
       <AnimatedRect
-        {...useShadowSprings(isHovered, springs)}
+        {...useShadowSprings(isHovered, theme, springs)}
         cornerRadius={6}
         perfectDrawEnabled={false}
         strokeEnabled={false}

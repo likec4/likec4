@@ -1,0 +1,136 @@
+model {
+
+  amazon = externalSystem 'Amazon' {
+    description: 'Cloud and managed services provider'
+
+    rds = container 'RDS' {
+      description: 'Relational Databases'
+      style {
+        shape cylinder
+      }
+
+      pg = database 'PostgreSQL' {
+        technology 'AWS Aurora'
+        description: 'Database for storing relational data'
+        style {
+          icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+        }
+      }
+
+      mysql = database 'MySQL' {
+        technology 'AWS Aurora'
+        description: 'Database for storing relational data'
+        style {
+          icon https://icons.terrastruct.com/dev%2Fmysql.svg
+        }
+      }
+
+    }
+
+    cognito = component 'Cognito' {
+      description: 'User management and authentication'
+    }
+
+    kinesis = component 'Kinesis' {
+      description: 'Streaming data'
+      style {
+        shape queue
+      }
+
+      hits = stream 'Hits' {
+        description '
+          Stream of page hits from Dashboard app.
+          Data is sent via GoogleTagManager
+        '
+
+        -> sqs.hits 'send in batches'
+      }
+
+      cloud.ui.dashboard -> hits "send page hits via GoogleTagManager"
+    }
+
+    sqs = component 'SQS' {
+      description 'Message queues'
+      style {
+        shape queue
+      }
+
+      hits = queue 'Hits' {
+        description '
+          Filtered data from stream of page hits.
+          Ready to be processed.
+        '
+      }
+    }
+
+  }
+
+}
+
+views {
+
+  view amazon of amazon {
+    title "[system] Amazon"
+    include
+      *,
+      cloud,
+      cloud.* -> amazon
+
+    style * {
+      color muted
+    }
+
+    style cloud.* {
+      color secondary
+    }
+
+    style amazon.* {
+      color primary
+    }
+
+  }
+
+  view amazon_rds of rds {
+    title: '[context] Amazon RDS'
+
+    include *,
+       amazon,
+       cloud.backend,
+       cloud.backend.* -> rds
+  }
+
+  view amazon_cognito of cognito {
+    title '[context] Amazon Cognito'
+
+    include *,
+      amazon,
+      cloud.* -> cognito
+
+    style cloud {
+      color muted
+    }
+
+    style cloud.* {
+      color secondary
+    }
+  }
+
+
+  view amazon_sqs of sqs {
+    title '[context] Amazon SQS'
+
+    include
+      *,
+      amazon,
+      cloud,
+      kinesis,
+      cloud.* -> kinesis.*,
+      cloud.* -> sqs.*,
+      kinesis.* -> sqs
+
+    style cloud, cloud.*, kinesis, kinesis.* {
+      color secondary
+    }
+  }
+
+}

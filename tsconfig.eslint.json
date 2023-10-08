@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "exclude": ["node_modules", "packages/*/node_modules", "packages/*/dist", ".yarn", ".next"]
+  "exclude": ["node_modules", "packages/*/dist", ".yarn", ".next"]
 }

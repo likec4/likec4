@@ -1,0 +1,37 @@
+model {
+
+  extend cloud.data {
+
+    hitsAnomalies = app 'Hits Anomalies' {
+      description '
+        Process page hits.
+        Search for anomalies.
+      '
+
+      -> amazon.sqs.hits 'process hits data'
+    }
+
+  }
+
+}
+
+views {
+
+  view cloud_data of cloud.data {
+    title "[context] Data Services"
+    include
+        *,
+        cloud,
+        amazon,
+        amazon.sqs,
+        cloud.data -> amazon.sqs.*
+
+    style cloud {
+      color muted
+    }
+    style amazon.* {
+      color secondary
+    }
+  }
+
+}

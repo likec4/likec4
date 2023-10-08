@@ -1,12 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "compile": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
-    "generate": {
-      "dependsOn": ["^build"],
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
       "outputs": []
     },
     "build": {

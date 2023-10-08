@@ -307,7 +307,7 @@ describe('LikeC4ModelBuilder', () => {
 
   it.concurrent('builds model and views with links', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics } = await validate(`
+    const { diagnostics, document } = await validate(`
     specification {
       element component
       tag v2
@@ -336,7 +336,8 @@ describe('LikeC4ModelBuilder', () => {
         #v2
         description 'View with links'
         link https://example1.com
-        link https://example2.com
+        link https://example2.com/
+        link ./samefolder.html
         include *
       }
     }
@@ -358,7 +359,7 @@ describe('LikeC4ModelBuilder', () => {
           'file:///test/workspace/src/sub/folder.js#L1-2',
           'file:///test/workspace/dir/another.js',
           'file:///workspace-root',
-          'https://example1.com/'
+          'https://example1.com'
         ]
       }
     })
@@ -368,21 +369,29 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Index',
         description: null,
         tags: null,
-        links: null
+        links: null,
+        docUri: document.uri.toString()
       },
       withLinks: {
         id: 'withLinks',
         title: null,
         description: 'View with links',
         tags: ['v2'],
-        links: ['https://example1.com', 'https://example2.com']
+        links: [
+          'https://example1.com',
+          'https://example2.com/',
+          'file:///test/workspace/src/samefolder.html'
+        ],
+        docUri: 'file:///test/workspace/src/1.c4'
       }
     })
   })
 
   it.concurrent('builds model with relative links inside virtual workspace', async ({ expect }) => {
-    const { validate, buildModel } = createTestServices('vscode-vfs://host/virtual')
-    const { diagnostics } = await validate(`
+    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    // vscode-vfs://host/virtual/src/index.c4
+    await parse(
+      `
       specification {
         element component
       }
@@ -394,8 +403,39 @@ describe('LikeC4ModelBuilder', () => {
           link /workspace-root
         }
       }
-    `)
-    expect(diagnostics).toHaveLength(0)
+      views {
+        view index {
+          link ./samefolder.c4
+          include *
+        }
+      }
+    `,
+      'index.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/subdir/doc2.c4
+    await parse(
+      `
+      model {
+        component sys2 {
+          link ./samefolder.c4
+          link ../sys2.c4
+          link /workspace-root
+        }
+      }
+      views {
+        view sys2 of sys2 {
+          link ./doc2.html
+          include *
+        }
+      }
+    `,
+      'subdir/doc2.c4'
+    )
+
+    const { errors } = await validateAll()
+
+    expect(errors).toHaveLength(0)
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
@@ -406,7 +446,126 @@ describe('LikeC4ModelBuilder', () => {
           'vscode-vfs://host/virtual/dir/another.js',
           'vscode-vfs://host/workspace-root'
         ]
+      },
+      sys2: {
+        links: [
+          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys2.c4',
+          'vscode-vfs://host/workspace-root'
+        ]
       }
+    })
+    const views = model.views as Record<string, any>
+    expect(views['index']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      relativePath: ''
+    })
+    expect(views['sys2']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      relativePath: 'subdir'
+    })
+  })
+
+  it.concurrent('build model and views have correct relative paths', async ({ expect }) => {
+    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    // vscode-vfs://host/virtual/src/index.c4
+    await parse(
+      `
+      specification {
+        element component
+      }
+      model {
+        component sys1 {
+          link ./samefolder.c4
+        }
+      }
+      views {
+        view index {
+          link ./samefolder.c4
+          include *
+        }
+      }
+    `,
+      'index.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/subdir/doc2.c4
+    await parse(
+      `
+      model {
+        component sys2 {
+          link ./samefolder.c4
+          link ../sys2.c4
+        }
+      }
+      views {
+        view sys2 of sys2 {
+          link ./doc2.html
+          include *
+        }
+      }
+    `,
+      'subdir/doc2.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/a/b/c/doc3.c4
+    await parse(
+      `
+      model {
+        component sys3 {
+          link ./samefolder.c4
+          link ../../../sys3.c4
+        }
+      }
+      views {
+        view sys3 of sys3 {
+          link ./sys3/index.html
+          include *
+        }
+      }
+    `,
+      'a/b/c/doc3.c4'
+    )
+
+    const { errors } = await validateAll()
+
+    expect(errors).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      sys1: {
+        links: ['vscode-vfs://host/virtual/src/samefolder.c4']
+      },
+      sys2: {
+        links: [
+          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys2.c4'
+        ]
+      },
+      sys3: {
+        links: [
+          'vscode-vfs://host/virtual/src/a/b/c/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys3.c4'
+        ]
+      }
+    })
+    const views = model.views as Record<string, any>
+    expect(views['index']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      relativePath: ''
+    })
+    expect(views['sys2']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      relativePath: 'subdir'
+    })
+    expect(views['sys3']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/a/b/c/sys3/index.html'],
+      docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
+      relativePath: 'a/b/c'
     })
   })
 })

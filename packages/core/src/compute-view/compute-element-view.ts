@@ -1,4 +1,4 @@
-import { allPass, find, sort } from 'remeda'
+import { allPass, find } from 'remeda'
 import { nonNullable } from '../errors'
 import type { ModelIndex } from '../model-index'
 import {
@@ -86,7 +86,10 @@ export function computeElementView(view: ElementView, index: ModelIndex): Comput
     if (!source) {
       continue
     }
-    const target = find(leafsFirst, allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)]))
+    const target = find(
+      leafsFirst,
+      allPass([anscestorOf(rel.target), e => !isSameHierarchy(e, source)])
+    )
     if (!target) {
       continue
     }

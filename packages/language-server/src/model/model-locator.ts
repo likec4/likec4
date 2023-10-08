@@ -1,5 +1,5 @@
+import type { likec4 as c4 } from '@likec4/core'
 import { InvalidModelError } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
 import type { LangiumDocuments } from 'langium'
 import { findNodeForProperty, getDocument } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
@@ -52,7 +52,10 @@ export class LikeC4ModelLocator {
       if (!relation) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, relation.astPath)
+      const node = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        relation.astPath
+      )
       if (!ast.isRelation(node)) {
         continue
       }
@@ -92,7 +95,10 @@ export class LikeC4ModelLocator {
       if (!view) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(doc.parseResult.value, view.astPath)
+      const node = this.services.workspace.AstNodeLocator.getAstNode(
+        doc.parseResult.value,
+        view.astPath
+      )
       if (!ast.isElementView(node)) {
         continue
       }

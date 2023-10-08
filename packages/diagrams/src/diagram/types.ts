@@ -6,7 +6,9 @@ export type DiagramViews<T extends string = string> = {
   [key in T]: DiagramView
 }
 
-export type DiagramPaddings = number | [top: number, right: number, bottom: number, left: number]
+export type DiagramPaddings =
+  | number
+  | readonly [top: number, right: number, bottom: number, left: number]
 
 // prettier-ignore
 export type {

@@ -1,0 +1,26 @@
+model {
+
+  extend cloud.reporting {
+
+    report_subscriptions = component 'Subscriptions Report' {
+        -> cloud.billing.subscriptions 'sync daily'
+    }
+
+  }
+
+}
+
+views {
+
+  view reporting of cloud.reporting {
+    title "[context] Reporting"
+    include
+        *,
+        cloud
+
+    style cloud {
+      color muted
+    }
+  }
+
+}

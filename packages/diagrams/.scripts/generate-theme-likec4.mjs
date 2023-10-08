@@ -39,6 +39,7 @@ specification {
       shape browser
     }
   }
+  element compound
 }
 model {
 
@@ -101,10 +102,27 @@ ${colors
       person -> rect
       browser -> mobile
       cylinder -> queue
+
+      this -> compound1
     }`
   )
   .join('')}
   }
+
+  themecolor compoundtest {
+    compound1 = compound 'Level 1' {
+      compound2 = compound 'Level 2' {
+        compound3 = compound 'Level 3' {
+          compound4 = compound 'Level 4' {
+            compound5 = compound 'Level 5' {
+              compound6 = compound 'Level 6'
+            }
+          }
+        }
+      }
+    }
+  }
+  colors -> compound1
 
   // Col1
   primary -> secondary
@@ -128,6 +146,7 @@ views {
   view themecolors of colors {
     title "Theme Colors"
     include *
+    exclude compoundtest
   }
 
 ${colors
@@ -136,6 +155,11 @@ ${colors
   view themecolor_${key} of ${key} {
     title "Theme Color: ${key}"
     include colors, ${key}, ${key}.*
+
+    include element.kind = compound
+    style element.kind = compound {
+      color ${key}
+    }
   }
 `
   )

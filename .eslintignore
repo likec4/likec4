@@ -8,7 +8,8 @@ dist
 **/*.d.ts
 packages/*/esbuild.*
 packages/*/build.config.*
-packages/cli/bin/*
+packages/*/bin/*
+packages/likec4/scripts/*
 vite.config.*
 vitest.config.*
 vitest.shared.*
@@ -19,3 +20,5 @@ docs/*.js
 docs/*.mjs
 docs/components/ui/
 packages/*/src/generated
+postcss.config.*
+tailwind.config.*

@@ -1,36 +1,35 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import type { ComputedView, DiagramView } from '@likec4/core'
-import { dotLayoutFn } from './dotLayout'
+import type { ComputedView } from '@likec4/core'
+import pLimit from 'p-limit'
 import { delay } from 'rambdax'
+import { dotLayoutFn } from './dotLayout'
+import { isDev } from '../const'
+
+const limit = pLimit(1)
 
 export class DotLayouter {
-  #loadPromise: Promise<Graphviz> | null = null
-
   dispose() {
-    this.#loadPromise = null
+    limit.clearQueue()
     Graphviz.unload()
   }
 
-  layout = async (computedView: ComputedView): Promise<DiagramView> => {
-    const graphviz = await this.load()
-    return dotLayoutFn(graphviz, computedView)
-  }
-
-  /**
-   * Workaround for some memory issues with Graphviz  WASM
-   */
-  async restart() {
-    this.#loadPromise = null
-    Graphviz.unload()
-    await delay(100)
-    await this.load()
-    return this
-  }
-
-  private async load() {
-    if (!this.#loadPromise) {
-      this.#loadPromise = Graphviz.load()
-    }
-    return await this.#loadPromise
+  async layout(view: ComputedView) {
+    return await limit(async () => {
+      let graphviz = await Graphviz.load()
+      try {
+        return dotLayoutFn(graphviz, view)
+      } catch (err) {
+        if (isDev && err instanceof Error) {
+          console.error(`Error in graphviz layout (view=${view.id}): ${err.stack ?? err.message}`)
+        }
+        // Attempt to recover from memory issues
+        Graphviz.unload()
+        await delay(10)
+        graphviz = await Graphviz.load()
+        return dotLayoutFn(graphviz, view)
+      } finally {
+        Graphviz.unload()
+      }
+    })
   }
 }

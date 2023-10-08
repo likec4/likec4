@@ -1,17 +1,26 @@
 import {
   ModelIndex,
+  assignNavigateTo,
   compareByFqnHierarchically,
+  computeView,
+  invariant,
+  isStrictElementView,
   parentFqn,
   resolveRulesExtendedViews,
-  computeView,
+  type StrictElementView,
   type ViewID,
   type c4,
-  assignNavigateTo,
-  type StrictElementView,
-  isStrictElementView
+  resolveRelativePaths
 } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments } from 'langium'
+import type { URI, WorkspaceCache } from 'langium'
+import {
+  DocumentState,
+  interruptAndCheck,
+  type LangiumDocument,
+  type LangiumDocuments
+} from 'langium'
 import * as R from 'remeda'
+import { Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
   ParsedAstElementView,
@@ -22,19 +31,29 @@ import type {
 import { isValidLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { Rpc } from '../protocol'
-import { printDocs } from '../utils'
+import { LikeC4WorkspaceManager } from '../shared'
+import { printDocs, queueMicrotask } from '../utils'
+
+function isRelativeLink(link: string) {
+  return link.startsWith('.') || link.startsWith('/')
+}
 
 function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {}
   }
-  R.forEach(R.map(docs, R.prop('c4Specification')), spec => Object.assign(c4Specification.kinds, spec.kinds))
+  R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
+    Object.assign(c4Specification.kinds, spec.kinds)
+  )
+
+  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
+    const base = new URL(doc.uri.toString())
+    return links.map(l =>
+      isRelativeLink(l) ? new URL(l, base).toString() : l
+    ) as c4.NonEmptyArray<string>
+  }
 
   const toModelElement = (doc: LangiumDocument) => {
-    const base = new URL(doc.uri.toString())
-    const resolveLinks = (links: c4.NonEmptyArray<string>) =>
-      links.map((l: string) => new URL(l, base).toString()) as c4.NonEmptyArray<string>
     return ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
       try {
         const kind = c4Specification.kinds[parsed.kind]
@@ -44,7 +63,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
             description: null,
             technology: null,
             tags: tags ?? null,
-            links: links ? resolveLinks(links) : null,
+            links: links ? resolveLinks(doc, links) : null,
             ...parsed
           }
         }
@@ -78,7 +97,12 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     )
   )
 
-  const toModelRelation = ({ astPath, source, target, ...model }: ParsedAstRelation): c4.Relation | null => {
+  const toModelRelation = ({
+    astPath,
+    source,
+    target,
+    ...model
+  }: ParsedAstRelation): c4.Relation | null => {
     if (source in elements && target in elements) {
       return {
         source,
@@ -96,30 +120,34 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     R.mapToObj(r => [r.id, r])
   )
 
-  const toElementView = (view: ParsedAstElementView): c4.ElementView | null => {
-    // eslint-disable-next-line prefer-const
-    let { astPath, rules, title, description, tags, links, ...model } = view
-    if (!title && 'viewOf' in view) {
-      title = elements[view.viewOf]?.title
-    }
-    if (!title && view.id === 'index') {
-      title = 'Landscape view'
-    }
-    return {
-      ...model,
-      title: title ?? null,
-      description: description ?? null,
-      tags: tags ?? null,
-      links: links ?? null,
-      rules
+  const toElementView = (doc: LangiumDocument) => {
+    const docUri = doc.uri.toString()
+    return (view: ParsedAstElementView): c4.ElementView => {
+      // eslint-disable-next-line prefer-const
+      let { astPath, rules, title, description, tags, links, ...model } = view
+      if (!title && 'viewOf' in view) {
+        title = elements[view.viewOf]?.title
+      }
+      if (!title && view.id === 'index') {
+        title = 'Landscape view'
+      }
+      return {
+        ...model,
+        title: title ?? null,
+        description: description ?? null,
+        tags: tags ?? null,
+        links: links ? resolveLinks(doc, links) : null,
+        docUri,
+        rules
+      }
     }
   }
 
   const views = R.pipe(
-    R.flatMap(docs, d => d.c4Views),
-    R.map(toElementView),
-    R.compact,
-    R.mapToObj(v => [v.id, v])
+    R.flatMap(docs, d => R.map(d.c4Views, toElementView(d))),
+    resolveRelativePaths,
+    R.mapToObj(v => [v.id, v]),
+    resolveRulesExtendedViews
   )
   // add index view if not present
   if (!('index' in views)) {
@@ -145,70 +173,79 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   return {
     elements,
     relations,
-    views: resolveRulesExtendedViews(views)
+    views
   }
 }
 
+const RAW_MODEL_CACHE = 'LikeC4RawModel'
+const MODEL_CACHE = 'LikeC4Model'
+
+type ModelParsedListener = (docs: URI[]) => void
+
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
+  private workspaceManager: LikeC4WorkspaceManager
+  private listeners: ModelParsedListener[] = []
 
-  private readonly cachedModel: {
-    last?: c4.LikeC4RawModel | null
-  } = {}
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
-
-    services.likec4.ModelParser.onParsed(() => {
-      this.cleanCache()
-      this.notifyClient()
-    })
+    invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
+    this.workspaceManager = services.shared.workspace.WorkspaceManager
+    const parser = services.likec4.ModelParser
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Validated,
+      async (docs, cancelToken) => {
+        await queueMicrotask(() => parser.parse(docs))
+        // Only allow interrupting the execution after all documents have been parsed
+        await interruptAndCheck(cancelToken)
+        this.notifyListeners(docs.map(d => d.uri))
+      }
+    )
   }
 
-  private cleanCache() {
-    delete this.cachedModel.last
-  }
-
-  private documents() {
-    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
+  public get workspaceUri() {
+    return this.workspaceManager.workspace()?.uri ?? null
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {
-    if ('last' in this.cachedModel) {
-      logger.debug('[ModelBuilder] returning cached model')
-      return this.cachedModel.last
-    }
-    try {
-      const docs = this.documents()
-      if (docs.length === 0) {
-        logger.debug('[ModelBuilder] No documents to build model from')
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
+    return cache.get(RAW_MODEL_CACHE, () => {
+      try {
+        const docs = this.documents()
+        if (docs.length === 0) {
+          logger.debug('[ModelBuilder] No documents to build model from')
+          return null
+        }
+        logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+        return buildModel(docs)
+      } catch (e) {
+        logError(e)
         return null
       }
-      logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
-      return (this.cachedModel.last = buildModel(docs))
-    } catch (e) {
-      logError(e)
-      return null
-    }
+    })
   }
 
   public buildModel(): c4.LikeC4Model | null {
-    const model = this.buildRawModel()
-    if (!model) {
-      return null
-    }
-    const index = ModelIndex.from(model)
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    return cache.get(MODEL_CACHE, () => {
+      const model = this.buildRawModel()
+      if (!model) {
+        return null
+      }
+      const index = ModelIndex.from(model)
 
-    const views = R.pipe(
-      R.values(model.views),
-      R.map(view => computeView(view, index).view),
-      R.compact
-    )
-    assignNavigateTo(views)
-    return {
-      elements: model.elements,
-      relations: model.relations,
-      views: R.mapToObj(views, v => [v.id, v])
-    }
+      const views = R.pipe(
+        R.values(model.views),
+        R.map(view => computeView(view, index).view),
+        R.compact
+      )
+      assignNavigateTo(views)
+      return {
+        elements: model.elements,
+        relations: model.relations,
+        views: R.mapToObj(views, v => [v.id, v])
+      }
+    })
   }
 
   public computeView(viewId: ViewID): c4.ComputedView | null {
@@ -229,7 +266,6 @@ export class LikeC4ModelBuilder {
     )
 
     const computedView = result.view
-
     computedView.nodes.forEach(node => {
       // find first element view that is not the current one
       const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
@@ -241,20 +277,27 @@ export class LikeC4ModelBuilder {
     return computedView
   }
 
-  private scheduledCb: NodeJS.Timeout | null = null
-  private notifyClient() {
-    const connection = this.services.shared.lsp.Connection
-    if (!connection) {
-      return
+  public onModelParsed(callback: ModelParsedListener): Disposable {
+    this.listeners.push(callback)
+    return Disposable.create(() => {
+      const index = this.listeners.indexOf(callback)
+      if (index >= 0) {
+        this.listeners.splice(index, 1)
+      }
+    })
+  }
+
+  private documents() {
+    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
+  }
+
+  private notifyListeners(docs: URI[]) {
+    for (const listener of this.listeners) {
+      try {
+        listener(docs)
+      } catch (e) {
+        logError(e)
+      }
     }
-    if (this.scheduledCb) {
-      logger.debug('[ModelBuilder] debounce onDidChangeModel')
-      clearTimeout(this.scheduledCb)
-    }
-    this.scheduledCb = setTimeout(() => {
-      this.scheduledCb = null
-      logger.debug('[ModelBuilder] send onDidChangeModel')
-      void connection.sendNotification(Rpc.onDidChangeModel, '')
-    }, 200)
   }
 }

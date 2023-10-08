@@ -99,7 +99,7 @@ export class C4Model extends AbstractDisposable {
       .then(() => this.dot.layout(view))
       .catch(err => {
         Logger.warn(serializeError(err).message)
-        return this.dot.restart().then(dot => dot.layout(view))
+        return Promise.reject(err)
       })
     return xs.from(promise).replaceError(err => {
       logError(err)

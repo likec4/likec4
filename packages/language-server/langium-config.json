@@ -1,5 +1,7 @@
 {
   "projectName": "LikeC4",
+  "importExtension": "",
+  "langiumInternal": false,
   "languages": [
     {
       "id": "likec4",
@@ -14,6 +16,7 @@
     }
   ],
   "out": "src/generated",
+  "mode": "production",
   "chevrotainParserConfig": {
     "recoveryEnabled": true,
     "nodeLocationTracking": "full"

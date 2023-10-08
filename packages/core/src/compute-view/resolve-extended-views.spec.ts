@@ -98,6 +98,7 @@ describe('resolveRulesExtendedViews', () => {
   })
 
   it('should skip circular extends', () => {
+    // Should be skipped because of circular extends
     const index3: ElementView = {
       id: 'index3',
       extends: 'index4'
@@ -106,8 +107,13 @@ describe('resolveRulesExtendedViews', () => {
       id: 'index4',
       extends: 'index3'
     } as any
+    // Should be dropped also, because parent is skipped
+    const index5: ElementView = {
+      id: 'index5',
+      extends: 'index4'
+    } as any
 
-    const result = resolveRulesExtendedViews(views(index3, index4, index, index2))
+    const result = resolveRulesExtendedViews(views(index3, index5, index4, index, index2))
 
     expect(result).toEqual({
       index,

@@ -3,7 +3,7 @@ import { useStoryViewport } from '../../.ladle/components'
 import { Diagram, DiagramStateProvider } from '../diagram'
 import { useDiagramRef } from '../hooks'
 import type { LikeC4ViewId } from './likec4'
-import { LikeC4ViewIds, LikeC4Views, isViewId } from './likec4'
+import { LikeC4ViewIds, LikeC4Views } from './likec4'
 
 export default {
   args: {
@@ -62,7 +62,7 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
         width={measures.width}
         height={measures.height}
         onNodeClick={(node, event) => {
-          if (isViewId(node.navigateTo)) {
+          if (node.navigateTo) {
             dispatch({
               type: ActionType.UpdateControl,
               value: {
@@ -95,11 +95,9 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
 }
 DiagramDevelopment.storyName = 'Diagram'
 
-export const Colors = DiagramDevelopment.bind({})
+export const Colors: Story<Props> = props => {
+  return <DiagramDevelopment {...props} />
+}
 Colors.args = {
   viewId: 'themecolors'
-}
-
-if (import.meta.hot) {
-  import.meta.hot.accept()
 }

@@ -80,4 +80,4 @@ jobs:
       - if: ${{ matrix.build_docs }}
         name: Build Docs
         working-directory: docs
-        run: yarn turbo-build
+        run: yarn build:turbo

@@ -16,14 +16,18 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     }
   },
   "publishConfig": {
@@ -32,12 +36,13 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
-    "compile": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "typecheck:stories": "tsc --noEmit -p ./src/stories/tsconfig.json",
+    "typecheck:diagrams": "tsc --emitDeclarationOnly",
+    "typecheck": "run 'typecheck:diagrams' && run 'typecheck:stories'",
     "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
     "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
-    "generate": "likec4 codegen views-data src/stories/likec4",
-    "build:deps": "run -T turbo run build --filter='diagrams'",
+    "generate": "../cli/bin/likec4 codegen views-data src/stories/likec4",
+    "build:turbo": "run -T turbo run build --filter='diagrams'",
     "build:watch": "unbuild",
     "build": "unbuild",
     "dev:watch": "run -T turbo run build:watch --filter='diagrams^...' & ladle serve",
@@ -66,8 +71,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@ladle/react": "^2.17.2",
-    "@likec4/cli": "workspace:*",
+    "@ladle/react": "^3.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "react": "^18.2.0",

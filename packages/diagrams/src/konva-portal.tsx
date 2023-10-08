@@ -1,5 +1,5 @@
 import type Konva from 'konva'
-import { useRef, type PropsWithChildren, useLayoutEffect, useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef, type PropsWithChildren } from 'react'
 import { Group } from './konva'
 
 type Props = PropsWithChildren<{
@@ -11,7 +11,7 @@ type Props = PropsWithChildren<{
  * Original source:
  * https://github.com/konvajs/react-konva-utils
  *
- * Ported because, imports from react-konva-utils loads whole konva
+ * Ported, because react-konva-utils loads whole konva
  */
 // make a portal implementation
 export const Portal = ({ selector, enabled, children }: Props) => {
@@ -27,13 +27,20 @@ export const Portal = ({ selector, enabled, children }: Props) => {
     if (!outer.current || !inner.current) {
       return
     }
-    safeRef.current = inner.current
-    const stage = outer.current.getStage() as Konva.Stage
-    const newContainer = stage.findOne(selector)
-    if (shouldMove && newContainer) {
-      inner.current.moveTo(newContainer)
-    } else {
-      inner.current.moveTo(outer.current)
+    const stage = outer.current.getStage()
+    if (!stage) {
+      return
+    }
+
+    if (shouldMove) {
+      const newContainer = stage.findOne(selector)
+      if (newContainer) {
+        safeRef.current = inner.current
+        inner.current.moveTo(newContainer)
+      }
+    } else if (safeRef.current) {
+      safeRef.current.moveTo(outer.current)
+      safeRef.current = undefined
     }
   }, [selector, shouldMove])
 
@@ -48,10 +55,8 @@ export const Portal = ({ selector, enabled, children }: Props) => {
   // outer - is main container, will be placed on old position
   // inner - that we will move into another container
   return (
-    <Group name='_outer_portal' ref={outer}>
-      <Group name='_inner_portal' ref={inner}>
-        {children}
-      </Group>
+    <Group ref={outer}>
+      <Group ref={inner}>{children}</Group>
     </Group>
   )
 }

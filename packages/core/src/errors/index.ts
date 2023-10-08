@@ -1,6 +1,6 @@
-import { CustomError } from 'ts-custom-error'
 import stringify from 'safe-stable-stringify'
-import { isString } from '../utils'
+import { CustomError } from 'ts-custom-error'
+import { isString } from '../utils/guards'
 
 export interface BaseErrorOptions {
   cause?: unknown

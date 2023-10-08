@@ -15,6 +15,15 @@ export type HexColorLiteral = `#${string}`
 
 export type ColorLiteral = HexColorLiteral
 
+export type InteractiveColor =
+  | HexColorLiteral
+  | [
+      HexColorLiteral,
+      {
+        onHover: HexColorLiteral
+      }
+    ]
+
 export interface ThemeColorValues {
   fill: ColorLiteral
   stroke: ColorLiteral
@@ -29,8 +38,8 @@ export type ThemeColors = {
 }
 
 export interface ThemeRelationColors {
-  lineColor: ColorLiteral
-  labelColor: ColorLiteral
+  lineColor: InteractiveColor
+  labelColor: InteractiveColor
 }
 
 export interface LikeC4Theme {

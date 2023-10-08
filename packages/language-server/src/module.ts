@@ -1,10 +1,11 @@
-import type {
-  DefaultSharedModuleContext,
-  LangiumServices,
-  LangiumSharedServices,
-  Module,
-  PartialLangiumServices,
-  PartialLangiumSharedServices
+import {
+  WorkspaceCache,
+  type DefaultSharedModuleContext,
+  type LangiumServices,
+  type LangiumSharedServices,
+  type Module,
+  type PartialLangiumServices,
+  type PartialLangiumSharedServices
 } from 'langium'
 import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
@@ -17,7 +18,7 @@ import {
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
-import { registerProtocolHandlers } from './registerProtocolHandlers'
+import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
 import { logger } from './logger'
@@ -30,6 +31,9 @@ type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: A
  * Declaration of custom services - add your own service classes here.
  */
 export interface LikeC4AddedServices {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  WorkspaceCache: WorkspaceCache<string, any>
+  Rpc: Rpc
   likec4: {
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
@@ -48,6 +52,8 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
+  WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
+  Rpc: bind(Rpc),
   likec4: {
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
@@ -61,10 +67,6 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     CodeLensProvider: bind(LikeC4CodeLensProvider),
     DocumentLinkProvider: bind(LikeC4DocumentLinkProvider)
   },
-  //
-  //   // Formatter: bind(LikeC4Formatter),
-  //
-  // },
   references: {
     ScopeComputation: bind(LikeC4ScopeComputation),
     ScopeProvider: bind(LikeC4ScopeProvider)
@@ -104,10 +106,14 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     ...context
   }
 
-  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4GeneratedSharedModule, LikeC4SharedModule)
+  const shared = inject(
+    createDefaultSharedModule(moduleContext),
+    LikeC4GeneratedSharedModule,
+    LikeC4SharedModule
+  )
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
-  registerProtocolHandlers(likec4)
+  likec4.Rpc.init()
   return { shared, likec4 }
 }

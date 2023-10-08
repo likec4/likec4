@@ -3,9 +3,6 @@
   "private": true,
   "version": "0.37.1",
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./protocol": "./protocol.ts"
@@ -16,7 +13,7 @@
     "!**/*.map"
   ],
   "scripts": {
-    "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "build:watch": "vite build --watch --mode watch-dev",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
@@ -34,15 +31,15 @@
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
     "@types/vscode-webview": "^1.57.2",
-    "@vitejs/plugin-react": "^4.0.4",
+    "@vitejs/plugin-react": "^4.1.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
-    "lucide-react": "^0.268.0",
+    "lucide-react": "^0.279.0",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9",
+    "vite": "^4.4.10",
     "vite-tsconfig-paths": "^4.2.1"
   }
 }

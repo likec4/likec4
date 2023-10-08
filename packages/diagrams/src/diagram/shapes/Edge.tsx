@@ -10,6 +10,7 @@ import type { DiagramEdge, LikeC4Theme } from '../types'
 export interface EdgeShapeProps extends KonvaNodeEvents {
   edge: DiagramEdge
   theme: LikeC4Theme
+  isHovered: boolean
   springs: SpringValues<{
     lineColor: string
     lineWidth: number
@@ -18,7 +19,7 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
   }>
 }
 
-export function EdgeShape({ edge, theme, springs }: EdgeShapeProps) {
+export function EdgeShape({ edge, theme, isHovered, springs }: EdgeShapeProps) {
   const { points, headArrow, labels } = edge
 
   invariant(points[0], 'Edge must have at least one point')
@@ -32,10 +33,12 @@ export function EdgeShape({ edge, theme, springs }: EdgeShapeProps) {
         y={y}
         radius={springs.lineWidth.to(v => v + 1)}
         fill={springs.lineColor}
+        visible={isHovered}
       />
       <AnimatedLine
         opacity={springs.opacity}
         bezier={true}
+        dashEnabled={true}
         points={points.flat()}
         stroke={springs.lineColor}
         strokeWidth={springs.lineWidth}
@@ -59,10 +62,6 @@ export function EdgeShape({ edge, theme, springs }: EdgeShapeProps) {
           y={label.pt[1] - label.fontSize / 2 - 4}
           opacity={springs.opacity}
           padding={4}
-          // offsetY={label.fontSize / 2}
-          // offsetY={label.fontSize / 2}
-          // offsetX={label  .width / 2}
-          // width={label.width}
           fill={springs.labelColor}
           fontFamily={theme.font}
           fontSize={label.fontSize}

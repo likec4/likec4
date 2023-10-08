@@ -24,8 +24,8 @@
   ],
   "scripts": {
     "build:watch": "yarn node esbuild.mjs --watch",
-    "build:deps": "run -T turbo run build --filter='cli'",
-    "compile": "tsc --noEmit",
+    "build:turbo": "run -T turbo run build --filter='cli'",
+    "typecheck": "tsc --noEmit",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
@@ -49,7 +49,7 @@
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "remeda": "^1.24.0",
+    "remeda": "^1.27.0",
     "typescript": "^5.2.2",
     "vscode-uri": "3.0.7"
   },

@@ -1,6 +1,6 @@
 import { useShadowSprings } from '../springs'
 import { AnimatedRect, Circle } from '../../konva'
-import { NodeLabels } from './Node-Labels'
+import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
@@ -9,7 +9,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
   return (
     <>
       <AnimatedRect
-        {...useShadowSprings(isHovered, springs)}
+        {...useShadowSprings(isHovered, theme, springs)}
         cornerRadius={6}
         perfectDrawEnabled={false}
         strokeEnabled={false}
@@ -39,13 +39,6 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetY={-8} />
-      {/* <ExternalLink
-              x={-2}
-              y={30}
-              fill={adjust(colors.fill, { s: -20, l: 3 })}
-              fillIcon={colors.loContrast}
-              {...toolbarProps}
-            /> */}
     </>
   )
 }

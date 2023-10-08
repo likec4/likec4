@@ -1,6 +1,6 @@
 import { useShadowSprings } from '../springs'
 import { AnimatedEllipse, AnimatedPath } from '../../konva'
-import { NodeLabels } from './Node-Labels'
+import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 import { useSpring } from '@react-spring/konva'
 
@@ -45,12 +45,18 @@ export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) 
   return (
     <>
       <AnimatedPath
-        {...useShadowSprings(isHovered, springs)}
+        {...useShadowSprings(isHovered, theme, springs)}
         data={path}
         perfectDrawEnabled={false}
         fill={springs.fill}
       />
-      <AnimatedEllipse x={props.x} y={props.y} radiusX={props.rx} radiusY={props.ry} fill={springs.stroke} />
+      <AnimatedEllipse
+        x={props.x}
+        y={props.y}
+        radiusX={props.rx}
+        radiusY={props.ry}
+        fill={springs.stroke}
+      />
       <NodeLabels node={node} maxWidth={width - rx * 2} theme={theme} />
     </>
   )

@@ -1,5 +1,13 @@
+import type {
+  Element,
+  ElementKind,
+  ElementView,
+  Fqn,
+  Opaque,
+  Relation,
+  RelationID
+} from '@likec4/core'
 import { ModelIndex } from '@likec4/core'
-import type { Element, ElementKind, ElementView, Fqn, Opaque, Relation, RelationID } from '@likec4/core/types'
 
 /**
               ┌──────────────────────────────────────────────────┐

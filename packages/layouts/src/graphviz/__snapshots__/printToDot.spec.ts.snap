@@ -4,11 +4,13 @@ exports[`printToDot > computedAmazonView 1`] = `
 "digraph {
   layout = "dot";
   compound = true;
-  pad = 0.2084;
+  pad = 0.1042;
   rankdir = "TB";
   outputorder = "nodesfirst";
-  nodesep = 0.9375;
+  nodesep = 0.8334;
   ranksep = 0.9375;
+  pack = 15;
+  packmode = "array_t";
   graph [
     fontname = "Helvetica";
     labeljust = "l";
@@ -20,8 +22,8 @@ exports[`printToDot > computedAmazonView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -83,11 +85,13 @@ exports[`printToDot > computedCloud3levels 1`] = `
 "digraph {
   layout = "dot";
   compound = true;
-  pad = 0.2084;
+  pad = 0.1042;
   rankdir = "TB";
   outputorder = "nodesfirst";
-  nodesep = 0.9375;
+  nodesep = 0.8334;
   ranksep = 0.9375;
+  pack = 15;
+  packmode = "array_t";
   graph [
     fontname = "Helvetica";
     labeljust = "l";
@@ -99,8 +103,8 @@ exports[`printToDot > computedCloud3levels 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -222,11 +226,13 @@ exports[`printToDot > computedCloudView 1`] = `
 "digraph {
   layout = "dot";
   compound = true;
-  pad = 0.2084;
+  pad = 0.1042;
   rankdir = "TB";
   outputorder = "nodesfirst";
-  nodesep = 0.9375;
+  nodesep = 0.8334;
   ranksep = 0.9375;
+  pack = 15;
+  packmode = "array_t";
   graph [
     fontname = "Helvetica";
     labeljust = "l";
@@ -238,8 +244,8 @@ exports[`printToDot > computedCloudView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";
@@ -323,11 +329,13 @@ exports[`printToDot > computedIndexView 1`] = `
 "digraph {
   layout = "dot";
   compound = true;
-  pad = 0.2084;
+  pad = 0.1042;
   rankdir = "TB";
   outputorder = "nodesfirst";
-  nodesep = 0.9375;
+  nodesep = 0.8334;
   ranksep = 0.9375;
+  pack = 15;
+  packmode = "array_t";
   graph [
     fontname = "Helvetica";
     labeljust = "l";
@@ -339,8 +347,8 @@ exports[`printToDot > computedIndexView 1`] = `
     style = "solid";
     penwidth = 2;
     arrowsize = 0.8;
-    color = "#a3a3a3";
-    fontcolor = "#d4d4d4";
+    color = "#b1b1b1";
+    fontcolor = "#b1b1b1";
   ];
   node [
     fontname = "Helvetica";

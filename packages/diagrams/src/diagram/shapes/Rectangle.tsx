@@ -1,5 +1,5 @@
 import { AnimatedRect } from '../../konva'
-import { NodeLabels } from './Node-Labels'
+import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
@@ -7,7 +7,7 @@ export function RectangleShape({ node, theme, springs, isHovered }: NodeShapePro
   return (
     <>
       <AnimatedRect
-        {...useShadowSprings(isHovered, springs)}
+        {...useShadowSprings(isHovered, theme, springs)}
         cornerRadius={6}
         strokeEnabled={false}
         width={springs.width}
