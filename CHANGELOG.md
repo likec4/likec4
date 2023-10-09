@@ -1,23 +1,14 @@
 # [0.40.0](https://github.com/likec4/likec4/compare/v0.37.1...v0.40.0) (2023-10-09)
 
-### Bug Fixes
-
-- **deps:** update dependency @radix-ui/react-dropdown-menu to ^2.0.6 ([495b5f4](https://github.com/likec4/likec4/commit/495b5f418562294d27a0d8cf92499fa4613c3671))
-- **deps:** update dependency @radix-ui/themes to ^2.0.0 ([65371d0](https://github.com/likec4/likec4/commit/65371d0e62ffcc9902edf260413928d7579e1b15))
-- **deps:** update dependency @types/eslint to ^8.44.3 ([b38bba4](https://github.com/likec4/likec4/commit/b38bba43c6efee2e5c25f1a4f18b410bcd65547f))
-- **deps:** update dependency autoprefixer to ^10.4.16 ([58b7f96](https://github.com/likec4/likec4/commit/58b7f9601d0524070ede491da878af619621cf31))
-- **deps:** update dependency konva to ^9.2.1 ([f80b01f](https://github.com/likec4/likec4/commit/f80b01f525d0e5cb9698acf6c897ffa278dd6325))
-- **deps:** update dependency nanoid to v5 ([d5150d1](https://github.com/likec4/likec4/commit/d5150d135742cded4317492767d458cbd11d8735))
-- **deps:** update dependency turbo to ^1.10.15 ([de200af](https://github.com/likec4/likec4/commit/de200afc56375d3bf30a2ac850793fc513fd8939))
-- **deps:** update js unit test packages to ^0.34.5 ([f88d74d](https://github.com/likec4/likec4/commit/f88d74de356c2affb63ad1144259b3e0c0bea796))
-- **diagrams:** fix zoom ([02ba48d](https://github.com/likec4/likec4/commit/02ba48d2a4e51f39ef0956abc9379cd48436791c))
-- **language:** resolve view links ([9d1a0ca](https://github.com/likec4/likec4/commit/9d1a0ca9dcb1ce6b1749f4964a64383ed6a3a923))
-
 ### Features
 
-- diagrams-dev workspace ([fc5560f](https://github.com/likec4/likec4/commit/fc5560faf56e9c53e4f08378a2e29712aac90fff))
-- **diagrams:** use [@ladle](https://github.com/ladle) for development ([bcaf8a5](https://github.com/likec4/likec4/commit/bcaf8a547ae123f828d810494007c292b1c63a0c))
-- new app and cli ([9413cec](https://github.com/likec4/likec4/commit/9413cecbc94087f7dfd136ea4d80704af965c3e5))
+- `diagrams-dev` workspace ([fc5560f](https://github.com/likec4/likec4/commit/fc5560faf56e9c53e4f08378a2e29712aac90fff))
+- new cli `likec4` ([9413cec](https://github.com/likec4/likec4/commit/9413cecbc94087f7dfd136ea4d80704af965c3e5))
+
+### Bug Fixes
+
+- **diagrams:** fix zoom ([02ba48d](https://github.com/likec4/likec4/commit/02ba48d2a4e51f39ef0956abc9379cd48436791c))
+- **language:** resolve view links ([9d1a0ca](https://github.com/likec4/likec4/commit/9d1a0ca9dcb1ce6b1749f4964a64383ed6a3a923))
 
 ## [0.37.1](https://github.com/likec4/likec4/compare/v0.37.0...v0.37.1) (2023-09-16)
 
