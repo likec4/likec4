@@ -1,7 +1,6 @@
 import { ActionType, action, useLadleContext, type Story, type StoryDefault } from '@ladle/react'
-import { useStoryViewport } from '../../.ladle/components'
-import { Diagram, DiagramStateProvider } from '../diagram'
-import { useDiagramRef } from '../hooks'
+import { useStoryViewport } from '../.ladle/components'
+import { Diagram, DiagramStateProvider, useDiagramRef } from '@likec4/diagrams'
 import type { LikeC4ViewId } from './likec4'
 import { LikeC4ViewIds, LikeC4Views } from './likec4'
 
@@ -98,6 +97,7 @@ DiagramDevelopment.storyName = 'Diagram'
 export const Colors: Story<Props> = props => {
   return <DiagramDevelopment {...props} />
 }
+Colors.parameters
 Colors.args = {
   viewId: 'themecolors'
 }

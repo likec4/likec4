@@ -40,7 +40,6 @@ Website:
 import { LikeC4View } from '$/likec4-generated'
 
 // ...
-
 ;<LikeC4View viewId='index' />
 ```
 
@@ -81,10 +80,12 @@ This repository's contents is divided across four primary sections:
 
 - `cli`: obviously, the CLI
 - `core`: model definitions
+- `create-likec4`: scaffolding tool
 - `diagrams`: react components for rendering diagrams
 - `generators`: _LikeC4 -> Other formats_
 - `language-server`: parser and language server
 - `layouts`: layout algorithms for views
+- `likec4`: the main package, published to npm as `likec4`
 - `tsconfig`: typescript configuration
 - `vscode`: vscode extension
 - `vscode-preview`: preview panel in vscode extension
