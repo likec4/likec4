@@ -4,8 +4,8 @@
   "pipeline": {
     "generate": {
       "dependsOn": ["@likec4/cli#build"],
-      "outputs": ["src/likec4/*.generated.ts"],
-      "inputs": ["package.json", "**/*.c4"]
+      "outputs": ["src/likec4/generated.ts"],
+      "inputs": ["package.json", "likec4/**/*.c4"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck", "generate"],

@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "generate:themec4": "tsx ./.scripts/generate-theme-c4.ts",
     "generate:stories": "tsx ./.scripts/generate-view-stories.ts",
-    "generate": "likec4 codegen views-data src/likec4",
+    "generate": "likec4 codegen views-data -o ./src/likec4/generated.ts ./likec4",
     "build:turbo": "run -T turbo run generate --filter='diagrams-dev'",
     "build": "ladle build --outDir dist",
     "dev": "run generate && ladle serve",

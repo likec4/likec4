@@ -13,7 +13,7 @@ export default defineConfig({
     watchAndRun([
       {
         name: 'likec4',
-        watch: resolve(__dirname, 'src/**/*.c4'),
+        watch: resolve(__dirname, 'likec4/**/*.c4'),
         run: 'yarn run generate'
       }
     ])

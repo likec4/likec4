@@ -129,6 +129,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         : [
             '@radix-ui/react-icons',
             '@radix-ui/themes',
+            '@likec4/core',
+            '@likec4/diagrams',
             '@react-spring/konva',
             '@use-gesture/react',
             'classnames',

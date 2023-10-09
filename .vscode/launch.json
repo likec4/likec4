@@ -23,14 +23,18 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/packages/likec4/dev",
+        "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
       "outFiles": [
         "${workspaceFolder}/packages/**/*",
       ],
-      "preLaunchTask": "vscode:task:build:extension"
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "build:turbo",
+        "path": "packages/vscode"
+      }
     },
     {
       "name": "Run Web Extension in VS Code",
@@ -40,25 +44,18 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/packages/diagrams/src/stories/likec4",
+        "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
       "outFiles": [
         "${workspaceFolder}/packages/**/*",
       ],
-      "preLaunchTask": "vscode:task:build:extension"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run likec4 serve",
-      "runtimeArgs": [
-        "dev:serve"
-      ],
-      "runtimeExecutable": "yarn",
-      "cwd": "${workspaceFolder}/packages/likec4",
-      "skipFiles": ["<node_internals>/**"]
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "build:turbo",
+        "path": "packages/vscode"
+      }
     }
   ]
 }

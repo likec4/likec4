@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 
-import { LikeC4Views } from '../src/likec4/likec4.generated'
+import { LikeC4Views } from '../src/likec4/generated'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))

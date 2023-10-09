@@ -177,7 +177,7 @@ ${colors
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-const out = resolve(__dirname, '../src/likec4/theme.c4')
+const out = resolve(__dirname, '../likec4/theme.c4')
 
 writeFileSync(out, likec4)
 
