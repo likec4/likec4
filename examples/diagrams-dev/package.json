@@ -7,12 +7,13 @@
   "packageManager": "yarn@3.6.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "generate:themec4": "$npm_node_execpath ./.scripts/generate-theme-c4.mjs",
-    "generate:stories": "$npm_node_execpath ./.scripts/generate-view-stories.mjs",
+    "generate:themec4": "tsx ./.scripts/generate-theme-c4.ts",
+    "generate:stories": "tsx ./.scripts/generate-view-stories.ts",
     "generate": "likec4 codegen views-data src/likec4",
     "build:turbo": "run -T turbo run generate --filter='diagrams-dev'",
-    "build": "",
+    "build": "ladle build --outDir dist",
     "dev": "run generate && ladle serve",
+    "preview": "ladle preview --outDir dist -p 61000",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },
@@ -27,6 +28,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
+    "tsx": "^3.13.0",
     "typescript": "^5.2.2",
     "vite-plugin-watch-and-run": "^1.1.3"
   }

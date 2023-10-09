@@ -40,5 +40,5 @@
       "@likec4/diagrams": ["../../packages/diagrams/src"]
     }
   },
-  "include": ["src", ".ladle"]
+  "include": ["src", ".ladle", ".scripts"]
 }

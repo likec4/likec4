@@ -10,7 +10,3 @@ If you change other packages (like `@likec4/language-server` or `@likec4/layouts
 - `yarn generate`: Parse `*.c4` in [src/likec4](./src/likec4/) and generate typed views data for stories
 - `yarn build:turbo`: Same as `generate`, but ensure that all dependencies are built first.
 - `yarn dev`: Start dev server with HMR
-
-## Scripts
-
-[](./.scripts/generate-theme-likec4.mjs)

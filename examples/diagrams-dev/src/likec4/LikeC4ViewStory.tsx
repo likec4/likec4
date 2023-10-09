@@ -1,7 +1,7 @@
 import { Diagram, DiagramStateProvider } from '@likec4/diagrams'
-import { useStoryViewport } from '../.ladle/components'
-import type { LikeC4ViewId } from './likec4'
-import { LikeC4Views } from './likec4'
+import { useStoryViewport } from '../../.ladle/components'
+import type { LikeC4ViewId } from './index'
+import { LikeC4Views } from './index'
 
 type Props = {
   viewId: LikeC4ViewId
