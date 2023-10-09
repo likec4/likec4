@@ -1,9 +1,21 @@
+# [0.40.0](https://github.com/likec4/likec4/compare/v0.37.1...v0.40.0) (2023-10-09)
+
+### Features
+
+- `diagrams-dev` workspace ([fc5560f](https://github.com/likec4/likec4/commit/fc5560faf56e9c53e4f08378a2e29712aac90fff))
+- new cli `likec4` ([9413cec](https://github.com/likec4/likec4/commit/9413cecbc94087f7dfd136ea4d80704af965c3e5))
+
+### Bug Fixes
+
+- **diagrams:** fix zoom ([02ba48d](https://github.com/likec4/likec4/commit/02ba48d2a4e51f39ef0956abc9379cd48436791c))
+- **language:** resolve view links ([9d1a0ca](https://github.com/likec4/likec4/commit/9d1a0ca9dcb1ce6b1749f4964a64383ed6a3a923))
+
 ## [0.37.1](https://github.com/likec4/likec4/compare/v0.37.0...v0.37.1) (2023-09-16)
 
 ### Features
 
 - **vscode:** "Open source" from element context menu in preview panel ([8b19661](https://github.com/likec4/likec4/commit/8b196615af7180435cd894a2ec39bc6083280994))
-- **vscode:** Back button in preview panel 
+- **vscode:** Back button in preview panel
 
 ### Bug Fixes
 

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/example-cloud-system",
   "private": true,
-  "version": "0.37.1",
+  "version": "0.40.0",
   "packageManager": "yarn@3.4.1",
   "scripts": {
     "dev": "likec4 serve"
