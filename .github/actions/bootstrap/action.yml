@@ -32,7 +32,7 @@ runs:
 
     - name: docs caches
       uses: actions/cache@v3
-      if: inputs.enable-docs-cache === 'true'
+      if: inputs.enable-docs-cache == 'true'
       with:
         path: |
           ${{ github.workspace }}/docs/.next/cache
