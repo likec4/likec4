@@ -50,7 +50,7 @@ model {
 
       graphql -> cms
       graphql -> amazon.cognito 'authorizes'
-      graphql -> amazon.ses 'schedule emails'
+      graphql -> amazon.sqs 'publishes domain events'
       graphql -> amazon.cognito 'authenticates'
       graphql -> amazon.rds.pg 'reads and writes'
 
@@ -68,6 +68,14 @@ views {
   view index {
     title "Landscape"
     include *
+
+    style * {
+      color secondary
+    }
+    style cloud {
+      color primary
+    }
+
     exclude element.kind = themecolor
   }
 
@@ -76,7 +84,18 @@ views {
     include *,
             -> ui.*,
             -> backend
-    exclude amazon
+
+    style * {
+      color secondary
+    }
+
+    style cloud {
+      color gray
+    }
+
+    style customer {
+      color green
+    }
   }
 
   view cloud of cloud {
@@ -86,7 +105,21 @@ views {
 
   view cloud_ui of ui {
     title "Overview UI"
-    include *
+    include *, backend, ui.* -> backend.*
+
+    exclude backend -> amazon
+
+    style * {
+      color secondary
+    }
+
+    style backend {
+      color gray
+    }
+
+    style ui, ui.* {
+      color green
+    }
   }
 
   view cloud_backend of backend {
@@ -97,18 +130,18 @@ views {
       backend.* -> amazon.*
 
     exclude
-      ui -> amazon
+      ui.* -> amazon.*
 
     style * {
-      color muted
-    }
-
-    style ui.*, amazon.* {
       color secondary
     }
 
+    style cloud, amazon {
+      color muted
+    }
+
     style backend, backend.* {
-      color primary
+      color green
     }
   }
 
@@ -119,10 +152,34 @@ views {
       -> amazon
     include
       graphql -> amazon
+
+    style * {
+      color secondary
+    }
+
+    style backend {
+      color muted
+    }
+
+    style graphql {
+      color green
+    }
   }
 
   view cloud_cms of cms {
     include *, backend
+
+    style * {
+      color secondary
+    }
+
+    style backend {
+      color muted
+    }
+
+    style cms {
+      color green
+    }
   }
 
 }

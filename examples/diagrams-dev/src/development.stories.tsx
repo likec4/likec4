@@ -94,10 +94,9 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
 }
 DiagramDevelopment.storyName = 'Diagram'
 
-export const Colors: Story<Props> = props => {
+export const ThemeColors: Story<Props> = props => {
   return <DiagramDevelopment {...props} />
 }
-Colors.parameters
-Colors.args = {
+ThemeColors.args = {
   viewId: 'themecolors'
 }
