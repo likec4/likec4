@@ -4,7 +4,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Group } from './konva'
 
-const needForceStyle = (el: HTMLDivElement) => {
+function needForceStyle(el: HTMLDivElement) {
   const pos = window.getComputedStyle(el).position
   const ok = pos === 'absolute' || pos === 'relative'
   return !ok
@@ -33,7 +33,7 @@ type HtmlProps = PropsWithChildren<{
  *
  * Ported because, imports from react-konva-utils loads whole konva
  */
-export const KonvaHtml = ({ children, groupProps, divProps, transform, transformFunc }: HtmlProps) => {
+export function KonvaHtml({ children, groupProps, divProps, transform, transformFunc }: HtmlProps) {
   const groupRef = useRef<Konva.Group>(null)
 
   const [div] = useState(() => document.createElement('div'))

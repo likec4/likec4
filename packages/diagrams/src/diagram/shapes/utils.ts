@@ -1,13 +1,13 @@
 import type { KonvaPointerEvent } from '../types'
 
-export const mousePointer = (e: KonvaPointerEvent) => {
+export function mousePointer(e: KonvaPointerEvent) {
   const container = e.target.getStage()?.container()
   if (container) {
     container.style.cursor = 'pointer'
   }
 }
 
-export const mouseDefault = (e: KonvaPointerEvent) => {
+export function mouseDefault(e: KonvaPointerEvent) {
   const container = e.target.getStage()?.container()
   if (container) {
     container.style.cursor = 'auto'

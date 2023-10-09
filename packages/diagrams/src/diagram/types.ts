@@ -26,9 +26,9 @@ export type OnNodeClick = (node: DiagramNode, event: KonvaPointerEvent) => void
 export type OnEdgeClick = (node: DiagramEdge, event: KonvaPointerEvent) => void
 export type OnStageClick = (stage: Konva.Stage, event: KonvaPointerEvent) => void
 export interface DiagramApi {
-  stage(): Konva.Stage
-  container(): HTMLDivElement
-  diagramView(): DiagramView
+  readonly stage: Konva.Stage
+  readonly container: HTMLDivElement
+  readonly diagramView: DiagramView
   /**
    * Reset stage position and zoom
    */

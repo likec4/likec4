@@ -155,7 +155,7 @@ type NodeShapeProps = {
   onNodeClick?: OnNodeClick | undefined
 }
 
-const NodeSnape = ({
+function NodeSnape({
   animate,
   node,
   ctrl,
@@ -163,7 +163,7 @@ const NodeSnape = ({
   isHovered,
   expired,
   onNodeClick
-}: NodeShapeProps) => {
+}: NodeShapeProps) {
   const setHoveredNode = useSetHoveredNode()
 
   const Shape = isCompound(node) ? CompoundShape : nodeShape(node)

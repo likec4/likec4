@@ -14,7 +14,7 @@ type Props = PropsWithChildren<{
  * Ported, because react-konva-utils loads whole konva
  */
 // make a portal implementation
-export const Portal = ({ selector, enabled, children }: Props) => {
+export function Portal({ selector, enabled, children }: Props) {
   // "selector" is a string to find another container to insert all internals
   // if can be like ".top-layer" or "#overlay-group"
   const outer = useRef<Konva.Group>(null)

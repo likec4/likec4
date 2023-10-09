@@ -4,19 +4,19 @@ import { hoveredEdgeAtom, hoveredEdgeIdAtom, hoveredNodeAtom, hoveredNodeIdAtom 
 import { useCallback } from 'react'
 import type { DiagramNode } from '../types'
 
-export const useHoveredNode = () => {
+export function useHoveredNode() {
   return useAtom(hoveredNodeAtom)
 }
 
-export const useHoveredNodeId = () => {
+export function useHoveredNodeId() {
   return useAtomValue(hoveredNodeIdAtom)
 }
 
-export const useSetHoveredNode = () => {
+export function useSetHoveredNode() {
   return useSetAtom(hoveredNodeAtom)
 }
 
-export const useGetNodeState = (nodeId: DiagramNode['id']) => {
+export function useGetNodeState(nodeId: DiagramNode['id']) {
   const isHovered = useAtomValue(
     selectAtom(
       hoveredNodeAtom,
@@ -26,10 +26,10 @@ export const useGetNodeState = (nodeId: DiagramNode['id']) => {
   return { isHovered }
 }
 
-export const useHoveredEdgeId = () => {
+export function useHoveredEdgeId() {
   return useAtomValue(hoveredEdgeIdAtom)
 }
 
-export const useSetHoveredEdge = () => {
+export function useSetHoveredEdge() {
   return useSetAtom(hoveredEdgeAtom)
 }
