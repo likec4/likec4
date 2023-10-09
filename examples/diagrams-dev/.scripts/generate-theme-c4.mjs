@@ -1,4 +1,10 @@
-import { defaultTheme } from '@likec4/core/dist/colors.js'
+/**
+ * This script generates theme.c4:
+ * - model with all theme colors and shapes
+ * - views for each theme color
+ * - nested shapes (6 levels)
+ */
+import { defaultTheme } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 
@@ -171,7 +177,7 @@ ${colors
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-const out = resolve(__dirname, '../src/stories/likec4/theme.c4')
+const out = resolve(__dirname, '../src/likec4/theme.c4')
 
 writeFileSync(out, likec4)
 

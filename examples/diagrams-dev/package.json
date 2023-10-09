@@ -1,0 +1,33 @@
+{
+  "name": "@likec4/diagrams-dev",
+  "private": true,
+  "version": "0.37.1",
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "yarn@3.6.1",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate:themec4": "$npm_node_execpath ./.scripts/generate-theme-c4.mjs",
+    "generate:stories": "$npm_node_execpath ./.scripts/generate-view-stories.mjs",
+    "generate": "likec4 codegen views-data src/likec4",
+    "build:turbo": "run -T turbo run generate --filter='diagrams-dev'",
+    "build": "",
+    "dev": "run generate && ladle serve",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "run -T rimraf dist"
+  },
+  "devDependencies": {
+    "@ladle/react": "^3.2.1",
+    "@likec4/cli": "workspace:*",
+    "@likec4/core": "workspace:*",
+    "@likec4/diagrams": "workspace:*",
+    "@react-hookz/web": "^23.1.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tilg": "^0.1.1",
+    "typescript": "^5.2.2",
+    "vite-plugin-watch-and-run": "^1.1.3"
+  }
+}

@@ -11,12 +11,12 @@
     "directory": "packages/diagrams"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "type": "module",
   "sideEffects": false,
   "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
@@ -36,12 +36,7 @@
   },
   "packageManager": "yarn@3.6.1",
   "scripts": {
-    "typecheck:stories": "tsc --noEmit -p ./src/stories/tsconfig.json",
-    "typecheck:diagrams": "tsc --emitDeclarationOnly",
-    "typecheck": "run 'typecheck:diagrams' && run 'typecheck:stories'",
-    "generate:rebuild": "yarn workspace @likec4/cli run build && run generate",
-    "generate:likec4": "node ./.scripts/generate-theme-likec4.mjs",
-    "generate": "../cli/bin/likec4 codegen views-data src/stories/likec4",
+    "typecheck": "tsc --emitDeclarationOnly",
     "build:turbo": "run -T turbo run build --filter='diagrams'",
     "build:watch": "unbuild",
     "build": "unbuild",
@@ -71,12 +66,10 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@ladle/react": "^3.2.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tilg": "^0.1.1",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0"
   }

@@ -5,7 +5,6 @@
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
-    "source.organizeImports": true
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -20,6 +19,7 @@
     "node_modules/**": true,
     "docs/.next/**": true,
     "docs/node_modules/**": true,
+    "examples/*/dist/**": true,
     "packages/*/dist/**": true,
     "packages/*/node_modules/**": true
   },
@@ -28,17 +28,14 @@
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.folderListener": [
-    "/packages/core/src/model"
+    "packages/core/src/model"
   ],
   "mdx.experimentalLanguageServer": true,
   "vitest.commandLine": "yarn vitest",
   "exportall.config.semis": false,
   "json.schemas": [
     {
-      "url": "https://cdn.jsdelivr.net/npm/tsup/schema.json",
-      "fileMatch": ["package.json", "tsup.config.json"]
-    }, {
-      "url": "../node_modules/langium-cli/langium-config-schema.json",
+      "url": "node_modules/langium-cli/langium-config-schema.json",
       "fileMatch": ["langium-config.json"]
     }
   ]

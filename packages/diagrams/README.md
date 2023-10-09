@@ -12,7 +12,4 @@ npm install @likec4/diagrams
 
 ### Local Development
 
-```bash
-yarn build:turbo
-yarn dev
-```
+Use [/examples/diagrams-dev](../../examples/diagrams-dev/) workspace

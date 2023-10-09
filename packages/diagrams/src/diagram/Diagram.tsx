@@ -1,7 +1,7 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
-import { useSpring, easings } from '@react-spring/konva'
+import { easings, useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'

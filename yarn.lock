@@ -1709,6 +1709,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kitql/helper@npm:0.6.1":
+  version: 0.6.1
+  resolution: "@kitql/helper@npm:0.6.1"
+  dependencies:
+    safe-stable-stringify: ^2.4.2
+  checksum: 7748d0dc937a47a0d4a2dc4c1c4b07c0465ae73e543ba5bb59b446ff40a21e4809a498fe7cca7f0a3f4f86021733c0dc08714cef89800f94e2a89cd2aa9c4410
+  languageName: node
+  linkType: hard
+
 "@ladle/react-context@npm:^1.0.1":
   version: 1.0.1
   resolution: "@ladle/react-context@npm:1.0.1"
@@ -1815,11 +1824,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/diagrams-dev@workspace:examples/diagrams-dev":
+  version: 0.0.0-use.local
+  resolution: "@likec4/diagrams-dev@workspace:examples/diagrams-dev"
+  dependencies:
+    "@ladle/react": ^3.2.1
+    "@likec4/cli": "workspace:*"
+    "@likec4/core": "workspace:*"
+    "@likec4/diagrams": "workspace:*"
+    "@react-hookz/web": ^23.1.0
+    "@types/react": ^18.2.0
+    "@types/react-dom": ^18.2.0
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    tilg: ^0.1.1
+    typescript: ^5.2.2
+    vite-plugin-watch-and-run: ^1.1.3
+  languageName: unknown
+  linkType: soft
+
 "@likec4/diagrams@workspace:*, @likec4/diagrams@workspace:packages/diagrams":
   version: 0.0.0-use.local
   resolution: "@likec4/diagrams@workspace:packages/diagrams"
   dependencies:
-    "@ladle/react": ^3.2.1
     "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": ^1.0.4
     "@react-hookz/web": ^23.1.0
@@ -1835,7 +1862,6 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-konva: ^18.2.10
-    tilg: ^0.1.1
     typescript: ^5.2.2
     unbuild: ^2.0.0
   peerDependencies:
@@ -15336,7 +15362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.4.3":
+"safe-stable-stringify@npm:^2.4.2, safe-stable-stringify@npm:^2.4.3":
   version: 2.4.3
   resolution: "safe-stable-stringify@npm:2.4.3"
   checksum: 3aeb64449706ee1f5ad2459fc99648b131d48e7a1fbb608d7c628020177512dc9d94108a5cb61bbc953985d313d0afea6566d243237743e02870490afef04b43
@@ -17636,6 +17662,16 @@ __metadata:
   bin:
     vite-node: vite-node.mjs
   checksum: 46eba82bf8b69c7dfeed901502533b172cc6303212f0f49f82c2f64758fa4b60acd1b1e37cb96aff944e36b510b0d1beedb50d9cb25ef39e0159b2b9d1136b1f
+  languageName: node
+  linkType: hard
+
+"vite-plugin-watch-and-run@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "vite-plugin-watch-and-run@npm:1.1.3"
+  dependencies:
+    "@kitql/helper": 0.6.1
+    micromatch: 4.0.5
+  checksum: 6a2cc8950ee9cbfda99ca3ab2f1d1064ff2a08390cc2333c4b51f0e278ba331e6275793f35d17ce46236a928e70dd3d19def5774b5aefdb18a48df8467a60ecc
   languageName: node
   linkType: hard
 

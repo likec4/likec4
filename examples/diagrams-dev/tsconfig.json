@@ -14,10 +14,10 @@
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsxdev",
 
     /* Linting */
-    "checkJs": true,
+    "checkJs": false,
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
@@ -31,10 +31,14 @@
     "noFallthroughCasesInSwitch": true,
 
     "baseUrl": ".",
-    "rootDir": "src",
-    "composite": true,
-    "outDir": "dist/esm"
+    "outDir": "dist",
+
+    "types": ["vite/client"],
+
+    "paths": {
+      "@likec4/core": ["../../packages/core/src"],
+      "@likec4/diagrams": ["../../packages/diagrams/src"]
+    }
   },
-  "include": ["src"],
-  "references": [{ "path": "../core" }]
+  "include": ["src", ".ladle"]
 }
