@@ -1559,7 +1559,7 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@monaco-editor/react": ^4.5.0
     "@radix-ui/react-dropdown-menu": ^2.0.6
-    "@radix-ui/react-scroll-area": ^1.0.4
+    "@radix-ui/react-scroll-area": ^1.0.5
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
     "@types/react": ^18.2.0
@@ -3381,7 +3381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-scroll-area@npm:^1.0.4, @radix-ui/react-scroll-area@npm:^1.0.5":
+"@radix-ui/react-scroll-area@npm:^1.0.5":
   version: 1.0.5
   resolution: "@radix-ui/react-scroll-area@npm:1.0.5"
   dependencies:
