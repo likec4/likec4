@@ -20,7 +20,9 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@likec4/core": ["../../core/src"],
+      "@likec4/diagrams": ["../../diagrams/src"]
     },
     "types": ["vite/client"],
     "plugins": [
@@ -34,5 +36,13 @@
       }
     ]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../core"
+    },
+    {
+      "path": "../../diagrams"
+    }
+  ]
 }

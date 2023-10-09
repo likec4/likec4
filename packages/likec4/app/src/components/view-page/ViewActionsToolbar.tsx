@@ -16,7 +16,7 @@ const ExportMenu = ({ diagramApi, children }: PropsWithChildren<{ diagramApi: Di
         <DropdownMenu.Item
           onClick={_ => {
             // const { boundingBox } = diagramApi.diagramView()
-            console.log('Serialized: ', diagramApi.stage().toObject())
+            console.log('Serialized: ', diagramApi.stage.toObject())
             // diagramApi.stage().toBlob({
             //   ...boundingBox,
             //   callback(blob) {
