@@ -87,8 +87,11 @@ await cp('app/', 'dist/__app__/', {
 await $({ all: true })`tsc -p ./app/tsconfig.json`
 
 const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
-tsconfig.compilerOptions.plugins = []
 tsconfig.compilerOptions.outDir = 'dist'
+delete tsconfig.compilerOptions.plugins
+delete tsconfig.references
+delete tsconfig.compilerOptions.paths['@likec4/core']
+delete tsconfig.compilerOptions.paths['@likec4/diagrams']
 await writeFile('dist/__app__/tsconfig.json', JSON.stringify(tsconfig, null, 2))
 
 console.info(`✔️ copied app files to dist/__app__`)

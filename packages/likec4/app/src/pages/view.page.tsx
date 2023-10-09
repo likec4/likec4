@@ -1,4 +1,4 @@
-import { Diagram, useDiagramRef } from '@likec4/diagrams'
+import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { useWindowSize } from '@react-hookz/web/esm'
 import { $pages } from '~/router'
@@ -13,7 +13,7 @@ type ViewPageProps = {
 }
 export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   const { width, height } = useWindowSize()
-  const diagramApi = useDiagramRef()
+  const [ref, diagramApi] = useDiagramApi()
   const diagram = useLikeC4View(viewId)
 
   if (!diagram) {
@@ -23,7 +23,7 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   return (
     <Box position={'fixed'} inset='0' className='overflow-hidden'>
       <Diagram
-        ref={diagramApi.ref}
+        ref={ref}
         diagram={diagram}
         padding={showUI ? Paddings : undefined}
         width={width}
