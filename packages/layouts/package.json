@@ -42,7 +42,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@dagrejs/dagre": "^0.8.0",
+    "@dagrejs/dagre": "^1.0.4",
     "@dagrejs/graphlib": "^2.1.13",
     "@hpcc-js/wasm": "^2.14.0",
     "@likec4/core": "workspace:*",
@@ -52,7 +52,7 @@
     "remeda": "^1.27.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
-    "type-fest": "^4.3.1",
+    "type-fest": "^4.4.0",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
