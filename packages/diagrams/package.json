@@ -34,7 +34,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.4",
   "scripts": {
     "typecheck": "tsc --emitDeclarationOnly",
     "build:turbo": "run -T turbo run build --filter='diagrams'",
