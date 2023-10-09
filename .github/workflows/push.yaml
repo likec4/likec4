@@ -19,13 +19,11 @@ env:
 
 jobs:
   build:
-    # If on pull request, don't run for releases or renovate branches
+    # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' || (
-          !startsWith(github.head_ref, 'releases/') &&
-          !startsWith(github.head_ref, 'renovate/')
-        )
+        github.event_name == 'push' ||
+        github.event.pull_request.head.repo.full_name != github.repository
       )
     timeout-minutes: 10
     strategy:
@@ -50,6 +48,7 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           node-version: ${{ matrix.node-version }}
+          enable-docs-cache: $${{ matrix.build_docs }}
 
       - name: Init turborepo-cache
         if: ${{ runner.os != 'Windows' && github.repository == 'like4/like4' }}

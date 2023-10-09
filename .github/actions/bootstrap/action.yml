@@ -6,6 +6,10 @@ inputs:
     description: 'The version of Node.js to use'
     required: false
     default: '20'
+  enable-docs-cache:
+    description: 'Enable docs nextjs cache'
+    required: false
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -25,6 +29,20 @@ runs:
         restore-keys: |
           ${{ runner.os }}-yarn-${{ inputs.node-version }}-
           ${{ runner.os }}-yarn-
+
+    - name: docs caches
+      uses: actions/cache@v3
+      if: inputs.enable-docs-cache === 'true'
+      with:
+        path: |
+          ${{ github.workspace }}/docs/.next/cache
+        # Generate a new cache whenever packages or source files change.
+        key: ${{ runner.os }}-docs-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
+        # If source files changed but packages didn't, rebuild from a prior cache.
+        restore-keys: |
+          ${{ runner.os }}-docs-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-
+          ${{ runner.os }}-docs-${{ inputs.node-version }}-
+          ${{ runner.os }}-docs-
 
     # - name: restore only caches
     #   uses: actions/cache/restore@v3
