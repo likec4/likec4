@@ -182,9 +182,15 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       ref,
       () =>
         ({
-          stage: () => nonNullable(stageRef.current),
-          diagramView: () => refs.current.diagram,
-          container: () => nonNullable(stageRef.current?.container()),
+          get stage() {
+            return nonNullable(stageRef.current, 'not mounted')
+          },
+          get diagramView() {
+            return refs.current.diagram
+          },
+          get container() {
+            return nonNullable(stageRef.current?.container(), 'not mounted')
+          },
           resetStageZoom: (_immediate?: boolean) => {
             refs.current.resetStageZoom(_immediate)
           },
@@ -197,7 +203,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }),
           centerAndFit: () => refs.current.centerAndFit()
         }) satisfies DiagramApi,
-      [refs, stageRef]
+      [refs, id, stageRef]
     )
 
     useUpdateEffect(() => {
@@ -248,21 +254,21 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         onPinch: ({ memo, first, last, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
           if (first) {
             const stage = nonNullable(stageRef.current)
-            const { width, height, x, y } = stage.container().getBoundingClientRect()
-            const tx = ox - (x + width / 2)
-            const ty = oy - (y + height / 2)
+            const { x, y } = stage.getAbsolutePosition()
+            const tx = Math.round(ox - x)
+            const ty = Math.round(oy - y)
             memo = [stage.x(), stage.y(), tx, ty]
           }
+          const x = Math.round(memo[0] - (ms - 1) * memo[2])
+          const y = Math.round(memo[1] - (ms - 1) * memo[3])
 
-          const x = memo[0] - (ms - 1) * memo[2]
-          const y = memo[1] - (ms - 1) * memo[3]
           stageSpringApi.start({
             to: {
               x,
               y,
               scale
             },
-            immediate: immediate || !last
+            immediate: immediate || !last || !first
           })
 
           return memo
@@ -280,9 +286,12 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           }
         },
         pinch: {
+          pointer: {
+            touch: true
+          },
           enabled: zoomable,
-          modifierKey: null,
           scaleBounds: { min: 0.2, max: 1.15 },
+          rubberband: 0.05,
           pinchOnWheel: true
         }
       }

@@ -94,5 +94,3 @@ export const ExternalLink = ({
     </AnimatedGroup>
   )
 }
-
-export {}
