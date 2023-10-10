@@ -1529,7 +1529,7 @@ __metadata:
     "@react-spring/konva": ^9.7.3
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
-    "@use-gesture/react": ^10.2.27
+    "@use-gesture/react": ^10.3.0
     body-scroll-lock-upgrade: ^1.0.4
     jotai: ^2.4.3
     khroma: ^2.0.0
@@ -4771,21 +4771,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@use-gesture/core@npm:10.2.27":
-  version: 10.2.27
-  resolution: "@use-gesture/core@npm:10.2.27"
-  checksum: 3cc29b93e23597257483e2bb14fa53d322fca9c1e41a50a0d2af78557f4565404e2029c1409cfb49c2fd75096044fe9219914b4ce908f8eb3846ec8404f23b0a
+"@use-gesture/core@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@use-gesture/core@npm:10.3.0"
+  checksum: cd6782b0cf61ae2306ecee4bd3c30942251427c142e3fd3584778d86e1a93b27e087033246700b54c4ad7063aa78747dc793f0dbb7434925c306215fb18dee82
   languageName: node
   linkType: hard
 
-"@use-gesture/react@npm:^10.2.27":
-  version: 10.2.27
-  resolution: "@use-gesture/react@npm:10.2.27"
+"@use-gesture/react@npm:^10.3.0":
+  version: 10.3.0
+  resolution: "@use-gesture/react@npm:10.3.0"
   dependencies:
-    "@use-gesture/core": 10.2.27
+    "@use-gesture/core": 10.3.0
   peerDependencies:
     react: ">= 16.8.0"
-  checksum: 745c835483138eb033953dee285ddece04f236ac82a6897dcf03dd38daeb5335f91e664436ff55e3b449dccb1eadd809fcd7e7d1440c6f82c4e87663bfaadd5f
+  checksum: d43a2296e536ea8e4885ca082b7c554eabb0e19bb7f89b5db96e0511712c849db879de64c2746c94e3c9a5032e8918c90ace67fc023c754034d75b2ea3b727c4
   languageName: node
   linkType: hard
 
@@ -10671,7 +10671,7 @@ __metadata:
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
     "@types/yargs": ^17.0.28
-    "@use-gesture/react": ^10.2.27
+    "@use-gesture/react": ^10.3.0
     "@vitejs/plugin-react": ^4.1.0
     autoprefixer: ^10.4.16
     body-scroll-lock-upgrade: ^1.0.4
