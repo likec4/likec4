@@ -14,7 +14,7 @@
     "likec4": "bin/likec4"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=16.20.2"
   },
   "preferGlobal": true,
   "engineStrict": true,
@@ -37,7 +37,7 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@types/node": "^16.11.16",
+    "@types/node": "^16.18.58",
     "commander": "^11.0.0",
     "esbuild": "^0.19.4",
     "execa": "^8.0.1",
