@@ -49,7 +49,7 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.1.0",
     "@react-spring/konva": "^9.7.3",
-    "@use-gesture/react": "^10.2.27",
+    "@use-gesture/react": "^10.3.0",
     "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.16",
     "body-scroll-lock-upgrade": "^1.0.4",
