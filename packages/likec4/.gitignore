@@ -1,4 +1,5 @@
 ./dist
-dev/.export
+dev/export
+dev/dist
 .vscode/
 package.json.backup

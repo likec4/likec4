@@ -19,6 +19,7 @@ export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: Take
     logger.info(`${k.dim('export')} ${view.id}  ${k.dim(url)}`)
 
     const page = await browser.newPage({
+      deviceScaleFactor: 2,
       viewport: {
         width: view.width + padding * 2,
         height: view.height + padding * 2
@@ -51,9 +52,9 @@ export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: Take
 
     try {
       await page.screenshot({
-        scale: 'css',
         path,
         animations: 'disabled',
+        timeout: 10000,
         omitBackground: true
       })
     } catch (error: unknown) {

@@ -38,9 +38,9 @@
     "clean": "run -T rimraf dist app/dist dev/.export dev/dist",
     "cli": "tsx src/cli/index.ts",
     "cli:serve": "tsx watch src/cli/index.ts serve dev",
-    "cli:build": "tsx src/cli/index.ts build dev",
-    "cli:preview": "tsx src/cli/index.ts preview dev",
-    "cli:export": "tsx src/cli/index.ts export png -o dev/.export dev"
+    "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",
+    "cli:preview": "tsx src/cli/index.ts preview -o dev/dist dev",
+    "cli:export": "tsx src/cli/index.ts export png -o dev/export dev"
   },
   "dependencies": {
     "@nanostores/logger": "^0.2.3",
