@@ -27,6 +27,8 @@ jobs:
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
+        with:
+          enable-docs-cache: 'true'
 
       - name: turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1

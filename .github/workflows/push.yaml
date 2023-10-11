@@ -38,7 +38,7 @@ jobs:
 
           - os: ubuntu-latest
             node-version: '20'
-            build_docs: true
+            build_docs: 'true'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -76,7 +76,7 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      - if: ${{ matrix.build_docs }}
+      - if: ${{ matrix.build_docs == 'true' }}
         name: Build Docs
         working-directory: docs
         run: yarn build:turbo
