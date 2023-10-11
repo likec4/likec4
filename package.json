@@ -32,7 +32,7 @@
     "vscode:task:build": "turbo run typecheck --log-prefix=none --log-order=grouped",
     "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
-  "dependencies": {
+  "devDependencies": {
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
     "@types/eslint": "^8.44.3",

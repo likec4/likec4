@@ -1,4 +1,5 @@
 import k from 'picocolors'
+import prettyMilliseconds from 'pretty-ms'
 import type { LogErrorOptions, LogOptions, Logger } from 'vite'
 import { createLogger } from 'vite'
 
@@ -30,6 +31,19 @@ export function createLikeC4Logger(prefix: string): Logger {
         timestamp: true,
         ...options
       })
+    }
+  }
+}
+
+const NS_PER_MS = 1e6
+
+export function startTimer(logger: Logger) {
+  const start = process.hrtime()
+  return {
+    stopAndLog(msg = '✓ done in ') {
+      const [seconds, nanoseconds] = process.hrtime(start)
+      const ms = seconds * 1000 + nanoseconds / NS_PER_MS
+      logger.info(k.green(`${msg}${prettyMilliseconds(ms)}`))
     }
   }
 }

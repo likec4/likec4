@@ -1,4 +1,4 @@
-import { build } from 'esbuild'
+import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import { $ } from 'execa'
 import json5 from 'json5'
@@ -22,10 +22,7 @@ async function buildCli() {
     '@likec4/layouts': resolve('../layouts/src/index.ts')
   }
 
-  /**
-   * @type {import('esbuild').BuildOptions}
-   */
-  const cfg = {
+  const cfg: BuildOptions = {
     metafile: isDev,
     logLevel: 'info',
     outdir: 'dist',
@@ -51,7 +48,19 @@ async function buildCli() {
     },
     plugins: [
       nodeExternalsPlugin({
-        devDependencies: false
+        devDependencies: false,
+        allowList: [
+          '@likec4/core',
+          '@likec4/diagrams',
+          '@likec4/layouts',
+          '@likec4/generators',
+          '@likec4/language-server',
+          'remeda',
+          'rambdax',
+          '@dagrejs/graphlib',
+          'safe-stable-stringify',
+          'ts-custom-error'
+        ]
       })
     ]
   }
@@ -60,12 +69,12 @@ async function buildCli() {
   if (bundle.errors.length || bundle.warnings.length) {
     console.error(
       [
-        ...formatMessagesSync(warnings, {
+        ...formatMessagesSync(bundle.warnings, {
           kind: 'warning',
           color: true,
           terminalWidth: process.stdout.columns
         }),
-        ...formatMessagesSync(errors, {
+        ...formatMessagesSync(bundle.errors, {
           kind: 'error',
           color: true,
           terminalWidth: process.stdout.columns

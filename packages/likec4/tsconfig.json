@@ -7,7 +7,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "references": [
     {
       "path": "../core"

@@ -7,6 +7,7 @@ import { hideBin } from 'yargs/helpers'
 import buildCmd from './build'
 import exportCmd from './export'
 import previewCmd from './preview'
+import codegenCmd from './codegen'
 import serveCmd from './serve'
 
 const cli = yargs(hideBin(process.argv))
@@ -16,6 +17,7 @@ const cli = yargs(hideBin(process.argv))
   .command(buildCmd)
   .command(previewCmd)
   .command(exportCmd)
+  .command(codegenCmd)
   .help('help')
   .version()
   .strictCommands()
