@@ -109,8 +109,10 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
           onEdgeClick(edge, e)
         },
         onPointerEnter: e => {
-          setHoveredEdge(edge)
-          mousePointer(e)
+          if (animate) {
+            setHoveredEdge(edge)
+            mousePointer(e)
+          }
         },
         onPointerLeave: e => {
           setHoveredEdge(null)

@@ -23,7 +23,7 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, _next)
-        }, 180)
+        }, 100)
       )
       return true
     }
@@ -33,7 +33,7 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, null)
-        }, 180)
+        }, 150)
       )
       return true
     }
@@ -62,7 +62,7 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, _next)
-        }, 180)
+        }, 100)
       )
       return true
     }
@@ -72,7 +72,7 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, null)
-        }, 180)
+        }, 150)
       )
       return true
     }

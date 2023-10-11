@@ -176,8 +176,10 @@ function NodeSnape({
         name={node.id}
         visible={expired !== true}
         onPointerEnter={e => {
-          setHoveredNode(node)
-          onNodeClick && animate && mousePointer(e)
+          if (animate) {
+            setHoveredNode(node)
+            onNodeClick && mousePointer(e)
+          }
         }}
         onPointerLeave={e => {
           setHoveredNode(null)
