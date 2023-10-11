@@ -28,15 +28,15 @@ jobs:
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: turborepo-cache
+      - name: Turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: docs caches
+      - name: Docs NextJS Cache
         uses: actions/cache@v3
         with:
           path: |
-            ${{ github.workspace }}/docs/.next/cache
-            ${{ github.workspace }}/node_modules/nextra/dist/__temp__
+            docs/.next/cache
+            node_modules/nextra/dist/__temp__
           key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
           restore-keys: |
             ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-

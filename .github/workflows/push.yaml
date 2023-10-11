@@ -33,12 +33,15 @@ jobs:
         node-version: ['18', '20']
         include:
 
+          - os: ubuntu-latest
+            turbo-cache: true
+
           - node-version: '20'
-            test_cli: true
+            test-cli: true
 
           - os: ubuntu-latest
             node-version: '20'
-            build_docs: true
+            build-docs: true
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -49,8 +52,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Init turborepo-cache
-        if: ${{ runner.os != 'Windows' && github.repository == 'like4/like4' }}
+      - name: Turborepo-cache
+        if: ${{ matrix.turbo-cache }}
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build
@@ -62,11 +65,11 @@ jobs:
       - name: Test
         run: yarn test
 
-      - if: ${{ matrix.test_cli }}
+      - if: ${{ matrix.test-cli }}
         name: Run СLI test
         run: yarn test:integration
 
-      - if: ${{ matrix.test_cli }}
+      - if: ${{ matrix.test-cli }}
         name: Upload CLI test artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -75,19 +78,19 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      - if: ${{ matrix.build_docs }}
-        name: docs caches
+      - if: ${{ matrix.build-docs }}
+        name: Docs NextJS Cache
         uses: actions/cache@v3
         with:
           path: |
-            ${{ github.workspace }}/docs/.next/cache
-            ${{ github.workspace }}/node_modules/nextra/dist/__temp__
+            docs/.next/cache
+            node_modules/nextra/dist/__temp__
           key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
           restore-keys: |
             ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
             ${{ runner.os }}-docs-
 
-      - if: ${{ matrix.build_docs }}
+      - if: ${{ matrix.build-docs }}
         name: Build Docs
         working-directory: docs
         run: yarn build:turbo
