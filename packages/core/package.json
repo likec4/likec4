@@ -88,7 +88,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.13",
     "rambdax": "^9.1.1",
-    "remeda": "^1.27.0",
+    "remeda": "^1.27.1",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },
@@ -97,5 +97,5 @@
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@3.6.4"
 }

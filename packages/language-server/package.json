@@ -53,7 +53,7 @@
     "p-debounce": "^4.0.0",
     "p-throttle": "^5.1.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.27.0",
+    "remeda": "^1.27.1",
     "strip-indent": "^4.0.0",
     "vscode-languageserver": "~8.1.0",
     "vscode-languageserver-protocol": "~3.17.3",
@@ -68,5 +68,5 @@
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@3.6.4"
 }

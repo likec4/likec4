@@ -34,7 +34,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.4",
   "scripts": {
     "typecheck": "tsc --emitDeclarationOnly",
     "build:turbo": "run -T turbo run build --filter='diagrams'",
@@ -53,7 +53,7 @@
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.1.0",
     "@react-spring/konva": "^9.7.3",
-    "@use-gesture/react": "^10.2.27",
+    "@use-gesture/react": "^10.3.0",
     "body-scroll-lock-upgrade": "^1.0.4",
     "jotai": "^2.4.3",
     "khroma": "^2.0.0",

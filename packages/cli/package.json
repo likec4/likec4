@@ -49,9 +49,9 @@
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "remeda": "^1.27.0",
+    "remeda": "^1.27.1",
     "typescript": "^5.2.2",
     "vscode-uri": "3.0.7"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@3.6.4"
 }

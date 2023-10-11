@@ -1476,7 +1476,7 @@ __metadata:
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    remeda: ^1.27.0
+    remeda: ^1.27.1
     typescript: ^5.2.2
     vscode-uri: 3.0.7
   bin:
@@ -1490,7 +1490,7 @@ __metadata:
   dependencies:
     "@dagrejs/graphlib": ^2.1.13
     rambdax: ^9.1.1
-    remeda: ^1.27.0
+    remeda: ^1.27.1
     safe-stable-stringify: ^2.4.3
     ts-custom-error: ^3.3.1
     typescript: ^5.2.2
@@ -1529,7 +1529,7 @@ __metadata:
     "@react-spring/konva": ^9.7.3
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
-    "@use-gesture/react": ^10.2.27
+    "@use-gesture/react": ^10.3.0
     body-scroll-lock-upgrade: ^1.0.4
     jotai: ^2.4.3
     khroma: ^2.0.0
@@ -1559,7 +1559,7 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@monaco-editor/react": ^4.5.0
     "@radix-ui/react-dropdown-menu": ^2.0.6
-    "@radix-ui/react-scroll-area": ^1.0.4
+    "@radix-ui/react-scroll-area": ^1.0.5
     "@react-hookz/web": ^23.1.0
     "@types/node": ^18.15.11
     "@types/react": ^18.2.0
@@ -1657,7 +1657,7 @@ __metadata:
     p-debounce: ^4.0.0
     p-throttle: ^5.1.0
     rambdax: ^9.1.1
-    remeda: ^1.27.0
+    remeda: ^1.27.1
     strip-indent: ^4.0.0
     typescript: ^5.2.2
     unbuild: ^2.0.0
@@ -1680,7 +1680,7 @@ __metadata:
     indent-string: ^5.0.0
     p-limit: ^4.0.0
     rambdax: ^9.1.1
-    remeda: ^1.27.0
+    remeda: ^1.27.1
     strip-indent: ^4.0.0
     ts-graphviz: ^1.8.1
     type-fest: ^4.4.0
@@ -3381,7 +3381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-scroll-area@npm:^1.0.4, @radix-ui/react-scroll-area@npm:^1.0.5":
+"@radix-ui/react-scroll-area@npm:^1.0.5":
   version: 1.0.5
   resolution: "@radix-ui/react-scroll-area@npm:1.0.5"
   dependencies:
@@ -4633,12 +4633,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17":
-  version: 17.0.26
-  resolution: "@types/yargs@npm:17.0.26"
+"@types/yargs@npm:^17.0.28":
+  version: 17.0.28
+  resolution: "@types/yargs@npm:17.0.28"
   dependencies:
     "@types/yargs-parser": "*"
-  checksum: 26611969674f4972080c3b22239d4579eaadc5287f95f7802f893c4a9bb292c141467bd70f1e66eb834486c63a23c4f10032618b3d2e7b1ddc05051d08db4078
+  checksum: f78c5e5c29903933c0557b4ffcd1d0b8564d66859c8ca4aa51da3714e49109ed7c2644334a1918d033df19028f4cecc91fd2e502651bb8e8451f246c371da847
   languageName: node
   linkType: hard
 
@@ -4771,21 +4771,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@use-gesture/core@npm:10.2.27":
-  version: 10.2.27
-  resolution: "@use-gesture/core@npm:10.2.27"
-  checksum: 3cc29b93e23597257483e2bb14fa53d322fca9c1e41a50a0d2af78557f4565404e2029c1409cfb49c2fd75096044fe9219914b4ce908f8eb3846ec8404f23b0a
+"@use-gesture/core@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@use-gesture/core@npm:10.3.0"
+  checksum: cd6782b0cf61ae2306ecee4bd3c30942251427c142e3fd3584778d86e1a93b27e087033246700b54c4ad7063aa78747dc793f0dbb7434925c306215fb18dee82
   languageName: node
   linkType: hard
 
-"@use-gesture/react@npm:^10.2.27":
-  version: 10.2.27
-  resolution: "@use-gesture/react@npm:10.2.27"
+"@use-gesture/react@npm:^10.3.0":
+  version: 10.3.0
+  resolution: "@use-gesture/react@npm:10.3.0"
   dependencies:
-    "@use-gesture/core": 10.2.27
+    "@use-gesture/core": 10.3.0
   peerDependencies:
     react: ">= 16.8.0"
-  checksum: 745c835483138eb033953dee285ddece04f236ac82a6897dcf03dd38daeb5335f91e664436ff55e3b449dccb1eadd809fcd7e7d1440c6f82c4e87663bfaadd5f
+  checksum: d43a2296e536ea8e4885ca082b7c554eabb0e19bb7f89b5db96e0511712c849db879de64c2746c94e3c9a5032e8918c90ace67fc023c754034d75b2ea3b727c4
   languageName: node
   linkType: hard
 
@@ -10670,8 +10670,8 @@ __metadata:
     "@types/prop-types": ^15
     "@types/react": ^18.2.0
     "@types/react-dom": ^18.2.0
-    "@types/yargs": ^17
-    "@use-gesture/react": ^10.2.27
+    "@types/yargs": ^17.0.28
+    "@use-gesture/react": ^10.3.0
     "@vitejs/plugin-react": ^4.1.0
     autoprefixer: ^10.4.16
     body-scroll-lock-upgrade: ^1.0.4
@@ -10701,7 +10701,7 @@ __metadata:
     react-accessible-treeview: ^2.8.0
     react-dom: ^18.2.0
     react-konva: ^18.2.10
-    remeda: ^1.27.0
+    remeda: ^1.27.1
     safe-stable-stringify: ^2.4.3
     strip-indent: ^4.0.0
     tailwind-merge: ^1.14.0
@@ -14360,10 +14360,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.27.0":
-  version: 1.27.0
-  resolution: "remeda@npm:1.27.0"
-  checksum: 0298aba3ade1d5694bf5a8ca592c735f5ed17325d1f1ee8e4bfc5d80384de47cf6cc42093167f8c512dc4e453896f0ac59685598222328545d7c047c990120a4
+"remeda@npm:^1.27.1":
+  version: 1.27.1
+  resolution: "remeda@npm:1.27.1"
+  checksum: 4175a0b685ad40bb6b7d1b3ceccb5414573a5e289eb6447199e0417223cdf0c4402b839947185ba02651a8d3238a73e55e369ebbb83d793f51a72f0233adbee4
   languageName: node
   linkType: hard
 
