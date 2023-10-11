@@ -1695,6 +1695,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/likec4-cli-integration-test@workspace:integration/likec4-cli"
   dependencies:
+    execa: ^8.0.1
     likec4: "workspace:*"
     vitest: ^0.34.6
   languageName: unknown

@@ -8,8 +8,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "likec4": "workspace:*",
     "execa": "^8.0.1",
+    "likec4": "workspace:*",
     "vitest": "^0.34.6"
   }
 }
