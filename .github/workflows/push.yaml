@@ -38,7 +38,7 @@ jobs:
 
           - os: ubuntu-latest
             node-version: '20'
-            build_docs: 'true'
+            build_docs: true
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -48,7 +48,6 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           node-version: ${{ matrix.node-version }}
-          enable-docs-cache: $${{ matrix.build_docs }}
 
       - name: Init turborepo-cache
         if: ${{ runner.os != 'Windows' && github.repository == 'like4/like4' }}
@@ -76,7 +75,19 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      - if: ${{ matrix.build_docs == 'true' }}
+      - if: ${{ matrix.build_docs }}
+        name: docs caches
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/docs/.next/cache
+            ${{ github.workspace }}/node_modules/nextra/dist/__temp__
+          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
+            ${{ runner.os }}-docs-
+
+      - if: ${{ matrix.build_docs }}
         name: Build Docs
         working-directory: docs
         run: yarn build:turbo
