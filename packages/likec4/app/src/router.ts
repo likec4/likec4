@@ -6,7 +6,7 @@ import { computed } from 'nanostores'
 
 const $searchParams = createSearchParams()
 
-const asTheme = (v: string | null | undefined) => {
+const asTheme = (v: string | null | undefined): 'light' | 'dark' | undefined => {
   const vlower = v?.toLowerCase()
   if (vlower === 'light' || vlower === 'dark') {
     return vlower
