@@ -41,7 +41,6 @@ export function generateReact(views: DiagramView[]) {
   }
 
   out.appendTemplate`
-
       export type LikeC4ViewId = ${generateViewId(views)};
       export const LikeC4Views = {
     `
@@ -51,7 +50,10 @@ export function generateReact(views: DiagramView[]) {
         indented.appendNewLineIf(views.length > 1).append(
           joinToNode(
             views,
-            view => expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(view)} as unknown) as DiagramView`,
+            view =>
+              expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(
+                view
+              )} as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true
@@ -64,12 +66,19 @@ export function generateReact(views: DiagramView[]) {
       export type LikeC4Views = typeof LikeC4Views
 
       export const {
+        // guard
         isViewId,
+        // React hook to use location hash for ViewId
         useViewId,
+        // React component to display diagram
         Diagram,
+        // React component to display diagram in responsive container
         Responsive,
+        // React component to display diagram in fullscreen container
         Fullscreen,
+        // React component to embed diagram and open browser on click
         Embedded,
+        // React component to browse diagrams in fullscreen container
         Browser,
       } = LikeC4.create<LikeC4ViewId>(LikeC4Views)
 
@@ -96,7 +105,7 @@ export function generateReact(views: DiagramView[]) {
         DiagramLabel,
         DiagramView
       } from '@likec4/diagrams'
-    `.append(NL, NL)
+    `.append(NL)
 
   return toString(out)
 }
