@@ -6,13 +6,30 @@ import { computed } from 'nanostores'
 
 const $searchParams = createSearchParams()
 
+const asTheme = (v: string | null | undefined) => {
+  const vlower = v?.toLowerCase()
+  if (vlower === 'light' || vlower === 'dark') {
+    return vlower
+  }
+  return undefined
+}
+
+const asPadding = (v: string | null | undefined) => {
+  const parsed = v ? parseFloat(v) : undefined
+  if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
+    return Math.round(parsed)
+  }
+  return 20
+}
+
 const $route = computed($searchParams, v => {
   if ('embed' in v) {
     return {
       route: 'export' as const,
       params: {
         viewId: v.embed,
-        padding: 'padding' in v ? parseInt(v.padding) : 20
+        padding: asPadding(v.padding),
+        theme: asTheme(v.theme)
       },
       showUI: false
     }
@@ -22,7 +39,8 @@ const $route = computed($searchParams, v => {
       route: 'export' as const,
       params: {
         viewId: v.export,
-        padding: 'padding' in v ? parseInt(v.padding) : 20
+        padding: asPadding(v.padding),
+        theme: asTheme(v.theme)
       },
       showUI: false
     }

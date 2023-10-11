@@ -51,7 +51,7 @@ export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
   const { code, href } = embedCode(diagram, theme)
 
   return (
-    <Dialog.Content size={'2'} style={{ maxWidth: 700, minWidth: 300 }}>
+    <Dialog.Content size='2' style={{ maxWidth: 800, minWidth: 280 }}>
       <Tabs.Root defaultValue='embed'>
         <Tabs.List>
           <Tabs.Trigger value='embed'>Embed</Tabs.Trigger>
@@ -68,8 +68,11 @@ export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
                     <ExclamationTriangleIcon />
                   </Callout.Icon>
                   <Callout.Text>
-                    This is a local URL. You need to build and deploy your diagrams to a public URL
+                    This is a local URL. You need to build your project and deploy to a public URL
                     to make it available for embedding.
+                    <br />
+                    <Code>likec4 build --help</Code> builds your project as static website (single
+                    .html file)
                   </Callout.Text>
                 </Callout.Root>
               )}

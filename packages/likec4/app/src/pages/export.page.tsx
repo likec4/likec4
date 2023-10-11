@@ -2,7 +2,6 @@ import { Diagram } from '@likec4/diagrams'
 import { useIsomorphicLayoutEffect, useWindowSize } from '@react-hookz/web/esm'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
-import styles from './export.module.css'
 
 type ExportPageProps = {
   viewId: string
@@ -13,7 +12,8 @@ export function ExportPage({ viewId, padding }: ExportPageProps) {
   const diagram = useLikeC4View(viewId)
 
   useIsomorphicLayoutEffect(() => {
-    const classname = styles.html ?? ''
+    // see ../../likec4.css
+    const classname = 'export-page'
     document.body.parentElement?.classList.add(classname)
     return () => {
       document.body.parentElement?.classList.remove(classname)
