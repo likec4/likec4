@@ -7,7 +7,6 @@ model {
       description 'Relational Databases'
       style {
         shape cylinder
-        icon https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS_Amazon-RDS_instance_light-bg.svg
       }
 
       pg = database 'PostgreSQL' {
@@ -29,15 +28,21 @@ model {
 
     }
 
-    cognito = component 'Cognito' {
+    cognito = container 'Cognito' {
       description 'User management and authentication'
+
+      customers = component 'Customers' {
+        technology 'Cognito UserPool'
+      }
     }
 
-    sqs = component 'SQS' {
+    sqs = container 'SQS' {
       description 'Message Queues'
       style {
         shape queue
       }
+
+      queueDomainEvents = queue 'Domain Events'
     }
   }
 
@@ -56,12 +61,12 @@ views {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud {
       color muted
     }
 
-    style amazon.* {
-      color primary
+    style amazon, amazon.* {
+      color green
     }
 
   }
@@ -82,7 +87,7 @@ views {
     }
 
     style rds, rds.* {
-      color primary
+      color green
     }
   }
 
@@ -99,7 +104,7 @@ views {
       color muted
     }
 
-    style sqs {
+    style sqs, sqs.* {
       color green
     }
   }
@@ -117,8 +122,8 @@ views {
       color muted
     }
 
-    style cognito {
-      color primary
+    style cognito, cognito.* {
+      color green
     }
   }
 

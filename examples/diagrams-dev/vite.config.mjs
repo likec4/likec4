@@ -14,7 +14,8 @@ export default defineConfig({
       {
         name: 'likec4',
         watch: resolve(__dirname, 'likec4/**/*.c4'),
-        run: 'yarn run generate'
+        run: 'yarn run generate',
+        delay: 0
       }
     ])
   ]

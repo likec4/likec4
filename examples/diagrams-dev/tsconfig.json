@@ -8,6 +8,7 @@
     "declaration": true,
     "declarationMap": true,
     "allowJs": true,
+    "noEmit": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -21,6 +22,7 @@
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
+    "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -33,12 +35,8 @@
     "baseUrl": ".",
     "outDir": "dist",
 
-    "types": ["vite/client"],
-
-    "paths": {
-      "@likec4/core": ["../../packages/core/src"],
-      "@likec4/diagrams": ["../../packages/diagrams/src"]
-    }
+    "types": ["vite/client"]
   },
-  "include": ["src", ".ladle", ".scripts"]
+  "include": ["src", ".ladle", ".scripts"],
+  "references": [{ "path": "../../packages/core" }, { "path": "../../packages/diagrams" }]
 }

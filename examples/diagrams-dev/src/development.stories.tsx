@@ -2,7 +2,7 @@ import { ActionType, action, useLadleContext, type Story, type StoryDefault } fr
 import { Diagram, DiagramStateProvider } from '@likec4/diagrams'
 import { useStoryViewport } from '../.ladle/components'
 import type { LikeC4ViewId } from './likec4'
-import { LikeC4ViewIds, LikeC4Views } from './likec4'
+import { LikeC4ViewIds, useLikeC4View } from './likec4'
 
 export default {
   args: {
@@ -49,7 +49,7 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
     dispatch,
     globalState: { control: controlState }
   } = useLadleContext()
-  const diagram = LikeC4Views[viewId]
+  const diagram = useLikeC4View(viewId)
   return (
     <DiagramStateProvider>
       <Diagram

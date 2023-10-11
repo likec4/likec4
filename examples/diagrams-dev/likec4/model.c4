@@ -12,26 +12,27 @@ model {
     '
 
     ui = container 'Frontend' {
-      description 'All the frontend applications of the cloud system'
+      description 'Publicly available applications to use services of the Cloud System'
       style {
         shape browser
       }
 
       dashboard = app 'Customer Dashboard' {
         technology 'Nextjs'
-        description 'Web application, that allows customers to interact with the cloud system'
+        description 'Web application, that allows customers to interact with the Cloud System'
         style {
           shape browser
         }
 
-        -> amazon.cognito 'authenticates'
-        -> graphql 'fetches xcgdata'
+        -> amazon.cognito.customers 'authenticates'
+        -> graphql 'fetches data'
       }
       customer -> dashboard 'opens in browser'
 
       mobile = mobileApp 'Mobile App' {
-        description 'The mobile app of the cloud system'
-        -> amazon.cognito 'authenticates'
+        technology 'Native iOS'
+        description 'Mobile application to use services of the Cloud System'
+        -> amazon.cognito.customers 'authenticates'
         -> graphql 'fetches data'
       }
       customer -> mobile 'opens on mobile device'
@@ -49,9 +50,8 @@ model {
       }
 
       graphql -> cms
-      graphql -> amazon.cognito 'authorizes'
-      graphql -> amazon.sqs 'publishes domain events'
-      graphql -> amazon.cognito 'authenticates'
+      graphql -> amazon.cognito.customers 'authorizes'
+      graphql -> amazon.sqs.queueDomainEvents 'publishes domain events'
       graphql -> amazon.rds.pg 'reads and writes'
 
       cms -> amazon.rds.mysql 'stores media'
@@ -82,6 +82,7 @@ views {
   view customer of customer {
     title "Overview Customer"
     include *,
+            ui,
             -> ui.*,
             -> backend
 
@@ -89,8 +90,8 @@ views {
       color secondary
     }
 
-    style cloud {
-      color gray
+    style cloud, ui {
+      color muted
     }
 
     style customer {
@@ -101,6 +102,18 @@ views {
   view cloud of cloud {
     title "Overview Cloud System"
     include *
+
+    style * {
+      color secondary
+    }
+
+    style cloud {
+      color muted
+    }
+
+    style cloud.* {
+      color green
+    }
   }
 
   view cloud_ui of ui {
@@ -147,22 +160,25 @@ views {
 
   view cloud_graphql of graphql {
     include
-      *, backend
-    exclude
-      -> amazon
+      *,
+      backend,
+      amazon
     include
-      graphql -> amazon
+      graphql -> amazon.*
 
     style * {
       color secondary
     }
 
-    style backend {
+    style backend, amazon {
       color muted
     }
 
     style graphql {
       color green
+    }
+    style ui {
+      color indigo
     }
   }
 
