@@ -31,9 +31,11 @@ const ExportMenu = ({ diagramApi, children }: PropsWithChildren<{ diagramApi: Di
             // })
           }}
         >
-          Export as PNG
+          Export as .png
         </DropdownMenu.Item>
-        <DropdownMenu.Item>Export as SVG</DropdownMenu.Item>
+        <DropdownMenu.Item>Export as .dot</DropdownMenu.Item>
+        <DropdownMenu.Item>Export as .d2</DropdownMenu.Item>
+        <DropdownMenu.Item>Export as .mmd</DropdownMenu.Item>
       </DropdownMenu.Group>
       <DropdownMenu.Separator />
       <DropdownMenu.Label>

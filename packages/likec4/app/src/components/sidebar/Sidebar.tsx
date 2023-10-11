@@ -55,7 +55,7 @@ export const Sidebar = () => {
               }}
             >
               <ArrowLeftIcon />
-              Back to dashboard
+              Back to overview
             </Button>
             <Separator orientation='horizontal' my='3' size={'4'} />
             <DiagramsTree />

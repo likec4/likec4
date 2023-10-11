@@ -94,7 +94,7 @@ views {
   }
 
   view customer of customer {
-    title "Customer Context"
+    title "[context] Customer"
     include
         *,
         ui,
@@ -113,7 +113,7 @@ views {
   }
 
   view cloud of cloud {
-    title "[system context] Cloud System"
+    title "[system] Cloud System"
     include
       *
     exclude

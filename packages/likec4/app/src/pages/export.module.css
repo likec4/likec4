@@ -1,4 +1,13 @@
-.exportpage {
+.html {
   --color-page-background: transparent !important;
-  background: transparent;
+  background: transparent !important;
+
+  &:global(.dark) {
+    --color-page-background: transparent !important;
+    background: transparent !important;
+  }
+
+  body {
+    background: transparent !important;
+  }
 }

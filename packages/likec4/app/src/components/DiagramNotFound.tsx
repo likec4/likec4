@@ -17,9 +17,9 @@ export const DiagramNotFound = () => {
               Diagram not found
             </Heading>
             <Text as='div'>The diagram you are looking for does not exist.</Text>
-            <Box>
+            <Box pt='2'>
               <Button variant='soft' color='amber' onClick={() => $pages.index.open()}>
-                Home page
+                Go to overview
               </Button>
             </Box>
           </Flex>
