@@ -1,1 +1,4 @@
-src/**/generated.*
+src/**/*generated.ts
+src/**/*generated.tsx
+dist/
+node_modules/

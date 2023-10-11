@@ -50,13 +50,15 @@
     "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
     "turbo": "^1.10.15",
+    "tsx": "^3.13.0",
     "typescript": "^5.2.2",
     "vite": "^4.4.11",
     "vitest": "^0.34.6",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "20.6.1"
+    "node": "20.6.1",
+    "yarn": "1.22.19"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.1.0",

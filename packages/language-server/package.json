@@ -68,5 +68,8 @@
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

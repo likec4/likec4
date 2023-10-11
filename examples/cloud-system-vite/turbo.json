@@ -5,7 +5,7 @@
     "generate": {
       "dependsOn": ["likec4#build"],
       "outputs": ["src/**/*.generated.ts", "src/**/*.generated.tsx"],
-      "inputs": ["package.json", "**/*.c4"]
+      "inputs": ["likec4/**"]
     },
     "typecheck": {
       "dependsOn": ["generate", "^typecheck"],

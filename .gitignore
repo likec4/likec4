@@ -12,6 +12,8 @@
 
 examples/*/.vscode
 packages/*/contrib
+packages/*/dist
+packages/language-server/src/generated/
 
 # Logs
 logs

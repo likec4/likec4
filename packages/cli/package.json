@@ -53,5 +53,8 @@
     "typescript": "^5.2.2",
     "vscode-uri": "3.0.7"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

@@ -98,5 +98,8 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

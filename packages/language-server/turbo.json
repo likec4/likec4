@@ -4,7 +4,7 @@
   "pipeline": {
     "generate": {
       "outputs": ["contrib/**", "src/generated/**"],
-      "inputs": ["package.json", "src/**/*.langium", "langium-config.json"]
+      "inputs": ["src/**/*.langium", "langium-config.json"]
     },
     "typecheck": {
       "dependsOn": ["generate", "^typecheck"],

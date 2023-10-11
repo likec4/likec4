@@ -72,5 +72,8 @@
     "react-dom": "^18.2.0",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }
