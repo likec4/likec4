@@ -5,8 +5,8 @@ import json5 from 'json5'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-const watch = process.argv.includes('--watch')
-const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
+// const watch = process.argv.includes('--watch')
+const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 console.info(`⚠️ likec4 build isDev=${isDev}`)
 
 async function buildCli() {
@@ -29,9 +29,6 @@ async function buildCli() {
     outbase: 'src',
     color: true,
     bundle: true,
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    },
     alias,
     sourcemap: true,
     sourcesContent: isDev,

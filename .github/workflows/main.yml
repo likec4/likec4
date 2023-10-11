@@ -52,10 +52,6 @@ jobs:
           if-no-files-found: error
           retention-days: 2
 
-      - name: Build Docs
-        working-directory: docs
-        run: yarn build:turbo
-
   release:
     name: Release
     uses: ./.github/workflows/release.yaml

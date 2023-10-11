@@ -5,7 +5,10 @@ import { $ } from 'execa'
 
 const $$ = $({
   stderr: 'inherit',
-  stdout: 'inherit'
+  stdout: 'inherit',
+  env: {
+    NODE_ENV: 'production'
+  }
 })
 
 console.log('Run build\n')

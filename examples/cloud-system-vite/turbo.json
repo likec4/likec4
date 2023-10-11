@@ -3,7 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
-      "dependsOn": ["@likec4/cli#build"],
+      "dependsOn": ["likec4#build"],
       "outputs": ["src/**/*.generated.ts", "src/**/*.generated.tsx"],
       "inputs": ["package.json", "**/*.c4"]
     },

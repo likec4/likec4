@@ -1,5 +1,4 @@
 import { Provider } from 'jotai'
-// import { useAtomsDevtools } from 'jotai-devtools'
 import { Fragment } from 'react'
 import { Sidebar } from './components'
 import { ExportPage, IndexPage, ViewPage } from './pages'
@@ -22,11 +21,6 @@ const Routes = () => {
     </>
   )
 }
-
-// const AtomsDevTools = import.meta.env.DEV ? ({ children }: PropsWithChildren) => {
-//   useAtomsDevtools('demo')
-//   return <>{children}</>
-// } : Fragment
 
 export default function App() {
   return (
