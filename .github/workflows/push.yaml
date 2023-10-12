@@ -119,7 +119,7 @@ jobs:
 
       - name: Serve Diagrams Dev
         working-directory: examples/diagrams-dev
-        run: yarn serve &
+        run: yarn preview &
 
       - name: Lost Pixel
         uses: lost-pixel/lost-pixel@v3.4.0
