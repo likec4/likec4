@@ -1,0 +1,41 @@
+on: workflow_dispatch
+
+jobs:
+  lost-pixel-update:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build Diagrams Dev
+        working-directory: examples/diagrams-dev
+        run: yarn build:turbo
+
+      - name: Serve Diagrams Dev
+        working-directory: examples/diagrams-dev
+        run: yarn preview &
+
+      - name: Lost Pixel
+        uses: lost-pixel/lost-pixel@v3.7.1
+        id: lp
+        env:
+          LOST_PIXEL_CONFIG_DIR: examples/diagrams-dev
+          LOST_PIXEL_API_KEY: ${{ secrets.LOST_PIXEL_API_KEY }}
+          LOST_PIXEL_MODE: update
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        if: ${{ failure() && steps.lp.conclusion == 'failure' }}
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: update lost-pixel baselines
+          delete-branch: true
+          branch: 'lost-pixel-update/${{ github.ref_name }}'
+          title: 'Lost Pixel update - ${{ github.ref_name }}'
+          body: Automated baseline update PR created by Lost Pixel

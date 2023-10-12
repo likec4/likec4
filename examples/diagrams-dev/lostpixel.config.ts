@@ -12,5 +12,8 @@ export const config: CustomProjectConfig = {
   imagePathDifference: resolve(__dirname, '.lostpixel/difference'),
   // OSS mode
   generateOnly: true,
-  failOnDifference: true
+  failOnDifference: true,
+
+  lostPixelProjectId: 'clmq8wisc3it5j40e3gievrls',
+  apiKey: process.env.LOST_PIXEL_API_KEY
 }

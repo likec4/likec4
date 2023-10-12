@@ -8,6 +8,7 @@ on:
       - "**"
     branches-ignore:
       - "main"
+      - "lost-pixel-update/*"
       - "releases/*"
 
 concurrency:
@@ -125,3 +126,4 @@ jobs:
         uses: lost-pixel/lost-pixel@v3.7.1
         env:
           LOST_PIXEL_CONFIG_DIR: examples/diagrams-dev
+          LOST_PIXEL_API_KEY: ${{ secrets.LOST_PIXEL_API_KEY }}
