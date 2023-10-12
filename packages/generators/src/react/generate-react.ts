@@ -1,6 +1,6 @@
-import type { DiagramView } from '@likec4/core/types'
+import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium/lib/generator'
+import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
 
 const componentName = (value: string): string => {
   if (!value.charAt(0).match(/[a-zA-Z]/)) {
@@ -9,6 +9,11 @@ const componentName = (value: string): string => {
   value = value.replaceAll('_', '')
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
+
+export const generateViewId = (views: DiagramView[]) =>
+  joinToNode(views, view => expandToNode`'${view.id}'`, {
+    separator: ' | '
+  })
 
 export function generateReact(views: DiagramView[]) {
   const components = views.map(({ id }) => {
@@ -26,8 +31,8 @@ export function generateReact(views: DiagramView[]) {
        ******************************************************************************/
       /* eslint-disable */
 
-      import type { DiagramView, EmbeddedDiagramProps } from '@likec4/diagrams'
-      import { EmbeddedDiagram } from '@likec4/diagrams'
+      import type { DiagramView } from '@likec4/diagrams'
+      import { LikeC4 } from '@likec4/diagrams'
     `.append(NL, NL)
 
   if (components.length == 0) {
@@ -35,16 +40,20 @@ export function generateReact(views: DiagramView[]) {
     return toString(out)
   }
 
-  out
-    .append('export const LikeC4ViewsData = {', NL)
+  out.appendTemplate`
+      export type LikeC4ViewId = ${generateViewId(views)};
+      export const LikeC4Views = {
+    `
     .indent({
       indentation: 2,
-      indentedChildren: indent => {
-        indent.append(
+      indentedChildren(indented) {
+        indented.appendNewLineIf(views.length > 1).append(
           joinToNode(
             views,
             view =>
-              expandToNode`'${view.id}': (${JSON5.stringify(view)} as unknown) as DiagramView`,
+              expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(
+                view
+              )} as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true
@@ -53,42 +62,50 @@ export function generateReact(views: DiagramView[]) {
         )
       }
     })
-    .append('} as const', NL, NL).appendTemplate`
-      export type LikeC4ViewsData = typeof LikeC4ViewsData
-      export type LikeC4ViewId = keyof LikeC4ViewsData
-      export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
-        return typeof value === 'string' && value in LikeC4ViewsData
-      }
+    .append('} as const satisfies Record<LikeC4ViewId, DiagramView>', NL, NL).appendTemplate`
+      export type LikeC4Views = typeof LikeC4Views
 
-      export type LikeC4ViewProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, LikeC4ViewId>, 'views'>;
-      export function LikeC4View(props: LikeC4ViewProps) {
-        return <EmbeddedDiagram views={LikeC4ViewsData} {...props}/>
-      }
+      export const {
+        // guard
+        isViewId,
+        // React hook to use location hash for ViewId
+        useViewId,
+        // React component to display diagram
+        Diagram,
+        // React component to display diagram in responsive container
+        Responsive,
+        // React component to display diagram in fullscreen container
+        Fullscreen,
+        // React component to embed diagram and open browser on click
+        Embedded,
+        // React component to browse diagrams in fullscreen container
+        Browser,
+      } = LikeC4.create<LikeC4ViewId>(LikeC4Views)
 
-      type LikeC4ViewsProps = Omit<EmbeddedDiagramProps<LikeC4ViewsData, LikeC4ViewId>, 'views' | 'viewId'>
-      export const LikeC4Views = {
-    `
-    .append(NL)
-    .indent({
-      indentation: 2,
-      indentedChildren: components.map(({ id, name }) =>
-        expandToNode`
-            ['${name}']: (props: LikeC4ViewsProps) => <LikeC4View viewId={'${id}'} {...props}/>,
-          `.append(NL)
-      )
-      // indentedChildren: [joinToNode(
-      //   components,
-      //   ({ id, name }) =>
-      //     expandToNode`
-      //       ['${name}']: (props: NamedViewProps) => <EmbeddedDiagram views={LikeC4ViewsData} viewId={'${id}'} {...props}/>
-      //     `,
-      //   {
-      //     separator: ',',
-      //     appendNewLineIfNotEmpty: true
-      //   }
-      // )],
-    })
-    .append('} as const', NL, NL)
+      export type DiagramProps = LikeC4.DiagramProps<LikeC4ViewId>
+      export type ResponsiveProps = LikeC4.ResponsiveProps<LikeC4ViewId>
+      export type FullscreenProps = LikeC4.FullscreenProps<LikeC4ViewId>
+      export type EmbeddedProps = LikeC4.EmbeddedProps<LikeC4ViewId>
+      export type BrowserProps = LikeC4.BrowserProps<LikeC4ViewId>
+
+      // Re-export types
+      export type {
+        DiagramApi,
+        Fqn,
+        Element,
+        RelationID,
+        Relation,
+        NodeId,
+        EdgeId,
+        ViewID,
+        ComputedView,
+        LikeC4Theme,
+        DiagramNode,
+        DiagramEdge,
+        DiagramLabel,
+        DiagramView
+      } from '@likec4/diagrams'
+    `.append(NL)
 
   return toString(out)
 }

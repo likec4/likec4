@@ -1,6 +1,6 @@
 declare const tag: unique symbol
 
-declare type Tagged<Token> = {
+type Tagged<Token> = {
   readonly [tag]: Token
 }
 

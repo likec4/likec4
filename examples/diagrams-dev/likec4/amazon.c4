@@ -1,0 +1,125 @@
+model {
+
+  amazon = system 'Amazon' {
+    description 'Cloud and managed services provider'
+
+    rds = container 'RDS' {
+      description 'Relational Databases'
+      style {
+        shape cylinder
+        icon https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS_Amazon-RDS_instance_light-bg.svg
+      }
+
+      pg = database 'PostgreSQL' {
+        technology 'AWS Aurora'
+        description 'Database for storing relational data'
+        style {
+          icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+        }
+      }
+
+      mysql = database 'MySQL' {
+        technology 'AWS Aurora'
+        description 'Database for storing relational data'
+        style {
+          icon https://icons.terrastruct.com/dev%2Fmysql.svg
+          color indigo
+        }
+      }
+
+    }
+
+    cognito = component 'Cognito' {
+      description 'User management and authentication'
+    }
+
+    sqs = component 'SQS' {
+      description 'Message Queues'
+      style {
+        shape queue
+      }
+    }
+  }
+
+}
+
+views {
+
+  view amazon of amazon {
+    title "Overview Amazon"
+    include
+      *,
+      cloud,
+      cloud.* -> amazon
+
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style amazon.* {
+      color primary
+    }
+
+  }
+
+  view amazon_rds of rds {
+    title 'Overview Amazon RDS'
+
+    include *,
+       amazon,
+       cloud.backend.* -> rds
+
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style rds, rds.* {
+      color primary
+    }
+  }
+
+  view amazon_sqs of sqs {
+    title 'Overview Amazon SQS'
+
+    include *, amazon, cloud.backend, cloud.backend.* -> sqs
+
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style sqs {
+      color green
+    }
+  }
+
+  view amazon_cognito of cognito {
+    title 'Overview Amazon Cognito'
+
+    include *, amazon, cloud.* -> cognito
+
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style cognito {
+      color primary
+    }
+  }
+
+}

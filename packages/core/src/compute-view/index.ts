@@ -1,3 +1,4 @@
-export { computeView, computeViews, assignNavigateTo } from './compute'
-
-export type * from '../types/computed-view'
+export * from './compute'
+export * from './resolve-extended-views'
+export * from './resolve-relative-paths'
+export * from './EdgeBuilder'

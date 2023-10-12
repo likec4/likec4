@@ -8,13 +8,13 @@
   
   [docs](https://likec4.dev/docs/) | [playground](https://likec4.dev/playground/) | [example](https://likec4.dev/examples/bigbank/likec4/)
 
-  ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
+![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
 </div>
 
 ## What is LikeC4? Why "like"?
 
-LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
+LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.
 
 LikeC4 is inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but provides some flexibility.
 You customize or define your own notation, element types, and any number of nested levels in architecture model.  
@@ -37,11 +37,10 @@ likec4 codegen react -o likec4-generated.tsx
 Website:
 
 ```tsx
-import { LikeC4View } from "$/likec4-generated"
+import { LikeC4View } from '$/likec4-generated'
 
 // ...
-
-<LikeC4View viewId="index"/>
+;<LikeC4View viewId='index' />
 ```
 
 And this is rendered:
@@ -51,3 +50,42 @@ And this is rendered:
 </div>
 
 Check the [Tutorial](https://likec4.dev/docs/#tutorial) - a bit better overview of LikeC4.
+
+## Local development
+
+Development tasks:
+
+- `yarn typecheck`: TypeScript compilation
+- `yarn build`: Build packages
+- `yarn test`: Test packages
+- `yarn vitest:ui`: Opens Vitest UI
+- `yarn dev`: ...requires work...
+
+For VSCode:
+
+- Task `Run Extension` to start a new VSCode instance with the extension loaded.
+
+## About this repository
+
+### Top-level layout
+
+This repository's contents is divided across four primary sections:
+
+- `/docs` contains the content for our docs site at [likec4.dev](https://likec4.dev)
+- `/examples` our local development / examples project
+- `/integration` integration tests (not yet implemented)
+- `/packages` contains the source for packages
+
+### Packages
+
+- `cli`: obviously, the CLI
+- `core`: model definitions
+- `create-likec4`: scaffolding tool
+- `diagrams`: react components for rendering diagrams
+- `generators`: _LikeC4 -> Other formats_
+- `language-server`: parser and language server
+- `layouts`: layout algorithms for views
+- `likec4`: the main package, published to npm as `likec4`
+- `tsconfig`: typescript configuration
+- `vscode`: vscode extension
+- `vscode-preview`: preview panel in vscode extension

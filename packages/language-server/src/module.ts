@@ -1,37 +1,45 @@
-import type {
-  DefaultSharedModuleContext,
-  LangiumServices,
-  LangiumSharedServices,
-  Module,
-  PartialLangiumServices,
-  PartialLangiumSharedServices
+import {
+  WorkspaceCache,
+  type DefaultSharedModuleContext,
+  type LangiumServices,
+  type LangiumSharedServices,
+  type Module,
+  type PartialLangiumServices,
+  type PartialLangiumSharedServices
 } from 'langium'
 import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
-import { logger } from './logger'
 import {
+  LikeC4CodeLensProvider,
+  LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
   LikeC4HoverProvider,
   LikeC4SemanticTokenProvider
 } from './lsp'
-import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator } from './model'
+import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
-import { registerProtocolHandlers } from './registerProtocolHandlers'
-import { LikeC4CodeLensProvider, LikeC4DocumentLinkProvider, LikeC4WorkspaceManager } from './shared'
+import { Rpc } from './Rpc'
+import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
+import { logger } from './logger'
+import { serializeError } from '@likec4/core'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T;
+type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
 
 /**
  * Declaration of custom services - add your own service classes here.
  */
 export interface LikeC4AddedServices {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  WorkspaceCache: WorkspaceCache<string, any>
+  Rpc: Rpc
   likec4: {
     FqnIndex: FqnIndex
+    ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
-  },
+  }
   lsp: {
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
   }
@@ -44,20 +52,21 @@ function bind<T>(Type: Constructor<T, [LikeC4Services]>) {
 }
 
 export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC4AddedServices> = {
+  WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
+  Rpc: bind(Rpc),
   likec4: {
     FqnIndex: bind(FqnIndex),
+    ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),
     ModelLocator: bind(LikeC4ModelLocator)
   },
   lsp: {
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
     SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),
-    HoverProvider: bind(LikeC4HoverProvider)
+    HoverProvider: bind(LikeC4HoverProvider),
+    CodeLensProvider: bind(LikeC4CodeLensProvider),
+    DocumentLinkProvider: bind(LikeC4DocumentLinkProvider)
   },
-  //
-  //   // Formatter: bind(LikeC4Formatter),
-  //
-  // },
   references: {
     ScopeComputation: bind(LikeC4ScopeComputation),
     ScopeProvider: bind(LikeC4ScopeProvider)
@@ -65,13 +74,8 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 }
 
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
-  ...LikeC4GeneratedSharedModule,
   workspace: {
     WorkspaceManager: services => new LikeC4WorkspaceManager(services)
-  },
-  lsp: {
-    CodeLensProvider: services => new LikeC4CodeLensProvider(services),
-    DocumentLinkProvider: services => new LikeC4DocumentLinkProvider(services)
   }
 }
 
@@ -83,24 +87,17 @@ export function createLanguageServices(context?: LanguageServicesContext): {
 } {
   const connection = context?.connection
   if (connection) {
-    const log = (method: 'log' | 'info' | 'warn' | 'error') => (message: unknown) => {
-      try {
-        console[method](message)
-        connection.console[method](String(message))
-        if (method === 'error') {
-          connection.telemetry.logEvent({ eventName: 'error', message})
-        }
-      } catch (error) {
-        console.error(error)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const original = logger.error.bind(logger)
+    logger.error = (arg: unknown) => {
+      if (typeof arg === 'string') {
+        original(arg)
+        connection.telemetry.logEvent({ eventName: 'error', error: arg })
+        return
       }
-    }
-    logger.log = log('log')
-    logger.info = log('info')
-    logger.warn = log('warn')
-    logger.error = log('error')
-    logger.trace = logger.debug = (message: string) => {
-      console.debug(message)
-      connection.tracer.log(message)
+      const { message, error } = serializeError(arg)
+      original(error)
+      connection.telemetry.logEvent({ eventName: 'error', error: message })
     }
   }
 
@@ -109,10 +106,14 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     ...context
   }
 
-  const shared = inject(createDefaultSharedModule(moduleContext), LikeC4SharedModule)
+  const shared = inject(
+    createDefaultSharedModule(moduleContext),
+    LikeC4GeneratedSharedModule,
+    LikeC4SharedModule
+  )
   const likec4 = inject(createDefaultModule({ shared }), LikeC4GeneratedModule, LikeC4Module)
   shared.ServiceRegistry.register(likec4)
   registerValidationChecks(likec4)
-  registerProtocolHandlers(likec4)
+  likec4.Rpc.init()
   return { shared, likec4 }
 }

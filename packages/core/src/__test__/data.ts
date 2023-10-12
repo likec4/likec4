@@ -1,5 +1,6 @@
+import { indexBy } from 'remeda'
 import { ModelIndex } from '../model-index'
-import type { Element, Relation, Tag } from '../types'
+import type { Element, ElementKind, Fqn, Relation, RelationID, Tag } from '../types'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -81,127 +82,134 @@ model {
 }
 
  */
+const el = ({
+  id,
+  kind,
+  title,
+  ...props
+}: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
+  id: id as Fqn,
+  kind: kind as ElementKind,
+  title: title ?? id,
+  description: null,
+  technology: null,
+  tags: null,
+  links: null,
+  ...props
+})
+
 export const fakeElements = {
-  amazon: {
-    id: 'amazon',
-    kind: 'system',
-    title: 'amazon'
-  },
-  cloud: {
+  'cloud': el({
     id: 'cloud',
     kind: 'system',
     title: 'cloud'
-  },
-  customer: {
+  }),
+  'customer': el({
     id: 'customer',
     kind: 'actor',
     title: 'customer',
     shape: 'person'
-  },
-  support: {
+  }),
+  'support': el({
     id: 'support',
     kind: 'actor',
     title: 'support',
     shape: 'person'
-  },
-  'amazon.s3': {
+  }),
+  'amazon': el({
+    id: 'amazon',
+    kind: 'system',
+    title: 'amazon'
+  }),
+  'amazon.s3': el({
     id: 'amazon.s3',
     kind: 'component',
     title: 's3',
     shape: 'storage'
-  },
-  'cloud.backend': {
+  }),
+  'cloud.backend': el({
     id: 'cloud.backend',
     kind: 'container',
     title: 'backend'
-  },
-  'cloud.frontend': {
+  }),
+  'cloud.frontend': el({
     id: 'cloud.frontend',
     kind: 'container',
     title: 'frontend',
     shape: 'browser'
-  },
-  'cloud.backend.graphql': {
+  }),
+  'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
     title: 'graphql'
-  },
-  'cloud.backend.storage': {
+  }),
+  'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
     title: 'storage',
     tags: ['old' as Tag]
-  },
-  'cloud.frontend.adminPanel': {
+  }),
+  'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
     title: 'adminPanel',
     tags: ['old' as Tag]
-  },
-  'cloud.frontend.dashboard': {
+  }),
+  'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard'
-  }
-} satisfies Record<
-  string,
-  Omit<Element, 'id' | 'kind'> & {
-    id: string
-    kind: string
-  }
->
+  })
+} satisfies Record<string, Element>
+
 export type FakeElementIds = keyof typeof fakeElements
 
-export const fakeRelations = {
-  'customer:cloud.frontend.dashboard': {
-    id: 'customer:cloud.frontend.dashboard',
+const rel = ({
+  source,
+  target,
+  title
+}: {
+  source: FakeElementIds
+  target: FakeElementIds
+  title?: string
+}): Relation => ({
+  id: `${source}:${target}` as RelationID,
+  title: title ?? '',
+  source: source as Fqn,
+  target: target as Fqn
+})
+
+export const fakeRelations = [
+  rel({
     source: 'customer',
-    target: 'cloud.frontend.dashboard',
-    title: ''
-  },
-  'support:cloud.frontend.adminPanel': {
-    id: 'support:cloud.frontend.adminPanel',
+    target: 'cloud.frontend.dashboard'
+  }),
+  rel({
     source: 'support',
-    target: 'cloud.frontend.adminPanel',
-    title: ''
-  },
-  'cloud.backend.storage:amazon.s3': {
-    id: 'cloud.backend.storage:amazon.s3',
+    target: 'cloud.frontend.adminPanel'
+  }),
+  rel({
     source: 'cloud.backend.storage',
-    target: 'amazon.s3',
-    title: ''
-  },
-  'cloud.backend.graphql:cloud.backend.storage': {
-    id: 'cloud.backend.graphql:cloud.backend.storage',
+    target: 'amazon.s3'
+  }),
+  rel({
     source: 'cloud.backend.graphql',
-    target: 'cloud.backend.storage',
-    title: ''
-  },
-  'cloud.frontend.dashboard:cloud.backend.graphql': {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql',
+    target: 'cloud.backend.storage'
+  }),
+  rel({
     source: 'cloud.frontend.dashboard',
-    target: 'cloud.backend.graphql',
-    title: ''
-  },
-  'cloud.frontend.adminPanel:cloud.backend.graphql': {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql',
+    target: 'cloud.backend.graphql'
+  }),
+  rel({
     source: 'cloud.frontend.adminPanel',
-    target: 'cloud.backend.graphql',
-    title: ''
-  }
-} satisfies Record<
-  string,
-  Omit<Relation, 'id' | 'source' | 'target'> & {
-    id: string
-    source: string
-    target: string
-  }
->
+    target: 'cloud.backend.graphql'
+  })
+]
 
 export type FakeRelationIds = keyof typeof fakeRelations
 
 export const fakeModel = () =>
   ModelIndex.from({
     elements: fakeElements,
-    relations: fakeRelations
+    relations: indexBy(fakeRelations, r => r.id)
   })

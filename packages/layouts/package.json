@@ -1,14 +1,14 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "0.29.0",
+  "version": "0.40.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
     "src",
-    "!**/__mocks__/",
+    "!**/__fixtures__/",
     "!**/*.spec.*",
     "!**/*.snap",
     "!**/*.map"
@@ -18,41 +18,51 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/layouts"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "access": "public"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
-    "build": "tsc",
+    "typecheck": "tsc --emitDeclarationOnly",
+    "build:watch": "tsc --watch",
+    "prepack": "run clean && run build",
+    "build": "unbuild",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
-    "test": "run -T vitest run",
-    "test:watch": "run -T vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@dagrejs/dagre": "^0.8.0",
+    "@dagrejs/dagre": "^1.0.4",
     "@dagrejs/graphlib": "^2.1.13",
-    "@hpcc-js/wasm": "^2.13.0",
+    "@hpcc-js/wasm": "^2.14.0",
     "@likec4/core": "workspace:*",
     "indent-string": "^5.0.0",
+    "p-limit": "^4.0.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.23.0",
+    "remeda": "^1.27.1",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
-    "word-wrap": "^1.2.3"
+    "type-fest": "^4.4.0",
+    "word-wrap": "^1.2.5"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
+  },
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
   }
 }

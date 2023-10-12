@@ -1,66 +1,63 @@
-import { useSpring } from '@react-spring/konva'
-import { useMemo } from 'react'
-import { AnimatedGroup, AnimatedPath } from '../../konva'
-import { cylinderSVGPath } from './Cylinder'
-import { NodeLabels } from './nodeLabels'
+import { useShadowSprings } from '../springs'
+import { AnimatedEllipse, AnimatedPath } from '../../konva'
+import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
-import React from 'react'
+import { useSpring } from '@react-spring/konva'
 
-export function QueueShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+function queueSVGPath(width: number, height: number, tilt = 0.2) {
+  const diameter = height
+  const radius = Math.round(diameter / 2)
+  // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
+  const ry = radius
+  const rx = Math.round((diameter / 2) * tilt)
+  const tiltAdjustedWidth = width - 2 * rx
+
+  const path = `  M ${rx},0
+        a ${rx},${ry} 0,0,0 0 ${diameter}
+        l ${tiltAdjustedWidth},0
+        a ${rx},${ry} 0,0,0 0 ${-diameter}
+        `
+    .replace(/\s+/g, ' ')
+    .trim()
+  return {
+    path,
+    ry,
+    rx
+  }
+}
+
+export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const {
-    size: { width, height }, color, labels
+    size: { width, height }
   } = node
-  const { fill, stroke } = theme.colors[color]
 
-  const path = useMemo(() => cylinderSVGPath(height, width, 0.1), [width, height])
-  const rx = Math.round(2 * 0.1 * (height / 2) * 1000) / 1000
+  const { path, rx, ry } = queueSVGPath(width, height)
 
-  const queueProps = useSpring({
+  const props = useSpring({
     to: {
-      fill,
-      stroke
+      x: width - rx,
+      y: ry,
+      rx,
+      ry
     }
   })
 
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      {...springs}
-      {...listeners}
-    >
+    <>
       <AnimatedPath
-        shadowBlur={16}
-        shadowOpacity={0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={8}
-        shadowColor={theme.shadow}
-        rotation={90}
+        {...useShadowSprings(isHovered, theme, springs)}
         data={path}
-        width={springs.height}
-        height={springs.width}
-        x={springs.offsetX}
-        y={springs.offsetY}
-        offsetX={springs.offsetY}
-        offsetY={springs.offsetX}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
         perfectDrawEnabled={false}
-        shadowForStrokeEnabled={false}
-        strokeWidth={2}
-        hitStrokeWidth={8}
-        {...queueProps} />
-      <NodeLabels
-        labels={labels}
-        width={width - rx}
-        color={color}
-        theme={theme} />
-    </AnimatedGroup>
+        fill={springs.fill}
+      />
+      <AnimatedEllipse
+        x={props.x}
+        y={props.y}
+        radiusX={props.rx}
+        radiusY={props.ry}
+        fill={springs.stroke}
+      />
+      <NodeLabels node={node} maxWidth={width - rx * 2} theme={theme} />
+    </>
   )
 }

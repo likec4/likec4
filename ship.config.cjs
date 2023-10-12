@@ -9,7 +9,9 @@ module.exports = {
       'packages/diagrams',
       'packages/generators',
       'packages/language-server',
-      'packages/layouts'
+      'packages/layouts',
+      'packages/create-likec4',
+      'packages/likec4',
     ]
   },
   publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public`

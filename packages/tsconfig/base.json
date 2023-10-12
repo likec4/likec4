@@ -2,18 +2,19 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Base Strictest",
   "compilerOptions": {
-    "lib": ["ESNext"],
-    "module": "es2022",
+    "lib": ["esnext"],
+    "module": "esnext",
     "target": "es2022",
     "moduleResolution": "bundler",
-
     "declaration": true,
-    "declarationMap": false,
-    "sourceMap": false,
+    "declarationMap": true,
+    "resolvePackageJsonExports": true,
 
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
+    "allowArbitraryExtensions": true,
+    "allowSyntheticDefaultImports": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -22,9 +23,8 @@
     "noUncheckedIndexedAccess": true,
 
     "verbatimModuleSyntax": true,
-    "checkJs": true,
-
-    "noEmitOnError": true,
+    "allowJs": true,
+    "checkJs": false,
 
     "isolatedModules": true,
     "esModuleInterop": true,

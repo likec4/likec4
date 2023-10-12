@@ -1,45 +1,47 @@
-import type { Fqn, LikeC4Model, RelationID, ViewID } from '@likec4/core'
-import type { DocumentUri, Location,  } from 'vscode-languageserver-protocol'
-import { NotificationType, RequestType0, RequestType } from 'vscode-languageserver-protocol'
+import type {
+  ComputedView,
+  Fqn,
+  LikeC4Model,
+  LikeC4RawModel,
+  RelationID,
+  ViewID
+} from '@likec4/core'
+import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
+import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
 
 //#region From server
-const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
+export const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 //#endregion
 
 //#region To server
-const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
+export const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>(
+  'likec4/fetchRaw'
+)
+export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
 
-const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
+export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
+  'likec4/computeView'
+)
+
+export const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
 
 interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
-const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/buildDocuments')
-
-export interface LocateElementParams {
-  element: Fqn
-  property?: string
-}
-export const locateElement = new RequestType<
-  LocateElementParams,
-  Location | null,
-  void
->('likec4/locateElement')
-
-export const locateRelation = new RequestType<{ id: RelationID }, Location | null, void>(
-  'likec4/locateRelation'
+export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>(
+  'likec4/buildDocuments'
 )
-export const locateView = new RequestType<{ id: ViewID }, Location | null, void>(
-  'likec4/locateView'
-)
+
+export type LocateParams =
+  | {
+      element: Fqn
+      property?: string
+    }
+  | {
+      relation: RelationID
+    }
+  | {
+      view: ViewID
+    }
+export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
 //#endregion
-
-export const Rpc = {
-  onDidChangeModel,
-  fetchModel,
-  rebuild,
-  buildDocuments,
-  locateElement,
-  locateRelation,
-  locateView
-} as const

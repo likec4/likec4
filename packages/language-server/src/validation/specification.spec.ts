@@ -1,5 +1,7 @@
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { createTestServices } from '../test'
+
+vi.mock('../logger')
 
 const { validate } = createTestServices()
 

@@ -1,0 +1,115 @@
+{
+  "folders": [
+    {
+      "name": "✨ likec4 ✨",
+      "path": "../"
+    },
+    {
+      "name": "📋 - docs",
+      "path": "../docs"
+    },
+    {
+      "name": "📋 - example-cloud-system",
+      "path": "../examples/cloud-system"
+    },
+    {
+      "name": "📦 - core",
+      "path": "../packages/core"
+    },
+    {
+      "name": "📦 - diagrams",
+      "path": "../packages/diagrams"
+    },
+    {
+      "name": "📦 - generators",
+      "path": "../packages/generators"
+    },
+    {
+      "name": "📦 - layouts",
+      "path": "../packages/layouts"
+    },
+    {
+      "name": "🛠 - cli",
+      "path": "../packages/cli"
+    },
+    {
+      "name": "🛠 - language-server",
+      "path": "../packages/language-server"
+    },
+    {
+      "name": "🖥 - vscode",
+      "path": "../packages/vscode"
+    },
+    {
+      "name": "🖥 - vscode-preview",
+      "path": "../packages/vscode-preview"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "langium.langium-vscode",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ZixuanChen.vitest-explorer",
+      "unifiedjs.vscode-mdx"
+    ]
+  },
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "exportall.config.folderListener": [
+      "/packages/language-server/src/model",
+      "/packages/language-server/src/lsp"
+    ],
+    "mdx.experimentalLanguageServer": true,
+    "prettier.enable": true,
+    "npm.packageManager": "yarn",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "search.exclude": {
+      "node_modules/**": true,
+      "docs/.next/**": true,
+      "docs/node_modules/**": true,
+      "packages/*/dist/**": true,
+      "packages/*/node_modules/**": true
+    },
+    "files.exclude": {
+      "**/.turbo": true,
+      "packages/*/.vscode-test-web": true
+    },
+    "vitest.commandLine": "yarn vitest"
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build workspace",
+        "type": "npm",
+        "script": "vscode:task:build",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "presentation": {
+          "panel": "dedicated",
+          "echo": false,
+          "reveal": "silent",
+          "close": true
+        }
+      }
+    ]
+  }
+}

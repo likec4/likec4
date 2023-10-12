@@ -2,13 +2,13 @@
   "cli": {
     "title": "CLI"
   },
-  "github-actions": {
-    "title": "Github Actions"
-  },
   "react": {
     "title": "React"
   },
   "vscode": {
     "title": "VSCode Extension"
+  },
+  "github-actions": {
+    "title": "Github Actions"
   }
 }

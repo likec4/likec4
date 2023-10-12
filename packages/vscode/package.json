@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.29.0",
+  "version": "0.40.0",
   "private": true,
   "publisher": "likec4",
   "displayName": "LikeC4",
@@ -33,22 +33,22 @@
     "dependencies": false
   },
   "scripts": {
-    "vscode:prepublish": "yarn turbo-build",
-    "turbo-build": "run -T turbo run build --filter='likec4-vscode'",
-    "open-web": "yarn turbo-build && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/examples/cloud-system/likec4",
-    "compile": "tsc --noEmit",
-    "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r $INIT_CWD/../language-server/contrib/* contrib/",
-    "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r $INIT_CWD/../vscode-preview/dist/* dist/preview/",
+    "vscode:prepublish": "run build:turbo",
+    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/packages/diagrams/src/stories/likec4",
+    "typecheck": "tsc --noEmit",
+    "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r \"$INIT_CWD/../language-server/contrib/*\" contrib/",
+    "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r \"$INIT_CWD/../vscode-preview/dist/*\" dist/preview/",
     "copy": "run-p 'copy:*'",
-    "build": "yarn node esbuild.mjs",
-    "dev": "yarn node esbuild.mjs --watch",
+    "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
+    "build:watch": "$npm_node_execpath esbuild.mjs --watch",
+    "build": "$npm_node_execpath esbuild.mjs",
+    "dev": "$npm_node_execpath esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist src/generated",
     "vsce:publish": "vsce publish"
   },
   "engines": {
-    "vscode": "^1.77.0",
-    "node": ">=16"
+    "vscode": "^1.77.0"
   },
   "keywords": [
     "architecture",
@@ -86,8 +86,8 @@
         ],
         "configuration": "language-configuration.json",
         "icon": {
-          "light": "./data/icon.png",
-          "dark": "./data/icon.png"
+          "light": "./data/icon-256-light.png",
+          "dark": "./data/icon-256-dark.png"
         }
       }
     ],
@@ -105,15 +105,14 @@
           "type": "string",
           "enum": [
             "off",
+            "messages",
             "verbose"
           ],
-          "default": "off",
-          "description": "Enable debug logging for the LikeC4 extension.",
-          "scope": "window"
+          "default": "messages",
+          "description": "Enable trace logging for the LikeC4 extension."
         },
         "likec4.trace.server": {
           "type": "string",
-          "scope": "window",
           "enum": [
             "off",
             "messages",
@@ -123,6 +122,20 @@
           "description": "Traces the communication between VS Code and the LikeC4 language server."
         }
       }
+    },
+    "menus": {
+      "webview/context": [
+        {
+          "command": "likec4.preview-context-open-source",
+          "when": "webviewId == 'likec4-preview'"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "likec4.preview-context-open-source",
+          "when": "webviewId == 'likec4-preview'"
+        }
+      ]
     },
     "commands": [
       {
@@ -134,17 +147,22 @@
         "command": "likec4.rebuild",
         "title": "%ext.cmd.rebuild%",
         "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.preview-context-open-source",
+        "title": "%ext.cmd.preview-context-open-source%",
+        "category": "%ext.title%"
       }
     ]
   },
   "activationEvents": [
-    "workspaceContains:*.c4",
-    "workspaceContains:*.likec4",
-    "workspaceContains:*.like-c4",
+    "workspaceContains:**/*.c4",
+    "workspaceContains:**/*.likec4",
+    "workspaceContains:**/*.like-c4",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "./dist/node.js",
-  "browser": "./dist/web.js",
+  "main": "dist/node/extension.js",
+  "browser": "dist/browser/extension.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -153,20 +171,18 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^16.11.16",
     "@types/vscode": "~1.77.0",
-    "@vscode/extension-telemetry": "^0.8.1",
-    "@vscode/vsce": "^2.19.0",
-    "esbuild": "^0.17.19",
-    "froebel": "^0.23.2",
-    "langium": "^1.2.1",
-    "nanoid": "^4.0.2",
+    "@vscode/extension-telemetry": "^0.8.5",
+    "@vscode/vsce": "^2.21.1",
+    "esbuild": "^0.19.4",
+    "esbuild-plugins-node-modules-polyfill": "^1.6.1",
+    "langium": "^2.0.2",
     "npm-run-all": "^4.1.5",
     "p-timeout": "^6.1.2",
     "path-browserify": "^1.0.1",
     "rambdax": "^9.1.1",
     "shx": "^0.3.4",
-    "tslib": "^2.6.0",
-    "typed-inject": "^4.0.0",
-    "typescript": "^5.1.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
     "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
@@ -174,5 +190,8 @@
     "vscode-uri": "~3.0.7",
     "xstream": "^11.14.0"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

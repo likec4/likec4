@@ -13,22 +13,17 @@ Tag: name=Name;
 
 SpecificationRule:
   name='specification' OpenBlock
-    (specs+=(SpecificationElementKind | SpecificationTag))*
-  CloseBlock;
-
-SpecificationStyleProperties:
-  'style' OpenBlock
-    StylePropertiesFragment
+    (elements+=SpecificationElementKind | tags+=SpecificationTag)*
   CloseBlock;
 
 SpecificationElementKind:
   'element' kind=ElementKind (OpenBlock
-    style=SpecificationStyleProperties?
+    style=StyleProperties?
   CloseBlock)?;
 
 SpecificationTag:
   'tag' tag=Tag (OpenBlock
-    style=SpecificationStyleProperties?
+    style=StyleProperties?
   CloseBlock)?;
 
 // Model -------------------------------------
@@ -66,13 +61,10 @@ ElementBody: OpenBlock
   )*
 CloseBlock;
 
-ElementProperty: ElementStringProperty | ElementStyleProperties;
+ElementProperty: ElementStringProperty | StyleProperties;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') Colon? value=STRING;
-
-ElementStyleProperties:
-  key='style' OpenBlock StylePropertiesFragment CloseBlock;
+  key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
 
 ExtendElement:
   'extend' element=StrictElementRef body=ExtendElementBody;
@@ -113,7 +105,7 @@ RelationBody: OpenBlock
 CloseBlock;
 
 RelationStringProperty:
-  key=('title') Colon? value=STRING;
+  key='title' Colon? value=STRING SemiColon?;
 
 
 // Views -------------------------------------
@@ -124,17 +116,29 @@ ModelViews:
   CloseBlock;
 
 View:
-  {infer ElementView} 'view' name=Name? ('of' viewOf=ElementRef)? OpenBlock
-    properties+=ViewProperty*
-    rules+=(
-      ViewRuleExpression |
-      ViewRuleStyle |
-      ViewRuleAutoLayout
-    )*
-  CloseBlock;
+  ElementView;
+
+ElementView:
+  'view' name=Name? (
+    'extends' extends=ElementViewRef |
+    'of' viewOf=ElementRef
+  )? body=ElementViewBody;
+
+ElementViewRef:
+  view=[ElementView:Name];
+
+ElementViewBody: OpenBlock
+  tags=Tags?
+  (props+=(ViewProperty | LinkProperty))*
+  rules+=(
+    ViewRuleExpression |
+    ViewRuleStyle |
+    ViewRuleAutoLayout
+  )*
+CloseBlock;
 
 ViewProperty:
-  key=('title' | 'description') Colon? value=STRING;
+  key=('title' | 'description') Colon? value=STRING SemiColon?;
 
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
@@ -197,19 +201,25 @@ ElementRefExpression: id=ElementRef (isDescedants?='.*')?;
 
 // Common -------------------------------------
 
-LinkProperty: key='link' Colon? value=Uri;
+LinkProperty: key='link' Colon? value=Uri SemiColon?;
+IconProperty: key='icon' Colon? value=Uri SemiColon?;
 
-ColorProperty: key='color' Colon? value=ThemeColor;
-ShapeProperty: key='shape' Colon? value=ElementShape;
+ColorProperty: key='color' Colon? value=ThemeColor SemiColon?;
+ShapeProperty: key='shape' Colon? value=ElementShape SemiColon?;
+
+StyleProperties:
+  key='style' OpenBlock
+    StylePropertiesFragment
+  CloseBlock;
 
 fragment StylePropertiesFragment:
   (props+=(
-    ColorProperty | ShapeProperty
+    ColorProperty | ShapeProperty | IconProperty
   ))*
 ;
 
 // type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
-type AStyleProperty = ColorProperty | ShapeProperty;
+// type AStyleProperty = ColorProperty | ShapeProperty | IconProperty;
 
 // -------------------------
 
@@ -223,10 +233,18 @@ RArrow returns string: RARROW;
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);
 
+
+// -------------------------
+// Comments
+hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
+hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
+hidden terminal WS: (NEWLINE | SPACE)+;
+
 // -----------------------------------
 // Symbols
 terminal fragment HASH      : '#';
 terminal fragment UNDERSCORE: '_';
+terminal fragment DASH: '-';
 terminal fragment LETTER       : /[^\W\d_]/;
 terminal fragment DIGIT        : /[0-9]/;
 terminal fragment NEWLINE: /[\t\r\n\v\f]/;
@@ -246,15 +264,10 @@ terminal Eq: '=';
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
 terminal Colon: ':';
+terminal SemiColon: ';';
 terminal Comma: ',';
 
-terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE)*;
-terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE)*;
 terminal STRING: /"[^"]*"|'[^']*'/;
 
-hidden terminal WS: (NEWLINE | SPACE)+;
-
-// -------------------------
-// Comments
-hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
-hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
+terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;

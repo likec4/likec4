@@ -1,349 +1,91 @@
-import { Card, Cards, Steps, Callout } from 'nextra-theme-docs'
-import { Button } from '$/components/ui/button'
+---
+title: LikeC4 - Getting Started
+description: LikeC4 Introduction
+---
+
+import { Card, Cards, Steps } from 'nextra/components'
+import { Info } from '$/components'
 import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
 
-# Getting Started
+## What is LikeC4?
 
-Software systems evolve and architecture diagrams become outdated quite quickly, especially if drawn manually.  
+LikeC4 is a language, a DSL, that describes architecture as a single model and then compiled into multiple diagrams, from different perspectives and details.  
 
-LikeC4 allows to describe architecture in a single model
-and generate multiple architecture diagrams from different perspectives, like per use-case.
-And any change, any refinement or deprecation in the model is automatically reflected,
-keeping diagrams up-to-date and synchronised with the actual state.
+You have a _**single source of truth - your code**_.  
+Any change, refinement or deprecation in the model is reflected automatically,
+keeping diagrams up-to-date and synchronized with the actual state.
 
-## C4 Model
+### Why "like"?
 
-The [C4 Model](https://c4model.com/) is a lightweight and practical approach for visualizing the architecture of a software system.  
-It was developed by [Simon Brown](http://simonbrown.je/), a seasoned software architect and consultant.  
+<Info>
+  If you never heard about _C4 Model_, check the [website](https://c4model.com/), you get the idea very quickly.
+</Info>
 
-C4 provides a set of diagrams that enable software architects and developers to communicate and document the structure, key elements, and interactions of the system.
+LikeC4 inherits the simplicity of C4, but allows you to use your _own notation_, _your element types_ and any number of nested levels and detalization.  
 
-If you never heard about it, check the [C4 Model website](https://c4model.com/), you get the idea very quickly.
+Also, LikeC4 is a _**toolchain**_ that provides:
 
-LikeC4 inherits the simplicity of the C4 Model, with focus on Architecture as Code approach, importing/exporting to various formats and documentation tools.
+- architecture-as-a-code with native IDE support
+- interactive and customizable React diagrams _in-the-box_
+- CI/CD automation via CLI and GitHub Actions
+- export to various formats:
+  - PNG
+  - HTML
+  - Mermaid
+  - D2
+  - DOT (Graphviz)
 
-## What does LikeC4 look like?
+You can use LikeC4 as a standalone tool or integrate it into your existing toolchain.
 
-Better to follow the [tutorial](#tutorial) to get the idea, but if you are impatient and want to try:
+### What does LikeC4 look like?
+
+```likec4 filename="example.c4"
+// customise model
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+}
+
+// describe the architecture
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+  }
+
+  saas = system 'Our SaaS' {
+    description 'Our product allows customers to manage their data'
+  }
+
+  customer -> saas 'uses to manage data'
+}
+
+// generate diagrams
+views {
+  view index {
+    include *
+  }
+}
+```
+
+## Quick Start
+
+Follow the [tutorial](/docs/tutorial) to get the idea, but if you are impatient and want to try:
 
 - Online playgrounds:
-  - [Blank](/playground/blank/)  
+  - [Blank](/playground/blank/)
   - [Tutorial](/playground/getting-started/)
   - [BigBank Architecture](/playground/)
 - Online with [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
 - Online with [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
 - Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 
-## Tutorial
+### From Template
 
-Open <Link className="nx-text-primary-600 nx-underline nx-decoration-from-font [text-underline-position:from-font]" href="/playground/blank/" target="_blank">blank playground</Link> in a new tab and follow the steps.
+Fork this [template repository](https://github.com/likec4/template-vite).  
+It provides a minimal setup to start with LikeC4 ([live demo](https://likec4-template-vite.pages.dev/)).
 
-<Steps>
-
-### Tailor specification
-
-We start with defining the element kinds we want in our model.  
-For now we need only two - `actor` and `system`
-
-```likec4 showLineNumbers copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-}
-```
-
-### Define first elements
-
-Start with top-level architecture elements
-
-```likec4 showLineNumbers copy {7-8} filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-}
-
-model {
-  customer = actor 'Customer'
-  saas = system 'Our SaaS'
-}
-```
-
-### Add nested elements
-
-Assume our system has two main components - `ui` and `backend`.  
-We add new kind to the specification and update the model.
-
-```likec4 showLineNumbers {4,10-11} copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer'
-  saas = system 'Our SaaS' {
-    component ui
-    component backend
-  }
-}
-```
-
-### Add relationships
-
-```likec4 showLineNumbers {13,14,17-18} copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer'
-  saas = system 'Our SaaS' {
-    component ui 
-    component backend
-
-    // UI requests data from the Backend
-    ui -> backend
-  }
-
-  // Customer uses the UI
-  customer -> ui 'opens in browser'
-}
-```
-
-### Landscape view
-
-View is a projection, a slice of the model defined by predicates (what to include/exclude).  
-Let's add the Landscape view, i.e bird's eye view of the architecture.
-
-```likec4 showLineNumbers {23-25} copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer'
-  saas = system 'Our SaaS' {
-    component ui 
-    component backend
-
-    // UI requests data from the Backend
-    ui -> backend
-
-    // Customer uses the UI
-    customer -> ui 'opens in browser'
-  }
-}
-
-views {
-
-  view index { 
-    include *
-  }
-
-}
-```
-
-We got this:
-
-![landscape view](/getting-started/01.png)
-
-<Callout type="info">
-  **Why there is a relationship?**
-
-  The relationships are implied from the nested elements.  
-  `customer` has the relationship with the nested `saas.ui` element
-</Callout>
-
-### Add more views
-
-View may have a root element `view of ...` as initial scope.  
-Then predicate `include *` is applied to the root element and includes nested elements.  
-This covered in more details in [LikeC4 Language - Views](/docs/dsl/views).
-
-```likec4 showLineNumbers copy {29-31} filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer'
-  saas = system 'Our SaaS' {
-    component ui 
-    component backend
-
-    // UI requests data from the Backend
-    ui -> backend
-
-    // Customer uses the UI
-    customer -> ui 'opens in browser'
-  }
-}
-
-views {
-
-  view index {
-    title 'Landscape view'
-
-    include *
-  }
-
-  view of saas {    
-    include *
-  }  
-
-}
-```
-
-Imagine, we zoom in the `saas` element, see nested elements and their relationships:
-
-![saas view](/getting-started/02.png)
-
-### Enrich model
-
-Let's add descriptions, define the shape of the `ui` and add label to the relationship `ui -> backend`
-
-```likec4 showLineNumbers {9,13-24,27,45-47} copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer' {
-    description 'The regular customer of the system'
-  }
-
-  saas = system 'Our SaaS' {
-    component ui 'Frontend' {
-      description 'Nextjs application, hosted on Vercel'
-      style {
-        shape browser
-      }
-    }
-    component backend 'Backend Services' {
-      description '
-        Implements business logic
-        and exposes as REST API
-      '
-    }
-
-    // UI requests data from the Backend
-    ui -> backend 'fetches via HTTPS'
-  }
-
-  // Customer uses the UI
-  customer -> ui 'opens in browser'
-}
-
-views {
-
-  view index {
-    title 'Landscape view'
-
-    include *
-  }
-
-  view of saas {    
-    include *
-
-    style customer {
-      color muted
-    }
-  }  
-
-}
-```
-
-The `saas` view after changes:
-
-![saas view after changes](/getting-started/03.png)
-
-### Change model
-
-Let's change the description of the `customer` and the label of `customer -> ui`
-
-```likec4 showLineNumbers {9,31} copy filename="getting-started.c4" 
-specification {
-  element actor
-  element system
-  element component
-}
-
-model {
-  customer = actor 'Customer' {
-    description 'Our dear customer'
-  }
-
-  saas = system 'Our SaaS' {
-    component ui 'Frontend' {
-      description 'Nextjs application, hosted on Vercel'
-      style {
-        shape browser
-      }
-    }
-    component backend 'Backend Services' {
-      description '
-        Implements business logic
-        and exposes as REST API
-      '
-    }
-
-    // UI requests data from the Backend
-    ui -> backend 'fetches via HTTPS'
-  }
-
-  // Customer uses the UI
-  customer -> ui 'enjoys our product'
-}
-
-views {
-
-  view index {
-    title 'Landscape view'
-    
-    include *
-  }
-
-  view of saas {    
-    include *
-
-    style customer {
-      color muted
-    }
-  }  
-
-}
-```
-
-We made changes and all views are updated automatically.
-
-`index` view:
-
-![landscape view after changes](/getting-started/04.png)
-
-`saas` view:
-
-![landscape view after changes](/getting-started/05.png)
-
-You can play with [this tutorial in playground](/playground/getting-started/) and, for example, add the following:
-- change [shape](/docs/dsl/specification/#shapes) of the `customer` element
-- add database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
-- add external system, like Stripe, and show how the backend interacts with it.
-
-</Steps>
-
-## Next steps
-
-
-<Cards>
-  <Card title="LikeC4 Language" href={`/docs/dsl/introduction/`} arrow/>
-</Cards>
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template-vite)

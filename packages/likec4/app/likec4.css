@@ -1,0 +1,18 @@
+@import '@radix-ui/themes/styles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.radix-themes {
+  --font-weight-bold: 600;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.export-page {
+  --color-page-background: transparent !important;
+}

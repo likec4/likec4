@@ -1,0 +1,42 @@
+name: pull_request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  statuses: write
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    name: Build
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.head_ref, 'releases/')"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup
+        uses: ./.github/actions/bootstrap
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Compile
+        run: yarn compile:all
+
+      - name: Test
+        run: yarn test
+
+      - name: Build NextJS
+        working-directory: docs
+        run: yarn turbo-build

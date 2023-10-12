@@ -3,76 +3,84 @@ title: LikeC4 - Architecture-as-a-code
 description: Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
 ---
 
-import { Hero, HeroVideo, GetStartedButton, IndexPageWhy, IndexPageSection, IndexPageDiagram } from '$/components/index-page'
+import {
+  Hero,
+  HeroVideo,
+  GetStartedButton,
+  IndexPageSection,
+  IndexPageDiagram
+} from '$/components/index-page'
 
-<Hero/>
-<GetStartedButton/>
-<HeroVideo/>
+<Hero />
+<GetStartedButton />
+<HeroVideo />
 
 <IndexPageSection title={'What is LikeC4? Why "like"?'}>    
   LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
   Inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but with some flexibility.
 
-  You define your own notation, custom element types and any number of nested levels in architecture model.  
-  Perfectly tailored to your needs.
+You define your own notation, custom element types and any number of nested levels in the architecture model.  
+ Perfectly tailored to your needs.
+
 </IndexPageSection>
 
 <IndexPageSection title={'What does LikeC4 look like?'}>   
   
   Example of LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
 
-  ```likec4 filename="example.c4"
-  // customise model
-  specification {
-    element actor {
-      style {
-        shape person
-      }
-    }
-    element system
-  }
-
-  // describe architecture
-  model {
-    customer = actor 'Customer' {
-      description 'A user of our product with active subscription'
-    }
-
-    saas = system 'Our SaaS' {
-      description 'Our product allows customers to manage their data'
-    }
-
-    customer -> saas 'uses to manage data'
-  }
-
-  // generate diagrams
-  views {
-    view index {
-      include *
+```likec4 filename="example.c4"
+// customise model
+specification {
+  element actor {
+    style {
+      shape person
     }
   }
-  ```  
+  element system
+}
 
-  CLI to generate react components (or export to other format):
+// describe the architecture
+model {
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+  }
 
-  ```bash
-  likec4 codegen react -o likec4-generated.tsx
-  ```
+  saas = system 'Our SaaS' {
+    description 'Our product allows customers to manage their data'
+  }
 
-  Somewhere in your code (optional):
+  customer -> saas 'uses to manage data'
+}
 
-  ```jsx
-  import { LikeC4View } from "$/likec4-generated"
+// generate diagrams
+views {
+  view index {
+    include *
+  }
+}
+```
 
-  // ...
+CLI to generate react components (or export to other formats):
 
-  <LikeC4View viewId="index"/>
-  ```
+```bash
+likec4 codegen react -o likec4-generated.tsx
+```
 
-  And this is rendered (click to explore):   
+Somewhere in your code (optional):
 
-  <IndexPageDiagram/>
+```jsx
+import { Embedded as LikeC4View } from '$/likec4-generated'
 
-  Check the [Tutorial](/docs/#tutorial) - a bit better overview of LikeC4.
+// ...
+<LikeC4View viewId='index' />
+```
+
+And this is rendered (click to explore):
+
+{' '}
+
+<IndexPageDiagram />
+
+Check the [Tutorial](/docs/tutorial) for better overview of LikeC4.
 
 </IndexPageSection>

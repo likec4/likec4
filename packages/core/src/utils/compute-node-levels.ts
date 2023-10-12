@@ -1,5 +1,5 @@
 import { invariant } from '../errors'
-import type { ComputedNode, ComputedView, NodeId } from '../types/computed-view'
+import type { ComputedNode, ComputedView, NodeId } from '../types'
 
 type NodeLevelDepth = {
   level: number

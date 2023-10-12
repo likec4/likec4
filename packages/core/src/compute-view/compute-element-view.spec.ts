@@ -1,10 +1,26 @@
-import { describe, expect, it } from 'vitest'
-import { fakeModel, type FakeElementIds } from '../__test__'
-import type { ComputedView, ElementKind, Fqn, Tag, ViewID, ViewRule } from '../types'
-import { computeElementView } from './compute-element-view'
 import { pluck } from 'rambdax'
+import { describe, expect, it } from 'vitest'
+import { fakeModel, type FakeElementIds, fakeElements } from '../__test__'
+import {
+  type ComputedView,
+  type ElementKind,
+  type Fqn,
+  type IconUrl,
+  type Tag,
+  type ViewID,
+  type ViewRule
+} from '../types'
+import { computeElementView } from './compute-element-view'
 
 const ids = pluck('id')
+
+const emptyView = {
+  title: null,
+  description: null,
+  tags: null,
+  links: null,
+  rules: []
+}
 
 describe('compute-element-view', () => {
   function computeView(...args: [FakeElementIds, ViewRule[]] | [ViewRule[]]) {
@@ -12,6 +28,7 @@ describe('compute-element-view', () => {
     if (args.length === 1) {
       result = computeElementView(
         {
+          ...emptyView,
           id: 'index' as ViewID,
           title: '',
           rules: args[0]
@@ -21,6 +38,7 @@ describe('compute-element-view', () => {
     } else {
       result = computeElementView(
         {
+          ...emptyView,
           id: 'index' as ViewID,
           title: '',
           viewOf: args[0] as Fqn,
@@ -38,9 +56,8 @@ describe('compute-element-view', () => {
   it('should be empty if no root and no rules', () => {
     const { nodes, edges } = computeElementView(
       {
-        id: 'index' as ViewID,
-        title: '',
-        rules: []
+        ...emptyView,
+        id: 'index' as ViewID
       },
       fakeModel()
     )
@@ -51,6 +68,7 @@ describe('compute-element-view', () => {
   it('should show only root if no rules', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -67,6 +85,7 @@ describe('compute-element-view', () => {
   it('should return landscape view on top `include *`', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         rules: [
@@ -83,12 +102,60 @@ describe('compute-element-view', () => {
       fakeModel()
     )
     expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
-    expect(ids(edges)).toEqual(['cloud:amazon', 'customer:cloud', 'support:cloud'])
+    expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
+    const [customer, support, cloud, amazon] = nodes
+    expect(amazon).toMatchObject({
+      outEdges: [],
+      inEdges: ['cloud:amazon']
+    })
+    expect(cloud).toMatchObject({
+      outEdges: ['cloud:amazon'],
+      inEdges: ['support:cloud', 'customer:cloud']
+    })
+    expect(customer).toMatchObject({
+      outEdges: ['customer:cloud'],
+      inEdges: []
+    })
+    expect(support).toMatchObject({
+      outEdges: ['support:cloud'],
+      inEdges: []
+    })
+  })
+
+  it('should return nodes in the same order as was in view', () => {
+    const { nodes, edges } = computeElementView(
+      {
+        ...emptyView,
+        id: 'index' as ViewID,
+        title: '',
+        rules: [
+          {
+            isInclude: true,
+            exprs: [
+              { element: fakeElements.customer.id, isDescedants: false },
+              { element: fakeElements.support.id, isDescedants: false }
+            ]
+          },
+          {
+            isInclude: true,
+            exprs: [
+              {
+                wildcard: true
+              }
+            ]
+          }
+        ]
+      },
+      fakeModel()
+    )
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud', 'amazon'])
+    expect(ids(edges)).to.have.members(['cloud:amazon', 'customer:cloud', 'support:cloud'])
   })
 
   it('should return landscape view on top `include *, -> cloud.*`', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'index' as ViewID,
         title: '',
         rules: [
@@ -108,16 +175,9 @@ describe('compute-element-view', () => {
       },
       fakeModel()
     )
-    expect(ids(nodes)).toEqual([
-      'customer',
-      'support',
-      'cloud',
-      'cloud.backend',
-      'amazon',
-      'cloud.frontend'
-    ])
-    expect(ids(edges)).toEqual([
-      'cloud.backend:amazon',
+    expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud', 'amazon'])
+    expect(ids(edges)).to.have.same.members([
+      'cloud:amazon',
       'customer:cloud.frontend',
       'support:cloud.frontend'
     ])
@@ -126,6 +186,7 @@ describe('compute-element-view', () => {
   it('view of cloud', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -147,13 +208,13 @@ describe('compute-element-view', () => {
     expect(ids(nodes)).toEqual([
       'customer',
       'support',
-      'cloud',
       'cloud.frontend',
       'cloud.backend',
+      'cloud',
       'amazon'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
       'cloud.backend:amazon',
       'customer:cloud.frontend',
@@ -166,6 +227,7 @@ describe('compute-element-view', () => {
   it('view of cloud.backend', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudbackend' as ViewID,
         title: '',
         viewOf: 'cloud.backend' as Fqn,
@@ -191,13 +253,13 @@ describe('compute-element-view', () => {
     expect(ids(nodes)).toEqual([
       'customer',
       'cloud.frontend',
-      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
+      'cloud.backend',
       'amazon'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.backend.graphql:cloud.backend.storage',
       'cloud.backend.storage:amazon',
       'cloud.frontend:cloud.backend.graphql',
@@ -208,6 +270,7 @@ describe('compute-element-view', () => {
   it('view of cloud.frontend', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudfrontend' as ViewID,
         title: '',
         viewOf: 'cloud.frontend' as Fqn,
@@ -228,14 +291,14 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual([
       'customer',
-      'support',
-      'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
+      'support',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend',
       'cloud.backend'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
@@ -248,6 +311,7 @@ describe('compute-element-view', () => {
   it('view of cloud.frontend (and include parent cloud)', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloudfrontend2' as ViewID,
         title: '',
         viewOf: 'cloud.frontend' as Fqn,
@@ -273,15 +337,15 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual([
       'customer',
-      'support',
-      'cloud',
-      'cloud.frontend',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
-      'cloud.backend'
+      'support',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend',
+      'cloud.backend',
+      'cloud'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
@@ -292,6 +356,7 @@ describe('compute-element-view', () => {
   it('view of cloud (exclude cloud, amazon.*)', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -319,7 +384,7 @@ describe('compute-element-view', () => {
 
     expect(ids(nodes)).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend'])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend:cloud.backend',
       'customer:cloud.frontend',
       'support:cloud.frontend'
@@ -331,6 +396,7 @@ describe('compute-element-view', () => {
   it('view with 3 levels', () => {
     const view = computeElementView(
       {
+        ...emptyView,
         id: 'cloud3levels' as ViewID,
         title: '',
         viewOf: 'cloud' as Fqn,
@@ -360,13 +426,13 @@ describe('compute-element-view', () => {
 
     expect(view.nodes.map(n => n.id)).toEqual([
       'customer',
-      'support',
-      'cloud',
-      'cloud.frontend.adminPanel',
       'cloud.frontend.dashboard',
-      'cloud.backend',
+      'support',
+      'cloud.frontend.adminPanel',
       'cloud.backend.graphql',
       'cloud.backend.storage',
+      'cloud.backend',
+      'cloud',
       'amazon'
     ])
 
@@ -376,6 +442,7 @@ describe('compute-element-view', () => {
   it('view of amazon', () => {
     const { nodes, edges } = computeElementView(
       {
+        ...emptyView,
         id: 'amazon' as ViewID,
         title: '',
         viewOf: 'amazon' as Fqn,
@@ -399,16 +466,22 @@ describe('compute-element-view', () => {
       fakeModel()
     )
 
-    expect(ids(nodes)).toEqual(['cloud', 'cloud.backend', 'amazon', 'amazon.s3'])
+    expect(ids(nodes)).toEqual(['cloud.backend', 'cloud', 'amazon.s3', 'amazon'])
 
-    expect(ids(edges)).toEqual(['cloud.backend:amazon.s3'])
+    expect(ids(edges)).to.have.same.members(['cloud.backend:amazon.s3'])
   })
 
   it('index view with applied styles', () => {
     const { nodes } = computeView([
       {
         isInclude: true,
-        exprs: [{ wildcard: true }, { element: 'cloud.frontend' as Fqn, isDescedants: false }]
+        exprs: [
+          // include customer, amazon, cloud, cloud.frontend
+          { element: 'customer' as Fqn, isDescedants: false },
+          { element: 'amazon' as Fqn, isDescedants: false },
+          { element: 'cloud' as Fqn, isDescedants: false },
+          { element: 'cloud.frontend' as Fqn, isDescedants: false }
+        ]
       },
       // all elements
       // color: secondary
@@ -424,7 +497,8 @@ describe('compute-element-view', () => {
       {
         targets: [{ element: 'cloud' as Fqn, isDescedants: false }],
         style: {
-          color: 'muted'
+          color: 'muted',
+          icon: 'http://some-icon' as IconUrl
         }
       },
       // cloud.*
@@ -446,20 +520,24 @@ describe('compute-element-view', () => {
       color: 'secondary',
       shape: 'storage'
     })
+    expect(amazon).not.toHaveProperty('icon')
     expect(customer).toMatchObject({
       color: 'secondary',
       shape: 'storage'
     })
+    expect(customer).not.toHaveProperty('icon')
 
     expect(cloud).toMatchObject({
       color: 'muted',
-      shape: 'storage'
+      shape: 'storage',
+      icon: 'http://some-icon'
     })
     expect(frontend).toMatchObject({
       parent: 'cloud',
       color: 'secondary',
       shape: 'browser'
     })
+    expect(frontend).not.toHaveProperty('icon')
   })
 
   it('should include by element kind', () => {
@@ -526,15 +604,15 @@ describe('compute-element-view', () => {
     ])
 
     expect(ids(nodes)).toEqual([
-      'cloud',
-      'cloud.frontend',
       'cloud.frontend.dashboard',
+      'cloud.frontend',
+      'cloud.backend.graphql',
       'cloud.backend',
-      'amazon',
-      'cloud.backend.graphql'
+      'cloud',
+      'amazon'
     ])
 
-    expect(ids(edges)).toEqual([
+    expect(ids(edges)).to.have.same.members([
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend:cloud.backend.graphql',
       'cloud.backend:amazon'

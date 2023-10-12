@@ -7,26 +7,44 @@ on:
 permissions:
   actions: write
   contents: read
+  checks: write
+  statuses: write
+
+env:
+  NODE_ENV: production
 
 jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    if: "github.ref == 'refs/heads/main'"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
-      - name: setup
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: turborepo-cache
+      - name: Turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Docs NextJS Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            docs/.next/cache
+            node_modules/nextra/dist/__temp__
+          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
+            ${{ runner.os }}-docs-
 
       - name: Build NextJS
         working-directory: docs
-        run: yarn turbo-build
+        run: yarn build:turbo
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1

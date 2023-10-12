@@ -1,12 +1,13 @@
 {
-  "name": "likec4-workspaces",
-  "version": "0.29.0",
+  "name": "@likec4/workspaces",
+  "version": "0.40.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.4",
   "workspaces": [
     "docs",
     "packages/*",
+    "integration/*",
     "examples/*"
   ],
   "engines": {
@@ -14,9 +15,11 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "compile:all": "turbo run compile",
-    "compile": "turbo run compile --filter='./packages/*'",
     "build": "turbo run build --filter='./packages/*'",
+    "build:watch": "turbo run build:watch --filter='./packages/*'",
+    "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",
+    "typecheck": "turbo run typecheck",
+    "turbo": "turbo",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
@@ -24,39 +27,45 @@
     "dev": "turbo run dev --filter='./packages/*'",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "turbo run lint --continue --filter='./packages/*'",
-    "vitest:ui": "vitest --ui"
+    "vitest:ui": "vitest --ui",
+    "vscode:task:build": "turbo run typecheck --log-prefix=none --log-order=grouped",
+    "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
-  "dependencies": {
-    "@commitlint/cli": "^17.6.6",
-    "@commitlint/config-conventional": "^17.6.6",
-    "@types/eslint": "^8.44.0",
+  "devDependencies": {
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@types/eslint": "^8.44.3",
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@vitest/ui": "^0.33.0",
-    "eslint": "^8.44.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "@vitest/ui": "^0.34.7",
+    "eslint": "^8.51.0",
+    "execa": "^8.0.1",
     "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
-    "rimraf": "^5.0.1",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
-    "turbo": "^1.10.7",
-    "typescript": "^5.1.6",
-    "vite": "^4.3.9",
-    "vitest": "^0.33.0",
+    "tsx": "^3.13.0",
+    "turbo": "^1.10.15",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11",
+    "vitest": "^0.34.6",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "18.16.1",
+    "node": "20.6.1",
     "yarn": "1.22.19"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
-    "vscode-languageserver-protocol": "3.17.3"
+    "vscode-languageserver-protocol": "3.17.3",
+    "chevrotain-allstar@^0.3.0": "patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
@@ -64,6 +73,11 @@
     ],
     "**/*.{md,mdx,yml,json,babelrc,eslintrc,prettierrc}": [
       "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
     ]
   }
 }

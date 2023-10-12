@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.vscode/
+src/**/*.generated.ts
+src/**/*.generated.tsx

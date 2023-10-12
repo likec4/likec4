@@ -1,4 +1,4 @@
-import { Callout } from 'nextra-theme-docs'
+import { Info, Warning } from '$/components'
 
 # References
 
@@ -6,7 +6,8 @@ LikeC4 uses the lexical scope, with hoisting, almost like in JavaScript.
 
 ## Scope
 
-Lets consider the following example:
+To understand references, we need to understand scopes first.  
+Example:
 
 ```likec4 filename="references.c4"
 model {
@@ -17,7 +18,7 @@ model {
 }
 ```
 
-Every element is unique in the model, so we can add relation referencing them, like:
+Every element is unique in the model, so we can add a relationship referencing them, like:
 
 ```likec4 {6} filename="references.c4"
 model {
@@ -29,9 +30,9 @@ model {
 }
 ```
 
-But if we add another `service` with `api`:
+But if we add `service2` with another `api`:
 
-```likec4 {6-9} filename="references.c4"
+```likec4 {6-8} filename="references.c4"
 model {
   service service1 {
     component api
@@ -40,22 +41,23 @@ model {
   service service2 {
     component api
   }
+
   frontend -> api // ⛔️ Error: 'api' not found
 }
 ```
 
-The reference is ambiguous - now there are two `api` components in the model.
+The reference is ambiguous, as there are two `api` components in the model.
 
-Every element creates a new scope with nested elements, so `api` is unique in the scope of `service1` and `service2`,
-but not in the scope of `model`.  
+Every element creates a new scope inside `{...}`, so `api` is unique inside `service1` and `service2`,
+but not in the scope of `model`.
 
-We can fix it by moving the relation to the scope of `service2`:
+We can resolve by moving the relationship to the scope of `service2`:
 
-```likec4 {9-11} filename="references.c4" 
+```likec4 {9-11} filename="references.c4"
 model {
   service service1 {
     component api
-    component frontend  
+    component frontend
   }
   service service2 {
     component api
@@ -63,31 +65,31 @@ model {
     frontend -> api // ✅ This is OK,
                     //    'api' is unique in 'service2'
                     //    'frontend' is unique in 'model'
-  }  
+  }
 }
 ```
 
 ## Hoisting
 
-<Callout type="info" emoji="ℹ️">
+<Info>
   **Hoisting** is a mechanism that moves the reference to the top of the scope.
-</Callout>
+</Info>
 
-The element name is hoisted (_"bubbles"_) to the upper scope if it stays unique.  
-We even may reference something that is not yet defined as it will be hoisted later.
+In LikeC4, the element, besides being hoisted in its scope, also _"bubbles"_ to the upper scopes, if it stays unique.
 
-The relation from `frontend` referencing not yet defined `graphql`:
+We may reference something that is not yet defined but will be hoisted later.  
+The relationship on line 8 references `graphql` defined below on line 15:
 
-```likec4 showLineNumbers copy filename="hoisting.c4"
+```likec4 showLineNumbers {8,15} copy filename="hoisting.c4"
 model {
-  
+
   service service1 {
     component api
     component frontend
 
     frontend -> api // ✅ This is OK, references to 'api' from 'service1'
-    frontend -> graphql // ✅ This is OK, references to unique 'graphql' defined later
-  }  
+    frontend -> graphql // ✅ This is OK, references to unique 'graphql'
+  }
 
   frontend -> api // ⛔️ Error: 'api' is ambiguous
 
@@ -96,23 +98,22 @@ model {
     component graphql
 
     frontend -> api  // ✅ This is OK, references to 'api' from 'service2'
-  }  
-  
+  }
+
 }
 ```
 
-<Callout type="info" emoji="ℹ️">
-  Line 7 and line 17 the same:  
-  `frontend -> api`  
+<Info>
+Lines 7 and 17 are the same: `frontend -> api`  
+But they reference to different elements:  
+{'-'} Line 7 to `service1.api`  
+{'-'} Line 17 to `service2.api`
+</Info>
 
-  But they refer different elements:  
-  Line 7 refers to `service1.api`  
-  Line 17 refers to `service2.api`
-</Callout>
+## Fully qualified names [#fqn]
 
-## Full qualified names
-
-Full qualified name is a unique "path" to the element if we traverse all the parents.
+Top-level elements (placed directly in the `model` block) are available globally.  
+To reference nested elements we use their fully qualified names (FQN).
 
 Example:
 
@@ -139,7 +140,7 @@ model {
   service service1 {
     component api
     component frontend {
-      -> service2.api 
+      -> service2.api
     }
   }
   service service2 {
@@ -148,7 +149,7 @@ model {
 }
 ```
 
-Middle-parts may be omitted, if target element is already unique in the scope:
+Some parts may be omitted, if FQN stays unique:
 
 ```likec4 showLineNumbers filename="references.c4"
 model {
@@ -159,18 +160,27 @@ model {
     component backend2  {
       component api
       component graphql
-    }  
+    }
   }
 
-  frontend -> service.backend1.api // ✅ Non-ambiguous full qualified name
+  frontend -> service.backend1.api // ✅ Non-ambiguous fully qualified name
 
-  frontend -> backend1.api  // ✅ This is OK, backend1 is unique in the scope of model
+  frontend -> backend1.api  // ✅ This is OK, 'api' is unique in 'backend1',
+                            //    and 'backend1' is unique in the model
+                            //    We may omit 'service'
+
   frontend -> backend2.api  // ✅ This is also OK
 
-  frontend -> service.api   // ⛔️ Error: api is ambiguous in the scope of service
+  frontend -> service.api   // ⛔️ Error: 'api' is ambiguous in 'service'
 
-  frontend -> service.graphql // ✅ This is also OK
-                              //    we omit backend2 as
-                              //    graphql is unique in the scope of service
+  frontend -> service.graphql // ✅ This is also OK, we omit 'backend2'
+                              //    as 'graphql' is unique in 'service'
 }
 ```
+
+<Warning>
+While omitting FQN-parts makes code better looking and references shorter,  
+it may be error-prone when you refactor the model
+
+_Sure, only if you have same-named elements_
+</Warning>

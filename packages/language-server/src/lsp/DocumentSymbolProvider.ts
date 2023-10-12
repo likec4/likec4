@@ -1,12 +1,8 @@
-import {
-  findNodeForProperty,
-  type DocumentSymbolProvider,
-  type MaybePromise
-} from 'langium'
-import { compact, isEmpty, map, pipe } from 'remeda'
+import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
+import { compact, concat, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
-import { logger } from '../logger'
+import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 
 function getElementKindSymbol(astKind: ast.SpecificationElementKind): DocumentSymbol | null {
@@ -59,7 +55,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
       try {
         return fn() ?? []
       } catch (e) {
-        logger.error(e)
+        logError(e)
         return []
       }
     })
@@ -72,7 +68,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!specKeywordNode) return []
 
     const specSymbols = pipe(
-      astSpec.specs,
+      concat(astSpec.elements, astSpec.tags),
       map(nd => {
         if (ast.isSpecificationElementKind(nd)) {
           return getElementKindSymbol(nd)
@@ -87,7 +83,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astSpec.name,
         range: cstModel.range,
         selectionRange: specKeywordNode.range,
@@ -103,7 +99,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!nameNode) return []
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
@@ -123,7 +119,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         return this.getElementSymbol(el)
       }
     } catch (e) {
-      logger.error(e)
+      logError(e)
     }
     return []
   }
@@ -174,7 +170,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!nameNode) return []
     return [
       {
-        kind: SymbolKind.Class,
+        kind: SymbolKind.Namespace,
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,

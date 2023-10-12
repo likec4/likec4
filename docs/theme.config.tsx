@@ -1,34 +1,26 @@
 import React from 'react'
 import type { DocsThemeConfig } from 'nextra-theme-docs'
 import { useConfig } from 'nextra-theme-docs'
-import { Logo } from '$/components/logo'
+import { HeaderLogo } from '$/components/logo'
 import { useRouter } from 'next/router'
-import { cn } from './lib'
-
-const logo = (
-  <span className={cn(
-    'inline-block h-[28px] pr-4'
-  )}>
-    <Logo className='w-auto h-full'/>
-  </span>
-)
 
 export default {
-  logo,
+  logo: HeaderLogo,
   // Show or hide the dark mode toggle button.
   darkMode: false,
   nextThemes: {
-    defaultTheme: 'dark',
+    defaultTheme: 'dark'
   },
   primaryHue: 195,
   sidebar: {
-    toggleButton: true,
+    autoCollapse: true,
+    toggleButton: true
   },
   // main: Main,
   project: {
-    link: 'https://github.com/likec4/likec4',
+    link: 'https://github.com/likec4/likec4'
   },
-  docsRepositoryBase: 'https://github.com/likec4/likec4/blob/develop/docs',
+  docsRepositoryBase: 'https://github.com/likec4/likec4/blob/main/docs',
   footer: {
     // component: () => null,
     text: `${new Date().getFullYear()} MIT License © LikeC4`
@@ -37,35 +29,36 @@ export default {
     const { frontMatter } = useConfig()
     const { route } = useRouter()
     const url = 'https://likec4.dev' + route + (route.endsWith('/') ? '' : '/')
+
+    const description =
+      frontMatter.description ||
+      'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code'
+
     return {
-      ...(frontMatter.title ? {
-        title: frontMatter.title,
-        titleTemplate: '%s',
-      } : {
-        titleTemplate: route.startsWith('/examples/bigbank')
-            ? 'Example Big Bank: %s'
-            : '%s – LikeC4',
-      }),
-      ...(frontMatter.description ? {
-        description: frontMatter.description,
-      } : {
-        titleTemplate: route.startsWith('/examples/bigbank')
-            ? 'Example Big Bank: %s'
-            : '%s – LikeC4',
-      }),
-      description: 'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
+      ...(frontMatter.title
+        ? {
+            title: frontMatter.title,
+            titleTemplate: '%s'
+          }
+        : {
+            titleTemplate: route.startsWith('/examples/bigbank')
+              ? 'Example Big Bank: %s'
+              : '%s – LikeC4'
+          }),
+      description,
       themeColor: '#111',
       noindex: route.startsWith('/playground'),
       nofollow: route.startsWith('/playground'),
       openGraph: {
         url,
-        images: [{
-          url: 'https://likec4.dev/logo.png',
-          type: 'image/png'
-        }]
+        images: [
+          {
+            url: 'https://likec4.dev/logo.png'
+          }
+        ]
       },
       additionalMetaTags: [
-        {name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4'},
+        { name: 'keywords', content: 'software, architecture, architecture-as-code, diagrams, c4' }
       ]
     }
   },
@@ -73,11 +66,13 @@ export default {
     const { route } = useRouter()
     const isZoomDisabled = route.startsWith('/playground')
 
-    const viewport = isZoomDisabled ? 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' : 'width=device-width, initial-scale=1.0'
+    const viewport = isZoomDisabled
+      ? 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no'
+      : 'width=device-width, initial-scale=1.0'
 
     return (
       <>
-        <meta name="viewport" content={viewport} />
+        <meta name='viewport' content={viewport} />
       </>
     )
   }

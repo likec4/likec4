@@ -1,18 +1,40 @@
 {
-  "extends": "../tsconfig/base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ES2022",
-    "target": "ES2020",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
-    "outDir": "dist",
+    "allowArbitraryExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "checkJs": true,
+    "strict": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": ".",
     "rootDir": "src",
     "composite": true,
-    "declaration": true,
-    "declarationDir": "dist",
-    "sourceMap": true,
-    "jsx": "react-jsx"
+    "outDir": "dist/esm"
   },
-  "include": ["./src/"],
+  "include": ["src"],
   "references": [{ "path": "../core" }]
 }

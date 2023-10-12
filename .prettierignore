@@ -1,5 +1,6 @@
 **/.git
 **/node_modules
+**/*.mdx
 
 .yarn/*
 .turbo
@@ -7,6 +8,7 @@
 .vscode-test-web
 .next
 
+docs/tsconfig.*
 docs/out
 docs/components/ui/
 

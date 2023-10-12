@@ -10,6 +10,9 @@ describe('compute-node-levels', () => {
       {
         id: 'cloud' as ViewID,
         title: '',
+        description: null,
+        tags: null,
+        links: null,
         viewOf: 'cloud' as Fqn,
         rules: [
           {
@@ -27,15 +30,15 @@ describe('compute-node-levels', () => {
     const levels = computeNodeLevels(view)
 
     expect(levels).toStrictEqual({
-      customer: {
+      'customer': {
         depth: 0,
         level: 0
       },
-      support: {
+      'support': {
         depth: 0,
         level: 0
       },
-      cloud: {
+      'cloud': {
         depth: 1,
         level: 0
       },
@@ -47,7 +50,7 @@ describe('compute-node-levels', () => {
         depth: 0,
         level: 1
       },
-      amazon: {
+      'amazon': {
         depth: 0,
         level: 0
       }
@@ -59,6 +62,9 @@ describe('compute-node-levels', () => {
       {
         id: 'cloud3levels' as ViewID,
         title: '',
+        description: null,
+        tags: null,
+        links: null,
         viewOf: 'cloud' as Fqn,
         rules: [
           {
@@ -80,11 +86,11 @@ describe('compute-node-levels', () => {
     const levels = computeNodeLevels(view)
 
     expect(levels).toStrictEqual({
-      amazon: {
+      'amazon': {
         depth: 0,
         level: 0
       },
-      cloud: {
+      'cloud': {
         depth: 2,
         level: 0
       },
@@ -112,11 +118,11 @@ describe('compute-node-levels', () => {
         depth: 0,
         level: 2
       },
-      customer: {
+      'customer': {
         depth: 0,
         level: 0
       },
-      support: {
+      'support': {
         depth: 0,
         level: 0
       }

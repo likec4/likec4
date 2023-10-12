@@ -2,7 +2,7 @@ name: release
 
 on:
   workflow_call:
-  workflow_dispatch:
+  # workflow_dispatch:
 
 permissions:
   actions: write
@@ -10,13 +10,17 @@ permissions:
   contents: write
   statuses: write
 
+env:
+  NODE_ENV: production
+
 jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: "github.ref == 'refs/heads/main'"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: setup
         uses: ./.github/actions/bootstrap

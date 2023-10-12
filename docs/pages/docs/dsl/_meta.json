@@ -8,6 +8,9 @@
   "model": {
     "title": "Model"
   },
+  "styling": {
+    "title": "Styling"
+  },
   "relations": {
     "title": "Relationships"
   },

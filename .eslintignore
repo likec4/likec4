@@ -7,7 +7,9 @@ dist
 .turbo
 **/*.d.ts
 packages/*/esbuild.*
-packages/cli/bin/*
+packages/*/build.config.*
+packages/*/bin/*
+packages/likec4/scripts/*
 vite.config.*
 vitest.config.*
 vitest.shared.*
@@ -18,3 +20,5 @@ docs/*.js
 docs/*.mjs
 docs/components/ui/
 packages/*/src/generated
+postcss.config.*
+tailwind.config.*

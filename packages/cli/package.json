@@ -1,12 +1,15 @@
 {
   "name": "@likec4/cli",
-  "version": "0.29.0",
+  "version": "0.40.0",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/cli"
   },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
   "bin": {
     "likec4": "bin/likec4"
   },
@@ -20,8 +23,9 @@
     "dist"
   ],
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='cli'",
-    "compile": "tsc --noEmit",
+    "build:watch": "yarn node esbuild.mjs --watch",
+    "build:turbo": "run -T turbo run build --filter='cli'",
+    "typecheck": "tsc --noEmit",
     "build": "yarn node esbuild.mjs",
     "dev": "yarn node esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
@@ -30,24 +34,27 @@
   "devDependencies": {
     "@commander-js/extra-typings": "^11.0.0",
     "@likec4/core": "workspace:*",
-    "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@types/node": "^16.11.16",
     "commander": "^11.0.0",
-    "esbuild": "^0.17.19",
-    "execa": "^7.1.1",
-    "fast-glob": "^3.3.0",
+    "esbuild": "^0.19.4",
+    "execa": "^8.0.1",
+    "fast-glob": "^3.3.1",
     "json5": "^2.2.3",
     "kleur": "^4.1.5",
-    "langium": "^1.2.1",
+    "langium": "^2.0.2",
     "mkdirp": "^3.0.1",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "remeda": "^1.23.0",
-    "typescript": "^5.1.6",
+    "remeda": "^1.27.1",
+    "typescript": "^5.2.2",
     "vscode-uri": "3.0.7"
+  },
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
   }
 }

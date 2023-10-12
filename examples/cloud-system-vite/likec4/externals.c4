@@ -1,0 +1,118 @@
+model {
+
+  amazon = externalSystem 'Amazon' {
+    description: 'Cloud and managed services provider'
+
+    rds = container 'RDS' {
+      description: 'Relational Database Service'
+
+      pg = component 'PostgreSQL' {
+        #db
+
+        tblUsers = table 'Users Table' {
+          #deprecated
+          description: '
+            Table with registered users.
+            Contains references to Identity provider.
+            [deprecated, moving to Aurora]
+          '
+        }
+      }
+
+    }
+
+    sqs = container {
+      title: 'SQS'
+      description: 'Simple Queue Service'
+
+      queue queue1 'Raw Data' {
+        description: 'Queue with raw data'
+      }
+
+      queue queue2 'Enriched Data' {
+        description: '
+          Filtered and preprocessed data
+          Ready for further processing
+        '
+      }
+    }
+
+    lambdas = container {
+      title: 'Lambdas'
+      description: 'Serverless compute'
+
+      fn_enrich = lambda 'Enrichment' {
+        description: '
+          Enriches raw data
+          by adding additional information
+        '
+      }
+
+      fn_enrich -> queue1 "reads raw data"
+      fn_enrich -> queue2 "writes enriched data"
+    }
+  }
+
+}
+
+views {
+
+  view amazon of amazon {
+    title: "Overview Amazon"
+
+    include
+      *,
+      cloud,
+      cloud.legacy -> amazon.*,
+      cloud.next -> amazon.*
+
+    style * {
+      color: muted
+    }
+    style amazon, amazon.* {
+      color: primary
+    }
+  }
+
+  view amazon_sqs of sqs {
+    title: 'Overview Amazon SQS'
+
+    include
+      *,
+      amazon
+  }
+
+  view amazon_lambdas of lambdas {
+    title: 'Overview Amazon Lambdas'
+
+    include
+      *,
+      amazon.sqs,
+      amazon.sqs.*
+  }
+
+  view amazon_rds of amazon.rds {
+    title: 'Overview Amazon RDS'
+
+    include
+      *,
+      pg.*,
+      aurora.*,
+      cloud.next.* -> amazon.rds,
+      cloud.legacy.* -> amazon.rds,
+      cloud,
+      cloud.next,
+      cloud.legacy
+
+    style * {
+      color: muted
+    }
+    style cloud.* {
+      color: primary
+    }
+    style amazon.rds.* {
+      color: secondary
+    }
+  }
+
+}

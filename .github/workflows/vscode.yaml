@@ -2,19 +2,23 @@ name: vscode
 
 on:
   workflow_call:
-  workflow_dispatch:
+  # workflow_dispatch:
 
 permissions:
   actions: write
   contents: read
 
+env:
+  NODE_ENV: production
+
 jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    if: "github.ref == 'refs/heads/main'"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: setup
         uses: ./.github/actions/bootstrap

@@ -1,4 +1,4 @@
-import type * as c4 from '@likec4/core/types'
+import type { likec4 as c4 } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
   DONE_RESULT,
@@ -11,22 +11,27 @@ import {
   type AstNodeDescription,
   type ReferenceInfo,
   type Scope,
-  type Stream
+  type Stream,
+  findNodeForProperty,
+  toDocumentSegment
 } from 'langium'
 import { ast } from '../ast'
-import {
-  elementRef,
-  isElementRefHead,
-  parentStrictElementRef
-} from '../elementRef'
-import { logger } from '../logger'
+import { elementRef, isElementRefHead, parentFqnElementRef } from '../elementRef'
+import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
 function toAstNodeDescription(entry: FqnIndexEntry): AstNodeDescription {
+  const $cstNode = findNodeForProperty(entry.el.$cstNode, 'name')
   return {
     documentUri: entry.doc.uri,
     name: entry.name,
+    ...(entry.el.$cstNode && {
+      selectionSegment: toDocumentSegment(entry.el.$cstNode)
+    }),
+    ...($cstNode && {
+      nameSegment: toDocumentSegment($cstNode)
+    }),
     path: entry.path,
     type: ast.Element
   }
@@ -41,20 +46,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   private directChildrenOf(parent: c4.Fqn): Stream<AstNodeDescription> {
-    return this.fqnIndex
-      .directChildrenOf(parent)
-      .map(toAstNodeDescription)
+    return this.fqnIndex.directChildrenOf(parent).map(toAstNodeDescription)
   }
 
-  private uniqueDescedants(of: () => (ast.Element | undefined)): Stream<AstNodeDescription> {
+  // we need lazy resolving here
+  private uniqueDescedants(of: () => ast.Element | undefined): Stream<AstNodeDescription> {
     return new StreamImpl(
       () => {
         const element = of()
-        const fqn = element && this.fqnIndex.get(element)
+        const fqn = element && this.fqnIndex.getFqn(element)
         if (fqn) {
-          return this.fqnIndex.uniqueDescedants(fqn)
-            .map(toAstNodeDescription)
-            .iterator()
+          return this.fqnIndex.uniqueDescedants(fqn).map(toAstNodeDescription).iterator()
         }
         return null
       },
@@ -79,34 +81,39 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return this.uniqueDescedants(() => elementRef(extend.element))
   }
 
-  private scopeElementView({ viewOf }: ast.ElementView): Stream<AstNodeDescription> {
-    if (!viewOf) {
-      return EMPTY_STREAM
+  private scopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
+    if (ext) {
+      return stream([ext]).flatMap(v => {
+        const view = v.view.ref
+        return view ? this.scopeElementView(view) : EMPTY_STREAM
+      })
     }
-    return this.uniqueDescedants(() => elementRef(viewOf))
+    if (viewOf) {
+      return this.uniqueDescedants(() => elementRef(viewOf))
+    }
+    return EMPTY_STREAM
   }
 
   override getScope(context: ReferenceInfo): Scope {
     const referenceType = this.reflection.getReferenceType(context)
     try {
-      const node = context.container
+      const container = context.container
       // const path = this.services.workspace.AstNodeLocator.getAstNodePath(node)
       if (referenceType === ast.Element) {
-        if (ast.isStrictElementRef(node)) {
-          if (isElementRefHead(node)) {
+        if (ast.isStrictElementRef(container)) {
+          if (isElementRefHead(container)) {
             return this.getGlobalScope(referenceType)
           }
-          const parent = parentStrictElementRef(node)
+          const parent = parentFqnElementRef(container)
           return new StreamScope(this.directChildrenOf(parent))
         }
-        if (ast.isElementRef(node) && !isElementRefHead(node)) {
-          return new StreamScope(this.scopeElementRef(node))
+        if (ast.isElementRef(container) && !isElementRefHead(container)) {
+          return new StreamScope(this.scopeElementRef(container))
         }
       }
-      return this.computeScope(node, referenceType)
+      return this.computeScope(container, referenceType)
     } catch (e) {
-      // console.error(e)
-      logger.error(e)
+      logError(e)
       return this.getGlobalScope(referenceType)
     }
   }
@@ -135,7 +142,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           if (ast.isExtendElementBody(container)) {
             scopes.push(this.scopeExtendElement(container.$container))
           }
-          if (ast.isViewRule(container)) {
+          if (ast.isElementViewBody(container)) {
             scopes.push(this.scopeElementView(container.$container))
           }
         }

@@ -1,7 +1,7 @@
 {
   "name": "@likec4/language-server",
   "description": "LikeC4 Language Server",
-  "version": "0.29.0",
+  "version": "0.40.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -20,56 +20,56 @@
     "directory": "packages/language-server"
   },
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.js"
-      }
-    }
+    "access": "public"
   },
   "scripts": {
-    "turbo-build": "run -T turbo run build --filter='language-server'",
-    "turbo-compile": "run -T turbo run compile --filter='language-server'",
-    "compile": "tsc --noEmit",
+    "typecheck:turbo": "run -T turbo run typecheck --filter='language-server'",
+    "typecheck": "tsc --emitDeclarationOnly",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "build": "tsc",
+    "prepack": "run clean && run build",
+    "build:watch": "run-p 'watch:*'",
+    "build:turbo": "run -T turbo run build --filter='language-server'",
+    "build": "unbuild",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
-    "test": "run -T vitest run",
-    "test:watch": "run -T vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "langium": "^1.2.1",
-    "nanoid": "^4.0.2",
+    "langium": "^2.0.2",
     "object-hash": "^3.0.0",
+    "p-debounce": "^4.0.0",
+    "p-throttle": "^5.1.0",
     "rambdax": "^9.1.1",
-    "remeda": "^1.23.0",
+    "remeda": "^1.27.1",
     "strip-indent": "^4.0.0",
     "vscode-languageserver": "~8.1.0",
-    "vscode-languageserver-protocol": "~3.17.3"
+    "vscode-languageserver-protocol": "~3.17.3",
+    "vscode-uri": "~3.0.7"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "@types/object-hash": "^3.0.2",
-    "langium-cli": "^1.2.1",
+    "@types/object-hash": "^3.0.4",
+    "langium-cli": "^2.0.1",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
+  },
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
   }
 }

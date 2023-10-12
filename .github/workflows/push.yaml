@@ -1,0 +1,96 @@
+name: Build and Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    tags-ignore:
+      - "**"
+    branches-ignore:
+      - "main"
+      - "releases/*"
+
+concurrency:
+  group:  ${{ github.workflow }}-${{github.event_name}}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: production
+
+jobs:
+  build:
+    # If on pull request, run only if coming from forked repos
+    if: |
+      !contains(github.event.head_commit.message, 'ci skip') && (
+        github.event_name == 'push' ||
+        github.event.pull_request.head.repo.full_name != github.repository
+      )
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        node-version: ['18', '20']
+        include:
+
+          - os: ubuntu-latest
+            turbo-cache: true
+
+          - node-version: '20'
+            test-cli: true
+
+          - os: ubuntu-latest
+            node-version: '20'
+            build-docs: true
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Turborepo-cache
+        if: ${{ matrix.turbo-cache }}
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build
+        run: yarn ci:build
+
+      - name: TypeCheck
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
+
+      - if: ${{ matrix.test-cli }}
+        name: Run СLI test
+        run: yarn test:integration
+
+      - if: ${{ matrix.test-cli }}
+        name: Upload CLI test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli-test-artifacts-${{ matrix.os }}-${{ matrix.node-version }}
+          path: integration/like4-cli-tests/out/
+          if-no-files-found: error
+          retention-days: 5
+
+      - if: ${{ matrix.build-docs }}
+        name: Docs NextJS Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            docs/.next/cache
+            node_modules/nextra/dist/__temp__
+          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
+            ${{ runner.os }}-docs-
+
+      - if: ${{ matrix.build-docs }}
+        name: Build Docs
+        working-directory: docs
+        run: yarn build:turbo

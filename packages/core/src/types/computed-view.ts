@@ -1,7 +1,9 @@
 import type { Opaque } from './opaque'
-import type { ElementKind, ElementShape, Fqn, Tag, ThemeColor } from './element'
+import type { ElementKind, ElementShape, Fqn, Tag } from './element'
 import type { RelationID } from './relation'
-import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
+import type { BasicElementView, ViewID, ViewRuleAutoLayout } from './view'
+import type { IconUrl, NonEmptyArray } from './_common'
+import type { ThemeColor } from './theme'
 
 export type NodeId = Fqn
 
@@ -12,13 +14,18 @@ export interface ComputedNode {
   kind: ElementKind
   parent: NodeId | null
   title: string
-  description?: string
-  technology?: string
-  tags?: Tag[]
+  description: string | null
+  technology: string | null
+  tags: NonEmptyArray<Tag> | null
+  links: NonEmptyArray<string> | null
   children: NodeId[]
+  inEdges: EdgeId[]
+  outEdges: EdgeId[]
   shape: ElementShape
   color: ThemeColor
+  icon?: IconUrl
   navigateTo?: ViewID
+  level: number
 }
 
 export interface ComputedEdge {
@@ -30,13 +37,10 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export interface ComputedView<
-  Node extends ComputedNode = ComputedNode,
-  Edge extends ComputedEdge = ComputedEdge
-> extends ElementView {
+export interface ComputedView extends BasicElementView {
+  viewOf?: Fqn
+  extends?: ViewID
   autoLayout: ViewRuleAutoLayout['autoLayout']
-  nodes: Node[]
-  edges: Edge[]
+  nodes: ComputedNode[]
+  edges: ComputedEdge[]
 }
-
-export type ComputeResult<V extends ElementView> = V & Pick<ComputedView, 'autoLayout' | 'nodes' | 'edges'>

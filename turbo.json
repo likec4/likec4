@@ -1,15 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "compile": {
-      "dependsOn": ["^build"],
+    "generate": {},
+    "typecheck": {
+      "dependsOn": ["generate"],
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["generate", "^build"],
       "outputs": ["dist/**"]
     },
     "lint": {
+      "cache": false,
       "outputs": []
     },
     "test": {
@@ -17,17 +19,14 @@
       "outputs": [],
       "dependsOn": ["^build"]
     },
-    "test:watch": {
-      "cache": false,
-      "persistent": true
-    },
     "clean": {
       "cache": false
     },
     "dev": {
+      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     }
   },
-  "globalDependencies": ["yarn.lock", "packages/tsconfig/*"]
+  "globalDependencies": ["packages/tsconfig/*"]
 }

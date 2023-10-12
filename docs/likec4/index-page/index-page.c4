@@ -76,6 +76,12 @@ views {
     include *
   }
 
+  view indexLR {
+    title 'Landscape view'
+    include *
+    autoLayout LeftRight
+  }
+
   view customer of customer {
     include *, saas.ui
   }

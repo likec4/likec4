@@ -1,19 +1,15 @@
-import type { OnPointerEvent } from './types'
+import type { KonvaPointerEvent } from '../types'
 
-export const mousePointer = (e: OnPointerEvent) => {
+export function mousePointer(e: KonvaPointerEvent) {
   const container = e.target.getStage()?.container()
   if (container) {
     container.style.cursor = 'pointer'
   }
 }
 
-export const mouseDefault = (e: OnPointerEvent) => {
+export function mouseDefault(e: KonvaPointerEvent) {
   const container = e.target.getStage()?.container()
   if (container) {
     container.style.cursor = 'auto'
   }
-}
-
-export function unexhaustive(arg: never, message = 'Unexhaustive value: '): never {
-  throw new Error(message + ': ' + JSON.stringify(arg))
 }

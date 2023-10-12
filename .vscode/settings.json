@@ -4,7 +4,7 @@
   "prettier.enable": true,
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": true,
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -19,6 +19,7 @@
     "node_modules/**": true,
     "docs/.next/**": true,
     "docs/node_modules/**": true,
+    "examples/*/dist/**": true,
     "packages/*/dist/**": true,
     "packages/*/node_modules/**": true
   },
@@ -27,9 +28,15 @@
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.folderListener": [
-    "/packages/language-server/src/model",
-    "/packages/language-server/src/lsp"
+    "packages/core/src/model"
   ],
   "mdx.experimentalLanguageServer": true,
-  "testing.automaticallyOpenPeekView": "never"
+  "vitest.commandLine": "yarn vitest",
+  "exportall.config.semis": false,
+  "json.schemas": [
+    {
+      "url": "node_modules/langium-cli/langium-config-schema.json",
+      "fileMatch": ["langium-config.json"]
+    }
+  ]
 }

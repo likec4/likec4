@@ -5,6 +5,9 @@ import type { LikeC4Services } from '../module'
 export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.ElementView> => {
   const index = services.shared.workspace.IndexManager
   return (el, accept) => {
+    if (el.extends) {
+      // TODO: circular dependency check
+    }
     if (!el.name) {
       return
     }

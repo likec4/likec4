@@ -1,120 +1,135 @@
-import { Bleed, Callout } from 'nextra-theme-docs'
-import { Tab, Tabs } from 'nextra-theme-docs'
+import { Tab, Tabs } from 'nextra/components'
+import { Info, Warning } from '$/components'
 
 # Model
 
-Model describes the software architecture as a set of various elements and relations/interactions between them.
+The model describes the software architecture as a set of various structured elements and relationships.
 
 ## Element
 
-Element is a basic building block.
+Element is a basic building block.  
 It represents a logical or physical part of the architecture.  
-The element kind must be [specified](./specification) first.
+Any element must have a [kind](./specification#kind) and a name (_identifier_):
 
 ```likec4 copy
 specification {
-  element actor
+  element actor // define a kind
   element service
 }
 
 model {
+  // element of kind 'actor' with the name 'customer'
   actor customer
+  // element of kind 'service' named as 'cloud'
   service cloud
-  // or use '='
-  cloud = service  
+
+  // also possible with '=', then the name goes first
+  cloud = service
 }
 ```
 
-Element must have a name. It is used for references.  
+Element name is required for references.  
 It can contain letters, digits and underscore, but can't start with a digit.
 
-| identifier        | |
-| :------------ | :--------- |
-| api | ✅ |
-| Api | ✅ |
-| _api | ✅ |
-| _1api | ✅ |
-| 1api | ⛔️ |
-| a.pi | ⛔️ |
+| name       |     |
+| :--------- | :-- |
+| api        | ✅  |
+| Api        | ✅  |
+| \_api      | ✅  |
+| \_1api     | ✅  |
+| 1api       | ⛔️ |
+| a.pi       | ⛔️ |
 
-Element name is also used as a title when rendered. To customize it:
+
+### Element Properties
+
+Elements may have properties: _title_, _description_ and _technology_.  
+For example, Structurizr DSL style:
 
 ```likec4 copy
 specification {
-  element actor
-  element service
+  element softwareSystem
 }
-
-model {
-  actor customer 'Customer'
-  service cloud 'Cloud'
-  // or use '='
-  cloud = service 'Cloud'
-}
-```
-
-### Element properties
-
-Element may have description and technology. 
-
-```likec4 copy
 model {
   // Structurizr DSL style:
   // <name> = softwareSystem [title] [description] [technology]
-  cloud = softwareSystem 'Cloud' 'Provides services to customers'
+  cloud = softwareSystem 'Cloud' 'Provides services to customers' 'SaaS'
 }
 ```
 
-Partial support of Structurizr DSL makes it easier to migrate from it.  
+<Info>
+LikeC4 supports Structurizr DSL syntax ("_partially_") allowing to copy-paste from it.  
 Check the [Big Bank example](/examples/bigbank).
+</Info>
 
+Element's name is used as a title by default.  
+But you can specify your own:
 
-{/* | Abstract grammar |
-| :--------|
-| _{'<'}element_kind{'>'}_ **NAME** [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ] |
-| **NAME** **'='** _{'<'}element_kind{'>'}_  [ title=_string_  [ description=_string_ [ technology=_string_ ] ] ]  | */}
+```likec4
+model {
+  // element of kind 'actor'  with name='customer' and title='customer'
+  actor customer
+  // element of kind 'service' with name='cloud' and title='Cloud Systems'
+  service cloud 'Cloud Systems'
+  
+  // or with '='
+  cloud = service 'Cloud Systems'
+}
+```
 
-These properties may be defined in nested block:
-
+These properties may be defined as nested:
 
 ```likec4 copy
 model {
-  // only description inside
-  customer = actor 'Customer' {
-    description 'Uses the Mobile Application'
+  // Only description inside
+  customer = actor 'Customer' {     
+    description: 'Uses the Mobile Application' // ':' is optional, but if you prefer
   }
-  // or even title inside
+  // All properties inside
   mobile = application {
     title 'Mobile Application'
     description 'Provides services to customers'
     technology 'React Native'
   }
+  // Multiline
+  web = application {
+    title 'Web Application'
+    description '
+      Provides services to customers through
+      the web interface.
+    '
+  }
 }
 ```
 
-#### Element Tags
+### Element Tags
 
-Element may have tags:
-
+Tags are defined in nested block and before any properties:
 
 ```likec4 copy
 model {
   appV1 = application 'App v1' {
-    #deprecated 
+    #deprecated
     description 'Old version of the application'
   }
 
   // multiple tags
-  appV2 = application 'App v2' {
-    #next, #serverless, #team2
+  appV2 = application {
+    #next, #serverless
+    #team2
+    title 'App v2'
+  }
+
+  appV3 = application {        
+    title 'App v3'
+    #team3 // ⛔️ Error: tags must be defined first
   }  
 }
 ```
 
-Tags will be explained later...
+### Element Links
 
-#### Links
-
+Element may have multiple links:
 
 ```likec4 copy
 model {
@@ -131,25 +146,10 @@ model {
 }
 ```
 
-#### Inline styling
-
-Element may be styled:
-
-```likec4 copy
-model {
-  customer = actor 'Customer' {
-    style {
-      shape person
-      color green
-    }    
-  }
-}
-```
-
 ## Structure
 
 Any element is a container and can contain other elements.  
-This way you define the structure, the internals of the element.
+This way you define the structure and internals of the element.
 
 ```likec4 filename="nested-elements.c4"
 model {
@@ -163,23 +163,26 @@ model {
   }
 
   // or use '='
-  service2 = service {    
+  service2 = service {
     backend = component {
       api = component
     }
-    frontend = component 
+    frontend = component
   }
 }
 ```
 
+<Warning>
 Element name must be unique within the container.  
+We learn this in detail with [references](./references)
+</Warning>
 
-Nested elements are _"namespaced"_, the parent name is used as a prefix for the children.  
-So the model above has the elements with these full qualified names:
+Nested elements are _"namespaced"_, the parent name is used as a prefix.  
+So, the model above has the elements with these fully qualified names:
 
-- `service1`  
+- `service1`
 - `service1.backend`
-- `service1.backend.api` 
+- `service1.backend.api`
 - `service1.frontend`
 
 and:
@@ -195,11 +198,11 @@ It is not possible to have elements with the same name on the same hierarchy lev
 model {
 
   service service1 'Service 1' {
-    component backend 
+    component backend
 
     component backend // ⛔️ Error: 'service1.backend' already defined
   }
-  
+
   service service2 'Service 2' {
     component backend // ✅ This is OK - 'service2.backend'
 

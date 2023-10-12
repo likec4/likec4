@@ -1,19 +1,17 @@
-import React from 'react'
 import { useSpring } from '@react-spring/konva'
-import { useMemo } from 'react'
-import { AnimatedGroup, AnimatedPath } from '../../konva'
-import { NodeLabels as NodeTitle } from './nodeLabels'
+import { AnimatedEllipse, AnimatedPath } from '../../konva'
+import { NodeLabels } from './NodeLabel'
+import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
-export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
+function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
   const radius = Math.round(diameter / 2)
   // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
   const rx = radius
-  const ry = Math.round(tilt * radius * 1000) / 1000
+  const ry = Math.round(tilt * radius)
   const tiltAdjustedHeight = height - 2 * ry
 
-  const d = `   M 0,${ry}
-        a ${rx},${ry} 0,0,0 ${diameter} 0
+  const path = `  M ${diameter},${ry}
         a ${rx},${ry} 0,0,0 ${-diameter} 0
         l 0,${tiltAdjustedHeight}
         a ${rx},${ry} 0,0,0 ${diameter} 0
@@ -21,59 +19,44 @@ export function cylinderSVGPath(diameter: number, height: number, tilt = 0.07) {
         `
     .replace(/\s+/g, ' ')
     .trim()
-  return d
+  return {
+    path,
+    ry,
+    rx
+  }
 }
 
-export function CylinderShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
+export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const {
-    size: { width, height }, color, labels
+    size: { width, height }
   } = node
-  const { fill, stroke } = theme.colors[color]
 
-  const path = useMemo(() => cylinderSVGPath(width, height), [width, height])
-  // const ry = Math.round(0.05 * (width / 2) * 1000) / 1000
-  const cylinderProps = useSpring({
+  const { path, rx, ry } = cylinderSVGPath(width, height)
+
+  const cylinder = useSpring({
     to: {
-      fill,
-      stroke
+      rx,
+      ry
     }
   })
 
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      {...springs}
-      {...listeners}
-    >
+    <>
       <AnimatedPath
-        shadowBlur={16}
-        shadowOpacity={0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={8}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
-        shadowColor={theme.shadow}
+        {...useShadowSprings(isHovered, theme, springs)}
         data={path}
-        width={springs.width}
-        height={springs.height}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
-        strokeWidth={2}
-        hitStrokeWidth={8}
-        {...cylinderProps} />
-      <NodeTitle
-        labels={labels}
-        // offsetY={-ry}
-        width={width}
-        color={color}
-        theme={theme} />
-    </AnimatedGroup>
+        fill={springs.fill}
+      />
+      <AnimatedEllipse
+        x={cylinder.rx}
+        y={cylinder.ry}
+        radiusX={cylinder.rx}
+        radiusY={cylinder.ry}
+        fill={springs.stroke}
+      />
+      <NodeLabels node={node} offsetY={-ry * (node.icon ? 1.5 : 0.5)} theme={theme} />
+    </>
   )
 }

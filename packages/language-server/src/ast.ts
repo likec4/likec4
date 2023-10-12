@@ -1,8 +1,12 @@
-import type * as c4 from '@likec4/core/types'
-import { RelationRefError } from '@likec4/core'
+import {
+  DefaultElementShape,
+  DefaultThemeColor,
+  RelationRefError,
+  nonexhaustive,
+  type c4
+} from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
-import { DocumentState } from 'langium/lib/workspace'
-// import objectHash from 'object-hash'
+import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
 import type { LikeC4Document } from './generated/ast'
 import * as ast from './generated/ast'
@@ -10,33 +14,19 @@ import { LikeC4LanguageMetaData } from './generated/module'
 
 export { ast }
 
-// export function c4hash({
-//   c4Specification,
-//   c4Elements,
-//   c4Relations,
-//   c4Views
-// }: LikeC4LangiumDocument) {
-//   return objectHash(
-//     {
-//       c4Specification,
-//       c4Elements,
-//       c4Relations,
-//       c4Views
-//     },
-//     {
-//       respectType: false
-//     }
-//   )
-// }
+declare module './generated/ast' {
+  export interface Element {
+    fqn?: c4.Fqn
+  }
+}
 
 export interface ParsedAstSpecification {
-  kinds: Record<
-    c4.ElementKind,
-    {
-      shape: c4.ElementShape
-      color: c4.ThemeColor
-    }
-  >
+  // prettier-ignore
+  kinds: Record<c4.ElementKind, {
+    shape?: c4.ElementShape
+    color?: c4.ThemeColor
+    icon?: c4.IconUrl
+  }>
 }
 
 export interface ParsedAstElement {
@@ -46,7 +36,9 @@ export interface ParsedAstElement {
   title: string
   description?: string
   technology?: string
-  tags?: c4.Tag[]
+  icon?: c4.IconUrl
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<string>
   shape?: c4.ElementShape
   color?: c4.ThemeColor
 }
@@ -61,17 +53,20 @@ export interface ParsedAstRelation {
 
 export interface ParsedAstElementView {
   id: c4.ViewID
-  astPath: string
   viewOf?: c4.Fqn
+  extends?: c4.ViewID
+  astPath: string
   title?: string
   description?: string
+  tags?: c4.NonEmptyArray<c4.Tag>
+  links?: c4.NonEmptyArray<string>
   rules: c4.ViewRule[]
 }
 
 const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
     ;(node as any)[idattr] = id
     return node
   },
@@ -86,9 +81,11 @@ export const ElementOps = {
     if (id === null) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-dynamic-delete
       delete (node as any)[idattr]
+      delete node.fqn
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
       ;(node as any)[idattr] = id
+      node.fqn = id
     }
     return node
   },
@@ -98,29 +95,40 @@ export const ElementOps = {
   }
 }
 
-export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document> {
-  // c4hash?: string
-  c4Specification: ParsedAstSpecification
-  c4Elements: ParsedAstElement[]
-  c4Relations: ParsedAstRelation[]
-  c4Views: ParsedAstElementView[]
-
-  // Fqn -> astPath
-  c4fqns?: MultiMap<c4.Fqn, string> | undefined
+export interface DocFqnIndexEntry {
+  name: string
+  el: WeakRef<ast.Element>
+  path: string
 }
 
+export interface LikeC4DocumentProps {
+  c4Specification?: ParsedAstSpecification
+  c4Elements?: ParsedAstElement[]
+  c4Relations?: ParsedAstRelation[]
+  c4Views?: ParsedAstElementView[]
+
+  // Fqn -> Element
+  c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
+}
+
+export interface LikeC4LangiumDocument
+  extends LangiumDocument<LikeC4Document>,
+    LikeC4DocumentProps {}
+export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
+  Required<LikeC4DocumentProps>
+
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  doc.c4Specification = {
+  const specification = (doc.c4Specification = {
     kinds: {}
-  }
-  const elements = (doc.c4Elements = [] as LikeC4LangiumDocument['c4Elements'])
-  const relations = (doc.c4Relations = [] as LikeC4LangiumDocument['c4Relations'])
-  const views = (doc.c4Views = [] as LikeC4LangiumDocument['c4Views'])
+  } as ParsedAstSpecification)
+  const elements = (doc.c4Elements = [] as ParsedAstElement[])
+  const relations = (doc.c4Relations = [] as ParsedAstRelation[])
+  const views = (doc.c4Views = [] as ParsedAstElementView[])
   return {
     elements,
     relations,
     views,
-    specification: doc.c4Specification
+    specification
   }
 }
 
@@ -128,16 +136,23 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
-export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
+export function isParsedLikeC4LangiumDocument(
+  doc: LangiumDocument
+): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
-    ['c4Specification', 'c4Elements', 'c4Relations', 'c4Views'].every(key => key in doc)
+    doc.state >= DocumentState.Validated &&
+    !!doc.c4Specification &&
+    !!doc.c4Elements &&
+    !!doc.c4Relations &&
+    !!doc.c4Views &&
+    !!doc.c4fqns
   )
 }
 
 export const isValidLikeC4LangiumDocument = (
   doc: LangiumDocument
-): doc is LikeC4LangiumDocument => {
+): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -198,7 +213,7 @@ export function resolveRelationPoints(node: ast.Relation): {
     }
   }
   if (!ast.isElementBody(node.$container)) {
-    throw new RelationRefError('Invalid relation parent')
+    throw new RelationRefError('Invalid relation parent, expected Element')
   }
   return {
     source: node.$container.$container,
@@ -206,21 +221,39 @@ export function resolveRelationPoints(node: ast.Relation): {
   }
 }
 
-export function toElementStyle(props?: ast.AStyleProperty[]) {
+export function toElementStyle(props?: ast.StyleProperties['props']) {
   const result: {
     color?: c4.ThemeColor
     shape?: c4.ElementShape
+    icon?: c4.IconUrl
   } = {}
-  const color = props?.find(ast.isColorProperty)?.value
-  if (color) {
-    result.color = color
+  if (!props || props.length === 0) {
+    return result
   }
-  const shape = props?.find(ast.isShapeProperty)?.value
-  if (shape) {
-    result.shape = shape
+  for (const prop of props) {
+    if (ast.isColorProperty(prop)) {
+      result.color = prop.value
+      continue
+    }
+    if (ast.isShapeProperty(prop)) {
+      result.shape = prop.value
+      continue
+    }
+    if (ast.isIconProperty(prop)) {
+      result.icon = prop.value as c4.IconUrl
+      continue
+    }
+    nonexhaustive(prop)
   }
-
   return result
+}
+export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props']) {
+  const { color, shape, ...rest } = toElementStyle(props)
+  return {
+    ...rest,
+    ...(color && color !== DefaultThemeColor ? { color } : {}),
+    ...(shape && shape !== DefaultElementShape ? { shape } : {})
+  }
 }
 
 export function toAutoLayout(

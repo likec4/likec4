@@ -4,17 +4,18 @@
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "allowArbitraryExtensions": true
   },
   "references": [
     {
       "path": "../packages/core"
     },
     {
-      "path": "../packages/diagrams"
+      "path": "../packages/layouts"
     },
     {
-      "path": "../packages/layouts"
+      "path": "../packages/generators"
     },
     {
       "path": "../packages/language-server"

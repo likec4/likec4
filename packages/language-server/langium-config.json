@@ -1,14 +1,12 @@
 {
-  "projectName": "like-c4",
+  "projectName": "LikeC4",
+  "importExtension": "",
+  "langiumInternal": false,
   "languages": [
     {
       "id": "likec4",
       "grammar": "src/like-c4.langium",
-      "fileExtensions": [
-        ".c4",
-        ".likec4",
-        ".like-c4"
-      ],
+      "fileExtensions": [".c4", ".likec4", ".like-c4"],
       "textMate": {
         "out": "contrib/likec4.tmLanguage.json"
       },
@@ -18,6 +16,7 @@
     }
   ],
   "out": "src/generated",
+  "mode": "production",
   "chevrotainParserConfig": {
     "recoveryEnabled": true,
     "nodeLocationTracking": "full"

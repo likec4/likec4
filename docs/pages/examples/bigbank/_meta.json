@@ -3,7 +3,8 @@
   "structurizr": "Structurizr DSL",
   "likec4": "LikeC4 Code",
   "---": {
-    "type": "separator"
+    "type": "separator",
+    "title": ""
   },
   "landscape": "System Landscape",
   "context": "System Context",

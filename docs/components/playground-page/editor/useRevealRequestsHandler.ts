@@ -1,4 +1,4 @@
-import { type Monaco } from "@monaco-editor/react"
+import { type Monaco } from '@monaco-editor/react'
 import { useStore } from 'jotai'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { delay, isNil } from 'rambdax'
@@ -14,7 +14,6 @@ function processRevealRequests(
   monacoRef: RefObject<Monaco>,
   languageClientRef: RefObject<MonacoLanguageClient>
 ) {
-
   async function goToLocation(location: Location) {
     const monaco = monacoRef.current
     if (!monaco) return
@@ -44,17 +43,11 @@ function processRevealRequests(
     editor.focus()
   }
 
-  async function requestLocation(languageClient: MonacoLanguageClient, revealRequest: EditorRevealRequest) {
-    if ('element' in revealRequest) {
-      return await languageClient.sendRequest(Rpc.locateElement, { element: revealRequest.element })
-    }
-    if ('view' in revealRequest) {
-      return await languageClient.sendRequest(Rpc.locateView, { id: revealRequest.view })
-    }
-    if ('relation' in revealRequest) {
-      return await languageClient.sendRequest(Rpc.locateRelation, { id: revealRequest.relation })
-    }
-    throw new Error('Unknown reveal request')
+  async function requestLocation(
+    languageClient: MonacoLanguageClient,
+    revealRequest: EditorRevealRequest
+  ) {
+    return await languageClient.sendRequest(Rpc.locate, revealRequest)
   }
 
   return async (revealRequest: EditorRevealRequest) => {
@@ -90,7 +83,7 @@ export const useRevealRequestsHandler = (
       monacoRef,
       languageClientRef
     )
-    let previousRequest: unknown | null = null
+    let previousRequest: EditorRevealRequest | null = null
     return store.sub(editorRevealRequestAtom, () => {
       const revealRequest = store.get(editorRevealRequestAtom)
       if (isNil(revealRequest) || Object.is(revealRequest, previousRequest)) {

@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
+
+vi.mock('../logger')
 
 describe('viewChecks', () => {
   it('should report duplicate view names', async () => {

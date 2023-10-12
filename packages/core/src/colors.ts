@@ -1,24 +1,15 @@
-import type { ThemeColor } from './types/element'
-
-type Color = `#${string}`
-
-export interface ElementColors {
-  fill: Color
-  stroke: Color
-  hiContrast: Color
-  loContrast: Color
-}
+import type { LikeC4Theme, ThemeColorValues, ThemeColors, ThemeRelationColors } from './types/theme'
 
 const blue = {
   // fill: colors.blue[500],
   // stroke: colors.blue[600],
   // hiContrast: colors.blue[50],
-  // loContrast: colors.blue[100],
+  // loContrast: colors.blue[200],
   fill: '#3b82f6',
   stroke: '#2563eb',
   hiContrast: '#eff6ff',
-  loContrast: '#dbeafe'
-} satisfies ElementColors
+  loContrast: '#bfdbfe'
+} satisfies ThemeColorValues
 
 const sky = {
   // fill: colors.sky[600],
@@ -29,7 +20,7 @@ const sky = {
   stroke: '#0369a1',
   hiContrast: '#f0f9ff',
   loContrast: '#e0f2fe'
-} satisfies ElementColors
+} satisfies ThemeColorValues
 
 const slate = {
   // fill: colors.slate[500],
@@ -40,14 +31,12 @@ const slate = {
   stroke: '#475569',
   hiContrast: '#f8fafc',
   loContrast: '#e2e8f0'
-} satisfies ElementColors
+} satisfies ThemeColorValues
 
 export const RelationColors = {
-  // lineColor: colors.neutral[400],
-  // labelColor: colors.neutral[300],
-  lineColor: '#a3a3a3',
-  labelColor: '#d4d4d4',
-} as const
+  lineColor: '#b1b1b1',
+  labelColor: '#b1b1b1'
+} as const satisfies ThemeRelationColors
 
 export const Colors = {
   primary: blue,
@@ -71,20 +60,22 @@ export const Colors = {
     // stroke: colors.red[600],
     // hiContrast: colors.red[50],
     // loContrast: colors.red[200],
-    fill: '#ef4444',
-    stroke: '#dc2626',
-    hiContrast: '#fef2f2',
-    loContrast: '#fecaca'
+    fill: '#b54548',
+    stroke: '#8c333a',
+    // hiContrast: '#fef2f2',
+    // loContrast: '#fecaca',
+    // hiContrast: '#191111', // colors.gray[900],
+    // loContrast: '#3b1219' // colors.gray[800],
+    hiContrast: '#f8fafc',
+    // hiContrast: '#f8fafc',
+    // loContrast: '#fdd8d8' // radix black red 12
+    loContrast: '#F9C6C6'
   },
   green: {
-    // fill: colors.green[600],
-    // stroke: colors.green[700],
-    // hiContrast: colors.green[50],
-    // loContrast: colors.green[200],
-    fill: '#16a34a',
-    stroke: '#15803d',
-    hiContrast: '#f0fdf4',
-    loContrast: '#bbf7d0'
+    fill: '#428a4f',
+    stroke: '#2d5d39',
+    hiContrast: '#f8fafc',
+    loContrast: '#c2f0c2'
   },
   amber: {
     // fill: colors.amber[600],
@@ -93,8 +84,10 @@ export const Colors = {
     // loContrast: colors.amber[200],
     fill: '#d97706',
     stroke: '#b45309',
-    hiContrast: '#fffbeb',
-    loContrast: '#fde68a'
+    // hiContrast: '#fffbeb',
+    // loContrast: '#fde68a',
+    hiContrast: '#f8fafc', // colors.gray[900],
+    loContrast: '#ffe0c2' // colors.gray[800],
   },
   indigo: {
     // fill: colors.indigo[500],
@@ -106,6 +99,11 @@ export const Colors = {
     hiContrast: '#eef2ff',
     loContrast: '#c7d2fe'
   }
-} as const satisfies {
-  [key in ThemeColor]: ElementColors
-}
+} as const satisfies ThemeColors
+
+export const defaultTheme = {
+  font: 'Helvetica',
+  shadow: '#0a0a0a',
+  relation: RelationColors,
+  colors: Colors
+} as const satisfies LikeC4Theme

@@ -1,6 +1,6 @@
 {
   "name": "@likec4/generators",
-  "version": "0.29.0",
+  "version": "0.40.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -16,21 +16,22 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/generators"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "access": "public"
   },
   "scripts": {
-    "compile": "tsc --noEmit",
-    "build": "tsc",
+    "typecheck": "tsc --emitDeclarationOnly",
+    "build:watch": "tsc --watch",
+    "build": "unbuild",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
@@ -40,11 +41,17 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
-    "langium": "^1.2.1",
+    "langium": "^2.0.2",
     "rambdax": "^9.1.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
+  },
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
   }
 }

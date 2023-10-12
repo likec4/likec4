@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'develop'
 
 permissions:
   actions: write
@@ -12,37 +11,51 @@ permissions:
   contents: read
   statuses: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+env:
+  NODE_ENV: production
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    concurrency:
+      group: ${{ github.workflow }}-build
+      cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: setup
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: turborepo-cache
+      - name: Init turborepo-cache
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: Build packages
-        run: yarn build
+      - name: Build
+        run: yarn ci:build
 
-      - name: Compile
-        run: yarn compile:all
+      - name: TypeCheck
+        run: yarn typecheck
 
       - name: Test
         run: yarn test
 
+      - name: Run СLI test
+        run: yarn test:integration
+
+      - name: Upload CLI test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cli-test-artifacts
+          path: integration/like4-cli-tests/out/
+          if-no-files-found: error
+          retention-days: 2
+
   release:
     name: Release
     uses: ./.github/workflows/release.yaml
-    if: "github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')"
+    if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build
     concurrency:
       group: ${{ github.workflow }}-release
@@ -56,7 +69,7 @@ jobs:
   docs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
-    if: "github.ref == 'refs/heads/main'"
+    if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build
     concurrency:
       group: ${{ github.workflow }}-docs
@@ -64,4 +77,6 @@ jobs:
     permissions:
       actions: write
       contents: read
+      checks: write
+      statuses: write
     secrets: inherit

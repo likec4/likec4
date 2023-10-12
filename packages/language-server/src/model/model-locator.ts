@@ -1,11 +1,12 @@
-import type * as c4 from '@likec4/core/types'
+import type { likec4 as c4 } from '@likec4/core'
+import { InvalidModelError } from '@likec4/core'
 import type { LangiumDocuments } from 'langium'
 import { findNodeForProperty, getDocument } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
-import { ElementOps, ast, isParsedLikeC4LangiumDocument } from '../ast'
+import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
-import type { FqnIndex } from './fqn-index'
+import { type FqnIndex } from './fqn-index'
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
@@ -21,7 +22,7 @@ export class LikeC4ModelLocator {
   }
 
   public getParsedElement(astNode: ast.Element): ParsedAstElement | null {
-    const fqn = ElementOps.readId(astNode) ?? null
+    const fqn = this.fqnIndex.getFqn(astNode)
     if (!fqn) return null
     const doc = getDocument(astNode)
     if (!isParsedLikeC4LangiumDocument(doc)) {
@@ -31,31 +32,18 @@ export class LikeC4ModelLocator {
   }
 
   public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {
-    for (const doc of this.documents()) {
-      if (!doc.c4fqns?.has(fqn)) {
-        continue
-      }
-      const element = doc.c4Elements.find(e => e.id === fqn)
-      if (!element) {
-        continue
-      }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(
-        doc.parseResult.value,
-        element.astPath
-      )
-      if (!ast.isElement(node)) {
-        continue
-      }
-      const propertyNode = findNodeForProperty(node.$cstNode, property) ?? node.$cstNode
-      if (!propertyNode) {
-        return null
-      }
-      return {
-        uri: doc.uri.toString(),
-        range: propertyNode.range
-      }
+    const entry = this.fqnIndex.byFqn(fqn).head()
+    if (!entry) {
+      return null
     }
-    return null
+    const propertyNode = findNodeForProperty(entry.el.$cstNode, property) ?? entry.el.$cstNode
+    if (!propertyNode) {
+      return null
+    }
+    return {
+      uri: entry.doc.uri.toString(),
+      range: propertyNode.range
+    }
   }
 
   public locateRelation(relationId: c4.RelationID): Location | null {
@@ -83,6 +71,9 @@ export class LikeC4ModelLocator {
           }
         }
       }
+      if (node.arr == null) {
+        throw new InvalidModelError('Relation.arr is not defined, but should be')
+      }
       const targetNode = findNodeForProperty(node.$cstNode, 'arr')
       if (!targetNode) {
         return null
@@ -90,7 +81,7 @@ export class LikeC4ModelLocator {
       return {
         uri: doc.uri.toString(),
         range: {
-          start: targetNode.range.end,
+          start: targetNode.range.start,
           end: targetNode.range.end
         }
       }
@@ -114,7 +105,7 @@ export class LikeC4ModelLocator {
       let targetNode = node.$cstNode
       if (node.name) {
         targetNode = findNodeForProperty(node.$cstNode, 'name') ?? targetNode
-      } else if (node.viewOf) {
+      } else if ('viewOf' in node) {
         targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
       }
       if (!targetNode) {

@@ -1,66 +1,25 @@
-import {
-  useSpring
-} from '@react-spring/konva'
-import { AnimatedGroup, AnimatedRect } from '../../konva'
-import { NodeLabels } from './nodeLabels'
+import { AnimatedRect } from '../../konva'
+import { NodeLabels } from './NodeLabel'
+import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
-export function RectangleShape({
-  id,
-  node,
-  theme,
-  springs,
-  ...listeners
-}: NodeShapeProps): JSX.Element {
-  const {
-    color, labels
-  } = node
-  const colors = theme.colors[color]
-
-  const rectProps = useSpring({
-    to: {
-      fill: colors.fill
-    }
-  })
-
-  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
+export function RectangleShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   return (
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    <AnimatedGroup
-      id={id}
-      x={springs.x}
-      y={springs.y}
-      offsetX={springs.offsetX}
-      offsetY={springs.offsetY}
-      opacity={springs.opacity}
-      scaleX={springs.scaleX}
-      scaleY={springs.scaleY}
-      {...listeners}
-    >
+    <>
       <AnimatedRect
+        {...useShadowSprings(isHovered, theme, springs)}
+        cornerRadius={6}
+        strokeEnabled={false}
         width={springs.width}
         height={springs.height}
-        cornerRadius={6}
-        shadowBlur={16}
-        shadowOpacity={0.25}
-        shadowOffsetX={0}
-        shadowOffsetY={8}
-        shadowColor={theme.shadow}
-        shadowEnabled={node.parent ? springs.opacity.to(v => v > 0.9) : false}
-        perfectDrawEnabled={false}
-        strokeEnabled={false}
+        fill={springs.fill}
+        // strokeEnabled={isHovered === true}
         // shadowForStrokeEnabled={false}
-        // stroke={rectProps.fill}
+        // stroke={'#F8F3D4'}
         // strokeScaleEnabled={false}
-        // strokeWidth={1}
-        // hitStrokeWidth={25}
-        {...rectProps} />
-      <NodeLabels
-        labels={labels}
-        width={node.size.width}
-        color={color}
-        theme={theme} />
+        // strokeWidth={2}
+      />
+      <NodeLabels node={node} theme={theme} />
       {/* <ExternalLink
               x={-2}
               y={30}
@@ -68,6 +27,6 @@ export function RectangleShape({
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
-    </AnimatedGroup>
+    </>
   )
 }

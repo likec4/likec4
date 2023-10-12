@@ -1,12 +1,18 @@
-import { createLanguageServices, type LikeC4Services } from '@likec4/language-server'
+import {
+  createLanguageServices,
+  logger as lspLogger,
+  type LikeC4Services
+} from '@likec4/language-server'
 import { dim, red, green } from 'kleur/colors'
 import type { LanguageMetaData } from 'langium'
 import { NodeFileSystem } from 'langium/node'
-import type { LikeC4Model, ViewID } from '@likec4/core/types'
+import type { DiagramView, LikeC4Model, ViewID } from '@likec4/core'
 import { existsSync, statSync } from 'node:fs'
 import { resolve, relative, basename } from 'node:path'
 import * as R from 'remeda'
 import { URI } from 'vscode-uri'
+
+lspLogger.silent(true)
 
 export function resolveDir(workspaceDir: string): string {
   if (workspaceDir === '.') {
@@ -37,7 +43,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   const modelLocator = services.likec4.ModelLocator
 
   console.log(dim('🔍 Searching for likec4 files in:'))
-  console.log('\t' + dim(workspace))
+  console.log('   ' + dim(workspace))
 
   await services.shared.workspace.WorkspaceManager.initializeWorkspace([
     {
@@ -53,7 +59,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
   }
 
   console.log(dim('🔍 Validating...'))
-  await services.shared.workspace.DocumentBuilder.build(documents, { validationChecks: 'all' })
+  await services.shared.workspace.DocumentBuilder.build(documents, { validation: true })
 
   let hasErrors = false
   for (const doc of documents) {
@@ -89,7 +95,7 @@ export async function initLanguageServices(props?: { workspaceDir?: string }): P
     process.exit(1)
   }
 
-  const viewSourcePaths = R.mapValues(model.views, v => {
+  const viewSourcePaths = R.mapValues(model.views as Record<string, DiagramView>, v => {
     const loc = modelLocator.locateView(v.id)
     if (!loc) {
       throw new Error(`No location found for view ${v.id}`)

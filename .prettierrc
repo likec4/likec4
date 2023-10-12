@@ -4,7 +4,10 @@
   "singleQuote": true,
   "semi": false,
   "jsxSingleQuote": true,
+  "editorconfig": true,
+  "embeddedLanguageFormatting": "auto",
   "arrowParens": "avoid",
   "trailingComma": "none",
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "quoteProps": "consistent"
 }

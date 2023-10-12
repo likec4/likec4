@@ -1,0 +1,15 @@
+{
+  "name": "@likec4/likec4-cli-integration-test",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "yarn@3.6.4",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "execa": "^8.0.1",
+    "likec4": "workspace:*",
+    "vitest": "^0.34.6"
+  }
+}

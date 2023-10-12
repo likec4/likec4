@@ -1,13 +1,12 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 import { keys } from 'rambdax'
-import type { Element, Fqn, ViewID } from '@likec4/core/types'
+import type { Element, ViewID } from '@likec4/core'
 
-import '../logger'
 vi.mock('../logger')
 
 describe('LikeC4ModelBuilder', () => {
-  it('builds model with shapes', async () => {
+  it.concurrent('builds model with colors and shapes', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -62,14 +61,12 @@ describe('LikeC4ModelBuilder', () => {
         title: 'Mobile'
       }
     })
-    // Ignore defaults
+    expect(elements['customer']).not.toHaveProperty('color')
     expect(elements['system']).not.toHaveProperty('shape')
     expect(elements['system']).not.toHaveProperty('color')
-    expect(elements['customer']).not.toHaveProperty('color')
-    expect(elements['spa']).not.toHaveProperty('color')
   })
 
-  it('builds model', async () => {
+  it('builds model with description and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -109,31 +106,29 @@ describe('LikeC4ModelBuilder', () => {
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      client: {
+      'client': {
         kind: 'user',
-        shape: 'person'
+        shape: 'person',
+        description: null,
+        technology: null
       },
       'system.backend': {
         color: 'secondary',
         title: 'Backend',
+        description: null,
         technology: 'NodeJS'
       },
       'system.frontend': {
         color: 'muted',
         shape: 'browser',
-        description: 'Frontend description'
+        description: 'Frontend description',
+        technology: null
       }
     })
-    expect(model.elements['client' as Fqn]).not.toHaveProperty('color')
-    expect(model.elements['system' as Fqn]).not.toHaveProperty('color')
-    expect(model.elements['system' as Fqn]).not.toHaveProperty('shape')
-    expect(model.elements['system.backend' as Fqn]).toHaveProperty('color', 'secondary')
-    expect(model.elements['system.backend' as Fqn]).not.toHaveProperty('description')
-
     expect(model).toMatchSnapshot()
   })
 
-  it('builds model with tags', async () => {
+  it.concurrent('builds model with tags', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -152,17 +147,62 @@ describe('LikeC4ModelBuilder', () => {
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
       system1: {
-        kind: 'component'
+        kind: 'component',
+        tags: null
       },
       system2: {
         kind: 'component',
         tags: ['deprecated']
       }
     })
-    expect(model.elements['system1' as Fqn]).not.toHaveProperty('tags')
   })
 
-  it('builds model and give default name for index view', async () => {
+  it.concurrent('builds model with icon', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+      element system {
+        style {
+          icon https://system1.png
+        }
+      }
+    }
+    model {
+      system system1
+      system system2 {
+        // override icon
+        style {
+          icon https://system2.png
+        }
+      }
+      component component1 {
+        style {
+          icon https://component.png
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toHaveProperty('elements', expect.any(Object))
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'system',
+        icon: 'https://system1.png'
+      },
+      system2: {
+        kind: 'system',
+        icon: 'https://system2.png'
+      },
+      component1: {
+        kind: 'component',
+        icon: 'https://component.png'
+      }
+    })
+  })
+
+  it.concurrent('builds model and give default name for index view', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
@@ -190,54 +230,54 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.rules).to.be.an('array').that.is.not.empty
   })
 
-  it('builds model with extend', async () => {
+  it.concurrent('builds model with extend', async ({ expect }) => {
     const { parse, validateAll, buildModel } = createTestServices()
     await parse(`
-    specification {
-      element component
-      element user
-      tag deprecated
-    }
-    model {
-      user client
-      component system {
-        backend = component
-        component frontend
+      specification {
+        element component
+        element user
+        tag deprecated
       }
-    }
+      model {
+        user client
+        component system {
+          backend = component
+          component frontend
+        }
+      }
     `)
     await parse(`
-    model {
-      extend system.backend {
-        component api
+      model {
+        extend system.backend {
+          component api
+        }
+        system.frontend -> api 'requests'
+        client -> system.frontend {
+          title 'opens'
+        }
       }
-      system.frontend -> api 'requests'
-      client -> system.frontend {
-        title 'opens'
-      }
-    }
-    views {
-      view index {
-        title 'Index'
-        include *
-      }
+      views {
+        view index {
+          title 'Index'
+          include *
+        }
 
-      view v1 of api {
-        include *
-        autoLayout LeftRight
-      }
+        view v1 of api {
+          include *
+          autoLayout LeftRight
+        }
 
-      view of system.frontend {
-        include *
+        view frontend of system.frontend {
+          include *
+        }
       }
-    }
     `)
     const { errors } = await validateAll()
-    expect(errors).toEqual([])
+    expect(errors).to.be.empty
     const model = await buildModel()
     expect(model).toBeDefined()
     expect(model.elements).toMatchObject({
-      client: {
+      'client': {
         kind: 'user'
       },
       'system.backend.api': {
@@ -263,5 +303,269 @@ describe('LikeC4ModelBuilder', () => {
     expect(model.views['index' as ViewID]).not.toHaveProperty('viewOf')
 
     expect(model).toMatchSnapshot()
+  })
+
+  it.concurrent('builds model and views with links', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics, document } = await validate(`
+    specification {
+      element component
+      tag v2
+    }
+    model {
+      component system1 {
+        #v2
+      }
+      component system2 {
+        link ./samefolder.js
+        link ./sub/folder.js#L1-2
+        link ../dir/another.js
+        link /workspace-root
+
+        link https://example1.com
+
+        -> system1
+      }
+    }
+    views {
+      view index {
+        title 'Index'
+        include *
+      }
+      view withLinks {
+        #v2
+        description 'View with links'
+        link https://example1.com
+        link https://example2.com/
+        link ./samefolder.html
+        include *
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      system1: {
+        kind: 'component',
+        tags: ['v2'],
+        links: null
+      },
+      system2: {
+        kind: 'component',
+        tags: null,
+        links: [
+          'file:///test/workspace/src/samefolder.js',
+          'file:///test/workspace/src/sub/folder.js#L1-2',
+          'file:///test/workspace/dir/another.js',
+          'file:///workspace-root',
+          'https://example1.com'
+        ]
+      }
+    })
+    expect(model.views).toMatchObject({
+      index: {
+        id: 'index',
+        title: 'Index',
+        description: null,
+        tags: null,
+        links: null,
+        docUri: document.uri.toString()
+      },
+      withLinks: {
+        id: 'withLinks',
+        title: null,
+        description: 'View with links',
+        tags: ['v2'],
+        links: [
+          'https://example1.com',
+          'https://example2.com/',
+          'file:///test/workspace/src/samefolder.html'
+        ],
+        docUri: 'file:///test/workspace/src/1.c4'
+      }
+    })
+  })
+
+  it.concurrent('builds model with relative links inside virtual workspace', async ({ expect }) => {
+    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    // vscode-vfs://host/virtual/src/index.c4
+    await parse(
+      `
+      specification {
+        element component
+      }
+      model {
+        component sys1 {
+          link ./samefolder.js
+          link ./sub/folder.js#L1-2
+          link ../dir/another.js
+          link /workspace-root
+        }
+      }
+      views {
+        view index {
+          link ./samefolder.c4
+          include *
+        }
+      }
+    `,
+      'index.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/subdir/doc2.c4
+    await parse(
+      `
+      model {
+        component sys2 {
+          link ./samefolder.c4
+          link ../sys2.c4
+          link /workspace-root
+        }
+      }
+      views {
+        view sys2 of sys2 {
+          link ./doc2.html
+          include *
+        }
+      }
+    `,
+      'subdir/doc2.c4'
+    )
+
+    const { errors } = await validateAll()
+
+    expect(errors).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      sys1: {
+        links: [
+          'vscode-vfs://host/virtual/src/samefolder.js',
+          'vscode-vfs://host/virtual/src/sub/folder.js#L1-2',
+          'vscode-vfs://host/virtual/dir/another.js',
+          'vscode-vfs://host/workspace-root'
+        ]
+      },
+      sys2: {
+        links: [
+          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys2.c4',
+          'vscode-vfs://host/workspace-root'
+        ]
+      }
+    })
+    const views = model.views as Record<string, any>
+    expect(views['index']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      relativePath: ''
+    })
+    expect(views['sys2']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      relativePath: 'subdir'
+    })
+  })
+
+  it.concurrent('build model and views have correct relative paths', async ({ expect }) => {
+    const { parse, validateAll, buildModel } = createTestServices('vscode-vfs://host/virtual')
+    // vscode-vfs://host/virtual/src/index.c4
+    await parse(
+      `
+      specification {
+        element component
+      }
+      model {
+        component sys1 {
+          link ./samefolder.c4
+        }
+      }
+      views {
+        view index {
+          link ./samefolder.c4
+          include *
+        }
+      }
+    `,
+      'index.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/subdir/doc2.c4
+    await parse(
+      `
+      model {
+        component sys2 {
+          link ./samefolder.c4
+          link ../sys2.c4
+        }
+      }
+      views {
+        view sys2 of sys2 {
+          link ./doc2.html
+          include *
+        }
+      }
+    `,
+      'subdir/doc2.c4'
+    )
+
+    // vscode-vfs://host/virtual/src/a/b/c/doc3.c4
+    await parse(
+      `
+      model {
+        component sys3 {
+          link ./samefolder.c4
+          link ../../../sys3.c4
+        }
+      }
+      views {
+        view sys3 of sys3 {
+          link ./sys3/index.html
+          include *
+        }
+      }
+    `,
+      'a/b/c/doc3.c4'
+    )
+
+    const { errors } = await validateAll()
+
+    expect(errors).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(model.elements).toMatchObject({
+      sys1: {
+        links: ['vscode-vfs://host/virtual/src/samefolder.c4']
+      },
+      sys2: {
+        links: [
+          'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys2.c4'
+        ]
+      },
+      sys3: {
+        links: [
+          'vscode-vfs://host/virtual/src/a/b/c/samefolder.c4',
+          'vscode-vfs://host/virtual/src/sys3.c4'
+        ]
+      }
+    })
+    const views = model.views as Record<string, any>
+    expect(views['index']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/samefolder.c4'],
+      docUri: 'vscode-vfs://host/virtual/src/index.c4',
+      relativePath: ''
+    })
+    expect(views['sys2']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/subdir/doc2.html'],
+      docUri: 'vscode-vfs://host/virtual/src/subdir/doc2.c4',
+      relativePath: 'subdir'
+    })
+    expect(views['sys3']).toMatchObject({
+      links: ['vscode-vfs://host/virtual/src/a/b/c/sys3/index.html'],
+      docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
+      relativePath: 'a/b/c'
+    })
   })
 })

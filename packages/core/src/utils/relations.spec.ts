@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { Fqn, Relation, RelationID } from '../types'
-import { isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } from './relations'
+import { compareRelations, Relations } from './relations'
+
+const { isAnyBetween, isAnyInOut, isBetween, isIncoming, isInside, isOutgoing } = Relations
 
 const relations = [
   {
@@ -48,7 +50,6 @@ const relations = [
 ] satisfies Relation[]
 
 describe('relation predicates', () => {
-
   const expectRelations = (predicate: (relation: Relation) => boolean) =>
     expect(relations.filter(predicate).map(r => r.id))
 
@@ -61,6 +62,12 @@ describe('relation predicates', () => {
     expectRelations(isBetween(frontend, backend)).toEqual([
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend.adminPanel:cloud.backend.graphql'
+    ])
+  })
+
+  it('isBetween: cloud.frontend.dashboard -> cloud.backend', () => {
+    expectRelations(isBetween('cloud.frontend.dashboard' as Fqn, backend)).toEqual([
+      'cloud.frontend.dashboard:cloud.backend.graphql'
     ])
   })
 
@@ -104,14 +111,19 @@ describe('relation predicates', () => {
   })
 
   it('isOutgoing: cloud', () => {
-    expectRelations(isOutgoing(cloud)).toEqual([
-      'cloud.backend.storage:amazon.s3',
+    expectRelations(isOutgoing(cloud)).toEqual(['cloud.backend.storage:amazon.s3'])
+  })
+
+  it('isOutgoing: cloud.frontend', () => {
+    expectRelations(isOutgoing(frontend)).toEqual([
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.adminPanel:cloud.backend.graphql'
     ])
   })
 
   it('isOutgoing: cloud.backend.storage', () => {
     expectRelations(isOutgoing('cloud.backend.storage' as Fqn)).toEqual([
-      'cloud.backend.storage:amazon.s3',
+      'cloud.backend.storage:amazon.s3'
     ])
   })
 
@@ -123,8 +135,16 @@ describe('relation predicates', () => {
     ])
   })
 
+  it('isInside: cloud.frontend', () => {
+    expectRelations(isInside(frontend)).toEqual([])
+  })
+
   it('isInside: cloud.backend', () => {
     expectRelations(isInside(backend)).toEqual(['cloud.backend.graphql:cloud.backend.storage'])
+  })
+
+  it('isAnyInOut: customer', () => {
+    expectRelations(isAnyInOut(customer)).toEqual(['customer:cloud.frontend.dashboard'])
   })
 
   it('isAnyInOut: cloud', () => {
@@ -140,6 +160,37 @@ describe('relation predicates', () => {
     expectRelations(isAnyBetween(cloud, 'amazon' as Fqn)).toEqual([
       'cloud.backend.storage:amazon.s3',
       'amazon.api:cloud.backend.graphql'
+    ])
+  })
+  it.todo('hasRelation')
+})
+
+describe('compareRelations', () => {
+  it('should sort relations by source and target', () => {
+    const sorted = [...relations].sort(compareRelations).map(r => r.id)
+    expect(sorted).toEqual([
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'amazon.api:cloud.backend.graphql',
+      'cloud.backend.storage:amazon.s3',
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.adminPanel:cloud.backend.graphql'
+    ])
+  })
+})
+
+describe('compareRelations', () => {
+  it('should sort relations by source and target', () => {
+    const sorted = [...relations].sort(compareRelations).map(r => r.id)
+    expect(sorted).toEqual([
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'amazon.api:cloud.backend.graphql',
+      'cloud.backend.storage:amazon.s3',
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.adminPanel:cloud.backend.graphql'
     ])
   })
 })

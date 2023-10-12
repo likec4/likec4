@@ -1,14 +1,26 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": "."
   },
-  "include": ["./src/**/*"],
+  "include": ["src"],
+  "exclude": ["src/export/puppeteer-page/**"],
   "references": [
-    { "path": "../language-server" },
-    { "path": "../generators" },
-    { "path": "../layouts" },
-    { "path": "../core" }
-  ],
-  "exclude": ["src/export/puppeteer-page/**"]
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../layouts"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../language-server"
+    }
+  ]
 }

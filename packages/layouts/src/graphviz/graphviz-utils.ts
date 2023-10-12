@@ -1,9 +1,12 @@
-
+import { nonexhaustive } from '@likec4/core/errors'
 
 export const pointToPx = (pt: number) => Math.ceil((pt * 96) / 72)
 export const inchToPx = (inch: number) => Math.ceil(inch * 96)
-export const pxToInch = (px: number) => Math.round((px / 96) * 10000) / 10000
-export const pxToPoints = (px: number) => px * 0.75
+export const pxToInch = (px: number) => Math.ceil((px / 96) * 10000) / 10000
+export const pxToPoints = (px: number) => Math.round(px * 0.75 * 1000) / 1000
+
+export const IconSize = '40px'
+export const IconSizePoints = pxToPoints(40).toString()
 
 export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
   switch (align) {
@@ -14,6 +17,6 @@ export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
     case 'c':
       return 'center'
   }
-  // @ts-expect-error - Unexhaustive match
-  throw new Error(`Invalid align: ${align}`)
+  // @ts-expect-error - Non-exhaustive switch statement
+  nonexhaustive(`Invalid align: ${align}`)
 }

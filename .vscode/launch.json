@@ -20,16 +20,21 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**"
-      ],
+      "runtimeExecutable": "${execPath}",
       "args": [
-        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/cloud-system/likec4",
+        "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
+      "sourceMaps": true,
       "autoAttachChildProcesses": true,
-      "preLaunchTask": "npm: turbo-build - packages/vscode",
+      "outFiles": [
+        "${workspaceFolder}/packages/**/*",
+      ],
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "build:turbo",
+        "path": "packages/vscode"
+      }
     },
     {
       "name": "Run Web Extension in VS Code",
@@ -37,21 +42,20 @@
       "debugWebWorkerHost": true,
       "request": "launch",
       "args": [
-        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
-        "${workspaceFolder}/examples/cloud-system/likec4",
+        "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
       "sourceMaps": true,
+      "autoAttachChildProcesses": true,
       "outFiles": [
-        "${workspaceFolder}/packages/*/dist/**/*.js"
+        "${workspaceFolder}/packages/**/*",
       ],
-      "skipFiles": [
-        "${workspaceFolder}/node_modules/**",
-        "**/vs/workbench/**",
-        "<node_internals>/**"
-      ],
-      "preLaunchTask": "npm: turbo-build - packages/vscode"
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "build:turbo",
+        "path": "packages/vscode"
+      }
     }
   ]
 }

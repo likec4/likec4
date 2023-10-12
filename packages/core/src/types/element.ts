@@ -1,29 +1,15 @@
+import type { IconUrl, NonEmptyArray } from './_common'
 import type { Opaque } from './opaque'
+import type { ThemeColor } from './theme'
 
 // Full-qualified-name
 export type Fqn = Opaque<string, 'Fqn'>
 
-export function Fqn(name: string, parent?: Fqn | null) {
+export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
 }
 
 export type ElementKind = Opaque<string, 'ElementKind'>
-
-/**
- * TailwindCSS based color palette
- */
-export type ThemeColor =
-  | 'amber'
-  | 'blue'
-  | 'gray'
-  | 'slate'
-  | 'green'
-  | 'indigo'
-  | 'muted'
-  | 'primary'
-  | 'red'
-  | 'secondary'
-  | 'sky'
 export type ElementShape =
   | 'rectangle'
   | 'person'
@@ -33,8 +19,8 @@ export type ElementShape =
   | 'storage'
   | 'queue'
 
-export const DefaultThemeColor: ThemeColor = 'primary'
-export const DefaultElementShape: ElementShape = 'rectangle'
+export const DefaultThemeColor = 'primary' satisfies ThemeColor
+export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
 export interface ElementStyle {
   shape?: ElementShape
@@ -51,9 +37,11 @@ export interface Element {
   readonly id: Fqn
   readonly kind: ElementKind
   readonly title: string
-  readonly description?: string
-  readonly technology?: string
-  readonly tags?: Tag[]
+  readonly description: string | null
+  readonly technology: string | null
+  readonly tags: NonEmptyArray<Tag> | null
+  readonly links: NonEmptyArray<string> | null
+  readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: ThemeColor
 }

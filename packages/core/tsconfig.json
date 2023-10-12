@@ -1,13 +1,17 @@
 {
   "extends": "../tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "incremental": true,
-    "composite": true,
-    "sourceMap": true,
+    "module": "esnext",
+    "target": "es2022",
+
+    "declaration": true,
     "declarationMap": true,
-    "skipLibCheck": true
+
+    "composite": true,
+
+    "outDir": "dist/esm",
+    "rootDir": "src",
+    "baseUrl": "."
   },
-  "include": ["./src/"]
+  "include": ["src"]
 }

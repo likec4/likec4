@@ -1,463 +1,303 @@
-import { ModelIndex, assignNavigateTo, computeView, invariant } from '@likec4/core'
-import type * as c4 from '@likec4/core/types'
-import { DefaultElementShape, DefaultThemeColor } from '@likec4/core/types'
-import { compareByFqnHierarchically, parentFqn } from '@likec4/core/utils'
-import type { AstNode, LangiumDocuments } from 'langium'
-import { DocumentState, getDocument } from 'langium'
-import objectHash from 'object-hash'
-import { clone } from 'rambdax'
+import {
+  ModelIndex,
+  assignNavigateTo,
+  compareByFqnHierarchically,
+  computeView,
+  invariant,
+  isStrictElementView,
+  parentFqn,
+  resolveRulesExtendedViews,
+  type StrictElementView,
+  type ViewID,
+  type c4,
+  resolveRelativePaths
+} from '@likec4/core'
+import type { URI, WorkspaceCache } from 'langium'
+import {
+  DocumentState,
+  interruptAndCheck,
+  type LangiumDocument,
+  type LangiumDocuments
+} from 'langium'
 import * as R from 'remeda'
-
-import stripIndent from 'strip-indent'
-
+import { Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification
+  ParsedAstSpecification,
+  ParsedLikeC4LangiumDocument
 } from '../ast'
-import {
-  ElementViewOps,
-  ast,
-  cleanParsedModel,
-  isLikeC4LangiumDocument,
-  isValidLikeC4LangiumDocument,
-  resolveRelationPoints,
-  streamModel,
-  toAutoLayout,
-  toElementStyle,
-  type LikeC4LangiumDocument
-} from '../ast'
-import { elementRef, strictElementRefFqn } from '../elementRef'
-import { logger } from '../logger'
+import { isValidLikeC4LangiumDocument } from '../ast'
+import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { Rpc } from '../protocol'
-import { failExpectedNever } from '../utils'
-import type { FqnIndex } from './fqn-index'
-import type { CancellationToken } from 'vscode-languageserver-protocol'
+import { LikeC4WorkspaceManager } from '../shared'
+import { printDocs, queueMicrotask } from '../utils'
+
+function isRelativeLink(link: string) {
+  return link.startsWith('.') || link.startsWith('/')
+}
+
+function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
+  const c4Specification: ParsedAstSpecification = {
+    kinds: {}
+  }
+  R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
+    Object.assign(c4Specification.kinds, spec.kinds)
+  )
+
+  const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
+    const base = new URL(doc.uri.toString())
+    return links.map(l =>
+      isRelativeLink(l) ? new URL(l, base).toString() : l
+    ) as c4.NonEmptyArray<string>
+  }
+
+  const toModelElement = (doc: LangiumDocument) => {
+    return ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
+      try {
+        const kind = c4Specification.kinds[parsed.kind]
+        if (kind) {
+          return {
+            ...kind,
+            description: null,
+            technology: null,
+            tags: tags ?? null,
+            links: links ? resolveLinks(doc, links) : null,
+            ...parsed
+          }
+        }
+      } catch (e) {
+        logWarnError(e)
+      }
+      return null
+    }
+  }
+
+  const elements = R.pipe(
+    R.flatMap(docs, d => d.c4Elements.map(toModelElement(d))),
+    R.compact,
+    R.sort(compareByFqnHierarchically),
+    R.reduce(
+      (acc, el) => {
+        const parent = parentFqn(el.id)
+        if (parent && R.isNil(acc[parent])) {
+          logWarnError(`No parent found for ${el.id}`)
+          return acc
+        }
+        if (el.id in acc) {
+          // should not happen, as validated
+          logWarnError(`Duplicate element id: ${el.id}`)
+          return acc
+        }
+        acc[el.id] = el
+        return acc
+      },
+      {} as c4.LikeC4Model['elements']
+    )
+  )
+
+  const toModelRelation = ({
+    astPath,
+    source,
+    target,
+    ...model
+  }: ParsedAstRelation): c4.Relation | null => {
+    if (source in elements && target in elements) {
+      return {
+        source,
+        target,
+        ...model
+      }
+    }
+    return null
+  }
+
+  const relations = R.pipe(
+    R.flatMap(docs, d => d.c4Relations),
+    R.map(toModelRelation),
+    R.compact,
+    R.mapToObj(r => [r.id, r])
+  )
+
+  const toElementView = (doc: LangiumDocument) => {
+    const docUri = doc.uri.toString()
+    return (view: ParsedAstElementView): c4.ElementView => {
+      // eslint-disable-next-line prefer-const
+      let { astPath, rules, title, description, tags, links, ...model } = view
+      if (!title && 'viewOf' in view) {
+        title = elements[view.viewOf]?.title
+      }
+      if (!title && view.id === 'index') {
+        title = 'Landscape view'
+      }
+      return {
+        ...model,
+        title: title ?? null,
+        description: description ?? null,
+        tags: tags ?? null,
+        links: links ? resolveLinks(doc, links) : null,
+        docUri,
+        rules
+      }
+    }
+  }
+
+  const views = R.pipe(
+    R.flatMap(docs, d => R.map(d.c4Views, toElementView(d))),
+    resolveRelativePaths,
+    R.mapToObj(v => [v.id, v]),
+    resolveRulesExtendedViews
+  )
+  // add index view if not present
+  if (!('index' in views)) {
+    views['index' as ViewID] = {
+      id: 'index' as ViewID,
+      title: 'Landscape',
+      description: null,
+      tags: null,
+      links: null,
+      rules: [
+        {
+          isInclude: true,
+          exprs: [
+            {
+              wildcard: true
+            }
+          ]
+        }
+      ]
+    }
+  }
+
+  return {
+    elements,
+    relations,
+    views
+  }
+}
+
+const RAW_MODEL_CACHE = 'LikeC4RawModel'
+const MODEL_CACHE = 'LikeC4Model'
+
+type ModelParsedListener = (docs: URI[]) => void
 
 export class LikeC4ModelBuilder {
-  private fqnIndex: FqnIndex
   private langiumDocuments: LangiumDocuments
+  private workspaceManager: LikeC4WorkspaceManager
+  private listeners: ModelParsedListener[] = []
 
-  private readonly cachedModel: {
-    last?: ReturnType<LikeC4ModelBuilder['buildModel']>
-  } = {}
   constructor(private services: LikeC4Services) {
-    this.fqnIndex = services.likec4.FqnIndex
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
-
+    invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
+    this.workspaceManager = services.shared.workspace.WorkspaceManager
+    const parser = services.likec4.ModelParser
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      (docs, cancelToken) => {
-        let countOfChangedDocs = 0
-        for (const doc of docs) {
-          if (!isLikeC4LangiumDocument(doc)) {
-            continue
-          }
-          countOfChangedDocs++
-          try {
-            this.parseDocument(doc)
-          } catch (e) {
-            logger.error(`Error parsing document ${doc.uri.toString()}`)
-            logger.error(e)
-          }
-        }
-        if (countOfChangedDocs > 0) {
-          this.cleanCache()
-          this.notifyClient(cancelToken)
-        }
+      async (docs, cancelToken) => {
+        await queueMicrotask(() => parser.parse(docs))
+        // Only allow interrupting the execution after all documents have been parsed
+        await interruptAndCheck(cancelToken)
+        this.notifyListeners(docs.map(d => d.uri))
       }
     )
   }
 
-  private cleanCache() {
-    delete this.cachedModel.last
+  public get workspaceUri() {
+    return this.workspaceManager.workspace()?.uri ?? null
+  }
+
+  public buildRawModel(): c4.LikeC4RawModel | null {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
+    return cache.get(RAW_MODEL_CACHE, () => {
+      try {
+        const docs = this.documents()
+        if (docs.length === 0) {
+          logger.debug('[ModelBuilder] No documents to build model from')
+          return null
+        }
+        logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
+        return buildModel(docs)
+      } catch (e) {
+        logError(e)
+        return null
+      }
+    })
+  }
+
+  public buildModel(): c4.LikeC4Model | null {
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    return cache.get(MODEL_CACHE, () => {
+      const model = this.buildRawModel()
+      if (!model) {
+        return null
+      }
+      const index = ModelIndex.from(model)
+
+      const views = R.pipe(
+        R.values(model.views),
+        R.map(view => computeView(view, index).view),
+        R.compact
+      )
+      assignNavigateTo(views)
+      return {
+        elements: model.elements,
+        relations: model.relations,
+        views: R.mapToObj(views, v => [v.id, v])
+      }
+    })
+  }
+
+  public computeView(viewId: ViewID): c4.ComputedView | null {
+    const model = this.buildRawModel()
+    const view = model?.views[viewId]
+    if (!view) {
+      logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+      return null
+    }
+    const result = computeView(view, ModelIndex.from(model))
+    if (!result.isSuccess) {
+      logError(result.error)
+      return null
+    }
+
+    const allElementViews = R.values(model.views).filter(
+      (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
+    )
+
+    const computedView = result.view
+    computedView.nodes.forEach(node => {
+      // find first element view that is not the current one
+      const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+      if (navigateTo) {
+        node.navigateTo = navigateTo.id
+      }
+    })
+
+    return computedView
+  }
+
+  public onModelParsed(callback: ModelParsedListener): Disposable {
+    this.listeners.push(callback)
+    return Disposable.create(() => {
+      const index = this.listeners.indexOf(callback)
+      if (index >= 0) {
+        this.listeners.splice(index, 1)
+      }
+    })
   }
 
   private documents() {
     return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
   }
 
-  public buildModel(): c4.LikeC4Model | null {
-    if ('last' in this.cachedModel) {
-      logger.debug('returning cached model')
-      return this.cachedModel.last
-    }
-    return (this.cachedModel.last = this._buildModel())
-  }
-
-  private _buildModel(): c4.LikeC4Model | null {
-    logger.debug('_buildModel')
-    const docs = this.documents()
-    if (docs.length === 0) {
-      logger.debug('No documents to build model from')
-      return null
-    }
-    // TODO:
-    try {
-      const c4Specification: ParsedAstSpecification = {
-        kinds: {}
-      }
-      R.forEach(R.map(docs, R.prop('c4Specification')), spec =>
-        Object.assign(c4Specification.kinds, spec.kinds)
-      )
-
-      const toModelElement = (el: ParsedAstElement): c4.Element | null => {
-        const kind = c4Specification.kinds[el.kind]
-        if (kind) {
-          const { astPath, ...model } = el
-          return {
-            ...(kind.shape !== DefaultElementShape ? { shape: kind.shape } : {}),
-            ...(kind.color !== DefaultThemeColor ? { color: kind.color } : {}),
-            ...model
-          }
-        }
-        return null
-      }
-
-      const elements = R.pipe(
-        R.flatMap(docs, d => d.c4Elements),
-        R.map(toModelElement),
-        R.compact,
-        R.sort(compareByFqnHierarchically),
-        R.reduce(
-          (acc, el) => {
-            const parent = parentFqn(el.id)
-            if (!parent || parent in acc) {
-              if (el.id in acc) {
-                logger.warn(`Duplicate element id: ${el.id}`)
-                return acc
-              }
-              acc[el.id] = el
-            }
-            return acc
-          },
-          {} as c4.LikeC4Model['elements']
-        )
-      )
-
-      const toModelRelation = ({
-        astPath,
-        source,
-        target,
-        ...model
-      }: ParsedAstRelation): c4.Relation | null => {
-        if (source in elements && target in elements) {
-          return {
-            source,
-            target,
-            ...model
-          }
-        }
-        return null
-      }
-
-      const relations = R.pipe(
-        R.flatMap(docs, d => d.c4Relations),
-        R.map(toModelRelation),
-        R.compact,
-        R.mapToObj(r => [r.id, r])
-      )
-
-      const modelIndex = ModelIndex.from({ elements, relations })
-
-      const toModelView = (view: ParsedAstElementView): c4.ComputedView | null => {
-        // eslint-disable-next-line prefer-const
-        let { astPath, rules, title, ...model } = view
-        if (!title && view.viewOf) {
-          title = elements[view.viewOf]?.title
-        }
-        if (!title && view.id === 'index') {
-          title = 'Landscape view'
-        }
-        return computeView(
-          {
-            ...model,
-            ...(title && { title }),
-            rules: clone(rules)
-          },
-          modelIndex
-        )
-      }
-
-      const views = R.pipe(
-        R.flatMap(docs, d => d.c4Views),
-        R.map(toModelView),
-        R.compact
-      )
-
-      assignNavigateTo(views)
-
-      return {
-        elements,
-        relations,
-        views: R.mapToObj(views, v => [v.id, v])
-      }
-    } catch (e) {
-      logger.error(e)
-      return null
-    }
-  }
-
-  /**
-   * @returns if the document was changed
-   */
-  protected parseDocument(doc: LikeC4LangiumDocument) {
-    const { elements, relations, views, specification } = cleanParsedModel(doc)
-
-    const specs = doc.parseResult.value.specification?.specs.filter(ast.isSpecificationElementKind)
-    if (specs) {
-      for (const { kind, style } of specs) {
-        try {
-          const styleProps = toElementStyle(style?.props)
-          specification.kinds[kind.name as c4.ElementKind] = {
-            color: styleProps.color ?? DefaultThemeColor,
-            shape: styleProps.shape ?? DefaultElementShape
-          }
-        } catch (e) {
-          logger.warn(e)
-        }
+  private notifyListeners(docs: URI[]) {
+    for (const listener of this.listeners) {
+      try {
+        listener(docs)
+      } catch (e) {
+        logError(e)
       }
     }
-
-    for (const el of streamModel(doc)) {
-      if (ast.isElement(el)) {
-        try {
-          elements.push(this.parseElement(el))
-        } catch (e) {
-          logger.warn(e)
-        }
-        continue
-      }
-      if (ast.isRelation(el)) {
-        try {
-          relations.push(this.parseRelation(el))
-        } catch (e) {
-          logger.warn(e)
-        }
-        continue
-      }
-      failExpectedNever(el)
-    }
-    const docviews = doc.parseResult.value.views?.views
-    if (docviews) {
-      for (const view of docviews) {
-        try {
-          const v = this.parseElementView(view)
-          ElementViewOps.writeId(view, v.id)
-          views.push(v)
-        } catch (e) {
-          logger.warn(e)
-        }
-      }
-    }
-    // const prevHash = doc.c4hash ?? ''
-    // doc.c4hash = c4hash(doc)
-    // return prevHash !== doc.c4hash
-  }
-
-  private parseElement(astNode: ast.Element): ParsedAstElement {
-    const id = this.resolveFqn(astNode)
-    invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
-    const kind = astNode.kind.ref.name as c4.ElementKind
-    const tags = (astNode.body && this.convertTags(astNode.body)) ?? []
-    const styleProps = astNode.body?.props.find(ast.isElementStyleProperties)?.props
-    const { color, shape } = toElementStyle(styleProps)
-    const astPath = this.getAstNodePath(astNode)
-
-    let [title, description, technology] = astNode.props
-
-    const bodyProps =
-      astNode.body?.props.filter((p): p is ast.ElementStringProperty =>
-        ast.isElementStringProperty(p)
-      ) ?? []
-
-    title = title ?? bodyProps.find(p => p.key === 'title')?.value
-    description = description ?? bodyProps.find(p => p.key === 'description')?.value
-    technology = technology ?? bodyProps.find(p => p.key === 'technology')?.value
-
-    return {
-      id,
-      kind,
-      astPath,
-      title: title ?? astNode.name,
-      ...(technology && { technology }),
-      ...(description && { description: stripIndent(description).trim() }),
-      ...(tags.length > 0 ? { tags } : {}),
-      ...(shape && shape !== DefaultElementShape ? { shape } : {}),
-      ...(color && color !== DefaultThemeColor ? { color } : {})
-    }
-  }
-
-  private parseRelation(astNode: ast.Relation): ParsedAstRelation {
-    const coupling = resolveRelationPoints(astNode)
-    const target = this.resolveFqn(coupling.target)
-    const source = this.resolveFqn(coupling.source)
-    const hashdata = {
-      astPath: this.getAstNodePath(astNode),
-      source,
-      target
-    }
-    const id = objectHash(hashdata) as c4.RelationID
-    const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
-    return {
-      id,
-      ...hashdata,
-      title
-    }
-  }
-
-  private parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
-    if (ast.isWildcardExpression(astNode)) {
-      return {
-        wildcard: true
-      }
-    }
-    if (ast.isElementKindExpression(astNode)) {
-      invariant(
-        astNode.kind.ref,
-        'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text
-      )
-      return {
-        elementKind: astNode.kind.ref.name as c4.ElementKind,
-        isEqual: astNode.isEqual
-      }
-    }
-    if (ast.isElementTagExpression(astNode)) {
-      invariant(
-        astNode.tag.ref,
-        'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text
-      )
-      return {
-        elementTag: astNode.tag.ref.name as c4.Tag,
-        isEqual: astNode.isEqual
-      }
-    }
-    if (ast.isElementRefExpression(astNode)) {
-      const element = elementRef(astNode.id)
-      invariant(element, 'Element not found ' + astNode.id.$cstNode?.text)
-      return {
-        element: this.resolveFqn(element),
-        isDescedants: astNode.isDescedants
-      }
-    }
-    failExpectedNever(astNode)
-  }
-
-  private parseExpression(astNode: ast.Expression): c4.Expression {
-    if (ast.isElementExpression(astNode)) {
-      return this.parseElementExpression(astNode)
-    }
-    if (ast.isIncomingExpression(astNode)) {
-      return {
-        incoming: this.parseElementExpression(astNode.target)
-      }
-    }
-    if (ast.isOutgoingExpression(astNode)) {
-      return {
-        outgoing: this.parseElementExpression(astNode.source)
-      }
-    }
-    if (ast.isInOutExpression(astNode)) {
-      return {
-        inout: this.parseElementExpression(astNode.inout.target)
-      }
-    }
-    if (ast.isRelationExpression(astNode)) {
-      return {
-        source: this.parseElementExpression(astNode.source),
-        target: this.parseElementExpression(astNode.target)
-      }
-    }
-    failExpectedNever(astNode)
-  }
-
-  private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
-    if (ast.isViewRuleExpression(astRule)) {
-      const exprs = astRule.expressions.map(n => this.parseExpression(n))
-      return {
-        isInclude: astRule.isInclude,
-        exprs
-      }
-    }
-    if (ast.isViewRuleStyle(astRule)) {
-      const styleProps = toElementStyle(astRule.props)
-      return {
-        targets: astRule.targets.map(n => this.parseElementExpression(n)),
-        style: {
-          ...styleProps
-        }
-      }
-    }
-    if (ast.isViewRuleAutoLayout(astRule)) {
-      return {
-        autoLayout: toAutoLayout(astRule.direction)
-      }
-    }
-    failExpectedNever(astRule)
-  }
-
-  private parseElementView(astNode: ast.ElementView): ParsedAstElementView {
-    const viewOfEl = astNode.viewOf && elementRef(astNode.viewOf)
-    const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-    const astPath = this.getAstNodePath(astNode)
-    let id = astNode.name as c4.ViewID | undefined
-    if (!id) {
-      const doc = getDocument(astNode).uri.toString()
-      id = objectHash({
-        doc,
-        astPath,
-        viewOf: viewOf ?? null
-      }) as c4.ViewID
-    }
-
-    const title = astNode.properties.find(p => p.key === 'title')?.value
-    const description = astNode.properties.find(p => p.key === 'description')?.value
-
-    return {
-      id,
-      astPath,
-      ...(viewOf && { viewOf }),
-      ...(title && { title }),
-      ...(description && { description }),
-      rules: astNode.rules.map(n => this.parseViewRule(n))
-    }
-  }
-
-  protected resolveFqn(node: ast.Element | ast.ExtendElement) {
-    if (ast.isExtendElement(node)) {
-      return strictElementRefFqn(node.element)
-    }
-    const fqn = this.fqnIndex.get(node)
-    invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)
-    return fqn
-  }
-
-  private getAstNodePath(node: AstNode) {
-    return this.services.workspace.AstNodeLocator.getAstNodePath(node)
-  }
-
-  private convertTags(el: { tags?: ast.Tags }) {
-    return el.tags?.value.map(tagRef => tagRef.ref?.name as c4.Tag) ?? []
-  }
-
-  private scheduledCb: NodeJS.Timeout | null = null
-  private notifyClient(cancelToken: CancellationToken) {
-    const connection = this.services.shared.lsp.Connection
-    if (!connection) {
-      return
-    }
-    if (this.scheduledCb) {
-      logger.debug('debounce scheduled onDidChangeModel')
-      clearTimeout(this.scheduledCb)
-    }
-    this.scheduledCb = setTimeout(() => {
-      logger.debug('send onDidChangeModel')
-      this.scheduledCb = null
-      if (!cancelToken.isCancellationRequested) {
-        void connection.sendNotification(Rpc.onDidChangeModel, '')
-      }
-    }, 300)
   }
 }

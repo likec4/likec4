@@ -1,21 +1,22 @@
 import { Bleed, Cards, Card, Callout } from 'nextra-theme-docs'
+import { Info, Warning } from '$/components'
 
 # Views
 
-Views are the architecture diagrams, projections of the model from different perspectives, with different level of details, like:
+Views are the architecture diagrams, projections of the model from different perspectives, with different levels of details, like:
 
 - System / service overviews
 - Components interactions in specific use case
-- Data flows
+- Data flows and sequence diagrams
 
-## View Definition
+## View definition
 
-View may be named (must be unique) or unnamed (can't be referenced).
+Views may be named (must be unique) or unnamed (can't be referenced):
 
 ```likec4 filename="views.c4"
 views {
   // with name
-  view index {  
+  view index {
   }
   // unnamed
   view {
@@ -23,19 +24,36 @@ views {
 }
 ```
 
-View may have a title 
+<Info>
+`index` is a special view, and is rendered by default if no view name is specified.  
+If not defined, it will be generated for top-level elements
+</Info>
+
+Views may have a title, description, tags and links (same as [model element](./model#element)):
 
 ```likec4 filename="views.c4"
 views {
 
-  view {
-    title 'Titled View'
+  view epic12 {
+    #next, #epic-12
+    title "Cloud System - Changes in Epic-12"
+    description "
+      This diagram shows the high-level
+      components and interactions.
+    "
+
+    link https://my.jira/epic/12
+
+    include *
   }
 
 }
 ```
 
-View may have a root element (`view of ..`) and inherit its scope:
+### View Of ...
+
+View may be defined for some element (`view of ..`).  
+Then it inherits the scope of this element:
 
 ```likec4 filename="views.c4"
 views {
@@ -55,9 +73,9 @@ views {
 
 ## View predicates
 
-View predicates define what elements/relations should be included/excluded.
+View predicates define what elements/relationships to include/exclude.
 
-```likec4 
+```likec4
 // include element
 include cloud.backend
 
@@ -67,13 +85,17 @@ exclude cloud.backend
 // include children of cloud.backend
 include cloud.backend.*
 
-// all incoming relations
+// all incoming relationships
+// if any found - includes cloud.backend and source elements
 include -> cloud.backend
+include * -> cloud.backend
 
-// all outgoing relations from cloud children
+// all outgoing relationships
+// if any found - includes cloud children and target elements
 include cloud.* ->
 
-// all relations from customer to cloud children
+// all relationships from customer to cloud children
+// if any found - includes customer and targeted children
 include customer -> cloud.*
 
 // elements by kind
@@ -82,55 +104,54 @@ include element.kind != system
 
 // elements by tag
 include element.tag = #next
+include element.tag != #V2
 ```
 
-<Callout type="info" emoji="ℹ️">
-  **Limitation**  
-  Relations with container elements are not rendered, i.e. only among leaf elements.  
-  Working on it...
-</Callout>
+<Info>
+**Limitation**  
+Relations with container elements are not rendered yet. Working on it...
+</Info>
 
-Wildcard may be used to reference "everything", but depends on the context.
+Wildcard may be used to reference "everything", but it depends on the context.
 
-```likec4 
+```likec4
 view {
-  // include all top level elements and their relations
+  // include all top level elements and their relationships
   include *
 }
 
 view of cloud.backend {
   // include 'cloud.backend', its children and all the incomings/outgoings
-  // (relations with the rest of the architecture)
+  // (relationships with the rest of the architecture)
   include *
 }
 ```
 
 Predicates are applied in same the order as defined in view.  
-`exclude` applies only to elements/relations included before.
+`exclude` applies only to elements/relationships included before.
 
-
-```likec4 
-view {
+```likec4
+view of bigbank {
   // rules may be merged
   include
     customer,
     bigbank,
     customer -> bigbank.*
 
-  // include all children of bigbank
-  include bigbank.*  
-  // but exclude webApplication
-  exclude bigbank.webApplication
+  // exclude all children of bigbank
+  exclude bigbank.*
+
+  // but include webApplication
+  include bigbank.webApplication
 }
 ```
-
 
 ## Style rules
 
 Style predicates define how elements are rendered.  
 Example from [BigBank](/examples/bigbank/components/):
 
-```likec4 
+```likec4
 view apiApp of internetBankingSystem.apiApplication {
 
   include *
@@ -145,14 +166,63 @@ view apiApp of internetBankingSystem.apiApplication {
     color secondary
   }
 
-  // apply only to apiApplication and its descdendants
+  // apply only to apiApplication and its descendants
   style apiApplication, apiApplication.* {
     color primary
   }
 
-  // apply only to tagged elements
+  // apply only to the tagged elements
   style element.tag = #deprecated {
     color muted
   }
 }
-``` 
+```
+
+## Extend views
+
+It is possible to extend views, to avoid duplication or, for example, create "slides" for a presentation:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+  
+  view view2 extends view1 {  
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+  
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+    
+    include * -> some.backend
+  }
+
+}
+```
+
+The predicates and style rules of extended views are merged with the ones from ancestors.
+
+Extended views also inherit the scope:
+
+```likec4 filename="views.c4"
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {  
+    include api // ✅ This is OK, references 'cloud.backend.api'  
+  }
+
+}
+```

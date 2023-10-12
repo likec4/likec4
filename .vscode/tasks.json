@@ -1,6 +1,6 @@
 {
-	"version": "2.0.0",
-	"tasks": [
+  "version": "2.0.0",
+  "tasks": [
     {
       "type": "npm",
       "script": "dev",
@@ -10,22 +10,57 @@
       "detail": "run generate && next dev"
     },
     {
+      "label": "build",
       "type": "npm",
-      "script": "build",
+      "script": "vscode:task:build",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": [],
-      "label": "build",
-      "detail": "turbo run build --filter='./packages/*'",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "promptOnClose": false,
       "presentation": {
-        "echo": true,
+        "panel": "dedicated",
         "close": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "clear": true
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "vscode:task:build:watch",
+      "type": "npm",
+      "dependsOn": [
+        "npm: build:turbo - packages/vscode"
+      ],
+      "script": "vscode:task:build:watch",
+      "promptOnClose": false,
+      "isBackground": true,
+      "problemMatcher": [
+        "$tsc",
+        "$tsc-watch"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "close": true,
+        "echo": false,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "vscode:task:build:extension",
+      "type": "npm",
+      "script": "build:turbo",
+      "path": "packages/vscode",
+      "promptOnClose": false,
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "close": true,
+        "echo": false,
       }
     }
   ]

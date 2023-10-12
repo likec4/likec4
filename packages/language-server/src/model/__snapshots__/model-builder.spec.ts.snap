@@ -1,23 +1,34 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LikeC4ModelBuilder > builds model 1`] = `
+exports[`LikeC4ModelBuilder > builds model with description and technology 1`] = `
 {
   "elements": {
     "client": {
+      "description": null,
       "id": "client",
       "kind": "user",
+      "links": null,
       "shape": "person",
+      "tags": null,
+      "technology": null,
       "title": "client",
     },
     "system": {
+      "description": null,
       "id": "system",
       "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "system",
     },
     "system.backend": {
       "color": "secondary",
+      "description": null,
       "id": "system.backend",
       "kind": "component",
+      "links": null,
+      "tags": null,
       "technology": "NodeJS",
       "title": "Backend",
     },
@@ -26,7 +37,10 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
       "description": "Frontend description",
       "id": "system.frontend",
       "kind": "component",
+      "links": null,
       "shape": "browser",
+      "tags": null,
+      "technology": null,
       "title": "frontend",
     },
   },
@@ -44,7 +58,76 @@ exports[`LikeC4ModelBuilder > builds model 1`] = `
       "title": "",
     },
   },
-  "views": {},
+  "views": {
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "client:system",
+          "label": null,
+          "parent": null,
+          "relations": [
+            "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+          ],
+          "source": "client",
+          "target": "system",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "client",
+          "inEdges": [],
+          "kind": "user",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "client:system",
+          ],
+          "parent": null,
+          "shape": "person",
+          "tags": null,
+          "technology": null,
+          "title": "client",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "system",
+          "inEdges": [
+            "client:system",
+          ],
+          "kind": "component",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "system",
+        },
+      ],
+      "rules": [
+        {
+          "exprs": [
+            {
+              "wildcard": true,
+            },
+          ],
+          "isInclude": true,
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
 }
 `;
 
@@ -52,28 +135,48 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
 {
   "elements": {
     "client": {
+      "description": null,
       "id": "client",
       "kind": "user",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "client",
     },
     "system": {
+      "description": null,
       "id": "system",
       "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "system",
     },
     "system.backend": {
+      "description": null,
       "id": "system.backend",
       "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "backend",
     },
     "system.backend.api": {
+      "description": null,
       "id": "system.backend.api",
       "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "api",
     },
     "system.frontend": {
+      "description": null,
       "id": "system.frontend",
       "kind": "component",
+      "links": null,
+      "tags": null,
+      "technology": null,
       "title": "frontend",
     },
   },
@@ -92,8 +195,10 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "views": {
-    "74f5364fa4b064ce9830043b93d4cc6fce9d85b0": {
+    "frontend": {
       "autoLayout": "TB",
+      "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "system.frontend:system.backend",
@@ -116,36 +221,67 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "target": "system.frontend",
         },
       ],
-      "id": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+      "id": "frontend",
+      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "client",
+          "inEdges": [],
           "kind": "user",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "client:system.frontend",
+          ],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "client",
         },
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "system.frontend",
+          "inEdges": [
+            "client:system.frontend",
+          ],
           "kind": "component",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "system.frontend:system.backend",
+          ],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "frontend",
         },
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "system.backend",
+          "inEdges": [
+            "system.frontend:system.backend",
+          ],
           "kind": "component",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "backend",
         },
       ],
+      "relativePath": "",
       "rules": [
         {
           "exprs": [
@@ -156,11 +292,14 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "isInclude": true,
         },
       ],
+      "tags": null,
       "title": "frontend",
       "viewOf": "system.frontend",
     },
     "index": {
       "autoLayout": "TB",
+      "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "client:system",
@@ -174,26 +313,46 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "id": "index",
+      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "client",
+          "inEdges": [],
           "kind": "user",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "client:system",
+          ],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "client",
         },
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "system",
+          "inEdges": [
+            "client:system",
+          ],
           "kind": "component",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "system",
         },
       ],
+      "relativePath": "",
       "rules": [
         {
           "exprs": [
@@ -204,10 +363,13 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "isInclude": true,
         },
       ],
+      "tags": null,
       "title": "Index",
     },
     "v1": {
       "autoLayout": "LR",
+      "description": null,
+      "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
           "id": "system.frontend:system.backend.api",
@@ -221,27 +383,47 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "id": "v1",
+      "links": null,
       "nodes": [
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "system.frontend",
+          "inEdges": [],
           "kind": "component",
-          "navigateTo": "74f5364fa4b064ce9830043b93d4cc6fce9d85b0",
+          "level": 0,
+          "links": null,
+          "navigateTo": "frontend",
+          "outEdges": [
+            "system.frontend:system.backend.api",
+          ],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "frontend",
         },
         {
           "children": [],
           "color": "primary",
+          "description": null,
           "id": "system.backend.api",
+          "inEdges": [
+            "system.frontend:system.backend.api",
+          ],
           "kind": "component",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
           "parent": null,
           "shape": "rectangle",
+          "tags": null,
+          "technology": null,
           "title": "api",
         },
       ],
+      "relativePath": "",
       "rules": [
         {
           "exprs": [
@@ -255,6 +437,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "autoLayout": "LR",
         },
       ],
+      "tags": null,
       "title": "api",
       "viewOf": "system.backend.api",
     },

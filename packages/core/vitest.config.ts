@@ -1,3 +1,10 @@
-import { vitestProject } from '../../vitest.shared'
+import { defineProject, defineConfig } from 'vitest/config'
 
-export default vitestProject('core')
+export default defineProject({
+  test: {
+    name: 'core',
+    chaiConfig: {
+      truncateThreshold: 300
+    }
+  }
+})

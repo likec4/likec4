@@ -5,8 +5,8 @@ export const prefix = "/docs/tools"
 
 # LikeC4 Tools
 
-<Cards>
+<Cards num={1}>
   {Object.entries(meta).map(([key, page]) => (
-    <Card key={key} title={page.title} href={`${prefix}/${key}/`}/>
+    <Card arrow key={key} title={page.title} href={`${prefix}/${key}/`}/>
   ))}
 </Cards>

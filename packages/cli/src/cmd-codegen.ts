@@ -1,6 +1,6 @@
 import { createArgument, createCommand } from '@commander-js/extra-typings'
-import type { DiagramView } from '@likec4/core/types'
-import { generateReact, generateViewsDataTs, generateD2 } from '@likec4/generators'
+import type { DiagramView } from '@likec4/core'
+import { generateReact, generateViewsDataTs, generateD2, generateMermaid } from '@likec4/generators'
 import { printToDot } from '@likec4/layouts'
 import { red, green, dim } from 'kleur/colors'
 import { mkdirp } from 'mkdirp'
@@ -36,10 +36,7 @@ async function codegenAction(
   console.log('\nGenerated:\n   ' + green(path.relative(process.cwd(), output)))
 }
 
-async function codegenDotAction(
-  workspaceDir: string,
-  outputdir?: string
-) {
+async function codegenDotAction(workspaceDir: string, outputdir?: string) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
   const diagrams = values(model.views)
   if (diagrams.length === 0) {
@@ -47,9 +44,7 @@ async function codegenDotAction(
     process.exit(1)
   }
 
-  outputdir = outputdir
-    ? path.resolve(process.cwd(), outputdir)
-    : workspace
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
 
   await mkdirp(outputdir)
 
@@ -62,11 +57,7 @@ async function codegenDotAction(
   }
 }
 
-
-async function codegenD2Action(
-  workspaceDir: string,
-  outputdir?: string
-) {
+async function codegenD2Action(workspaceDir: string, outputdir?: string) {
   const { workspace, model } = await initLanguageServices({ workspaceDir })
   console.log(dim(`🔍\tLayouting...`))
 
@@ -79,9 +70,7 @@ async function codegenD2Action(
     process.exit(1)
   }
 
-  outputdir = outputdir
-    ? path.resolve(process.cwd(), outputdir)
-    : workspace
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
 
   await mkdirp(outputdir)
 
@@ -89,6 +78,32 @@ async function codegenD2Action(
   for (const diagram of diagrams) {
     const generated = generateD2(diagram)
     const output = path.resolve(outputdir, diagram.id + '.d2')
+    await writeFile(output, generated)
+    console.log(' - ' + green(path.relative(process.cwd(), output)))
+  }
+}
+
+async function codegenMermaidAction(workspaceDir: string, outputdir?: string) {
+  const { workspace, model } = await initLanguageServices({ workspaceDir })
+  console.log(dim(`🔍\tLayouting...`))
+
+  // const layout = await dotLayouter()
+  // const diagrams = await mapAsync(layout, values(model.views))
+  const diagrams = await layoutViews(values(model.views))
+
+  if (diagrams.length === 0) {
+    console.log(red(`No views found`))
+    process.exit(1)
+  }
+
+  outputdir = outputdir ? path.resolve(process.cwd(), outputdir) : workspace
+
+  await mkdirp(outputdir)
+
+  console.log(green('\nGenerated:'))
+  for (const diagram of diagrams) {
+    const generated = generateMermaid(diagram)
+    const output = path.resolve(outputdir, diagram.id + '.mmd')
     await writeFile(output, generated)
     console.log(' - ' + green(path.relative(process.cwd(), output)))
   }
@@ -107,10 +122,8 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <file>', 'output file\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenAction(generateReact, sourcedir, '.tsx', output)
-        )
+        .option('-o, --output <file>', 'output .tsx file\nif not defined, outputs to workspace')
+        .action((sourcedir, { output }) => codegenAction(generateReact, sourcedir, '.tsx', output))
     )
     .addCommand(
       createCommand('views-data')
@@ -121,7 +134,7 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <file>', 'output file\nif not defined, outputs to workspace')
+        .option('-o, --output <file>', 'output .ts file\nif not defined, outputs to workspace')
         .action((sourcedir, { output }) =>
           codegenAction(generateViewsDataTs, sourcedir, '.ts', output)
         )
@@ -135,10 +148,11 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenDotAction(sourcedir, output)
+        .option(
+          '-o, --output <directory>',
+          'output directory\nif not defined, outputs to workspace'
         )
+        .action((sourcedir, { output }) => codegenDotAction(sourcedir, output))
     )
     .addCommand(
       createCommand('d2')
@@ -149,9 +163,35 @@ export const codegenCommand = () => {
             .argOptional()
             .default(process.cwd(), '"."')
         )
-        .option('-o, --output <directory>', 'output directory\nif not defined, outputs to workspace')
-        .action((sourcedir, { output }) =>
-          codegenD2Action(sourcedir, output)
+        .option(
+          '-o, --output <directory>',
+          'output directory\nif not defined, outputs to workspace'
         )
+        .action((sourcedir, { output }) => codegenD2Action(sourcedir, output))
+    )
+    .addCommand(
+      createCommand('mermaid')
+        .alias('mmd')
+        .summary('generates Mermaid (.mmd) files')
+        .description('generates mmd files for each likec4 view')
+        .addArgument(
+          createArgument('workspace', 'directory with likec4 sources')
+            .argOptional()
+            .default(process.cwd(), '"."')
+        )
+        .option(
+          '-o, --output <directory>',
+          'output directory\nif not defined, outputs to workspace'
+        )
+        .action((sourcedir, { output }) => codegenMermaidAction(sourcedir, output))
+    )
+    .addHelpText(
+      'afterAll',
+      `
+Examples:
+  likec4 codegen react -o ./src/likec4.generated.tsx ./src/likec4
+  likec4 codegen views-data -o ./src/likec4-data.ts
+  likec4 codegen dot
+`
     )
 }

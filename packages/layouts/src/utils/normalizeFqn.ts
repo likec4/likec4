@@ -1,4 +1,4 @@
-import type { Fqn, NodeId } from '@likec4/core/types'
+import type { Fqn, NodeId } from '@likec4/core'
 
 const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toLocaleUpperCase() + value.slice(1)
