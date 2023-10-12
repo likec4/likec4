@@ -9,6 +9,11 @@ export default defineConfig({
       '@likec4/core': resolve(__dirname, '../../packages/core/src/index.ts')
     }
   },
+  preview: {
+    host: '0.0.0.0',
+    port: 61000,
+    open: false
+  },
   plugins: [
     watchAndRun([
       {

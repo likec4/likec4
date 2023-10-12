@@ -122,6 +122,6 @@ jobs:
         run: yarn preview &
 
       - name: Lost Pixel
-        uses: lost-pixel/lost-pixel@v3.4.0
+        uses: lost-pixel/lost-pixel@v3.7.1
         env:
           LOST_PIXEL_CONFIG_DIR: examples/diagrams-dev
