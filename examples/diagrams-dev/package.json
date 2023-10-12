@@ -16,6 +16,7 @@
     "lost-pixel": "lost-pixel",
     "lost-pixel:update": "lost-pixel update",
     "preview": "ladle preview --outDir dist -p 61000",
+    "serve": "npx serve dist -p 61000",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },

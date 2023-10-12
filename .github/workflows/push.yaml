@@ -119,9 +119,9 @@ jobs:
 
       - name: Serve Diagrams Dev
         working-directory: examples/diagrams-dev
-        run: yarn preview &
+        run: yarn serve &
 
       - name: Lost Pixel
-        uses: lost-pixel/lost-pixel@v3.4.0
+        uses: lost-pixel/lost-pixel@v3
         env:
           LOST_PIXEL_CONFIG_DIR: examples/diagrams-dev
