@@ -1,7 +1,9 @@
 import { textDocumentParams } from 'langium/test'
-import { describe, it } from 'vitest'
+import { vi, describe, it } from 'vitest'
 import { SymbolKind } from 'vscode-languageserver-protocol'
 import { createTestServices } from '../test'
+
+vi.mock('../logger')
 
 describe('LikeC4DocumentSymbolProvider', () => {
   it('should show all specification symbols', async ({ expect }) => {

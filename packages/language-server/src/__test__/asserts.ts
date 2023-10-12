@@ -2,7 +2,7 @@
 import stripIndent from 'strip-indent'
 import type { TestFunction } from 'vitest'
 import { test as viTest } from 'vitest'
-import { createTestServices } from '../../test'
+import { createTestServices } from '../test'
 
 export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   const result = ['']

@@ -1,7 +1,7 @@
 import { vi, describe, test as viTest } from 'vitest'
 import { valid, likec4, invalid } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
 const spec = `
 specification {
@@ -33,7 +33,7 @@ function test(name: string) {
   }
 }
 
-describe('02 Model Links', () => {
+describe('Model Links', () => {
   describe('with schema', () => {
     test('https and vscode').valid`
       component tst1 {
@@ -151,9 +151,15 @@ describe('02 Model Links', () => {
       }
     `
 
-    test('from source parent').valid`
+    test('to parent').valid`
       component tst3 {
         link ../segment1/segment2.html
+      }
+    `
+
+    test('to parent-of-parent').valid`
+      component tst3 {
+        link ../../../segment2.html
       }
     `
 
@@ -161,6 +167,13 @@ describe('02 Model Links', () => {
       component tst1 {
         link: ./../segment1/segment2.html
         link: ../segment1/segment2.html
+      }
+    `
+
+    test('with semicolon').valid`
+      component tst1 {
+        link ./../segment1/segment2.html;
+        link: ../segment1/segment2.html;
       }
     `
   })

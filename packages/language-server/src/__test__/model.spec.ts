@@ -1,9 +1,9 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
-describe('02 Model', () => {
+describe('model', () => {
   test('name on the right side').valid`
     specification {
       element person

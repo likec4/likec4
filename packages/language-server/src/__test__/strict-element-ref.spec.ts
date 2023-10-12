@@ -1,9 +1,9 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
-describe('05_StrictElementRef', () => {
+describe('strict elementref', () => {
   test('StrictElementRef').valid`
     specification {
       element component

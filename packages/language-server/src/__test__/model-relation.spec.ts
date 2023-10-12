@@ -1,9 +1,9 @@
 import { describe, test, vi } from 'vitest'
 import { invalid, valid } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
-describe('03_Relation', () => {
+describe('model relation', () => {
   test(
     'valid',
     valid`

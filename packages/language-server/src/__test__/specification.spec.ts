@@ -1,7 +1,7 @@
 import { describe, vi } from 'vitest'
 import { test } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
 describe('specification', () => {
   test('valid').valid`

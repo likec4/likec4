@@ -1,7 +1,7 @@
 import { describe, test, vi } from 'vitest'
 import { valid } from './asserts'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
 const model = `
 specification {
@@ -13,7 +13,7 @@ specification {
 }
 `
 
-describe('08_Structurizr', () => {
+describe('structurizr', () => {
   test(
     'valid',
     valid`${model}
