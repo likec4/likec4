@@ -5,6 +5,7 @@ import { availableParallelism } from 'node:os'
 import { resolve } from 'node:path'
 import PQueue from 'p-queue'
 import k from 'picocolors'
+import { isCI } from 'ci-info'
 import { chromium } from 'playwright-core'
 import { LanguageServicesInstance } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
@@ -49,8 +50,13 @@ export async function handler({ path, output }: HandlerParams) {
     open: false
   })
 
+  previewServer.resolvedUrls
+
+  // IP should be localhost when running locally & 172.17.0.1 when running in GitHub action
+  const host = isCI ? '172.17.0.1' : 'localhost'
+
   const pageUrl = (view: DiagramView) =>
-    `http://localhost:${previewServer.config.preview.port}/?export=${encodeURIComponent(view.id)}`
+    `http://${host}:${previewServer.config.preview.port}/?export=${encodeURIComponent(view.id)}`
 
   logger.info(`start chromium`)
   const browser = await chromium.launch()

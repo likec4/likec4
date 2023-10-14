@@ -16,7 +16,7 @@ export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: Take
   return async function takeScreenshot(view: DiagramView) {
     const padding = 20
     const url = pageUrl(view) + `&padding=${padding}`
-    logger.info(`${k.dim('export')} ${view.id}  ${k.dim(url)}`)
+    logger.info(`${k.dim('export')} ${view.id} ${k.underline(k.dim(url))}`)
 
     const page = await browser.newPage({
       deviceScaleFactor: 2,
