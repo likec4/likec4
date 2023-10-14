@@ -1,3 +1,7 @@
-import { vitestProject } from '../../vitest.shared'
+import { defineProject } from 'vitest/config'
 
-export default vitestProject('layouts')
+export default defineProject({
+  test: {
+    name: 'graph'
+  }
+})

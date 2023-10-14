@@ -1,13 +1,20 @@
+import { indexBy, values } from 'remeda'
 import type {
+  ComputedView,
   Element,
   ElementKind,
-  ElementView,
+  Expression as C4Expression,
   Fqn,
-  Opaque,
   Relation,
-  RelationID
+  RelationID,
+  Tag,
+  ViewID,
+  ViewRule,
+  ViewRuleExpression
 } from '@likec4/core'
-import { ModelIndex } from '@likec4/core'
+import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
+import { computeElementView } from '../index'
+import { pluck } from 'rambdax'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -45,7 +52,10 @@ import { ModelIndex } from '@likec4/core'
 specification {
   element actor
   element system
+  element container
   element component
+
+  tag old
 }
 
 model {
@@ -54,18 +64,21 @@ model {
   actor support
 
   system cloud {
-    component backend {
+    container backend {
       component graphql
-      component storage
+      component storage {
+        #old
+      }
 
       graphql -> storage
     }
 
-    component frontend {
+    container frontend {
       component dashboard {
         -> graphql
       }
       component adminPanel {
+        #old
         -> graphql
       }
     }
@@ -100,11 +113,6 @@ const el = ({
 })
 
 export const fakeElements = {
-  'cloud': el({
-    id: 'cloud',
-    kind: 'system',
-    title: 'cloud'
-  }),
   'customer': el({
     id: 'customer',
     kind: 'actor',
@@ -114,185 +122,217 @@ export const fakeElements = {
   'support': el({
     id: 'support',
     kind: 'actor',
-    title: 'Support Engineer',
-    description: 'Support engineers are responsible for supporting customers',
+    title: 'support',
     shape: 'person'
+  }),
+  'cloud': el({
+    id: 'cloud',
+    kind: 'system',
+    title: 'cloud'
+  }),
+  'amazon': el({
+    id: 'amazon',
+    kind: 'system',
+    title: 'amazon'
+  }),
+  'amazon.s3': el({
+    id: 'amazon.s3',
+    kind: 'component',
+    title: 's3',
+    shape: 'storage'
   }),
   'cloud.backend': el({
     id: 'cloud.backend',
-    kind: 'component',
-    title: 'Backend'
+    kind: 'container',
+    title: 'backend'
   }),
   'cloud.frontend': el({
     id: 'cloud.frontend',
-    kind: 'component',
-    title: 'Frontend',
+    kind: 'container',
+    title: 'frontend',
     shape: 'browser'
   }),
   'cloud.backend.graphql': el({
     id: 'cloud.backend.graphql',
     kind: 'component',
-    title: 'Graphql API',
-    description: 'Component that allows to query data via GraphQL.'
+    title: 'graphql'
   }),
   'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
-    title: 'Backend Storage',
-    description: 'The backend storage is a component that stores data.',
-    shape: 'storage'
+    title: 'storage',
+    tags: ['old' as Tag]
   }),
   'cloud.frontend.adminPanel': el({
     id: 'cloud.frontend.adminPanel',
     kind: 'component',
-    title: 'Admin Panel Webapp',
-    description: 'The admin panel is a webapp that allows support staff to manage customer data.'
+    title: 'adminPanel',
+    tags: ['old' as Tag]
   }),
   'cloud.frontend.dashboard': el({
     id: 'cloud.frontend.dashboard',
     kind: 'component',
-    title: 'Customer Dashboard Webapp',
-    description: 'The customer dashboard is a webapp that allows customers to view their data.'
-  }),
-  'amazon': el({
-    id: 'amazon',
-    kind: 'system',
-    title: 'Amazon',
-    description: 'Amazon is a cloud provider'
-  }),
-  'amazon.s3': el({
-    id: 'amazon.s3',
-    kind: 'component',
-    title: 'S3',
-    description: 'S3 is a storage service'
+    title: 'dashboard'
   })
 } satisfies Record<string, Element>
 
 export type FakeElementIds = keyof typeof fakeElements
 
-const fakeRelations = {
-  'customer:cloud.frontend.dashboard': {
-    id: 'customer:cloud.frontend.dashboard' as RelationID,
-    source: 'customer' as Fqn,
-    target: 'cloud.frontend.dashboard' as Fqn,
+const rel = ({
+  source,
+  target,
+  title
+}: {
+  source: FakeElementIds
+  target: FakeElementIds
+  title?: string
+}): Relation => ({
+  id: `${source}:${target}` as RelationID,
+  title: title ?? '',
+  source: source as Fqn,
+  target: target as Fqn
+})
+
+export const fakeRelations = [
+  rel({
+    source: 'customer',
+    target: 'cloud.frontend.dashboard',
     title: 'opens in browser'
-  },
-  'support:cloud.frontend.adminPanel': {
-    id: 'support:cloud.frontend.adminPanel' as RelationID,
-    source: 'support' as Fqn,
-    target: 'cloud.frontend.adminPanel' as Fqn,
+  }),
+  rel({
+    source: 'support',
+    target: 'cloud.frontend.adminPanel',
     title: 'manages'
-  },
-  'cloud.backend.storage:amazon.s3': {
-    id: 'cloud.backend.storage:amazon.s3' as RelationID,
-    source: 'cloud.backend.storage' as Fqn,
-    target: 'amazon.s3' as Fqn,
-    title: 'persists artifacts'
-  },
-  'cloud.backend.graphql:cloud.backend.storage': {
-    id: 'cloud.backend.graphql:cloud.backend.storage' as RelationID,
-    source: 'cloud.backend.graphql' as Fqn,
-    target: 'cloud.backend.storage' as Fqn,
-    title: ''
-  },
-  'cloud.frontend.dashboard:cloud.backend.graphql': {
-    id: 'cloud.frontend.dashboard:cloud.backend.graphql' as RelationID,
-    source: 'cloud.frontend.dashboard' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
-    title: 'fetches data'
-  },
-  'cloud.frontend.adminPanel:cloud.backend.graphql': {
-    id: 'cloud.frontend.adminPanel:cloud.backend.graphql' as RelationID,
-    source: 'cloud.frontend.adminPanel' as Fqn,
-    target: 'cloud.backend.graphql' as Fqn,
-    title: 'fetches data in zero trust network with sso authentification'
-  }
-} satisfies Record<string, Relation>
-
-export const indexView = {
-  id: 'index' as Opaque<'index', 'ViewID'>,
-  title: '',
-  description: null,
-  tags: null,
-  links: null,
-  rules: [
-    {
-      include: [
-        {
-          wildcard: true
-        }
-      ]
-    }
-  ]
-} satisfies ElementView
-
-export const cloudView = {
-  id: 'cloudView' as Opaque<'cloudView', 'ViewID'>,
-  title: '',
-  description: null,
-  tags: null,
-  links: null,
-  viewOf: 'cloud' as Fqn,
-  rules: [
-    {
-      include: [{ wildcard: true }]
-    }
-  ]
-} satisfies ElementView
-
-export const cloud3levels = {
-  id: 'cloud3levels' as Opaque<'cloud3levels', 'ViewID'>,
-  title: '',
-  viewOf: 'cloud' as Fqn,
-  description: null,
-  tags: null,
-  links: null,
-  rules: [
-    {
-      include: [
-        // include *
-        { wildcard: true },
-        // include cloud.frontend.*
-        { element: fakeElements['cloud.frontend'].id, isDescedants: true },
-        // include cloud.backend.*
-        { element: fakeElements['cloud.backend'].id, isDescedants: true }
-      ]
-    },
-    {
-      exclude: [
-        // exclude cloud.frontend
-        { element: 'cloud.frontend' as Fqn, isDescedants: false }
-      ]
-    }
-  ]
-} satisfies ElementView
-
-export const amazonView = {
-  id: 'amazon' as Opaque<'amazon', 'ViewID'>,
-  title: '',
-  viewOf: 'amazon' as Fqn,
-  description: null,
-  tags: null,
-  links: null,
-  rules: [
-    {
-      include: [
-        // include *
-        { wildcard: true },
-        // include cloud
-        { element: 'cloud' as Fqn, isDescedants: false },
-        // include cloud.* -> amazon
-        {
-          source: { element: 'cloud' as Fqn, isDescedants: true },
-          target: { element: 'amazon' as Fqn, isDescedants: false }
-        }
-      ]
-    }
-  ]
-} satisfies ElementView
-
-export const fakeModel = () =>
-  ModelIndex.from({
-    elements: fakeElements,
-    relations: fakeRelations
+  }),
+  rel({
+    source: 'cloud.backend.storage',
+    target: 'amazon.s3',
+    title: 'uploads'
+  }),
+  rel({
+    source: 'cloud.backend.graphql',
+    target: 'cloud.backend.storage',
+    title: 'stores'
+  }),
+  rel({
+    source: 'cloud.frontend.dashboard',
+    target: 'cloud.backend.graphql',
+    title: 'requests'
+  }),
+  rel({
+    source: 'cloud.frontend.adminPanel',
+    target: 'cloud.backend.graphql',
+    title: 'fetches'
   })
+]
+
+export type FakeRelationIds = keyof typeof fakeRelations
+
+export const fakeModel = new LikeC4ModelGraph({
+  elements: values(fakeElements),
+  relations: fakeRelations
+})
+
+const emptyView = {
+  id: 'index' as ViewID,
+  title: null,
+  description: null,
+  tags: null,
+  links: null,
+  rules: []
+}
+
+export const includeWildcard = {
+  include: [
+    {
+      wildcard: true
+    }
+  ]
+} satisfies ViewRule
+
+export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*`
+
+type InOutExpr = `-> ${ElementRefExpr} ->`
+type IncomingExpr = `-> ${ElementRefExpr}`
+type OutgoingExpr = `${ElementRefExpr} ->`
+type RelationExpr = `${ElementRefExpr} -> ${ElementRefExpr}`
+
+type Expression = ElementRefExpr | InOutExpr | IncomingExpr | OutgoingExpr | RelationExpr
+
+function toExpression(expr: Expression): C4Expression {
+  if (expr === '*') {
+    return { wildcard: true }
+  }
+  if (expr.startsWith('->')) {
+    if (expr.endsWith('->')) {
+      return {
+        inout: toExpression(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
+      }
+    }
+    return {
+      incoming: toExpression(expr.replace('-> ', '') as ElementRefExpr) as any
+    }
+  }
+  if (expr.endsWith(' ->')) {
+    return {
+      outgoing: toExpression(expr.replace(' ->', '') as ElementRefExpr) as any
+    }
+  }
+  if (expr.includes(' -> ')) {
+    const [source, target] = expr.split(' -> ')
+    return {
+      source: toExpression(source as ElementRefExpr) as any,
+      target: toExpression(target as ElementRefExpr) as any
+    }
+  }
+  if (expr.endsWith('.*')) {
+    return {
+      element: expr.replace('.*', '') as Fqn,
+      isDescedants: true
+    }
+  }
+  return {
+    element: expr as Fqn,
+    isDescedants: false
+  }
+}
+
+export function $include(expr: Expression): ViewRuleExpression {
+  return {
+    include: [toExpression(expr)]
+  }
+}
+export function $exclude(expr: Expression): ViewRuleExpression {
+  return {
+    exclude: [toExpression(expr)]
+  }
+}
+
+export function computeView(
+  ...args: [FakeElementIds, ViewRule | ViewRule[]] | [ViewRule | ViewRule[]]
+) {
+  let result: ComputedView
+  if (args.length === 1) {
+    result = computeElementView(
+      {
+        ...emptyView,
+        rules: [args[0]].flat()
+      },
+      fakeModel
+    )
+  } else {
+    result = computeElementView(
+      {
+        ...emptyView,
+        id: 'index' as ViewID,
+        viewOf: args[0] as Fqn,
+        rules: [args[1]].flat()
+      },
+      fakeModel
+    )
+  }
+  return Object.assign(result, {
+    nodeIds: pluck('id', result.nodes) as string[],
+    edgeIds: pluck('id', result.edges) as string[]
+  })
+}

@@ -16,7 +16,7 @@ interface BaseExpr {
 
 export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants'> {
   element: Fqn
-  isDescedants: boolean
+  isDescedants?: boolean
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
   return 'element' in expr && 'isDescedants' in expr

@@ -16,8 +16,7 @@ describe('compute-node-levels', () => {
         viewOf: 'cloud' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
@@ -68,8 +67,7 @@ describe('compute-node-levels', () => {
         viewOf: 'cloud' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               // include *
               { wildcard: true },
               // include cloud.frontend.*

@@ -1,148 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`compute-element-view > view of cloud (exclude cloud, amazon.*) 1`] = `
-{
-  "autoLayout": "TB",
-  "description": null,
-  "edges": [
-    {
-      "id": "cloud.frontend:cloud.backend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend",
-      "target": "cloud.backend",
-    },
-    {
-      "id": "support:cloud.frontend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend",
-    },
-    {
-      "id": "customer:cloud.frontend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend",
-    },
-  ],
-  "id": "cloud",
-  "links": null,
-  "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "customer",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "customer:cloud.frontend",
-      ],
-      "parent": null,
-      "shape": "person",
-      "tags": null,
-      "technology": null,
-      "title": "customer",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "support:cloud.frontend",
-      ],
-      "parent": null,
-      "shape": "person",
-      "tags": null,
-      "technology": null,
-      "title": "support",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.frontend",
-      "inEdges": [
-        "support:cloud.frontend",
-        "customer:cloud.frontend",
-      ],
-      "kind": "container",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "cloud.frontend:cloud.backend",
-      ],
-      "parent": null,
-      "shape": "browser",
-      "tags": null,
-      "technology": null,
-      "title": "frontend",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.backend",
-      "inEdges": [
-        "cloud.frontend:cloud.backend",
-      ],
-      "kind": "container",
-      "level": 0,
-      "links": null,
-      "outEdges": [],
-      "parent": null,
-      "shape": "rectangle",
-      "tags": null,
-      "technology": null,
-      "title": "backend",
-    },
-  ],
-  "rules": [
-    {
-      "include": [
-        {
-          "wildcard": true,
-        },
-      ],
-    },
-    {
-      "exclude": [
-        {
-          "element": "cloud",
-          "isDescedants": false,
-        },
-        {
-          "element": "amazon",
-          "isDescedants": true,
-        },
-      ],
-    },
-  ],
-  "tags": null,
-  "title": "",
-  "viewOf": "cloud",
-}
-`;
-
 exports[`compute-element-view > view of cloud 1`] = `
 {
   "autoLayout": "TB",
@@ -161,7 +18,7 @@ exports[`compute-element-view > view of cloud 1`] = `
     },
     {
       "id": "cloud.backend:amazon",
-      "label": null,
+      "label": "uploads",
       "parent": null,
       "relations": [
         "cloud.backend.storage:amazon.s3",
@@ -170,18 +27,8 @@ exports[`compute-element-view > view of cloud 1`] = `
       "target": "amazon",
     },
     {
-      "id": "support:cloud.frontend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend",
-    },
-    {
       "id": "customer:cloud.frontend",
-      "label": null,
+      "label": "opens in browser",
       "parent": null,
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -189,28 +36,20 @@ exports[`compute-element-view > view of cloud 1`] = `
       "source": "customer",
       "target": "cloud.frontend",
     },
+    {
+      "id": "support:cloud.frontend",
+      "label": "manages",
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
   ],
-  "id": "cloud",
+  "id": "index",
   "links": null,
   "nodes": [
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "customer",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "customer:cloud.frontend",
-      ],
-      "parent": null,
-      "shape": "person",
-      "tags": null,
-      "technology": null,
-      "title": "customer",
-    },
     {
       "children": [],
       "color": "primary",
@@ -233,10 +72,28 @@ exports[`compute-element-view > view of cloud 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
+      "id": "customer",
+      "inEdges": [],
+      "kind": "actor",
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "customer:cloud.frontend",
+      ],
+      "parent": null,
+      "shape": "person",
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
       "id": "cloud.frontend",
       "inEdges": [
-        "support:cloud.frontend",
         "customer:cloud.frontend",
+        "support:cloud.frontend",
       ],
       "kind": "container",
       "level": 1,
@@ -308,49 +165,22 @@ exports[`compute-element-view > view of cloud 1`] = `
       "title": "amazon",
     },
   ],
-  "rules": [
-    {
-      "include": [
-        {
-          "wildcard": true,
-        },
-      ],
-    },
-  ],
   "tags": null,
-  "title": "",
+  "title": null,
   "viewOf": "cloud",
 }
 `;
 
-exports[`compute-element-view > view of cloud.frontend 1`] = `
+exports[`compute-element-view > view of cloud.frontend 1`] = `[Function]`;
+
+exports[`compute-element-view > view with 3 levels 1`] = `
 {
   "autoLayout": "TB",
   "description": null,
   "edges": [
     {
-      "id": "cloud.frontend.adminPanel:cloud.backend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.adminPanel",
-      "target": "cloud.backend",
-    },
-    {
-      "id": "cloud.frontend.dashboard:cloud.backend",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.dashboard",
-      "target": "cloud.backend",
-    },
-    {
       "id": "support:cloud.frontend.adminPanel",
-      "label": null,
+      "label": "manages",
       "parent": null,
       "relations": [
         "support:cloud.frontend.adminPanel",
@@ -360,7 +190,7 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
     },
     {
       "id": "customer:cloud.frontend.dashboard",
-      "label": null,
+      "label": "opens in browser",
       "parent": null,
       "relations": [
         "customer:cloud.frontend.dashboard",
@@ -368,150 +198,19 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
       "source": "customer",
       "target": "cloud.frontend.dashboard",
     },
-  ],
-  "id": "cloudfrontend",
-  "links": null,
-  "nodes": [
     {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "customer",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "customer:cloud.frontend.dashboard",
+      "id": "cloud.backend.graphql:cloud.backend.storage",
+      "label": "stores",
+      "parent": "cloud.backend",
+      "relations": [
+        "cloud.backend.graphql:cloud.backend.storage",
       ],
-      "parent": null,
-      "shape": "person",
-      "tags": null,
-      "technology": null,
-      "title": "customer",
+      "source": "cloud.backend.graphql",
+      "target": "cloud.backend.storage",
     },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.frontend.dashboard",
-      "inEdges": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "kind": "component",
-      "level": 1,
-      "links": null,
-      "outEdges": [
-        "cloud.frontend.dashboard:cloud.backend",
-      ],
-      "parent": "cloud.frontend",
-      "shape": "rectangle",
-      "tags": null,
-      "technology": null,
-      "title": "dashboard",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "parent": null,
-      "shape": "person",
-      "tags": null,
-      "technology": null,
-      "title": "support",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.frontend.adminPanel",
-      "inEdges": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "kind": "component",
-      "level": 1,
-      "links": null,
-      "outEdges": [
-        "cloud.frontend.adminPanel:cloud.backend",
-      ],
-      "parent": "cloud.frontend",
-      "shape": "rectangle",
-      "tags": [
-        "old",
-      ],
-      "technology": null,
-      "title": "adminPanel",
-    },
-    {
-      "children": [
-        "cloud.frontend.dashboard",
-        "cloud.frontend.adminPanel",
-      ],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.frontend",
-      "inEdges": [],
-      "kind": "container",
-      "level": 0,
-      "links": null,
-      "outEdges": [],
-      "parent": null,
-      "shape": "browser",
-      "tags": null,
-      "technology": null,
-      "title": "frontend",
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "id": "cloud.backend",
-      "inEdges": [
-        "cloud.frontend.adminPanel:cloud.backend",
-        "cloud.frontend.dashboard:cloud.backend",
-      ],
-      "kind": "container",
-      "level": 0,
-      "links": null,
-      "outEdges": [],
-      "parent": null,
-      "shape": "rectangle",
-      "tags": null,
-      "technology": null,
-      "title": "backend",
-    },
-  ],
-  "rules": [
-    {
-      "include": [
-        {
-          "wildcard": true,
-        },
-      ],
-    },
-  ],
-  "tags": null,
-  "title": "",
-  "viewOf": "cloud.frontend",
-}
-`;
-
-exports[`compute-element-view > view with 3 levels 1`] = `
-{
-  "autoLayout": "TB",
-  "description": null,
-  "edges": [
     {
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": null,
+      "label": "fetches",
       "parent": "cloud",
       "relations": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
@@ -521,7 +220,7 @@ exports[`compute-element-view > view with 3 levels 1`] = `
     },
     {
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
-      "label": null,
+      "label": "requests",
       "parent": "cloud",
       "relations": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -530,18 +229,8 @@ exports[`compute-element-view > view with 3 levels 1`] = `
       "target": "cloud.backend.graphql",
     },
     {
-      "id": "cloud.backend.graphql:cloud.backend.storage",
-      "label": null,
-      "parent": "cloud.backend",
-      "relations": [
-        "cloud.backend.graphql:cloud.backend.storage",
-      ],
-      "source": "cloud.backend.graphql",
-      "target": "cloud.backend.storage",
-    },
-    {
       "id": "cloud.backend.storage:amazon",
-      "label": null,
+      "label": "uploads",
       "parent": null,
       "relations": [
         "cloud.backend.storage:amazon.s3",
@@ -549,28 +238,8 @@ exports[`compute-element-view > view with 3 levels 1`] = `
       "source": "cloud.backend.storage",
       "target": "amazon",
     },
-    {
-      "id": "support:cloud.frontend.adminPanel",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend.adminPanel",
-    },
-    {
-      "id": "customer:cloud.frontend.dashboard",
-      "label": null,
-      "parent": null,
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend.dashboard",
-    },
   ],
-  "id": "cloud3levels",
+  "id": "index",
   "links": null,
   "nodes": [
     {
@@ -752,33 +421,8 @@ exports[`compute-element-view > view with 3 levels 1`] = `
       "title": "amazon",
     },
   ],
-  "rules": [
-    {
-      "include": [
-        {
-          "wildcard": true,
-        },
-        {
-          "element": "cloud.frontend",
-          "isDescedants": true,
-        },
-        {
-          "element": "cloud.backend",
-          "isDescedants": true,
-        },
-      ],
-    },
-    {
-      "exclude": [
-        {
-          "element": "cloud.frontend",
-          "isDescedants": false,
-        },
-      ],
-    },
-  ],
   "tags": null,
-  "title": "",
+  "title": null,
   "viewOf": "cloud",
 }
 `;

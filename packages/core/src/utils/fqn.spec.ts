@@ -1,6 +1,7 @@
 import { expect, describe, it } from 'vitest'
 import type { Fqn, Element } from '../types'
 import {
+  ancestorsFqn,
   commonAncestor,
   compareFqnHierarchically,
   isAncestor,
@@ -9,7 +10,7 @@ import {
   parentFqn
 } from './fqn'
 
-const el = (id: string): Element => (({ id } as unknown) as Element)
+const el = (id: string): Element => ({ id }) as unknown as Element
 
 describe('parentFqn', () => {
   it('should return null if no parent', () => {
@@ -18,6 +19,15 @@ describe('parentFqn', () => {
   it('should return parent', () => {
     expect(parentFqn('a.b' as Fqn)).toBe('a')
     expect(parentFqn('a.b.c' as Fqn)).toBe('a.b')
+  })
+})
+
+describe('ancestorsFqn', () => {
+  it('should return empty array if no parent', () => {
+    expect(ancestorsFqn('a' as Fqn)).toEqual([])
+  })
+  it('should return ancestors', () => {
+    expect(ancestorsFqn('a.b.c.d.e' as Fqn)).toEqual(['a.b.c.d', 'a.b.c', 'a.b', 'a'])
   })
 })
 
@@ -58,7 +68,6 @@ describe('isDescendantOf', () => {
     expect(predicate(el('c'))).toBe(false)
     expect(predicate(el('ac'))).toBe(false)
     expect(predicate(el('d.a.c'))).toBe(false)
-
   })
 })
 

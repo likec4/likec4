@@ -262,10 +262,7 @@ export class LikeC4ModelParser {
   private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
     if (ast.isViewRuleExpression(astRule)) {
       const exprs = astRule.expressions.map(n => this.parseExpression(n))
-      return {
-        isInclude: astRule.isInclude,
-        exprs
-      }
+      return astRule.isInclude ? { include: exprs } : { exclude: exprs }
     }
     if (ast.isViewRuleStyle(astRule)) {
       const styleProps = toElementStyle(astRule.props)

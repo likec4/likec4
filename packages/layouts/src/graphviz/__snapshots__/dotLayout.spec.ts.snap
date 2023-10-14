@@ -244,7 +244,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
   ],
   "rules": [
     {
-      "exprs": [
+      "include": [
         {
           "wildcard": true,
         },
@@ -263,7 +263,6 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           },
         },
       ],
-      "isInclude": true,
     },
   ],
   "tags": null,
@@ -1129,7 +1128,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
   ],
   "rules": [
     {
-      "exprs": [
+      "include": [
         {
           "wildcard": true,
         },
@@ -1142,16 +1141,14 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "isDescedants": true,
         },
       ],
-      "isInclude": true,
     },
     {
-      "exprs": [
+      "exclude": [
         {
           "element": "cloud.frontend",
           "isDescedants": false,
         },
       ],
-      "isInclude": false,
     },
   ],
   "tags": null,
@@ -1688,12 +1685,11 @@ exports[`dotLayout: > computedCloudView 1`] = `
   ],
   "rules": [
     {
-      "exprs": [
+      "include": [
         {
           "wildcard": true,
         },
       ],
-      "isInclude": true,
     },
   ],
   "tags": null,
@@ -2087,12 +2083,11 @@ exports[`dotLayout: > computedIndexView 1`] = `
   ],
   "rules": [
     {
-      "exprs": [
+      "include": [
         {
           "wildcard": true,
         },
       ],
-      "isInclude": true,
     },
   ],
   "tags": null,

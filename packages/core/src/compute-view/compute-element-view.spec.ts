@@ -90,8 +90,7 @@ describe('compute-element-view', () => {
         title: '',
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
@@ -130,15 +129,13 @@ describe('compute-element-view', () => {
         title: '',
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               { element: fakeElements.customer.id, isDescedants: false },
               { element: fakeElements.support.id, isDescedants: false }
             ]
           },
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
@@ -160,8 +157,7 @@ describe('compute-element-view', () => {
         title: '',
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               { wildcard: true },
               {
                 incoming: {
@@ -192,8 +188,7 @@ describe('compute-element-view', () => {
         viewOf: 'cloud' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
@@ -233,8 +228,7 @@ describe('compute-element-view', () => {
         viewOf: 'cloud.backend' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               },
@@ -276,8 +270,7 @@ describe('compute-element-view', () => {
         viewOf: 'cloud.frontend' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
@@ -317,8 +310,7 @@ describe('compute-element-view', () => {
         viewOf: 'cloud.frontend' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               },
@@ -362,16 +354,14 @@ describe('compute-element-view', () => {
         viewOf: 'cloud' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               {
                 wildcard: true
               }
             ]
           },
           {
-            isInclude: false,
-            exprs: [
+            exclude: [
               { element: 'cloud' as Fqn, isDescedants: false },
               { element: 'amazon' as Fqn, isDescedants: true }
             ]
@@ -402,8 +392,7 @@ describe('compute-element-view', () => {
         viewOf: 'cloud' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               // include *
               { wildcard: true },
               // include cloud.frontend.*
@@ -413,8 +402,7 @@ describe('compute-element-view', () => {
             ]
           },
           {
-            isInclude: false,
-            exprs: [
+            exclude: [
               // exclude cloud.frontend
               { element: 'cloud.frontend' as Fqn, isDescedants: false }
             ]
@@ -448,8 +436,7 @@ describe('compute-element-view', () => {
         viewOf: 'amazon' as Fqn,
         rules: [
           {
-            isInclude: true,
-            exprs: [
+            include: [
               // include *
               { wildcard: true },
               // include cloud
@@ -474,8 +461,7 @@ describe('compute-element-view', () => {
   it('index view with applied styles', () => {
     const { nodes } = computeView([
       {
-        isInclude: true,
-        exprs: [
+        include: [
           // include customer, amazon, cloud, cloud.frontend
           { element: 'customer' as Fqn, isDescedants: false },
           { element: 'amazon' as Fqn, isDescedants: false },
@@ -543,8 +529,7 @@ describe('compute-element-view', () => {
   it('should include by element kind', () => {
     const { nodeIds, edgeIds } = computeView([
       {
-        isInclude: true,
-        exprs: [
+        include: [
           {
             elementKind: 'system' as ElementKind,
             isEqual: true
@@ -560,8 +545,7 @@ describe('compute-element-view', () => {
   it('should include by element tag', () => {
     const { nodeIds, edgeIds } = computeView([
       {
-        isInclude: true,
-        exprs: [
+        include: [
           {
             elementTag: 'old' as Tag,
             isEqual: true
@@ -578,8 +562,7 @@ describe('compute-element-view', () => {
   it('should exclude by element tag and kind', () => {
     const { nodes, edges } = computeView('cloud', [
       {
-        isInclude: true,
-        exprs: [
+        include: [
           // include *
           { wildcard: true },
           // include cloud.backend.*
@@ -589,8 +572,7 @@ describe('compute-element-view', () => {
         ]
       },
       {
-        isInclude: false,
-        exprs: [
+        exclude: [
           {
             elementKind: 'actor' as ElementKind,
             isEqual: true

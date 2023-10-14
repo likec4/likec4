@@ -1,6 +1,6 @@
 import { mapToObj } from 'remeda'
 import { describe, expect, it } from 'vitest'
-import type { ElementView, Fqn, ViewID, ViewRule } from '../types'
+import type { ElementView, Fqn, ViewID, ViewRule } from '@likec4/core'
 import { resolveRulesExtendedViews } from './resolve-extended-views'
 
 function views(...views: ElementView[]): Record<ViewID, ElementView> {

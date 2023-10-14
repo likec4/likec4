@@ -116,12 +116,11 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       ],
       "rules": [
         {
-          "exprs": [
+          "include": [
             {
               "wildcard": true,
             },
           ],
-          "isInclude": true,
         },
       ],
       "tags": null,
@@ -284,12 +283,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "relativePath": "",
       "rules": [
         {
-          "exprs": [
+          "include": [
             {
               "wildcard": true,
             },
           ],
-          "isInclude": true,
         },
       ],
       "tags": null,
@@ -355,12 +353,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "relativePath": "",
       "rules": [
         {
-          "exprs": [
+          "include": [
             {
               "wildcard": true,
             },
           ],
-          "isInclude": true,
         },
       ],
       "tags": null,
@@ -426,12 +423,11 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "relativePath": "",
       "rules": [
         {
-          "exprs": [
+          "include": [
             {
               "wildcard": true,
             },
           ],
-          "isInclude": true,
         },
         {
           "autoLayout": "LR",

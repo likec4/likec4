@@ -2,15 +2,12 @@ import {
   ModelIndex,
   assignNavigateTo,
   compareByFqnHierarchically,
-  computeView,
   invariant,
   isStrictElementView,
   parentFqn,
-  resolveRulesExtendedViews,
   type StrictElementView,
   type ViewID,
-  type c4,
-  resolveRelativePaths
+  type c4
 } from '@likec4/core'
 import type { URI, WorkspaceCache } from 'langium'
 import {
@@ -159,8 +156,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
       links: null,
       rules: [
         {
-          isInclude: true,
-          exprs: [
+          include: [
             {
               wildcard: true
             }

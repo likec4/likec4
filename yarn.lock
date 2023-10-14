@@ -1502,12 +1502,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/graph@workspace:packages/graph"
   dependencies:
+    "@dagrejs/graphlib": ^2.1.13
     "@likec4/core": "workspace:*"
-    "@types/cytoscape": ^3
-    "@types/node": ^18.15.11
-    cytoscape: ^3.25.0
-    remeda: ^1.23.0
-    typescript: ^5.1.6
+    rambdax: ^9.1.1
+    remeda: ^1.27.1
+    typescript: ^5.2.2
+    unbuild: ^2.0.0
+    vitest: ^0.34.6
   languageName: unknown
   linkType: soft
 
@@ -3962,13 +3963,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:^3":
-  version: 3.19.12
-  resolution: "@types/cytoscape@npm:3.19.12"
-  checksum: b4c4555e6ef11b70cd58ad85e3c75fbf2b47359b06a78af6db9d98f3012ad334eff6225ce51180b2904490fea4b139da9609d9eb04280f139f405a124fe90832
-  languageName: node
-  linkType: hard
-
 "@types/debug@npm:^4.0.0, @types/debug@npm:^4.1.7":
   version: 4.1.9
   resolution: "@types/debug@npm:4.1.9"
@@ -6301,7 +6295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.23.0, cytoscape@npm:^3.25.0":
+"cytoscape@npm:^3.23.0":
   version: 3.25.0
   resolution: "cytoscape@npm:3.25.0"
   dependencies:
@@ -13780,7 +13774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.23.0, remeda@npm:^1.27.1":
+"remeda@npm:^1.27.1":
   version: 1.27.1
   resolution: "remeda@npm:1.27.1"
   checksum: 4175a0b685ad40bb6b7d1b3ceccb5414573a5e289eb6447199e0417223cdf0c4402b839947185ba02651a8d3238a73e55e369ebbb83d793f51a72f0233adbee4
@@ -15672,7 +15666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.6.4 || ^5.0.0, typescript@npm:^5.1.6, typescript@npm:^5.2.2":
+"typescript@npm:^4.6.4 || ^5.0.0, typescript@npm:^5.2.2":
   version: 5.2.2
   resolution: "typescript@npm:5.2.2"
   bin:
@@ -15682,7 +15676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>, typescript@patch:typescript@^5.1.6#~builtin<compat/typescript>, typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>, typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
   version: 5.2.2
   resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
   bin:

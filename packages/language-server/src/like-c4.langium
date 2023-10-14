@@ -143,7 +143,7 @@ ViewProperty:
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
 ViewRuleExpression:
-  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)*;
+  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)* Comma?;
 
 ViewRuleLayoutDirection returns string: 'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
 
@@ -178,10 +178,8 @@ Expression:
 
 ElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
-  'element' Dot (
-    {infer ElementTagExpression} 'tag' IsEqual tag=[Tag:TagID] |
-    {infer ElementKindExpression} 'kind' IsEqual kind=[ElementKind:Name]
-  ) |
+  {infer ElementTagExpression} 'element' Dot 'tag' IsEqual tag=[Tag:TagID] |
+  {infer ElementKindExpression} 'element' Dot 'kind' IsEqual kind=[ElementKind:Name] |
   ElementRefExpression
   // {infer IdentifierExpression} id=ElementRef isDescedants?='.*'?
   // 'element' '.' (

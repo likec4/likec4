@@ -68,7 +68,9 @@ export class ComputeCtx {
   processViewRules(viewRules: ViewRuleExpression[]): ComputeCtx {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let ctx: ComputeCtx = this
-    for (const { isInclude, exprs } of viewRules) {
+    for (const r of viewRules) {
+      const isInclude = 'include' in r
+      const exprs = r.include ?? r.exclude
       for (const expr of exprs) {
         if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
           ctx = isInclude ? includeElementKindOrTag(ctx, expr) : excludeElementKindOrTag(ctx, expr)

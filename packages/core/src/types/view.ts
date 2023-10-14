@@ -7,12 +7,20 @@ import type { ThemeColor } from './theme'
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
 
-export interface ViewRuleExpression {
-  isInclude: boolean
-  exprs: Expression[]
-}
+export type ViewRuleExpression =
+  | {
+      include: Expression[]
+      exclude?: never
+    }
+  | {
+      include?: never
+      exclude: Expression[]
+    }
 export function isViewRuleExpression(rule: ViewRule): rule is ViewRuleExpression {
-  return 'exprs' in rule && 'isInclude' in rule
+  return (
+    ('include' in rule && Array.isArray(rule.include)) ||
+    ('exclude' in rule && Array.isArray(rule.exclude))
+  )
 }
 
 export interface ViewRuleStyle {
