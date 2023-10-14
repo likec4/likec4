@@ -204,11 +204,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
       nojustify = true;
     ];
   }
-  "storage" -> "amazon" [
-    likec4_id = "cloud.backend.storage:amazon";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
-    nojustify = true;
-  ];
   "support" -> "adminpanel" [
     likec4_id = "support:cloud.frontend.adminPanel";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
@@ -217,6 +212,11 @@ exports[`printToDot > computedCloud3levels 1`] = `
   "customer" -> "dashboard" [
     likec4_id = "customer:cloud.frontend.dashboard";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
+    nojustify = true;
+  ];
+  "storage" -> "amazon" [
+    likec4_id = "cloud.backend.storage:amazon";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
 }"
@@ -258,16 +258,16 @@ exports[`printToDot > computedCloudView 1`] = `
     margin = 0.2084;
     penwidth = 0;
   ];
-  "customer" [
-    likec4_id = "customer";
-    likec4_level = 0;
-    label = <<FONT COLOR="#eff6ff" POINT-SIZE="14.25">customer</FONT>>;
-    sortv = 0;
-  ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="7"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="14.25">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#bfdbfe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR/></FONT></TD></TR></TABLE>>;
+    sortv = 0;
+  ];
+  "customer" [
+    likec4_id = "customer";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="14.25">customer</FONT>>;
     sortv = 1;
   ];
   "frontend" [
@@ -303,8 +303,6 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       weight = 10;
-      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">fetches data</FONT></TD></TR></TABLE>>;
-      nojustify = true;
     ];
   }
   "backend" -> "amazon" [
@@ -312,14 +310,14 @@ exports[`printToDot > computedCloudView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
-  "support" -> "frontend" [
-    likec4_id = "support:cloud.frontend";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
-    nojustify = true;
-  ];
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
+    nojustify = true;
+  ];
+  "support" -> "frontend" [
+    likec4_id = "support:cloud.frontend";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
 }"
@@ -361,16 +359,16 @@ exports[`printToDot > computedIndexView 1`] = `
     margin = 0.2084;
     penwidth = 0;
   ];
-  "customer" [
-    likec4_id = "customer";
-    likec4_level = 0;
-    label = <<FONT COLOR="#eff6ff" POINT-SIZE="14.25">customer</FONT>>;
-    sortv = 0;
-  ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="7"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="14.25">Support Engineer</FONT></TD></TR><TR><TD><FONT COLOR="#bfdbfe" POINT-SIZE="10.5">Support engineers are responsible for<BR/>supporting customers<BR/></FONT></TD></TR></TABLE>>;
+    sortv = 0;
+  ];
+  "customer" [
+    likec4_id = "customer";
+    likec4_level = 0;
+    label = <<FONT COLOR="#eff6ff" POINT-SIZE="14.25">customer</FONT>>;
     sortv = 1;
   ];
   "cloud" [
@@ -385,9 +383,9 @@ exports[`printToDot > computedIndexView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="7"><TR><TD><FONT COLOR="#eff6ff" POINT-SIZE="14.25">Amazon</FONT></TD></TR><TR><TD><FONT COLOR="#bfdbfe" POINT-SIZE="10.5">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
     sortv = 3;
   ];
-  "cloud" -> "amazon" [
-    likec4_id = "cloud:amazon";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
+  "customer" -> "cloud" [
+    likec4_id = "customer:cloud";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
   "support" -> "cloud" [
@@ -395,9 +393,9 @@ exports[`printToDot > computedIndexView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">manages</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
-  "customer" -> "cloud" [
-    likec4_id = "customer:cloud";
-    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">opens in browser</FONT></TD></TR></TABLE>>;
+  "cloud" -> "amazon" [
+    likec4_id = "cloud:amazon";
+    label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="10.5">persists artifacts</FONT></TD></TR></TABLE>>;
     nojustify = true;
   ];
 }"

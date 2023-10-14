@@ -14,8 +14,8 @@ import {
 import { intersection } from 'remeda'
 
 type Params = {
-  elements: Element[]
-  relations: Relation[]
+  elements: Record<Fqn, Element>
+  relations: Record<RelationID, Relation>
   // views: ElementView[]
 }
 
@@ -42,10 +42,10 @@ export class LikeC4ModelGraph {
   #internal = new Map<Fqn, RelationID[]>()
 
   constructor({ elements, relations }: Params) {
-    for (const el of elements) {
+    for (const el of Object.values(elements)) {
       this.addElement(el)
     }
-    for (const rel of relations) {
+    for (const rel of Object.values(relations)) {
       this.addRelation(rel)
     }
   }

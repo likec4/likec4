@@ -7,7 +7,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
-    "!**/__mocks__/",
+    "!**/__test__/",
     "!**/*.spec.*",
     "!**/*.snap",
     "!**/*.map"
@@ -17,10 +17,14 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/graph"
   },
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "type": "module",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -29,7 +33,8 @@
     "typecheck:turbo": "run -T turbo run typecheck --filter='graph'",
     "typecheck": "tsc --emitDeclarationOnly",
     "build:turbo": "run -T turbo run build --filter='graph'",
-    "build": "tsc",
+    "prepack": "run clean && run build",
+    "build": "unbuild",
     "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",

@@ -43,9 +43,12 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
     this.addElement(this.graph.element(root))
 
     const children = this.graph.children(root)
-    this.addElement(...children)
-
-    this.addEdges(this.graph.edgesWithin(children))
+    if (children.length > 0) {
+      this.addElement(...children)
+      this.addEdges(this.graph.edgesWithin(children))
+    } else {
+      children.push(this.graph.element(root))
+    }
 
     // All neighbours that may have relations with root or its children
     const neighbours = [
@@ -69,7 +72,9 @@ export function excludeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
   if (root) {
     this.excludeElement(this.graph.element(root))
     this.excludeElement(...this.graph.children(root))
-    this.excludeRelation(...this.graph.internal(root))
+    this.excludeRelation(
+      ...[...this.graph.internal(root), ...this.graph.incoming(root), ...this.graph.outgoing(root)]
+    )
   } else {
     this.reset()
   }
@@ -120,7 +125,7 @@ export function excludeElementKindOrTag(
 function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Element[] {
   if (Expr.isWildcard(expr)) {
     if (this.root) {
-      return this.graph.children(this.root)
+      return [...this.graph.children(this.root), this.graph.element(this.root)]
     } else {
       return this.graph.rootElements
     }
@@ -162,7 +167,11 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr) {
       ...this.graph.siblings(this.root),
       ...this.graph.ancestors(this.root).flatMap(a => this.graph.siblings(a.id))
     ]
-    return this.graph.edgesBetween(neighbours, this.graph.children(this.root))
+    const children = this.graph.children(this.root)
+    if (children.length == 0) {
+      children.push(this.graph.element(this.root))
+    }
+    return this.graph.edgesBetween(neighbours, children)
   }
   const currentElements = [...this.elements]
   if (currentElements.length === 0) {
@@ -200,7 +209,11 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
       ...this.graph.siblings(this.root),
       ...this.graph.ancestors(this.root).flatMap(a => this.graph.siblings(a.id))
     ]
-    return this.graph.edgesBetween(this.graph.children(this.root), neighbours)
+    const children = this.graph.children(this.root)
+    if (children.length == 0) {
+      children.push(this.graph.element(this.root))
+    }
+    return this.graph.edgesBetween(children, neighbours)
   }
   const elements = resolveElements.call(this, expr.outgoing)
   if (elements.length === 0) {
@@ -257,16 +270,38 @@ export function excludeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
   }
 }
 
+/**
+ * Expand element to its children and itself, if it is the root (and not ".*")
+ * Example:
+ *
+ *   view of api {
+ *     include some -> api
+ *   }
+ *
+ * Transform to:
+ *
+ *   view of api {
+ *     include  some -> api.*, some -> api
+ *   }
+ *
+ */
+function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpression) {
+  if (Expr.isElementRef(expr) && this.root === expr.element && expr.isDescedants !== true) {
+    return [...this.graph.children(expr.element), this.graph.element(expr.element)]
+  }
+  return resolveElements.call(this, expr)
+}
+
 export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
-  const sources = resolveElements.call(this, expr.source)
-  const targets = resolveElements.call(this, expr.target)
+  const sources = resolveRelationExprElements.call(this, expr.source)
+  const targets = resolveRelationExprElements.call(this, expr.target)
   const edges = this.graph.edgesBetween(sources, targets)
   this.addEdges(edges)
 }
 
 export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
-  const sources = resolveElements.call(this, expr.source)
-  const targets = resolveElements.call(this, expr.target)
+  const sources = resolveRelationExprElements.call(this, expr.source)
+  const targets = resolveRelationExprElements.call(this, expr.target)
   const relations = this.graph.edgesBetween(sources, targets).flatMap(e => e.relations)
   this.excludeRelation(...relations)
 }

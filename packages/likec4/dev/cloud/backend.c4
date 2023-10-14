@@ -48,7 +48,7 @@ views {
     }
 
     style graphql {
-      color primary
+      color green
     }
   }
 

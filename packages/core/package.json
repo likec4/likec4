@@ -14,7 +14,7 @@
     "typecheck": "tsc --emitDeclarationOnly",
     "build:watch": "tsc --watch",
     "build": "unbuild",
-    "prepack": "unbuild",
+    "prepack": " run clean && run build",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
@@ -86,7 +86,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@dagrejs/graphlib": "^2.1.13",
     "rambdax": "^9.1.1",
     "remeda": "^1.27.1",
     "safe-stable-stringify": "^2.4.3",

@@ -18,8 +18,14 @@ views {
         *,
         cloud
 
+    style * {
+      color secondary
+    }
     style cloud {
       color muted
+    }
+    style cloud.reporting, cloud.reporting.* {
+      color green
     }
   }
 

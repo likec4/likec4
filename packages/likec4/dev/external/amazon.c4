@@ -97,6 +97,18 @@ views {
        amazon,
        cloud.backend,
        cloud.backend.* -> rds
+
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style rds, rds.* {
+      color green
+    }
   }
 
   view amazon_cognito of cognito {
@@ -128,8 +140,16 @@ views {
       cloud.* -> sqs.*,
       kinesis.* -> sqs
 
-    style cloud, cloud.*, kinesis, kinesis.* {
+    style * {
       color secondary
+    }
+
+    style cloud, amazon {
+      color muted
+    }
+
+    style sqs, sqs.* {
+      color green
     }
   }
 

@@ -1,6 +1,4 @@
 import {
-  ModelIndex,
-  assignNavigateTo,
   compareByFqnHierarchically,
   invariant,
   isStrictElementView,
@@ -30,6 +28,8 @@ import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { LikeC4WorkspaceManager } from '../shared'
 import { printDocs, queueMicrotask } from '../utils'
+import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { LikeC4ModelGraph, computeView } from '@likec4/graph'
 
 function isRelativeLink(link: string) {
   return link.startsWith('.') || link.startsWith('/')
@@ -228,7 +228,7 @@ export class LikeC4ModelBuilder {
       if (!model) {
         return null
       }
-      const index = ModelIndex.from(model)
+      const index = new LikeC4ModelGraph(model)
 
       const views = R.pipe(
         R.values(model.views),
@@ -251,7 +251,8 @@ export class LikeC4ModelBuilder {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
     }
-    const result = computeView(view, ModelIndex.from(model))
+    const index = new LikeC4ModelGraph(model)
+    const result = computeView(view, index)
     if (!result.isSuccess) {
       logError(result.error)
       return null

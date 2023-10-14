@@ -90,7 +90,7 @@ views {
     }
 
     style cloud {
-      color gray
+      color muted
     }
 
     style customer {
@@ -101,11 +101,23 @@ views {
   view cloud of cloud {
     title "Overview Cloud System"
     include *
+
+    style * {
+      color secondary
+    }
+
+    style cloud {
+      color gray
+    }
+
+    style cloud.* {
+      color green
+    }
   }
 
   view cloud_ui of ui {
     title "Overview UI"
-    include *, backend, ui.* -> backend.*
+    include *, backend, * -> backend.*
 
     exclude backend -> amazon
 
@@ -126,7 +138,7 @@ views {
     title "Overview Backend"
     include
       ui, amazon, backend, cloud,
-      ui.* -> backend,
+      ui.* -> backend.*,
       backend.* -> amazon.*
 
     exclude

@@ -83,6 +83,7 @@ This repository's contents is divided across four primary sections:
 - `create-likec4`: scaffolding tool
 - `diagrams`: react components for rendering diagrams
 - `generators`: _LikeC4 -> Other formats_
+- `graph`: Architecture model graph, compute views
 - `language-server`: parser and language server
 - `layouts`: layout algorithms for views
 - `likec4`: the main package, published to npm as `likec4`

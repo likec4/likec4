@@ -156,6 +156,32 @@ describe('compute-element-view', () => {
     ])
   })
 
+  it('view of cloud.frontend (and include parent cloud)', () => {
+    const { edgeIds, nodeIds } = computeView('cloud.frontend', [
+      $include('*'),
+      $include('cloud'),
+      $include('cloud.frontend -> cloud.backend.*')
+    ])
+
+    expect(nodeIds).toEqual([
+      'customer',
+      'cloud.frontend.dashboard',
+      'support',
+      'cloud.frontend.adminPanel',
+      'cloud.frontend',
+      'cloud.backend.graphql',
+      'cloud.backend',
+      'cloud'
+    ])
+
+    expect(edgeIds).to.have.same.members([
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend.dashboard:cloud.backend.graphql'
+    ])
+  })
+
   it('view of cloud (exclude cloud, amazon)', () => {
     const { edgeIds, nodeIds } = computeView('cloud', [
       $include('*'),
@@ -177,6 +203,8 @@ describe('compute-element-view', () => {
       $include('*'),
       $include('cloud.frontend.*'),
       $include('cloud.backend.*'),
+      $include('-> amazon.*'),
+      $exclude('amazon'),
       $exclude('cloud.frontend')
     ])
 
@@ -189,10 +217,45 @@ describe('compute-element-view', () => {
       'cloud.backend.storage',
       'cloud.backend',
       'cloud',
+      'amazon.s3'
+    ])
+
+    expect(edgeIds).to.have.same.members([
+      'support:cloud.frontend.adminPanel',
+      'customer:cloud.frontend.dashboard',
+      'cloud.backend.graphql:cloud.backend.storage',
+      'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.backend.storage:amazon.s3'
+    ])
+  })
+
+  it('view with 3 levels (with only relevant elements)', () => {
+    const { edgeIds, nodeIds } = computeView('cloud', [
+      $include('*'),
+      $include('-> cloud.frontend.*'),
+      $include('-> cloud.backend.*')
+    ])
+
+    expect(nodeIds).toEqual([
+      'support',
+      'cloud.frontend.adminPanel',
+      'customer',
+      'cloud.frontend.dashboard',
+      'cloud.frontend',
+      'cloud.backend.graphql',
+      'cloud.backend',
+      'cloud',
       'amazon'
     ])
 
-    expect(view).toMatchSnapshot()
+    expect(edgeIds).to.have.same.members([
+      'cloud.backend:amazon',
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend.adminPanel:cloud.backend.graphql'
+    ])
   })
 
   it('view of amazon', () => {

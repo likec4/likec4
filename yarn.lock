@@ -679,16 +679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/dagre@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@dagrejs/dagre@npm:1.0.4"
-  dependencies:
-    "@dagrejs/graphlib": 2.1.13
-  checksum: 49fefa4128604ad2231a9a572b93912398edde53a069e63e4fee4bc42145d0fbe153d9763edd47b91f0732895f3428577f518f355b97da515a426144eab9d3dc
-  languageName: node
-  linkType: hard
-
-"@dagrejs/graphlib@npm:2.1.13, @dagrejs/graphlib@npm:^2.1.13":
+"@dagrejs/graphlib@npm:^2.1.13":
   version: 2.1.13
   resolution: "@dagrejs/graphlib@npm:2.1.13"
   checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
@@ -1345,7 +1336,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
-    "@dagrejs/graphlib": ^2.1.13
     rambdax: ^9.1.1
     remeda: ^1.27.1
     safe-stable-stringify: ^2.4.3
@@ -1498,7 +1488,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/graph@workspace:packages/graph":
+"@likec4/graph@workspace:*, @likec4/graph@workspace:packages/graph":
   version: 0.0.0-use.local
   resolution: "@likec4/graph@workspace:packages/graph"
   dependencies:
@@ -1517,6 +1507,7 @@ __metadata:
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
     "@likec4/core": "workspace:*"
+    "@likec4/graph": "workspace:*"
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.4
     langium: ^2.0.2
@@ -1541,10 +1532,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@dagrejs/dagre": ^1.0.4
-    "@dagrejs/graphlib": ^2.1.13
     "@hpcc-js/wasm": ^2.14.0
     "@likec4/core": "workspace:*"
+    "@likec4/graph": "workspace:*"
     "@types/node": ^18.15.11
     indent-string: ^5.0.0
     p-limit: ^4.0.0

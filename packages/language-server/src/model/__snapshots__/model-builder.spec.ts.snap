@@ -65,7 +65,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "edges": [
         {
           "id": "client:system",
-          "label": null,
+          "label": "",
           "parent": null,
           "relations": [
             "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
@@ -112,15 +112,6 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "tags": null,
           "technology": null,
           "title": "system",
-        },
-      ],
-      "rules": [
-        {
-          "include": [
-            {
-              "wildcard": true,
-            },
-          ],
         },
       ],
       "tags": null,
@@ -281,15 +272,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "",
-      "rules": [
-        {
-          "include": [
-            {
-              "wildcard": true,
-            },
-          ],
-        },
-      ],
       "tags": null,
       "title": "frontend",
       "viewOf": "system.frontend",
@@ -351,15 +333,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "",
-      "rules": [
-        {
-          "include": [
-            {
-              "wildcard": true,
-            },
-          ],
-        },
-      ],
       "tags": null,
       "title": "Index",
     },
@@ -421,18 +394,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
         },
       ],
       "relativePath": "",
-      "rules": [
-        {
-          "include": [
-            {
-              "wildcard": true,
-            },
-          ],
-        },
-        {
-          "autoLayout": "LR",
-        },
-      ],
       "tags": null,
       "title": "api",
       "viewOf": "system.backend.api",

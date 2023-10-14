@@ -7,7 +7,7 @@ import type {
   Relation,
   RelationID
 } from '@likec4/core'
-import { ModelIndex } from '@likec4/core'
+import { LikeC4ModelGraph } from '@likec4/graph'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -292,7 +292,7 @@ export const amazonView = {
 } satisfies ElementView
 
 export const fakeModel = () =>
-  ModelIndex.from({
+  new LikeC4ModelGraph({
     elements: fakeElements,
     relations: fakeRelations
   })

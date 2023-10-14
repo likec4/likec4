@@ -229,8 +229,8 @@ export const fakeRelations = [
 export type FakeRelationIds = keyof typeof fakeRelations
 
 export const fakeModel = new LikeC4ModelGraph({
-  elements: values(fakeElements),
-  relations: fakeRelations
+  elements: fakeElements,
+  relations: indexBy(fakeRelations, r => r.id)
 })
 
 const emptyView = {
