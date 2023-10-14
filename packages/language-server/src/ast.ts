@@ -1,4 +1,10 @@
-import { DefaultElementShape, DefaultThemeColor, RelationRefError, nonexhaustive, type c4 } from '@likec4/core'
+import {
+  DefaultElementShape,
+  DefaultThemeColor,
+  RelationRefError,
+  nonexhaustive,
+  type c4
+} from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
@@ -105,7 +111,9 @@ export interface LikeC4DocumentProps {
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
 }
 
-export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document>, LikeC4DocumentProps {}
+export interface LikeC4LangiumDocument
+  extends LangiumDocument<LikeC4Document>,
+    LikeC4DocumentProps {}
 export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
   Required<LikeC4DocumentProps>
 
@@ -128,7 +136,9 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
-export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument {
+export function isParsedLikeC4LangiumDocument(
+  doc: LangiumDocument
+): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
     doc.state >= DocumentState.Validated &&
@@ -140,7 +150,9 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Pars
   )
 }
 
-export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument => {
+export const isValidLikeC4LangiumDocument = (
+  doc: LangiumDocument
+): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -190,7 +202,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   if (!target) {
     throw new RelationRefError('Invalid reference to target')
   }
-  if ('source' in node) {
+  if ('source' in node && !!node.source) {
     const source = elementRef(node.source)
     if (!source) {
       throw new RelationRefError('Invalid reference to source')
@@ -244,7 +256,9 @@ export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props
   }
 }
 
-export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
+export function toAutoLayout(
+  direction: ast.ViewRuleLayoutDirection
+): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {
       return 'TB'

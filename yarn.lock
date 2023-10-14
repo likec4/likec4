@@ -679,16 +679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/dagre@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@dagrejs/dagre@npm:1.0.4"
-  dependencies:
-    "@dagrejs/graphlib": 2.1.13
-  checksum: 49fefa4128604ad2231a9a572b93912398edde53a069e63e4fee4bc42145d0fbe153d9763edd47b91f0732895f3428577f518f355b97da515a426144eab9d3dc
-  languageName: node
-  linkType: hard
-
-"@dagrejs/graphlib@npm:2.1.13, @dagrejs/graphlib@npm:^2.1.13":
+"@dagrejs/graphlib@npm:^2.1.13":
   version: 2.1.13
   resolution: "@dagrejs/graphlib@npm:2.1.13"
   checksum: 7d0732f78675ea1c25e54ad1fb2dcd3b8784705faba328bd44def6f372140197ccdf546d75c33db05555da9b288a00d67f34317215f64233b89e9e59bd79596a
@@ -1345,7 +1336,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
   dependencies:
-    "@dagrejs/graphlib": ^2.1.13
+    execa: ^8.0.1
     rambdax: ^9.1.1
     remeda: ^1.27.1
     safe-stable-stringify: ^2.4.3
@@ -1388,6 +1379,7 @@ __metadata:
     "@types/react-dom": ^18.2.0
     "@use-gesture/react": ^10.3.0
     body-scroll-lock-upgrade: ^1.0.4
+    execa: ^8.0.1
     jotai: ^2.4.3
     khroma: ^2.0.0
     konva: ^9.2.1
@@ -1444,6 +1436,7 @@ __metadata:
     tailwindcss: ^3.3.3
     tailwindcss-animate: ^1.0.7
     typescript: ^5.2.2
+    typescript-plugin-css-modules: ^5.0.1
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
@@ -1498,13 +1491,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@likec4/graph@workspace:*, @likec4/graph@workspace:packages/graph":
+  version: 0.0.0-use.local
+  resolution: "@likec4/graph@workspace:packages/graph"
+  dependencies:
+    "@dagrejs/graphlib": ^2.1.13
+    "@likec4/core": "workspace:*"
+    execa: ^8.0.1
+    rambdax: ^9.1.1
+    remeda: ^1.27.1
+    typescript: ^5.2.2
+    unbuild: ^2.0.0
+    vitest: ^0.34.6
+  languageName: unknown
+  linkType: soft
+
 "@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
     "@likec4/core": "workspace:*"
+    "@likec4/graph": "workspace:*"
     "@types/node": ^18.15.11
     "@types/object-hash": ^3.0.4
+    execa: ^8.0.1
     langium: ^2.0.2
     langium-cli: ^2.0.1
     npm-run-all: ^4.1.5
@@ -1527,11 +1537,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@dagrejs/dagre": ^1.0.4
-    "@dagrejs/graphlib": ^2.1.13
     "@hpcc-js/wasm": ^2.14.0
     "@likec4/core": "workspace:*"
+    "@likec4/graph": "workspace:*"
     "@types/node": ^18.15.11
+    execa: ^8.0.1
     indent-string: ^5.0.0
     p-limit: ^4.0.0
     rambdax: ^9.1.1
@@ -1596,6 +1606,7 @@ __metadata:
     "@vitest/ui": ^0.34.7
     eslint: ^8.51.0
     execa: ^8.0.1
+    global: ^4.4.0
     husky: ^8.0.3
     lint-staged: ^14.0.1
     prettier: ^3.0.3
@@ -5605,6 +5616,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ci-info@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "ci-info@npm:3.9.0"
+  checksum: 6b19dc9b2966d1f8c2041a838217299718f15d6c4b63ae36e4674edd2bee48f780e94761286a56aa59eb305a85fbea4ddffb7630ec063e7ec7e7e5ad42549a87
+  languageName: node
+  linkType: hard
+
 "citty@npm:^0.1.2":
   version: 0.1.3
   resolution: "citty@npm:0.1.3"
@@ -6964,6 +6982,13 @@ __metadata:
     domhandler: ^5.0.2
     entities: ^4.2.0
   checksum: cd1810544fd8cdfbd51fa2c0c1128ec3a13ba92f14e61b7650b5de421b88205fd2e3f0cc6ace82f13334114addb90ed1c2f23074a51770a8e9c1273acbc7f3e6
+  languageName: node
+  linkType: hard
+
+"dom-walk@npm:^0.1.0":
+  version: 0.1.2
+  resolution: "dom-walk@npm:0.1.2"
+  checksum: 19eb0ce9c6de39d5e231530685248545d9cd2bd97b2cb3486e0bfc0f2a393a9addddfd5557463a932b52fdfcf68ad2a619020cd2c74a5fe46fbecaa8e80872f3
   languageName: node
   linkType: hard
 
@@ -8366,6 +8391,16 @@ __metadata:
   dependencies:
     ini: ^1.3.4
   checksum: 10624f5a8ddb8634c22804c6b24f93fb591c3639a6bc78e3584e01a238fc6f7b7965824184e57d63f6df36980b6c191484ad7bc6c35a1599b8f1d64be64c2a4a
+  languageName: node
+  linkType: hard
+
+"global@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "global@npm:4.4.0"
+  dependencies:
+    min-document: ^2.19.0
+    process: ^0.11.10
+  checksum: 9c057557c8f5a5bcfbeb9378ba4fe2255d04679452be504608dd5f13b54edf79f7be1db1031ea06a4ec6edd3b9f5f17d2d172fb47e6c69dae57fd84b7e72b77f
   languageName: node
   linkType: hard
 
@@ -10172,6 +10207,7 @@ __metadata:
     "@vitejs/plugin-react": ^4.1.0
     autoprefixer: ^10.4.16
     boxen: ^7.1.1
+    ci-info: ^3.9.0
     classnames: ^2.3.2
     clsx: ^1.2.1
     esbuild: ^0.19.4
@@ -11525,6 +11561,15 @@ __metadata:
   version: 3.1.0
   resolution: "mimic-response@npm:3.1.0"
   checksum: 25739fee32c17f433626bf19f016df9036b75b3d84a3046c7d156e72ec963dd29d7fc8a302f55a3d6c5a4ff24259676b15d915aad6480815a969ff2ec0836867
+  languageName: node
+  linkType: hard
+
+"min-document@npm:^2.19.0":
+  version: 2.19.0
+  resolution: "min-document@npm:2.19.0"
+  dependencies:
+    dom-walk: ^0.1.0
+  checksum: da6437562ea2228041542a2384528e74e22d1daa1a4ec439c165abf0b9d8a63e17e3b8a6dc6e0c731845e85301198730426932a0e813d23f932ca668340c9623
   languageName: node
   linkType: hard
 
@@ -13155,6 +13200,13 @@ __metadata:
   version: 2.0.1
   resolution: "process-nextick-args@npm:2.0.1"
   checksum: 1d38588e520dab7cea67cbbe2efdd86a10cc7a074c09657635e34f035277b59fbb57d09d8638346bf7090f8e8ebc070c96fa5fd183b777fff4f5edff5e9466cf
+  languageName: node
+  linkType: hard
+
+"process@npm:^0.11.10":
+  version: 0.11.10
+  resolution: "process@npm:0.11.10"
+  checksum: bfcce49814f7d172a6e6a14d5fa3ac92cc3d0c3b9feb1279774708a719e19acd673995226351a082a9ae99978254e320ccda4240ddc474ba31a76c79491ca7c3
   languageName: node
   linkType: hard
 

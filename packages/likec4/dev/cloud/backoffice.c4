@@ -41,8 +41,14 @@ views {
         *,
         cloud
 
-    style cloud {
+    style * {
+      color secondary
+    }
+    style cloud, cloud.backoffice {
       color muted
+    }
+    style cloud.backoffice.* {
+      color green
     }
   }
 

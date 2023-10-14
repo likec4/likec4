@@ -1,7 +1,5 @@
 export * from './colors'
-export * from './compute-view'
 export * from './errors'
-export * from './model-index'
 export * from './types'
 export * from './utils'
 

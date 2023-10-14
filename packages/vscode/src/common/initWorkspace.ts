@@ -15,7 +15,10 @@ export async function initWorkspace(rpc: Rpc) {
       Logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
       return
     }
-    Logger.info(`[InitWorkspace] with pattern "${globPattern}" found:\n` + docs.map(s => '  - ' + s).join('\n'))
+    Logger.info(
+      `[InitWorkspace] with pattern "${globPattern}" found:\n` +
+        docs.map(s => '  - ' + s).join('\n')
+    )
     for (const uri of uris) {
       try {
         // Langium started with EmptyFileSystem

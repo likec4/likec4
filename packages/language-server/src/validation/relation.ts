@@ -22,10 +22,14 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
         sourceEl = elementRef(el.source)
       } else {
         if (!ast.isElementBody(el.$container)) {
-          accept('error', 'Invalid relation, expected to have source defined or be inside the element', {
-            node: el,
-            keyword: '->'
-          })
+          accept(
+            'error',
+            'Invalid relation, expected to have source defined or be inside the element',
+            {
+              node: el,
+              keyword: '->'
+            }
+          )
         } else {
           sourceEl = el.$container.$container
         }

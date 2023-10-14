@@ -11,7 +11,12 @@ import getNotificationServiceOverride from 'vscode/service-override/notification
 
 import { Editor, loader, type Monaco } from '@monaco-editor/react'
 import { MonacoLanguageClient } from 'monaco-languageclient'
-import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
+import {
+  BrowserMessageReader,
+  BrowserMessageWriter,
+  CloseAction,
+  ErrorAction
+} from 'vscode-languageclient/browser'
 
 import { Fira_Code } from 'next/font/google'
 import { once, toPairs } from 'rambdax'
@@ -103,10 +108,13 @@ function useLikeC4LanguageClient() {
   const startLanguageClient = useCallback(() => {
     if (!languageClientRef.current) {
       console.debug('create likec4 language client')
-      const worker = (workerRef.current = new Worker(new URL('./likec4-language-server.worker.ts', import.meta.url), {
-        name: 'likec4-language-worker',
-        type: 'module'
-      }))
+      const worker = (workerRef.current = new Worker(
+        new URL('./likec4-language-server.worker.ts', import.meta.url),
+        {
+          name: 'likec4-language-worker',
+          type: 'module'
+        }
+      ))
 
       const reader = new BrowserMessageReader(worker)
       const writer = new BrowserMessageWriter(worker)
@@ -235,7 +243,9 @@ const setup = once((monaco: Monaco) => {
     ],
     colorizedBracketPairs: [['{', '}']],
     indentationRules: {
-      increaseIndentPattern: new RegExp('^((?!\\/\\/).)*(\\{[^}"\'`]*|\\([^)"\'`]*|\\[[^\\]"\'`]*)$'),
+      increaseIndentPattern: new RegExp(
+        '^((?!\\/\\/).)*(\\{[^}"\'`]*|\\([^)"\'`]*|\\[[^\\]"\'`]*)$'
+      ),
       decreaseIndentPattern: new RegExp('^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$')
     }
   })

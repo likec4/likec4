@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { nonexhaustive, type DiagramView, type Fqn, type RelationID, type ViewID } from '@likec4/core'
-import type { ExtensionToPanelProtocol, PanelToExtensionProtocol } from '@likec4/vscode-preview/protocol'
+import {
+  nonexhaustive,
+  type DiagramView,
+  type Fqn,
+  type RelationID,
+  type ViewID
+} from '@likec4/core'
+import type {
+  ExtensionToPanelProtocol,
+  PanelToExtensionProtocol
+} from '@likec4/vscode-preview/protocol'
 import { disposeAll, getNonce } from '../../util'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import * as vscode from 'vscode'
@@ -95,7 +104,9 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     const onDidReceiveMessage = this.panel.webview.onDidReceiveMessage(this.onWebviewMessage)
 
     const onDidChangeViewState = this.panel.onDidChangeViewState(({ webviewPanel }) => {
-      Logger.debug(`[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`)
+      Logger.debug(
+        `[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`
+      )
       if (!webviewPanel.visible) {
         this.unsubscribe()
       }
@@ -183,7 +194,8 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     const panelViewColumn = this.panel?.viewColumn ?? vscode.ViewColumn.Two
     const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
     await vscode.window.showTextDocument(location.uri, {
-      viewColumn: panelViewColumn !== vscode.ViewColumn.One ? vscode.ViewColumn.One : panelViewColumn,
+      viewColumn:
+        panelViewColumn !== vscode.ViewColumn.One ? vscode.ViewColumn.One : panelViewColumn,
       selection: location.range
     })
   }

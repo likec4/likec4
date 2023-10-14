@@ -7,7 +7,7 @@ import type {
   Relation,
   RelationID
 } from '@likec4/core'
-import { ModelIndex } from '@likec4/core'
+import { LikeC4ModelGraph } from '@likec4/graph'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -217,8 +217,7 @@ export const indexView = {
   links: null,
   rules: [
     {
-      isInclude: true,
-      exprs: [
+      include: [
         {
           wildcard: true
         }
@@ -236,8 +235,7 @@ export const cloudView = {
   viewOf: 'cloud' as Fqn,
   rules: [
     {
-      isInclude: true,
-      exprs: [{ wildcard: true }]
+      include: [{ wildcard: true }]
     }
   ]
 } satisfies ElementView
@@ -251,8 +249,7 @@ export const cloud3levels = {
   links: null,
   rules: [
     {
-      isInclude: true,
-      exprs: [
+      include: [
         // include *
         { wildcard: true },
         // include cloud.frontend.*
@@ -262,8 +259,7 @@ export const cloud3levels = {
       ]
     },
     {
-      isInclude: false,
-      exprs: [
+      exclude: [
         // exclude cloud.frontend
         { element: 'cloud.frontend' as Fqn, isDescedants: false }
       ]
@@ -280,8 +276,7 @@ export const amazonView = {
   links: null,
   rules: [
     {
-      isInclude: true,
-      exprs: [
+      include: [
         // include *
         { wildcard: true },
         // include cloud
@@ -297,7 +292,7 @@ export const amazonView = {
 } satisfies ElementView
 
 export const fakeModel = () =>
-  ModelIndex.from({
+  new LikeC4ModelGraph({
     elements: fakeElements,
     relations: fakeRelations
   })

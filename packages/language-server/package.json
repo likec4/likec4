@@ -21,33 +21,34 @@
   },
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "scripts": {
-    "typecheck:turbo": "run -T turbo run typecheck --filter='language-server'",
-    "typecheck": "tsc --emitDeclarationOnly",
+    "typecheck": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "prepack": "run clean && run build",
-    "build:watch": "run-p 'watch:*'",
-    "build:turbo": "run -T turbo run build --filter='language-server'",
+    "prepack": "run clean && unbuild",
+    "build:turbo": "run -T turbo build --filter='language-server'",
     "build": "unbuild",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@likec4/graph": "workspace:*",
     "langium": "^2.0.2",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/object-hash": "^3.0.4",
+    "execa": "^8.0.1",
     "langium-cli": "^2.0.1",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.2.2",

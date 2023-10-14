@@ -50,20 +50,20 @@ export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'clas
    * If true, the diagram will be animated when nodes are added or removed
    * @default true
    */
-  animate?: boolean
+  animate?: boolean | undefined
   /**
    * If true, the diagram will be pannable
    * @default true
    */
-  pannable?: boolean
+  pannable?: boolean | undefined
   /**
    * If true, the diagram will be zoomable
    * @default true
    */
-  zoomable?: boolean
+  zoomable?: boolean | undefined
 
-  width?: number
-  height?: number
+  width?: number | undefined
+  height?: number | undefined
   /**
    * The padding inside the diagram canvas
    */

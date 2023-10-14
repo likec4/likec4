@@ -15,7 +15,9 @@ export type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
 }
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
+  return (
+    isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
+  )
 }
 
 export interface FqnIndexEntry {
@@ -41,30 +43,36 @@ export class FqnIndex {
     //     logger.debug(` deleted:\n` + deleted.map(u => '  - ' + Utils.basename(u)).join('\n'))
     //   }
     // })
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Changed, (docs, _cancelToken) => {
-      logger.debug(`[FqnIndex] onChanged (${docs.length} docs):\n` + printDocs(docs))
-      for (const doc of docs) {
-        if (isLikeC4LangiumDocument(doc)) {
-          delete doc.c4fqns
-          delete doc.c4Elements
-          delete doc.c4Specification
-          delete doc.c4Relations
-          delete doc.c4Views
-        }
-      }
-    })
-    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.IndexedContent, (docs, _cancelToken) => {
-      logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
-      for (const doc of docs) {
-        if (isLikeC4LangiumDocument(doc)) {
-          try {
-            computeDocumentFqn(doc, services)
-          } catch (e) {
-            logError(e)
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Changed,
+      (docs, _cancelToken) => {
+        logger.debug(`[FqnIndex] onChanged (${docs.length} docs):\n` + printDocs(docs))
+        for (const doc of docs) {
+          if (isLikeC4LangiumDocument(doc)) {
+            delete doc.c4fqns
+            delete doc.c4Elements
+            delete doc.c4Specification
+            delete doc.c4Relations
+            delete doc.c4Views
           }
         }
       }
-    })
+    )
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.IndexedContent,
+      (docs, _cancelToken) => {
+        logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
+        for (const doc of docs) {
+          if (isLikeC4LangiumDocument(doc)) {
+            try {
+              computeDocumentFqn(doc, services)
+            } catch (e) {
+              logError(e)
+            }
+          }
+        }
+      }
+    )
   }
 
   private documents() {

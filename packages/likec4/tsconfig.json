@@ -7,19 +7,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "scripts"],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../layouts"
-    },
-    {
-      "path": "../generators"
-    },
-    {
-      "path": "../language-server"
-    }
-  ]
+  "include": ["src", "scripts"]
 }

@@ -56,13 +56,6 @@ model {
       '
     }
 
-    integration = container 'Integration Services' {
-      description '
-        Integration with
-        Third-Party services
-      '
-    }
-
     billing = service 'Billing' {
       description '
         Billing services, process
@@ -98,17 +91,17 @@ views {
     include
         *,
         ui,
-        customer -> ui.*,
-        backend
+        -> ui.*
+    exclude cloud
 
     style * {
+      color secondary
+    }
+    style ui {
       color muted
     }
-    style customer, ui, ui.* {
-      color primary
-    }
-    style backend {
-      color secondary
+    style customer {
+      color green
     }
   }
 
@@ -119,8 +112,16 @@ views {
     exclude
       ui.* -> amazon
 
-    style cloud, cloud.* {
-      color primary
+    style * {
+      color secondary
+    }
+
+    style cloud {
+      color muted
+    }
+
+    style cloud.* {
+      color green
     }
   }
 
@@ -147,21 +148,21 @@ views {
       ui.* -> backend,
       billing.* -> backend,
       backoffice.* -> backend,
-      backend.* -> amazon.*
+      backend -> amazon.*
 
     exclude
-      ui -> amazon
+      ui.* -> amazon.*
 
     style * {
-      color muted
-    }
-
-    style ui.*, amazon.*, backoffice.*, billing.* {
       color secondary
     }
 
+    style cloud, billing, ui, backoffice, amazon {
+      color muted
+    }
+
     style backend, backend.* {
-      color primary
+      color green
     }
   }
 

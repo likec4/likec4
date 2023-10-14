@@ -37,10 +37,9 @@ export interface ComputedEdge {
   relations: RelationID[]
 }
 
-export interface ComputedView extends BasicElementView {
-  viewOf?: Fqn
-  extends?: ViewID
-  autoLayout: ViewRuleAutoLayout['autoLayout']
-  nodes: ComputedNode[]
-  edges: ComputedEdge[]
+export interface ComputedView extends Omit<BasicElementView, 'rules'> {
+  readonly extends?: ViewID
+  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly nodes: ComputedNode[]
+  readonly edges: ComputedEdge[]
 }

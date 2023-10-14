@@ -9,7 +9,10 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
   constructor(private services: LikeC4Services) {
     //
   }
-  getDocumentLinks(doc: LangiumDocument, _params: DocumentLinkParams): MaybePromise<DocumentLink[]> {
+  getDocumentLinks(
+    doc: LangiumDocument,
+    _params: DocumentLinkParams
+  ): MaybePromise<DocumentLink[]> {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return []
     }

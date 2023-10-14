@@ -9,6 +9,7 @@ model {
       '
 
       -> amazon.sqs.hits 'process hits data'
+      -> cloud.backend.graphql 'read tenants'
     }
 
   }
@@ -26,11 +27,15 @@ views {
         amazon.sqs,
         cloud.data -> amazon.sqs.*
 
-    style cloud {
+    style * {
+      color secondary
+    }
+
+    style cloud, amazon {
       color muted
     }
-    style amazon.* {
-      color secondary
+    style cloud.data, cloud.data.* {
+      color green
     }
   }
 

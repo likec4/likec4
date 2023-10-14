@@ -3,7 +3,6 @@ import type { ComputedView } from '@likec4/core'
 import pLimit from 'p-limit'
 import { delay } from 'rambdax'
 import { dotLayoutFn } from './dotLayout'
-import { isDev } from '../const'
 
 const limit = pLimit(1)
 
@@ -19,9 +18,9 @@ export class DotLayouter {
       try {
         return dotLayoutFn(graphviz, view)
       } catch (err) {
-        if (isDev && err instanceof Error) {
-          console.error(`Error in graphviz layout (view=${view.id}): ${err.stack ?? err.message}`)
-        }
+        // if (isDev && err instanceof Error) {
+        //   console.error(`Error in graphviz layout (view=${view.id}): ${err.stack ?? err.message}`)
+        // }
         // Attempt to recover from memory issues
         Graphviz.unload()
         await delay(10)

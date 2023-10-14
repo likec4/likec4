@@ -48,7 +48,11 @@ export class LikeC4<ViewId extends string, Views extends Types.DiagramViews<View
   private constructor(private views: Views) {}
 
   readonly isViewId = (value: unknown): value is ViewId => {
-    return value != null && typeof value === 'string' && Object.prototype.hasOwnProperty.call(this.views, value)
+    return (
+      value != null &&
+      typeof value === 'string' &&
+      Object.prototype.hasOwnProperty.call(this.views, value)
+    )
   }
 
   /**
@@ -95,7 +99,10 @@ export class LikeC4<ViewId extends string, Views extends Types.DiagramViews<View
     return <FullscreenDiagramBrowser views={this.views} {...props} />
   }
 
-  static create<ViewId extends string, V extends Types.DiagramViews<ViewId> = Types.DiagramViews<ViewId>>(views: V) {
+  static create<
+    ViewId extends string,
+    V extends Types.DiagramViews<ViewId> = Types.DiagramViews<ViewId>
+  >(views: V) {
     if (Object.keys(views).length === 0) {
       throw new Error('LikeC4: views must not be empty')
     }

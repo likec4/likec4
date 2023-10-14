@@ -1,5 +1,8 @@
 import * as vscode from 'vscode'
-import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
+import {
+  LanguageClient as BrowserLanguageClient,
+  type LanguageClientOptions
+} from 'vscode-languageclient/browser'
 import ExtensionController from '../common/ExtensionController'
 import { extensionTitle, globPattern, languageId } from '../const'
 import { disposable } from '../util'
@@ -19,9 +22,12 @@ export function deactivate() {
 
 function createLanguageClient(context: vscode.ExtensionContext) {
   // Create a worker. The worker main file implements the language server.
-  const serverMain = vscode.Uri.joinPath(context.extensionUri, 'dist', 'browser', 'language-server-worker.js').toString(
-    true
-  )
+  const serverMain = vscode.Uri.joinPath(
+    context.extensionUri,
+    'dist',
+    'browser',
+    'language-server-worker.js'
+  ).toString(true)
   const worker = new Worker(serverMain, {
     name: 'LikeC4 Language Server'
   })

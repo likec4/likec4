@@ -34,13 +34,5 @@
       }
     ]
   },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../../core"
-    },
-    {
-      "path": "../../diagrams"
-    }
-  ]
+  "include": ["src"]
 }

@@ -1,4 +1,4 @@
-.CodePanel {
+.codePanel {
   @apply relative min-w-[18rem] bg-neutral-700 bg-opacity-60 pt-12 pb-7 px-5 text-neutral-200 rounded-lg my-5;
 
   &:before {

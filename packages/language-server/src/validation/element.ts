@@ -18,19 +18,23 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
       .filter(v => v.el !== el)
       .head()
     if (withSameFqn) {
-      accept('error', `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`, {
-        node: el,
-        property: 'name',
-        relatedInformation: [
-          {
-            location: {
-              range: withSameFqn.el.$cstNode!.range,
-              uri: getDocument(withSameFqn.el).uri.toString()
-            },
-            message: `Already defined here`
-          }
-        ]
-      })
+      accept(
+        'error',
+        `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,
+        {
+          node: el,
+          property: 'name',
+          relatedInformation: [
+            {
+              location: {
+                range: withSameFqn.el.$cstNode!.range,
+                uri: getDocument(withSameFqn.el).uri.toString()
+              },
+              message: `Already defined here`
+            }
+          ]
+        }
+      )
     }
     // for (let i = 3; i < el.props.length; i++) {
     //   accept('error', `Too many properties, max 3 allowed`, {

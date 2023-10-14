@@ -1,10 +1,6 @@
-# LikeC4 Core
+# `@likec4/core`
 
-[docs](https://likec4.dev/docs/) | [example](https://likec4.dev/examples/bigbank/likec4/)
-
-```bash
-npm install @likec4/core
-```
+[docs](https://likec4.dev/docs/)
 
 Package contains:
 

@@ -3,15 +3,7 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@likec4/diagrams": ["../diagrams/src"]
-    }
+    "baseUrl": "."
   },
-  "include": ["./protocol.ts", "src"],
-  "references": [
-    {
-      "path": "../core"
-    }
-  ]
+  "include": ["./protocol.ts", "src"]
 }

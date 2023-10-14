@@ -43,7 +43,10 @@ function processRevealRequests(
     editor.focus()
   }
 
-  async function requestLocation(languageClient: MonacoLanguageClient, revealRequest: EditorRevealRequest) {
+  async function requestLocation(
+    languageClient: MonacoLanguageClient,
+    revealRequest: EditorRevealRequest
+  ) {
     return await languageClient.sendRequest(Rpc.locate, revealRequest)
   }
 

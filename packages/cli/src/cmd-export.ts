@@ -67,7 +67,14 @@ type ExportOptions = {
   dryRun?: true | undefined
   keepScripts?: true | undefined
 }
-export async function exportHandler({ workspaceDir, output, template, dryRun, scriptCwd, keepScripts }: ExportOptions) {
+export async function exportHandler({
+  workspaceDir,
+  output,
+  template,
+  dryRun,
+  scriptCwd,
+  keepScripts
+}: ExportOptions) {
   const { workspace, model, viewSourcePaths } = await initLanguageServices({ workspaceDir })
 
   const modelViews = values(model.views)
@@ -110,7 +117,10 @@ export async function exportHandler({ workspaceDir, output, template, dryRun, sc
     console.log(dim(`Use built-in template`))
   }
 
-  await writeFile(exportJS, generateExportScript({ views, outputdir, ...(template ? { template } : {}) }))
+  await writeFile(
+    exportJS,
+    generateExportScript({ views, outputdir, ...(template ? { template } : {}) })
+  )
   console.log(dim(`Export script:`))
   console.log(dim(`  ${exportJS}`))
 
@@ -145,11 +155,16 @@ export const exportCommand = () => {
     .summary('export likec4 views to png')
     .description(`Export LikeC4 views to PNG, rendering in Headless Chrome with Puppeteer`)
     .addArgument(
-      createArgument('workspace', 'directory with likec4 sources').argOptional().default(process.cwd(), '"."')
+      createArgument('workspace', 'directory with likec4 sources')
+        .argOptional()
+        .default(process.cwd(), '"."')
     )
     .option('-t, --template <file>', 'custom HTML file\n(default: built-in template)')
     .option('-o, --output <directory>', 'directory for generated png\n(default: next to sources)')
-    .option('-S, --script-cwd [path]', 'path to run export scripts\nif not defined, creates temporary folder')
+    .option(
+      '-S, --script-cwd [path]',
+      'path to run export scripts\nif not defined, creates temporary folder'
+    )
     .option('--keep-scripts', 'do not delete generated scripts')
     .addOption(
       createOption('--dry-run', 'generate, but do not run export script').implies({

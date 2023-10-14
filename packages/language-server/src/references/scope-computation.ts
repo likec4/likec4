@@ -27,7 +27,9 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       for (const spec of specification.tags) {
         if (spec.tag && !isEmpty(spec.tag.name)) {
           docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
-          docExports.push(this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document))
+          docExports.push(
+            this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+          )
         }
       }
     }
@@ -63,7 +65,11 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     return Promise.resolve(scopes)
   }
 
-  protected processContainer(container: ElementsContainer, scopes: PrecomputedScopes, document: LikeC4LangiumDocument) {
+  protected processContainer(
+    container: ElementsContainer,
+    scopes: PrecomputedScopes,
+    document: LikeC4LangiumDocument
+  ) {
     const localScope = new MultiMap<string, AstNodeDescription>()
     const nestedScopes = new MultiMap<string, AstNodeDescription>()
     for (const el of container.elements) {

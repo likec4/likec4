@@ -7,7 +7,6 @@ model {
       description 'Relational Databases'
       style {
         shape cylinder
-        icon https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-RDS_Amazon-RDS_instance_light-bg.svg
       }
 
       pg = database 'PostgreSQL' {
@@ -50,7 +49,7 @@ views {
     include
       *,
       cloud,
-      cloud.* -> amazon
+      cloud.* -> amazon.*
 
     style * {
       color secondary
@@ -61,7 +60,7 @@ views {
     }
 
     style amazon.* {
-      color primary
+      color green
     }
 
   }
@@ -71,7 +70,7 @@ views {
 
     include *,
        amazon,
-       cloud.backend.* -> rds
+       cloud.backend.* -> rds.*
 
     style * {
       color secondary
@@ -82,7 +81,7 @@ views {
     }
 
     style rds, rds.* {
-      color primary
+      color green
     }
   }
 
@@ -118,7 +117,7 @@ views {
     }
 
     style cognito {
-      color primary
+      color green
     }
   }
 

@@ -46,7 +46,9 @@ function wrapToHTML({
   if (bold) {
     html = `<B>${html}</B>`
   }
-  return `<FONT${color ? ` COLOR="${color}"` : ``} POINT-SIZE="${pxToPoints(fontsize)}">${html}</FONT>`
+  return `<FONT${color ? ` COLOR="${color}"` : ``} POINT-SIZE="${pxToPoints(
+    fontsize
+  )}">${html}</FONT>`
 }
 export function nodeIcon(src: string) {
   return `<IMG SRC="${src}" SCALE="TRUE" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}"/>`

@@ -4,21 +4,19 @@
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
-    "noUncheckedIndexedAccess": true,
-    "allowArbitraryExtensions": true
-  },
-  "references": [
-    {
-      "path": "../packages/core"
-    },
-    {
-      "path": "../packages/layouts"
-    },
-    {
-      "path": "../packages/generators"
-    },
-    {
-      "path": "../packages/language-server"
-    }
-  ]
+
+    "allowArbitraryExtensions": true,
+    "exactOptionalPropertyTypes": true,
+
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "camelCaseOnly",
+          "postcssOptions": {},
+          "rendererOptions": {}
+        }
+      }
+    ]
+  }
 }

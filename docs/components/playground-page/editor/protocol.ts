@@ -1,4 +1,11 @@
-import type { ComputedView, Fqn, LikeC4Model, LikeC4RawModel, RelationID, ViewID } from '@likec4/core'
+import type {
+  ComputedView,
+  Fqn,
+  LikeC4Model,
+  LikeC4RawModel,
+  RelationID,
+  ViewID
+} from '@likec4/core'
 import type { DocumentUri, Location } from 'vscode-languageclient/lib/common/api'
 import { NotificationType, RequestType0, RequestType } from 'vscode-languageclient/lib/common/api'
 
@@ -10,7 +17,9 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>('likec4/fetchRaw')
 const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
 
-const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>('likec4/computeView')
+const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
+  'likec4/computeView'
+)
 
 interface BuildDocumentsParams {
   docs: DocumentUri[]

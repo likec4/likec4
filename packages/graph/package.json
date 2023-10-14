@@ -1,0 +1,58 @@
+{
+  "name": "@likec4/graph",
+  "license": "MIT",
+  "version": "0.40.0",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "files": [
+    "dist",
+    "!**/__test__/",
+    "!**/*.spec.*",
+    "!**/*.snap",
+    "!**/*.map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/graph"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "unbuild",
+    "lint": "run -T eslint src/ --fix",
+    "test": "run -T vitest run",
+    "clean": "run -T rimraf dist"
+  },
+  "dependencies": {
+    "@dagrejs/graphlib": "^2.1.13",
+    "@likec4/core": "workspace:*",
+    "rambdax": "^9.1.1",
+    "remeda": "^1.27.1"
+  },
+  "devDependencies": {
+    "execa": "^8.0.1",
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
+  },
+  "packageManager": "yarn@3.6.4",
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

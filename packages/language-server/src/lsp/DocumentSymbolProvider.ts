@@ -108,7 +108,9 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     ]
   }
 
-  protected getElementsSymbol(el: ast.Element | ast.Relation | ast.ExtendElement): DocumentSymbol[] {
+  protected getElementsSymbol(
+    el: ast.Element | ast.Relation | ast.ExtendElement
+  ): DocumentSymbol[] {
     try {
       if (ast.isExtendElement(el)) {
         return this.getExtendElementSymbol(el)

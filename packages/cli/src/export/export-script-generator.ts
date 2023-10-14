@@ -37,7 +37,11 @@ export function generateExportScript({
 
       const browser = await puppeteer.launch({
         headless: 'new',
-        ${isNoSanbox ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],` : ''}
+        ${
+          isNoSanbox
+            ? `args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],`
+            : ''
+        }
       });
       const page = await browser.newPage();
       await page.setViewport({

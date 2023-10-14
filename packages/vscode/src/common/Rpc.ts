@@ -12,7 +12,9 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 
 //#region To server
 const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>('likec4/fetchRaw')
-const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>('likec4/computeView')
+const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
+  'likec4/computeView'
+)
 
 const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
 

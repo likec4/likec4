@@ -26,10 +26,14 @@ export function generateViewsDataJs(views: DiagramView[]) {
       indentation: 2,
       indentedChildren(indented) {
         indented.appendNewLineIf(views.length > 1).append(
-          joinToNode(views, view => expandToNode`${JSON5.stringify(view.id)}: ${JSON5.stringify(view)}`, {
-            separator: ',',
-            appendNewLineIfNotEmpty: true
-          })
+          joinToNode(
+            views,
+            view => expandToNode`${JSON5.stringify(view.id)}: ${JSON5.stringify(view)}`,
+            {
+              separator: ',',
+              appendNewLineIfNotEmpty: true
+            }
+          )
         )
       }
     })
@@ -73,7 +77,10 @@ export function generateViewsDataTs(views: DiagramView[]) {
         indented.appendNewLineIf(views.length > 1).append(
           joinToNode(
             views,
-            view => expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(view)} as unknown) as DiagramView`,
+            view =>
+              expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(
+                view
+              )} as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true

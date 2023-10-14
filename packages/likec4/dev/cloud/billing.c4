@@ -29,11 +29,14 @@ views {
         cloud,
         stripe,
         stripe.*
-    style cloud {
+    style * {
+      color secondary
+    }
+    style stripe, cloud {
       color muted
     }
-    style stripe, stripe.* {
-      color secondary
+    style cloud.billing, cloud.billing.* {
+      color green
     }
   }
 

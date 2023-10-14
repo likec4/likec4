@@ -19,12 +19,10 @@ export function isAncestor<E extends { id: Fqn }>(
   return another.startsWith(ancestor + '.')
 }
 
-export function isSameHierarchy<E extends { id: Fqn }>(
-  ...args: [one: Fqn, another: Fqn] | [one: E, another: E]
-) {
-  const one = isString(args[0]) ? args[0] : args[0].id
-  const another = isString(args[1]) ? args[1] : args[1].id
-  return one === another || another.startsWith(one + '.') || one.startsWith(another + '.')
+export function isSameHierarchy<E extends { id: Fqn }>(one: E | Fqn, another: E | Fqn) {
+  const first = isString(one) ? one : one.id
+  const second = isString(another) ? another : another.id
+  return first === second || second.startsWith(first + '.') || first.startsWith(second + '.')
 }
 
 export function isDescendantOf<E extends { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
@@ -65,6 +63,23 @@ export function parentFqn(fqn: Fqn): Fqn | null {
     return fqn.substring(0, lastDot) as Fqn
   }
   return null
+}
+
+/**
+ * Get all ancestor elements (i.e. parent, parent’s parent, etc.)
+ * (from closest to root)
+ */
+export function ancestorsFqn(fqn: Fqn): Fqn[] {
+  const path = fqn.split('.')
+  path.pop()
+  if (path.length === 0) {
+    return []
+  }
+  return path.reduce((acc, _, idx) => {
+    const ancestor = path.slice(0, idx + 1).join('.')
+    acc.unshift(ancestor as Fqn)
+    return acc
+  }, [] as Fqn[])
 }
 
 /**
