@@ -54,7 +54,7 @@
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "nanostores": "^0.9.3",
-    "playwright-core": "^1.38.1",
+    "playwright-core": "^1.39.0",
     "postcss": "^8.4.31",
     "prop-types": "^15.8.1",
     "radix-themes-tw": "^0.0.8",

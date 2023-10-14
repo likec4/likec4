@@ -10183,7 +10183,7 @@ __metadata:
     nanostores: ^0.9.3
     p-queue: ^7.4.1
     picocolors: ^1.0.0
-    playwright-core: ^1.38.1
+    playwright-core: ^1.39.0
     postcss: ^8.4.31
     pretty-ms: ^8.0.0
     prop-types: ^15.8.1
@@ -12913,12 +12913,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:^1.38.1":
-  version: 1.38.1
-  resolution: "playwright-core@npm:1.38.1"
+"playwright-core@npm:^1.39.0":
+  version: 1.39.0
+  resolution: "playwright-core@npm:1.39.0"
   bin:
     playwright-core: cli.js
-  checksum: 66e83fe040f309b13ad94ba39dea40ac207bfcbbc22de13141af88dbdedd64e1c4e3ce1d0cb070d4efd8050d7e579953ec3681dd8a0acf2c1cc738d9c50e545e
+  checksum: 556e78dee4f9890facf2af8249972e0d6e01a5ae98737b0f6b0166c660a95ffee4cb79350335b1ef96430a0ef01d3669daae9099fa46c8d403d11c623988238b
   languageName: node
   linkType: hard
 
