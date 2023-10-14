@@ -202,7 +202,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   if (!target) {
     throw new RelationRefError('Invalid reference to target')
   }
-  if ('source' in node) {
+  if ('source' in node && !!node.source) {
     const source = elementRef(node.source)
     if (!source) {
       throw new RelationRefError('Invalid reference to source')

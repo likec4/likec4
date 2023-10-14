@@ -4,7 +4,19 @@
     "strict": true,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
-    "noUncheckedIndexedAccess": true,
-    "allowArbitraryExtensions": true
+
+    "allowArbitraryExtensions": true,
+    "exactOptionalPropertyTypes": true,
+
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "camelCaseOnly",
+          "postcssOptions": {},
+          "rendererOptions": {}
+        }
+      }
+    ]
   }
 }

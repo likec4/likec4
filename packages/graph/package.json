@@ -28,15 +28,13 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.js"
+        "default": "./dist/index.js"
       }
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
-    "prepack": "unbuild",
+    "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "clean": "run -T rimraf dist"

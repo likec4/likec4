@@ -29,7 +29,7 @@ export interface EmbeddedDiagramProps<ViewId extends string>
    * If true, the diagram will be animated when nodes are added or removed
    * @default false
    */
-  animate?: boolean
+  animate?: boolean | undefined
 
   /**
    * By default, when diagram is clicked, the browser is opened.

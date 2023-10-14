@@ -44,8 +44,7 @@
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

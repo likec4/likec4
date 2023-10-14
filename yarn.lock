@@ -1436,6 +1436,7 @@ __metadata:
     tailwindcss: ^3.3.3
     tailwindcss-animate: ^1.0.7
     typescript: ^5.2.2
+    typescript-plugin-css-modules: ^5.0.1
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0

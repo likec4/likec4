@@ -32,42 +32,7 @@ export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
-    // services.shared.workspace.DocumentBuilder.onBuildPhase(
-    //   DocumentState.Validated,
-    //   async (docs, cancelToken) => await this.onValidated(docs, cancelToken)
-    // )
   }
-
-  // public onParsed(callback: ModelParsedListener): Disposable {
-  //   this.listeners.push(callback)
-  //   return Disposable.create(() => {
-  //     const index = this.listeners.indexOf(callback)
-  //     if (index >= 0) {
-  //       this.listeners.splice(index, 1)
-  //     }
-  //   })
-  // }
-
-  // protected async onValidated(docs: LangiumDocument[], cancelToken: CancellationToken): Promise<void> {
-  //   let countOfChangedDocs = 0
-
-  //   logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-
-  //   for (const doc of docs) {
-  //     if (!isLikeC4LangiumDocument(doc)) {
-  //       continue
-  //     }
-  //     countOfChangedDocs++
-  //     try {
-  //       await this.parseDocument(doc, cancelToken)
-  //     } catch (cause) {
-  //       logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
-  //     }
-  //   }
-  //   if (countOfChangedDocs > 0) {
-  //     this.notifyListeners()
-  //   }
-  // }
 
   parse(doc: LangiumDocument | LangiumDocument[]) {
     const docs = Array.isArray(doc) ? doc : [doc]
