@@ -3,7 +3,7 @@
   "pipeline": {
     "generate": {},
     "typecheck": {
-      "dependsOn": ["generate"],
+      "dependsOn": ["generate", "^build"],
       "outputs": []
     },
     "build": {

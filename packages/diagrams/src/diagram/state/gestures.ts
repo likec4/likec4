@@ -1,5 +1,5 @@
 let _isDragging = false
-let tm: NodeJS.Timeout
+let tm: number | undefined
 
 /**
  * Debounce the isDragging=false
@@ -17,7 +17,7 @@ export const DiagramGesture = {
     if (_isDragging) {
       tm = setTimeout(() => {
         _isDragging = false
-      }, 100)
+      }, 100) as unknown as number
     }
   }
 }

@@ -1,4 +1,4 @@
-import { nonexhaustive } from '@likec4/core/errors'
+import { nonexhaustive } from '@likec4/core'
 
 export const pointToPx = (pt: number) => Math.ceil((pt * 96) / 72)
 export const inchToPx = (inch: number) => Math.ceil(inch * 96)

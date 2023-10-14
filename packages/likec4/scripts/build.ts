@@ -11,15 +11,14 @@ console.info(`⚠️ likec4 build isDev=${isDev}`)
 
 async function buildCli() {
   const alias = {
-    '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
-    '@likec4/core/errors': resolve('../core/src/errors/index.ts'),
-    '@likec4/core/types': resolve('../core/src/types/index.ts'),
-    '@likec4/core/colors': resolve('../core/src/colors.ts'),
-    '@likec4/core': resolve('../core/src/index.ts'),
-    '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
-    '@likec4/generators': resolve('../generators/src/index.ts'),
-    '@likec4/language-server': resolve('../language-server/src/index.ts'),
-    '@likec4/layouts': resolve('../layouts/src/index.ts')
+    // '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
+    // '@likec4/core/types': resolve('../core/src/types/index.ts'),
+    // '@likec4/core/colors': resolve('../core/src/colors.ts'),
+    // '@likec4/core': resolve('../core/src/index.ts'),
+    // '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
+    // '@likec4/generators': resolve('../generators/src/index.ts'),
+    // '@likec4/language-server': resolve('../language-server/src/index.ts'),
+    // '@likec4/layouts': resolve('../layouts/src/index.ts')
   }
 
   const cfg: BuildOptions = {
@@ -105,5 +104,5 @@ await cp('../core/dist/esm/', 'dist/@likec4/core/', { recursive: true })
 console.info(`✔️ copied @likec4/core to dist`)
 
 await mkdir('dist/@likec4/diagrams')
-await cp('../diagrams/dist/esm/', 'dist/@likec4/diagrams/', { recursive: true })
+await cp('../diagrams/dist/', 'dist/@likec4/diagrams/', { recursive: true })
 console.info(`✔️ copied @likec4/diagrams to dist`)

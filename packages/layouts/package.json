@@ -20,24 +20,24 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "scripts": {
-    "typecheck": "tsc --emitDeclarationOnly",
-    "build:watch": "tsc --watch",
-    "prepack": "run clean && run build",
+    "typecheck": "tsc --noEmit",
+    "prepack": "run clean && unbuild",
     "build": "unbuild",
-    "dev": "tsc --watch",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
-    "test:watch": "vitest",
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "execa": "^8.0.1",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"

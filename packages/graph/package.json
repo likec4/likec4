@@ -20,25 +20,25 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      }
+    }
   },
   "scripts": {
-    "typecheck:turbo": "run -T turbo run typecheck --filter='graph'",
-    "typecheck": "tsc --emitDeclarationOnly",
-    "build:turbo": "run -T turbo run build --filter='graph'",
-    "prepack": "run clean && run build",
-    "build": "unbuild",
-    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
-    "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
@@ -48,6 +48,7 @@
     "remeda": "^1.27.1"
   },
   "devDependencies": {
+    "execa": "^8.0.1",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"

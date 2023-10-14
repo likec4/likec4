@@ -1,10 +1,9 @@
 /* eslint-disable */
 import type { MkdistOptions } from 'mkdist'
 import { defineBuildConfig } from 'unbuild'
+import { $ } from 'execa'
 
 const opts = {
-  declaration: true,
-  ext: 'js',
   pattern: ['**/*.{ts,tsx}', '!stories/**'],
   esbuild: {
     jsx: 'automatic',
@@ -18,19 +17,17 @@ export default defineBuildConfig({
     {
       builder: "mkdist",
       input: "./src/",
-      outDir: "./dist/cjs/",
-      format: "cjs",
-      ...opts
-    },
-    {
-      builder: "mkdist",
-      input: "./src/",
-      outDir: "./dist/esm/",
+      outDir: "./dist/",
       format: "esm",
+      ext: 'js',
       ...opts
     }
   ],
   // if clean enabled, TS Language server in VSCode has to be restarted
   clean: false,
-  sourcemap: true
+  hooks: {
+    'build:before': async (ctx) => {
+      await $`tsc --emitDeclarationOnly --declaration --declarationMap --listFiles`
+    }
+  }
 })

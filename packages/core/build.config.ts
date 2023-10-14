@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { defineBuildConfig } from 'unbuild'
+import { $ } from 'execa'
 
-const pattern = ['**/*.ts', '!**/*.spec.ts', '!__test__/']
+const pattern = ['**/*.ts', '!**/*.spec.ts']
 
 // prettier-ignore
 export default defineBuildConfig({
@@ -11,21 +12,32 @@ export default defineBuildConfig({
       input: "./src/",
       outDir: "./dist/cjs/",
       format: "cjs",
-      declaration: true,
       ext: "js",
+      declaration: true,
+      esbuild: {
+        sourcemap: true,
+      },
       pattern,
     },
     {
       builder: "mkdist",
       input: "./src/",
       outDir: "./dist/esm/",
-      declaration: true,
       format: "esm",
       ext: "js",
+      declaration: true,
+      esbuild: {
+        sourcemap: true,
+      },
       pattern,
     },
   ],
   // if clean enabled, TS Language server in VSCode has to be restarted
   clean: false,
-  sourcemap: true
+  sourcemap: true,
+  hooks: {
+    'build:before': async (ctx) => {
+      await $`tsc --emitDeclarationOnly --declaration --declarationMap --listFiles --outDir ./dist/types`
+    }
+  }
 })

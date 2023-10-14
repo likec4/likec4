@@ -11,40 +11,30 @@
     "directory": "packages/diagrams"
   },
   "files": [
-    "dist"
+    "dist",
+    "!**/*.spec.*",
+    "!**/*.map"
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/cjs/index.d.ts",
   "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
-    }
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "packageManager": "yarn@3.6.4",
   "scripts": {
-    "typecheck": "tsc --emitDeclarationOnly",
-    "build:turbo": "run -T turbo run build --filter='diagrams'",
-    "build:watch": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "build:turbo": "run -T turbo build --filter='diagrams'",
     "build": "unbuild",
-    "dev:watch": "run -T turbo run build:watch --filter='diagrams^...' & ladle serve",
-    "dev": "run generate && ladle serve",
-    "stories:generate": "node ./.scripts/generate-view-stories.mjs",
-    "stories:build": "ladle build",
-    "stories:preview": "ladle preview -p 61107",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },
@@ -68,6 +58,7 @@
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "execa": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.2.2",

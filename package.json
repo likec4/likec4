@@ -79,5 +79,8 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "dependencies": {
+    "global": "^4.4.0"
   }
 }
