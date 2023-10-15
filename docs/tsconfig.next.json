@@ -37,5 +37,22 @@
     "node_modules",
     ".next",
     "out"
+  ],
+  "references": [
+    {
+      "path": "../packages/core"
+    },
+    {
+      "path": "../packages/layouts"
+    },
+    {
+      "path": "../packages/diagrams"
+    },
+    {
+      "path": "../packages/generators"
+    },
+    {
+      "path": "../packages/language-server"
+    }
   ]
 }

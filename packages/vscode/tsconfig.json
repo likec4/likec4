@@ -6,5 +6,19 @@
     "rootDir": "src",
     "baseUrl": "."
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../language-server"
+    },
+    {
+      "path": "../layouts"
+    }
+  ]
 }

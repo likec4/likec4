@@ -5,5 +5,10 @@
     "outDir": "dist",
     "baseUrl": "."
   },
-  "include": ["./protocol.ts", "src"]
+  "include": ["./protocol.ts", "src"],
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
 }

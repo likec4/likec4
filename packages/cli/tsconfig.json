@@ -5,5 +5,19 @@
     "baseUrl": "."
   },
   "include": ["src"],
-  "exclude": ["src/export/puppeteer-page/**"]
+  "exclude": ["src/export/puppeteer-page/**"],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../layouts"
+    },
+    {
+      "path": "../language-server"
+    }
+  ]
 }
