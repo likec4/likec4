@@ -35,3 +35,20 @@ export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> =>
     }
   }
 }
+
+export const relationshipChecks = (services: LikeC4Services): ValidationCheck<ast.RelationshipKind> => {
+  const index = services.shared.workspace.IndexManager
+  return (node, accept) => {
+    const sameKinds = index
+      .allElements(ast.RelationshipKind)
+      .filter(n => n.name === node.name)
+      .limit(2)
+      .count()
+    if (sameKinds > 1) {
+      accept('error', `Duplicate RelationshipKind '${node.name}'`, {
+        node: node,
+        property: 'name'
+      })
+    }
+  }
+}

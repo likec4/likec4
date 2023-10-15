@@ -10,10 +10,11 @@ entry LikeC4Document:
 
 ElementKind: name=Name;
 Tag: name=Name;
+RelationshipKind: name=Name;
 
 SpecificationRule:
   name='specification' OpenBlock
-    (elements+=SpecificationElementKind | tags+=SpecificationTag)*
+    (elements+=SpecificationElementKind | tags+=SpecificationTag | relationships+=SpecificationRelationshipKind)*
   CloseBlock;
 
 SpecificationElementKind:
@@ -25,6 +26,12 @@ SpecificationTag:
   'tag' tag=Tag (OpenBlock
     style=StyleProperties?
   CloseBlock)?;
+
+SpecificationRelationshipKind:
+  'relationship' kind=RelationshipKind (OpenBlock
+    RelationshipStylePropertiesFragment
+  CloseBlock)?
+;
 
 // Model -------------------------------------
 
@@ -88,16 +95,17 @@ Tags:
 Relation: ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
+  (arr=RArrow | '-['kind=[RelationshipKind:Name]']->')
   target=ElementRef
   (title=STRING)?
   body=RelationBody?
 ;
 
 ImplicitRelation infers Relation:
-  ('this' | 'it')? arr=RArrow RelationFragment;
+  ('this' | 'it')? RelationFragment;
 
 ExplicitRelation infers Relation:
-  source=ElementRef arr=RArrow RelationFragment;
+  source=ElementRef RelationFragment;
 
 RelationBody: OpenBlock
   tags=Tags?
@@ -143,7 +151,7 @@ ViewProperty:
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
 ViewRuleExpression:
-  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)* Comma?;
+  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)*;
 
 ViewRuleLayoutDirection returns string: 'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
 
@@ -178,8 +186,10 @@ Expression:
 
 ElementExpression:
   {infer WildcardExpression} isWildcard?='*' |
-  {infer ElementTagExpression} 'element' Dot 'tag' IsEqual tag=[Tag:TagID] |
-  {infer ElementKindExpression} 'element' Dot 'kind' IsEqual kind=[ElementKind:Name] |
+  'element' Dot (
+    {infer ElementTagExpression} 'tag' IsEqual tag=[Tag:TagID] |
+    {infer ElementKindExpression} 'kind' IsEqual kind=[ElementKind:Name]
+  ) |
   ElementRefExpression
   // {infer IdentifierExpression} id=ElementRef isDescedants?='.*'?
   // 'element' '.' (
@@ -205,6 +215,10 @@ IconProperty: key='icon' Colon? value=Uri SemiColon?;
 ColorProperty: key='color' Colon? value=ThemeColor SemiColon?;
 ShapeProperty: key='shape' Colon? value=ElementShape SemiColon?;
 
+LineProperty: key='line' Colon? value=LineOptions SemiColon?;
+ArrowProperty: key=('head' | 'tail') Colon? value=ArrowType SemiColon?;
+
+
 StyleProperties:
   key='style' OpenBlock
     StylePropertiesFragment
@@ -216,10 +230,19 @@ fragment StylePropertiesFragment:
   ))*
 ;
 
+fragment RelationshipStylePropertiesFragment:
+  (props+=(
+    ColorProperty | LineProperty | ArrowProperty
+  ))*
+;
+
 // type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
 // type AStyleProperty = ColorProperty | ShapeProperty | IconProperty;
 
 // -------------------------
+// Relationship Style Properties
+LineOptions returns string: 'solid' | 'dashed' | 'dotted';
+ArrowType returns string: 'normal' | 'empty' | 'diamond' | 'ediamond' | 'open' |'none';
 
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';

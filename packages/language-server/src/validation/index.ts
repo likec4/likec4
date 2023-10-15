@@ -4,7 +4,7 @@ import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
 import { relationChecks } from './relation'
-import { elementKindChecks, tagChecks } from './specification'
+import { elementKindChecks, tagChecks, relationshipChecks } from './specification'
 import { viewChecks } from './view'
 
 export function registerValidationChecks(services: LikeC4Services) {
@@ -23,13 +23,14 @@ export function registerValidationChecks(services: LikeC4Services) {
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
-    Tag: tagChecks(services)
+    Tag: tagChecks(services),
+    RelationshipKind: relationshipChecks(services)
   })
 
   const connection = services.shared.lsp.Connection
   if (connection) {
     logger.info('registerValidationChecks')
-    // wokraround for bug in langium
+    // workaround for bug in langium
     services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
       const message = [`[DocumentBuilder.onUpdate]`]
       if (changed.length > 0) {

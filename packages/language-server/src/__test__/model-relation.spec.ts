@@ -142,4 +142,25 @@ describe('model relation', () => {
       }
     }`
   )
+
+  test(
+    'relation with properties',
+    valid`
+    specification {
+      element person
+      relationship async {
+        color red
+        line dotted
+        head normal
+        tail normal
+      }
+    }
+    model {
+      person user1
+      person user2 
+      person user3
+      user1 -> user2
+      user1 -[async]-> user3
+    }`
+  )
 })

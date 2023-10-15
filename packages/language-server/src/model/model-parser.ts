@@ -18,7 +18,8 @@ import {
   streamModel,
   toAutoLayout,
   toElementStyle,
-  toElementStyleExcludeDefaults
+  toElementStyleExcludeDefaults,
+  toRelationshipStyleExcludeDefaults
 } from '../ast'
 import { elementRef, fqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
@@ -32,7 +33,42 @@ export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
+    // services.shared.workspace.DocumentBuilder.onBuildPhase(
+    //   DocumentState.Validated,
+    //   async (docs, cancelToken) => await this.onValidated(docs, cancelToken)
+    // )
   }
+
+  // public onParsed(callback: ModelParsedListener): Disposable {
+  //   this.listeners.push(callback)
+  //   return Disposable.create(() => {
+  //     const index = this.listeners.indexOf(callback)
+  //     if (index >= 0) {
+  //       this.listeners.splice(index, 1)
+  //     }
+  //   })
+  // }
+
+  // protected async onValidated(docs: LangiumDocument[], cancelToken: CancellationToken): Promise<void> {
+  //   let countOfChangedDocs = 0
+
+  //   logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+
+  //   for (const doc of docs) {
+  //     if (!isLikeC4LangiumDocument(doc)) {
+  //       continue
+  //     }
+  //     countOfChangedDocs++
+  //     try {
+  //       await this.parseDocument(doc, cancelToken)
+  //     } catch (cause) {
+  //       logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
+  //     }
+  //   }
+  //   if (countOfChangedDocs > 0) {
+  //     this.notifyListeners()
+  //   }
+  // }
 
   parse(doc: LangiumDocument | LangiumDocument[]) {
     const docs = Array.isArray(doc) ? doc : [doc]
@@ -52,9 +88,9 @@ export class LikeC4ModelParser {
   protected parseLikeC4Document(doc: LikeC4LangiumDocument) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
-    const specs = doc.parseResult.value.specification?.elements
-    if (specs) {
-      for (const { kind, style } of specs) {
+    const elements_specs = doc.parseResult.value.specification?.elements
+    if (elements_specs) {
+      for (const { kind, style } of elements_specs) {
         if (kind.name in specification.kinds) {
           logger.warn(`Duplicate specification for kind ${kind.name}`)
           continue
@@ -62,6 +98,23 @@ export class LikeC4ModelParser {
         try {
           specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
             style?.props
+          )
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+    }
+
+    const relations_specs = doc.parseResult.value.specification?.relationships
+    if (relations_specs) {
+      for (const { kind, props } of relations_specs) {
+        if (kind.name in specification.relationships) {
+          logger.warn(`Duplicate specification for kind ${kind.name}`)
+          continue
+        }
+        try {
+          specification.relationships[kind.name as c4.RelationshipKind] = toRelationshipStyleExcludeDefaults(
+            props
           )
         } catch (e) {
           logWarnError(e)
@@ -145,10 +198,12 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
+    const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const hashdata = {
       astPath: this.getAstNodePath(astNode),
       source,
-      target
+      target,
+      kind
     }
     const id = objectHash(hashdata) as c4.RelationID
     const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
@@ -227,7 +282,10 @@ export class LikeC4ModelParser {
   private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
     if (ast.isViewRuleExpression(astRule)) {
       const exprs = astRule.expressions.map(n => this.parseExpression(n))
-      return astRule.isInclude ? { include: exprs } : { exclude: exprs }
+      return {
+        isInclude: astRule.isInclude,
+        exprs
+      }
     }
     if (ast.isViewRuleStyle(astRule)) {
       const styleProps = toElementStyle(astRule.props)

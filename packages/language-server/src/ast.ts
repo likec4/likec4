@@ -1,10 +1,4 @@
-import {
-  DefaultElementShape,
-  DefaultThemeColor,
-  RelationRefError,
-  nonexhaustive,
-  type c4
-} from '@likec4/core'
+import { DefaultElementShape, DefaultThemeColor, RelationRefError, nonexhaustive, type c4, DefaultLineStyle, DefaultArrowType, DefaultRelationshipColor } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
@@ -26,6 +20,12 @@ export interface ParsedAstSpecification {
     shape?: c4.ElementShape
     color?: c4.ThemeColor
     icon?: c4.IconUrl
+  }>,
+  relationships: Record<c4.RelationshipKind, {
+    color?: c4.ThemeColor
+    line?: c4.RelationshipLineType
+    head?: c4.RelationshipArrowType
+    tail?: c4.RelationshipArrowType
   }>
 }
 
@@ -48,6 +48,7 @@ export interface ParsedAstRelation {
   astPath: string
   source: c4.Fqn
   target: c4.Fqn
+  kind?: c4.RelationshipKind
   title: string
 }
 
@@ -111,15 +112,13 @@ export interface LikeC4DocumentProps {
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
 }
 
-export interface LikeC4LangiumDocument
-  extends LangiumDocument<LikeC4Document>,
-    LikeC4DocumentProps {}
+export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document>, LikeC4DocumentProps {}
 export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
   Required<LikeC4DocumentProps>
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const specification = (doc.c4Specification = {
-    kinds: {}
+    kinds: {}, relationships: {}
   } as ParsedAstSpecification)
   const elements = (doc.c4Elements = [] as ParsedAstElement[])
   const relations = (doc.c4Relations = [] as ParsedAstRelation[])
@@ -136,9 +135,7 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
-export function isParsedLikeC4LangiumDocument(
-  doc: LangiumDocument
-): doc is ParsedLikeC4LangiumDocument {
+export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
     doc.state >= DocumentState.Validated &&
@@ -150,9 +147,7 @@ export function isParsedLikeC4LangiumDocument(
   )
 }
 
-export const isValidLikeC4LangiumDocument = (
-  doc: LangiumDocument
-): doc is ParsedLikeC4LangiumDocument => {
+export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -202,7 +197,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   if (!target) {
     throw new RelationRefError('Invalid reference to target')
   }
-  if ('source' in node && !!node.source) {
+  if ('source' in node) {
     const source = elementRef(node.source)
     if (!source) {
       throw new RelationRefError('Invalid reference to source')
@@ -247,6 +242,7 @@ export function toElementStyle(props?: ast.StyleProperties['props']) {
   }
   return result
 }
+
 export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props']) {
   const { color, shape, ...rest } = toElementStyle(props)
   return {
@@ -256,9 +252,57 @@ export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props
   }
 }
 
-export function toAutoLayout(
-  direction: ast.ViewRuleLayoutDirection
-): c4.ViewRuleAutoLayout['autoLayout'] {
+export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['props']) {
+  const result: {
+    color?: c4.ThemeColor
+    line?: c4.RelationshipLineType
+    head?: c4.RelationshipArrowType
+    tail?: c4.RelationshipArrowType
+  } = {}
+  if (!props || props.length === 0) {
+    return result
+  }
+  for (const prop of props) {
+    if (ast.isColorProperty(prop)) {
+      result.color = prop.value
+      continue
+    }
+    if (ast.isLineProperty(prop)) {
+      result.line = prop.value
+      continue
+    }
+    if (ast.isArrowProperty(prop)) {
+      switch(prop.key) {
+        case "head": {
+          result.head = prop.value
+          break
+        }
+        case "tail": {
+          result.tail = prop.value
+          break
+        }
+        default: {
+          nonexhaustive(prop)
+        }
+      }
+      continue
+    }
+    nonexhaustive(prop)
+  }
+  return result
+}
+
+export function toRelationshipStyleExcludeDefaults(props?: ast.SpecificationRelationshipKind['props']) {
+  const { color, line, head, tail } = toRelationshipStyle(props)
+  return {
+    ...(color && color !== DefaultRelationshipColor ? { color } : {}),
+    ...(line && line !== DefaultLineStyle ? { line } : {}),
+    ...(head && head !== DefaultArrowType ? { head } : {}),
+    ...(tail && tail !== DefaultArrowType ? { tail } : {})
+  }
+}
+
+export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {
       return 'TB'

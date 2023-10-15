@@ -18,5 +18,19 @@
     "outDir": "dist",
     "baseUrl": "."
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/layouts"
+    },
+    {
+      "path": "../../packages/generators"
+    },
+    {
+      "path": "../../packages/language-server"
+    }
+  ]
 }

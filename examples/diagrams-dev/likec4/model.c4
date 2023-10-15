@@ -44,7 +44,7 @@ model {
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
       }
-      cms = app 'CMS' {
+      cms = app 'ACMS' {
         description 'The CMS of the cloud system'
       }
 
@@ -54,7 +54,7 @@ model {
       graphql -> amazon.cognito 'authenticates'
       graphql -> amazon.rds.pg 'reads and writes'
 
-      cms -> amazon.rds.mysql 'stores media'
+      cms -[async]-> amazon.rds.mysql 'stores media'
     }
   }
 
@@ -90,7 +90,7 @@ views {
     }
 
     style cloud {
-      color muted
+      color gray
     }
 
     style customer {
@@ -101,23 +101,11 @@ views {
   view cloud of cloud {
     title "Overview Cloud System"
     include *
-
-    style * {
-      color secondary
-    }
-
-    style cloud {
-      color gray
-    }
-
-    style cloud.* {
-      color green
-    }
   }
 
   view cloud_ui of ui {
     title "Overview UI"
-    include *, backend, * -> backend.*
+    include *, backend, ui.* -> backend.*
 
     exclude backend -> amazon
 
@@ -138,7 +126,7 @@ views {
     title "Overview Backend"
     include
       ui, amazon, backend, cloud,
-      ui.* -> backend.*,
+      ui.* -> backend,
       backend.* -> amazon.*
 
     exclude

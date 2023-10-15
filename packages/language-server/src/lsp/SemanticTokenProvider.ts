@@ -121,6 +121,15 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return
     }
+    if (ast.isRelationshipKind(node)) {
+      acceptor({
+        node,
+        property: 'name',
+        type: SemanticTokenTypes.type,
+        modifier: [SemanticTokenModifiers.definition]
+      })
+      return
+    }
     if (ast.isColorProperty(node) || ast.isShapeProperty(node)) {
       acceptor({
         node,
