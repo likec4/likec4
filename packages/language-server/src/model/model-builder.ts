@@ -1,16 +1,11 @@
 import {
-  ModelIndex,
-  assignNavigateTo,
   compareByFqnHierarchically,
-  computeView,
   invariant,
   isStrictElementView,
   parentFqn,
-  resolveRulesExtendedViews,
   type StrictElementView,
   type ViewID,
-  type c4,
-  resolveRelativePaths
+  type c4
 } from '@likec4/core'
 import type { URI, WorkspaceCache } from 'langium'
 import {
@@ -33,6 +28,8 @@ import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { LikeC4WorkspaceManager } from '../shared'
 import { printDocs, queueMicrotask } from '../utils'
+import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
+import { LikeC4ModelGraph, computeView } from '@likec4/graph'
 
 function isRelativeLink(link: string) {
   return link.startsWith('.') || link.startsWith('/')
@@ -42,12 +39,11 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {},
     relationships: {}
-  }
+ }
   R.forEach(R.map(docs, R.prop('c4Specification')), spec => {
-    Object.assign(c4Specification.kinds, spec.kinds)
+    Object.assign(c4Specification.kinds, spec.kinds),
     Object.assign(c4Specification.relationships, spec.relationships)
   })
-
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
     const base = new URL(doc.uri.toString())
     return links.map(l =>
@@ -170,8 +166,7 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
       links: null,
       rules: [
         {
-          isInclude: true,
-          exprs: [
+          include: [
             {
               wildcard: true
             }
@@ -243,7 +238,7 @@ export class LikeC4ModelBuilder {
       if (!model) {
         return null
       }
-      const index = ModelIndex.from(model)
+      const index = new LikeC4ModelGraph(model)
 
       const views = R.pipe(
         R.values(model.views),
@@ -266,7 +261,8 @@ export class LikeC4ModelBuilder {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
     }
-    const result = computeView(view, ModelIndex.from(model))
+    const index = new LikeC4ModelGraph(model)
+    const result = computeView(view, index)
     if (!result.isSuccess) {
       logError(result.error)
       return null

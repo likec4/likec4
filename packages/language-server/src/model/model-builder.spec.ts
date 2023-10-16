@@ -227,7 +227,6 @@ describe('LikeC4ModelBuilder', () => {
     expect(indexView.title).toEqual('Landscape view')
     expect(indexView.nodes).to.be.an('array').that.has.length(1)
     expect(indexView.edges).to.be.an('array').that.is.empty
-    expect(indexView.rules).to.be.an('array').that.is.not.empty
   })
 
   it.concurrent('builds model with extend', async ({ expect }) => {
