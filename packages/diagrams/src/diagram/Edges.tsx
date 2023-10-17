@@ -15,25 +15,20 @@ type EdgesProps = {
 }
 
 const edgeColors = (
-  { relation: { lineColor, labelColor } }: LikeC4Theme,
+  { relation: { lineColor, labelBgColor, labelColor } }: LikeC4Theme,
   isHovered = false
 ): {
   lineColor: string
+  labelBgColor: string
   labelColor: string
 } => {
-  if (Array.isArray(lineColor)) {
-    lineColor = isHovered ? lineColor[1].onHover : lineColor[0]
-  } else if (isHovered) {
+  if (isHovered) {
     lineColor = toHex(
       scale(lineColor, {
         l: 35,
         s: -5
       })
     ) as `#${string}`
-  }
-  if (Array.isArray(labelColor)) {
-    labelColor = isHovered ? labelColor[1].onHover : labelColor[0]
-  } else if (isHovered) {
     labelColor = toHex(
       scale(labelColor, {
         l: 50
@@ -42,6 +37,7 @@ const edgeColors = (
   }
   return {
     lineColor,
+    labelBgColor,
     labelColor
   }
 }
@@ -121,6 +117,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       })}
     >
       <EdgeShape
+        animate={animate}
         edge={edge}
         isHovered={hoveredEdgeId === edge.id}
         theme={theme}

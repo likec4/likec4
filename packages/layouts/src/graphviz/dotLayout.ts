@@ -111,14 +111,16 @@ function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
     return [x, y]
   })
   const endpoint = points.shift()
-  invariant(endpoint, 'edge should have endpoint')
+  invariant(endpoint && hasAtLeast(points, 1), 'edge should have endpoint')
   return [...points, endpoint]
 }
 
 function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {
   const p = _hdraw_?.find(propEq('op', 'P'))
-  if (p) {
-    return p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)])
+  if (p && p.points.length > 2) {
+    const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
+    invariant(hasAtLeast(points, 1))
+    return points
   }
   return undefined
 }

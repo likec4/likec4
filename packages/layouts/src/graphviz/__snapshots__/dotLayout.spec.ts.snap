@@ -31,7 +31,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             214,
@@ -331,7 +331,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             512,
@@ -342,7 +342,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         },
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             512,
@@ -407,7 +407,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             291,
@@ -472,7 +472,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             614,
@@ -537,7 +537,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             214,
@@ -602,7 +602,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             367,
@@ -1220,7 +1220,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             363,
@@ -1285,7 +1285,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             475,
@@ -1350,7 +1350,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             258,
@@ -1708,7 +1708,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             468,
@@ -1773,7 +1773,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             270,
@@ -1838,7 +1838,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labels": [
         {
           "align": "left",
-          "color": "#b1b1b1",
+          "color": "#c6c6c6",
           "fontSize": 12,
           "pt": [
             363,

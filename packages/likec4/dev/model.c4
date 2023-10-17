@@ -116,10 +116,6 @@ views {
       color secondary
     }
 
-    style cloud {
-      color muted
-    }
-
     style cloud.* {
       color green
     }

@@ -34,5 +34,13 @@
       }
     ]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../core"
+    },
+    {
+      "path": "../../diagrams"
+    }
+  ]
 }

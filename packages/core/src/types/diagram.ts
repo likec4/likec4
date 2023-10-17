@@ -34,9 +34,9 @@ export interface DiagramNode extends ComputedNode {
 }
 
 export interface DiagramEdge extends ComputedEdge {
-  points: Point[]
+  points: NonEmptyArray<Point>
   // Polygons are used to draw arrows
-  headArrow?: Point[]
+  headArrow?: NonEmptyArray<Point>
   labels?: NonEmptyArray<DiagramLabel>
   labelBBox?: BBox
 }

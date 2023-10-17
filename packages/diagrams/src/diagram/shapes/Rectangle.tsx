@@ -1,6 +1,6 @@
-import { AnimatedRect, Text } from '../../konva'
-import { NodeLabels } from './NodeLabel'
+import { AnimatedRect } from '../../konva'
 import { useShadowSprings } from '../springs'
+import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 
 export function RectangleShape({ node, theme, springs, isHovered }: NodeShapeProps) {
