@@ -30,6 +30,7 @@ export function NodeIcon({ icon, maxWidth, maxHeight, offsetX = 0, offsetY = 0 }
       width={iconWidth}
       height={iconHeight}
       listening={false}
+      globalCompositeOperation='hard-light'
     />
   )
 }

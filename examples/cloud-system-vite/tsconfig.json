@@ -18,5 +18,13 @@
     "outDir": "dist",
     "baseUrl": "."
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/diagrams"
+    }
+  ]
 }
