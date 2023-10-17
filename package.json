@@ -34,13 +34,13 @@
     "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.7.2",
-    "@commitlint/config-conventional": "^17.7.0",
-    "@types/eslint": "^8.44.3",
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0",
+    "@types/eslint": "^8.44.4",
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
     "@vitest/ui": "^0.34.7",
     "eslint": "^8.51.0",
     "execa": "^8.0.1",
