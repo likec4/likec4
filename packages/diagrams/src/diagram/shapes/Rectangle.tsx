@@ -1,4 +1,4 @@
-import { AnimatedRect } from '../../konva'
+import { AnimatedRect, Text } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
@@ -13,6 +13,7 @@ export function RectangleShape({ node, theme, springs, isHovered }: NodeShapePro
         width={springs.width}
         height={springs.height}
         fill={springs.fill}
+        // globalCompositeOperation={'screen'}
         // strokeEnabled={isHovered === true}
         // shadowForStrokeEnabled={false}
         // stroke={'#F8F3D4'}
@@ -27,6 +28,21 @@ export function RectangleShape({ node, theme, springs, isHovered }: NodeShapePro
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
+      {/*
+      <Text
+        x={8}
+        y={node.size.height}
+        offsetY={18}
+        fill={colors.loContrast}
+        align='center'
+        fontFamily={theme.font}
+        fontSize={10}
+        text={'#' + node.id}
+        strokeEnabled={false}
+        perfectDrawEnabled={false}
+        listening={false}
+        globalCompositeOperation='luminosity'
+      /> */}
     </>
   )
 }

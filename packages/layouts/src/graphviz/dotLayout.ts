@@ -5,11 +5,12 @@ import type {
   DiagramLabel,
   DiagramNode,
   DiagramView,
+  BBox as LabelBBox,
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { dropRepeats, propEq } from 'rambdax'
-import type { DiagramLayoutFn } from '../types'
+import { first, hasAtLeast, last, maxBy } from 'remeda'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
@@ -123,8 +124,8 @@ function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['head
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = graphviz.unflatten(printToDot(computedView), 1, true, 2)
-  // const dot = printToDot(computedView)
+  // const dot = graphviz.unflatten(printToDot(computedView), 1, false, 2)
+  const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -188,9 +189,36 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
     }
     const edge: DiagramEdge = {
       ...edgeData,
-      points: parseEdgePoints(e),
-      labels: parseLabelDraws(e)
+      points: parseEdgePoints(e)
     }
+
+    const labels = parseLabelDraws(e)
+    if (hasAtLeast(labels, 1)) {
+      const labelBBox = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      } as LabelBBox
+      // edge label is inside table with 2point padding
+      const labelPadding = pointToPx(2)
+      // first label has the lowest y
+      const _first = first(labels)
+      labelBBox.y = _first.pt[1] - Math.round(_first.fontSize / 2) - labelPadding
+
+      // x and width - from the label with max width
+      const _maxWidth = maxBy(labels, l => l.width) ?? labels[0]
+      labelBBox.x = _maxWidth.pt[0] - labelPadding
+      labelBBox.width = _maxWidth.width + labelPadding * 2
+
+      // height - y from the last label
+      const _last = last(labels)
+      const lastY = _last.pt[1] + Math.ceil(_last.fontSize / 2) + labelPadding
+      labelBBox.height = lastY - labelBBox.y
+      edge.labels = labels
+      edge.labelBBox = labelBBox
+    }
+
     const headArrow = parseEdgeHeadPolygon(e)
     if (headArrow) {
       edge.headArrow = headArrow
@@ -201,30 +229,11 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
   return diagram
 }
 
-export const dotLayout: DiagramLayoutFn = async computedView => {
+export const dotLayout = async (computedView: ComputedView): Promise<DiagramView> => {
   const graphviz = await Graphviz.load()
   try {
     return dotLayoutFn(graphviz, computedView)
   } finally {
     Graphviz.unload()
   }
-}
-
-export async function dotLayouter() {
-  const graphviz = await Graphviz.load()
-  // return {
-  //   dotLayout: (computedView: ComputedView) => dotLayoutFn(graphviz, computedView),
-  //   dispose: () => {
-  //     Graphviz.unload()
-  //   }
-  // }
-  // Graphviz.unload()
-  return (computedView: ComputedView) =>
-    new Promise<DiagramView>((resolve, reject) => {
-      try {
-        resolve(dotLayoutFn(graphviz, computedView))
-      } catch (e) {
-        reject(e)
-      }
-    })
 }

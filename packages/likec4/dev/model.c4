@@ -144,11 +144,11 @@ views {
     title "[context] Cloud Backend"
     include
       *,
-      ui, amazon, backend, cloud, backoffice, billing,
       ui.* -> backend,
       billing.* -> backend,
       backoffice.* -> backend,
-      backend -> amazon.*
+      backend -> amazon.*,
+      cloud
 
     exclude
       ui.* -> amazon.*

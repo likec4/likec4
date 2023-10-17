@@ -20,7 +20,7 @@ export default defineBuildConfig({
   clean: false,
   hooks: {
     'build:before': async (ctx) => {
-      await $`tsc --emitDeclarationOnly --declaration --declarationMap --listFiles`
+      await $`tsc --emitDeclarationOnly --declaration --declarationMap`
     }
   }
 })

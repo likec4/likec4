@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import type { SpringValues } from '@react-spring/konva'
-import { AnimatedCircle, AnimatedLine, AnimatedText } from '../../konva'
+import { AnimatedCircle, AnimatedLine, AnimatedText, Rect } from '../../konva'
 
-import { invariant, nonNullable } from '@likec4/core'
+import { hasAtLeast, invariant, nonNullable } from '@likec4/core'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { DiagramEdge, LikeC4Theme } from '../types'
 
@@ -20,29 +20,24 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
 }
 
 export function EdgeShape({ edge, theme, isHovered, springs }: EdgeShapeProps) {
-  const { points, headArrow, labels } = edge
+  const { points, headArrow, labelBBox: labelBg, labels } = edge
 
-  invariant(points[0], 'Edge must have at least one point')
-  const [x, y] = nonNullable(points[0])
+  invariant(hasAtLeast(points, 1), 'Edge must have at least one point')
+  const [x, y] = points[0]
 
   return (
     <>
-      <AnimatedCircle
-        opacity={springs.opacity}
-        x={x}
-        y={y}
-        radius={springs.lineWidth.to(v => v + 1)}
-        fill={springs.lineColor}
-        visible={isHovered}
-      />
       <AnimatedLine
         opacity={springs.opacity}
         bezier={true}
         dashEnabled={true}
         points={points.flat()}
+        dash={[8, 4]}
+        dashOffset={isHovered ? -5 : 0}
         stroke={springs.lineColor}
         strokeWidth={springs.lineWidth}
         hitStrokeWidth={20}
+        globalCompositeOperation={'luminosity'}
       />
       {headArrow && (
         <AnimatedLine
@@ -51,25 +46,47 @@ export function EdgeShape({ edge, theme, isHovered, springs }: EdgeShapeProps) {
           closed={true}
           fill={springs.lineColor}
           stroke={springs.lineColor}
-          strokeWidth={2}
+          strokeWidth={1}
+          hitStrokeWidth={5}
+          globalCompositeOperation={'luminosity'}
+        />
+      )}
+      {labelBg.width > 0 && (
+        <Rect
+          x={labelBg.x - 5}
+          y={labelBg.y - 5}
+          width={labelBg.width + 10}
+          height={labelBg.height + 10}
+          fill={'#555'}
+          cornerRadius={4}
+          opacity={isHovered ? 0.3 : 0.05}
+          globalCompositeOperation='color-burn'
           hitStrokeWidth={5}
         />
       )}
       {labels.map((label, i) => (
         <AnimatedText
           key={i}
-          x={label.pt[0] - 4}
-          y={label.pt[1] - label.fontSize / 2 - 4}
+          x={label.pt[0]}
+          y={label.pt[1]}
+          offsetY={label.fontSize / 2}
           opacity={springs.opacity}
-          padding={4}
           fill={springs.labelColor}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
-          align={label.align}
           text={label.text}
           perfectDrawEnabled={false}
           hitStrokeWidth={10}
+          listening={false}
+          shadowEnabled
+          globalCompositeOperation='luminosity'
+          // // shadowForStrokeEnabled
+          shadowColor={'#000'}
+          shadowOpacity={0.1}
+          shadowOffsetX={1}
+          shadowOffsetY={2}
+          shadowBlur={2}
         />
       ))}
     </>
