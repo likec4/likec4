@@ -7,7 +7,7 @@ export type RelationshipKind = Opaque<string, 'RelationshipKind'>
 
 
 export type RelationshipLineType =  'solid' | 'dashed' | 'dotted'
-export type RelationshipArrowType = 'diamond' | 'ediamond' | 'empty' | 'none' | 'normal' | 'open';
+export type RelationshipArrowType = 'diamond' | 'odiamond' | 'onormal' | 'none' | 'normal' | 'vee'
 
 export const DefaultLineStyle = 'solid' satisfies RelationshipLineType
 export const DefaultArrowType = 'normal' satisfies RelationshipArrowType

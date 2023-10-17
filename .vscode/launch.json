@@ -23,12 +23,14 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/diagrams-dev/likec4",
+        "${workspaceFolder}/examples/mo",
       ],
       "sourceMaps": true,
       "autoAttachChildProcesses": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/**/*",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/packages/**",
+        "!**/node_modules/**",
+        "!${workspaceFolder}/packages/*/dist"
       ],
       "preLaunchTask": {
         "type": "npm",

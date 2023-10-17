@@ -242,7 +242,7 @@ fragment RelationshipStylePropertiesFragment:
 // -------------------------
 // Relationship Style Properties
 LineOptions returns string: 'solid' | 'dashed' | 'dotted';
-ArrowType returns string: 'normal' | 'empty' | 'diamond' | 'ediamond' | 'open' |'none';
+ArrowType returns string: 'normal' | 'onormal' | 'diamond' | 'odiamond' | 'vee' |'none';
 
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
