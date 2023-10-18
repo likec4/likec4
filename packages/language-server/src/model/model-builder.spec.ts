@@ -1,6 +1,6 @@
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
-import { keys } from 'rambdax'
+import { keys, values } from 'rambdax'
 import type { Element, ViewID } from '@likec4/core'
 
 vi.mock('../logger')
@@ -566,5 +566,31 @@ describe('LikeC4ModelBuilder', () => {
       docUri: 'vscode-vfs://host/virtual/src/a/b/c/doc3.c4',
       relativePath: 'a/b/c'
     })
+  })
+
+  it('builds model with relationship spec', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics, document } = await validate(`
+    specification {
+      element person
+      relationship async
+      
+    }
+    model {
+      person user1
+      person user2
+
+      user1 -[async]-> user2
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(values(model.relations)[0]).toMatchObject({
+      source: 'user1',
+      target: 'user2',
+      kind: 'async'
+    })
+    expect(model).toMatchSnapshot()
   })
 })

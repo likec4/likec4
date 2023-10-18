@@ -18,7 +18,8 @@ import {
   streamModel,
   toAutoLayout,
   toElementStyle,
-  toElementStyleExcludeDefaults
+  toElementStyleExcludeDefaults,
+  toRelationshipStyleExcludeDefaults
 } from '../ast'
 import { elementRef, fqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
@@ -62,6 +63,23 @@ export class LikeC4ModelParser {
         try {
           specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
             style?.props
+          )
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
+    }
+
+    const relations_specs = doc.parseResult.value.specification?.relationships
+    if (relations_specs) {
+      for (const { kind, props } of relations_specs) {
+        if (kind.name in specification.relationships) {
+          logger.warn(`Duplicate specification for kind ${kind.name}`)
+          continue
+        }
+        try {
+          specification.relationships[kind.name as c4.RelationshipKind] = toRelationshipStyleExcludeDefaults(
+            props
           )
         } catch (e) {
           logWarnError(e)
@@ -145,16 +163,18 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
+    const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const hashdata = {
       astPath: this.getAstNodePath(astNode),
       source,
-      target
-    }
+      target,
+   }
     const id = objectHash(hashdata) as c4.RelationID
     const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
     return {
       id,
       ...hashdata,
+      ...(kind && { kind }),
       title
     }
   }

@@ -401,3 +401,97 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   },
 }
 `;
+
+exports[`LikeC4ModelBuilder > builds model with relationship spec 1`] = `
+{
+  "elements": {
+    "user1": {
+      "description": null,
+      "id": "user1",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user1",
+    },
+    "user2": {
+      "description": null,
+      "id": "user2",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user2",
+    },
+  },
+  "relations": {
+    "c17e99a67ebce9c8314a906b7cbb53b77a8d103e": {
+      "id": "c17e99a67ebce9c8314a906b7cbb53b77a8d103e",
+      "kind": "async",
+      "source": "user1",
+      "target": "user2",
+      "title": "",
+    },
+  },
+  "views": {
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "user1:user2",
+          "label": "",
+          "parent": null,
+          "relations": [
+            "c17e99a67ebce9c8314a906b7cbb53b77a8d103e",
+          ],
+          "source": "user1",
+          "target": "user2",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user1",
+          "inEdges": [],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "user1:user2",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user1",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user2",
+          "inEdges": [
+            "user1:user2",
+          ],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user2",
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
+}
+`;
