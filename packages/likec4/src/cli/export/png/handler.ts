@@ -56,7 +56,7 @@ export async function handler({ path, output }: HandlerParams) {
   const host = isCI ? '172.17.0.1' : 'localhost'
 
   const pageUrl = (view: DiagramView) =>
-    `http://${host}:${previewServer.config.preview.port}/?export=${encodeURIComponent(view.id)}`
+    `http://${host}:${previewServer.config.preview.port}/export/${encodeURIComponent(view.id)}?`
 
   logger.info(`start chromium`)
   const browser = await chromium.launch()
@@ -67,17 +67,14 @@ export async function handler({ path, output }: HandlerParams) {
   logger.info(`${k.dim('output')} ${output}`)
   const queue = new PQueue({ concurrency })
 
-  try {
-    await queue.addAll(
-      views.map(v => () => takeScreenshot(v)),
-      {
-        throwOnTimeout: true,
-        timeout: 20000
-      }
-    )
-  } catch (error) {
-    logger.error(`Error while taking screenshots`, { error: error as any })
-  }
+  await queue.addAll(
+    views.map(v => () => takeScreenshot(v)),
+    {
+      throwOnTimeout: true,
+      timeout: 60000
+    }
+  )
+
   // delete vite cache
   await rm(buildOutputDir, { recursive: true, force: true })
 

@@ -13,19 +13,17 @@ export const serveCmd = {
         normalize: true
       })
       .options({
-        'source-maps': {
-          type: 'boolean',
-          desc: 'Enable source maps',
-          default: false
+        base: {
+          type: 'string',
+          desc: 'base url the app is being served from'
         }
       })
-      .hide('source-maps') //we use it at dev only
       .coerce('path', resolve)
       .default('path', resolve('.'), '.'),
   handler: async args => {
     const { handler } = await import('./serve')
     await handler(args)
   }
-} satisfies CommandModule<object, { 'path': string; 'source-maps': boolean }>
+} satisfies CommandModule<object, { path: string; base: string | undefined }>
 
 export default serveCmd

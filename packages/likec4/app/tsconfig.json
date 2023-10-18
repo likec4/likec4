@@ -34,7 +34,7 @@
       }
     ]
   },
-  "include": ["src"],
+  "include": ["src", "src/likec4-views.ts"],
   "references": [
     {
       "path": "../../core"

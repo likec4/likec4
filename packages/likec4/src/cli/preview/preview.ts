@@ -11,14 +11,19 @@ type HandlerParams = {
    * output directory
    */
   output: string
+  /**
+   * base url the app is being served from
+   * @default '/'
+   */
+  base?: string | undefined
 }
 
-export async function handler({ path, output: outputDir }: HandlerParams) {
+export async function handler({ path, output: outputDir, ...params }: HandlerParams) {
   const languageServices = await LanguageServicesInstance.get({
     workspaceDir: path
   })
 
-  const server = await vitePreview({ languageServices, outputDir, open: true })
+  const server = await vitePreview({ ...params, languageServices, outputDir, open: true })
 
   printServerUrls(server)
 }

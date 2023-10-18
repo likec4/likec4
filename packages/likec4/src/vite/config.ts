@@ -41,11 +41,13 @@ export type LikeC4ViteConfig =
       languageServices: LanguageServices
       workspaceDir?: never
       outputDir?: string
+      base?: string | undefined
     }
   | {
       languageServices?: never
       workspaceDir: string
       outputDir?: string
+      base?: string | undefined
     }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
@@ -59,20 +61,12 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   customLogger.info(`${k.dim('app root')} ${root}`)
 
-  let languageServices
-  if (cfg) {
-    languageServices =
-      cfg.languageServices ??
-      (await mkLanguageServices({
-        workspaceDir: cfg.workspaceDir,
-        logValidationErrors: true
-      }))
-  } else {
-    languageServices = await mkLanguageServices({
-      workspaceDir: process.cwd(),
+  const languageServices =
+    cfg?.languageServices ??
+    (await mkLanguageServices({
+      workspaceDir: cfg?.workspaceDir ?? process.cwd(),
       logValidationErrors: true
-    })
-  }
+    }))
 
   let coreSrc, diagramsSrc
 
@@ -92,6 +86,18 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger
   )
 
+  let base = '/'
+  if (cfg?.base) {
+    base = cfg.base
+    if (!base.startsWith('/')) {
+      base = '/' + base
+    }
+    if (!base.endsWith('/')) {
+      base = base + '/'
+    }
+    customLogger.info(`${k.dim('app base url')} ${base}`)
+  }
+
   return {
     root,
     languageServices,
@@ -102,6 +108,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         ...aliases
       }
     },
+    clearScreen: false,
+    base,
     build: {
       outDir: cfg?.outputDir ?? resolve(languageServices.workspace, 'dist'),
       emptyOutDir: isNil(cfg?.outputDir),

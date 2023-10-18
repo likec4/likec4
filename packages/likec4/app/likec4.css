@@ -13,6 +13,6 @@ html, body {
   padding: 0;
 }
 
-.export-page {
+.transparent-bg {
   --color-page-background: transparent !important;
 }

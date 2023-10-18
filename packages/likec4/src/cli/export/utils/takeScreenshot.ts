@@ -15,7 +15,7 @@ type TakeScreenshotParams = {
 export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: TakeScreenshotParams) {
   return async function takeScreenshot(view: DiagramView) {
     const padding = 20
-    const url = pageUrl(view) + `&padding=${padding}`
+    const url = pageUrl(view) + `e=e&padding=${padding}`
     logger.info(`${k.dim('export')} ${view.id} ${k.underline(k.dim(url))}`)
 
     const page = await browser.newPage({
@@ -39,7 +39,10 @@ export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: Take
     }
 
     try {
-      await Promise.all([page.waitForLoadState('load')])
+      // Wait for page to be fully loaded
+      await page.waitForLoadState()
+      // Wait for network to be idle (if there images to be loaded)
+      await page.waitForLoadState('networkidle', { timeout: 10000 })
     } catch (error: unknown) {
       logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
         error: error as any

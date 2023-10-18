@@ -10,17 +10,6 @@ const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'
 console.info(`⚠️ likec4 build isDev=${isDev}`)
 
 async function buildCli() {
-  const alias = {
-    // '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
-    // '@likec4/core/types': resolve('../core/src/types/index.ts'),
-    // '@likec4/core/colors': resolve('../core/src/colors.ts'),
-    // '@likec4/core': resolve('../core/src/index.ts'),
-    // '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
-    // '@likec4/generators': resolve('../generators/src/index.ts'),
-    // '@likec4/language-server': resolve('../language-server/src/index.ts'),
-    // '@likec4/layouts': resolve('../layouts/src/index.ts')
-  }
-
   const cfg: BuildOptions = {
     metafile: isDev,
     logLevel: 'info',
@@ -28,7 +17,6 @@ async function buildCli() {
     outbase: 'src',
     color: true,
     bundle: true,
-    alias,
     sourcemap: true,
     sourcesContent: isDev,
     keepNames: true,

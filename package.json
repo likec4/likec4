@@ -44,6 +44,7 @@
     "@vitest/ui": "^0.34.7",
     "eslint": "^8.51.0",
     "execa": "^8.0.1",
+    "global": "^4.4.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "prettier": "^3.0.3",
@@ -57,7 +58,7 @@
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "20.6.1",
+    "node": "20.8.1",
     "yarn": "1.22.19"
   },
   "resolutions": {
@@ -79,8 +80,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "dependencies": {
-    "global": "^4.4.0"
   }
 }

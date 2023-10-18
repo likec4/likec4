@@ -17,11 +17,11 @@ import {
   Text
 } from '@radix-ui/themes'
 import { useState } from 'react'
+import { $pages } from '../../router'
 
 const embedCode = (diagram: DiagramView, theme: string) => {
   const padding = 20
   const params = new URLSearchParams()
-  params.set('embed', diagram.id)
   params.set('padding', `${padding}`)
   if (theme !== 'system') {
     params.set('theme', theme)
@@ -31,6 +31,7 @@ const embedCode = (diagram: DiagramView, theme: string) => {
   const height = diagram.height + padding * 2
 
   const url = new URL(window.location.href)
+  url.pathname = $pages.embed.path(diagram.id)
   url.search = params.toString()
   const iframe = `<iframe src="${url.href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>`
 

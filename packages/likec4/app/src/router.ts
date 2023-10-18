@@ -1,8 +1,16 @@
 // stores/router.ts
 import { logger } from '@nanostores/logger'
 import { useStore } from '@nanostores/react'
-import { createSearchParams } from '@nanostores/router'
+import { createSearchParams, createRouter, openPage, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
+import { BaseUrl } from './const'
+
+export const $router = createRouter({
+  index: BaseUrl,
+  view: `${BaseUrl}view/:viewId?`,
+  export: `${BaseUrl}export/:viewId`,
+  embed: `${BaseUrl}embed/:viewId`
+} as const)
 
 const $searchParams = createSearchParams()
 
@@ -22,36 +30,25 @@ const asPadding = (v: string | null | undefined) => {
   return 20
 }
 
-const $route = computed($searchParams, v => {
-  if ('embed' in v) {
-    return {
-      route: 'export' as const,
-      params: {
-        viewId: v.embed,
-        padding: asPadding(v.padding),
-        theme: asTheme(v.theme)
-      },
-      showUI: false
-    }
-  }
-  if ('export' in v) {
-    return {
-      route: 'export' as const,
-      params: {
-        viewId: v.export,
-        padding: asPadding(v.padding),
-        theme: asTheme(v.theme)
-      },
-      showUI: false
-    }
-  }
-  if ('view' in v) {
+const $route = computed([$router, $searchParams], (r, v) => {
+  if (r?.route === 'view') {
     return {
       route: 'view' as const,
       params: {
-        viewId: v.view
+        viewId: r.params.viewId ?? 'index'
       },
       showUI: 'showUI' in v ? v.showUI === 'true' : true
+    }
+  }
+  if (r?.route === 'export' || r?.route === 'embed') {
+    return {
+      route: 'export' as const,
+      params: {
+        viewId: r.params.viewId,
+        padding: asPadding(v.padding),
+        theme: asTheme(v.theme)
+      },
+      showUI: false
     }
   }
   return {
@@ -70,16 +67,20 @@ export const isCurrentDiagram = <V extends { id: string }>(view: V) => {
 
 export const $pages = {
   index: {
-    open: () => $searchParams.open({})
+    open: () => openPage($router, 'index')
   },
   view: {
-    open: (viewId: string) => $searchParams.open({ view: viewId })
+    open: (viewId: string) => openPage($router, 'view', { viewId })
+  },
+  embed: {
+    path: (viewId: string) => getPagePath($router, 'embed', { viewId })
   }
 } as const
 
 if (import.meta.env.DEV) {
   logger({
     $searchParams,
+    $router,
     $route
   })
 }
