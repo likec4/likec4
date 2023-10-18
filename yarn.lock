@@ -1612,7 +1612,7 @@ __metadata:
     prettier: ^3.0.3
     rimraf: ^5.0.5
     shipjs: ^0.26.3
-    tsx: ^3.13.0
+    tsx: ^3.14.0
     turbo: ^1.10.15
     typescript: ^5.2.2
     vite: ^4.4.11
@@ -10231,7 +10231,7 @@ __metadata:
     tailwind-merge: ^1.14.0
     tailwindcss: ^3.3.3
     tailwindcss-animate: ^1.0.7
-    tsx: ^3.13.0
+    tsx: ^3.14.0
     typescript: ^5.2.2
     typescript-plugin-css-modules: ^5.0.1
     vite: ^4.4.11
@@ -15484,6 +15484,23 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: ef858574e110d16a7ca9bbb3a5edeeafd37026ebed6cdd390c4707ad64005024c55fd3142a8f89732c79176196afa7d27073f586966ff0cae0126159ebd58be4
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^3.14.0":
+  version: 3.14.0
+  resolution: "tsx@npm:3.14.0"
+  dependencies:
+    esbuild: ~0.18.20
+    fsevents: ~2.3.3
+    get-tsconfig: ^4.7.2
+    source-map-support: ^0.5.21
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: afcef5d9b90b5800cf1ffb749e943f63042d78a4c0d9eef6e13e43f4ecab465d45e2c9812a2c515cbdc2ee913ff1cd01bf5c606a48013dd3ce2214a631b45557
   languageName: node
   linkType: hard
 
