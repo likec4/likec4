@@ -7,7 +7,7 @@ import { viteConfig } from './config'
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
   const config = await viteConfig(cfg)
   const port = await getPort({
-    port: [61001, 62002, 62003, 62004, 62005]
+    port: [5173, 61000, 61001, 62002, 62003, 62004, 62005]
   })
   const hmrPort = await getPort({
     port: [24678, 24679, 24680, 24681, 24682, 24683, 24684, 24685]
