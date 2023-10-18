@@ -2,7 +2,6 @@ name: Build and Test
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
   push:
     tags-ignore:
       - "**"
@@ -22,8 +21,7 @@ jobs:
     # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' ||
-        github.event.pull_request.head.repo.full_name != github.repository
+        github.event_name == 'push' || github.event.pull_request.head.repo.fork
       )
     timeout-minutes: 10
     strategy:
@@ -47,14 +45,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Bootstrap
-        uses: ./.github/actions/bootstrap
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: restore caches
+        uses: actions/cache/restore@v3
+        if: github.event_name != 'push'
+        with:
+          path: |
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-${{ matrix.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-${{ matrix.node-version }}-
+            ${{ runner.os }}-yarn-
+
+      - name: yarn caches
+        uses: actions/cache@v3
+        if: github.event_name == 'push'
+        with:
+          path: |
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-${{ matrix.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-${{ matrix.node-version }}-
+            ${{ runner.os }}-yarn-
+
       - name: Turborepo-cache
-        if: ${{ matrix.turbo-cache }}
+        if: ${{ github.event_name == 'push' && matrix.turbo-cache }}
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: install dependencies
+        shell: bash
+        env:
+          YARN_CACHE_FOLDER: .yarn/cache
+        run: yarn install --immutable
 
       - name: Build
         run: yarn ci:build
@@ -77,18 +102,6 @@ jobs:
           path: integration/like4-cli-tests/out/
           if-no-files-found: error
           retention-days: 5
-
-      - if: ${{ matrix.build-docs }}
-        name: Docs NextJS Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            docs/.next/cache
-            node_modules/nextra/dist/__temp__
-          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
-            ${{ runner.os }}-docs-
 
       - if: ${{ matrix.build-docs }}
         name: Build Docs

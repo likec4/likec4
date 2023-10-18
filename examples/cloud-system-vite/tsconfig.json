@@ -24,13 +24,7 @@
       "path": "../../packages/core"
     },
     {
-      "path": "../../packages/layouts"
-    },
-    {
-      "path": "../../packages/generators"
-    },
-    {
-      "path": "../../packages/language-server"
+      "path": "../../packages/diagrams"
     }
   ]
 }

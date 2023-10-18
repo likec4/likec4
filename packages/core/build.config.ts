@@ -37,7 +37,7 @@ export default defineBuildConfig({
   sourcemap: true,
   hooks: {
     'build:before': async (ctx) => {
-      await $`tsc --emitDeclarationOnly --declaration --declarationMap --listFiles`
+      await $`tsc --emitDeclarationOnly --declaration --declarationMap`
     }
   }
 })

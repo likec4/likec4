@@ -34,8 +34,9 @@ const slate = {
 } satisfies ThemeColorValues
 
 export const RelationColors = {
-  lineColor: '#b1b1b1',
-  labelColor: '#b1b1b1'
+  lineColor: '#6E6E6E',
+  labelBgColor: '#18191b',
+  labelColor: '#C6C6C6'
 } as const satisfies ThemeRelationColors
 
 export const Colors = {

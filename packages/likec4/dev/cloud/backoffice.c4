@@ -8,7 +8,11 @@ model {
         shape browser
       }
 
-      -> cloud.billing.subscriptions 'manage subscriptions'
+      -> cloud.billing.subscriptions '
+        manage tarrifs, payments
+        and subscriptions
+      '
+
     }
 
     tenantsDashboard = app 'Tenants Dashboard' {

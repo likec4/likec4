@@ -24,7 +24,6 @@
   "type": "module",
   "bin": "./bin/likec4.mjs",
   "scripts": {
-    "typecheck:turbo": "run -T turbo run typecheck --filter='likec4'",
     "build:turbo": "run -T turbo run build --filter='likec4'",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit",
@@ -36,6 +35,8 @@
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist app/dist dev/.export dev/dist",
+    "dev": "tsx watch src/cli/index.ts serve dev",
+    "dev:bigbank": "tsx watch src/cli/index.ts serve ../../docs/likec4/bigbank",
     "cli": "tsx src/cli/index.ts",
     "cli:serve": "tsx watch src/cli/index.ts serve dev",
     "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",
@@ -43,7 +44,7 @@
     "cli:export": "tsx src/cli/index.ts export png -o dev/export dev"
   },
   "dependencies": {
-    "@nanostores/logger": "^0.2.3",
+    "@nanostores/logger": "^0.2.4",
     "@nanostores/react": "^0.7.1",
     "@nanostores/router": "^0.11.0",
     "@radix-ui/react-icons": "^1.3.0",

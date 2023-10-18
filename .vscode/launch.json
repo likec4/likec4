@@ -26,12 +26,12 @@
         "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
       "sourceMaps": true,
-      "autoAttachChildProcesses": true,
       "resolveSourceMapLocations": [
         "${workspaceFolder}/packages/**",
-        "!**/node_modules/**",
-        "!${workspaceFolder}/packages/*/dist"
+        "!${workspaceFolder}/packages/*/dist/",
+        "!**/node_modules/**"
       ],
+      "autoAttachChildProcesses": true,
       "preLaunchTask": {
         "type": "npm",
         "script": "build:turbo",
@@ -49,10 +49,12 @@
         "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
       "sourceMaps": true,
-      "autoAttachChildProcesses": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/**/*",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/packages/**",
+        "!${workspaceFolder}/packages/*/dist/",
+        "!**/node_modules/**"
       ],
+      "autoAttachChildProcesses": true,
       "preLaunchTask": {
         "type": "npm",
         "script": "build:turbo",

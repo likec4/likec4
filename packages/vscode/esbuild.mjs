@@ -9,23 +9,6 @@ const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
 console.log(`VSCode build isDev=${isDev}`)
 
-const alias = {
-  'vscode-uri': 'vscode-uri/lib/esm/index.js',
-  '@likec4/core/utils': resolve('../core/src/utils/index.ts'),
-  '@likec4/core/errors': resolve('../core/src/errors/index.ts'),
-  '@likec4/core/types': resolve('../core/src/types/index.ts'),
-  '@likec4/core/colors': resolve('../core/src/colors.ts'),
-  '@likec4/core': resolve('../core/src/index.ts'),
-  '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
-  '@likec4/generators': resolve('../generators/src/index.ts'),
-  '@likec4/language-server': resolve('../language-server/src/index.ts'),
-  '@likec4/layouts': resolve('../layouts/src/index.ts')
-}
-
-if (isDev) {
-  console.info(' ⚠️  Using local packages:')
-  console.dir(alias)
-}
 
 /**
  * @type {esbuild.BuildOptions}
@@ -40,9 +23,6 @@ const base = {
   external: ['vscode'],
   define: {
     'process.env.NODE_ENV': '"production"'
-  },
-  alias: {
-    ...alias
   },
   sourcemap: true,
   sourcesContent: isDev,

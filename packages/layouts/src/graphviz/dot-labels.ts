@@ -97,11 +97,11 @@ export function edgeLabel(text: string) {
   const lines = [
     wrapToHTML({
       text,
-      maxchars: 45,
-      fontsize: 14,
+      maxchars: 35,
+      fontsize: 13,
       align: 'left'
     })
   ]
   const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`).join('')
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="3" CELLSPACING="0">${rows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="0">${rows}</TABLE>>`
 }
