@@ -1381,7 +1381,7 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.4
     execa: ^8.0.1
     jotai: ^2.4.3
-    khroma: ^2.0.0
+    khroma: ^2.1.0
     konva: ^9.2.2
     rambdax: ^9.1.1
     react: ^18.2.0
@@ -9967,6 +9967,13 @@ __metadata:
   version: 2.0.0
   resolution: "khroma@npm:2.0.0"
   checksum: 3be7ef681f41f6071464e21060731fa63e2915bcd0774b9f35e431aa664c0c0e0826825403360654935111d4309f6704e5dc27cd953614133dfbdee4c056c3a8
+  languageName: node
+  linkType: hard
+
+"khroma@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "khroma@npm:2.1.0"
+  checksum: b34ba39d3a9a52d388110bded8cb1c12272eb69c249d8eb26feab12d18a96a9bc4ceec4851d2afa43de4569f7d5ea78fa305965a3d0e96a38e02fe77c53677da
   languageName: node
   linkType: hard
 

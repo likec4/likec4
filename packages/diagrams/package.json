@@ -46,7 +46,7 @@
     "@use-gesture/react": "^10.3.0",
     "body-scroll-lock-upgrade": "^1.0.4",
     "jotai": "^2.4.3",
-    "khroma": "^2.0.0",
+    "khroma": "^2.1.0",
     "konva": "^9.2.2",
     "rambdax": "^9.1.1",
     "react-konva": "^18.2.10"
