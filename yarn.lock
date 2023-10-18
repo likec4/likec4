@@ -1083,14 +1083,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "@hpcc-js/wasm@npm:2.14.0"
+"@hpcc-js/wasm@npm:^2.14.1":
+  version: 2.14.1
+  resolution: "@hpcc-js/wasm@npm:2.14.1"
   dependencies:
     yargs: 17.7.2
   bin:
     dot-wasm: bin/dot-wasm.js
-  checksum: 672330257ceb70fa4da088cbcc7d6488bfd13ccc4e2323963216a71dfa9f0375189049c96d3ead5ffcb7a8429dcce1227191347a37e3a421f2c314a9989341f8
+  checksum: dd7973f8da59febc10758f9cdf77ab1206013b746e80d4dcceeab82c54ccfadecc0a473facdb91f7b9a363664dcd8b9e5c10b0bdefa949c156f382cb5d765303
   languageName: node
   linkType: hard
 
@@ -1382,7 +1382,7 @@ __metadata:
     execa: ^8.0.1
     jotai: ^2.4.3
     khroma: ^2.0.0
-    konva: ^9.2.1
+    konva: ^9.2.2
     rambdax: ^9.1.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -1537,7 +1537,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@hpcc-js/wasm": ^2.14.0
+    "@hpcc-js/wasm": ^2.14.1
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
     "@types/node": ^18.15.11
@@ -1882,12 +1882,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nanostores/logger@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@nanostores/logger@npm:0.2.3"
+"@nanostores/logger@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@nanostores/logger@npm:0.2.4"
   peerDependencies:
     nanostores: ">=0.9.2"
-  checksum: 77215448931d3bb0d240cb26ad1b995c0d7e5da804f60701ddee82418dc9bab9638a652cb64bfa71ab4cb89caa970be04251bf10475bfd2973f93701acbefdca
+  checksum: 35c0f773e93143dba1dc4df90081cde9f782a45ebae1b45354f309c45de6d7993e41aa68b0dcb62a48f18f32365b659eaafc4f4b7f2b9ddc89dbd725f1e54e03
   languageName: node
   linkType: hard
 
@@ -10039,10 +10039,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.2.1":
-  version: 9.2.1
-  resolution: "konva@npm:9.2.1"
-  checksum: f6813c42732d006d78a289c4954a82b4dcb79e80bf33c5d6b9bc135d268465be6313b2a5df503fd6da18d5ab5deb9c3f96d81f447199f557d36deefe1a702aa9
+"konva@npm:^9.2.2":
+  version: 9.2.2
+  resolution: "konva@npm:9.2.2"
+  checksum: 9597129797ea805e43a143b5f3feba83f5ff4681b123d6598bd0d6753ea9a3a2c3b01d631f21322144b40b51875ca1fc8d4408130163efbd656f3e05c2ccdea8
   languageName: node
   linkType: hard
 
@@ -10193,7 +10193,7 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@nanostores/logger": ^0.2.3
+    "@nanostores/logger": ^0.2.4
     "@nanostores/react": ^0.7.1
     "@nanostores/router": ^0.11.0
     "@radix-ui/react-icons": ^1.3.0

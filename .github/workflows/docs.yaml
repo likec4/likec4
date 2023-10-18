@@ -42,9 +42,14 @@ jobs:
             ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
             ${{ runner.os }}-docs-
 
+      - name: Prebuild dependencies
+        run: yarn turbo run build --filter='docs-website^...'
+
       - name: Build NextJS
         working-directory: docs
-        run: yarn build:turbo
+        run: |
+          yarn generate
+          yarn build
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
