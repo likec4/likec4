@@ -47,7 +47,7 @@ jobs:
 
       - name: Build NextJS
         working-directory: docs
-        run:
+        run: |
           yarn generate
           yarn build
 
