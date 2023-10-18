@@ -14,6 +14,27 @@ model {
 }
 ```
 
+Relations may be styled by defining a relationship in the `specification` and using **`-[<relationship_name>]->`** for the relation.
+```likec4 filename="specification.c4"
+model {
+  ...
+  relationship async {
+    color amber
+    line dashed
+    head diamond
+    tail none
+  }
+}
+```
+```likec4 filename="relations.c4"
+model {
+  server = system 'Server'
+  cloud = service 'Cloud'
+
+  server -[async]-> cloud
+}
+```
+
 Relationship may be nested
 
 ```likec4 filename="relations.c4"
