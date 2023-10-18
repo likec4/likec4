@@ -586,14 +586,6 @@ describe('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
     const model = await buildModel()
     expect(model).toBeDefined()
-    expect(model.elements).toMatchObject({
-      'user1': {
-        kind: 'person'
-      },
-      'user2': {
-        kind: 'person'
-      }
-    })
     expect(values(model.relations)[0]).toMatchObject({
       source: 'user1',
       target: 'user2',

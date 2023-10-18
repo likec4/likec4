@@ -144,7 +144,7 @@ describe('model relation', () => {
   )
 
   test(
-    'relation with properties',
+    'styled relationship',
     valid`
     specification {
       element person

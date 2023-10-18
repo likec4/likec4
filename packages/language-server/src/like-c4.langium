@@ -151,7 +151,7 @@ ViewProperty:
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 
 ViewRuleExpression:
-  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)*;
+  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)* Comma?;
 
 ViewRuleLayoutDirection returns string: 'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
 
