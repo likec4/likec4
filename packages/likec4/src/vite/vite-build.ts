@@ -4,13 +4,14 @@ import { viteConfig } from './config'
 
 export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
   const config = await viteConfig(cfg)
-  await build(
-    mergeConfig(config, {
-      configFile: false,
-      mode: 'production'
-    })
-  )
+  // Static website
+  await build({
+    ...config,
+    configFile: false,
+    mode: 'production'
+  })
 
+  // Script for embedding in other websites
   await build(
     mergeConfig(config, {
       configFile: false,

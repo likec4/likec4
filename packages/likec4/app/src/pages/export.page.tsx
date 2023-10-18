@@ -1,5 +1,6 @@
 import { Diagram } from '@likec4/diagrams'
-import { useIsomorphicLayoutEffect, useWindowSize } from '@react-hookz/web/esm'
+import { useWindowSize } from '@react-hookz/web/esm'
+import { useLayoutEffect } from 'react'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
 
@@ -11,9 +12,11 @@ export function ExportPage({ viewId, padding }: ExportPageProps) {
   const { width, height } = useWindowSize()
   const diagram = useLikeC4View(viewId)
 
-  useIsomorphicLayoutEffect(() => {
+  // To get the transparent background
+  // We need to add a class to the HTML element
+  useLayoutEffect(() => {
     // see ../../likec4.css
-    const classname = 'export-page'
+    const classname = 'transparent-bg'
     document.body.parentElement?.classList.add(classname)
     return () => {
       document.body.parentElement?.classList.remove(classname)
