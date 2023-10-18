@@ -9,6 +9,9 @@ export type LikeC4PluginOptions = {
 const moduleId = '~likec4'
 const resolvedVirtualModuleId = '/@vite-plugin-likec4/likec4-generated'
 
+const dimensionsModuleId = '~likec4-dimensions'
+const resolvedDimensionsModuleId = '/@vite-plugin-likec4/likec4-dimensions'
+
 const isTarget = (path: string) => {
   const p = path.toLowerCase()
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
@@ -23,6 +26,16 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     return generateViewsDataJs(views)
   }
 
+  async function generateDimensionsCode() {
+    const views = await likec4.getViews()
+    let code = `export const LikeC4Views = {\n`
+    for (const view of views) {
+      code += `  ${JSON.stringify(view.id)}: {width: ${view.width},height: ${view.height}},\n`
+    }
+    code += `}`
+    return code
+  }
+
   return {
     name: 'vite-plugin-likec4',
 
@@ -31,6 +44,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     },
 
     resolveId(id) {
+      if (id === dimensionsModuleId) {
+        return resolvedDimensionsModuleId
+      }
       if (id === moduleId) {
         return resolvedVirtualModuleId
       }
@@ -38,6 +54,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     },
 
     async load(id) {
+      if (id === resolvedDimensionsModuleId) {
+        return await generateDimensionsCode()
+      }
       if (id === resolvedVirtualModuleId) {
         const code = (_generatedCode ??= await generateCode())
         return code

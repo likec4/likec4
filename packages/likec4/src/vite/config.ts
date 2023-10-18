@@ -41,11 +41,13 @@ export type LikeC4ViteConfig =
       languageServices: LanguageServices
       workspaceDir?: never
       outputDir?: string
+      base?: string | undefined
     }
   | {
       languageServices?: never
       workspaceDir: string
       outputDir?: string
+      base?: string | undefined
     }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
@@ -92,6 +94,18 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger
   )
 
+  let base = '/'
+  if (cfg?.base) {
+    base = cfg.base
+    if (!base.startsWith('/')) {
+      base = '/' + base
+    }
+    if (!base.endsWith('/')) {
+      base = base + '/'
+    }
+    customLogger.info(`${k.dim('app base url')} ${base}`)
+  }
+
   return {
     root,
     languageServices,
@@ -102,6 +116,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         ...aliases
       }
     },
+    base,
     build: {
       outDir: cfg?.outputDir ?? resolve(languageServices.workspace, 'dist'),
       emptyOutDir: isNil(cfg?.outputDir),

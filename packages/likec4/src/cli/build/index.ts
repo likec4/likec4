@@ -20,6 +20,10 @@ export const buildCmd = {
           type: 'string',
           desc: 'output directory for production build',
           normalize: true
+        },
+        base: {
+          type: 'string',
+          desc: 'base url the app is being served from'
         }
       })
       .coerce(['path', 'output'], resolve)
@@ -33,6 +37,6 @@ export const buildCmd = {
     const { handler } = await import('./build')
     await handler(args)
   }
-} satisfies CommandModule<object, { path: string; output: string }>
+} satisfies CommandModule<object, { path: string; output: string; base: string | undefined }>
 
 export default buildCmd

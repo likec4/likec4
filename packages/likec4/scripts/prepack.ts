@@ -14,7 +14,7 @@ const $$ = $({
 console.log('Run build\n')
 
 // Run build
-await $$`yarn build`
+await $$`yarn build:turbo`
 
 console.log('\nUpdate package.json\n')
 

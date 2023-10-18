@@ -56,7 +56,7 @@ export async function handler({ path, output }: HandlerParams) {
   const host = isCI ? '172.17.0.1' : 'localhost'
 
   const pageUrl = (view: DiagramView) =>
-    `http://${host}:${previewServer.config.preview.port}/?export=${encodeURIComponent(view.id)}`
+    `http://${host}:${previewServer.config.preview.port}/export/${encodeURIComponent(view.id)}?`
 
   logger.info(`start chromium`)
   const browser = await chromium.launch()
