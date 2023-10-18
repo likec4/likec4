@@ -1436,7 +1436,7 @@ __metadata:
     tailwindcss: ^3.3.3
     tailwindcss-animate: ^1.0.7
     typescript: ^5.2.2
-    typescript-plugin-css-modules: ^5.0.1
+    typescript-plugin-css-modules: ^5.0.2
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: 8.1.0
     vscode-languageclient: 8.1.0
@@ -10233,7 +10233,7 @@ __metadata:
     tailwindcss-animate: ^1.0.7
     tsx: ^3.13.0
     typescript: ^5.2.2
-    typescript-plugin-css-modules: ^5.0.1
+    typescript-plugin-css-modules: ^5.0.2
     vite: ^4.4.11
     vitest: ^0.34.6
     yargs: ^17.7.2
@@ -15678,9 +15678,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-plugin-css-modules@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "typescript-plugin-css-modules@npm:5.0.1"
+"typescript-plugin-css-modules@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "typescript-plugin-css-modules@npm:5.0.2"
   dependencies:
     "@types/postcss-modules-local-by-default": ^4.0.0
     "@types/postcss-modules-scope": ^3.0.1
@@ -15700,7 +15700,7 @@ __metadata:
     tsconfig-paths: ^4.1.2
   peerDependencies:
     typescript: ">=4.0.0"
-  checksum: 5d6d6003c97ce821904981273f9d6e9c1bb27b1b712b187fd17255eb27634a9dfe0a5e961b5dad3d1274c90161439736b65b605fd55c22d88907275a8abda9c8
+  checksum: 4efbe2313ecab85ea9d499e29fb93352cc5c06a5960e26368f3469cc8f81a5faa9d02339bcd13c0e2591eeb9eca1da66e8fcf7c77e7728d077193ebbef600a7c
   languageName: node
   linkType: hard
 
