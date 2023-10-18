@@ -18,7 +18,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
-    "@ladle/react": "^3.2.1",
+    "@ladle/react": "^3.2.2",
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/web": "^23.1.0",
@@ -28,9 +28,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "tsx": "^3.13.0",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2",
-    "vite-plugin-watch-and-run": "^1.1.3"
+    "vite-plugin-watch-and-run": "^1.4.0"
   },
   "volta": {
     "extends": "../../package.json"
