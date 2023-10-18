@@ -13,7 +13,6 @@
     },
     "build": {
       "dependsOn": ["generate", "^build"],
-      "cache": false,
       "outputs": [".next/**", "out/**", "!.next/cache/**"]
     }
   }
