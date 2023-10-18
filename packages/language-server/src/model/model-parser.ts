@@ -168,13 +168,13 @@ export class LikeC4ModelParser {
       astPath: this.getAstNodePath(astNode),
       source,
       target,
-      kind
    }
     const id = objectHash(hashdata) as c4.RelationID
     const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
     return {
       id,
       ...hashdata,
+      ...(kind && { kind }),
       title
     }
   }
