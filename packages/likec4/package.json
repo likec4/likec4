@@ -54,7 +54,7 @@
     "autoprefixer": "^10.4.16",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
-    "nanostores": "^0.9.3",
+    "nanostores": "^0.9.4",
     "playwright-core": "^1.38.1",
     "postcss": "^8.4.31",
     "prop-types": "^15.8.1",

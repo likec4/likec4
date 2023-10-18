@@ -10216,7 +10216,7 @@ __metadata:
     get-port: ^7.0.0
     json5: ^2.2.3
     mkdirp: ^3.0.1
-    nanostores: ^0.9.3
+    nanostores: ^0.9.4
     p-queue: ^7.4.1
     picocolors: ^1.0.0
     playwright-core: ^1.38.1
@@ -11895,10 +11895,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanostores@npm:^0.9.3":
-  version: 0.9.3
-  resolution: "nanostores@npm:0.9.3"
-  checksum: aad0db366a3fa82d1e3664199145cd28f71ecb4fc6f3fcaeb758400485efbd8f888fcb9db3cca4827c5ee54a5f79451ae6f8bf5080b54befad50469c411001d0
+"nanostores@npm:^0.9.4":
+  version: 0.9.4
+  resolution: "nanostores@npm:0.9.4"
+  checksum: 03bf9a56c53a4d9e7fe00c56ae693d86589c47642bab5f846b96047c27758282c969f3104f0e37303d60263fde014e3110305400e9a53472649da0e27146488a
   languageName: node
   linkType: hard
 
