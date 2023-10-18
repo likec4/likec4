@@ -1,6 +1,6 @@
 import type { Opaque } from './opaque'
 import type { ElementKind, ElementShape, Fqn, Tag } from './element'
-import type { RelationID } from './relation'
+import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
 import type { BasicElementView, ViewID, ViewRuleAutoLayout } from './view'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ThemeColor } from './theme'
@@ -35,6 +35,10 @@ export interface ComputedEdge {
   target: NodeId
   label: string | null
   relations: RelationID[]
+  color?: ThemeColor
+  line?: RelationshipLineType
+  head?: RelationshipArrowType
+  tail?: RelationshipArrowType
 }
 
 export interface ComputedView extends Omit<BasicElementView, 'rules'> {

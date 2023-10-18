@@ -11,7 +11,8 @@ import {
   type GraphBaseModel,
   type NodeModel,
   type RootGraphModel,
-  type SubgraphModel
+  type SubgraphModel,
+  type ArrowType
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import { pxToInch, pxToPoints } from './graphviz-utils'
@@ -256,6 +257,27 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         e.attributes.apply({
           [attr]: edgeLabel(edge.label),
           [_.nojustify]: true
+        })
+      }
+      if (edge.color) {
+        e.attributes.apply({
+          [_.color]: edge.color
+        })
+      }
+      if (edge.line) {
+        e.attributes.apply({
+          [_.style]: edge.line
+        })
+      }
+      if (edge.head) {
+        e.attributes.apply({
+          [_.arrowhead]: edge.head
+        })
+      }
+      if (edge.tail) {
+        e.attributes.apply({
+          [_.arrowtail]: edge.tail,
+          [_.dir]: "both"
         })
       }
     }

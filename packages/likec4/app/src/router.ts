@@ -1,19 +1,15 @@
 // stores/router.ts
 import { logger } from '@nanostores/logger'
 import { useStore } from '@nanostores/react'
-import { createSearchParams, createRouter, openPage } from '@nanostores/router'
+import { createSearchParams, createRouter, openPage, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
-
-let BASE = import.meta.env.BASE_URL
-if (!BASE.endsWith('/')) {
-  BASE = BASE + '/'
-}
+import { BaseUrl } from './const'
 
 export const $router = createRouter({
-  index: BASE,
-  view: `${BASE}view/:viewId?`,
-  export: `${BASE}export/:viewId`,
-  embed: `${BASE}embed/:viewId`
+  index: BaseUrl,
+  view: `${BaseUrl}view/:viewId?`,
+  export: `${BaseUrl}export/:viewId`,
+  embed: `${BaseUrl}embed/:viewId`
 } as const)
 
 const $searchParams = createSearchParams()
@@ -75,6 +71,9 @@ export const $pages = {
   },
   view: {
     open: (viewId: string) => openPage($router, 'view', { viewId })
+  },
+  embed: {
+    path: (viewId: string) => getPagePath($router, 'embed', { viewId })
   }
 } as const
 

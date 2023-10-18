@@ -34,3 +34,18 @@ test('tagChecks', async () => {
     expect(diagnostic.message, 'diagnostic message').toBe("Duplicate tag 'tag1'")
   }
 })
+
+test('relationshipChecks', async () => {
+  const { diagnostics } = await validate(`
+    specification {
+      relationship async
+      relationship foo
+      relationship async
+    }
+  `)
+  expect(diagnostics).toHaveLength(2)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe("Duplicate RelationshipKind 'async'")
+  }
+})

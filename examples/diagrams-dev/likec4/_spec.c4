@@ -22,5 +22,10 @@ specification {
     }
   }
 
-
+  relationship async {
+    color red
+    line dashed
+    head normal
+    tail none
+  }
 }

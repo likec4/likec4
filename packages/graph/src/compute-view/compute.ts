@@ -5,7 +5,6 @@ import type {
   Element,
   ElementView,
   Relation,
-  RelationID,
   ViewRuleExpression
 } from '@likec4/core'
 import {
@@ -127,23 +126,27 @@ export class ComputeCtx {
       invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
       const source = e.source.id
       const target = e.target.id
-
-      let label = null
-      if (e.relations.length === 1) {
-        label = e.relations[0].title
-      } else {
-        const exact = e.relations.find(r => r.source === source && r.target === target)
-        label = exact?.title ?? null
-      }
-
-      return {
+      
+      const edge: ComputedEdge = {
         id: `${source}:${target}` as EdgeId,
         parent: commonAncestor(source, target),
         source,
         target,
-        label,
-        relations: e.relations.map(r => r.id)
-      } satisfies ComputedEdge
+        label: null,
+        relations: e.relations.map(r => r.id),
+      }
+
+      let relation
+      if (e.relations.length === 1) {
+        edge.label = e.relations[0].title
+        relation = e.relations[0]
+      } else {
+        const exact = e.relations.find(r => r.source === source && r.target === target)
+        edge.label = exact?.title ?? null
+        relation = exact ?? null
+      }
+
+      return Object.assign(edge, relation?.color && {color: relation.color }, relation?.line && {line: relation.line}, relation?.head && {head: relation.head}, relation?.tail && {tail: relation.tail})
     })
   }
 
