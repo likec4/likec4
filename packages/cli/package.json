@@ -32,7 +32,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
-    "@commander-js/extra-typings": "^11.0.0",
+    "@commander-js/extra-typings": "^11.1.0",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
