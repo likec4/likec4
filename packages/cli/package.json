@@ -38,7 +38,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@types/node": "^16.11.16",
-    "commander": "^11.0.0",
+    "commander": "^11.1.0",
     "esbuild": "^0.19.4",
     "execa": "^8.0.1",
     "fast-glob": "^3.3.1",
