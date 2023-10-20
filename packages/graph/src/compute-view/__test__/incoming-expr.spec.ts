@@ -87,4 +87,28 @@ describe('incoming-expr', () => {
       ])
     })
   })
+
+  describe('view of cloud.frontend', () => {
+    it('include -> cloud.backend.*', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.frontend', [
+        $include('*'),
+        $include('-> cloud.backend.*')
+      ])
+      expect(nodeIds).toEqual([
+        'customer',
+        'cloud.frontend.dashboard',
+        'support',
+        'cloud.frontend.adminPanel',
+        'cloud.frontend',
+        // 'cloud.backend', // implicit is removed, due to `-> cloud.backend.*`
+        'cloud.backend.graphql'
+      ])
+      expect(edgeIds).to.have.same.members([
+        'customer:cloud.frontend.dashboard',
+        'support:cloud.frontend.adminPanel',
+        'cloud.frontend.adminPanel:cloud.backend.graphql',
+        'cloud.frontend.dashboard:cloud.backend.graphql'
+      ])
+    })
+  })
 })

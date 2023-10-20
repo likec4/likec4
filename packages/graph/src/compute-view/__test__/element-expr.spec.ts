@@ -198,5 +198,23 @@ describe('element-expr', () => {
         'cloud.frontend:cloud.backend.graphql'
       ])
     })
+
+    it('include *, amazon', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.backend.graphql', [
+        $include('*'),
+        $include('amazon')
+      ])
+      expect(nodeIds).toEqual([
+        'cloud.frontend',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'amazon'
+      ])
+      expect(edgeIds).to.have.same.members([
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.frontend:cloud.backend.graphql',
+        'cloud.backend.storage:amazon'
+      ])
+    })
   })
 })

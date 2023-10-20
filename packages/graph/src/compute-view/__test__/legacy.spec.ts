@@ -135,8 +135,12 @@ describe('compute-element-view', () => {
     ])
   })
 
-  it('view of cloud.frontend (and include parent cloud)', () => {
-    const { edgeIds, nodeIds } = computeView('cloud.frontend', [$include('*'), $include('cloud')])
+  it('view of cloud.frontend (and include cloud.backend.*)', () => {
+    const { edgeIds, nodeIds } = computeView('cloud.frontend', [
+      $include('*'),
+      $include('cloud'),
+      $include('cloud.backend.*')
+    ])
 
     expect(nodeIds).toEqual([
       'customer',
@@ -144,19 +148,21 @@ describe('compute-element-view', () => {
       'support',
       'cloud.frontend.adminPanel',
       'cloud.frontend',
-      'cloud.backend',
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
       'cloud'
     ])
 
     expect(edgeIds).to.have.same.members([
-      'cloud.frontend.adminPanel:cloud.backend',
-      'cloud.frontend.dashboard:cloud.backend',
+      'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.backend.graphql:cloud.backend.storage',
       'customer:cloud.frontend.dashboard',
       'support:cloud.frontend.adminPanel'
     ])
   })
 
-  it('view of cloud.frontend (and include parent cloud)', () => {
+  it('view of cloud.frontend (and include cloud.frontend -> cloud.backend.*)', () => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [
       $include('*'),
       $include('cloud'),
@@ -170,7 +176,6 @@ describe('compute-element-view', () => {
       'cloud.frontend.adminPanel',
       'cloud.frontend',
       'cloud.backend.graphql',
-      'cloud.backend',
       'cloud'
     ])
 
@@ -199,7 +204,7 @@ describe('compute-element-view', () => {
   })
 
   it('view with 3 levels', () => {
-    const { edgeIds, nodeIds, ...view } = computeView('cloud', [
+    const { edgeIds, nodeIds } = computeView('cloud', [
       $include('*'),
       $include('cloud.frontend.*'),
       $include('cloud.backend.*'),
@@ -264,7 +269,7 @@ describe('compute-element-view', () => {
       $include('cloud.* ->')
     ])
 
-    expect(nodeIds).toEqual(['cloud.backend', 'cloud', 'amazon.s3', 'amazon'])
+    expect(nodeIds).toEqual(['cloud.backend', 'amazon.s3', 'amazon'])
 
     expect(edgeIds).to.have.same.members(['cloud.backend:amazon.s3'])
   })
