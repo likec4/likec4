@@ -99,6 +99,7 @@ export function edgeLabel(text: string) {
       text,
       maxchars: 35,
       fontsize: 13,
+      bold: text === '[...]',
       align: 'left'
     })
   ]

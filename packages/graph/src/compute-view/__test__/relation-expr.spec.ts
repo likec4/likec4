@@ -53,4 +53,6 @@ describe('relation-expr', () => {
     expect(nodeIds).toEqual(['support', 'customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).toEqual(['customer:cloud.frontend.dashboard'])
   })
+
+  it.todo('verify label [...]')
 })

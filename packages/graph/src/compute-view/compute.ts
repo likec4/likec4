@@ -138,6 +138,14 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // we can't use relation.title, because it is not unique
       if (!relation) {
+        const labels = uniq(e.relations.flatMap(r => (r.title.trim() !== '' ? r.title : [])))
+        if (hasAtLeast(labels, 1)) {
+          if (labels.length === 1) {
+            edge.label = labels[0]
+          } else {
+            edge.label = '[...]'
+          }
+        }
         return edge
       }
 
@@ -161,7 +169,12 @@ export class ComputeCtx {
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
     for (const e of edges) {
-      const existing = this.ctxEdges.find(_e => _e.source === e.source && _e.target === e.target)
+      if (e.relations.length === 0) {
+        continue
+      }
+      const existing = this.ctxEdges.find(
+        _e => _e.source.id === e.source.id && _e.target.id === e.target.id
+      )
       if (existing) {
         existing.relations = uniq([...existing.relations, ...e.relations])
         continue
@@ -217,6 +230,7 @@ export class ComputeCtx {
       return !edges.some(
         e2 =>
           e1 !== e2 &&
+          (e1.source.id !== e2.source.id || e1.target.id !== e2.target.id) &&
           (e1.source.id === e2.source.id || isAncestor(e1.source.id, e2.source.id)) &&
           (e1.target.id === e2.target.id || isAncestor(e1.target.id, e2.target.id))
       )

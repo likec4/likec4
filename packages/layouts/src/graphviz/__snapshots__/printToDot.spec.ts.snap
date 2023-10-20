@@ -303,6 +303,8 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       weight = 10;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="9.75"><B>[...]</B></FONT></TD></TR></TABLE>>;
+      nojustify = true;
     ];
   }
   "backend" -> "amazon" [

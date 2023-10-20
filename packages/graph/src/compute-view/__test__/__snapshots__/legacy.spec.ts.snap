@@ -7,7 +7,7 @@ exports[`compute-element-view > view of cloud 1`] = `
   "edges": [
     {
       "id": "cloud.frontend:cloud.backend",
-      "label": null,
+      "label": "[...]",
       "parent": "cloud",
       "relations": [
         "cloud.frontend.dashboard:cloud.backend.graphql",

@@ -16,12 +16,14 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
 
   this.addElement(...elements)
 
-  if (expr.isDescedants === true) {
+  if (expr.isDescedants === true && elements.length > 0) {
     this.addEdges(this.graph.edgesWithin(elements))
   }
 
-  for (const el of elements) {
-    this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
+  if (currentElements.length > 0 && elements.length > 0) {
+    for (const el of elements) {
+      this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
+    }
   }
 }
 
