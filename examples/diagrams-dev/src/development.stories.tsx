@@ -98,3 +98,10 @@ export const ThemeColors: Story<Props> = props => {
 ThemeColors.args = {
   viewId: 'themecolors'
 }
+
+export const RelationshipColors: Story<Props> = props => {
+  return <DiagramDevelopment {...props} />
+}
+RelationshipColors.args = {
+  viewId: 'relationshipcolors'
+}

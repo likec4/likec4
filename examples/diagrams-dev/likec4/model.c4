@@ -25,7 +25,7 @@ model {
         }
 
         -> amazon.cognito 'authenticates'
-        -> graphql 'fetches xcgdata'
+        -> graphql 'fetches data'
       }
       customer -> dashboard 'opens in browser'
 
@@ -36,6 +36,7 @@ model {
       }
       customer -> mobile 'opens on mobile device'
     }
+    customer -> ui 'uses web and mobile'
 
 
     backend = container 'Backend' {
@@ -51,11 +52,12 @@ model {
       graphql -> cms
       graphql -> amazon.cognito 'authorizes'
       graphql -> amazon.sqs 'publishes domain events'
-      graphql -> amazon.cognito 'authenticates'
       graphql -> amazon.rds.pg 'reads and writes'
 
-      cms -[async]-> amazon.rds.mysql 'stores media'
+      cms -> amazon.rds.mysql 'stores media'
     }
+    backend -> amazon 'uses services'
+
   }
 
   customer -> cloud 'uses and pays'
@@ -76,7 +78,9 @@ views {
       color primary
     }
 
-    exclude element.kind = themecolor
+    exclude
+      element.kind = themecolor,
+      element.kind = themerelationships
   }
 
   view customer of customer {

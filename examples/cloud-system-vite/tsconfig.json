@@ -21,10 +21,10 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../../packages/core"
+      "path": "../../packages/core/"
     },
     {
-      "path": "../../packages/diagrams"
+      "path": "../../packages/diagrams/"
     }
   ]
 }

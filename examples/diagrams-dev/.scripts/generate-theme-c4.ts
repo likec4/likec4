@@ -177,8 +177,65 @@ ${colors
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-const out = resolve(__dirname, '../likec4/theme.c4')
+let out = resolve(__dirname, '../likec4/theme.c4')
 
 writeFileSync(out, likec4)
+
+console.log(`Generated ${out}`)
+
+const relationships = `// DO NOT EDIT MANUALLY
+specification {
+
+  element themerelationships
+
+${colors
+  .map(
+    key => `
+  relationship ${key} {
+    color ${key}
+  }
+`
+  )
+  .join('')}
+
+}
+
+model {
+
+  themerelationships relationship_colors {
+    title 'Relationships Colors'
+    style {
+      color muted
+    }
+
+${colors
+  .map(
+    key => `
+    ${key}_source = rect '${key.toUpperCase()} Source' {
+      style { color ${key} }
+    }
+    ${key}_target = rect '${key.toUpperCase()} Target' {
+      style { color ${key} }
+    }
+    ${key}_source -[${key}]-> ${key}_target 'relation with ${key} color'
+`
+  )
+  .join('')}
+  }
+
+}
+
+views {
+
+  view relationshipcolors of relationship_colors {
+    include *
+  }
+
+}
+`
+
+out = resolve(__dirname, '../likec4/relationships.c4')
+
+writeFileSync(out, relationships)
 
 console.log(`Generated ${out}`)

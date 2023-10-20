@@ -24,8 +24,8 @@ specification {
 
   relationship async {
     color red
-    line dashed
-    head normal
-    tail none
+    line dotted
+    head odiamond
+    tail vee
   }
 }

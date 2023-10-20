@@ -1,0 +1,161 @@
+// DO NOT EDIT MANUALLY
+specification {
+
+  element themerelationships
+
+
+  relationship primary {
+    color primary
+  }
+
+  relationship blue {
+    color blue
+  }
+
+  relationship secondary {
+    color secondary
+  }
+
+  relationship sky {
+    color sky
+  }
+
+  relationship muted {
+    color muted
+  }
+
+  relationship slate {
+    color slate
+  }
+
+  relationship gray {
+    color gray
+  }
+
+  relationship red {
+    color red
+  }
+
+  relationship green {
+    color green
+  }
+
+  relationship amber {
+    color amber
+  }
+
+  relationship indigo {
+    color indigo
+  }
+
+
+}
+
+model {
+
+  themerelationships relationship_colors {
+    title 'Relationships Colors'
+    style {
+      color muted
+    }
+
+
+    primary_source = rect 'PRIMARY Source' {
+      style { color primary }
+    }
+    primary_target = rect 'PRIMARY Target' {
+      style { color primary }
+    }
+    primary_source -[primary]-> primary_target 'relation with primary color'
+
+    blue_source = rect 'BLUE Source' {
+      style { color blue }
+    }
+    blue_target = rect 'BLUE Target' {
+      style { color blue }
+    }
+    blue_source -[blue]-> blue_target 'relation with blue color'
+
+    secondary_source = rect 'SECONDARY Source' {
+      style { color secondary }
+    }
+    secondary_target = rect 'SECONDARY Target' {
+      style { color secondary }
+    }
+    secondary_source -[secondary]-> secondary_target 'relation with secondary color'
+
+    sky_source = rect 'SKY Source' {
+      style { color sky }
+    }
+    sky_target = rect 'SKY Target' {
+      style { color sky }
+    }
+    sky_source -[sky]-> sky_target 'relation with sky color'
+
+    muted_source = rect 'MUTED Source' {
+      style { color muted }
+    }
+    muted_target = rect 'MUTED Target' {
+      style { color muted }
+    }
+    muted_source -[muted]-> muted_target 'relation with muted color'
+
+    slate_source = rect 'SLATE Source' {
+      style { color slate }
+    }
+    slate_target = rect 'SLATE Target' {
+      style { color slate }
+    }
+    slate_source -[slate]-> slate_target 'relation with slate color'
+
+    gray_source = rect 'GRAY Source' {
+      style { color gray }
+    }
+    gray_target = rect 'GRAY Target' {
+      style { color gray }
+    }
+    gray_source -[gray]-> gray_target 'relation with gray color'
+
+    red_source = rect 'RED Source' {
+      style { color red }
+    }
+    red_target = rect 'RED Target' {
+      style { color red }
+    }
+    red_source -[red]-> red_target 'relation with red color'
+
+    green_source = rect 'GREEN Source' {
+      style { color green }
+    }
+    green_target = rect 'GREEN Target' {
+      style { color green }
+    }
+    green_source -[green]-> green_target 'relation with green color'
+
+    amber_source = rect 'AMBER Source' {
+      style { color amber }
+    }
+    amber_target = rect 'AMBER Target' {
+      style { color amber }
+    }
+    amber_source -[amber]-> amber_target 'relation with amber color'
+
+    indigo_source = rect 'INDIGO Source' {
+      style { color indigo }
+    }
+    indigo_target = rect 'INDIGO Target' {
+      style { color indigo }
+    }
+    indigo_source -[indigo]-> indigo_target 'relation with indigo color'
+
+  }
+
+}
+
+views {
+
+  view relationshipcolors of relationship_colors {
+    include *
+  }
+
+}
