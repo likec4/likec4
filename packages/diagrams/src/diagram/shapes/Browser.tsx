@@ -11,7 +11,6 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
       <AnimatedRect
         {...useShadowSprings(isHovered, theme, springs)}
         cornerRadius={6}
-        perfectDrawEnabled={false}
         strokeEnabled={false}
         width={springs.width}
         height={springs.height}

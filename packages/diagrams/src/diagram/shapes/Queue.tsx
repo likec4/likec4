@@ -47,7 +47,6 @@ export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) 
       <AnimatedPath
         {...useShadowSprings(isHovered, theme, springs)}
         data={path}
-        perfectDrawEnabled={false}
         fill={springs.fill}
       />
       <AnimatedEllipse

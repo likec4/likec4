@@ -14,7 +14,7 @@ const compoundColor = memoize((color: string, depth: number) =>
   )
 )
 
-const isCompound = (node: DiagramNode) => {
+export function isCompound(node: DiagramNode) {
   return node.children.length > 0
 }
 

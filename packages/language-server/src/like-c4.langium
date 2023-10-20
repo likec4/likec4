@@ -242,14 +242,23 @@ fragment RelationshipStylePropertiesFragment:
 // -------------------------
 // Relationship Style Properties
 LineOptions returns string: 'solid' | 'dashed' | 'dotted';
-ArrowType returns string: 'normal' | 'onormal' | 'diamond' | 'odiamond' | 'vee' |'none';
+ArrowType returns string:
+  'none' |
+  'normal' |
+  'onormal' |
+  'diamond' |
+  'odiamond' |
+  'crow' |
+  'open' |
+  'vee'
+;
 
 ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
 ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
-Name returns string: ElementShape | ThemeColor | 'element' | 'model' | ID;
 Uri returns string: URI_WITH_SCHEMA | URI_RELATIVE;
-
 RArrow returns string: RARROW;
+
+Name returns string: ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
 
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);

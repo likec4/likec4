@@ -45,7 +45,6 @@ export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProp
       <AnimatedPath
         {...useShadowSprings(isHovered, theme, springs)}
         data={path}
-        perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
         fill={springs.fill}
       />

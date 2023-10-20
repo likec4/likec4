@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { ComputedEdge, ComputedNode, ComputedView, Fqn } from '@likec4/core'
+import type {
+  ComputedEdge,
+  ComputedNode,
+  ComputedView,
+  Fqn,
+  RelationshipArrowType
+} from '@likec4/core'
 import { Colors, DefaultThemeColor, RelationColors, nameFromFqn, nonNullable } from '@likec4/core'
 import { isTruthy } from 'remeda'
 import {
@@ -47,6 +53,15 @@ function isCompound(node: ComputedNode) {
   return node.children.length > 0
 }
 
+function toArrowType(type: RelationshipArrowType): ArrowType {
+  switch (type) {
+    case 'open':
+      return 'vee'
+    default:
+      return type
+  }
+}
+
 export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): RootGraphModel {
   const G = digraph({
     [_.layout]: 'dot',
@@ -80,10 +95,10 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
 
   G.attributes.edge.apply({
     [_.fontname]: 'Helvetica',
-    [_.fontsize]: pxToPoints(14),
+    [_.fontsize]: pxToPoints(13),
     [_.style]: 'solid',
     [_.penwidth]: 2,
-    [_.arrowsize]: 0.8,
+    [_.arrowsize]: 0.85,
     [_.color]: RelationColors.lineColor,
     [_.fontcolor]: RelationColors.labelColor
   })
@@ -271,13 +286,13 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
       }
       if (edge.head) {
         e.attributes.apply({
-          [_.arrowhead]: edge.head
+          [_.arrowhead]: toArrowType(edge.head)
         })
       }
       if (edge.tail) {
         e.attributes.apply({
-          [_.arrowtail]: edge.tail,
-          [_.dir]: "both"
+          [_.arrowtail]: toArrowType(edge.tail),
+          [_.dir]: 'both'
         })
       }
     }

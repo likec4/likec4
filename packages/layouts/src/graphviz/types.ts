@@ -58,6 +58,29 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
+  export type DrawOps =
+    // style
+    | {
+        op: 'S'
+        style: string
+      }
+    // color
+    | {
+        op: 'c'
+        grad: string
+        color: string
+      }
+    // polygon
+    | {
+        op: 'p' | 'P'
+        points: Point[]
+      }
+    // bspline
+    | {
+        op: 'b' | 'B'
+        points: Point[]
+      }
+
   export type Ldraw =
     | {
         op: 'F'
@@ -78,21 +101,6 @@ export namespace GraphvizJson {
         align: 'l' | 'r' | 'c'
         width: number
         text: string
-      }
-
-  export type _EdgeDraw_ =
-    | {
-        op: 'S'
-        style: string
-      }
-    | {
-        op: 'c'
-        grad: string
-        color: string
-      }
-    | {
-        op: 'b' | 'B'
-        points: Point[]
       }
 
   export type GvObject = GvNodeObject | GvSubgraph
@@ -139,8 +147,11 @@ export namespace GraphvizJson {
     _gvid: GvId
     tail: number
     head: number
-    _draw_: _EdgeDraw_[]
-    _hdraw_?: Hdraw[]
+    _draw_: DrawOps[]
+    // head arrow
+    _hdraw_?: DrawOps[]
+    // tail arrow
+    _tdraw_?: DrawOps[]
     _ldraw_?: Ldraw[]
     fontname: string
     fontsize: string

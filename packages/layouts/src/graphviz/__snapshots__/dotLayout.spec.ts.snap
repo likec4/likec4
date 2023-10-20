@@ -53,15 +53,11 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         ],
         [
           211,
-          348,
+          347,
         ],
         [
           211,
-          391,
-        ],
-        [
-          211,
-          405,
+          390,
         ],
       ],
       "relations": [
@@ -263,7 +259,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           368,
-          915,
+          914,
         ],
         [
           364,
@@ -271,7 +267,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           361,
-          915,
+          914,
         ],
       ],
       "id": "cloud.backend.graphql:cloud.backend.storage",
@@ -288,15 +284,11 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           364,
-          890,
+          889,
         ],
         [
           364,
-          915,
-        ],
-        [
-          364,
-          930,
+          914,
         ],
       ],
       "relations": [
@@ -309,7 +301,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           442,
-          650,
+          649,
         ],
         [
           432,
@@ -317,7 +309,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           436,
-          645,
+          644,
         ],
       ],
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
@@ -363,16 +355,12 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           547,
         ],
         [
-          472,
+          473,
           601,
         ],
         [
-          438,
-          648,
-        ],
-        [
-          430,
-          659,
+          439,
+          647,
         ],
       ],
       "relations": [
@@ -432,12 +420,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           600,
         ],
         [
-          318,
-          646,
-        ],
-        [
-          324,
-          659,
+          317,
+          645,
         ],
       ],
       "relations": [
@@ -498,11 +482,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           611,
-          309,
-        ],
-        [
-          611,
-          323,
+          308,
         ],
       ],
       "relations": [
@@ -563,11 +543,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           211,
-          309,
-        ],
-        [
-          211,
-          323,
+          308,
         ],
       ],
       "relations": [
@@ -624,15 +600,11 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           364,
-          1208,
+          1207,
         ],
         [
           364,
-          1253,
-        ],
-        [
-          364,
-          1267,
+          1252,
         ],
       ],
       "relations": [
@@ -1151,7 +1123,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "headArrow": [
         [
           364,
-          580,
+          579,
         ],
         [
           360,
@@ -1159,7 +1131,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           357,
-          580,
+          579,
         ],
       ],
       "id": "cloud.frontend:cloud.backend",
@@ -1180,11 +1152,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           360,
-          580,
-        ],
-        [
-          360,
-          595,
+          579,
         ],
       ],
       "relations": [
@@ -1198,7 +1166,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "headArrow": [
         [
           364,
-          876,
+          875,
         ],
         [
           360,
@@ -1206,7 +1174,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           357,
-          876,
+          875,
         ],
       ],
       "id": "cloud.backend:amazon",
@@ -1242,15 +1210,11 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           360,
-          843,
+          842,
         ],
         [
           360,
-          876,
-        ],
-        [
-          360,
-          890,
+          875,
         ],
       ],
       "relations": [
@@ -1263,7 +1227,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "headArrow": [
         [
           427,
-          313,
+          312,
         ],
         [
           418,
@@ -1271,7 +1235,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           420,
-          309,
+          308,
         ],
       ],
       "id": "customer:cloud.frontend",
@@ -1310,12 +1274,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           269,
         ],
         [
-          423,
-          311,
-        ],
-        [
-          416,
-          323,
+          424,
+          310,
         ],
       ],
       "relations": [
@@ -1327,8 +1287,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          301,
-          309,
+          300,
+          308,
         ],
         [
           303,
@@ -1336,7 +1296,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
         ],
         [
           294,
-          313,
+          312,
         ],
       ],
       "id": "support:cloud.frontend",
@@ -1375,12 +1335,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           269,
         ],
         [
-          298,
-          311,
-        ],
-        [
-          305,
-          323,
+          297,
+          310,
         ],
       ],
       "relations": [
@@ -1693,8 +1649,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           288,
         ],
         [
-          427,
-          277,
+          428,
+          276,
         ],
       ],
       "id": "customer:cloud",
@@ -1725,20 +1681,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
           180,
         ],
         [
-          477,
+          478,
           211,
         ],
         [
           453,
-          247,
+          246,
         ],
         [
-          430,
-          279,
-        ],
-        [
-          422,
-          291,
+          431,
+          278,
         ],
       ],
       "relations": [
@@ -1750,8 +1702,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          294,
-          277,
+          293,
+          276,
         ],
         [
           297,
@@ -1790,20 +1742,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
           180,
         ],
         [
-          244,
+          243,
           211,
         ],
         [
           268,
-          247,
+          246,
         ],
         [
-          291,
-          279,
-        ],
-        [
-          299,
-          291,
+          290,
+          278,
         ],
       ],
       "relations": [
@@ -1816,7 +1764,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "headArrow": [
         [
           364,
-          567,
+          566,
         ],
         [
           360,
@@ -1824,7 +1772,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
         ],
         [
           357,
-          567,
+          566,
         ],
       ],
       "id": "cloud:amazon",
@@ -1864,11 +1812,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
         ],
         [
           360,
-          567,
-        ],
-        [
-          360,
-          581,
+          566,
         ],
       ],
       "relations": [
