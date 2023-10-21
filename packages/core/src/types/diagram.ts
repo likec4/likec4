@@ -37,6 +37,7 @@ export interface DiagramEdge extends ComputedEdge {
   points: NonEmptyArray<Point>
   // Polygons are used to draw arrows
   headArrow?: NonEmptyArray<Point>
+  tailArrow?: NonEmptyArray<Point>
   labels?: NonEmptyArray<DiagramLabel>
   labelBBox?: BBox
 }

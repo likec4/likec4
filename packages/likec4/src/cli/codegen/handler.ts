@@ -47,9 +47,47 @@ async function singleFileCodegenAction(
   logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
 }
 
+async function dotCodegenAction(
+  languageServices: LanguageServices,
+  outdir: string,
+  logger: Logger
+) {
+  await mkdir(outdir, { recursive: true })
+
+  logger.info(`${k.dim('format')} ${k.green('dot')}`)
+  logger.info(`${k.dim('outdir')} ${outdir}`)
+
+  const createdDirs = new Set<string>()
+  const views = languageServices.getModel()?.views
+  if (!views) {
+    throw new Error('no views found')
+  }
+  let succeeded = 0
+  for (const view of Object.values(views)) {
+    try {
+      const relativePath = view.relativePath ?? ''
+      if (relativePath !== '' && !createdDirs.has(relativePath)) {
+        await mkdir(resolve(outdir, relativePath), { recursive: true })
+        createdDirs.add(relativePath)
+      }
+      const outfile = resolve(outdir, relativePath, view.id + '.dot')
+      const generatedSource = printToDot(view)
+      await writeFile(outfile, generatedSource)
+      logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
+      succeeded++
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      logger.error(`error while generating ${view.id}`, { error: error as any })
+    }
+  }
+  if (succeeded > 0) {
+    logger.info(`${k.dim('total')} ${succeeded} files`)
+  }
+}
+
 async function multipleFilesCodegenAction(
   languageServices: LanguageServices,
-  format: 'dot' | 'd2' | 'mermaid',
+  format: 'd2' | 'mermaid',
   outdir: string,
   logger: Logger
 ) {
@@ -61,10 +99,6 @@ async function multipleFilesCodegenAction(
   let ext
   let generator
   switch (format) {
-    case 'dot':
-      ext = '.dot'
-      generator = printToDot
-      break
     case 'd2':
       ext = '.d2'
       generator = generateD2
@@ -109,8 +143,8 @@ export async function handler({ path, ...outparams }: HandlerParams) {
     workspaceDir: path
   })
 
-  const views = await languageServices.getViews()
-  if (views.length === 0) {
+  const views = languageServices.getModel()?.views
+  if (!views || Object.keys(views).length === 0) {
     logger.warn('no views found')
     process.exit(0)
   }
@@ -121,7 +155,10 @@ export async function handler({ path, ...outparams }: HandlerParams) {
       await singleFileCodegenAction(languageServices, outparams.format, outparams.outfile, logger)
       break
     }
-    case 'dot':
+    case 'dot': {
+      await dotCodegenAction(languageServices, outparams.outdir ?? path, logger)
+      break
+    }
     case 'd2':
     case 'mermaid': {
       await multipleFilesCodegenAction(

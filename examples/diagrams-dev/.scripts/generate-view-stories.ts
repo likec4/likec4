@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const views = Object.keys(LikeC4Views)
 
-function viewOf(viewId, storyName = viewId) {
+function viewOf(viewId: string, storyName = viewId) {
   const name = viewId.replace('_', '')
   return `
 export const ${name} = () => (

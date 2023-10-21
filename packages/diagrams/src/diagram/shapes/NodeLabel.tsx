@@ -17,7 +17,7 @@ export function NodeLabels({
   offsetY = 0,
   maxWidth
 }: NodeLabelsProps) {
-  const colors = theme.colors[color]
+  const colors = theme.elements[color]
   // Title has max font size
   const width = maxWidth ?? size.width
   const firstLabel = labels[0]

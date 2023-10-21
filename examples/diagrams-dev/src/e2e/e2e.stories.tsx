@@ -7,3 +7,5 @@ export const CloudBackend = () => <LikeC4ViewStory viewId='cloud_backend' />
 export const AmazonRds = () => <LikeC4ViewStory viewId='amazon_rds' />
 
 export const CloudUi = () => <LikeC4ViewStory viewId='cloud_ui' />
+
+export const RelationshipColors = () => <LikeC4ViewStory viewId='relationshipcolors' />

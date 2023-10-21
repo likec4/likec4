@@ -6,10 +6,11 @@ import type {
   DiagramNode,
   DiagramView,
   BBox as LabelBBox,
+  NonEmptyArray,
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { dropRepeats, propEq } from 'rambdax'
+import { dropRepeats } from 'rambdax'
 import { first, hasAtLeast, last, maxBy } from 'remeda'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
@@ -101,28 +102,23 @@ function parseLabelDraws(
 //   https://forum.graphviz.org/t/how-to-interpret-graphviz-edge-coordinates-from-xdot-or-json/879/11
 // Example:
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
-function parseEdgePoints({ pos }: GraphvizJson.Edge): DiagramEdge['points'] {
-  invariant(pos, 'edge should pos')
-  invariant(pos.startsWith('e,'), 'edge should start with e,')
-  const posStr = pos.substring(2)
-  const posParts = posStr.split(' ')
-  const points = posParts.map((p: string): Point => {
-    const { x, y } = parsePos(p)
-    return [x, y]
-  })
-  const endpoint = points.shift()
-  invariant(endpoint && hasAtLeast(points, 1), 'edge should have endpoint')
-  return [...points, endpoint]
+function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
+  const p = _draw_.find(({ op }) => op.toLowerCase() === 'b')
+  invariant(p?.op === 'b' || p?.op === 'B', 'edge should have points for spline')
+  const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
+  invariant(hasAtLeast(points, 1))
+  return points
 }
 
-function parseEdgeHeadPolygon({ _hdraw_ }: GraphvizJson.Edge): DiagramEdge['headArrow'] {
-  const p = _hdraw_?.find(propEq('op', 'P'))
-  if (p && p.points.length > 2) {
-    const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
-    invariant(hasAtLeast(points, 1))
-    return points
+function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point> | undefined {
+  const p = ops.find(({ op }) => op === 'P' || op === 'p')
+  if (!p) {
+    return undefined
   }
-  return undefined
+  invariant(p.op === 'p' || p.op === 'P')
+  const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
+  invariant(hasAtLeast(points, 1))
+  return points
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
@@ -221,10 +217,16 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       edge.labelBBox = labelBBox
     }
 
-    const headArrow = parseEdgeHeadPolygon(e)
+    const headArrow = e._hdraw_ && parseEdgeArrowPolygon(e._hdraw_)
     if (headArrow) {
       edge.headArrow = headArrow
     }
+
+    const tailArrow = e._tdraw_ && parseEdgeArrowPolygon(e._tdraw_)
+    if (tailArrow) {
+      edge.tailArrow = tailArrow
+    }
+
     diagram.edges.push(edge)
   }
 

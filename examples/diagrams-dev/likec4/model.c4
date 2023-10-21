@@ -5,6 +5,7 @@ model {
   }
 
   cloud = system 'Cloud System' {
+
     description '
       Our SaaS platfrom that allows
       customers to interact with
@@ -18,6 +19,7 @@ model {
       }
 
       dashboard = app 'Customer Dashboard' {
+        #team-a
         technology 'Nextjs'
         description 'Web application, that allows customers to interact with the cloud system'
         style {
@@ -25,18 +27,16 @@ model {
         }
 
         -> amazon.cognito 'authenticates'
-        -> graphql 'fetches xcgdata'
+        -> graphql 'fetches data'
       }
-      customer -> dashboard 'opens in browser'
 
       mobile = mobileApp 'Mobile App' {
+        #team-b
         description 'The mobile app of the cloud system'
         -> amazon.cognito 'authenticates'
         -> graphql 'fetches data'
       }
-      customer -> mobile 'opens on mobile device'
     }
-
 
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
@@ -44,21 +44,27 @@ model {
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
       }
-      cms = app 'ACMS' {
+      cms = app 'CMS' {
+        #deprecated
         description 'The CMS of the cloud system'
       }
 
       graphql -> cms
       graphql -> amazon.cognito 'authorizes'
       graphql -> amazon.sqs 'publishes domain events'
-      graphql -> amazon.cognito 'authenticates'
       graphql -> amazon.rds.pg 'reads and writes'
 
-      cms -[async]-> amazon.rds.mysql 'stores media'
+      cms -> amazon.rds.mysql 'stores media'
     }
+    backend -> amazon 'uses services'
+
   }
 
   customer -> cloud 'uses and pays'
+  customer -> ui 'uses web and mobile'
+  customer -> ui.dashboard 'opens in browser'
+  customer -> ui.mobile 'opens on mobile device'
+
   cloud -> amazon 'hosted on'
 
 }
@@ -76,14 +82,17 @@ views {
       color primary
     }
 
-    exclude element.kind = themecolor
+    exclude
+      element.kind = themecolor,
+      element.kind = themerelationships
   }
 
   view customer of customer {
     title "Overview Customer"
-    include *,
-            -> ui.*,
-            -> backend
+    include
+      *,
+      -> ui.*,
+      -> backend
 
     style * {
       color secondary
@@ -105,7 +114,10 @@ views {
 
   view cloud_ui of ui {
     title "Overview UI"
-    include *, backend, ui.* -> backend.*
+    include
+      *,
+      backend,
+      ui.* -> backend.*
 
     exclude backend -> amazon
 

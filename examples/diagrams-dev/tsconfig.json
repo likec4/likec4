@@ -4,15 +4,20 @@
     "baseUrl": ".",
     "outDir": "dist",
 
+    "lib": ["esnext"],
+    "module": "esnext",
+    "target": "es2022",
+    "moduleResolution": "bundler",
+
     "types": ["vite/client"]
   },
-  "include": ["src", ".ladle", ".scripts"],
+  "include": ["src", "./.ladle/*.ts", "./.scripts/*.ts"],
   "references": [
     {
-      "path": "../../packages/core"
+      "path": "../../packages/core/"
     },
     {
-      "path": "../../packages/diagrams"
+      "path": "../../packages/diagrams/"
     }
   ]
 }

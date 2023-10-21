@@ -22,7 +22,7 @@
       "match": "\\b(specification|model|views)\\b"
     },
     {
-      "match": "\\b(element|tag)\\s+([^\\s]+)\\b",
+      "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -65,7 +65,7 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color):?\\s+([^\\W]+)\\b",
+      "match": "\\b(shape|color|head|tail|line):?\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -132,7 +132,7 @@
       }
     },
     {
-      "match": "\\b(it|this)\\s+(->)\\s+([^\\W]+)\\b",
+      "match": "\\b(it|this)\\s+(->|-\\[\\w+\\]->)\\s+([^\\W]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -146,7 +146,7 @@
       }
     },
     {
-      "match": "\\b([a-zA-Z][_\\.\\w]*)\\s+(->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\b([a-zA-Z][_\\.\\w]*)\\s+(->|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "variable.other.constant.likec4"
@@ -160,7 +160,7 @@
       }
     },
     {
-      "match": "\\s+(->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\s+(->|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "storage.type.function.likec4"

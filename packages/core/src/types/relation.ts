@@ -5,11 +5,20 @@ import type { ThemeColor } from './theme'
 export type RelationID = Opaque<string, 'RelationID'>
 export type RelationshipKind = Opaque<string, 'RelationshipKind'>
 
+export type RelationshipLineType = 'dashed' | 'solid' | 'dotted'
 
-export type RelationshipLineType =  'solid' | 'dashed' | 'dotted'
-export type RelationshipArrowType = 'diamond' | 'odiamond' | 'onormal' | 'none' | 'normal' | 'vee'
+// reference: https://graphviz.org/docs/attr-types/arrowType/
+export type RelationshipArrowType =
+  | 'none'
+  | 'normal'
+  | 'onormal'
+  | 'diamond'
+  | 'odiamond'
+  | 'crow'
+  | 'open'
+  | 'vee'
 
-export const DefaultLineStyle = 'solid' satisfies RelationshipLineType
+export const DefaultLineStyle = 'dashed' satisfies RelationshipLineType
 export const DefaultArrowType = 'normal' satisfies RelationshipArrowType
 export const DefaultRelationshipColor = 'gray' satisfies ThemeColor
 

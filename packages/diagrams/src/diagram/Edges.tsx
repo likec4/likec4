@@ -1,11 +1,14 @@
-import { useMemo } from 'react'
+import type { RelationshipThemeColorValues } from '@likec4/core'
+import { DefaultRelationshipColor } from '@likec4/core'
+import { useTransition } from '@react-spring/konva'
+import { scale, toHex } from 'khroma'
+import { memoize } from 'rambdax'
+import { useCallback } from 'react'
 import { Group } from '../konva'
 import { EdgeShape } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
-import type { LikeC4Theme, DiagramView, OnEdgeClick } from './types'
-import { useTransition } from '@react-spring/konva'
-import { scale, toHex } from 'khroma'
+import type { DiagramEdge, DiagramView, LikeC4Theme, OnEdgeClick } from './types'
 
 type EdgesProps = {
   animate: boolean
@@ -14,72 +17,70 @@ type EdgesProps = {
   onEdgeClick?: OnEdgeClick | undefined
 }
 
-const edgeColors = (
-  { relation: { lineColor, labelBgColor, labelColor } }: LikeC4Theme,
-  isHovered = false
-): {
-  lineColor: string
-  labelBgColor: string
-  labelColor: string
-} => {
+const edgeColors = memoize((colors: RelationshipThemeColorValues, isHovered: boolean) => {
   if (isHovered) {
-    lineColor = toHex(
-      scale(lineColor, {
-        l: 35,
-        s: -5
-      })
-    ) as `#${string}`
-    labelColor = toHex(
-      scale(labelColor, {
-        l: 50
-      })
-    ) as `#${string}`
+    return {
+      lineColor: toHex(
+        scale(colors.lineColor, {
+          l: 25,
+          s: -5
+        })
+      ),
+      labelColor: toHex(
+        scale(colors.labelColor, {
+          l: 40
+        })
+      ),
+      labelBgColor: toHex(
+        scale(colors.labelBgColor, {
+          l: -10
+        })
+      )
+    }
+  } else {
+    return colors
   }
-  return {
-    lineColor,
-    labelBgColor,
-    labelColor
-  }
-}
+})
 
 export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
   const hoveredEdgeId = useHoveredEdgeId()
   const setHoveredEdge = useSetHoveredEdge()
 
-  const colors = useMemo(
-    () => ({
-      base: edgeColors(theme),
-      onHover: edgeColors(theme, true)
-    }),
+  const edgeSprings = useCallback(
+    (edge: DiagramEdge, isHovered = false) => {
+      return {
+        opacity: 1,
+        lineWidth: 2,
+        ...edgeColors(theme.relationships[edge.color ?? DefaultRelationshipColor], isHovered)
+      }
+    },
     [theme]
   )
 
   const edgeTransitions = useTransition(diagram.edges, {
-    initial: {
-      opacity: 1,
-      lineWidth: 2,
-      ...colors.base
-    },
-    from: {
+    from: ((edge: DiagramEdge) => ({
+      ...edgeSprings(edge),
       opacity: 0.15,
-      lineWidth: 2,
-      ...colors.base
-    },
+      lineWidth: 2
+    })) as unknown as ReturnType<typeof edgeSprings>,
+    initial: edge => edgeSprings(edge),
     update: edge => {
       const isHovered = hoveredEdgeId === edge.id
       return {
+        ...edgeSprings(edge, isHovered),
         opacity: 1,
-        lineWidth: isHovered ? 3 : 2,
-        ...(isHovered ? colors.onHover : colors.base)
+        lineWidth: isHovered ? 3 : 2
       }
     },
     enter: {
       opacity: 1
     },
-    leave: {
-      opacity: 0.05,
-      lineWidth: 2,
-      ...colors.base
+    leave: edge => {
+      return {
+        ...edgeSprings(edge),
+        opacity: 0.05,
+        lineWidth: 2
+      }
     },
     expires: true,
     exitBeforeEnter: true,

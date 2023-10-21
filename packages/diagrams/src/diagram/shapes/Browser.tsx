@@ -4,14 +4,13 @@ import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
-  const colors = theme.colors[node.color]
+  const colors = theme.elements[node.color]
 
   return (
     <>
       <AnimatedRect
         {...useShadowSprings(isHovered, theme, springs)}
         cornerRadius={6}
-        perfectDrawEnabled={false}
         strokeEnabled={false}
         width={springs.width}
         height={springs.height}

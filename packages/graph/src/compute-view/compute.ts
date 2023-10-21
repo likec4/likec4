@@ -73,6 +73,7 @@ export class ComputeCtx {
       this.addElement(this.graph.element(this.root))
     }
     this.processPredicates(rulesInclude)
+    this.removeRedundantImplicitEdges()
 
     const resolvedElements = [...this.elements]
     const nodesMap = buildComputeNodes(resolvedElements)
@@ -113,40 +114,49 @@ export class ComputeCtx {
   }
 
   protected get computedEdges(): ComputedEdge[] {
-    // Filter out edges if there are more specific edges (between descendants)
-    const relevant = this.ctxEdges.filter(e1 => {
-      return !this.ctxEdges.some(
-        e2 =>
-          e1 !== e2 &&
-          (e1.source.id === e2.source.id || isAncestor(e1.source.id, e2.source.id)) &&
-          (e1.target.id === e2.target.id || isAncestor(e1.target.id, e2.target.id))
-      )
-    })
-    return relevant.map((e): ComputedEdge => {
+    return this.ctxEdges.map((e): ComputedEdge => {
       invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
       const source = e.source.id
       const target = e.target.id
-      
+
       const edge: ComputedEdge = {
         id: `${source}:${target}` as EdgeId,
         parent: commonAncestor(source, target),
         source,
         target,
         label: null,
-        relations: e.relations.map(r => r.id),
+        relations: e.relations.map(r => r.id)
       }
 
       let relation
       if (e.relations.length === 1) {
-        edge.label = e.relations[0].title
         relation = e.relations[0]
       } else {
-        const exact = e.relations.find(r => r.source === source && r.target === target)
-        edge.label = exact?.title ?? null
-        relation = exact ?? null
+        relation = e.relations.find(r => r.source === source && r.target === target)
       }
 
-      return Object.assign(edge, relation?.color && {color: relation.color }, relation?.line && {line: relation.line}, relation?.head && {head: relation.head}, relation?.tail && {tail: relation.tail})
+      // This edge represents mutliple relations
+      // we can't use relation.title, because it is not unique
+      if (!relation) {
+        const labels = uniq(e.relations.flatMap(r => (r.title.trim() !== '' ? r.title : [])))
+        if (hasAtLeast(labels, 1)) {
+          if (labels.length === 1) {
+            edge.label = labels[0]
+          } else {
+            edge.label = '[...]'
+          }
+        }
+        return edge
+      }
+
+      return Object.assign(
+        edge,
+        { label: relation.title },
+        relation.color && { color: relation.color },
+        relation.line && { line: relation.line },
+        relation.head && { head: relation.head },
+        relation.tail && { tail: relation.tail }
+      )
     })
   }
 
@@ -159,7 +169,12 @@ export class ComputeCtx {
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
     for (const e of edges) {
-      const existing = this.ctxEdges.find(_e => _e.source === e.source && _e.target === e.target)
+      if (e.relations.length === 0) {
+        continue
+      }
+      const existing = this.ctxEdges.find(
+        _e => _e.source.id === e.source.id && _e.target.id === e.target.id
+      )
       if (existing) {
         existing.relations = uniq([...existing.relations, ...e.relations])
         continue
@@ -197,6 +212,29 @@ export class ComputeCtx {
   protected reset() {
     this.ctxElements.clear()
     this.ctxEdges = []
+  }
+
+  // Filter out edges if there are edges between descendants
+  // i.e. remove implicit edges, derived from childs
+  protected removeRedundantImplicitEdges() {
+    const edges = [...this.ctxEdges]
+    this.ctxEdges = edges.filter(e1 => {
+      // Keep the edge, if there is only one relation and it is not implicit (has same source and target as edge)
+      if (e1.relations.length === 1) {
+        const rel = e1.relations[0]!
+        if (rel.source === e1.source.id && rel.target === e1.target.id) {
+          return true
+        }
+      }
+      // Keep the edge, if there is no edge between descendants
+      return !edges.some(
+        e2 =>
+          e1 !== e2 &&
+          (e1.source.id !== e2.source.id || e1.target.id !== e2.target.id) &&
+          (e1.source.id === e2.source.id || isAncestor(e1.source.id, e2.source.id)) &&
+          (e1.target.id === e2.target.id || isAncestor(e1.target.id, e2.target.id))
+      )
+    })
   }
 
   protected processPredicates(viewRules: ViewRuleExpression[]): this {

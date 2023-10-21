@@ -8,7 +8,7 @@ import { defaultTheme } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 
-const colors = Object.keys(defaultTheme.colors)
+const colors = Object.keys(defaultTheme.elements)
 
 const likec4 = `// DO NOT EDIT MANUALLY
 
@@ -177,8 +177,105 @@ ${colors
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-const out = resolve(__dirname, '../likec4/theme.c4')
+let out = resolve(__dirname, '../likec4/theme.c4')
 
 writeFileSync(out, likec4)
+
+console.log(`Generated ${out}`)
+
+const relationships = `// DO NOT EDIT MANUALLY
+specification {
+
+  element themerelationships
+
+  relationship solid {
+    line solid
+    tail none
+    head none
+  }
+
+${colors
+  .map(
+    key => `
+  relationship ${key} {
+    color ${key}
+    tail vee
+    head vee
+  }
+`
+  )
+  .join('')}
+
+}
+
+model {
+
+  themerelationships relationship_colors {
+    title 'Relationships Colors'
+    style {
+      color muted
+    }
+
+${colors
+  .map(
+    key => `
+    ${key}_source = rect '${key.toUpperCase()} Source' {
+      style { color ${key} }
+    }
+    ${key}_target = rect '${key.toUpperCase()} Target' {
+      style { color ${key} }
+    }
+    ${key}_source -[${key}]-> ${key}_target 'relation with ${key} color'
+`
+  )
+  .join('')}
+  }
+
+  // Col1
+  primary_target -[solid]-> secondary_source
+  secondary_target -[solid]-> muted_source
+
+  // Col2
+  blue_target -[solid]-> sky_source
+  sky_target -[solid]-> indigo_source
+
+  // Col3
+  gray_target -[solid]-> slate_source
+
+  // Col4
+  red_target -[solid]-> amber_source
+  amber_target -[solid]-> green_source
+}
+
+views {
+
+  view relationshipcolors of relationship_colors {
+    include *
+  }
+
+  ${colors
+    .map(
+      key => `
+  view relationship_${key} of ${key}_source {
+    include *, relationship_colors
+    exclude -> ${key}_source
+  }
+  view relationship_${key}_target of ${key}_target {
+    include *, relationship_colors
+    exclude ${key}_target ->
+    style relationship_colors {
+      color ${key}
+    }
+  }
+  `
+    )
+    .join('')}
+
+}
+`
+
+out = resolve(__dirname, '../likec4/relationships.c4')
+
+writeFileSync(out, relationships)
 
 console.log(`Generated ${out}`)

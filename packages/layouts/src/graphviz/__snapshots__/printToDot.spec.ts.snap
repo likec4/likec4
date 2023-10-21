@@ -18,10 +18,10 @@ exports[`printToDot > computedAmazonView 1`] = `
   ];
   edge [
     fontname = "Helvetica";
-    fontsize = 10.5;
-    style = "solid";
+    fontsize = 9.75;
+    style = "dashed";
     penwidth = 2;
-    arrowsize = 0.8;
+    arrowsize = 0.85;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -99,10 +99,10 @@ exports[`printToDot > computedCloud3levels 1`] = `
   ];
   edge [
     fontname = "Helvetica";
-    fontsize = 10.5;
-    style = "solid";
+    fontsize = 9.75;
+    style = "dashed";
     penwidth = 2;
-    arrowsize = 0.8;
+    arrowsize = 0.85;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -240,10 +240,10 @@ exports[`printToDot > computedCloudView 1`] = `
   ];
   edge [
     fontname = "Helvetica";
-    fontsize = 10.5;
-    style = "solid";
+    fontsize = 9.75;
+    style = "dashed";
     penwidth = 2;
-    arrowsize = 0.8;
+    arrowsize = 0.85;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -303,6 +303,8 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       weight = 10;
+      label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="9.75"><B>[...]</B></FONT></TD></TR></TABLE>>;
+      nojustify = true;
     ];
   }
   "backend" -> "amazon" [
@@ -341,10 +343,10 @@ exports[`printToDot > computedIndexView 1`] = `
   ];
   edge [
     fontname = "Helvetica";
-    fontsize = 10.5;
-    style = "solid";
+    fontsize = 9.75;
+    style = "dashed";
     penwidth = 2;
-    arrowsize = 0.8;
+    arrowsize = 0.85;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];

@@ -11,7 +11,7 @@ import { BrowserShape } from './shapes/Browser'
 import { CompoundShape } from './shapes/Compound'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import type { NodeSprings, NodeSpringsCtrl } from './springs'
-import { useNodeSpringsFn } from './springs'
+import { isCompound, useNodeSpringsFn } from './springs'
 import { DiagramGesture, useHoveredNodeId, useSetHoveredNode } from './state'
 import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
 
@@ -40,10 +40,6 @@ function nodeShape({ shape }: DiagramNode): ShapeComponent {
       return nonexhaustive(shape)
     }
   }
-}
-
-const isCompound = (node: DiagramNode) => {
-  return node.children.length > 0
 }
 
 type NodesProps = {
@@ -96,7 +92,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
     },
     // update: nodeSprings(),
     update: node => {
-      const scale = !isCompound(node) && hoveredNodeId === node.id && animate ? 1.08 : 1
+      const scale = animate && !isCompound(node) && hoveredNodeId === node.id ? 1.08 : 1
       return {
         ...nodeSprings(node),
         scaleX: scale,

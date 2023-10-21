@@ -1,4 +1,4 @@
-import { Colors, type ComputedNode } from '@likec4/core'
+import { ElementColors as Colors, type ComputedNode } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './graphviz-utils'
@@ -99,6 +99,7 @@ export function edgeLabel(text: string) {
       text,
       maxchars: 35,
       fontsize: 13,
+      bold: text === '[...]',
       align: 'left'
     })
   ]
