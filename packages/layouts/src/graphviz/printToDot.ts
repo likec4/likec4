@@ -7,7 +7,14 @@ import type {
   Fqn,
   RelationshipArrowType
 } from '@likec4/core'
-import { Colors, DefaultThemeColor, RelationColors, nameFromFqn, nonNullable } from '@likec4/core'
+import {
+  DefaultLineStyle,
+  DefaultRelationshipColor,
+  DefaultThemeColor,
+  defaultTheme,
+  nameFromFqn,
+  nonNullable
+} from '@likec4/core'
 import { isTruthy } from 'remeda'
 import {
   attribute as _,
@@ -63,6 +70,7 @@ function toArrowType(type: RelationshipArrowType): ArrowType {
 }
 
 export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): RootGraphModel {
+  const Theme = defaultTheme
   const G = digraph({
     [_.layout]: 'dot',
     [_.compound]: true,
@@ -76,31 +84,31 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.packmode]: 'array_t'
   })
   G.attributes.graph.apply({
-    [_.fontname]: 'Helvetica',
+    [_.fontname]: Theme.font,
     [_.labeljust]: 'l',
     [_.fontsize]: pxToPoints(12)
   })
 
   G.attributes.node.apply({
-    [_.fontname]: 'Helvetica',
+    [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(19),
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
     [_.style]: 'filled,rounded',
-    [_.fillcolor]: Colors[DefaultThemeColor].fill,
+    [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.margin]: pxToInch(20),
     [_.penwidth]: 0
   })
 
   G.attributes.edge.apply({
-    [_.fontname]: 'Helvetica',
+    [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
-    [_.style]: 'solid',
+    [_.style]: DefaultLineStyle,
     [_.penwidth]: 2,
     [_.arrowsize]: 0.85,
-    [_.color]: RelationColors.lineColor,
-    [_.fontcolor]: RelationColors.labelColor
+    [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
+    [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
 
   const subgraphs = new Map<Fqn, SubgraphModel>()
@@ -125,7 +133,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     })
     if (elementNode.color !== DefaultThemeColor) {
       node.attributes.apply({
-        [_.fillcolor]: Colors[elementNode.color].fill
+        [_.fillcolor]: Theme.elements[elementNode.color].fill
       })
     }
     switch (elementNode.shape) {
@@ -139,7 +147,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.color]: Colors[elementNode.color].stroke,
+          [_.color]: Theme.elements[elementNode.color].stroke,
           [_.penwidth]: 2,
           [_.shape]: 'cylinder'
         })
@@ -276,7 +284,8 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
       }
       if (edge.color) {
         e.attributes.apply({
-          [_.color]: edge.color
+          [_.color]: Theme.relationships[edge.color].lineColor,
+          [_.fontcolor]: Theme.relationships[edge.color].labelColor
         })
       }
       if (edge.line) {

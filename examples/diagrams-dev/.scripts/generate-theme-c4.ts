@@ -8,7 +8,7 @@ import { defaultTheme } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 
-const colors = Object.keys(defaultTheme.colors)
+const colors = Object.keys(defaultTheme.elements)
 
 const likec4 = `// DO NOT EDIT MANUALLY
 

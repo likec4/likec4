@@ -4,7 +4,7 @@ import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
-  const colors = theme.colors[node.color]
+  const colors = theme.elements[node.color]
 
   return (
     <>

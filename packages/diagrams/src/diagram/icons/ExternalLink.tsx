@@ -17,7 +17,7 @@ export type ExternalLinkProps = {
 export const ExternalLink = ({
   visible = true,
   fill,
-  fillIcon = theme.colors.primary.loContrast,
+  fillIcon = theme.elements.primary.loContrast,
   opacity = 1,
   scale = 1,
   x = 0,

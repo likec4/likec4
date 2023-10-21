@@ -4,7 +4,7 @@ import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
 
 export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps) {
-  const colors = theme.colors[node.color]
+  const colors = theme.elements[node.color]
 
   // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
   return (

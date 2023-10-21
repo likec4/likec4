@@ -24,7 +24,7 @@ function nodeSprings(theme: DiagramTheme, node: DiagramNode) {
     size: { width, height },
     color
   } = node
-  const colors = theme.colors[color]
+  const colors = theme.elements[color]
   const offsetX = Math.round(width / 2)
   const offsetY = Math.round(height / 2)
   return {

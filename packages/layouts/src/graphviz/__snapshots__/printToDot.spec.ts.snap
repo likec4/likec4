@@ -19,7 +19,7 @@ exports[`printToDot > computedAmazonView 1`] = `
   edge [
     fontname = "Helvetica";
     fontsize = 9.75;
-    style = "solid";
+    style = "dashed";
     penwidth = 2;
     arrowsize = 0.85;
     color = "#6E6E6E";
@@ -100,7 +100,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
   edge [
     fontname = "Helvetica";
     fontsize = 9.75;
-    style = "solid";
+    style = "dashed";
     penwidth = 2;
     arrowsize = 0.85;
     color = "#6E6E6E";
@@ -241,7 +241,7 @@ exports[`printToDot > computedCloudView 1`] = `
   edge [
     fontname = "Helvetica";
     fontsize = 9.75;
-    style = "solid";
+    style = "dashed";
     penwidth = 2;
     arrowsize = 0.85;
     color = "#6E6E6E";
@@ -344,7 +344,7 @@ exports[`printToDot > computedIndexView 1`] = `
   edge [
     fontname = "Helvetica";
     fontsize = 9.75;
-    style = "solid";
+    style = "dashed";
     penwidth = 2;
     arrowsize = 0.85;
     color = "#6E6E6E";

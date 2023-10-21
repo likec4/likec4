@@ -15,7 +15,7 @@ export type HexColorLiteral = `#${string}`
 
 export type ColorLiteral = HexColorLiteral
 
-export interface ThemeColorValues {
+export interface ElementThemeColorValues {
   fill: ColorLiteral
   stroke: ColorLiteral
   // Main text (title, etc.)
@@ -24,19 +24,23 @@ export interface ThemeColorValues {
   loContrast: ColorLiteral
 }
 
-export type ThemeColors = {
-  [key in ThemeColor]: ThemeColorValues
+export type ElementThemeColors = {
+  [key in ThemeColor]: ElementThemeColorValues
 }
 
-export interface ThemeRelationColors {
+export interface RelationshipThemeColorValues {
   lineColor: ColorLiteral
   labelBgColor: ColorLiteral
   labelColor: ColorLiteral
 }
 
+export type RelationshipThemeColors = {
+  [key in ThemeColor]: RelationshipThemeColorValues
+}
+
 export interface LikeC4Theme {
   font: 'Helvetica' // for now only support Helvetica
   shadow: ColorLiteral
-  relation: ThemeRelationColors
-  colors: ThemeColors
+  relationships: RelationshipThemeColors
+  elements: ElementThemeColors
 }
