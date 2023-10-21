@@ -12,67 +12,67 @@ specification {
 
   relationship primary {
     color primary
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship blue {
     color blue
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship secondary {
     color secondary
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship sky {
     color sky
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship muted {
     color muted
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship slate {
     color slate
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship gray {
     color gray
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship red {
     color red
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship green {
     color green
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship amber {
     color amber
-    tail diamond
+    tail vee
     head vee
   }
 
   relationship indigo {
     color indigo
-    tail diamond
+    tail vee
     head vee
   }
 

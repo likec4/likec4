@@ -22,10 +22,7 @@ specification {
     }
   }
 
-  relationship async {
-    color red
-    line dotted
-    head odiamond
-    tail vee
-  }
+  tag deprecated
+  tag team-a
+  tag team-b
 }

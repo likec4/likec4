@@ -22,13 +22,23 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
 
+    if (ast.isRelation(node) && 'kind' in node) {
+      keyword('-[')
+      acceptor({
+        node,
+        property: 'kind',
+        type: SemanticTokenTypes.type,
+        modifier: [SemanticTokenModifiers.definition]
+      })
+      keyword(']->')
+    }
+
     if (ast.isElementRef(node) || ast.isStrictElementRef(node)) {
       acceptor({
         node,
         property: 'el',
         type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property
       })
-      return
     }
     if (ast.isElementViewRef(node)) {
       acceptor({
@@ -36,7 +46,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'view',
         type: SemanticTokenTypes.variable
       })
-      return
     }
     if (ast.isWildcardExpression(node)) {
       acceptor({
@@ -44,23 +53,8 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'isWildcard',
         type: SemanticTokenTypes.variable
       })
-      return
     }
 
-    // if (
-    //   ast.isRelation(node) ||
-    //   ast.isRelationExpression(node) ||
-    //   ast.isIncomingExpression(node) ||
-    //   ast.isInOutExpression(node) ||
-    //   ast.isOutgoingExpression(node)
-    // ) {
-    //   acceptor({
-    //     node,
-    //     property: 'arr',
-    //     type: SemanticTokenTypes.keyword,
-    //     modifier: [SemanticTokenModifiers.defaultLibrary]
-    //   })
-    // }
     if (ast.isElementKindExpression(node) || ast.isElementTagExpression(node)) {
       keyword('element')
       if (ast.isElementKindExpression(node)) {
@@ -71,7 +65,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.type,
           modifier: [SemanticTokenModifiers.definition]
         })
-        return
       }
       if (ast.isElementTagExpression(node)) {
         keyword('tag')
@@ -81,7 +74,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.type,
           modifier: [SemanticTokenModifiers.definition]
         })
-        return
       }
     }
     if (ast.isRelation(node)) {
@@ -92,7 +84,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
           type: SemanticTokenTypes.string
         })
       }
-      return
     }
     if (ast.isElementKind(node)) {
       acceptor({
@@ -101,7 +92,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition]
       })
-      return
     }
     if (ast.isTags(node)) {
       acceptor({
@@ -110,7 +100,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition]
       })
-      return
     }
     if (ast.isTag(node)) {
       acceptor({
@@ -119,7 +108,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition]
       })
-      return
     }
     if (ast.isRelationshipKind(node)) {
       acceptor({
@@ -128,9 +116,13 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition]
       })
-      return
     }
-    if (ast.isColorProperty(node) || ast.isShapeProperty(node)) {
+    if (
+      ast.isColorProperty(node) ||
+      ast.isShapeProperty(node) ||
+      ast.isArrowProperty(node) ||
+      ast.isLineProperty(node)
+    ) {
       acceptor({
         node,
         property: 'key',
@@ -141,7 +133,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.enum
       })
-      return
     }
     if (ast.isLinkProperty(node) || ast.isIconProperty(node)) {
       acceptor({
@@ -154,46 +145,12 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.string
       })
-      return
     }
-    // ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty
-    // if (
-    //   ast.isViewProperty(node) ||
-    //   ast.isElementStringProperty(node) ||
-    //   ast.isRelationStringProperty(node) ||
-    //   ast.isLinkProperty(node) ||
-    //   ast.isIconProperty(node)
-    // ) {
-    //   acceptor({
-    //     node,
-    //     property: 'key',
-    //     type: SemanticTokenTypes.keyword
-    //     // type: SemanticTokenTypes.property,
-    //     // modifier: [
-    //     //   SemanticTokenModifiers.readonly,
-    //     //   SemanticTokenModifiers.declaration
-    //     // ]
-    //   })
-    //   acceptor({
-    //     node,
-    //     property: 'value',
-    //     type: SemanticTokenTypes.string
-    //   })
-    //   return
-    // }
-    // if (ast.isModel(node)) {
-    //   keyword('model')
-    //   return
-    // }
-    // if (ast.isModelViews(node)) {
-    //   keyword('views')
-    //   return
-    // }
     if (ast.isElement(node)) {
-      return this.highlightAstElement(node, acceptor)
+      this.highlightAstElement(node, acceptor)
     }
     if (ast.isView(node)) {
-      return this.highlightView(node, acceptor)
+      this.highlightView(node, acceptor)
     }
   }
 
