@@ -3,49 +3,77 @@ specification {
 
   element themerelationships
 
+  relationship solid {
+    line solid
+    tail none
+    head none
+  }
+
 
   relationship primary {
     color primary
+    tail diamond
+    head vee
   }
 
   relationship blue {
     color blue
+    tail diamond
+    head vee
   }
 
   relationship secondary {
     color secondary
+    tail diamond
+    head vee
   }
 
   relationship sky {
     color sky
+    tail diamond
+    head vee
   }
 
   relationship muted {
     color muted
+    tail diamond
+    head vee
   }
 
   relationship slate {
     color slate
+    tail diamond
+    head vee
   }
 
   relationship gray {
     color gray
+    tail diamond
+    head vee
   }
 
   relationship red {
     color red
+    tail diamond
+    head vee
   }
 
   relationship green {
     color green
+    tail diamond
+    head vee
   }
 
   relationship amber {
     color amber
+    tail diamond
+    head vee
   }
 
   relationship indigo {
     color indigo
+    tail diamond
+    head vee
   }
 
 
@@ -150,6 +178,20 @@ model {
 
   }
 
+  // Col1
+  primary_target -[solid]-> secondary_source
+  secondary_target -[solid]-> muted_source
+
+  // Col2
+  blue_target -[solid]-> sky_source
+  sky_target -[solid]-> indigo_source
+
+  // Col3
+  gray_target -[solid]-> slate_source
+
+  // Col4
+  red_target -[solid]-> amber_source
+  amber_target -[solid]-> green_source
 }
 
 views {
@@ -157,5 +199,139 @@ views {
   view relationshipcolors of relationship_colors {
     include *
   }
+
+  
+  view relationship_primary of primary_source {
+    include *, relationship_colors
+    exclude -> primary_source
+  }
+  view relationship_primary_target of primary_target {
+    include *, relationship_colors
+    exclude primary_target ->
+    style relationship_colors {
+      color primary
+    }
+  }
+  
+  view relationship_blue of blue_source {
+    include *, relationship_colors
+    exclude -> blue_source
+  }
+  view relationship_blue_target of blue_target {
+    include *, relationship_colors
+    exclude blue_target ->
+    style relationship_colors {
+      color blue
+    }
+  }
+  
+  view relationship_secondary of secondary_source {
+    include *, relationship_colors
+    exclude -> secondary_source
+  }
+  view relationship_secondary_target of secondary_target {
+    include *, relationship_colors
+    exclude secondary_target ->
+    style relationship_colors {
+      color secondary
+    }
+  }
+  
+  view relationship_sky of sky_source {
+    include *, relationship_colors
+    exclude -> sky_source
+  }
+  view relationship_sky_target of sky_target {
+    include *, relationship_colors
+    exclude sky_target ->
+    style relationship_colors {
+      color sky
+    }
+  }
+  
+  view relationship_muted of muted_source {
+    include *, relationship_colors
+    exclude -> muted_source
+  }
+  view relationship_muted_target of muted_target {
+    include *, relationship_colors
+    exclude muted_target ->
+    style relationship_colors {
+      color muted
+    }
+  }
+  
+  view relationship_slate of slate_source {
+    include *, relationship_colors
+    exclude -> slate_source
+  }
+  view relationship_slate_target of slate_target {
+    include *, relationship_colors
+    exclude slate_target ->
+    style relationship_colors {
+      color slate
+    }
+  }
+  
+  view relationship_gray of gray_source {
+    include *, relationship_colors
+    exclude -> gray_source
+  }
+  view relationship_gray_target of gray_target {
+    include *, relationship_colors
+    exclude gray_target ->
+    style relationship_colors {
+      color gray
+    }
+  }
+  
+  view relationship_red of red_source {
+    include *, relationship_colors
+    exclude -> red_source
+  }
+  view relationship_red_target of red_target {
+    include *, relationship_colors
+    exclude red_target ->
+    style relationship_colors {
+      color red
+    }
+  }
+  
+  view relationship_green of green_source {
+    include *, relationship_colors
+    exclude -> green_source
+  }
+  view relationship_green_target of green_target {
+    include *, relationship_colors
+    exclude green_target ->
+    style relationship_colors {
+      color green
+    }
+  }
+  
+  view relationship_amber of amber_source {
+    include *, relationship_colors
+    exclude -> amber_source
+  }
+  view relationship_amber_target of amber_target {
+    include *, relationship_colors
+    exclude amber_target ->
+    style relationship_colors {
+      color amber
+    }
+  }
+  
+  view relationship_indigo of indigo_source {
+    include *, relationship_colors
+    exclude -> indigo_source
+  }
+  view relationship_indigo_target of indigo_target {
+    include *, relationship_colors
+    exclude indigo_target ->
+    style relationship_colors {
+      color indigo
+    }
+  }
+  
 
 }

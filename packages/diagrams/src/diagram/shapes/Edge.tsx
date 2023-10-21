@@ -9,10 +9,40 @@ import {
   type NonEmptyArray,
   type Point,
   type RelationshipArrowType,
-  DefaultLineStyle
+  DefaultLineStyle,
+  DefaultRelationshipColor
 } from '@likec4/core'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { DiagramEdge, LikeC4Theme } from '../types'
+
+type GlobalCompositeOperationType =
+  | ''
+  | 'source-over'
+  | 'source-in'
+  | 'source-out'
+  | 'source-atop'
+  | 'destination-over'
+  | 'destination-in'
+  | 'destination-out'
+  | 'destination-atop'
+  | 'lighter'
+  | 'copy'
+  | 'xor'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity'
 
 // const lineColor = '#6E6E6E'
 // const labelBgColor = '#18191b'
@@ -20,11 +50,13 @@ import type { DiagramEdge, LikeC4Theme } from '../types'
 function EdgeArrow({
   arrowType,
   points,
-  springs
+  springs,
+  globalCompositeOperation
 }: {
   arrowType: Exclude<RelationshipArrowType, 'none'>
   points: NonEmptyArray<Point>
   springs: EdgeShapeProps['springs']
+  globalCompositeOperation: GlobalCompositeOperationType
 }) {
   const isOutline = arrowType === 'odiamond' || arrowType === 'onormal'
   return (
@@ -38,7 +70,7 @@ function EdgeArrow({
       hitStrokeWidth={5}
       lineCap={'round'}
       lineJoin={'miter'}
-      globalCompositeOperation={'luminosity'}
+      globalCompositeOperation={globalCompositeOperation}
     />
   )
 }
@@ -93,6 +125,7 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
   const {
     points,
     head,
+    color,
     line = DefaultLineStyle,
     headArrow,
     tail,
@@ -100,6 +133,9 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
     labelBBox,
     labels
   } = edge
+
+  const globalCompositeOperation: GlobalCompositeOperationType =
+    !color || color === DefaultRelationshipColor ? 'luminosity' : 'lighten'
 
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
@@ -125,7 +161,7 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
         hitStrokeWidth={20}
         lineCap={'round'}
         lineJoin={'round'}
-        globalCompositeOperation={'luminosity'}
+        globalCompositeOperation={globalCompositeOperation}
       />
       {head !== 'none' && headArrow && (
         <EdgeArrow
@@ -133,6 +169,7 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
           arrowType={head ?? DefaultArrowType}
           points={headArrow}
           springs={springs}
+          globalCompositeOperation={globalCompositeOperation}
         />
       )}
       {tail !== 'none' && tailArrow && (
@@ -141,6 +178,7 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
           arrowType={tail ?? DefaultArrowType}
           points={tailArrow}
           springs={springs}
+          globalCompositeOperation={globalCompositeOperation}
         />
       )}
       {labelBBox && labelBBox.width > 0 && (
@@ -164,9 +202,8 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
             text={label.text}
-            perfectDrawEnabled={false}
             listening={false}
-            globalCompositeOperation='luminosity'
+            globalCompositeOperation={globalCompositeOperation}
             shadowEnabled={springs.opacity.to(o => o > 0.5)}
             shadowColor={'#222'}
             shadowOpacity={0.15}

@@ -188,11 +188,19 @@ specification {
 
   element themerelationships
 
+  relationship solid {
+    line solid
+    tail none
+    head none
+  }
+
 ${colors
   .map(
     key => `
   relationship ${key} {
     color ${key}
+    tail vee
+    head vee
   }
 `
   )
@@ -223,6 +231,20 @@ ${colors
   .join('')}
   }
 
+  // Col1
+  primary_target -[solid]-> secondary_source
+  secondary_target -[solid]-> muted_source
+
+  // Col2
+  blue_target -[solid]-> sky_source
+  sky_target -[solid]-> indigo_source
+
+  // Col3
+  gray_target -[solid]-> slate_source
+
+  // Col4
+  red_target -[solid]-> amber_source
+  amber_target -[solid]-> green_source
 }
 
 views {
@@ -230,6 +252,24 @@ views {
   view relationshipcolors of relationship_colors {
     include *
   }
+
+  ${colors
+    .map(
+      key => `
+  view relationship_${key} of ${key}_source {
+    include *, relationship_colors
+    exclude -> ${key}_source
+  }
+  view relationship_${key}_target of ${key}_target {
+    include *, relationship_colors
+    exclude ${key}_target ->
+    style relationship_colors {
+      color ${key}
+    }
+  }
+  `
+    )
+    .join('')}
 
 }
 `
