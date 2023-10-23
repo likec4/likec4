@@ -34,8 +34,8 @@
     "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.8.1",
-    "@commitlint/config-conventional": "^17.8.1",
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
     "@types/eslint": "^8.44.6",
     "@types/node": "^20.8.7",
     "@types/prettier": "^2.7.3",
