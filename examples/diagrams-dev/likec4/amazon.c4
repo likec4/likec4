@@ -55,14 +55,13 @@ views {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud {
       color muted
     }
 
-    style amazon.* {
+    style amazon, amazon.* {
       color green
     }
-
   }
 
   view amazon_rds of rds {
@@ -70,13 +69,15 @@ views {
 
     include *,
        amazon,
+       cloud,
+       cloud.backend,
        cloud.backend.* -> rds.*
 
     style * {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud, cloud.backend, amazon {
       color muted
     }
 
@@ -88,13 +89,18 @@ views {
   view amazon_sqs of sqs {
     title 'Overview Amazon SQS'
 
-    include *, amazon, cloud.backend, cloud.backend.* -> sqs
+    include
+      *,
+      amazon,
+      cloud,
+      cloud.backend,
+      cloud.backend.* -> sqs,
 
     style * {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud, cloud.backend, amazon {
       color muted
     }
 
@@ -106,7 +112,11 @@ views {
   view amazon_cognito of cognito {
     title 'Overview Amazon Cognito'
 
-    include *, amazon, cloud.* -> cognito
+    include
+      *,
+      amazon,
+      cloud,
+      cloud.* -> cognito
 
     style * {
       color secondary

@@ -79,7 +79,7 @@ views {
       color secondary
     }
     style cloud {
-      color primary
+      color green
     }
 
     exclude
@@ -92,14 +92,15 @@ views {
     include
       *,
       -> ui.*,
-      -> backend
+      -> backend,
+      cloud,
 
     style * {
       color secondary
     }
 
     style cloud {
-      color gray
+      color muted
     }
 
     style customer {
@@ -110,14 +111,24 @@ views {
   view cloud of cloud {
     title "Overview Cloud System"
     include *
+
+    style * {
+      color secondary
+    }
+    style cloud, cloud.* {
+      color green
+    }
   }
 
   view cloud_ui of ui {
     title "Overview UI"
     include
       *,
+      cloud,
+      amazon,
       backend,
-      ui.* -> backend.*
+      ui.* -> backend.*,
+      ui.* -> amazon.*
 
     exclude backend -> amazon
 
@@ -125,8 +136,8 @@ views {
       color secondary
     }
 
-    style backend {
-      color gray
+    style cloud, amazon {
+      color muted
     }
 
     style ui, ui.* {
