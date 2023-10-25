@@ -38,7 +38,7 @@
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "prepack": "run clean && unbuild",
+    "prepack": "unbuild",
     "build:turbo": "run -T turbo build --filter='language-server'",
     "build": "unbuild",
     "dev": "run-p 'watch:*'",

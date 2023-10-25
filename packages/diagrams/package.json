@@ -35,6 +35,7 @@
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo build --filter='diagrams'",
     "build": "unbuild",
+    "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist"
   },

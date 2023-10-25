@@ -34,7 +34,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "run clean && unbuild",
+    "prepack": "unbuild",
     "build": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",

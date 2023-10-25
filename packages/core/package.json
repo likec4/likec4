@@ -13,7 +13,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "unbuild",
-    "prepack": "run clean && run build",
+    "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "clean": "run -T rimraf dist"

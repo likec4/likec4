@@ -28,6 +28,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "unbuild",
+    "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
     "test": "run -T vitest run"
