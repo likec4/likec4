@@ -1,0 +1,79 @@
+model {
+
+  extend provider {
+    pg = database 'PostgreSQL' {
+      description 'Database for storing relational data'
+      style {
+        icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+      }
+
+      tbl_customers = db_table '[ customers ]' {
+        technology 'private schema'
+      }
+
+      tbl_sessions = db_table '[ sessions ]' {
+        technology 'private schema'
+        description '
+          Active sessions
+        '
+      }
+      tbl_sessions -> tbl_customers 'belongs to'
+    }
+  }
+
+  extend cloud.backend {
+
+    graphql = service 'GraphQL API' {
+      description 'The GraphQL API of the cloud system'
+
+      -> provider.pg.tbl_sessions 'reads/writes'
+      -> provider.pg.tbl_customers 'reads/writes'
+    }
+
+  }
+
+}
+
+views {
+
+  view cloud_backend of cloud.backend {
+
+    include
+      *,
+      cloud,
+      provider,
+      provider.pg,
+      cloud.backend.* -> provider.pg.*
+
+    style * {
+      color secondary
+    }
+
+    style cloud, provider, provider.pg  {
+      color muted
+    }
+
+    style cloud.backend, cloud.backend.* {
+      color green
+    }
+  }
+
+  view provider_pg  of provider.pg {
+    title 'Databases'
+    include
+      *,
+      cloud.* -> provider.pg.*
+
+    style * {
+      color secondary
+    }
+
+    style cloud, provider, provider.pg  {
+      color muted
+    }
+
+    style provider.pg.* {
+      color green
+    }
+  }
+}

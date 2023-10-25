@@ -1,0 +1,57 @@
+model {
+
+  extend cloud.ui {
+
+    dashboard = webapp 'Customer Dashboard' {
+      technology 'Nextjs'
+      description 'Web application, that allows customers to interact with the cloud system'
+      -> cloud.backend.graphql 'fetches data'
+    }
+
+    mobile = mobile 'Mobile App' {
+      description 'The mobile app of the cloud system'
+      -> cloud.backend.graphql 'fetches data'
+    }
+
+    customer -> dashboard 'opens in browser'
+    customer -> mobile 'opens on mobile device'
+  }
+
+}
+
+views {
+
+  view cloud_ui of cloud.ui {
+
+    include
+      *,
+      cloud
+
+    style * {
+      color secondary
+    }
+
+    style cloud  {
+      color muted
+    }
+
+    style cloud.ui, cloud.ui.* {
+      color green
+    }
+  }
+
+  view cloud_ui_dashboard of dashboard {
+    title 'Frontend: Dashboard'
+    include *
+    style cloud.ui,cloud.ui.* {
+      color green
+    }
+  }
+  view cloud_ui_mobile of mobile {
+    title 'Frontend: Mobile'
+    include *
+    style cloud.ui,cloud.ui.* {
+      color green
+    }
+  }
+}

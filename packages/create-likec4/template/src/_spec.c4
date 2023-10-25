@@ -1,0 +1,32 @@
+specification {
+
+  element actor {
+    style {
+      shape person
+    }
+  }
+
+  element system
+  element component
+  element service
+  element webapp {
+    style {
+      shape browser
+    }
+  }
+  element mobile {
+    style {
+      shape mobile
+    }
+  }
+  element database {
+    style {
+      shape storage
+    }
+  }
+  element db_table {
+    style {
+      shape storage
+    }
+  }
+}

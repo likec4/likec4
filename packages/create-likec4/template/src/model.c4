@@ -1,0 +1,67 @@
+model {
+
+  customer = actor 'Customer' {
+    description 'Customer of the cloud system'
+  }
+
+  cloud = system 'Cloud System' {
+    description '
+      Our SaaS platfrom that allows
+      customers to interact with
+      the latest technologies
+    '
+
+    ui = component 'Frontend' {
+      description 'All the frontend applications of the cloud system'
+      style {
+        shape browser
+      }
+    }
+
+    backend = component 'Backend' {
+      description 'The backend services of the cloud system'
+    }
+
+  }
+
+  customer -> cloud 'uses and pays'
+  customer -> ui 'uses web and mobile'
+
+  provider = system 'Managed Services' {
+    description '
+      Provider of managed services
+      and cloud hosting
+    '
+  }
+
+  cloud -> provider 'uses services'
+}
+
+views {
+
+  view index {
+    title 'Landscape'
+    include *
+  }
+
+  view cloud of cloud {
+    title 'Context: Cloud System'
+    include *
+
+    style * {
+      color secondary
+    }
+    style cloud, cloud.* {
+      color green
+    }
+  }
+
+  view provider of provider {
+    title 'Context: Managed Services'
+    include
+      *,
+      cloud,
+      cloud.* -> provider.*
+  }
+
+}

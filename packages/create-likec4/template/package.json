@@ -1,0 +1,14 @@
+{
+  "name": "likec4-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "likec4 serve",
+    "build": "likec4 build",
+    "export:png": "likec4 export png -o ./png"
+  },
+  "devDependencies": {
+    "likec4": "*"
+  }
+}

@@ -4335,6 +4335,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prompts@npm:^2":
+  version: 2.4.7
+  resolution: "@types/prompts@npm:2.4.7"
+  dependencies:
+    "@types/node": "*"
+    kleur: ^3.0.3
+  checksum: 2c57b3c419b4be72039dcd0d099c4643a5f7d06cf20156709e87498cd4f6cb4000edc1cafde95786b46d137eb5ace01e3ba83dbc5f29cb69f4b778fdd42b7d81
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.8
   resolution: "@types/prop-types@npm:15.7.8"
@@ -6365,6 +6375,10 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@types/node": ^20.8.7
+    "@types/prompts": ^2
+    execa: ^8.0.1
+    prompts: ^2.4.2
+    tsx: ^3.14.0
     typescript: ^5.2.2
     unbuild: ^2.0.0
   languageName: unknown
@@ -10256,6 +10270,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kleur@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "kleur@npm:3.0.3"
+  checksum: df82cd1e172f957bae9c536286265a5cdbd5eeca487cb0a3b2a7b41ef959fc61f8e7c0e9aeea9c114ccf2c166b6a8dd45a46fd619c1c569d210ecd2765ad5169
+  languageName: node
+  linkType: hard
+
 "kleur@npm:^4.0.3, kleur@npm:^4.1.5":
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
@@ -13508,6 +13529,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prompts@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "prompts@npm:2.4.2"
+  dependencies:
+    kleur: ^3.0.3
+    sisteransi: ^1.0.5
+  checksum: d8fd1fe63820be2412c13bfc5d0a01909acc1f0367e32396962e737cb2fc52d004f3302475d5ce7d18a1e8a79985f93ff04ee03007d091029c3f9104bffc007d
+  languageName: node
+  linkType: hard
+
 "prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
@@ -14729,6 +14760,13 @@ __metadata:
     mrmime: ^1.0.0
     totalist: ^3.0.0
   checksum: e2dfd4c97735a6ad6d842d0eec2cd9e3919ff0e46f0d228248c5753ad4b70b832711e77e1259c031c439cdb08303cc54d923685c92b0e890145cc733af7c5568
+  languageName: node
+  linkType: hard
+
+"sisteransi@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "sisteransi@npm:1.0.5"
+  checksum: aba6438f46d2bfcef94cf112c835ab395172c75f67453fe05c340c770d3c402363018ae1ab4172a1026a90c47eaccf3af7b6ff6fa749a680c2929bd7fa2b37a4
   languageName: node
   linkType: hard
 

@@ -9,9 +9,13 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/create-likec4"
   },
+  "bin": {
+    "create-likec4": "index.js"
+  },
   "files": [
     "index.js",
-    "dist"
+    "dist",
+    "template"
   ],
   "engines": {
     "node": "^18.0.0 || >=20.0.0"
@@ -23,13 +27,16 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "unbuild --stub",
     "build": "unbuild",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",
+    "@types/prompts": "^2",
+    "execa": "^8.0.1",
+    "prompts": "^2.4.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0"
   },
