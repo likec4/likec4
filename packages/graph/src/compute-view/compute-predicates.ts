@@ -1,5 +1,5 @@
 import type { Element } from '@likec4/core'
-import { Expr } from '@likec4/core'
+import { Expr, parentFqn } from '@likec4/core'
 import type { Predicate } from 'rambdax'
 import { isNil } from 'remeda'
 import type { ComputeCtx } from './compute'
@@ -42,14 +42,16 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
   const currentElements = [...this.elements]
   const root = this.root
   if (root) {
-    this.addElement(this.graph.element(root))
+    const _elRoot = this.graph.element(root)
+    this.addElement(_elRoot)
 
     const children = this.graph.children(root)
-    if (children.length > 0) {
+    const hasChildren = children.length > 0
+    if (hasChildren) {
       this.addElement(...children)
       this.addEdges(this.graph.edgesWithin(children))
     } else {
-      children.push(this.graph.element(root))
+      children.push(_elRoot)
     }
 
     // All neighbours that may have relations with root or its children
@@ -62,6 +64,21 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
     for (const el of children) {
       this.addEdges(this.graph.anyEdgesBetween(el, neighbours))
     }
+
+    // If root has no children
+    if (!hasChildren) {
+      // Any edges with siblings?
+      const edgesWithSiblings = this.graph.anyEdgesBetween(_elRoot, this.graph.siblings(root))
+      if (edgesWithSiblings.length === 0) {
+        // If no edges with siblings, i.e. root is orphan
+        // Lets add parent for better view
+        const _parentId = parentFqn(root)
+        const parent = _parentId && this.graph.element(_parentId)
+        if (parent) {
+          this.addElement(parent)
+        }
+      }
+    }
   } else {
     // Take root elements
     this.addElement(...this.graph.rootElements)
@@ -72,7 +89,7 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
 export function excludeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
   const root = this.root
   if (root) {
-    this.excludeElement(this.graph.element(root))
+    this.excludeElement(_elRoot)
     this.excludeElement(...this.graph.children(root))
     this.excludeRelation(
       ...[...this.graph.internal(root), ...this.graph.incoming(root), ...this.graph.outgoing(root)]
