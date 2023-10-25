@@ -1,3 +1,31 @@
+# [0.41.0](https://github.com/likec4/likec4/compare/v0.40.0...v0.41.0) (2023-10-25)
+
+### Bug Fixes
+
+- **deps:** update dependency @hpcc-js/wasm to ^2.14.1 ([#365](https://github.com/likec4/likec4/issues/365)) ([6c27fca](https://github.com/likec4/likec4/commit/6c27fca8659500b787d765c7b232839f3cec7bed))
+- **deps:** update dependency @nanostores/logger to ^0.2.4 ([#367](https://github.com/likec4/likec4/issues/367)) ([b344fb7](https://github.com/likec4/likec4/commit/b344fb70eae1e5236c81b7051cfe84fdda79d42b))
+- **deps:** update dependency @radix-ui/react-scroll-area to ^1.0.5 ([72af585](https://github.com/likec4/likec4/commit/72af585679986011413bc3e9010234cf97812835))
+- **deps:** update dependency @use-gesture/react to ^10.3.0 ([35ca264](https://github.com/likec4/likec4/commit/35ca2645c39470974d01a7ca9f1ec1f4f359de78))
+- **deps:** update dependency konva to ^9.2.2 ([#360](https://github.com/likec4/likec4/issues/360)) ([c121c8c](https://github.com/likec4/likec4/commit/c121c8c2ec33a538ae16c208acd98a3973785576))
+- **deps:** update dependency remeda to ^1.27.1 ([c9abfdf](https://github.com/likec4/likec4/commit/c9abfdf33299475c9ac09c34ee626095435bdbad))
+- **diagrams:** don't animate element if animation is disabled ([b039602](https://github.com/likec4/likec4/commit/b03960204963a04ba4badbacc6ea780709b81801))
+- **likec4:** response embeds ([c8b187d](https://github.com/likec4/likec4/commit/c8b187d4207fb84312c14360e9839f3c626da3c1))
+- **likec4:** use deviceScaleFactor = 2 ([ad8099a](https://github.com/likec4/likec4/commit/ad8099af1a31b3fd59c8fe3ec3833ba1b259daba))
+- **likec4:** use window size for export/embed ([a0b3d6b](https://github.com/likec4/likec4/commit/a0b3d6bea49b18878aa684f1a833849e84a472e5))
+- remove redundant implicit edges ([4a8daaf](https://github.com/likec4/likec4/commit/4a8daaf00444275506659a86922a32037d7ff9a6))
+- ts compile error ([0edd5d6](https://github.com/likec4/likec4/commit/0edd5d6d68976eae8db31e66e9a464be368c8f41))
+- use [...] for merged edges ([81282e6](https://github.com/likec4/likec4/commit/81282e698c36b964c80e9439138f2db54b8e3c05))
+- vscode launch task loads source maps ([c867401](https://github.com/likec4/likec4/commit/c867401f8535654e7701664d669d0d18f9d2bd9f))
+
+### Features
+
+- `npm create likec4` ([ef7cf93](https://github.com/likec4/likec4/commit/ef7cf93bbb7a397a2685b7952b4a8c601656ab81))
+- base url in cli ([835aea5](https://github.com/likec4/likec4/commit/835aea538f1608869a8ba2c2b12ba0ee2f6be858))
+- dashed relationships by default ([3593d71](https://github.com/likec4/likec4/commit/3593d71a143720615f8783a587978dea250be24f))
+- improve likec4 build ([e904de7](https://github.com/likec4/likec4/commit/e904de7d6cb164e639b1b7b02376fc54bdf64c6a))
+- new package `@likec4/graph` ([#363](https://github.com/likec4/likec4/issues/363)) ([430322c](https://github.com/likec4/likec4/commit/430322c55940facbc5d2da7f21332f3dde3d02fb))
+- relationship arrow styles ([8b902f4](https://github.com/likec4/likec4/commit/8b902f4b2cc88b566a82e02bd7d3bb12e8baca35))
+
 # [0.40.0](https://github.com/likec4/likec4/compare/v0.37.1...v0.40.0) (2023-10-09)
 
 ### Features
