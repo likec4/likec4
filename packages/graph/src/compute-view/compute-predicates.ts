@@ -89,7 +89,7 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
 export function excludeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
   const root = this.root
   if (root) {
-    this.excludeElement(_elRoot)
+    this.excludeElement(this.graph.element(root))
     this.excludeElement(...this.graph.children(root))
     this.excludeRelation(
       ...[...this.graph.internal(root), ...this.graph.incoming(root), ...this.graph.outgoing(root)]
