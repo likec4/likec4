@@ -10,6 +10,7 @@
     "directory": "packages/create-likec4"
   },
   "bin": {
+    "clikec4": "index.js",
     "create-likec4": "index.js"
   },
   "files": [

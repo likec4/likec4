@@ -6381,6 +6381,9 @@ __metadata:
     tsx: ^3.14.0
     typescript: ^5.2.2
     unbuild: ^2.0.0
+  bin:
+    clikec4: index.js
+    create-likec4: index.js
   languageName: unknown
   linkType: soft
 
