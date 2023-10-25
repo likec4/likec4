@@ -1,3 +1,59 @@
+# [0.41.0](https://github.com/likec4/likec4/compare/v0.40.0...v0.41.0) (2023-10-25)
+
+### 🚀  Features
+
+- **diagrams:** relationship kinds by @MoBoo ([#342](https://github.com/likec4/likec4/issues/342))  
+  [Docs](https://likec4.dev/docs/dsl/specification/#relationships)
+
+  Relationship kinds allow you to express different types of relations in a model and customize styling.
+  
+  Example:
+  ```
+  specification {
+    relationship async {
+      color amber
+      line dotted
+      head diamond
+    }
+  }
+  model {
+    service1 -[async]-> service2
+  }
+  ```
+  
+- **cli:** new CLI and preview mode  
+
+  Try this in folder with your `*.c4` files
+  ```bash
+  npx likec4 serve
+  ```
+
+  Documentation is updating... 👷
+  
+- **cli:** export to static website
+
+  ```bash
+  npx likec4 build -o dist
+  ```
+  
+- **cli:** Scaffold projects with `npm create likec4` ([ef7cf93](https://github.com/likec4/likec4/commit/ef7cf93bbb7a397a2685b7952b4a8c601656ab81))
+- **diagrams:** dashed relationships by default ([3593d71](https://github.com/likec4/likec4/commit/3593d71a143720615f8783a587978dea250be24f))
+
+
+### Bug Fixes
+
+- **diagrams:** don't animate element if animation is disabled ([b039602](https://github.com/likec4/likec4/commit/b03960204963a04ba4badbacc6ea780709b81801))
+- **likec4:** responsive embeds ([c8b187d](https://github.com/likec4/likec4/commit/c8b187d4207fb84312c14360e9839f3c626da3c1))
+- **likec4:** use deviceScaleFactor = 2 ([ad8099a](https://github.com/likec4/likec4/commit/ad8099af1a31b3fd59c8fe3ec3833ba1b259daba))
+- **likec4:** use window size for export/embed ([a0b3d6b](https://github.com/likec4/likec4/commit/a0b3d6bea49b18878aa684f1a833849e84a472e5))
+- remove redundant implicit edges ([4a8daaf](https://github.com/likec4/likec4/commit/4a8daaf00444275506659a86922a32037d7ff9a6))
+- use [...] for merged edges ([81282e6](https://github.com/likec4/likec4/commit/81282e698c36b964c80e9439138f2db54b8e3c05))
+- vscode launch task loads source maps ([c867401](https://github.com/likec4/likec4/commit/c867401f8535654e7701664d669d0d18f9d2bd9f))
+
+### New Contributors
+@MoBoo made their first contribution in #374
+
+
 # [0.40.0](https://github.com/likec4/likec4/compare/v0.37.1...v0.40.0) (2023-10-09)
 
 ### Features
