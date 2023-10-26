@@ -1,7 +1,7 @@
 {
   "name": "@likec4/example-cloud-system-vite",
   "private": true,
-  "version": "0.42.0",
+  "version": "0.42.1",
   "packageManager": "yarn@3.4.1",
   "scripts": {
     "build:turbo": "run -T turbo run build --filter='example-cloud-system'",

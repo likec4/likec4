@@ -1,3 +1,9 @@
+## [0.42.1](https://github.com/likec4/likec4/compare/v0.42.0...v0.42.1) (2023-10-26)
+
+### Bug Fixes
+
+- **cli:** wrong vite entrypoint when embeded ([4f43536](https://github.com/likec4/likec4/commit/4f435361f2ce45e44262cadc5f4b577f92081362))
+
 # [0.42.0](https://github.com/likec4/likec4/compare/v0.41.0...v0.42.0) (2023-10-26)
 
 ### 🚀 Features
