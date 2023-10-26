@@ -5,7 +5,7 @@ import type { LikeC4ViteConfig } from './config'
 import { viteConfig } from './config'
 
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
-  const config = await viteConfig(cfg)
+  const { isDev, ...config } = await viteConfig(cfg)
   const port = await getPort({
     port: [5173, 61000, 61001, 62002, 62003, 62004, 62005]
   })

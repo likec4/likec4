@@ -99,6 +99,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   }
 
   return {
+    isDev,
     root,
     languageServices,
     resolve: {
@@ -173,5 +174,5 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }),
       likec4Plugin({ languageServices })
     ]
-  } satisfies InlineConfig & LikeC4ViteConfig
+  } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

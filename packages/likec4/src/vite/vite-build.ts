@@ -3,7 +3,7 @@ import type { LikeC4ViteConfig } from './config'
 import { viteConfig } from './config'
 
 export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
-  const config = await viteConfig(cfg)
+  const { isDev, ...config } = await viteConfig(cfg)
   // Static website
   await build({
     ...config,
@@ -18,7 +18,7 @@ export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
       mode: 'production',
       build: {
         lib: {
-          entry: 'src/likec4-views.ts',
+          entry: `src/likec4-views.${isDev ? 'ts' : 'js'}`,
           name: 'LikeC4',
           fileName: () => 'likec4-views.js',
           formats: ['umd']

@@ -9,7 +9,7 @@ type VitePreviewParams = LikeC4ViteConfig & {
 }
 
 export async function vitePreview(cfg?: VitePreviewParams) {
-  const config = await viteConfig(cfg)
+  const { isDev, ...config } = await viteConfig(cfg)
   const port = await getPort({
     port: portNumbers(62001, 62020)
   })
