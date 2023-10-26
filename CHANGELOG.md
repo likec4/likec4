@@ -1,13 +1,20 @@
+# [0.42.0](https://github.com/likec4/likec4/compare/v0.41.0...v0.42.0) (2023-10-26)
+
+### Features
+
+- export to PNG from preview ([6996184](https://github.com/likec4/likec4/commit/6996184859003fb0c67f02d22ba0e3b86029738a))
+
 # [0.41.0](https://github.com/likec4/likec4/compare/v0.40.0...v0.41.0) (2023-10-25)
 
-### 🚀  Features
+### 🚀 Features
 
 - **diagrams:** relationship kinds by @MoBoo ([#342](https://github.com/likec4/likec4/issues/342))  
   [Docs](https://likec4.dev/docs/dsl/specification/#relationships)
 
   Relationship kinds allow you to express different types of relations in a model and customize styling.
-  
+
   Example:
+
   ```
   specification {
     relationship async {
@@ -20,25 +27,25 @@
     service1 -[async]-> service2
   }
   ```
-  
-- **cli:** new CLI and preview mode  
+
+- **cli:** new CLI and preview mode
 
   Try this in folder with your `*.c4` files
+
   ```bash
   npx likec4 serve
   ```
 
   Documentation is updating... 👷
-  
+
 - **cli:** export to static website
 
   ```bash
   npx likec4 build -o dist
   ```
-  
+
 - **cli:** Scaffold projects with `npm create likec4` ([ef7cf93](https://github.com/likec4/likec4/commit/ef7cf93bbb7a397a2685b7952b4a8c601656ab81))
 - **diagrams:** dashed relationships by default ([3593d71](https://github.com/likec4/likec4/commit/3593d71a143720615f8783a587978dea250be24f))
-
 
 ### Bug Fixes
 
@@ -51,8 +58,8 @@
 - vscode launch task loads source maps ([c867401](https://github.com/likec4/likec4/commit/c867401f8535654e7701664d669d0d18f9d2bd9f))
 
 ### New Contributors
-@MoBoo made their first contribution in #374
 
+@MoBoo made their first contribution in #374
 
 # [0.40.0](https://github.com/likec4/likec4/compare/v0.37.1...v0.40.0) (2023-10-09)
 
