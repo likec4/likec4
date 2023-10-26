@@ -80,7 +80,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.nodesep]: pxToInch(80),
     [_.ranksep]: pxToInch(90),
     // [_.newrank]: true,
-    [_.pack]: pxToPoints(20),
+    [_.pack]: pxToPoints(40),
     [_.packmode]: 'array_t'
   })
   G.attributes.graph.apply({
@@ -106,7 +106,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.fontsize]: pxToPoints(13),
     [_.style]: DefaultLineStyle,
     [_.penwidth]: 2,
-    [_.arrowsize]: 0.85,
+    [_.arrowsize]: 0.8,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -115,7 +115,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   const graphvizNodes = new Map<Fqn, NodeModel>()
 
   let sortv = 0
-  const addNode = (elementNode: ComputedNode) => {
+  function addNode(elementNode: ComputedNode) {
     let name = nameFromFqn(elementNode.id).toLowerCase()
     if (name.startsWith('cluster')) {
       name = 'nd_' + name
@@ -163,11 +163,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   /**
    * returns recursion depth
    */
-  const traverseClusters = (
-    elementNode: ComputedNode,
-    parent: GraphBaseModel,
-    level = 0
-  ): number => {
+  function traverseClusters(elementNode: ComputedNode, parent: GraphBaseModel, level = 0): number {
     if (!isCompound(elementNode)) {
       const node = nonNullable(graphvizNodes.get(elementNode.id), "graphviz node doesn't exist")
       parent.node(node.id)
@@ -263,6 +259,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
           [_.weight]: 5
         })
       }
+
       if (lhead) {
         e.attributes.apply({
           [_.lhead]: lhead
@@ -303,6 +300,31 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
           [_.arrowtail]: toArrowType(edge.tail),
           [_.dir]: 'both'
         })
+      }
+
+      const sourceNode = nodes.find(n => n.id === edge.source)
+      const targetNode = nodes.find(n => n.id === edge.target)
+      if (
+        sourceNode &&
+        targetNode &&
+        sourceNode.parent === targetNode.parent &&
+        sourceNode.parent === edge.parent
+      ) {
+        const parentNode = edge.parent && nodes.find(n => n.id === edge.parent)
+        // parent has source and target as children
+        const isTheOnlyChildren = parentNode?.children.length === 2
+
+        const sourceHasOtherEdges = sourceNode.inEdges.length > 0 || sourceNode.outEdges.length > 1
+        const targetHasOtherEdges = targetNode.outEdges.length > 0 || targetNode.inEdges.length > 1
+        // source and target have no other edges
+        const haveNoOtherEdges = !sourceHasOtherEdges && !targetHasOtherEdges
+
+        if (isTheOnlyChildren || haveNoOtherEdges) {
+          // don't rank the edge
+          e.attributes.apply({
+            [_.minlen]: 0
+          })
+        }
       }
     }
   }

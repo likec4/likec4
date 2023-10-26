@@ -90,7 +90,7 @@ export function nodeLabel(node: ComputedNode) {
     return `<${lines[0]}>`
   }
   const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`).join('')
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="7">${rows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">${rows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {
