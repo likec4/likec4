@@ -9,10 +9,10 @@ const Routes = () => {
   const r = useRoute()
   return (
     <Theme
-      accentColor='iris'
-      panelBackground='translucent'
-      appearance={r.params?.theme}
+      hasBackground={r.route !== 'export'}
+      accentColor='indigo'
       radius='small'
+      appearance={r.params?.theme}
     >
       {r.route === 'index' && <IndexPage key='index' />}
       {r.route === 'view' && <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />}
