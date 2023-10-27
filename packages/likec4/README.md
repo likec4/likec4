@@ -1,19 +1,13 @@
 # LikeC4
 
-`likec4` is a CLI tool for various operations and automation over LikeC4 projects, such as:
+`likec4` is a CLI tool for various operations and automation over LikeC4 projects.
 
-1. LikeC4
-   1. Install
-      1. Local installation
-      2. Global installation
-   2. Usage
-      1. Preview diagrams
-      2. Build static website
-      3. Export to PNG
-      4. Export to Mermaid, Dot, D2
-      5. Generate React components
-      6. Generate structured data
-   3. Support
+Features:
+
+- preview diagrams in a local web server (with fast hot-reload on changes)
+- build a static website for sharing and embedding diagrams
+- export to PNG, Mermaid, Dot, D2
+- generate React components
 
 ## Install
 
@@ -39,7 +33,8 @@ You can reference it directly in the `package.json#scripts` object:
 }
 ```
 
-> Check out the template repository [likec4/template](https://github.com/likec4/template)
+> **Template:**  
+> Check out the template repository [likec4/template](https://github.com/likec4/template)  
 > with pre-configured CI for building and deploying to github pages.
 
 To use the binary, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx) while in the project directory:
@@ -64,6 +59,15 @@ likec4 ...
 
 ## Usage
 
+> Refer to the help:
+>
+> ```sh
+> likec4 build -h
+> likec4 codegen react -h
+> ```
+>
+> Almost all commands have a `--help` option and provide usage examples.
+
 ### Preview diagrams
 
 In a folder with LikeC4 sources:
@@ -72,39 +76,68 @@ In a folder with LikeC4 sources:
 likec4 serve
 ```
 
-This will recursively search for `*.c4`, `*.likec4` files and serve them in a local web server.
+This recursively searchs for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.
 
-Any changes to the sources will trigger a live-update of diagrams.
+Any changes in the sources trigger a super-fast live-update of diagrams and you can see changes in the browser immediately.
 
-Refer to the help for more options:
-
-```sh
-likec4 serve --help
-```
+> **Tip:**  
+> You can use `likec4 serve [path to project]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
 
 ### Build static website
+
+Build a single-page application with all diagrams:
 
 ```sh
 likec4 build -o ./dist
 ```
 
-The output folder will contain a static website (single-page application).
+There is a supplementary command to preview the build:
+
+```sh
+likec4 preview -o ./dist
+```
+
+> **Tip:**  
+> [likec4/template](https://github.com/likec4/template) repository demonstrates how to use `likec4` CLI to build and deploy a static website to github pages.
 
 ### Export to PNG
 
-...
+```sh
+likec4 export png -o ./assets
+```
+
+This command starts temporary local web server and uses [Playwright](https://playwright.dev/) to take screenshots of diagrams.
 
 ### Export to Mermaid, Dot, D2
 
-...
+Export to various formats via codegen:
+
+```sh
+likec4 codegen mmd
+likec4 codegen mermaid
+likec4 codegen dot
+likec4 codegen d2
+```
 
 ### Generate React components
 
-...
+```sh
+likec4 codegen react --outfile ./src/likec4.generated.tsx
+```
+
+> Output file should have `.tsx` extension  
+> By default, it generates `likec4.generated.tsx` in current directory
 
 ### Generate structured data
 
-...
+```sh
+likec4 codegen views-data --outfile ./src/likec4.generated.ts
+```
+
+Aliases: `likec4 codegen ts`, `likec4 codegen views`
+
+> Output file should have `.ts` extension  
+> By default, it generates `likec4.generated.ts` in current directory
 
 ## Support
 

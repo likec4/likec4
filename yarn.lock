@@ -464,15 +464,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commander-js/extra-typings@npm:^11.1.0":
-  version: 11.1.0
-  resolution: "@commander-js/extra-typings@npm:11.1.0"
-  peerDependencies:
-    commander: 11.1.x
-  checksum: b325200b477f0631b008f64a79cb8cc42286c97fe6ec1203579be40e7fa999c78910c7952de35b5004a7958e24f0cbbbd132ae011f4c18c2880651a127fe0a74
-  languageName: node
-  linkType: hard
-
 "@commitlint/cli@npm:^18.0.0":
   version: 18.0.0
   resolution: "@commitlint/cli@npm:18.0.0"
@@ -1303,35 +1294,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@likec4/cli@workspace:packages/cli":
-  version: 0.0.0-use.local
-  resolution: "@likec4/cli@workspace:packages/cli"
-  dependencies:
-    "@commander-js/extra-typings": ^11.1.0
-    "@likec4/core": "workspace:*"
-    "@likec4/generators": "workspace:*"
-    "@likec4/language-server": "workspace:*"
-    "@likec4/layouts": "workspace:*"
-    "@types/node": ^16.11.16
-    commander: ^11.1.0
-    esbuild: ^0.19.5
-    execa: ^8.0.1
-    fast-glob: ^3.3.1
-    json5: ^2.2.3
-    kleur: ^4.1.5
-    langium: ^2.0.2
-    mkdirp: ^3.0.1
-    rambdax: ^9.1.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    remeda: ^1.27.1
-    typescript: ^5.2.2
-    vscode-uri: 3.0.7
-  bin:
-    likec4: bin/likec4
-  languageName: unknown
-  linkType: soft
-
 "@likec4/core@workspace:*, @likec4/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
@@ -1543,6 +1505,7 @@ __metadata:
   dependencies:
     execa: ^8.0.1
     likec4: "workspace:*"
+    typescript: ^5.2.2
     vitest: ^0.34.6
   languageName: unknown
   linkType: soft
@@ -5853,7 +5816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:11.1.0, commander@npm:^11.0.0, commander@npm:^11.1.0":
+"commander@npm:11.1.0, commander@npm:^11.0.0":
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
   checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
@@ -6187,7 +6150,6 @@ __metadata:
     typescript: ^5.2.2
     unbuild: ^2.0.0
   bin:
-    clikec4: index.js
     create-likec4: index.js
   languageName: unknown
   linkType: soft
@@ -7820,7 +7782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.0.3, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.1":
+"fast-glob@npm:^3.0.3, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0":
   version: 3.3.1
   resolution: "fast-glob@npm:3.3.1"
   dependencies:
@@ -10001,7 +9963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:^4.0.3, kleur@npm:^4.1.5":
+"kleur@npm:^4.0.3":
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 1dc476e32741acf0b1b5b0627ffd0d722e342c1b0da14de3e8ae97821327ca08f9fb944542fb3c126d90ac5f27f9d804edbe7c585bf7d12ef495d115e0f22c12
@@ -16658,7 +16620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-uri@npm:3.0.7, vscode-uri@npm:~3.0.7":
+"vscode-uri@npm:~3.0.7":
   version: 3.0.7
   resolution: "vscode-uri@npm:3.0.7"
   checksum: c899a0334f9f6ba53021328e083f6307978c09b94407d7e5fe86fcd8fcb8f1da0cb344123a335e55769055007a46d51aff83f9ee1dfc0296ee54b78f34ef0e4f

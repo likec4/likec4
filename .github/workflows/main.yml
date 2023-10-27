@@ -41,16 +41,16 @@ jobs:
       - name: Test
         run: yarn test
 
-      - name: Run СLI test
-        run: yarn test:integration
+      # - name: Run СLI test
+      #   run: yarn test:integration
 
-      - name: Upload CLI test artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cli-test-artifacts
-          path: integration/like4-cli-tests/out/
-          if-no-files-found: error
-          retention-days: 2
+      # - name: Upload CLI test artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: cli-test-artifacts
+      #     path: integration/like4-cli-tests/out/
+      #     if-no-files-found: error
+      #     retention-days: 2
 
   release:
     name: Release

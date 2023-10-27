@@ -16,8 +16,6 @@
   "files": [
     "bin",
     "dist",
-    "LICENSE",
-    "README.md",
     "!dist/@likec4/**/*.d.ts",
     "!**/*.map"
   ],
