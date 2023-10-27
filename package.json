@@ -11,7 +11,7 @@
     "examples/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=18.18.2"
   },
   "scripts": {
     "prepare": "husky install",
