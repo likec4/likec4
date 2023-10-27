@@ -23,15 +23,13 @@ const exportPngCmd = {
       })
       .coerce(['path', 'output'], resolve)
       .default('path', resolve('.'), '.')
-      .default('output', resolve('.'), '.')
-      .example(
-        `${k.green('$0 export png')}`,
-        k.gray('Search for likec4 files in current directory and output PNG next to sources')
-      )
-      .example(
-        `${k.green('$0 export png -o ./generated src/likec4 ')}`,
-        k.gray('Search for likec4 files in $PWD/src/likec4 and output PNG next to $PWD/generated')
-      )
+      .default('output', resolve('.'), '.').epilog(`${k.bold('Examples:')}
+  ${k.green('$0 export png')}
+    ${k.gray('Search for likec4 files in current directory and output PNG next to sources')}
+
+  ${k.green('$0 export png -o ./generated src/likec4 ')}
+    ${k.gray('Search for likec4 files in src/likec4 and output PNG next to generated')}
+`)
   },
   async handler(args) {
     const { handler } = await import('./handler')

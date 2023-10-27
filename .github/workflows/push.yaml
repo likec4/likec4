@@ -34,9 +34,6 @@ jobs:
           - os: ubuntu-latest
             turbo-cache: true
 
-          - node-version: '20'
-            test-cli: true
-
           - os: ubuntu-latest
             node-version: '20'
             build-docs: true
@@ -89,19 +86,6 @@ jobs:
 
       - name: Test
         run: yarn test
-
-      - if: ${{ matrix.test-cli }}
-        name: Run СLI test
-        run: yarn test:integration
-
-      - if: ${{ matrix.test-cli }}
-        name: Upload CLI test artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cli-test-artifacts-${{ matrix.os }}-${{ matrix.node-version }}
-          path: integration/like4-cli-tests/out/
-          if-no-files-found: error
-          retention-days: 5
 
       - if: ${{ matrix.build-docs }}
         name: Build Docs

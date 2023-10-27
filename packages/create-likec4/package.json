@@ -9,10 +9,7 @@
     "url": "https://github.com/likec4/likec4.git",
     "directory": "packages/create-likec4"
   },
-  "bin": {
-    "clikec4": "index.js",
-    "create-likec4": "index.js"
-  },
+  "bin": "index.js",
   "files": [
     "index.js",
     "dist",
