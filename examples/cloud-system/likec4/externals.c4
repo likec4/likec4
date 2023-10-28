@@ -34,7 +34,7 @@ model {
           Filtered and preprocessed data
           Ready for further processing
         '
-      }
+      }      
     }
 
     lambdas = container {
@@ -58,19 +58,21 @@ model {
 views {
 
   view amazon of amazon {
-    title: "Overview Amazon"
+    title "Overview Amazon"
 
     include
       *,
       cloud,
-      cloud.legacy -> amazon.*,
-      cloud.next -> amazon.*
+      cloud.* -> amazon.*,
 
     style * {
-      color: muted
+      color secondary
     }
-    style amazon, amazon.* {
-      color: primary
+    style amazon, cloud {
+      color muted
+    }
+    style amazon.* {
+      color green
     }
   }
 
@@ -84,35 +86,42 @@ views {
 
   view amazon_lambdas of lambdas {
     title: 'Overview Amazon Lambdas'
-
+    
     include
       *,
+      amazon,
       amazon.sqs,
-      amazon.sqs.*
+      -> amazon.sqs.*
+
+    style * {
+      color secondary
+    }
+    style amazon {
+      color muted
+    }
+    style lambdas, lambdas.* {
+      color green
+    }      
   }
 
   view amazon_rds of amazon.rds {
-    title: 'Overview Amazon RDS'
+    title 'Overview Amazon RDS'
 
     include
       *,
-      pg.*,
-      aurora.*,
-      cloud.next.* -> amazon.rds,
-      cloud.legacy.* -> amazon.rds,
       cloud,
-      cloud.next,
-      cloud.legacy
-
+      cloud.* -> amazon.rds.pg.*,
+      cloud.* -> amazon.rds.aurora.*,
+      
     style * {
-      color: muted
+      color muted
     }
     style cloud.* {
-      color: primary
+      color secondary
     }
     style amazon.rds.* {
-      color: secondary
+      color green
     }
-  }
+  }  
 
 }

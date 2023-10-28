@@ -38,17 +38,15 @@ model {
 
       gqlQuery myAccount {
         description '
-          Returns the accggggount of
-          the authenticated user
+          Returns the account of the authenticated user
         '
 
         -> backend 'reads'
       }
       gqlMutation updateAccount {
         description '          
-          If requested by customer,
-          updates only its own account.
-          Support User updates any account
+          If requested by customer, updates only its own account
+          Support user updates any account
         '
 
         -> backend 'writes'
@@ -71,8 +69,6 @@ views {
 
 
   view cloud_next of cloud.next {
-    title 'Cloud Next'
-
     include *
     include cloud
     exclude

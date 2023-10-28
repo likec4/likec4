@@ -12,24 +12,19 @@ views {
       supportUser,
       ui.supportPanel,
       next -> legacy
-    include
-      cloud.* -> amazon.*,
-      amazon
-    exclude
-      amazon -> *
 
     style amazon {
       color indigo
     }
     style customer {
       color green
-    } 
+    }
     style cloud {
       color sky
-    }     
+    }
     style cloud.* {
       color primary
-    }      
+    }
   }
 
 }

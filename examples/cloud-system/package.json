@@ -2,11 +2,16 @@
   "name": "@likec4/example-cloud-system",
   "private": true,
   "version": "0.42.2",
-  "packageManager": "yarn@3.4.1",
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "yarn@3.6.1",
   "scripts": {
     "dev": "likec4 serve"
   },
   "devDependencies": {
     "likec4": "workspace:*"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

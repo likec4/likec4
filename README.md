@@ -51,20 +51,6 @@ And this is rendered:
 
 Check the [Tutorial](https://likec4.dev/docs/#tutorial) - a bit better overview of LikeC4.
 
-## Local development
-
-Development tasks:
-
-- `yarn typecheck`: TypeScript compilation
-- `yarn build`: Build packages
-- `yarn test`: Test packages
-- `yarn vitest:ui`: Opens Vitest UI
-- `yarn dev`: ...requires work...
-
-For VSCode:
-
-- Task `Run Extension` to start a new VSCode instance with the extension loaded.
-
 ## About this repository
 
 ### Top-level layout
@@ -78,7 +64,6 @@ This repository's contents is divided across four primary sections:
 
 ### Packages
 
-- `cli`: obviously, the CLI
 - `core`: model definitions
 - `create-likec4`: scaffolding tool
 - `diagrams`: react components for rendering diagrams
@@ -90,3 +75,16 @@ This repository's contents is divided across four primary sections:
 - `tsconfig`: typescript configuration
 - `vscode`: vscode extension
 - `vscode-preview`: preview panel in vscode extension
+
+### Local development
+
+Development tasks:
+
+- `yarn typecheck`: TypeScript compilation
+- `yarn build`: Build packages
+- `yarn test`: Test packages
+- `yarn vitest:ui`: Opens Vitest UI
+
+For VSCode:
+
+- Task `Run Extension` to start a new VSCode instance with the extension loaded.
