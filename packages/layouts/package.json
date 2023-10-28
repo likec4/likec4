@@ -50,7 +50,7 @@
     "remeda": "^1.28.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
-    "type-fest": "^4.5.0",
+    "type-fest": "^4.6.0",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
