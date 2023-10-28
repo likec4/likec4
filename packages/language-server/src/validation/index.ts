@@ -6,6 +6,7 @@ import { elementChecks } from './element'
 import { relationChecks } from './relation'
 import { elementKindChecks, tagChecks, relationshipChecks } from './specification'
 import { viewChecks } from './view'
+import { incomingExpressionChecks, outgoingExpressionChecks } from './view-predicates'
 
 export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
@@ -24,7 +25,9 @@ export function registerValidationChecks(services: LikeC4Services) {
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
     Tag: tagChecks(services),
-    RelationshipKind: relationshipChecks(services)
+    RelationshipKind: relationshipChecks(services),
+    IncomingExpression: incomingExpressionChecks(services),
+    OutgoingExpression: outgoingExpressionChecks(services)
   })
 
   const connection = services.shared.lsp.Connection

@@ -44,13 +44,35 @@ describe('relation-expr', () => {
     expect(edgeIds).toEqual(['cloud.backend:amazon.s3'])
   })
 
+  it('* -> cloud.frontend.*', () => {
+    const { nodeIds, edgeIds } = computeView([$include('* -> cloud.frontend.*')])
+    expect(nodeIds).toEqual([
+      'support',
+      'cloud.frontend.adminPanel',
+      'customer',
+      'cloud.frontend.dashboard'
+    ])
+    expect(edgeIds).to.have.same.members([
+      'support:cloud.frontend.adminPanel',
+      'customer:cloud.frontend.dashboard'
+    ])
+  })
+
+  it('* -> cloud.frontend.*, exclude support', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include('* -> cloud.frontend.*'),
+      $exclude('support')
+    ])
+    expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
+    expect(edgeIds).to.have.same.members(['customer:cloud.frontend.dashboard'])
+  })
+
   it('* -> cloud.frontend.*, exclude support -> *', () => {
     const { nodeIds, edgeIds } = computeView([
-      $include('support'),
       $include('* -> cloud.frontend.*'),
       $exclude('support -> *')
     ])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud.frontend.dashboard'])
+    expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).toEqual(['customer:cloud.frontend.dashboard'])
   })
 

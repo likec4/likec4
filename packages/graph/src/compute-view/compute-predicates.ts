@@ -166,6 +166,9 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
       return isNil(tags) || tags.length === 0 || !tags.includes(expr.elementTag)
     })
   }
+  if (this.root === expr.element && (isNil(expr.isDescedants) || expr.isDescedants === false)) {
+    return [...this.graph.children(this.root), this.graph.element(this.root)]
+  }
 
   if (expr.isDescedants) {
     return this.graph.children(expr.element)
