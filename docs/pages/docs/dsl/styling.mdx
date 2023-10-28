@@ -137,7 +137,7 @@ Check these icons:
 
 ## Relationship
 
-Relationships can be used styled using the kind:
+Relationships can be styled using the [kinds](./relations#kind):
 
 ```likec4
 specification {
@@ -150,10 +150,13 @@ specification {
 }
 ```
 
+At the moment, the styling applies globally and cannot be overridden per view.  
+Let us know and [open an issue](https://github.com/likec4/likec4/issues) if you need it.
+
 ### Line
 
-| line     | example |
-| :-------- | :-----: |
+| line   | example |
+| :----- | :-----: |
 | dashed |   ..    |
 | solid  |   ..    |
 | dotted |   ..    |
@@ -164,20 +167,20 @@ By default, the line is `dashed`.
 
 The arrow type can be set for the head and the tail of the relationship:
 
-| type     | example |
+| type      | example |
 | :-------- | :-----: |
-| normal |   ..    |
-| onormal  |   ..    |
-| diamond |   ..    |
-| odiamond |   ..    |
-| crow |   ..    |
-| vee |   ..    |
-| open |   ..    |
-| none |   ..    |
+| normal    |   ..    |
+| onormal   |   ..    |
+| diamond   |   ..    |
+| odiamond  |   ..    |
+| crow      |   ..    |
+| vee       |   ..    |
+| open      |   ..    |
+| none      |   ..    |
 
 By default, the head is `normal` and the tail is `none`.
 
-> `onormal` means "outlined normal"  
+> `onormal` means "outlined normal", i.e. no fill  
 > `odiamond` - "outlined diamond"
 
 Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.

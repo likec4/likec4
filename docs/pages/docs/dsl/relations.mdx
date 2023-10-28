@@ -3,7 +3,7 @@ import { Callout } from 'nextra-theme-docs'
 # Relationships
 
 Relationships describe the connections and interactions of the elements,  
-and created with the **`->`**:
+and created with the **`->`** operator:
 
 ```likec4
 model {
@@ -14,13 +14,13 @@ model {
 }
 ```
 
-## Relationship kinds
+## Relationship kinds [#kind]
 
-Relationships can be "kinded"
+Relationships can be "kinded":
 
 ```likec4
 specification {
-  // Define a kind
+  // Define a relationship kind in specifications
   relationship async
 }
 
@@ -32,9 +32,15 @@ model {
 }
 ```
 
-## Examples
+This allows us to express and add more semantics to the interactions between the elements, for instance, from a technology perspective (REST, GRPC, GraphQL, Sync/Async, etc.) or from a business perspective (delegation, inform, accountability, etc.).  
+It's up to you to define the relationship kinds that make sense for your context.
 
-Relationship may be nested
+> **Tip:**  
+> The relationship kinds allow to customize the styling of the relationships, see [styling](./styling#relationship)
+
+## Definition examples
+
+Relationships may be nested
 
 ```likec4
 model {
@@ -50,7 +56,7 @@ model {
 ```
 
 
-Relationship may have a label (and better to have one)
+Relationships may have a label (and better to have one)
 
 ```likec4
 model {
@@ -66,7 +72,7 @@ model {
 }
 ```
 
-Nested relationship may be _"sourceless"_, then the source is the parent element
+Nested relationships may be _"sourceless"_, then the source is the parent element
 
 ```likec4
 specification {

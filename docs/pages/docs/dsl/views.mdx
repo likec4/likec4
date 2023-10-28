@@ -11,9 +11,10 @@ Views are the architecture diagrams, projections of the model from different per
 
 ## View definition
 
+Views are defined in `views` section.  
 Views may be named (must be unique) or unnamed (can't be referenced):
 
-```likec4 filename="views.c4"
+```likec4
 views {
   // with name
   view index {
@@ -24,6 +25,8 @@ views {
 }
 ```
 
+View's name is used as a filename during the export, and a URL part for the sharing, so better to define it.
+
 <Info>
 `index` is a special view, and is rendered by default if no view name is specified.  
 If not defined, it will be generated for top-level elements
@@ -31,7 +34,7 @@ If not defined, it will be generated for top-level elements
 
 Views may have a title, description, tags and links (same as [model element](./model#element)):
 
-```likec4 filename="views.c4"
+```likec4
 views {
 
   view epic12 {
@@ -53,9 +56,10 @@ views {
 ### View Of ...
 
 View may be defined for some element (`view of ..`).  
-Then it inherits the scope of this element:
+This view becomes the default view for the element (in interactive mode).  
+Also, view inherits the [scope](./references) of the element:
 
-```likec4 filename="views.c4"
+```likec4
 views {
 
   view {
@@ -82,7 +86,8 @@ include cloud.backend
 // or exclude
 exclude cloud.backend
 
-// include children of cloud.backend
+// include children of cloud.backend and all the relationships
+// among them and the elements of the view
 include cloud.backend.*
 
 // all incoming relationships
@@ -111,6 +116,11 @@ include element.tag != #V2
 **Limitation**  
 Relations with container elements are not rendered yet. Working on it...
 </Info>
+
+<Warning>
+**TODO:**  
+Document why relationships predicates are awesome
+</Warning>
 
 Wildcard may be used to reference "everything", but it depends on the context.
 
@@ -213,7 +223,7 @@ The predicates and style rules of extended views are merged with the ones from a
 
 Extended views also inherit the scope:
 
-```likec4 filename="views.c4"
+```likec4
 views {
 
   view view1 of cloud.backend {
