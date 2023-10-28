@@ -74,8 +74,6 @@ jobs:
 
       - name: install dependencies
         shell: bash
-        env:
-          YARN_CACHE_FOLDER: .yarn/cache
         run: yarn install --immutable
 
       - name: Build
