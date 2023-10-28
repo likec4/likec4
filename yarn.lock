@@ -4110,7 +4110,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prompts@npm:^2":
+"@types/prompts@npm:^2.4.7":
   version: 2.4.7
   resolution: "@types/prompts@npm:2.4.7"
   dependencies:
@@ -6136,7 +6136,7 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@types/node": ^20.8.7
-    "@types/prompts": ^2
+    "@types/prompts": ^2.4.7
     execa: ^8.0.1
     prompts: ^2.4.2
     tsx: ^3.14.0
