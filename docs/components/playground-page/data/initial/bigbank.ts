@@ -36,8 +36,6 @@ model {
   }
 
   bigbank = enterprise "Big Bank plc" {
-    // Original
-    link https://structurizr.com/dsl?example=big-bank-plc
 
     supportStaff = person "Customer Service Staff" {
       description: "Customer service staff within the bank."
@@ -196,6 +194,13 @@ views {
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
     exclude webApplication
+
+    style bigbank {
+      color muted
+    }
+    style customer {
+      color green
+    }
   }
 
   view spa of singlePageApplication {
@@ -206,11 +211,13 @@ views {
       -> singlePageApplication ->
 
     style * {
+      color secondary
+    }
+    style internetBankingSystem {
       color muted
     }
-
-    style singlePageApplication, customer {
-      color primary
+    style singlePageApplication {
+      color green
     }
   }
 
@@ -258,15 +265,15 @@ views {
       mobileApp -> internetBankingSystem.apiApplication.*
 
     style * {
+      color secondary
+    }
+
+    style apiApplication, internetBankingSystem {
       color muted
     }
 
-    style apiApplication.*, mobileApp {
-      color primary
-    }
-
-    style customer {
-      color secondary
+    style mobileApp {
+      color green
     }
   }
 

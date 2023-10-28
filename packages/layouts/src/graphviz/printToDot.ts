@@ -15,7 +15,7 @@ import {
   nameFromFqn,
   nonNullable
 } from '@likec4/core'
-import { isTruthy } from 'remeda'
+import { isNil, isTruthy } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -310,7 +310,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         sourceNode.parent === targetNode.parent &&
         sourceNode.parent === edge.parent
       ) {
-        const parentNode = edge.parent && nodes.find(n => n.id === edge.parent)
+        const parentNode = sourceNode.parent && nodes.find(n => n.id === sourceNode.parent)
         // parent has source and target as children
         const isTheOnlyChildren = parentNode?.children.length === 2
 
@@ -319,7 +319,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         // source and target have no other edges
         const haveNoOtherEdges = !sourceHasOtherEdges && !targetHasOtherEdges
 
-        if (isTheOnlyChildren || haveNoOtherEdges) {
+        if (isTheOnlyChildren || (isNil(parentNode) && haveNoOtherEdges)) {
           // don't rank the edge
           e.attributes.apply({
             [_.minlen]: 0

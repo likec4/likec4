@@ -18,7 +18,16 @@ views {
       *,
       customer -> internetBankingSystem.*,
       customer -> bigbank.*
-    exclude webApplication
+      
+    exclude
+      webApplication
+
+    style bigbank {
+      color muted
+    }
+    style customer {
+      color green
+    }
   }
 
 }

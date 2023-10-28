@@ -15,7 +15,7 @@
   opacity: 0.2;
   /* background: radial-gradient(circle, rgb(110 110 110) 0%, rgb(31 31 31) 100%); */
 }
-.hero_ratio {
+.heroratio {
   aspect-ratio: 16/9;
   width: auto;
   height: auto;
