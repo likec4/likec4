@@ -8,14 +8,14 @@
   "model": {
     "title": "Model"
   },
-  "styling": {
-    "title": "Styling"
-  },
   "relations": {
     "title": "Relationships"
   },
   "references": {
     "title": "References"
+  },
+  "styling": {
+    "title": "Styling"
   },
   "views": {
     "title": "Views"

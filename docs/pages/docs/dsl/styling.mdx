@@ -134,3 +134,50 @@ model {
 Check these icons:
 
 - [icons.terrastruct.com](https://icons.terrastruct.com/)
+
+## Relationship
+
+Relationships can be used styled using the kind:
+
+```likec4
+specification {
+  relationship async {
+    color amber
+    line dotted
+    head diamond
+    tail vee
+  }
+}
+```
+
+### Line
+
+| line     | example |
+| :-------- | :-----: |
+| dashed |   ..    |
+| solid  |   ..    |
+| dotted |   ..    |
+
+By default, the line is `dashed`.
+
+### Arrow type
+
+The arrow type can be set for the head and the tail of the relationship:
+
+| type     | example |
+| :-------- | :-----: |
+| normal |   ..    |
+| onormal  |   ..    |
+| diamond |   ..    |
+| odiamond |   ..    |
+| crow |   ..    |
+| vee |   ..    |
+| open |   ..    |
+| none |   ..    |
+
+By default, the head is `normal` and the tail is `none`.
+
+> `onormal` means "outlined normal"  
+> `odiamond` - "outlined diamond"
+
+Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.

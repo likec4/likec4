@@ -44,19 +44,19 @@ specification {
 
 }
 ```
-### Relationships
+{/* 
+### Relationship kind
 
 Relationships can be used to define the kind and styling of a relation (`-[<name>]->`).
+
 ```likec4
 specification {
-  relationship async {
-    color amber
-    line dotted
-    head diamond
-    tail diamond
-  }
+  relationship async
+  relationship notify
 }
 ```
+
+
 
 #### Color
 Any color defined in [styling](./styling).
@@ -67,3 +67,4 @@ Valid options for `line` are: `solid`, `dashed`, `dotted`.
 #### Arrowhead / Arrowtail
 Valid options for `head` and `tail` are: `normal`, `onormal`, `diamond`, `odiamond`, `crow`, `vee`, `open`, `none`.
 Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.
+ */}

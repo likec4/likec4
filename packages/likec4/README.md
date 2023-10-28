@@ -74,31 +74,37 @@ In a folder with LikeC4 sources:
 
 ```sh
 likec4 serve
+
+# Aliases:
+likec4 start
+likec4 dev
 ```
 
-This recursively searchs for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.
-
-Any changes in the sources trigger a super-fast live-update of diagrams and you can see changes in the browser immediately.
+This recursively searchs for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.  
+Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
 
 > **Tip:**  
-> You can use `likec4 serve [path to project]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
+> You can use `likec4 serve [path]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
 
 ### Build static website
 
+Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)  
 Build a single-page application with all diagrams:
 
 ```sh
 likec4 build -o ./dist
 ```
 
-There is a supplementary command to preview the build:
+When you deploy the website, you can use "Share" button to get a link to a specific diagram.
+
+> **Tip:**  
+> [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
+
+There is also a supplementary command to preview the build:
 
 ```sh
 likec4 preview -o ./dist
 ```
-
-> **Tip:**  
-> [likec4/template](https://github.com/likec4/template) repository demonstrates how to use `likec4` CLI to build and deploy a static website to github pages.
 
 ### Export to PNG
 
@@ -132,9 +138,11 @@ likec4 codegen react --outfile ./src/likec4.generated.tsx
 
 ```sh
 likec4 codegen views-data --outfile ./src/likec4.generated.ts
-```
 
-Aliases: `likec4 codegen ts`, `likec4 codegen views`
+#Aliases
+likec4 codegen views ...
+likec4 codegen ts ...
+```
 
 > Output file should have `.ts` extension  
 > By default, it generates `likec4.generated.ts` in current directory

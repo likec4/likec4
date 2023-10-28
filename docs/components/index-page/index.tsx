@@ -126,7 +126,7 @@ export const LikeC4View = ({
   viewId: LikeC4ViewId
   noBrowser?: boolean
 }) => (
-  <div className={styles.likec4embedded}>
+  <div className={styles.embedded}>
     <LikeC4EmbeddedView animate viewId={viewId} noBrowser={noBrowser} />
   </div>
 )

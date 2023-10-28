@@ -5,7 +5,7 @@ import { Callout } from 'nextra-theme-docs'
 Relationships describe the connections and interactions of the elements,  
 and created with the **`->`**:
 
-```likec4 filename="relations.c4"
+```likec4
 model {
   customer = actor 'Customer'
   cloud = service 'Cloud'
@@ -14,27 +14,29 @@ model {
 }
 ```
 
-Relations may be styled by defining a relationship in the `specification` and using **`-[<relationship_name>]->`** for the relation.
-```likec4 filename="relations.c4"
-specification {  
-  relationship async {
-    color amber
-    line dashed
-    head diamond
-    tail none
-  }
-}
-model {
-  server = system 'Server'
-  cloud = service 'Cloud'
+## Relationship kinds
 
-  server -[async]-> cloud
+Relationships can be "kinded"
+
+```likec4
+specification {
+  // Define a kind
+  relationship async
+}
+
+model {
+  system1 = system 'System 1'
+  system2 = system 'System 2'
+
+  system1 -[async]-> system2
 }
 ```
 
+## Examples
+
 Relationship may be nested
 
-```likec4 filename="relations.c4"
+```likec4
 model {
   actor customer
   service cloud {
@@ -50,7 +52,7 @@ model {
 
 Relationship may have a label (and better to have one)
 
-```likec4 filename="relations.c4"
+```likec4
 model {
   actor customer
   service cloud {
@@ -66,7 +68,10 @@ model {
 
 Nested relationship may be _"sourceless"_, then the source is the parent element
 
-```likec4 filename="relations.c4"
+```likec4
+specification {
+  relationship graphql
+}
 model {
   customer = actor {    
     -> frontend 'opens in browser' // same as customer -> frontend
@@ -74,7 +79,7 @@ model {
   service cloud {
     component backend
     component frontend {
-      -> backend 'requests data'  // same as frontend -> backend
+      -[graphql]-> backend 'requests data'  // same as frontend -[graphql]-> backend
     }
   }
 

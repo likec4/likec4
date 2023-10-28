@@ -15,15 +15,15 @@ views {
       mobileApp -> internetBankingSystem.apiApplication.*
 
     style * {
+      color secondary
+    }
+
+    style apiApplication, internetBankingSystem {
       color muted
     }
 
-    style apiApplication.*, mobileApp {
-      color primary
-    }
-
-    style customer {
-      color secondary
+    style mobileApp {
+      color green
     }
   }
 
