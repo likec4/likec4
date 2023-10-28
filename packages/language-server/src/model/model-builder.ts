@@ -39,10 +39,10 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {},
     relationships: {}
- }
+  }
   R.forEach(R.map(docs, R.prop('c4Specification')), spec => {
     Object.assign(c4Specification.kinds, spec.kinds),
-    Object.assign(c4Specification.relationships, spec.relationships)
+      Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
     const base = new URL(doc.uri.toString())
@@ -99,15 +99,16 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
     astPath,
     source,
     target,
+    kind,
     ...model
   }: ParsedAstRelation): c4.Relation | null => {
     if (source in elements && target in elements) {
-      if (model.kind) {
-        const kind = c4Specification.relationships[model.kind]
+      if (!!kind && kind in c4Specification.relationships) {
         return {
           source,
           target,
-          ...kind,
+          kind,
+          ...c4Specification.relationships[kind],
           ...model
         }
       }

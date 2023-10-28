@@ -78,9 +78,8 @@ export class LikeC4ModelParser {
           continue
         }
         try {
-          specification.relationships[kind.name as c4.RelationshipKind] = toRelationshipStyleExcludeDefaults(
-            props
-          )
+          specification.relationships[kind.name as c4.RelationshipKind] =
+            toRelationshipStyleExcludeDefaults(props)
         } catch (e) {
           logWarnError(e)
         }
@@ -163,19 +162,23 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
+    const tags = this.convertTags(astNode.body)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
-    const hashdata = {
-      astPath: this.getAstNodePath(astNode),
-      source,
-      target,
-   }
-    const id = objectHash(hashdata) as c4.RelationID
+    const astPath = this.getAstNodePath(astNode)
     const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
+    const id = objectHash({
+      astPath,
+      source,
+      target
+    }) as c4.RelationID
     return {
       id,
-      ...hashdata,
+      astPath,
+      source,
+      target,
+      title,
       ...(kind && { kind }),
-      title
+      ...(tags && { tags })
     }
   }
 
@@ -206,12 +209,17 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isElementRefExpression(astNode)) {
-      const element = elementRef(astNode.id)
-      invariant(element, 'Element not found ' + astNode.id.$cstNode?.text)
-      return {
-        element: this.resolveFqn(element),
-        isDescedants: astNode.isDescedants
-      }
+      const elementNode = elementRef(astNode.id)
+      invariant(elementNode, 'Element not found ' + astNode.id.$cstNode?.text)
+      const element = this.resolveFqn(elementNode)
+      return astNode.isDescedants
+        ? {
+            element,
+            isDescedants: astNode.isDescedants
+          }
+        : {
+            element
+          }
     }
     nonexhaustive(astNode)
   }

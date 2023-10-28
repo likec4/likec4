@@ -17,6 +17,7 @@ import {
   isViewRuleExpression,
   isViewRuleStyle,
   nonNullable,
+  nonexhaustive,
   parentFqn
 } from '@likec4/core'
 import { hasAtLeast, uniq } from 'remeda'
@@ -24,12 +25,14 @@ import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
   excludeElementRef,
+  excludeInOutExpr,
   excludeIncomingExpr,
   excludeOutgoingExpr,
   excludeRelationExpr,
   excludeWildcardRef,
   includeElementKindOrTag,
   includeElementRef,
+  includeInOutExpr,
   includeIncomingExpr,
   includeOutgoingExpr,
   includeRelationExpr,
@@ -265,15 +268,15 @@ export class ComputeCtx {
           isInclude ? includeOutgoingExpr.call(this, expr) : excludeOutgoingExpr.call(this, expr)
           continue
         }
-        // if (Expr.isInOut(expr)) {
-        //   ctx = isInclude ? includeInOutExpr.call(this, expr) : excludeInOutExpr.call(this, expr)
-        //   continue
-        // }
+        if (Expr.isInOut(expr)) {
+          isInclude ? includeInOutExpr.call(this, expr) : excludeInOutExpr.call(this, expr)
+          continue
+        }
         if (Expr.isRelation(expr)) {
           isInclude ? includeRelationExpr.call(this, expr) : excludeRelationExpr.call(this, expr)
           continue
         }
-        // nonexhaustive(expr)
+        nonexhaustive(expr)
       }
     }
     return this

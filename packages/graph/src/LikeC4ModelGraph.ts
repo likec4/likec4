@@ -175,6 +175,9 @@ export class LikeC4ModelGraph {
     for (const _source of sources) {
       const source = isString(_source) ? this.element(_source) : _source
       const outcoming = this._outgoingFrom(source.id)
+      if (outcoming.length === 0) {
+        continue
+      }
 
       for (const _target of targets) {
         const target = isString(_target) ? this.element(_target) : _target
@@ -182,6 +185,9 @@ export class LikeC4ModelGraph {
           continue
         }
         const incoming = this._incomingTo(target.id)
+        if (incoming.length === 0) {
+          continue
+        }
 
         const relations = intersection(outcoming, incoming).flatMap(
           id => this.#relations.get(id) ?? []

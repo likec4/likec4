@@ -264,10 +264,7 @@ describe('compute-element-view', () => {
   })
 
   it('view of amazon', () => {
-    const { edgeIds, nodeIds, ...view } = computeView('amazon', [
-      $include('*'),
-      $include('cloud.* ->')
-    ])
+    const { edgeIds, nodeIds } = computeView('amazon', [$include('*'), $include('cloud.* ->')])
 
     expect(nodeIds).toEqual(['cloud.backend', 'amazon.s3', 'amazon'])
 
@@ -292,7 +289,7 @@ describe('compute-element-view', () => {
       // cloud
       // color: muted
       {
-        targets: [{ element: 'cloud' as Fqn, isDescedants: false }],
+        targets: [{ element: 'cloud' as Fqn }],
         style: {
           color: 'muted',
           icon: 'http://some-icon' as IconUrl
