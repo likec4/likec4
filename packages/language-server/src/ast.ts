@@ -1,4 +1,13 @@
-import { DefaultElementShape, DefaultThemeColor, RelationRefError, nonexhaustive, type c4, DefaultLineStyle, DefaultArrowType, DefaultRelationshipColor } from '@likec4/core'
+import {
+  DefaultElementShape,
+  DefaultThemeColor,
+  RelationRefError,
+  nonexhaustive,
+  type c4,
+  DefaultLineStyle,
+  DefaultArrowType,
+  DefaultRelationshipColor
+} from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
@@ -21,12 +30,15 @@ export interface ParsedAstSpecification {
     color?: c4.ThemeColor
     icon?: c4.IconUrl
   }>,
-  relationships: Record<c4.RelationshipKind, {
-    color?: c4.ThemeColor
-    line?: c4.RelationshipLineType
-    head?: c4.RelationshipArrowType
-    tail?: c4.RelationshipArrowType
-  }>
+  relationships: Record<
+    c4.RelationshipKind,
+    {
+      color?: c4.ThemeColor
+      line?: c4.RelationshipLineType
+      head?: c4.RelationshipArrowType
+      tail?: c4.RelationshipArrowType
+    }
+  >
 }
 
 export interface ParsedAstElement {
@@ -49,6 +61,7 @@ export interface ParsedAstRelation {
   source: c4.Fqn
   target: c4.Fqn
   kind?: c4.RelationshipKind
+  tags?: c4.NonEmptyArray<c4.Tag>
   title: string
 }
 
@@ -112,13 +125,16 @@ export interface LikeC4DocumentProps {
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
 }
 
-export interface LikeC4LangiumDocument extends LangiumDocument<LikeC4Document>, LikeC4DocumentProps {}
+export interface LikeC4LangiumDocument
+  extends LangiumDocument<LikeC4Document>,
+    LikeC4DocumentProps {}
 export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
   Required<LikeC4DocumentProps>
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const specification = (doc.c4Specification = {
-    kinds: {}, relationships: {}
+    kinds: {},
+    relationships: {}
   } as ParsedAstSpecification)
   const elements = (doc.c4Elements = [] as ParsedAstElement[])
   const relations = (doc.c4Relations = [] as ParsedAstRelation[])
@@ -135,7 +151,9 @@ export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4Lang
   return doc.textDocument.languageId === LikeC4LanguageMetaData.languageId
 }
 
-export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument {
+export function isParsedLikeC4LangiumDocument(
+  doc: LangiumDocument
+): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
     doc.state >= DocumentState.Validated &&
@@ -147,7 +165,9 @@ export function isParsedLikeC4LangiumDocument(doc: LangiumDocument): doc is Pars
   )
 }
 
-export const isValidLikeC4LangiumDocument = (doc: LangiumDocument): doc is ParsedLikeC4LangiumDocument => {
+export const isValidLikeC4LangiumDocument = (
+  doc: LangiumDocument
+): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { state, parseResult, diagnostics } = doc
   return (
@@ -272,12 +292,12 @@ export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['p
       continue
     }
     if (ast.isArrowProperty(prop)) {
-      switch(prop.key) {
-        case "head": {
+      switch (prop.key) {
+        case 'head': {
           result.head = prop.value
           break
         }
-        case "tail": {
+        case 'tail': {
           result.tail = prop.value
           break
         }
@@ -292,7 +312,9 @@ export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['p
   return result
 }
 
-export function toRelationshipStyleExcludeDefaults(props?: ast.SpecificationRelationshipKind['props']) {
+export function toRelationshipStyleExcludeDefaults(
+  props?: ast.SpecificationRelationshipKind['props']
+) {
   const { color, line, head, tail } = toRelationshipStyle(props)
   return {
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
@@ -302,7 +324,9 @@ export function toRelationshipStyleExcludeDefaults(props?: ast.SpecificationRela
   }
 }
 
-export function toAutoLayout(direction: ast.ViewRuleLayoutDirection): c4.ViewRuleAutoLayout['autoLayout'] {
+export function toAutoLayout(
+  direction: ast.ViewRuleLayoutDirection
+): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {
       return 'TB'

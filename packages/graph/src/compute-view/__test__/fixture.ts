@@ -1,9 +1,8 @@
-import { indexBy, values } from 'remeda'
 import type {
+  Expression as C4Expression,
   ComputedView,
   Element,
   ElementKind,
-  Expression as C4Expression,
   Fqn,
   Relation,
   RelationID,
@@ -12,9 +11,10 @@ import type {
   ViewRule,
   ViewRuleExpression
 } from '@likec4/core'
+import { pluck } from 'rambdax'
+import { indexBy } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { computeElementView } from '../index'
-import { pluck } from 'rambdax'
 
 /**
               ┌──────────────────────────────────────────────────┐

@@ -19,7 +19,7 @@ export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants
   isDescedants?: boolean
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
-  return 'element' in expr && 'isDescedants' in expr
+  return 'element' in expr
 }
 
 export interface WildcardExpr extends Omit<BaseExpr, 'wildcard'> {
