@@ -1272,7 +1272,7 @@ __metadata:
   dependencies:
     execa: ^8.0.1
     rambdax: ^9.1.1
-    remeda: ^1.27.1
+    remeda: ^1.28.0
     safe-stable-stringify: ^2.4.3
     ts-custom-error: ^3.3.1
     typescript: ^5.2.2
@@ -1414,7 +1414,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     execa: ^8.0.1
     rambdax: ^9.1.1
-    remeda: ^1.27.1
+    remeda: ^1.28.0
     typescript: ^5.2.2
     unbuild: ^2.0.0
     vitest: ^0.34.6
@@ -1437,7 +1437,7 @@ __metadata:
     p-debounce: ^4.0.0
     p-throttle: ^5.1.0
     rambdax: ^9.1.1
-    remeda: ^1.27.1
+    remeda: ^1.28.0
     strip-indent: ^4.0.0
     typescript: ^5.2.2
     unbuild: ^2.0.0
@@ -1460,7 +1460,7 @@ __metadata:
     indent-string: ^5.0.0
     p-limit: ^4.0.0
     rambdax: ^9.1.1
-    remeda: ^1.27.1
+    remeda: ^1.28.0
     strip-indent: ^4.0.0
     ts-graphviz: ^1.8.1
     type-fest: ^4.5.0
@@ -13692,10 +13692,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.27.1":
-  version: 1.27.1
-  resolution: "remeda@npm:1.27.1"
-  checksum: 4175a0b685ad40bb6b7d1b3ceccb5414573a5e289eb6447199e0417223cdf0c4402b839947185ba02651a8d3238a73e55e369ebbb83d793f51a72f0233adbee4
+"remeda@npm:^1.28.0":
+  version: 1.28.0
+  resolution: "remeda@npm:1.28.0"
+  checksum: b29630428a91aee655c92de35ddae9db37eb7ee0600e300705dbcea4d58c16f47c29605e7622177e634cdf4a09a26131dda92577e31e5e7e707a8f8efa3e1408
   languageName: node
   linkType: hard
 
