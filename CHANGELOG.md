@@ -1,3 +1,10 @@
+## [0.42.2](https://github.com/likec4/likec4/compare/v0.42.1...v0.42.2) (2023-10-28)
+
+### Bug Fixes
+
+- handle `-> .. ->` expressions ([c7fb33e](https://github.com/likec4/likec4/commit/c7fb33ed3daefcbea95b3c4db21e0b46cd4fe81a))
+- nodes `haveNoOtherEdges` should be only for root ([095c4ac](https://github.com/likec4/likec4/commit/095c4ac3e0f97ad6debf3cb2426d0ceda3792b28))
+
 ## [0.42.1](https://github.com/likec4/likec4/compare/v0.42.0...v0.42.1) (2023-10-26)
 
 ### Bug Fixes
