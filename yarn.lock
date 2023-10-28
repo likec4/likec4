@@ -1315,7 +1315,7 @@ __metadata:
     "@use-gesture/react": ^10.3.0
     body-scroll-lock-upgrade: ^1.0.4
     execa: ^8.0.1
-    jotai: ^2.4.3
+    jotai: ^2.5.0
     khroma: ^2.1.0
     konva: ^9.2.2
     rambdax: ^9.1.1
@@ -1351,7 +1351,7 @@ __metadata:
     body-scroll-lock-upgrade: ^1.0.4
     class-variance-authority: ^0.7.0
     clsx: ^1.2.1
-    jotai: ^2.4.3
+    jotai: ^2.5.0
     langium: ^2.0.2
     likec4: "workspace:*"
     lucide-react: ^0.288.0
@@ -9653,9 +9653,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.4.3":
-  version: 2.4.3
-  resolution: "jotai@npm:2.4.3"
+"jotai@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "jotai@npm:2.5.0"
   peerDependencies:
     "@types/react": ">=17.0.0"
     react: ">=17.0.0"
@@ -9664,7 +9664,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 4991faba3284978bda3d90c6b1fc711759b76ce83ff04edb181d7929951ee54cb077793e5e4b0bba2ddf07fb6681a97a9d3007e2697d6ef181a66479ef9b2116
+  checksum: 95bafc2912a3b5da29a891b6d5b9fa73decf314def6db1fb56cec93c971334704bac3b566dfcf16f4c96f4563a04b49bbbf67eabe5d3379d19bd99e10a2ce759
   languageName: node
   linkType: hard
 
