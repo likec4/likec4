@@ -169,7 +169,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^16.11.16",
+    "@types/node": "^16.18.59",
     "@types/vscode": "~1.77.0",
     "@vscode/extension-telemetry": "^0.8.5",
     "@vscode/vsce": "^2.21.1",
