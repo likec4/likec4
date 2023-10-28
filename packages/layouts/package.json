@@ -54,7 +54,7 @@
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.8.9",
     "execa": "^8.0.1",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",

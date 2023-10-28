@@ -72,7 +72,7 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.8.9",
     "@types/prop-types": "^15.7.9",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

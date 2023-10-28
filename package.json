@@ -11,7 +11,7 @@
     "examples/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9.0"
   },
   "scripts": {
     "prepare": "husky install",
@@ -37,7 +37,7 @@
     "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",
     "@types/eslint": "^8.44.6",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.8.9",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
@@ -58,7 +58,7 @@
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "20.8.1",
+    "node": "20.9.0",
     "yarn": "1.22.19"
   },
   "resolutions": {

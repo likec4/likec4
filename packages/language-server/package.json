@@ -61,7 +61,7 @@
     "vscode-uri": "~3.0.7"
   },
   "devDependencies": {
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.8.9",
     "@types/object-hash": "^3.0.5",
     "execa": "^8.0.1",
     "langium-cli": "^2.0.1",
