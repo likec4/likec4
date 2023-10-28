@@ -32,9 +32,6 @@ jobs:
         include:
 
           - os: ubuntu-latest
-            turbo-cache: true
-
-          - os: ubuntu-latest
             node-version: '20'
             build-docs: true
 
@@ -68,14 +65,8 @@ jobs:
             ${{ runner.os }}-yarn-${{ matrix.node-version }}-
             ${{ runner.os }}-yarn-
 
-      - name: Turborepo-cache
-        if: ${{ github.event_name == 'push' && matrix.turbo-cache }}
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
       - name: install dependencies
         shell: bash
-        env:
-          YARN_CACHE_FOLDER: .yarn/cache
         run: yarn install --immutable
 
       - name: Build
