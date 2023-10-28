@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup
+      - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: turborepo-cache
