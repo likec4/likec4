@@ -49,7 +49,7 @@ model {
         description 'The CMS of the cloud system'
       }
 
-      graphql -> cms
+      graphql -> cms 'gets media'
       graphql -> amazon.cognito 'authorizes'
       graphql -> amazon.sqs 'publishes domain events'
       graphql -> amazon.rds.pg 'reads and writes'
@@ -115,7 +115,10 @@ views {
     style * {
       color secondary
     }
-    style cloud, cloud.* {
+    style cloud {
+      color muted
+    }
+    style cloud.* {
       color green
     }
   }
@@ -130,13 +133,11 @@ views {
       ui.* -> backend.*,
       ui.* -> amazon.*
 
-    exclude backend -> amazon
-
     style * {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud, amazon, backend {
       color muted
     }
 
@@ -148,18 +149,17 @@ views {
   view cloud_backend of backend {
     title "Overview Backend"
     include
-      ui, amazon, backend, cloud,
+      *,
+      cloud,
+      cloud.*,
       ui.* -> backend,
       backend.* -> amazon.*
-
-    exclude
-      ui.* -> amazon.*
 
     style * {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud, amazon, ui {
       color muted
     }
 
@@ -170,17 +170,18 @@ views {
 
   view cloud_graphql of graphql {
     include
-      *, backend
-    exclude
-      -> amazon
-    include
-      graphql -> amazon
+      *,
+      backend,
+      amazon,
+      cloud,
+      amazon.rds,
+      graphql -> amazon.*
 
     style * {
       color secondary
     }
 
-    style backend {
+    style cloud, backend, amazon {
       color muted
     }
 
@@ -190,13 +191,17 @@ views {
   }
 
   view cloud_cms of cms {
-    include *, backend
+    include
+      *,
+      backend,
+      amazon,
+      cms -> amazon.rds.*
 
     style * {
       color secondary
     }
 
-    style backend {
+    style backend, amazon, amazon.rds {
       color muted
     }
 

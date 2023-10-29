@@ -45,7 +45,7 @@ model {
 views {
 
   view amazon of amazon {
-    title "Overview Amazon"
+    title "Amazon"
     include
       *,
       cloud,
@@ -65,13 +65,13 @@ views {
   }
 
   view amazon_rds of rds {
-    title 'Overview Amazon RDS'
+    title 'Amazon: RDS'
 
-    include *,
+    include
+       *,
        amazon,
        cloud,
-       cloud.backend,
-       cloud.backend.* -> rds.*
+       cloud.backend.*
 
     style * {
       color secondary
@@ -87,7 +87,7 @@ views {
   }
 
   view amazon_sqs of sqs {
-    title 'Overview Amazon SQS'
+    title 'Amazon: SQS'
 
     include
       *,
@@ -110,7 +110,7 @@ views {
   }
 
   view amazon_cognito of cognito {
-    title 'Overview Amazon Cognito'
+    title 'Amazon: Cognito'
 
     include
       *,
