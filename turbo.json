@@ -28,5 +28,5 @@
       "persistent": true
     }
   },
-  "globalDependencies": ["packages/tsconfig/*"]
+  "globalDependencies": ["packages/tsconfig/*", "yarn.lock"]
 }
