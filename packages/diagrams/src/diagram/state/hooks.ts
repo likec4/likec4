@@ -13,6 +13,10 @@ export function useSetHoveredNode() {
   return useSetAtom(hoveredNodeAtom)
 }
 
+export function useHoveredEdge() {
+  return useAtom(hoveredEdgeAtom)
+}
+
 export function useHoveredEdgeId() {
   return useAtomValue(hoveredEdgeIdAtom)
 }

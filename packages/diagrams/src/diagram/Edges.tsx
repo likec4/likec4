@@ -65,10 +65,11 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     })) as unknown as ReturnType<typeof edgeSprings>,
     initial: edge => edgeSprings(edge),
     update: edge => {
-      const isHovered = hoveredEdgeId === edge.id
+      const isInactive = animate && hoveredEdgeId !== null && hoveredEdgeId !== edge.id
+      const isHovered = animate && hoveredEdgeId === edge.id
       return {
         ...edgeSprings(edge, isHovered),
-        opacity: 1,
+        opacity: isInactive ? 0.4 : 1,
         lineWidth: isHovered ? 3 : 2
       }
     },

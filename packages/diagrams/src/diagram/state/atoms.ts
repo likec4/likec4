@@ -23,7 +23,19 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, _next)
-        }, 100)
+          clearTimeout(get(edgeTimeoutAtom))
+          set(currentHoveredEdgeAtom, null)
+        }, 200)
+      )
+      return true
+    }
+    // Update node if it's already hovered
+    if (_next != null && _prev != null) {
+      set(
+        nodeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredNodeAtom, _next)
+        }, 150)
       )
       return true
     }
@@ -33,7 +45,7 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, null)
-        }, 150)
+        }, 200)
       )
       return true
     }
@@ -62,7 +74,19 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, _next)
-        }, 100)
+          clearTimeout(get(nodeTimeoutAtom))
+          set(currentHoveredNodeAtom, null)
+        }, 600)
+      )
+      return true
+    }
+    // Update edge if it's already hovered
+    if (_next != null && _prev != null) {
+      set(
+        edgeTimeoutAtom,
+        setTimeout(() => {
+          set(currentHoveredEdgeAtom, _next)
+        }, 200)
       )
       return true
     }
@@ -72,11 +96,11 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, null)
-        }, 150)
+        }, 300)
       )
       return true
     }
-    set(currentHoveredEdgeAtom, _next)
+    set(currentHoveredEdgeAtom, null)
     return true
   }
 )

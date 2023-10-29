@@ -12,7 +12,7 @@ import { CompoundShape } from './shapes/Compound'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import type { NodeSprings, NodeSpringsCtrl } from './springs'
 import { isCompound, useNodeSpringsFn } from './springs'
-import { DiagramGesture, useHoveredNodeId, useSetHoveredNode } from './state'
+import { DiagramGesture, useHoveredEdge, useHoveredNodeId, useSetHoveredNode } from './state'
 import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
 
 function nodeShape({ shape }: DiagramNode): ShapeComponent {
@@ -67,6 +67,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
 
   const prevNodes = _prev.current
   const hoveredNodeId = useHoveredNodeId()
+  const [hoveredEdge] = useHoveredEdge()
   const nodeSprings = useNodeSpringsFn(theme)
 
   const nodeTransitions = useTransition<DiagramNode, NodeSprings>(diagram.nodes, {
@@ -92,9 +93,12 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
     },
     // update: nodeSprings(),
     update: node => {
+      const isInactive =
+        animate && hoveredEdge && hoveredEdge.source !== node.id && hoveredEdge.target !== node.id
       const scale = animate && !isCompound(node) && hoveredNodeId === node.id ? 1.08 : 1
       return {
         ...nodeSprings(node),
+        opacity: isInactive ? 0.3 : 1,
         scaleX: scale,
         scaleY: scale
       }
