@@ -19,7 +19,6 @@ import {
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
-import { LikeC4WorkspaceManager } from './shared'
 import { registerValidationChecks } from './validation'
 import { logger } from './logger'
 import { serializeError } from '@likec4/core'
@@ -74,9 +73,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 }
 
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
-  workspace: {
-    WorkspaceManager: services => new LikeC4WorkspaceManager(services)
-  }
+  // workspace: {
+  //   WorkspaceManager: services => new LikeC4WorkspaceManager(services)
+  // }
 }
 
 type LanguageServicesContext = Partial<DefaultSharedModuleContext>

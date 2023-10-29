@@ -35,19 +35,22 @@ export class LikeC4ModelParser {
     this.fqnIndex = services.likec4.FqnIndex
   }
 
-  parse(doc: LangiumDocument | LangiumDocument[]) {
+  parse(doc: LangiumDocument | LangiumDocument[]): LikeC4LangiumDocument[] {
     const docs = Array.isArray(doc) ? doc : [doc]
     logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+    const result = [] as LikeC4LangiumDocument[]
     for (const doc of docs) {
       if (!isLikeC4LangiumDocument(doc)) {
         continue
       }
       try {
         this.parseLikeC4Document(doc)
+        result.push(doc)
       } catch (cause) {
         logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
     }
+    return result
   }
 
   protected parseLikeC4Document(doc: LikeC4LangiumDocument) {

@@ -1,12 +1,12 @@
 import {
   compareByFqnHierarchically,
-  invariant,
   isStrictElementView,
   parentFqn,
   type StrictElementView,
   type ViewID,
   type c4
 } from '@likec4/core'
+import { LikeC4ModelGraph, computeView } from '@likec4/graph'
 import type { URI, WorkspaceCache } from 'langium'
 import {
   DocumentState,
@@ -26,10 +26,8 @@ import type {
 import { isValidLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { LikeC4WorkspaceManager } from '../shared'
-import { printDocs, queueMicrotask } from '../utils'
+import { printDocs } from '../utils'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
-import { LikeC4ModelGraph, computeView } from '@likec4/graph'
 
 function isRelativeLink(link: string) {
   return link.startsWith('.') || link.startsWith('/')
@@ -191,27 +189,22 @@ type ModelParsedListener = (docs: URI[]) => void
 
 export class LikeC4ModelBuilder {
   private langiumDocuments: LangiumDocuments
-  private workspaceManager: LikeC4WorkspaceManager
   private listeners: ModelParsedListener[] = []
 
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
-    invariant(services.shared.workspace.WorkspaceManager instanceof LikeC4WorkspaceManager)
-    this.workspaceManager = services.shared.workspace.WorkspaceManager
     const parser = services.likec4.ModelParser
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
       async (docs, cancelToken) => {
-        await queueMicrotask(() => parser.parse(docs))
+        const parsed = parser.parse(docs).map(d => d.uri)
         // Only allow interrupting the execution after all documents have been parsed
         await interruptAndCheck(cancelToken)
-        this.notifyListeners(docs.map(d => d.uri))
+        if (parsed.length > 0) {
+          this.notifyListeners(parsed)
+        }
       }
     )
-  }
-
-  public get workspaceUri() {
-    return this.workspaceManager.workspace()?.uri ?? null
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {
