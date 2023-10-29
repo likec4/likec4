@@ -98,25 +98,23 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
   return edgeTransitions((springs, edge, { key }) => (
     <Group
       key={key}
-      {...(onEdgeClick && {
-        onPointerClick: e => {
-          if (DiagramGesture.isDragging || e.evt.button !== 0) {
-            return
-          }
-          e.cancelBubble = true
-          onEdgeClick(edge, e)
-        },
-        onPointerEnter: e => {
-          if (animate) {
-            setHoveredEdge(edge)
-            mousePointer(e)
-          }
-        },
-        onPointerLeave: e => {
-          setHoveredEdge(null)
-          mouseDefault(e)
+      onPointerClick={e => {
+        if (!onEdgeClick || DiagramGesture.isDragging || e.evt.button !== 0) {
+          return
         }
-      })}
+        e.cancelBubble = true
+        onEdgeClick(edge, e)
+      }}
+      onPointerEnter={e => {
+        if (animate) {
+          setHoveredEdge(edge)
+          mousePointer(e)
+        }
+      }}
+      onPointerLeave={e => {
+        setHoveredEdge(null)
+        mouseDefault(e)
+      }}
     >
       <EdgeShape
         animate={animate}

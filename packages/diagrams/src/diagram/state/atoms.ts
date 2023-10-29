@@ -13,6 +13,7 @@ export const hoveredNodeAtom = atom(
   get => get(currentHoveredNodeAtom),
   (get, set, update: SetStateAction<HoveredNode>) => {
     clearTimeout(get(nodeTimeoutAtom))
+    clearTimeout(get(edgeTimeoutAtom))
     const _prev = get(currentHoveredNodeAtom)
     const _next = typeof update === 'function' ? update(_prev) : update
     if (equals(_prev, _next)) {
@@ -23,7 +24,6 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, _next)
-          clearTimeout(get(edgeTimeoutAtom))
           set(currentHoveredEdgeAtom, null)
         }, 200)
       )
@@ -35,6 +35,7 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, _next)
+          set(currentHoveredEdgeAtom, null)
         }, 150)
       )
       return true
@@ -45,7 +46,7 @@ export const hoveredNodeAtom = atom(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, null)
-        }, 200)
+        }, 150)
       )
       return true
     }
@@ -62,6 +63,7 @@ const edgeTimeoutAtom = atom<ReturnType<typeof setTimeout> | undefined>(undefine
 export const hoveredEdgeAtom = atom(
   get => get(currentHoveredEdgeAtom),
   (get, set, update: SetStateAction<HoveredEdge>) => {
+    clearTimeout(get(nodeTimeoutAtom))
     clearTimeout(get(edgeTimeoutAtom))
     const _prev = get(currentHoveredEdgeAtom)
     const _next = typeof update === 'function' ? update(_prev) : update
@@ -74,9 +76,8 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, _next)
-          clearTimeout(get(nodeTimeoutAtom))
           set(currentHoveredNodeAtom, null)
-        }, 600)
+        }, 400)
       )
       return true
     }
@@ -86,7 +87,8 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, _next)
-        }, 200)
+          set(currentHoveredNodeAtom, null)
+        }, 150)
       )
       return true
     }
@@ -96,7 +98,7 @@ export const hoveredEdgeAtom = atom(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, null)
-        }, 300)
+        }, 150)
       )
       return true
     }
