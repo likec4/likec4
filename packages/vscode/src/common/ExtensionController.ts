@@ -5,12 +5,12 @@ import { State } from 'vscode-languageclient'
 import { serializeError, type ViewID } from '@likec4/core'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
-import { Logger, logError } from '../logger'
+import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
-import { Rpc } from './Rpc'
-import { findSources, initWorkspace } from './initWorkspace'
+import { initWorkspace } from './initWorkspace'
 import { PreviewPanel } from './panel/PreviewPanel'
+import { Rpc } from './Rpc'
 
 export default class ExtensionController extends AbstractDisposable {
   private _telemetry: TelemetryReporter
