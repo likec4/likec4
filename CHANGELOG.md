@@ -1,3 +1,10 @@
+## [0.43.1](https://github.com/likec4/likec4/compare/v0.43.0...v0.43.1) (2023-10-29)
+
+### Bug Fixes
+
+- **diagrams:** better timing for edge onhover ([2dec801](https://github.com/likec4/likec4/commit/2dec8013a256293fbc565365eaebe94908fcf2d0))
+- **vscode:** do not fail if source file removed ([96e15ff](https://github.com/likec4/likec4/commit/96e15ffcd85a320c316e527bd9a3b6b37b9d7e0c))
+
 # [0.43.0](https://github.com/likec4/likec4/compare/v0.42.2...v0.43.0) (2023-10-29)
 
 ### 🚀 Features
