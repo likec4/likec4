@@ -27,9 +27,6 @@
     "**/.turbo": true,
     "packages/*/.vscode-test-web": true
   },
-  "exportall.config.folderListener": [
-    "packages/core/src/model"
-  ],
   "mdx.experimentalLanguageServer": true,
   "vitest.commandLine": "yarn vitest",
   "exportall.config.semis": false,
