@@ -9,7 +9,7 @@ import { Logger, logError } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
 import { Rpc } from './Rpc'
-import { initWorkspace } from './initWorkspace'
+import { findSources, initWorkspace } from './initWorkspace'
 import { PreviewPanel } from './panel/PreviewPanel'
 
 export default class ExtensionController extends AbstractDisposable {
@@ -83,7 +83,8 @@ export default class ExtensionController extends AbstractDisposable {
         this._telemetry.sendTelemetryEvent('open-preview')
       })
       this.registerCommand(cmdRebuild, () => {
-        rpc.rebuild().catch(e => logError(e))
+        initWorkspace(rpc).catch(e => logError(e))
+        // rpc.rebuild().catch(e => logError(e))
         this._telemetry.sendTelemetryEvent('rebuild')
       })
       this.registerCommand(cmdPreviewContextOpenSource, () => {
@@ -97,6 +98,8 @@ export default class ExtensionController extends AbstractDisposable {
         rpc
       )
 
+      await initWorkspace(rpc)
+
       this._telemetry.sendTelemetryEvent(
         'activation',
         {},
@@ -104,8 +107,6 @@ export default class ExtensionController extends AbstractDisposable {
           workspaceFolders: workspaceFolders.length
         }
       )
-
-      await initWorkspace(rpc)
       //
     } catch (e) {
       const { message, error } = serializeError(e)

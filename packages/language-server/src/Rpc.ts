@@ -97,6 +97,11 @@ export class Rpc {
       logger.debug(
         `[ServerRpc] received request to buildDocuments:\n${docs.map(d => '   - ' + d).join('\n')}`
       )
+      // remove orphaned documents
+      const deleted = LangiumDocuments.all
+        .filter(d => !docs.includes(d.uri.toString()))
+        .map(d => d.uri)
+        .toArray()
       const changed = [] as URI[]
       for (const d of docs) {
         try {
@@ -124,7 +129,7 @@ We rebuild: [
   `.trim()
         )
       }
-      await DocumentBuilder.update(changed, [], cancelToken)
+      await DocumentBuilder.update(changed, deleted, cancelToken)
     })
 
     connection.onRequest(locate, params => {

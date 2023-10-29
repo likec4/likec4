@@ -132,7 +132,7 @@ export class C4Model extends AbstractDisposable {
     Logger.info(`[Extension.C4Model] turnOnTelemetry`)
     const Minutes = 1000 * 60
     const telemetry = xs
-      .merge(xs.periodic(3 * Minutes).take(1), xs.periodic(10 * Minutes).drop(1))
+      .merge(xs.periodic(3 * Minutes).take(1), xs.periodic(20 * Minutes).drop(1))
       .map(() => xs.from(this.fetchTelemetry()))
       .replaceError(err => {
         logError(err)

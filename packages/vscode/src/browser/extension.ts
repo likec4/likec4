@@ -46,9 +46,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
-      { pattern: globPattern, scheme: 'file' },
-      { pattern: globPattern, scheme: 'vscode-vfs' },
-      { pattern: globPattern, scheme: 'vscode-test-web' },
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' }
