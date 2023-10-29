@@ -1,7 +1,7 @@
 {
   "name": "@likec4/diagrams-dev",
   "private": true,
-  "version": "0.42.2",
+  "version": "0.43.0",
   "type": "module",
   "sideEffects": false,
   "packageManager": "yarn@3.6.1",

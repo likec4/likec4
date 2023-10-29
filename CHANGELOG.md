@@ -1,3 +1,16 @@
+# [0.43.0](https://github.com/likec4/likec4/compare/v0.42.2...v0.43.0) (2023-10-29)
+
+### Bug Fixes
+
+- add validation for incoming and outgoing expressions ([b31c1f1](https://github.com/likec4/likec4/commit/b31c1f1a520937048929a0fa5c8163240dc2be6f))
+- **deps:** update dependency jotai to ^2.5.0 ([f513d5f](https://github.com/likec4/likec4/commit/f513d5f2c005a34613d7d2e90a090c0580e48c86))
+- **deps:** update dependency remeda to ^1.28.0 ([e760883](https://github.com/likec4/likec4/commit/e76088300170a496d51d5327a573e90bb4c79f01))
+- **deps:** update dependency type-fest to ^4.6.0 ([0eec808](https://github.com/likec4/likec4/commit/0eec8082436099a350276169570fd56804a7dec9))
+
+### Features
+
+- highlight elements of the hovered edge ([7e65b0e](https://github.com/likec4/likec4/commit/7e65b0e3ab60ad96e55584b2326fed7a1f51b3e6))
+
 ## [0.42.2](https://github.com/likec4/likec4/compare/v0.42.1...v0.42.2) (2023-10-28)
 
 ### Bug Fixes
