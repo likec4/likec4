@@ -41,35 +41,62 @@ You can use LikeC4 as a standalone tool or integrate it into your existing toolc
 ### What does LikeC4 look like?
 
 ```likec4 filename="example.c4"
-// customise model
 specification {
+  // Element kinds used in our architecture
   element actor {
     style {
       shape person
     }
   }
   element system
+  element component
+  // Relationship kind
+  relationship async
 }
 
-// describe the architecture
+// Describe the architecture
 model {
   customer = actor 'Customer' {
-    description 'A user of our product with active subscription'
+    description 'Customer of Cloud System'
+  }
+  
+  cloud = system 'Cloud System' {  
+
+    backend = component 'Backend' {
+      description 'Backend services and API'
+    }
+
+    ui = component 'Frontend' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      style {
+        shape browser
+      }      
+    }    
   }
 
-  saas = system 'Our SaaS' {
-    description 'Our product allows customers to manage their data'
-  }
+  customer -> ui 'opens in browser'  
 
-  customer -> saas 'uses to manage data'
+  // Relationship of predefined kind
+  ui -[async]-> backend 'requests via GraphQL'
 }
 
-// generate diagrams
+// What diagrams to generate
 views {
-  view index {
+  view of cloud {
     include *
+
+    style * {
+      color muted
+    }   
+    style cloud.* {
+      color green
+    }
   }
 }
+
 ```
 
 ## Quick Start
@@ -80,8 +107,8 @@ Follow the [tutorial](/docs/tutorial) to get the idea, but if you are impatient 
   - [Blank](/playground/blank/)
   - [Tutorial](/playground/getting-started/)
   - [BigBank Architecture](/playground/)
-- Online with [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
-- Online with [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
+- Online with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4)
+- Online with [vscode.dev](https://vscode.dev/github/likec4/template/blob/main/src/model.c4)
 - Install [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 
 ### From Template

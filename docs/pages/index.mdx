@@ -26,7 +26,7 @@ You define your own notation, custom element types and any number of nested leve
 
 <IndexPageSection title={'What does LikeC4 look like?'}>   
   
-  Example of LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
+Example of LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)):
 
 ```likec4 filename="example.c4"
 // customise model
@@ -60,19 +60,10 @@ views {
 }
 ```
 
-CLI to generate react components (or export to other formats):
+CLI to preview:
 
-```bash
-likec4 codegen react -o likec4-generated.tsx
-```
-
-Somewhere in your code (optional):
-
-```jsx
-import { Embedded as LikeC4View } from '$/likec4-generated'
-
-// ...
-<LikeC4View viewId='index' />
+```sh
+npx likec4@latest serve
 ```
 
 And this is rendered (click to explore):

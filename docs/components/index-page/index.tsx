@@ -115,7 +115,7 @@ export const IndexPageWhy = () => (
 
 export const IndexPageDiagram = () => (
   <div className='mt-6'>
-    <LikeC4EmbeddedView viewId='index' noBrowser />
+    <LikeC4EmbeddedView viewId='index' />
   </div>
 )
 

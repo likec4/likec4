@@ -3,7 +3,6 @@ specification {
   element actor {
     style {
       shape person
-      color indigo
     }
   }
   element system
@@ -76,16 +75,18 @@ views {
     include *
   }
 
-  view customer of customer {
-    include *, saas.ui
-  }
-
   view saas of saas {
     title 'Our Saas - Overview'
     include *
 
+    style * {
+      color secondary
+    }
+    style saas {
+      color muted
+    }
     style saas.* {
-      color sky
+      color green
     }
   }
 
@@ -93,42 +94,43 @@ views {
     include *, saas
 
     style ui {
-      color sky
+      color green
+    }
+    style saas {
+      color muted
     }
   }
 
   view backend of backend {
     include *, saas
-    style backend.* {
-      color sky
+
+    style * {
+      color secondary
+    }
+    style saas {
+      color muted
+    }
+    style backend, backend.* {
+      color green
     }
   }
 
   view infra of infra {
     include
       *,
+      backend,
       backend.* -> infra
 
-    style infra, infra.* {
-      color sky
+    style * {
+      color secondary
     }
+    style backend, infra {
+      color muted
+    }
+    style infra.* {
+      color green
+    }
+
   }
 
-  view backendApi of api {
-    include *, infra, backend
-
-    style api {
-      color sky
-    }
-  }
-
-  view backendServices of services {
-    include
-      *,
-      backend
-
-    style services {
-      color sky
-    }
-  }
 }

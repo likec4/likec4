@@ -14,8 +14,29 @@ The `likec4` CLI is a tool for various operations and automation over LikeC4 pro
 
 ## Install
 
+### Local installation
+
+If you're using it in an npm project, install it as a development dependency:
+
 ```sh npm2yarn
-npm install -D likec4
+npm install --save-dev likec4
+```
+
+You can reference it directly in the `package.json#scripts` object:
+
+```json5
+{
+  scripts: {
+    dev: 'likec4 serve ...',
+    build: 'likec4 build ...'
+  }
+}
+```
+
+To use the binary, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx) while in the project directory:
+
+```sh
+npx likec4 ...
 ```
 
 ### Global installation
@@ -66,14 +87,15 @@ Any changes in the sources trigger a super-fast hot update and you see changes i
 
 ### Build static website
 
-Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)  
-Build a single-page application with all diagrams:
+Build a single HTML with diagrams, ready to be embedded into your website:
 
 ```sh
 likec4 build -o ./dist
 ```
 
-When you deploy the website, you can use "Share" button to get a link to a specific diagram.  
+Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+
+When you deployed the website, you can use "Share" button to get a link to a specific diagram.
 
 > **Tip:**  
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
@@ -84,13 +106,16 @@ There is also a supplementary command to preview the build:
 likec4 preview -o ./dist
 ```
 
+For example, this command can be used on CI, to compare diagrams with ones from the previous/main build.
+
 ### Export to PNG
 
 ```sh
 likec4 export png -o ./assets
 ```
 
-This command starts temporary local web server and uses [Playwright](https://playwright.dev/) to take screenshots of diagrams.
+This command starts local web server and uses Playwright to take screenshots.  
+If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
 
 ### Export to Mermaid, Dot, D2
 
@@ -113,6 +138,8 @@ likec4 codegen react --outfile ./src/likec4.generated.tsx
 > By default, it generates `likec4.generated.tsx` in current directory
 
 ### Generate structured data
+
+Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
 
 ```sh
 likec4 codegen views-data --outfile ./src/likec4.generated.ts
