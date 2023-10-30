@@ -1,10 +1,11 @@
+import type { Fqn } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
 import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
 import { useRef } from 'react'
-import type { Fqn } from '@likec4/core'
 import { AnimatedGroup } from '../konva'
 import { Portal } from '../konva-portal'
+import { ZoomInIcon } from './icons'
 import type { ShapeComponent } from './shapes'
 import { CylinderShape, MobileShape, PersonShape, QueueShape, RectangleShape } from './shapes'
 import { BrowserShape } from './shapes/Browser'
@@ -166,12 +167,15 @@ function NodeSnape({
 }: NodeShapeProps) {
   const setHoveredNode = useSetHoveredNode()
 
-  const Shape = isCompound(node) ? CompoundShape : nodeShape(node)
+  const _isCompound = isCompound(node)
+  const isNavigatable = !!node.navigateTo && !!onNodeClick
+
+  const Shape = nodeShape(node)
 
   const springs = ctrl.springs
 
   return (
-    <Portal selector='.top' enabled={isHovered && !isCompound(node)}>
+    <Portal selector='.top' enabled={isHovered && !_isCompound}>
       <AnimatedGroup
         name={node.id}
         visible={expired !== true}
@@ -204,7 +208,31 @@ function NodeSnape({
         scaleY={springs.scaleY}
         opacity={springs.opacity}
       >
-        <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
+        {_isCompound && (
+          <>
+            <CompoundShape
+              node={node}
+              theme={theme}
+              springs={springs}
+              labelOffsetX={isNavigatable ? -12 : 4}
+            />
+            {isNavigatable && <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={18} />}
+          </>
+        )}
+        {!_isCompound && (
+          <>
+            <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
+            {isNavigatable && (
+              <ZoomInIcon
+                // fill={theme.elements[node.color].loContrast}
+                fill={'#BABABA'}
+                size={16}
+                x={node.size.width / 2}
+                y={node.size.height - 20}
+              />
+            )}
+          </>
+        )}
       </AnimatedGroup>
     </Portal>
   )

@@ -1,8 +1,9 @@
 import { type DiagramApi, type DiagramView } from '@likec4/diagrams'
 import { CaretDownIcon, Share1Icon as ShareIcon } from '@radix-ui/react-icons'
-import { Button, Dialog, DropdownMenu, Flex, IconButton, Separator, Text } from '@radix-ui/themes'
+import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
 import { useState, type PropsWithChildren } from 'react'
 // import { ThemePanelToggle } from '../ThemePanelToggle'
+import { DisplayModeSelector } from './DisplayModeSelector'
 import ExportDiagram from './ExportDiagram'
 import { ShareDialog } from './ShareDialog'
 
@@ -20,23 +21,6 @@ const ExportMenu = ({
         <DropdownMenu.Item
           onClick={_ => {
             onExport('png')
-            // const { boundingBox } = diagramApi.diagramView()
-            // console.log('Serialized: ', diagramApi.stage.toObject())
-            // const k = new KonvaCore.Canvas({
-            //   height: diagramApi.
-            // })
-            // diagramApi.stage().toBlob({
-            //   ...boundingBox,
-            //   callback(blob) {
-            //     const url = URL.createObjectURL(blob)
-            //     window.open(url)
-            //     // const a = document.createElement('a')
-            //     // a.href = url
-            //     // a.download = 'diagram.png'
-            //     // a.click()
-            //     URL.revokeObjectURL(url)
-            //   },
-            // })
           }}
         >
           Export as .png
@@ -44,6 +28,8 @@ const ExportMenu = ({
         <DropdownMenu.Item disabled>Export as .dot</DropdownMenu.Item>
         <DropdownMenu.Item disabled>Export as .mmd</DropdownMenu.Item>
         <DropdownMenu.Item disabled>Export as .d2</DropdownMenu.Item>
+        <DropdownMenu.Item disabled>Export to Draw.io</DropdownMenu.Item>
+        <DropdownMenu.Item disabled>Export to Miro</DropdownMenu.Item>
       </DropdownMenu.Group>
       <DropdownMenu.Separator />
       <DropdownMenu.Label>
@@ -66,28 +52,7 @@ export const ViewActionsToolbar = ({
 
   return (
     <Flex position='fixed' top='0' right='0' p='2' gap={'3'} justify='end' align='center'>
-      <Flex
-        display={{
-          initial: 'none',
-          md: 'flex'
-        }}
-        gap='3'
-        align='center'
-      >
-        <Button variant='solid' size='1'>
-          React
-        </Button>
-        <Button variant='ghost' size='1'>
-          Graphviz
-        </Button>
-        <Button variant='ghost' size='1'>
-          Mermaid
-        </Button>
-        <IconButton variant='ghost' size='1'>
-          <CaretDownIcon />
-        </IconButton>
-        <Separator orientation='vertical' />
-      </Flex>
+      <DisplayModeSelector />
       <Dialog.Root>
         <Dialog.Trigger>
           <Button variant='solid'>
