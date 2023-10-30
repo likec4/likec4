@@ -71,7 +71,7 @@ views {
        *,
        amazon,
        cloud,
-       cloud.backend.*
+       cloud.backend.* ->
 
     style * {
       color secondary

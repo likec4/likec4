@@ -91,15 +91,14 @@ views {
     title "Overview Customer"
     include
       *,
-      -> ui.*,
-      -> backend,
-      cloud,
+      ui,
+      -> ui.*
 
     style * {
       color secondary
     }
 
-    style cloud {
+    style ui {
       color muted
     }
 
@@ -130,14 +129,13 @@ views {
       cloud,
       amazon,
       backend,
-      ui.* -> backend.*,
       ui.* -> amazon.*
 
     style * {
       color secondary
     }
 
-    style cloud, amazon, backend {
+    style cloud, amazon {
       color muted
     }
 
@@ -174,7 +172,6 @@ views {
       backend,
       amazon,
       cloud,
-      amazon.rds,
       graphql -> amazon.*
 
     style * {
@@ -195,13 +192,13 @@ views {
       *,
       backend,
       amazon,
-      cms -> amazon.rds.*
+      cms -> amazon.*
 
     style * {
       color secondary
     }
 
-    style backend, amazon, amazon.rds {
+    style backend, amazon {
       color muted
     }
 
