@@ -4,10 +4,10 @@
 
 Features:
 
-- preview diagrams in a local web server (with fast hot-reload on changes)
-- build a static website for sharing and embedding diagrams
-- export to PNG, Mermaid, Dot, D2
-- generate React components
+- Preview diagrams in a local web server (with lightning fast updates) ⚡️
+- Build a static .website (deploy to github pages, netlify...) 🔗
+- Export to PNG, Mermaid, Dot, D2 (if you something static) 🖼️
+- Generate React components (for custom integrations ) 🛠️
 
 ## Install
 
@@ -32,10 +32,6 @@ You can reference it directly in the `package.json#scripts` object:
   }
 }
 ```
-
-> **Template:**  
-> Check out the template repository [likec4/template](https://github.com/likec4/template)  
-> with pre-configured CI for building and deploying to github pages.
 
 To use the binary, you can call it with [`npx`](https://docs.npmjs.com/cli/v10/commands/npx) while in the project directory:
 
@@ -88,14 +84,15 @@ Any changes in the sources trigger a super-fast hot update and you see changes i
 
 ### Build static website
 
-Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)  
-Build a single-page application with all diagrams:
+Build a single HTML with diagrams, ready to be embedded into your website:
 
 ```sh
 likec4 build -o ./dist
 ```
 
-When you deploy the website, you can use "Share" button to get a link to a specific diagram.
+Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+
+When you deployed the website, you can use "Share" button to get a link to a specific diagram.
 
 > **Tip:**  
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
@@ -106,13 +103,16 @@ There is also a supplementary command to preview the build:
 likec4 preview -o ./dist
 ```
 
+For example, this command can be used on CI, to compare diagrams with ones from the previous/main build.
+
 ### Export to PNG
 
 ```sh
 likec4 export png -o ./assets
 ```
 
-This command starts temporary local web server and uses [Playwright](https://playwright.dev/) to take screenshots of diagrams.
+This command starts local web server and uses Playwright to take screenshots.  
+If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
 
 ### Export to Mermaid, Dot, D2
 
@@ -131,10 +131,14 @@ likec4 codegen d2
 likec4 codegen react --outfile ./src/likec4.generated.tsx
 ```
 
+Check [documentation](https://likec4.dev/docs/tools/react/)
+
 > Output file should have `.tsx` extension  
 > By default, it generates `likec4.generated.tsx` in current directory
 
 ### Generate structured data
+
+Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
 
 ```sh
 likec4 codegen views-data --outfile ./src/likec4.generated.ts
@@ -146,6 +150,18 @@ likec4 codegen ts ...
 
 > Output file should have `.ts` extension  
 > By default, it generates `likec4.generated.ts` in current directory
+
+## Development
+
+In root workspace:
+
+```sh
+yarn install
+yarn build
+
+cd packages/likec4
+yarn dev
+```
 
 ## Support
 

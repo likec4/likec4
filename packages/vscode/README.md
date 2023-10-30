@@ -8,10 +8,10 @@
   <p>
     <a href="https://likec4.dev/docs/">docs</a> |
     <a href="https://likec4.dev/playground/">playground</a> |
-    <a href="https://likec4.dev/examples/bigbank/">example</a>
+    <a href="https://template.likec4.dev/view/cloud">demo</a>
   </p>
 
-  ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
+![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
 </div>
 
@@ -25,35 +25,28 @@ Perfectly tailored to your needs.
 
 ## What does LikeC4 look like?
 
-LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/develop/docs/likec4/index-page/index-page.c4)):
+LikeC4 source:
 
 <div align="center">
-  <img src="https://github.com/likec4/.github/assets/824903/feb8a707-4556-4628-a083-29e2559f75d7" width="705px">
+  <img src="https://github.com/likec4/likec4/assets/824903/6a5e9fe9-f930-4e43-be5b-fdf30475bb61" width="535px">
 </div>
 
-CLI to generate react components (or export to other format):
+CLI to preview:
 
 ```sh
-likec4 codegen react -o likec4-generated.tsx
+npx likec4@latest serve
 ```
 
-Website:
-
-```tsx
-import { LikeC4View } from "$/likec4-generated"
-
-// ...
-
-<LikeC4View viewId="index"/>
-```
-
-And this is rendered:
+And result:
 
 <div align="center">
-  <img src="https://github.com/likec4/.github/assets/824903/954093f2-c164-4aa9-9ba6-3627206eeb4e" width="1048px">
+  <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
 </div>
 
-Check the [Tutorial](https://likec4.dev/docs/#tutorial) - a bit better overview of LikeC4.
+Template repository - [likec4/template](https://github.com/likec4/template)  
+Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
+
+Check the [Tutorial](https://likec4.dev/docs/tutorial/) - a bit better overview of LikeC4.
 
 ---
 
@@ -68,7 +61,7 @@ The extension provides (via [language server protocol](https://microsoft.github.
 - Hover information
 
 Extension is universal and can run as web-version.  
-Open [example-cloud-system](https://github.com/likec4/example-cloud-system) in the browser using any of:
+Open [likec4/template](https://github.com/likec4/template) in the browser using any of:
 
-- [github.dev](https://github.dev/likec4/example-cloud-system/blob/main/model.c4)
-- [vscode.dev](https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4)
+- [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4)
+- [vscode.dev](https://vscode.dev/github/likec4/template/blob/main/src/model.c4)
