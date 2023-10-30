@@ -6,9 +6,10 @@ interface CompoundProps {
   node: DiagramNode
   theme: DiagramTheme
   springs: NodeSpringValues
+  labelOffsetX?: number
 }
 
-export function CompoundShape({ node, theme, springs }: CompoundProps) {
+export function CompoundShape({ node, theme, springs, labelOffsetX = 4 }: CompoundProps) {
   const { labels } = node
 
   return (
@@ -31,9 +32,9 @@ export function CompoundShape({ node, theme, springs }: CompoundProps) {
         <AnimatedText
           key={i}
           x={x}
-          y={y - label.fontSize / 2}
-          offsetX={4}
-          offsetY={4}
+          y={y - 4}
+          offsetX={labelOffsetX}
+          offsetY={label.fontSize / 2}
           width={springs.width.to(v => v - x - 4)}
           fill={'#BABABA'}
           fontFamily={theme.font}
