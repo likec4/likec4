@@ -1,3 +1,9 @@
+# [0.44.0](https://github.com/likec4/likec4/compare/v0.43.1...v0.44.0) (2023-10-30)
+
+### Features
+
+- **diagrams:** add icon to elements to indicate they include a sub-view [#361](https://github.com/likec4/likec4/issues/361) ([8fd1a2e](https://github.com/likec4/likec4/commit/8fd1a2eb708bd5597954237f2979c056df831ee6))
+
 ## [0.43.1](https://github.com/likec4/likec4/compare/v0.43.0...v0.43.1) (2023-10-29)
 
 ### Bug Fixes
