@@ -2,17 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "dev",
-      "path": "docs",
-      "problemMatcher": [],
-      "label": "docs: next dev",
-      "detail": "run generate && next dev"
-    },
-    {
       "label": "build",
       "type": "npm",
-      "script": "vscode:task:build",
+      "script": "vs:tasks:build",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -22,45 +14,9 @@
       ],
       "promptOnClose": false,
       "presentation": {
-        "panel": "dedicated",
-        "close": true,
+        "panel": "shared",
         "echo": false,
-        "reveal": "silent"
-      }
-    },
-    {
-      "label": "vscode:task:build:watch",
-      "type": "npm",
-      "dependsOn": [
-        "npm: build:turbo - packages/vscode"
-      ],
-      "script": "vscode:task:build:watch",
-      "promptOnClose": false,
-      "isBackground": true,
-      "problemMatcher": [
-        "$tsc",
-        "$tsc-watch"
-      ],
-      "presentation": {
-        "panel": "dedicated",
-        "close": true,
-        "echo": false,
-        "reveal": "silent"
-      }
-    },
-    {
-      "label": "vscode:task:build:extension",
-      "type": "npm",
-      "script": "build:turbo",
-      "path": "packages/vscode",
-      "promptOnClose": false,
-      "problemMatcher": [
-        "$tsc"
-      ],
-      "presentation": {
-        "panel": "dedicated",
-        "close": true,
-        "echo": false,
+        "showReuseMessage": false
       }
     }
   ]

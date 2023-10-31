@@ -30,7 +30,7 @@
       }
     }
   },
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.0.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo build --filter='diagrams'",

@@ -33,7 +33,9 @@
   "json.schemas": [
     {
       "url": "node_modules/langium-cli/langium-config-schema.json",
-      "fileMatch": ["langium-config.json"]
+      "fileMatch": [
+        "langium-config.json"
+      ]
     }
   ]
 }
