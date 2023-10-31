@@ -3,7 +3,7 @@
   "version": "0.44.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.0.1",
   "workspaces": [
     "docs",
     "packages/*",
@@ -16,10 +16,8 @@
   "scripts": {
     "prepare": "husky install",
     "build": "turbo run build --filter='./packages/*'",
-    "build:watch": "turbo run build:watch --filter='./packages/*'",
     "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",
     "typecheck": "turbo run typecheck",
-    "turbo": "turbo",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/*.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
@@ -30,8 +28,7 @@
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "turbo run lint --continue --filter='./packages/*'",
     "vitest:ui": "vitest --ui",
-    "vscode:task:build": "turbo run typecheck --log-prefix=none --log-order=grouped",
-    "vscode:task:build:watch": "turbo run build:watch --filter='likec4-vscode...' --log-prefix=none"
+    "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.2.0",
@@ -58,15 +55,14 @@
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "volta": {
-    "node": "20.8.1",
-    "yarn": "1.22.19"
+    "node": "20.8.1"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.1.0",
     "vscode-languageclient": "8.1.0",
     "vscode-languageserver": "8.1.0",
-    "vscode-languageserver-protocol": "3.17.3",
-    "chevrotain-allstar@^0.3.0": "patch:chevrotain-allstar@npm%3A0.3.0#./.yarn/patches/chevrotain-allstar-npm-0.3.0-e9ee9605e3.patch"
+    "vscode-languageserver-protocol": "3.17.5",
+    "chevrotain-allstar": "0.3.1"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx}": [
