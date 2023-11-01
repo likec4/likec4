@@ -43,14 +43,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      # - name: yarn cache directory path
+      #   id: yarn-cache-dir-path
+      #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: restore caches
         uses: actions/cache/restore@v3
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: '.yarn/cache'
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           enableCrossOsArchive: true
           restore-keys: |
