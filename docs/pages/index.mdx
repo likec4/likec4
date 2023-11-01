@@ -26,44 +26,40 @@ You define your own notation, custom element types and any number of nested leve
 
 <IndexPageSection title={'What does LikeC4 look like?'}>   
   
-Example of LikeC4 source ([full source on github](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)):
+LikeC4 source ([full](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)):
 
-```likec4 filename="example.c4"
-// customise model
-specification {
+```likec4
+specification { // define "types" of architecture elements
   element actor {
     style {
-      shape person
+      shape person // how to render this element
     }
   }
   element system
 }
 
-// describe the architecture
-model {
+model { // describe your architecture, single source of truth
   customer = actor 'Customer' {
     description 'A user of our product with active subscription'
   }
-
   saas = system 'Our SaaS' {
     description 'Our product allows customers to manage their data'
   }
-
+  //  relationship between elements
   customer -> saas 'uses to manage data'
 }
 
-// generate diagrams
-views {
+views { // what to present from the model
   view index {
-    include *
+    include * // predicate to include all elements
   }
 }
 ```
 
-CLI to preview:
+Run to preview:
 
 ```sh
-npx likec4@latest serve
+npx likec4 start
 ```
 
 And this is rendered (click to explore):

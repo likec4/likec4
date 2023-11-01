@@ -80,7 +80,7 @@ This recursively searchs for `*.c4`, `*.likec4` files in current folder, parses 
 Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
 
 > **Tip:**  
-> You can use `likec4 serve [path]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
+> You can use `likec4 start [path]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
 
 ### Build static website
 

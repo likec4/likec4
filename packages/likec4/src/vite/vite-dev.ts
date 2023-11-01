@@ -1,4 +1,4 @@
-import getPort from 'get-port'
+import getPort, { portNumbers } from 'get-port'
 import type { InlineConfig, ViteDevServer } from 'vite'
 import { createServer, mergeConfig, searchForWorkspaceRoot } from 'vite'
 import type { LikeC4ViteConfig } from './config'
@@ -7,10 +7,10 @@ import { viteConfig } from './config'
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
   const { isDev, ...config } = await viteConfig(cfg)
   const port = await getPort({
-    port: [5173, 61000, 61001, 62002, 62003, 62004, 62005]
+    port: [5173, 61000, 61001, ...portNumbers(62002, 62010)]
   })
   const hmrPort = await getPort({
-    port: [24678, 24679, 24680, 24681, 24682, 24683, 24684, 24685]
+    port: portNumbers(24678, 24690)
   })
 
   const server = await createServer(
@@ -28,7 +28,7 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
         },
         fs: {
           allow: [
-            searchForWorkspaceRoot(process.cwd()),
+            isDev ? searchForWorkspaceRoot(process.cwd()) : process.cwd(),
             config.root,
             config.languageServices.workspace
           ]

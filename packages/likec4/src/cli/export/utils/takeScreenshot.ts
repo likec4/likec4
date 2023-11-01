@@ -15,55 +15,57 @@ type TakeScreenshotParams = {
 export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: TakeScreenshotParams) {
   return async function takeScreenshot(view: DiagramView) {
     const padding = 20
-    const url = pageUrl(view) + `e=e&padding=${padding}`
+    const url = pageUrl(view) + `?padding=${padding}`
     logger.info(`${k.dim('export')} ${view.id} ${k.underline(k.dim(url))}`)
 
-    const page = await browser.newPage({
-      deviceScaleFactor: 2,
-      viewport: {
-        width: view.width + padding * 2,
-        height: view.height + padding * 2
-      }
-    })
-
+    let page
     try {
-      await page.goto(url)
-    } catch (error) {
-      if (error instanceof Error && error.name === 'TimeoutError') {
-        logger.error(`Timeout while loading page: ${url}`)
-      } else {
-        logger.error(`Page loading failed: ${url}\n${error}`, { error: error as any })
-      }
-      await page.close()
-      return
-    }
-
-    try {
-      // Wait for page to be fully loaded
-      await page.waitForLoadState()
-      // Wait for network to be idle (if there images to be loaded)
-      await page.waitForLoadState('networkidle', { timeout: 10000 })
-    } catch (error: unknown) {
-      logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
-        error: error as any
+      page = await browser.newPage({
+        deviceScaleFactor: 2,
+        viewport: {
+          width: view.width + padding * 2,
+          height: view.height + padding * 2
+        }
       })
-      await page.close()
-      return
-    }
 
-    const path = resolve(outputDir, view.relativePath ?? '.', `${view.id}.png`)
+      try {
+        await page.goto(url)
+      } catch (error) {
+        if (error instanceof Error && error.name === 'TimeoutError') {
+          logger.error(`Timeout while loading page: ${url}`)
+        } else {
+          logger.error(`Page loading failed: ${url}\n${error}`, { error: error as any })
+        }
+        return
+      }
 
-    try {
-      await page.screenshot({
-        path,
-        animations: 'disabled',
-        timeout: 10000,
-        omitBackground: true
-      })
-    } catch (error: unknown) {
-      logger.error(`Error when taking screenshot: ${url}\n${error}`, { error: error as any })
-      await page.close()
-      return
+      try {
+        // Wait for page to be fully loaded
+        await page.waitForLoadState()
+        // Wait for network to be idle (if there images to be loaded)
+        await page.waitForLoadState('networkidle', { timeout: 10000 })
+      } catch (error: unknown) {
+        logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
+          error: error as any
+        })
+        return
+      }
+
+      const path = resolve(outputDir, view.relativePath ?? '.', `${view.id}.png`)
+
+      try {
+        await page.screenshot({
+          path,
+          animations: 'disabled',
+          timeout: 10000,
+          omitBackground: true
+        })
+      } catch (error: unknown) {
+        logger.error(`Error when taking screenshot: ${url}\n${error}`, { error: error as any })
+        return
+      }
+    } finally {
+      await page?.close()
     }
   }
 }
