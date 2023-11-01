@@ -78,7 +78,7 @@
     "@types/react-dom": "^18.2.0",
     "@types/yargs": "^17.0.29",
     "boxen": "^7.1.1",
-    "ci-info": "^3.9.0",
+    "ci-info": "^4.0.0",
     "esbuild": "^0.19.5",
     "esbuild-node-externals": "^1.9.0",
     "execa": "^8.0.1",
