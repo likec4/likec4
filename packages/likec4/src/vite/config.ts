@@ -68,6 +68,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       logValidationErrors: true
     }))
 
+  const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
+  customLogger.info(k.dim('outDir') + ' ' + outDir)
+
   let coreSrc, diagramsSrc
 
   if (isDev) {
@@ -112,8 +115,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     clearScreen: false,
     base,
     build: {
-      outDir: cfg?.outputDir ?? resolve(languageServices.workspace, 'dist'),
-      emptyOutDir: isNil(cfg?.outputDir),
+      outDir,
+      emptyOutDir: true,
       assetsInlineLimit: 500 * 1000,
       cssMinify: true,
       minify: true,

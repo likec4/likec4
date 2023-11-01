@@ -12,7 +12,14 @@
     }
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [5173, 51204, 61000, 24678, 24679],
+  "forwardPorts": [
+    5173, // likec4 cli - dev
+    24678,
+    24679, // likec4 cli - HMR
+    62001, // likec4 cli - preview
+    51204, // vitest
+    61000 // examples-dev
+  ],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "yarn install && yarn build",
   // Configure tool-specific properties.

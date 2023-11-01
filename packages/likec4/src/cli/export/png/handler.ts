@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { DiagramView } from '@likec4/core'
+import { hasAtLeast, type DiagramView } from '@likec4/core'
 import { rm } from 'fs/promises'
 import { availableParallelism } from 'node:os'
 import { resolve } from 'node:path'
 import PQueue from 'p-queue'
 import k from 'picocolors'
-import { isCI } from 'ci-info'
 import { chromium } from 'playwright-core'
 import { LanguageServicesInstance } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
@@ -35,34 +34,35 @@ export async function handler({ path, output }: HandlerParams) {
   const views = await languageServices.getViews()
   if (views.length === 0) {
     logger.warn('no views found')
-    process.exit(0)
+    throw new Error('no views found')
   }
 
   const buildOutputDir = resolve(output, '.build-cache')
-
-  logger.info(`build`)
   await viteBuild({ languageServices, outputDir: buildOutputDir })
 
-  logger.info(`start preview server`)
+  logger.info(k.cyan(`start preview server`))
   const previewServer = await vitePreview({
     languageServices,
     outputDir: buildOutputDir,
     open: false
   })
-
-  previewServer.resolvedUrls
+  const hosts = [...previewServer.resolvedUrls.network, ...previewServer.resolvedUrls.local]
+  if (!hasAtLeast(hosts, 1)) {
+    logger.error(`no preview server url`)
+    throw new Error(`no preview server url`)
+  }
 
   // IP should be localhost when running locally & 172.17.0.1 when running in GitHub action
-  const host = isCI ? '172.17.0.1' : 'localhost'
+  // const host = isCI ? '172.17.0.1' : 'localhost'
+  // const url = hosts[0]
 
-  const pageUrl = (view: DiagramView) =>
-    `http://${host}:${previewServer.config.preview.port}/export/${encodeURIComponent(view.id)}?`
+  const pageUrl = (view: DiagramView) => `${hosts[0]}export/${encodeURIComponent(view.id)}`
 
-  logger.info(`start chromium`)
+  logger.info(k.cyan(`start chromium`))
   const browser = await chromium.launch()
   const takeScreenshot = mkTakeScreenshotFn({ browser, pageUrl, outputDir: output, logger })
 
-  const concurrency = availableParallelism()
+  const concurrency = Math.max(availableParallelism() - 1, 1)
   logger.info(`${k.dim('concurrency')} ${concurrency}`)
   logger.info(`${k.dim('output')} ${output}`)
   const queue = new PQueue({ concurrency })
@@ -76,11 +76,12 @@ export async function handler({ path, output }: HandlerParams) {
   )
 
   // delete vite cache
+  logger.info(k.dim('clean build outDir'))
   await rm(buildOutputDir, { recursive: true, force: true })
 
-  logger.info(`close browser`)
+  logger.info(k.cyan(`close chromium`))
   await browser.close()
-  logger.info(`stop preview server`)
+  logger.info(k.cyan(`stop preview server`))
   await new Promise<void>((resolve, reject) => {
     previewServer.httpServer.close(err => (err ? reject(err) : resolve()))
   })
