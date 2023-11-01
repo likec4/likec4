@@ -8,7 +8,7 @@ model {
         Search for anomalies.
       '
 
-      -> amazon.sqs.hits 'process hits data'
+      -[pull]-> amazon.sqs.hits 'pull and process hits data'
       -> cloud.backend.graphql 'read tenants'
     }
 
@@ -24,8 +24,9 @@ views {
         *,
         cloud,
         amazon,
+        amazon.kinesis,
         amazon.sqs,
-        cloud.data -> amazon.sqs.*
+        -> amazon.sqs.*
 
     style * {
       color secondary

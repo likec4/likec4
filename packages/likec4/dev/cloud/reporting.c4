@@ -3,7 +3,9 @@ model {
   extend cloud.reporting {
 
     report_subscriptions = component 'Subscriptions Report' {
-        -> cloud.billing.subscriptions 'sync daily'
+      -> cloud.billing.subscriptions 'sync daily'
+      -> amazon.rds.pg 'read data'
+      -> cloud.backend.graphql 'read tenants'
     }
 
   }
@@ -14,9 +16,8 @@ views {
 
   view reporting of cloud.reporting {
     title "[context] Reporting"
-    include
-        *,
-        cloud
+    include *, cloud
+    autoLayout BottomTop
 
     style * {
       color secondary

@@ -16,12 +16,13 @@ model {
     }
 
     tenantsDashboard = app 'Tenants Dashboard' {
-      description 'Manage users and tenants'
+      description 'Manage tenants and data'
       style {
         shape browser
       }
 
-      -> cloud.backend.cms 'manage users'
+      -> cloud.backend.graphql 'manage tenants'
+      -> cloud.backend.cms 'manage data'
     }
 
     reports = app 'Reports Dashboard' {
