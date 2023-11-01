@@ -5,6 +5,5 @@
 Package contains:
 
 - types
-- view computation
 - utilities and guards
 - errors

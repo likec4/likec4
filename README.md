@@ -25,13 +25,13 @@ Perfectly tailored to your needs.
 LikeC4 source:
 
 <div align="center">
-  <img src="https://github.com/likec4/likec4/assets/824903/6a5e9fe9-f930-4e43-be5b-fdf30475bb61" width="535px">
+  <img src="https://github.com/likec4/.github/assets/824903/c0f22106-dba6-469e-ab47-85e7b8565513" width="675px">
 </div>
 
-[CLI](./packages/likec4/README.md) to preview:
+Run [CLI](./packages/likec4/README.md) to preview:
 
 ```sh
-npx likec4@latest serve
+npx likec4 start
 ```
 
 And result:
