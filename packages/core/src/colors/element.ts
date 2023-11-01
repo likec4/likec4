@@ -11,14 +11,14 @@ const sky = {
   fill: '#0284c7',
   stroke: '#0369a1',
   hiContrast: '#f0f9ff',
-  loContrast: '#e0f2fe'
+  loContrast: '#B6ECF7'
 } satisfies ElementThemeColorValues
 
 const slate = {
   fill: '#64748b',
   stroke: '#475569',
   hiContrast: '#f8fafc',
-  loContrast: '#e2e8f0'
+  loContrast: '#cbd5e1'
 } satisfies ElementThemeColorValues
 
 export const ElementColors = {
@@ -36,23 +36,24 @@ export const ElementColors = {
     fill: '#737373',
     stroke: '#525252',
     hiContrast: '#fafafa',
-    loContrast: '#e5e5e5'
+    loContrast: '#d4d4d4'
   },
   red: {
     // fill: colors.red[500],
     // stroke: colors.red[600],
     // hiContrast: colors.red[50],
     // loContrast: colors.red[200],
-    fill: '#b54548',
-    stroke: '#8c333a',
+    fill: '#AC4D39',
+    // fill: '#b54548',
+    stroke: '#853A2D',
     // hiContrast: '#fef2f2',
     // loContrast: '#fecaca',
     // hiContrast: '#191111', // colors.gray[900],
     // loContrast: '#3b1219' // colors.gray[800],
-    hiContrast: '#f8fafc',
+    hiContrast: '#FBD3CB',
     // hiContrast: '#f8fafc',
     // loContrast: '#fdd8d8' // radix black red 12
-    loContrast: '#F9C6C6'
+    loContrast: '#FF977D'
   },
   green: {
     fill: '#428a4f',
@@ -61,16 +62,10 @@ export const ElementColors = {
     loContrast: '#c2f0c2'
   },
   amber: {
-    // fill: colors.amber[600],
-    // stroke: colors.amber[700],
-    // hiContrast: colors.amber[50],
-    // loContrast: colors.amber[200],
-    fill: '#d97706',
-    stroke: '#b45309',
-    // hiContrast: '#fffbeb',
-    // loContrast: '#fde68a',
-    hiContrast: '#f8fafc', // colors.gray[900],
-    loContrast: '#ffe0c2' // colors.gray[800],
+    fill: '#A35829',
+    stroke: '#7E451D',
+    hiContrast: '#FFE0C2',
+    loContrast: '#FFA057'
   },
   indigo: {
     // fill: colors.indigo[500],

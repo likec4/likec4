@@ -27,7 +27,7 @@ export const RelationshipColors = {
   amber: {
     lineColor: '#b45309',
     labelBgColor: '#78350f',
-    labelColor: '#f59e0b'
+    labelColor: '#FFE0C2'
   },
   blue,
   gray,
@@ -44,9 +44,9 @@ export const RelationshipColors = {
   muted: slate,
   primary: blue,
   red: {
-    lineColor: '#b91c1c',
+    lineColor: '#AC4D39',
     labelBgColor: '#b91c1c',
-    labelColor: '#dc2626'
+    labelColor: '#FF977D'
   },
   secondary: sky,
   sky,

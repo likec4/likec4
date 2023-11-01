@@ -40,4 +40,9 @@ specification {
     }
   }
 
+  relationship pull {
+    line dotted
+    tail onormal
+  }
+
 }

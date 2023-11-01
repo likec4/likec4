@@ -45,48 +45,72 @@ model {
 
     themecolor primary {
       title "PRIMARY"
+      description '
+        Example of primary Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color primary
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color primary
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color primary
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color primary
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color primary
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color primary
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color primary
         }
@@ -99,48 +123,72 @@ model {
     }
     themecolor blue {
       title "BLUE"
+      description '
+        Example of blue Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color blue
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color blue
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color blue
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color blue
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color blue
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color blue
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color blue
         }
@@ -153,48 +201,72 @@ model {
     }
     themecolor secondary {
       title "SECONDARY"
+      description '
+        Example of secondary Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color secondary
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color secondary
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color secondary
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color secondary
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color secondary
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color secondary
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color secondary
         }
@@ -207,48 +279,72 @@ model {
     }
     themecolor sky {
       title "SKY"
+      description '
+        Example of sky Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color sky
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color sky
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color sky
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color sky
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color sky
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color sky
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color sky
         }
@@ -261,48 +357,72 @@ model {
     }
     themecolor muted {
       title "MUTED"
+      description '
+        Example of muted Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color muted
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color muted
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color muted
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color muted
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color muted
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color muted
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color muted
         }
@@ -315,48 +435,72 @@ model {
     }
     themecolor slate {
       title "SLATE"
+      description '
+        Example of slate Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color slate
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color slate
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color slate
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color slate
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color slate
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color slate
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color slate
         }
@@ -369,48 +513,72 @@ model {
     }
     themecolor gray {
       title "GRAY"
+      description '
+        Example of gray Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color gray
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color gray
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color gray
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color gray
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color gray
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color gray
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color gray
         }
@@ -423,48 +591,72 @@ model {
     }
     themecolor red {
       title "RED"
+      description '
+        Example of red Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color red
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color red
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color red
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color red
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color red
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color red
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color red
         }
@@ -477,48 +669,72 @@ model {
     }
     themecolor green {
       title "GREEN"
+      description '
+        Example of green Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color green
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color green
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color green
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color green
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color green
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color green
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color green
         }
@@ -531,48 +747,72 @@ model {
     }
     themecolor amber {
       title "AMBER"
+      description '
+        Example of amber Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color amber
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color amber
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color amber
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color amber
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color amber
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color amber
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color amber
         }
@@ -585,48 +825,72 @@ model {
     }
     themecolor indigo {
       title "INDIGO"
+      description '
+        Example of indigo Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color indigo
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color indigo
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color indigo
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color indigo
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color indigo
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color indigo
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color indigo
         }

@@ -90,14 +90,9 @@ views {
     title "[context] Customer"
     include
         *,
-        ui,
+        cloud,
         -> ui.*
-    exclude cloud
-
-    style * {
-      color secondary
-    }
-    style ui {
+    style cloud {
       color muted
     }
     style customer {
@@ -107,32 +102,29 @@ views {
 
   view cloud of cloud {
     title "[system] Cloud System"
-    include
-      *
-    exclude
-      ui.* -> amazon
-
-    style * {
-      color secondary
-    }
-
-    style cloud.* {
+    include *
+    style cloud, cloud.* {
       color green
     }
   }
 
   view cloud_ui of ui {
     title "[context] Cloud UI"
-    include *, cloud
+    include
+      *,
+      * -> amazon.*,
+      cloud,
+      amazon,
+
 
     style * {
       color secondary
     }
-    style cloud {
+    style cloud, amazon {
       color muted
     }
     style ui, ui.* {
-      color primary
+      color green
     }
   }
 
@@ -140,20 +132,14 @@ views {
     title "[context] Cloud Backend"
     include
       *,
-      ui.* -> backend,
-      billing.* -> backend,
-      backoffice.* -> backend,
-      backend -> amazon.*,
-      cloud
-
-    exclude
-      ui.* -> amazon.*
+      cloud,
+      * -> amazon.*,
+      amazon
 
     style * {
       color secondary
     }
-
-    style cloud, billing, ui, backoffice, amazon {
+    style cloud, amazon {
       color muted
     }
 

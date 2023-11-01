@@ -78,15 +78,18 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.rankdir]: autoLayout,
     [_.outputorder]: 'nodesfirst',
     [_.nodesep]: pxToInch(80),
-    [_.ranksep]: pxToInch(90),
+    [_.ranksep]: pxToInch(80),
     // [_.newrank]: true,
+    [_.mclimit]: 8,
+    [_.center]: true,
     [_.pack]: pxToPoints(40),
     [_.packmode]: 'array_t'
   })
   G.attributes.graph.apply({
     [_.fontname]: Theme.font,
-    [_.labeljust]: 'l',
-    [_.fontsize]: pxToPoints(12)
+    [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
+    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't',
+    [_.fontsize]: pxToPoints(13)
   })
 
   G.attributes.node.apply({
@@ -97,7 +100,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.height]: pxToInch(180),
     [_.style]: 'filled,rounded',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
-    [_.margin]: pxToInch(20),
+    [_.margin]: pxToInch(24),
     [_.penwidth]: 0
   })
 
@@ -107,6 +110,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     [_.style]: DefaultLineStyle,
     [_.penwidth]: 2,
     [_.arrowsize]: 0.8,
+    [_.weight]: 2,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -182,8 +186,6 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
     })
 
     subgraph.attributes.graph.apply({
-      [_.fontsize]: pxToPoints(13),
-      [_.style]: 'rounded',
       [_.margin]: pxToPoints(40)
     })
 
@@ -206,6 +208,12 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
   }
 
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
+    const sourceNode = nodes.find(n => n.id === edge.source)
+    const targetNode = nodes.find(n => n.id === edge.target)
+    if (!sourceNode || !targetNode) {
+      return
+    }
+
     const source = graphvizNodes.get(edge.source)
     const target = graphvizNodes.get(edge.target)
 
@@ -249,11 +257,18 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
 
       const sourceLevel = source.attributes.get(_.likec4_level) ?? 0
       const targetLevel = target.attributes.get(_.likec4_level) ?? 0
+
       if (parent !== G) {
         e.attributes.apply({
-          [_.weight]: sourceLevel === targetLevel ? 10 : 5
+          [_.weight]:
+            sourceNode.parent === targetNode.parent ? 12 : sourceLevel === targetLevel ? 6 : 5
         })
-      } else if (sourceLevel > 0 && sourceLevel == targetLevel) {
+        // } else if (sourceLevel === 0 && targetLevel === 0) {
+        //   // More weight level 0
+        //   e.attributes.apply({
+        //     [_.weight]: 5
+        //   })
+      } else if (sourceLevel == targetLevel) {
         // More weight for same level
         e.attributes.apply({
           [_.weight]: 5
@@ -301,9 +316,6 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
           [_.dir]: 'both'
         })
       }
-
-      const sourceNode = nodes.find(n => n.id === edge.source)
-      const targetNode = nodes.find(n => n.id === edge.target)
       if (
         sourceNode &&
         targetNode &&

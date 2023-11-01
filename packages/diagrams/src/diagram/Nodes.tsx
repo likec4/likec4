@@ -179,16 +179,18 @@ function NodeSnape({
       <AnimatedGroup
         name={node.id}
         visible={expired !== true}
-        onPointerEnter={e => {
-          if (animate) {
+        {...(animate && {
+          onPointerEnter: e => {
             setHoveredNode(node)
-            onNodeClick && mousePointer(e)
+            if (isNavigatable) {
+              mousePointer(e)
+            }
+          },
+          onPointerLeave: e => {
+            setHoveredNode(null)
+            mouseDefault(e)
           }
-        }}
-        onPointerLeave={e => {
-          setHoveredNode(null)
-          mouseDefault(e)
-        }}
+        })}
         {...(onNodeClick && {
           onPointerClick: e => {
             if (DiagramGesture.isDragging || e.evt.button !== 0) {
@@ -216,7 +218,7 @@ function NodeSnape({
               springs={springs}
               labelOffsetX={isNavigatable ? -12 : 4}
             />
-            {isNavigatable && <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={18} />}
+            {isNavigatable && <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={17} />}
           </>
         )}
         {!_isCompound && (

@@ -59,48 +59,72 @@ ${colors
     key => `
     themecolor ${key} {
       title "${key.toUpperCase()}"
+      description '
+        Example of ${key} Theme Color
+        with multiline description
+        and more text
+      '
       style {
         color ${key}
       }
 
       cylinder = cylinder {
         title: 'Cylinder'
-        description: 'Example of Cylinder Shape'
+        technology: 'cylinder'
+        description: '
+          Example of Cylinder Shape
+          with multiline description
+        '
         style {
           color ${key}
         }
       }
       queue = queue {
         title: 'Queue'
-        description: 'Example of Queue Shape'
+        description: '
+          Example of Queue Shape
+          with multiline description
+        '
         style {
           color ${key}
         }
       }
       mobile = mobile {
         title: 'Mobile'
-        description: 'Example of Mobile Shape'
+        description: '
+          Example of Mobile Shape
+          with multiline description
+        '
         style {
           color ${key}
         }
       }
       browser = browser {
         title: 'Browser'
-        description: 'Example of Browser Shape'
+        description: '
+          Example of Browser Shape
+          with multiline description
+        '
         style {
           color ${key}
         }
       }
       person = person {
         title: 'Person'
-        description: 'Example of Person Shape'
+        description: '
+          Example of Person Shape
+          with multiline description
+        '
         style {
           color ${key}
         }
       }
       rect = rect {
         title: 'Rectangle'
-        description: 'Example of Rectangle Shape'
+        description: '
+          Example of Rectangle Shape
+          with multiline description
+        '
         style {
           color ${key}
         }

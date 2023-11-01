@@ -2,6 +2,9 @@ model {
 
   amazon = externalSystem 'Amazon' {
     description: 'Cloud and managed services provider'
+    style {
+      color amber
+    }
 
     rds = container 'RDS' {
       description: 'Relational Databases'
@@ -95,14 +98,16 @@ views {
 
     include *,
        amazon,
+       cloud,
        cloud.backend,
-       cloud.backend.* -> rds
+       cloud.* -> rds,
+       cloud.backend.* -> rds,
 
     style * {
       color secondary
     }
 
-    style cloud, amazon {
+    style cloud, cloud.backend, amazon {
       color muted
     }
 
@@ -116,9 +121,10 @@ views {
 
     include *,
       amazon,
+      cloud,
       cloud.* -> cognito
 
-    style cloud {
+    style cloud, amazon {
       color muted
     }
 

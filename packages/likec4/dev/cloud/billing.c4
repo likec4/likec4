@@ -13,11 +13,19 @@ model {
 
   stripe = externalSystem 'Stripe' {
     description 'Stripe payment system'
+    style {
+      color indigo
+    }
 
     api = service 'Stripe API' {
       technology 'REST'
+      style {
+        color indigo
+      }
     }
   }
+
+  cloud.billing -> stripe 'use as payment provider'
 
 }
 
@@ -29,11 +37,12 @@ views {
         cloud,
         stripe,
         stripe.*
-    style * {
-      color secondary
-    }
-    style stripe, cloud {
+
+    style cloud {
       color muted
+    }
+    style cloud.* {
+      color secondary
     }
     style cloud.billing, cloud.billing.* {
       color green
