@@ -2,11 +2,13 @@ import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
   TransportKind,
+  RevealOutputChannelOn,
   type LanguageClientOptions,
   type ServerOptions
 } from 'vscode-languageclient/node'
 import { extensionTitle, globPattern, languageId } from '../const'
 import ExtensionController from '../common/ExtensionController'
+import { hasAtLeast } from '@likec4/core'
 
 let controller: ExtensionController | undefined
 
@@ -54,25 +56,26 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
 
-  const watchers =
-    workspaceFolders.map(f => {
-      return vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(f, globPattern))
-    }) ?? []
-
-  if (watchers.length === 0) {
-    outputChannel.warn(`No workspace folders found. Using global file watcher for ${globPattern}`)
-    watchers.push(vscode.workspace.createFileSystemWatcher(globPattern))
-  }
+  outputChannel.info(`Create file watcher for ${globPattern}`)
+  const watchers = [vscode.workspace.createFileSystemWatcher(globPattern)]
 
   context.subscriptions.push(...watchers)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
+    diagnosticPullOptions: {
+      onChange: true,
+      onSave: true,
+      onTabs: true
+    },
+    revealOutputChannelOn: RevealOutputChannelOn.Warn,
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
       { language: languageId, scheme: 'file' },
-      { language: languageId, scheme: 'vscode-vfs' }
+      { language: languageId, scheme: 'vscode-vfs' },
+      { pattern: globPattern, scheme: 'file' },
+      { pattern: globPattern, scheme: 'vscode-vfs' }
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
@@ -81,8 +84,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     progressOnInitialization: true
   }
 
-  if (workspaceFolders.length === 1) {
-    clientOptions.workspaceFolder = workspaceFolders[0]!
+  if (hasAtLeast(workspaceFolders, 1)) {
+    clientOptions.workspaceFolder = workspaceFolders[0]
   }
 
   // Create the language client and start the client.

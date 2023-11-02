@@ -6,6 +6,7 @@ import {
 import ExtensionController from '../common/ExtensionController'
 import { extensionTitle, globPattern, languageId } from '../const'
 import { disposable } from '../util'
+import { hasAtLeast } from '@likec4/core'
 
 let controller: ExtensionController | undefined
 
@@ -32,6 +33,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     name: 'LikeC4 Language Server'
   })
 
+  const workspaceFolders = vscode.workspace.workspaceFolders ?? []
+
   const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
   context.subscriptions.push(fileSystemWatcher)
   context.subscriptions.push(disposable(() => worker.terminate()))
@@ -46,6 +49,9 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
+      { pattern: globPattern, scheme: 'file' },
+      { pattern: globPattern, scheme: 'vscode-vfs' },
+      { pattern: globPattern, scheme: 'vscode-test-web' },
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' }
@@ -54,6 +60,10 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       // Notify the server about file changes to files contained in the workspace
       fileEvents: fileSystemWatcher
     }
+  }
+
+  if (hasAtLeast(workspaceFolders, 1)) {
+    clientOptions.workspaceFolder = workspaceFolders[0]
   }
 
   // Create the language client and start the client.

@@ -107,6 +107,7 @@ export default class ExtensionController extends AbstractDisposable {
           workspaceFolders: workspaceFolders.length
         }
       )
+      Logger.info(`[Extension] activated`)
       //
     } catch (e) {
       const { message, error } = serializeError(e)
