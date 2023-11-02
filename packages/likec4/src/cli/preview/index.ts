@@ -15,7 +15,7 @@ export const previewCmd = {
         output: {
           alias: 'o',
           type: 'string',
-          desc: 'output directory for production build',
+          desc: 'output directory from production build',
           normalize: true
         },
         base: {
@@ -24,12 +24,15 @@ export const previewCmd = {
         }
       })
       .coerce(['path', 'output'], resolve)
-      .default('path', resolve('.'), '.')
-      .default('output', resolve('./dist'), './dist'),
+      .default('path', resolve('.'), '.'),
+
   async handler(args) {
     const { handler } = await import('./preview')
     await handler(args)
   }
-} satisfies CommandModule<object, { path: string; output: string; base: string | undefined }>
+} satisfies CommandModule<
+  object,
+  { path: string; output?: string | undefined; base?: string | undefined }
+>
 
 export default previewCmd

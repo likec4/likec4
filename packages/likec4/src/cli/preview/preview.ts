@@ -10,7 +10,7 @@ type HandlerParams = {
   /**
    * output directory
    */
-  output: string
+  output?: string | undefined
   /**
    * base url the app is being served from
    * @default '/'

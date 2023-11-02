@@ -40,13 +40,13 @@ export type LikeC4ViteConfig =
   | {
       languageServices: LanguageServices
       workspaceDir?: never
-      outputDir?: string
+      outputDir?: string | undefined
       base?: string | undefined
     }
   | {
       languageServices?: never
       workspaceDir: string
-      outputDir?: string
+      outputDir?: string | undefined
       base?: string | undefined
     }
 
@@ -116,7 +116,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     base,
     build: {
       outDir,
-      emptyOutDir: true,
       assetsInlineLimit: 500 * 1000,
       cssMinify: true,
       minify: true,

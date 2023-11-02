@@ -28,7 +28,6 @@ export const buildCmd = {
       })
       .coerce(['path', 'output'], resolve)
       .default('path', resolve('.'), '.')
-      .default('output', resolve('./dist'), './dist')
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
         k.gray("Search for likec4 files in 'src' and output static site to 'build'")
@@ -37,6 +36,9 @@ export const buildCmd = {
     const { handler } = await import('./build')
     await handler(args)
   }
-} satisfies CommandModule<object, { path: string; output: string; base: string | undefined }>
+} satisfies CommandModule<
+  object,
+  { path: string; output: string | undefined; base: string | undefined }
+>
 
 export default buildCmd

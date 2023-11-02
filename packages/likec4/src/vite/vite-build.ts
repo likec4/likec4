@@ -1,4 +1,4 @@
-import { build, mergeConfig } from 'vite'
+import { build, mergeConfig, type InlineConfig } from 'vite'
 import type { LikeC4ViteConfig } from './config'
 import { viteConfig } from './config'
 
@@ -17,6 +17,8 @@ export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
       configFile: false,
       mode: 'production',
       build: {
+        // Don't emptyOutDir on second run
+        emptyOutDir: false,
         lib: {
           entry: `src/likec4-views.${isDev ? 'ts' : 'js'}`,
           name: 'LikeC4',
@@ -24,6 +26,6 @@ export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
           formats: ['umd']
         }
       }
-    })
+    } satisfies InlineConfig)
   )
 }
