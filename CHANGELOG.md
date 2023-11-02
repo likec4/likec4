@@ -1,3 +1,10 @@
+## [0.44.1](https://github.com/likec4/likec4/compare/v0.44.0...v0.44.1) (2023-11-02)
+
+### Bug Fixes
+
+- **cli:** vite ports and export output ([36e0f68](https://github.com/likec4/likec4/commit/36e0f68648c0b6f02c6de4e2450d023181305f67))
+- **deps:** update dependency konva to ^9.2.3 ([b02301b](https://github.com/likec4/likec4/commit/b02301b106432148aba558e2d4a8396d278968d8))
+
 # [0.44.0](https://github.com/likec4/likec4/compare/v0.43.1...v0.44.0) (2023-10-30)
 
 ### Features
