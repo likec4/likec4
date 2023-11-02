@@ -43,27 +43,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
       - name: restore caches
         uses: actions/cache/restore@v3
-        if: github.event_name != 'push'
         with:
-          path: |
-            .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ matrix.node-version }}-${{ hashFiles('yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          enableCrossOsArchive: true
           restore-keys: |
-            ${{ runner.os }}-yarn-${{ matrix.node-version }}-
-            ${{ runner.os }}-yarn-
-
-      - name: yarn caches
-        uses: actions/cache@v3
-        if: github.event_name == 'push'
-        with:
-          path: |
-            .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ matrix.node-version }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ matrix.node-version }}-
-            ${{ runner.os }}-yarn-
+            yarn-${{ runner.os }}-
+            yarn-
 
       - name: install dependencies
         shell: bash
