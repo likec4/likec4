@@ -1,6 +1,5 @@
-import { Text } from '../../konva'
-import type { DiagramTheme, DiagramNode } from '../types'
-import { NodeIcon } from './NodeIcon'
+import { Group, Text } from '../../konva'
+import type { DiagramNode, DiagramTheme } from '../types'
 
 type NodeLabelsProps = {
   node: DiagramNode
@@ -10,65 +9,41 @@ type NodeLabelsProps = {
   theme: DiagramTheme
 }
 
-export function NodeLabels({
-  node: { icon, labels, size, color },
-  theme,
-  offsetX = 0,
-  offsetY = 0,
-  maxWidth
-}: NodeLabelsProps) {
+export function NodeLabels({ node, theme, offsetX = 0, offsetY = 0, maxWidth }: NodeLabelsProps) {
+  const { labels, size, color } = node
   const colors = theme.elements[color]
-  // Title has max font size
-  const width = maxWidth ?? size.width
-  const firstLabel = labels[0]
-  const titleFontSize = firstLabel?.fontSize ?? 12
-
-  let nodeIcon
-  if (icon) {
-    // Y of the first label or node height
-    const maxHeight = firstLabel
-      ? Math.floor(firstLabel.pt[1] - firstLabel.fontSize / 2)
-      : size.height
-    nodeIcon = (
-      <NodeIcon
-        icon={icon}
-        maxWidth={width}
-        maxHeight={maxHeight}
-        offsetX={offsetX}
-        offsetY={offsetY}
-      />
-    )
-  }
+  const width = maxWidth ?? size.width - 40
+  const titleFontSize = labels[0]?.fontSize ?? 18
+  const x = Math.ceil((size.width - width) / 2)
 
   return (
-    <>
-      {nodeIcon}
+    <Group x={x} y={0} offsetX={offsetX} offsetY={offsetY}>
       {labels.map((label, i) => {
+        const isTitle = label.fontSize === titleFontSize
         let color = colors.hiContrast
-        if (label.fontSize !== titleFontSize) {
+        if (!isTitle) {
           color = colors.loContrast
         }
         return (
           <Text
             key={label.text + i}
-            x={8}
-            width={width - 16}
-            y={label.pt[1]}
-            offsetY={offsetY + label.fontSize / 2}
-            offsetX={offsetX}
+            text={label.text}
+            x={0}
+            y={label.pt[1] - label.fontSize}
+            width={width}
             fill={color}
             fontFamily={theme.font}
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
             align={'center'}
-            text={label.text}
-            strokeEnabled={false}
+            wrap={'none'}
+            strokeEnablaed={false}
             perfectDrawEnabled={false}
             listening={false}
           />
         )
       })}
-    </>
+    </Group>
   )
 }
 NodeLabels.displayName = 'NodeLabels'

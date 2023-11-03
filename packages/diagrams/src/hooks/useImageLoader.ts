@@ -36,19 +36,19 @@ export default function useImageLoader(
 
   // keep track of old props to trigger changes
   const urlRef = useRef(url)
-  // const crossOriginRef = useRef(crossOrigin);
-  // const referrerPolicyRef = useRef(referrerpolicy);
-  // if (urlRef.current !== url || crossOriginRef.current !== crossOrigin || referrerPolicyRef.current !== referrerpolicy) {
-  //   statusRef.current = 'loading';
-  //   imageRef.current = undefined;
-  //   urlRef.current = url;
-  //   crossOriginRef.current = crossOrigin;
-  //   referrerPolicyRef.current = referrerpolicy;
-  // }
-  if (!url || urlRef.current !== url) {
+  const crossOriginRef = useRef(crossOrigin)
+  const referrerPolicyRef = useRef(referrerpolicy)
+  if (
+    !url ||
+    urlRef.current !== url ||
+    crossOriginRef.current !== crossOrigin ||
+    referrerPolicyRef.current !== referrerpolicy
+  ) {
     statusRef.current = 'loading'
     imageRef.current = undefined
     urlRef.current = url
+    crossOriginRef.current = crossOrigin
+    referrerPolicyRef.current = referrerpolicy
   }
 
   useLayoutEffect(() => {
@@ -67,6 +67,8 @@ export default function useImageLoader(
     }
 
     const img = document.createElement('img')
+    img.style.width = '100%'
+    img.style.height = 'auto'
 
     function onload() {
       if (!isMounted()) return

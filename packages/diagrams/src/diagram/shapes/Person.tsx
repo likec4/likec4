@@ -2,6 +2,7 @@ import { useShadowSprings } from '../springs'
 import { AnimatedPath, AnimatedRect } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
+import { NodeIcon } from './NodeIcon'
 
 const PersonIcon = {
   width: 115,
@@ -57,6 +58,7 @@ export function PersonShape({ node, theme, springs, isHovered }: NodeShapeProps)
               fillIcon={colors.loContrast}
               {...toolbarProps}
             /> */}
+      <NodeIcon node={node} />
     </>
   )
 }

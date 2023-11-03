@@ -1,11 +1,12 @@
 import type { RelationshipThemeColorValues } from '@likec4/core'
 import { DefaultRelationshipColor } from '@likec4/core'
-import { useTransition } from '@react-spring/konva'
+import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
+import { useTransition, type Controller } from '@react-spring/konva'
 import { scale, toHex } from 'khroma'
 import { memoize } from 'rambdax'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { Group } from '../konva'
-import { EdgeShape } from './shapes/Edge'
+import { Edge } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
 import type { DiagramEdge, DiagramView, LikeC4Theme, OnEdgeClick } from './types'
@@ -44,7 +45,6 @@ const edgeColors = memoize((colors: RelationshipThemeColorValues, isHovered: boo
 
 export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
   const hoveredEdgeId = useHoveredEdgeId()
-  const setHoveredEdge = useSetHoveredEdge()
 
   const edgeSprings = useCallback(
     (edge: DiagramEdge, isHovered = false) => {
@@ -84,7 +84,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       }
     },
     expires: true,
-    exitBeforeEnter: true,
+    // exitBeforeEnter: true,
     immediate: !animate,
     // delay: 30,
     config: {
@@ -95,9 +95,38 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
     // to avoid any issues with diagram-to-diagram transitions
     keys: e => e.id + diagram.id
   })
-  return edgeTransitions((springs, edge, { key }) => (
-    <Group
+  return edgeTransitions((_, edge, { key, ctrl }) => (
+    <EdgeShape
       key={key}
+      animate={animate}
+      edge={edge}
+      isHovered={hoveredEdgeId === edge.id}
+      theme={theme}
+      ctrl={ctrl}
+      onEdgeClick={onEdgeClick}
+    />
+  ))
+}
+type EdgeSpringsCtrl = Controller<
+  ReturnType<typeof edgeColors> & {
+    opacity: number
+    lineWidth: number
+  }
+>
+
+type EdgeShapeProps = {
+  animate: boolean
+  edge: DiagramEdge
+  ctrl: EdgeSpringsCtrl
+  isHovered: boolean
+  theme: LikeC4Theme
+  onEdgeClick?: OnEdgeClick | undefined
+}
+
+const EdgeShape = memo<EdgeShapeProps>(({ animate, edge, ctrl, theme, isHovered, onEdgeClick }) => {
+  const setHoveredEdge = useSetHoveredEdge()
+  return (
+    <Group
       onPointerClick={e => {
         if (!onEdgeClick || DiagramGesture.isDragging || e.evt.button !== 0) {
           return
@@ -116,13 +145,14 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
         mouseDefault(e)
       }}
     >
-      <EdgeShape
+      <Edge
         animate={animate}
         edge={edge}
-        isHovered={hoveredEdgeId === edge.id}
+        isHovered={isHovered}
         theme={theme}
-        springs={springs}
+        springs={ctrl.springs}
       />
     </Group>
-  ))
-}
+  )
+}, isEqualSimple)
+EdgeShape.displayName = 'EdgeShape'

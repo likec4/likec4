@@ -3,6 +3,7 @@ import { AnimatedEllipse, AnimatedPath } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
+import { NodeIcon } from './NodeIcon'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
   const radius = Math.round(diameter / 2)
@@ -55,7 +56,8 @@ export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProp
         radiusY={cylinder.ry}
         fill={springs.stroke}
       />
-      <NodeLabels node={node} offsetY={-ry * (node.icon ? 1.5 : 0.5)} theme={theme} />
+      <NodeLabels node={node} offsetY={-ry * (node.icon ? 1 : 0.5)} theme={theme} />
+      <NodeIcon node={node} paddingY={2 * ry} offsetY={-ry} />
     </>
   )
 }

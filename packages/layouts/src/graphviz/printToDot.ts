@@ -94,7 +94,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
 
   G.attributes.node.apply({
     [_.fontname]: Theme.font,
-    [_.fontsize]: pxToPoints(19),
+    [_.fontsize]: pxToPoints(18),
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
@@ -140,11 +140,23 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         [_.fillcolor]: Theme.elements[elementNode.color].fill
       })
     }
+    if (elementNode.icon) {
+      node.attributes.apply({
+        [_.imagescale]: true
+      })
+    }
     switch (elementNode.shape) {
+      case 'browser': {
+        node.attributes.apply({
+          [_.margin]: `${pxToInch(24)},${pxToInch(40)}`
+        })
+        break
+      }
       case 'queue': {
         node.attributes.apply({
           [_.width]: pxToInch(320),
-          [_.height]: pxToInch(160)
+          [_.height]: pxToInch(160),
+          [_.margin]: `${pxToInch(32)},${pxToInch(24)}`
         })
         break
       }
@@ -153,7 +165,8 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
         node.attributes.apply({
           [_.color]: Theme.elements[elementNode.color].stroke,
           [_.penwidth]: 2,
-          [_.shape]: 'cylinder'
+          [_.shape]: 'cylinder',
+          [_.margin]: `${pxToInch(24)},${pxToInch(32)}`
         })
         break
       }
@@ -290,8 +303,7 @@ export function toGraphvisModel({ autoLayout, nodes, edges }: ComputedView): Roo
       if (isTruthy(edge.label)) {
         const attr = lhead || ltail ? _.xlabel : _.label
         e.attributes.apply({
-          [attr]: edgeLabel(edge.label),
-          [_.nojustify]: true
+          [attr]: edgeLabel(edge.label)
         })
       }
       if (edge.color) {

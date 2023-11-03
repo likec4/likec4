@@ -62,6 +62,15 @@ export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'clas
    */
   zoomable?: boolean | undefined
 
+  /**
+   * @default 0.1
+   */
+  minZoom?: number | undefined
+  /**
+   * @default 1.1
+   */
+  maxZoom?: number | undefined
+
   width?: number | undefined
   height?: number | undefined
   /**

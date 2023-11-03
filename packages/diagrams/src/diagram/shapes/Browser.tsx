@@ -2,6 +2,7 @@ import { useShadowSprings } from '../springs'
 import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
+import { NodeIcon } from './NodeIcon'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.elements[node.color]
@@ -37,7 +38,8 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         fill={springs.fill}
         listening={false}
       />
-      <NodeLabels node={node} theme={theme} offsetY={-8} />
+      <NodeLabels node={node} theme={theme} />
+      <NodeIcon node={node} paddingY={42} />
     </>
   )
 }

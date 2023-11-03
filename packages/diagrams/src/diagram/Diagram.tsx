@@ -63,6 +63,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       onStageContextMenu,
       width: _width,
       height: _height,
+      minZoom = 0.1,
+      maxZoom = 1.2,
       ...props
     },
     ref
@@ -98,7 +100,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         // Get the ratios of target shape v's view space widths and heights
         // decide on best scale to fit longest side of shape into view
         viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
-        scale = clamp(0.1, 1.1, viewScale),
+        scale = clamp(minZoom, maxZoom, viewScale),
         // calculate the final adjustments needed to make
         // the shape centered in the view
         centeringAjustment = {
@@ -277,21 +279,26 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       {
         target: containerRef,
         drag: {
+          target: containerRef,
           enabled: pannable,
           threshold: 4,
           from: () => [stageProps.x.get(), stageProps.y.get()],
           pointer: {
             buttons: -1,
-            keys: false
+            keys: false,
+            touch: true,
+            capture: true
           }
         },
         pinch: {
+          target: containerRef,
           pointer: {
             touch: true
           },
           enabled: zoomable,
-          scaleBounds: { min: 0.1, max: 1.4 },
-          rubberband: 0.05,
+          // eventOptions
+          scaleBounds: { min: minZoom, max: maxZoom + 0.2 },
+          rubberband: 0.04,
           pinchOnWheel: true
         }
       }
