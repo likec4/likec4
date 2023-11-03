@@ -42,12 +42,7 @@ const ExportMenu = ({
   </DropdownMenu.Root>
 )
 
-export const ViewActionsToolbar = ({
-  diagram
-}: {
-  diagramApi: DiagramApi
-  diagram: DiagramView
-}) => {
+export const ViewActionsToolbar = ({ diagram }: { diagram: DiagramView }) => {
   const [exportTo, setExportTo] = useState<'png' | null>(null)
 
   return (

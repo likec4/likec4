@@ -2,6 +2,7 @@ import { AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
+import { NodeIcon } from './NodeIcon'
 
 export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.elements[node.color]
@@ -27,6 +28,7 @@ export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps)
         listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetX={-6} />
+      <NodeIcon node={node} offsetX={-6} />
     </>
   )
 }

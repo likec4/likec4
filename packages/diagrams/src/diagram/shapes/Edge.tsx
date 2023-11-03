@@ -55,7 +55,7 @@ function EdgeArrow({
 }: {
   arrowType: Exclude<RelationshipArrowType, 'none'>
   points: NonEmptyArray<Point>
-  springs: EdgeShapeProps['springs']
+  springs: EdgeProps['springs']
   globalCompositeOperation: GlobalCompositeOperationType
 }) {
   const isOutline = arrowType === 'odiamond' || arrowType === 'onormal'
@@ -84,7 +84,7 @@ function EdgeLabelBg({
   animate: boolean
   labelBBox: BBox
   isHovered: boolean
-  springs: EdgeShapeProps['springs']
+  springs: EdgeProps['springs']
 }) {
   const padding = 4
   const props = useSpring({
@@ -108,7 +108,7 @@ function EdgeLabelBg({
   )
 }
 
-export interface EdgeShapeProps extends KonvaNodeEvents {
+export interface EdgeProps extends KonvaNodeEvents {
   animate?: boolean | undefined
   edge: DiagramEdge
   theme: LikeC4Theme
@@ -121,7 +121,7 @@ export interface EdgeShapeProps extends KonvaNodeEvents {
     labelColor: string
   }>
 }
-export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: EdgeShapeProps) {
+export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgeProps) {
   const {
     points,
     head,
@@ -194,8 +194,7 @@ export function EdgeShape({ animate = true, edge, theme, isHovered, springs }: E
           <AnimatedText
             key={i}
             x={label.pt[0]}
-            y={label.pt[1]}
-            offsetY={label.fontSize / 2}
+            y={label.pt[1] - label.fontSize}
             opacity={springs.opacity}
             fill={springs.labelColor}
             fontFamily={theme.font}

@@ -15,4 +15,8 @@ html, body {
 
 .transparent-bg {
   --color-page-background: transparent !important;
+
+  body {
+    background-color: transparent !important;
+  }
 }

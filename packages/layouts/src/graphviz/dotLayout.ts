@@ -198,11 +198,11 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
         width: 0,
         height: 0
       } as LabelBBox
-      // edge label is inside table with 2point padding
-      const labelPadding = pointToPx(2)
+      // edge label is inside table with 1.5point padding
+      const labelPadding = pointToPx(1.5)
       // first label has the lowest y
       const _first = first(labels)
-      labelBBox.y = _first.pt[1] - Math.round(_first.fontSize / 2) - labelPadding
+      labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding
 
       // x and width - from the label with max width
       const _maxWidth = maxBy(labels, l => l.width) ?? labels[0]
@@ -211,7 +211,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
 
       // height - y from the last label
       const _last = last(labels)
-      const lastY = _last.pt[1] + Math.ceil(_last.fontSize / 2) + labelPadding
+      const lastY = _last.pt[1] + labelPadding
       labelBBox.height = lastY - labelBBox.y
       edge.labels = labels
       edge.labelBBox = labelBBox

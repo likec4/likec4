@@ -1,9 +1,13 @@
 model {
 
-  amazon = externalSystem 'Amazon' {
-    description: 'Cloud and managed services provider'
+  amazon = externalSystem 'Amazon Web Services' {
+    description '
+      Cloud Infrastructure, Hosting
+      and Managed Services
+    '
     style {
       color amber
+      icon https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
     }
 
     rds = container 'RDS' {

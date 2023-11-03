@@ -3,6 +3,7 @@ import { AnimatedEllipse, AnimatedPath } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
 import { useSpring } from '@react-spring/konva'
+import { NodeIcon } from './NodeIcon'
 
 function queueSVGPath(width: number, height: number, tilt = 0.2) {
   const diameter = height
@@ -56,7 +57,8 @@ export function QueueShape({ node, theme, springs, isHovered }: NodeShapeProps) 
         radiusY={props.ry}
         fill={springs.stroke}
       />
-      <NodeLabels node={node} maxWidth={width - rx * 2} theme={theme} />
+      <NodeLabels node={node} maxWidth={width - 2 * rx - 10} offsetX={rx} theme={theme} />
+      <NodeIcon node={node} maxWidth={width - 2 * rx - 10} offsetX={rx} />
     </>
   )
 }

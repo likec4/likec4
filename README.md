@@ -87,3 +87,7 @@ Development tasks:
 For VSCode:
 
 - Task `Run Extension` to start a new VSCode instance with the extension loaded.
+
+## License
+
+This project is released under the [MIT License](LICENSE)

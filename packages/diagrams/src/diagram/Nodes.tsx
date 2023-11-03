@@ -1,8 +1,9 @@
 import type { Fqn } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
+import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
 import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { AnimatedGroup } from '../konva'
 import { Portal } from '../konva-portal'
 import { ZoomInIcon } from './icons'
@@ -133,7 +134,7 @@ export function Nodes({ animate, theme, diagram, onNodeClick }: NodesProps) {
   } satisfies UseTransitionProps<DiagramNode>)
 
   return nodeTransitions((_, node, { key, ctrl, expired }) => (
-    <NodeSnape
+    <NodeShape
       key={key}
       animate={animate}
       node={node}
@@ -156,86 +157,84 @@ type NodeShapeProps = {
   onNodeClick?: OnNodeClick | undefined
 }
 
-function NodeSnape({
-  animate,
-  node,
-  ctrl,
-  theme,
-  isHovered,
-  expired,
-  onNodeClick
-}: NodeShapeProps) {
-  const setHoveredNode = useSetHoveredNode()
+const NodeShape = memo<NodeShapeProps>(
+  ({ animate, node, ctrl, theme, isHovered, expired, onNodeClick }) => {
+    const setHoveredNode = useSetHoveredNode()
 
-  const _isCompound = isCompound(node)
-  const isNavigatable = !!node.navigateTo && !!onNodeClick
+    const _isCompound = isCompound(node)
+    const isNavigatable = !!node.navigateTo && !!onNodeClick
 
-  const Shape = nodeShape(node)
+    const Shape = nodeShape(node)
 
-  const springs = ctrl.springs
+    const springs = ctrl.springs
 
-  return (
-    <Portal selector='.top' enabled={isHovered && !_isCompound}>
-      <AnimatedGroup
-        name={node.id}
-        visible={expired !== true}
-        {...(animate && {
-          onPointerEnter: e => {
-            setHoveredNode(node)
-            if (isNavigatable) {
-              mousePointer(e)
+    return (
+      <Portal selector='.top' enabled={isHovered && !_isCompound}>
+        <AnimatedGroup
+          name={node.id}
+          visible={expired !== true}
+          {...(animate && {
+            onPointerEnter: e => {
+              setHoveredNode(node)
+              if (isNavigatable) {
+                mousePointer(e)
+              }
+            },
+            onPointerLeave: e => {
+              setHoveredNode(null)
+              mouseDefault(e)
             }
-          },
-          onPointerLeave: e => {
-            setHoveredNode(null)
-            mouseDefault(e)
-          }
-        })}
-        {...(onNodeClick && {
-          onPointerClick: e => {
-            if (DiagramGesture.isDragging || e.evt.button !== 0) {
-              return
+          })}
+          {...(onNodeClick && {
+            onPointerClick: e => {
+              if (DiagramGesture.isDragging || e.evt.button !== 0) {
+                return
+              }
+              e.cancelBubble = true
+              onNodeClick(node, e)
             }
-            e.cancelBubble = true
-            onNodeClick(node, e)
-          }
-        })}
-        x={springs.x}
-        y={springs.y}
-        offsetX={springs.offsetX}
-        offsetY={springs.offsetY}
-        width={springs.width}
-        height={springs.height}
-        scaleX={springs.scaleX}
-        scaleY={springs.scaleY}
-        opacity={springs.opacity}
-      >
-        {_isCompound && (
-          <>
-            <CompoundShape
-              node={node}
-              theme={theme}
-              springs={springs}
-              labelOffsetX={isNavigatable ? -12 : 4}
-            />
-            {isNavigatable && <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={17} />}
-          </>
-        )}
-        {!_isCompound && (
-          <>
-            <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
-            {isNavigatable && (
-              <ZoomInIcon
-                // fill={theme.elements[node.color].loContrast}
-                fill={'#BABABA'}
-                size={16}
-                x={node.size.width / 2}
-                y={node.size.height - 20}
+          })}
+          x={springs.x}
+          y={springs.y}
+          offsetX={springs.offsetX}
+          offsetY={springs.offsetY}
+          width={springs.width}
+          height={springs.height}
+          scaleX={springs.scaleX}
+          scaleY={springs.scaleY}
+          opacity={springs.opacity}
+        >
+          {_isCompound && (
+            <>
+              <CompoundShape
+                node={node}
+                theme={theme}
+                springs={springs}
+                labelOffsetX={isNavigatable ? -12 : 4}
               />
-            )}
-          </>
-        )}
-      </AnimatedGroup>
-    </Portal>
-  )
-}
+              {isNavigatable && (
+                <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={17} />
+              )}
+            </>
+          )}
+          {!_isCompound && (
+            <>
+              <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
+              {isNavigatable && (
+                <ZoomInIcon
+                  // fill={theme.elements[node.color].loContrast}
+                  fill={'#BABABA'}
+                  size={16}
+                  x={node.size.width / 2}
+                  y={node.size.height - 20}
+                />
+              )}
+            </>
+          )}
+        </AnimatedGroup>
+      </Portal>
+    )
+  },
+  isEqualSimple
+)
+NodeShape.displayName = 'NodeShape'

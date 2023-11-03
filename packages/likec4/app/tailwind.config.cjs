@@ -1,5 +1,4 @@
 const { radixThemePreset } = require('radix-themes-tw');
-const tailwindcssAnimate = require('tailwindcss-animate');
 const { resolve } = require('node:path');
 
 /** @type {import('tailwindcss').Config} */
@@ -14,6 +13,5 @@ module.exports = {
     // ...
     // Preflight is enabled by default, we disable it here
     preflight: false
-  },
-  plugins: [tailwindcssAnimate],
+  }
 };
