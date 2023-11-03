@@ -1,8 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
-import { Box, Button, Card, Flex, Heading, IconButton, Text } from '@radix-ui/themes'
+import { Box, Button, Card, Code, Flex, Heading, IconButton, Text } from '@radix-ui/themes'
 import { $pages } from '../router'
 
-export const DiagramNotFound = () => {
+export const DiagramNotFound = ({ viewId }: { viewId: string }) => {
   return (
     <Flex position='fixed' inset='0' align='center' justify='center'>
       <Card color='red' size='3'>
@@ -16,9 +16,20 @@ export const DiagramNotFound = () => {
             <Heading trim='both' color='amber' size='4'>
               Diagram not found
             </Heading>
-            <Text as='div'>The diagram you are looking for does not exist.</Text>
+            <Text as='div'>
+              The diagram{' '}
+              <Code color='amber' variant='soft'>
+                {viewId}
+              </Code>{' '}
+              does not exist
+            </Text>
             <Box pt='2'>
-              <Button variant='soft' color='amber' onClick={() => $pages.index.open()}>
+              <Button
+                variant='soft'
+                color='amber'
+                className='cursor-pointer'
+                onClick={() => $pages.index.open()}
+              >
                 Go to overview
               </Button>
             </Box>

@@ -76,7 +76,6 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "cloud.backend:amazon.s3";
     weight = 5;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
 }"
 `;
@@ -197,29 +196,24 @@ exports[`printToDot > computedCloud3levels 1`] = `
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       weight = 5;
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">fetches data in zero trust network</FONT></TD></TR>,<TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">with sso authentification</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-      nojustify = true;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       weight = 5;
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">fetches data</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-      nojustify = true;
     ];
   }
   "support" -> "adminpanel" [
     likec4_id = "support:cloud.frontend.adminPanel";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">manages</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "customer" -> "dashboard" [
     likec4_id = "customer:cloud.frontend.dashboard";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">opens in browser</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "storage" -> "amazon" [
     likec4_id = "cloud.backend.storage:amazon";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
 }"
 `;
@@ -309,24 +303,20 @@ exports[`printToDot > computedCloudView 1`] = `
       likec4_id = "cloud.frontend:cloud.backend";
       weight = 12;
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><B><FONT POINT-SIZE="9.75">[...]</FONT></B></TD></TR></TABLE></TD></TR></TABLE>>;
-      nojustify = true;
       minlen = 0;
     ];
   }
   "backend" -> "amazon" [
     likec4_id = "cloud.backend:amazon";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">opens in browser</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">manages</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
 }"
 `;
@@ -399,19 +389,16 @@ exports[`printToDot > computedIndexView 1`] = `
     likec4_id = "customer:cloud";
     weight = 5;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">opens in browser</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
     weight = 5;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">manages</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     weight = 5;
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="10.73"><FONT POINT-SIZE="9.75">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    nojustify = true;
   ];
 }"
 `;

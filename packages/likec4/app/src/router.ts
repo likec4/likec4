@@ -42,11 +42,11 @@ const $route = computed([$router, $searchParams], (r, v) => {
   }
   if (r?.route === 'export' || r?.route === 'embed') {
     return {
-      route: 'export' as const,
+      route: r.route,
       params: {
         viewId: r.params.viewId,
         padding: asPadding(v.padding),
-        theme: asTheme(v.theme)
+        theme: r.route === 'embed' ? asTheme(v.theme) : undefined
       },
       showUI: false
     }
