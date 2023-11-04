@@ -10,6 +10,6 @@ export function mousePointer(e: KonvaPointerEvent) {
 export function mouseDefault(e: KonvaPointerEvent) {
   const container = e.target.getStage()?.container()
   if (container) {
-    container.style.cursor = 'auto'
+    container.style.cursor = ''
   }
 }

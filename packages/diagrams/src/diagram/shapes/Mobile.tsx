@@ -6,8 +6,9 @@ import { NodeIcon } from './NodeIcon'
 
 export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.elements[node.color]
-
-  // const [toolbarProps, toggleToolbar] = useNodeToolbarSpring()
+  // 40 - padding left and right
+  // 30 - padding of the icon
+  const maxWidth = node.size.width - 40 - 30
   return (
     <>
       <AnimatedRect
@@ -27,8 +28,8 @@ export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps)
         fill={springs.fill}
         listening={false}
       />
-      <NodeLabels node={node} theme={theme} offsetX={-6} />
-      <NodeIcon node={node} offsetX={-6} />
+      <NodeLabels node={node} theme={theme} offsetX={-10} maxWidth={maxWidth} />
+      <NodeIcon node={node} offsetX={-10} maxWidth={maxWidth} />
     </>
   )
 }

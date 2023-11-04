@@ -23,13 +23,13 @@ const edgeColors = memoize((colors: RelationshipThemeColorValues, isHovered: boo
     return {
       lineColor: toHex(
         scale(colors.lineColor, {
-          l: 25,
-          s: -5
+          l: 30
         })
       ),
       labelColor: toHex(
         scale(colors.labelColor, {
-          l: 40
+          l: 40,
+          s: 5
         })
       ),
       labelBgColor: toHex(
@@ -84,7 +84,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       }
     },
     expires: true,
-    // exitBeforeEnter: true,
+    //exitBeforeEnter: true,
     immediate: !animate,
     // delay: 30,
     config: {

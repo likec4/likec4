@@ -1,4 +1,4 @@
-import { AnimatedRect, AnimatedText } from '../../konva'
+import { AnimatedRect, Text } from '../../konva'
 import type { NodeSpringValues } from '../springs'
 import type { DiagramNode, DiagramTheme } from '../types'
 
@@ -9,7 +9,7 @@ interface CompoundProps {
   labelOffsetX?: number
 }
 
-export function CompoundShape({ node, theme, springs, labelOffsetX = 4 }: CompoundProps) {
+export function CompoundShape({ node, theme, springs, labelOffsetX = 0 }: CompoundProps) {
   const { labels } = node
 
   return (
@@ -29,35 +29,26 @@ export function CompoundShape({ node, theme, springs, labelOffsetX = 4 }: Compou
         listening={false}
       />
       {labels.map(({ pt: [x, y], ...label }, i) => (
-        <AnimatedText
+        <Text
           key={i}
-          x={x}
-          y={y - 4}
+          x={x - 6}
+          y={y - 8}
           offsetX={labelOffsetX}
-          offsetY={label.fontSize / 2}
-          width={springs.width.to(v => v - x - 4)}
+          width={node.size.width - x - 8 - 6 + labelOffsetX}
           fill={'#BABABA'}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
-          letterSpacing={0.8}
+          letterSpacing={0.75}
           align={label.align}
           text={label.text}
           wrap={'none'}
           ellipsis={true}
           perfectDrawEnabled={false}
-          padding={6}
-          hitStrokeWidth={3}
+          padding={8}
           globalCompositeOperation={'luminosity'}
         />
       ))}
-      {/* <ExternalLink
-          x={-5}
-          y={36}
-          fill={colors.fill}
-          fillIcon={colors.loContrast}
-          {...toolbarProps}
-        /> */}
     </>
   )
 }

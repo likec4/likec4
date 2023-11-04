@@ -38,7 +38,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         fill={springs.fill}
         listening={false}
       />
-      <NodeLabels node={node} theme={theme} />
+      <NodeLabels node={node} theme={theme} offsetY={-6} />
       <NodeIcon node={node} paddingY={42} />
     </>
   )

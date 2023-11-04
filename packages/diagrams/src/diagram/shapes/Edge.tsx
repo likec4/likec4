@@ -93,7 +93,7 @@ function EdgeLabelBg({
       y: labelBBox.y - padding,
       width: labelBBox.width + padding * 2,
       height: labelBBox.height + padding * 2,
-      opacity: isHovered ? 0.25 : 0.1
+      opacity: isHovered ? 0.5 : 0.1
     },
     immediate: !animate
   })

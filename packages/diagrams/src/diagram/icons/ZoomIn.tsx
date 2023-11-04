@@ -1,14 +1,14 @@
 import { Path } from '../../konva'
 
 type ZoomInIconProps = {
-  fill: string
+  fill?: string
   opacity?: number
   size?: number
   x: number
   y: number
 }
 
-export const ZoomInIcon = ({ fill, opacity = 1, size = 20, x, y }: ZoomInIconProps) => {
+export const ZoomInIcon = ({ fill = '#BABABA', opacity = 1, size = 20, x, y }: ZoomInIconProps) => {
   const originalSize = 15
   const scale = size / originalSize
 
@@ -30,7 +30,6 @@ export const ZoomInIcon = ({ fill, opacity = 1, size = 20, x, y }: ZoomInIconPro
       height={originalSize}
       opacity={opacity}
       globalCompositeOperation={'luminosity'}
-      hitStrokeWidth={5}
     />
   )
 }

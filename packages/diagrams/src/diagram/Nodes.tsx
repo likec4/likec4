@@ -168,6 +168,16 @@ const NodeShape = memo<NodeShapeProps>(
 
     const springs = ctrl.springs
 
+    let zoomInIconY: number
+    switch (node.shape) {
+      case 'browser':
+      case 'mobile':
+        zoomInIconY = node.size.height - 20
+        break
+      default:
+        zoomInIconY = node.size.height - 16
+    }
+
     return (
       <Portal selector='.top' enabled={isHovered && !_isCompound}>
         <AnimatedGroup
@@ -210,25 +220,15 @@ const NodeShape = memo<NodeShapeProps>(
                 node={node}
                 theme={theme}
                 springs={springs}
-                labelOffsetX={isNavigatable ? -12 : 4}
+                labelOffsetX={isNavigatable ? -18 : 0}
               />
-              {isNavigatable && (
-                <ZoomInIcon fill={'#BABABA'} opacity={0.9} size={16} x={16} y={17} />
-              )}
+              {isNavigatable && <ZoomInIcon opacity={0.9} size={18} x={18} y={22} />}
             </>
           )}
           {!_isCompound && (
             <>
               <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
-              {isNavigatable && (
-                <ZoomInIcon
-                  // fill={theme.elements[node.color].loContrast}
-                  fill={'#BABABA'}
-                  size={16}
-                  x={node.size.width / 2}
-                  y={node.size.height - 20}
-                />
-              )}
+              {isNavigatable && <ZoomInIcon size={16} x={node.size.width / 2} y={zoomInIconY} />}
             </>
           )}
         </AnimatedGroup>

@@ -56,8 +56,8 @@ export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProp
         radiusY={cylinder.ry}
         fill={springs.stroke}
       />
-      <NodeLabels node={node} offsetY={-ry * (node.icon ? 1 : 0.5)} theme={theme} />
-      <NodeIcon node={node} paddingY={2 * ry} offsetY={-ry} />
+      <NodeLabels node={node} offsetY={-4 - ry * (node.icon ? 1 : 0)} theme={theme} />
+      <NodeIcon node={node} paddingY={ry + 4} offsetY={-ry - 8} />
     </>
   )
 }

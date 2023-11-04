@@ -63,8 +63,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       onStageContextMenu,
       width: _width,
       height: _height,
-      minZoom = 0.1,
-      maxZoom = 1.2,
+      minZoom = 0.2,
+      maxZoom = 1.1,
       ...props
     },
     ref
@@ -297,7 +297,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           },
           enabled: zoomable,
           // eventOptions
-          scaleBounds: { min: minZoom, max: maxZoom + 0.2 },
+          scaleBounds: { min: minZoom, max: maxZoom + 0.4 },
           rubberband: 0.04,
           pinchOnWheel: true
         }

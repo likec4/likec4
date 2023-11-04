@@ -17,7 +17,7 @@ export function NodeLabels({ node, theme, offsetX = 0, offsetY = 0, maxWidth }: 
   const x = Math.ceil((size.width - width) / 2)
 
   return (
-    <Group x={x} y={0} offsetX={offsetX} offsetY={offsetY}>
+    <Group x={x} y={3} offsetX={offsetX} offsetY={offsetY}>
       {labels.map((label, i) => {
         const isTitle = label.fontSize === titleFontSize
         let color = colors.hiContrast
