@@ -55,8 +55,7 @@ export function nodeLabel(node: ComputedNode) {
       text: node.title,
       fontsize: 18,
       maxchars: 35,
-      color: Colors[node.color].hiContrast,
-      align: 'center'
+      color: Colors[node.color].hiContrast
     })
   ]
   if (isTruthy(node.technology)) {
@@ -65,7 +64,6 @@ export function nodeLabel(node: ComputedNode) {
         text: node.technology,
         fontsize: 12,
         maxchars: 50,
-        align: 'center',
         color: Colors[node.color].loContrast
       })
     )
@@ -83,11 +81,13 @@ export function nodeLabel(node: ComputedNode) {
   if (lines.length === 1 && !node.icon) {
     return `<${lines[0]}>`
   }
-  const rows = lines.map(line => `<TR><TD ALIGN="CENTER">${line}</TD></TR>`)
+  const rows = lines.map(line => `<TR><TD ALIGN="TEXT">${line}</TD></TR>`)
   if (node.icon) {
-    rows.unshift(`<TR><TD HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`)
+    rows.unshift(
+      `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
+    )
   }
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
+  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {
@@ -99,5 +99,5 @@ export function edgeLabel(text: string) {
     bold: text === '[...]',
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
 }
