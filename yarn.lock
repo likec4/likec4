@@ -1459,7 +1459,7 @@ __metadata:
     "@types/node": "npm:^20.8.7"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
-    p-limit: "npm:^4.0.0"
+    p-limit: "npm:^5.0.0"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.28.0"
     strip-indent: "npm:^4.0.0"
@@ -12380,6 +12380,15 @@ __metadata:
   dependencies:
     yocto-queue: "npm:^1.0.0"
   checksum: 01d9d70695187788f984226e16c903475ec6a947ee7b21948d6f597bed788e3112cc7ec2e171c1d37125057a5f45f3da21d8653e04a3a793589e12e9e80e756b
+  languageName: node
+  linkType: hard
+
+"p-limit@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "p-limit@npm:5.0.0"
+  dependencies:
+    yocto-queue: "npm:^1.0.0"
+  checksum: 87bf5837dee6942f0dbeff318436179931d9a97848d1b07dbd86140a477a5d2e6b90d9701b210b4e21fe7beaea2979dfde366e4f576fa644a59bd4d6a6371da7
   languageName: node
   linkType: hard
 
