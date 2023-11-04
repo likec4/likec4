@@ -49,7 +49,7 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
-    "langium": "^2.0.2",
+    "langium": "^2.1.0",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
     "p-throttle": "^5.1.0",
@@ -64,7 +64,7 @@
     "@types/node": "^20.8.7",
     "@types/object-hash": "^3.0.5",
     "execa": "^8.0.1",
-    "langium-cli": "^2.0.1",
+    "langium-cli": "^2.1.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",

@@ -38,7 +38,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "jotai": "^2.5.0",
-    "langium": "^2.0.2",
+    "langium": "^2.1.0",
     "lucide-react": "^0.288.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
