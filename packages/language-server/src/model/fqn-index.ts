@@ -34,20 +34,11 @@ export class FqnIndex {
   constructor(services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
-    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
-      const message = [`[FqnIndex] onUpdate`]
-      if (changed.length > 0) {
-        message.push(` changed:`)
-        changed.forEach(u => message.push(`  - ${u}`))
-      }
-      if (deleted.length > 0) {
-        message.push(` deleted:`)
-        deleted.forEach(u => message.push(`  - ${u}`))
-      }
-      logger.debug(message.join('\n'))
-      for (const uri of changed) {
-        if (this.langiumDocuments.hasDocument(uri)) {
-          const doc = this.langiumDocuments.getOrCreateDocument(uri)
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Changed,
+      (docs, _cancelToken) => {
+        logger.debug(`[FqnIndex] onChanged ${docs.length}:\n` + printDocs(docs))
+        for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
             delete doc.c4fqns
             delete doc.c4Elements
@@ -57,7 +48,7 @@ export class FqnIndex {
           }
         }
       }
-    })
+    )
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.IndexedContent,

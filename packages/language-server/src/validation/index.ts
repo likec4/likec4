@@ -32,7 +32,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   const connection = services.shared.lsp.Connection
   if (connection) {
     // workaround for bug in langium
-    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
+    services.shared.workspace.DocumentBuilder.onUpdate((_, deleted) => {
       for (const uri of deleted) {
         void connection.sendDiagnostics({
           uri: uri.toString(),

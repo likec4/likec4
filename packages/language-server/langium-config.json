@@ -12,13 +12,18 @@
       },
       "monarch": {
         "out": "contrib/likec4.monarch.ts"
+      },
+      "railroad": {
+        "out": "contrib/likec4.railroad.html"
       }
     }
   ],
   "out": "src/generated",
   "mode": "production",
   "chevrotainParserConfig": {
+    "dynamicTokensEnabled": true,
     "recoveryEnabled": true,
+    "skipValidations": true,
     "nodeLocationTracking": "full"
   }
 }

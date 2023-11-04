@@ -58,9 +58,8 @@
     "node": "20.8.1"
   },
   "resolutions": {
-    "vscode-jsonrpc": "8.1.0",
-    "vscode-languageclient": "8.1.0",
-    "vscode-languageserver": "8.1.0",
+    "vscode-languageclient": "~9.0.1",
+    "vscode-languageserver": "~9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
     "chevrotain-allstar": "0.3.1"
   },

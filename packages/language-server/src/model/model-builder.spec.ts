@@ -574,7 +574,7 @@ describe('LikeC4ModelBuilder', () => {
     specification {
       element person
       relationship async
-      
+
     }
     model {
       person user1

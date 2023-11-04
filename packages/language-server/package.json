@@ -56,8 +56,8 @@
     "rambdax": "^9.1.1",
     "remeda": "^1.28.0",
     "strip-indent": "^4.0.0",
-    "vscode-languageserver": "~8.1.0",
-    "vscode-languageserver-protocol": "~3.17.3",
+    "vscode-languageserver": "~9.0.1",
+    "vscode-languageserver-protocol": "~3.17.5",
     "vscode-uri": "~3.0.7"
   },
   "devDependencies": {

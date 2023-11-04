@@ -53,10 +53,9 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
-    "vscode-jsonrpc": "8.1.0",
-    "vscode-languageclient": "8.1.0",
-    "vscode-languageserver": "8.1.0",
-    "vscode-languageserver-protocol": "3.17.3",
+    "vscode-languageclient": "~9.0.1",
+    "vscode-languageserver": "~9.0.1",
+    "vscode-languageserver-protocol": "3.17.5",
     "vscode-oniguruma": "1.7.0",
     "vscode-textmate": "^9.0.0",
     "vscode-uri": "~3.0.7"

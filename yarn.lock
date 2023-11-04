@@ -1374,10 +1374,9 @@ __metadata:
     typescript: "npm:^5.2.2"
     typescript-plugin-css-modules: "npm:^5.0.2"
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
-    vscode-jsonrpc: "npm:8.1.0"
-    vscode-languageclient: "npm:8.1.0"
-    vscode-languageserver: "npm:8.1.0"
-    vscode-languageserver-protocol: "npm:3.17.3"
+    vscode-languageclient: "npm:~9.0.1"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-protocol: "npm:3.17.5"
     vscode-oniguruma: "npm:1.7.0"
     vscode-textmate: "npm:^9.0.0"
     vscode-uri: "npm:~3.0.7"
@@ -1443,8 +1442,8 @@ __metadata:
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^0.34.6"
-    vscode-languageserver: "npm:~8.1.0"
-    vscode-languageserver-protocol: "npm:~3.17.3"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-protocol: "npm:~3.17.5"
     vscode-uri: "npm:~3.0.7"
   languageName: unknown
   linkType: soft
@@ -10039,10 +10038,9 @@ __metadata:
     shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
-    vscode-jsonrpc: "npm:8.1.0"
-    vscode-languageclient: "npm:8.1.0"
-    vscode-languageserver: "npm:8.1.0"
-    vscode-languageserver-protocol: "npm:3.17.3"
+    vscode-languageclient: "npm:~9.0.1"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-protocol: "npm:3.17.5"
     vscode-uri: "npm:~3.0.7"
     xstream: "npm:^11.14.0"
   languageName: unknown
@@ -16382,21 +16380,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-jsonrpc@npm:8.1.0":
+"vscode-jsonrpc@npm:*, vscode-jsonrpc@npm:8.2.0":
+  version: 8.2.0
+  resolution: "vscode-jsonrpc@npm:8.2.0"
+  checksum: 6d57c3aed591d0bc89d1c226061d265b04de528582bef183f5998cac5de78a736887e5238fe48b9f6a14ec32f05d8fda71599f92862ac5dacc7f26bf7399b532
+  languageName: node
+  linkType: hard
+
+"vscode-jsonrpc@npm:~8.1.0":
   version: 8.1.0
   resolution: "vscode-jsonrpc@npm:8.1.0"
   checksum: e3378ae849e51c1b13a2b985b83c05b082dc9b033df958bc7c3d3a43628be0fccacca890a01ec6263559be9aaac7a679abc288c36f0c9fab6f2f093297c97ac2
   languageName: node
   linkType: hard
 
-"vscode-languageclient@npm:8.1.0":
-  version: 8.1.0
-  resolution: "vscode-languageclient@npm:8.1.0"
+"vscode-languageclient@npm:~9.0.1":
+  version: 9.0.1
+  resolution: "vscode-languageclient@npm:9.0.1"
   dependencies:
     minimatch: "npm:^5.1.0"
     semver: "npm:^7.3.7"
-    vscode-languageserver-protocol: "npm:3.17.3"
-  checksum: b841e6d59ed0eb4b191fc48f0c66a328c5b27865a88ea273b793e2a42860c40b43d697b213dba0da375bc88e7e400aab3f88626929573e3987ef38badf5fa51a
+    vscode-languageserver-protocol: "npm:3.17.5"
+  checksum: 56acdb78a153e39d9f97494833ae74ff49b143034f4ef8d0bd3817e39c9278d1e6db7269875d0b3fc173d9717b5806b6812bbac7d85b8325c37ca142383bfcdb
   languageName: node
   linkType: hard
 
@@ -16424,14 +16429,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver@npm:8.1.0":
-  version: 8.1.0
-  resolution: "vscode-languageserver@npm:8.1.0"
+"vscode-languageserver@npm:~9.0.1":
+  version: 9.0.1
+  resolution: "vscode-languageserver@npm:9.0.1"
   dependencies:
-    vscode-languageserver-protocol: "npm:3.17.3"
+    vscode-languageserver-protocol: "npm:3.17.5"
   bin:
     installServerIntoExtension: bin/installServerIntoExtension
-  checksum: 3aa3d2f421e478e20b418e134fada4eb480feacdf3d5ea77b972093e61476e390cb1cc53cf42361a15fabecd0b88cbb8fb5bdc1b5fd908a1c125e1324e8f460f
+  checksum: 1cb643b1b1f41a620aaf4a62e152acad694c22b4d98de73fa614a0bddf3b4b4832460465bdbc43f27ba23dad7e61aba533e77b8bfac74cc8de310c39623a7ba1
   languageName: node
   linkType: hard
 
@@ -16456,14 +16461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-uri@npm:~3.0.7":
-  version: 3.0.7
-  resolution: "vscode-uri@npm:3.0.7"
-  checksum: 4d2a035f2446f6e876f84933780dbb8d7cc7147f49b25352690db709b1062809dd615df8904896d2c2a8c691860e5dae06c7a30e9e4fa9e9c36ddc7ecc88e571
-  languageName: node
-  linkType: hard
-
-"vscode-uri@npm:~3.0.8":
+"vscode-uri@npm:~3.0.7, vscode-uri@npm:~3.0.8":
   version: 3.0.8
   resolution: "vscode-uri@npm:3.0.8"
   checksum: e882d6b679e0d053cbc042893c0951a135d899a192b62cd07f0a8924f11ae722067a8d6b1b5b147034becf57faf9fff9fb543b17b749fd0f17db1f54f783f07c
