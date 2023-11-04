@@ -114,7 +114,7 @@ export const IndexPageWhy = () => (
 )
 
 export const IndexPageDiagram = () => (
-  <div className='mt-6'>
+  <div className={cn('mt-6', styles.embedded)}>
     <LikeC4EmbeddedView viewId='index' />
   </div>
 )

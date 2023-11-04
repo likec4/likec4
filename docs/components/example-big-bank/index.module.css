@@ -4,5 +4,10 @@
   margin: 1.75rem 0;
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
-  background: hsl(var(--nextra-primary-hue) 100% 77%/0.1);
+  --bg-opacity: 0.08;
+  background: hsl(var(--nextra-primary-hue) 100% 77% / var(--bg-opacity));
+  &:hover {
+    transform: scale(1.02);
+    --bg-opacity: 0.12;
+  }
 }
