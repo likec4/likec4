@@ -4,13 +4,17 @@ entry LikeC4Document:
   specification=SpecificationRule?
   model=Model?
   views=ModelViews?
+  EndOfFile
 ;
 
 // Specification -------------------------------------
 
-ElementKind: name=Name;
-Tag: name=Name;
-RelationshipKind: name=Name;
+ElementKind:
+  name=Name;
+Tag:
+  name=Name;
+RelationshipKind:
+  name=Name;
 
 SpecificationRule:
   name='specification' OpenBlock
@@ -58,7 +62,8 @@ Element:
   )?
   body=ElementBody?;
 
-ElementBody: OpenBlock
+ElementBody:
+  OpenBlock
   tags=Tags?
   (props+=(ElementProperty | LinkProperty))*
 
@@ -68,7 +73,8 @@ ElementBody: OpenBlock
   )*
 CloseBlock;
 
-ElementProperty: ElementStringProperty | StyleProperties;
+ElementProperty:
+  ElementStringProperty | StyleProperties;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
@@ -76,12 +82,13 @@ ElementStringProperty:
 ExtendElement:
   'extend' element=StrictElementRef body=ExtendElementBody;
 
-ExtendElementBody: OpenBlock
+ExtendElementBody:
+  OpenBlock
   elements+=(
     Element |
     ExplicitRelation
   )*
-CloseBlock ;
+CloseBlock;
 
 StrictElementRef:
   el=[Element:Name] (Dot next=StrictElementRef)?;
@@ -92,7 +99,8 @@ ElementRef:
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
 
-Relation: ExplicitRelation | ImplicitRelation;
+Relation:
+  ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
   (arr=RArrow | '-['kind=[RelationshipKind:Name]']->')
@@ -107,7 +115,8 @@ ImplicitRelation infers Relation:
 ExplicitRelation infers Relation:
   source=ElementRef RelationFragment;
 
-RelationBody: OpenBlock
+RelationBody:
+  OpenBlock
   tags=Tags?
   (props+=RelationStringProperty)*
 CloseBlock;
@@ -135,7 +144,8 @@ ElementView:
 ElementViewRef:
   view=[ElementView:Name];
 
-ElementViewBody: OpenBlock
+ElementViewBody:
+  OpenBlock
   tags=Tags?
   (props+=(ViewProperty | LinkProperty))*
   rules+=(
@@ -149,11 +159,11 @@ ViewProperty:
   key=('title' | 'description') Colon? value=STRING SemiColon?;
 
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
-
 ViewRuleExpression:
   (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)* Comma?;
 
-ViewRuleLayoutDirection returns string: 'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
+ViewRuleLayoutDirection returns string:
+  'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewRuleLayoutDirection;
@@ -205,18 +215,25 @@ ElementExpression:
   // )?
 ;
 
-ElementRefExpression: id=ElementRef (isDescedants?='.*')?;
+ElementRefExpression:
+  id=ElementRef (isDescedants?='.*')?;
 
 // Common -------------------------------------
 
-LinkProperty: key='link' Colon? value=Uri SemiColon?;
-IconProperty: key='icon' Colon? value=Uri SemiColon?;
+LinkProperty:
+  key='link' Colon? value=Uri SemiColon?;
+IconProperty:
+  key='icon' Colon? value=Uri SemiColon?;
 
-ColorProperty: key='color' Colon? value=ThemeColor SemiColon?;
-ShapeProperty: key='shape' Colon? value=ElementShape SemiColon?;
+ColorProperty:
+  key='color' Colon? value=ThemeColor SemiColon?;
+ShapeProperty:
+  key='shape' Colon? value=ElementShape SemiColon?;
 
-LineProperty: key='line' Colon? value=LineOptions SemiColon?;
-ArrowProperty: key=('head' | 'tail') Colon? value=ArrowType SemiColon?;
+LineProperty:
+  key='line' Colon? value=LineOptions SemiColon?;
+ArrowProperty:
+  key=('head' | 'tail') Colon? value=ArrowType SemiColon?;
 
 
 StyleProperties:
@@ -241,7 +258,8 @@ fragment RelationshipStylePropertiesFragment:
 
 // -------------------------
 // Relationship Style Properties
-LineOptions returns string: 'solid' | 'dashed' | 'dotted';
+LineOptions returns string:
+  'solid' | 'dashed' | 'dotted';
 ArrowType returns string:
   'none' |
   'normal' |
@@ -253,33 +271,39 @@ ArrowType returns string:
   'vee'
 ;
 
-ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
-ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
-Uri returns string: URI_WITH_SCHEMA | URI_RELATIVE;
-RArrow returns string: RARROW;
+ThemeColor returns string:
+  'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
+ElementShape returns string:
+  'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+Uri returns string:
+  URI_WITH_SCHEMA | URI_RELATIVE;
+RArrow returns string:
+  RARROW;
 
-Name returns string: ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
+Name returns string:
+  ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
 
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);
 
+EndOfFile:
+    {infer EndOfFile} 'EOF';
+
+// -----------------------------------
+// Symbols
+terminal fragment HASH: '#';
+terminal fragment UNDERSCORE: '_';
+terminal fragment DASH: '-';
+terminal fragment LETTER: /[^\W\d_]/;
+terminal fragment DIGIT: /[0-9]/;
+terminal fragment NEWLINE: /[\r?\n]/;
+terminal fragment SPACE: /[^\S\r\n]/;
 
 // -------------------------
 // Comments
 hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
 hidden terminal WS: (NEWLINE | SPACE)+;
-
-// -----------------------------------
-// Symbols
-terminal fragment HASH      : '#';
-terminal fragment UNDERSCORE: '_';
-terminal fragment DASH: '-';
-terminal fragment LETTER       : /[^\W\d_]/;
-terminal fragment DIGIT        : /[0-9]/;
-terminal fragment NEWLINE: /[\t\r\n\v\f]/;
-terminal fragment SPACE: /[^\S\r\n]/;
-
 
 // -----------------------------------
 // Terminals

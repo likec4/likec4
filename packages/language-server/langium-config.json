@@ -12,9 +12,6 @@
       },
       "monarch": {
         "out": "contrib/likec4.monarch.ts"
-      },
-      "railroad": {
-        "out": "contrib/likec4.railroad.html"
       }
     }
   ],
