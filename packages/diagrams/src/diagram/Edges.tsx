@@ -5,7 +5,7 @@ import { useTransition, type Controller } from '@react-spring/konva'
 import { scale, toHex } from 'khroma'
 import { memoize } from 'rambdax'
 import { memo, useCallback } from 'react'
-import { Group } from '../konva'
+import { AnimatedGroup } from '../konva'
 import { Edge } from './shapes/Edge'
 import { mouseDefault, mousePointer } from './shapes/utils'
 import { DiagramGesture, useHoveredEdgeId, useSetHoveredEdge } from './state'
@@ -84,7 +84,7 @@ export function Edges({ animate, theme, diagram, onEdgeClick }: EdgesProps) {
       }
     },
     expires: true,
-    //exitBeforeEnter: true,
+    exitBeforeEnter: true,
     immediate: !animate,
     // delay: 30,
     config: {
@@ -126,7 +126,8 @@ type EdgeShapeProps = {
 const EdgeShape = memo<EdgeShapeProps>(({ animate, edge, ctrl, theme, isHovered, onEdgeClick }) => {
   const setHoveredEdge = useSetHoveredEdge()
   return (
-    <Group
+    <AnimatedGroup
+      opacity={ctrl.springs.opacity}
       onPointerClick={e => {
         if (!onEdgeClick || DiagramGesture.isDragging || e.evt.button !== 0) {
           return
@@ -152,7 +153,7 @@ const EdgeShape = memo<EdgeShapeProps>(({ animate, edge, ctrl, theme, isHovered,
         theme={theme}
         springs={ctrl.springs}
       />
-    </Group>
+    </AnimatedGroup>
   )
 }, isEqualSimple)
 EdgeShape.displayName = 'EdgeShape'

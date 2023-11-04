@@ -1,12 +1,10 @@
+import { AnimatedCircle, AnimatedRect } from '../../konva'
 import { useShadowSprings } from '../springs'
-import { AnimatedRect, Circle } from '../../konva'
+import { NodeIcon } from './NodeIcon'
 import { NodeLabels } from './NodeLabel'
 import type { NodeShapeProps } from './types'
-import { NodeIcon } from './NodeIcon'
 
 export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps) {
-  const colors = theme.elements[node.color]
-
   return (
     <>
       <AnimatedRect
@@ -16,10 +14,32 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         width={springs.width}
         height={springs.height}
         fill={springs.stroke}
+        perfectDrawEnabled={false}
       />
-      <Circle x={16} y={15} radius={7} fill={colors.fill} listening={false} />
-      <Circle x={36} y={15} radius={7} fill={colors.fill} listening={false} />
-      <Circle x={56} y={15} radius={7} fill={colors.fill} listening={false} />
+      <AnimatedCircle
+        x={16}
+        y={15}
+        radius={7}
+        fill={springs.fill}
+        listening={false}
+        perfectDrawEnabled={false}
+      />
+      <AnimatedCircle
+        x={36}
+        y={15}
+        radius={7}
+        fill={springs.fill}
+        listening={false}
+        perfectDrawEnabled={false}
+      />
+      <AnimatedCircle
+        x={56}
+        y={15}
+        radius={7}
+        fill={springs.fill}
+        listening={false}
+        perfectDrawEnabled={false}
+      />
       <AnimatedRect
         cornerRadius={5}
         x={70}
@@ -28,6 +48,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         height={16}
         fill={springs.fill}
         listening={false}
+        perfectDrawEnabled={false}
       />
       <AnimatedRect
         cornerRadius={5}
@@ -37,6 +58,7 @@ export function BrowserShape({ node, theme, springs, isHovered }: NodeShapeProps
         height={springs.height.to(h => h - 40)}
         fill={springs.fill}
         listening={false}
+        perfectDrawEnabled={false}
       />
       <NodeLabels node={node} theme={theme} offsetY={-6} />
       <NodeIcon node={node} paddingY={42} />

@@ -1,4 +1,4 @@
-import { AnimatedRect, Circle } from '../../konva'
+import { AnimatedCircle, AnimatedRect, Circle } from '../../konva'
 import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
 import type { NodeShapeProps } from './types'
@@ -17,8 +17,16 @@ export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps)
         width={springs.width}
         height={springs.height}
         fill={springs.stroke}
+        perfectDrawEnabled={false}
       />
-      <Circle x={16} y={node.size.height / 2} radius={10} fill={colors.fill} listening={false} />
+      <AnimatedCircle
+        x={16}
+        y={node.size.height / 2}
+        radius={10}
+        fill={springs.fill}
+        listening={false}
+        perfectDrawEnabled={false}
+      />
       <AnimatedRect
         cornerRadius={4}
         x={31}
@@ -26,6 +34,7 @@ export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps)
         width={springs.width.to(w => w - 43)}
         height={springs.height.to(h => h - 24)}
         fill={springs.fill}
+        perfectDrawEnabled={false}
         listening={false}
       />
       <NodeLabels node={node} theme={theme} offsetX={-10} maxWidth={maxWidth} />

@@ -1,5 +1,11 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { hoveredEdgeAtom, hoveredEdgeIdAtom, hoveredNodeAtom, hoveredNodeIdAtom } from './atoms'
+import {
+  hoveredEdgeAtom,
+  hoveredEdgeIdAtom,
+  hoveredNodeAtom,
+  hoveredNodeIdAtom,
+  resetHoveredStatesAtom
+} from './atoms'
 
 export function useHoveredNode() {
   return useAtom(hoveredNodeAtom)
@@ -23,4 +29,8 @@ export function useHoveredEdgeId() {
 
 export function useSetHoveredEdge() {
   return useSetAtom(hoveredEdgeAtom)
+}
+
+export function useResetHoveredStates() {
+  return useSetAtom(resetHoveredStatesAtom)
 }

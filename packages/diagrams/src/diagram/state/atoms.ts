@@ -108,3 +108,10 @@ export const hoveredEdgeAtom = atom(
 )
 
 export const hoveredEdgeIdAtom = selectAtom(hoveredEdgeAtom, edge => edge?.id ?? null)
+
+export const resetHoveredStatesAtom = atom(undefined, (get, set) => {
+  clearTimeout(get(nodeTimeoutAtom))
+  clearTimeout(get(edgeTimeoutAtom))
+  set(currentHoveredNodeAtom, null)
+  set(currentHoveredEdgeAtom, null)
+})

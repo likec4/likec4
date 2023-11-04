@@ -61,7 +61,6 @@ function EdgeArrow({
   const isOutline = arrowType === 'odiamond' || arrowType === 'onormal'
   return (
     <AnimatedLine
-      opacity={springs.opacity}
       points={points.flat()}
       closed={true}
       fill={isOutline ? undefined : springs.lineColor}
@@ -70,6 +69,7 @@ function EdgeArrow({
       hitStrokeWidth={5}
       lineCap={'round'}
       lineJoin={'miter'}
+      perfectDrawEnabled={false}
       globalCompositeOperation={globalCompositeOperation}
     />
   )
@@ -93,13 +93,14 @@ function EdgeLabelBg({
       y: labelBBox.y - padding,
       width: labelBBox.width + padding * 2,
       height: labelBBox.height + padding * 2,
-      opacity: isHovered ? 0.5 : 0.1
+      opacity: isHovered ? 0.5 : 0.12
     },
     immediate: !animate
   })
   return (
     <AnimatedRect
       {...props}
+      perfectDrawEnabled={false}
       fill={springs.labelBgColor}
       cornerRadius={2}
       globalCompositeOperation='darken'
@@ -150,7 +151,6 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
   return (
     <>
       <AnimatedLine
-        opacity={springs.opacity}
         bezier={true}
         dashEnabled={isDashed}
         dashOffset={1}
@@ -161,6 +161,7 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
         hitStrokeWidth={20}
         lineCap={'round'}
         lineJoin={'round'}
+        perfectDrawEnabled={false}
         globalCompositeOperation={globalCompositeOperation}
       />
       {head !== 'none' && headArrow && (
@@ -195,12 +196,12 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
             key={i}
             x={label.pt[0]}
             y={label.pt[1] - label.fontSize}
-            opacity={springs.opacity}
             fill={springs.labelColor}
             fontFamily={theme.font}
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
             text={label.text}
+            perfectDrawEnabled={false}
             listening={false}
             globalCompositeOperation={globalCompositeOperation}
             shadowEnabled={springs.opacity.to(o => o > 0.5)}

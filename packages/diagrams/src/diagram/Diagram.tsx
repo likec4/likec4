@@ -11,7 +11,7 @@ import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
 
 import { createUseGesture, dragAction, pinchAction } from '@use-gesture/react'
 import { Nodes } from './Nodes'
-import { DiagramGesture } from './state'
+import { DiagramGesture, useResetHoveredStates } from './state'
 
 const useGesture = createUseGesture([dragAction, pinchAction])
 
@@ -207,6 +207,12 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         }) satisfies DiagramApi,
       [refs, id, stageRef]
     )
+
+    const resetHoveredStates = useResetHoveredStates()
+
+    useUpdateEffect(() => {
+      resetHoveredStates()
+    }, [id])
 
     useUpdateEffect(() => {
       refs.current.centerAndFit(80, 650)
