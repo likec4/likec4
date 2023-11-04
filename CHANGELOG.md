@@ -1,19 +1,19 @@
 # [0.45.0](https://github.com/likec4/likec4/compare/v0.44.1...v0.45.0) (2023-11-04)
 
+### 🚀 Features
+
+- **likec4:** dedicated page for export with transparent background ([e992144](https://github.com/likec4/likec4/commit/e9921449e5b1c9011b32e438244325c97c3edb78))
+
 ### Bug Fixes
 
-- **cli:** don't emptyOutDir on second run ([9d58f39](https://github.com/likec4/likec4/commit/9d58f39e9a07ec1ab005a78fb9d9c4445f004bc9))
+- **likec4:** don't emptyOutDir on second run ([9d58f39](https://github.com/likec4/likec4/commit/9d58f39e9a07ec1ab005a78fb9d9c4445f004bc9))
 - **diagrams:** absolute position for FullscreenDiagram ([29741f1](https://github.com/likec4/likec4/commit/29741f1139d44cdaaf77e78adbce736a5eaa1504))
 - **diagrams:** adjust label positions ([afdad65](https://github.com/likec4/likec4/commit/afdad654ce506fda9fffa3d2f16edf15964ce067))
 - **diagrams:** correct node label positions ([500f53d](https://github.com/likec4/likec4/commit/500f53d8c237540400a0dc1ea2ba32fd526a38a5))
 - **diagrams:** smooth animation ([ad054ce](https://github.com/likec4/likec4/commit/ad054cee07b18f9ff6d905a74a44218fec8130e6))
 - **docs:** css classes for embedded diagram ([9a0418a](https://github.com/likec4/likec4/commit/9a0418a756f3fd52900deb526e28ca4f68f8cbfe))
-- **layouts:** stict align for node and edge labels ([813fd10](https://github.com/likec4/likec4/commit/813fd10bccd46ebc2d9d39686396349ca7897619))
-- **vscode:** git changes was parsed too, that lead to duplicate entries ([04d1a7f](https://github.com/likec4/likec4/commit/04d1a7fe4ca9dff2be2fb27f3b214495b5bdb1cc))
-
-### Features
-
-- **likec4:** dedicated page for export with transparent background ([e992144](https://github.com/likec4/likec4/commit/e9921449e5b1c9011b32e438244325c97c3edb78))
+- **layouts:** strict align for node and edge labels ([813fd10](https://github.com/likec4/likec4/commit/813fd10bccd46ebc2d9d39686396349ca7897619))
+- **vscode:** git changes were parsed too, that led to duplicate entries ([04d1a7f](https://github.com/likec4/likec4/commit/04d1a7fe4ca9dff2be2fb27f3b214495b5bdb1cc))
 
 ## [0.44.1](https://github.com/likec4/likec4/compare/v0.44.0...v0.44.1) (2023-11-02)
 
