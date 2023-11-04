@@ -64,11 +64,11 @@ jobs:
       - name: Build
         run: yarn ci:build
 
-      - name: TypeCheck
-        run: yarn typecheck
-
       - name: Test
         run: yarn test
+
+      - name: TypeCheck
+        run: yarn typecheck
 
       - if: ${{ matrix.build-docs }}
         name: Build Docs
