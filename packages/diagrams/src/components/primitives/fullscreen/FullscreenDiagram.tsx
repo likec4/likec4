@@ -63,13 +63,9 @@ const StyleOverlay = {
   left: 0,
   right: 0,
   bottom: 0,
-  backgroundColor: 'var(--likec4-browser-overlay-bg, rgba(18,18,18,0.8))',
+  backgroundColor: 'var(--likec4-browser-overlay-bg, rgba(18,18,18,0.9))',
   backdropFilter: 'var(--likec4-browser-backdrop, blur(4px))',
   zIndex: 'var(--likec4-overlay-z-index, 100)',
-  display: 'flex',
-  placeContent: 'strech',
-  placeItems: 'strech',
-  touchAction: 'pan-x pan-y pinch-zoom',
   boxSizing: 'border-box',
   margin: 0,
   padding: 0,
@@ -77,10 +73,15 @@ const StyleOverlay = {
 } satisfies CSSProperties
 
 const StyleContainer = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
   margin: 0,
   padding: 0,
-  flex: '1 1 100%',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  touchAction: 'pan-x pan-y pinch-zoom'
 } satisfies CSSProperties
 
 // function processRenderViewTitle(
