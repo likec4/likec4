@@ -11,9 +11,10 @@ import {
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
 import { elementRef } from './elementRef'
-import type { LikeC4Document } from './generated/ast'
+import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
+import { first } from 'remeda'
 
 export { ast }
 
@@ -126,7 +127,7 @@ export interface LikeC4DocumentProps {
 }
 
 export interface LikeC4LangiumDocument
-  extends LangiumDocument<LikeC4Document>,
+  extends LangiumDocument<LikeC4Grammar>,
     LikeC4DocumentProps {}
 export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
   Required<LikeC4DocumentProps>
@@ -178,7 +179,8 @@ export const isValidLikeC4LangiumDocument = (
 }
 
 export function* streamModel(doc: LikeC4LangiumDocument) {
-  const elements = doc.parseResult.value.model?.elements ?? []
+  const model = first(doc.parseResult.value.models)
+  const elements = model?.elements ?? []
   const traverseStack = [...elements]
   const relations = [] as ast.Relation[]
   let el
@@ -217,7 +219,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   if (!target) {
     throw new RelationRefError('Invalid reference to target')
   }
-  if ('source' in node) {
+  if (ast.isExplicitRelation(node)) {
     const source = elementRef(node.source)
     if (!source) {
       throw new RelationRefError('Invalid reference to source')
@@ -226,9 +228,6 @@ export function resolveRelationPoints(node: ast.Relation): {
       source,
       target
     }
-  }
-  if (!ast.isElementBody(node.$container)) {
-    throw new RelationRefError('Invalid relation parent, expected Element')
   }
   return {
     source: node.$container.$container,

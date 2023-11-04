@@ -17,35 +17,29 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
           property: 'target'
         })
       }
-      let sourceEl: ast.Element | undefined
-      if ('source' in el) {
+      let sourceEl
+      if (ast.isExplicitRelation(el)) {
         sourceEl = elementRef(el.source)
-      } else {
-        if (!ast.isElementBody(el.$container)) {
-          accept(
-            'error',
-            'Invalid relation, expected to have source defined or be inside the element',
-            {
-              node: el,
-              keyword: '->'
-            }
-          )
-        } else {
-          sourceEl = el.$container.$container
+        if (!sourceEl) {
+          return accept('error', 'Source not found (not parsed/indexed yet)', {
+            node: el,
+            property: 'source'
+          })
         }
+      } else {
+        sourceEl = el.$container.$container
       }
 
-      const source = sourceEl && fqnIndex.getFqn(sourceEl)
+      const source = fqnIndex.getFqn(sourceEl)
 
-      if (sourceEl && !source) {
+      if (!source) {
         accept('error', 'Source not found (not parsed/indexed yet)', {
-          node: el,
-          property: 'source'
+          node: el
         })
       }
 
       if (source && target && isSameHierarchy(source, target)) {
-        return accept('error', 'Invalid parent-child relationship', {
+        accept('error', 'Invalid parent-child relationship', {
           node: el
         })
       }

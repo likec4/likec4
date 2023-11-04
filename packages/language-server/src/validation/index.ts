@@ -3,7 +3,14 @@ import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
 import { relationChecks } from './relation'
-import { elementKindChecks, relationshipChecks, tagChecks } from './specification'
+import {
+  elementKindChecks,
+  modelRuleChecks,
+  modelViewsChecks,
+  relationshipChecks,
+  specificationRuleChecks,
+  tagChecks
+} from './specification'
 import { viewChecks } from './view'
 import { incomingExpressionChecks, outgoingExpressionChecks } from './view-predicates'
 
@@ -19,6 +26,9 @@ export function registerValidationChecks(services: LikeC4Services) {
   // ColorStyleProperty: validator.checkColorStyleProperty,
   // }
   registry.register<ast.LikeC4AstType>({
+    SpecificationRule: specificationRuleChecks(services),
+    Model: modelRuleChecks(services),
+    ModelViews: modelViewsChecks(services),
     ElementView: viewChecks(services),
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),

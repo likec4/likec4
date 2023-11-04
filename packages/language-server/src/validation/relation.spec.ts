@@ -25,6 +25,36 @@ describe('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
+  it('should report invalid relation of target', async () => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+        }
+        c1 -> c2
+      }
+    `)
+    expect(errors).to.include.members(['Target not found (not parsed/indexed yet)'])
+  })
+
+  it('should report invalid relation of source', async () => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+        }
+        c2 -> c1
+      }
+    `)
+    expect(errors).to.include.members(['Source not found (not parsed/indexed yet)'])
+  })
+
   it('should report invalid relation: parent -> child', async () => {
     const { validate } = createTestServices()
     const { errors } = await validate(`

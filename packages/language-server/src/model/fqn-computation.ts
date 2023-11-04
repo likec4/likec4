@@ -1,6 +1,6 @@
 import { AsFqn, nonexhaustive, type c4 } from '@likec4/core'
 import { MultiMap } from 'langium'
-import { isEmpty, isNil } from 'remeda'
+import { first, isEmpty, isNil } from 'remeda'
 import { ElementOps, ast, type LikeC4LangiumDocument } from '../ast'
 import { fqnElementRef } from '../elementRef'
 import type { LikeC4Services } from '../module'
@@ -9,7 +9,7 @@ type TraversePair = [el: ast.Element | ast.ExtendElement | ast.Relation, parent:
 
 export function computeDocumentFqn(document: LikeC4LangiumDocument, services: LikeC4Services) {
   const c4fqns = (document.c4fqns = new MultiMap())
-  const { model } = document.parseResult.value
+  const model = first(document.parseResult.value.models)
   if (!model?.elements) {
     return
   }

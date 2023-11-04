@@ -18,7 +18,6 @@
   "out": "src/generated",
   "mode": "production",
   "chevrotainParserConfig": {
-    "dynamicTokensEnabled": true,
     "recoveryEnabled": true,
     "skipValidations": true,
     "nodeLocationTracking": "full"

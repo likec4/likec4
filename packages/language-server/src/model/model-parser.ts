@@ -26,6 +26,7 @@ import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils'
 import type { FqnIndex } from './fqn-index'
+import { first } from 'remeda'
 
 export type ModelParsedListener = () => void
 
@@ -56,7 +57,7 @@ export class LikeC4ModelParser {
   protected parseLikeC4Document(doc: LikeC4LangiumDocument) {
     const { elements, relations, views, specification } = cleanParsedModel(doc)
 
-    const specs = doc.parseResult.value.specification?.elements
+    const specs = first(doc.parseResult.value.specifications)?.elements
     if (specs) {
       for (const { kind, style } of specs) {
         if (kind.name in specification.kinds) {
@@ -73,7 +74,7 @@ export class LikeC4ModelParser {
       }
     }
 
-    const relations_specs = doc.parseResult.value.specification?.relationships
+    const relations_specs = first(doc.parseResult.value.specifications)?.relationships
     if (relations_specs) {
       for (const { kind, props } of relations_specs) {
         if (kind.name in specification.relationships) {
@@ -109,7 +110,7 @@ export class LikeC4ModelParser {
       nonexhaustive(el)
     }
 
-    const docviews = doc.parseResult.value.views?.views
+    const docviews = first(doc.parseResult.value.views)?.views
     if (docviews) {
       for (const view of docviews) {
         try {

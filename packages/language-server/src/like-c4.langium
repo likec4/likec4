@@ -1,10 +1,12 @@
 grammar LikeC4
 
-entry LikeC4Document:
-  specification=SpecificationRule?
-  model=Model?
-  views=ModelViews?
-  EndOfFile
+entry LikeC4Grammar:
+  (
+    specifications+=SpecificationRule |
+    models+=Model  |
+    views+=ModelViews
+  )*
+  EOF
 ;
 
 // Specification -------------------------------------
@@ -42,9 +44,9 @@ SpecificationRelationshipKind:
 Model:
   name='model' OpenBlock
     elements+=(
-      Element |
       ExtendElement |
-      ExplicitRelation
+      ExplicitRelation |
+      Element
     )*
   CloseBlock;
 
@@ -65,16 +67,16 @@ Element:
 ElementBody:
   OpenBlock
   tags=Tags?
-  (props+=(ElementProperty | LinkProperty))*
+  (props+=ElementProperty)*
 
   elements+=(
-    Element |
-    Relation
+    Relation |
+    Element
   )*
 CloseBlock;
 
 ElementProperty:
-  ElementStringProperty | StyleProperties;
+  ElementStringProperty | StyleProperties | LinkProperty;
 
 ElementStringProperty:
   key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
@@ -85,8 +87,8 @@ ExtendElement:
 ExtendElementBody:
   OpenBlock
   elements+=(
-    Element |
-    ExplicitRelation
+    ExplicitRelation |
+    Element
   )*
 CloseBlock;
 
@@ -109,10 +111,10 @@ fragment RelationFragment:
   body=RelationBody?
 ;
 
-ImplicitRelation infers Relation:
+ImplicitRelation:
   ('this' | 'it')? RelationFragment;
 
-ExplicitRelation infers Relation:
+ExplicitRelation:
   source=ElementRef RelationFragment;
 
 RelationBody:
@@ -285,9 +287,6 @@ Name returns string:
 
 fragment IsEqual:
   (NotEqual | isEqual?=Eq);
-
-EndOfFile:
-    {infer EndOfFile} 'EOF';
 
 // -----------------------------------
 // Symbols
