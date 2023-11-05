@@ -34,20 +34,6 @@ export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
-
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Linked,
-      (docs, _cancelToken) => {
-        for (const doc of docs) {
-          if (isLikeC4LangiumDocument(doc)) {
-            delete doc.c4Elements
-            delete doc.c4Specification
-            delete doc.c4Relations
-            delete doc.c4Views
-          }
-        }
-      }
-    )
     logger.debug(`[ModelParser] Created`)
   }
 

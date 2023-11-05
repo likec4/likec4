@@ -1,4 +1,5 @@
-import type { ast } from '../ast'
+import { UriUtils, ValidationCategory } from 'langium'
+import { isLikeC4LangiumDocument, type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
@@ -18,16 +19,19 @@ export function registerValidationChecks(services: LikeC4Services) {
   // View: validator.checkViewNameDuplicates,
   // ColorStyleProperty: validator.checkColorStyleProperty,
   // }
-  registry.register<ast.LikeC4AstType>({
-    ElementView: viewChecks(services),
-    Element: elementChecks(services),
-    ElementKind: elementKindChecks(services),
-    Relation: relationChecks(services),
-    Tag: tagChecks(services),
-    RelationshipKind: relationshipChecks(services),
-    IncomingExpression: incomingExpressionChecks(services),
-    OutgoingExpression: outgoingExpressionChecks(services)
-  })
+  registry.register<ast.LikeC4AstType>(
+    {
+      ElementView: viewChecks(services),
+      Element: elementChecks(services),
+      ElementKind: elementKindChecks(services),
+      Relation: relationChecks(services),
+      Tag: tagChecks(services),
+      RelationshipKind: relationshipChecks(services),
+      IncomingExpression: incomingExpressionChecks(services),
+      OutgoingExpression: outgoingExpressionChecks(services)
+    },
+    'slow'
+  )
 
   const connection = services.shared.lsp.Connection
   if (connection) {

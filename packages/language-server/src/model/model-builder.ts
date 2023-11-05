@@ -189,14 +189,22 @@ export class LikeC4ModelBuilder {
   constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     const parser = services.likec4.ModelParser
+
+    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
+      if (deleted.length > 0) {
+        this.notifyListeners(deleted)
+      }
+    })
+
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      (docs, _cancelToken) => {
+      async (docs, _cancelToken) => {
         logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
         const parsed = parser.parse(docs).map(d => d.uri)
         if (parsed.length > 0) {
           this.notifyListeners(parsed)
         }
+        return Promise.resolve()
       }
     )
     logger.debug(`[ModelBuilder] Created`)
