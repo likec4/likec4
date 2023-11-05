@@ -61,10 +61,10 @@ export class Rpc {
       return Promise.resolve({ rawmodel })
     })
 
-    connection.onRequest(computeView, ({ viewId }) => {
-      return {
+    connection.onRequest(computeView, async ({ viewId }, _cancelToken) => {
+      return Promise.resolve({
         view: modelBuilder.computeView(viewId)
-      }
+      })
     })
 
     connection.onRequest(rebuild, async cancelToken => {
@@ -99,39 +99,8 @@ export class Rpc {
       logger.debug(
         `[ServerRpc] received request to buildDocuments:\n${docs.map(d => '   - ' + d).join('\n')}`
       )
-      // remove orphaned documents
-      const deleted = LangiumDocuments.all
-        .filter(d => !docs.includes(d.uri.toString()))
-        .map(d => d.uri)
-        .toArray()
-      const changed = [] as URI[]
-      for (const d of docs) {
-        try {
-          const uri = URI.parse(d)
-          if (LangiumDocuments.hasDocument(uri)) {
-            changed.push(uri)
-          } else {
-            logger.warn(`[ServerRpc] LangiumDocuments does not have document: ${d}`)
-            LangiumDocuments.getOrCreateDocument(uri)
-          }
-        } catch (e) {
-          logError(e)
-        }
-      }
-      if (changed.length !== docs.length) {
-        const all = LangiumDocuments.all.map(d => d.uri.toString()).toArray()
-        logger.warn(
-          `
-[ServerRpc] We have in LangiumDocuments: [
-  ${all.join('\n  ')}
-]
-We rebuild: [
-  ${changed.join('\n  ')}
-]
-  `.trim()
-        )
-      }
-      await DocumentBuilder.update(changed, deleted, cancelToken)
+      const changed = docs.map(d => URI.parse(d))
+      await DocumentBuilder.update(changed, [], cancelToken)
     })
 
     connection.onRequest(locate, params => {
