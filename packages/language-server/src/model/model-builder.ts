@@ -8,12 +8,7 @@ import {
 } from '@likec4/core'
 import { LikeC4ModelGraph, computeView } from '@likec4/graph'
 import type { URI, WorkspaceCache } from 'langium'
-import {
-  DocumentState,
-  interruptAndCheck,
-  type LangiumDocument,
-  type LangiumDocuments
-} from 'langium'
+import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
 import * as R from 'remeda'
 import { Disposable } from 'vscode-languageserver'
 import type {
@@ -196,15 +191,15 @@ export class LikeC4ModelBuilder {
     const parser = services.likec4.ModelParser
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
-      async (docs, cancelToken) => {
+      (docs, _cancelToken) => {
+        logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
         const parsed = parser.parse(docs).map(d => d.uri)
-        // Only allow interrupting the execution after all documents have been parsed
-        await interruptAndCheck(cancelToken)
         if (parsed.length > 0) {
           this.notifyListeners(parsed)
         }
       }
     )
+    logger.debug(`[ModelBuilder] Created`)
   }
 
   public buildRawModel(): c4.LikeC4RawModel | null {

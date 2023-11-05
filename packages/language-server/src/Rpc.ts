@@ -19,9 +19,11 @@ export class Rpc {
   constructor(private services: LikeC4Services) {}
 
   init() {
-    const { ModelBuilder: modelBuilder, ModelLocator: modelLocator } = this.services.likec4
+    const modelBuilder = this.services.likec4.ModelBuilder
+    const modelLocator = this.services.likec4.ModelLocator
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
+      logger.info(`[ServerRpc] no connection, not initializing`)
       return
     }
     logger.info(`[ServerRpc] init`)

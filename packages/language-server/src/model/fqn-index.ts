@@ -34,20 +34,11 @@ export class FqnIndex {
   constructor(services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
-    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
-      const message = [`[FqnIndex] onUpdate`]
-      if (changed.length > 0) {
-        message.push(` changed:`)
-        changed.forEach(u => message.push(`  - ${u}`))
-      }
-      if (deleted.length > 0) {
-        message.push(` deleted:`)
-        deleted.forEach(u => message.push(`  - ${u}`))
-      }
-      logger.debug(message.join('\n'))
-      for (const uri of changed) {
-        if (this.langiumDocuments.hasDocument(uri)) {
-          const doc = this.langiumDocuments.getOrCreateDocument(uri)
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Changed,
+      (docs, _cancelToken) => {
+        logger.debug(`[FqnIndex] onChanged ${docs.length}:\n` + printDocs(docs))
+        for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
             delete doc.c4fqns
             delete doc.c4Elements
@@ -57,7 +48,7 @@ export class FqnIndex {
           }
         }
       }
-    })
+    )
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.IndexedContent,
@@ -74,14 +65,15 @@ export class FqnIndex {
         }
       }
     )
+    logger.debug(`[FqnIndex] Created`)
   }
 
-  private documents() {
+  get documents() {
     return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
   private entries(filterByFqn: (fqn: Fqn) => boolean = () => true): Stream<FqnIndexEntry> {
-    return this.documents().flatMap(doc =>
+    return this.documents.flatMap(doc =>
       doc.c4fqns
         .entries()
         .filter(([fqn]) => filterByFqn(fqn))
@@ -97,7 +89,7 @@ export class FqnIndex {
   }
 
   public getFqn(el: ast.Element): Fqn | null {
-    return el.fqn ?? ElementOps.readId(el) ?? null
+    return ElementOps.readId(el) ?? null
     // if (fqn) {
     //   const doc = getDocument(el)
     //   if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
@@ -112,7 +104,7 @@ export class FqnIndex {
   }
 
   public byFqn(fqn: Fqn): Stream<FqnIndexEntry> {
-    return this.documents().flatMap(doc => {
+    return this.documents.flatMap(doc => {
       return doc.c4fqns.get(fqn).flatMap(entry => {
         const el = entry.el.deref()
         if (el) {
