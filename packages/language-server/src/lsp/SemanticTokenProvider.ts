@@ -1,7 +1,6 @@
 import { AbstractSemanticTokenProvider, type AstNode, type SemanticTokenAcceptor } from 'langium'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
-import { isElementRefHead } from '../elementRef'
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
   protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor) {
@@ -33,11 +32,11 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       keyword(']->')
     }
 
-    if (ast.isElementRef(node) || ast.isStrictElementRef(node)) {
+    if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
       acceptor({
         node,
         property: 'el',
-        type: isElementRefHead(node) ? SemanticTokenTypes.variable : SemanticTokenTypes.property
+        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable
       })
     }
     if (ast.isElementViewRef(node)) {

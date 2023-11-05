@@ -32,9 +32,21 @@ describe('strict elementref', () => {
           component sub2
         }
       }
-      extend system. sub1 {
+      extend system .sub1 {
       }
-      extend system.sub1. sub2 {
+    }`
+
+  test('not fail if space after dot').valid`
+    specification {
+      element component
+    }
+    model {
+      component system {
+        component sub1 {
+          component sub2
+        }
+      }
+      extend system. sub1 {
       }
     }`
 

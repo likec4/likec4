@@ -37,7 +37,19 @@ describe('elementref', () => {
     }
   `
 
-  test('fail if has spaces').invalid`
+  test('fail if has space before dot').invalid`
+    specification {
+      element component
+    }
+    model {
+      component user
+      component system {
+        component sub1
+      }
+      user -> system .sub1
+    }`
+
+  test('not fail if space after dot').valid`
     specification {
       element component
     }

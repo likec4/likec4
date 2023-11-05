@@ -74,7 +74,7 @@ ElementStringProperty:
   key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
 
 ExtendElement:
-  'extend' element=StrictElementRef body=ExtendElementBody;
+  'extend' element=FqnElementRef body=ExtendElementBody;
 
 ExtendElementBody: OpenBlock
   elements+=(
@@ -83,11 +83,12 @@ ExtendElementBody: OpenBlock
   )*
 CloseBlock ;
 
-StrictElementRef:
-  el=[Element:Name] (Dot next=StrictElementRef)?;
+//
+FqnElementRef:
+  el=[Element:Name] ({infer FqnElementRef.parent=current} Dot el=[Element:Name])*;
 
 ElementRef:
-  el=[Element:Name] (Dot next=ElementRef)?;
+  el=[Element:Name] ({infer ElementRef.parent=current} Dot el=[Element:Name])*;
 
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
@@ -288,7 +289,7 @@ terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal RARROW: '->';
-terminal Dot: /\b\.\b/;
+terminal Dot: /\b\./;
 terminal NotEqual: '!=';
 terminal Eq: '=';
 terminal OpenBlock: '{';

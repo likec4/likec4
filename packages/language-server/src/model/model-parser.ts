@@ -23,7 +23,7 @@ import {
   toElementStyleExcludeDefaults,
   toRelationshipStyleExcludeDefaults
 } from '../ast'
-import { elementRef, fqnElementRef } from '../elementRef'
+import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
@@ -347,7 +347,7 @@ export class LikeC4ModelParser {
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {
     if (ast.isExtendElement(node)) {
-      return fqnElementRef(node.element)
+      return getFqnElementRef(node.element)
     }
     const fqn = this.fqnIndex.getFqn(node)
     invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)

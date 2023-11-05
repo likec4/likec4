@@ -2,7 +2,7 @@ import { AsFqn, nonexhaustive, type c4 } from '@likec4/core'
 import { MultiMap } from 'langium'
 import { isEmpty, isNil } from 'remeda'
 import { ElementOps, ast, type LikeC4LangiumDocument } from '../ast'
-import { fqnElementRef } from '../elementRef'
+import { getFqnElementRef } from '../elementRef'
 import type { LikeC4Services } from '../module'
 
 type TraversePair = [el: ast.Element | ast.ExtendElement | ast.Relation, parent: c4.Fqn | null]
@@ -23,7 +23,7 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
     }
     if (ast.isExtendElement(el)) {
       if (!isNil(el.body) && !isEmpty(el.body.elements)) {
-        const fqn = fqnElementRef(el.element)
+        const fqn = getFqnElementRef(el.element)
         el.body.elements.forEach(child => traverseStack.push([child, fqn]))
       }
       continue
