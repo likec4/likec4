@@ -1,7 +1,9 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { pluck } from 'rambdax'
-import { describe, it } from 'vitest'
+import { vi, describe, it } from 'vitest'
 import { createTestServices } from '../../test'
+
+vi.mock('../../logger')
 
 function expectCompletion() {
   const services = createTestServices().services
