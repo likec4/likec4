@@ -16,7 +16,7 @@ export type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
   return (
-    isLikeC4LangiumDocument(doc) && doc.state > DocumentState.IndexedContent && !isNil(doc.c4fqns)
+    isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
   )
 }
 
