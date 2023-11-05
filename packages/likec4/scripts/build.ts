@@ -17,7 +17,7 @@ async function buildCli() {
     outbase: 'src',
     color: true,
     bundle: true,
-    sourcemap: true,
+    sourcemap: isDev,
     sourcesContent: isDev,
     keepNames: true,
     minify: !isDev,
@@ -30,18 +30,17 @@ async function buildCli() {
     banner: {
       js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
     },
+    external: ['vscode', 'async_hooks'],
     plugins: [
       nodeExternalsPlugin({
+        // bundle devDependencies
         devDependencies: false,
+        // bundle
         allowList: [
           '@likec4/core',
           '@likec4/diagrams',
-          '@likec4/layouts',
-          '@likec4/generators',
-          '@likec4/language-server',
           'remeda',
           'rambdax',
-          '@dagrejs/graphlib',
           'safe-stable-stringify',
           'ts-custom-error'
         ]
@@ -50,25 +49,32 @@ async function buildCli() {
   }
 
   const bundle = await build(cfg)
-  if (bundle.errors.length || bundle.warnings.length) {
+  if (bundle.warnings.length) {
+    console.warn(
+      formatMessagesSync(bundle.warnings, {
+        kind: 'warning',
+        color: true,
+        terminalWidth: process.stdout.columns
+      }).join('\n')
+    )
+  }
+  if (bundle.errors.length) {
     console.error(
-      [
-        ...formatMessagesSync(bundle.warnings, {
-          kind: 'warning',
-          color: true,
-          terminalWidth: process.stdout.columns
-        }),
-        ...formatMessagesSync(bundle.errors, {
-          kind: 'error',
-          color: true,
-          terminalWidth: process.stdout.columns
-        })
-      ].join('\n')
+      formatMessagesSync(bundle.errors, {
+        kind: 'error',
+        color: true,
+        terminalWidth: process.stdout.columns
+      }).join('\n')
     )
     console.error('\n ⛔️ Build failed')
     process.exit(1)
   }
 }
+
+const $$ = $({
+  stderr: 'inherit',
+  stdout: 'inherit'
+})
 
 await rm('dist', { recursive: true, force: true })
 await buildCli()
@@ -77,7 +83,7 @@ await cp('app/', 'dist/__app__/', {
   recursive: true,
   filter: src => !src.endsWith('.ts') && !src.endsWith('.tsx')
 })
-await $({ all: true })`tsc -p ./app/tsconfig.json`
+await $$`tsc -p ./app/tsconfig.json`
 
 const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
 tsconfig.compilerOptions.outDir = 'dist'
