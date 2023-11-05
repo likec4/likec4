@@ -108,7 +108,6 @@ export function createLanguageServices(context?: LanguageServicesContext): {
     ...EmptyFileSystem,
     ...context
   }
-  con
 
   const shared = inject(
     createDefaultSharedModule(moduleContext),
