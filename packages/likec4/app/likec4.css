@@ -8,9 +8,18 @@
   --font-weight-bold: 600;
 }
 
-html, body {
+* {
+  box-sizing: border-box;
+}
+
+html, body, #like4-root {
   margin: 0;
   padding: 0;
+}
+
+#like4-root {
+  width: 100vw;
+  height: 100vh;
 }
 
 .transparent-bg {

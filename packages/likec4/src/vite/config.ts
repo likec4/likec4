@@ -4,8 +4,7 @@ import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
-import { isNil } from 'remeda'
-import type { InlineConfig, Logger } from 'vite'
+import type { InlineConfig, Logger, Alias } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { mkLanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
@@ -23,15 +22,15 @@ const getAppRoot = (): [path: string, isDev: boolean] => {
   return [resolve(_dirname, '../../app'), true]
 }
 
-function resolveAliases(aliases: Record<string, string>, logger: Logger): Record<string, string> {
-  const resolved = {}
+function resolveAliases(aliases: Record<string, string>, logger: Logger): Array<Alias> {
+  const resolved = [] as Array<Alias>
   Array.from(Object.entries(aliases)).forEach(([key, src]) => {
     if (!fs.existsSync(src)) {
       logger.error(`${k.bgRed(k.white(key))} does not exist ${src}`)
       return
     }
     logger.info(`${key} ${k.dim('resolve to')} ${src}`)
-    Object.assign(resolved, { [key]: src })
+    resolved.push({ find: key, replacement: src })
   })
   return resolved
 }
@@ -107,10 +106,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     languageServices,
     resolve: {
       dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
-      alias: {
-        '~': resolve(root, './src'),
-        ...aliases
-      }
+      alias: [...aliases]
     },
     clearScreen: false,
     base,
@@ -134,39 +130,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }
     },
     customLogger,
-    optimizeDeps: {
-      include: isDev
-        ? []
-        : [
-            '@radix-ui/react-icons',
-            '@radix-ui/themes',
-            '@likec4/core',
-            '@likec4/diagrams',
-            '@react-spring/konva',
-            '@use-gesture/react',
-            'classnames',
-            'remeda',
-            'rambdax',
-            'jotai',
-            'konva',
-            'react-accessible-treeview',
-            'react-dom',
-            'react-dom/client',
-            'react-konva',
-            'react-konva/es/ReactKonvaCore',
-            'konva/lib/Core',
-            'konva/lib/shapes/Rect',
-            'konva/lib/shapes/Text',
-            'konva/lib/shapes/Path',
-            'konva/lib/shapes/Circle',
-            'konva/lib/shapes/Line',
-            'konva/lib/shapes/Image',
-            'konva/lib/shapes/Ellipse',
-            'react',
-            'react/jsx-dev-runtime',
-            'react/jsx-runtime'
-          ]
-    },
     plugins: [
       react({
         // plugins: [

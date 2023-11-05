@@ -1,7 +1,7 @@
 import { Diagram } from '@likec4/diagrams'
 import { Box, Flex, Heading, Text } from '@radix-ui/themes'
 import { useWindowSize } from '@react-hookz/web/esm'
-import { $pages } from '~/router'
+import { $pages } from '../router'
 import { DiagramNotFound, ViewActionsToolbar } from '../components'
 import { useLikeC4View } from '../data'
 import { Fragment } from 'react'

@@ -19,9 +19,6 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "rootDir": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
     "types": ["vite/client"],
     "plugins": [
       {
