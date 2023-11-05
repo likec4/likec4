@@ -85,7 +85,11 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   }
 
   if (hasAtLeast(workspaceFolders, 1)) {
-    clientOptions.workspaceFolder = workspaceFolders[0]
+    const workspace = workspaceFolders[0]
+    outputChannel.info(`Workspace: ${workspace.uri}`)
+    clientOptions.workspaceFolder = workspace
+  } else {
+    outputChannel.info(`No workspace`)
   }
 
   // Create the language client and start the client.
