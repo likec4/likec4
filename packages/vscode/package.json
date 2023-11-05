@@ -34,7 +34,7 @@
   },
   "scripts": {
     "vscode:prepublish": "run build:turbo",
-    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --extensionDevelopmentPath=. $PROJECT_CWD/packages/diagrams/src/stories/likec4",
+    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --open-devtools --extensionDevelopmentPath=. $PROJECT_CWD/examples/diagrams-dev/likec4",
     "typecheck": "tsc --noEmit",
     "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r \"$INIT_CWD/../language-server/contrib/*\" contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r \"$INIT_CWD/../vscode-preview/dist/*\" dist/preview/",

@@ -14,13 +14,18 @@ import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { first } from 'remeda'
+import { first, isNil } from 'remeda'
 
 export { ast }
 
+const idattr = Symbol.for('idattr')
+
 declare module './generated/ast' {
   export interface Element {
-    fqn?: c4.Fqn
+    [idattr]?: c4.Fqn
+  }
+  export interface ElementView {
+    [idattr]?: c4.ViewID
   }
 }
 
@@ -78,35 +83,28 @@ export interface ParsedAstElementView {
   rules: c4.ViewRule[]
 }
 
-const idattr = Symbol.for('idattr')
 export const ElementViewOps = {
   writeId(node: ast.ElementView, id: c4.ViewID) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
-    ;(node as any)[idattr] = id
+    node[idattr] = id
     return node
   },
   readId(node: ast.ElementView) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (node as any)[idattr] as c4.ViewID | undefined
+    return node[idattr]
   }
 }
 
 export const ElementOps = {
   writeId(node: ast.Element, id: c4.Fqn | null) {
-    if (id === null) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-dynamic-delete
-      delete (node as any)[idattr]
-      delete node.fqn
+    if (isNil(id)) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete node[idattr]
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-extra-semi
-      ;(node as any)[idattr] = id
-      node.fqn = id
+      node[idattr] = id
     }
     return node
   },
   readId(node: ast.Element) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (node as any)[idattr] as c4.Fqn | undefined
+    return node[idattr]
   }
 }
 
@@ -133,19 +131,17 @@ export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof Like
   Required<LikeC4DocumentProps>
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const specification = (doc.c4Specification = {
-    kinds: {},
-    relationships: {}
-  } as ParsedAstSpecification)
-  const elements = (doc.c4Elements = [] as ParsedAstElement[])
-  const relations = (doc.c4Relations = [] as ParsedAstRelation[])
-  const views = (doc.c4Views = [] as ParsedAstElementView[])
-  return {
-    elements,
-    relations,
-    views,
-    specification
+  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns'>> = {
+    c4Specification: {
+      kinds: {},
+      relationships: {}
+    },
+    c4Elements: [],
+    c4Relations: [],
+    c4Views: []
   }
+  Object.assign(doc, props)
+  return doc as ParsedLikeC4LangiumDocument
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
@@ -179,8 +175,7 @@ export const isValidLikeC4LangiumDocument = (
 }
 
 export function* streamModel(doc: LikeC4LangiumDocument) {
-  const model = first(doc.parseResult.value.models)
-  const elements = model?.elements ?? []
+  const elements = doc.parseResult.value.models.flatMap(m => m.elements)
   const traverseStack = [...elements]
   const relations = [] as ast.Relation[]
   let el
