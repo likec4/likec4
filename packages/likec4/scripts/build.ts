@@ -25,12 +25,15 @@ async function buildCli() {
     legalComments: 'none',
     entryPoints: ['src/cli/index.ts'],
     format: 'esm',
-    target: 'esnext',
+    target: 'node18',
     platform: 'node',
     banner: {
       js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
     },
-    external: ['vscode', 'async_hooks'],
+    alias: {
+      // p-limit
+      '#async_hooks': 'node:async_hooks',
+    },
     plugins: [
       nodeExternalsPlugin({
         // bundle devDependencies
