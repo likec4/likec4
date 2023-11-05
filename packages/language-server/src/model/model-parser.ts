@@ -1,13 +1,15 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { getDocument } from 'langium'
+import { DocumentState, getDocument } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
 import type {
   LikeC4LangiumDocument,
   ParsedAstElement,
   ParsedAstElementView,
-  ParsedAstRelation
+  ParsedAstRelation,
+  ParsedAstSpecification,
+  ParsedLikeC4LangiumDocument
 } from '../ast'
 import {
   ElementViewOps,
@@ -24,7 +26,6 @@ import {
 import { elementRef, fqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { printDocs } from '../utils'
 import type { FqnIndex } from './fqn-index'
 
 export type ModelParsedListener = () => void
@@ -33,19 +34,32 @@ export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
+
+    services.shared.workspace.DocumentBuilder.onBuildPhase(
+      DocumentState.Linked,
+      (docs, _cancelToken) => {
+        for (const doc of docs) {
+          if (isLikeC4LangiumDocument(doc)) {
+            delete doc.c4Elements
+            delete doc.c4Specification
+            delete doc.c4Relations
+            delete doc.c4Views
+          }
+        }
+      }
+    )
+    logger.debug(`[ModelParser] Created`)
   }
 
-  parse(doc: LangiumDocument | LangiumDocument[]): LikeC4LangiumDocument[] {
+  parse(doc: LangiumDocument | LangiumDocument[]): ParsedLikeC4LangiumDocument[] {
     const docs = Array.isArray(doc) ? doc : [doc]
-    logger.debug(`[ModelParser] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-    const result = [] as LikeC4LangiumDocument[]
+    const result = [] as ParsedLikeC4LangiumDocument[]
     for (const doc of docs) {
       if (!isLikeC4LangiumDocument(doc)) {
         continue
       }
       try {
-        this.parseLikeC4Document(doc)
-        result.push(doc)
+        result.push(this.parseLikeC4Document(doc))
       } catch (cause) {
         logError(new InvalidModelError(`Error parsing document ${doc.uri.toString()}`, { cause }))
       }
@@ -53,18 +67,27 @@ export class LikeC4ModelParser {
     return result
   }
 
-  protected parseLikeC4Document(doc: LikeC4LangiumDocument) {
-    const { elements, relations, views, specification } = cleanParsedModel(doc)
+  protected parseLikeC4Document(_doc: LikeC4LangiumDocument) {
+    const doc = cleanParsedModel(_doc)
+    this.parseSpecification(doc)
+    this.parseModel(doc)
+    this.parseViews(doc)
+    return doc
+    // const prevHash = doc.c4hash ?? ''
+    // doc.c4hash = c4hash(doc)
+    // return prevHash !== doc.c4hash
+  }
 
-    const specs = doc.parseResult.value.specification?.elements
-    if (specs) {
-      for (const { kind, style } of specs) {
-        if (kind.name in specification.kinds) {
-          logger.warn(`Duplicate specification for kind ${kind.name}`)
+  private parseSpecification({ parseResult, c4Specification }: ParsedLikeC4LangiumDocument) {
+    const element_specs = parseResult.value.specification?.elements
+    if (element_specs) {
+      for (const { kind, style } of element_specs) {
+        if (kind.name in c4Specification.kinds) {
+          logger.warn(`Duplicate specification for element kind ${kind.name}`)
           continue
         }
         try {
-          specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
+          c4Specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
             style?.props
           )
         } catch (e) {
@@ -73,26 +96,28 @@ export class LikeC4ModelParser {
       }
     }
 
-    const relations_specs = doc.parseResult.value.specification?.relationships
+    const relations_specs = parseResult.value.specification?.relationships
     if (relations_specs) {
       for (const { kind, props } of relations_specs) {
-        if (kind.name in specification.relationships) {
-          logger.warn(`Duplicate specification for kind ${kind.name}`)
+        if (kind.name in c4Specification.relationships) {
+          logger.warn(`Duplicate specification for relationship kind ${kind.name}`)
           continue
         }
         try {
-          specification.relationships[kind.name as c4.RelationshipKind] =
+          c4Specification.relationships[kind.name as c4.RelationshipKind] =
             toRelationshipStyleExcludeDefaults(props)
         } catch (e) {
           logWarnError(e)
         }
       }
     }
+  }
 
+  private parseModel(doc: ParsedLikeC4LangiumDocument) {
     for (const el of streamModel(doc)) {
       if (ast.isElement(el)) {
         try {
-          elements.push(this.parseElement(el))
+          doc.c4Elements.push(this.parseElement(el))
         } catch (e) {
           logWarnError(e)
         }
@@ -100,7 +125,7 @@ export class LikeC4ModelParser {
       }
       if (ast.isRelation(el)) {
         try {
-          relations.push(this.parseRelation(el))
+          doc.c4Relations.push(this.parseRelation(el))
         } catch (e) {
           logWarnError(e)
         }
@@ -108,22 +133,6 @@ export class LikeC4ModelParser {
       }
       nonexhaustive(el)
     }
-
-    const docviews = doc.parseResult.value.views?.views
-    if (docviews) {
-      for (const view of docviews) {
-        try {
-          const v = this.parseElementView(view)
-          ElementViewOps.writeId(view, v.id)
-          views.push(v)
-        } catch (e) {
-          logWarnError(e)
-        }
-      }
-    }
-    // const prevHash = doc.c4hash ?? ''
-    // doc.c4hash = c4hash(doc)
-    // return prevHash !== doc.c4hash
   }
 
   private parseElement(astNode: ast.Element): ParsedAstElement {
@@ -182,6 +191,20 @@ export class LikeC4ModelParser {
       title,
       ...(kind && { kind }),
       ...(tags && { tags })
+    }
+  }
+
+  private parseViews(doc: ParsedLikeC4LangiumDocument) {
+    const docviews = doc.parseResult.value.views?.views
+    if (docviews) {
+      for (const view of docviews) {
+        try {
+          const v = this.parseElementView(view)
+          doc.c4Views.push(v)
+        } catch (e) {
+          logWarnError(e)
+        }
+      }
     }
   }
 
@@ -312,6 +335,7 @@ export class LikeC4ModelParser {
         }
       })
     }
+    ElementViewOps.writeId(astNode, basic.id)
 
     if ('viewOf' in astNode) {
       const viewOfEl = elementRef(astNode.viewOf)
