@@ -1,6 +1,6 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { DocumentState, getDocument } from 'langium'
+import { getDocument } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
 import type {
@@ -8,7 +8,6 @@ import type {
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
-  ParsedAstSpecification,
   ParsedLikeC4LangiumDocument
 } from '../ast'
 import {
@@ -160,10 +159,10 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
-    const tags = this.convertTags(astNode.body)
+    const tags = this.convertTags(astNode)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
+    const title = astNode.title ?? astNode.props.find(p => p.key === 'title')?.value ?? ''
     const id = objectHash({
       astPath,
       source,

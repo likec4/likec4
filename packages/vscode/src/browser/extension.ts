@@ -4,7 +4,7 @@ import {
   type LanguageClientOptions
 } from 'vscode-languageclient/browser'
 import ExtensionController from '../common/ExtensionController'
-import { extensionTitle, globPattern, languageId } from '../const'
+import { extensionName, extensionTitle, globPattern, languageId } from '../const'
 import { disposable } from '../util'
 import { hasAtLeast } from '@likec4/core'
 
@@ -46,6 +46,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
+    diagnosticCollectionName: extensionName,
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
@@ -59,7 +60,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
       fileEvents: fileSystemWatcher
-    }
+    },
+    progressOnInitialization: true
   }
 
   if (hasAtLeast(workspaceFolders, 1)) {

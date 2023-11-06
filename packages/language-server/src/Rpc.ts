@@ -3,7 +3,7 @@ import type { LikeC4Services } from './module'
 import pThrottle from 'p-throttle'
 
 import { nonexhaustive } from '@likec4/core'
-import { URI } from 'langium'
+import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
 import {
   buildDocuments,
@@ -11,8 +11,7 @@ import {
   fetchModel,
   fetchRawModel,
   locate,
-  onDidChangeModel,
-  rebuild
+  onDidChangeModel
 } from './protocol'
 
 export class Rpc {
@@ -67,40 +66,19 @@ export class Rpc {
       })
     })
 
-    connection.onRequest(rebuild, async cancelToken => {
-      const changed = LangiumDocuments.all
-        .map(d => {
-          // clean up any computed properties
-          if (isLikeC4LangiumDocument(d)) {
-            delete d.c4Specification
-            delete d.c4Elements
-            delete d.c4Relations
-            delete d.c4Views
-            delete d.c4fqns
-          }
-          return d.uri
-        })
-        .toArray()
-
-      logger.debug(`[ServerRpc] rebuild all documents: [
-        ${changed.map(d => d.toString()).join('\n      ')}
-      ]`)
-      await DocumentBuilder.update(changed, [], cancelToken)
-      return {
-        docs: changed.map(d => d.toString())
-      }
-    })
-
     connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
-      if (docs.length === 0) {
-        logger.debug(`[ServerRpc] received empty request to rebuild`)
-        return
-      }
-      logger.debug(
-        `[ServerRpc] received request to buildDocuments:\n${docs.map(d => '   - ' + d).join('\n')}`
-      )
       const changed = docs.map(d => URI.parse(d))
-      await DocumentBuilder.update(changed, [], cancelToken)
+      const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
+      const deleted = LangiumDocuments.all
+        .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri))
+        .map(d => d.uri)
+        .toArray()
+      logger.debug(
+        `[ServerRpc] received request to build:
+  changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
+  deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`
+      )
+      await DocumentBuilder.update(changed, deleted, cancelToken)
     })
 
     connection.onRequest(locate, params => {
