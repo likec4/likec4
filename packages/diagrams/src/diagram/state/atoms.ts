@@ -19,38 +19,37 @@ export const hoveredNodeAtom = atom(
     if (equals(_prev, _next)) {
       return false
     }
-    if (_next != null && _prev == null) {
-      set(
-        nodeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredNodeAtom, _next)
-          set(currentHoveredEdgeAtom, null)
-        }, 200)
-      )
+    if (_next != null) {
+      if (_prev == null) {
+        set(
+          nodeTimeoutAtom,
+          setTimeout(() => {
+            set(currentHoveredNodeAtom, _next)
+            set(currentHoveredEdgeAtom, null)
+          }, 175)
+        )
+      } else {
+        // Update node if it's already hovered
+        set(
+          nodeTimeoutAtom,
+          setTimeout(() => {
+            set(currentHoveredNodeAtom, _next)
+            set(currentHoveredEdgeAtom, null)
+          }, 120)
+        )
+      }
       return true
     }
-    // Update node if it's already hovered
-    if (_next != null && _prev != null) {
-      set(
-        nodeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredNodeAtom, _next)
-          set(currentHoveredEdgeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    if (_next == null && _prev != null) {
+    if (_prev != null) {
       // set previous timeout atom in case it needs to get cleared
       set(
         nodeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredNodeAtom, null)
-        }, 150)
+        }, 175)
       )
       return true
     }
-    set(currentHoveredNodeAtom, _next)
     return true
   }
 )
@@ -70,39 +69,38 @@ export const hoveredEdgeAtom = atom(
     if (equals(_prev, _next)) {
       return false
     }
-    if (_next != null && _prev == null) {
+    if (_next != null) {
       // set previous timeout atom in case it needs to get cleared
-      set(
-        edgeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredEdgeAtom, _next)
-          set(currentHoveredNodeAtom, null)
-        }, 400)
-      )
+      if (_prev == null) {
+        set(
+          edgeTimeoutAtom,
+          setTimeout(() => {
+            set(currentHoveredEdgeAtom, _next)
+            set(currentHoveredNodeAtom, null)
+          }, 300)
+        )
+      } else {
+        // Update edge if it's already hovered
+        set(
+          edgeTimeoutAtom,
+          setTimeout(() => {
+            set(currentHoveredEdgeAtom, _next)
+            set(currentHoveredNodeAtom, null)
+          }, 120)
+        )
+      }
       return true
     }
-    // Update edge if it's already hovered
-    if (_next != null && _prev != null) {
-      set(
-        edgeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredEdgeAtom, _next)
-          set(currentHoveredNodeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    if (_next == null && _prev != null) {
+    if (_prev != null) {
       // set previous timeout atom in case it needs to get cleared
       set(
         edgeTimeoutAtom,
         setTimeout(() => {
           set(currentHoveredEdgeAtom, null)
-        }, 150)
+        }, 175)
       )
       return true
     }
-    set(currentHoveredEdgeAtom, null)
     return true
   }
 )

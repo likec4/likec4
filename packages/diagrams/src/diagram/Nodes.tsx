@@ -2,9 +2,9 @@ import type { Fqn } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
 import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
 import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
-import { useTransition } from '@react-spring/konva'
+import { useSpring, useTransition } from '@react-spring/konva'
 import { memo, useRef } from 'react'
-import { AnimatedGroup } from '../konva'
+import { AnimatedCircle, AnimatedGroup, AnimatedRect } from '../konva'
 import { Portal } from '../konva-portal'
 import { ZoomInIcon } from './icons'
 import type { ShapeComponent } from './shapes'
@@ -16,6 +16,8 @@ import type { NodeSprings, NodeSpringsCtrl } from './springs'
 import { isCompound, useNodeSpringsFn } from './springs'
 import { DiagramGesture, useHoveredEdge, useHoveredNodeId, useSetHoveredNode } from './state'
 import type { DiagramNode, DiagramTheme, DiagramView, LikeC4Theme, OnNodeClick } from './types'
+import { useToggle } from '@react-hookz/web/esm'
+import { lighten, mix, scale, toHex } from 'khroma'
 
 function nodeShape({ shape }: DiagramNode): ShapeComponent {
   switch (shape) {
@@ -186,9 +188,9 @@ const NodeShape = memo<NodeShapeProps>(
           {...(animate && {
             onPointerEnter: e => {
               setHoveredNode(node)
-              if (isNavigatable) {
-                mousePointer(e)
-              }
+              // if (isNavigatable) {
+              //   mousePointer(e)
+              // }
             },
             onPointerLeave: e => {
               setHoveredNode(null)
@@ -228,7 +230,16 @@ const NodeShape = memo<NodeShapeProps>(
           {!_isCompound && (
             <>
               <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
-              {isNavigatable && <ZoomInIcon size={16} x={node.size.width / 2} y={zoomInIconY} />}
+              {isNavigatable && (
+                <NodeZoomBtn
+                  animate={animate}
+                  node={node}
+                  ctrl={ctrl}
+                  theme={theme}
+                  isHovered={isHovered}
+                  onNodeClick={onNodeClick}
+                />
+              )}
             </>
           )}
         </AnimatedGroup>
@@ -238,3 +249,78 @@ const NodeShape = memo<NodeShapeProps>(
   isEqualSimple
 )
 NodeShape.displayName = 'NodeShape'
+
+type NodeZoomBtn = {
+  animate: boolean
+  node: DiagramNode
+  theme: DiagramTheme
+  ctrl: NodeSpringsCtrl
+  isHovered: boolean
+  onNodeClick: OnNodeClick
+}
+
+const NodeZoomBtn = ({ animate, node, theme, ctrl, isHovered, onNodeClick }: NodeZoomBtn) => {
+  const size = 32
+  const colors = theme.elements[node.color]
+  let zoomInIconY: number
+  switch (node.shape) {
+    case 'browser':
+    case 'mobile':
+      zoomInIconY = node.size.height - 20
+      break
+    default:
+      zoomInIconY = node.size.height - 16
+  }
+  const fill = toHex(mix(colors.fill, colors.stroke, 65))
+  const onOver = toHex(mix(colors.fill, colors.stroke, 75))
+  const [isOver, toggleOver] = useToggle(false)
+  const props = useSpring({
+    to: {
+      fill: isOver ? onOver : fill,
+      opacity: isHovered ? 1 : 0,
+      y: isHovered ? zoomInIconY + 4 : zoomInIconY,
+      scaleX: isOver ? 1.45 : isHovered ? 1.25 : 1,
+      scaleY: isOver ? 1.45 : isHovered ? 1.25 : 1,
+      shadowBlur: isOver ? 6 : 4,
+      shadowOpacity: isOver ? 0.3 : 0.15,
+      shadowOffsetY: isOver ? 8 : 6
+    },
+    delay: isHovered && !isOver ? 100 : 0,
+    immediate: !animate
+  })
+  return (
+    <AnimatedGroup
+      x={node.size.width / 2}
+      y={props.y}
+      offsetX={size / 2}
+      offsetY={size / 2}
+      scaleX={props.scaleX}
+      scaleY={props.scaleY}
+      onPointerEnter={e => {
+        toggleOver(true)
+        mousePointer(e)
+      }}
+      onPointerLeave={e => {
+        toggleOver(false)
+        mouseDefault(e)
+      }}
+    >
+      <AnimatedCircle
+        x={size / 2}
+        y={size / 2}
+        radius={size / 2}
+        fill={props.fill}
+        shadowBlur={props.shadowBlur}
+        shadowOpacity={props.shadowOpacity}
+        shadowOffsetX={0}
+        shadowOffsetY={props.shadowOffsetY}
+        shadowColor={theme.shadow}
+        shadowEnabled={isHovered}
+        perfectDrawEnabled={false}
+        opacity={props.opacity}
+        hitStrokeWidth={30}
+      />
+      <ZoomInIcon size={16} x={size / 2} y={size / 2} />
+    </AnimatedGroup>
+  )
+}
