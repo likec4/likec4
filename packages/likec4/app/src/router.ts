@@ -35,7 +35,8 @@ const $route = computed([$router, $searchParams], (r, v) => {
     return {
       route: 'view' as const,
       params: {
-        viewId: r.params.viewId ?? 'index'
+        viewId: r.params.viewId ?? 'index',
+        theme: asTheme(v.theme) ?? 'dark'
       },
       showUI: 'showUI' in v ? v.showUI === 'true' : true
     }
@@ -53,6 +54,9 @@ const $route = computed([$router, $searchParams], (r, v) => {
   }
   return {
     route: 'index' as const,
+    params: {
+      theme: asTheme(v.theme) ?? 'dark'
+    },
     showUI: 'showUI' in v ? v.showUI === 'true' : true
   }
 })

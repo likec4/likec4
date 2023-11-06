@@ -9,7 +9,9 @@ import { nonexhaustive } from '@likec4/core'
 const Routes = () => {
   const r = useRoute()
 
+  const theme = r.params?.theme
   let page: JSX.Element | null = null
+
   switch (r.route) {
     case 'view': {
       page = <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />
@@ -20,7 +22,14 @@ const Routes = () => {
       break
     }
     case 'embed': {
-      page = <EmbedPage key='embed' viewId={r.params.viewId} padding={r.params.padding} />
+      page = (
+        <EmbedPage
+          key='embed'
+          viewId={r.params.viewId}
+          padding={r.params.padding}
+          transparentBg={!theme}
+        />
+      )
       break
     }
     case 'index': {
@@ -32,12 +41,7 @@ const Routes = () => {
   }
 
   return (
-    <Theme
-      hasBackground={r.route !== 'export'}
-      accentColor='indigo'
-      radius='small'
-      appearance={r.route !== 'export' ? r.params?.theme ?? 'inherit' : undefined}
-    >
+    <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
       {page}
       {r.showUI && (
         <Fragment key='ui'>
