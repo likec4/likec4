@@ -3,8 +3,8 @@ import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
-import { AbstractDisposable, disposeAll } from '../util'
 import { Logger } from '../logger'
+import { AbstractDisposable } from '../util'
 
 //#region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
@@ -16,12 +16,10 @@ const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | n
   'likec4/computeView'
 )
 
-const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
-
 interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
-const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/buildDocuments')
+const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
 
 export type LocateParams =
   | {
@@ -70,14 +68,8 @@ export class Rpc extends AbstractDisposable {
     return view
   }
 
-  async rebuild(): Promise<DocumentUri[]> {
-    const { docs } = await this.client.sendRequest(rebuild)
-    Logger.debug(`[Rpc] rebuild response: ${docs}`)
-    return docs
-  }
-
   async buildDocuments(docs: DocumentUri[]) {
-    return await this.client.sendRequest(buildDocuments, { docs })
+    await this.client.sendRequest(buildDocuments, { docs })
   }
 
   async locate<P extends LocateParams>(params: P): Promise<Location | null> {

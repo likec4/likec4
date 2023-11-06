@@ -8,7 +8,7 @@ import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey }
 import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
-import { initWorkspace } from './initWorkspace'
+import { initWorkspace, rebuildWorkspace } from './initWorkspace'
 import { PreviewPanel } from './panel/PreviewPanel'
 import { Rpc } from './Rpc'
 
@@ -29,7 +29,7 @@ export default class ExtensionController extends AbstractDisposable {
       Logger.channel = _client.outputChannel as unknown as vscode.LogOutputChannel
       Logger.telemetry = this._telemetry
       this.onDispose(() => {
-        Logger.channel = null
+        Logger.channel = console
         Logger.telemetry = null
       })
     }
@@ -60,10 +60,11 @@ export default class ExtensionController extends AbstractDisposable {
   public async activate() {
     try {
       const workspaceFolders = vscode.workspace.workspaceFolders ?? []
-      Logger.info(`[Extension] Activate in ${workspaceFolders.length} workspace folders`)
-      workspaceFolders.forEach(w => {
-        Logger.info(`  ${w.name}: ${w.uri}`)
-      })
+      Logger.info(
+        `[Extension] Activate in ${workspaceFolders.length} workspace folders${workspaceFolders
+          .map(w => `\n  ${w.name}: ${w.uri}`)
+          .join('')}`
+      )
       Logger.info(`[Extension] Starting LanguageClient...`)
       this._client.outputChannel.show(true)
       await this._client.start()
@@ -83,8 +84,7 @@ export default class ExtensionController extends AbstractDisposable {
         this._telemetry.sendTelemetryEvent('open-preview')
       })
       this.registerCommand(cmdRebuild, () => {
-        initWorkspace(rpc).catch(e => logError(e))
-        // rpc.rebuild().catch(e => logError(e))
+        void rebuildWorkspace(rpc)
         this._telemetry.sendTelemetryEvent('rebuild')
       })
       this.registerCommand(cmdPreviewContextOpenSource, () => {

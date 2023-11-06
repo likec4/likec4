@@ -23,14 +23,10 @@ export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedV
   'likec4/computeView'
 )
 
-export const rebuild = new RequestType0<{ docs: DocumentUri[] }, void>('likec4/rebuildModel')
-
 interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
-export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>(
-  'likec4/buildDocuments'
-)
+export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
 
 export type LocateParams =
   | {

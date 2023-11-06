@@ -1,6 +1,5 @@
 **/*
 
-!contrib/
 !dist/**/*.js
 !dist/**/*.css
 !data/
@@ -9,3 +8,4 @@
 !LICENSE
 !README.md
 !language-configuration.json
+!likec4.tmLanguage.json

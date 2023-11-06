@@ -1,7 +1,7 @@
 import type { likec4 as c4 } from '@likec4/core'
 import { InvalidModelError } from '@likec4/core'
-import type { LangiumDocuments } from 'langium'
-import { findNodeForProperty, getDocument } from 'langium'
+import type { CstNode, LangiumDocuments } from 'langium'
+import { findNodeForKeyword, findNodeForProperty, getDocument } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
@@ -71,20 +71,19 @@ export class LikeC4ModelLocator {
           }
         }
       }
-      if (node.arr == null) {
-        throw new InvalidModelError('Relation.arr is not defined, but should be')
-      }
-      const targetNode = findNodeForProperty(node.$cstNode, 'arr')
-      if (!targetNode) {
-        return null
-      }
-      return {
-        uri: doc.uri.toString(),
-        range: {
-          start: targetNode.range.start,
-          end: targetNode.range.end
-        }
-      }
+      const targetNode =
+        (node.kind
+          ? findNodeForProperty(node.$cstNode, 'kind')
+          : findNodeForKeyword(node.$cstNode, '->')) ?? findNodeForProperty(node.$cstNode, 'target')
+      return targetNode
+        ? {
+            uri: doc.uri.toString(),
+            range: {
+              start: targetNode.range.start,
+              end: targetNode.range.end
+            }
+          }
+        : null
     }
     return null
   }
