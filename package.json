@@ -39,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "@vitest/ui": "^0.34.7",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "execa": "^8.0.1",
     "global": "^4.4.0",
     "husky": "^8.0.3",
