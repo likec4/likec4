@@ -1,5 +1,3 @@
-// stores/router.ts
-import { logger } from '@nanostores/logger'
 import { useStore } from '@nanostores/react'
 import { createSearchParams, createRouter, openPage, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
@@ -81,10 +79,10 @@ export const $pages = {
   }
 } as const
 
-if (import.meta.env.DEV) {
-  logger({
-    $searchParams,
-    $router,
-    $route
-  })
-}
+// if (import.meta.env.DEV) {
+//   logger({
+//     $searchParams,
+//     $router,
+//     $route
+//   })
+// }

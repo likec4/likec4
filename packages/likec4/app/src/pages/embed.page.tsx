@@ -21,6 +21,7 @@ export function EmbedPage({ viewId, padding, transparentBg = true }: EmbedPagePr
 
   return (
     <Diagram
+      animate={false}
       pannable={false}
       zoomable={false}
       diagram={diagram}

@@ -19,7 +19,6 @@ import {
 const Paddings = [30, 20, 20, 20] as const
 
 const App = () => {
-  const [ref, diagramApi] = useDiagramApi()
   const windowSize = useWindowSize(undefined, false)
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
@@ -121,7 +120,6 @@ const App = () => {
   return (
     <div data-vscode-context='{"preventDefaultContextMenuItems": true}'>
       <Diagram
-        ref={ref}
         className={'likec4-layer likec4-diagram'}
         diagram={view}
         padding={Paddings}
@@ -130,7 +128,6 @@ const App = () => {
         onNodeClick={onNodeClick}
         onNodeContextMenu={(nd, e) => {
           e.cancelBubble = true
-          diagramApi.stage.releaseCapture(e.pointerId)
           lastNodeContextMenuRef.current = nd
         }}
         onStageContextMenu={(stage, e) => {
