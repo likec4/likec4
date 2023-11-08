@@ -31,7 +31,7 @@
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
     "@types/vscode-webview": "^1.57.3",
-    "@vitejs/plugin-react": "^4.1.0",
+    "@vitejs/plugin-react": "^4.1.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "lucide-react": "^0.288.0",
     "rambdax": "^9.1.1",
