@@ -10082,7 +10082,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-accessible-treeview: "npm:^2.8.0"
     react-dom: "npm:^18.2.0"
-    remeda: "npm:^1.28.0"
+    remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.3.5"
