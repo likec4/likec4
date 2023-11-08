@@ -5,6 +5,7 @@ import { ExportPage, IndexPage, EmbedPage, ViewPage } from './pages'
 import { useRoute } from './router'
 import { Theme } from '@radix-ui/themes'
 import { nonexhaustive } from '@likec4/core'
+import { isNil } from 'remeda'
 
 const Routes = () => {
   const r = useRoute()
@@ -27,7 +28,7 @@ const Routes = () => {
           key='embed'
           viewId={r.params.viewId}
           padding={r.params.padding}
-          transparentBg={!theme}
+          transparentBg={isNil(r.params.theme)}
         />
       )
       break
