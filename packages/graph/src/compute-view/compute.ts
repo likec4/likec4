@@ -20,7 +20,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, uniq } from 'remeda'
+import { first, hasAtLeast, uniq } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -71,21 +71,18 @@ export class ComputeCtx {
     this.reset()
     const { rules, ...view } = this.view
 
-    const rulesInclude = rules.filter(isViewRuleExpression)
-    if (this.root && rulesInclude.length == 0) {
+    const viewPredicates = rules.filter(isViewRuleExpression)
+    if (this.root && viewPredicates.length == 0) {
       this.addElement(this.graph.element(this.root))
     }
-    this.processPredicates(rulesInclude)
+    this.processPredicates(viewPredicates)
     this.removeRedundantImplicitEdges()
 
     const resolvedElements = [...this.elements]
     const nodesMap = buildComputeNodes(resolvedElements)
 
     const edges = this.computedEdges.map(edge => {
-      while (edge.parent) {
-        if (nodesMap.has(edge.parent)) {
-          break
-        }
+      while (edge.parent && !nodesMap.has(edge.parent)) {
         edge.parent = parentFqn(edge.parent)
       }
       nonNullable(nodesMap.get(edge.source)).outEdges.push(edge.id)
@@ -117,8 +114,8 @@ export class ComputeCtx {
   }
 
   protected get computedEdges(): ComputedEdge[] {
-    return this.ctxEdges.map((e): ComputedEdge => {
-      invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
+    return this.ctxEdges.map(({ relations, ...e }): ComputedEdge => {
+      invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
       const source = e.source.id
       const target = e.target.id
 
@@ -128,20 +125,20 @@ export class ComputeCtx {
         source,
         target,
         label: null,
-        relations: e.relations.map(r => r.id)
+        relations: relations.map(r => r.id)
       }
 
       let relation
-      if (e.relations.length === 1) {
-        relation = e.relations[0]
+      if (relations.length === 1) {
+        relation = relations[0]
       } else {
-        relation = e.relations.find(r => r.source === source && r.target === target)
+        relation = relations.find(r => r.source === source && r.target === target)
       }
 
       // This edge represents mutliple relations
       // we can't use relation.title, because it is not unique
       if (!relation) {
-        const labels = uniq(e.relations.flatMap(r => (r.title.trim() !== '' ? r.title : [])))
+        const labels = uniq(relations.flatMap(r => (r.title !== '' ? r.title : [])))
         if (hasAtLeast(labels, 1)) {
           if (labels.length === 1) {
             edge.label = labels[0]
@@ -154,7 +151,7 @@ export class ComputeCtx {
 
       return Object.assign(
         edge,
-        { label: relation.title },
+        relation.title !== '' && { label: relation.title },
         relation.color && { color: relation.color },
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },
@@ -223,8 +220,8 @@ export class ComputeCtx {
     const edges = [...this.ctxEdges]
     this.ctxEdges = edges.filter(e1 => {
       // Keep the edge, if there is only one relation and it is not implicit (has same source and target as edge)
-      if (e1.relations.length === 1) {
-        const rel = e1.relations[0]!
+      if (hasAtLeast(e1.relations, 1) && e1.relations.length === 1) {
+        const rel = e1.relations[0]
         if (rel.source === e1.source.id && rel.target === e1.target.id) {
           return true
         }

@@ -9,13 +9,18 @@ describe('element-expr', () => {
   })
 
   it('include elements with relations', () => {
-    const { nodeIds, edgeIds } = computeView([
+    const { nodes, nodeIds, edgeIds } = computeView([
       $include('customer'),
       $include('cloud.frontend'),
       $include('support')
     ])
     expect(nodeIds).toEqual(['support', 'customer', 'cloud.frontend'])
     expect(edgeIds).toEqual(['customer:cloud.frontend', 'support:cloud.frontend'])
+
+    for (const node of nodes) {
+      expect(node).not.toHaveProperty('depth')
+      expect(node).toHaveProperty('level', 0)
+    }
   })
 
   it('include elements with descedants', () => {
@@ -46,7 +51,7 @@ describe('element-expr', () => {
 
   describe('view of cloud', () => {
     it('include *', () => {
-      const { nodeIds, edgeIds } = computeView('cloud', [$include('*')])
+      const { nodes, nodeIds, edgeIds } = computeView('cloud', [$include('*')])
       expect(nodeIds).toEqual([
         'support',
         'customer',
@@ -55,6 +60,20 @@ describe('element-expr', () => {
         'cloud',
         'amazon'
       ])
+      for (const node of nodes) {
+        // cloud has depth 1 (the only node with depth)
+        if (node.id === 'cloud') {
+          expect(node).toHaveProperty('depth', 1)
+        } else {
+          expect(node).not.toHaveProperty('depth')
+        }
+        // nested nodes have level 1
+        if (node.id.startsWith('cloud.')) {
+          expect(node).toHaveProperty('level', 1)
+        } else {
+          expect(node).toHaveProperty('level', 0)
+        }
+      }
       expect(edgeIds).to.have.same.members([
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',
@@ -88,7 +107,7 @@ describe('element-expr', () => {
     })
 
     it('include *, cloud.frontend.*', () => {
-      const { nodeIds, edgeIds } = computeView('cloud', [
+      const { nodes, nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
         $include('cloud.frontend.*')
       ])
@@ -109,6 +128,12 @@ describe('element-expr', () => {
         'cloud.frontend.dashboard:cloud.backend',
         'customer:cloud.frontend.dashboard'
       ])
+
+      // check depth
+      const frontend = nodes.find(n => n.id === 'cloud.frontend')!
+      expect(frontend).toHaveProperty('depth', 1)
+      const cloud = nodes.find(n => n.id === 'cloud')!
+      expect(cloud).toHaveProperty('depth', 2)
     })
   })
 

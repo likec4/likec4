@@ -133,6 +133,7 @@ exports[`compute-element-view > view of cloud 1`] = `
         "cloud.backend",
       ],
       "color": "primary",
+      "depth": 1,
       "description": null,
       "id": "cloud",
       "inEdges": [],
