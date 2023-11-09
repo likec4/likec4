@@ -1,5 +1,5 @@
 import type { Fqn } from '../types'
-import { compareFqnHierarchically, isAncestor } from './fqn'
+import { commonAncestor, compareFqnHierarchically, isAncestor } from './fqn'
 import { either } from 'rambdax'
 
 type Relation = {
@@ -10,8 +10,19 @@ type Relation = {
 type RelationPredicate = (rel: Relation) => boolean
 
 export const compareRelations = <T extends { source: string; target: string }>(a: T, b: T) => {
+  const parentA = commonAncestor(a.source as Fqn, a.target as Fqn)
+  const parentB = commonAncestor(b.source as Fqn, b.target as Fqn)
+  if (parentA && !parentB) {
+    return 1
+  }
+  if (!parentA && parentB) {
+    return -1
+  }
+  const compareParents = parentA && parentB ? compareFqnHierarchically(parentA, parentB) : 0
   return (
-    compareFqnHierarchically(a.source, b.source) || compareFqnHierarchically(a.target, b.target)
+    compareParents ||
+    compareFqnHierarchically(a.source, b.source) ||
+    compareFqnHierarchically(a.target, b.target)
   )
 }
 
