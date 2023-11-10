@@ -99,7 +99,7 @@ export function edgeLabel(text: string) {
     fontsize: 13,
     lineHeight: 1.1,
     bold: text === '[...]',
-    align: 'center'
+    align: 'left'
   })
   return `<${html}>`
 }

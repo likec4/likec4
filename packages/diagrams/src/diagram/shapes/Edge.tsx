@@ -69,6 +69,7 @@ function EdgeArrow({
       lineCap={'round'}
       lineJoin={'miter'}
       perfectDrawEnabled={false}
+      listening={false}
       globalCompositeOperation={globalCompositeOperation}
     />
   )
@@ -195,13 +196,11 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
             key={i}
             x={label.pt[0]}
             y={label.pt[1] - label.fontSize}
-            width={label.width}
             fill={springs.labelColor}
             fontFamily={theme.font}
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
             text={label.text}
-            align={'center'}
             perfectDrawEnabled={false}
             listening={false}
             globalCompositeOperation={globalCompositeOperation}
