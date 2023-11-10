@@ -6,17 +6,17 @@ import {
   EMPTY_STREAM,
   StreamImpl,
   StreamScope,
+  findNodeForProperty,
   getDocument,
   stream,
+  toDocumentSegment,
   type AstNodeDescription,
   type ReferenceInfo,
   type Scope,
-  type Stream,
-  findNodeForProperty,
-  toDocumentSegment
+  type Stream
 } from 'langium'
 import { ast } from '../ast'
-import { elementRef, isElementRefHead, parentFqnElementRef } from '../elementRef'
+import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
@@ -70,11 +70,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   private scopeElementRef(ref: ast.ElementRef): Stream<AstNodeDescription> {
-    const parentNode = ref.$container
-    if (!ast.isElementRef(parentNode)) {
-      throw new Error('Expected be inside ElementRef')
-    }
-    return this.uniqueDescedants(() => parentNode.el.ref)
+    return this.uniqueDescedants(() => ref.el.ref)
   }
 
   private scopeExtendElement(extend: ast.ExtendElement): Stream<AstNodeDescription> {
@@ -82,14 +78,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   private scopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
+    if (viewOf) {
+      return this.uniqueDescedants(() => elementRef(viewOf))
+    }
     if (ext) {
       return stream([ext]).flatMap(v => {
         const view = v.view.ref
         return view ? this.scopeElementView(view) : EMPTY_STREAM
       })
-    }
-    if (viewOf) {
-      return this.uniqueDescedants(() => elementRef(viewOf))
     }
     return EMPTY_STREAM
   }
@@ -98,17 +94,17 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const referenceType = this.reflection.getReferenceType(context)
     try {
       const container = context.container
-      // const path = this.services.workspace.AstNodeLocator.getAstNodePath(node)
-      if (referenceType === ast.Element) {
-        if (ast.isStrictElementRef(container)) {
-          if (isElementRefHead(container)) {
-            return this.getGlobalScope(referenceType)
-          }
-          const parent = parentFqnElementRef(container)
-          return new StreamScope(this.directChildrenOf(parent))
+      if (ast.isFqnElementRef(container) && context.property === 'el') {
+        const parent = container.parent
+        if (!parent) {
+          return this.getGlobalScope(referenceType)
         }
-        if (ast.isElementRef(container) && !isElementRefHead(container)) {
-          return new StreamScope(this.scopeElementRef(container))
+        return new StreamScope(this.directChildrenOf(getFqnElementRef(parent)))
+      }
+      if (ast.isElementRef(container) && context.property === 'el') {
+        const parent = container.parent
+        if (parent) {
+          return new StreamScope(this.scopeElementRef(parent))
         }
       }
       return this.computeScope(container, referenceType)

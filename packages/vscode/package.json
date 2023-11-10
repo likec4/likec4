@@ -9,10 +9,10 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "license": "MIT",
   "files": [
-    "contrib",
     "dist",
     "data",
     "./language-configuration.json",
+    "./likec4.tmLanguage.json",
     "!**/*.map"
   ],
   "repository": {
@@ -36,7 +36,6 @@
     "vscode:prepublish": "run build:turbo",
     "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --open-devtools --extensionDevelopmentPath=. $PROJECT_CWD/examples/diagrams-dev/likec4",
     "typecheck": "tsc --noEmit",
-    "copy:contrib": "shx echo 'copy contrib' && shx mkdir -p contrib && shx --silent cp -r \"$INIT_CWD/../language-server/contrib/*\" contrib/",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r \"$INIT_CWD/../vscode-preview/dist/*\" dist/preview/",
     "copy": "run-p 'copy:*'",
     "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
@@ -84,7 +83,7 @@
           ".likec4",
           ".like-c4"
         ],
-        "configuration": "language-configuration.json",
+        "configuration": "./language-configuration.json",
         "icon": {
           "light": "./data/icon-256-light.png",
           "dark": "./data/icon-256-dark.png"
@@ -95,7 +94,7 @@
       {
         "language": "likec4",
         "scopeName": "source.likec4",
-        "path": "contrib/likec4.tmLanguage.json"
+        "path": "./likec4.tmLanguage.json"
       }
     ],
     "configuration": {
@@ -171,7 +170,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^16.18.59",
     "@types/vscode": "~1.77.0",
-    "@vscode/extension-telemetry": "^0.8.5",
+    "@vscode/extension-telemetry": "^0.9.0",
     "@vscode/vsce": "^2.22.0",
     "esbuild": "^0.19.5",
     "esbuild-plugins-node-modules-polyfill": "^1.6.1",

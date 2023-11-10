@@ -83,26 +83,16 @@ if (import.meta.hot) {
   let $updateViews: undefined | ((update: typeof LikeC4Views) => void)
 
   viewsAtom.onMount = set => {
-    console.log('mount viewsAtom')
     $updateViews = set
     return () => {
-      console.log('unmount viewsAtom')
       $updateViews = undefined
     }
   }
 
   import.meta.hot.accept('/@vite-plugin-likec4/likec4-generated', md => {
     const update = md?.LikeC4Views as typeof LikeC4Views | undefined
-    console.debug('accept ./data update')
-    console.dir(update, {
-      colors: true,
-      compact: false,
-      depth: 10
-    })
     if (update) {
       $updateViews?.(update)
-    } else {
-      console.warn('no update', md)
     }
   })
 }

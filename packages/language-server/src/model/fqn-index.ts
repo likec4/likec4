@@ -1,7 +1,7 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
 import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
-import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, stream } from 'langium'
+import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, getDocument, stream } from 'langium'
 import { isNil } from 'remeda'
 import type { ast } from '../ast'
 import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
@@ -31,13 +31,13 @@ export interface FqnIndexEntry {
 export class FqnIndex {
   protected langiumDocuments: LangiumDocuments
 
-  constructor(services: LikeC4Services) {
+  constructor(private services: LikeC4Services) {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
 
     services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Changed,
-      (docs, _cancelToken) => {
-        logger.debug(`[FqnIndex] onChanged ${docs.length}:\n` + printDocs(docs))
+      DocumentState.IndexedContent,
+      async (docs, _cancelToken) => {
+        logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
         for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
             delete doc.c4fqns
@@ -45,17 +45,6 @@ export class FqnIndex {
             delete doc.c4Specification
             delete doc.c4Relations
             delete doc.c4Views
-          }
-        }
-      }
-    )
-
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.IndexedContent,
-      (docs, _cancelToken) => {
-        logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
-        for (const doc of docs) {
-          if (isLikeC4LangiumDocument(doc)) {
             try {
               computeDocumentFqn(doc, services)
             } catch (e) {
@@ -63,6 +52,7 @@ export class FqnIndex {
             }
           }
         }
+        return Promise.resolve()
       }
     )
     logger.debug(`[FqnIndex] Created`)
@@ -89,18 +79,18 @@ export class FqnIndex {
   }
 
   public getFqn(el: ast.Element): Fqn | null {
-    return ElementOps.readId(el) ?? null
-    // if (fqn) {
-    //   const doc = getDocument(el)
-    //   if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
-    //     return fqn
-    //   }
-    //   const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
-    //   logError(`Clean cached FQN ${fqn} at ${path}`)
-    //   ElementOps.writeId(el, null)
-    //   fqn = null
-    // }
-    // return fqn
+    let fqn = ElementOps.readId(el) ?? null
+    if (fqn) {
+      const doc = getDocument(el)
+      if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
+        return fqn
+      }
+      const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
+      logError(`Clean cached FQN ${fqn} at ${path}`)
+      ElementOps.writeId(el, null)
+      fqn = null
+    }
+    return fqn
   }
 
   public byFqn(fqn: Fqn): Stream<FqnIndexEntry> {

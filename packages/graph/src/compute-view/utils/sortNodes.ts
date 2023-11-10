@@ -1,49 +1,70 @@
 import pkg from '@dagrejs/graphlib'
-import type { ComputedEdge, ComputedNode } from '@likec4/core'
+import {
+  invariant,
+  isSameHierarchy,
+  nonNullable,
+  type ComputedEdge,
+  type ComputedNode
+} from '@likec4/core'
+import { difference } from 'remeda'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
 const { Graph, alg } = pkg
 
 // side effect
-function fillChildren(nodes: readonly ComputedNode[]) {
-  nodes.forEach(node => (node.children = nodes.flatMap(n => (n.parent === node.id ? n.id : []))))
-  return nodes as ComputedNode[]
+function sortChildren(nodes: readonly ComputedNode[]) {
+  nodes.forEach(parent => {
+    if (parent.children.length > 0) {
+      parent.children = nodes.flatMap(n => (n.parent === parent.id ? n.id : []))
+    }
+  })
 }
 
 export function sortNodes(
-  _nodes: readonly ComputedNode[],
+  nodes: readonly ComputedNode[],
   edges: readonly ComputedEdge[]
 ): ComputedNode[] {
   if (edges.length === 0) {
-    return fillChildren(_nodes)
+    return nodes as ComputedNode[]
   }
 
   const g = new Graph({
-    compound: true,
+    compound: false,
     directed: true,
     multigraph: false
   })
 
   for (const e of edges) {
     g.setEdge(e.source, e.target)
+    const source = nonNullable(
+      nodes.find(n => n.id === e.source),
+      'Edge source not found'
+    )
+    if (source.parent && !isSameHierarchy(source.parent, e.target)) {
+      g.setEdge(source.parent, e.target)
+    }
   }
-  for (const n of _nodes) {
+
+  for (const n of nodes) {
     g.setNode(n.id)
     if (n.parent) {
       g.setEdge(n.id, n.parent)
     }
   }
 
-  const unprocessed = [..._nodes]
-  const sorted = [] as ComputedNode[]
+  const orderedIds = alg.postorder(g, g.sources()).reverse()
 
-  const ordered = alg.postorder(g, g.sources()).reverse()
-  for (const id of ordered) {
-    const inx = unprocessed.findIndex(n => n.id === id)
-    if (inx >= 0) {
-      sorted.push(...unprocessed.splice(inx, 1))
-    }
+  if (orderedIds.length < nodes.length) {
+    const nodeIds = nodes.map(n => n.id)
+    const unsorted = difference(nodeIds, orderedIds)
+    orderedIds.unshift(...unsorted)
   }
-  return fillChildren(unprocessed.concat(sorted))
+  invariant(orderedIds.length === nodes.length, 'Not all nodes were processed by graphlib')
+
+  const sorted = orderedIds.flatMap(id => nodes.find(n => n.id === id) ?? [])
+  invariant(sorted.length === nodes.length, 'Not all sorted nodes were found')
+
+  sortChildren(sorted)
+  return sorted
 }

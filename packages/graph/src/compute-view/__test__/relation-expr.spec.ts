@@ -10,13 +10,13 @@ describe('relation-expr', () => {
 
   it('* -> *', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> *')])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud', 'amazon'])
+    expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'amazon'])
     expect(edgeIds).toEqual(['customer:cloud', 'support:cloud', 'cloud:amazon'])
   })
 
   it('* -> cloud.*', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> cloud.*')])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud.frontend'])
+    expect(nodeIds).toEqual(['customer', 'support', 'cloud.frontend'])
     expect(edgeIds).toEqual(['customer:cloud.frontend', 'support:cloud.frontend'])
   })
 
@@ -47,14 +47,14 @@ describe('relation-expr', () => {
   it('* -> cloud.frontend.*', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> cloud.frontend.*')])
     expect(nodeIds).toEqual([
-      'support',
-      'cloud.frontend.adminPanel',
       'customer',
-      'cloud.frontend.dashboard'
+      'cloud.frontend.dashboard',
+      'support',
+      'cloud.frontend.adminPanel'
     ])
-    expect(edgeIds).to.have.same.members([
-      'support:cloud.frontend.adminPanel',
-      'customer:cloud.frontend.dashboard'
+    expect(edgeIds).toEqual([
+      'customer:cloud.frontend.dashboard',
+      'support:cloud.frontend.adminPanel'
     ])
   })
 

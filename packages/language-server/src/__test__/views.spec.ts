@@ -142,7 +142,7 @@ describe('views', () => {
           element.kind = component,
           element.kind != component
         exclude
-          element.tag = #next,
+          element.tag == #next,
           element.tag != #next
       }
     }`
@@ -219,16 +219,29 @@ describe('views', () => {
       }
     }`
 
-  test('invalid comma in style rule').invalid`${model}
-      views {
-        view {
-          include *
-          style backend, {
-            color muted
-          }
+  test('trailing comma in predicates').valid`${model}
+    views {
+      view {
+        include
+          -> backend,
+          -> backend.*,
+        exclude
+          * -> infra,
+          * -> infra.*,
+      }
+    }
+  `
+
+  test('trailing comma in style rule').valid`${model}
+    views {
+      view {
+        include *
+        style backend, {
+          color muted
         }
       }
-      `
+    }
+  `
 
   test('autoLayout').valid`${model}
     views {

@@ -55,10 +55,10 @@ Element:
     kind=[ElementKind:Name] name=Name |
     name=Name Eq kind=[ElementKind:Name]
   )
-  (props+=STRING  // title
-    (props+=STRING  // description
-      (props+=STRING  // technology
-        (props+=STRING)?   // tags
+  (props+=String  // title
+    (props+=String  // description
+      (props+=String  // technology
+        (props+=String)?   // tags
       )?
     )?
   )?
@@ -73,16 +73,17 @@ ElementBody:
     Relation |
     Element
   )*
-CloseBlock;
+  CloseBlock
+;
 
 ElementProperty:
   ElementStringProperty | StyleProperties | LinkProperty;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') Colon? value=STRING SemiColon?;
+  key=('title' | 'technology' | 'description') Colon? value=String SemiColon?;
 
 ExtendElement:
-  'extend' element=StrictElementRef body=ExtendElementBody;
+  'extend' element=FqnElementRef body=ExtendElementBody;
 
 ExtendElementBody:
   OpenBlock
@@ -92,11 +93,12 @@ ExtendElementBody:
   )*
 CloseBlock;
 
-StrictElementRef:
-  el=[Element:Name] (Dot next=StrictElementRef)?;
+//
+FqnElementRef:
+  el=[Element:Name] ({infer FqnElementRef.parent=current} Dot el=[Element:Name])*;
 
 ElementRef:
-  el=[Element:Name] (Dot next=ElementRef)?;
+  el=[Element:Name] ({infer ElementRef.parent=current} Dot el=[Element:Name])*;
 
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
@@ -105,10 +107,13 @@ Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  (arr=RArrow | '-['kind=[RelationshipKind:Name]']->')
+  (RArrow | '-[' kind=[RelationshipKind:Name] ']->')
   target=ElementRef
-  (title=STRING)?
-  body=RelationBody?
+  (title=String)?
+  (OpenBlock
+    tags=Tags?
+    props+=RelationStringProperty*
+  CloseBlock) ?
 ;
 
 ImplicitRelation:
@@ -124,7 +129,7 @@ RelationBody:
 CloseBlock;
 
 RelationStringProperty:
-  key='title' Colon? value=STRING SemiColon?;
+  key='title' Colon? value=String SemiColon?;
 
 
 // Views -------------------------------------
@@ -158,11 +163,11 @@ ElementViewBody:
 CloseBlock;
 
 ViewProperty:
-  key=('title' | 'description') Colon? value=STRING SemiColon?;
+  key=('title' | 'description') Colon? value=String SemiColon?;
 
 type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
 ViewRuleExpression:
-  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression)* Comma?;
+  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression?)*;
 
 ViewRuleLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
@@ -171,7 +176,7 @@ ViewRuleAutoLayout:
   'autoLayout' direction=ViewRuleLayoutDirection;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpression (Comma targets+=ElementExpression)* OpenBlock
+  'style' targets+=ElementExpression (Comma targets+=ElementExpression?)* OpenBlock
     StylePropertiesFragment
   CloseBlock;
 //   'style' targets+=ElementExpression (COMMA? targets+=ElementExpression)* OPEN_BLOCK
@@ -187,12 +192,12 @@ ViewRuleStyle:
 //   source=ElementRef (isReverse?='<-' | '->') target=ElementRef (title=STRING)? SEMI?;
 
 Expression:
-  {infer IncomingExpression} arr=RArrow target=ElementExpression (
-    {infer InOutExpression.inout=current} arr=RArrow
+  {infer IncomingExpression} RArrow target=ElementExpression (
+    {infer InOutExpression.inout=current} RArrow
   )? |
   ElementExpression (
-    {infer RelationExpression.source=current} arr=RArrow target=ElementExpression |
-    {infer OutgoingExpression.source=current} arr=RArrow
+    {infer RelationExpression.source=current} RArrow target=ElementExpression |
+    {infer OutgoingExpression.source=current} RArrow
   )?
 ;
 
@@ -273,14 +278,9 @@ ArrowType returns string:
   'vee'
 ;
 
-ThemeColor returns string:
-  'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
-ElementShape returns string:
-  'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
-Uri returns string:
-  URI_WITH_SCHEMA | URI_RELATIVE;
-RArrow returns string:
-  RARROW;
+ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
+ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+Uri returns string: URI_WITH_SCHEMA | URI_RELATIVE;
 
 Name returns string:
   ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
@@ -310,17 +310,17 @@ hidden terminal WS: (NEWLINE | SPACE)+;
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
-terminal RARROW: '->';
-terminal Dot: /\b\.\b/;
+terminal RArrow: '->';
+terminal Dot: /\b\./;
 terminal NotEqual: '!=';
-terminal Eq: '=';
+terminal Eq: /\={1,2}/ ;
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';
 
-terminal STRING: /"[^"]*"|'[^']*'/;
+terminal String: /"[^"]*"|'[^']*'/;
 
 terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;

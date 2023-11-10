@@ -6,7 +6,7 @@ import {
   type LanguageClientOptions,
   type ServerOptions
 } from 'vscode-languageclient/node'
-import { extensionTitle, globPattern, languageId } from '../const'
+import { extensionName, extensionTitle, globPattern, languageId } from '../const'
 import ExtensionController from '../common/ExtensionController'
 import { hasAtLeast } from '@likec4/core'
 
@@ -63,11 +63,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
-    diagnosticPullOptions: {
-      onChange: true,
-      onSave: true,
-      onTabs: true
-    },
     revealOutputChannelOn: RevealOutputChannelOn.Warn,
     outputChannel,
     traceOutputChannel: outputChannel,

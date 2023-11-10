@@ -122,8 +122,8 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  // const dot = graphviz.unflatten(printToDot(computedView), 1, false, 2)
-  const dot = printToDot(computedView)
+  const dot = graphviz.unflatten(printToDot(computedView), 1, true, 3)
+  // const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -198,8 +198,8 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
         width: 0,
         height: 0
       } as LabelBBox
-      // edge label is inside table with 1.5point padding
-      const labelPadding = pointToPx(1.5)
+      // edge label is inside table with 2point padding
+      const labelPadding = pointToPx(2)
       // first label has the lowest y
       const _first = first(labels)
       labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding

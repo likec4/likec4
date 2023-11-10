@@ -3,7 +3,7 @@ import type { LikeC4Services } from './module'
 import pThrottle from 'p-throttle'
 
 import { nonexhaustive } from '@likec4/core'
-import { URI } from 'langium'
+import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
 import {
   buildDocuments,
@@ -11,8 +11,7 @@ import {
   fetchModel,
   fetchRawModel,
   locate,
-  onDidChangeModel,
-  rebuild
+  onDidChangeModel
 } from './protocol'
 
 export class Rpc {
@@ -61,76 +60,24 @@ export class Rpc {
       return Promise.resolve({ rawmodel })
     })
 
-    connection.onRequest(computeView, ({ viewId }) => {
-      return {
+    connection.onRequest(computeView, async ({ viewId }, _cancelToken) => {
+      return Promise.resolve({
         view: modelBuilder.computeView(viewId)
-      }
-    })
-
-    connection.onRequest(rebuild, async cancelToken => {
-      const changed = LangiumDocuments.all
-        .map(d => {
-          // clean up any computed properties
-          if (isLikeC4LangiumDocument(d)) {
-            delete d.c4Specification
-            delete d.c4Elements
-            delete d.c4Relations
-            delete d.c4Views
-            delete d.c4fqns
-          }
-          return d.uri
-        })
-        .toArray()
-
-      logger.debug(`[ServerRpc] rebuild all documents: [
-        ${changed.map(d => d.toString()).join('\n      ')}
-      ]`)
-      await DocumentBuilder.update(changed, [], cancelToken)
-      return {
-        docs: changed.map(d => d.toString())
-      }
+      })
     })
 
     connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
-      if (docs.length === 0) {
-        logger.debug(`[ServerRpc] received empty request to rebuild`)
-        return
-      }
-      logger.debug(
-        `[ServerRpc] received request to buildDocuments:\n${docs.map(d => '   - ' + d).join('\n')}`
-      )
-      // remove orphaned documents
+      const changed = docs.map(d => URI.parse(d))
+      const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
       const deleted = LangiumDocuments.all
-        .filter(d => !docs.includes(d.uri.toString()))
+        .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri))
         .map(d => d.uri)
         .toArray()
-      const changed = [] as URI[]
-      for (const d of docs) {
-        try {
-          const uri = URI.parse(d)
-          if (LangiumDocuments.hasDocument(uri)) {
-            changed.push(uri)
-          } else {
-            logger.warn(`[ServerRpc] LangiumDocuments does not have document: ${d}`)
-            LangiumDocuments.getOrCreateDocument(uri)
-          }
-        } catch (e) {
-          logError(e)
-        }
-      }
-      if (changed.length !== docs.length) {
-        const all = LangiumDocuments.all.map(d => d.uri.toString()).toArray()
-        logger.warn(
-          `
-[ServerRpc] We have in LangiumDocuments: [
-  ${all.join('\n  ')}
-]
-We rebuild: [
-  ${changed.join('\n  ')}
-]
-  `.trim()
-        )
-      }
+      logger.debug(
+        `[ServerRpc] received request to build:
+  changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
+  deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`
+      )
       await DocumentBuilder.update(changed, deleted, cancelToken)
     })
 

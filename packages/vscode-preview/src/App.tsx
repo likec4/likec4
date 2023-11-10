@@ -1,5 +1,5 @@
 import { nonexhaustive, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
-import { Diagram, useDiagramApi } from '@likec4/diagrams'
+import { Diagram } from '@likec4/diagrams'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
@@ -19,7 +19,6 @@ import {
 const Paddings = [30, 20, 20, 20] as const
 
 const App = () => {
-  const [ref, diagramApi] = useDiagramApi()
   const windowSize = useWindowSize(undefined, false)
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
@@ -121,7 +120,6 @@ const App = () => {
   return (
     <div data-vscode-context='{"preventDefaultContextMenuItems": true}'>
       <Diagram
-        ref={ref}
         className={'likec4-layer likec4-diagram'}
         diagram={view}
         padding={Paddings}
@@ -130,7 +128,6 @@ const App = () => {
         onNodeClick={onNodeClick}
         onNodeContextMenu={(nd, e) => {
           e.cancelBubble = true
-          diagramApi.stage.releaseCapture(e.pointerId)
           lastNodeContextMenuRef.current = nd
         }}
         onStageContextMenu={(stage, e) => {

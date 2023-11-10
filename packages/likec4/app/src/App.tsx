@@ -5,11 +5,14 @@ import { ExportPage, IndexPage, EmbedPage, ViewPage } from './pages'
 import { useRoute } from './router'
 import { Theme } from '@radix-ui/themes'
 import { nonexhaustive } from '@likec4/core'
+import { isNil } from 'remeda'
 
 const Routes = () => {
   const r = useRoute()
 
+  const theme = r.params?.theme
   let page: JSX.Element | null = null
+
   switch (r.route) {
     case 'view': {
       page = <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />
@@ -20,7 +23,14 @@ const Routes = () => {
       break
     }
     case 'embed': {
-      page = <EmbedPage key='embed' viewId={r.params.viewId} padding={r.params.padding} />
+      page = (
+        <EmbedPage
+          key='embed'
+          viewId={r.params.viewId}
+          padding={r.params.padding}
+          transparentBg={isNil(r.params.theme)}
+        />
+      )
       break
     }
     case 'index': {
@@ -32,12 +42,7 @@ const Routes = () => {
   }
 
   return (
-    <Theme
-      hasBackground={r.route !== 'export'}
-      accentColor='indigo'
-      radius='small'
-      appearance={r.route !== 'export' ? r.params?.theme ?? 'inherit' : undefined}
-    >
+    <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
       {page}
       {r.showUI && (
         <Fragment key='ui'>

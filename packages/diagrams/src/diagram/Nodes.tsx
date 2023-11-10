@@ -162,7 +162,7 @@ const NodeShape = memo<NodeShapeProps>(
     const setHoveredNode = useSetHoveredNode()
 
     const _isCompound = isCompound(node)
-    const isNavigatable = !!node.navigateTo && !!onNodeClick
+    const isNavigatable = animate && !!node.navigateTo && !!onNodeClick
 
     const Shape = nodeShape(node)
 
@@ -183,18 +183,16 @@ const NodeShape = memo<NodeShapeProps>(
         <AnimatedGroup
           name={node.id}
           visible={expired !== true}
-          {...(animate && {
-            onPointerEnter: e => {
-              setHoveredNode(node)
-              if (isNavigatable) {
-                mousePointer(e)
-              }
-            },
-            onPointerLeave: e => {
-              setHoveredNode(null)
-              mouseDefault(e)
+          onPointerEnter={e => {
+            setHoveredNode(node)
+            if (isNavigatable) {
+              mousePointer(e)
             }
-          })}
+          }}
+          onPointerLeave={e => {
+            setHoveredNode(null)
+            mouseDefault(e)
+          }}
           {...(onNodeClick && {
             onPointerClick: e => {
               if (DiagramGesture.isDragging || e.evt.button !== 0) {

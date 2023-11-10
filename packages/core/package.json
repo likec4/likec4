@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "rambdax": "^9.1.1",
-    "remeda": "^1.28.0",
+    "remeda": "^1.29.0",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },

@@ -213,8 +213,7 @@ specification {
   element themerelationships
 
   relationship solid {
-    line solid
-    tail none
+    line dotted
     head none
   }
 

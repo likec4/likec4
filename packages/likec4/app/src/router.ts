@@ -1,5 +1,3 @@
-// stores/router.ts
-import { logger } from '@nanostores/logger'
 import { useStore } from '@nanostores/react'
 import { createSearchParams, createRouter, openPage, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
@@ -35,7 +33,8 @@ const $route = computed([$router, $searchParams], (r, v) => {
     return {
       route: 'view' as const,
       params: {
-        viewId: r.params.viewId ?? 'index'
+        viewId: r.params.viewId ?? 'index',
+        theme: asTheme(v.theme) ?? 'dark'
       },
       showUI: 'showUI' in v ? v.showUI === 'true' : true
     }
@@ -53,6 +52,9 @@ const $route = computed([$router, $searchParams], (r, v) => {
   }
   return {
     route: 'index' as const,
+    params: {
+      theme: asTheme(v.theme) ?? 'dark'
+    },
     showUI: 'showUI' in v ? v.showUI === 'true' : true
   }
 })
@@ -77,10 +79,10 @@ export const $pages = {
   }
 } as const
 
-if (import.meta.env.DEV) {
-  logger({
-    $searchParams,
-    $router,
-    $route
-  })
-}
+// if (import.meta.env.DEV) {
+//   logger({
+//     $searchParams,
+//     $router,
+//     $route
+//   })
+// }

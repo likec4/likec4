@@ -3,7 +3,7 @@ import { useClickOutside, useToggle } from '@react-hookz/web/esm'
 
 import { HamburgerMenuIcon, ArrowLeftIcon } from '@radix-ui/react-icons'
 import { useRef } from 'react'
-import { cn } from '~/utils'
+import { cn } from '../../utils'
 
 import { DiagramsTree } from './DiagramsTree'
 import styles from './styles.module.css'

@@ -1,8 +1,8 @@
 import { Diagram } from '@likec4/diagrams'
 import { useWindowSize } from '@react-hookz/web/esm'
-import { useEffect } from 'react'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
+import { useTransparentBackground } from './useTransparentBackground'
 
 type ExportPageProps = {
   viewId: string
@@ -12,18 +12,7 @@ export function ExportPage({ viewId, padding }: ExportPageProps) {
   const { width, height } = useWindowSize()
   const diagram = useLikeC4View(viewId)
 
-  // To get the transparent background
-  // We need to add a class to the HTML element
-  useEffect(() => {
-    const htmlEl = document.body.parentElement
-    if (!htmlEl) return
-    // see ../../likec4.css
-    const classname = 'transparent-bg'
-    htmlEl.classList.add(classname)
-    return () => {
-      htmlEl.classList.remove(classname)
-    }
-  }, [])
+  useTransparentBackground(!!diagram)
 
   if (!diagram) {
     return <DiagramNotFound viewId={viewId} />

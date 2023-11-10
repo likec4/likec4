@@ -34,7 +34,7 @@ export const DisplayModeSelector = () => {
     <Flex
       display={{
         initial: 'none',
-        md: 'flex'
+        sm: 'flex'
       }}
       gap='3'
       align='center'

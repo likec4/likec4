@@ -11,7 +11,7 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
 
   const elements =
     expr.isDescedants === true
-      ? this.graph.children(expr.element)
+      ? this.graph.childrenOrElement(expr.element)
       : [this.graph.element(expr.element)]
 
   this.addElement(...elements)
@@ -171,7 +171,7 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
   }
 
   if (expr.isDescedants) {
-    return this.graph.children(expr.element)
+    return this.graph.childrenOrElement(expr.element)
   } else {
     return [this.graph.element(expr.element)]
   }

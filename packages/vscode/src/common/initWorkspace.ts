@@ -27,6 +27,16 @@ export async function initWorkspace(rpc: Rpc) {
   }
 }
 
+export async function rebuildWorkspace(rpc: Rpc) {
+  try {
+    const docs = await findSources(rpc.client)
+    Logger.info(`rebuild workspace, found ${docs.length} docs`)
+    await rpc.buildDocuments(docs)
+  } catch (e) {
+    logError(e)
+  }
+}
+
 async function findSources(client: LanguageClient) {
   const c2pConverter = client.code2ProtocolConverter
   const uris = await vscode.workspace.findFiles(globPattern)

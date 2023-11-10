@@ -1,6 +1,6 @@
 import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { DocumentState, getDocument } from 'langium'
+import { getDocument } from 'langium'
 import objectHash from 'object-hash'
 import stripIndent from 'strip-indent'
 import type {
@@ -22,7 +22,7 @@ import {
   toElementStyleExcludeDefaults,
   toRelationshipStyleExcludeDefaults
 } from '../ast'
-import { elementRef, fqnElementRef } from '../elementRef'
+import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
@@ -33,20 +33,6 @@ export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
   constructor(private services: LikeC4Services) {
     this.fqnIndex = services.likec4.FqnIndex
-
-    services.shared.workspace.DocumentBuilder.onBuildPhase(
-      DocumentState.Linked,
-      (docs, _cancelToken) => {
-        for (const doc of docs) {
-          if (isLikeC4LangiumDocument(doc)) {
-            delete doc.c4Elements
-            delete doc.c4Specification
-            delete doc.c4Relations
-            delete doc.c4Views
-          }
-        }
-      }
-    )
     logger.debug(`[ModelParser] Created`)
   }
 
@@ -173,10 +159,10 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
-    const tags = this.convertTags(astNode.body)
+    const tags = this.convertTags(astNode)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title = astNode.title ?? astNode.body?.props.find(p => p.key === 'title')?.value ?? ''
+    const title = astNode.title ?? astNode.props.find(p => p.key === 'title')?.value ?? ''
     const id = objectHash({
       astPath,
       source,
@@ -358,7 +344,7 @@ export class LikeC4ModelParser {
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {
     if (ast.isExtendElement(node)) {
-      return fqnElementRef(node.element)
+      return getFqnElementRef(node.element)
     }
     const fqn = this.fqnIndex.getFqn(node)
     invariant(fqn, `Not indexed element: ${this.getAstNodePath(node)}`)

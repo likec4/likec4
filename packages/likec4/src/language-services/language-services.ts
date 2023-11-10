@@ -1,4 +1,4 @@
-import { type ComputedView, type DiagramView, type LikeC4Model } from '@likec4/core'
+import { normalizeError, type ComputedView, type DiagramView, type LikeC4Model } from '@likec4/core'
 import {
   createLanguageServices as createLangium,
   logger as lspLogger,
@@ -136,8 +136,13 @@ export async function mkLanguageServices({
       }
       const diagrams = [] as DiagramView[]
       for (const view of Object.values(views)) {
-        const diagram = await layout(view)
-        diagrams.push(diagram)
+        try {
+          const diagram = await layout(view)
+          diagrams.push(diagram)
+        } catch (e) {
+          const err = normalizeError(e)
+          logger.error(`layout failed for ${view.id}: ${err.stack ?? err.message}`)
+        }
       }
       return diagrams
     })

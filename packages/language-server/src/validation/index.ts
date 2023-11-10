@@ -1,4 +1,5 @@
-import type { ast } from '../ast'
+import { UriUtils, ValidationCategory } from 'langium'
+import { isLikeC4LangiumDocument, type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
@@ -37,7 +38,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     RelationshipKind: relationshipChecks(services),
     IncomingExpression: incomingExpressionChecks(services),
     OutgoingExpression: outgoingExpressionChecks(services)
-  })
+  }, 'slow')
 
   const connection = services.shared.lsp.Connection
   if (connection) {

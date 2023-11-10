@@ -1,7 +1,7 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
-import { easings, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
@@ -51,7 +51,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
     {
       diagram,
-      padding: _padding = NoPadding,
+      padding = NoPadding,
       pannable = true,
       zoomable = true,
       animate = true,
@@ -80,15 +80,15 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
       return value
     })
+    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
+      ? padding
+      : ([padding, padding, padding, padding] as const)
 
-    const width = _width ?? diagram.width
-    const height = _height ?? diagram.height
+    const width = _width ?? diagram.width + paddingLeft + paddingRight
+    const height = _height ?? diagram.height + paddingTop + paddingBottom
 
     const toCenterOnRect = (centerTo: IRect) => {
-      const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(_padding)
-        ? _padding
-        : ([_padding, _padding, _padding, _padding] as const)
-      const container = stageRef.current?.container()
+      const container = containerRef.current
 
       const // Get the space we can see in the web page = size of div containing stage
         // or stage size, whichever is the smaller
@@ -112,9 +112,6 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           x: Math.ceil(paddingLeft + centeringAjustment.x - centerTo.x * scale),
           y: Math.ceil(paddingTop + centeringAjustment.y - centerTo.y * scale)
         }
-      // console.log(`centerTo: \n${JSON.stringify(centerTo, null, 4)}`)
-      // console.log(`viewRect: \n${JSON.stringify(viewRect, null, 4)}`)
-      // console.log(`finalPosition: \n${JSON.stringify(finalPosition, null, 4)}`)
       return {
         ...finalPosition,
         scale
@@ -124,16 +121,19 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const toFitDiagram = () =>
       toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
 
-    const [stageProps, stageSpringApi] = useSpring(() =>
-      initialPosition
-        ? {
-            from: initialPosition,
-            to: toFitDiagram()
-          }
-        : {
-            from: toFitDiagram(),
-            immediate
-          }
+    const [stageProps, stageSpringApi] = useSpring(
+      () =>
+        initialPosition
+          ? {
+              from: initialPosition,
+              to: toFitDiagram(),
+              immediate
+            }
+          : {
+              to: toFitDiagram(),
+              immediate
+            },
+      []
     )
 
     const centerOnRect = (centerTo: IRect) => {
@@ -144,16 +144,10 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       return
     }
 
-    const centerAndFit = (delay = 70, durationMs?: number) => {
+    const centerAndFit = (delay = 0) => {
       stageSpringApi.start({
         to: toFitDiagram(),
         delay,
-        config: durationMs
-          ? {
-              duration: durationMs,
-              easing: easings.easeInOutCubic
-            }
-          : {},
         immediate
       })
       return
@@ -185,13 +179,13 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       () =>
         ({
           get stage() {
-            return nonNullable(stageRef.current, 'not mounted')
+            return stageRef.current
           },
           get diagramView() {
             return refs.current.diagram
           },
           get container() {
-            return nonNullable(stageRef.current?.container(), 'not mounted')
+            return stageRef.current?.container() ?? null
           },
           resetStageZoom: (_immediate?: boolean) => {
             refs.current.resetStageZoom(_immediate)
@@ -205,7 +199,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             }),
           centerAndFit: () => refs.current.centerAndFit()
         }) satisfies DiagramApi,
-      [refs, id, stageRef]
+      [refs, stageRef]
     )
 
     const resetHoveredStates = useResetHoveredStates()
@@ -215,8 +209,12 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     }, [id])
 
     useUpdateEffect(() => {
-      refs.current.centerAndFit(80, 650)
-    }, [id, height, width])
+      refs.current.centerAndFit(200)
+    }, [id])
+
+    useUpdateEffect(() => {
+      refs.current.centerAndFit(50)
+    }, [height, width])
 
     // Recommended by @use-gesture/react
     useEffect(() => {
@@ -234,38 +232,40 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
 
     useGesture(
       {
-        onDragEnd: () => {
-          DiagramGesture.isDragging = false
-        },
         onDrag: state => {
           const {
-            pinching,
+            first,
+            last,
             down,
-            cancel,
             intentional,
             offset: [x, y]
           } = state
-          if (pinching) {
-            return cancel()
+          if (!intentional) {
+            return
           }
-          if (intentional) {
-            DiagramGesture.isDragging = true
-            stageSpringApi.start({
-              to: {
-                x,
-                y
-              },
-              immediate: immediate || down
-            })
+          if (first || last) {
+            DiagramGesture.isDragging = first && !last
           }
+          stageSpringApi.start({
+            to: {
+              x,
+              y
+            },
+            delay: 0,
+            immediate: immediate || (down && !last)
+          })
         },
         onPinch: ({ memo, first, last, origin: [ox, oy], movement: [ms], offset: [scale] }) => {
           if (first) {
+            DiagramGesture.isDragging = true
             const stage = nonNullable(stageRef.current)
             const { x, y } = stage.getAbsolutePosition()
             const tx = Math.round(ox - x)
             const ty = Math.round(oy - y)
             memo = [stage.x(), stage.y(), tx, ty]
+          }
+          if (last) {
+            DiagramGesture.isDragging = false
           }
           const x = Math.round(memo[0] - (ms - 1) * memo[2])
           const y = Math.round(memo[1] - (ms - 1) * memo[3])
@@ -276,9 +276,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               y,
               scale
             },
-            immediate: immediate || !last || !first
+            delay: 0
           })
-
           return memo
         }
       },
@@ -288,23 +287,28 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           target: containerRef,
           enabled: pannable,
           threshold: 4,
-          from: () => [stageProps.x.get(), stageProps.y.get()],
-          pointer: {
-            buttons: -1,
-            keys: false,
-            touch: true,
-            capture: true
-          }
+          from: () => [stageRef.current?.x() ?? 0, stageRef.current?.y() ?? 0],
+          pointer: Object.assign(
+            {
+              keys: false,
+              mouse: true,
+              capture: true
+            },
+            !onNodeContextMenu &&
+              !onStageContextMenu && {
+                buttons: -1
+              }
+          )
         },
         pinch: {
           target: containerRef,
           pointer: {
             touch: true
           },
+          from: () => [stageRef.current?.scaleX() ?? 1, 0],
           enabled: zoomable,
-          // eventOptions
           scaleBounds: { min: minZoom, max: maxZoom + 0.4 },
-          rubberband: 0.04,
+          rubberband: 0.045,
           pinchOnWheel: true
         }
       }
