@@ -43,7 +43,9 @@ function wrapToHTML({
           fontsize * lineHeight
         )}">${text}</TD></TR>`
     )
-  return `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
+  return `<TABLE ALIGN="${
+    align?.toUpperCase() ?? 'TEXT'
+  }" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
 export function nodeIcon(src: string) {
   return `<IMG SRC="${src}" SCALE="TRUE"/>`
@@ -87,7 +89,7 @@ export function nodeLabel(node: ComputedNode) {
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${rows}</TABLE>>`
+  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {
@@ -97,7 +99,7 @@ export function edgeLabel(text: string) {
     fontsize: 13,
     lineHeight: 1.1,
     bold: text === '[...]',
-    align: 'left'
+    align: 'center'
   })
-  return `<<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="1.5" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<${html}>`
 }
