@@ -5,8 +5,8 @@ describe('wildcard-expr', () => {
   it('include *', () => {
     const { nodeIds, edgeIds } = computeView('cloud', [$include('*')])
     expect(nodeIds).toEqual([
-      'support',
       'customer',
+      'support',
       'cloud.frontend',
       'cloud.backend',
       'cloud',

@@ -1,12 +1,11 @@
 .diagramBg {
+  overscroll-behavior: none;
   overflow: hidden;
-  --konva-bg-size: 24px;
-  --konva-bg-position-x: 0;
-  --konva-bg-position-y: 0;
+  --diagram-bg-size: 24px;
+  --diagram-bg-position-x: 0;
+  --diagram-bg-position-y: 0;
 
   :global(.konvajs-content) {
-    overflow: hidden;
-    overscroll-behavior: none;
 
     &::before {
       content: '';
@@ -23,8 +22,8 @@
       background-origin: border-box;
       background-attachment: fixed;
       background-image: radial-gradient(var(--gray-a3) 12%, transparent 12%);
-      background-position: var(--konva-bg-position-x) var(--konva-bg-position-y);
-      background-size: var(--konva-bg-size) var(--konva-bg-size);
+      background-position: var(--diagram-bg-position-x) var(--diagram-bg-position-y);
+      background-size: var(--diagram-bg-size) var(--diagram-bg-size);
       z-index: -1;
     }
   }

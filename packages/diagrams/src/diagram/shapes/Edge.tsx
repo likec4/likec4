@@ -65,8 +65,7 @@ function EdgeArrow({
       closed={true}
       fill={isOutline ? undefined : springs.lineColor}
       stroke={springs.lineColor}
-      strokeWidth={1.6}
-      hitStrokeWidth={5}
+      strokeWidth={1}
       lineCap={'round'}
       lineJoin={'miter'}
       perfectDrawEnabled={false}
@@ -86,7 +85,7 @@ function EdgeLabelBg({
   isHovered: boolean
   springs: EdgeProps['springs']
 }) {
-  const padding = 4
+  const padding = 2
   const props = useSpring({
     to: {
       x: labelBBox.x - padding,
@@ -196,11 +195,13 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
             key={i}
             x={label.pt[0]}
             y={label.pt[1] - label.fontSize}
+            width={label.width}
             fill={springs.labelColor}
             fontFamily={theme.font}
             fontSize={label.fontSize}
             fontStyle={label.fontStyle ?? 'normal'}
             text={label.text}
+            align={'center'}
             perfectDrawEnabled={false}
             listening={false}
             globalCompositeOperation={globalCompositeOperation}

@@ -80,6 +80,12 @@ export class LikeC4ModelGraph {
     return this._childrenOf(id).flatMap(id => this.#elements.get(id) ?? [])
   }
 
+  // Get children or element itself if no children
+  public childrenOrElement(id: Fqn) {
+    const children = this.children(id)
+    return children.length > 0 ? children : [this.element(id)]
+  }
+
   // Get all sibling (i.e. same parent)
   public siblings(element: Fqn | Element) {
     const id = isString(element) ? element : element.id
@@ -110,7 +116,7 @@ export class LikeC4ModelGraph {
     const result = [] as Array<RelationEdge>
     for (const _other of others) {
       const other = isString(_other) ? this.element(_other) : _other
-      if (isSameHierarchy(element.id, other.id)) {
+      if (isSameHierarchy(element, other)) {
         continue
       }
 

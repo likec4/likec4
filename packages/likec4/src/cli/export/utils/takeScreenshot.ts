@@ -14,7 +14,7 @@ type TakeScreenshotParams = {
 
 export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: TakeScreenshotParams) {
   return async function takeScreenshot(view: DiagramView) {
-    const padding = 20
+    const padding = 24
     const url = pageUrl(view) + `?padding=${padding}`
     logger.info(`${k.dim('export')} ${view.id} ${k.underline(k.dim(url))}`)
 

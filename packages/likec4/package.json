@@ -36,6 +36,7 @@
     "dev": "tsx watch src/cli/index.ts serve dev",
     "dev:bigbank": "tsx watch src/cli/index.ts serve ../../docs/likec4/bigbank",
     "dev:template": "tsx watch src/cli/index.ts serve ../create-likec4/template",
+    "dev:example": "tsx watch src/cli/index.ts serve ../../examples/diagrams-dev/likec4",
     "cli": "tsx src/cli/index.ts",
     "cli:serve": "tsx watch src/cli/index.ts serve dev",
     "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",

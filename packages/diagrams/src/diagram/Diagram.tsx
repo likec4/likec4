@@ -1,7 +1,7 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
-import { easings, useSpring } from '@react-spring/konva'
+import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp } from 'rambdax'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
@@ -112,9 +112,6 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           x: Math.ceil(paddingLeft + centeringAjustment.x - centerTo.x * scale),
           y: Math.ceil(paddingTop + centeringAjustment.y - centerTo.y * scale)
         }
-      // console.log(`centerTo: \n${JSON.stringify(centerTo, null, 4)}`)
-      // console.log(`viewRect: \n${JSON.stringify(viewRect, null, 4)}`)
-      // console.log(`finalPosition: \n${JSON.stringify(finalPosition, null, 4)}`)
       return {
         ...finalPosition,
         scale
@@ -239,6 +236,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           const {
             first,
             last,
+            down,
             intentional,
             offset: [x, y]
           } = state
@@ -253,7 +251,8 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               x,
               y
             },
-            delay: 0
+            delay: 0,
+            immediate: immediate || (down && !last)
           })
         },
         onPinch: ({ memo, first, last, origin: [ox, oy], movement: [ms], offset: [scale] }) => {

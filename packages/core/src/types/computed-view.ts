@@ -26,6 +26,8 @@ export interface ComputedNode {
   icon?: IconUrl
   navigateTo?: ViewID
   level: number
+  // For compound nodes, the max depth of nested nodes
+  depth?: number
 }
 
 export interface ComputedEdge {
