@@ -1315,7 +1315,7 @@ __metadata:
     "@use-gesture/react": "npm:^10.3.0"
     body-scroll-lock-upgrade: "npm:^1.0.4"
     execa: "npm:^8.0.1"
-    jotai: "npm:^2.5.0"
+    jotai: "npm:^2.5.1"
     khroma: "npm:^2.1.0"
     konva: "npm:^9.2.3"
     rambdax: "npm:^9.1.1"
@@ -1351,7 +1351,7 @@ __metadata:
     body-scroll-lock-upgrade: "npm:^1.0.4"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^1.2.1"
-    jotai: "npm:^2.5.0"
+    jotai: "npm:^2.5.1"
     langium: "npm:^2.1.2"
     likec4: "workspace:*"
     lucide-react: "npm:^0.288.0"
@@ -9416,9 +9416,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "jotai@npm:2.5.0"
+"jotai@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "jotai@npm:2.5.1"
   peerDependencies:
     "@types/react": ">=17.0.0"
     react: ">=17.0.0"
@@ -9427,7 +9427,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 8485043226c9e208c29cf5e636d50d655dc261a13e5aad505833ac3dcb60f832e35d5e8b9f76390a0bb3a5d07f1df5eea0b06b7e83c14084f0ec018c8323da60
+  checksum: acd85e669eeb3bb86feef26d53050611488143f8d2311e8b714a65708b8a7c383d0677285240daf2cb1762fee9dc008edd09048a0ba161e99ff1c096efd81cfd
   languageName: node
   linkType: hard
 
@@ -9850,7 +9850,7 @@ __metadata:
     esbuild-node-externals: "npm:^1.9.0"
     execa: "npm:^8.0.1"
     get-port: "npm:^7.0.0"
-    jotai: "npm:^2.5.0"
+    jotai: "npm:^2.5.1"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:^0.9.4"
