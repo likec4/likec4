@@ -3969,13 +3969,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prompts@npm:^2.4.7":
-  version: 2.4.7
-  resolution: "@types/prompts@npm:2.4.7"
+"@types/prompts@npm:^2.4.8":
+  version: 2.4.8
+  resolution: "@types/prompts@npm:2.4.8"
   dependencies:
     "@types/node": "npm:*"
     kleur: "npm:^3.0.3"
-  checksum: 2c57b3c419b4be72039dcd0d099c4643a5f7d06cf20156709e87498cd4f6cb4000edc1cafde95786b46d137eb5ace01e3ba83dbc5f29cb69f4b778fdd42b7d81
+  checksum: 5422ae432c107a083a22016212fba5fc736e789f6168527961badb180485f816b1ad136002e7a614f44bc03285c76b7e2d09e0fe8240229eff7a2000a200a7f7
   languageName: node
   linkType: hard
 
@@ -5901,7 +5901,7 @@ __metadata:
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
     "@types/node": "npm:^20.8.7"
-    "@types/prompts": "npm:^2.4.7"
+    "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
     tsx: "npm:^3.14.0"
