@@ -180,8 +180,8 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument) {
-    const docviews = doc.parseResult.value.views.flatMap(v => v.views)
-    for (const view of docviews) {
+    const views = doc.parseResult.value.views.flatMap(v => v.views)
+    for (const view of views) {
       try {
         const v = this.parseElementView(view)
         doc.c4Views.push(v)

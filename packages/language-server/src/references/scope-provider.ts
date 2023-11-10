@@ -79,7 +79,14 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
 
   private scopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
     if (viewOf) {
-      return this.uniqueDescedants(() => elementRef(viewOf))
+      // If we have "view of parent.target"
+      // we make "target" resolvable inside ElementView
+      return stream([viewOf])
+        .flatMap(v => {
+          const el = elementRef(v)
+          return el ? this.descriptions.createDescription(el, el.name) : []
+        })
+        .concat(this.uniqueDescedants(() => elementRef(viewOf)))
     }
     if (ext) {
       return stream([ext]).flatMap(v => {

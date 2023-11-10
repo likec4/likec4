@@ -1,6 +1,6 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { pluck } from 'rambdax'
-import { vi, describe, it } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 import { createTestServices } from '../../test'
 
 vi.mock('../../logger')
@@ -11,7 +11,7 @@ function expectCompletion() {
 }
 
 describe('Completions', () => {
-  it('should correct keywords inside specification', async () => {
+  it('should suggest keywords inside specification', async () => {
     const text = `
       <|>spe<|>cification {
         <|>el<|>ement frontend {
@@ -80,7 +80,7 @@ describe('Completions', () => {
     })
   })
 
-  it('should correct keywords inside model', async ({ expect }) => {
+  it('should suggest keywords inside model', async () => {
     const text = `
       specification {
         element actor
@@ -102,8 +102,7 @@ describe('Completions', () => {
       index: 0,
       assert: completions => {
         expect(completions.items).not.to.be.empty
-        expect(completions.items[0]!.label).toEqual('actor')
-        expect(completions.items[1]!.label).toEqual('system')
+        expect(pluck('label', completions.items)).to.include.members(['actor', 'system', 'extend'])
       }
     })
     await completion({
@@ -121,7 +120,9 @@ describe('Completions', () => {
           'technology',
           'description',
           'link',
-          'style'
+          'style',
+          'sys',
+          'this'
         ])
       }
     })
@@ -146,6 +147,106 @@ describe('Completions', () => {
       text,
       index: 6,
       expectedItems: ['customer', 'sys']
+    })
+  })
+
+  it('should suggest keywords inside element', async () => {
+    const text = `
+      specification {
+        element actor
+        element system
+        tag deprecated
+      }
+      model {
+        actor customer {
+          <|>
+        }
+        <|>
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const labels = pluck('label', completions.items)
+        expect(labels).to.include.members([
+          '#deprecated',
+          'title',
+          'technology',
+          'description',
+          'link',
+          'style',
+          'this',
+          'actor',
+          'system'
+        ])
+        expect(labels).not.to.include.members(['extend'])
+      }
+    })
+    await completion({
+      text,
+      index: 1,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        expect(pluck('label', completions.items)).to.include.members([
+          'customer',
+          'extend',
+          'actor',
+          'system'
+        ])
+      }
+    })
+  })
+
+  it('should suggest nested elements for elementref', async () => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        root = component {
+          c1 = component {
+            c2 = component {
+              notunique = component
+            }
+            notunique = component
+          }
+        }
+        cloud = component {
+          -> <|>root.<|>c1.<|>
+        }
+        cloud2 = component {
+          -> c2.<|>
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: ['root', 'cloud', 'cloud2', 'c1', 'c2', 'notunique'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: ['c1', 'c2'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: ['c2', 'notunique'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 3,
+      expectedItems: ['notunique']
     })
   })
 })

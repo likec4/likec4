@@ -195,7 +195,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "opens",
           "parent": null,
           "relations": [
-            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+            "20105a407235e700d090af3a112b7e54ffa4961b",
           ],
           "source": "client",
           "target": "system.frontend",

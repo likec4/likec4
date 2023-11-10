@@ -45,14 +45,15 @@ function getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   constructor(private services: LikeC4Services) {}
 
-  getSymbols({ parseResult: { value } }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
-    const specification = first(value.specifications)
-    const model = first(value.models)
-    const views = first(value.views)
+  getSymbols({
+    parseResult: {
+      value: { specifications, models, views }
+    }
+  }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     return [
-      () => specification && this.getSpecSymbol(specification),
-      () => model && this.getModelSymbol(model),
-      () => views && this.getModelViewsSymbol(views)
+      ...specifications.map(s => () => this.getSpecSymbol(s)),
+      ...models.map(s => () => this.getModelSymbol(s)),
+      ...views.map(s => () => this.getModelViewsSymbol(s))
     ].flatMap(fn => {
       try {
         return fn() ?? []
