@@ -150,10 +150,25 @@ describe('views', () => {
   // Two api: in backend and auth
   test('viewRules inambiqutes').invalid`${model}
     views {
+      view {
+        include api
+      }
+    }`
+  test('viewRules inambiqutes "of"').invalid`${model}
+    views {
       view of system {
         include api
       }
     }`
+
+  // api is resolved from "of"
+  test('viewRules resolve reference to "of" ').valid`${model}
+    views {
+      view of backend.api {
+        include api
+      }
+    }
+    `
 
   test('viewRules IncludeScopeOf').valid`${model}
     views {

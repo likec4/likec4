@@ -237,11 +237,15 @@ export class LikeC4ModelBuilder {
       }
       const index = new LikeC4ModelGraph(model)
 
-      const views = R.pipe(
-        R.values(model.views),
-        R.map(view => computeView(view, index).view),
-        R.compact
-      )
+      const views = [] as c4.ComputedView[]
+      for (const view of R.values(model.views)) {
+        const result = computeView(view, index)
+        if (!result.isSuccess) {
+          logWarnError(result.error)
+          continue
+        }
+        views.push(result.view)
+      }
       assignNavigateTo(views)
       return {
         elements: model.elements,

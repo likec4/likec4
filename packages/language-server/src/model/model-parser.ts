@@ -64,8 +64,8 @@ export class LikeC4ModelParser {
   }
 
   private parseSpecification({ parseResult, c4Specification }: ParsedLikeC4LangiumDocument) {
-    const element_specs = parseResult.value.specification?.elements
-    if (element_specs) {
+    const element_specs = parseResult.value.specifications.flatMap(s => s.elements)
+    if (element_specs.length > 0) {
       for (const { kind, style } of element_specs) {
         if (kind.name in c4Specification.kinds) {
           logger.warn(`Duplicate specification for element kind ${kind.name}`)
@@ -81,8 +81,8 @@ export class LikeC4ModelParser {
       }
     }
 
-    const relations_specs = parseResult.value.specification?.relationships
-    if (relations_specs) {
+    const relations_specs = parseResult.value.specifications.flatMap(s => s.relationships)
+    if (relations_specs.length > 0) {
       for (const { kind, props } of relations_specs) {
         if (kind.name in c4Specification.relationships) {
           logger.warn(`Duplicate specification for relationship kind ${kind.name}`)
@@ -180,15 +180,13 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument) {
-    const docviews = doc.parseResult.value.views?.views
-    if (docviews) {
-      for (const view of docviews) {
-        try {
-          const v = this.parseElementView(view)
-          doc.c4Views.push(v)
-        } catch (e) {
-          logWarnError(e)
-        }
+    const views = doc.parseResult.value.views.flatMap(v => v.views)
+    for (const view of views) {
+      try {
+        const v = this.parseElementView(view)
+        doc.c4Views.push(v)
+      } catch (e) {
+        logWarnError(e)
       }
     }
   }

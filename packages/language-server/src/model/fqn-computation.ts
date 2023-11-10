@@ -9,12 +9,12 @@ type TraversePair = [el: ast.Element | ast.ExtendElement | ast.Relation, parent:
 
 export function computeDocumentFqn(document: LikeC4LangiumDocument, services: LikeC4Services) {
   const c4fqns = (document.c4fqns = new MultiMap())
-  const { model } = document.parseResult.value
-  if (!model?.elements) {
+  const elements = document.parseResult.value.models.flatMap(m => m.elements)
+  if (elements.length === 0) {
     return
   }
   const locator = services.workspace.AstNodeLocator
-  const traverseStack: TraversePair[] = model.elements.map(el => [el, null])
+  const traverseStack: TraversePair[] = elements.map(el => [el, null])
   let pair
   while ((pair = traverseStack.shift())) {
     const [el, parent] = pair

@@ -1,5 +1,5 @@
 import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
-import { compact, concat, isEmpty, map, pipe } from 'remeda'
+import { compact, concat, first, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -45,12 +45,15 @@ function getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   constructor(private services: LikeC4Services) {}
 
-  getSymbols(document: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
-    const { specification, model, views } = document.parseResult.value
+  getSymbols({
+    parseResult: {
+      value: { specifications, models, views }
+    }
+  }: LikeC4LangiumDocument): MaybePromise<DocumentSymbol[]> {
     return [
-      () => specification && this.getSpecSymbol(specification),
-      () => model && this.getModelSymbol(model),
-      () => views && this.getModelViewsSymbol(views)
+      ...specifications.map(s => () => this.getSpecSymbol(s)),
+      ...models.map(s => () => this.getModelSymbol(s)),
+      ...views.map(s => () => this.getModelViewsSymbol(s))
     ].flatMap(fn => {
       try {
         return fn() ?? []

@@ -45,14 +45,14 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "relations": {
-    "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23": {
-      "id": "171cae8ab349b2ef3f3d40f23c7a7fa2d46a2b23",
+    "37cee57b4268d779f4074e0b66ea6fa0b65823c3": {
+      "id": "37cee57b4268d779f4074e0b66ea6fa0b65823c3",
       "source": "system.frontend",
       "target": "system.backend",
       "title": "requests",
     },
-    "6f3533077304f2e812d6c9cfdb6be977e23efe3d": {
-      "id": "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+    "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6": {
+      "id": "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6",
       "source": "client",
       "target": "system.frontend",
       "title": "",
@@ -68,7 +68,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "label": null,
           "parent": null,
           "relations": [
-            "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
+            "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6",
           ],
           "source": "client",
           "target": "system",
@@ -171,17 +171,17 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "relations": {
-    "671e3db5eb605d5f245f247d95925bd0953e0e4c": {
-      "id": "671e3db5eb605d5f245f247d95925bd0953e0e4c",
-      "source": "system.frontend",
-      "target": "system.backend.api",
-      "title": "requests",
-    },
-    "99bffdfd5c78e024393e6223cd9b19225321a5e3": {
-      "id": "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+    "20105a407235e700d090af3a112b7e54ffa4961b": {
+      "id": "20105a407235e700d090af3a112b7e54ffa4961b",
       "source": "client",
       "target": "system.frontend",
       "title": "opens",
+    },
+    "b3da58159b2f91810338032ee6f95f4e9322a459": {
+      "id": "b3da58159b2f91810338032ee6f95f4e9322a459",
+      "source": "system.frontend",
+      "target": "system.backend.api",
+      "title": "requests",
     },
   },
   "views": {
@@ -195,7 +195,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "opens",
           "parent": null,
           "relations": [
-            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+            "20105a407235e700d090af3a112b7e54ffa4961b",
           ],
           "source": "client",
           "target": "system.frontend",
@@ -205,7 +205,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "requests",
           "parent": null,
           "relations": [
-            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+            "b3da58159b2f91810338032ee6f95f4e9322a459",
           ],
           "source": "system.frontend",
           "target": "system.backend",
@@ -286,7 +286,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "opens",
           "parent": null,
           "relations": [
-            "99bffdfd5c78e024393e6223cd9b19225321a5e3",
+            "20105a407235e700d090af3a112b7e54ffa4961b",
           ],
           "source": "client",
           "target": "system",
@@ -346,7 +346,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "requests",
           "parent": null,
           "relations": [
-            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+            "b3da58159b2f91810338032ee6f95f4e9322a459",
           ],
           "source": "system.frontend",
           "target": "system.backend.api",
@@ -446,8 +446,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec 1`] = `
     },
   },
   "relations": {
-    "c17e99a67ebce9c8314a906b7cbb53b77a8d103e": {
-      "id": "c17e99a67ebce9c8314a906b7cbb53b77a8d103e",
+    "6af4d5e25f365ec73b16b0625641967bfdcf1b90": {
+      "id": "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
       "kind": "async",
       "source": "user1",
       "target": "user2",
@@ -464,7 +464,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec 1`] = `
           "label": null,
           "parent": null,
           "relations": [
-            "c17e99a67ebce9c8314a906b7cbb53b77a8d103e",
+            "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
           ],
           "source": "user1",
           "target": "user2",

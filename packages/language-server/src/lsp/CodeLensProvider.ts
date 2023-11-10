@@ -16,8 +16,8 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return
     }
-
-    return doc.parseResult.value.views?.views.flatMap<CodeLens>(ast => {
+    const views = doc.parseResult.value.views.flatMap(v => v.views)
+    return views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const viewId = ElementViewOps.readId(ast)
       const range = ast.$cstNode?.range

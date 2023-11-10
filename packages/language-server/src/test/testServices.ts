@@ -15,21 +15,21 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     name: 'test',
     uri: workspaceUri.toString()
   }
-  const initPromise = services.shared.workspace.WorkspaceManager.initializeWorkspace([
-    workspaceFolder
-  ])
-
-  // Workaround to set protected folders property
-  void initPromise.finally(() => {
+  let isInitialized = false
+  const init = async () => {
+    if (isInitialized) return Promise.resolve()
+    isInitialized = true
+    await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+    // Workaround to set protected folders property
     Object.assign(services.shared.workspace.WorkspaceManager, {
       folders: [workspaceFolder]
     })
-  })
+  }
 
   let documentIndex = 1
 
   const parse = async (input: string, uri?: string) => {
-    await initPromise
+    await init()
     const docUri = Utils.resolvePath(
       workspaceUri,
       './src/',
@@ -45,7 +45,6 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
-    await initPromise
     const document = typeof input === 'string' ? await parse(input, uri) : input
     await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
@@ -58,7 +57,6 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
 
   const validateAll = async () => {
-    await initPromise
     const docs = langiumDocuments.all.toArray()
     await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
