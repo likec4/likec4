@@ -41,14 +41,21 @@ exports[`printToDot > computedAmazonView 1`] = `
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
-    margin = 0.389;
+    margin = 0.362;
     ordering = "out";
   ];
-  "backend" [
-    likec4_id = "cloud.backend";
+  subgraph "cluster_cloud" {
+    likec4_id = "cloud";
     likec4_level = 0;
-    label = <<TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Backend</FONT></TD></TR></TABLE>>;
-  ];
+    likec4_depth = 1;
+    margin = 32;
+    label = <<B>CLOUD</B>>;
+    "backend" [
+      likec4_id = "cloud.backend";
+      likec4_level = 1;
+      label = <<TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Backend</FONT></TD></TR></TABLE>>;
+    ];
+  }
   subgraph "cluster_amazon" {
     likec4_id = "amazon";
     likec4_level = 0;
@@ -111,7 +118,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
-    margin = 0.389;
+    margin = 0.362;
     ordering = "out";
   ];
   "support" [
@@ -160,11 +167,10 @@ exports[`printToDot > computedCloud3levels 1`] = `
         likec4_id = "cloud.backend.storage";
         likec4_level = 2;
         width = 4.445;
-        height = 2.223;
+        height = 2.362;
         color = "#2563eb";
         penwidth = 2;
         shape = "cylinder";
-        margin = "0.334,0.445";
         label = <<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Backend Storage</FONT></TD></TR></TABLE></TD></TR>,<TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The backend storage is a component that</FONT></TD></TR>,<TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">stores data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
       ];
       "graphql" -> "storage" [
@@ -240,7 +246,7 @@ exports[`printToDot > computedCloudView 1`] = `
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
-    margin = 0.389;
+    margin = 0.362;
     ordering = "out";
   ];
   "customer" [
@@ -267,7 +273,7 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" [
       likec4_id = "cloud.frontend";
       likec4_level = 1;
-      margin = "0.334,0.445";
+      margin = "0.362,0.417";
       label = <<TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Frontend</FONT></TD></TR></TABLE>>;
     ];
     "backend" [
@@ -338,7 +344,7 @@ exports[`printToDot > computedIndexView 1`] = `
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
-    margin = 0.389;
+    margin = 0.362;
     ordering = "out";
   ];
   "customer" [

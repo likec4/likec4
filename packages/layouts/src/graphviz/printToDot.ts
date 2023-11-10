@@ -115,7 +115,7 @@ export function toGraphvisModel({
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
     [_.nojustify]: true,
-    [_.margin]: pxToInch(28),
+    [_.margin]: pxToInch(26),
     [_.ordering]: 'out'
   })
 
@@ -197,7 +197,7 @@ export function toGraphvisModel({
     switch (elementNode.shape) {
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(24)},${pxToInch(32)}`
+          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`
         })
         break
       }
@@ -205,7 +205,7 @@ export function toGraphvisModel({
         node.attributes.apply({
           [_.width]: pxToInch(320),
           [_.height]: pxToInch(160),
-          [_.margin]: `${pxToInch(32)},${pxToInch(24)}`
+          [_.margin]: `${pxToInch(30)},${pxToInch(26)}`
         })
         break
       }
@@ -213,11 +213,10 @@ export function toGraphvisModel({
       case 'storage': {
         node.attributes.apply({
           [_.width]: pxToInch(320),
-          [_.height]: pxToInch(160),
+          [_.height]: pxToInch(170),
           [_.color]: Theme.elements[elementNode.color].stroke,
           [_.penwidth]: pxToPoints(2),
-          [_.shape]: 'cylinder',
-          [_.margin]: `${pxToInch(24)},${pxToInch(32)}`
+          [_.shape]: 'cylinder'
         })
         break
       }
