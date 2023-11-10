@@ -53,7 +53,7 @@
     "autoprefixer": "^10.4.16",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
-    "jotai": "^2.5.0",
+    "jotai": "^2.5.1",
     "nanostores": "^0.9.4",
     "playwright-core": "^1.38.1",
     "postcss": "^8.4.31",

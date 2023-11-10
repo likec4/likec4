@@ -37,7 +37,7 @@
     "body-scroll-lock-upgrade": "^1.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
-    "jotai": "^2.5.0",
+    "jotai": "^2.5.1",
     "langium": "^2.1.2",
     "lucide-react": "^0.288.0",
     "monaco-editor": "0.36.1",
