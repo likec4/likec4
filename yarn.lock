@@ -1352,7 +1352,7 @@ __metadata:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^1.2.1"
     jotai: "npm:^2.5.0"
-    langium: "npm:^2.0.2"
+    langium: "npm:^2.1.2"
     likec4: "workspace:*"
     lucide-react: "npm:^0.288.0"
     monaco-editor: "npm:0.36.1"
@@ -1373,13 +1373,13 @@ __metadata:
     typescript: "npm:^5.2.2"
     typescript-plugin-css-modules: "npm:^5.0.2"
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
-    vscode-jsonrpc: "npm:8.1.0"
-    vscode-languageclient: "npm:8.1.0"
-    vscode-languageserver: "npm:8.1.0"
-    vscode-languageserver-protocol: "npm:3.17.3"
+    vscode-jsonrpc: "npm:8.2.0"
+    vscode-languageclient: "npm:9.0.1"
+    vscode-languageserver: "npm:9.0.1"
+    vscode-languageserver-protocol: "npm:3.17.5"
     vscode-oniguruma: "npm:1.7.0"
     vscode-textmate: "npm:^9.0.0"
-    vscode-uri: "npm:~3.0.7"
+    vscode-uri: "npm:3.0.8"
   languageName: unknown
   linkType: soft
 
@@ -1398,7 +1398,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@types/node": "npm:^20.8.7"
     json5: "npm:^2.2.3"
-    langium: "npm:^2.0.2"
+    langium: "npm:^2.1.2"
     rambdax: "npm:^9.1.1"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
@@ -1430,8 +1430,8 @@ __metadata:
     "@types/node": "npm:^20.8.7"
     "@types/object-hash": "npm:^3.0.5"
     execa: "npm:^8.0.1"
-    langium: "npm:^2.0.2"
-    langium-cli: "npm:^2.0.1"
+    langium: "npm:^2.1.2"
+    langium-cli: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
@@ -1442,9 +1442,10 @@ __metadata:
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^0.34.6"
-    vscode-languageserver: "npm:~8.1.0"
-    vscode-languageserver-protocol: "npm:~3.17.3"
-    vscode-uri: "npm:~3.0.7"
+    vscode-jsonrpc: "npm:8.2.0"
+    vscode-languageserver: "npm:9.0.1"
+    vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-uri: "npm:3.0.8"
   languageName: unknown
   linkType: soft
 
@@ -5312,7 +5313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chevrotain@npm:^11.0.1":
+"chevrotain@npm:~11.0.3":
   version: 11.0.3
   resolution: "chevrotain@npm:11.0.3"
   dependencies:
@@ -5611,10 +5612,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:~10.0.0":
-  version: 10.0.1
-  resolution: "commander@npm:10.0.1"
-  checksum: 8799faa84a30da985802e661cc9856adfaee324d4b138413013ef7f087e8d7924b144c30a1f1405475f0909f467665cd9e1ce13270a2f41b141dab0b7a58f3fb
+"commander@npm:~11.0.0":
+  version: 11.0.0
+  resolution: "commander@npm:11.0.0"
+  checksum: 71cf453771c15d4e94afdd76a1e9bb31597dbc5f33130a1d399a4a7bc14eac765ebca7f0e077f347e5119087f6faa0017fd5e3cb6e4fc5c453853334c26162bc
   languageName: node
   linkType: hard
 
@@ -7697,7 +7698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.1, fs-extra@npm:~11.1.0":
+"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.1, fs-extra@npm:~11.1.1":
   version: 11.1.1
   resolution: "fs-extra@npm:11.1.1"
   dependencies:
@@ -9683,43 +9684,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "langium-cli@npm:2.0.1"
+"langium-cli@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "langium-cli@npm:2.1.0"
   dependencies:
     chalk: "npm:~5.3.0"
-    commander: "npm:~10.0.0"
-    fs-extra: "npm:~11.1.0"
+    commander: "npm:~11.0.0"
+    fs-extra: "npm:~11.1.1"
     jsonschema: "npm:~1.4.1"
-    langium: "npm:~2.0.0"
-    langium-railroad: "npm:~2.0.0"
+    langium: "npm:~2.1.0"
+    langium-railroad: "npm:~2.1.0"
     lodash: "npm:~4.17.21"
   bin:
     langium: bin/langium.js
-  checksum: b40fe25cdb92f7d4a6deaff09c67ce1af20e695e2cf77e28b643fe2e64b06248760f7e752a28ce808794f5720159098dbd5a6b75c0437df1d1dcf495298afb10
+  checksum: ab453578431f7a56420daf835cd0597d70ba1f8459771248bc01f3c40c71d4b47566e24c602e303728a46bdb9e116d0bcca545ba766d3d7e563ac59d94821912
   languageName: node
   linkType: hard
 
-"langium-railroad@npm:~2.0.0":
-  version: 2.0.0
-  resolution: "langium-railroad@npm:2.0.0"
+"langium-railroad@npm:~2.1.0":
+  version: 2.1.0
+  resolution: "langium-railroad@npm:2.1.0"
   dependencies:
-    langium: "npm:~2.0.0"
-    railroad-diagrams: "npm:^1.0.0"
-  checksum: e08c0436239a133680e5b1fff34be02403a19a73ce2044a7abed3623a59ad58514390aa6ae3fbc4f00b0348968cb74781bb24f76ab08e558307b44ec3dcdb87a
+    langium: "npm:~2.1.0"
+    railroad-diagrams: "npm:~1.0.0"
+  checksum: 6060ffeb2a986bb0b7cccd7a944f091e29ae1524a24c92664a67f898c9a5581ab563cb1c883e1428accca189115f2afbce40e547b48e9e3ddb5d68fc7054cdb8
   languageName: node
   linkType: hard
 
-"langium@npm:^2.0.2, langium@npm:~2.0.0":
-  version: 2.0.2
-  resolution: "langium@npm:2.0.2"
+"langium@npm:^2.1.2, langium@npm:~2.1.0":
+  version: 2.1.2
+  resolution: "langium@npm:2.1.2"
   dependencies:
-    chevrotain: "npm:^11.0.1"
-    chevrotain-allstar: "npm:^0.3.0"
-    vscode-languageserver: "npm:~8.0.2"
-    vscode-languageserver-textdocument: "npm:~1.0.8"
-    vscode-uri: "npm:~3.0.7"
-  checksum: facb596c5b483871c8341e9b0f43d708f7f391b25a3d8a2f5470f6b68a7280ddc1b217a108659322fa97262b1f88609b357260e1278011fe7742d6927df43a00
+    chevrotain: "npm:~11.0.3"
+    chevrotain-allstar: "npm:~0.3.0"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-textdocument: "npm:~1.0.11"
+    vscode-uri: "npm:~3.0.8"
+  checksum: 0e730eab667b8fdad969c3a787736a958b2edf0c8e8b368902d21a4d569618dc470ff19f967d3d2590b81f95f11a3b3f2f68c14cea80935c6741d9f036803691
   languageName: node
   linkType: hard
 
@@ -9804,7 +9805,7 @@ __metadata:
     "@vscode/vsce": "npm:^2.22.0"
     esbuild: "npm:^0.19.5"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.1"
-    langium: "npm:^2.0.2"
+    langium: "npm:^2.1.2"
     npm-run-all: "npm:^4.1.5"
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"
@@ -9812,11 +9813,11 @@ __metadata:
     shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
-    vscode-jsonrpc: "npm:8.1.0"
-    vscode-languageclient: "npm:8.1.0"
-    vscode-languageserver: "npm:8.1.0"
-    vscode-languageserver-protocol: "npm:3.17.3"
-    vscode-uri: "npm:~3.0.7"
+    vscode-jsonrpc: "npm:8.2.0"
+    vscode-languageclient: "npm:9.0.1"
+    vscode-languageserver: "npm:9.0.1"
+    vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-uri: "npm:3.0.8"
     xstream: "npm:^11.14.0"
   languageName: unknown
   linkType: soft
@@ -12966,7 +12967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"railroad-diagrams@npm:^1.0.0":
+"railroad-diagrams@npm:~1.0.0":
   version: 1.0.0
   resolution: "railroad-diagrams@npm:1.0.0"
   checksum: 5349cf7a27f28c2cd152b525964624e0d0a795ab062d01682084381570fbb07ab877035771bcfb27cd5b6a7ee9f8371ecc34ccc8c3bde3443676230a59a7a85e
@@ -16124,21 +16125,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-jsonrpc@npm:8.1.0":
-  version: 8.1.0
-  resolution: "vscode-jsonrpc@npm:8.1.0"
-  checksum: e3378ae849e51c1b13a2b985b83c05b082dc9b033df958bc7c3d3a43628be0fccacca890a01ec6263559be9aaac7a679abc288c36f0c9fab6f2f093297c97ac2
+"vscode-jsonrpc@npm:8.2.0":
+  version: 8.2.0
+  resolution: "vscode-jsonrpc@npm:8.2.0"
+  checksum: 6d57c3aed591d0bc89d1c226061d265b04de528582bef183f5998cac5de78a736887e5238fe48b9f6a14ec32f05d8fda71599f92862ac5dacc7f26bf7399b532
   languageName: node
   linkType: hard
 
-"vscode-languageclient@npm:8.1.0":
-  version: 8.1.0
-  resolution: "vscode-languageclient@npm:8.1.0"
+"vscode-languageclient@npm:9.0.1":
+  version: 9.0.1
+  resolution: "vscode-languageclient@npm:9.0.1"
   dependencies:
     minimatch: "npm:^5.1.0"
     semver: "npm:^7.3.7"
-    vscode-languageserver-protocol: "npm:3.17.3"
-  checksum: b841e6d59ed0eb4b191fc48f0c66a328c5b27865a88ea273b793e2a42860c40b43d697b213dba0da375bc88e7e400aab3f88626929573e3987ef38badf5fa51a
+    vscode-languageserver-protocol: "npm:3.17.5"
+  checksum: 56acdb78a153e39d9f97494833ae74ff49b143034f4ef8d0bd3817e39c9278d1e6db7269875d0b3fc173d9717b5806b6812bbac7d85b8325c37ca142383bfcdb
   languageName: node
   linkType: hard
 
@@ -16152,10 +16153,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-textdocument@npm:~1.0.8":
-  version: 1.0.9
-  resolution: "vscode-languageserver-textdocument@npm:1.0.9"
-  checksum: 589a3b61b48a40d1b300bb021d1e0c3852c9732269270d766523441ad4b222493f2983002b3ba99fb519f444bfb9f9d3259055ef232478a4351c7d611e745ec6
+"vscode-languageserver-textdocument@npm:~1.0.11":
+  version: 1.0.11
+  resolution: "vscode-languageserver-textdocument@npm:1.0.11"
+  checksum: 6096d2a85570e819e01ff406de7c88c48211e6874c6fc71df92193aa8b5aadf40591e44f033d634a95d04975d7aad29049d3eccab617ca41c189ae325aadb913
   languageName: node
   linkType: hard
 
@@ -16166,14 +16167,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver@npm:8.1.0":
-  version: 8.1.0
-  resolution: "vscode-languageserver@npm:8.1.0"
+"vscode-languageserver@npm:9.0.1":
+  version: 9.0.1
+  resolution: "vscode-languageserver@npm:9.0.1"
   dependencies:
-    vscode-languageserver-protocol: "npm:3.17.3"
+    vscode-languageserver-protocol: "npm:3.17.5"
   bin:
     installServerIntoExtension: bin/installServerIntoExtension
-  checksum: 3aa3d2f421e478e20b418e134fada4eb480feacdf3d5ea77b972093e61476e390cb1cc53cf42361a15fabecd0b88cbb8fb5bdc1b5fd908a1c125e1324e8f460f
+  checksum: 1cb643b1b1f41a620aaf4a62e152acad694c22b4d98de73fa614a0bddf3b4b4832460465bdbc43f27ba23dad7e61aba533e77b8bfac74cc8de310c39623a7ba1
   languageName: node
   linkType: hard
 
@@ -16198,10 +16199,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-uri@npm:~3.0.7":
-  version: 3.0.7
-  resolution: "vscode-uri@npm:3.0.7"
-  checksum: 4d2a035f2446f6e876f84933780dbb8d7cc7147f49b25352690db709b1062809dd615df8904896d2c2a8c691860e5dae06c7a30e9e4fa9e9c36ddc7ecc88e571
+"vscode-uri@npm:3.0.8":
+  version: 3.0.8
+  resolution: "vscode-uri@npm:3.0.8"
+  checksum: e882d6b679e0d053cbc042893c0951a135d899a192b62cd07f0a8924f11ae722067a8d6b1b5b147034becf57faf9fff9fb543b17b749fd0f17db1f54f783f07c
   languageName: node
   linkType: hard
 
