@@ -62,18 +62,15 @@ Element:
       )?
     )?
   )?
-  body=ElementBody?;
+  (OpenBlock body=ElementBody CloseBlock)?;
 
 ElementBody:
-  OpenBlock
   tags=Tags?
-  (props+=ElementProperty)*
-
+  props+=ElementProperty*
   elements+=(
     Relation |
     Element
   )*
-  CloseBlock
 ;
 
 ElementProperty:
@@ -87,11 +84,12 @@ ExtendElement:
 
 ExtendElementBody:
   OpenBlock
-  elements+=(
-    ExplicitRelation |
-    Element
-  )*
-CloseBlock;
+    elements+=(
+      ExplicitRelation |
+      Element
+    )*
+  CloseBlock
+;
 
 //
 FqnElementRef:
@@ -113,7 +111,7 @@ fragment RelationFragment:
   (OpenBlock
     tags=Tags?
     props+=RelationStringProperty*
-  CloseBlock) ?
+  CloseBlock)?
 ;
 
 ImplicitRelation:
@@ -121,12 +119,6 @@ ImplicitRelation:
 
 ExplicitRelation:
   source=ElementRef RelationFragment;
-
-RelationBody:
-  OpenBlock
-  tags=Tags?
-  (props+=RelationStringProperty)*
-CloseBlock;
 
 RelationStringProperty:
   key='title' Colon? value=String SemiColon?;
@@ -146,13 +138,15 @@ ElementView:
   'view' name=Name? (
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
-  )? body=ElementViewBody;
+  )?
+  OpenBlock
+    body=ElementViewBody
+  CloseBlock;
 
 ElementViewRef:
   view=[ElementView:Name];
 
 ElementViewBody:
-  OpenBlock
   tags=Tags?
   (props+=(ViewProperty | LinkProperty))*
   rules+=(
@@ -160,7 +154,7 @@ ElementViewBody:
     ViewRuleStyle |
     ViewRuleAutoLayout
   )*
-CloseBlock;
+;
 
 ViewProperty:
   key=('title' | 'description') Colon? value=String SemiColon?;
@@ -278,9 +272,12 @@ ArrowType returns string:
   'vee'
 ;
 
-ThemeColor returns string: 'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
-ElementShape returns string: 'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
-Uri returns string: URI_WITH_SCHEMA | URI_RELATIVE;
+ThemeColor returns string:
+  'primary' | 'secondary' | 'muted' | 'slate' | 'blue' | 'indigo' | 'sky' | 'red' | 'gray' | 'green' | 'amber';
+ElementShape returns string:
+  'rectangle' | 'person' | 'browser' | 'mobile' | 'cylinder' | 'storage' | 'queue';
+Uri returns string:
+  URI_WITH_SCHEMA | URI_RELATIVE;
 
 Name returns string:
   ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
@@ -313,7 +310,7 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 terminal RArrow: '->';
 terminal Dot: /\b\./;
 terminal NotEqual: '!=';
-terminal Eq: /\={1,2}/ ;
+terminal Eq: /\={1,2}/;
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
 terminal Colon: ':';

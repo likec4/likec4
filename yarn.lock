@@ -1352,7 +1352,7 @@ __metadata:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^1.2.1"
     jotai: "npm:^2.5.0"
-    langium: "npm:^2.1.0"
+    langium: "npm:^2.1.2"
     likec4: "workspace:*"
     lucide-react: "npm:^0.288.0"
     monaco-editor: "npm:0.36.1"
@@ -1397,7 +1397,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@types/node": "npm:^20.8.7"
     json5: "npm:^2.2.3"
-    langium: "npm:^2.1.0"
+    langium: "npm:^2.1.2"
     rambdax: "npm:^9.1.1"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
@@ -1429,7 +1429,7 @@ __metadata:
     "@types/node": "npm:^20.8.7"
     "@types/object-hash": "npm:^3.0.5"
     execa: "npm:^8.0.1"
-    langium: "npm:^2.1.0"
+    langium: "npm:^2.1.2"
     langium-cli: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
     object-hash: "npm:^3.0.0"
@@ -9709,7 +9709,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:^2.1.0, langium@npm:~2.1.0":
+"langium@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "langium@npm:2.1.2"
+  dependencies:
+    chevrotain: "npm:~11.0.3"
+    chevrotain-allstar: "npm:~0.3.0"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-textdocument: "npm:~1.0.11"
+    vscode-uri: "npm:~3.0.8"
+  checksum: 0e730eab667b8fdad969c3a787736a958b2edf0c8e8b368902d21a4d569618dc470ff19f967d3d2590b81f95f11a3b3f2f68c14cea80935c6741d9f036803691
+  languageName: node
+  linkType: hard
+
+"langium@npm:~2.1.0":
   version: 2.1.0
   resolution: "langium@npm:2.1.0"
   dependencies:
@@ -9803,7 +9816,7 @@ __metadata:
     "@vscode/vsce": "npm:^2.22.0"
     esbuild: "npm:^0.19.5"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.1"
-    langium: "npm:^2.1.0"
+    langium: "npm:^2.1.2"
     npm-run-all: "npm:^4.1.5"
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"
