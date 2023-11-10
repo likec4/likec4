@@ -18,6 +18,7 @@
   "out": "src/generated",
   "mode": "production",
   "chevrotainParserConfig": {
+    "skipValidations": true,
     "recoveryEnabled": true,
     "nodeLocationTracking": "full"
   }

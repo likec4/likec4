@@ -49,16 +49,17 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
-    "langium": "^2.1.1",
+    "langium": "^2.1.2",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
     "p-throttle": "^5.1.0",
     "rambdax": "^9.1.1",
     "remeda": "^1.29.0",
     "strip-indent": "^4.0.0",
-    "vscode-languageserver": "~8.1.0",
-    "vscode-languageserver-protocol": "~3.17.3",
-    "vscode-uri": "~3.0.7"
+    "vscode-jsonrpc": "8.2.0",
+    "vscode-languageserver": "9.0.1",
+    "vscode-languageserver-protocol": "3.17.5",
+    "vscode-uri": "3.0.8"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",

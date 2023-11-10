@@ -38,7 +38,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "jotai": "^2.5.0",
-    "langium": "^2.1.1",
+    "langium": "^2.1.2",
     "lucide-react": "^0.288.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
@@ -53,13 +53,13 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "vscode": "npm:@codingame/monaco-vscode-api@1.76.6",
-    "vscode-jsonrpc": "8.1.0",
-    "vscode-languageclient": "8.1.0",
-    "vscode-languageserver": "8.1.0",
-    "vscode-languageserver-protocol": "3.17.3",
+    "vscode-jsonrpc": "8.2.0",
+    "vscode-languageclient": "9.0.1",
+    "vscode-languageserver": "9.0.1",
+    "vscode-languageserver-protocol": "3.17.5",
     "vscode-oniguruma": "1.7.0",
     "vscode-textmate": "^9.0.0",
-    "vscode-uri": "~3.0.7"
+    "vscode-uri": "3.0.8"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",

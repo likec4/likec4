@@ -57,10 +57,11 @@
     "node": "20.8.1"
   },
   "resolutions": {
-    "vscode-jsonrpc": "8.1.0",
-    "vscode-languageclient": "8.1.0",
-    "vscode-languageserver": "8.1.0",
+    "vscode-jsonrpc": "8.2.0",
+    "vscode-languageclient": "9.0.1",
+    "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
+    "vscode-uri": "3.0.8",
     "chevrotain-allstar": "0.3.1"
   },
   "lint-staged": {

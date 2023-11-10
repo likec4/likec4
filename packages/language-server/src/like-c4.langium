@@ -203,7 +203,7 @@ ElementExpression:
   // )?
 ;
 
-ElementRefExpression: id=ElementRef isDescedants?='.*'?;
+ElementRefExpression: id=ElementRef (isDescedants?=DotWildcard)?;
 
 // Common -------------------------------------
 
@@ -285,6 +285,7 @@ terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal RArrow: '->';
+terminal DotWildcard: /\b\.\*/;
 terminal Dot: /\b\./;
 terminal NotEqual: '!=';
 terminal Eq: /\={1,2}/ ;

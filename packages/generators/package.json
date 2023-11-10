@@ -36,7 +36,7 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
-    "langium": "^2.1.1",
+    "langium": "^2.1.2",
     "rambdax": "^9.1.1"
   },
   "devDependencies": {
