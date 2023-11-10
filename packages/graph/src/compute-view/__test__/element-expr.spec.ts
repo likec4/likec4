@@ -212,6 +212,82 @@ describe('element-expr', () => {
     })
   })
 
+  describe('view of cloud.backend', () => {
+    it('include *', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.backend', [$include('*')])
+      expect(nodeIds).toEqual([
+        'cloud.frontend',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'cloud.backend',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend.graphql',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.backend.storage:amazon'
+      ])
+    })
+    it('include *, cloud.frontend.* -> cloud.backend', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.backend', [
+        $include('*'),
+        $include('cloud.frontend.* -> cloud.backend')
+      ])
+      expect(nodeIds).toEqual([
+        'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'cloud.backend',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.frontend.adminPanel:cloud.backend.graphql',
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.backend.storage:amazon'
+      ])
+    })
+    it('include *, cloud.frontend, cloud.frontend.* -> cloud.backend', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.backend', [
+        $include('*'),
+        $include('cloud.frontend'),
+        $include('cloud.frontend.* -> cloud.backend')
+      ])
+      expect(nodeIds).toEqual([
+        'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard',
+        'cloud.frontend',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'cloud.backend',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.frontend.adminPanel:cloud.backend.graphql',
+        'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.backend.storage:amazon'
+      ])
+    })
+    it('include *, cloud', () => {
+      const { nodeIds, edgeIds } = computeView('cloud.backend', [$include('*'), $include('cloud')])
+      expect(nodeIds).toEqual([
+        'cloud.frontend',
+        'cloud.backend.graphql',
+        'cloud.backend.storage',
+        'cloud.backend',
+        'cloud',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend.graphql',
+        'cloud.backend.graphql:cloud.backend.storage',
+        'cloud.backend.storage:amazon'
+      ])
+    })
+  })
+
   describe('view of cloud.backend.graphql', () => {
     it('include *', () => {
       const { nodeIds, edgeIds } = computeView('cloud.backend.graphql', [$include('*')])
