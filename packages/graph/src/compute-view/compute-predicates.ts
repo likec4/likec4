@@ -9,10 +9,11 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
   // Because we need to add edges between them and the new elements
   const currentElements = [...this.elements]
 
-  const elements =
+  const elements = (
     expr.isDescedants === true
-      ? this.graph.children(expr.element)
+      ? this.graph.childrenOrElement(expr.element)
       : [this.graph.element(expr.element)]
+  ).filter(el => !currentElements.includes(el))
 
   this.addElement(...elements)
 
@@ -121,7 +122,9 @@ export function includeElementKindOrTag(
   expr: Expr.ElementKindExpr | Expr.ElementTagExpr
 ) {
   const currentElements = [...this.elements]
-  const elements = this.graph.elements.filter(asElementPredicate(expr))
+  const elements = this.graph.elements
+    .filter(asElementPredicate(expr))
+    .filter(el => !currentElements.includes(el))
   if (elements.length > 0) {
     this.addElement(...elements)
     this.addEdges(this.graph.edgesWithin(elements))
@@ -171,7 +174,7 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
   }
 
   if (expr.isDescedants) {
-    return this.graph.children(expr.element)
+    return this.graph.childrenOrElement(expr.element)
   } else {
     return [this.graph.element(expr.element)]
   }

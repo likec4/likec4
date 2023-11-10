@@ -130,17 +130,6 @@ export const fakeElements = {
     kind: 'system',
     title: 'cloud'
   }),
-  'amazon': el({
-    id: 'amazon',
-    kind: 'system',
-    title: 'amazon'
-  }),
-  'amazon.s3': el({
-    id: 'amazon.s3',
-    kind: 'component',
-    title: 's3',
-    shape: 'storage'
-  }),
   'cloud.backend': el({
     id: 'cloud.backend',
     kind: 'container',
@@ -173,6 +162,17 @@ export const fakeElements = {
     id: 'cloud.frontend.dashboard',
     kind: 'component',
     title: 'dashboard'
+  }),
+  'amazon': el({
+    id: 'amazon',
+    kind: 'system',
+    title: 'amazon'
+  }),
+  'amazon.s3': el({
+    id: 'amazon.s3',
+    kind: 'component',
+    title: 's3',
+    shape: 'storage'
   })
 } satisfies Record<string, Element>
 
@@ -210,9 +210,19 @@ export const fakeRelations = [
     title: 'uploads'
   }),
   rel({
+    source: 'customer',
+    target: 'cloud',
+    title: 'uses'
+  }),
+  rel({
     source: 'cloud.backend.graphql',
     target: 'cloud.backend.storage',
     title: 'stores'
+  }),
+  rel({
+    source: 'cloud.frontend',
+    target: 'cloud.backend',
+    title: 'requests'
   }),
   rel({
     source: 'cloud.frontend.dashboard',
@@ -223,6 +233,11 @@ export const fakeRelations = [
     source: 'cloud.frontend.adminPanel',
     target: 'cloud.backend.graphql',
     title: 'fetches'
+  }),
+  rel({
+    source: 'cloud',
+    target: 'amazon',
+    title: 'uses'
   })
 ]
 

@@ -6,6 +6,7 @@ import { sortNodes } from './sortNodes'
 type TestComputedNode = {
   id: string
   parent?: string
+  children?: string[]
 }
 
 describe('sortNodes', () => {
@@ -14,11 +15,11 @@ describe('sortNodes', () => {
     _edges: [source: string, target: string][] = []
   ) => {
     const nodes = _nodes.map(
-      ({ id, parent }) =>
+      ({ id, parent, children }) =>
         ({
           id,
           parent: parent ?? null,
-          children: []
+          children: children ? [...children] : []
         }) as unknown as ComputedNode
     )
     const edges = _edges.map(([source, target]) => {
@@ -30,11 +31,12 @@ describe('sortNodes', () => {
       //   parent = parentFqn(parent)
       // }
       return {
+        id: `${source}:${target}`,
         source,
         target
       } as ComputedEdge
     })
-    return sortNodes(nodes, edges) as ComputedNode[]
+    return sortNodes(nodes, edges)
   }
 
   const expectSorting = (
@@ -45,7 +47,8 @@ describe('sortNodes', () => {
   describe('two nodes inside', () => {
     const nodes = [
       {
-        id: 'cloud'
+        id: 'cloud',
+        children: ['cloud.backend', 'cloud.frontend']
       },
       {
         id: 'customer'
@@ -84,13 +87,18 @@ describe('sortNodes', () => {
   describe('three nodes inside', () => {
     const nodes = [
       {
-        id: 'cloud'
-      },
-      {
         id: 'customer'
       },
       {
         id: 'amazon'
+      },
+      {
+        id: 'cloud.frontend',
+        parent: 'cloud'
+      },
+      {
+        id: 'cloud',
+        children: ['cloud.db', 'cloud.backend', 'cloud.frontend']
       },
       {
         id: 'cloud.db',
@@ -99,25 +107,21 @@ describe('sortNodes', () => {
       {
         id: 'cloud.backend',
         parent: 'cloud'
-      },
-      {
-        id: 'cloud.frontend',
-        parent: 'cloud'
       }
     ] satisfies TestComputedNode[]
 
     it('should keep sorting, if no edges', () => {
       const sorted = testnodes(nodes)
       expect(pluck('id', sorted)).toEqual([
-        'cloud',
         'customer',
         'amazon',
+        'cloud.frontend',
+        'cloud',
         'cloud.db',
-        'cloud.backend',
-        'cloud.frontend'
+        'cloud.backend'
       ])
 
-      const cloud = sorted[0]!
+      const cloud = sorted.find(n => n.id === 'cloud')!
       expect(cloud).toMatchObject({
         id: 'cloud',
         parent: null,
@@ -173,7 +177,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'customer']
-      ]).toEqual(['cloud', 'customer', 'amazon', 'cloud.db', 'cloud.backend', 'cloud.frontend'])
+      ]).toEqual(['customer', 'amazon', 'cloud.frontend', 'cloud', 'cloud.db', 'cloud.backend'])
     })
   })
 

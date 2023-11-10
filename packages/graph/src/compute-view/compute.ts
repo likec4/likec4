@@ -4,12 +4,16 @@ import type {
   EdgeId,
   Element,
   ElementView,
+  NonEmptyArray,
   Relation,
   ViewRuleExpression
 } from '@likec4/core'
 import {
   Expr,
+  ancestorsFqn,
   commonAncestor,
+  compareFqnHierarchically,
+  compareRelations,
   invariant,
   isAncestor,
   isStrictElementView,
@@ -20,7 +24,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { first, hasAtLeast, uniq } from 'remeda'
+import { first, hasAtLeast, intersection, uniq } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -50,6 +54,13 @@ export namespace ComputeCtx {
     target: Element
     relations: Relation[]
   }
+}
+
+function compareEdges(a: ComputeCtx.Edge, b: ComputeCtx.Edge) {
+  return compareRelations(
+    { source: a.source.id, target: a.target.id },
+    { source: b.source.id, target: b.target.id }
+  )
 }
 
 export class ComputeCtx {
@@ -87,6 +98,21 @@ export class ComputeCtx {
       }
       nonNullable(nodesMap.get(edge.source)).outEdges.push(edge.id)
       nonNullable(nodesMap.get(edge.target)).inEdges.push(edge.id)
+      // Process source hierarchy
+      for (const sourceAncestor of ancestorsFqn(edge.source)) {
+        if (sourceAncestor === edge.parent) {
+          break
+        }
+        nodesMap.get(sourceAncestor)?.outEdges.push(edge.id)
+      }
+      // Process target hierarchy
+      for (const targetAncestor of ancestorsFqn(edge.target)) {
+        if (targetAncestor === edge.parent) {
+          break
+        }
+        nodesMap.get(targetAncestor)?.inEdges.push(edge.id)
+      }
+
       return edge
     })
 
@@ -100,12 +126,19 @@ export class ComputeCtx {
       sortNodes(initialSort, edges)
     )
 
+    const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
+
+    const sortedEdges = new Set([
+      ...nodes.flatMap(n => n.outEdges.flatMap(id => edgesMap.get(id) ?? [])),
+      ...edges
+    ])
+
     const autoLayoutRule = this.view.rules.find(isViewRuleAutoLayout)
     return {
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
       nodes,
-      edges
+      edges: Array.from(sortedEdges)
     }
   }
 
@@ -169,7 +202,7 @@ export class ComputeCtx {
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
     for (const e of edges) {
-      if (e.relations.length === 0) {
+      if (!hasAtLeast(e.relations, 1)) {
         continue
       }
       const existing = this.ctxEdges.find(
@@ -217,24 +250,47 @@ export class ComputeCtx {
   // Filter out edges if there are edges between descendants
   // i.e. remove implicit edges, derived from childs
   protected removeRedundantImplicitEdges() {
-    const edges = [...this.ctxEdges]
-    this.ctxEdges = edges.filter(e1 => {
-      // Keep the edge, if there is only one relation and it is not implicit (has same source and target as edge)
-      if (hasAtLeast(e1.relations, 1) && e1.relations.length === 1) {
-        const rel = e1.relations[0]
-        if (rel.source === e1.source.id && rel.target === e1.target.id) {
-          return true
-        }
+    // Keep the edge, if there is only one relation and it has same source and target as edge
+    const isDirectEdge = ({ relations: [rel, ...tail], source, target }: ComputeCtx.Edge) => {
+      if (rel && tail.length === 0) {
+        return rel.source === source.id && rel.target === target.id
       }
-      // Keep the edge, if there is no edge between descendants
-      return !edges.some(
-        e2 =>
-          e1 !== e2 &&
-          (e1.source.id !== e2.source.id || e1.target.id !== e2.target.id) &&
-          (e1.source.id === e2.source.id || isAncestor(e1.source.id, e2.source.id)) &&
-          (e1.target.id === e2.target.id || isAncestor(e1.target.id, e2.target.id))
-      )
-    })
+      return false
+    }
+
+    // Returns predicate, that checks if edge is between descendants of given edge
+    const isNestedEdgeOf = ({ source, target, relations }: ComputeCtx.Edge) => {
+      const relationsSet = new Set(relations)
+      return (edge: ComputeCtx.Edge) => {
+        invariant(
+          source.id !== edge.source.id || target.id !== edge.target.id,
+          'Edge must not be the same'
+        )
+        const isSameSource = source.id === edge.source.id || isAncestor(source.id, edge.source.id)
+        const isSameTarget = target.id === edge.target.id || isAncestor(target.id, edge.target.id)
+        return (
+          isSameSource &&
+          isSameTarget &&
+          // include same relation, i.e. top edge is implicit
+          edge.relations.some(rel => relationsSet.has(rel))
+        )
+      }
+    }
+
+    // Sort edges from bottom to top (i.e. implicit edges are at the end)
+    const edges = [...this.ctxEdges].sort(compareEdges).reverse()
+    this.ctxEdges = edges.reduce((acc, e) => {
+      if (acc.length === 0 || isDirectEdge(e)) {
+        acc.push(e)
+        return acc
+      }
+      // ignore this edge, if there is already an edge between descendants
+      if (acc.some(isNestedEdgeOf(e))) {
+        return acc
+      }
+      acc.push(e)
+      return acc
+    }, [] as ComputeCtx.Edge[])
   }
 
   protected processPredicates(viewRules: ViewRuleExpression[]): this {
