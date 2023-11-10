@@ -25,9 +25,8 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()
 
-  const stage = api.stage
-
   const handleTransform = useCallback(() => {
+    const stage = api.stage
     const style = pageDivRef.current?.style
     if (!stage || !style) {
       return
@@ -40,12 +39,13 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
     const size = round(24 * scale)
     const x = round(pos.x)
     const y = round(pos.y)
-    style.setProperty('--konva-bg-size', `${size}px`)
-    style.setProperty('--konva-bg-position-x', `${x}px`)
-    style.setProperty('--konva-bg-position-y', `${y}px`)
-  }, [stage, pageDivRef])
+    style.setProperty('--diagram-bg-size', `${size}px`)
+    style.setProperty('--diagram-bg-position-x', `${x}px`)
+    style.setProperty('--diagram-bg-position-y', `${y}px`)
+  }, [api, pageDivRef])
 
   useEffect(() => {
+    const stage = api.stage
     if (!stage) {
       return
     }
@@ -54,7 +54,7 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
     return () => {
       stage.off('absoluteTransformChange', handleTransform)
     }
-  }, [stage])
+  }, [api])
 
   if (!diagram) {
     return <DiagramNotFound viewId={viewId} />

@@ -1,5 +1,5 @@
 import { nonexhaustive, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
-import { Diagram, useDiagramApi } from '@likec4/diagrams'
+import { Diagram } from '@likec4/diagrams'
 import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'

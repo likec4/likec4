@@ -26,7 +26,7 @@ views {
         amazon,
         amazon.kinesis,
         amazon.sqs,
-        -> amazon.sqs.*
+        amazon.sqs.*
 
     style * {
       color secondary

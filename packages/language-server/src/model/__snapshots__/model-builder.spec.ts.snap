@@ -65,7 +65,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "edges": [
         {
           "id": "client:system",
-          "label": "",
+          "label": null,
           "parent": null,
           "relations": [
             "6f3533077304f2e812d6c9cfdb6be977e23efe3d",
@@ -191,16 +191,6 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "docUri": "file:///test/workspace/src/2.c4",
       "edges": [
         {
-          "id": "system.frontend:system.backend",
-          "label": "requests",
-          "parent": null,
-          "relations": [
-            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
-          ],
-          "source": "system.frontend",
-          "target": "system.backend",
-        },
-        {
           "id": "client:system.frontend",
           "label": "opens",
           "parent": null,
@@ -209,6 +199,16 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           ],
           "source": "client",
           "target": "system.frontend",
+        },
+        {
+          "id": "system.frontend:system.backend",
+          "label": "requests",
+          "parent": null,
+          "relations": [
+            "671e3db5eb605d5f245f247d95925bd0953e0e4c",
+          ],
+          "source": "system.frontend",
+          "target": "system.backend",
         },
       ],
       "id": "frontend",
@@ -397,9 +397,12 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
             "system.backend.api",
           ],
           "color": "primary",
+          "depth": 1,
           "description": null,
           "id": "system.backend",
-          "inEdges": [],
+          "inEdges": [
+            "system.frontend:system.backend.api",
+          ],
           "kind": "component",
           "level": 0,
           "links": null,
@@ -458,7 +461,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec 1`] = `
       "edges": [
         {
           "id": "user1:user2",
-          "label": "",
+          "label": null,
           "parent": null,
           "relations": [
             "c17e99a67ebce9c8314a906b7cbb53b77a8d103e",

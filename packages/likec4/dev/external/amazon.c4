@@ -147,8 +147,8 @@ views {
       cloud,
       kinesis,
       cloud.* -> kinesis.*,
-      cloud.* -> sqs.*,
-      kinesis.* -> sqs
+      cloud.* -> sqs,
+      -> sqs.*
 
     style * {
       color secondary
