@@ -1,3 +1,25 @@
+# [0.46.0](https://github.com/likec4/likec4/compare/v0.45.0...v0.46.0) (2023-11-11)
+
+### Bug Fixes
+
+- **core:** hierarchical sorting of relationships ([6325e0e](https://github.com/likec4/likec4/commit/6325e0ee7b79adff69bef9739aaf3c22128d85d1))
+- **deps:** update dependency remeda to ^1.29.0 ([1ec9348](https://github.com/likec4/likec4/commit/1ec9348271e53a847c03079f7f6234a947db2b25))
+- **deps:** update dependency remeda to ^1.29.0 ([4aba2ab](https://github.com/likec4/likec4/commit/4aba2abfdfa1af831e6b88163674817b8cea0da6))
+- **deps:** update langium to 2.1.2 ([#423](https://github.com/likec4/likec4/issues/423)) ([ba17f44](https://github.com/likec4/likec4/commit/ba17f44bfcfa19fb46909193b7e31de2dda62025))
+- **graph:** do not add element if it exists implicitly ([27b5d7d](https://github.com/likec4/likec4/commit/27b5d7d5e24aeb38fd7c75f5f9e4663979fa204c))
+- left-align for edge labels ([7e7dea8](https://github.com/likec4/likec4/commit/7e7dea82cdcad779315a4caf89e4b4393fb9c95f))
+- **likec4:** improve transparent background for emded ([174f296](https://github.com/likec4/likec4/commit/174f296f11055aa1f50d0099b54dec75daeca7e2))
+- **lsp:** onBuildPhase should be in async context ([2a7f0cb](https://github.com/likec4/likec4/commit/2a7f0cb98c48324429fe9d2e21198d2cfb566412))
+
+### Features
+
+- **core:** add depth field to compound nodes ([fe3083a](https://github.com/likec4/likec4/commit/fe3083acadd0da82d947a61f3ff6cc1997eaa1aa))
+- **diagrams:** backgroung pattern ([c2bc83b](https://github.com/likec4/likec4/commit/c2bc83b0ead78e16812f2174c7ea9cbf0f5888eb))
+- **diagrams:** backgroung pattern ([6529b73](https://github.com/likec4/likec4/commit/6529b73c3704a78ad2ab3903577b093d2276c089))
+- **graph:** sorting of relationships ([bd8d694](https://github.com/likec4/likec4/commit/bd8d694bbb7f5100efe90d432133898815ce93a4))
+- **lsp:** any order of top-level statements ([#445](https://github.com/likec4/likec4/issues/445)) ([154844c](https://github.com/likec4/likec4/commit/154844c8ceb1317cba3950b2030cab3abea008c5))
+- **vscode:** display error message on failed parse ([789958f](https://github.com/likec4/likec4/commit/789958f72585f4e3e3fa6e2339fef67be4c0df5e))
+
 # [0.45.0](https://github.com/likec4/likec4/compare/v0.44.1...v0.45.0) (2023-11-04)
 
 ### 🚀 Features
