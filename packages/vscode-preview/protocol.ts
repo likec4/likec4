@@ -6,6 +6,9 @@ export type ExtensionToPanelProtocol =
       view: DiagramView
     }
   | {
+      kind: 'error'
+    }
+  | {
       kind: 'onContextMenuOpenSource'
     }
 

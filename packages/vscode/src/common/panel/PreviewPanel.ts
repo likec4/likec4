@@ -142,17 +142,21 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     this.currentViewId = null
   }
 
-  private sendUpdate(view: DiagramView) {
-    if (!this.panel) {
-      Logger.warn(`[Extension.PreviewPanel] sendUpdate failed, panel is not initialized`)
-      this.unsubscribe()
-      return
+  private sendUpdate(view: DiagramView | null) {
+    if (this.panel && view) {
+      this.panel.title = view.title ?? 'Untitled'
     }
-    this.panel.title = view.title ?? 'Untitled'
-    this.sendToPanel({
-      kind: 'update',
+    const msg = (
       view
-    })
+        ? {
+            kind: 'update',
+            view
+          }
+        : {
+            kind: 'error'
+          }
+    ) satisfies ExtensionToPanelProtocol
+    this.sendToPanel(msg)
   }
 
   private sendToPanel(message: ExtensionToPanelProtocol) {

@@ -1,10 +1,16 @@
-import { nonexhaustive, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
-import { Diagram } from '@likec4/diagrams'
-import { useEventListener, useWindowSize } from '@react-hookz/web/esm'
+import {
+  nonexhaustive,
+  type DiagramEdge,
+  type DiagramNode,
+  type DiagramView,
+  hasAtLeast
+} from '@likec4/core'
+import { useEventListener, useToggle } from '@react-hookz/web/esm'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { startTransition, useCallback, useEffect, useRef, useState } from 'react'
 import type { ExtensionToPanelProtocol } from '../protocol'
+import { LikeC4Diagram } from './LikeC4Diagram'
 import {
   closePreviewWindow,
   getPreviewWindowState,
@@ -15,22 +21,29 @@ import {
   openView,
   savePreviewWindowState
 } from './vscode'
+import { useViewHistory } from './useViewHistory'
 
-const Paddings = [30, 20, 20, 20] as const
+const ErrorMessage = () => (
+  <div className='likec4-error-message'>
+    <p>Oops, something went wrong.</p>
+  </div>
+)
 
 const App = () => {
-  const windowSize = useWindowSize(undefined, false)
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [view, setView] = useState(getPreviewWindowState)
 
-  const [{ view, loading }, updateState] = useState(() => {
-    const view = getPreviewWindowState()
-    return {
-      view,
-      loading: true
+  const updateView = useCallback((view: DiagramView | null) => {
+    if (view) {
+      lastNodeContextMenuRef.current = null
+      savePreviewWindowState(view)
+      setState('ready')
+      setView(view)
+    } else {
+      setState('error')
     }
-  })
-
-  const viewsHistoryRef = useRef<DiagramView[]>(view ? [view] : [])
+  }, [])
 
   useEffect(() => {
     if (view) {
@@ -40,33 +53,16 @@ const App = () => {
     }
   }, [])
 
-  if (view) {
-    const [head, prev] = viewsHistoryRef.current
-    if (head && prev) {
-      if (view.id === prev.id) {
-        viewsHistoryRef.current.shift()
-      } else if (view.id !== head.id) {
-        viewsHistoryRef.current.unshift(view)
-      }
-      if (viewsHistoryRef.current.length > 20) {
-        viewsHistoryRef.current.pop()
-      }
-    } else {
-      if (!head || head.id !== view.id) {
-        viewsHistoryRef.current.unshift(view)
-      }
-    }
-  }
+  const prevView = useViewHistory(view)
 
   useEventListener(window, 'message', ({ data }: MessageEvent<ExtensionToPanelProtocol>) => {
     switch (data.kind) {
       case 'update': {
-        lastNodeContextMenuRef.current = null
-        savePreviewWindowState(data.view)
-        updateState({
-          view: data.view,
-          loading: false
-        })
+        updateView(data.view)
+        return
+      }
+      case 'error': {
+        updateView(null)
         return
       }
       case 'onContextMenuOpenSource': {
@@ -93,19 +89,26 @@ const App = () => {
   }, [])
 
   const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    const relation = edge.relations[0]
-    if (relation) {
-      goToRelation(relation)
+    if (hasAtLeast(edge.relations, 1)) {
+      goToRelation(edge.relations[0])
     }
   }, [])
 
   if (!view) {
     return (
       <div className='likec4-parsing-screen'>
-        <section>
-          <p>Parsing your model...</p>
-          <VSCodeProgressRing />
-        </section>
+        {state === 'error' && (
+          <section>
+            <h3>Oops, invalid view</h3>
+            <p>Failed to parse your model.</p>
+          </section>
+        )}
+        {state !== 'error' && (
+          <section>
+            <p>Parsing your model...</p>
+            <VSCodeProgressRing />
+          </section>
+        )}
         <section>
           <p>
             <VSCodeButton appearance='secondary' onClick={closePreviewWindow}>
@@ -118,27 +121,21 @@ const App = () => {
   }
 
   return (
-    <div data-vscode-context='{"preventDefaultContextMenuItems": true}'>
-      <Diagram
-        className={'likec4-layer likec4-diagram'}
+    <>
+      <LikeC4Diagram
         diagram={view}
-        padding={Paddings}
-        width={windowSize.width}
-        height={windowSize.height}
         onNodeClick={onNodeClick}
         onNodeContextMenu={(nd, e) => {
           e.cancelBubble = true
           lastNodeContextMenuRef.current = nd
-        }}
-        onStageContextMenu={(stage, e) => {
-          e.evt.stopPropagation()
         }}
         onEdgeClick={onEdgeClick}
         onStageClick={() => {
           goToViewSource(view.id)
         }}
       />
-      {loading && (
+      {state === 'error' && <ErrorMessage />},
+      {state === 'loading' && (
         <>
           <div className='likec4-diagram-loading-overlay'></div>
           <div className='likec4-diagram-loading'>
@@ -147,36 +144,25 @@ const App = () => {
           </div>
         </>
       )}
-      {viewsHistoryRef.current.length > 1 && (
+      {prevView && (
         <div className='likec4-toolbar'>
           <div className='likec4-toolbar-left'>
             <VSCodeButton
               appearance='icon'
               onClick={e => {
                 e.stopPropagation()
-                const [_, prev] = viewsHistoryRef.current
-                if (prev) {
-                  goToViewSource(prev.id)
-                  openView(prev.id)
-                  // optimistic update
-                  updateState({
-                    view: prev,
-                    loading: false
-                  })
-                }
+                goToViewSource(prevView.id)
+                openView(prevView.id)
+                // optimistic update
+                updateView(prevView)
               }}
             >
               <ArrowLeftIcon />
             </VSCodeButton>
           </div>
-          {/* <div className='likec4-toolbar-right'>
-            <VSCodeButton appearance='secondary' onClick={closePreviewWindow}>
-              Export
-            </VSCodeButton>
-          </div> */}
         </div>
       )}
-    </div>
+    </>
   )
 }
 

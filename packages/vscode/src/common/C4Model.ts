@@ -84,13 +84,12 @@ export class C4Model extends AbstractDisposable {
     Logger.info(`[Extension.C4Model] fetchView ${viewId}`)
     // microtask
     const promise = Promise.resolve().then(() => this.rpc.computeView(viewId))
-    return xs
-      .fromPromise(promise)
-      .filter(isNotNullish)
-      .replaceError(err => {
-        logError(err)
-        return xs.empty()
-      })
+    return xs.fromPromise(promise)
+    // .filter(isNotNullish)
+    // .replaceError(err => {
+    //   logError(err)
+    //   return xs.empty()
+    // })
   }
 
   private layoutView(view: ComputedView) {
@@ -107,17 +106,29 @@ export class C4Model extends AbstractDisposable {
     })
   }
 
-  public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView) => void) {
+  public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView | null) => void) {
     Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
     const subscription = this.changesStream
       .map(() => this.fetchView(viewId))
       .flatten()
-      .compose(dropRepeats<ComputedView>(equals))
-      .map(view => this.layoutView(view))
+      .replaceError(err => {
+        logError(err)
+        callback(null)
+        return xs.empty()
+      })
+      .compose(dropRepeats<ComputedView | null>(equals))
+      .map(view => {
+        if (!view) {
+          callback(null)
+          return xs.empty()
+        }
+        return this.layoutView(view)
+      })
       .flatten()
       .subscribe({
         next: diagram => callback(diagram),
         error: err => {
+          callback(null)
           logError(err)
         }
       })
