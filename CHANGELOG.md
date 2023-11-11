@@ -1,6 +1,6 @@
 # [0.46.0](https://github.com/likec4/likec4/compare/v0.45.0...v0.46.0) (2023-11-11)
 
-With the langium update to 2.1.2 vscode completions are much better
+With the Langium update to version 2.1.2, the code completions in VSCode have significantly improved.
 
 ### 🚀 Features
 
@@ -16,7 +16,7 @@ With the langium update to 2.1.2 vscode completions are much better
 - **deps:** update dependency remeda to ^1.29.0 ([1ec9348](https://github.com/likec4/likec4/commit/1ec9348271e53a847c03079f7f6234a947db2b25))
 - **deps:** update langium to 2.1.2 ([#423](https://github.com/likec4/likec4/issues/423)) ([ba17f44](https://github.com/likec4/likec4/commit/ba17f44bfcfa19fb46909193b7e31de2dda62025))
 - **graph:** do not add element if it exists implicitly ([27b5d7d](https://github.com/likec4/likec4/commit/27b5d7d5e24aeb38fd7c75f5f9e4663979fa204c))
-- left-align for edge labels ([7e7dea8](https://github.com/likec4/likec4/commit/7e7dea82cdcad779315a4caf89e4b4393fb9c95f))
+- **graph:** left-align for edge labels ([7e7dea8](https://github.com/likec4/likec4/commit/7e7dea82cdcad779315a4caf89e4b4393fb9c95f))
 - **likec4:** improve transparent background for emded ([174f296](https://github.com/likec4/likec4/commit/174f296f11055aa1f50d0099b54dec75daeca7e2))
 - **lsp:** onBuildPhase should be in async context ([2a7f0cb](https://github.com/likec4/likec4/commit/2a7f0cb98c48324429fe9d2e21198d2cfb566412))
 
