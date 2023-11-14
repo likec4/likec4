@@ -1524,7 +1524,7 @@ __metadata:
     execa: "npm:^8.0.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
-    lint-staged: "npm:^15.0.2"
+    lint-staged: "npm:^15.1.0"
     prettier: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
@@ -9902,9 +9902,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^15.0.2":
-  version: 15.0.2
-  resolution: "lint-staged@npm:15.0.2"
+"lint-staged@npm:^15.1.0":
+  version: 15.1.0
+  resolution: "lint-staged@npm:15.1.0"
   dependencies:
     chalk: "npm:5.3.0"
     commander: "npm:11.1.0"
@@ -9915,10 +9915,10 @@ __metadata:
     micromatch: "npm:4.0.5"
     pidtree: "npm:0.6.0"
     string-argv: "npm:0.3.2"
-    yaml: "npm:2.3.3"
+    yaml: "npm:2.3.4"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 79c6487405dff2670bcf7e4721f06705bd33b4fef88d77988565fb9cb2f62608231cbbc706da0ae150b49d0fab447be083c4561164670ec7f407fd183ce27615
+  checksum: 77aacab303ebab8ef6781833d35d82405b73f0e3e8f8c585cdd95b0e1f42a638a12e853d7ef6227a85d77ed2ba233f92b0499124696a6872569c508e04d25ce3
   languageName: node
   linkType: hard
 
@@ -16482,10 +16482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.3.3, yaml@npm:^2.1.1":
-  version: 2.3.3
-  resolution: "yaml@npm:2.3.3"
-  checksum: 3b1a974b9d3672c671d47099a41c0de77b7ff978d0849aa55a095587486e82cd072321d19f2b4c791a367f766310b5a82dff098839b0f4ddcbbbe477f82dfb07
+"yaml@npm:2.3.4":
+  version: 2.3.4
+  resolution: "yaml@npm:2.3.4"
+  checksum: f8207ce43065a22268a2806ea6a0fa3974c6fde92b4b2fa0082357e487bc333e85dc518910007e7ac001b532c7c84bd3eccb6c7757e94182b564028b0008f44b
   languageName: node
   linkType: hard
 
@@ -16493,6 +16493,13 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: e088b37b4d4885b70b50c9fa1b7e54bd2e27f5c87205f9deaffd1fb293ab263d9c964feadb9817a7b129a5bf30a06582cb08750f810568ecc14f3cdbabb79cb3
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.1.1":
+  version: 2.3.3
+  resolution: "yaml@npm:2.3.3"
+  checksum: 3b1a974b9d3672c671d47099a41c0de77b7ff978d0849aa55a095587486e82cd072321d19f2b4c791a367f766310b5a82dff098839b0f4ddcbbbe477f82dfb07
   languageName: node
   linkType: hard
 
