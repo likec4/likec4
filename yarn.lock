@@ -1405,7 +1405,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
-    "@types/vscode-webview": "npm:^1.57.3"
+    "@types/vscode-webview": "npm:^1.57.4"
     "@vitejs/plugin-react": "npm:^4.1.1"
     "@vscode/webview-ui-toolkit": "npm:^1.2.2"
     lucide-react: "npm:^0.288.0"
@@ -3948,10 +3948,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/vscode-webview@npm:^1.57.3":
-  version: 1.57.3
-  resolution: "@types/vscode-webview@npm:1.57.3"
-  checksum: 376cf619da8bc6f30f0678db0eb570bf1d7a69ffda4e580375cc04415d92452709013fa545ce2ee61a971744e76b7bec1b3eb4d1f96e047ba099438aaa7bdf0d
+"@types/vscode-webview@npm:^1.57.4":
+  version: 1.57.4
+  resolution: "@types/vscode-webview@npm:1.57.4"
+  checksum: c80854d67236a514f321d19da77d44d6c9d941c77fa9da474b09607c45e2c273f361d421838f7087ccb0d4ae0a41d541e9e844032c649190edf048fc4761ce9b
   languageName: node
   linkType: hard
 
