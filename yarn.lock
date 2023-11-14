@@ -9725,7 +9725,7 @@ __metadata:
     jotai: "npm:^2.5.1"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
-    nanostores: "npm:^0.9.4"
+    nanostores: "npm:^0.9.5"
     p-queue: "npm:^7.4.1"
     picocolors: "npm:^1.0.0"
     playwright-core: "npm:^1.38.1"
@@ -11392,10 +11392,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanostores@npm:^0.9.4":
-  version: 0.9.4
-  resolution: "nanostores@npm:0.9.4"
-  checksum: 502ff3adfaf46bdb76a16e4d18d7d0065cd2290b6795cc7e845c216cd5f09b72722977d8699502547e5a18a87bd96008294d9675ae5f0791d37a90130cb06bae
+"nanostores@npm:^0.9.5":
+  version: 0.9.5
+  resolution: "nanostores@npm:0.9.5"
+  checksum: 34b33678b79afc09855641ad1a5d6ec6a626b8fb64e003a36cc4f5cec736fa21471d723f51f979762ce9dd72e1ac7a1010565ab6e393c2404f2c4f2e382adc35
   languageName: node
   linkType: hard
 
