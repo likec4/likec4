@@ -1528,7 +1528,7 @@ __metadata:
     prettier: "npm:^3.0.3"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^3.14.0"
+    tsx: "npm:^4.1.1"
     turbo: "npm:^1.10.16"
     typescript: "npm:^5.2.2"
     vite: "npm:^4.5.0"
@@ -5911,7 +5911,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^3.14.0"
+    tsx: "npm:^4.1.1"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
   bin:
@@ -9875,7 +9875,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.3.5"
-    tsx: "npm:^3.14.0"
+    tsx: "npm:^4.1.1"
     typescript: "npm:^5.2.2"
     typescript-plugin-css-modules: "npm:^5.0.2"
     vite: "npm:^4.5.0"
@@ -15085,6 +15085,23 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: 7147970975344d779f495169c0246dff5110a3e110b0a89e8cec6403fcd6c03ede3abbf4c7ccc03dae7fb17d7f1a4c21992c5c6d7ab2130cb2f7a3ffaeae1ce1
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "tsx@npm:4.1.2"
+  dependencies:
+    esbuild: "npm:~0.18.20"
+    fsevents: "npm:~2.3.3"
+    get-tsconfig: "npm:^4.7.2"
+    source-map-support: "npm:^0.5.21"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: cbcc5bef47c14e959d34bf31d4147e4d771607af1371247d8ff5ce27181cd7839238a1e74bb3d7664cae6812fbd46313efe1759ae21b2dd7a69663ec1f3129d5
   languageName: node
   linkType: hard
 
