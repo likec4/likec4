@@ -3268,9 +3268,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/themes@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@radix-ui/themes@npm:2.0.0"
+"@radix-ui/themes@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@radix-ui/themes@npm:2.0.1"
   dependencies:
     "@radix-ui/colors": "npm:^3.0.0"
     "@radix-ui/primitive": "npm:^1.0.1"
@@ -3309,7 +3309,7 @@ __metadata:
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: e80d4eb62964194808d5a9015098eb26237f765200134be64b1ca9eb6e27b714af5527e86be113bf2f255e3eff77242e08686ab4c171eded59616c1485a38e86
+  checksum: ef8e3810f6ef394d7bc7d2513d55a88c55b0740007da6d86c15bd3e1f057eb196f3a595fa419120f9b48cc770eae5986945854423ad16dba4fd67091f2691217
   languageName: node
   linkType: hard
 
@@ -9840,7 +9840,7 @@ __metadata:
     "@nanostores/react": "npm:^0.7.1"
     "@nanostores/router": "npm:^0.11.0"
     "@radix-ui/react-icons": "npm:^1.3.0"
-    "@radix-ui/themes": "npm:^2.0.0"
+    "@radix-ui/themes": "npm:^2.0.1"
     "@react-hookz/web": "npm:^23.1.0"
     "@types/node": "npm:^20.8.7"
     "@types/prop-types": "npm:^15.7.10"
