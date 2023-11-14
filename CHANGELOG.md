@@ -1,3 +1,9 @@
+## [0.46.1](https://github.com/likec4/likec4/compare/v0.46.0...v0.46.1) (2023-11-14)
+
+### Bug Fixes
+
+- **cli:** return optimizeDeps in serve ([d8e065f](https://github.com/likec4/likec4/commit/d8e065fc05cafaa703061a7e3224ed6b1ef19ed7))
+
 # [0.46.0](https://github.com/likec4/likec4/compare/v0.45.0...v0.46.0) (2023-11-11)
 
 With the Langium update to version 2.1.2, the code completions in VSCode have significantly improved.
