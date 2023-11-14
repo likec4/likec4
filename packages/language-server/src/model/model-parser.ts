@@ -191,85 +191,83 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseElementExpression(astNode: ast.ElementExpression): c4.ElementExpression {
-    if (ast.isWildcardExpression(astNode)) {
+  private parseElementExpr(astNode: ast.ElementExpr): c4.ElementExpression {
+    if (ast.isWildcardExpr(astNode)) {
       return {
         wildcard: true
       }
     }
-    if (ast.isElementKindExpression(astNode)) {
-      invariant(
-        astNode.kind.ref,
-        'ElementKindExpression kind is not resolved: ' + astNode.$cstNode?.text
-      )
+    if (ast.isElementKindExpr(astNode)) {
+      invariant(astNode.kind.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementKind: astNode.kind.ref.name as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
-    if (ast.isElementTagExpression(astNode)) {
-      invariant(
-        astNode.tag.ref,
-        'ElementTagExpression tag is not resolved: ' + astNode.$cstNode?.text
-      )
+    if (ast.isElementTagExpr(astNode)) {
+      invariant(astNode.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementTag: astNode.tag.ref.name as c4.Tag,
         isEqual: astNode.isEqual
       }
     }
-    if (ast.isElementRefExpression(astNode)) {
-      const elementNode = elementRef(astNode.id)
-      invariant(elementNode, 'Element not found ' + astNode.id.$cstNode?.text)
+    if (ast.isDescedantsExpr(astNode)) {
+      const elementNode = elementRef(astNode.parent)
+      invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
       const element = this.resolveFqn(elementNode)
-      return astNode.isDescedants
-        ? {
-            element,
-            isDescedants: astNode.isDescedants
-          }
-        : {
-            element
-          }
+      return {
+        element,
+        isDescedants: true
+      }
+    }
+    if (ast.isElementRef(astNode)) {
+      const elementNode = elementRef(astNode)
+      invariant(elementNode, 'Element not found ' + astNode.$cstNode?.text)
+      const element = this.resolveFqn(elementNode)
+      return {
+        element
+      }
     }
     nonexhaustive(astNode)
   }
 
-  private parseExpression(astNode: ast.Expression): c4.Expression {
-    if (ast.isElementExpression(astNode)) {
-      return this.parseElementExpression(astNode)
-    }
-    if (ast.isIncomingExpression(astNode)) {
+  private parsePredicateExpr(astNode: ast.ViewRulePredicateExpr): c4.Expression {
+    if (ast.isRelationExpr(astNode)) {
       return {
-        incoming: this.parseElementExpression(astNode.target)
+        source: this.parseElementExpr(astNode.source),
+        target: this.parseElementExpr(astNode.target)
       }
     }
-    if (ast.isOutgoingExpression(astNode)) {
+    if (ast.isInOutExpr(astNode)) {
       return {
-        outgoing: this.parseElementExpression(astNode.source)
+        inout: this.parseElementExpr(astNode.inout.to)
       }
     }
-    if (ast.isInOutExpression(astNode)) {
+    if (ast.isOutgoingExpr(astNode)) {
       return {
-        inout: this.parseElementExpression(astNode.inout.target)
+        outgoing: this.parseElementExpr(astNode.from)
       }
     }
-    if (ast.isRelationExpression(astNode)) {
+    if (ast.isIncomingExpr(astNode)) {
       return {
-        source: this.parseElementExpression(astNode.source),
-        target: this.parseElementExpression(astNode.target)
+        incoming: this.parseElementExpr(astNode.to)
       }
+    }
+    if (ast.isElementExpr(astNode)) {
+      return this.parseElementExpr(astNode)
     }
     nonexhaustive(astNode)
   }
 
   private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
-    if (ast.isViewRuleExpression(astRule)) {
-      const exprs = astRule.expressions.map(n => this.parseExpression(n))
-      return astRule.isInclude ? { include: exprs } : { exclude: exprs }
+    if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
+      const exprs = astRule.expressions.map(n => this.parsePredicateExpr(n))
+      return ast.isIncludePredicate(astRule) ? { include: exprs } : { exclude: exprs }
     }
     if (ast.isViewRuleStyle(astRule)) {
-      const styleProps = toElementStyle(astRule.props)
+      const styleProps = toElementStyle(astRule.styleprops)
       return {
-        targets: astRule.targets.map(n => this.parseElementExpression(n)),
+        targets: astRule.targets.map(n => this.parseElementExpr(n)),
         style: {
           ...styleProps
         }

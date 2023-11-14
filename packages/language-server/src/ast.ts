@@ -1,20 +1,21 @@
 import {
+  DefaultArrowType,
   DefaultElementShape,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
   DefaultThemeColor,
   RelationRefError,
   nonexhaustive,
-  type c4,
-  DefaultLineStyle,
-  DefaultArrowType,
-  DefaultRelationshipColor
+  type c4
 } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
 import { DocumentState } from 'langium'
+import { isNil } from 'remeda'
 import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { first, isNil } from 'remeda'
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 
 export { ast }
 
@@ -153,7 +154,7 @@ export function isParsedLikeC4LangiumDocument(
 ): doc is ParsedLikeC4LangiumDocument {
   return (
     isLikeC4LangiumDocument(doc) &&
-    doc.state >= DocumentState.Validated &&
+    doc.state == DocumentState.Validated &&
     !!doc.c4Specification &&
     !!doc.c4Elements &&
     !!doc.c4Relations &&
@@ -166,11 +167,10 @@ export const isValidLikeC4LangiumDocument = (
   doc: LangiumDocument
 ): doc is ParsedLikeC4LangiumDocument => {
   if (!isParsedLikeC4LangiumDocument(doc)) return false
-  const { state, parseResult, diagnostics } = doc
+  const { parseResult, diagnostics } = doc
   return (
-    state === DocumentState.Validated &&
     parseResult.lexerErrors.length === 0 &&
-    (!diagnostics || diagnostics.every(d => d.severity !== 1))
+    (!diagnostics || diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
   )
 }
 
@@ -230,7 +230,7 @@ export function resolveRelationPoints(node: ast.Relation): {
   }
 }
 
-export function toElementStyle(props?: ast.StyleProperties['props']) {
+export function toElementStyle(props?: Array<ast.StyleProperty>) {
   const result: {
     color?: c4.ThemeColor
     shape?: c4.ElementShape
@@ -319,7 +319,7 @@ export function toRelationshipStyleExcludeDefaults(
 }
 
 export function toAutoLayout(
-  direction: ast.ViewRuleLayoutDirection
+  direction: ast.ViewLayoutDirection
 ): c4.ViewRuleAutoLayout['autoLayout'] {
   switch (direction) {
     case 'TopBottom': {

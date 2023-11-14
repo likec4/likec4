@@ -249,4 +249,46 @@ describe('Completions', () => {
       expectedItems: ['notunique']
     })
   })
+  it('should suggest nested elements inside view', async () => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        root = component {
+          a = component {
+            b1 = component {
+              b2 = component
+            }
+          }
+        }
+      }
+      views {
+        view {
+          include -> <|>root.<|>
+          exclude -> b<|>
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: ['root', 'a', 'b1', 'b2', 'element'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: ['a', 'b1', 'b2'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: ['b1', 'b2'],
+      disposeAfterCheck: true
+    })
+  })
 })

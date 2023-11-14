@@ -5,9 +5,9 @@ import { isNil } from 'remeda'
 
 export const outgoingExpressionChecks = (
   _services: LikeC4Services
-): ValidationCheck<ast.OutgoingExpression> => {
+): ValidationCheck<ast.OutgoingExpr> => {
   return (el, accept) => {
-    if (ast.isWildcardExpression(el.source) && ast.isViewRuleExpression(el.$container)) {
+    if (ast.isWildcardExpr(el.from)) {
       const view = el.$container.$container.$container
       if (isNil(view.viewOf)) {
         accept('warning', 'Predicate is ignored as it concerns all relationships', {

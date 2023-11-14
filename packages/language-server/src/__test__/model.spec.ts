@@ -109,7 +109,7 @@ describe('model', () => {
       }
     }`
 
-  test('fail if comma left after tag').invalid`
+  test('not fail if comma left after tag').valid`
     specification {
       element person
       tag one

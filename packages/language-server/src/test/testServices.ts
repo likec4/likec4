@@ -3,6 +3,8 @@ import { EmptyFileSystem } from 'langium'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import stripIndent from 'strip-indent'
+import * as assert from 'node:assert'
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
   const services = createLanguageServices(EmptyFileSystem).likec4
@@ -16,20 +18,17 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     uri: workspaceUri.toString()
   }
   let isInitialized = false
-  const init = async () => {
-    if (isInitialized) return Promise.resolve()
-    isInitialized = true
-    await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
-    // Workaround to set protected folders property
-    Object.assign(services.shared.workspace.WorkspaceManager, {
-      folders: [workspaceFolder]
-    })
-  }
-
   let documentIndex = 1
 
   const parse = async (input: string, uri?: string) => {
-    await init()
+    if (!isInitialized) {
+      isInitialized = true
+      await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+      // Workaround to set protected folders property
+      Object.assign(services.shared.workspace.WorkspaceManager, {
+        folders: [workspaceFolder]
+      })
+    }
     const docUri = Utils.resolvePath(
       workspaceUri,
       './src/',
@@ -48,22 +47,35 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     const document = typeof input === 'string' ? await parse(input, uri) : input
     await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
-    const errors = diagnostics.map(d => d.message)
+    const warnings = diagnostics.flatMap(d =>
+      d.severity === DiagnosticSeverity.Warning ? d.message : []
+    )
+    const errors = diagnostics.flatMap(d =>
+      d.severity === DiagnosticSeverity.Error ? d.message : []
+    )
     return {
       document,
       diagnostics,
+      warnings,
       errors
     }
   }
 
   const validateAll = async () => {
     const docs = langiumDocuments.all.toArray()
+    assert.ok(docs.length > 0, 'no documents to validate')
     await documentBuilder.build(docs, { validation: true })
     const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
-    const errors = diagnostics.map(d => d.message)
+    const warnings = diagnostics.flatMap(d =>
+      d.severity === DiagnosticSeverity.Warning ? d.message : []
+    )
+    const errors = diagnostics.flatMap(d =>
+      d.severity === DiagnosticSeverity.Error ? d.message : []
+    )
     return {
       diagnostics,
-      errors
+      errors,
+      warnings
     }
   }
 
@@ -82,3 +94,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     buildModel
   }
 }
+
+export type TestServices = ReturnType<typeof createTestServices>
+export type TestParseFn = TestServices['validate']
+export type TestValidateFn = TestServices['validate']

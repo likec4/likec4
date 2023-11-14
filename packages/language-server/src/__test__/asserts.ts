@@ -15,25 +15,25 @@ export function likec4(strings: TemplateStringsArray, ...expr: string[]) {
   return stripIndent(result.join(''))
 }
 
-export const valid =
-  (strings: TemplateStringsArray, ...expr: string[]): TestFunction =>
-  async ({ expect }) => {
-    expect.hasAssertions()
-    const { validate } = createTestServices()
-    const { diagnostics } = await validate(likec4(strings, ...expr))
-    const errors = diagnostics.map(d => d.message)
-    expect(errors).toEqual([])
-  }
-
-export const invalid =
-  (strings: TemplateStringsArray, ...expr: string[]): TestFunction =>
-  async ({ expect }) => {
+export function valid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
+  return async ({ expect }) => {
     expect.hasAssertions()
     const { validate } = createTestServices()
     const { diagnostics } = await validate(likec4(strings, ...expr))
     const errors = diagnostics.map(d => d.message).join('\n')
-    expect(errors).not.to.be.empty
+    expect(errors).toEqual('')
   }
+}
+
+export function invalid(strings: TemplateStringsArray, ...expr: string[]): TestFunction {
+  return async ({ expect }) => {
+    expect.hasAssertions()
+    const { validate } = createTestServices()
+    const { diagnostics } = await validate(likec4(strings, ...expr))
+    const errors = diagnostics.map(d => d.message).join('\n')
+    expect(errors).not.toEqual('')
+  }
+}
 
 const runValidTest = valid
 const runInvalidTest = invalid
