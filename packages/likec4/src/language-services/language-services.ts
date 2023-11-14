@@ -16,6 +16,7 @@ import { equals, keys } from 'rambdax'
 import * as R from 'remeda'
 import type { Logger } from 'vite'
 import { createLikeC4Logger } from '../logger'
+import pkg from '../../package.json' assert { type: 'json' }
 
 export type LanguageServicesOptions = {
   /**
@@ -107,7 +108,7 @@ export async function mkLanguageServices({
   logValidationErrors = true
 }: LanguageServicesOptions) {
   const logger = createLikeC4Logger('c4:lsp ')
-
+  logger.info(`${k.dim('version')} ${pkg.version}`)
   lspLogger.silent(true)
 
   const workspace = resolve(workspaceDir)
