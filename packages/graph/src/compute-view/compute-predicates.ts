@@ -166,7 +166,7 @@ function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Elemen
       return isNil(tags) || tags.length === 0 || !tags.includes(expr.elementTag)
     })
   }
-  if (this.root === expr.element && (isNil(expr.isDescedants) || expr.isDescedants === false)) {
+  if (this.root === expr.element && expr.isDescedants !== true) {
     return [...this.graph.children(this.root), this.graph.element(this.root)]
   }
 
@@ -189,10 +189,10 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr) {
       ...this.graph.siblings(this.root),
       ...this.graph.ancestors(this.root).flatMap(a => this.graph.siblings(a.id))
     ]
-    const children = this.graph.children(this.root)
-    if (children.length == 0) {
-      children.push(this.graph.element(this.root))
+    if (neighbours.length === 0) {
+      return []
     }
+    const children = this.graph.childrenOrElement(this.root)
     return this.graph.edgesBetween(neighbours, children)
   }
   const currentElements = [...this.elements]
@@ -231,21 +231,21 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
       ...this.graph.siblings(this.root),
       ...this.graph.ancestors(this.root).flatMap(a => this.graph.siblings(a.id))
     ]
-    const children = this.graph.children(this.root)
-    if (children.length == 0) {
-      children.push(this.graph.element(this.root))
+    if (neighbours.length === 0) {
+      return []
     }
-    return this.graph.edgesBetween(children, neighbours)
+    const from = this.graph.childrenOrElement(this.root)
+    return this.graph.edgesBetween(from, neighbours)
   }
-  const elements = resolveElements.call(this, expr.outgoing)
-  if (elements.length === 0) {
+  const from = resolveElements.call(this, expr.outgoing)
+  if (from.length === 0) {
     return []
   }
   const currentElements = [...this.elements]
   if (currentElements.length === 0) {
     currentElements.push(...this.graph.rootElements)
   }
-  return this.graph.edgesBetween(elements, currentElements)
+  return this.graph.edgesBetween(from, currentElements)
 }
 
 export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {

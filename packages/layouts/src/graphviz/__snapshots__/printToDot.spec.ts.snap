@@ -71,8 +71,8 @@ exports[`printToDot > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
-    constraint = false;
-    weight = 4;
+    weight = 20;
+    minlen = 0;
   ];
 }"
 `;
@@ -166,8 +166,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
       "storage" [
         likec4_id = "cloud.backend.storage";
         likec4_level = 2;
-        width = 4.445;
-        height = 2.362;
+        margin = "0.362,0.417";
         color = "#2563eb";
         penwidth = 2;
         shape = "cylinder";
@@ -175,8 +174,8 @@ exports[`printToDot > computedCloud3levels 1`] = `
       ];
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
-        constraint = false;
-        weight = 4;
+        weight = 20;
+        minlen = 0;
       ];
     }
     "adminpanel" -> "graphql" [
@@ -284,8 +283,8 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><B><FONT POINT-SIZE="13">[...]</FONT></B></TD></TR></TABLE>>;
-      constraint = false;
-      weight = 4;
+      weight = 20;
+      minlen = 0;
     ];
   }
   "customer" -> "frontend" [

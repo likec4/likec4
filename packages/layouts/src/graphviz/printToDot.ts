@@ -212,8 +212,7 @@ export function toGraphvisModel({
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.width]: pxToInch(320),
-          [_.height]: pxToInch(170),
+          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`,
           [_.color]: Theme.elements[elementNode.color].stroke,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder'
@@ -263,7 +262,7 @@ export function toGraphvisModel({
     }
     const prefix = parentId + '.'
     return viewNodes.filter(
-      n => !isCompound(n) && n.parent && (n.parent === parentId || n.parent.startsWith(prefix))
+      n => !isCompound(n) && (n.parent === parentId || n.parent?.startsWith(prefix))
     )
   }
 
@@ -290,13 +289,13 @@ export function toGraphvisModel({
       // Edge with cluster as target
       lhead = subgraphs.get(edge.target)?.id
       const targetElement = first(leafElements(edge.target))
-      target = targetElement && graphvizNodes.get(targetElement.id)
+      target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
     }
     if (!source) {
       // Edge with cluster as source
       ltail = subgraphs.get(edge.source)?.id
       const sourceElement = last(leafElements(edge.source))
-      source = sourceElement && graphvizNodes.get(sourceElement.id)
+      source = !!ltail && !!sourceElement ? graphvizNodes.get(sourceElement.id) : undefined
     }
 
     if (!source || !target) {
@@ -345,12 +344,17 @@ export function toGraphvisModel({
       if (edge.head === 'none') {
         e.attributes.set(_.dir, 'back')
       } else {
-        e.attributes.set(_.dir, 'both')
+        e.attributes.apply({
+          [_.dir]: 'both',
+          [_.constraint]: false
+        })
       }
     }
     if (edge.tail === 'none' && edge.head === 'none') {
-      e.attributes.set(_.dir, 'none')
-      e.attributes.set(_.constraint, false)
+      e.attributes.apply({
+        [_.dir]: 'none',
+        [_.constraint]: false
+      })
       return
     }
     const parentId = edge.parent
@@ -360,9 +364,11 @@ export function toGraphvisModel({
     const isTheOnlyEdge = findNestedEdges(parentId).length === 1
 
     if (isTheOnlyEdge && (isTheOnlyChildren || (isTruthy(parentId) && leafNodes.length <= 3))) {
-      // don't rank the edge
-      e.attributes.set(_.constraint, false)
-      e.attributes.set(_.weight, 4)
+      // don't rank the edge, but keep it straight
+      e.attributes.apply({
+        [_.weight]: 20,
+        [_.minlen]: 0
+      })
       return
     }
 
@@ -373,7 +379,11 @@ export function toGraphvisModel({
         break
       }
       case isSameLevel && isTruthy(parentId): {
-        e.attributes.set(_.weight, 4)
+        e.attributes.set(_.weight, 6)
+        break
+      }
+      case isSameLevel && sourceNode.level > 0: {
+        e.attributes.set(_.weight, 3)
         break
       }
       case isSameLevel || isTruthy(parentId): {
