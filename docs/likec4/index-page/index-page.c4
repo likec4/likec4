@@ -1,12 +1,12 @@
-// customise model
-specification {
+specification { // define "types", allowed in model
   element actor {
     style {
-      shape person
+      shape person // how to render
     }
   }
   element system
   element component
+  relationship async // allow "typed" relationship
 }
 
 // describe architecture
@@ -15,8 +15,11 @@ model {
     description 'A user of our product with active subscription'
   }
 
-  saas = system 'Our SaaS' {
+  cloud = system 'Our SaaS' {
     description 'Our product allows customers to manage their data'
+    style {
+      color muted
+    }
 
     backend = component 'Backend' {
       description '
@@ -29,85 +32,86 @@ model {
       }
 
       services = component 'Services' {
+        technology 'serverless functions'
         description '
-        Serverless Functions
-        Implement business logic and comminucate with external services
+          Implement business logic and
+          comminucate with external services
         '
       }
 
       api -> services 'calls'
-      api -> db 'reads'
-      services -> db 'writes'
+      api -> infra.db 'reads'
+      services -> infra.db 'writes'
     }
 
     ui = component 'Frontend' {
-      description 'NextJs application, hosted on Vercel'
+      description 'NextJs application'
       style {
         shape browser
       }
-
-      -> api 'requests via HTTPS'
     }
 
-    infra = component 'Infrastructure' {
-      description 'Cloud Infrastructure, managed services'
+    ui -[async]-> api 'requests via HTTPS'
 
-      db = component 'Database' {
-        description 'PostgreSQL, hosted on DigitalOcean'
-        style {
-          shape storage
-        }
-      }
-    }
-
-    backend -> infra 'uses'
   }
 
-  customer -> saas 'uses to manage data'
+  infra = system 'Infrastructure' {
+    description '
+      Cloud Infrastructure, Hosting
+      and Managed Services
+    '
+
+    db = component 'Database' {
+      description 'Managed PostgreSQL'
+      style {
+        shape storage
+      }
+    }
+  }
+
+  cloud -> infra 'uses'
+  backend -> infra 'uses'
+
+  customer -> cloud 'uses to manage data'
   customer -> ui 'opens in browser'
 }
 
 // generate diagrams
 views {
 
-  view index {
+  view index of customer {
     title 'Landscape view'
-    include *
+    include customer, cloud, cloud.*
+    style cloud {
+      color muted
+    }
+    style cloud.* {
+      color green
+    }
   }
 
-  view saas of saas {
+  view cloud of cloud {
     title 'Our Saas - Overview'
     include *
 
     style * {
       color secondary
     }
-    style saas {
+    style cloud {
       color muted
     }
-    style saas.* {
+    style cloud.* {
       color green
-    }
-  }
-
-  view ui of ui {
-    include *, saas
-
-    style ui {
-      color green
-    }
-    style saas {
-      color muted
     }
   }
 
   view backend of backend {
-    include *, saas
+    include *, cloud
 
     style * {
       color secondary
     }
-    style saas {
+    style cloud {
       color muted
     }
     style backend, backend.* {
@@ -118,19 +122,19 @@ views {
   view infra of infra {
     include
       *,
+      cloud,
       backend,
       backend.* -> infra
 
     style * {
       color secondary
     }
-    style backend, infra {
+    style cloud, infra {
       color muted
     }
     style infra.* {
       color green
     }
-
   }
 
 }

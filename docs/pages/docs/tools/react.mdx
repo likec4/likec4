@@ -38,33 +38,7 @@ The [examples](/examples/bigbank/containers/) on this website are rendered with 
 
 ### Example
 
-```likec4 filename="example.c4"
-specification {
-  element actor {
-    style {
-      shape person
-    }
-  }
-  element system
-}
-
-model {
-  customer = actor 'Customer' {
-    description 'A user of our product with active subscription'
-  }
-
-  cloud = system 'Our SaaS' {
-    description 'Our product allows customers to manage their data'
-  }
-
-  customer -> saas 'uses to manage data'
-}
-
-views {
-  view index {
-    include *
-  }
-}
+```likec4 file=<rootDir>/likec4/index-page/example
 ```
 
 > Code above is partial, see [full source](https://github.com/likec4/likec4/blob/main/docs/likec4/index-page/index-page.c4)

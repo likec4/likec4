@@ -35,6 +35,7 @@
     "clean": "run -T rimraf dist app/dist dev/.export dev/dist",
     "dev": "tsx watch src/cli/index.ts serve dev",
     "dev:bigbank": "tsx watch src/cli/index.ts serve ../../docs/likec4/bigbank",
+    "dev:index-page": "tsx watch src/cli/index.ts serve ../../docs/likec4/index-page",
     "dev:template": "tsx watch src/cli/index.ts serve ../create-likec4/template",
     "dev:example": "tsx watch src/cli/index.ts serve ../../examples/diagrams-dev/likec4",
     "cli": "tsx src/cli/index.ts",
