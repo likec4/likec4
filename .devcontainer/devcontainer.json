@@ -6,19 +6,18 @@
     "dockerfile": "Dockerfile"
   },
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest",
-      "ppa": "false"
-    }
+    "ghcr.io/devcontainers/features/git:1": {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
     5173, // likec4 cli - dev
     24678,
     24679, // likec4 cli - HMR
-    62001, // likec4 cli - preview
     51204, // vitest
-    61000 // examples-dev
+    61000, 
+    61001, // examples-dev
+    62001, 
+    62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "yarn install && yarn build",
