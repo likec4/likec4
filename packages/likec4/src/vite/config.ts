@@ -8,6 +8,7 @@ import type { InlineConfig, Logger, Alias } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { mkLanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
+import pkg from '../../package.json' assert { type: 'json' }
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -52,13 +53,19 @@ export type LikeC4ViteConfig =
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
 
+  customLogger.info(`${k.dim('version')} ${pkg.version}`)
+
   const [root, isDev] = getAppRoot()
   if (!fs.existsSync(root)) {
     customLogger.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
   }
 
-  customLogger.info(`${k.dim('app root')} ${root}`)
+  if (isDev) {
+    customLogger.warn(`${k.dim('dev app root')} ${root}`)
+  } else {
+    customLogger.info(`${k.dim('app root')} ${root}`)
+  }
 
   const languageServices =
     cfg?.languageServices ??
@@ -131,36 +138,38 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     customLogger,
     optimizeDeps: {
-      include: isDev ? [] : [
-        'react/jsx-dev-runtime',
-        'react/jsx-runtime',
-        'react-dom/client',
-        'react-dom',
-        'react',
-        'classnames',
-        'remeda',
-        'rambdax',
-        'jotai',
-        'react-konva/es/ReactKonvaCore',
-        'konva/lib/Core',
-        'konva/lib/shapes/Rect',
-        'konva/lib/shapes/Text',
-        'konva/lib/shapes/Path',
-        'konva/lib/shapes/Circle',
-        'konva/lib/shapes/Line',
-        'konva/lib/shapes/Image',
-        'konva/lib/shapes/Ellipse',
-        'react-konva',
-        'konva',        
-        'react-accessible-treeview',      
-        '@radix-ui/react-icons',
-        '@radix-ui/themes',
-        '@react-spring/konva',
-        '@use-gesture/react',
-        '@likec4/core',
-        '@likec4/diagrams'        
-      ]
-    },    
+      include: isDev
+        ? []
+        : [
+            'react/jsx-dev-runtime',
+            'react/jsx-runtime',
+            'react-dom/client',
+            'react-dom',
+            'react',
+            'classnames',
+            'remeda',
+            'rambdax',
+            'jotai',
+            'react-konva/es/ReactKonvaCore',
+            'konva/lib/Core',
+            'konva/lib/shapes/Rect',
+            'konva/lib/shapes/Text',
+            'konva/lib/shapes/Path',
+            'konva/lib/shapes/Circle',
+            'konva/lib/shapes/Line',
+            'konva/lib/shapes/Image',
+            'konva/lib/shapes/Ellipse',
+            'react-konva',
+            'konva',
+            'react-accessible-treeview',
+            '@radix-ui/react-icons',
+            '@radix-ui/themes',
+            '@react-spring/konva',
+            '@use-gesture/react',
+            '@likec4/core',
+            '@likec4/diagrams'
+          ]
+    },
     plugins: [
       react({
         // plugins: [

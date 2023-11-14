@@ -3,6 +3,7 @@ import type { InlineConfig, ViteDevServer } from 'vite'
 import { createServer, mergeConfig, searchForWorkspaceRoot } from 'vite'
 import type { LikeC4ViteConfig } from './config'
 import { viteConfig } from './config'
+import k from 'picocolors'
 
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
   const { isDev, ...config } = await viteConfig(cfg)
@@ -40,7 +41,7 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
 
   if (!config.languageServices.workspace.startsWith(config.root)) {
     const pattern = config.languageServices.workspace
-    server.config.logger.info(`add to watcher: ${pattern}`)
+    server.config.logger.info(`${k.dim('`add to watcher')} ${pattern}`)
     server.watcher.add(pattern)
   }
 
