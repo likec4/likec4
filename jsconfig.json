@@ -6,7 +6,9 @@
     "jsx": "react",
     "checkJs": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true
+    "strictFunctionTypes": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "packages/*/dist/", "packages/*/bin/"]
+  "exclude": ["node_modules", "dist", "packages/*/dist", "packages/*/bin"]
 }

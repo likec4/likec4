@@ -3,8 +3,8 @@ import { test } from './asserts'
 
 vi.mock('../logger')
 
-describe('strict elementref', () => {
-  test('StrictElementRef').valid`
+describe('FqnElementRef', () => {
+  test('valid').valid`
     specification {
       element component
     }

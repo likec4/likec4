@@ -28,9 +28,7 @@ SpecificationElementKind:
   CloseBlock)?;
 
 SpecificationTag:
-  'tag' tag=Tag (OpenBlock
-    style=StyleProperties?
-  CloseBlock)?;
+  'tag' tag=Tag;
 
 SpecificationRelationshipKind:
   'relationship' kind=RelationshipKind (OpenBlock
@@ -61,7 +59,9 @@ Element:
       )?
     )?
   )?
-  (OpenBlock body=ElementBody CloseBlock)?;
+  (OpenBlock
+    body=ElementBody
+  CloseBlock)?;
 
 ElementBody:
   tags=Tags?
@@ -98,7 +98,7 @@ ElementRef:
   el=[Element:Name] ({infer ElementRef.parent=current} Dot el=[Element:Name])*;
 
 Tags:
-  value+=[Tag:TagID] (Comma? value+=[Tag:TagID])*;
+  value+=[Tag:TagID] (Comma? value+=[Tag:TagID])* (Comma | SemiColon)?;
 
 Relation:
   ExplicitRelation | ImplicitRelation;
@@ -147,76 +147,75 @@ ElementViewRef:
 
 ElementViewBody:
   tags=Tags?
-  (props+=(ViewProperty | LinkProperty))*
-  rules+=(
-    ViewRuleExpression |
-    ViewRuleStyle |
-    ViewRuleAutoLayout
-  )*
+  props+=ViewProperty*
+  rules+=ViewRule*
 ;
 
 ViewProperty:
+  ViewStringProperty | LinkProperty
+;
+
+ViewStringProperty:
   key=('title' | 'description') Colon? value=String SemiColon?;
 
-type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout;
-ViewRuleExpression:
-  (isInclude?='include' | 'exclude') expressions+=Expression (Comma expressions+=Expression?)*;
-
-ViewRuleLayoutDirection returns string:
+ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
 
-ViewRuleAutoLayout:
-  'autoLayout' direction=ViewRuleLayoutDirection;
+ViewRule:
+  ViewRulePredicate |
+  ViewRuleStyle |
+  ViewRuleAutoLayout
+;
+
+ViewRulePredicate:
+  ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
+  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr?)*
+;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpression (Comma targets+=ElementExpression?)* OpenBlock
-    StylePropertiesFragment
+  'style' targets+=ElementExpr (Comma targets+=ElementExpr?)* OpenBlock
+    styleprops+=StyleProperty*
   CloseBlock;
-//   'style' targets+=ElementExpression (COMMA? targets+=ElementExpression)* OPEN_BLOCK
-//   (styleProps+=StyleProperty)*
-// CLOSE_BLOCK;
 
-// DynamicViewSteps:
-//   'steps' OPEN_BLOCK
-//     step+=DynamicViewStep+
-//   CLOSE_BLOCK;
+ViewRuleAutoLayout:
+  'autoLayout' direction=ViewLayoutDirection;
 
-// DynamicViewStep:
-//   source=ElementRef (isReverse?='<-' | '->') target=ElementRef (title=STRING)? SEMI?;
-
-Expression:
-  {infer IncomingExpression} RArrow target=ElementExpression (
-    {infer InOutExpression.inout=current} RArrow
-  )? |
-  ElementExpression (
-    {infer RelationExpression.source=current} RArrow target=ElementExpression |
-    {infer OutgoingExpression.source=current} RArrow
+ViewRulePredicateExpr:
+  InOutExpr |
+  // CustomElementExpr |
+  ElementExpr (
+    {infer RelationExpr.source=current} RArrow target=ElementExpr |
+    {infer OutgoingExpr.from=current} RArrow
   )?
 ;
 
-ElementExpression:
-  {infer WildcardExpression} isWildcard?='*' |
-  'element' Dot (
-    {infer ElementTagExpression} 'tag' IsEqual tag=[Tag:TagID] |
-    {infer ElementKindExpression} 'kind' IsEqual kind=[ElementKind:Name]
-  ) |
-  ElementRefExpression
-  // {infer IdentifierExpression} id=ElementRef isDescedants?='.*'?
-  // 'element' '.' (
-  //   {infer ElementTagExpression} 'tag' IsEqual tags+=[Tag:TagID] (COMMA tags+=[Tag:TagID])* |
-  //   {infer ElementKindExpression} 'kind' IsEqual kinds+=[ElementKind:Name] (COMMA kinds+=[ElementKind:Name])*
-  // ) |
-  // {infer IdentifierExpression} id=ElementRef isDescedants?=DESCEDANTS?
-  // {infer IdentifierExpression} id=ElementRef (
-  //   '['
-  //     'onclick' ('zoom' 'to' | 'show') view=[View:Name]
-  //   ']' |
-  //   isDescedants?=DESCEDANTS
-  // )?
+InOutExpr infers ViewRulePredicateExpr:
+  IncomingExpr ({infer InOutExpr.inout=current} RArrow)?;
+
+IncomingExpr:
+  RArrow to=ElementExpr;
+
+// CustomElementExpr:
+//   target=ElementRef '[' ']'
+// ;
+
+ElementExpr:
+  WildcardExpr | ElementSelectorExpr | DescedantsExpr;
+
+WildcardExpr:
+  isWildcard?='*'
 ;
 
-ElementRefExpression: id=ElementRef (isDescedants?=DotWildcard)?;
+ElementSelectorExpr infers ElementExpr:
+  'element' Dot (
+    {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagID] |
+    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind:Name]
+  )
+;
 
+DescedantsExpr infers ElementExpr:
+  ElementRef ({infer DescedantsExpr.parent=current} DotWildcard)?
+;
 // Common -------------------------------------
 
 LinkProperty:
@@ -240,16 +239,18 @@ StyleProperties:
     StylePropertiesFragment
   CloseBlock;
 
+StyleProperty:
+  ColorProperty | ShapeProperty | IconProperty;
+
+RelationshipStyleProperty:
+  ColorProperty | LineProperty | ArrowProperty;
+
 fragment StylePropertiesFragment:
-  (props+=(
-    ColorProperty | ShapeProperty | IconProperty
-  ))*
+  props+=StyleProperty*
 ;
 
 fragment RelationshipStylePropertiesFragment:
-  (props+=(
-    ColorProperty | LineProperty | ArrowProperty
-  ))*
+  (props+=RelationshipStyleProperty)*
 ;
 
 // type AnyStringProperty = ViewProperty | ElementStringProperty | RelationStringProperty | LinkProperty;
@@ -277,15 +278,20 @@ ElementShape returns string:
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
+TagID returns string:
+  Hash Name;
+
 Name returns string:
   ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
 
+
+
 fragment IsEqual:
-  (NotEqual | isEqual?=Eq);
+  isEqual?=Eq | NotEqual;
 
 // -----------------------------------
 // Symbols
-terminal fragment HASH: '#';
+// terminal fragment HASH: '#';
 terminal fragment UNDERSCORE: '_';
 terminal fragment DASH: '-';
 terminal fragment LETTER: /[^\W\d_]/;
@@ -307,8 +313,9 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal RArrow: '->';
 terminal DotWildcard: /\b\.\*/;
+terminal Hash: /\#\b/;
 terminal Dot: /\b\./;
-terminal NotEqual: '!=';
+terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal OpenBlock: '{';
 terminal CloseBlock: '}';
@@ -318,5 +325,5 @@ terminal Comma: ',';
 
 terminal String: /"[^"]*"|'[^']*'/;
 
-terminal TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal ID: (LETTER | UNDERSCORE) (LETTER | DIGIT | UNDERSCORE | DASH)*;
+// terminal  TagID: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal ID: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;

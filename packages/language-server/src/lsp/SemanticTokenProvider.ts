@@ -27,14 +27,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.variable
       })
     }
-    if (ast.isElementRefExpression(node) && node.isDescedants) {
+    if (ast.isDescedantsExpr(node)) {
       acceptor({
         node,
         keyword: '.*',
         type: SemanticTokenTypes.variable
       })
     }
-    if (ast.isWildcardExpression(node)) {
+    if (ast.isWildcardExpr(node)) {
       acceptor({
         node,
         property: 'isWildcard',
@@ -42,7 +42,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
 
-    if (ast.isElementKindExpression(node)) {
+    if (ast.isElementKindExpr(node)) {
       acceptor({
         node,
         property: 'kind',
@@ -50,7 +50,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         modifier: [SemanticTokenModifiers.definition]
       })
     }
-    if (ast.isElementTagExpression(node)) {
+    if (ast.isElementTagExpr(node)) {
       acceptor({
         node,
         property: 'tag',
