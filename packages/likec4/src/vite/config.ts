@@ -105,7 +105,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     root,
     languageServices,
     resolve: {
-      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+      dedupe: ['react', 'react-dom'],
       alias: [...aliases]
     },
     clearScreen: false,
@@ -130,6 +130,37 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }
     },
     customLogger,
+    optimizeDeps: {
+      include: isDev ? [] : [
+        'react/jsx-dev-runtime',
+        'react/jsx-runtime',
+        'react-dom/client',
+        'react-dom',
+        'react',
+        'classnames',
+        'remeda',
+        'rambdax',
+        'jotai',
+        'react-konva/es/ReactKonvaCore',
+        'konva/lib/Core',
+        'konva/lib/shapes/Rect',
+        'konva/lib/shapes/Text',
+        'konva/lib/shapes/Path',
+        'konva/lib/shapes/Circle',
+        'konva/lib/shapes/Line',
+        'konva/lib/shapes/Image',
+        'konva/lib/shapes/Ellipse',
+        'react-konva',
+        'konva',        
+        'react-accessible-treeview',      
+        '@radix-ui/react-icons',
+        '@radix-ui/themes',
+        '@react-spring/konva',
+        '@use-gesture/react',
+        '@likec4/core',
+        '@likec4/diagrams'        
+      ]
+    },    
     plugins: [
       react({
         // plugins: [
