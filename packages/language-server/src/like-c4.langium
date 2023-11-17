@@ -18,34 +18,34 @@ RelationshipKind:
   name=Name;
 
 SpecificationRule:
-  name='specification' OpenBlock
+  name='specification' '{'
     (elements+=SpecificationElementKind | tags+=SpecificationTag | relationships+=SpecificationRelationshipKind)*
-  CloseBlock;
+  '}';
 
 SpecificationElementKind:
-  'element' kind=ElementKind (OpenBlock
+  'element' kind=ElementKind ('{'
     style=StyleProperties?
-  CloseBlock)?;
+  '}')?;
 
 SpecificationTag:
   'tag' tag=Tag;
 
 SpecificationRelationshipKind:
-  'relationship' kind=RelationshipKind (OpenBlock
+  'relationship' kind=RelationshipKind ('{'
     RelationshipStylePropertiesFragment
-  CloseBlock)?
+  '}')?
 ;
 
 // Model -------------------------------------
 
 Model:
-  name='model' OpenBlock
+  name='model' '{'
     elements+=(
       ExtendElement |
       ExplicitRelation |
       Element
     )*
-  CloseBlock;
+  '}';
 
 Element:
   (
@@ -59,17 +59,16 @@ Element:
       )?
     )?
   )?
-  (OpenBlock
-    body=ElementBody
-  CloseBlock)?;
+  body=ElementBody?;
 
-ElementBody:
+ElementBody: '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
     Relation |
     Element
   )*
+'}'
 ;
 
 ElementProperty:
@@ -82,12 +81,12 @@ ExtendElement:
   'extend' element=FqnElementRef body=ExtendElementBody;
 
 ExtendElementBody:
-  OpenBlock
+  '{'
     elements+=(
       ExplicitRelation |
       Element
     )*
-  CloseBlock
+  '}'
 ;
 
 //
@@ -107,10 +106,10 @@ fragment RelationFragment:
   (RArrow | '-[' kind=[RelationshipKind] ']->')
   target=ElementRef
   (title=String)?
-  (OpenBlock
+  ('{'
     tags=Tags?
     props+=RelationStringProperty*
-  CloseBlock)?
+  '}')?
 ;
 
 ImplicitRelation:
@@ -126,26 +125,26 @@ RelationStringProperty:
 // Views -------------------------------------
 
 ModelViews:
-  name='views' OpenBlock
+  name='views' '{'
     views+=ElementView*
-  CloseBlock;
+  '}';
 
 ElementView:
   'view' name=Name? (
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
   )?
-  OpenBlock
-    body=ElementViewBody
-  CloseBlock;
+  body=ElementViewBody
+;
 
 ElementViewRef:
   view=[ElementView];
 
-ElementViewBody:
+ElementViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=ViewRule*
+  '}'
 ;
 
 ViewProperty:
@@ -166,21 +165,21 @@ ViewRule:
 
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr?)*
+  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (Comma targets+=ElementExpr?)* OpenBlock
+  'style' targets+=ElementExpr (Comma targets+=ElementExpr)* Comma? '{'
     styleprops+=StyleProperty*
-  CloseBlock;
+  '}';
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
 ViewRulePredicateExpr:
   InOutExpr |
-  CustomElementExpr |
   ElementExpr (
+    {infer CustomElementExpr.target=current} 'with' '{' body=CustomElementExprBody '}' |
     {infer RelationExpr.source=current} RArrow target=ElementExpr |
     {infer OutgoingExpr.from=current} RArrow
   )?
@@ -211,20 +210,17 @@ DescedantsExpr infers ElementExpr:
   ElementRef ({infer DescedantsExpr.parent=current} DotWildcard)?
 ;
 
-CustomElementExpr:
-  target=ElementRef body=CustomElementExprBody
-;
-
-CustomElementExprBody: '['
+CustomElementExprBody:
   props+=(
-      ElementStringProperty |
-      NavigateToProperty
-    )*
-    ']'
+    NavigateToProperty |
+    ElementStringProperty |
+    ColorProperty |
+    ShapeProperty
+  )*
 ;
 
 NavigateToProperty:
-  key='navigateTo' value=ElementViewRef;
+  'navigateTo' value=ElementViewRef;
 
 // Common -------------------------------------
 
@@ -245,9 +241,9 @@ ArrowProperty:
 
 
 StyleProperties:
-  key='style' OpenBlock
+  key='style' '{'
     StylePropertiesFragment
-  CloseBlock;
+  '}';
 
 StyleProperty:
   ColorProperty | ShapeProperty | IconProperty;
@@ -289,12 +285,10 @@ Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
 TagID returns string:
-  Hash Name;
+  TagHash Name;
 
 Name returns string:
-  ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
-
-
+  ElementShape | ThemeColor | ArrowType | 'element' | 'model' | ID;
 
 fragment IsEqual:
   isEqual?=Eq | NotEqual;
@@ -323,12 +317,10 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal RArrow: '->';
 terminal DotWildcard: /\b\.\*/;
-terminal Hash: /\#\b/;
+terminal TagHash: /\#\b/;
 terminal Dot: /\b\./;
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
-terminal OpenBlock: '{';
-terminal CloseBlock: '}';
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';

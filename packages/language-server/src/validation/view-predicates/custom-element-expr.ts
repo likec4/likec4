@@ -11,5 +11,11 @@ export const customElementExprChecks = (
         node: el
       })
     }
+    if (!ast.isElementRef(el.target)) {
+      accept('error', 'Invalid target for customization', {
+        node: el,
+        property: 'target'
+      })
+    }
   }
 }

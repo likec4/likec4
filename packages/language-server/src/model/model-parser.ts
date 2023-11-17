@@ -251,6 +251,7 @@ export class LikeC4ModelParser {
   }
 
   private parseCustomElementExpr(astNode: ast.CustomElementExpr): c4.CustomElementExpr {
+    invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
     const elementNode = elementRef(astNode.target)
     invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
     const element = this.resolveFqn(elementNode)
@@ -268,6 +269,14 @@ export class LikeC4ModelParser {
           const value =
             prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
           acc.custom[prop.key] = value.trim()
+          return acc
+        }
+        if (ast.isColorProperty(prop)) {
+          acc.custom[prop.key] = prop.value
+          return acc
+        }
+        if (ast.isShapeProperty(prop)) {
+          acc.custom[prop.key] = prop.value
           return acc
         }
         nonexhaustive(prop)

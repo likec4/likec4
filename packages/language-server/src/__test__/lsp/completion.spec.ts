@@ -291,4 +291,48 @@ describe('Completions', () => {
       disposeAfterCheck: true
     })
   })
+
+  it('should suggest views for navigateTo', async () => {
+    const text = `
+      specification {
+        element component
+      }
+      model {
+        root = component
+      }
+      views {
+        view index {
+          include *
+        }
+        view view2 {
+          include *
+        }
+        view {
+          include root <|>with {
+            <|>navigateTo <|>
+          }
+        }
+      }
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      expectedItems: ['with', 'include', 'exclude', 'style', 'autoLayout'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 1,
+      expectedItems: ['navigateTo', 'title', 'technology', 'description', 'color', 'shape'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 2,
+      expectedItems: ['index', 'view2'],
+      disposeAfterCheck: true
+    })
+  })
 })

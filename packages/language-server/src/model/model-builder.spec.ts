@@ -609,17 +609,18 @@ describe('LikeC4ModelBuilder', () => {
     views {
       view index {
         include *,
-          system1 [
+          system1 with {
             description 'Custom description'
             navigateTo index
-          ]
+            color amber
+          }
       }
       view system1 of system1 {
         include *,
-          system2 [
+          system2 with {
             title 'Custom'
             navigateTo system1
-          ]
+          }
       }
     }
     `)
@@ -639,10 +640,11 @@ describe('LikeC4ModelBuilder', () => {
     expect(views).toHaveProperty('index')
     expect(views).toHaveProperty('system1')
 
-    system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')
+    system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')!
     expect(system1Node).toBeDefined()
-    expect(system1Node!.description).toEqual('Custom description')
-    expect(system1Node!.navigateTo).toEqual('index')
+    expect(system1Node.description).toEqual('Custom description')
+    expect(system1Node.navigateTo).toEqual('index')
+    expect(system1Node.color).toEqual('amber')
 
     const system2Node = views['system1' as ViewID]!.nodes.find(n => n.id === 'system2')
     expect(system2Node).toMatchObject({
