@@ -101,7 +101,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.0.2",
   "volta": {
     "extends": "../../package.json"
   }
