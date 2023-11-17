@@ -3,6 +3,7 @@
   "pipeline": {
     "generate": {},
     "typecheck": {
+      "cache": false,
       "dependsOn": ["generate", "^build"],
       "outputs": []
     },

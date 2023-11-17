@@ -8,12 +8,13 @@
       "inputs": ["likec4/**"]
     },
     "typecheck": {
+      "cache": false,
       "dependsOn": ["^build", "generate"],
       "outputs": []
     },
     "build": {
       "dependsOn": ["^build", "generate"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "tsconfig.tsbuildinfo"]
     }
   }
 }

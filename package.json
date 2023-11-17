@@ -7,7 +7,6 @@
   "workspaces": [
     "docs",
     "packages/*",
-    "integration/*",
     "examples/*"
   ],
   "engines": {

@@ -8,6 +8,7 @@
     },
     "typecheck": {
       "dependsOn": ["generate", "^build"],
+      "cache": false,
       "outputs": []
     },
     "build": {

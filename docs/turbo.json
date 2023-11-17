@@ -8,6 +8,7 @@
       "inputs": ["likec4/**"]
     },
     "typecheck": {
+      "cache": false,
       "dependsOn": ["generate", "^build"],
       "outputs": []
     },
