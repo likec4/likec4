@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.0.2",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
