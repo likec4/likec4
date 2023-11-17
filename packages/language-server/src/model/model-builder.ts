@@ -275,10 +275,12 @@ export class LikeC4ModelBuilder {
 
     const computedView = result.view
     computedView.nodes.forEach(node => {
-      // find first element view that is not the current one
-      const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
-      if (navigateTo) {
-        node.navigateTo = navigateTo.id
+      if (!node.navigateTo) {
+        // find first element view that is not the current one
+        const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+        if (navigateTo) {
+          node.navigateTo = navigateTo.id
+        }
       }
     })
 

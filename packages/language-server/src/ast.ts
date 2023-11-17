@@ -9,6 +9,7 @@ import {
   type c4
 } from '@likec4/core'
 import type { LangiumDocument, MultiMap } from 'langium'
+import type { SetRequired } from 'type-fest'
 import { DocumentState } from 'langium'
 import { isNil } from 'remeda'
 import { elementRef } from './elementRef'
@@ -128,8 +129,18 @@ export interface LikeC4DocumentProps {
 export interface LikeC4LangiumDocument
   extends LangiumDocument<LikeC4Grammar>,
     LikeC4DocumentProps {}
-export type ParsedLikeC4LangiumDocument = Omit<LikeC4LangiumDocument, keyof LikeC4DocumentProps> &
-  Required<LikeC4DocumentProps>
+
+// export type FqnIndexedDocument = SetRequired<LikeC4LangiumDocument, 'c4fqns'>
+//   extends LangiumDocument<LikeC4Grammar>,
+//     SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
+export interface FqnIndexedDocument
+  extends LangiumDocument<LikeC4Grammar>,
+    SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
+
+// export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
+export interface ParsedLikeC4LangiumDocument
+  extends LangiumDocument<LikeC4Grammar>,
+    Required<LikeC4DocumentProps> {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const props: Required<Omit<LikeC4DocumentProps, 'c4fqns'>> = {
@@ -143,6 +154,12 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   }
   Object.assign(doc, props)
   return doc as ParsedLikeC4LangiumDocument
+}
+
+export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
+  return (
+    isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
+  )
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {

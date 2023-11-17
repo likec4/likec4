@@ -1,5 +1,6 @@
 import { type AstNode, AstNodeHoverProvider, type MaybePromise } from 'langium'
 import stripIndent from 'strip-indent'
+import { isTruthy } from 'remeda'
 import type { Hover } from 'vscode-languageserver-protocol'
 import type { LikeC4Services } from '../module'
 import type { LikeC4ModelLocator } from '../model'
@@ -43,17 +44,11 @@ export class LikeC4HoverProvider extends AstNodeHoverProvider {
       if (!el) {
         return
       }
-      const lines = [el.id, `${el.kind}: **${el.title}**`]
-      if (el.tags && el.tags.length > 0) {
-        lines.push('  \n', el.tags.map(t => '#' + t).join(', '))
-      }
-      if (el.description) {
-        lines.push('  \n', el.description)
-      }
+      const lines = [el.id, `### ${el.title}`, '`' + el.kind + '` ']
       return {
         contents: {
           kind: 'markdown',
-          value: lines.join('  \n')
+          value: lines.join('\n')
         }
       }
     }

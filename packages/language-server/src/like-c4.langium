@@ -18,39 +18,39 @@ RelationshipKind:
   name=Name;
 
 SpecificationRule:
-  name='specification' OpenBlock
+  name='specification' '{'
     (elements+=SpecificationElementKind | tags+=SpecificationTag | relationships+=SpecificationRelationshipKind)*
-  CloseBlock;
+  '}';
 
 SpecificationElementKind:
-  'element' kind=ElementKind (OpenBlock
+  'element' kind=ElementKind ('{'
     style=StyleProperties?
-  CloseBlock)?;
+  '}')?;
 
 SpecificationTag:
   'tag' tag=Tag;
 
 SpecificationRelationshipKind:
-  'relationship' kind=RelationshipKind (OpenBlock
+  'relationship' kind=RelationshipKind ('{'
     RelationshipStylePropertiesFragment
-  CloseBlock)?
+  '}')?
 ;
 
 // Model -------------------------------------
 
 Model:
-  name='model' OpenBlock
+  name='model' '{'
     elements+=(
       ExtendElement |
       ExplicitRelation |
       Element
     )*
-  CloseBlock;
+  '}';
 
 Element:
   (
-    kind=[ElementKind:Name] name=Name |
-    name=Name Eq kind=[ElementKind:Name]
+    kind=[ElementKind] name=Name |
+    name=Name Eq kind=[ElementKind]
   )
   (props+=String  // title
     (props+=String  // description
@@ -59,17 +59,16 @@ Element:
       )?
     )?
   )?
-  (OpenBlock
-    body=ElementBody
-  CloseBlock)?;
+  body=ElementBody?;
 
-ElementBody:
+ElementBody: '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
     Relation |
     Element
   )*
+'}'
 ;
 
 ElementProperty:
@@ -82,20 +81,20 @@ ExtendElement:
   'extend' element=FqnElementRef body=ExtendElementBody;
 
 ExtendElementBody:
-  OpenBlock
+  '{'
     elements+=(
       ExplicitRelation |
       Element
     )*
-  CloseBlock
+  '}'
 ;
 
 //
 FqnElementRef:
-  el=[Element:Name] ({infer FqnElementRef.parent=current} Dot el=[Element:Name])*;
+  el=[Element] ({infer FqnElementRef.parent=current} Dot el=[Element])*;
 
 ElementRef:
-  el=[Element:Name] ({infer ElementRef.parent=current} Dot el=[Element:Name])*;
+  el=[Element] ({infer ElementRef.parent=current} Dot el=[Element])*;
 
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])* (Comma | SemiColon)?;
@@ -104,13 +103,13 @@ Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  (RArrow | '-[' kind=[RelationshipKind:Name] ']->')
+  (RArrow | '-[' kind=[RelationshipKind] ']->')
   target=ElementRef
   (title=String)?
-  (OpenBlock
+  ('{'
     tags=Tags?
     props+=RelationStringProperty*
-  CloseBlock)?
+  '}')?
 ;
 
 ImplicitRelation:
@@ -126,29 +125,26 @@ RelationStringProperty:
 // Views -------------------------------------
 
 ModelViews:
-  name='views' OpenBlock
-    views+=View*
-  CloseBlock;
-
-View:
-  ElementView;
+  name='views' '{'
+    views+=ElementView*
+  '}';
 
 ElementView:
   'view' name=Name? (
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
   )?
-  OpenBlock
-    body=ElementViewBody
-  CloseBlock;
+  body=ElementViewBody
+;
 
 ElementViewRef:
-  view=[ElementView:Name];
+  view=[ElementView];
 
-ElementViewBody:
+ElementViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=ViewRule*
+  '}'
 ;
 
 ViewProperty:
@@ -169,21 +165,21 @@ ViewRule:
 
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr?)*
+  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (Comma targets+=ElementExpr?)* OpenBlock
+  'style' targets+=ElementExpr (Comma targets+=ElementExpr)* Comma? '{'
     styleprops+=StyleProperty*
-  CloseBlock;
+  '}';
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
 ViewRulePredicateExpr:
   InOutExpr |
-  // CustomElementExpr |
   ElementExpr (
+    {infer CustomElementExpr.target=current} 'with' '{' body=CustomElementExprBody '}' |
     {infer RelationExpr.source=current} RArrow target=ElementExpr |
     {infer OutgoingExpr.from=current} RArrow
   )?
@@ -195,9 +191,6 @@ InOutExpr infers ViewRulePredicateExpr:
 IncomingExpr:
   RArrow to=ElementExpr;
 
-// CustomElementExpr:
-//   target=ElementRef '[' ']'
-// ;
 
 ElementExpr:
   WildcardExpr | ElementSelectorExpr | DescedantsExpr;
@@ -209,13 +202,26 @@ WildcardExpr:
 ElementSelectorExpr infers ElementExpr:
   'element' Dot (
     {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagID] |
-    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind:Name]
+    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind]
   )
 ;
 
 DescedantsExpr infers ElementExpr:
   ElementRef ({infer DescedantsExpr.parent=current} DotWildcard)?
 ;
+
+CustomElementExprBody:
+  props+=(
+    NavigateToProperty |
+    ElementStringProperty |
+    ColorProperty |
+    ShapeProperty
+  )*
+;
+
+NavigateToProperty:
+  'navigateTo' value=ElementViewRef;
+
 // Common -------------------------------------
 
 LinkProperty:
@@ -235,9 +241,9 @@ ArrowProperty:
 
 
 StyleProperties:
-  key='style' OpenBlock
+  key='style' '{'
     StylePropertiesFragment
-  CloseBlock;
+  '}';
 
 StyleProperty:
   ColorProperty | ShapeProperty | IconProperty;
@@ -279,12 +285,10 @@ Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
 TagID returns string:
-  Hash Name;
+  TagHash Name;
 
 Name returns string:
-  ElementShape | ThemeColor | LineOptions | ArrowType | 'element' | 'model' | ID;
-
-
+  ID | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
 
 fragment IsEqual:
   isEqual?=Eq | NotEqual;
@@ -313,12 +317,10 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal RArrow: '->';
 terminal DotWildcard: /\b\.\*/;
-terminal Hash: /\#\b/;
+terminal TagHash: /\#\b/;
 terminal Dot: /\b\./;
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
-terminal OpenBlock: '{';
-terminal CloseBlock: '}';
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';

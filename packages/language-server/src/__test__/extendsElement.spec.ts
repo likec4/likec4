@@ -13,6 +13,7 @@ model {
       component sub1
     }
   }
+  component system2
 }
 `
 const document2 = `
@@ -27,6 +28,10 @@ model {
 const document3 = `
 model {
   system.sub1 -> system.sub2
+
+  extend system.sub.sub2 {
+    sub2 -> system2
+  }
 }
 `
 

@@ -31,6 +31,24 @@ describe('model', () => {
       element el2
     }`
 
+  test('allow element with kind "model"').valid`
+    specification {
+      element model
+    }
+    model {
+      model el1
+      el2 = model
+    }`
+
+  test('allow element with kind "solid" (reserved for line style)').valid`
+    specification {
+      element solid
+    }
+    model {
+      solid el1
+      el2 = solid
+    }`
+
   test('element with title').valid`
     specification {
       element person

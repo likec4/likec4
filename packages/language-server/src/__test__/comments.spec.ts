@@ -6,7 +6,7 @@ vi.mock('../logger')
 describe('comments', () => {
   test('line comment').valid`
     // line1
-    specification {
+    specification { // }
       element container
       /// line2
     }

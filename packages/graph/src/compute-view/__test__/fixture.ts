@@ -3,16 +3,18 @@ import type {
   ComputedView,
   Element,
   ElementKind,
+  ElementShape,
   Fqn,
   Relation,
   RelationID,
   Tag,
+  ThemeColor,
   ViewID,
   ViewRule,
   ViewRuleExpression
 } from '@likec4/core'
 import { pluck } from 'rambdax'
-import { indexBy } from 'remeda'
+import { indexBy, isString, pick } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { computeElementView } from '../index'
 
@@ -272,9 +274,30 @@ type IncomingExpr = `-> ${ElementRefExpr}`
 type OutgoingExpr = `${ElementRefExpr} ->`
 type RelationExpr = `${ElementRefExpr} -> ${ElementRefExpr}`
 
-type Expression = ElementRefExpr | InOutExpr | IncomingExpr | OutgoingExpr | RelationExpr
+type CustomExpr = {
+  custom: {
+    element: FakeElementIds
+    title?: string
+    description?: string
+    technology?: string
+    shape?: ElementShape
+    color?: ThemeColor
+    navigateTo?: string
+  }
+}
+
+type Expression =
+  | ElementRefExpr
+  | InOutExpr
+  | IncomingExpr
+  | OutgoingExpr
+  | RelationExpr
+  | CustomExpr
 
 function toExpression(expr: Expression): C4Expression {
+  if (!isString(expr)) {
+    return expr as C4Expression
+  }
   if (expr === '*') {
     return { wildcard: true }
   }

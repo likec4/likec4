@@ -5,7 +5,7 @@ import {
   type AstNodeDescription,
   type PrecomputedScopes
 } from 'langium'
-import { hasAtLeast, isEmpty } from 'remeda'
+import { isEmpty, isTruthy } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -17,48 +17,61 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
     document: LikeC4LangiumDocument,
     _cancelToken: CancellationToken
   ): Promise<AstNodeDescription[]> {
+    const docExports: AstNodeDescription[] = []
+    const { specifications, models, views } = document.parseResult.value
+
     try {
-      const { specifications, models, views } = document.parseResult.value
-
-      const docExports: AstNodeDescription[] = []
-
       for (const spec of specifications.flatMap(s => s.elements)) {
-        if (spec.kind && !isEmpty(spec.kind.name)) {
+        if (spec.kind && isTruthy(spec.kind.name)) {
           docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
         }
       }
+    } catch (e) {
+      logError(e)
+    }
+
+    try {
       for (const spec of specifications.flatMap(s => s.tags)) {
-        if (spec.tag && !isEmpty(spec.tag.name)) {
-          docExports.push(this.descriptions.createDescription(spec.tag, spec.tag.name, document))
+        if (spec.tag && isTruthy(spec.tag.name)) {
           docExports.push(
             this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
           )
         }
       }
+    } catch (e) {
+      logError(e)
+    }
+
+    try {
       for (const spec of specifications.flatMap(s => s.relationships)) {
-        if (spec.kind && !isEmpty(spec.kind.name)) {
+        if (spec.kind && isTruthy(spec.kind.name)) {
           docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
         }
       }
+    } catch (e) {
+      logError(e)
+    }
 
-      // Only root model elements are exported
+    try {
       for (const elAst of models.flatMap(m => m.elements)) {
         if (ast.isElement(elAst) && !isEmpty(elAst.name)) {
           docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
         }
       }
+    } catch (e) {
+      logError(e)
+    }
 
+    try {
       for (const viewAst of views.flatMap(v => v.views)) {
-        if (viewAst.name && !isEmpty(viewAst.name)) {
+        if (isTruthy(viewAst.name)) {
           docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
         }
       }
-
-      return Promise.resolve(docExports)
     } catch (e) {
       logError(e)
-      return Promise.reject(e)
     }
+    return Promise.resolve(docExports)
   }
 
   override async computeLocalScopes(
@@ -67,10 +80,15 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
   ): Promise<PrecomputedScopes> {
     const root = document.parseResult.value
     const scopes = new MultiMap<AstNode, AstNodeDescription>()
-    if (hasAtLeast(root.models, 1)) {
-      const nested = this.processContainer(root.models[0], scopes, document)
-      scopes.addAll(root, nested.values())
+    for (const model of root.models) {
+      try {
+        const nested = this.processContainer(model, scopes, document)
+        scopes.addAll(root, nested.values())
+      } catch (e) {
+        logError(e)
+      }
     }
+
     return Promise.resolve(scopes)
   }
 
@@ -87,8 +105,10 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
 
       let subcontainer
-      if (ast.isElement(el) && !isEmpty(el.name)) {
-        localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
+      if (ast.isElement(el)) {
+        if (isTruthy(el.name)) {
+          localScope.add(el.name, this.descriptions.createDescription(el, el.name, document))
+        }
         subcontainer = el.body
       } else if (ast.isExtendElement(el)) {
         subcontainer = el.body

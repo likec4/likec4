@@ -208,25 +208,87 @@ describe.concurrent('views2', () => {
       `)
     })
 
-    it.skip('element []', async ctx => {
+    it('element { }', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
-      // await invalid(`
-      //   exclude system.backend.api [ ]
-      // `)
       await invalid(`
-        include system.backend.* [ ]
+        exclude system.backend.api with { }
       `)
       await invalid(`
-        include * [ ]
+        include system.backend.* with { }
+      `)
+      await invalid(`
+        include system.backend with {
+      `)
+      await invalid(`
+        include * with { }
       `)
       await valid(`
-        include system.backend.api [ ]
+        include system.backend with { }
       `)
       await valid(`
         include
           system.backend.*,
-          system.backend.api [ ],
-          system.model [ ],
+          system.backend.api with {
+          },
+          system.model with  { },
+      `)
+    })
+
+    it('element {... props}', async ctx => {
+      const { valid, invalid } = await mkTestServices(ctx)
+      await invalid(`
+        include system.backend with  {
+          title
+        }
+      `)
+      await invalid(`
+        include system.backend with  {
+          style {
+          }
+        }
+      `)
+      await valid(`
+        include system.backend with {
+          title ''
+          description ''
+          technology '
+          '
+        }
+      `)
+      await valid(`
+        include system.backend with {
+          shape storage
+          color green
+        }
+      `)
+    })
+
+    it('element [navigateTo]', async ctx => {
+      const { view } = await mkTestServices(ctx)
+      await view.valid(`
+        view index {
+          include *
+        }
+        view index2 {
+          include system.backend.api with {
+            navigateTo index
+          }
+        }
+      `)
+      await view.valid(`
+        view index3 {
+          include
+            system with {
+              navigateTo index3
+            }
+        }
+      `)
+      await view.invalid(`
+        view {
+          include system.backend.api with {
+            navigateTo index11
+          }
+        }
       `)
     })
 
@@ -239,7 +301,7 @@ describe.concurrent('views2', () => {
         include -> system.backend.api
       `)
       await invalid(`
-        include -> system.backend.api [],
+        include -> system.backend.api with {},
       `)
       await valid(`
         include -> system.backend.*
@@ -296,7 +358,7 @@ describe.concurrent('views2', () => {
         include system -> infra
       `)
       await invalid(`
-        include system [ ] -> infra
+        include system { } -> infra
       `)
       await valid(`
         include system.backend.* -> infra.*

@@ -57,9 +57,10 @@ export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast
 export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> => {
   const index = services.shared.workspace.IndexManager
   return (node, accept) => {
+    const tagname = '#' + node.name
     const sameKinds = index
       .allElements(ast.Tag)
-      .filter(n => n.name === node.name)
+      .filter(n => n.name === tagname)
       .limit(2)
       .count()
     if (sameKinds > 1) {

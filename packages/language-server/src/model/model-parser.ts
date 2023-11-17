@@ -1,4 +1,11 @@
-import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
+import {
+  InvalidModelError,
+  invariant,
+  isNonEmptyArray,
+  nonexhaustive,
+  type c4,
+  isString
+} from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { getDocument } from 'langium'
 import objectHash from 'object-hash'
@@ -14,6 +21,7 @@ import {
   ElementViewOps,
   ast,
   cleanParsedModel,
+  isFqnIndexedDocument,
   isLikeC4LangiumDocument,
   resolveRelationPoints,
   streamModel,
@@ -26,8 +34,17 @@ import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
+import { isTruthy } from 'remeda'
 
 export type ModelParsedListener = () => void
+
+function toSingleLine<T extends string | undefined>(str: T): T {
+  return str?.split('\n').join(' ').trim() as T
+}
+
+function removeIndent<T extends string | undefined>(str: T): T {
+  return (str ? stripIndent(str).trim() : undefined) as T
+}
 
 export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
@@ -53,6 +70,7 @@ export class LikeC4ModelParser {
   }
 
   protected parseLikeC4Document(_doc: LikeC4LangiumDocument) {
+    invariant(isFqnIndexedDocument(_doc), 'Not a FqnIndexedDocument')
     const doc = cleanParsedModel(_doc)
     this.parseSpecification(doc)
     this.parseModel(doc)
@@ -122,8 +140,7 @@ export class LikeC4ModelParser {
 
   private parseElement(astNode: ast.Element): ParsedAstElement {
     const id = this.resolveFqn(astNode)
-    invariant(astNode.kind.ref, 'Element kind is not resolved: ' + astNode.name)
-    const kind = astNode.kind.ref.name as c4.ElementKind
+    const kind = astNode.kind.$refText as c4.ElementKind
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isStyleProperties)?.props
     const styleProps = toElementStyleExcludeDefaults(stylePropsAst)
@@ -131,14 +148,11 @@ export class LikeC4ModelParser {
 
     let [title, description, technology] = astNode.props
 
-    const bodyProps =
-      astNode.body?.props.filter((p): p is ast.ElementStringProperty =>
-        ast.isElementStringProperty(p)
-      ) ?? []
+    const bodyProps = astNode.body?.props.filter(ast.isElementStringProperty) ?? []
 
-    title = title ?? bodyProps.find(p => p.key === 'title')?.value
-    description = description ?? bodyProps.find(p => p.key === 'description')?.value
-    technology = technology ?? bodyProps.find(p => p.key === 'technology')?.value
+    title = toSingleLine(title ?? bodyProps.find(p => p.key === 'title')?.value)
+    description = removeIndent(description ?? bodyProps.find(p => p.key === 'description')?.value)
+    technology = toSingleLine(technology ?? bodyProps.find(p => p.key === 'technology')?.value)
 
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
 
@@ -146,11 +160,11 @@ export class LikeC4ModelParser {
       id,
       kind,
       astPath,
-      title: title ? stripIndent(title).trim() : astNode.name,
+      title: title ?? astNode.name,
       ...(tags && { tags }),
       ...(links && isNonEmptyArray(links) && { links }),
-      ...(technology && { technology }),
-      ...(description && { description: stripIndent(description).trim() }),
+      ...(isTruthy(technology) && { technology }),
+      ...(isTruthy(description) && { description }),
       ...styleProps
     }
   }
@@ -162,7 +176,8 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(astNode)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title = astNode.title ?? astNode.props.find(p => p.key === 'title')?.value ?? ''
+    const title =
+      toSingleLine(astNode.title ?? astNode.props.find(p => p.key === 'title')?.value) ?? ''
     const id = objectHash({
       astPath,
       source,
@@ -198,16 +213,20 @@ export class LikeC4ModelParser {
       }
     }
     if (ast.isElementKindExpr(astNode)) {
-      invariant(astNode.kind.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+      // invariant(astNode.kind.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
       return {
-        elementKind: astNode.kind.ref.name as c4.ElementKind,
+        elementKind: astNode.kind.$refText as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
     if (ast.isElementTagExpr(astNode)) {
-      invariant(astNode.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
+      let elementTag = astNode.tag.$refText
+      if (elementTag.startsWith('#')) {
+        elementTag = elementTag.slice(1)
+      }
+      // invariant(astNode.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
       return {
-        elementTag: astNode.tag.ref.name as c4.Tag,
+        elementTag: elementTag as c4.Tag,
         isEqual: astNode.isEqual
       }
     }
@@ -229,6 +248,45 @@ export class LikeC4ModelParser {
       }
     }
     nonexhaustive(astNode)
+  }
+
+  private parseCustomElementExpr(astNode: ast.CustomElementExpr): c4.CustomElementExpr {
+    invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
+    const elementNode = elementRef(astNode.target)
+    invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
+    const element = this.resolveFqn(elementNode)
+    const props = astNode.body?.props ?? []
+    return props.reduce(
+      (acc, prop) => {
+        if (ast.isNavigateToProperty(prop)) {
+          const viewId = prop.value.view.$refText
+          if (isTruthy(viewId)) {
+            acc.custom.navigateTo = viewId as c4.ViewID
+          }
+          return acc
+        }
+        if (ast.isElementStringProperty(prop)) {
+          const value =
+            prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
+          acc.custom[prop.key] = value.trim()
+          return acc
+        }
+        if (ast.isColorProperty(prop)) {
+          acc.custom[prop.key] = prop.value
+          return acc
+        }
+        if (ast.isShapeProperty(prop)) {
+          acc.custom[prop.key] = prop.value
+          return acc
+        }
+        nonexhaustive(prop)
+      },
+      {
+        custom: {
+          element
+        }
+      } as c4.CustomElementExpr
+    )
   }
 
   private parsePredicateExpr(astNode: ast.ViewRulePredicateExpr): c4.Expression {
@@ -253,6 +311,9 @@ export class LikeC4ModelParser {
         incoming: this.parseElementExpr(astNode.to)
       }
     }
+    if (ast.isCustomElementExpr(astNode)) {
+      return this.parseCustomElementExpr(astNode)
+    }
     if (ast.isElementExpr(astNode)) {
       return this.parseElementExpr(astNode)
     }
@@ -261,7 +322,14 @@ export class LikeC4ModelParser {
 
   private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
     if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
-      const exprs = astRule.expressions.map(n => this.parsePredicateExpr(n))
+      const exprs = astRule.expressions.flatMap(n => {
+        try {
+          return this.parsePredicateExpr(n)
+        } catch (e) {
+          logWarnError(e)
+          return []
+        }
+      })
       return ast.isIncludePredicate(astRule) ? { include: exprs } : { exclude: exprs }
     }
     if (ast.isViewRuleStyle(astRule)) {
