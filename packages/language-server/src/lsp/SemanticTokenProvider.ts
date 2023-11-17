@@ -13,13 +13,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
 
-    if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
-      acceptor({
-        node,
-        property: 'el',
-        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable
-      })
-    }
     if (ast.isElementViewRef(node)) {
       acceptor({
         node,
@@ -27,17 +20,15 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.variable
       })
     }
-    if (ast.isDescedantsExpr(node)) {
+    if (ast.isDescedantsExpr(node) && node.$cstNode) {
       acceptor({
-        node,
-        keyword: '.*',
+        cst: node.$cstNode,
         type: SemanticTokenTypes.variable
       })
     }
-    if (ast.isWildcardExpr(node)) {
+    if (ast.isWildcardExpr(node) && node.$cstNode) {
       acceptor({
-        node,
-        property: 'isWildcard',
+        cst: node.$cstNode,
         type: SemanticTokenTypes.variable
       })
     }
@@ -58,7 +49,14 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         modifier: [SemanticTokenModifiers.definition]
       })
     }
-    if (ast.isSpecificationElementKind(node)) {
+    if (ast.isElementRef(node) || ast.isFqnElementRef(node)) {
+      acceptor({
+        node,
+        property: 'el',
+        type: node.parent ? SemanticTokenTypes.property : SemanticTokenTypes.variable
+      })
+    }
+    if (ast.isSpecificationElementKind(node) || ast.isSpecificationRelationshipKind(node)) {
       acceptor({
         node,
         property: 'kind',
@@ -78,14 +76,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       acceptor({
         node,
         property: 'name',
-        type: SemanticTokenTypes.type,
-        modifier: [SemanticTokenModifiers.definition]
-      })
-    }
-    if (ast.isSpecificationRelationshipKind(node)) {
-      acceptor({
-        node,
-        property: 'kind',
         type: SemanticTokenTypes.type,
         modifier: [SemanticTokenModifiers.definition]
       })
@@ -112,7 +102,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     if (ast.isElement(node)) {
       this.highlightAstElement(node, acceptor)
     }
-    if (ast.isView(node)) {
+    if (ast.isElementView(node)) {
       this.highlightView(node, acceptor)
     }
   }

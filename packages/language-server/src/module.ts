@@ -22,7 +22,7 @@ import { Rpc } from './Rpc'
 import { registerValidationChecks } from './validation'
 import { logger } from './logger'
 import { serializeError } from '@likec4/core'
-import { NodeKindProvider } from './shared/NodeKindProvider'
+import { WorkspaceSymbolProvider, NodeKindProvider } from './shared'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
@@ -75,7 +75,8 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
 
 const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
   lsp: {
-    NodeKindProvider: () => new NodeKindProvider()
+    NodeKindProvider: services => new NodeKindProvider(services),
+    WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services)
   }
   // workspace: {
   //   WorkspaceManager: services => new LikeC4WorkspaceManager(services)

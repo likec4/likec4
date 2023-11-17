@@ -46,7 +46,7 @@ describe('LikeC4DocumentSymbolProvider', () => {
         children: [
           {
             name: 'component',
-            kind: SymbolKind.Class,
+            kind: SymbolKind.TypeParameter,
             range: {
               start: {
                 character: 2,
@@ -70,7 +70,7 @@ describe('LikeC4DocumentSymbolProvider', () => {
           },
           {
             name: '#next',
-            kind: SymbolKind.Interface,
+            kind: SymbolKind.EnumMember,
             range: {
               start: {
                 character: 2,

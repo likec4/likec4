@@ -1,49 +1,24 @@
-import { findNodeForProperty, type DocumentSymbolProvider, type MaybePromise } from 'langium'
-import { compact, concat, first, isEmpty, map, pipe } from 'remeda'
+import { nonexhaustive } from '@likec4/core'
+import {
+  findNodeForProperty,
+  type AstNode,
+  type DocumentSymbolProvider,
+  type MaybePromise,
+  type NodeKindProvider
+} from 'langium'
+import { compact, isEmpty, map, pipe } from 'remeda'
 import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
+import { getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { LikeC4Services } from '../module'
 
-function getElementKindSymbol(astKind: ast.SpecificationElementKind): DocumentSymbol | null {
-  if (!astKind.$cstNode || !astKind.kind.$cstNode || isEmpty(astKind.kind.name)) return null
-
-  return {
-    kind: SymbolKind.Class,
-    name: astKind.kind.name,
-    range: astKind.$cstNode.range,
-    selectionRange: astKind.kind.$cstNode.range
-  }
-}
-
-function getTagSymbol(astTag: ast.SpecificationTag): DocumentSymbol | null {
-  if (!astTag.$cstNode || !astTag.tag.$cstNode || isEmpty(astTag.tag.name)) return null
-  return {
-    kind: SymbolKind.Interface,
-    name: '#' + astTag.tag.name,
-    range: astTag.$cstNode.range,
-    selectionRange: astTag.tag.$cstNode.range
-  }
-}
-
-function getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
-  const cst = astView?.$cstNode
-  if (!cst) return []
-  const nameNode = astView.name ? findNodeForProperty(cst, 'name') : null
-  if (!nameNode) return []
-  return [
-    {
-      kind: SymbolKind.Class,
-      name: nameNode.text,
-      range: cst.range,
-      selectionRange: nameNode.range,
-      children: []
-    }
-  ]
-}
-
 export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
-  constructor(private services: LikeC4Services) {}
+  protected readonly nodeKindProvider: NodeKindProvider
+
+  constructor(private services: LikeC4Services) {
+    this.nodeKindProvider = services.shared.lsp.NodeKindProvider
+  }
 
   getSymbols({
     parseResult: {
@@ -71,13 +46,15 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!specKeywordNode) return []
 
     const specSymbols = pipe(
-      concat(astSpec.elements, astSpec.tags),
+      [...astSpec.elements, ...astSpec.tags, ...astSpec.relationships],
       map(nd => {
-        if (ast.isSpecificationElementKind(nd)) {
-          return getElementKindSymbol(nd)
-        } else {
-          return getTagSymbol(nd)
+        if (ast.isSpecificationElementKind(nd) || ast.isSpecificationRelationshipKind(nd)) {
+          return this.getKindSymbol(nd)
         }
+        if (ast.isSpecificationTag(nd)) {
+          return this.getTagSymbol(nd)
+        }
+        nonexhaustive(nd)
       }),
       compact
     )
@@ -102,7 +79,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     if (!nameNode) return []
     return [
       {
-        kind: SymbolKind.Namespace,
+        kind: this.symbolKind(astModel),
         name: astModel.name,
         range: cstModel.range,
         selectionRange: nameNode.range,
@@ -131,12 +108,12 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const cst = astElement.$cstNode
     const nameNode = astElement.element.$cstNode
     const body = astElement.body
-    if (!cst || !nameNode || !body) return []
+    if (!cst || !nameNode) return []
 
     return [
       {
-        kind: SymbolKind.Constructor,
-        name: nameNode.text,
+        kind: this.symbolKind(astElement),
+        name: getFqnElementRef(astElement.element),
         range: cst.range,
         selectionRange: nameNode.range,
         children: body.elements.flatMap(e => this.getElementsSymbol(e))
@@ -146,10 +123,8 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
   protected getElementSymbol(astElement: ast.Element): DocumentSymbol[] {
     const cst = astElement.$cstNode
-    if (!cst) return []
-
     const nameNode = findNodeForProperty(cst, 'name')
-    if (!nameNode) return []
+    if (!nameNode || !cst) return []
 
     const name = astElement.name
     const kind = astElement.kind.$refText
@@ -157,7 +132,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const detail = kind // + (astElement.title ? ': ' + astElement.title : '').replaceAll('\n', ' ').trim()
     return [
       {
-        kind: SymbolKind.Constructor,
+        kind: this.symbolKind(astElement),
         name: name,
         range: cst.range,
         selectionRange: nameNode.range,
@@ -168,17 +143,59 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   }
   protected getModelViewsSymbol(astViews: ast.ModelViews): DocumentSymbol[] {
     const cst = astViews.$cstNode
-    if (!cst) return []
     const nameNode = findNodeForProperty(cst, 'name')
-    if (!nameNode) return []
+    if (!nameNode || !cst) return []
     return [
       {
-        kind: SymbolKind.Namespace,
+        kind: this.symbolKind(astViews),
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: astViews.views.flatMap(e => getElementViewSymbol(e))
+        children: astViews.views.flatMap(e => this.getElementViewSymbol(e))
       }
     ]
+  }
+
+  protected getKindSymbol(
+    astKind: ast.SpecificationElementKind | ast.SpecificationRelationshipKind
+  ): DocumentSymbol | null {
+    if (!astKind.$cstNode || !astKind.kind.$cstNode || isEmpty(astKind.kind.name)) return null
+
+    return {
+      kind: this.symbolKind(astKind),
+      name: astKind.kind.name,
+      range: astKind.$cstNode.range,
+      selectionRange: astKind.kind.$cstNode.range
+    }
+  }
+
+  protected getTagSymbol(astTag: ast.SpecificationTag): DocumentSymbol | null {
+    if (!astTag.$cstNode || !astTag.tag.$cstNode || isEmpty(astTag.tag.name)) return null
+    return {
+      kind: this.symbolKind(astTag),
+      name: '#' + astTag.tag.name,
+      range: astTag.$cstNode.range,
+      selectionRange: astTag.tag.$cstNode.range
+    }
+  }
+
+  protected getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
+    const cst = astView?.$cstNode
+    if (!cst) return []
+    const nameNode = astView.name ? findNodeForProperty(cst, 'name') : null
+    if (!nameNode) return []
+    return [
+      {
+        kind: this.symbolKind(astView),
+        name: nameNode.text,
+        range: cst.range,
+        selectionRange: nameNode.range,
+        children: []
+      }
+    ]
+  }
+
+  protected symbolKind(node: AstNode): SymbolKind {
+    return this.nodeKindProvider.getSymbolKind(node)
   }
 }
