@@ -208,11 +208,11 @@ describe.concurrent('views2', () => {
       `)
     })
 
-    it.skip('element []', async ctx => {
+    it('element []', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
-      // await invalid(`
-      //   exclude system.backend.api [ ]
-      // `)
+      await invalid(`
+        exclude system.backend.api [ ]
+      `)
       await invalid(`
         include system.backend.* [ ]
       `)
@@ -220,13 +220,66 @@ describe.concurrent('views2', () => {
         include * [ ]
       `)
       await valid(`
-        include system.backend.api [ ]
+        include system.backend [ ]
       `)
       await valid(`
         include
           system.backend.*,
-          system.backend.api [ ],
+          system.backend.api [
+          ],
           system.model [ ],
+      `)
+    })
+
+    it('element [... props]', async ctx => {
+      const { valid, invalid } = await mkTestServices(ctx)
+      await invalid(`
+        include system.backend [
+          title
+        ]
+      `)
+      await invalid(`
+        include system.backend [
+          style {
+          }
+        ]
+      `)
+      await valid(`
+        include system.backend [
+          title ''
+          description ''
+          technology '
+          '
+        ]
+      `)
+    })
+
+    it('element [navigateTo]', async ctx => {
+      const { view } = await mkTestServices(ctx)
+      await view.valid(`
+        view index {
+          include *
+        }
+        view index2 {
+          include system.backend.api [
+            navigateTo index
+          ]
+        }
+      `)
+      await view.valid(`
+        view index3 {
+          include
+            system [
+              navigateTo index3
+            ]
+        }
+      `)
+      await view.invalid(`
+        view {
+          include system.backend.api [
+            navigateTo index11
+          ]
+        }
       `)
     })
 

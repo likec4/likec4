@@ -49,8 +49,8 @@ Model:
 
 Element:
   (
-    kind=[ElementKind:Name] name=Name |
-    name=Name Eq kind=[ElementKind:Name]
+    kind=[ElementKind] name=Name |
+    name=Name Eq kind=[ElementKind]
   )
   (props+=String  // title
     (props+=String  // description
@@ -92,10 +92,10 @@ ExtendElementBody:
 
 //
 FqnElementRef:
-  el=[Element:Name] ({infer FqnElementRef.parent=current} Dot el=[Element:Name])*;
+  el=[Element] ({infer FqnElementRef.parent=current} Dot el=[Element])*;
 
 ElementRef:
-  el=[Element:Name] ({infer ElementRef.parent=current} Dot el=[Element:Name])*;
+  el=[Element] ({infer ElementRef.parent=current} Dot el=[Element])*;
 
 Tags:
   value+=[Tag:TagID] (Comma? value+=[Tag:TagID])* (Comma | SemiColon)?;
@@ -104,7 +104,7 @@ Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  (RArrow | '-[' kind=[RelationshipKind:Name] ']->')
+  (RArrow | '-[' kind=[RelationshipKind] ']->')
   target=ElementRef
   (title=String)?
   (OpenBlock
@@ -127,11 +127,8 @@ RelationStringProperty:
 
 ModelViews:
   name='views' OpenBlock
-    views+=View*
+    views+=ElementView*
   CloseBlock;
-
-View:
-  ElementView;
 
 ElementView:
   'view' name=Name? (
@@ -143,7 +140,7 @@ ElementView:
   CloseBlock;
 
 ElementViewRef:
-  view=[ElementView:Name];
+  view=[ElementView];
 
 ElementViewBody:
   tags=Tags?
@@ -182,7 +179,7 @@ ViewRuleAutoLayout:
 
 ViewRulePredicateExpr:
   InOutExpr |
-  // CustomElementExpr |
+  CustomElementExpr |
   ElementExpr (
     {infer RelationExpr.source=current} RArrow target=ElementExpr |
     {infer OutgoingExpr.from=current} RArrow
@@ -195,9 +192,6 @@ InOutExpr infers ViewRulePredicateExpr:
 IncomingExpr:
   RArrow to=ElementExpr;
 
-// CustomElementExpr:
-//   target=ElementRef '[' ']'
-// ;
 
 ElementExpr:
   WildcardExpr | ElementSelectorExpr | DescedantsExpr;
@@ -209,13 +203,29 @@ WildcardExpr:
 ElementSelectorExpr infers ElementExpr:
   'element' Dot (
     {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagID] |
-    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind:Name]
+    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind]
   )
 ;
 
 DescedantsExpr infers ElementExpr:
   ElementRef ({infer DescedantsExpr.parent=current} DotWildcard)?
 ;
+
+CustomElementExpr:
+  target=ElementRef body=CustomElementExprBody
+;
+
+CustomElementExprBody: '['
+  props+=(
+      ElementStringProperty |
+      NavigateToProperty
+    )*
+    ']'
+;
+
+NavigateToProperty:
+  key='navigateTo' value=ElementViewRef;
+
 // Common -------------------------------------
 
 LinkProperty:

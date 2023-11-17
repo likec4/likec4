@@ -12,19 +12,15 @@ import {
   tagChecks
 } from './specification'
 import { viewChecks } from './view'
-import { incomingExpressionChecks, outgoingExpressionChecks } from './view-predicates'
+import {
+  customElementExprChecks,
+  incomingExpressionChecks,
+  outgoingExpressionChecks
+} from './view-predicates'
 
 export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
-  // const checks: ValidationChecks = {
-  // Element: validator.checkElementNameDuplicates,
-  // Tag: validator.checkTagDuplicates,
-  // ElementKind: elementKindChecks(services),
-  // ElementStyleProperty: validator.checkElementStyleProperty,
-  // View: validator.checkViewNameDuplicates,
-  // ColorStyleProperty: validator.checkColorStyleProperty,
-  // }
   registry.register<ast.LikeC4AstType>(
     {
       SpecificationRule: specificationRuleChecks(services),
@@ -35,6 +31,7 @@ export function registerValidationChecks(services: LikeC4Services) {
       ElementKind: elementKindChecks(services),
       Relation: relationChecks(services),
       Tag: tagChecks(services),
+      CustomElementExpr: customElementExprChecks(services),
       RelationshipKind: relationshipChecks(services),
       IncomingExpr: incomingExpressionChecks(services),
       OutgoingExpr: outgoingExpressionChecks(services)

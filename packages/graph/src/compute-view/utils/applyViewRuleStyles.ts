@@ -1,9 +1,10 @@
-import type { ComputedNode, ViewRuleStyle } from '@likec4/core'
-import { Expr, nonexhaustive } from '@likec4/core'
+import type { ComputedNode, ViewRule } from '@likec4/core'
+import { Expr, isViewRuleStyle, nonexhaustive } from '@likec4/core'
 import { anyPass, filter, isNil, type Predicate } from 'rambdax'
 import { isDefined } from 'remeda'
 
-export function applyViewRuleStyles(rules: ViewRuleStyle[], nodes: ComputedNode[]) {
+export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
+  const rules = _rules.filter(isViewRuleStyle)
   if (rules.length === 0) {
     return nodes
   }

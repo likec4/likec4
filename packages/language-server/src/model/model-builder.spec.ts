@@ -570,7 +570,7 @@ describe('LikeC4ModelBuilder', () => {
 
   it('builds model with relationship spec', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
-    const { diagnostics, document } = await validate(`
+    const { diagnostics } = await validate(`
     specification {
       element person
       relationship async
@@ -592,5 +592,62 @@ describe('LikeC4ModelBuilder', () => {
       kind: 'async'
     })
     expect(model).toMatchSnapshot()
+  })
+
+  it.concurrent('builds model and view with customized element', async ({ expect }) => {
+    const { validate, buildModel, services } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1
+      }
+    }
+    views {
+      view index {
+        include *,
+          system1 [
+            description 'Custom description'
+            navigateTo index
+          ]
+      }
+      view system1 of system1 {
+        include *,
+          system2 [
+            title 'Custom'
+            navigateTo system1
+          ]
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+
+    // Check that computeView method does not change navigateTo
+    const indexView = services.likec4.ModelBuilder.computeView('index' as ViewID)!
+    let system1Node = indexView.nodes.find(n => n.id === 'system1')
+    expect(system1Node).toMatchObject({
+      title: 'system1',
+      description: 'Custom description',
+      navigateTo: 'index'
+    })
+
+    // Check buildModel
+    const { views } = await buildModel()
+    expect(views).toHaveProperty('index')
+    expect(views).toHaveProperty('system1')
+
+    system1Node = views['index' as ViewID]!.nodes.find(n => n.id === 'system1')
+    expect(system1Node).toBeDefined()
+    expect(system1Node!.description).toEqual('Custom description')
+    expect(system1Node!.navigateTo).toEqual('index')
+
+    const system2Node = views['system1' as ViewID]!.nodes.find(n => n.id === 'system2')
+    expect(system2Node).toMatchObject({
+      title: 'Custom',
+      navigateTo: 'system1'
+    })
   })
 })

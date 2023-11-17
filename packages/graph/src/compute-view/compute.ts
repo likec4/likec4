@@ -4,7 +4,6 @@ import type {
   EdgeId,
   Element,
   ElementView,
-  NonEmptyArray,
   Relation,
   ViewRuleExpression
 } from '@likec4/core'
@@ -12,19 +11,17 @@ import {
   Expr,
   ancestorsFqn,
   commonAncestor,
-  compareFqnHierarchically,
   compareRelations,
   invariant,
   isAncestor,
   isStrictElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
-  isViewRuleStyle,
   nonNullable,
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { first, hasAtLeast, intersection, uniq } from 'remeda'
+import { hasAtLeast, uniq } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -34,6 +31,7 @@ import {
   excludeOutgoingExpr,
   excludeRelationExpr,
   excludeWildcardRef,
+  includeCustomElement,
   includeElementKindOrTag,
   includeElementRef,
   includeInOutExpr,
@@ -42,6 +40,7 @@ import {
   includeRelationExpr,
   includeWildcardRef
 } from './compute-predicates'
+import { applyElementCustomProperties } from './utils/applyElementCustomProperties'
 import { applyViewRuleStyles } from './utils/applyViewRuleStyles'
 import { buildComputeNodes } from './utils/buildComputeNodes'
 import { sortNodes } from './utils/sortNodes'
@@ -120,10 +119,13 @@ export class ComputeCtx {
     // but we need to keep the initial sort
     const initialSort = resolvedElements.flatMap(e => nodesMap.get(e.id) ?? [])
 
-    const nodes = applyViewRuleStyles(
-      rules.filter(isViewRuleStyle),
-      // Build graph and apply postorder sort
-      sortNodes(initialSort, edges)
+    const nodes = applyElementCustomProperties(
+      rules,
+      applyViewRuleStyles(
+        rules,
+        // Build graph and apply postorder sort
+        sortNodes(initialSort, edges)
+      )
     )
 
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
@@ -299,6 +301,11 @@ export class ComputeCtx {
       const isInclude = 'include' in rule
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
+        if (Expr.isCustomElement(expr)) {
+          invariant(isInclude, 'CustomElementExpr is not allowed in exclude rule')
+          includeCustomElement.call(this, expr)
+          continue
+        }
         if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {
           isInclude
             ? includeElementKindOrTag.call(this, expr)

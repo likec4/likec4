@@ -1,7 +1,10 @@
-import type { ElementKind, Fqn, Tag } from './element'
+import type { ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { ThemeColor } from './theme'
+import type { ViewID } from './view'
 
 interface BaseExpr {
   element?: never
+  custom?: never
   elementKind?: never
   elementTag?: never
   isEqual?: never
@@ -20,6 +23,21 @@ export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
   return 'element' in expr
+}
+
+export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
+  custom: {
+    element: Fqn
+    title?: string
+    description?: string
+    technology?: string
+    shape?: ElementShape
+    color?: ThemeColor
+    navigateTo?: ViewID
+  }
+}
+export function isCustomElement(expr: Expression): expr is CustomElementExpr {
+  return 'custom' in expr
 }
 
 export interface WildcardExpr extends Omit<BaseExpr, 'wildcard'> {
@@ -83,7 +101,7 @@ export function isAnyRelation(expr: Expression): expr is AnyRelationExpression {
   return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)
 }
 
-export type Expression = ElementExpression | AnyRelationExpression
+export type Expression = ElementExpression | CustomElementExpr | AnyRelationExpression
 
 // export const Expr = {
 //   isElementRef,

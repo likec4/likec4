@@ -327,3 +327,17 @@ export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
   const relations = this.graph.edgesBetween(sources, targets).flatMap(e => e.relations)
   this.excludeRelation(...relations)
 }
+
+export function includeCustomElement(this: ComputeCtx, expr: Expr.CustomElementExpr) {
+  // Get the elements that are already in the Ctx before any mutations
+  // Because we need to add edges between them and the new elements
+  const currentElements = [...this.elements]
+
+  const el = this.graph.element(expr.custom.element)
+
+  this.addElement(el)
+
+  if (currentElements.length > 0) {
+    this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
+  }
+}

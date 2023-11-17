@@ -10,12 +10,20 @@
       "include": "#string"
     },
     {
+      "name": "entity.name.variable.likec4",
+      "match": "\\b\\.\\*"
+    },
+    {
       "name": "keyword.control.likec4",
       "match": "(\\]?->|-\\[)"
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|browser|color|crow|cylinder|dashed|description|diamond|dotted|element|exclude|extend|extends|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|none|normal|odiamond|of|onormal|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views)\\b"
+      "match": "\\belement(\\.(kind|tag)?)?\\b"
+    },
+    {
+      "name": "keyword.control.likec4",
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|browser|color|crow|cylinder|dashed|description|diamond|dotted|element|exclude|extends?|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views)\\b"
     }
   ],
   "repository": {

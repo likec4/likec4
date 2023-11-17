@@ -1,24 +1,13 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
-import type { LangiumDocument, LangiumDocuments, Stream } from 'langium'
+import type { LangiumDocuments, Stream } from 'langium'
 import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, getDocument, stream } from 'langium'
-import { isNil } from 'remeda'
-import type { ast } from '../ast'
-import { ElementOps, isLikeC4LangiumDocument, type LikeC4LangiumDocument } from '../ast'
+import type { FqnIndexedDocument, ast } from '../ast'
+import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils'
 import { computeDocumentFqn } from './fqn-computation'
-
-export type FqnIndexedDocument = Omit<LikeC4LangiumDocument, 'c4fqns'> & {
-  c4fqns: NonNullable<LikeC4LangiumDocument['c4fqns']>
-}
-
-export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return (
-    isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
-  )
-}
 
 export interface FqnIndexEntry {
   fqn: Fqn
@@ -27,6 +16,8 @@ export interface FqnIndexEntry {
   doc: FqnIndexedDocument
   path: string
 }
+
+const True = () => true
 
 export class FqnIndex {
   protected langiumDocuments: LangiumDocuments
@@ -62,35 +53,34 @@ export class FqnIndex {
     return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
-  private entries(filterByFqn: (fqn: Fqn) => boolean = () => true): Stream<FqnIndexEntry> {
+  private entries(filterByFqn: (fqn: Fqn) => boolean = True): Stream<FqnIndexEntry> {
     return this.documents.flatMap(doc =>
-      doc.c4fqns
-        .entries()
-        .filter(([fqn]) => filterByFqn(fqn))
-        .map(([fqn, entry]): FqnIndexEntry | null => {
+      doc.c4fqns.entries().flatMap(([fqn, entry]): FqnIndexEntry | FqnIndexEntry[] => {
+        if (filterByFqn(fqn)) {
           const el = entry.el.deref()
           if (el) {
             return { ...entry, fqn, el, doc }
           }
-          return null
-        })
-        .nonNullable()
+        }
+        return []
+      })
     )
   }
 
   public getFqn(el: ast.Element): Fqn | null {
-    let fqn = ElementOps.readId(el) ?? null
-    if (fqn) {
-      const doc = getDocument(el)
-      if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
-        return fqn
-      }
-      const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
-      logError(`Clean cached FQN ${fqn} at ${path}`)
-      ElementOps.writeId(el, null)
-      fqn = null
-    }
-    return fqn
+    return ElementOps.readId(el) ?? null
+    // let fqn = ElementOps.readId(el) ?? null
+    // if (fqn) {
+    //   const doc = getDocument(el)
+    //   if (isFqnIndexedDocument(doc) && doc.c4fqns.has(fqn)) {
+    //     return fqn
+    //   }
+    //   const path = this.services.workspace.AstNodeLocator.getAstNodePath(el)
+    //   logError(`Clean cached FQN ${fqn} at ${path}`)
+    //   ElementOps.writeId(el, null)
+    //   fqn = null
+    // }
+    // return fqn
   }
 
   public byFqn(fqn: Fqn): Stream<FqnIndexEntry> {
@@ -98,7 +88,7 @@ export class FqnIndex {
       return doc.c4fqns.get(fqn).flatMap(entry => {
         const el = entry.el.deref()
         if (el) {
-          return [{ fqn, el, doc, path: entry.path, name: entry.name }]
+          return { fqn, el, doc, path: entry.path, name: entry.name }
         }
         return []
       })

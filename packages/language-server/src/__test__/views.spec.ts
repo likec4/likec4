@@ -173,7 +173,8 @@ describe('views', () => {
   test('viewRules IncludeScopeOf').valid`${model}
     views {
       view of system.backend {
-        include api, auth.api
+        include api
+        include auth.api
       }
     }
     `

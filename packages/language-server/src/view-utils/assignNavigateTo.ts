@@ -15,6 +15,9 @@ export function assignNavigateTo<R extends Iterable<ComputedView>>(views: R): R 
   // set default navigateTo
   for (const { id, nodes } of views) {
     for (const node of nodes) {
+      if (node.navigateTo) {
+        continue
+      }
       // find first element view that is not the current one
       const navigateTo = find(allElementViews.get(node.id) ?? [], v => v !== id)
       if (navigateTo) {

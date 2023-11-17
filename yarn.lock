@@ -1350,6 +1350,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
+    type-fest: "npm:^4.6.0"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^0.34.6"
