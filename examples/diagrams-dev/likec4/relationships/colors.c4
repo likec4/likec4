@@ -4,74 +4,62 @@ specification {
   element themerelationships
 
   relationship solid {
-    line dotted
-    head none
+    line solid
   }
 
 
   relationship primary {
     color primary
-    tail vee
     head vee
   }
 
   relationship blue {
     color blue
-    tail vee
     head vee
   }
 
   relationship secondary {
     color secondary
-    tail vee
     head vee
   }
 
   relationship sky {
     color sky
-    tail vee
     head vee
   }
 
   relationship muted {
     color muted
-    tail vee
     head vee
   }
 
   relationship slate {
     color slate
-    tail vee
     head vee
   }
 
   relationship gray {
     color gray
-    tail vee
     head vee
   }
 
   relationship red {
     color red
-    tail vee
     head vee
   }
 
   relationship green {
     color green
-    tail vee
     head vee
   }
 
   relationship amber {
     color amber
-    tail vee
     head vee
   }
 
   relationship indigo {
     color indigo
-    tail vee
     head vee
   }
 

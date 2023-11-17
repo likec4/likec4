@@ -201,7 +201,7 @@ ${colors
 const __filename = new URL(import.meta.url).pathname
 const __dirname = dirname(__filename)
 
-let out = resolve(__dirname, '../likec4/theme.c4')
+let out = resolve(__dirname, '../likec4/theme/colors.c4')
 
 writeFileSync(out, likec4)
 
@@ -213,8 +213,7 @@ specification {
   element themerelationships
 
   relationship solid {
-    line dotted
-    head none
+    line solid
   }
 
 ${colors
@@ -222,7 +221,6 @@ ${colors
     key => `
   relationship ${key} {
     color ${key}
-    tail vee
     head vee
   }
 `
@@ -297,7 +295,7 @@ views {
 }
 `
 
-out = resolve(__dirname, '../likec4/relationships.c4')
+out = resolve(__dirname, '../likec4/relationships/colors.c4')
 
 writeFileSync(out, relationships)
 

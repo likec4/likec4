@@ -44,17 +44,37 @@ model {
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
       }
-      cms = app 'CMS' {
-        #deprecated
-        description 'The CMS of the cloud system'
+
+      services = component 'Services' {
+        description 'The backend services of the cloud system'
+
+        cms = app 'CMS' {
+          #deprecated
+          description 'The CMS of the cloud system'
+        }
+
+        logic = app 'Media' {
+          #deprecated
+          description 'The media service of the cloud system'
+        }
+
+        soap = app 'SOAP API' {
+          #deprecated
+          description 'The SOAP API of the cloud system'
+        }
+
       }
 
+      graphql -> services 'gets media'
       graphql -> cms 'gets media'
+      graphql -> logic 'gets media'
+      graphql -> soap 'gets data'
       graphql -> amazon.cognito 'authorizes'
       graphql -> amazon.sqs 'publishes domain events'
       graphql -> amazon.rds.pg 'reads and writes'
 
       cms -> amazon.rds.mysql 'stores media'
+      logic -> amazon.rds.pg 'reads and writes'
     }
     backend -> amazon 'uses services'
 
@@ -166,13 +186,14 @@ views {
     }
   }
 
-  view cloud_graphql of graphql {
+  view cloud_graphql {
     include
-      *,
-      backend,
-      amazon,
-      cloud,
-      graphql -> amazon.*
+      -> graphql ->
+      // graphql,
+      // ui,
+      // ui.* -> graphql,
+      // services,
+      // graphql -> services.*,
 
     style * {
       color secondary

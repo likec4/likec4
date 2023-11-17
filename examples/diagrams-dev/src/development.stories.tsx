@@ -10,7 +10,9 @@ export default {
     padding: 16,
     animate: true,
     pannable: true,
-    zoomable: true
+    zoomable: true,
+    onNodeClick: true,
+    onEdgeClick: true
   },
   argTypes: {
     viewId: {
@@ -19,6 +21,12 @@ export default {
       control: {
         type: 'select'
       }
+    },
+    onNodeClick: {
+      control: { type: 'boolean' }
+    },
+    onEdgeClick: {
+      control: { type: 'boolean' }
     },
     pannable: {
       control: { type: 'boolean' }
@@ -41,9 +49,16 @@ type Props = {
   padding?: number
   pannable?: boolean
   zoomable?: boolean
+  onNodeClick?: boolean
+  onEdgeClick?: boolean
 }
 
-export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
+export const DiagramDevelopment: Story<Props> = ({
+  viewId,
+  onNodeClick = true,
+  onEdgeClick = true,
+  ...props
+}) => {
   const measures = useStoryViewport()
   const {
     dispatch,
@@ -58,25 +73,31 @@ export const DiagramDevelopment: Story<Props> = ({ viewId, ...props }) => {
         {...props}
         width={measures.width}
         height={measures.height}
-        onNodeClick={(node, event) => {
-          if (node.navigateTo) {
-            dispatch({
-              type: ActionType.UpdateControl,
-              value: {
-                ...controlState,
-                viewId: {
-                  ...controlState['viewId'],
-                  value: node.navigateTo
+        onNodeClick={
+          onNodeClick
+            ? (node, event) => {
+                if (node.navigateTo) {
+                  dispatch({
+                    type: ActionType.UpdateControl,
+                    value: {
+                      ...controlState,
+                      viewId: {
+                        ...controlState['viewId'],
+                        value: node.navigateTo
+                      }
+                    }
+                  })
                 }
+                action('onNodeClick')({
+                  node,
+                  event
+                })
               }
-            })
-          }
-          action('onNodeClick')({
-            node,
-            event
-          })
-        }}
-        onEdgeClick={(edge, event) => action('onEdgeClick')({ edge, event })}
+            : undefined
+        }
+        onEdgeClick={
+          onEdgeClick ? (edge, event) => action('onEdgeClick')({ edge, event }) : undefined
+        }
         onStageClick={(stage, event) => action('onStageClick')({ stage, event })}
         onStageContextMenu={(stage, event) => {
           event.evt.preventDefault()
