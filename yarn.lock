@@ -1439,7 +1439,7 @@ __metadata:
     prettier: "npm:^3.1.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^4.1.1"
+    tsx: "npm:^4.1.2"
     turbo: "npm:^1.10.16"
     typescript: "npm:^5.2.2"
     vite: "npm:^4.5.0"
@@ -5776,7 +5776,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^4.1.1"
+    tsx: "npm:^4.1.2"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
   bin:
@@ -9740,7 +9740,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.3.5"
-    tsx: "npm:^4.1.1"
+    tsx: "npm:^4.1.2"
     typescript: "npm:^5.2.2"
     typescript-plugin-css-modules: "npm:^5.0.2"
     vite: "npm:^4.5.0"
@@ -14953,7 +14953,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.1.1":
+"tsx@npm:^4.1.2":
   version: 4.1.2
   resolution: "tsx@npm:4.1.2"
   dependencies:
