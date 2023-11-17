@@ -56,8 +56,7 @@ views {
 ### View Of ...
 
 View may be defined for some element (`view of ..`).  
-This view becomes the default view for the element (in interactive mode).  
-Also, view inherits the [scope](./references) of the element:
+View inherits the [scope](./references) of the element:
 
 ```likec4
 views {
@@ -67,11 +66,68 @@ views {
   }
 
   view of cloud.backend {
-    title 'Backend components'
-
     include api // ✅ This is OK, references 'cloud.backend.api'
   }
 
+}
+```
+
+This view becomes the default view for the element:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    include *
+  }
+
+  view {
+    // on click navigates to 'view1', because it is the default view for 'cloud.backend'
+    include cloud.backend 
+  }
+
+}
+```
+
+You may have multiple views for the same element, but which one is selected as default is not determined.
+
+### Custom navigation
+
+It is possible to define custom navigation and links between views:
+
+```likec4
+
+view view2 {
+  include *
+  include cloud.backend with {
+    // navigate to 'view3' on click
+    navigateTo view3
+  }
+}
+
+view view3 {
+  include *
+  include cloud.backend with {
+    // the same element, but navigate back to 'view2'
+    navigateTo view2
+  }
+}
+```
+
+### Custom properties
+
+It is possible to customize the properties of the element for the view:
+
+```likec4
+view {
+  // Include the element and override its properties
+  include cloud.backend with {
+    title 'Backend components'
+    description '...'
+    technology 'Java, Spring'
+    color amber
+    shape browser
+  }
 }
 ```
 
@@ -188,9 +244,13 @@ view apiApp of internetBankingSystem.apiApplication {
 }
 ```
 
+<Info>
+[Custom properties](#custom-properties) have higher priority than style rules.
+</Info>
+
 ## Extend views
 
-It is possible to extend views, to avoid duplication or, for example, create "slides" for a presentation:
+Views can be extended to avoid duplication, create a "baseline" or, for example, "slides" for a presentation:
 
 ```likec4
 views {

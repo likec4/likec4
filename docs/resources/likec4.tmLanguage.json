@@ -33,7 +33,7 @@
       }
     },
     {
-      "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s*(!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
+      "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s*(==|\\!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -61,17 +61,28 @@
       }
     },
     {
-      "name": "keyword.control.likec4",
-      "match": "\\b(include|exclude)\\b"
-    },
-    {
-      "match": "\\b(shape|color|head|tail|line):?\\s+([^\\W]+)\\b",
+      "match": "\\b(navigateTo)\\s+([_\\*\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "support.constant.likec4"
+          "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.likec4",
+      "match": "\\b(include|exclude)\\b"
+    },
+    {
+      "match": "\\b(shape|color|head|tail|line):?\\s+(\\w+)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "entity.name.type.likec4"
         }
       }
     },
@@ -132,7 +143,7 @@
       }
     },
     {
-      "match": "\\b(it|this)\\s+(->|-\\[\\w+\\]->)\\s+([^\\W]+)\\b",
+      "match": "\\b(it|this)\\s+(->|-\\[\\w+\\]->)\\s+([^\\W]+)",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -146,7 +157,7 @@
       }
     },
     {
-      "match": "\\b([a-zA-Z][_\\.\\w]*)\\s+(->|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "(\\b[_\\.\\w]+|\\*)\\s+(->|-\\[\\w+\\]->)\\s+([_\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.constant.likec4"
@@ -156,6 +167,17 @@
         },
         "3": {
           "name": "variable.other.constant.likec4"
+        }
+      }
+    },
+    {
+      "match": "\\b([\\.\\w]+)\\s+(with)\\s+\\{",
+      "captures": {
+        "1": {
+          "name": "variable.other.constant.likec4"
+        },
+        "2": {
+          "name": "keyword.control.likec4"
         }
       }
     },
@@ -180,11 +202,19 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
     },
     {
       "name": "variable.other.constant.likec4",
       "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem)\\b"
+    },
+    {
+      "match": "(\\b\\.)?(\\*),?",
+      "captures": {
+        "2": {
+          "name": "variable.other.constant.likec4"
+        }
+      }
     },
     {
       "name": "string.quoted.double.likec4",
