@@ -29,8 +29,6 @@
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.4.1",
-    "@commitlint/config-conventional": "^18.4.0",
     "@types/eslint": "^8.44.7",
     "@types/node": "^20.8.7",
     "@types/prettier": "^2.7.3",
@@ -69,11 +67,6 @@
     ],
     "**/*.{md,mdx,yml,json,babelrc,eslintrc,prettierrc}": [
       "prettier --write"
-    ]
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
     ]
   }
 }
