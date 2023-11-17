@@ -73,19 +73,19 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     return this.uniqueDescedants(() => ref.el.ref)
   }
 
-  private scopeExtendElement(extend: ast.ExtendElement): Stream<AstNodeDescription> {
-    return this.uniqueDescedants(() => elementRef(extend.element))
+  private scopeExtendElement({ element }: ast.ExtendElement): Stream<AstNodeDescription> {
+    // we make extended element resolvable inside ExtendElementBody
+    return stream([element.el.$nodeDescription])
+      .nonNullable()
+      .concat(this.uniqueDescedants(() => elementRef(element)))
   }
 
   private scopeElementView({ viewOf, extends: ext }: ast.ElementView): Stream<AstNodeDescription> {
     if (viewOf) {
       // If we have "view of parent.target"
       // we make "target" resolvable inside ElementView
-      return stream([viewOf])
-        .flatMap(v => {
-          const el = elementRef(v)
-          return el ? this.descriptions.createDescription(el, el.name) : []
-        })
+      return stream([viewOf.el.$nodeDescription])
+        .nonNullable()
         .concat(this.uniqueDescedants(() => elementRef(viewOf)))
     }
     if (ext) {
@@ -114,43 +114,37 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
           return new StreamScope(this.scopeElementRef(parent))
         }
       }
-      return this.computeScope(container, referenceType)
+      return this.computeScope(context)
     } catch (e) {
       logError(e)
       return this.getGlobalScope(referenceType)
     }
   }
 
-  protected computeScope(node: AstNode, referenceType: string) {
+  protected computeScope(context: ReferenceInfo) {
+    const referenceType = this.reflection.getReferenceType(context)
     const scopes: Stream<AstNodeDescription>[] = []
-    const doc = getDocument(node)
+    const doc = getDocument(context.container)
     const precomputed = doc.precomputedScopes
 
     const byReferenceType = (desc: AstNodeDescription) =>
       this.reflection.isSubtype(desc.type, referenceType)
 
-    if (precomputed) {
-      const elements = precomputed.get(node).filter(byReferenceType)
-      if (elements.length > 0) {
+    let container: AstNode | undefined = context.container
+    while (container) {
+      const elements = precomputed?.get(container).filter(byReferenceType)
+      if (elements && elements.length > 0) {
         scopes.push(stream(elements))
       }
-
-      let container = node.$container
-      while (container) {
-        const elements = precomputed.get(container).filter(byReferenceType)
-        if (elements.length > 0) {
-          scopes.push(stream(elements))
+      if (referenceType === ast.Element) {
+        if (ast.isExtendElementBody(container)) {
+          scopes.push(this.scopeExtendElement(container.$container))
         }
-        if (referenceType === ast.Element) {
-          if (ast.isExtendElementBody(container)) {
-            scopes.push(this.scopeExtendElement(container.$container))
-          }
-          if (ast.isElementViewBody(container)) {
-            scopes.push(this.scopeElementView(container.$container))
-          }
+        if (ast.isElementViewBody(container)) {
+          scopes.push(this.scopeElementView(container.$container))
         }
-        container = container.$container
       }
+      container = container.$container
     }
 
     return scopes.reduceRight((outerScope, elements) => {
