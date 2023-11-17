@@ -12,6 +12,7 @@ import {
   DefaultRelationshipColor,
   DefaultThemeColor,
   defaultTheme,
+  hasAtLeast,
   invariant,
   nameFromFqn,
   parentFqn
@@ -19,7 +20,7 @@ import {
 import { first, isNil, isNumber, isTruthy, last } from 'remeda'
 import {
   attribute as _,
-  strict,
+  digraph,
   toDot,
   type $keywords,
   type ArrowType,
@@ -76,7 +77,7 @@ export function toGraphvisModel({
   edges: viewEdges
 }: ComputedView): RootGraphModel {
   const Theme = defaultTheme
-  const G = strict.digraph({
+  const G = digraph({
     [_.layout]: 'dot',
     [_.compound]: true,
     [_.TBbalance]: 'min',
@@ -91,7 +92,7 @@ export function toGraphvisModel({
     // [_.nslimit]: 4,
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
-    [_.pack]: pxToPoints(80),
+    [_.pack]: pxToPoints(120),
     [_.packmode]: 'array_tr3'
   })
 
@@ -310,8 +311,10 @@ export function toGraphvisModel({
 
     // Hide edges between clusters
     if (lhead || ltail) {
-      e.attributes.set(_.weight, 0)
-      e.attributes.set(_.style, 'invis')
+      e.attributes.apply({
+        [_.minlen]: 1,
+        [_.style]: 'invis'
+      })
       e.attributes.delete(_.likec4_id)
       return
     }
@@ -346,51 +349,61 @@ export function toGraphvisModel({
       } else {
         e.attributes.apply({
           [_.dir]: 'both',
-          [_.constraint]: false
+          [_.minlen]: 0
         })
       }
     }
-    if (edge.tail === 'none' && edge.head === 'none') {
+    if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
+      e.attributes.delete(_.arrowhead)
+      e.attributes.delete(_.arrowtail)
       e.attributes.apply({
         [_.dir]: 'none',
         [_.constraint]: false
       })
       return
     }
+
     const parentId = edge.parent
     const leafNodes = leafElements(parentId)
     // parent has source and target as children
     const isTheOnlyChildren = leafNodes.length === 2
     const isTheOnlyEdge = findNestedEdges(parentId).length === 1
 
+    const weight = sourceNode.outEdges.length + targetNode.inEdges.length - 1
+
     if (isTheOnlyEdge && (isTheOnlyChildren || (isTruthy(parentId) && leafNodes.length <= 3))) {
-      // don't rank the edge, but keep it straight
+      // don't rank the edge
       e.attributes.apply({
-        [_.weight]: 20,
+        [_.weight]: weight + 2,
         [_.minlen]: 0
       })
       return
     }
 
-    const isSameLevel = sourceNode.level === targetNode.level
-    switch (true) {
-      case isSameLevel && isTruthy(parentId) && sourceNode.parent === targetNode.parent: {
-        e.attributes.set(_.weight, 16)
-        break
-      }
-      case isSameLevel && isTruthy(parentId): {
-        e.attributes.set(_.weight, 6)
-        break
-      }
-      case isSameLevel && sourceNode.level > 0: {
-        e.attributes.set(_.weight, 3)
-        break
-      }
-      case isSameLevel || isTruthy(parentId): {
-        e.attributes.set(_.weight, 2)
-        break
-      }
+    if (weight > 1) {
+      e.attributes.set(_.weight, weight)
     }
+
+    // const isSameLevel = sourceNode.level === targetNode.level
+    // switch (true) {
+    //   case isTruthy(parentId) && sourceNode.parent === targetNode.parent: {
+    //     weight += 2
+    //     break
+    //   }
+    //   // case isSameLevel && isTruthy(parentId): {
+    //   //   weight += 1
+    //   //   break
+    //   // }
+    //   case isTruthy(parentId) || (isSameLevel): {
+    //     weight += 1
+    //     break
+    //   }
+    //   // case isSameLevel || isTruthy(parentId): {
+    //   //   weight += 1
+    //   //   // e.attributes.set(_.weight, 2)
+    //   //   break
+    //   // }
+    // }
   }
 
   // ----------------------------------------------

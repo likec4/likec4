@@ -9,6 +9,10 @@ type Relation = {
 
 type RelationPredicate = (rel: Relation) => boolean
 
+/**
+ * Compares two relations hierarchically.
+ * From the most general (implicit) to the most specific.
+ */
 export const compareRelations = <T extends { source: string; target: string }>(a: T, b: T) => {
   const parentA = commonAncestor(a.source as Fqn, a.target as Fqn)
   const parentB = commonAncestor(b.source as Fqn, b.target as Fqn)

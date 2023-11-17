@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`printToDot > computedAmazonView 1`] = `
-"strict digraph {
+"digraph {
   layout = "dot";
   compound = true;
   TBbalance = "min";
@@ -9,7 +9,7 @@ exports[`printToDot > computedAmazonView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.389;
-  pack = 80;
+  pack = 120;
   packmode = "array_tr3";
   graph [
     fontname = "Helvetica";
@@ -71,14 +71,14 @@ exports[`printToDot > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
-    weight = 20;
+    weight = 3;
     minlen = 0;
   ];
 }"
 `;
 
 exports[`printToDot > computedCloud3levels 1`] = `
-"strict digraph {
+"digraph {
   layout = "dot";
   compound = true;
   TBbalance = "min";
@@ -86,7 +86,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.389;
-  pack = 80;
+  pack = 120;
   packmode = "array_tr3";
   graph [
     fontname = "Helvetica";
@@ -174,7 +174,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
       ];
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
-        weight = 20;
+        weight = 3;
         minlen = 0;
       ];
     }
@@ -205,7 +205,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
 `;
 
 exports[`printToDot > computedCloudView 1`] = `
-"strict digraph {
+"digraph {
   layout = "dot";
   compound = true;
   TBbalance = "min";
@@ -213,7 +213,7 @@ exports[`printToDot > computedCloudView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.389;
-  pack = 80;
+  pack = 120;
   packmode = "array_tr3";
   graph [
     fontname = "Helvetica";
@@ -283,17 +283,19 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><B><FONT POINT-SIZE="13">[...]</FONT></B></TD></TR></TABLE>>;
-      weight = 20;
+      weight = 3;
       minlen = 0;
     ];
   }
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">opens in browser</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">manages</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "backend" -> "amazon" [
     likec4_id = "cloud.backend:amazon";
@@ -303,7 +305,7 @@ exports[`printToDot > computedCloudView 1`] = `
 `;
 
 exports[`printToDot > computedIndexView 1`] = `
-"strict digraph {
+"digraph {
   layout = "dot";
   compound = true;
   TBbalance = "min";
@@ -311,7 +313,7 @@ exports[`printToDot > computedIndexView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.389;
-  pack = 80;
+  pack = 120;
   packmode = "array_tr3";
   graph [
     fontname = "Helvetica";
@@ -379,7 +381,6 @@ exports[`printToDot > computedIndexView 1`] = `
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
-    weight = 2;
   ];
 }"
 `;

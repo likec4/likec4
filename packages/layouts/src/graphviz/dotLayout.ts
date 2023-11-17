@@ -122,7 +122,7 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
 }
 
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = graphviz.unflatten(printToDot(computedView), 1, true, 3)
+  const dot = graphviz.unflatten(printToDot(computedView), 1, false, 2)
   // const dot = printToDot(computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView

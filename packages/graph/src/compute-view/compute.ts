@@ -21,7 +21,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, uniq } from 'remeda'
+import { hasAtLeast, uniq, isTruthy } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -149,8 +149,9 @@ export class ComputeCtx {
   }
 
   protected get computedEdges(): ComputedEdge[] {
-    return this.ctxEdges.map(({ relations, ...e }): ComputedEdge => {
-      invariant(hasAtLeast(relations, 1), 'Edge must have at least one relation')
+    return this.ctxEdges.map((e): ComputedEdge => {
+      invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
+      const relations = [...e.relations].sort(compareRelations)
       const source = e.source.id
       const target = e.target.id
 
@@ -168,12 +169,13 @@ export class ComputeCtx {
         relation = relations[0]
       } else {
         relation = relations.find(r => r.source === source && r.target === target)
+        relation ??= relations.find(r => r.source === source || r.target === target)
       }
 
       // This edge represents mutliple relations
       // we can't use relation.title, because it is not unique
       if (!relation) {
-        const labels = uniq(relations.flatMap(r => (r.title !== '' ? r.title : [])))
+        const labels = uniq(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
         if (hasAtLeast(labels, 1)) {
           if (labels.length === 1) {
             edge.label = labels[0]
@@ -186,7 +188,7 @@ export class ComputeCtx {
 
       return Object.assign(
         edge,
-        relation.title !== '' && { label: relation.title },
+        isTruthy(relation.title) && { label: relation.title },
         relation.color && { color: relation.color },
         relation.line && { line: relation.line },
         relation.head && { head: relation.head },
