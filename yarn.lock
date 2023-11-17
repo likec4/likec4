@@ -1202,7 +1202,7 @@ __metadata:
     "@types/vscode": "npm:~1.77.0"
     "@types/vscode-webview": "npm:^1.57.4"
     "@vitejs/plugin-react": "npm:^4.2.0"
-    "@vscode/webview-ui-toolkit": "npm:^1.2.2"
+    "@vscode/webview-ui-toolkit": "npm:^1.3.1"
     lucide-react: "npm:^0.288.0"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.2.0"
@@ -4063,16 +4063,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/webview-ui-toolkit@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@vscode/webview-ui-toolkit@npm:1.2.2"
+"@vscode/webview-ui-toolkit@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@vscode/webview-ui-toolkit@npm:1.3.1"
   dependencies:
     "@microsoft/fast-element": "npm:^1.6.2"
     "@microsoft/fast-foundation": "npm:^2.38.0"
     "@microsoft/fast-react-wrapper": "npm:^0.1.18"
   peerDependencies:
     react: ">=16.9.0"
-  checksum: 3376254b5c2ae5f898dbee19a67688e0d34e6608d161c39506e6b329baf366b66ca430ca6bd57714a31443df8f2a862fc9b98bfd3288d958d28639b63921afb7
+  checksum: 51c18135929238c9fab2804e25b9f79008a3348307421587636949c38e32ef3212b354a6a667e32bd5621fa384c34315b08baabdeecdeafa064d1fb6fb4f3e75
   languageName: node
   linkType: hard
 
