@@ -123,6 +123,12 @@ describe('specification', () => {
         }
       }`
 
+    test('kind the same name as relationship line').valid`
+      specification {
+        element solid
+        element dotted
+      }`
+
     test('fail if element only underscores').invalid`
       specification {
         element __
@@ -170,6 +176,13 @@ describe('specification', () => {
     test('spec without relationshipkind attributes').valid`
       specification {
         relationship async
+      }`
+
+    test('spec with the same name as line style').valid`
+      specification {
+        relationship solid {
+          line solid
+        }
       }`
 
     test('spec with relationshipkind attributes').valid`

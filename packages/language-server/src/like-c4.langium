@@ -288,7 +288,7 @@ TagID returns string:
   TagHash Name;
 
 Name returns string:
-  ElementShape | ThemeColor | ArrowType | 'element' | 'model' | ID;
+  ID | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
 
 fragment IsEqual:
   isEqual?=Eq | NotEqual;
