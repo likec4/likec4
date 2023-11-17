@@ -31,21 +31,19 @@ export function CompoundShape({ node, theme, springs, labelOffsetX = 0 }: Compou
       {labels.map(({ pt: [x, y], ...label }, i) => (
         <Text
           key={i}
-          x={x - 6}
-          y={y - 8}
+          x={x + 4}
+          y={y}
           offsetX={labelOffsetX}
-          width={node.size.width - x - 8 - 6 + labelOffsetX}
+          width={node.size.width + labelOffsetX - 4}
           fill={'#BABABA'}
           fontFamily={theme.font}
           fontSize={label.fontSize}
           fontStyle={label.fontStyle ?? 'normal'}
-          letterSpacing={0.75}
           align={label.align}
           text={label.text}
           wrap={'none'}
           ellipsis={true}
           perfectDrawEnabled={false}
-          padding={8}
           globalCompositeOperation={'luminosity'}
         />
       ))}

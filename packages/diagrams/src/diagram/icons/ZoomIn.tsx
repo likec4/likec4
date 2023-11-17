@@ -29,6 +29,7 @@ export const ZoomInIcon = ({ fill = '#BABABA', opacity = 1, size = 20, x, y }: Z
       width={originalSize}
       height={originalSize}
       opacity={opacity}
+      perfectDrawEnabled={false}
       globalCompositeOperation={'luminosity'}
     />
   )

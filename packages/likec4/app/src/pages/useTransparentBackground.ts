@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 export function useTransparentBackground(enabled = true) {
   useEffect(() => {
     const htmlEl = document.body.parentElement
-    if (!htmlEl || !enabled) return
+    if (!htmlEl || enabled !== true) return
     // see ../../likec4.css
     const classname = 'transparent-bg'
     htmlEl.classList.add(classname)

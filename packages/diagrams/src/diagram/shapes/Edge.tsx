@@ -93,7 +93,7 @@ function EdgeLabelBg({
       y: labelBBox.y - padding,
       width: labelBBox.width + padding * 2,
       height: labelBBox.height + padding * 2,
-      opacity: isHovered ? 0.5 : 0.12
+      opacity: isHovered ? 0.75 : 0.65
     },
     immediate: !animate
   })
@@ -103,7 +103,8 @@ function EdgeLabelBg({
       perfectDrawEnabled={false}
       fill={springs.labelBgColor}
       cornerRadius={2}
-      globalCompositeOperation='darken'
+      globalCompositeOperation='lighten'
+      // globalCompositeOperation='darken'
       hitStrokeWidth={5}
     />
   )

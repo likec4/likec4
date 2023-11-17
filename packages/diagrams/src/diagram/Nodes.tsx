@@ -218,9 +218,9 @@ const NodeShape = memo<NodeShapeProps>(
                 node={node}
                 theme={theme}
                 springs={springs}
-                labelOffsetX={isNavigatable ? -18 : 0}
+                labelOffsetX={isNavigatable ? -20 : 0}
               />
-              {isNavigatable && <ZoomInIcon opacity={0.9} size={18} x={18} y={22} />}
+              {isNavigatable && <ZoomInIcon opacity={0.9} size={20} x={18} y={21} />}
             </>
           )}
           {!_isCompound && (

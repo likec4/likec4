@@ -294,13 +294,18 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               mouse: true,
               capture: true
             },
-            !onNodeContextMenu &&
-              !onStageContextMenu && {
-                buttons: -1
-              }
+            !onNodeContextMenu && !onStageContextMenu
+              ? {
+                  buttons: -1
+                }
+              : undefined
           )
         },
         pinch: {
+          eventOptions: {
+            passive: true,
+            capture: true
+          },
           target: containerRef,
           pointer: {
             touch: true
