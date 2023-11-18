@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: build
+  build-docs:
+    name: build docs
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -59,28 +59,24 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: docs-website
-          path: docs/out/
-          if-no-files-found: error
+          path: |
+            docs/*
+            docs/out/
+            !docs/.next/
+            !docs/node_modules/
           
   publish-preview:
     name: publish preview
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-docs
     timeout-minutes: 10
     environment: preview
-    steps:
-
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true     
+    steps: 
 
       - name: download artifact
         uses: actions/download-artifact@v3
         with:
           name: docs-website
-          path: docs/out/
 
       - name: publish to cloudflare
         uses: cloudflare/pages-action@v1
@@ -95,25 +91,18 @@ jobs:
           wranglerVersion: '3'
 
   publish-production:
-    name: publish preview
+    name: publish production
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-docs
     timeout-minutes: 10
     environment: production
     if: "github.ref == 'refs/heads/main'"
-    steps:
-
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true     
+    steps:  
 
       - name: download artifact
         uses: actions/download-artifact@v3
         with:
           name: docs-website
-          path: docs/out/
 
       - name: publish to cloudflare
         uses: cloudflare/pages-action@v1
