@@ -9,16 +9,20 @@ permissions:
   contents: read
   checks: write
   statuses: write
+  deployments: write
 
 env:
   NODE_ENV: production
 
+concurrency:
+  group: docs-website-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  publish:
-    name: Publish
+  build:
+    name: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: "github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,8 +54,35 @@ jobs:
         run: |
           yarn generate
           yarn build
+          
+      - name: upload a build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-website
+          path: docs/out/
+          if-no-files-found: error
+          
+  publish-preview:
+    name: publish preview
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+    environment: preview
+    steps:
 
-      - name: Publish to Cloudflare Pages
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true     
+
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs-website
+          path: docs/out/
+
+      - name: publish to cloudflare
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -59,3 +90,39 @@ jobs:
           projectName: likec4-docs
           workingDirectory: docs
           directory: out
+          branch: preview
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
+
+  publish-production:
+    name: publish preview
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+    environment: production
+    if: "github.ref == 'refs/heads/main'"
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true     
+
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs-website
+          path: docs/out/
+
+      - name: publish to cloudflare
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: likec4-docs
+          workingDirectory: docs
+          directory: out
+          branch: main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
