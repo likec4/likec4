@@ -83,7 +83,7 @@ export const diagramAtom = atom(async get => {
   if (!view) return null
   const layouter = await getDotLayouter()
   try {
-    const diagram = await layouter.layout(view)
+    const { diagram } = await layouter.layout(view)
     return diagram
   } catch (e) {
     console.error(e)
