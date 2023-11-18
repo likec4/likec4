@@ -1,3 +1,4 @@
+name: re-deploy template
 # When we release a new version of likec4
 # We trigger a redeploy of likec4/template
 on:
