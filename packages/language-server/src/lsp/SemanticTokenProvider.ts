@@ -3,7 +3,11 @@ import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserve
 import { ast } from '../ast'
 
 export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
-  protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor) {
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  protected override highlightElement(
+    node: AstNode,
+    acceptor: SemanticTokenAcceptor
+  ): void | undefined | 'prune' {
     if (ast.isRelation(node) && 'kind' in node) {
       acceptor({
         node,
@@ -25,6 +29,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         cst: node.$cstNode,
         type: SemanticTokenTypes.variable
       })
+      return 'prune'
     }
     if (ast.isWildcardExpr(node) && node.$cstNode) {
       acceptor({
