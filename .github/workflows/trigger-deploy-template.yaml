@@ -1,0 +1,18 @@
+# When we release a new version of likec4
+# We trigger a redeploy of likec4/template
+on:
+  workflow_run:
+    workflows: [release]
+    types: [completed]
+
+jobs:
+  trigger-deploy-template:
+    name: trigger deploy template
+    runs-on: ubuntu-latest
+    steps:
+      - name: trigger deploy
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GH_WORKFLOW_PAT }}
+          repository: likec4/template
+          event-type: redeploy
