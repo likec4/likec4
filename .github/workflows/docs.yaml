@@ -9,7 +9,6 @@ permissions:
   contents: read
   checks: write
   statuses: write
-  deployments: write
 
 env:
   NODE_ENV: production
@@ -66,20 +65,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docs
     timeout-minutes: 10
-    environment: preview
+    environment:
+      name: preview
+      url: ${{ steps.cloudflare.outputs.url }}
     steps: 
 
       - name: download artifact
         uses: actions/download-artifact@v3
         with:
           name: docs-website
+          path: docs/out/
 
-      - name: publish to cloudflare
+      - id: cloudflare
+        name: publish to cloudflare
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
+          workingDirectory: docs
+          directory: out          
           branch: preview
           wranglerVersion: '3'
 
@@ -88,7 +93,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-preview
     timeout-minutes: 10
-    environment: production
+    environment:
+      name: production
+      url: ${{ steps.cloudflare.outputs.url }}
     if: "github.ref == 'refs/heads/main'"
     steps:  
 
@@ -96,6 +103,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: docs-website
+          path: docs/out/
 
       - name: publish to cloudflare
         uses: cloudflare/pages-action@v1
@@ -103,5 +111,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
+          workingDirectory: docs
+          directory: out           
           branch: main
           wranglerVersion: '3'

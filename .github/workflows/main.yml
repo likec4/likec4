@@ -79,5 +79,4 @@ jobs:
       contents: read
       checks: write
       statuses: write
-      deployments: write
     secrets: inherit
