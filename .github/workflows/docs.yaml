@@ -59,14 +59,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: docs-website
-          path: |
-            docs/*
-            docs/out/
-            !docs/.next/
-            !docs/node_modules/
+          path: docs/out/
           
-  publish-preview:
-    name: publish preview
+  deploy-preview:
+    name: preview
     runs-on: ubuntu-latest
     needs: build-docs
     timeout-minutes: 10
@@ -84,16 +80,13 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
-          workingDirectory: docs
-          directory: out
           branch: preview
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
-  publish-production:
-    name: publish production
+  deploy-production:
+    name: production
     runs-on: ubuntu-latest
-    needs: build-docs
+    needs: deploy-preview
     timeout-minutes: 10
     environment: production
     if: "github.ref == 'refs/heads/main'"
@@ -110,8 +103,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
-          workingDirectory: docs
-          directory: out
           branch: main
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
