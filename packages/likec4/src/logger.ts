@@ -1,3 +1,4 @@
+import { normalizeError } from '@likec4/core'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
 import type { LogErrorOptions, LogOptions, Logger } from 'vite'
@@ -7,7 +8,7 @@ const ERROR = k.bold(k.bgRed(k.white('ERROR')))
 const WARN = k.bold(k.yellow('WARN'))
 const INFO = k.bold(k.green('INFO'))
 
-export function createLikeC4Logger(prefix: string): Logger {
+export function createLikeC4Logger(prefix: string) {
   const logger = createLogger('info', {
     prefix
   })
@@ -21,14 +22,23 @@ export function createLikeC4Logger(prefix: string): Logger {
       })
     },
     warn(msg: string, options?: LogOptions) {
-      logger.info(`${WARN} ${msg}`, {
+      logger.warn(`${WARN} ${msg}`, {
         timestamp: true,
         ...options
       })
     },
-    error(msg: string, options?: LogErrorOptions) {
-      logger.info(`${ERROR} ${msg}`, {
+    error(err: unknown, options?: LogErrorOptions) {
+      if (typeof err === 'string') {
+        logger.error(`${ERROR} ${err}`, {
+          timestamp: true,
+          ...options
+        })
+        return
+      }
+      const error = normalizeError(err)
+      logger.error(`${ERROR} ${error.stack ?? error.message}`, {
         timestamp: true,
+        error,
         ...options
       })
     }

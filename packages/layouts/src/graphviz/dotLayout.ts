@@ -1,4 +1,4 @@
-import { Graphviz } from '@hpcc-js/wasm/graphviz'
+import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
   ComputedView,
   DiagramEdge,
@@ -15,6 +15,7 @@ import { first, hasAtLeast, last, maxBy } from 'remeda'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
+import { fromDot } from 'ts-graphviz'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
@@ -121,9 +122,16 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
   return points
 }
 
-export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DiagramView {
-  const dot = graphviz.unflatten(printToDot(computedView), 1, false, 2)
-  // const dot = printToDot(computedView)
+export function toDot(graphviz: Graphviz, computedView: ComputedView) {
+  return graphviz.unflatten(printToDot(computedView), 1, false, 2)
+}
+
+export type DotLayoutResult = {
+  dot: string
+  diagram: DiagramView
+}
+export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
+  const dot = toDot(graphviz, computedView)
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
@@ -169,7 +177,6 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
       ...computed,
       position,
       size,
-      ...('likec4_depth' in obj ? { depth: +obj.likec4_depth } : {}),
       labels: parseLabelDraws(obj, position)
     }
     diagram.nodes.push(node)
@@ -230,14 +237,8 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dia
     diagram.edges.push(edge)
   }
 
-  return diagram
-}
-
-export const dotLayout = async (computedView: ComputedView): Promise<DiagramView> => {
-  const graphviz = await Graphviz.load()
-  try {
-    return dotLayoutFn(graphviz, computedView)
-  } finally {
-    Graphviz.unload()
+  return {
+    dot,
+    diagram
   }
 }

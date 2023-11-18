@@ -5,7 +5,18 @@ import {
   computedCloud3levels,
   computedIndexView
 } from './__fixtures__'
-import { dotLayout } from './dotLayout'
+import { dotLayoutFn } from './dotLayout'
+import type { ComputedView } from '@likec4/core'
+import { Graphviz } from '@hpcc-js/wasm/graphviz'
+
+export const dotLayout = async (computedView: ComputedView) => {
+  const graphviz = await Graphviz.load()
+  try {
+    return dotLayoutFn(graphviz, computedView).diagram
+  } finally {
+    Graphviz.unload()
+  }
+}
 
 describe('dotLayout:', () => {
   it('computedIndexView', async () => {

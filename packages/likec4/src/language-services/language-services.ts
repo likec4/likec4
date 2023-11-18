@@ -1,10 +1,16 @@
-import { normalizeError, type ComputedView, type DiagramView, type LikeC4Model } from '@likec4/core'
+import {
+  normalizeError,
+  type ComputedView,
+  type DiagramView,
+  type LikeC4Model,
+  type ViewID
+} from '@likec4/core'
 import {
   createLanguageServices as createLangium,
   logger as lspLogger,
   type LikeC4Services
 } from '@likec4/language-server'
-import { DotLayouter } from '@likec4/layouts'
+import { DotLayouter, type DotLayoutResult } from '@likec4/layouts'
 import type { LangiumDocument, WorkspaceCache } from 'langium'
 import { DocumentState, MutexLock, URI, interruptAndCheck } from 'langium'
 import { NodeFileSystem } from 'langium/node'
@@ -52,27 +58,8 @@ function mkGetModelFn(services: LikeC4Services) {
   return () => workspaceCache.get('model', build)
 }
 
-function mkLayoutFn() {
-  const dot = new DotLayouter()
-  const cache = new WeakMap<ComputedView, DiagramView>()
-
-  return async (view: ComputedView) => {
-    let diagram = cache.get(view)
-    if (diagram) {
-      return diagram
-    }
-    diagram = await dot.layout(view)
-    cache.set(view, diagram)
-    return diagram
-  }
-}
-
 function isInvalid(document: LangiumDocument) {
-  return !!document.diagnostics?.find(e => e.severity === 1)
-}
-
-function isValid(document: LangiumDocument) {
-  return !isInvalid(document)
+  return document.diagnostics?.some(e => e.severity === 1) ?? false
 }
 
 function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
@@ -116,6 +103,10 @@ export async function mkLanguageServices({
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
   const DocumentBuilder = services.shared.workspace.DocumentBuilder
 
+  function hasValidationErrors() {
+    return LangiumDocuments.all.some(isInvalid)
+  }
+
   const printValidationErrors = mkPrintValidationErrors(services, logger)
 
   if (logValidationErrors) {
@@ -126,47 +117,55 @@ export async function mkLanguageServices({
 
   const getModel = mkGetModelFn(services)
 
-  const layout = mkLayoutFn()
+  const dot = new DotLayouter()
+  const dotCache = new WeakMap<ComputedView, DotLayoutResult>()
 
-  const getViews = () => {
-    const castedCache = services.WorkspaceCache as WorkspaceCache<string, Promise<DiagramView[]>>
-    return castedCache.get('views', async () => {
+  async function layoutView(view: ComputedView) {
+    let result = dotCache.get(view)
+    if (result) {
+      return result
+    }
+    result = await dot.layout(view)
+    dotCache.set(view, result)
+    return result
+  }
+
+  function dotlayouts() {
+    const castedCache = services.WorkspaceCache as WorkspaceCache<
+      string,
+      Promise<DotLayoutResult[]>
+    >
+    return castedCache.get('dotlayouts', async () => {
       const views = getModel()?.views
       if (!views || keys(views).length === 0) {
         return []
       }
-      const diagrams = [] as DiagramView[]
+      const results = [] as DotLayoutResult[]
       for (const view of Object.values(views)) {
         try {
-          const diagram = await layout(view)
-          diagrams.push(diagram)
+          results.push(await layoutView(view))
         } catch (e) {
           const err = normalizeError(e)
           logger.error(`layout failed for ${view.id}: ${err.stack ?? err.message}`)
         }
       }
-      return diagrams
+      return results
     })
   }
 
-  const mutex = new MutexLock()
-  const notifyUpdate = async ({ changed, removed }: { changed?: string; removed?: string }) => {
-    let isSuccess = false
-    await mutex.lock(async token => {
-      logger.info(`watcher update: ${changed ?? ''} ${removed ?? ''}`)
+  // Returns true if the update was successful
+  async function notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
+    logger.info(`watcher update: ${changed ?? ''} ${removed ?? ''}`)
+    try {
       await DocumentBuilder.update(
         changed ? [URI.file(changed)] : [],
-        removed ? [URI.file(removed)] : [],
-        token
+        removed ? [URI.file(removed)] : []
       )
-      await interruptAndCheck(token)
-      isSuccess = LangiumDocuments.all.every(isValid)
-    })
-    return isSuccess
-  }
-
-  const hasValidationErrors = () => {
-    return LangiumDocuments.all.some(isInvalid)
+      return !hasValidationErrors()
+    } catch (e) {
+      logger.error(e)
+      return false
+    }
   }
 
   // Initialize workspace
@@ -195,7 +194,11 @@ export async function mkLanguageServices({
   return {
     workspace,
     getModel,
-    getViews,
+    getViews: () => dotlayouts().then(results => results.map(r => r.diagram)),
+    getViewsAsDot: () =>
+      dotlayouts().then(
+        results => R.fromPairs(results.map(r => [r.diagram.id, r.dot])) as Record<ViewID, string>
+      ),
     notifyUpdate,
     hasValidationErrors,
     printValidationErrors: () => printValidationErrors()

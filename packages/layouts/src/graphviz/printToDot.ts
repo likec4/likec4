@@ -12,7 +12,6 @@ import {
   DefaultRelationshipColor,
   DefaultThemeColor,
   defaultTheme,
-  hasAtLeast,
   invariant,
   nameFromFqn,
   parentFqn
