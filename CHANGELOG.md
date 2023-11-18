@@ -1,5 +1,30 @@
 # [0.47.0](https://github.com/likec4/likec4/compare/v0.46.1...v0.47.0) (2023-11-18)
 
+Custom navigation and links between views:
+
+```
+view view2 {
+  include *
+  include cloud.backend with {
+    // navigate to 'view3' on click
+    navigateTo view3
+  }
+}
+ 
+view view3 {
+  include *
+  include cloud.backend with {
+    // the same element, but navigate back to 'view2'
+    navigateTo view2
+  }
+}
+```
+
+### 🚀 Features
+
+- **lsp:** custom navigation ([dc428ee](https://github.com/likec4/likec4/commit/dc428eefda8959aea99f2725900e9d922a0ea7a8))
+- **vscode:** add WorkspaceSymbolProvider ([f333a24](https://github.com/likec4/likec4/commit/f333a24418c931c43fb7dfe75a97dbac7248acf7))
+
 ### Bug Fixes
 
 - **cli:** output version ([4e06953](https://github.com/likec4/likec4/commit/4e06953ee10734850d9e73965294162e4240dd36))
@@ -7,15 +32,11 @@
 - **deps:** update dependency jotai to ^2.5.1 ([4bb2362](https://github.com/likec4/likec4/commit/4bb2362e320f545ece5e8d20072f2d0e0e383a31))
 - **deps:** update dependency nanostores to ^0.9.5 ([748554c](https://github.com/likec4/likec4/commit/748554caa4dc3b290ce6d9fb1d032dd01a276a13))
 - **deps:** update dependency type-fest to ^4.7.1 ([cadebe0](https://github.com/likec4/likec4/commit/cadebe0ebd46589671f0ba23cb9d7ba97877a625))
-- edge layout ([21f55cb](https://github.com/likec4/likec4/commit/21f55cb2b3ac8afbce5acca1c83c8e485ba60e63))
+- **layouts:** improve edge weights ([21f55cb](https://github.com/likec4/likec4/commit/21f55cb2b3ac8afbce5acca1c83c8e485ba60e63))
 - **layouts:** set `minlen=0`instead of `constraint=false` for better layout ([ccad492](https://github.com/likec4/likec4/commit/ccad492688b6d41342b0f4de46202086adfb850a))
 - **lsp:** allow reserved words as ID ([12636d5](https://github.com/likec4/likec4/commit/12636d5d14cc65edfb2ba70de0aa5caa96477435))
 - **lsp:** make extended element resolvable inside its body ([6c3b009](https://github.com/likec4/likec4/commit/6c3b009d762bcd04f253f138f030089b8850be2a))
 
-### Features
-
-- custom navigation ([dc428ee](https://github.com/likec4/likec4/commit/dc428eefda8959aea99f2725900e9d922a0ea7a8))
-- **vscode:** add WorkspaceSymbolProvider ([f333a24](https://github.com/likec4/likec4/commit/f333a24418c931c43fb7dfe75a97dbac7248acf7))
 
 ## [0.46.1](https://github.com/likec4/likec4/compare/v0.46.0...v0.46.1) (2023-11-14)
 
