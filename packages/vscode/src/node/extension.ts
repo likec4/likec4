@@ -1,14 +1,14 @@
+import { hasAtLeast } from '@likec4/core'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
-  TransportKind,
   RevealOutputChannelOn,
+  TransportKind,
   type LanguageClientOptions,
   type ServerOptions
 } from 'vscode-languageclient/node'
-import { extensionName, extensionTitle, globPattern, languageId } from '../const'
 import ExtensionController from '../common/ExtensionController'
-import { hasAtLeast } from '@likec4/core'
+import { extensionTitle, globPattern, languageId } from '../const'
 
 let controller: ExtensionController | undefined
 
@@ -19,8 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This function is called when the extension is deactivated.
-export function deactivate() {
-  controller?.deactivate()
+export function deactivate(): Thenable<void> | undefined {
+  return controller?.deactivate()
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
@@ -67,10 +67,10 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
-      { language: languageId, scheme: 'file' },
-      { language: languageId, scheme: 'vscode-vfs' },
-      { pattern: globPattern, scheme: 'file' },
-      { pattern: globPattern, scheme: 'vscode-vfs' }
+      { language: languageId, scheme: 'file' }
+      // { language: languageId, scheme: 'vscode-vfs' },
+      // { pattern: globPattern, scheme: 'file' },
+      // { pattern: globPattern, scheme: 'vscode-vfs' }
     ],
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
@@ -82,7 +82,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   if (hasAtLeast(workspaceFolders, 1)) {
     const workspace = workspaceFolders[0]
     outputChannel.info(`Workspace: ${workspace.uri}`)
-    clientOptions.workspaceFolder = workspace
+    // clientOptions.workspaceFolder = workspace
   } else {
     outputChannel.info(`No workspace`)
   }

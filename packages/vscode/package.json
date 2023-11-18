@@ -64,6 +64,10 @@
     "color": "#111111",
     "theme": "dark"
   },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
   "capabilities": {
     "virtualWorkspaces": true,
     "untrustedWorkspaces": {
@@ -160,8 +164,8 @@
     "workspaceContains:**/*.like-c4",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "dist/node/extension.js",
-  "browser": "dist/browser/extension.js",
+  "main": "./dist/node/extension.js",
+  "browser": "./dist/browser/extension.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",

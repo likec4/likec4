@@ -14,9 +14,9 @@
     24678,
     24679, // likec4 cli - HMR
     51204, // vitest
-    61000, 
+    61000,
     61001, // examples-dev
-    62001, 
+    62001,
     62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.

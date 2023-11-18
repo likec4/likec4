@@ -22,6 +22,7 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
+        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/diagrams-dev/likec4",
       ],
@@ -44,6 +45,7 @@
       "debugWebWorkerHost": true,
       "request": "launch",
       "args": [
+        "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples/diagrams-dev/likec4",

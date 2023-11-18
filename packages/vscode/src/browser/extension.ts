@@ -1,12 +1,11 @@
+import { hasAtLeast } from '@likec4/core'
 import * as vscode from 'vscode'
 import {
   LanguageClient as BrowserLanguageClient,
   type LanguageClientOptions
 } from 'vscode-languageclient/browser'
 import ExtensionController from '../common/ExtensionController'
-import { extensionName, extensionTitle, globPattern, languageId } from '../const'
-import { disposable } from '../util'
-import { hasAtLeast } from '@likec4/core'
+import { extensionName, extensionTitle, languageId } from '../const'
 
 let controller: ExtensionController | undefined
 
@@ -18,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  controller?.deactivate()
+  return controller?.deactivate()
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
@@ -35,10 +34,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
 
-  const fileSystemWatcher = vscode.workspace.createFileSystemWatcher(globPattern)
-  context.subscriptions.push(fileSystemWatcher)
-  context.subscriptions.push(disposable(() => worker.terminate()))
-
   const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
     log: true
   })
@@ -50,24 +45,17 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel,
     traceOutputChannel: outputChannel,
     documentSelector: [
-      { pattern: globPattern, scheme: 'file' },
-      { pattern: globPattern, scheme: 'vscode-vfs' },
-      { pattern: globPattern, scheme: 'vscode-test-web' },
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' }
     ],
-    synchronize: {
-      // Notify the server about file changes to files contained in the workspace
-      fileEvents: fileSystemWatcher
-    },
-    progressOnInitialization: true
+    synchronize: {},
+    initializationOptions: {}
   }
 
   if (hasAtLeast(workspaceFolders, 1)) {
     const workspace = workspaceFolders[0]
     outputChannel.info(`Workspace: ${workspace.uri}`)
-    clientOptions.workspaceFolder = workspace
   } else {
     outputChannel.info(`No workspace`)
   }

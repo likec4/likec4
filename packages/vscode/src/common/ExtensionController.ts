@@ -2,7 +2,7 @@ import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { State } from 'vscode-languageclient'
 
-import { serializeError, type ViewID } from '@likec4/core'
+import { normalizeError, serializeError, type ViewID } from '@likec4/core'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { logError, Logger } from '../logger'
@@ -17,7 +17,7 @@ export default class ExtensionController extends AbstractDisposable {
 
   constructor(
     private _context: vscode.ExtensionContext,
-    private _client: LanguageClient
+    public client: LanguageClient
   ) {
     super()
     this._context.subscriptions.push(this)
@@ -25,8 +25,8 @@ export default class ExtensionController extends AbstractDisposable {
     this._telemetry = new TelemetryReporter(telemetryKey)
     this.onDispose(this._telemetry)
 
-    if ('debug' in _client.outputChannel) {
-      Logger.channel = _client.outputChannel as unknown as vscode.LogOutputChannel
+    if ('debug' in client.outputChannel) {
+      Logger.channel = client.outputChannel as unknown as vscode.LogOutputChannel
       Logger.telemetry = this._telemetry
       this.onDispose(() => {
         Logger.channel = console
@@ -38,20 +38,22 @@ export default class ExtensionController extends AbstractDisposable {
   /**
    * Deactivate the controller
    */
-  deactivate(): void {
-    this.dispose()
+  async deactivate() {
+    if (this.client.isRunning()) {
+      Logger.info(`[Extension] Stopping language client`)
+      try {
+        await this.client.stop()
+      } catch (e) {
+        Logger.error(normalizeError(e))
+      }
+      Logger.info(`[Extension] Language client stopped`)
+    }
     Logger.info('[Extension] extension deactivated')
   }
 
   override dispose() {
     super.dispose()
     Logger.info('[Extension] disposed')
-    if (this._client.isRunning()) {
-      Logger.info(`[Extension] Stopping language client`)
-      void this._client.stop().finally(() => {
-        Logger.info(`[Extension] Language client stopped`)
-      })
-    }
   }
 
   /**
@@ -66,13 +68,13 @@ export default class ExtensionController extends AbstractDisposable {
           .join('')}`
       )
       Logger.info(`[Extension] Starting LanguageClient...`)
-      this._client.outputChannel.show(true)
-      await this._client.start()
+      this.client.outputChannel.show(true)
+      await this.client.start()
       await this.waitClient()
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
-      const rpc = new Rpc(this._client)
+      const rpc = new Rpc(this.client)
 
       const c4model = new C4Model(rpc, this._telemetry)
       c4model.turnOnTelemetry()
@@ -120,14 +122,14 @@ export default class ExtensionController extends AbstractDisposable {
   private waitClient() {
     Logger.info(`[Extension] waitClient`)
     return new Promise<void>((resolve, reject) => {
-      if (this._client.state === State.Running) {
+      if (this.client.state === State.Running) {
         Logger.info(`[Extension] LanguageClient is running already`)
         return resolve()
       }
-      if (this._client.state === State.Stopped) {
+      if (this.client.state === State.Stopped) {
         return reject('LanguageClient is stopped')
       }
-      const subscription = this._client.onDidChangeState(e => {
+      const subscription = this.client.onDidChangeState(e => {
         Logger.info(`[Extension] LanguageClient state change ${e.oldState} -> ${e.newState}`)
         if (e.newState === State.Running) {
           Logger.info(`[Extension] LanguageClient is running now`)
