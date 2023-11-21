@@ -1,3 +1,12 @@
+# [0.48.0](https://github.com/likec4/likec4/compare/v0.47.0...v0.48.0) (2023-11-21)
+
+### Bug Fixes
+
+- **deps:** update dependency playwright-core to ^1.40.0 ([#466](https://github.com/likec4/likec4/issues/466)) ([ac979d4](https://github.com/likec4/likec4/commit/ac979d4492bfbfc16ce86623fd5acee2626a3a26))
+- **likec4:** import statements and error handling in code ([efb0797](https://github.com/likec4/likec4/commit/efb07970c6e254e0f66a32245ba95d73ce5e0039))
+- **lsp:** semantic tokens overlap ([f4b9c00](https://github.com/likec4/likec4/commit/f4b9c0018975d79264c7171bfaff7bd5a8769b9c))
+- **vscode:** init workspace for web ([88b043d](https://github.com/likec4/likec4/commit/88b043d10738bbcae11f21d443dc880d079355d2))
+
 # [0.47.0](https://github.com/likec4/likec4/compare/v0.46.1...v0.47.0) (2023-11-18)
 
 Custom navigation and links between views:
@@ -10,7 +19,7 @@ view view2 {
     navigateTo view3
   }
 }
- 
+
 view view3 {
   include *
   include cloud.backend with {
@@ -36,7 +45,6 @@ view view3 {
 - **layouts:** set `minlen=0`instead of `constraint=false` for better layout ([ccad492](https://github.com/likec4/likec4/commit/ccad492688b6d41342b0f4de46202086adfb850a))
 - **lsp:** allow reserved words as ID ([12636d5](https://github.com/likec4/likec4/commit/12636d5d14cc65edfb2ba70de0aa5caa96477435))
 - **lsp:** make extended element resolvable inside its body ([6c3b009](https://github.com/likec4/likec4/commit/6c3b009d762bcd04f253f138f030089b8850be2a))
-
 
 ## [0.46.1](https://github.com/likec4/likec4/compare/v0.46.0...v0.46.1) (2023-11-14)
 
