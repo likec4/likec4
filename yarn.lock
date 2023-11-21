@@ -1155,7 +1155,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.8.1"
+    type-fest: "npm:^4.8.2"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^0.34.6"
@@ -1180,7 +1180,7 @@ __metadata:
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.1"
-    type-fest: "npm:^4.8.1"
+    type-fest: "npm:^4.8.2"
     typescript: "npm:^5.2.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^0.34.6"
@@ -14826,10 +14826,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.8.1":
-  version: 4.8.1
-  resolution: "type-fest@npm:4.8.1"
-  checksum: ac8d7fa89f7e89e69b9b1f77150a0ca3f33608504372c5894ee10f269d7391e1706c16ca6ac8f9f443378ef01b020feb0d76422b0573ee25893fc47ce18d2052
+"type-fest@npm:^4.8.2":
+  version: 4.8.2
+  resolution: "type-fest@npm:4.8.2"
+  checksum: 86ea9b4c2a1784af7708b837948bd0b4c22d1b1bc15d95e0366213b983e802c09a76eccd56566e91ee5b7c961238b118fd256a7a323e7d79dc302773d40c99d2
   languageName: node
   linkType: hard
 
