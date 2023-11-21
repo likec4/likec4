@@ -4,9 +4,9 @@
 
 Features:
 
-- Preview diagrams in a local web server (with lightning fast updates) ⚡️
+- Preview diagrams in a local web server (with lightning-fast updates) ⚡️
 - Build a static .website (deploy to github pages, netlify...) 🔗
-- Export to PNG, Mermaid, Dot, D2 (if you something static) 🖼️
+- Export to PNG, Mermaid, Dot, D2 (if you need something static) 🖼️
 - Generate React components (for custom integrations ) 🛠️
 
 ## Install
@@ -76,7 +76,7 @@ likec4 start
 likec4 dev
 ```
 
-This recursively searchs for `*.c4`, `*.likec4` files in current folder, parses and serves diagrams in a local web server.  
+This recursively searches for `*.c4`, `*.likec4` files in the current folder, parses and serves diagrams in a local web server.  
 Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
 
 > **Tip:**  
@@ -92,7 +92,7 @@ likec4 build -o ./dist
 
 Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 
-When you deployed the website, you can use "Share" button to get a link to a specific diagram.
+When you deploy the website, you can use the "Share" button to get links.
 
 > **Tip:**  
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
@@ -111,7 +111,7 @@ For example, this command can be used on CI, to compare diagrams with ones from 
 likec4 export png -o ./assets
 ```
 
-This command starts local web server and uses Playwright to take screenshots.  
+This command starts the local web server and uses Playwright to take screenshots.  
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
 
 ### Export to Mermaid, Dot, D2
@@ -165,4 +165,4 @@ yarn dev
 
 ## Support
 
-If there's a problem you're encountering or something you need help with, don't hesitate to take advantage of my [_Priority Support_ service](https://github.com/sponsors/davydkov) where you can ask me questions in an exclusive forum. I'm well equppied to assist you with this project and would be happy to help you out! 🙂
+If there's a problem you're encountering or something you need help with, don't hesitate to take advantage of my [_Priority Support_ service](https://github.com/sponsors/davydkov) where you can ask me questions in an exclusive forum. I'm well-equipped to assist you with this project and would be happy to help you out! 🙂
