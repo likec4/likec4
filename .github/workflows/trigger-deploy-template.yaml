@@ -11,9 +11,14 @@ jobs:
     name: trigger deploy template
     runs-on: ubuntu-latest
     steps:
+      - uses: wow-actions/use-app-token@v2
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
       - name: trigger deploy
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GH_WORKFLOW_PAT }}
+          token: ${{ env.BOT_TOKEN }}
           repository: likec4/template
           event-type: redeploy
