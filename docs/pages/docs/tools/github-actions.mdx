@@ -3,39 +3,72 @@ import { Warning } from '$/components'
 
 # Github Actions
 
-<Warning>
-  Updating...
-</Warning>
+![GitHub release](https://img.shields.io/github/release/likec4/actions.svg)
 
-{/* 
+This action wraps [CLI](./cli) as a GitHub Action.
+ 
+## Usage
 
-## Export Views
-
-Export LikeC4 views to png.
+Build website:
 
 ```yaml
 ...
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: export
-        uses: likec4/actions-export@v1
+      - name: build
+        uses: likec4/actions@v1
         with:
-          out: out/likec4
+          action: build
+          path: src/likec4
+          output: dist
+          base: baseurl
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: likec4
-          path: out/likec4
+          path: dist
 ```
 
-### Inputs
+> **Tip:**  
+> [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
 
-|  INPUT  |  TYPE  | REQUIRED |  DEFAULT  |        DESCRIPTION               |
-|---------|--------|----------|-----------|----------------------------------|
-|   src   | string |  false   |   '.'     |   directory with likec4 sources  |
-|   out   | string |  false   |   '.'     |   directory for generated png    |
+Export diagrams to PNG:
 
-Github: [likec4/actions-export](https://github.com/likec4/actions-export)
- */}
+```yaml
+...
+    steps:
+      - name: export diagrams
+        uses: likec4/actions@v1
+        with:
+          export: png
+          path: src/likec4
+          output: images
+```
+
+Code generation:
+
+```yaml
+...
+    steps:
+      - name: code generation
+        uses: likec4/actions@v1
+        with:
+          codegen: react
+          output: __generated__/likec4.tsx
+```
+
+## Inputs
+
+| Name      | Description                                     |
+| --------- | ----------------------------------------------- |
+| `action`  | Action to perform (`build` / `export` / `codegen`) |
+| `export`  | Can be used instead of `action: export`           |
+| `codegen` | Can be used instead of `action: codegen`, same values as in [cli](https://likec4.dev/docs/tools/cli/)  |
+| `path`    | Path in repository to likec4 sources, root otherwise   |
+| `output`  | Output directory/file                            |
+| `base`    | Custom baseUrl for website                        |
+
+> All inputs are optional.  
+> By default it builds a website to `dist` directory.
