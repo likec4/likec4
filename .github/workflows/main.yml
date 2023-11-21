@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - 'main'
+    tags-ignore:
+      - '**'
 
 permissions:
   actions: write
@@ -69,7 +71,6 @@ jobs:
   docs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
-    if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build
     concurrency:
       group: ${{ github.workflow }}-docs

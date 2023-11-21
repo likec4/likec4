@@ -28,22 +28,21 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: Turborepo-cache
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
       - name: Docs NextJS Cache
         uses: actions/cache@v3
         with:
           path: |
             docs/.next/cache
-            node_modules/nextra/dist/__temp__
           key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
           restore-keys: |
             ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
             ${{ runner.os }}-docs-
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Prebuild dependencies
         run: yarn turbo run build --filter='docs-website^...'
@@ -53,13 +52,13 @@ jobs:
         run: |
           yarn generate
           yarn build
-          
+
       - name: upload a build artifact
         uses: actions/upload-artifact@v3
         with:
           name: docs-website
           path: docs/out/
-          
+
   deploy-preview:
     name: preview
     runs-on: ubuntu-latest
@@ -68,7 +67,7 @@ jobs:
     environment:
       name: preview
       url: ${{ steps.cloudflare.outputs.url }}
-    steps: 
+    steps:
 
       - name: download artifact
         uses: actions/download-artifact@v3
@@ -84,7 +83,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
           workingDirectory: docs
-          directory: out          
+          directory: out
           branch: preview
           wranglerVersion: '3'
 
@@ -96,8 +95,7 @@ jobs:
     environment:
       name: production
       url: ${{ steps.cloudflare.outputs.url }}
-    if: "github.ref == 'refs/heads/main'"
-    steps:  
+    steps:
 
       - name: download artifact
         uses: actions/download-artifact@v3
@@ -112,6 +110,6 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: likec4-docs
           workingDirectory: docs
-          directory: out           
+          directory: out
           branch: main
           wranglerVersion: '3'
