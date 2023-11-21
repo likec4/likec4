@@ -4,11 +4,11 @@ import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
-import type { InlineConfig, Logger, Alias } from 'vite'
-import type { LanguageServices } from '../language-services'
-import { mkLanguageServices } from '../language-services'
-import { likec4Plugin } from './plugin'
+import type { Alias, InlineConfig, Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
+import { LanguageServices } from '../language-services'
+import { likec4Plugin } from './plugin'
+import { isCI } from 'ci-info'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -69,8 +69,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   const languageServices =
     cfg?.languageServices ??
-    (await mkLanguageServices({
-      workspaceDir: cfg?.workspaceDir ?? process.cwd(),
+    (await LanguageServices.get({
+      path: cfg?.workspaceDir ?? process.cwd(),
       logValidationErrors: true
     }))
 
@@ -119,6 +119,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     base,
     build: {
       outDir,
+      reportCompressedSize: isDev || !isCI,
       assetsInlineLimit: 500 * 1000,
       cssMinify: true,
       minify: true,

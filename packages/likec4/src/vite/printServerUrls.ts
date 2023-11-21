@@ -4,8 +4,7 @@ import type { PreviewServer, ViteDevServer } from 'vite'
 
 export function printServerUrls(server: ViteDevServer | PreviewServer) {
   if (!server.resolvedUrls) {
-    console.error('Vite server is not ready, no resolvedUrls')
-    process.exit(1)
+    throw new Error('Vite server is not ready, no resolvedUrls')
   }
   let text = k.dim('Local:  ') + server.resolvedUrls.local.join('\n' + ''.padEnd(8, ' '))
   text += '\n\n'

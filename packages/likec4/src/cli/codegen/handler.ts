@@ -5,7 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'picocolors'
 import type { Logger } from 'vite'
-import { LanguageServicesInstance, type LanguageServices } from '../../language-services'
+import { LanguageServices } from '../../language-services'
 import { createLikeC4Logger, startTimer } from '../../logger'
 
 type HandlerParams = {
@@ -139,14 +139,13 @@ async function multipleFilesCodegenAction(
 export async function handler({ path, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServicesInstance.get({
-    workspaceDir: path
-  })
+  const languageServices = await LanguageServices.get({ path })
 
   const views = languageServices.getModel()?.views
   if (!views || Object.keys(views).length === 0) {
     logger.warn('no views found')
-    process.exit(0)
+    process.exitCode = 1
+    throw new Error('no views found')
   }
 
   switch (outparams.format) {

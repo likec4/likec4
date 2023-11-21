@@ -1,10 +1,6 @@
-import {
-  normalizeError,
-  type ComputedView,
-  type DiagramView,
-  type LikeC4Model,
-  type ViewID
-} from '@likec4/core'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+import { normalizeError, type ComputedView, type LikeC4Model, type ViewID } from '@likec4/core'
 import {
   createLanguageServices as createLangium,
   logger as lspLogger,
@@ -12,7 +8,7 @@ import {
 } from '@likec4/language-server'
 import { DotLayouter, type DotLayoutResult } from '@likec4/layouts'
 import type { LangiumDocument, WorkspaceCache } from 'langium'
-import { DocumentState, MutexLock, URI, interruptAndCheck } from 'langium'
+import { DocumentState, URI } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import { basename, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -21,14 +17,14 @@ import type { IdentityFunction } from 'rambdax'
 import { equals, keys } from 'rambdax'
 import * as R from 'remeda'
 import type { Logger } from 'vite'
-import { createLikeC4Logger } from '../logger'
 import pkg from '../../package.json' assert { type: 'json' }
+import { createLikeC4Logger } from '../logger'
 
 export type LanguageServicesOptions = {
   /**
    * The directory where c4 files are located.
    */
-  workspaceDir: string
+  path: string
   logValidationErrors?: boolean
 }
 
@@ -73,7 +69,7 @@ function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
       const errors = doc.diagnostics?.filter(e => e.severity === 1)
       if (errors && errors.length > 0) {
         if (cleanScreenIfError) {
-          logger.clearScreen('info')
+          logger.clearScreen('error')
           cleanScreenIfError = false
         }
         const messages = errors
@@ -91,14 +87,14 @@ function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
 }
 
 export async function mkLanguageServices({
-  workspaceDir,
+  path,
   logValidationErrors = true
 }: LanguageServicesOptions) {
   const logger = createLikeC4Logger('c4:lsp ')
   logger.info(`${k.dim('version')} ${pkg.version}`)
   lspLogger.silent(true)
 
-  const workspace = resolve(workspaceDir)
+  const workspace = resolve(path)
   const services = createLangium(NodeFileSystem).likec4
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
   const DocumentBuilder = services.shared.workspace.DocumentBuilder
@@ -181,6 +177,7 @@ export async function mkLanguageServices({
 
   const documents = LangiumDocuments.all.toArray()
   if (documents.length === 0) {
+    process.exitCode = 1
     logger.error(`no LikeC4 sources found`)
     throw new Error(`no LikeC4 sources found`)
   }
@@ -192,6 +189,7 @@ export async function mkLanguageServices({
   }
 
   return {
+    //Resolved workspace directory
     workspace,
     getModel,
     getViews: () => dotlayouts().then(results => results.map(r => r.diagram)),
@@ -206,3 +204,22 @@ export async function mkLanguageServices({
 }
 
 export type LanguageServices = Awaited<ReturnType<typeof mkLanguageServices>>
+
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace LanguageServices {
+  export async function get(opts?: Partial<LanguageServicesOptions>) {
+    let instance = (globalThis as any)['LikeC4LanguageServices'] as LanguageServices | undefined
+    if (!instance) {
+      instance = await mkLanguageServices({
+        path: opts?.path ?? process.cwd(),
+        logValidationErrors: opts?.logValidationErrors ?? true
+      })
+      if (instance.printValidationErrors()) {
+        process.exitCode = 1
+        return Promise.reject(new Error('validation failed'))
+      }
+      ;(globalThis as any)['LikeC4LanguageServices'] = instance
+    }
+    return instance
+  }
+}

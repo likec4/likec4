@@ -1,4 +1,4 @@
-import { LanguageServicesInstance } from '@/language-services'
+import { LanguageServices } from '@/language-services'
 import { printServerUrls } from '@/vite/printServerUrls'
 import { viteDev } from '@/vite/vite-dev'
 
@@ -15,7 +15,7 @@ type HandlerParams = {
 }
 
 export async function handler({ path, ...params }: HandlerParams) {
-  const languageServices = await LanguageServicesInstance.get({ workspaceDir: path })
+  const languageServices = await LanguageServices.get({ path })
 
   const server = await viteDev({ ...params, languageServices })
 

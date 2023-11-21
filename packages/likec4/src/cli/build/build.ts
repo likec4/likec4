@@ -1,4 +1,4 @@
-import { LanguageServicesInstance } from '@/language-services'
+import { LanguageServices } from '@/language-services'
 import { viteBuild } from '@/vite/vite-build'
 
 type HandlerParams = {
@@ -18,6 +18,6 @@ type HandlerParams = {
 }
 
 export async function handler({ path, output: outputDir, ...params }: HandlerParams) {
-  const languageServices = await LanguageServicesInstance.get({ workspaceDir: path })
+  const languageServices = await LanguageServices.get({ path })
   await viteBuild({ ...params, languageServices, outputDir })
 }

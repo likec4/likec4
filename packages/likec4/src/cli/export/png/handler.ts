@@ -6,7 +6,7 @@ import { resolve } from 'node:path'
 import PQueue from 'p-queue'
 import k from 'picocolors'
 import { chromium } from 'playwright-core'
-import { LanguageServicesInstance } from '../../../language-services'
+import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
 import { viteBuild } from '../../../vite/vite-build'
 import { vitePreview } from '../../../vite/vite-preview'
@@ -27,9 +27,7 @@ export async function handler({ path, output }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer(logger)
 
-  const languageServices = await LanguageServicesInstance.get({
-    workspaceDir: path
-  })
+  const languageServices = await LanguageServices.get({ path })
 
   const views = await languageServices.getViews()
   if (views.length === 0) {
