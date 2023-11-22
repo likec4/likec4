@@ -12,7 +12,6 @@ runs:
   steps:
     - uses: actions/setup-node@v4
       with:
-        cache: 'yarn'
         node-version: ${{ inputs.node-version }}
 
     # - name: yarn cache directory path
