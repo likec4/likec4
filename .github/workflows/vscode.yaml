@@ -13,12 +13,20 @@ env:
 
 jobs:
   publish:
-    name: Publish
+    name: Publish Extension
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: "github.ref == 'refs/heads/main'"
+    # if triggered by workflow_dispatch or
+    # by workflow_call on main with a commit message containing "chore: release"
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')
+      )
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap

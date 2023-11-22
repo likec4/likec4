@@ -21,6 +21,9 @@ jobs:
     if: "github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
@@ -38,12 +41,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
-  vscode:
-    name: VSCode
-    uses: ./.github/workflows/vscode.yaml
-    needs: publish
-    permissions:
-      actions: write
-      contents: read
-    secrets: inherit

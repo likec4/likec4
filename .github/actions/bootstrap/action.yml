@@ -12,6 +12,7 @@ runs:
   steps:
     - uses: actions/setup-node@v4
       with:
+        cache: 'yarn'
         node-version: ${{ inputs.node-version }}
 
     # - name: yarn cache directory path
@@ -21,6 +22,7 @@ runs:
 
     - name: yarn caches
       uses: actions/cache@v3
+      if: github.ref == 'refs/heads/main'
       with:
         path: '.yarn/cache'
         key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -29,18 +31,16 @@ runs:
           yarn-${{ runner.os }}-
           yarn-
 
-    # - name: restore only caches
-    #   uses: actions/cache/restore@v3
-    #   if: github.ref != 'refs/heads/main'
-    #   with:
-    #     path: |
-    #       .yarn/cache
-    #       .yarn/install-state.gz
-    #       node_modules/.cache/turbo
-    #     key: ${{ runner.os }}-yarn-${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-yarn-${{ inputs.node-version }}-
-    #       ${{ runner.os }}-yarn-
+    - name: restore only caches
+      uses: actions/cache/restore@v3
+      if: github.ref != 'refs/heads/main'
+      with:
+        path: '.yarn/cache'
+        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        enableCrossOsArchive: true
+        restore-keys: |
+          yarn-${{ runner.os }}-
+          yarn-
 
     - name: install dependencies
       shell: bash

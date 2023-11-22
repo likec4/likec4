@@ -38,28 +38,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
 
-      - uses: actions/setup-node@v4
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
         with:
           node-version: ${{ matrix.node-version }}
-
-      # - name: yarn cache directory path
-      #   id: yarn-cache-dir-path
-      #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: restore caches
-        uses: actions/cache/restore@v3
-        with:
-          path: '.yarn/cache'
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          enableCrossOsArchive: true
-          restore-keys: |
-            yarn-${{ runner.os }}-
-            yarn-
-
-      - name: install dependencies
-        shell: bash
-        run: yarn install --immutable
 
       - name: Build
         run: yarn ci:build

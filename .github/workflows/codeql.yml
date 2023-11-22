@@ -13,10 +13,10 @@ name: codeql js/ts
 
 on:
   push:
+    branches:
+      - 'main'
     tags-ignore:
       - '**'
-    branches-ignore:
-      - 'releases/*'
   pull_request:
 
 jobs:
