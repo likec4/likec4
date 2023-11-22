@@ -87,9 +87,6 @@ jobs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
     needs: build
-    concurrency:
-      group: ${{ github.workflow }}-docs
-      cancel-in-progress: true
     permissions:
       actions: write
       contents: read
