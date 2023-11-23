@@ -6,7 +6,7 @@ Features:
 
 - Preview diagrams in a local web server (with lightning-fast updates) ⚡️
 - Build a static .website (deploy to github pages, netlify...) 🔗
-- Export to PNG, Mermaid, Dot, D2 (if you need something static) 🖼️
+- Export to PNG, JSON, Mermaid, Dot, D2 (if you need something static) 🖼️
 - Generate React components (for custom integrations ) 🛠️
 
 ## Install
@@ -113,6 +113,12 @@ likec4 export png -o ./assets
 
 This command starts the local web server and uses Playwright to take screenshots.  
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
+
+### Export to JSON
+
+```sh
+likec4 export json -o dump.json
+```
 
 ### Export to Mermaid, Dot, D2
 
