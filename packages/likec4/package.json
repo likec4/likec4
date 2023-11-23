@@ -42,7 +42,8 @@
     "cli:serve": "tsx watch src/cli/index.ts serve dev",
     "cli:build": "tsx src/cli/index.ts build -o dev/dist dev",
     "cli:preview": "tsx src/cli/index.ts preview -o dev/dist dev",
-    "cli:export": "tsx src/cli/index.ts export png -o dev/export dev"
+    "cli:export": "tsx src/cli/index.ts export png -o dev/export dev",
+    "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
     "@nanostores/react": "^0.7.1",
