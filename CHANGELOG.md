@@ -1,3 +1,14 @@
+# [0.49.0](https://github.com/likec4/likec4/compare/v0.48.0...v0.49.0) (2023-11-23)
+
+### Bug Fixes
+
+- **codegen:** incorrect dot is generated ([fddade6](https://github.com/likec4/likec4/commit/fddade65f494f6e7ebcd45720c886de261e258ed))
+- **vscode:** extension lifecycle ([ecedcd6](https://github.com/likec4/likec4/commit/ecedcd6cb608347309f6a045b55f6c13db35106e))
+
+### Features
+
+- export to JSON ([f7a5db7](https://github.com/likec4/likec4/commit/f7a5db74ad0641b051ee4a058cd11b747436a88a))
+
 # [0.48.0](https://github.com/likec4/likec4/compare/v0.47.0...v0.48.0) (2023-11-21)
 
 ### Bug Fixes
