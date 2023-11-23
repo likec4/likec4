@@ -44,15 +44,14 @@ export async function handler({ path, output }: HandlerParams) {
     outputDir: buildOutputDir,
     open: false
   })
+  if (!previewServer.resolvedUrls) {
+    throw new Error('Vite server is not ready, no resolvedUrls')
+  }
   const hosts = [...previewServer.resolvedUrls.network, ...previewServer.resolvedUrls.local]
   if (!hasAtLeast(hosts, 1)) {
     logger.error(`no preview server url`)
     throw new Error(`no preview server url`)
   }
-
-  // IP should be localhost when running locally & 172.17.0.1 when running in GitHub action
-  // const host = isCI ? '172.17.0.1' : 'localhost'
-  // const url = hosts[0]
 
   const pageUrl = (view: DiagramView) => `${hosts[0]}export/${encodeURIComponent(view.id)}`
 
