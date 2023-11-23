@@ -15,7 +15,6 @@ import { first, hasAtLeast, last, maxBy } from 'remeda'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
 import { printToDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
-import { fromDot } from 'ts-graphviz'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb

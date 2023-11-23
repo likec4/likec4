@@ -71,9 +71,9 @@ async function dotCodegenAction(
         createdDirs.add(relativePath)
       }
       const outfile = resolve(outdir, relativePath, view.id + '.dot')
-      const generatedSource = viewsDot[view.id]
-      invariant(generatedSource, `dot for ${view.id} not found`)
-      await writeFile(outfile, generatedSource)
+      const dot = viewsDot[view.id]
+      invariant(dot, `dot for ${view.id} not found`)
+      await writeFile(outfile, dot)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
     } catch (error) {
