@@ -1,6 +1,5 @@
-import { nonexhaustive } from '@likec4/core'
+import { invariant, nonexhaustive } from '@likec4/core'
 import { generateD2, generateMermaid, generateReact, generateViewsDataTs } from '@likec4/generators'
-import { printToDot } from '@likec4/layouts'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import k from 'picocolors'
@@ -62,6 +61,7 @@ async function dotCodegenAction(
   if (!views) {
     throw new Error('no views found')
   }
+  const viewsDot = await languageServices.getViewsAsDot()
   let succeeded = 0
   for (const view of Object.values(views)) {
     try {
@@ -71,7 +71,8 @@ async function dotCodegenAction(
         createdDirs.add(relativePath)
       }
       const outfile = resolve(outdir, relativePath, view.id + '.dot')
-      const generatedSource = printToDot(view)
+      const generatedSource = viewsDot[view.id]
+      invariant(generatedSource, `dot for ${view.id} not found`)
       await writeFile(outfile, generatedSource)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
