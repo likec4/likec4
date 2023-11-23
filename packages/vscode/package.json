@@ -159,9 +159,7 @@
     ]
   },
   "activationEvents": [
-    "workspaceContains:**/*.c4",
-    "workspaceContains:**/*.likec4",
-    "workspaceContains:**/*.like-c4",
+    "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
   ],
   "main": "./dist/node/extension.js",

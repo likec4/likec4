@@ -152,14 +152,11 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
     c4Relations: [],
     c4Views: []
   }
-  Object.assign(doc, props)
-  return doc as ParsedLikeC4LangiumDocument
+  return Object.assign(doc, props) as ParsedLikeC4LangiumDocument
 }
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return (
-    isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !isNil(doc.c4fqns)
-  )
+  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqns
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {

@@ -1,17 +1,11 @@
-import {
-  InvalidModelError,
-  invariant,
-  isNonEmptyArray,
-  nonexhaustive,
-  type c4,
-  isString
-} from '@likec4/core'
+import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { getDocument } from 'langium'
 import objectHash from 'object-hash'
+import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
-  LikeC4LangiumDocument,
+  FqnIndexedDocument,
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
@@ -22,7 +16,6 @@ import {
   ast,
   cleanParsedModel,
   isFqnIndexedDocument,
-  isLikeC4LangiumDocument,
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
@@ -34,7 +27,6 @@ import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
-import { isTruthy } from 'remeda'
 
 export type ModelParsedListener = () => void
 
@@ -57,7 +49,8 @@ export class LikeC4ModelParser {
     const docs = Array.isArray(doc) ? doc : [doc]
     const result = [] as ParsedLikeC4LangiumDocument[]
     for (const doc of docs) {
-      if (!isLikeC4LangiumDocument(doc)) {
+      if (!isFqnIndexedDocument(doc)) {
+        logger.warn(`Not a FqnIndexedDocument: ${doc.uri.toString(true)}`)
         continue
       }
       try {
@@ -69,8 +62,7 @@ export class LikeC4ModelParser {
     return result
   }
 
-  protected parseLikeC4Document(_doc: LikeC4LangiumDocument) {
-    invariant(isFqnIndexedDocument(_doc), 'Not a FqnIndexedDocument')
+  protected parseLikeC4Document(_doc: FqnIndexedDocument) {
     const doc = cleanParsedModel(_doc)
     this.parseSpecification(doc)
     this.parseModel(doc)

@@ -4,7 +4,13 @@ import { State } from 'vscode-languageclient'
 
 import { normalizeError, serializeError, type ViewID } from '@likec4/core'
 import TelemetryReporter from '@vscode/extension-telemetry'
-import { cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
+import {
+  cmdOpenPreview,
+  cmdPreviewContextOpenSource,
+  cmdRebuild,
+  languageId,
+  telemetryKey
+} from '../const'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
@@ -20,8 +26,13 @@ export default class ExtensionController extends AbstractDisposable {
     public client: LanguageClient
   ) {
     super()
-    this._context.subscriptions.push(this)
+    // this._context.subscriptions.push(this)
 
+    this.onDispose(() => {
+      client.outputChannel.dispose()
+      void client.dispose()
+      Logger.info(`[Extension] Language client disposed`)
+    })
     this._telemetry = new TelemetryReporter(telemetryKey)
     this.onDispose(this._telemetry)
 
@@ -29,7 +40,7 @@ export default class ExtensionController extends AbstractDisposable {
       Logger.channel = client.outputChannel as unknown as vscode.LogOutputChannel
       Logger.telemetry = this._telemetry
       this.onDispose(() => {
-        Logger.channel = console
+        Logger.channel = null
         Logger.telemetry = null
       })
     }
@@ -46,8 +57,9 @@ export default class ExtensionController extends AbstractDisposable {
       } catch (e) {
         Logger.error(normalizeError(e))
       }
-      Logger.info(`[Extension] Language client stopped`)
     }
+    Logger.info(`[Extension] Language client stopped`)
+    this.dispose()
     Logger.info('[Extension] extension deactivated')
   }
 
@@ -70,21 +82,23 @@ export default class ExtensionController extends AbstractDisposable {
       Logger.info(`[Extension] Starting LanguageClient...`)
       this.client.outputChannel.show(true)
       await this.client.start()
-      await this.waitClient()
+      Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
       const rpc = new Rpc(this.client)
+      this.onDispose(rpc)
 
       const c4model = new C4Model(rpc, this._telemetry)
       c4model.turnOnTelemetry()
+      this.onDispose(c4model)
 
       const previewPanel = new PreviewPanel(c4model, rpc, this._context)
+      this.onDispose(previewPanel)
 
-      this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
-        previewPanel.open(viewId ?? ('index' as ViewID))
-        this._telemetry.sendTelemetryEvent('open-preview')
-      })
+      this.onDispose(
+        vscode.window.registerWebviewPanelSerializer(PreviewPanel.ViewType, previewPanel)
+      )
       this.registerCommand(cmdRebuild, () => {
         void rebuildWorkspace(rpc)
         this._telemetry.sendTelemetryEvent('rebuild')
@@ -93,14 +107,19 @@ export default class ExtensionController extends AbstractDisposable {
         previewPanel.onContextMenuOpenSource()
       })
 
-      this.onDispose(
-        vscode.window.registerWebviewPanelSerializer(PreviewPanel.ViewType, previewPanel),
-        previewPanel,
-        c4model,
-        rpc
-      )
+      this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
+        previewPanel.open(viewId ?? ('index' as ViewID))
+        this._telemetry.sendTelemetryEvent('open-preview')
+      })
 
       await initWorkspace(rpc)
+
+      this.onDispose(
+        vscode.workspace.onDidDeleteFiles(_ => {
+          Logger.debug(`[Extension] onDidDeleteFiles`)
+          void rebuildWorkspace(rpc)
+        })
+      )
 
       this._telemetry.sendTelemetryEvent(
         'activation',
@@ -117,32 +136,6 @@ export default class ExtensionController extends AbstractDisposable {
       logError(message)
       throw error
     }
-  }
-
-  private waitClient() {
-    Logger.info(`[Extension] waitClient`)
-    return new Promise<void>((resolve, reject) => {
-      if (this.client.state === State.Running) {
-        Logger.info(`[Extension] LanguageClient is running already`)
-        return resolve()
-      }
-      if (this.client.state === State.Stopped) {
-        return reject('LanguageClient is stopped')
-      }
-      const subscription = this.client.onDidChangeState(e => {
-        Logger.info(`[Extension] LanguageClient state change ${e.oldState} -> ${e.newState}`)
-        if (e.newState === State.Running) {
-          Logger.info(`[Extension] LanguageClient is running now`)
-          subscription.dispose()
-          return resolve()
-        }
-        if (e.newState === State.Stopped) {
-          Logger.info(`[Extension] LanguageClient is stopped`)
-          subscription.dispose()
-          return reject('LanguageClient is stopped')
-        }
-      })
-    })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

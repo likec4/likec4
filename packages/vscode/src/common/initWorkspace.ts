@@ -1,7 +1,7 @@
 import { delay } from 'rambdax'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
-import { globPattern } from '../const'
+import { globPattern, isVirtual, isWebUi } from '../const'
 import { Logger, logError } from '../logger'
 import type { Rpc } from './Rpc'
 
@@ -18,7 +18,7 @@ export async function initWorkspace(rpc: Rpc) {
       `[InitWorkspace] with pattern "${globPattern}" found:\n` +
         docs.map(s => '  - ' + s).join('\n')
     )
-    await delay(500)
+    await delay(1000)
     Logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
@@ -40,16 +40,17 @@ export async function rebuildWorkspace(rpc: Rpc) {
 }
 
 async function findSources(client: LanguageClient) {
+  const isweb = isWebUi() || isVirtual()
   const c2pConverter = client.code2ProtocolConverter
-  const uris = await (vscode.env.uiKind === vscode.UIKind.Web
-    ? findSourcesWeb()
-    : findSourcesNode())
+  const uris = await (isweb ? recursiveSearchSources() : findFiles())
   const docs = [] as string[]
   for (const uri of uris) {
     try {
       // Langium started with EmptyFileSystem
       // so we need to open all files to make them available
-      await vscode.workspace.openTextDocument(uri)
+      if (isweb || uri.scheme !== 'file') {
+        await vscode.workspace.openTextDocument(uri)
+      }
       docs.push(c2pConverter.asUri(uri))
     } catch (e) {
       logError(e)
@@ -58,8 +59,8 @@ async function findSources(client: LanguageClient) {
   return docs
 }
 
-async function findSourcesNode() {
-  Logger.info(`findSourcesNode`)
+async function findFiles() {
+  Logger.debug(`call vscode.workspace.findFiles`)
   return await vscode.workspace.findFiles(globPattern)
 }
 
@@ -68,8 +69,8 @@ const isSource = (path: string) => {
   return p.endsWith('.c4') || p.endsWith('.likec4') || p.endsWith('.like-c4')
 }
 
-async function findSourcesWeb() {
-  Logger.info(`findSourcesWeb`)
+async function recursiveSearchSources() {
+  Logger.debug(`recursiveSearchSources`)
   const uris = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   while (folders.length > 0) {

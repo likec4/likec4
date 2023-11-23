@@ -1,26 +1,31 @@
-import { hasAtLeast } from '@likec4/core'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
   RevealOutputChannelOn,
   TransportKind,
   type LanguageClientOptions,
-  type ServerOptions
+  type ServerOptions,
+  type TextDocumentFilter
 } from 'vscode-languageclient/node'
 import ExtensionController from '../common/ExtensionController'
-import { extensionTitle, globPattern, languageId } from '../const'
+import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
 
 let controller: ExtensionController | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
-  const ctrl = (controller = new ExtensionController(context, createLanguageClient(context)))
+  const client = createLanguageClient(context)
+  const ctrl = (controller = new ExtensionController(context, client))
   void ctrl.activate()
 }
 
 // This function is called when the extension is deactivated.
-export function deactivate(): Thenable<void> | undefined {
-  return controller?.deactivate()
+export function deactivate(): Thenable<unknown> {
+  return Promise.resolve()
+    .then(() => controller?.deactivate())
+    .finally(() => {
+      controller = undefined
+    })
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
@@ -52,39 +57,37 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
     log: true
   })
-  context.subscriptions.push(outputChannel)
+  // Disposed explicitly by the controller
+  // context.subscriptions.push(outputChannel)
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
 
-  outputChannel.info(`Create file watcher for ${globPattern}`)
-  const watchers = [vscode.workspace.createFileSystemWatcher(globPattern)]
+  if (workspaceFolders.length === 0) {
+    outputChannel.warn(`No workspace folder found`)
+  }
 
-  context.subscriptions.push(...watchers)
+  const watcher = vscode.workspace.createFileSystemWatcher(globPattern)
+  context.subscriptions.push(watcher)
+
+  // The glob pattern used to find likec4 source files inside the workspace
+  const scheme = isVirtual() ? 'vscode-vfs' : 'file'
+  const documentSelector = workspaceFolders.map((f): TextDocumentFilter => {
+    const w = vscode.Uri.joinPath(f.uri, globPattern)
+    return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
+  })
+
+  outputChannel.info(`Document selector: ${JSON.stringify(documentSelector, null, 2)}`)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     revealOutputChannelOn: RevealOutputChannelOn.Warn,
     outputChannel,
     traceOutputChannel: outputChannel,
-    documentSelector: [
-      { language: languageId, scheme: 'file' }
-      // { language: languageId, scheme: 'vscode-vfs' },
-      // { pattern: globPattern, scheme: 'file' },
-      // { pattern: globPattern, scheme: 'vscode-vfs' }
-    ],
+    documentSelector,
     synchronize: {
       // Notify the server about file changes to files contained in the workspace
-      fileEvents: watchers
-    },
-    progressOnInitialization: true
-  }
-
-  if (hasAtLeast(workspaceFolders, 1)) {
-    const workspace = workspaceFolders[0]
-    outputChannel.info(`Workspace: ${workspace.uri}`)
-    // clientOptions.workspaceFolder = workspace
-  } else {
-    outputChannel.info(`No workspace`)
+      fileEvents: watcher
+    }
   }
 
   // Create the language client and start the client.

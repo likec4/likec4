@@ -23,25 +23,26 @@ export function disposable(callOnDispose: () => void) {
 }
 
 export function disposeAll(disposables: vscode.Disposable[]) {
-  // const localCopy = Array.from(disposables)
-  for (const disposable of disposables) {
-    try {
-      disposable.dispose()
-    } catch (e) {
-      logError(e)
+  while (disposables.length) {
+    const item = disposables.pop()
+    if (item) {
+      try {
+        item.dispose()
+      } catch (e) {
+        logError(e)
+      }
     }
   }
-  disposables.length = 0
 }
 
 type DisposableLike = vscode.Disposable | (() => void)
 
 export abstract class AbstractDisposable implements vscode.Disposable {
-  private _disposables: vscode.Disposable[] = []
+  protected _disposables: vscode.Disposable[] = []
 
   private _isDisposed = false
 
-  protected onDispose<T extends DisposableLike>(...disposables: T[]) {
+  public onDispose<T extends DisposableLike>(...disposables: T[]) {
     invariant(!this._isDisposed, 'Is alredy disposed')
     for (const item of disposables) {
       if ('dispose' in item) {
@@ -53,9 +54,10 @@ export abstract class AbstractDisposable implements vscode.Disposable {
   }
 
   public dispose() {
-    if (this._isDisposed) return
-    this._isDisposed = true
-    disposeAll(this._disposables)
-    this._disposables.length = 0
+    if (!this._isDisposed) {
+      this._isDisposed = true
+      disposeAll(this._disposables)
+      this._disposables.length = 0
+    }
   }
 }

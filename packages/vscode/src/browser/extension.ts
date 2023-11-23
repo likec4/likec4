@@ -8,6 +8,7 @@ import ExtensionController from '../common/ExtensionController'
 import { extensionName, extensionTitle, languageId } from '../const'
 
 let controller: ExtensionController | undefined
+let worker: Worker | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -17,7 +18,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  return controller?.deactivate()
+  return Promise.resolve()
+    .then(() => controller?.deactivate())
+    .finally(() => {
+      worker?.terminate()
+      controller = undefined
+    })
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
@@ -28,7 +34,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     'browser',
     'language-server-worker.js'
   ).toString(true)
-  const worker = new Worker(serverMain, {
+  worker = new Worker(serverMain, {
     name: 'LikeC4 Language Server'
   })
 
@@ -37,7 +43,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
     log: true
   })
-  context.subscriptions.push(outputChannel)
+  // context.subscriptions.push(outputChannel)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
@@ -48,14 +54,13 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       { language: languageId, scheme: 'file' },
       { language: languageId, scheme: 'vscode-vfs' },
       { language: languageId, scheme: 'vscode-test-web' }
-    ],
-    synchronize: {},
-    initializationOptions: {}
+    ]
   }
 
   if (hasAtLeast(workspaceFolders, 1)) {
-    const workspace = workspaceFolders[0]
-    outputChannel.info(`Workspace: ${workspace.uri}`)
+    workspaceFolders.forEach(workspace => {
+      outputChannel.info(`Workspace: ${workspace.uri}`)
+    })
   } else {
     outputChannel.info(`No workspace`)
   }

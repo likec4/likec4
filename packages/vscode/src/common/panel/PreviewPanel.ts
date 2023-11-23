@@ -4,30 +4,29 @@ import {
   type DiagramView,
   type Fqn,
   type RelationID,
-  type ViewID
+  type ViewID,
+  normalizeError
 } from '@likec4/core'
 import type {
   ExtensionToPanelProtocol,
   PanelToExtensionProtocol
 } from '@likec4/vscode-preview/protocol'
-import { disposeAll, getNonce } from '../../util'
 import type { Disposable, Webview, WebviewPanel } from 'vscode'
 import * as vscode from 'vscode'
+import type { Location } from 'vscode-languageclient'
 import { Logger, logError } from '../../logger'
+import { AbstractDisposable, getNonce } from '../../util'
 import type { C4Model } from '../C4Model'
 import type { Rpc } from '../Rpc'
-import type { Location } from 'vscode-languageclient'
 
 function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
 }
 
-export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSerializer {
+export class PreviewPanel extends AbstractDisposable implements vscode.WebviewPanelSerializer {
   private panel: WebviewPanel | null = null
   private listener: Disposable | null = null
   private currentViewId: ViewID | null = null
-
-  private _disposables: vscode.Disposable[] = []
 
   static ViewType = 'likec4-preview' as const
 
@@ -35,35 +34,47 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
     private c4model: C4Model,
     private rpc: Rpc,
     private context: vscode.ExtensionContext
-  ) {}
+  ) {
+    super()
 
-  public dispose() {
-    Logger.debug(`[Extension.PreviewPanel] dispose`)
-    this.close()
-    disposeAll(this._disposables)
+    this.onDispose(() => {
+      this.unsubscribe()
+      this.panel?.dispose()
+    })
   }
 
-  async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: unknown) {
-    this.currentViewId = null
-    if (this.panel) {
-      logError(new Error('PreviewPanel is already initialized'))
-      return
+  public override dispose() {
+    super.dispose()
+    Logger.debug(`[Extension.PreviewPanel] disposed`)
+  }
+
+  deserializeWebviewPanel(webviewPanel: WebviewPanel, state: unknown) {
+    try {
+      this.currentViewId = null
+      if (this.panel) {
+        const err = new Error('PreviewPanel is already initialized')
+        logError(err)
+        return Promise.reject(err)
+      }
+      // TODO: refactor guard
+      if (
+        state != null &&
+        typeof state === 'object' &&
+        'view' in state &&
+        state.view != null &&
+        typeof state.view === 'object' &&
+        'id' in state.view &&
+        typeof state.view.id === 'string'
+      ) {
+        this.currentViewId = state.view.id as ViewID
+      }
+      this.panel = webviewPanel
+      this.initPanel()
+      return Promise.resolve()
+    } catch (e) {
+      Logger.error(normalizeError(e))
+      return Promise.reject(e)
     }
-    // TODO: refactor guard
-    if (
-      state != null &&
-      typeof state === 'object' &&
-      'view' in state &&
-      state.view != null &&
-      typeof state.view === 'object' &&
-      'id' in state.view &&
-      typeof state.view.id === 'string'
-    ) {
-      this.currentViewId = state.view.id as ViewID
-    }
-    this.panel = webviewPanel
-    this.initPanel()
-    return Promise.resolve()
   }
 
   public open(viewId: ViewID) {
@@ -101,9 +112,9 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
       throw new Error('PreviewPanel is not initialized')
     }
 
-    const onDidReceiveMessage = this.panel.webview.onDidReceiveMessage(this.onWebviewMessage)
+    this.panel.webview.onDidReceiveMessage(this.onWebviewMessage)
 
-    const onDidChangeViewState = this.panel.onDidChangeViewState(({ webviewPanel }) => {
+    this.panel.onDidChangeViewState(({ webviewPanel }) => {
       Logger.debug(
         `[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`
       )
@@ -112,17 +123,11 @@ export class PreviewPanel implements vscode.Disposable, vscode.WebviewPanelSeria
       }
     })
 
-    this.panel.onDidDispose(
-      () => {
-        Logger.debug(`[Extension.PreviewPanel.panel] onDidDispose`)
-        onDidReceiveMessage.dispose()
-        onDidChangeViewState.dispose()
-        this.panel = null
-        this.close()
-      },
-      this,
-      this._disposables
-    )
+    this.panel.onDidDispose(() => {
+      Logger.debug(`[Extension.PreviewPanel.panel] onDidDispose`)
+      this.panel = null
+      this.close()
+    })
 
     this.updateWebviewContent()
   }

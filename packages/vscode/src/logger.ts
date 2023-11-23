@@ -6,31 +6,34 @@ import type TelemetryReporter from '@vscode/extension-telemetry'
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Logger {
-  // TODO: dirty, refactor later
-  public static channel: LogOutputChannel | Console = console
+  public static channel: LogOutputChannel | null = null
   public static telemetry: TelemetryReporter | null = null
 
   static debug(message: string) {
-    Logger.channel.debug(message)
+    console.debug(message)
+    Logger.channel?.debug(message)
   }
 
   static info(message: string) {
-    Logger.channel.info(message)
+    console.info(message)
+    Logger.channel?.info(message)
   }
 
   static warn(message: string) {
-    Logger.channel.warn(message)
+    Logger.channel?.warn(message)
   }
 
   static log(message: string) {
-    Logger.channel.debug(message)
+    console.log(message)
+    Logger.channel?.info(message)
   }
 
   static error(message: string | BaseError) {
     if (typeof message !== 'string') {
       message = message.stack ? message.stack : `${message.name}: ${message.message}`
     }
-    Logger.channel.error(message)
+    console.error(message)
+    Logger.channel?.error(message)
     if (Logger.telemetry) {
       Logger.telemetry.sendTelemetryErrorEvent('error', { message })
     }

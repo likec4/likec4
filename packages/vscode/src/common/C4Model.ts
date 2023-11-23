@@ -52,7 +52,6 @@ export class C4Model extends AbstractDisposable {
         stop: () => {
           Logger.info('[Extension.C4Model.changesStream] stop')
           this.#activeSubscription?.dispose()
-          this.#activeSubscription = null
         }
       })
       .compose(debounce(200))
