@@ -1,11 +1,13 @@
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box, Flex, Heading, Text } from '@radix-ui/themes'
-import { useWindowSize } from '@react-hookz/web/esm'
+import { useToggle, useUpdateEffect, useWindowSize } from '@react-hookz/web/esm'
 import { $pages } from '../router'
 import { DiagramNotFound, ViewActionsToolbar } from '../components'
 import { useLikeC4View } from '../data'
 import { Fragment, useCallback, useEffect, useRef } from 'react'
 import styles from './view-page.module.css'
+import { cn } from '../utils'
+import { nonNullable } from '@likec4/core'
 
 const Paddings = [70, 20, 20, 40] as const
 
@@ -24,6 +26,7 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   const diagram = useLikeC4View(viewId)
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()
+  const [isActive, toggle] = useToggle(false)
 
   const handleTransform = useCallback(() => {
     const stage = api.stage
@@ -56,12 +59,24 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
     }
   }, [api])
 
+  useUpdateEffect(() => {
+    toggle(false)
+  }, [diagram])
+
   if (!diagram) {
     return <DiagramNotFound viewId={viewId} />
   }
 
   return (
-    <Box position={'fixed'} inset='0' className={styles.diagramBg} ref={pageDivRef}>
+    <Box
+      position={'fixed'}
+      inset='0'
+      className={cn(
+        styles.diagramBg
+        // isActive && styles.active
+      )}
+      ref={pageDivRef}
+    >
       <Diagram
         ref={ref}
         diagram={diagram}
@@ -71,7 +86,31 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
         onNodeClick={node => {
           if (node.navigateTo) {
             $pages.view.open(node.navigateTo)
+          } else {
+            // api.centerOnNode(node)
+            // toggle(true)
           }
+        }}
+        onStageClick={s => {
+          const layer = nonNullable(s.getLayers()[0])
+          if (isActive) {
+            layer.scale({
+              x: 1,
+              y: 1
+            })
+          } else {
+            layer.scale({
+              x: 0.5,
+              y: 0.5
+            })
+          }
+          toggle()
+          // activeRef.current = !activeRef.current
+          // if (activeRef.current) {
+          //   pageDivRef.current?.classList.add(styles.active)
+          // } else {
+          //   pageDivRef.current?.classList.remove(styles.active)
+          // }
         }}
         onEdgeClick={_ => ({})}
       />
