@@ -6700,7 +6700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.19.2, esbuild@npm:^0.19.3, esbuild@npm:^0.19.5":
+"esbuild@npm:^0.19.2, esbuild@npm:^0.19.3, esbuild@npm:^0.19.7":
   version: 0.19.7
   resolution: "esbuild@npm:0.19.7"
   dependencies:
@@ -9445,7 +9445,7 @@ __metadata:
     "@types/vscode": "npm:~1.77.0"
     "@vscode/extension-telemetry": "npm:^0.9.0"
     "@vscode/vsce": "npm:^2.22.0"
-    esbuild: "npm:^0.19.5"
+    esbuild: "npm:^0.19.7"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.1"
     langium: "npm:^2.1.2"
     npm-run-all: "npm:^4.1.5"
@@ -9489,7 +9489,7 @@ __metadata:
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
     clsx: "npm:^1.2.1"
-    esbuild: "npm:^0.19.5"
+    esbuild: "npm:^0.19.7"
     esbuild-node-externals: "npm:^1.9.0"
     execa: "npm:^8.0.1"
     get-port: "npm:^7.0.0"
