@@ -45,6 +45,7 @@ export function CompoundShape({ node, theme, springs, labelOffsetX = 0 }: Compou
           ellipsis={true}
           perfectDrawEnabled={false}
           globalCompositeOperation={'luminosity'}
+          listening={false}
         />
       ))}
     </>

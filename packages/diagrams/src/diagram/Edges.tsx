@@ -135,16 +135,16 @@ const EdgeShape = memo<EdgeShapeProps>(({ animate, edge, ctrl, theme, isHovered,
         e.cancelBubble = true
         onEdgeClick(edge, e)
       }}
-      onPointerEnter={e => {
-        if (animate) {
+      {...(animate && {
+        onPointerEnter: e => {
           setHoveredEdge(edge)
           mousePointer(e)
+        },
+        onPointerLeave: e => {
+          setHoveredEdge(null)
+          mouseDefault(e)
         }
-      }}
-      onPointerLeave={e => {
-        setHoveredEdge(null)
-        mouseDefault(e)
-      }}
+      })}
     >
       <Edge
         animate={animate}

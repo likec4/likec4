@@ -1,6 +1,6 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
-import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
+import { useHookableRef, useMountEffect, useUpdateEffect } from '@react-hookz/web/esm'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
@@ -11,7 +11,7 @@ import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
 
 import { createUseGesture, dragAction, pinchAction } from '@use-gesture/react'
 import { Nodes } from './Nodes'
-import { DiagramGesture, useResetHoveredStates } from './state'
+import { DiagramGesture, DiagramStateProvider, useResetHoveredStates } from './state'
 import type { IRect } from './types'
 import { isNumber } from './utils'
 
@@ -44,7 +44,7 @@ function diagramNodeId(konvaNode: Konva.Node): NodeId | null {
 
 type CenteringOpts = DiagramApi.CenterMethodOptions
 
-export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
+const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
     {
       diagram,
@@ -339,16 +339,17 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     }
 
     // center of the stage
-    const offsetX = width / 2
-    const offsetY = height / 2
+    const layerCenterX = diagram.width / 2
+    const layerCenterY = diagram.height / 2
 
     return (
       <AnimatedStage
+        _useStrictMode
         ref={stageRef}
         width={width}
         height={height}
-        offsetX={offsetX}
-        offsetY={offsetY}
+        offsetX={width / 2}
+        offsetY={height / 2}
         x={stageProps.x}
         y={stageProps.y}
         scaleX={stageProps.scale}
@@ -398,7 +399,14 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         })}
         {...props}
       >
-        <Layer x={offsetX} offsetX={offsetX} y={offsetY} offsetY={offsetY}>
+        <Layer
+          x={layerCenterX}
+          offsetX={layerCenterX}
+          y={layerCenterY}
+          offsetY={layerCenterY}
+          scaleX={1}
+          scaleY={1}
+        >
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
@@ -407,4 +415,11 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     )
   }
 )
+DiagramKonva.displayName = 'DiagramKonva'
+
+export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>((props, ref) => (
+  <DiagramStateProvider>
+    <DiagramKonva {...props} ref={ref} />
+  </DiagramStateProvider>
+))
 Diagram.displayName = 'Diagram'
