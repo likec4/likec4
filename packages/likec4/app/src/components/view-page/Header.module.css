@@ -1,0 +1,21 @@
+.header {
+  background: var(--color-panel-translucent);
+  border-bottom: 1px solid var(--gray-a2);
+  /* box-shadow: var(--shadow-1); */
+}
+
+.dimmed {
+  color: var(--color-text-dimmed);
+}
+
+/* diagram title */
+.title {
+  /* display: inline-block; */
+  /* padding: var(--space-2) var(--space-3); */
+  border-radius: var(--radius-2);
+  cursor: var(--cursor-link);
+
+  &:hover {
+    background-color: var(--gray-a3);
+  }
+}

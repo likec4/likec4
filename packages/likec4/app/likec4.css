@@ -6,6 +6,7 @@
 
 .radix-themes {
   --font-weight-bold: 600;
+  --color-text-dimmed: var(--gray-a8);
 }
 
 *,

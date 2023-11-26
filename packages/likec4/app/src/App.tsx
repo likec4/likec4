@@ -1,5 +1,5 @@
 import { Provider } from 'jotai'
-import { Fragment } from 'react'
+import { Fragment, useDeferredValue } from 'react'
 import { Sidebar } from './components'
 import { ExportPage, IndexPage, EmbedPage, ViewPage } from './pages'
 import { useRoute } from './router'
@@ -8,7 +8,7 @@ import { nonexhaustive } from '@likec4/core'
 import { isNil } from 'remeda'
 
 const Routes = () => {
-  const r = useRoute()
+  const r = useDeferredValue(useRoute())
 
   const theme = r.params?.theme
   let page: JSX.Element | null = null
@@ -43,12 +43,8 @@ const Routes = () => {
 
   return (
     <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
-      {page}
-      {r.showUI && (
-        <Fragment key='ui'>
-          <Sidebar />
-        </Fragment>
-      )}
+      <Fragment key='page'>{page}</Fragment>
+      <Fragment key='ui'>{r.showUI && <Sidebar />}</Fragment>
     </Theme>
   )
 }

@@ -1,10 +1,9 @@
-import type { ExtractAtomValue } from 'jotai'
+import type { DiagramView } from '@likec4/core'
 import { atom } from 'jotai'
-import { atomFamily, atomWithReducer, splitAtom } from 'jotai/utils'
-import { equals, groupBy, mapObject, values } from 'rambdax'
+import { atomFamily, atomWithReducer } from 'jotai/utils'
+import { equals, mapObject, values } from 'rambdax'
 import { LikeC4Views } from '~likec4'
 import { buildDiagramTreeAtom } from './sidebar-diagram-tree'
-import type { DiagramView } from '@likec4/core'
 
 function atomWithCompare<Value>(initialValue: Value) {
   return atomWithReducer(initialValue, (prev: Value, next: Value) => {
@@ -44,29 +43,6 @@ export const viewsAtom = atom(
 )
 viewsAtom.debugLabel = 'views'
 
-const indexPageTilesAtom = atom(get => {
-  const views = values(get(viewsAtom))
-  const byPath = groupBy(v => get(v).relativePath ?? '', views)
-  return Object.entries(byPath)
-    .map(([path, views]) => ({
-      path,
-      isRoot: path === '',
-      views
-    }))
-    .sort((a, b) => {
-      return a.path.localeCompare(b.path)
-    })
-})
-export type IndexPageTile = ExtractAtomValue<typeof indexPageTilesAtom>[number]
-
-const byPath = (tile: IndexPageTile) => tile.path
-export const indexPageTilesAtomsAtom = splitAtom(indexPageTilesAtom, byPath)
-
-// export type DashboardTile = ExtractAtomValue<typeof dashboardTilesAtom>[number]
-
-// const key = (tile: DashboardTile) => tile.path
-
-// export const diagramsTreeAtom = atom(buildDiagramTreeAtom(LikeC4Views))
 export const diagramsTreeAtom = atom(get => {
   const views = values(get(viewsAtom))
   return buildDiagramTreeAtom(views.map(v => get(v)))

@@ -55,7 +55,7 @@ export const DisplayModeSelector = () => {
             <CaretDownIcon />
           </IconButton>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content>
+        <DropdownMenu.Content size={'1'} side='bottom' align='end'>
           {rest.map(mode => (
             <DropdownMenu.Item key={mode} onClick={changeMode(mode)}>
               {Mode[mode]}

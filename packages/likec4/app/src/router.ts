@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import { createSearchParams, createRouter, openPage, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
 import { BaseUrl } from './const'
+import { startTransition } from 'react'
 
 export const $router = createRouter({
   index: BaseUrl,
@@ -55,7 +56,7 @@ const $route = computed([$router, $searchParams], (r, v) => {
     params: {
       theme: asTheme(v.theme) ?? 'dark'
     },
-    showUI: 'showUI' in v ? v.showUI === 'true' : true
+    showUI: 'showUI' in v ? v.showUI === 'true' : false
   }
 })
 
@@ -69,10 +70,12 @@ export const isCurrentDiagram = <V extends { id: string }>(view: V) => {
 
 export const $pages = {
   index: {
-    open: () => openPage($router, 'index')
+    url: () => getPagePath($router, 'index'),
+    open: () => startTransition(() => openPage($router, 'index'))
   },
   view: {
-    open: (viewId: string) => openPage($router, 'view', { viewId })
+    url: (viewId: string) => getPagePath($router, 'view', { viewId }),
+    open: (viewId: string) => startTransition(() => openPage($router, 'view', { viewId }))
   },
   embed: {
     path: (viewId: string) => getPagePath($router, 'embed', { viewId })

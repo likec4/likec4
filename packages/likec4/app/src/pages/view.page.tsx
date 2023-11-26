@@ -1,13 +1,13 @@
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
-import { Box, Flex, Heading, Text } from '@radix-ui/themes'
-import { useToggle, useUpdateEffect, useWindowSize } from '@react-hookz/web/esm'
-import { $pages } from '../router'
-import { DiagramNotFound, ViewActionsToolbar } from '../components'
+import { Box } from '@radix-ui/themes'
+import { useWindowSize } from '@react-hookz/web/esm'
+import { useCallback, useEffect, useRef } from 'react'
+import { DiagramNotFound } from '../components'
+import { Header } from '../components/view-page/Header'
 import { useLikeC4View } from '../data'
-import { Fragment, useCallback, useEffect, useRef } from 'react'
-import styles from './view-page.module.css'
+import { $pages } from '../router'
 import { cn } from '../utils'
-import { nonNullable } from '@likec4/core'
+import styles from './view-page.module.css'
 
 const Paddings = [70, 20, 20, 40] as const
 
@@ -26,7 +26,6 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
   const diagram = useLikeC4View(viewId)
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()
-  const [isActive, toggle] = useToggle(false)
 
   const handleTransform = useCallback(() => {
     const stage = api.stage
@@ -59,88 +58,41 @@ export function ViewPage({ viewId, showUI = true }: ViewPageProps) {
     }
   }, [api])
 
-  useUpdateEffect(() => {
-    toggle(false)
-  }, [diagram])
-
   if (!diagram) {
     return <DiagramNotFound viewId={viewId} />
   }
 
   return (
-    <Box
-      position={'fixed'}
-      inset='0'
-      className={cn(
-        styles.diagramBg
-        // isActive && styles.active
-      )}
-      ref={pageDivRef}
-    >
-      <Diagram
-        ref={ref}
-        diagram={diagram}
-        padding={showUI ? Paddings : undefined}
-        width={width}
-        height={height}
-        onNodeClick={node => {
-          if (node.navigateTo) {
-            $pages.view.open(node.navigateTo)
-          } else {
-            // api.centerOnNode(node)
-            // toggle(true)
-          }
-        }}
-        onStageClick={s => {
-          const layer = nonNullable(s.getLayers()[0])
-          if (isActive) {
-            layer.scale({
-              x: 1,
-              y: 1
-            })
-          } else {
-            layer.scale({
-              x: 0.5,
-              y: 0.5
-            })
-          }
-          toggle()
-          // activeRef.current = !activeRef.current
-          // if (activeRef.current) {
-          //   pageDivRef.current?.classList.add(styles.active)
-          // } else {
-          //   pageDivRef.current?.classList.remove(styles.active)
-          // }
-        }}
-        onEdgeClick={_ => ({})}
-      />
-      {showUI && (
-        <Fragment key='ui'>
-          <Flex
-            position={'fixed'}
-            top='0'
-            p='3'
-            style={{
-              left: 54
-            }}
-            direction={'column'}
-          >
-            <Text
-              size={'1'}
-              trim={'start'}
-              color='gray'
-              as='div'
-              className='whitespace-nowrap select-none'
-            >
-              id: <span className='select-all'>{diagram.id}</span>
-            </Text>
-            <Heading size={'5'} className='select-all'>
-              {diagram.title || 'Untitled'}
-            </Heading>
-          </Flex>
-          <ViewActionsToolbar diagram={diagram} />
-        </Fragment>
-      )}
-    </Box>
+    <>
+      <Box
+        position={'fixed'}
+        inset='0'
+        className={cn(
+          styles.diagramBg
+          // isActive && styles.active
+        )}
+        ref={pageDivRef}
+      >
+        <Diagram
+          ref={ref}
+          diagram={diagram}
+          padding={showUI ? Paddings : undefined}
+          width={width}
+          height={height}
+          onNodeClick={node => {
+            if (node.navigateTo) {
+              $pages.view.open(node.navigateTo)
+            } else {
+              api.centerOnNode(node, {
+                keepZoom: true
+              })
+            }
+          }}
+          onStageClick={_ => ({})}
+          onEdgeClick={_ => ({})}
+        />
+      </Box>
+      {showUI && <Header diagram={diagram} />}
+    </>
   )
 }

@@ -13,7 +13,7 @@ const ExportMenu = ({
 }: PropsWithChildren<{ onExport: (format: 'png') => void }>) => (
   <DropdownMenu.Root>
     <DropdownMenu.Trigger>{children}</DropdownMenu.Trigger>
-    <DropdownMenu.Content>
+    <DropdownMenu.Content variant='soft'>
       <DropdownMenu.Label>
         <Text weight='medium'>Current view</Text>
       </DropdownMenu.Label>
@@ -42,22 +42,11 @@ const ExportMenu = ({
   </DropdownMenu.Root>
 )
 
-export const ViewActionsToolbar = ({ diagram }: { diagram: DiagramView }) => {
+export const ViewActions = ({ diagram }: { diagram: DiagramView }) => {
   const [exportTo, setExportTo] = useState<'png' | null>(null)
 
   return (
-    <Flex
-      position='fixed'
-      top='0'
-      right='0'
-      p={{
-        initial: '3',
-        md: '2'
-      }}
-      gap={'3'}
-      justify='end'
-      align='center'
-    >
+    <Flex shrink={'0'} grow={'0'} gap={'3'} align='center' wrap={'nowrap'}>
       <DisplayModeSelector />
       <Dialog.Root>
         <Dialog.Trigger>

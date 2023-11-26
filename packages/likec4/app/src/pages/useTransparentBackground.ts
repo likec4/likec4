@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web/esm'
 
 // To get the transparent background
 // We need to add a class to the HTML element
 export function useTransparentBackground(enabled = true) {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const htmlEl = document.body.parentElement
     if (!htmlEl || enabled !== true) return
     // see ../../likec4.css
