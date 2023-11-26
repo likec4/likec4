@@ -4,6 +4,7 @@ import type {
   ComputedEdge,
   ComputedNode,
   ComputedView,
+  EdgeId,
   Fqn,
   RelationshipArrowType
 } from '@likec4/core'
@@ -16,7 +17,7 @@ import {
   nameFromFqn,
   parentFqn
 } from '@likec4/core'
-import { first, isNil, isNumber, isTruthy, last } from 'remeda'
+import { first, isEmpty, isNil, isNumber, isTruthy, last } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -82,20 +83,20 @@ export function toGraphvisModel({
     [_.TBbalance]: 'min',
     [_.rankdir]: autoLayout,
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(100),
-    [_.ranksep]: pxToInch(100),
-    // [_.ranksep]: `${pxToInch(120)} equally`,
-    // [_.concentrate]: true,
-    // [_.forcelabels]: true,
+    [_.nodesep]: pxToInch(110),
+    [_.ranksep]: pxToInch(110),
+    // [_.ranksep]: `${pxToInch(110)} equally`,
+    // [_.concentrate]: false,
     // [_.mclimit]: 10,
     // [_.nslimit]: 4,
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
     [_.pack]: pxToPoints(120),
-    [_.packmode]: 'array_tr3'
+    [_.packmode]: 'array_3'
   })
 
   G.attributes.graph.apply({
+    [_.margin]: pxToPoints(40),
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
@@ -115,8 +116,8 @@ export function toGraphvisModel({
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
     [_.nojustify]: true,
-    [_.margin]: pxToInch(26),
-    [_.ordering]: 'out'
+    [_.margin]: pxToInch(26)
+    // [_.ordering]: 'out'
   })
 
   G.attributes.edge.apply({
@@ -124,7 +125,7 @@ export function toGraphvisModel({
     [_.fontsize]: pxToPoints(13),
     [_.style]: DefaultLineStyle,
     [_.weight]: 1,
-    [_.penwidth]: pxToPoints(2),
+    [_.penwidth]: pxToPoints(1),
     [_.arrowsize]: 0.85,
     [_.nojustify]: true,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
@@ -266,12 +267,30 @@ export function toGraphvisModel({
     )
   }
 
+  /**
+   * At the moment, we don't show edges between clusters.
+   * But they are still used to calculate the rank of nodes.
+   */
+  function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
+    const edge = typeof _edge === 'string' ? viewEdges.find(e => e.id === _edge) : _edge
+    if (!edge) {
+      return false
+    }
+    const endpoints = viewNodes.filter(
+      n => !isCompound(n) && (n.id === edge.source || n.id === edge.target)
+    )
+    return endpoints.length === 2
+  }
+
   function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
+    // At top level all edges are nested
     if (parentId === null) {
-      return viewEdges
+      return viewEdges.filter(isEdgeVisible)
     }
     const prefix = parentId + '.'
-    return viewEdges.filter(e => e.parent === parentId || e.parent?.startsWith(prefix))
+    return viewEdges.filter(
+      e => (e.parent === parentId || e.parent?.startsWith(prefix)) && isEdgeVisible(e)
+    )
   }
 
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
@@ -305,11 +324,10 @@ export function toGraphvisModel({
       [_.likec4_id]: edge.id
     })
 
-    lhead && e.attributes.set(_.lhead, lhead)
-    ltail && e.attributes.set(_.ltail, ltail)
-
     // Hide edges between clusters
     if (lhead || ltail) {
+      lhead && e.attributes.set(_.lhead, lhead)
+      ltail && e.attributes.set(_.ltail, ltail)
       e.attributes.apply({
         [_.minlen]: 1,
         [_.style]: 'invis'
@@ -318,9 +336,10 @@ export function toGraphvisModel({
       return
     }
 
-    if (isTruthy(edge.label)) {
+    const label = edge.label?.trim() ?? ''
+    if (!isEmpty(label)) {
       e.attributes.apply({
-        [_.label]: edgeLabel(edge.label)
+        [_.label]: edgeLabel(label)
       })
     }
     if (edge.color) {
@@ -368,41 +387,27 @@ export function toGraphvisModel({
     const isTheOnlyChildren = leafNodes.length === 2
     const isTheOnlyEdge = findNestedEdges(parentId).length === 1
 
-    const weight = sourceNode.outEdges.length + targetNode.inEdges.length - 1
+    let weight =
+      sourceNode.outEdges.filter(isEdgeVisible).length +
+      targetNode.inEdges.filter(isEdgeVisible).length
+    weight = Math.max(weight - 1, 1)
 
     if (isTheOnlyEdge && (isTheOnlyChildren || (isTruthy(parentId) && leafNodes.length <= 3))) {
       // don't rank the edge
       e.attributes.apply({
-        [_.weight]: weight + 2,
+        [_.weight]: weight + 5,
         [_.minlen]: 0
       })
       return
     }
 
+    if (sourceNode.parent != null && sourceNode.parent === targetNode.parent) {
+      weight += 3
+    }
+
     if (weight > 1) {
       e.attributes.set(_.weight, weight)
     }
-
-    // const isSameLevel = sourceNode.level === targetNode.level
-    // switch (true) {
-    //   case isTruthy(parentId) && sourceNode.parent === targetNode.parent: {
-    //     weight += 2
-    //     break
-    //   }
-    //   // case isSameLevel && isTruthy(parentId): {
-    //   //   weight += 1
-    //   //   break
-    //   // }
-    //   case isTruthy(parentId) || (isSameLevel): {
-    //     weight += 1
-    //     break
-    //   }
-    //   // case isSameLevel || isTruthy(parentId): {
-    //   //   weight += 1
-    //   //   // e.attributes.set(_.weight, 2)
-    //   //   break
-    //   // }
-    // }
   }
 
   // ----------------------------------------------
@@ -425,6 +430,19 @@ export function toGraphvisModel({
     const parent = edge.parent ? subgraphs.get(edge.parent) : G
     invariant(parent, 'Edge parent graph should be defined')
     addEdge(edge, parent)
+  }
+
+  const groups = viewNodes.filter(n => isCompound(n) && n.depth === 1)
+  for (const group of groups) {
+    const subgraph = subgraphs.get(group.id)
+    // Skip groups without edges
+    if (!subgraph || subgraph.edges.length === 0) {
+      continue
+    }
+    const groupId = group.id
+    group.children.forEach(childId => {
+      graphvizNodes.get(childId)?.attributes.set(_.group, groupId)
+    })
   }
 
   return G
