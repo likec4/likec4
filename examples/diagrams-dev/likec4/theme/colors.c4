@@ -119,7 +119,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor blue {
       title "BLUE"
@@ -197,7 +197,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor secondary {
       title "SECONDARY"
@@ -275,7 +275,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor sky {
       title "SKY"
@@ -353,7 +353,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor muted {
       title "MUTED"
@@ -431,7 +431,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor slate {
       title "SLATE"
@@ -509,7 +509,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor gray {
       title "GRAY"
@@ -587,7 +587,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor red {
       title "RED"
@@ -665,7 +665,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor green {
       title "GREEN"
@@ -743,7 +743,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor amber {
       title "AMBER"
@@ -821,7 +821,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
     themecolor indigo {
       title "INDIGO"
@@ -899,7 +899,7 @@ model {
       browser -> mobile
       cylinder -> queue
 
-      this -> compound1
+      //this -> compound1
     }
   }
 
@@ -916,7 +916,7 @@ model {
       }
     }
   }
-  colors -> compound1
+  // colors -> compound1
 
   // Col1
   primary -> secondary
