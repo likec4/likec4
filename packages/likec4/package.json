@@ -79,7 +79,7 @@
     "@types/prop-types": "^15.7.10",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/yargs": "^17.0.31",
+    "@types/yargs": "^17.0.32",
     "boxen": "^7.1.1",
     "ci-info": "^3.9.0",
     "esbuild": "^0.19.7",
