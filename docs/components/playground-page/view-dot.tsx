@@ -1,7 +1,6 @@
 import { cn } from '$/lib'
 import type { DiagramView } from '@likec4/diagrams'
-import { printToDot } from '@likec4/layouts'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import useSWR from 'swr'
 import { CodePanel } from '../CodePanel'
 import styles from './view-dot.module.css'
@@ -23,6 +22,7 @@ const fetchFromKroki = async (dot: string) => {
 
 type PlaygroundViewDotProps = {
   diagram: DiagramView
+  dot: string
 }
 
 const tabClassName = (isActive = false) =>
@@ -34,9 +34,8 @@ const tabClassName = (isActive = false) =>
     isActive && 'bg-neutral-600 text-slate-300'
   )
 
-export default function PlaygroundViewDot({ diagram }: PlaygroundViewDotProps) {
+export default function PlaygroundViewDot({ dot }: PlaygroundViewDotProps) {
   const [tab, setTab] = useState<'source' | 'render'>('source')
-  const dot = useMemo(() => printToDot(diagram), [diagram])
 
   const { data } = useSWR(tab == 'render' ? dot : null, fetchFromKroki, {
     revalidateIfStale: false,

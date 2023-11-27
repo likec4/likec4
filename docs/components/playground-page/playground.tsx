@@ -19,8 +19,9 @@ import {
   PlaygroundDataProvider,
   type PlaygroundDataProviderProps
 } from './data/PlaygroundDataProvider'
+import type { DiagramState } from './data'
 import {
-  useCurrentDiagram,
+  useCurrentDiagramState,
   useCurrentFile,
   useInitialFiles,
   useRevealInEditor,
@@ -44,16 +45,16 @@ const ViewModes = {
 } as const
 type ViewMode = keyof typeof ViewModes
 
-const renderView = (viewMode: Omit<ViewMode, 'diagram'>, diagram: DiagramView) => {
+const renderView = (viewMode: Omit<ViewMode, 'diagram'>, state: DiagramState) => {
   switch (viewMode) {
     case 'd2':
-      return <PlaygroundViewD2 diagram={diagram} />
+      return <PlaygroundViewD2 diagram={state.diagram} />
     case 'dot':
-      return <PlaygroundViewDot diagram={diagram} />
+      return <PlaygroundViewDot diagram={state.diagram} dot={state.dot} />
     case 'mermaid':
-      return <PlaygroundViewMermaid diagram={diagram} />
+      return <PlaygroundViewMermaid diagram={state.diagram} />
     default:
-      return <PlaygroundViewNotReady diagram={diagram} />
+      return <PlaygroundViewNotReady diagram={state.diagram} />
   }
 }
 
@@ -66,18 +67,22 @@ const PlaygroundPreview = ({
 }) => {
   const padding = useMemo((): DiagramPaddings => [20, 20, 20, sidebarWidth + 20], [sidebarWidth])
   const [viewId, setDiagramFromViewId] = useAtom(diagramIdAtom)
-  const diagramState = useCurrentDiagram()
+  const diagramState = useCurrentDiagramState()
   const [viewMode, setViewMode] = useState<ViewMode>('diagram')
   const isReady = useAtomValue(viewsReadyAtom)
   const revealInEditor = useRevealInEditor()
 
-  const previousDiagramRef = useRef<DiagramView | null>(null)
-  if (diagramState.state === 'hasData' && diagramState.data) {
-    previousDiagramRef.current = diagramState.data
-  }
-  const previousDiagram = previousDiagramRef.current
+  const previousStateRef = useRef<DiagramState | null>(null)
+  const loadState = diagramState.state
+  const currentState = (loadState === 'hasData' && diagramState.data) || null
+  useEffect(() => {
+    if (loadState === 'hasData' && currentState) {
+      previousStateRef.current = currentState
+    }
+  }, [loadState, currentState])
+  const previousState = previousStateRef.current
 
-  if (diagramState.state !== 'hasData' && !previousDiagram) {
+  if (loadState !== 'hasData' && !previousState) {
     //console.log('PlaygroundPreview: diagramState.state !== "hasData" && !previousDiagram')
     return (
       <div
@@ -96,9 +101,9 @@ const PlaygroundPreview = ({
       </div>
     )
   }
+  const state = currentState || previousState
 
-  const diagram = diagramState.state === 'hasData' ? diagramState.data : previousDiagram
-  if (!diagram) {
+  if (!state) {
     //console.log('PlaygroundPreview: !diagram')
     return (
       <div
@@ -112,6 +117,7 @@ const PlaygroundPreview = ({
       </div>
     )
   }
+  const { diagram } = state
 
   return (
     <>
@@ -148,7 +154,7 @@ const PlaygroundPreview = ({
             paddingLeft: sidebarWidth + 5
           }}
         >
-          {renderView(viewMode, diagram)}
+          {renderView(viewMode, state)}
         </div>
       )}
       <div
