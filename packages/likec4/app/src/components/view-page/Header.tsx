@@ -1,8 +1,8 @@
-import { Badge, Box, Button, Flex, Heading, HoverCard, HoverCardRoot, Text } from '@radix-ui/themes'
-import styles from './Header.module.css'
 import type { DiagramView } from '@likec4/core'
-import { ViewActions } from '..'
+import { Box, Code, Flex, Heading, HoverCard, Text } from '@radix-ui/themes'
 import { isEmpty } from 'remeda'
+import { ViewActions } from '..'
+import styles from './Header.module.css'
 
 type HeaderProps = {
   diagram: DiagramView
@@ -53,13 +53,13 @@ function DiagramTitle({ diagram }: HeaderProps) {
       <HoverCard.Content size={'1'}>
         <Flex direction='column' gap='3'>
           <HoverCardItem title='view id'>
-            <Badge color='gray' size='1'>
+            <Code color='gray' size='2'>
               {diagram.id}
-            </Badge>
+            </Code>
           </HoverCardItem>
           {diagram.viewOf && (
             <HoverCardItem title='view of'>
-              <Badge size='1'>{diagram.viewOf}</Badge>
+              <Code size='2'>{diagram.viewOf}</Code>
             </HoverCardItem>
           )}
           <HoverCardItem title='description'>
