@@ -12,7 +12,7 @@ exports[`printToDot > computedAmazonView 1`] = `
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
+    margin = 30;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
@@ -71,8 +71,8 @@ exports[`printToDot > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
-    weight = 6;
     minlen = 0;
+    weight = 3;
   ];
 }"
 `;
@@ -89,7 +89,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
+    margin = 30;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
@@ -146,11 +146,13 @@ exports[`printToDot > computedCloud3levels 1`] = `
       likec4_id = "cloud.frontend.adminPanel";
       likec4_level = 1;
       label = <<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Admin Panel Webapp</FONT></TD></TR></TABLE></TD></TR>,<TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The admin panel is a webapp that allows</FONT></TD></TR>,<TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">support staff to manage customer data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+      group = "cloud";
     ];
     "dashboard" [
       likec4_id = "cloud.frontend.dashboard";
       likec4_level = 1;
       label = <<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Customer Dashboard Webapp</FONT></TD></TR></TABLE></TD></TR>,<TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The customer dashboard is a webapp that</FONT></TD></TR>,<TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">allows customers to view their data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+      group = "cloud";
     ];
     subgraph "cluster_backend" {
       likec4_id = "cloud.backend";
@@ -162,7 +164,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
         likec4_id = "cloud.backend.graphql";
         likec4_level = 2;
         label = <<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Graphql API</FONT></TD></TR></TABLE></TD></TR>,<TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Component that allows to query data via</FONT></TD></TR>,<TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">GraphQL.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-        group = "cloud.backend";
+        group = "backend";
       ];
       "storage" [
         likec4_id = "cloud.backend.storage";
@@ -172,23 +174,23 @@ exports[`printToDot > computedCloud3levels 1`] = `
         penwidth = 2;
         shape = "cylinder";
         label = <<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="23"><FONT POINT-SIZE="18" COLOR="#eff6ff">Backend Storage</FONT></TD></TR></TABLE></TD></TR>,<TR><TD ALIGN="TEXT"><TABLE ALIGN="TEXT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The backend storage is a component that</FONT></TD></TR>,<TR><TD ALIGN="TEXT" VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">stores data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-        group = "cloud.backend";
+        group = "backend";
       ];
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
-        weight = 6;
         minlen = 0;
+        weight = 5;
       ];
     }
     "adminpanel" -> "graphql" [
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">fetches data in zero trust network</FONT></TD></TR>,<TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">with sso authentification</FONT></TD></TR></TABLE>>;
-      weight = 2;
+      weight = 3;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">fetches data</FONT></TD></TR></TABLE>>;
-      weight = 2;
+      weight = 3;
     ];
   }
   "support" -> "adminpanel" [
@@ -218,7 +220,7 @@ exports[`printToDot > computedCloudView 1`] = `
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
+    margin = 30;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
@@ -287,8 +289,8 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><B><FONT POINT-SIZE="13">[...]</FONT></B></TD></TR></TABLE>>;
-      weight = 6;
       minlen = 0;
+      weight = 4;
     ];
   }
   "customer" -> "frontend" [
@@ -320,7 +322,7 @@ exports[`printToDot > computedIndexView 1`] = `
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
+    margin = 30;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";

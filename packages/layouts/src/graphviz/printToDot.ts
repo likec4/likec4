@@ -207,9 +207,6 @@ export function toGraphvisModel({
         [_.fillcolor]: Theme.elements[elementNode.color].fill
       })
     }
-    if (!elementNode.parent) {
-      node.attributes.set(_.group, 'root')
-    }
     if (elementNode.icon) {
       node.attributes.apply({
         [_.imagescale]: true
