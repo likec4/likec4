@@ -1,0 +1,113 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sortNodes > should generate valid testnodes 1`] = `
+{
+  "edges": [
+    {
+      "id": "customer:cloud.frontend.ui",
+      "parent": null,
+      "source": "customer",
+      "target": "cloud.frontend.ui",
+    },
+    {
+      "id": "cloud.frontend.ui:cloud.backend",
+      "parent": "cloud",
+      "source": "cloud.frontend.ui",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "cloud.backend:cloud.db",
+      "parent": "cloud",
+      "source": "cloud.backend",
+      "target": "cloud.db",
+    },
+    {
+      "id": "cloud.db:amazon",
+      "parent": null,
+      "source": "cloud.db",
+      "target": "amazon",
+    },
+  ],
+  "nodes": [
+    {
+      "children": [],
+      "id": "customer",
+      "inEdges": [],
+      "outEdges": [
+        "customer:cloud.frontend.ui",
+      ],
+      "parent": null,
+    },
+    {
+      "children": [],
+      "id": "amazon",
+      "inEdges": [
+        "cloud.db:amazon",
+      ],
+      "outEdges": [],
+      "parent": null,
+    },
+    {
+      "children": [
+        "cloud.frontend.ui",
+      ],
+      "id": "cloud.frontend",
+      "inEdges": [
+        "customer:cloud.frontend.ui",
+      ],
+      "outEdges": [
+        "cloud.frontend.ui:cloud.backend",
+      ],
+      "parent": "cloud",
+    },
+    {
+      "children": [],
+      "id": "cloud.frontend.ui",
+      "inEdges": [
+        "customer:cloud.frontend.ui",
+      ],
+      "outEdges": [
+        "cloud.frontend.ui:cloud.backend",
+      ],
+      "parent": "cloud.frontend",
+    },
+    {
+      "children": [
+        "cloud.frontend",
+        "cloud.db",
+        "cloud.backend",
+      ],
+      "id": "cloud",
+      "inEdges": [
+        "customer:cloud.frontend.ui",
+      ],
+      "outEdges": [
+        "cloud.db:amazon",
+      ],
+      "parent": null,
+    },
+    {
+      "children": [],
+      "id": "cloud.db",
+      "inEdges": [
+        "cloud.backend:cloud.db",
+      ],
+      "outEdges": [
+        "cloud.db:amazon",
+      ],
+      "parent": "cloud",
+    },
+    {
+      "children": [],
+      "id": "cloud.backend",
+      "inEdges": [
+        "cloud.frontend.ui:cloud.backend",
+      ],
+      "outEdges": [
+        "cloud.backend:cloud.db",
+      ],
+      "parent": "cloud",
+    },
+  ],
+}
+`;

@@ -1,12 +1,17 @@
+import {
+  ancestorsFqn,
+  commonAncestor,
+  type ComputedEdge,
+  type ComputedNode,
+  type Fqn
+} from '@likec4/core'
 import { pluck } from 'rambdax'
 import { describe, expect, it } from 'vitest'
-import type { ComputedEdge, ComputedNode } from '@likec4/core'
 import { sortNodes } from './sortNodes'
 
 type TestComputedNode = {
   id: string
   parent?: string
-  children?: string[]
 }
 
 describe('sortNodes', () => {
@@ -15,40 +20,101 @@ describe('sortNodes', () => {
     _edges: [source: string, target: string][] = []
   ) => {
     const nodes = _nodes.map(
-      ({ id, parent, children }) =>
+      ({ id, parent }) =>
         ({
           id,
           parent: parent ?? null,
-          children: children ? [...children] : []
+          children: _nodes.flatMap(n => (n.parent === id ? n.id : [])),
+          inEdges: [],
+          outEdges: []
         }) as unknown as ComputedNode
     )
     const edges = _edges.map(([source, target]) => {
-      // let parent = commonAncestor(source as Fqn, target as Fqn)
-      // while (parent) {
-      //   if (parent in nodesreg) {
-      //     break
-      //   }
-      //   parent = parentFqn(parent)
-      // }
-      return {
+      const parentId = commonAncestor(source as Fqn, target as Fqn)
+      const edge = {
         id: `${source}:${target}`,
         source,
-        target
+        target,
+        parent: parentId
       } as ComputedEdge
+
+      const sources = [source, ...ancestorsFqn(source as Fqn)]
+      while (sources.length > 0) {
+        const fqn = sources.shift()
+        if (!fqn || fqn === parentId) {
+          break
+        }
+        const node = nodes.find(n => n.id === fqn)
+        if (node) {
+          node.outEdges.push(edge.id)
+        }
+      }
+      const targets = [target, ...ancestorsFqn(target as Fqn)]
+      while (targets.length > 0) {
+        const fqn = targets.shift()
+        if (!fqn || fqn === parentId) {
+          break
+        }
+        const node = nodes.find(n => n.id === fqn)
+        if (node) {
+          node.inEdges.push(edge.id)
+        }
+      }
+
+      return edge
     })
-    return sortNodes(nodes, edges)
+    return { nodes, edges }
   }
+
+  it('should generate valid testnodes', () => {
+    expect(
+      testnodes(
+        [
+          {
+            id: 'customer'
+          },
+          {
+            id: 'amazon'
+          },
+          {
+            id: 'cloud.frontend',
+            parent: 'cloud'
+          },
+          {
+            id: 'cloud.frontend.ui',
+            parent: 'cloud.frontend'
+          },
+          {
+            id: 'cloud'
+          },
+          {
+            id: 'cloud.db',
+            parent: 'cloud'
+          },
+          {
+            id: 'cloud.backend',
+            parent: 'cloud'
+          }
+        ],
+        [
+          ['customer', 'cloud.frontend.ui'],
+          ['cloud.frontend.ui', 'cloud.backend'],
+          ['cloud.backend', 'cloud.db'],
+          ['cloud.db', 'amazon']
+        ]
+      )
+    ).toMatchSnapshot()
+  })
 
   const expectSorting = (
     _nodes: TestComputedNode[],
     _edges: [source: string, target: string][] = []
-  ) => expect(testnodes(_nodes, _edges).map(n => n.id))
+  ) => expect(sortNodes(testnodes(_nodes, _edges)).map(n => n.id))
 
   describe('two nodes inside', () => {
     const nodes = [
       {
-        id: 'cloud',
-        children: ['cloud.backend', 'cloud.frontend']
+        id: 'cloud'
       },
       {
         id: 'customer'
@@ -97,8 +163,7 @@ describe('sortNodes', () => {
         parent: 'cloud'
       },
       {
-        id: 'cloud',
-        children: ['cloud.db', 'cloud.backend', 'cloud.frontend']
+        id: 'cloud'
       },
       {
         id: 'cloud.db',
@@ -111,7 +176,7 @@ describe('sortNodes', () => {
     ] satisfies TestComputedNode[]
 
     it('should keep sorting, if no edges', () => {
-      const sorted = testnodes(nodes)
+      const sorted = sortNodes(testnodes(nodes))
       expect(pluck('id', sorted)).toEqual([
         'customer',
         'amazon',
@@ -125,15 +190,17 @@ describe('sortNodes', () => {
       expect(cloud).toMatchObject({
         id: 'cloud',
         parent: null,
-        children: ['cloud.db', 'cloud.backend', 'cloud.frontend']
+        children: ['cloud.frontend', 'cloud.db', 'cloud.backend']
       })
     })
 
     it('should sort nested nodes using edges', () => {
-      const sorted = testnodes(nodes, [
-        ['cloud.frontend', 'cloud.backend'],
-        ['cloud.backend', 'cloud.db']
-      ])
+      const sorted = sortNodes(
+        testnodes(nodes, [
+          ['cloud.frontend', 'cloud.backend'],
+          ['cloud.backend', 'cloud.db']
+        ])
+      )
       expect(pluck('id', sorted)).toEqual([
         'amazon',
         'customer',
@@ -167,7 +234,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'cloud.backend']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
+      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon', 'cloud'])
     })
 
     it('should sort nodes using edges and ignore cycles (2)', () => {
