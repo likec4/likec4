@@ -15,9 +15,26 @@ import {
   defaultTheme,
   invariant,
   nameFromFqn,
-  parentFqn
+  parentFqn,
+  nonNullable,
+  compareFqnHierarchically,
+  compareByFqnHierarchically,
+  isAncestor,
+  isSameHierarchy
 } from '@likec4/core'
-import { first, isEmpty, isNil, isNumber, isTruthy, last } from 'remeda'
+import {
+  first,
+  flatMap,
+  isNil,
+  isNumber,
+  isTruthy,
+  last,
+  length,
+  pipe,
+  reverse,
+  sort,
+  uniq
+} from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -87,16 +104,16 @@ export function toGraphvisModel({
     [_.ranksep]: pxToInch(110),
     // [_.ranksep]: `${pxToInch(110)} equally`,
     // [_.concentrate]: false,
-    // [_.mclimit]: 10,
-    // [_.nslimit]: 4,
-    // [_.nslimit1]: 10,
+    // [_.mclimit]: 5,
+    // [_.nslimit]: 2,
+    // [_.nslimit1]: 2,
     // [_.newrank]: true,
     [_.pack]: pxToPoints(120),
     [_.packmode]: 'array_3'
   })
 
   G.attributes.graph.apply({
-    [_.margin]: pxToPoints(40),
+    [_.margin]: pxToPoints(30),
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
@@ -190,6 +207,9 @@ export function toGraphvisModel({
         [_.fillcolor]: Theme.elements[elementNode.color].fill
       })
     }
+    if (!elementNode.parent) {
+      node.attributes.set(_.group, 'root')
+    }
     if (elementNode.icon) {
       node.attributes.apply({
         [_.imagescale]: true
@@ -267,29 +287,29 @@ export function toGraphvisModel({
     )
   }
 
+  function getEdge(_edge: ComputedEdge | EdgeId) {
+    return typeof _edge === 'string' ? nonNullable(viewEdges.find(e => e.id === _edge)) : _edge
+  }
+
   /**
    * At the moment, we don't show edges between clusters.
    * But they are still used to calculate the rank of nodes.
    */
   function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
-    const edge = typeof _edge === 'string' ? viewEdges.find(e => e.id === _edge) : _edge
-    if (!edge) {
-      return false
-    }
-    const endpoints = viewNodes.filter(
-      n => !isCompound(n) && (n.id === edge.source || n.id === edge.target)
+    const edge = getEdge(_edge)
+    const hasCompoundEndpoint = viewNodes.some(
+      n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
     )
-    return endpoints.length === 2
+    return !hasCompoundEndpoint
   }
 
   function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
-    // At top level all edges are nested
     if (parentId === null) {
       return viewEdges.filter(isEdgeVisible)
     }
     const prefix = parentId + '.'
     return viewEdges.filter(
-      e => (e.parent === parentId || e.parent?.startsWith(prefix)) && isEdgeVisible(e)
+      e => e.parent && (e.parent === parentId || e.parent.startsWith(prefix)) && isEdgeVisible(e)
     )
   }
 
@@ -304,22 +324,31 @@ export function toGraphvisModel({
 
     let lhead, ltail: string | undefined
 
-    if (!target) {
-      // Edge with cluster as target
-      lhead = subgraphs.get(edge.target)?.id
-      const targetElement = first(leafElements(edge.target))
-      target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
-    }
     if (!source) {
       // Edge with cluster as source
       ltail = subgraphs.get(edge.source)?.id
       const sourceElement = last(leafElements(edge.source))
       source = !!ltail && !!sourceElement ? graphvizNodes.get(sourceElement.id) : undefined
     }
+    if (!target) {
+      // Edge with cluster as target
+      lhead = subgraphs.get(edge.target)?.id
+      const targetElement = first(leafElements(edge.target))
+      target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
+    }
 
     if (!source || !target) {
       return
     }
+
+    if (lhead || ltail) {
+      const sourceId = source.attributes.get(_.likec4_id)
+      const targetId = target.attributes.get(_.likec4_id)
+      if (viewEdges.some(e => e.source === sourceId && e.target === targetId)) {
+        return
+      }
+    }
+
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id
     })
@@ -329,6 +358,7 @@ export function toGraphvisModel({
       lhead && e.attributes.set(_.lhead, lhead)
       ltail && e.attributes.set(_.ltail, ltail)
       e.attributes.apply({
+        [_.weight]: 0,
         [_.minlen]: 1,
         [_.style]: 'invis'
       })
@@ -337,7 +367,7 @@ export function toGraphvisModel({
     }
 
     const label = edge.label?.trim() ?? ''
-    if (!isEmpty(label)) {
+    if (isTruthy(label)) {
       e.attributes.apply({
         [_.label]: edgeLabel(label)
       })
@@ -376,33 +406,73 @@ export function toGraphvisModel({
       e.attributes.delete(_.arrowtail)
       e.attributes.apply({
         [_.dir]: 'none',
+        [_.weight]: 0,
         [_.constraint]: false
       })
       return
     }
 
     const parentId = edge.parent
-    const leafNodes = leafElements(parentId)
-    // parent has source and target as children
-    const isTheOnlyChildren = leafNodes.length === 2
-    const isTheOnlyEdge = findNestedEdges(parentId).length === 1
+
+    let otherEdges
+    if (parentId === null && sourceNode.parent == null && targetNode.parent == null) {
+      otherEdges = viewEdges.filter(e => {
+        // hide self
+        if (e.id === edge.id) {
+          return false
+        }
+        // hide edges inside clusters
+        if (e.parent !== null) {
+          return false
+        }
+        const edgeSource = viewNodes.find(n => n.id === e.source)
+        const edgeTarget = viewNodes.find(n => n.id === e.target)
+        // hide edges with compound endpoints
+        if (!edgeSource || !edgeTarget || isCompound(edgeSource) || isCompound(edgeTarget)) {
+          return false
+        }
+        // only edges between top-level nodes
+        return edgeSource.parent == null && edgeTarget.parent == null
+      })
+    } else {
+      otherEdges = findNestedEdges(parentId).filter(e => e.id !== edge.id)
+    }
+    const isTheOnlyEdge = otherEdges.length === 0
 
     let weight =
-      sourceNode.outEdges.filter(isEdgeVisible).length +
-      targetNode.inEdges.filter(isEdgeVisible).length
-    weight = Math.max(weight - 1, 1)
+      [...sourceNode.outEdges, ...targetNode.inEdges].filter(_edgeId => {
+        if (_edgeId === edge.id) {
+          return false
+        }
+        const _edge = getEdge(_edgeId)
+        if (!isEdgeVisible(_edge)) {
+          return false
+        }
+        if (_edge.parent === parentId) {
+          return true
+        }
+        if (parentId === null || _edge.parent === null) {
+          return false
+        }
+        return isSameHierarchy(parentId, _edge.parent)
+      }).length + 1
 
-    if (isTheOnlyEdge && (isTheOnlyChildren || (isTruthy(parentId) && leafNodes.length <= 3))) {
-      // don't rank the edge
-      e.attributes.apply({
-        [_.weight]: weight + 5,
-        [_.minlen]: 0
-      })
-      return
+    if (isTheOnlyEdge) {
+      if (parentId === null || leafElements(parentId).length <= 3) {
+        // don't rank the edge
+        e.attributes.set(_.minlen, 0)
+      }
+      weight += 2
     }
 
-    if (sourceNode.parent != null && sourceNode.parent === targetNode.parent) {
-      weight += 3
+    if (parentId !== null) {
+      const parentNode = viewNodes.find(n => n.id === parentId)
+      invariant(parentNode, 'parentNode should be defined')
+      weight += parentNode.level + 1
+
+      // if (sourceNode.parent === targetNode.parent) {
+      //   weight += 1
+      // }
     }
 
     if (weight > 1) {
@@ -432,17 +502,24 @@ export function toGraphvisModel({
     addEdge(edge, parent)
   }
 
-  const groups = viewNodes.filter(n => isCompound(n) && n.depth === 1)
-  for (const group of groups) {
-    const subgraph = subgraphs.get(group.id)
-    // Skip groups without edges
-    if (!subgraph || subgraph.edges.length === 0) {
-      continue
+  const groupIds = pipe(
+    viewEdges,
+    flatMap(e => (e.parent && isEdgeVisible(e) ? [e.parent] : [])),
+    uniq(),
+    sort<Fqn>(compareFqnHierarchically),
+    reverse()
+  )
+
+  const processed = new Set<Fqn>()
+  for (const groupId of groupIds) {
+    const id = nameFromFqn(groupId).toLowerCase()
+    for (const element of leafElements(groupId)) {
+      if (processed.has(element.id)) {
+        continue
+      }
+      processed.add(element.id)
+      graphvizNodes.get(element.id)?.attributes.set(_.group, id)
     }
-    const groupId = group.id
-    group.children.forEach(childId => {
-      graphvizNodes.get(childId)?.attributes.set(_.group, groupId)
-    })
   }
 
   return G

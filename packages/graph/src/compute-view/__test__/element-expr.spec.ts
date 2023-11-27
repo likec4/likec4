@@ -46,7 +46,7 @@ describe('element-expr', () => {
       $exclude('cloud.backend')
     ])
     expect(nodeIds).toEqual(['customer', 'support', 'cloud.frontend', 'cloud'])
-    expect(edgeIds).toEqual(['customer:cloud.frontend', 'support:cloud.frontend'])
+    expect(edgeIds).toEqual(['customer:cloud.frontend', 'customer:cloud', 'support:cloud.frontend'])
   })
 
   describe('view of cloud', () => {
@@ -122,11 +122,12 @@ describe('element-expr', () => {
         'amazon'
       ])
       expect(edgeIds).to.have.same.members([
-        'cloud.backend:amazon',
-        'cloud.frontend.adminPanel:cloud.backend',
         'support:cloud.frontend.adminPanel',
+        'cloud.frontend.adminPanel:cloud.backend',
+        'customer:cloud.frontend.dashboard',
         'cloud.frontend.dashboard:cloud.backend',
-        'customer:cloud.frontend.dashboard'
+        'cloud.frontend:cloud.backend',
+        'cloud.backend:amazon'
       ])
 
       // check depth
@@ -167,10 +168,11 @@ describe('element-expr', () => {
         'cloud'
       ])
       expect(edgeIds).to.have.same.members([
-        'cloud.frontend.adminPanel:cloud.backend',
         'support:cloud.frontend.adminPanel',
-        'cloud.frontend.dashboard:cloud.backend',
-        'customer:cloud.frontend.dashboard'
+        'cloud.frontend.adminPanel:cloud.backend',
+        'customer:cloud.frontend.dashboard',
+        'customer:cloud',
+        'cloud.frontend.dashboard:cloud.backend'
       ])
     })
     it('include *, exclude support', () => {
@@ -206,8 +208,9 @@ describe('element-expr', () => {
         'cloud'
       ])
       expect(edgeIds).to.have.same.members([
+        'support:cloud.frontend.adminPanel',
         'customer:cloud.frontend.dashboard',
-        'support:cloud.frontend.adminPanel'
+        'customer:cloud'
       ])
     })
   })
@@ -266,6 +269,7 @@ describe('element-expr', () => {
       expect(edgeIds).toEqual([
         'cloud.frontend.adminPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
+        'cloud.frontend:cloud.backend',
         'cloud.backend.graphql:cloud.backend.storage',
         'cloud.backend.storage:amazon'
       ])
@@ -283,7 +287,8 @@ describe('element-expr', () => {
       expect(edgeIds).toEqual([
         'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon'
+        'cloud.backend.storage:amazon',
+        'cloud:amazon'
       ])
     })
   })
