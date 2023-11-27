@@ -76,7 +76,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@types/node": "^20.8.7",
-    "@types/prop-types": "^15.7.10",
+    "@types/prop-types": "^15.7.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/yargs": "^17.0.31",
