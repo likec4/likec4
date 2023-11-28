@@ -24,13 +24,8 @@ export const DiagramNotFound = ({ viewId }: { viewId: string }) => {
               does not exist
             </Text>
             <Box pt='2'>
-              <Button
-                variant='soft'
-                color='amber'
-                className='cursor-pointer'
-                onClick={() => $pages.index.open()}
-              >
-                Go to overview
+              <Button asChild variant='soft' color='amber'>
+                <a href={$pages.index.url()}>Go to overview</a>
               </Button>
             </Box>
           </Flex>

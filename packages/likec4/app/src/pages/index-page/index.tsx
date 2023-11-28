@@ -60,13 +60,7 @@ const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
   return (
     <Box asChild shrink='0' grow='1'>
       <Card asChild style={{ width: 350, maxWidth: 350 }} variant='surface' size='1'>
-        <a
-          href={$pages.view.url(id)}
-          onClick={e => {
-            e.preventDefault()
-            $pages.view.open(id)
-          }}
-        >
+        <a href={$pages.view.url(id)}>
           <Inset clip='padding-box' side='top' pb='current'>
             <DiagramPreview diagram={diagram} />
           </Inset>

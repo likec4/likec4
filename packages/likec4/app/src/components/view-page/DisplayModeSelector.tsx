@@ -1,7 +1,8 @@
 import { CaretDownIcon } from '@radix-ui/react-icons'
 import { Button, DropdownMenu, Flex, IconButton, Separator } from '@radix-ui/themes'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { keys } from 'remeda'
+import { updateSearchParams, useSearchParams } from '../../router'
 
 const Mode = {
   react: 'React',
@@ -15,20 +16,26 @@ type DisplayMode = keyof typeof Mode
 const mode_keys = keys.strict(Mode) as [DisplayMode, DisplayMode, ...DisplayMode[]]
 
 export const DisplayModeSelector = () => {
-  const [current, setCurrent] = useState<DisplayMode>('react')
+  const current = useSearchParams().mode ?? 'react'
   const [[first, second, ...rest], setModes] = useState(mode_keys)
 
   const changeMode = (mode: DisplayMode) => () => {
     if (mode === current) {
       return
     }
-    setCurrent(mode)
-    if (mode === first || mode === second) {
-      return
-    }
-    // change only second
-    setModes(([first, ...rest]) => [first, mode, ...rest.filter(m => m !== mode)])
+    updateSearchParams({ mode })
   }
+
+  useEffect(() => {
+    // change only second
+    setModes(modes => {
+      if (modes[0] === current || modes[1] === current) {
+        return modes
+      }
+      const [first, ...rest] = modes
+      return [first, current, ...rest.filter(m => m !== current)]
+    })
+  }, [current])
 
   return (
     <Flex

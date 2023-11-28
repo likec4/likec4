@@ -1,11 +1,11 @@
+import { nonexhaustive } from '@likec4/core'
+import { Box, Theme } from '@radix-ui/themes'
 import { Provider } from 'jotai'
 import { Fragment, useDeferredValue } from 'react'
-import { Sidebar } from './components'
-import { ExportPage, IndexPage, EmbedPage, ViewPage } from './pages'
-import { useRoute } from './router'
-import { Theme } from '@radix-ui/themes'
-import { nonexhaustive } from '@likec4/core'
 import { isNil } from 'remeda'
+import { Sidebar } from './components'
+import { EmbedPage, ExportPage, IndexPage, ViewPage } from './pages'
+import { useRoute } from './router'
 
 const Routes = () => {
   const r = useDeferredValue(useRoute())
@@ -15,7 +15,9 @@ const Routes = () => {
 
   switch (r.route) {
     case 'view': {
-      page = <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />
+      page = (
+        <ViewPage key='view' viewId={r.params.viewId} viewMode={r.params.mode} showUI={r.showUI} />
+      )
       break
     }
     case 'export': {
@@ -43,7 +45,7 @@ const Routes = () => {
 
   return (
     <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
-      <Fragment key='page'>{page}</Fragment>
+      {page}
       <Fragment key='ui'>{r.showUI && <Sidebar />}</Fragment>
     </Theme>
   )

@@ -1,6 +1,4 @@
-.diagramBg {
-  overscroll-behavior: none;
-  overflow: hidden;
+.reactDiagram {
   --diagram-bg-size: 24px;
   --diagram-bg-position-x: 0;
   --diagram-bg-position-y: 0;
