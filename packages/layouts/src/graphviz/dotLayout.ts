@@ -122,7 +122,10 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
 }
 
 export function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  return graphviz.unflatten(printToDot(computedView), 1, false, 2)
+  const unflattened = graphviz.unflatten(printToDot(computedView), 1, false, 2)
+  // const model = fromDot(unflattened)
+  // use ts-graphviz to pretty print the model
+  return unflattened.replaceAll('\t', '    ')
 }
 
 export type DotLayoutResult = {
