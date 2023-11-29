@@ -10,12 +10,8 @@ export function generateD2Sources(views: ComputedView[]) {
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
     /* eslint-disable */
-    import { memo } from 'react'
 
-    type Opts = {
-      viewId: string
-    }
-    export function d2Source(viewId: string): string {
+    export function d2Source(viewId) {
       switch (viewId) {
   `
     .appendNewLine()
@@ -43,11 +39,6 @@ export function generateD2Sources(views: ComputedView[]) {
     })
     .append(NL, '  }', NL).appendTemplate`
     }
-
-    export const D2Source = memo(({viewId}: Opts) => {
-      return <>{d2Source(viewId)}</>
-    })
-    D2Source.displayName = 'D2Source'
     `.append(NL, NL)
   return toString(out)
 }

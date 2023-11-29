@@ -1,12 +1,10 @@
-declare module '~likec4' {
+declare module 'virtual:likec4/views' {
   import type { DiagramView, ViewID } from '@likec4/core'
-
-  export type { ViewID }
 
   export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
 }
 
-declare module '~likec4-dimensions' {
+declare module 'virtual:likec4/dimensions' {
   interface DiagramViewDimensions {
     width: number
     height: number
@@ -15,18 +13,14 @@ declare module '~likec4-dimensions' {
   export const LikeC4Views: Record<string, DiagramViewDimensions>
 }
 
-declare module '~likec4-dot-sources' {
-  import type { FC } from 'react'
+declare module 'virtual:likec4/dot-sources' {
   export function dotSource(viewId: string): string
-  export const DotSource: FC<{ viewId: string }>
+
+  export function svgSource(viewId: string): string
 }
-declare module '~likec4-d2-sources' {
-  import type { FC } from 'react'
+declare module 'virtual:likec4/d2-sources' {
   export function d2Source(viewId: string): string
-  export const D2Source: FC<{ viewId: string }>
 }
-declare module '~likec4-mmd-sources' {
-  import type { FC } from 'react'
+declare module 'virtual:likec4/mmd-sources' {
   export function mmdSource(viewId: string): string
-  export const MmdSource: FC<{ viewId: string }>
 }

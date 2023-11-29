@@ -1,5 +1,6 @@
 import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
-import { DotSource } from '~likec4-dot-sources'
+import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
+import styles from '../view-page.module.css'
 
 type ViewAsDotProps = {
   viewId: string
@@ -7,11 +8,21 @@ type ViewAsDotProps = {
 
 export default function ViewAsDot({ viewId }: ViewAsDotProps) {
   return (
-    <Flex position={'fixed'} inset='0' pt={'8'} align={'stretch'} direction={'row'} px={'2'}>
+    <Flex
+      grow={'1'}
+      align={'stretch'}
+      justify={'start'}
+      direction={'row'}
+      px={'2'}
+      gap={'2'}
+      style={{
+        overflow: 'scroll'
+      }}
+    >
       <Box
-        grow={'1'}
+        grow={'0'}
         shrink={'1'}
-        py={'3'}
+        py={'2'}
         style={{
           overflow: 'scroll'
         }}
@@ -26,12 +37,24 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
             }}
           >
             <Code variant='soft' autoFocus>
-              <DotSource viewId={viewId} />
+              {dotSource(viewId)}
             </Code>
           </Box>
         </ScrollArea>
       </Box>
-      <Box grow={'1'}>...</Box>
+      <Box
+        grow={'1'}
+        shrink={'1'}
+        py={'2'}
+        style={{
+          overflow: 'scroll',
+          overscrollBehavior: 'none'
+        }}
+      >
+        <Box asChild position={'relative'} className={styles.dotSvg}>
+          <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
+        </Box>
+      </Box>
     </Flex>
   )
 }

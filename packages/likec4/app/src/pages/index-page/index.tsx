@@ -65,7 +65,7 @@ const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
             <DiagramPreview diagram={diagram} />
           </Inset>
           <Text as='div' size='2' weight='bold' trim='start'>
-            {title}
+            {title || id}
           </Text>
           <Text
             as='div'
@@ -92,8 +92,7 @@ function ViewsGroup({ atom }: { atom: Atom<IViewsGroup> }) {
       <Section size='2'>
         <Flex gap='2'>
           <Heading
-            color='gray'
-            highContrast={isRoot}
+            color={isRoot ? undefined : 'gray'}
             className={cn(isRoot || styles.dimmed)}
             trim='end'
           >

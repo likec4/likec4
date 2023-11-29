@@ -2,7 +2,7 @@ import type { DiagramView } from '@likec4/core'
 import { atom } from 'jotai'
 import { atomFamily, atomWithReducer } from 'jotai/utils'
 import { equals, mapObject, values } from 'rambdax'
-import { LikeC4Views } from '~likec4'
+import { LikeC4Views } from 'virtual:likec4/views'
 import { buildDiagramTreeAtom } from './sidebar-diagram-tree'
 
 function atomWithCompare<Value>(initialValue: Value) {
@@ -65,8 +65,8 @@ if (import.meta.hot) {
     }
   }
 
-  import.meta.hot.accept('/@vite-plugin-likec4/likec4-generated.ts', md => {
-    const update = md?.LikeC4Views as typeof LikeC4Views | undefined
+  import.meta.hot.accept('/@likec4-plugin/likec4-views.js', md => {
+    const update = md?.LikeC4Views
     if (update) {
       $updateViews?.(update)
     }

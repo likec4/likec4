@@ -1,5 +1,5 @@
 import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
-import { MmdSource } from '~likec4-mmd-sources'
+import { mmdSource } from 'virtual:likec4/mmd-sources'
 
 type ViewAsMmdProps = {
   viewId: string
@@ -7,7 +7,7 @@ type ViewAsMmdProps = {
 
 export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
   return (
-    <Flex position={'fixed'} inset='0' pt={'8'} align={'stretch'} direction={'row'} px={'2'}>
+    <Flex align={'stretch'} direction={'row'} px={'2'}>
       <Box
         grow={'1'}
         shrink={'1'}
@@ -26,7 +26,7 @@ export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
             }}
           >
             <Code variant='soft' autoFocus>
-              <MmdSource viewId={viewId} />
+              {mmdSource(viewId)}
             </Code>
           </Box>
         </ScrollArea>

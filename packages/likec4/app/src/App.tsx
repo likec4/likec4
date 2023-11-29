@@ -44,7 +44,12 @@ const Routes = () => {
   }
 
   return (
-    <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
+    <Theme
+      hasBackground={!!theme}
+      accentColor='indigo'
+      radius='small'
+      appearance={theme ?? 'inherit'}
+    >
       {page}
       <Fragment key='ui'>{r.showUI && <Sidebar />}</Fragment>
     </Theme>

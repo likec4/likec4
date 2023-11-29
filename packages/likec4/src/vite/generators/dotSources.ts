@@ -1,19 +1,24 @@
 import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
 
-export function generateDotSources(sources: Record<string, string>) {
+export function generateDotSources(
+  sources: Record<
+    string,
+    {
+      dot: string
+      svg: string
+    }
+  >
+) {
   const out = new CompositeGeneratorNode()
+
   out.appendTemplate`
     /******************************************************************************
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
     /* eslint-disable */
-    import { memo } from 'react'
 
-    type Opts = {
-      viewId: string
-    }
-    export function dotSource(viewId: string): string {
+    export function dotSource(viewId) {
       switch (viewId) {
   `
     .appendNewLine()
@@ -25,7 +30,7 @@ export function generateDotSources(sources: Record<string, string>) {
             Object.keys(sources),
             key => expandToNode`
               case ${JSON.stringify(key)}: {
-                return ${JSON.stringify(sources[key])}
+                return ${JSON.stringify(sources[key]!.dot)}
               }
             `,
             {
@@ -42,10 +47,32 @@ export function generateDotSources(sources: Record<string, string>) {
     .append(NL, '  }', NL).appendTemplate`
     }
 
-    export const DotSource = memo(({viewId}: Opts) => {
-      return <>{dotSource(viewId)}</>
+    export function svgSource(viewId) {
+      switch (viewId) {
+    `
+    .appendNewLine()
+    .indent({
+      indentation: 4,
+      indentedChildren(indented) {
+        indented.append(
+          joinToNode(
+            Object.keys(sources),
+            key => expandToNode`
+              case ${JSON.stringify(key)}: {
+                return ${JSON.stringify(sources[key]!.svg)}
+              }
+            `,
+            {
+              appendNewLineIfNotEmpty: true
+            }
+          )
+        ).appendTemplate`
+          default: {
+            throw new Error('Unknown viewId: ' + viewId)
+          }
+        `
+      }
     })
-    DotSource.displayName = 'DotSource'
-    `.append(NL, NL)
+    .append(NL, '  }', NL, '}', NL, NL)
   return toString(out)
 }

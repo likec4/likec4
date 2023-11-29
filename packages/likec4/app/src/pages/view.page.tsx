@@ -19,21 +19,15 @@ export function ViewPage({ viewId, viewMode, showUI = true }: ViewPageProps) {
     return <DiagramNotFound viewId={viewId} />
   }
 
-  if (viewMode === 'react') {
-    return (
-      <Fragment key='react'>
-        <ViewAsReact diagram={diagram} />
-        {showUI && <Header diagram={diagram} />}
-      </Fragment>
-    )
-  }
-
   return (
-    <Fragment key={'view-as'}>
-      <Suspense>
-        <ViewAs viewMode={viewMode} viewId={viewId} />
-      </Suspense>
-      {showUI && <Header diagram={diagram} />}
-    </Fragment>
+    <>
+      {viewMode === 'react' && <ViewAsReact diagram={diagram} />}
+      {viewMode !== 'react' && (
+        <Suspense>
+          <ViewAs viewMode={viewMode} viewId={viewId} />
+        </Suspense>
+      )}
+      <Header diagram={diagram} />
+    </>
   )
 }

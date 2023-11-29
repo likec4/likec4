@@ -2,8 +2,8 @@ import { useStore } from '@nanostores/react'
 import type { ConfigFromRouter, ParamsArg } from '@nanostores/router'
 import { createRouter, createSearchParams, getPagePath } from '@nanostores/router'
 import { computed } from 'nanostores'
-import { equals, mapValues, omitBy } from 'remeda'
-import type { ViewID } from '~likec4'
+import { equals, isEmpty, isString, mapValues, omitBy } from 'remeda'
+import type { ViewID } from '@likec4/core'
 import { BaseUrl } from './const'
 import { startTransition } from 'react'
 
@@ -64,19 +64,24 @@ const searchParams = computed($searchParams, v => {
     showUI: 'showUI' in v ? v.showUI === 'true' : undefined
   }
 })
-type SearchParams = NonNullable<(typeof searchParams)['value']>
-// type SearchParamsWithoutDefaults = {
-//   [K in keyof SearchParams]: Exclude<SearchParams[K], undefined>
-// }
+type SearchParams = ReturnType<(typeof searchParams)['get']>
+type ChangedSearchParams = {
+  [K in keyof SearchParams]?: SearchParams[K] extends infer P
+    ? P extends undefined
+      ? never
+      : P
+    : never
+}
 
-const omitDefaults = omitBy<SearchParams>((v, k) => {
-  return (
-    v == undefined ||
-    (k === 'theme' && v === 'dark') ||
-    (k === 'mode' && v === 'react') ||
-    (k === 'padding' && v === 20)
-  )
-})
+const filter = <K extends keyof SearchParams>(v: SearchParams[K], k: K) =>
+  v == undefined ||
+  (k === 'theme' && v === 'dark') ||
+  (k === 'mode' && v === 'react') ||
+  (k === 'padding' && v === 20)
+
+function omitDefaults(v: SearchParams): ChangedSearchParams {
+  return omitBy(v, filter) as ChangedSearchParams
+}
 
 export function updateSearchParams(update: Partial<SearchParams>) {
   const current = searchParams.get()
@@ -85,7 +90,7 @@ export function updateSearchParams(update: Partial<SearchParams>) {
     ...update
   }
   if (!equals(current, next)) {
-    const params = mapValues(omitDefaults(next), v => v?.toString() ?? '')
+    const params = mapValues(omitDefaults(next), v => (isString(v) ? v : String(v)))
     startTransition(() => {
       $searchParams.open(params)
     })
@@ -138,11 +143,12 @@ export const isCurrentDiagram = <V extends { id: string }>(view: V) => {
 
 function currentSearchParams() {
   const params = omitDefaults(searchParams.get())
+  if (isEmpty(params)) {
+    return ''
+  }
   const urlSearchParams = new URLSearchParams()
   for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined) {
-      urlSearchParams.set(k, v.toString())
-    }
+    urlSearchParams.set(k, isString(v) ? v : String(v))
   }
   const asString = urlSearchParams.toString()
   return asString !== '' ? '?' + asString : ''
@@ -174,18 +180,10 @@ export const $pages = {
     open: () => openRoute('index')
   },
   view: {
-    url: (viewId: ViewID) => getRoutePath('view', { viewId }),
-    open: (viewId: ViewID) => openRoute('view', { viewId })
+    url: (viewId: string) => getRoutePath('view', { viewId }),
+    open: (viewId: string) => openRoute('view', { viewId })
   },
   embed: {
-    path: (viewId: ViewID) => getRoutePath('embed', { viewId })
+    path: (viewId: string) => getRoutePath('embed', { viewId })
   }
 } as const
-
-// if (import.meta.env.DEV) {
-//   logger({
-//     $searchParams,
-//     $router,
-//     $route
-//   })
-// }

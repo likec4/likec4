@@ -55,3 +55,28 @@
     background: var(--color-overlay);
   }
 } */
+
+.dotSvg {
+  & > svg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.otherFormats {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  overflow: scroll;
+  position: relative;
+
+  & > :global(.rt-TabsContent) {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+    overflow: scroll;
+    &[hidden] {
+      display: none;
+    }
+  }
+}

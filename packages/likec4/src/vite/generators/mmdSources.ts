@@ -10,12 +10,8 @@ export function generateMmdSources(views: ComputedView[]) {
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
     /* eslint-disable */
-    import { memo } from 'react'
 
-    type Opts = {
-      viewId: string
-    }
-    export function mmdSource(viewId: string): string {
+    export function mmdSource(viewId) {
       switch (viewId) {
   `
     .appendNewLine()
@@ -33,21 +29,17 @@ export function generateMmdSources(views: ComputedView[]) {
             {
               appendNewLineIfNotEmpty: true
             }
-          ).appendTemplate`
+          )
+        ).appendTemplate`
           default: {
             throw new Error('Unknown viewId: ' + viewId)
           }
         `
-        )
       }
     })
     .append(NL, '  }', NL).appendTemplate`
     }
 
-    export const MmdSource = memo(({viewId}: Opts) => {
-      return <>{mmdSource(viewId)}</>
-    })
-    MmdSource.displayName = 'MmdSource'
     `.append(NL, NL)
   return toString(out)
 }

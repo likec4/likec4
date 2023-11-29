@@ -1,4 +1,4 @@
-import { generateViewsDataTs } from '@likec4/generators'
+import { generateViewsDataJs, generateViewsDataTs } from '@likec4/generators'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { generateD2Sources, generateDotSources, generateMmdSources } from './generators'
@@ -19,20 +19,21 @@ interface Module {
 }
 
 const generatedViews = {
-  id: '~likec4',
-  virtualId: '/@vite-plugin-likec4/likec4-generated.ts',
+  id: 'virtual:likec4/views',
+  virtualId: '/@likec4-plugin/likec4-views.js',
   async load({ likec4, logger }) {
-    logger.info('generating ~likec4')
+    logger.info('generating virtual:likec4/views')
     const views = await likec4.getViews()
-    return generateViewsDataTs(views)
+    return generateViewsDataJs(views)
   }
 } satisfies Module
 
 const dimensionsModule = {
-  id: '~likec4-dimensions',
-  virtualId: '/@vite-plugin-likec4/likec4-dimensions.ts',
+  id: 'virtual:likec4/dimensions',
+  virtualId: '\0likec4/dimensions',
+  // virtualId: '/@vite-plugin-likec4/likec4-dimensions.ts',
   async load({ likec4, logger }) {
-    logger.info('generating ~likec4-dimensions')
+    logger.info('generating virtual:likec4/dimensions')
     const views = await likec4.getViews()
     let code = `export const LikeC4Views = {\n`
     for (const view of views) {
@@ -44,21 +45,35 @@ const dimensionsModule = {
 } satisfies Module
 
 const dotSourcesModule = {
-  id: '~likec4-dot-sources',
-  virtualId: '/@vite-plugin-likec4/likec4-dot-sources.tsx',
+  id: 'virtual:likec4/dot-sources',
+  virtualId: '\0likec4/dot-sources',
+  // virtualId: '/@vite-plugin-likec4/likec4-dot-sources.ts',
   async load({ likec4, logger }) {
-    logger.info('generating ~likec4-dot-sources')
+    logger.info('generating virtual:likec4/dot-sources')
     const dotSources = await likec4.getViewsAsDot()
-    return generateDotSources(dotSources)
+    const sources = {} as Record<
+      string,
+      {
+        dot: string
+        svg: string
+      }
+    >
+    for (const [viewId, dot] of Object.entries(dotSources)) {
+      sources[viewId] = {
+        dot,
+        svg: await likec4.dotlayouter.svg(dot)
+      }
+    }
+    return generateDotSources(sources)
   }
 } satisfies Module
 
 const d2SourcesModule = {
-  id: '~likec4-d2-sources',
-  virtualId: '/@vite-plugin-likec4/likec4-d2-sources.tsx',
+  id: 'virtual:likec4/d2-sources',
+  virtualId: '\0likec4/d2-sources',
   async load({ likec4, logger }) {
     await Promise.resolve()
-    logger.info('generating ~likec4-d2-sources')
+    logger.info('generating virtual:likec4/d2-sources')
     const views = likec4.getModel()?.views
     invariant(views, 'views must be defined')
     return generateD2Sources(values(views))
@@ -66,11 +81,12 @@ const d2SourcesModule = {
 } satisfies Module
 
 const mmdSourcesModule = {
-  id: '~likec4-mmd-sources',
-  virtualId: '/@vite-plugin-likec4/likec4-mmd-sources.tsx',
+  id: 'virtual:likec4/mmd-sources',
+  virtualId: '\0likec4/mmd-sources',
+  // virtualId: '/@vite-plugin-likec4/likec4-mmd-sources.ts',
   async load({ likec4, logger }) {
     await Promise.resolve()
-    logger.info('generating ~likec4-mmd-sources')
+    logger.info('generating virtual:likec4/mmd-sources')
     const views = likec4.getModel()?.views
     invariant(views, 'views must be defined')
     return generateMmdSources(values(views))
@@ -105,7 +121,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
       if (module) {
         return module.virtualId
       }
-      return null
+      return
     },
 
     async load(id) {
