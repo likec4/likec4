@@ -1,7 +1,8 @@
-import { nonNullable } from '@likec4/core'
+import { hasAtLeast, invariant } from '@likec4/core'
 import type { LangiumDocument } from 'langium'
 import { DefaultWorkspaceManager } from 'langium'
 import type { WorkspaceFolder } from 'vscode-languageserver'
+import { URI } from 'vscode-uri'
 
 export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   /**
@@ -18,6 +19,21 @@ export class LikeC4WorkspaceManager extends DefaultWorkspaceManager {
   }
 
   public workspace() {
-    return this.folders && this.folders.length > 0 ? nonNullable(this.folders[0]) : null
+    if (this.folders && hasAtLeast(this.folders, 1)) {
+      return this.folders[0]
+    }
+    return null
+  }
+
+  public get workspaceUri() {
+    const workspace = this.workspace()
+    invariant(workspace, 'Workspace not initialized')
+    return URI.parse(workspace.uri)
+  }
+
+  public get workspaceURL() {
+    const workspace = this.workspace()
+    invariant(workspace, 'Workspace not initialized')
+    return new URL(workspace.uri)
   }
 }

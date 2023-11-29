@@ -24,11 +24,7 @@ import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
-function isRelativeLink(link: string) {
-  return link.startsWith('.') || link.startsWith('/')
-}
-
-function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
+function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]) {
   const c4Specification: ParsedAstSpecification = {
     kinds: {},
     relationships: {}
@@ -38,9 +34,8 @@ function buildModel(docs: ParsedLikeC4LangiumDocument[]) {
       Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
-    const base = new URL(doc.uri.toString())
     return links.map(l =>
-      isRelativeLink(l) ? new URL(l, base).toString() : l
+      services.lsp.DocumentLinkProvider.resolveLink(doc, l)
     ) as c4.NonEmptyArray<string>
   }
 
@@ -220,7 +215,7 @@ export class LikeC4ModelBuilder {
           return null
         }
         logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
-        return buildModel(docs)
+        return buildModel(this.services, docs)
       } catch (e) {
         logError(e)
         return null

@@ -1,10 +1,10 @@
-import { createLanguageServices } from '../module'
 import { EmptyFileSystem } from 'langium'
+import * as assert from 'node:assert'
+import stripIndent from 'strip-indent'
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
-import stripIndent from 'strip-indent'
-import * as assert from 'node:assert'
-import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
+import { createLanguageServices } from '../module'
 
 export function createTestServices(workspace = 'file:///test/workspace') {
   const services = createLanguageServices(EmptyFileSystem).likec4

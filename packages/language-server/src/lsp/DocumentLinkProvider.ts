@@ -1,5 +1,6 @@
 import type { DocumentLinkProvider, LangiumDocument, MaybePromise } from 'langium'
 import { findNodeForProperty, streamAllContents } from 'langium'
+import { hasProtocol, isRelative, withBase } from 'ufo'
 import type { DocumentLink, DocumentLinkParams } from 'vscode-languageserver-protocol'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -16,19 +17,18 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return []
     }
-    const base = new URL(doc.uri.toString())
     return streamAllContents(doc.parseResult.value)
       .filter(ast.isLinkProperty)
       .flatMap((n): DocumentLink | Iterable<DocumentLink> => {
         try {
-          const u = new URL(n.value, base)
-          const valueCst = findNodeForProperty(n.$cstNode, 'value')
-          if (!valueCst) {
+          const range = findNodeForProperty(n.$cstNode, 'value')?.range
+          if (!range) {
             return []
           }
+          const target = this.resolveLink(doc, n.value)
           return {
-            range: valueCst.range,
-            target: u.toString()
+            range,
+            target
           }
         } catch (e) {
           logError(e)
@@ -36,5 +36,17 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
         }
       })
       .toArray()
+  }
+
+  resolveLink(doc: LangiumDocument, link: string): string {
+    if (hasProtocol(link)) {
+      return link
+    }
+    if (isRelative(link)) {
+      const base = new URL(doc.uri.toString(true))
+      return new URL(link, base).toString()
+    }
+    const workspace = this.services.shared.workspace.WorkspaceManager.workspaceURL
+    return withBase(link, workspace.toString())
   }
 }

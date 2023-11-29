@@ -318,8 +318,9 @@ describe('LikeC4ModelBuilder', () => {
       component system2 {
         link ./samefolder.js
         link ./sub/folder.js#L1-2
-        link ../dir/another.js
+        link ../dir/another.js?query=1
         link /workspace-root
+        link /root/another.js#L2
 
         link https://example1.com
 
@@ -356,8 +357,9 @@ describe('LikeC4ModelBuilder', () => {
         links: [
           'file:///test/workspace/src/samefolder.js',
           'file:///test/workspace/src/sub/folder.js#L1-2',
-          'file:///test/workspace/dir/another.js',
-          'file:///workspace-root',
+          'file:///test/workspace/dir/another.js?query=1',
+          'file:///test/workspace/workspace-root',
+          'file:///test/workspace/root/another.js#L2',
           'https://example1.com'
         ]
       }
@@ -443,14 +445,14 @@ describe('LikeC4ModelBuilder', () => {
           'vscode-vfs://host/virtual/src/samefolder.js',
           'vscode-vfs://host/virtual/src/sub/folder.js#L1-2',
           'vscode-vfs://host/virtual/dir/another.js',
-          'vscode-vfs://host/workspace-root'
+          'vscode-vfs://host/virtual/workspace-root'
         ]
       },
       sys2: {
         links: [
           'vscode-vfs://host/virtual/src/subdir/samefolder.c4',
           'vscode-vfs://host/virtual/src/sys2.c4',
-          'vscode-vfs://host/workspace-root'
+          'vscode-vfs://host/virtual/workspace-root'
         ]
       }
     })

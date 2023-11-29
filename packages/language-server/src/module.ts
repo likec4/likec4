@@ -1,5 +1,10 @@
+import { serializeError } from '@likec4/core'
 import {
+  EmptyFileSystem,
   WorkspaceCache,
+  createDefaultModule,
+  createDefaultSharedModule,
+  inject,
   type DefaultSharedModuleContext,
   type LangiumServices,
   type LangiumSharedServices,
@@ -7,8 +12,9 @@ import {
   type PartialLangiumServices,
   type PartialLangiumSharedServices
 } from 'langium'
-import { EmptyFileSystem, createDefaultModule, createDefaultSharedModule, inject } from 'langium'
+import { Rpc } from './Rpc'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
+import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
   LikeC4DocumentLinkProvider,
@@ -18,14 +24,36 @@ import {
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
-import { Rpc } from './Rpc'
+import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
-import { logger } from './logger'
-import { serializeError } from '@likec4/core'
-import { WorkspaceSymbolProvider, NodeKindProvider } from './shared'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
+
+interface LikeC4AddedSharedServices {
+  lsp: {
+    NodeKindProvider: NodeKindProvider
+    WorkspaceSymbolProvider: WorkspaceSymbolProvider
+  }
+  workspace: {
+    WorkspaceManager: LikeC4WorkspaceManager
+  }
+}
+
+export type LikeC4SharedServices = LangiumSharedServices & LikeC4AddedSharedServices
+
+const LikeC4SharedModule: Module<
+  LikeC4SharedServices,
+  PartialLangiumSharedServices & LikeC4AddedSharedServices
+> = {
+  lsp: {
+    NodeKindProvider: services => new NodeKindProvider(services),
+    WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services)
+  },
+  workspace: {
+    WorkspaceManager: services => new LikeC4WorkspaceManager(services)
+  }
+}
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -41,8 +69,10 @@ export interface LikeC4AddedServices {
     ModelLocator: LikeC4ModelLocator
   }
   lsp: {
+    DocumentLinkProvider: LikeC4DocumentLinkProvider
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
   }
+  shared?: LikeC4SharedServices
 }
 
 export type LikeC4Services = LangiumServices & LikeC4AddedServices
@@ -73,20 +103,9 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   }
 }
 
-const LikeC4SharedModule: Module<LangiumSharedServices, PartialLangiumSharedServices> = {
-  lsp: {
-    NodeKindProvider: services => new NodeKindProvider(services),
-    WorkspaceSymbolProvider: services => new WorkspaceSymbolProvider(services)
-  }
-  // workspace: {
-  //   WorkspaceManager: services => new LikeC4WorkspaceManager(services)
-  // }
-}
-
 type LanguageServicesContext = Partial<DefaultSharedModuleContext>
-
 export function createLanguageServices(context?: LanguageServicesContext): {
-  shared: LangiumSharedServices
+  shared: LikeC4SharedServices
   likec4: LikeC4Services
 } {
   const connection = context?.connection
