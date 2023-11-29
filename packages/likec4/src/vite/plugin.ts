@@ -20,7 +20,7 @@ interface Module {
 
 const generatedViews = {
   id: 'virtual:likec4/views',
-  virtualId: '/@likec4-plugin/likec4-views.js',
+  virtualId: '/@vite-plugin-likec4/likec4-views',
   async load({ likec4, logger }) {
     logger.info('generating virtual:likec4/views')
     const views = await likec4.getViews()
@@ -116,12 +116,15 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
       logger = config.logger
     },
 
-    resolveId(id) {
-      const module = modules.find(m => m.id === id)
-      if (module) {
-        return module.virtualId
+    resolveId: {
+      order: 'pre',
+      handler(id) {
+        const module = modules.find(m => m.id === id)
+        if (module) {
+          return module.virtualId
+        }
+        return null
       }
-      return
     },
 
     async load(id) {

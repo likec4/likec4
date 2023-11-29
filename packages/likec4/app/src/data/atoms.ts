@@ -65,7 +65,7 @@ if (import.meta.hot) {
     }
   }
 
-  import.meta.hot.accept('/@likec4-plugin/likec4-views.js', md => {
+  import.meta.hot.accept('/@vite-plugin-likec4/likec4-views', md => {
     const update = md?.LikeC4Views
     if (update) {
       $updateViews?.(update)
