@@ -190,6 +190,7 @@ export async function mkLanguageServices({
 
   return {
     //Resolved workspace directory
+    dotlayouter: dot,
     workspace,
     getModel,
     getViews: () => dotlayouts().then(results => results.map(r => r.diagram)),

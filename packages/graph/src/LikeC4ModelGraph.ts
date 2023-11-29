@@ -234,8 +234,7 @@ export class LikeC4ModelGraph {
     const relParent = commonAncestor(rel.source, rel.target)
     // Process internal relationships
     if (relParent) {
-      this._internalOf(relParent).push(rel.id)
-      ancestorsFqn(relParent).forEach(ancestor => {
+      ;[relParent, ...ancestorsFqn(relParent)].forEach(ancestor => {
         this._internalOf(ancestor).push(rel.id)
       })
     }

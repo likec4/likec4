@@ -9,6 +9,8 @@ import pkg from '../../package.json' assert { type: 'json' }
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 import { isCI } from 'ci-info'
+import autoprefixer from 'autoprefixer'
+import postcssNested from 'postcss-nested'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -122,9 +124,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       reportCompressedSize: isDev || !isCI,
       assetsInlineLimit: 500 * 1000,
       cssMinify: true,
-      minify: true,
       sourcemap: false,
-      cssCodeSplit: false,
       chunkSizeWarningLimit: 5 * 1000 * 1000,
       commonjsOptions: {
         esmExternals: true,
@@ -132,7 +132,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }
     },
     css: {
-      postcss: resolve(root, 'postcss.config.cjs'),
+      postcss: {
+        plugins: [autoprefixer(), postcssNested()]
+      },
       modules: {
         localsConvention: 'camelCaseOnly'
       }

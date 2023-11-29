@@ -1,11 +1,8 @@
 @import '@radix-ui/themes/styles.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .radix-themes {
   --font-weight-bold: 600;
+  --color-text-dimmed: var(--gray-a8);
 }
 
 *,
@@ -26,10 +23,16 @@ html, body {
 }
 
 #like4-root {
-  margin: 0;
+  /* margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
+  overscroll-behavior: none;
+  overflow: hidden; */
+  /* & > div {
+    position: fixed;
+    inset: 0;
+  } */
 }
 
 .transparent-bg {

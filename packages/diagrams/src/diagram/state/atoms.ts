@@ -1,4 +1,4 @@
-import type { SetStateAction } from 'jotai'
+import type { SetStateAction, Setter } from 'jotai'
 import { atom } from 'jotai'
 import { equals } from 'rambdax'
 import type { DiagramEdge, DiagramNode } from '../types'
@@ -9,48 +9,36 @@ type HoveredEdge = DiagramEdge | null
 const currentHoveredNodeAtom = atom<HoveredNode>(null)
 const nodeTimeoutAtom = atom<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+const scheduleHoveredNode = (set: Setter, node: HoveredNode = null, timeout = 175) => {
+  if (timeout <= 0) {
+    set(currentHoveredNodeAtom, node)
+    return
+  }
+  set(
+    nodeTimeoutAtom,
+    setTimeout(() => {
+      set(currentHoveredNodeAtom, node)
+    }, timeout)
+  )
+}
+
 export const hoveredNodeAtom = atom(
   get => get(currentHoveredNodeAtom),
   (get, set, update: SetStateAction<HoveredNode>) => {
     clearTimeout(get(nodeTimeoutAtom))
-    clearTimeout(get(edgeTimeoutAtom))
     const _prev = get(currentHoveredNodeAtom)
     const _next = typeof update === 'function' ? update(_prev) : update
     if (equals(_prev, _next)) {
       return false
     }
-    if (_next != null && _prev == null) {
-      set(
-        nodeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredNodeAtom, _next)
-          set(currentHoveredEdgeAtom, null)
-        }, 200)
-      )
-      return true
+    // update faster if there is one already hovered
+    const timeout = !!_next && !!_prev ? 120 : 175
+    if (_next != null) {
+      // clean hovered edge
+      clearTimeout(get(edgeTimeoutAtom))
+      scheduleHoveredEdge(set, null, timeout)
     }
-    // Update node if it's already hovered
-    if (_next != null && _prev != null) {
-      set(
-        nodeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredNodeAtom, _next)
-          set(currentHoveredEdgeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    if (_next == null && _prev != null) {
-      // set previous timeout atom in case it needs to get cleared
-      set(
-        nodeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredNodeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    set(currentHoveredNodeAtom, _next)
+    scheduleHoveredNode(set, _next, timeout)
     return true
   }
 )
@@ -60,49 +48,37 @@ export const hoveredNodeIdAtom = selectAtom(hoveredNodeAtom, node => node?.id ??
 const currentHoveredEdgeAtom = atom<HoveredEdge>(null)
 const edgeTimeoutAtom = atom<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+const scheduleHoveredEdge = (set: Setter, edge: HoveredEdge = null, timeout = 175) => {
+  if (timeout <= 0) {
+    set(currentHoveredEdgeAtom, edge)
+    return
+  }
+  set(
+    edgeTimeoutAtom,
+    setTimeout(() => {
+      set(currentHoveredEdgeAtom, edge)
+    }, timeout)
+  )
+}
+
 export const hoveredEdgeAtom = atom(
   get => get(currentHoveredEdgeAtom),
   (get, set, update: SetStateAction<HoveredEdge>) => {
-    clearTimeout(get(nodeTimeoutAtom))
     clearTimeout(get(edgeTimeoutAtom))
     const _prev = get(currentHoveredEdgeAtom)
     const _next = typeof update === 'function' ? update(_prev) : update
     if (equals(_prev, _next)) {
       return false
     }
-    if (_next != null && _prev == null) {
-      // set previous timeout atom in case it needs to get cleared
-      set(
-        edgeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredEdgeAtom, _next)
-          set(currentHoveredNodeAtom, null)
-        }, 400)
-      )
-      return true
+    let timeout = 175
+    if (_next != null) {
+      // update faster if there is one already hovered
+      timeout = _prev != null ? 120 : 300
+      // clean hovered node
+      clearTimeout(get(nodeTimeoutAtom))
+      scheduleHoveredNode(set, null, timeout)
     }
-    // Update edge if it's already hovered
-    if (_next != null && _prev != null) {
-      set(
-        edgeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredEdgeAtom, _next)
-          set(currentHoveredNodeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    if (_next == null && _prev != null) {
-      // set previous timeout atom in case it needs to get cleared
-      set(
-        edgeTimeoutAtom,
-        setTimeout(() => {
-          set(currentHoveredEdgeAtom, null)
-        }, 150)
-      )
-      return true
-    }
-    set(currentHoveredEdgeAtom, null)
+    scheduleHoveredEdge(set, _next, timeout)
     return true
   }
 )

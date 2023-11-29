@@ -8,7 +8,7 @@ model {
         Search for anomalies.
       '
 
-      -[pull]-> amazon.sqs.hits 'pull and process hits data'
+      -> amazon.sqs.hits 'pull and process hits data'
       -> cloud.backend.graphql 'read tenants'
     }
 
@@ -20,6 +20,10 @@ views {
 
   view cloud_data of cloud.data {
     title "[context] Data Services"
+    description '
+        Process page hits.
+        Search for anomalies.
+      '
     include
         *,
         cloud,

@@ -1,7 +1,7 @@
 import { normalizeError } from '@likec4/core'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
-import type { LogErrorOptions, LogOptions, Logger } from 'vite'
+import type { LogErrorOptions, LogOptions } from 'vite'
 import { createLogger } from 'vite'
 import { isCI } from 'ci-info'
 
@@ -48,6 +48,7 @@ export function createLikeC4Logger(prefix: string) {
     }
   }
 }
+export type Logger = ReturnType<typeof createLikeC4Logger>
 
 const NS_PER_MS = 1e6
 

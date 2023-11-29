@@ -1,21 +1,23 @@
-import { Provider } from 'jotai'
-import { Fragment } from 'react'
-import { Sidebar } from './components'
-import { ExportPage, IndexPage, EmbedPage, ViewPage } from './pages'
-import { useRoute } from './router'
-import { Theme } from '@radix-ui/themes'
 import { nonexhaustive } from '@likec4/core'
+import { Box, Theme } from '@radix-ui/themes'
+import { Provider } from 'jotai'
+import { Fragment, useDeferredValue } from 'react'
 import { isNil } from 'remeda'
+import { Sidebar } from './components'
+import { EmbedPage, ExportPage, IndexPage, ViewPage } from './pages'
+import { useRoute } from './router'
 
 const Routes = () => {
-  const r = useRoute()
+  const r = useDeferredValue(useRoute())
 
   const theme = r.params?.theme
   let page: JSX.Element | null = null
 
   switch (r.route) {
     case 'view': {
-      page = <ViewPage key='view' viewId={r.params.viewId} showUI={r.showUI} />
+      page = (
+        <ViewPage key='view' viewId={r.params.viewId} viewMode={r.params.mode} showUI={r.showUI} />
+      )
       break
     }
     case 'export': {
@@ -42,13 +44,14 @@ const Routes = () => {
   }
 
   return (
-    <Theme hasBackground={!!theme} accentColor='indigo' radius='small' appearance={theme}>
+    <Theme
+      hasBackground={!!theme}
+      accentColor='indigo'
+      radius='small'
+      appearance={theme ?? 'inherit'}
+    >
       {page}
-      {r.showUI && (
-        <Fragment key='ui'>
-          <Sidebar />
-        </Fragment>
-      )}
+      <Fragment key='ui'>{r.showUI && <Sidebar />}</Fragment>
     </Theme>
   )
 }

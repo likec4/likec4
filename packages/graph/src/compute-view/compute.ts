@@ -13,7 +13,6 @@ import {
   commonAncestor,
   compareRelations,
   invariant,
-  isAncestor,
   isStrictElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
@@ -21,7 +20,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, uniq, isTruthy } from 'remeda'
+import { hasAtLeast, isTruthy, uniq } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -124,7 +123,10 @@ export class ComputeCtx {
       applyViewRuleStyles(
         rules,
         // Build graph and apply postorder sort
-        sortNodes(initialSort, edges)
+        sortNodes({
+          nodes: initialSort,
+          edges
+        })
       )
     )
 
@@ -241,7 +243,10 @@ export class ComputeCtx {
           this.ctxEdges.splice(this.ctxEdges.indexOf(edge), 1)
           continue
         }
-        edge.relations = edge.relations.filter(r => r !== relation)
+        this.ctxEdges[this.ctxEdges.indexOf(edge)] = {
+          ...edge,
+          relations: edge.relations.filter(r => r !== relation)
+        }
       }
     }
   }
@@ -262,37 +267,26 @@ export class ComputeCtx {
       return false
     }
 
-    // Returns predicate, that checks if edge is between descendants of given edge
-    const isNestedEdgeOf = ({ source, target, relations }: ComputeCtx.Edge) => {
-      const relationsSet = new Set(relations)
-      return (edge: ComputeCtx.Edge) => {
-        invariant(
-          source.id !== edge.source.id || target.id !== edge.target.id,
-          'Edge must not be the same'
-        )
-        const isSameSource = source.id === edge.source.id || isAncestor(source.id, edge.source.id)
-        const isSameTarget = target.id === edge.target.id || isAncestor(target.id, edge.target.id)
-        return (
-          isSameSource &&
-          isSameTarget &&
-          // include same relation, i.e. top edge is implicit
-          edge.relations.some(rel => relationsSet.has(rel))
-        )
-      }
-    }
+    const processedRelations = new Set<Relation>()
 
     // Sort edges from bottom to top (i.e. implicit edges are at the end)
     const edges = [...this.ctxEdges].sort(compareEdges).reverse()
     this.ctxEdges = edges.reduce((acc, e) => {
       if (acc.length === 0 || isDirectEdge(e)) {
+        e.relations.forEach(rel => processedRelations.add(rel))
         acc.push(e)
         return acc
       }
-      // ignore this edge, if there is already an edge between descendants
-      if (acc.some(isNestedEdgeOf(e))) {
-        return acc
+      const relations = e.relations.filter(rel => !processedRelations.has(rel))
+      // this edge represents some relations
+      // that are not processed by previous edges
+      if (relations.length > 0) {
+        relations.forEach(rel => processedRelations.add(rel))
+        acc.push({
+          ...e,
+          relations
+        })
       }
-      acc.push(e)
       return acc
     }, [] as ComputeCtx.Edge[])
   }

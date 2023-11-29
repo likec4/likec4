@@ -1,6 +1,15 @@
-import { useAtomValue, useSetAtom, useStore } from 'jotai'
+import { ExtractAtomValue, useAtomValue, useSetAtom, useStore } from 'jotai'
 import { useRef } from 'react'
-import { currentFileAtom, currentViewAtom, editorRevealRequestAtom, filesAtom, loadableDiagramAtom, updateCurrentFileAtom, viewsAtom } from './atoms'
+import {
+  currentFileAtom,
+  currentViewAtom,
+  editorRevealRequestAtom,
+  filesAtom,
+  loadableDiagramAtom,
+  updateCurrentFileAtom,
+  viewsAtom
+} from './atoms'
+import type { DotLayoutResult } from '@likec4/layouts'
 
 export const useCurrentFile = () => useAtomValue(currentFileAtom)
 
@@ -19,7 +28,7 @@ export const useUpdateViews = () => useSetAtom(viewsAtom)
 
 export const useCurrentView = () => useAtomValue(currentViewAtom)
 
-export const useCurrentDiagram = () => useAtomValue(loadableDiagramAtom)
-
+export const useCurrentDiagramState = () => useAtomValue(loadableDiagramAtom)
+export type DiagramState = DotLayoutResult
 
 export const useRevealInEditor = () => useSetAtom(editorRevealRequestAtom)

@@ -16,12 +16,14 @@ export function useDiagramApi() {
         get container() {
           return ref.current?.container ?? null
         },
-        resetStageZoom: (_immediate?: boolean) => {
-          nonNullable(ref.current, 'not mounted, use ref').resetStageZoom(_immediate)
-        },
-        centerOnNode: (node: DiagramNode) =>
-          nonNullable(ref.current, 'not mounted, use ref').centerOnNode(node),
-        centerAndFit: () => nonNullable(ref.current, 'not mounted, use ref').centerAndFit()
+        resetStageZoom: (_immediate?: boolean) =>
+          nonNullable(ref.current, 'not mounted, use ref').resetStageZoom(_immediate),
+        centerOnNode: (node: DiagramNode, opts?: DiagramApi.CenterMethodOptions) =>
+          nonNullable(ref.current, 'not mounted, use ref').centerOnNode(node, opts),
+        centerOnRect: (rect, opts) =>
+          nonNullable(ref.current, 'not mounted, use ref').centerOnRect(rect, opts),
+        centerAndFit: (opts?: DiagramApi.CenterMethodOptions) =>
+          nonNullable(ref.current, 'not mounted, use ref').centerAndFit(opts)
       }) satisfies DiagramApi
   )
   return [ref, api] as const

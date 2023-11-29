@@ -118,8 +118,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor blue {
       title "BLUE"
@@ -196,8 +194,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor secondary {
       title "SECONDARY"
@@ -274,8 +270,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor sky {
       title "SKY"
@@ -352,8 +346,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor muted {
       title "MUTED"
@@ -430,8 +422,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor slate {
       title "SLATE"
@@ -508,8 +498,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor gray {
       title "GRAY"
@@ -586,8 +574,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor red {
       title "RED"
@@ -664,8 +650,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor green {
       title "GREEN"
@@ -742,8 +726,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor amber {
       title "AMBER"
@@ -820,8 +802,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
     themecolor indigo {
       title "INDIGO"
@@ -898,8 +878,6 @@ model {
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      this -> compound1
     }
   }
 
@@ -916,7 +894,6 @@ model {
       }
     }
   }
-  colors -> compound1
 
   // Col1
   primary -> secondary

@@ -104,8 +104,7 @@ function EdgeLabelBg({
       fill={springs.labelBgColor}
       cornerRadius={2}
       globalCompositeOperation='lighten'
-      // globalCompositeOperation='darken'
-      hitStrokeWidth={5}
+      hitStrokeWidth={20}
     />
   )
 }

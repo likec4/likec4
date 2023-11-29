@@ -1,10 +1,10 @@
 import pkg from '@dagrejs/graphlib'
 import {
   invariant,
-  isSameHierarchy,
   nonNullable,
   type ComputedEdge,
-  type ComputedNode
+  type ComputedNode,
+  type EdgeId
 } from '@likec4/core'
 import { difference } from 'remeda'
 
@@ -21,35 +21,53 @@ function sortChildren(nodes: readonly ComputedNode[]) {
   })
 }
 
-export function sortNodes(
-  nodes: readonly ComputedNode[],
-  edges: readonly ComputedEdge[]
-): ComputedNode[] {
+export function sortNodes({
+  nodes,
+  edges
+}: {
+  nodes: ComputedNode[]
+  edges: ComputedEdge[]
+}): ComputedNode[] {
   if (edges.length === 0) {
-    return nodes as ComputedNode[]
+    return nodes
   }
 
   const g = new Graph({
     compound: false,
     directed: true,
-    multigraph: false
+    multigraph: true
   })
 
   for (const e of edges) {
-    g.setEdge(e.source, e.target)
-    const source = nonNullable(
-      nodes.find(n => n.id === e.source),
-      'Edge source not found'
-    )
-    if (source.parent && !isSameHierarchy(source.parent, e.target)) {
-      g.setEdge(source.parent, e.target)
-    }
+    g.setEdge(e.source, e.target, undefined, e.id)
   }
+
+  const getEdge = (id: EdgeId) =>
+    nonNullable(
+      edges.find(edge => edge.id === id),
+      'Edge not found'
+    )
 
   for (const n of nodes) {
     g.setNode(n.id)
+    if (n.children.length > 0) {
+      n.inEdges.forEach(e => {
+        const edge = getEdge(e)
+        if (edge.target !== n.id) {
+          const id = `${edge.source}:${n.id}`
+          g.setEdge(edge.source, n.id, undefined, id)
+        }
+      })
+      n.outEdges.forEach(e => {
+        const edge = getEdge(e)
+        if (edge.source !== n.id) {
+          const id = `${n.id}:${edge.target}`
+          g.setEdge(n.id, edge.target, undefined, id)
+        }
+      })
+    }
     if (n.parent) {
-      g.setEdge(n.id, n.parent)
+      g.setEdge(n.id, n.parent, undefined, `${n.id}:${n.parent}`)
     }
   }
 

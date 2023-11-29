@@ -1,6 +1,9 @@
 .trigger {
-
   cursor: pointer;
+
+  &[data-opened='true'] {
+    visibility: hidden;
+  }
 
   &::before {
     transition-property: all;

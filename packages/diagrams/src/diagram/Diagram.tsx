@@ -1,9 +1,9 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
 import { nonNullable, defaultTheme as theme } from '@likec4/core'
-import { useHookableRef, useUpdateEffect } from '@react-hookz/web/esm'
+import { useHookableRef, useMountEffect, useUpdateEffect } from '@react-hookz/web/esm'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
-import { clamp } from 'rambdax'
+import { clamp, isNil } from 'rambdax'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, Layer } from '../konva'
 import { Edges } from './Edges'
@@ -11,16 +11,11 @@ import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
 
 import { createUseGesture, dragAction, pinchAction } from '@use-gesture/react'
 import { Nodes } from './Nodes'
-import { DiagramGesture, useResetHoveredStates } from './state'
+import { DiagramGesture, DiagramStateProvider, useResetHoveredStates } from './state'
+import type { IRect } from './types'
+import { isNumber } from './utils'
 
 const useGesture = createUseGesture([dragAction, pinchAction])
-
-interface IRect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
 
 const useSyncedRef = <T extends object>(value: T) => {
   const ref = useRef<Readonly<T>>(value)
@@ -47,7 +42,9 @@ function diagramNodeId(konvaNode: Konva.Node): NodeId | null {
   return null
 }
 
-export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
+type CenteringOpts = DiagramApi.CenterMethodOptions
+
+const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
   (
     {
       diagram,
@@ -80,15 +77,22 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
       return value
     })
-    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = Array.isArray(padding)
-      ? padding
-      : ([padding, padding, padding, padding] as const)
+    const [paddingTop, paddingRight, paddingBottom, paddingLeft] = isNumber(padding)
+      ? [padding, padding, padding, padding]
+      : padding
 
     const width = _width ?? diagram.width + paddingLeft + paddingRight
     const height = _height ?? diagram.height + paddingTop + paddingBottom
 
-    const toCenterOnRect = (centerTo: IRect) => {
+    /**
+     * @param centerTo rectangle to center on
+     * @param zoomIn if true, zoom can be greater than current
+     */
+    const toCenterOnRect = (centerTo: IRect, opts?: CenteringOpts) => {
+      const keepZoom = opts?.keepZoom ?? false
       const container = containerRef.current
+      const _maxZoom =
+        keepZoom === true && !isNil(stageRef.current) ? stageRef.current.scaleX() : maxZoom
 
       const // Get the space we can see in the web page = size of div containing stage
         // or stage size, whichever is the smaller
@@ -100,7 +104,7 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         // Get the ratios of target shape v's view space widths and heights
         // decide on best scale to fit longest side of shape into view
         viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
-        scale = clamp(minZoom, maxZoom, viewScale),
+        scale = clamp(minZoom, _maxZoom, viewScale),
         // calculate the final adjustments needed to make
         // the shape centered in the view
         centeringAjustment = {
@@ -136,19 +140,22 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       []
     )
 
-    const centerOnRect = (centerTo: IRect) => {
+    const centerOnRect = (centerTo: IRect, opts?: CenteringOpts) => {
       stageSpringApi.start({
-        to: toCenterOnRect(centerTo),
-        immediate
+        to: toCenterOnRect(centerTo, {
+          keepZoom: opts?.keepZoom ?? true
+        }),
+        delay: opts?.delay ?? 0,
+        immediate: immediate || (opts?.immediate ?? false)
       })
       return
     }
 
-    const centerAndFit = (delay = 0) => {
+    const centerAndFit = (opts?: CenteringOpts) => {
       stageSpringApi.start({
         to: toFitDiagram(),
-        delay,
-        immediate
+        delay: opts?.delay ?? 0,
+        immediate: immediate || (opts?.immediate ?? false)
       })
       return
     }
@@ -190,14 +197,19 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           resetStageZoom: (_immediate?: boolean) => {
             refs.current.resetStageZoom(_immediate)
           },
-          centerOnNode: (node: DiagramNode) =>
-            refs.current.centerOnRect({
-              x: node.position[0],
-              y: node.position[1],
-              width: node.size.width,
-              height: node.size.height
-            }),
-          centerAndFit: () => refs.current.centerAndFit()
+          centerOnNode: (node: DiagramNode, opts?: CenteringOpts) =>
+            refs.current.centerOnRect(
+              {
+                x: node.position[0],
+                y: node.position[1],
+                width: node.size.width,
+                height: node.size.height
+              },
+              opts
+            ),
+          centerOnRect: (rect: IRect, opts?: CenteringOpts) =>
+            refs.current.centerOnRect(rect, opts),
+          centerAndFit: (opts?: CenteringOpts) => refs.current.centerAndFit(opts)
         }) satisfies DiagramApi,
       [refs, stageRef]
     )
@@ -206,14 +218,15 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
 
     useUpdateEffect(() => {
       resetHoveredStates()
+      refs.current.centerAndFit({
+        delay: 200
+      })
     }, [id])
 
     useUpdateEffect(() => {
-      refs.current.centerAndFit(200)
-    }, [id])
-
-    useUpdateEffect(() => {
-      refs.current.centerAndFit(50)
+      refs.current.centerAndFit({
+        keepZoom: true
+      })
     }, [height, width])
 
     // Recommended by @use-gesture/react
@@ -325,8 +338,13 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       diagram
     }
 
+    // center of the stage
+    const layerCenterX = diagram.width / 2
+    const layerCenterY = diagram.height / 2
+
     return (
       <AnimatedStage
+        _useStrictMode
         ref={stageRef}
         width={width}
         height={height}
@@ -381,7 +399,14 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
         })}
         {...props}
       >
-        <Layer>
+        <Layer
+          x={layerCenterX}
+          offsetX={layerCenterX}
+          y={layerCenterY}
+          offsetY={layerCenterY}
+          scaleX={1}
+          scaleY={1}
+        >
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
@@ -390,4 +415,11 @@ export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     )
   }
 )
+DiagramKonva.displayName = 'DiagramKonva'
+
+export const Diagram = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>((props, ref) => (
+  <DiagramStateProvider>
+    <DiagramKonva {...props} ref={ref} />
+  </DiagramStateProvider>
+))
 Diagram.displayName = 'Diagram'

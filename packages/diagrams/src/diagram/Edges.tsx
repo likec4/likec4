@@ -128,23 +128,26 @@ const EdgeShape = memo<EdgeShapeProps>(({ animate, edge, ctrl, theme, isHovered,
   return (
     <AnimatedGroup
       opacity={ctrl.springs.opacity}
-      onPointerClick={e => {
-        if (!onEdgeClick || DiagramGesture.isDragging || e.evt.button !== 0) {
-          return
+      {...(onEdgeClick && {
+        onPointerClick: e => {
+          if (DiagramGesture.isDragging || e.evt.button !== 0) {
+            return
+          }
+          e.cancelBubble = true
+          onEdgeClick(edge, e)
         }
-        e.cancelBubble = true
-        onEdgeClick(edge, e)
-      }}
-      onPointerEnter={e => {
-        if (animate) {
+      })}
+      {...(animate && {
+        onPointerEnter: e => {
           setHoveredEdge(edge)
           mousePointer(e)
+          e.cancelBubble = true
+        },
+        onPointerLeave: e => {
+          setHoveredEdge(null)
+          mouseDefault(e)
         }
-      }}
-      onPointerLeave={e => {
-        setHoveredEdge(null)
-        mouseDefault(e)
-      }}
+      })}
     >
       <Edge
         animate={animate}

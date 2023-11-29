@@ -128,10 +128,11 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).to.have.same.members([
+      'support:cloud.frontend.adminPanel',
       'cloud.frontend.adminPanel:cloud.backend',
-      'cloud.frontend.dashboard:cloud.backend',
       'customer:cloud.frontend.dashboard',
-      'support:cloud.frontend.adminPanel'
+      'customer:cloud',
+      'cloud.frontend.dashboard:cloud.backend'
     ])
   })
 
@@ -157,6 +158,7 @@ describe('compute-element-view', () => {
       'support:cloud.frontend.adminPanel',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
+      'customer:cloud',
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.backend.graphql:cloud.backend.storage'
     ])
@@ -180,9 +182,10 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).to.have.same.members([
-      'customer:cloud.frontend.dashboard',
       'support:cloud.frontend.adminPanel',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'customer:cloud.frontend.dashboard',
+      'customer:cloud',
       'cloud.frontend.dashboard:cloud.backend.graphql'
     ])
   })
@@ -259,6 +262,7 @@ describe('compute-element-view', () => {
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'support:cloud.frontend.adminPanel',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend:cloud.backend',
       'cloud.backend:amazon'
     ])
   })
@@ -392,8 +396,10 @@ describe('compute-element-view', () => {
     ])
 
     expect(edgeIds).to.have.same.members([
-      'cloud.backend:amazon',
-      'cloud.frontend.dashboard:cloud.backend.graphql'
+      'cloud.frontend.dashboard:cloud.backend.graphql',
+      'cloud.frontend:cloud.backend.graphql',
+      'cloud.frontend:cloud.backend',
+      'cloud.backend:amazon'
     ])
   })
 })

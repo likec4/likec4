@@ -7,6 +7,7 @@
     "skipLibCheck": true,
     "outDir": "../dist/__app__",
     "allowJs": true,
+    "exactOptionalPropertyTypes": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "esModuleInterop": true,

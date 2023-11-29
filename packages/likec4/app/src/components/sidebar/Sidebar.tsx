@@ -20,12 +20,12 @@ export const Sidebar = () => {
       <Flex
         position='fixed'
         left='0'
+        top={'0'}
+        bottom={'0'}
         p={'2'}
-        className={cn(
-          styles.trigger,
-          'inset-y-0 cursor-pointer items-start',
-          isOpened && 'display-none'
-        )}
+        justify={'start'}
+        data-opened={isOpened}
+        className={cn(styles.trigger)}
         onClick={toggle}
       >
         <IconButton size='2' color='gray' variant='soft'>
