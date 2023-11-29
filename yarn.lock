@@ -9354,7 +9354,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:^2.1.3":
+"langium@npm:^2.1.3, langium@npm:~2.1.0":
   version: 2.1.3
   resolution: "langium@npm:2.1.3"
   dependencies:
@@ -9364,19 +9364,6 @@ __metadata:
     vscode-languageserver-textdocument: "npm:~1.0.11"
     vscode-uri: "npm:~3.0.8"
   checksum: 5ca5e62df89f6906d0bf26aeffab74cc3b4b2b51059b39a855e1ceea0f011e712f98c443f5f855ee7b3cf7cc44279daead1903e174897fa69a68618533ccaf97
-  languageName: node
-  linkType: hard
-
-"langium@npm:~2.1.0":
-  version: 2.1.2
-  resolution: "langium@npm:2.1.2"
-  dependencies:
-    chevrotain: "npm:~11.0.3"
-    chevrotain-allstar: "npm:~0.3.0"
-    vscode-languageserver: "npm:~9.0.1"
-    vscode-languageserver-textdocument: "npm:~1.0.11"
-    vscode-uri: "npm:~3.0.8"
-  checksum: 0e730eab667b8fdad969c3a787736a958b2edf0c8e8b368902d21a4d569618dc470ff19f967d3d2590b81f95f11a3b3f2f68c14cea80935c6741d9f036803691
   languageName: node
   linkType: hard
 
@@ -14932,14 +14919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ufo@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "ufo@npm:1.1.2"
-  checksum: 82468cde70cf692242660eeaeac71b2ebd6573c6a5405e17e2d4ccd905f9070d465cfce8e6c4f873178aec6ce00d69e5a8ed8bc2ff58d085511ae3938014a80d
-  languageName: node
-  linkType: hard
-
-"ufo@npm:^1.3.2":
+"ufo@npm:^1.1.2, ufo@npm:^1.3.2":
   version: 1.3.2
   resolution: "ufo@npm:1.3.2"
   checksum: 7133290d495e2b3f9416de69982019e81cff40d28cfd3a07accff1122ee52f23d9165e495a140a1b34b183244e88fc4001cb649591385ecbad1d3d0d2264fa6e
