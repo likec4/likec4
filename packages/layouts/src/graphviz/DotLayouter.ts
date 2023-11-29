@@ -27,4 +27,24 @@ export class DotLayouter {
       }
     })
   }
+
+  svg(dot: string): Promise<string> {
+    return limit(async () => {
+      let graphviz = await Graphviz.load()
+      try {
+        return graphviz.layout(dot, 'svg', 'dot', {
+          yInvert: true
+        })
+      } catch (err) {
+        Graphviz.unload()
+        await delay(20)
+        graphviz = await Graphviz.load()
+        return graphviz.layout(dot, 'svg', 'dot', {
+          yInvert: true
+        })
+      } finally {
+        Graphviz.unload()
+      }
+    })
+  }
 }

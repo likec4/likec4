@@ -1,10 +1,10 @@
 import pkg from '@dagrejs/graphlib'
 import {
   invariant,
-  isSameHierarchy,
   nonNullable,
   type ComputedEdge,
-  type ComputedNode
+  type ComputedNode,
+  type EdgeId
 } from '@likec4/core'
 import { difference } from 'remeda'
 
@@ -42,32 +42,32 @@ export function sortNodes({
     g.setEdge(e.source, e.target, undefined, e.id)
   }
 
+  const getEdge = (id: EdgeId) =>
+    nonNullable(
+      edges.find(edge => edge.id === id),
+      'Edge not found'
+    )
+
   for (const n of nodes) {
     g.setNode(n.id)
-    if (n.parent) {
-      g.setEdge(n.id, n.parent, undefined, `${n.id}:${n.parent}`)
-    }
     if (n.children.length > 0) {
       n.inEdges.forEach(e => {
-        const edge = nonNullable(
-          edges.find(edge => edge.id === e),
-          'Edge not found'
-        )
+        const edge = getEdge(e)
         if (edge.target !== n.id) {
           const id = `${edge.source}:${n.id}`
           g.setEdge(edge.source, n.id, undefined, id)
         }
       })
       n.outEdges.forEach(e => {
-        const edge = nonNullable(
-          edges.find(edge => edge.id === e),
-          'Edge not found'
-        )
+        const edge = getEdge(e)
         if (edge.source !== n.id) {
           const id = `${n.id}:${edge.target}`
           g.setEdge(n.id, edge.target, undefined, id)
         }
       })
+    }
+    if (n.parent) {
+      g.setEdge(n.id, n.parent, undefined, `${n.id}:${n.parent}`)
     }
   }
 

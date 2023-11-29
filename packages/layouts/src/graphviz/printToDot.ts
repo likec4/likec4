@@ -23,13 +23,19 @@ import {
   isSameHierarchy
 } from '@likec4/core'
 import {
+  filter,
   first,
   flatMap,
+  groupBy,
+  identity,
   isNil,
   isNumber,
   isTruthy,
+  keys,
   last,
   length,
+  map,
+  omitBy,
   pipe,
   reverse,
   sort,
@@ -95,29 +101,35 @@ export function toGraphvisModel({
 }: ComputedView): RootGraphModel {
   const Theme = defaultTheme
   const G = digraph({
+    [_.bgcolor]: 'transparent',
     [_.layout]: 'dot',
     [_.compound]: true,
     [_.TBbalance]: 'min',
     [_.rankdir]: autoLayout,
-    [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(110),
-    [_.ranksep]: pxToInch(110),
-    // [_.ranksep]: `${pxToInch(110)} equally`,
+    [_.splines]: 'spline',
+    // [_.outputorder]: 'nodesfirst',
+    [_.nodesep]: pxToInch(100),
+    [_.ranksep]: pxToInch(90),
+    [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
+    // [_.ratio]: 'fill',
     // [_.concentrate]: false,
-    // [_.mclimit]: 5,
-    // [_.nslimit]: 2,
-    // [_.nslimit1]: 2,
+    // [_.mclimit]: 3,
+    // [_.nslimit]: 10,
+    // [_.nslimit1]: 10,
+    // [_.searchsize]: Math.max(50, viewNodes.length + viewEdges.length),
+    // [_.nslimit1]: 10,
     // [_.newrank]: true,
     [_.pack]: pxToPoints(120),
     [_.packmode]: 'array_3'
   })
 
   G.attributes.graph.apply({
-    [_.margin]: pxToPoints(30),
+    [_.margin]: pxToPoints(40),
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
-    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't'
+    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't',
+    [_.style]: 'filled,rounded'
   })
 
   G.attributes.node.apply({
@@ -132,8 +144,8 @@ export function toGraphvisModel({
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
-    [_.nojustify]: true,
-    [_.margin]: pxToInch(26)
+    [_.nojustify]: true
+    // [_.margin]: pxToInch(26)
     // [_.ordering]: 'out'
   })
 
@@ -200,7 +212,8 @@ export function toGraphvisModel({
     invariant(parentGraph, 'parentGraph should be defined')
     const node = parentGraph.node(id, {
       [_.likec4_id]: elementNode.id,
-      [_.likec4_level]: elementNode.level
+      [_.likec4_level]: elementNode.level,
+      [_.margin]: pxToInch(26)
     })
     if (elementNode.color !== DefaultThemeColor) {
       node.attributes.apply({
@@ -404,7 +417,8 @@ export function toGraphvisModel({
       e.attributes.apply({
         [_.dir]: 'none',
         [_.weight]: 0,
-        [_.constraint]: false
+        [_.minlen]: 0
+        // [_.constraint]: false
       })
       return
     }
@@ -436,43 +450,48 @@ export function toGraphvisModel({
     }
     const isTheOnlyEdge = otherEdges.length === 0
 
-    let weight =
-      [...sourceNode.outEdges, ...targetNode.inEdges].filter(_edgeId => {
-        if (_edgeId === edge.id) {
-          return false
-        }
-        const _edge = getEdge(_edgeId)
-        if (!isEdgeVisible(_edge)) {
-          return false
-        }
-        if (_edge.parent === parentId) {
-          return true
-        }
-        if (parentId === null || _edge.parent === null) {
-          return false
-        }
-        return isSameHierarchy(parentId, _edge.parent)
-      }).length + 1
+    function filterNeighboursEdges(_edgeId: EdgeId) {
+      if (_edgeId === edge.id) {
+        return false
+      }
+      const _edge = getEdge(_edgeId)
+      if (!isEdgeVisible(_edge)) {
+        return false
+      }
+      return true
+      // if (_edge.parent === parentId) {
+      //   return true
+      // }
+      // if (parentId === null || _edge.parent === null) {
+      //   return false
+      // }
+      // return isSameHierarchy(parentId, _edge.parent)
+    }
+
+    let weight = [...sourceNode.outEdges, ...targetNode.inEdges].filter(
+      filterNeighboursEdges
+    ).length
+    const weightMinus = [...sourceNode.inEdges, ...targetNode.outEdges].filter(
+      filterNeighboursEdges
+    ).length
+
+    weight = Math.max(weight - weightMinus, 1)
 
     if (isTheOnlyEdge) {
       if (parentId === null || leafElements(parentId).length <= 3) {
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
       }
-      weight += 2
+      weight += 1
     }
 
     if (parentId !== null) {
       const parentNode = viewNodes.find(n => n.id === parentId)
       invariant(parentNode, 'parentNode should be defined')
       weight += parentNode.level + 1
-
-      // if (sourceNode.parent === targetNode.parent) {
-      //   weight += 1
-      // }
     }
 
-    if (weight > 1) {
+    if (weight > 0) {
       e.attributes.set(_.weight, weight)
     }
   }
@@ -499,25 +518,32 @@ export function toGraphvisModel({
     addEdge(edge, parent)
   }
 
-  const groupIds = pipe(
-    viewEdges,
-    flatMap(e => (e.parent && isEdgeVisible(e) ? [e.parent] : [])),
-    uniq(),
-    sort<Fqn>(compareFqnHierarchically),
-    reverse()
-  )
+  // const groupIds = pipe(
+  //   viewEdges,
+  //   filter(e => !!e.parent && isEdgeVisible(e)),
+  //   groupBy(e => e.parent!),
+  //   omitBy((v,_k) => v.length <= 1),
+  //   keys,
+  //   map(k => k as Fqn),
+  //   sort<Fqn>(compareFqnHierarchically),
+  //   reverse(),
+  //   // flatMap(e => (e.parent && isEdgeVisible(e) ? [e.parent] : [])),
+  //   // uniq(),
+  //   // sort<Fqn>(compareFqnHierarchically),
+  //   // reverse()
+  // )
 
-  const processed = new Set<Fqn>()
-  for (const groupId of groupIds) {
-    const id = nameFromFqn(groupId).toLowerCase()
-    for (const element of leafElements(groupId)) {
-      if (processed.has(element.id)) {
-        continue
-      }
-      processed.add(element.id)
-      graphvizNodes.get(element.id)?.attributes.set(_.group, id)
-    }
-  }
+  // const processed = new Set<Fqn>()
+  // for (const groupId of groupIds) {
+  //   const id = nameFromFqn(groupId).toLowerCase()
+  //   for (const element of leafElements(groupId)) {
+  //     if (processed.has(element.id)) {
+  //       continue
+  //     }
+  //     processed.add(element.id)
+  //     graphvizNodes.get(element.id)?.attributes.set(_.group, id)
+  //   }
+  // }
 
   return G
 }

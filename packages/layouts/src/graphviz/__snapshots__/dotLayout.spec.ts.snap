@@ -8,15 +8,15 @@ exports[`dotLayout: > computedAmazonView 1`] = `
     {
       "headArrow": [
         [
-          555,
+          545,
           151,
         ],
         [
-          563,
+          553,
           154,
         ],
         [
-          555,
+          545,
           157,
         ],
       ],
@@ -25,7 +25,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 98,
-        "x": 414,
+        "x": 409,
         "y": 132,
       },
       "labels": [
@@ -34,7 +34,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            416,
+            411,
             147,
           ],
           "text": "persists artifacts",
@@ -48,15 +48,15 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           154,
         ],
         [
-          422,
+          419,
           154,
         ],
         [
-          492,
+          485,
           154,
         ],
         [
-          555,
+          545,
           154,
         ],
       ],
@@ -145,7 +145,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        532,
+        522,
         8,
       ],
       "shape": "rectangle",
@@ -234,7 +234,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        563,
+        553,
         64,
       ],
       "shape": "rectangle",
@@ -250,7 +250,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 924,
+  "width": 914,
 }
 `;
 
@@ -262,16 +262,16 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          500,
-          742,
+          489,
+          722,
         ],
         [
-          508,
-          745,
+          498,
+          725,
         ],
         [
-          500,
-          748,
+          489,
+          728,
         ],
       ],
       "id": "cloud.backend.graphql:cloud.backend.storage",
@@ -280,19 +280,19 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "points": [
         [
           400,
-          745,
+          725,
         ],
         [
-          434,
-          745,
+          430,
+          725,
         ],
         [
-          467,
-          745,
+          460,
+          725,
         ],
         [
-          500,
-          745,
+          490,
+          725,
         ],
       ],
       "relations": [
@@ -305,15 +305,15 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           239,
-          645,
+          625,
         ],
         [
           236,
-          653,
+          633,
         ],
         [
           233,
-          645,
+          625,
         ],
       ],
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
@@ -321,8 +321,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 33,
         "width": 196,
-        "x": 231,
-        "y": 554,
+        "x": 230,
+        "y": 534,
       },
       "labels": [
         {
@@ -330,8 +330,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            233,
-            569,
+            232,
+            549,
           ],
           "text": "fetches data in zero trust network",
           "width": 192,
@@ -341,8 +341,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            233,
-            585,
+            232,
+            565,
           ],
           "text": "with sso authentification",
           "width": 139,
@@ -352,19 +352,19 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "points": [
         [
           229,
-          503,
+          492,
         ],
         [
           231,
-          547,
+          534,
         ],
         [
-          234,
-          600,
+          233,
+          583,
         ],
         [
           236,
-          645,
+          625,
         ],
       ],
       "relations": [
@@ -376,16 +376,16 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          375,
-          651,
+          372,
+          631,
         ],
         [
-          366,
-          654,
+          364,
+          634,
         ],
         [
-          371,
-          646,
+          369,
+          626,
         ],
       ],
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -393,8 +393,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 75,
-        "x": 483,
-        "y": 562,
+        "x": 484,
+        "y": 542,
       },
       "labels": [
         {
@@ -402,8 +402,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            485,
-            577,
+            486,
+            557,
           ],
           "text": "fetches data",
           "width": 71,
@@ -412,32 +412,32 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "points": [
         [
-          556,
-          503,
+          542,
+          493,
         ],
         [
-          523,
-          531,
+          512,
+          518,
         ],
         [
-          486,
-          562,
+          479,
+          545,
         ],
         [
-          451,
+          448,
+          569,
+        ],
+        [
+          423,
           589,
         ],
         [
-          426,
+          396,
           609,
         ],
         [
-          399,
+          370,
           629,
-        ],
-        [
-          373,
-          649,
         ],
       ],
       "relations": [
@@ -450,15 +450,15 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           227,
-          313,
+          303,
         ],
         [
           224,
-          321,
+          311,
         ],
         [
           222,
-          313,
+          303,
         ],
       ],
       "id": "support:cloud.frontend.adminPanel",
@@ -467,7 +467,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         "height": 17,
         "width": 58,
         "x": 222,
-        "y": 232,
+        "y": 222,
       },
       "labels": [
         {
@@ -476,7 +476,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "fontSize": 13,
           "pt": [
             224,
-            247,
+            237,
           ],
           "text": "manages",
           "width": 54,
@@ -490,15 +490,15 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         ],
         [
           224,
-          221,
+          219,
         ],
         [
           224,
-          271,
+          264,
         ],
         [
           224,
-          313,
+          303,
         ],
       ],
       "relations": [
@@ -510,16 +510,16 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          659,
-          313,
+          649,
+          303,
         ],
         [
-          656,
-          321,
+          646,
+          311,
         ],
         [
-          654,
-          313,
+          644,
+          303,
         ],
       ],
       "id": "customer:cloud.frontend.dashboard",
@@ -527,8 +527,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 103,
-        "x": 654,
-        "y": 232,
+        "x": 644,
+        "y": 222,
       },
       "labels": [
         {
@@ -536,8 +536,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            656,
-            247,
+            646,
+            237,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -546,20 +546,20 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          656,
+          646,
           180,
         ],
         [
-          656,
-          221,
+          646,
+          219,
         ],
         [
-          656,
-          271,
+          646,
+          264,
         ],
         [
-          656,
-          313,
+          646,
+          303,
         ],
       ],
       "relations": [
@@ -571,16 +571,16 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          673,
-          978,
+          663,
+          948,
         ],
         [
-          670,
-          986,
+          660,
+          956,
         ],
         [
-          668,
-          978,
+          658,
+          948,
         ],
       ],
       "id": "cloud.backend.storage:amazon",
@@ -588,8 +588,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 98,
-        "x": 668,
-        "y": 914,
+        "x": 658,
+        "y": 894,
       },
       "labels": [
         {
@@ -597,8 +597,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            670,
-            929,
+            660,
+            909,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -607,20 +607,20 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          670,
-          838,
+          660,
+          818,
         ],
         [
-          670,
-          881,
+          660,
+          858,
         ],
         [
-          670,
-          933,
+          660,
+          906,
         ],
         [
-          670,
-          978,
+          660,
+          948,
         ],
       ],
       "relations": [
@@ -630,7 +630,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "target": "amazon",
     },
   ],
-  "height": 1167,
+  "height": 1137,
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -671,12 +671,12 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "position": [
         8,
-        259,
+        249,
       ],
       "shape": "rectangle",
       "size": {
-        "height": 650,
-        "width": 894,
+        "height": 640,
+        "width": 884,
       },
       "tags": null,
       "technology": null,
@@ -718,12 +718,12 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         48,
-        597,
+        577,
       ],
       "shape": "rectangle",
       "size": {
         "height": 272,
-        "width": 814,
+        "width": 804,
       },
       "tags": null,
       "technology": null,
@@ -782,7 +782,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud.backend",
       "position": [
         79,
-        655,
+        635,
       ],
       "shape": "rectangle",
       "size": {
@@ -844,8 +844,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud.backend",
       "position": [
-        509,
-        652,
+        499,
+        632,
       ],
       "shape": "storage",
       "size": {
@@ -908,7 +908,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         63,
-        323,
+        313,
       ],
       "shape": "rectangle",
       "size": {
@@ -970,8 +970,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        494,
-        323,
+        484,
+        313,
       ],
       "shape": "rectangle",
       "size": {
@@ -1070,7 +1070,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": null,
       "position": [
-        495,
+        485,
         0,
       ],
       "shape": "person",
@@ -1120,8 +1120,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        509,
-        987,
+        499,
+        957,
       ],
       "shape": "rectangle",
       "size": {
@@ -1136,7 +1136,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 910,
+  "width": 900,
 }
 `;
 
@@ -1148,16 +1148,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          655,
-          402,
+          640,
+          392,
         ],
         [
-          663,
-          405,
+          648,
+          395,
         ],
         [
-          655,
-          408,
+          640,
+          398,
         ],
       ],
       "id": "cloud.frontend:cloud.backend",
@@ -1165,8 +1165,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 24,
-        "x": 588,
-        "y": 382,
+        "x": 578,
+        "y": 372,
       },
       "labels": [
         {
@@ -1175,8 +1175,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "fontSize": 13,
           "fontStyle": "bold",
           "pt": [
-            590,
-            397,
+            580,
+            387,
           ],
           "text": "[...]",
           "width": 20,
@@ -1185,20 +1185,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": "cloud",
       "points": [
         [
-          535,
-          405,
+          530,
+          395,
         ],
         [
-          574,
-          405,
+          566,
+          395,
         ],
         [
-          616,
-          405,
+          604,
+          395,
         ],
         [
-          655,
-          405,
+          640,
+          395,
         ],
       ],
       "relations": [
@@ -1211,16 +1211,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          311,
           305,
+          295,
         ],
         [
-          313,
-          314,
-        ],
-        [
-          306,
           308,
+          304,
+        ],
+        [
+          301,
+          298,
         ],
       ],
       "id": "customer:cloud.frontend",
@@ -1228,8 +1228,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 103,
-        "x": 267,
-        "y": 232,
+        "x": 258,
+        "y": 222,
       },
       "labels": [
         {
@@ -1237,8 +1237,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            269,
-            247,
+            260,
+            237,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1251,16 +1251,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
           180,
         ],
         [
-          249,
-          220,
+          248,
+          217,
         ],
         [
-          281,
-          266,
+          277,
+          259,
         ],
         [
-          309,
-          307,
+          303,
+          297,
         ],
       ],
       "relations": [
@@ -1272,16 +1272,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          445,
-          308,
-        ],
-        [
-          438,
-          314,
-        ],
-        [
           440,
-          305,
+          298,
+        ],
+        [
+          433,
+          304,
+        ],
+        [
+          436,
+          295,
         ],
       ],
       "id": "support:cloud.frontend",
@@ -1289,8 +1289,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 58,
-        "x": 488,
-        "y": 232,
+        "x": 481,
+        "y": 222,
       },
       "labels": [
         {
@@ -1298,8 +1298,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            490,
-            247,
+            483,
+            237,
           ],
           "text": "manages",
           "width": 54,
@@ -1308,20 +1308,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          529,
+          519,
           180,
         ],
         [
-          502,
-          220,
+          493,
+          217,
         ],
         [
-          470,
-          266,
+          464,
+          259,
         ],
         [
-          442,
-          307,
+          438,
+          297,
         ],
       ],
       "relations": [
@@ -1333,16 +1333,16 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          827,
-          611,
+          812,
+          581,
         ],
         [
-          825,
-          619,
+          810,
+          589,
         ],
         [
-          822,
-          611,
+          807,
+          581,
         ],
       ],
       "id": "cloud.backend:amazon",
@@ -1350,8 +1350,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 98,
-        "x": 823,
-        "y": 546,
+        "x": 808,
+        "y": 526,
       },
       "labels": [
         {
@@ -1359,8 +1359,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            825,
-            561,
+            810,
+            541,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1369,20 +1369,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          825,
-          494,
+          810,
+          485,
         ],
         [
-          825,
-          531,
+          810,
+          515,
         ],
         [
-          825,
-          573,
+          810,
+          550,
         ],
         [
-          825,
-          611,
+          810,
+          581,
         ],
       ],
       "relations": [
@@ -1392,7 +1392,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "target": "amazon",
     },
   ],
-  "height": 800,
+  "height": 770,
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1431,13 +1431,13 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        184,
-        259,
+        179,
+        249,
       ],
       "shape": "rectangle",
       "size": {
         "height": 268,
-        "width": 832,
+        "width": 822,
       },
       "tags": null,
       "technology": null,
@@ -1473,8 +1473,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        215,
-        315,
+        210,
+        305,
       ],
       "shape": "browser",
       "size": {
@@ -1514,8 +1514,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        664,
-        315,
+        649,
+        305,
       ],
       "shape": "rectangle",
       "size": {
@@ -1614,7 +1614,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        430,
+        420,
         0,
       ],
       "shape": "person",
@@ -1664,8 +1664,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        664,
-        620,
+        649,
+        590,
       ],
       "shape": "rectangle",
       "size": {
@@ -1680,7 +1680,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1024,
+  "width": 1009,
 }
 `;
 
@@ -1692,16 +1692,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          309,
-          296,
-        ],
-        [
-          312,
-          305,
+          301,
+          277,
         ],
         [
           304,
-          300,
+          285,
+        ],
+        [
+          297,
+          280,
         ],
       ],
       "id": "customer:cloud",
@@ -1709,8 +1709,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 103,
-        "x": 267,
-        "y": 232,
+        "x": 264,
+        "y": 222,
       },
       "labels": [
         {
@@ -1718,8 +1718,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            269,
-            247,
+            266,
+            237,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1728,20 +1728,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          223,
+          226,
           180,
         ],
         [
-          250,
-          217,
+          249,
+          212,
         ],
         [
-          280,
-          260,
+          275,
+          247,
         ],
         [
-          307,
-          298,
+          299,
+          278,
         ],
       ],
       "relations": [
@@ -1753,16 +1753,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          447,
-          300,
+          445,
+          280,
         ],
         [
-          439,
-          305,
+          437,
+          285,
         ],
         [
-          442,
-          296,
+          440,
+          277,
         ],
       ],
       "id": "support:cloud",
@@ -1770,8 +1770,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 58,
-        "x": 481,
-        "y": 232,
+        "x": 474,
+        "y": 222,
       },
       "labels": [
         {
@@ -1779,8 +1779,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            483,
-            247,
+            476,
+            237,
           ],
           "text": "manages",
           "width": 54,
@@ -1789,20 +1789,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          528,
+          515,
           180,
         ],
         [
-          501,
-          217,
+          492,
+          212,
         ],
         [
-          471,
-          260,
+          466,
+          247,
         ],
         [
-          444,
-          298,
+          442,
+          278,
         ],
       ],
       "relations": [
@@ -1814,16 +1814,16 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          378,
-          602,
-        ],
-        [
-          376,
-          610,
-        ],
-        [
           373,
-          602,
+          562,
+        ],
+        [
+          371,
+          571,
+        ],
+        [
+          368,
+          562,
         ],
       ],
       "id": "cloud:amazon",
@@ -1831,8 +1831,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 17,
         "width": 98,
-        "x": 374,
-        "y": 538,
+        "x": 369,
+        "y": 508,
       },
       "labels": [
         {
@@ -1840,8 +1840,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            376,
-            553,
+            371,
+            523,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1850,20 +1850,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          376,
-          486,
+          371,
+          466,
         ],
         [
-          376,
-          522,
+          371,
+          497,
         ],
         [
-          376,
-          565,
+          371,
+          531,
         ],
         [
-          376,
-          602,
+          371,
+          562,
         ],
       ],
       "relations": [
@@ -1873,7 +1873,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "target": "amazon",
     },
   ],
-  "height": 792,
+  "height": 752,
   "id": "index",
   "links": null,
   "nodes": [
@@ -1946,8 +1946,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        215,
-        306,
+        210,
+        286,
       ],
       "shape": "rectangle",
       "size": {
@@ -2007,7 +2007,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        430,
+        420,
         0,
       ],
       "shape": "person",
@@ -2057,8 +2057,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        215,
-        612,
+        210,
+        572,
       ],
       "shape": "rectangle",
       "size": {
@@ -2072,6 +2072,6 @@ exports[`dotLayout: > computedIndexView 1`] = `
   ],
   "tags": null,
   "title": "",
-  "width": 751,
+  "width": 741,
 }
 `;
