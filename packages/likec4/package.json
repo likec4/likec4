@@ -81,7 +81,7 @@
     "@types/yargs": "^17.0.31",
     "boxen": "^7.1.1",
     "ci-info": "^3.9.0",
-    "esbuild": "^0.19.5",
+    "esbuild": "^0.19.7",
     "esbuild-node-externals": "^1.9.0",
     "execa": "^8.0.1",
     "get-port": "^7.0.0",
