@@ -14826,7 +14826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.8.2":
+"type-fest@npm:^4.8.1, type-fest@npm:^4.8.2":
   version: 4.8.2
   resolution: "type-fest@npm:4.8.2"
   checksum: 86ea9b4c2a1784af7708b837948bd0b4c22d1b1bc15d95e0366213b983e802c09a76eccd56566e91ee5b7c961238b118fd256a7a323e7d79dc302773d40c99d2
