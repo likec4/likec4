@@ -132,8 +132,6 @@ ${colors
       person -> rect
       browser -> mobile
       cylinder -> queue
-
-      //this -> compound1
     }`
   )
   .join('')}
@@ -152,7 +150,6 @@ ${colors
       }
     }
   }
-  // colors -> compound1
 
   // Col1
   primary -> secondary
