@@ -6598,15 +6598,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-node-externals@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "esbuild-node-externals@npm:1.9.0"
+"esbuild-node-externals@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "esbuild-node-externals@npm:1.11.0"
   dependencies:
     find-up: "npm:^5.0.0"
     tslib: "npm:^2.4.1"
   peerDependencies:
     esbuild: 0.12 - 0.19
-  checksum: 78126940aec51bd8cd0aad845a29342478ca485378e85991b7faddb4968141c4507ce40179d8a7e92c05ad23dcc2e66b3da0c8913d99a297b7863a949e248cf7
+  checksum: 48bad17787b6663ada1dcdb278945e2f13304502c52ceca6f7c506c07a707de5ab41bac8dbc14b858f6b51ad9e583ac55ee200cb1540665934f3a49c040a5c06
   languageName: node
   linkType: hard
 
@@ -9490,7 +9490,7 @@ __metadata:
     classnames: "npm:^2.3.2"
     clsx: "npm:^1.2.1"
     esbuild: "npm:^0.19.7"
-    esbuild-node-externals: "npm:^1.9.0"
+    esbuild-node-externals: "npm:^1.11.0"
     execa: "npm:^8.0.1"
     get-port: "npm:^7.0.0"
     jotai: "npm:^2.5.1"
