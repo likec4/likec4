@@ -778,14 +778,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:^2.14.1":
-  version: 2.14.1
-  resolution: "@hpcc-js/wasm@npm:2.14.1"
+"@hpcc-js/wasm@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "@hpcc-js/wasm@npm:2.15.0"
   dependencies:
     yargs: "npm:17.7.2"
   bin:
     dot-wasm: bin/dot-wasm.js
-  checksum: 589dda16b8f0853ba69fd6702c426eeb5d1933bc7dd291cdfb24ad48b13be2009c691b20acd6a809440e9ddf7f55999c7251d046b32330495651a699f3741c44
+  checksum: 9b4f9113f191ca4d4850e2b54e633cfc11e6ca591d6f39257ed34256d0c1f378eb94d96558fafa6e8e0cc4dd63ce80fecda10500a4bd9c6b5ae8ece6888d8a0b
   languageName: node
   linkType: hard
 
@@ -1169,7 +1169,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@hpcc-js/wasm": "npm:^2.14.1"
+    "@hpcc-js/wasm": "npm:^2.15.0"
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
     "@types/node": "npm:^20.8.7"
