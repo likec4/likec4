@@ -11,7 +11,7 @@
   "devDependencies": {
     "execa": "^8.0.1",
     "likec4": "workspace:*",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.2",
     "vitest": "^0.34.6"
   }
 }
