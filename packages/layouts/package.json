@@ -41,7 +41,7 @@
     "clean": "run -T rimraf dist"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "^2.14.1",
+    "@hpcc-js/wasm": "^2.15.0",
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
     "indent-string": "^5.0.0",
@@ -54,7 +54,7 @@
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.10.1",
     "execa": "^8.0.1",
     "typescript": "^5.3.2",
     "unbuild": "^2.0.0",

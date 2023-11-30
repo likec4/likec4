@@ -1,4 +1,4 @@
-import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
+import { Box, Code, Grid, ScrollArea } from '@radix-ui/themes'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import styles from '../view-page.module.css'
 
@@ -8,20 +8,14 @@ type ViewAsDotProps = {
 
 export default function ViewAsDot({ viewId }: ViewAsDotProps) {
   return (
-    <Flex
-      grow={'1'}
-      align={'stretch'}
-      justify={'start'}
-      direction={'row'}
-      px={'2'}
-      gap={'2'}
-      style={{
-        overflow: 'scroll'
-      }}
+    <Grid
+      //@ts-expect-error TODO: fails on columns prop due to `exactOptionalPropertyTypes: true` in tsconfig
+      columns='2'
+      gap='2'
+      shrink='1'
+      grow='1'
     >
       <Box
-        grow={'0'}
-        shrink={'1'}
         py={'2'}
         style={{
           overflow: 'scroll'
@@ -43,8 +37,6 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
         </ScrollArea>
       </Box>
       <Box
-        grow={'1'}
-        shrink={'1'}
         py={'2'}
         style={{
           overflow: 'scroll',
@@ -55,6 +47,6 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
           <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
         </Box>
       </Box>
-    </Flex>
+    </Grid>
   )
 }

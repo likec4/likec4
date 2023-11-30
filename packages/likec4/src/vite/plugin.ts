@@ -1,11 +1,11 @@
-import { generateViewsDataJs, generateViewsDataTs } from '@likec4/generators'
+import { invariant } from '@likec4/core'
+import { generateViewsDataJs } from '@likec4/generators'
+import pDebounce from 'p-debounce'
+import { values } from 'remeda'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
-import { generateD2Sources, generateDotSources, generateMmdSources } from './generators'
-import pDebounce from 'p-debounce'
 import type { Logger } from '../logger'
-import { invariant } from '@likec4/core'
-import { values } from 'remeda'
+import { generateD2Sources, generateDotSources, generateMmdSources } from './generators'
 
 export type LikeC4PluginOptions = {
   languageServices: LanguageServices
@@ -137,6 +137,24 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
 
     configureServer(server) {
       const triggerHMR = async () => {
+        const [error] = likec4.getValidationDiagnostics()
+        if (error) {
+          server.ws.send({
+            type: 'error',
+            err: {
+              message: 'Validation error:\n\n' + error.message,
+              stack: '',
+              plugin: 'vite-plugin-likec4',
+              loc: {
+                file: error.source,
+                line: error.range.start.line + 1,
+                column: error.range.start.character + 1
+              }
+            }
+          })
+          return
+        }
+
         const reload = modules
           .flatMap(m => {
             const md = server.moduleGraph.getModuleById(m.virtualId)
@@ -155,9 +173,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
       const scheduleHMR = pDebounce(triggerHMR, 200)
 
       const handleUpdate = (task: Promise<boolean>) => {
-        task
-          .then(result => (result ? scheduleHMR() : null))
-          .catch(err => server.ws.send({ type: 'error', err }))
+        task.then(() => scheduleHMR()).catch(err => server.ws.send({ type: 'error', err }))
       }
 
       server.watcher

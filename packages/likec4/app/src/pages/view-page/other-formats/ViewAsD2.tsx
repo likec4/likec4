@@ -1,4 +1,4 @@
-import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
+import { Box, Code, ScrollArea } from '@radix-ui/themes'
 import { d2Source } from 'virtual:likec4/d2-sources'
 
 type ViewAsDotProps = {

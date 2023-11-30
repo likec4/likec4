@@ -1,7 +1,18 @@
 import type { DiagramView } from '@likec4/core'
-import { Box, Code, Flex, Heading, HoverCard, Text } from '@radix-ui/themes'
+import { ExternalLinkIcon, Link2Icon } from '@radix-ui/react-icons'
+import {
+  Box,
+  Code,
+  Flex,
+  Heading,
+  HoverCard,
+  IconButton,
+  Link,
+  Text,
+  Tooltip
+} from '@radix-ui/themes'
 import { isEmpty } from 'remeda'
-import { ViewActions } from '..'
+import { ViewActions } from './ViewActions'
 import styles from './Header.module.css'
 
 type HeaderProps = {
@@ -21,8 +32,9 @@ export function Header({ diagram }: HeaderProps) {
       gap={'4'}
       p={'2'}
     >
-      <Flex pl='7' grow='1' shrink='1' align={'stretch'}>
+      <Flex pl='7' grow='1' gap={'2'} shrink='1' align={'stretch'} wrap={'nowrap'}>
         <DiagramTitle diagram={diagram} />
+        <DiagramLinks diagram={diagram} />
       </Flex>
       <ViewActions diagram={diagram} />
     </Flex>
@@ -35,7 +47,6 @@ function DiagramTitle({ diagram }: HeaderProps) {
     <HoverCard.Root closeDelay={500}>
       <HoverCard.Trigger>
         <Flex px={'3'} className={styles.title} align={'center'}>
-          {/* <Button color='gray' variant='ghost' highContrast size={'3'}> */}
           <Heading
             size={{
               initial: '2',
@@ -48,9 +59,8 @@ function DiagramTitle({ diagram }: HeaderProps) {
             {diagram.title || 'Untitled'}
           </Heading>
         </Flex>
-        {/* </Button> */}
       </HoverCard.Trigger>
-      <HoverCard.Content size={'1'}>
+      <HoverCard.Content size={'2'} className={styles.titleHoverCardContent}>
         <Flex direction='column' gap='3'>
           <HoverCardItem title='view id'>
             <Code color='gray' size='2'>
@@ -86,5 +96,52 @@ function HoverCardItem({ title, children }: { title: string; children: React.Rea
       </Text>
       {children}
     </Box>
+  )
+}
+
+function DiagramLinks({ diagram: { links } }: HeaderProps) {
+  if (!links) {
+    return null
+  }
+  if (links.length > 1) {
+    return (
+      <Flex align={'center'}>
+        <Box grow={'0'} height={'4'}>
+          <HoverCard.Root closeDelay={500}>
+            <HoverCard.Trigger>
+              <IconButton color='gray' variant='ghost' size={'2'}>
+                <Link2Icon width={16} height={16} />
+              </IconButton>
+            </HoverCard.Trigger>
+            <HoverCard.Content size={'2'} align='center'>
+              <Flex direction='column' gap='2'>
+                {links.map(link => (
+                  <Flex asChild align={'center'} gap={'2'} key={link}>
+                    <Link href={link} target='_blank'>
+                      <ExternalLinkIcon width={13} height={13} />
+                      <Text size='2'>{link}</Text>
+                    </Link>
+                  </Flex>
+                ))}
+              </Flex>
+            </HoverCard.Content>
+          </HoverCard.Root>
+        </Box>
+      </Flex>
+    )
+  }
+  const link = links[0]
+  return (
+    <Flex align={'center'}>
+      <Tooltip content={link}>
+        <Box grow={'0'}>
+          <IconButton asChild color='gray' variant='ghost' size={'2'}>
+            <Link href={link} target='_blank'>
+              <Link2Icon width={16} height={16} />
+            </Link>
+          </IconButton>
+        </Box>
+      </Tooltip>
+    </Flex>
   )
 }

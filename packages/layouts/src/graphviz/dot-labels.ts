@@ -32,20 +32,19 @@ function wrapToHTML({
   color?: string
   align?: 'left' | 'right' | 'center'
 }) {
-  const fontOpts = `POINT-SIZE="${pxToPoints(fontsize)}"${color ? ` COLOR="${color}"` : ``}`
+  // Change row height if line height is not 1
+  const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
+  const TDheight =
+    lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
+  const fontOpts = ` POINT-SIZE="${pxToPoints(fontsize)}"${color ? ` COLOR="${color}"` : ``}`
   const rows = wrap(text, maxchars)
     .map(text => (isEmpty(text) ? ' ' : text))
-    .map(text => `<FONT ${fontOpts}>${text}</FONT>`)
+    .map(text => `<FONT${fontOpts}>${text}</FONT>`)
     .map(text => (bold ? `<B>${text}</B>` : text))
-    .map(
-      text =>
-        `<TR><TD ALIGN="${align?.toUpperCase() ?? 'TEXT'}" VALIGN="BOTTOM" HEIGHT="${pxToPoints(
-          fontsize * lineHeight
-        )}">${text}</TD></TR>`
-    )
-  return `<TABLE ALIGN="${
-    align?.toUpperCase() ?? 'TEXT'
-  }" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
+    .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
+  return `<TABLE${
+    ALIGN || ' ALIGN="TEXT"'
+  } BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
 export function nodeIcon(src: string) {
   return `<IMG SRC="${src}" SCALE="TRUE"/>`
@@ -55,7 +54,7 @@ export function nodeLabel(node: ComputedNode) {
   const lines = [
     wrapToHTML({
       text: node.title,
-      fontsize: 18,
+      fontsize: 20,
       maxchars: 35,
       color: Colors[node.color].hiContrast
     })
@@ -65,6 +64,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.technology,
         fontsize: 12,
+        lineHeight: 1,
         maxchars: 50,
         color: Colors[node.color].loContrast
       })
@@ -75,6 +75,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.description,
         fontsize: 14,
+        lineHeight: 1.1,
         maxchars: 45,
         color: Colors[node.color].loContrast
       })
@@ -83,13 +84,15 @@ export function nodeLabel(node: ComputedNode) {
   if (lines.length === 1 && !node.icon) {
     return `<${lines[0]}>`
   }
-  const rows = lines.map(line => `<TR><TD ALIGN="TEXT">${line}</TD></TR>`)
+  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
   if (node.icon) {
     rows.unshift(
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
+  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">\n${rows
+    .map(l => '   ' + l)
+    .join('\n')}\n</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

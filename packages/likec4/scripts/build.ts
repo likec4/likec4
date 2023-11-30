@@ -33,12 +33,8 @@ async function buildCli() {
     plugins: [
       nodeExternalsPlugin({
         devDependencies: false,
+        allowWorkspaces: true,
         allowList: [
-          '@likec4/core',
-          '@likec4/diagrams',
-          '@likec4/layouts',
-          '@likec4/generators',
-          '@likec4/language-server',
           'remeda',
           'rambdax',
           '@dagrejs/graphlib',
