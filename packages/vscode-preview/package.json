@@ -26,7 +26,7 @@
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^23.1.0",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.10.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
@@ -39,7 +39,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
     "typescript": "^5.3.2",
-    "vite": "^5.0.2",
+    "vite": "^5.0.4",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "volta": {

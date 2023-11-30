@@ -57,16 +57,15 @@
     "clsx": "^1.2.1",
     "jotai": "^2.5.1",
     "nanostores": "^0.9.5",
-    "playwright-core": "^1.40.0",
+    "playwright-core": "^1.40.1",
     "postcss": "^8.4.31",
     "postcss-nested": "^6.0.1",
     "prop-types": "^15.8.1",
-    "radix-themes-tw": "^0.0.8",
     "react": "^18.2.0",
     "react-accessible-treeview": "^2.8.0",
     "react-dom": "^18.2.0",
     "remeda": "^1.29.0",
-    "vite": "^5.0.2"
+    "vite": "^5.0.4"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
@@ -74,7 +73,7 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.10.1",
     "@types/prop-types": "^15.7.10",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
