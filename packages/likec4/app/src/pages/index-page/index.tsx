@@ -6,6 +6,7 @@ import {
   Container,
   Flex,
   Heading,
+  IconButton,
   Inset,
   Section,
   Separator,
@@ -20,6 +21,7 @@ import { useViewGroupsAtoms, type ViewsGroup as IViewsGroup } from '../../data'
 import { $pages } from '../../router'
 import { cn } from '../../utils'
 import styles from './index.module.css'
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 
 const DiagramPreview = memo((props: { diagram: DiagramView }) => {
   const [diagram, setDiagram] = useState<DiagramView | null>(null)
@@ -145,6 +147,24 @@ export function IndexPage() {
       {viewGroupsAtoms.map(g => (
         <ViewsGroup key={g.toString()} atom={g} />
       ))}
+      {viewGroupsAtoms.length === 0 && (
+        <Flex position='fixed' inset='0' align='center' justify='center'>
+          <Card color='red' size='4'>
+            <Flex gap='4' direction='row' align='center'>
+              <Box grow='0' shrink='0' pt='1'>
+                <IconButton variant='ghost' color='red'>
+                  <ExclamationTriangleIcon width={20} height={20} />
+                </IconButton>
+              </Box>
+              <Flex gap='3' direction='column'>
+                <Heading trim='both' color='red' size='4'>
+                  No diagrams found
+                </Heading>
+              </Flex>
+            </Flex>
+          </Card>
+        </Flex>
+      )}
     </Container>
   )
 }

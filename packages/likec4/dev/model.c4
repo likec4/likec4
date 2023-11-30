@@ -10,6 +10,7 @@ model {
       customers to interact with
       the latest technologies
     '
+    link https://github.com/likec4/likec4
 
     ui = container 'Frontend' {
       description '
@@ -42,11 +43,13 @@ model {
 
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
+      link ./cloud/backend.c4#L3
     }
 
     reporting = service 'Reporting' {
       technology 'PowerBI'
       description 'Reporting services'
+      link ./cloud/reporting.c4#L3
     }
 
     data = container 'Data Services' {
@@ -83,6 +86,8 @@ views {
 
   view index {
     title "Landscape"
+    link https://github.com/likec4/likec4
+
     include *
   }
 

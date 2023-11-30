@@ -200,7 +200,17 @@ export async function mkLanguageServices({
       ),
     notifyUpdate,
     hasValidationErrors,
-    printValidationErrors: () => printValidationErrors()
+    printValidationErrors: () => printValidationErrors(),
+    getValidationDiagnostics: () => {
+      return LangiumDocuments.all
+        .flatMap(d => {
+          return (
+            d.diagnostics?.flatMap(e => (e.severity === 1 ? { ...e, source: d.uri.fsPath } : [])) ??
+            []
+          )
+        })
+        .toArray()
+    }
   }
 }
 
