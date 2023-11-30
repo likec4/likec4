@@ -4,7 +4,8 @@ model {
     description 'The regular customer of the system'
   }
 
-  cloud = softwareSystem 'Cloud d System' {
+  cloud = softwareSystem 'Cloud System' {
+  cloud = softwareSystem 'Cloud System' {
     description '
       Our SaaS platfrom that allows
       customers to interact with
