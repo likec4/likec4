@@ -1,4 +1,4 @@
-import { Box, Code, Flex, Grid, ScrollArea } from '@radix-ui/themes'
+import { Box, Code, Grid, ScrollArea } from '@radix-ui/themes'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import styles from '../view-page.module.css'
 
@@ -8,7 +8,13 @@ type ViewAsDotProps = {
 
 export default function ViewAsDot({ viewId }: ViewAsDotProps) {
   return (
-    <Grid columns='2' gap='2' shrink='1' grow='1'>
+    <Grid
+      //@ts-expect-error TODO: fails on columns prop due to `exactOptionalPropertyTypes: true` in tsconfig
+      columns='2'
+      gap='2'
+      shrink='1'
+      grow='1'
+    >
       <Box
         py={'2'}
         style={{
