@@ -16,8 +16,9 @@ export default function ViewDiagramInOtherFormats({ viewId, viewMode }: Props) {
       position={'fixed'}
       inset={'0'}
       pt={'8'}
+      pl={'8'}
+      pr={'2'}
       align={'stretch'}
-      px={'2'}
       direction={'column'}
     >
       <Tabs.Root

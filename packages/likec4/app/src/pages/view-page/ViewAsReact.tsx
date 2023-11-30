@@ -68,6 +68,7 @@ export function ViewAsReact({ diagram }: ViewAsReactProps) {
         ref={ref}
         diagram={diagram}
         padding={Paddings}
+        maxZoom={1.05}
         width={width}
         height={height}
         onNodeClick={node => {

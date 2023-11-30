@@ -4,7 +4,7 @@ model {
     description 'The regular customer of the system'
   }
 
-  cloud = softwareSystem 'Cloud System' {
+  cloud = softwareSystem 'Cloud d System' {
     description '
       Our SaaS platfrom that allows
       customers to interact with
@@ -106,7 +106,16 @@ views {
   }
 
   view cloud of cloud {
-    title "[system] Cloud System"
+    title "[system] Cloud"
+    description "
+      Some description with
+      multi-lines
+    "
+
+    link https://likec4.dev/
+    link https://github.com/likec4/likec4
+    link https://github.com/likec4/actions
+
     include *
     style cloud, cloud.* {
       color green
@@ -115,6 +124,8 @@ views {
 
   view cloud_ui of ui {
     title "[context] Cloud UI"
+    link ./model.c4#L127
+
     include
       *,
       * -> amazon.*,

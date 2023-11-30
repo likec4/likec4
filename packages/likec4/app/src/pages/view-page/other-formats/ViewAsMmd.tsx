@@ -7,31 +7,19 @@ type ViewAsMmdProps = {
 
 export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
   return (
-    <Flex align={'stretch'} direction={'row'} px={'2'}>
+    <ScrollArea scrollbars='both'>
       <Box
-        grow={'1'}
-        shrink={'1'}
-        py={'3'}
+        asChild
+        display={'block'}
+        p='2'
         style={{
-          overflow: 'scroll'
+          whiteSpace: 'pre'
         }}
       >
-        <ScrollArea scrollbars='both'>
-          <Box
-            asChild
-            display={'block'}
-            p='2'
-            style={{
-              whiteSpace: 'pre'
-            }}
-          >
-            <Code variant='soft' autoFocus>
-              {mmdSource(viewId)}
-            </Code>
-          </Box>
-        </ScrollArea>
+        <Code variant='soft' autoFocus>
+          {mmdSource(viewId)}
+        </Code>
       </Box>
-      <Box grow={'1'}>...</Box>
-    </Flex>
+    </ScrollArea>
   )
 }

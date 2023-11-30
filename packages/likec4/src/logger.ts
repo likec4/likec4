@@ -1,9 +1,8 @@
-import { normalizeError } from '@likec4/core'
+import { isCI } from 'ci-info'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
 import type { LogErrorOptions, LogOptions } from 'vite'
 import { createLogger } from 'vite'
-import { isCI } from 'ci-info'
 
 const ERROR = k.bold(k.bgRed(k.white('ERROR')))
 const WARN = k.bold(k.yellow('WARN'))
@@ -32,19 +31,19 @@ export function createLikeC4Logger(prefix: string) {
       })
     },
     error(err: unknown, options?: LogErrorOptions) {
-      if (typeof err === 'string') {
-        logger.error(`${ERROR} ${err}`, {
+      if (err instanceof Error) {
+        logger.error(`${ERROR} ${err.stack ?? err.message}`, {
           timestamp,
+          error: err,
           ...options
         })
         return
       }
-      const error = normalizeError(err)
-      logger.error(`${ERROR} ${error.stack ?? error.message}`, {
+      logger.error(`${ERROR} ${err}`, {
         timestamp,
-        error,
         ...options
       })
+      return
     }
   }
 }
