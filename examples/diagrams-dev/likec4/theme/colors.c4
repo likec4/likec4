@@ -67,6 +67,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -77,6 +78,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -87,6 +89,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -97,6 +100,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -107,6 +111,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -143,6 +148,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -153,6 +159,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -163,6 +170,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -173,6 +181,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -183,6 +192,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -219,6 +229,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -229,6 +240,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -239,6 +251,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -249,6 +262,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -259,6 +273,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -295,6 +310,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -305,6 +321,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -315,6 +332,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -325,6 +343,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -335,6 +354,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -371,6 +391,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -381,6 +402,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -391,6 +413,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -401,6 +424,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -411,6 +435,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -447,6 +472,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -457,6 +483,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -467,6 +494,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -477,6 +505,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -487,6 +516,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -523,6 +553,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -533,6 +564,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -543,6 +575,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -553,6 +586,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -563,6 +597,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -599,6 +634,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -609,6 +645,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -619,6 +656,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -629,6 +667,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -639,6 +678,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -675,6 +715,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -685,6 +726,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -695,6 +737,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -705,6 +748,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -715,6 +759,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -751,6 +796,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -761,6 +807,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -771,6 +818,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -781,6 +829,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -791,6 +840,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
@@ -827,6 +877,7 @@ model {
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -837,6 +888,7 @@ model {
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -847,6 +899,7 @@ model {
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -857,6 +910,7 @@ model {
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -867,6 +921,7 @@ model {
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description

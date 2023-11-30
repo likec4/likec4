@@ -81,6 +81,7 @@ ${colors
       }
       queue = queue {
         title: 'Queue'
+        technology: 'queue shape'
         description: '
           Example of Queue Shape
           with multiline description
@@ -91,6 +92,7 @@ ${colors
       }
       mobile = mobile {
         title: 'Mobile'
+        technology: 'mobile shape'
         description: '
           Example of Mobile Shape
           with multiline description
@@ -101,6 +103,7 @@ ${colors
       }
       browser = browser {
         title: 'Browser'
+        technology: 'browser shape'
         description: '
           Example of Browser Shape
           with multiline description
@@ -111,6 +114,7 @@ ${colors
       }
       person = person {
         title: 'Person'
+        technology: 'person shape'
         description: '
           Example of Person Shape
           with multiline description
@@ -121,6 +125,7 @@ ${colors
       }
       rect = rect {
         title: 'Rectangle'
+        technology: 'rect shape'
         description: '
           Example of Rectangle Shape
           with multiline description
