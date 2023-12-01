@@ -29,7 +29,7 @@ export async function handler({ path, output }: HandlerParams) {
 
   const languageServices = await LanguageServices.get({ path })
 
-  const views = await languageServices.getViews()
+  const views = (await languageServices.getViews()).map(v => v.diagram)
   if (views.length === 0) {
     logger.warn('no views found')
     throw new Error('no views found')

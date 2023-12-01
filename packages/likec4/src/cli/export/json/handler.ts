@@ -33,7 +33,7 @@ export async function handler({ path, outfile }: HandlerParams) {
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.getViews()
+  const views = (await languageServices.getViews()).map(v => v.diagram)
 
   const output = {
     ...model,

@@ -36,7 +36,7 @@ async function singleFileCodegenAction(
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = await languageServices.getViews()
+  const views = (await languageServices.getViews()).map(v => v.diagram)
   const generator = format === 'react' ? generateReact : generateViewsDataTs
 
   const generatedSource = generator(views)
@@ -57,28 +57,23 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = languageServices.getModel()?.views
-  if (!views) {
-    throw new Error('no views found')
-  }
-  const viewsDot = await languageServices.getViewsAsDot()
+  const views = await languageServices.getViews()
   let succeeded = 0
-  for (const view of Object.values(views)) {
+  for (const { diagram, dot } of views) {
     try {
-      const relativePath = view.relativePath ?? ''
+      const relativePath = diagram.relativePath ?? ''
       if (relativePath !== '' && !createdDirs.has(relativePath)) {
         await mkdir(resolve(outdir, relativePath), { recursive: true })
         createdDirs.add(relativePath)
       }
-      const outfile = resolve(outdir, relativePath, view.id + '.dot')
-      const dot = viewsDot[view.id]
-      invariant(dot, `dot for ${view.id} not found`)
+      const outfile = resolve(outdir, relativePath, diagram.id + '.dot')
+      invariant(dot, `dot for ${diagram.id} not found`)
       await writeFile(outfile, dot)
       logger.info(`${k.dim('generated')} ${relative(process.cwd(), outfile)}`)
       succeeded++
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      logger.error(`error while generating ${view.id}`, { error: error as any })
+      logger.error(`error while generating ${diagram.id}`, { error: error as any })
     }
   }
   if (succeeded > 0) {
@@ -113,7 +108,7 @@ async function multipleFilesCodegenAction(
   }
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.getViews()
+  const views = (await languageServices.getViews()).map(v => v.diagram)
   let succeeded = 0
   for (const view of views) {
     try {
