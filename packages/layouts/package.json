@@ -45,6 +45,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
     "indent-string": "^5.0.0",
+    "khroma": "^2.1.0",
     "p-limit": "^4.0.0",
     "rambdax": "^9.1.1",
     "remeda": "^1.29.0",

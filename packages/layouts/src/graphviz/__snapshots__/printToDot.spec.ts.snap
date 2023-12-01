@@ -5,21 +5,18 @@ exports[`printToDot > computedAmazonView 1`] = `
   bgcolor = "transparent";
   layout = "dot";
   compound = true;
-  TBbalance = "min";
   rankdir = "TB";
   splines = "spline";
-  nodesep = 1.389;
-  ranksep = 1.25;
-  size = "4.167,2.778!";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.389;
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
     labelloc = "t";
-    style = "filled,rounded";
   ];
   edge [
     fontname = "Helvetica";
@@ -39,18 +36,19 @@ exports[`printToDot > computedAmazonView 1`] = `
     shape = "rect";
     width = 4.445;
     height = 2.5;
-    fixedsize = false;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
+    margin = 0.362;
   ];
   subgraph "cluster_cloud" {
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 1;
-    margin = 32;
+    style = "filled,rounded";
+    margin = "28,32";
     label = <<B>CLOUD</B>>;
     "backend" [
       likec4_id = "cloud.backend";
@@ -63,7 +61,8 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "amazon";
     likec4_level = 0;
     likec4_depth = 1;
-    margin = 32;
+    style = "filled,rounded";
+    margin = "28,32";
     label = <<B>AMAZON</B>>;
     "s3" [
       likec4_id = "amazon.s3";
@@ -89,21 +88,18 @@ exports[`printToDot > computedCloud3levels 1`] = `
   bgcolor = "transparent";
   layout = "dot";
   compound = true;
-  TBbalance = "min";
   rankdir = "TB";
   splines = "spline";
-  nodesep = 1.389;
-  ranksep = 1.25;
-  size = "4.167,2.778!";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.389;
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
     labelloc = "t";
-    style = "filled,rounded";
   ];
   edge [
     fontname = "Helvetica";
@@ -123,12 +119,12 @@ exports[`printToDot > computedCloud3levels 1`] = `
     shape = "rect";
     width = 4.445;
     height = 2.5;
-    fixedsize = false;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
+    margin = 0.362;
   ];
   "support" [
     likec4_id = "support";
@@ -158,7 +154,8 @@ exports[`printToDot > computedCloud3levels 1`] = `
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 2;
-    margin = 40;
+    style = "filled,rounded";
+    margin = "28,32";
     label = <<B>CLOUD</B>>;
     "adminpanel" [
       likec4_id = "cloud.frontend.adminPanel";
@@ -182,7 +179,8 @@ exports[`printToDot > computedCloud3levels 1`] = `
       likec4_id = "cloud.backend";
       likec4_level = 1;
       likec4_depth = 1;
-      margin = 32;
+      style = "filled,rounded";
+      margin = "28,32";
       label = <<B>BACKEND</B>>;
       "graphql" [
         likec4_id = "cloud.backend.graphql";
@@ -245,21 +243,18 @@ exports[`printToDot > computedCloudView 1`] = `
   bgcolor = "transparent";
   layout = "dot";
   compound = true;
-  TBbalance = "min";
   rankdir = "TB";
   splines = "spline";
-  nodesep = 1.389;
-  ranksep = 1.25;
-  size = "4.167,2.778!";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.389;
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
     labelloc = "t";
-    style = "filled,rounded";
   ];
   edge [
     fontname = "Helvetica";
@@ -279,12 +274,12 @@ exports[`printToDot > computedCloudView 1`] = `
     shape = "rect";
     width = 4.445;
     height = 2.5;
-    fixedsize = false;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
+    margin = 0.362;
   ];
   "customer" [
     likec4_id = "customer";
@@ -314,7 +309,8 @@ exports[`printToDot > computedCloudView 1`] = `
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 1;
-    margin = 32;
+    style = "filled,rounded";
+    margin = "28,32";
     label = <<B>CLOUD</B>>;
     "frontend" [
       likec4_id = "cloud.frontend";
@@ -358,21 +354,18 @@ exports[`printToDot > computedIndexView 1`] = `
   bgcolor = "transparent";
   layout = "dot";
   compound = true;
-  TBbalance = "min";
   rankdir = "TB";
   splines = "spline";
-  nodesep = 1.389;
-  ranksep = 1.25;
-  size = "4.167,2.778!";
+  outputorder = "nodesfirst";
+  nodesep = 1.528;
+  ranksep = 1.389;
   pack = 120;
   packmode = "array_3";
   graph [
-    margin = 40;
     fontname = "Helvetica";
     fontsize = 13;
     labeljust = "l";
     labelloc = "t";
-    style = "filled,rounded";
   ];
   edge [
     fontname = "Helvetica";
@@ -392,12 +385,12 @@ exports[`printToDot > computedIndexView 1`] = `
     shape = "rect";
     width = 4.445;
     height = 2.5;
-    fixedsize = false;
     style = "filled,rounded";
     fillcolor = "#3b82f6";
     color = "#2563eb";
     penwidth = 0;
     nojustify = true;
+    margin = 0.362;
   ];
   "customer" [
     likec4_id = "customer";

@@ -6,41 +6,19 @@ import type {
   ComputedView,
   EdgeId,
   Fqn,
-  RelationshipArrowType
+  RelationshipArrowType,
+  RelationshipLineType
 } from '@likec4/core'
 import {
-  DefaultLineStyle,
   DefaultRelationshipColor,
   DefaultThemeColor,
   defaultTheme,
   invariant,
   nameFromFqn,
-  parentFqn,
   nonNullable,
-  compareFqnHierarchically,
-  compareByFqnHierarchically,
-  isAncestor,
-  isSameHierarchy
+  parentFqn
 } from '@likec4/core'
-import {
-  filter,
-  first,
-  flatMap,
-  groupBy,
-  identity,
-  isNil,
-  isNumber,
-  isTruthy,
-  keys,
-  last,
-  length,
-  map,
-  omitBy,
-  pipe,
-  reverse,
-  sort,
-  uniq
-} from 'remeda'
+import { first, isNil, isNumber, isTruthy, last } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -53,7 +31,7 @@ import {
   type SubgraphModel
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
-import { pxToInch, pxToPoints } from './graphviz-utils'
+import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
 import type { DotSource } from './types'
 
 // Declare custom attributes.
@@ -94,6 +72,8 @@ function toArrowType(type: RelationshipArrowType): ArrowType {
   }
 }
 
+const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
+
 export function toGraphvisModel({
   autoLayout,
   nodes: viewNodes,
@@ -104,13 +84,12 @@ export function toGraphvisModel({
     [_.bgcolor]: 'transparent',
     [_.layout]: 'dot',
     [_.compound]: true,
-    [_.TBbalance]: 'min',
     [_.rankdir]: autoLayout,
     [_.splines]: 'spline',
-    // [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(100),
-    [_.ranksep]: pxToInch(90),
-    [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
+    [_.outputorder]: 'nodesfirst',
+    [_.nodesep]: pxToInch(110),
+    [_.ranksep]: pxToInch(100),
+    // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
     // [_.ratio]: 'fill',
     // [_.concentrate]: false,
     // [_.mclimit]: 3,
@@ -124,12 +103,11 @@ export function toGraphvisModel({
   })
 
   G.attributes.graph.apply({
-    [_.margin]: pxToPoints(40),
+    // [_.margin]: pxToPoints(40),
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
-    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't',
-    [_.style]: 'filled,rounded'
+    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't'
   })
 
   G.attributes.node.apply({
@@ -139,23 +117,23 @@ export function toGraphvisModel({
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
-    [_.fixedsize]: false,
+    // [_.fixedsize]: false,
     [_.style]: 'filled,rounded',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
-    [_.nojustify]: true
-    // [_.margin]: pxToInch(26)
+    [_.nojustify]: true,
+    [_.margin]: pxToInch(26)
     // [_.ordering]: 'out'
   })
 
   G.attributes.edge.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
-    [_.style]: DefaultLineStyle,
+    [_.style]: DefaultEdgeStyle,
     [_.weight]: 1,
     [_.penwidth]: pxToPoints(1),
-    [_.arrowsize]: 0.85,
+    // [_.arrowsize]: 0.9,
     [_.nojustify]: true,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
@@ -271,12 +249,16 @@ export function toGraphvisModel({
       [_.likec4_id]: elementNode.id,
       [_.likec4_level]: elementNode.level,
       [_.likec4_depth]: elementNode.depth,
-      [_.margin]: elementNode.children.length > 2 ? pxToPoints(40) : pxToPoints(32)
+      [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
+      [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
+      [_.style]: 'filled,rounded',
+      [_.margin]: `${pxToPoints(28)},${pxToPoints(32)}`
     })
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
+      const color = compoundLabelColor(Theme.elements[elementNode.color].loContrast)
       subgraph.apply({
-        [_.label]: `<<B>${label}</B>>`
+        [_.label]: `<<FONT COLOR="${color}"><B>${label}</B></FONT>>`
       })
     }
     subgraphs.set(elementNode.id, subgraph)
@@ -388,7 +370,7 @@ export function toGraphvisModel({
         [_.fontcolor]: Theme.relationships[edge.color].labelColor
       })
     }
-    if (edge.line) {
+    if (edge.line && edge.line !== DefaultEdgeStyle) {
       e.attributes.apply({
         [_.style]: edge.line
       })

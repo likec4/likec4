@@ -10,11 +10,10 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { dropRepeats } from 'rambdax'
-import { first, hasAtLeast, last, maxBy } from 'remeda'
-import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './graphviz-utils'
+import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { printToDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
+import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
@@ -137,7 +136,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
-  const icons = dropRepeats(computedNodes.flatMap(node => (node.icon ? [node.icon] : [])))
+  const icons = uniq(computedNodes.flatMap(node => (node.icon ? [node.icon] : [])))
 
   const rawjson = graphviz.dot(dot, 'json', {
     images: icons.map(path => ({ path, width: IconSize, height: IconSize })),

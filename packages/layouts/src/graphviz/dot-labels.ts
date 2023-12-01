@@ -1,7 +1,7 @@
 import { ElementColors as Colors, type ComputedNode } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
-import { IconSizePoints, pxToPoints } from './graphviz-utils'
+import { IconSizePoints, pxToPoints } from './utils'
 
 export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
