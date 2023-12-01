@@ -24,7 +24,6 @@ exports[`printToDot > computedAmazonView 1`] = `
     style = "dashed";
     weight = 1;
     penwidth = 1;
-    arrowsize = 0.85;
     nojustify = true;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
@@ -47,9 +46,11 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
     style = "filled,rounded";
     margin = "28,32";
-    label = <<B>CLOUD</B>>;
+    label = <<FONT COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
     "backend" [
       likec4_id = "cloud.backend";
       likec4_level = 1;
@@ -61,9 +62,11 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "amazon";
     likec4_level = 0;
     likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
     style = "filled,rounded";
     margin = "28,32";
-    label = <<B>AMAZON</B>>;
+    label = <<FONT COLOR="#bfdbfeb3"><B>AMAZON</B></FONT>>;
     "s3" [
       likec4_id = "amazon.s3";
       likec4_level = 1;
@@ -107,7 +110,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
     style = "dashed";
     weight = 1;
     penwidth = 1;
-    arrowsize = 0.85;
     nojustify = true;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
@@ -154,9 +156,11 @@ exports[`printToDot > computedCloud3levels 1`] = `
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 2;
+    fillcolor = "#1a468d";
+    color = "#1c3979";
     style = "filled,rounded";
     margin = "28,32";
-    label = <<B>CLOUD</B>>;
+    label = <<FONT COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
     "adminpanel" [
       likec4_id = "cloud.frontend.adminPanel";
       likec4_level = 1;
@@ -179,9 +183,11 @@ exports[`printToDot > computedCloud3levels 1`] = `
       likec4_id = "cloud.backend";
       likec4_level = 1;
       likec4_depth = 1;
+      fillcolor = "#194b9e";
+      color = "#1b3d88";
       style = "filled,rounded";
       margin = "28,32";
-      label = <<B>BACKEND</B>>;
+      label = <<FONT COLOR="#bfdbfeb3"><B>BACKEND</B></FONT>>;
       "graphql" [
         likec4_id = "cloud.backend.graphql";
         likec4_level = 2;
@@ -262,7 +268,6 @@ exports[`printToDot > computedCloudView 1`] = `
     style = "dashed";
     weight = 1;
     penwidth = 1;
-    arrowsize = 0.85;
     nojustify = true;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
@@ -309,9 +314,11 @@ exports[`printToDot > computedCloudView 1`] = `
     likec4_id = "cloud";
     likec4_level = 0;
     likec4_depth = 1;
+    fillcolor = "#194b9e";
+    color = "#1b3d88";
     style = "filled,rounded";
     margin = "28,32";
-    label = <<B>CLOUD</B>>;
+    label = <<FONT COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
     "frontend" [
       likec4_id = "cloud.frontend";
       likec4_level = 1;
@@ -373,7 +380,6 @@ exports[`printToDot > computedIndexView 1`] = `
     style = "dashed";
     weight = 1;
     penwidth = 1;
-    arrowsize = 0.85;
     nojustify = true;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
