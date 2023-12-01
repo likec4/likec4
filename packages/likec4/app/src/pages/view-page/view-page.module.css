@@ -68,7 +68,6 @@
   align-items: stretch;
   flex: 1 1 auto;
   overflow: scroll;
-  position: relative;
 
   & > :global(.rt-TabsContent) {
     display: flex;

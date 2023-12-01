@@ -33,7 +33,7 @@ export default function ViewDiagramInOtherFormats({ viewId, viewMode }: Props) {
           </Tabs.List>
         </Box>
 
-        <Box p='2' className={styles.otherFormats}>
+        <Box p='2' className={styles.otherFormats} position={'relative'}>
           <Tabs.Content value='dot'>
             <ViewAsDot viewId={viewId} />
           </Tabs.Content>

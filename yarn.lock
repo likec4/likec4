@@ -1174,6 +1174,7 @@ __metadata:
     "@types/node": "npm:^20.10.1"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
+    khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.29.0"

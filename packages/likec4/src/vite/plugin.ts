@@ -23,7 +23,7 @@ const generatedViews = {
   virtualId: '/@vite-plugin-likec4/likec4-views',
   async load({ likec4, logger }) {
     logger.info('generating virtual:likec4/views')
-    const views = await likec4.getViews()
+    const views = (await likec4.getViews()).map(v => v.diagram)
     return generateViewsDataJs(views)
   }
 } satisfies Module
@@ -34,7 +34,7 @@ const dimensionsModule = {
   // virtualId: '/@vite-plugin-likec4/likec4-dimensions.ts',
   async load({ likec4, logger }) {
     logger.info('generating virtual:likec4/dimensions')
-    const views = await likec4.getViews()
+    const views = (await likec4.getViews()).map(v => v.diagram)
     let code = `export const LikeC4Views = {\n`
     for (const view of views) {
       code += `  ${JSON.stringify(view.id)}: {width: ${view.width},height: ${view.height}},\n`
@@ -50,7 +50,7 @@ const dotSourcesModule = {
   // virtualId: '/@vite-plugin-likec4/likec4-dot-sources.ts',
   async load({ likec4, logger }) {
     logger.info('generating virtual:likec4/dot-sources')
-    const dotSources = await likec4.getViewsAsDot()
+    const views = await likec4.getViews()
     const sources = {} as Record<
       string,
       {
@@ -58,10 +58,10 @@ const dotSourcesModule = {
         svg: string
       }
     >
-    for (const [viewId, dot] of Object.entries(dotSources)) {
-      sources[viewId] = {
+    for (const { diagram, dot } of views) {
+      sources[diagram.id] = {
         dot,
-        svg: await likec4.dotlayouter.svg(dot)
+        svg: await likec4.dotlayouter.svg(dot, diagram)
       }
     }
     return generateDotSources(sources)

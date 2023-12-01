@@ -12,33 +12,34 @@ import {
   Dialog,
   Flex,
   Link,
+  ScrollArea,
   Select,
   Tabs,
   Text
 } from '@radix-ui/themes'
 import { useState } from 'react'
 import { $pages } from '../../router'
+import { CopyToClipboard } from '../CopyToClipboard'
 
 const embedCode = (diagram: DiagramView, theme: string) => {
+  const url = new URL($pages.embed.path(diagram.id), window.location.href)
   const padding = 20
-  const params = new URLSearchParams()
-  params.set('padding', `${padding}`)
+
+  url.searchParams.set('padding', `${padding}`)
   if (theme !== 'system') {
-    params.set('theme', theme)
+    url.searchParams.set('theme', theme)
+  } else {
+    url.searchParams.delete('theme')
   }
 
   const width = diagram.width + padding * 2
   const height = diagram.height + padding * 2
 
-  const url = new URL(window.location.href)
-  url.pathname = $pages.embed.path(diagram.id)
-  url.search = params.toString()
-  const iframe = `<iframe src="${url.href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>`
-
   const code = `
-<div style="aspect-ratio:${width}/${height};max-width:${width}px;width:100%;height:auto;padding:0;margin-left:auto;margin-right:auto">
-  ${iframe}
-</div>`.trim()
+<div style="aspect-ratio:${width}/${height};width:100%;height:auto;max-width:${width}px;margin:0 auto">
+  <iframe src="${url.href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>
+</div>
+`.trim()
 
   return {
     code,
@@ -91,16 +92,23 @@ export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
                     </Link>
                   </Flex>
                 </Flex>
-                <Box
-                  asChild
-                  display={'block'}
-                  my='2'
-                  p='2'
-                  className='whitespace-pre-wrap overflow-scroll select-all'
-                >
-                  <Code variant='soft' autoFocus>
-                    {code}
-                  </Code>
+                <Box position={'relative'} mt={'1'}>
+                  <ScrollArea scrollbars='both' style={{ maxHeight: 200 }}>
+                    <Box
+                      asChild
+                      display={'block'}
+                      px='2'
+                      py='3'
+                      style={{
+                        whiteSpace: 'pre'
+                      }}
+                    >
+                      <Code variant='soft' autoFocus>
+                        {code}
+                      </Code>
+                    </Box>
+                  </ScrollArea>
+                  <CopyToClipboard text={code} />
                 </Box>
               </label>
               <Text as='div' size='2' color='gray' trim={'start'}>

@@ -1,12 +1,14 @@
 import { Box, Code, Grid, ScrollArea } from '@radix-ui/themes'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import styles from '../view-page.module.css'
+import { CopyToClipboard } from '../../../components'
 
 type ViewAsDotProps = {
   viewId: string
 }
 
 export default function ViewAsDot({ viewId }: ViewAsDotProps) {
+  const dot = dotSource(viewId)
   return (
     <Grid
       //@ts-expect-error TODO: fails on columns prop due to `exactOptionalPropertyTypes: true` in tsconfig
@@ -17,6 +19,7 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
     >
       <Box
         py={'2'}
+        position={'relative'}
         style={{
           overflow: 'scroll'
         }}
@@ -31,10 +34,11 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
             }}
           >
             <Code variant='soft' autoFocus>
-              {dotSource(viewId)}
+              {dot}
             </Code>
           </Box>
         </ScrollArea>
+        <CopyToClipboard text={dot} />
       </Box>
       <Box
         py={'2'}

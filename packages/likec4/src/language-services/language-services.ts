@@ -126,12 +126,12 @@ export async function mkLanguageServices({
     return result
   }
 
-  function dotlayouts() {
+  function getViews() {
     const castedCache = services.WorkspaceCache as WorkspaceCache<
       string,
       Promise<DotLayoutResult[]>
     >
-    return castedCache.get('dotlayouts', async () => {
+    return castedCache.get('getViews', async () => {
       const views = getModel()?.views
       if (!views || keys(views).length === 0) {
         return []
@@ -193,11 +193,7 @@ export async function mkLanguageServices({
     dotlayouter: dot,
     workspace,
     getModel,
-    getViews: () => dotlayouts().then(results => results.map(r => r.diagram)),
-    getViewsAsDot: () =>
-      dotlayouts().then(
-        results => R.fromPairs(results.map(r => [r.diagram.id, r.dot])) as Record<ViewID, string>
-      ),
+    getViews,
     notifyUpdate,
     hasValidationErrors,
     printValidationErrors: () => printValidationErrors(),
