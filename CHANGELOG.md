@@ -1,3 +1,24 @@
+# [0.50.0](https://github.com/likec4/likec4/compare/v0.49.0...v0.50.0) (2023-12-01)
+
+### 🚀 Features
+- **diagrams:** navigate button ([44d2182](https://github.com/likec4/likec4/commit/44d218257916a449ce0e3ce2a039a0e460196d6a))
+- **likec4:** display other formats ([c2f5823](https://github.com/likec4/likec4/commit/c2f5823e378cca00e16e548e10db53b133a768a0))
+- **likec4:** copy-to-clipboard button ([ee444ac](https://github.com/likec4/likec4/commit/ee444ac1fd6f7f6ad937bf58182a12862aecb0f9))
+- **likec4:** display diagram links ([c4932e7](https://github.com/likec4/likec4/commit/c4932e763a446dd9a426a08c62be28dfee07308e))
+- **likec4:** show overlay on validation error ([6f1c36f](https://github.com/likec4/likec4/commit/6f1c36f57d3097726cbe1fdc06d59eb98b9d12ad))
+
+### Bug Fixes
+
+- **layouts:** background color for compounds in dot ([773c1ae](https://github.com/likec4/likec4/commit/773c1ae7dc83d8341c84f0fe1cb26682e6e5a3e7))
+- **deps:** update dependency type-fest to ^4.8.2 ([75c54fa](https://github.com/likec4/likec4/commit/75c54faf37e8c4e33808336420f3cd0cea5c8b7a))
+- **docs:** show correct dot in playground ([9e20da9](https://github.com/likec4/likec4/commit/9e20da9e2d1e1f37f14325f79e198dc3ba2ded76))
+- **graph:** sort graph nodes considering implicit edges ([a1e33a4](https://github.com/likec4/likec4/commit/a1e33a4b9a7a52ccf2e8e97bb0c01a8bf06f4b6f))
+- **layouts:** improve graph layout ([e71abfe](https://github.com/likec4/likec4/commit/e71abfe923febad88e190a66e8aced13a559bba6))
+- **graph:** removeRedundantImplicitEdges ([a6420dc](https://github.com/likec4/likec4/commit/a6420dca92dc3ceea079b12ee4cab1711b841757))
+
+### Features
+
+
 # [0.49.0](https://github.com/likec4/likec4/compare/v0.48.0...v0.49.0) (2023-11-23)
 
 ### 🚀 Features
