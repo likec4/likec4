@@ -72,7 +72,7 @@ export class Rpc extends AbstractDisposable {
     await this.client.sendRequest(buildDocuments, { docs })
   }
 
-  async locate<P extends LocateParams>(params: P): Promise<Location | null> {
+  async locate(params: LocateParams): Promise<Location | null> {
     return await this.client.sendRequest(locate, params)
   }
 }

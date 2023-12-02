@@ -54,14 +54,7 @@ const extensionWebCfg = {
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
-  platform: 'browser',
-  plugins: [
-    nodeModulesPolyfillPlugin({
-      globals: {
-        process: true
-      }
-    })
-  ]
+  platform: 'browser'
 }
 /**
  * @type {esbuild.BuildOptions}
@@ -71,14 +64,7 @@ const serverWebCfg = {
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',
-  platform: 'browser',
-  plugins: [
-    nodeModulesPolyfillPlugin({
-      globals: {
-        process: true
-      }
-    })
-  ]
+  platform: 'browser'
 }
 
 const builds = [extensionNodeCfg, serverNodeCfg, extensionWebCfg, serverWebCfg]

@@ -20,7 +20,7 @@ model {
 
       dashboard = app 'Customer Dashboard' {
         #team-a
-        technology 'Nextjs'
+        technology '[ nextjs ]'
         description 'Web application, that allows customers to interact with the cloud system'
         style {
           shape browser
@@ -142,6 +142,7 @@ views {
     }
   }
 
+
   view cloud_ui of ui {
     title "Overview UI"
     include
@@ -163,6 +164,7 @@ views {
       color green
     }
   }
+
 
   view cloud_backend of backend {
     title "Overview Backend"

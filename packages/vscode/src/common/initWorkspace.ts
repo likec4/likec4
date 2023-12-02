@@ -18,7 +18,8 @@ export async function initWorkspace(rpc: Rpc) {
       `[InitWorkspace] with pattern "${globPattern}" found:\n` +
         docs.map(s => '  - ' + s).join('\n')
     )
-    await delay(1000)
+    const isweb = isWebUi() || isVirtual()
+    await delay(isweb ? 2000 : 500)
     Logger.info(`[InitWorkspace] Send request buildDocuments`)
     await rpc.buildDocuments(docs)
   } catch (e) {
@@ -74,7 +75,8 @@ async function recursiveSearchSources() {
   const uris = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   while (folders.length > 0) {
-    const folder = folders.pop()!
+    const folder = folders.pop()
+    if (!folder) break
     try {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)

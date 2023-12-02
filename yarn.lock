@@ -1211,6 +1211,7 @@ __metadata:
     typescript: "npm:^5.3.2"
     vite: "npm:^5.0.4"
     vite-tsconfig-paths: "npm:^4.2.1"
+    vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
 
@@ -9452,6 +9453,7 @@ __metadata:
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-messenger: "npm:^0.4.5"
     vscode-uri: "npm:3.0.8"
     xstream: "npm:^11.14.0"
   languageName: unknown
@@ -15752,6 +15754,31 @@ __metadata:
   bin:
     installServerIntoExtension: bin/installServerIntoExtension
   checksum: 1cb643b1b1f41a620aaf4a62e152acad694c22b4d98de73fa614a0bddf3b4b4832460465bdbc43f27ba23dad7e61aba533e77b8bfac74cc8de310c39623a7ba1
+  languageName: node
+  linkType: hard
+
+"vscode-messenger-common@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "vscode-messenger-common@npm:0.4.5"
+  checksum: 10ca0ac90ab20198507ab937de09d8bd22c223e6623dd581bc41d0a49489785c34bb44eb90507302463be07fe0b7f1d979e30eb23e5ede97f97d63779b708350
+  languageName: node
+  linkType: hard
+
+"vscode-messenger-webview@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "vscode-messenger-webview@npm:0.4.5"
+  dependencies:
+    vscode-messenger-common: "npm:^0.4.5"
+  checksum: 0cb2180175f24fe30a712e03cc0425230046a26aec1893fb85c55581cd534dc2ddf2fbe4ae9720b508f1a7b93151fb1b00ee936aac881334f9b9268ec17199f4
+  languageName: node
+  linkType: hard
+
+"vscode-messenger@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "vscode-messenger@npm:0.4.5"
+  dependencies:
+    vscode-messenger-common: "npm:^0.4.5"
+  checksum: a396ff2321db21c2c2b57e2a35aa949a3892995c85a4fc25829cea9518ee544c0e5f42394138140b56f817d7dd6d7dd2932a5832343d100fee3226bc835d494c
   languageName: node
   linkType: hard
 

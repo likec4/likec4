@@ -7,13 +7,15 @@ import {
   type ServerOptions,
   type TextDocumentFilter
 } from 'vscode-languageclient/node'
-import ExtensionController from '../common/ExtensionController'
+import { ExtensionController } from '../common/ExtensionController'
 import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
+import { Logger } from '../logger'
 
 let controller: ExtensionController | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
+  Logger.info('[Extension] active node extension')
   const client = createLanguageClient(context)
   const ctrl = (controller = new ExtensionController(context, client))
   void ctrl.activate()

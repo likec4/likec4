@@ -4,14 +4,16 @@ import {
   LanguageClient as BrowserLanguageClient,
   type LanguageClientOptions
 } from 'vscode-languageclient/browser'
-import ExtensionController from '../common/ExtensionController'
+import { ExtensionController } from '../common/ExtensionController'
 import { extensionName, extensionTitle, languageId } from '../const'
+import { Logger } from '../logger'
 
 let controller: ExtensionController | undefined
 let worker: Worker | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
+  Logger.info('[Extension] active browser extension')
   const ctrl = (controller = new ExtensionController(context, createLanguageClient(context)))
   void ctrl.activate()
 }
