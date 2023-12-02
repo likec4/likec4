@@ -57,10 +57,12 @@ export class NodeKindProvider implements NodeKindProvider {
         return CompletionItemKind.EnumMember
       case SymbolKind.TypeParameter:
         return CompletionItemKind.TypeParameter
+      case SymbolKind.Interface:
+        return CompletionItemKind.Interface
       case SymbolKind.Event:
         return CompletionItemKind.Event
       default:
-        return CompletionItemKind.Constant
+        return CompletionItemKind.Keyword
     }
   }
 }

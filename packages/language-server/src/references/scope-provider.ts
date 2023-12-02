@@ -127,24 +127,26 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const doc = getDocument(context.container)
     const precomputed = doc.precomputedScopes
 
-    const byReferenceType = (desc: AstNodeDescription) =>
-      this.reflection.isSubtype(desc.type, referenceType)
+    if (precomputed) {
+      const byReferenceType = (desc: AstNodeDescription) =>
+        this.reflection.isSubtype(desc.type, referenceType)
 
-    let container: AstNode | undefined = context.container
-    while (container) {
-      const elements = precomputed?.get(container).filter(byReferenceType)
-      if (elements && elements.length > 0) {
-        scopes.push(stream(elements))
-      }
-      if (referenceType === ast.Element) {
-        if (ast.isExtendElementBody(container)) {
-          scopes.push(this.scopeExtendElement(container.$container))
+      let container: AstNode | undefined = context.container
+      while (container) {
+        const elements = precomputed.get(container).filter(byReferenceType)
+        if (elements.length > 0) {
+          scopes.push(stream(elements))
         }
-        if (ast.isElementViewBody(container)) {
-          scopes.push(this.scopeElementView(container.$container))
+        if (referenceType === ast.Element) {
+          if (ast.isExtendElementBody(container)) {
+            scopes.push(this.scopeExtendElement(container.$container))
+          }
+          if (ast.isElementViewBody(container)) {
+            scopes.push(this.scopeElementView(container.$container))
+          }
         }
+        container = container.$container
       }
-      container = container.$container
     }
 
     return scopes.reduceRight((outerScope, elements) => {

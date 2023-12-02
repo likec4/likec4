@@ -69,8 +69,15 @@ export interface LikeC4AddedServices {
     ModelLocator: LikeC4ModelLocator
   }
   lsp: {
-    DocumentLinkProvider: LikeC4DocumentLinkProvider
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
+    SemanticTokenProvider: LikeC4SemanticTokenProvider
+    HoverProvider: LikeC4HoverProvider
+    CodeLensProvider: LikeC4CodeLensProvider
+    DocumentLinkProvider: LikeC4DocumentLinkProvider
+  }
+  references: {
+    ScopeComputation: LikeC4ScopeComputation
+    ScopeProvider: LikeC4ScopeProvider
   }
   shared?: LikeC4SharedServices
 }

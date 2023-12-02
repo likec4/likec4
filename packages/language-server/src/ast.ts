@@ -129,10 +129,6 @@ export interface LikeC4DocumentProps {
 export interface LikeC4LangiumDocument
   extends LangiumDocument<LikeC4Grammar>,
     LikeC4DocumentProps {}
-
-// export type FqnIndexedDocument = SetRequired<LikeC4LangiumDocument, 'c4fqns'>
-//   extends LangiumDocument<LikeC4Grammar>,
-//     SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
 export interface FqnIndexedDocument
   extends LangiumDocument<LikeC4Grammar>,
     SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
