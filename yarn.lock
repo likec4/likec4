@@ -1232,7 +1232,7 @@ __metadata:
     prettier: "npm:^3.1.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^4.1.3"
+    tsx: "npm:^4.6.1"
     turbo: "npm:^1.10.16"
     typescript: "npm:^5.3.2"
     vite: "npm:^5.0.4"
@@ -5572,7 +5572,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^4.1.3"
+    tsx: "npm:^4.6.1"
     typescript: "npm:^5.3.2"
     unbuild: "npm:^2.0.0"
   bin:
@@ -9502,7 +9502,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
-    tsx: "npm:^4.1.3"
+    tsx: "npm:^4.6.1"
     type-fest: "npm:^4.8.2"
     typescript: "npm:^5.3.2"
     typescript-plugin-css-modules: "npm:^5.0.2"
@@ -14656,6 +14656,22 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: 147035c69c63db503ef5d07dc4e85e900362a7d0a77b940c9620c96ee4d1758f9e5b343bf19da664b437587fc87eaf1896f9e18519f1f5cb0cc1c420bf0fc37d
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^4.6.1":
+  version: 4.6.2
+  resolution: "tsx@npm:4.6.2"
+  dependencies:
+    esbuild: "npm:~0.18.20"
+    fsevents: "npm:~2.3.3"
+    get-tsconfig: "npm:^4.7.2"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 451b23ed999a3bf3592181f3411d67bfe6d4269f2171ca627c5acbe442fd08d8864585eb67095c0dc8462e35ee8427de37c9bb2b4f6ffc629d5a05f0c66983d4
   languageName: node
   linkType: hard
 
