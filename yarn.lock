@@ -1027,7 +1027,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@use-gesture/react": "npm:^10.3.0"
-    body-scroll-lock-upgrade: "npm:^1.0.4"
+    body-scroll-lock-upgrade: "npm:^1.1.0"
     execa: "npm:^8.0.1"
     jotai: "npm:^2.6.0"
     khroma: "npm:^2.1.0"
@@ -1062,7 +1062,7 @@ __metadata:
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
     autoprefixer: "npm:^10.4.16"
-    body-scroll-lock-upgrade: "npm:^1.0.4"
+    body-scroll-lock-upgrade: "npm:^1.1.0"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^1.2.1"
     jotai: "npm:^2.6.0"
@@ -4610,10 +4610,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-scroll-lock-upgrade@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "body-scroll-lock-upgrade@npm:1.0.4"
-  checksum: 3d243fcb956231470d96c68cd022b287be9ea270c2ba363dc7d8d79b18b5dacdecb76339301ec615ebdd86cc648ebaee84f3b2986b939e9fd9dfde6fb9281654
+"body-scroll-lock-upgrade@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "body-scroll-lock-upgrade@npm:1.1.0"
+  checksum: a8bc92187a487996e5e8277f4055aaf6966e193967079b2d669ccb071a49d7f6caa8749b7c000164123a4a0a61d497ce097dc368ac3ef587e050689977587308
   languageName: node
   linkType: hard
 
