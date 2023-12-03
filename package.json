@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.44.8",
-    "@types/node": "^20.10.1",
+    "@types/node": "^20.10.3",
     "@types/prettier": "^2.7.3",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
