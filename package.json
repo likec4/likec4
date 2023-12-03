@@ -10,7 +10,7 @@
     "examples/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": "^18.0.0 || >=20.0.0"
   },
   "scripts": {
     "prepare": "husky install",
@@ -51,7 +51,7 @@
     "vitest-github-actions-reporter": "^0.11.1"
   },
   "volta": {
-    "node": "20.8.1"
+    "node": "20.10.0"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",
