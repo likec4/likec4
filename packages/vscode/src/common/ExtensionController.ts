@@ -1,24 +1,27 @@
 import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
-import { State } from 'vscode-languageclient'
 
 import { normalizeError, serializeError, type ViewID } from '@likec4/core'
+import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import {
+  cmdLocate,
   cmdOpenPreview,
   cmdPreviewContextOpenSource,
   cmdRebuild,
-  languageId,
   telemetryKey
 } from '../const'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
 import { initWorkspace, rebuildWorkspace } from './initWorkspace'
+import Messenger from './Messenger'
 import { PreviewPanel } from './panel/PreviewPanel'
 import { Rpc } from './Rpc'
 
-export default class ExtensionController extends AbstractDisposable {
+export class ExtensionController extends AbstractDisposable {
+  public static extensionUri: vscode.Uri
+
   private _telemetry: TelemetryReporter
 
   constructor(
@@ -26,7 +29,7 @@ export default class ExtensionController extends AbstractDisposable {
     public client: LanguageClient
   ) {
     super()
-    // this._context.subscriptions.push(this)
+    ExtensionController.extensionUri = _context.extensionUri
 
     this.onDispose(() => {
       client.outputChannel.dispose()
@@ -86,6 +89,9 @@ export default class ExtensionController extends AbstractDisposable {
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
+      const messenger = new Messenger()
+      this.onDispose(messenger)
+
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
 
@@ -93,23 +99,47 @@ export default class ExtensionController extends AbstractDisposable {
       c4model.turnOnTelemetry()
       this.onDispose(c4model)
 
-      const previewPanel = new PreviewPanel(c4model, rpc, this._context)
-      this.onDispose(previewPanel)
-
       this.onDispose(
-        vscode.window.registerWebviewPanelSerializer(PreviewPanel.ViewType, previewPanel)
+        vscode.window.registerWebviewPanelSerializer(
+          PreviewPanel.ViewType,
+          PreviewPanel.Serializer({
+            c4model,
+            messenger
+          })
+        )
       )
       this.registerCommand(cmdRebuild, () => {
         void rebuildWorkspace(rpc)
         this._telemetry.sendTelemetryEvent('rebuild')
       })
-      this.registerCommand(cmdPreviewContextOpenSource, () => {
-        previewPanel.onContextMenuOpenSource()
+      this.registerCommand(cmdPreviewContextOpenSource, async () => {
+        const { elementId } = await messenger.getHoveredElement()
+        if (!elementId) return
+        await vscode.commands.executeCommand(cmdLocate, {
+          element: elementId
+        } satisfies WebviewToExtension.LocateParams)
       })
 
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {
-        previewPanel.open(viewId ?? ('index' as ViewID))
+        PreviewPanel.createOrShow({
+          viewId: viewId ?? ('index' as ViewID),
+          c4model,
+          messenger
+        })
         this._telemetry.sendTelemetryEvent('open-preview')
+      })
+      this.registerCommand(cmdLocate, async (params: WebviewToExtension.LocateParams) => {
+        const loc = await rpc.locate(params)
+        if (!loc) return
+        const location = this.client.protocol2CodeConverter.asLocation(loc)
+        const editor = await vscode.window.showTextDocument(location.uri, {
+          viewColumn: vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+          selection: location.range
+        })
+        editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
+      })
+      this.onDispose(() => {
+        PreviewPanel.current?.dispose()
       })
 
       await initWorkspace(rpc)

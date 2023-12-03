@@ -43,7 +43,7 @@ export abstract class AbstractDisposable implements vscode.Disposable {
   private _isDisposed = false
 
   public onDispose<T extends DisposableLike>(...disposables: T[]) {
-    invariant(!this._isDisposed, 'Is alredy disposed')
+    invariant(!this._isDisposed, 'Is already disposed')
     for (const item of disposables) {
       if ('dispose' in item) {
         this._disposables.push(item)

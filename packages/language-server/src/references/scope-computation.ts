@@ -15,81 +15,76 @@ type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
   override computeExports(
     document: LikeC4LangiumDocument,
-    _cancelToken: CancellationToken
+    _cancelToken?: CancellationToken
   ): Promise<AstNodeDescription[]> {
-    const docExports: AstNodeDescription[] = []
-    const { specifications, models, views } = document.parseResult.value
+    return new Promise(resolve => {
+      const docExports: AstNodeDescription[] = []
+      const { specifications, models, views } = document.parseResult.value
 
-    try {
-      for (const spec of specifications.flatMap(s => s.elements)) {
-        if (spec.kind && isTruthy(spec.kind.name)) {
-          docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
-        }
-      }
-    } catch (e) {
-      logError(e)
-    }
-
-    try {
-      for (const spec of specifications.flatMap(s => s.tags)) {
-        if (spec.tag && isTruthy(spec.tag.name)) {
-          docExports.push(
-            this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
-          )
-        }
-      }
-    } catch (e) {
-      logError(e)
-    }
-
-    try {
-      for (const spec of specifications.flatMap(s => s.relationships)) {
-        if (spec.kind && isTruthy(spec.kind.name)) {
-          docExports.push(this.descriptions.createDescription(spec.kind, spec.kind.name, document))
-        }
-      }
-    } catch (e) {
-      logError(e)
-    }
-
-    try {
-      for (const elAst of models.flatMap(m => m.elements)) {
-        if (ast.isElement(elAst) && !isEmpty(elAst.name)) {
-          docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
-        }
-      }
-    } catch (e) {
-      logError(e)
-    }
-
-    try {
-      for (const viewAst of views.flatMap(v => v.views)) {
-        if (isTruthy(viewAst.name)) {
-          docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
-        }
-      }
-    } catch (e) {
-      logError(e)
-    }
-    return Promise.resolve(docExports)
-  }
-
-  override async computeLocalScopes(
-    document: LikeC4LangiumDocument,
-    _cancelToken: CancellationToken
-  ): Promise<PrecomputedScopes> {
-    const root = document.parseResult.value
-    const scopes = new MultiMap<AstNode, AstNodeDescription>()
-    for (const model of root.models) {
       try {
-        const nested = this.processContainer(model, scopes, document)
-        scopes.addAll(root, nested.values())
+        for (const spec of specifications.flatMap(s => [...s.elements, ...s.relationships])) {
+          if (spec.kind && isTruthy(spec.kind.name)) {
+            docExports.push(
+              this.descriptions.createDescription(spec.kind, spec.kind.name, document)
+            )
+          }
+        }
       } catch (e) {
         logError(e)
       }
-    }
 
-    return Promise.resolve(scopes)
+      try {
+        for (const spec of specifications.flatMap(s => s.tags)) {
+          if (spec.tag && isTruthy(spec.tag.name)) {
+            docExports.push(
+              this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+            )
+          }
+        }
+      } catch (e) {
+        logError(e)
+      }
+
+      try {
+        for (const elAst of models.flatMap(m => m.elements)) {
+          if (ast.isElement(elAst) && isTruthy(elAst.name)) {
+            docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
+          }
+        }
+      } catch (e) {
+        logError(e)
+      }
+
+      try {
+        for (const viewAst of views.flatMap(v => v.views)) {
+          if (isTruthy(viewAst.name)) {
+            docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
+          }
+        }
+      } catch (e) {
+        logError(e)
+      }
+      resolve(docExports)
+    })
+  }
+
+  override computeLocalScopes(
+    document: LikeC4LangiumDocument,
+    _cancelToken?: CancellationToken
+  ): Promise<PrecomputedScopes> {
+    return new Promise(resolve => {
+      const root = document.parseResult.value
+      const scopes = new MultiMap<AstNode, AstNodeDescription>()
+      for (const model of root.models) {
+        try {
+          const nested = this.processContainer(model, scopes, document)
+          scopes.addAll(root, nested.values())
+        } catch (e) {
+          logError(e)
+        }
+      }
+      resolve(scopes)
+    })
   }
 
   protected processContainer(
@@ -115,9 +110,13 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
 
       if (subcontainer && subcontainer.elements.length > 0) {
-        const nested = this.processContainer(subcontainer, scopes, document)
-        for (const [nestedName, desc] of nested) {
-          nestedScopes.add(nestedName, desc)
+        try {
+          const nested = this.processContainer(subcontainer, scopes, document)
+          for (const [nestedName, desc] of nested) {
+            nestedScopes.add(nestedName, desc)
+          }
+        } catch (e) {
+          logError(e)
         }
       }
     }

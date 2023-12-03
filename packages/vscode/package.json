@@ -137,6 +137,10 @@
         {
           "command": "likec4.preview-context-open-source",
           "when": "webviewId == 'likec4-preview'"
+        },
+        {
+          "command": "likec4.locate",
+          "when": "webviewId == 'likec4-preview'"
         }
       ]
     },
@@ -154,6 +158,11 @@
       {
         "command": "likec4.preview-context-open-source",
         "title": "%ext.cmd.preview-context-open-source%",
+        "category": "%ext.title%"
+      },
+      {
+        "command": "likec4.locate",
+        "title": "%ext.cmd.locate%",
         "category": "%ext.title%"
       }
     ]
@@ -184,6 +193,7 @@
     "shx": "^0.3.4",
     "tslib": "^2.6.2",
     "typescript": "^5.3.2",
+    "vscode-messenger": "^0.4.5",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",

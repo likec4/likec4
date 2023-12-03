@@ -1,7 +1,7 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
 import type { LangiumDocuments, Stream } from 'langium'
-import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, getDocument, stream } from 'langium'
+import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, stream } from 'langium'
 import type { FqnIndexedDocument, ast } from '../ast'
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logError, logger } from '../logger'

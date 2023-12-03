@@ -1,62 +1,33 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import {
-  nonexhaustive,
-  type DiagramView,
-  type Fqn,
-  type RelationID,
-  type ViewID,
-  normalizeError
-} from '@likec4/core'
-import type {
-  ExtensionToPanelProtocol,
-  PanelToExtensionProtocol
-} from '@likec4/vscode-preview/protocol'
-import type { Disposable, Webview, WebviewPanel } from 'vscode'
+import { invariant, type ViewID } from '@likec4/core'
+import { random } from 'rambdax'
 import * as vscode from 'vscode'
-import type { Location } from 'vscode-languageclient'
-import { Logger, logError } from '../../logger'
-import { AbstractDisposable, getNonce } from '../../util'
+import { ViewColumn, type Disposable, type Webview, type WebviewPanel } from 'vscode'
+import { Logger } from '../../logger'
+import { AbstractDisposable, disposable, getNonce } from '../../util'
 import type { C4Model } from '../C4Model'
-import type { Rpc } from '../Rpc'
+import type Messenger from '../Messenger'
+import { ExtensionController } from '../ExtensionController'
 
-function getUri(webview: Webview, extensionUri: vscode.Uri, pathList: string[]) {
-  return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
+function getUri(webview: Webview, pathList: string[]) {
+  return webview.asWebviewUri(vscode.Uri.joinPath(ExtensionController.extensionUri, ...pathList))
+}
+type Props = {
+  viewId: ViewID
+  messenger: Messenger
+  c4model: C4Model
 }
 
-export class PreviewPanel extends AbstractDisposable implements vscode.WebviewPanelSerializer {
-  private panel: WebviewPanel | null = null
-  private listener: Disposable | null = null
-  private currentViewId: ViewID | null = null
-
+export class PreviewPanel extends AbstractDisposable {
+  /**
+   * Track the currently panel. Only allow a single panel to exist at a time.
+   */
+  public static current: PreviewPanel | undefined
   static ViewType = 'likec4-preview' as const
 
-  constructor(
-    private c4model: C4Model,
-    private rpc: Rpc,
-    private context: vscode.ExtensionContext
-  ) {
-    super()
-
-    this.onDispose(() => {
-      this.unsubscribe()
-      this.panel?.dispose()
-    })
-  }
-
-  public override dispose() {
-    super.dispose()
-    Logger.debug(`[Extension.PreviewPanel] disposed`)
-  }
-
-  deserializeWebviewPanel(webviewPanel: WebviewPanel, state: unknown) {
-    try {
-      this.currentViewId = null
-      if (this.panel) {
-        const err = new Error('PreviewPanel is already initialized')
-        logError(err)
-        return Promise.reject(err)
-      }
-      // TODO: refactor guard
+  public static Serializer = (props: Omit<Props, 'viewId'>): vscode.WebviewPanelSerializer => ({
+    deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
+      let viewId: ViewID
       if (
         state != null &&
         typeof state === 'object' &&
@@ -66,224 +37,160 @@ export class PreviewPanel extends AbstractDisposable implements vscode.WebviewPa
         'id' in state.view &&
         typeof state.view.id === 'string'
       ) {
-        this.currentViewId = state.view.id as ViewID
+        viewId = state.view.id as ViewID
+      } else {
+        viewId = 'index' as ViewID
       }
-      this.panel = webviewPanel
-      this.initPanel()
+      PreviewPanel.revive({ ...props, panel, viewId })
       return Promise.resolve()
-    } catch (e) {
-      Logger.error(normalizeError(e))
-      return Promise.reject(e)
     }
-  }
+  })
 
-  public open(viewId: ViewID) {
-    Logger.debug(`[Extension.PreviewPanel] open ${viewId}`)
-    if (this.panel) {
-      this.panel.reveal(undefined, true)
-      this.subscribeToModel(viewId)
+  public static createOrShow({ viewId, messenger, c4model }: Props) {
+    Logger.debug(`[Extension.PreviewPanel] createOrShow viewId=${viewId}`)
+    // If we already have a panel, show it.
+    if (PreviewPanel.current) {
+      PreviewPanel.current.open(viewId)
+      PreviewPanel.current.panel.reveal()
       return
     }
-    this.currentViewId = viewId
-    this.panel = this.createWebviewPanel()
-    this.initPanel()
-    // Subscribe to model happends on "ready" from webview
-    // this.subscribeToModel(viewId)
-  }
 
-  private subscribeToModel(viewId: ViewID) {
-    this.unsubscribe()
-    this.currentViewId = viewId
-    this.listener = this.c4model.subscribeToView(viewId, data => {
-      this.sendUpdate(data)
+    let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? ViewColumn.One
+    viewColumn = viewColumn === ViewColumn.One ? ViewColumn.Beside : viewColumn
+
+    // Otherwise, create a new panel.
+    const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
+      viewColumn,
+      preserveFocus: true
     })
+    messenger.registerWebViewPanel(panel)
+    PreviewPanel.current = new PreviewPanel(viewId, panel, messenger, c4model)
   }
 
-  private unsubscribe() {
-    if (this.listener) {
-      Logger.debug(`[Extension.PreviewPanel] unsubscribe`)
-      this.listener.dispose()
-      this.listener = null
-    }
+  public static revive({
+    viewId,
+    panel,
+    messenger,
+    c4model
+  }: Props & { panel: vscode.WebviewPanel }) {
+    Logger.debug(`[Extension.PreviewPanel] revive viewId=${viewId}`)
+    invariant(!PreviewPanel.current, 'PreviewPanel is already initialized')
+    messenger.registerWebViewPanel(panel)
+    PreviewPanel.current = new PreviewPanel(viewId, panel, messenger, c4model)
   }
 
-  private initPanel() {
-    if (!this.panel) {
-      throw new Error('PreviewPanel is not initialized')
-    }
+  private _listener: Disposable | null = null
 
-    this.panel.webview.onDidReceiveMessage(this.onWebviewMessage)
+  private constructor(
+    private _viewId: ViewID,
+    private readonly _panel: vscode.WebviewPanel,
+    private readonly messenger: Messenger,
+    private readonly c4model: C4Model
+  ) {
+    super()
+    // Set the webview's initial html content
+    this._update()
 
-    this.panel.onDidChangeViewState(({ webviewPanel }) => {
-      Logger.debug(
-        `[Extension.PreviewPanel.panel] onDidChangeViewState visible=${webviewPanel.visible}`
-      )
-      if (!webviewPanel.visible) {
-        this.unsubscribe()
-      }
-    })
-
-    this.panel.onDidDispose(() => {
-      Logger.debug(`[Extension.PreviewPanel.panel] onDidDispose`)
-      this.panel = null
-      this.close()
+    this.onDispose(() => {
+      PreviewPanel.current = undefined
     })
 
-    this.updateWebviewContent()
-  }
+    // Listen for when the panel is disposed
+    // This happens when the user closes the panel or when the panel is closed programmatically
+    this._panel.onDidDispose(
+      () => {
+        Logger.debug(`[Extension.PreviewPanel.panel.onDidDispose]`)
+        this.dispose()
+      },
+      this,
+      this._disposables
+    )
 
-  public onContextMenuOpenSource() {
-    this.sendToPanel({
-      kind: 'onContextMenuOpenSource'
-    })
-  }
-
-  private close() {
-    Logger.debug(`[Extension.PreviewPanel] close`)
-    // this.telemetry.sendTelemetryEvent('PreviewPanel.close')
-    this.unsubscribe()
-    this.panel?.dispose()
-    this.panel = null
-    this.currentViewId = null
-  }
-
-  private sendUpdate(view: DiagramView | null) {
-    if (this.panel && view) {
-      this.panel.title = view.title ?? 'Untitled'
-    }
-    const msg = (
-      view
-        ? {
-            kind: 'update',
-            view
-          }
-        : {
-            kind: 'error'
-          }
-    ) satisfies ExtensionToPanelProtocol
-    this.sendToPanel(msg)
-  }
-
-  private sendToPanel(message: ExtensionToPanelProtocol) {
-    if (!this.panel) {
-      Logger.warn(`[Extension.PreviewPanel] sendToPanel failed, panel is not initialized`)
-      this.unsubscribe()
-      return
-    }
-    if (!this.panel.visible) {
-      Logger.debug(`[Extension.PreviewPanel] sendToPanel ignore, panel is not visible`)
-      return
-    }
-    void this.panel.webview.postMessage(message).then(
-      posted => {
-        if (!posted) {
-          Logger.warn('[Extension.PreviewPanel] sendToPanel: message not posted')
+    // Update the content based on view changes
+    this._panel.onDidChangeViewState(
+      ({ webviewPanel }) => {
+        Logger.debug(
+          `[Extension.PreviewPanel.panel.onDidChangeViewState] visible=${webviewPanel.visible}`
+        )
+        if (!webviewPanel.visible && this._listener) {
+          this._deactivate()
         }
       },
-      err => logError(err)
+      this,
+      this._disposables
     )
-  }
 
-  private goToSource = async (element: Fqn) => {
-    return await this.rpc.locate({ element })
-  }
+    this.onDispose(() => {
+      this._panel.dispose()
+    })
 
-  private goToRelation = async (relation: RelationID) => {
-    return await this.rpc.locate({ relation })
-  }
-
-  private goToViewSource = async (view: ViewID) => {
-    return await this.rpc.locate({ view })
-  }
-
-  private goToLocation = async (loc: Location | null) => {
-    if (!loc) {
-      return
-    }
-    const panelViewColumn = this.panel?.viewColumn ?? vscode.ViewColumn.Two
-    const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
-    await vscode.window.showTextDocument(location.uri, {
-      viewColumn:
-        panelViewColumn !== vscode.ViewColumn.One ? vscode.ViewColumn.One : panelViewColumn,
-      selection: location.range
+    this.onDispose(() => {
+      this._deactivate()
     })
   }
 
-  private onWebviewMessage = (message: PanelToExtensionProtocol) => {
-    Logger.debug(`[Extension.PreviewPanel] from webview: ${message.kind}`)
-    switch (message.kind) {
-      case 'close': {
-        this.close()
-        return
+  get panel() {
+    return this._panel
+  }
+
+  public override dispose() {
+    super.dispose()
+    Logger.debug(`[Extension.PreviewPanel] disposed`)
+  }
+
+  public open(viewId?: ViewID) {
+    this._deactivate()
+    if (viewId && viewId !== this._viewId) {
+      this._viewId = viewId
+    }
+    this._activate()
+  }
+
+  protected _activate() {
+    if (this._listener) {
+      Logger.warn(`[Extension.PreviewPanel] _activate: already activated`)
+      this._deactivate()
+    }
+    const subscribeToView = this.c4model.subscribeToView(this._viewId, result => {
+      if (result.success) {
+        this._panel.title = result.diagram.title || 'Untitled'
+        this.messenger.diagramUpdate(result.diagram)
+      } else {
+        this.messenger.sendError(result.error)
       }
-      case 'ready': {
-        if (this.currentViewId) {
-          this.subscribeToModel(this.currentViewId)
-        } else {
-          Logger.warn('[Extension.PreviewPanel] on ready: currentViewId is not set')
-        }
-        return
-      }
-      case 'open': {
-        this.open(message.viewId)
-        return
-      }
-      case 'goToRelationSource': {
-        void this.goToRelation(message.relationId).then(this.goToLocation)
-        return
-      }
-      case 'goToElementSource': {
-        void this.goToSource(message.element).then(this.goToLocation)
-        return
-      }
-      case 'goToViewSource': {
-        void this.goToViewSource(message.viewId).then(this.goToLocation)
-        return
-      }
-      default: {
-        return nonexhaustive(message)
-      }
+    })
+    const id = '' + random(1000, 9999) + '_' + this._viewId
+    this._listener = disposable(() => {
+      subscribeToView.dispose()
+      this._listener = null
+      Logger.debug(`[Extension.PreviewPanel.listener.${id}] disposed`)
+    })
+    Logger.debug(`[Extension.PreviewPanel] _activated`)
+  }
+
+  private _deactivate() {
+    if (this._listener) {
+      this._listener.dispose()
+      Logger.debug(`[Extension.PreviewPanel] _deactivated`)
     }
   }
 
-  private getWebviewOptions(): vscode.WebviewOptions & vscode.WebviewPanelOptions {
-    return {
+  private _update() {
+    const webview = this._panel.webview
+    webview.options = {
       // retainContextWhenHidden: true,
       // Enable javascript in the webview
       enableScripts: true
-
       // And restrict the webview to only loading content from our extension's `dist` directory.
       // localResourceRoots: [
       //   vscode.Uri.joinPath(this.context.extensionUri, 'dist')
       // ]
     }
-  }
-
-  private createWebviewPanel(): WebviewPanel {
-    return vscode.window.createWebviewPanel(
-      PreviewPanel.ViewType,
-      'Diagram preview',
-      {
-        viewColumn: vscode.ViewColumn.Beside,
-        preserveFocus: true
-      },
-      this.getWebviewOptions()
-    )
-  }
-
-  private updateWebviewContent() {
-    if (!this.panel) {
-      throw new Error('PreviewPanel is not initialized')
-    }
-    const webview = this.panel.webview
-    webview.options = this.getWebviewOptions()
-
-    const extensionUri = this.context.extensionUri
 
     const nonce = getNonce()
 
-    const stylesUri = getUri(webview, extensionUri, ['dist', 'preview', 'style.css'])
-    const scriptUri = getUri(webview, extensionUri, ['dist', 'preview', 'index.js'])
+    const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
+    const scriptUri = getUri(webview, ['dist', 'preview', 'index.js'])
 
     const cspSource = webview.cspSource
     webview.html = /*html*/ `

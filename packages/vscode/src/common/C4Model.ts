@@ -7,7 +7,6 @@ import { equals } from 'rambdax'
 import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
-import debounce from 'xstream/extra/debounce'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { Logger, logError } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
@@ -19,6 +18,17 @@ function isNotNullish<T>(x: T): x is NonNullable<T> {
 
 // const StateKeyLikeC4Model = 'c4model:last:views'
 
+type Callback =
+  | {
+      success: true
+      diagram: LayoutedView
+      error?: never
+    }
+  | {
+      success: false
+      diagram?: never
+      error: string
+    }
 export class C4Model extends AbstractDisposable {
   #activeSubscription: vscode.Disposable | null = null
 
@@ -44,9 +54,9 @@ export class C4Model extends AbstractDisposable {
           })
           this.#activeSubscription = disposable(() => {
             this.#activeSubscription = null
-            Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
             unsubscribe.dispose()
             listener.complete()
+            Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
           })
         },
         stop: () => {
@@ -54,7 +64,6 @@ export class C4Model extends AbstractDisposable {
           this.#activeSubscription?.dispose()
         }
       })
-      .compose(debounce(200))
       .startWith(0)
 
     this.onDispose(() => {
@@ -66,17 +75,6 @@ export class C4Model extends AbstractDisposable {
   override dispose() {
     super.dispose()
     Logger.info(`[Extension.C4Model] disposed`)
-  }
-
-  private fetchModel() {
-    Logger.info(`[Extension.C4Model] fetchModel`)
-    return xs
-      .fromPromise(this.rpc.fetchModel())
-      .filter(isNotNullish)
-      .replaceError(err => {
-        logError(err)
-        return xs.empty()
-      })
   }
 
   private fetchView(viewId: ViewID) {
@@ -96,40 +94,41 @@ export class C4Model extends AbstractDisposable {
     const promise = Promise.resolve()
       .then(() => this.dot.layout(view))
       .then(({ diagram }) => diagram)
-      .catch(err => {
-        Logger.warn(serializeError(err).message)
-        return Promise.reject(err)
-      })
-    return xs.from(promise).replaceError(err => {
-      logError(err)
-      return xs.empty()
-    })
+    return xs.from(promise)
   }
 
-  public subscribeToView(viewId: ViewID, callback: (diagram: LayoutedView | null) => void) {
+  public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
     Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
     const subscription = this.changesStream
       .map(() => this.fetchView(viewId))
       .flatten()
-      .replaceError(err => {
-        logError(err)
-        callback(null)
-        return xs.empty()
-      })
       .compose(dropRepeats<ComputedView | null>(equals))
       .map(view => {
         if (!view) {
-          callback(null)
+          callback({
+            success: false,
+            error: 'View not found'
+          })
           return xs.empty()
         }
         return this.layoutView(view)
       })
       .flatten()
       .subscribe({
-        next: diagram => callback(diagram),
+        next: diagram =>
+          callback({
+            success: true,
+            diagram
+          }),
         error: err => {
-          callback(null)
           logError(err)
+          callback({
+            success: false,
+            error:
+              err instanceof Error
+                ? err.stack ?? `${err.name}: ${err.message}`
+                : serializeError(err).message
+          })
         }
       })
 

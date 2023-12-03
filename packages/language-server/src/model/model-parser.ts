@@ -31,7 +31,7 @@ import type { FqnIndex } from './fqn-index'
 export type ModelParsedListener = () => void
 
 function toSingleLine<T extends string | undefined>(str: T): T {
-  return str?.split('\n').join(' ').trim() as T
+  return (str ? removeIndent(str).split('\n').join(' ') : undefined) as T
 }
 
 function removeIndent<T extends string | undefined>(str: T): T {
@@ -77,14 +77,12 @@ export class LikeC4ModelParser {
     const element_specs = parseResult.value.specifications.flatMap(s => s.elements)
     if (element_specs.length > 0) {
       for (const { kind, style } of element_specs) {
-        if (kind.name in c4Specification.kinds) {
-          logger.warn(`Duplicate specification for element kind ${kind.name}`)
-          continue
-        }
         try {
-          c4Specification.kinds[kind.name as c4.ElementKind] = toElementStyleExcludeDefaults(
-            style?.props
-          )
+          const kindName = kind.name as c4.ElementKind
+          c4Specification.kinds[kindName] = {
+            ...c4Specification.kinds[kindName],
+            ...toElementStyleExcludeDefaults(style?.props)
+          }
         } catch (e) {
           logWarnError(e)
         }
@@ -94,13 +92,12 @@ export class LikeC4ModelParser {
     const relations_specs = parseResult.value.specifications.flatMap(s => s.relationships)
     if (relations_specs.length > 0) {
       for (const { kind, props } of relations_specs) {
-        if (kind.name in c4Specification.relationships) {
-          logger.warn(`Duplicate specification for relationship kind ${kind.name}`)
-          continue
-        }
         try {
-          c4Specification.relationships[kind.name as c4.RelationshipKind] =
-            toRelationshipStyleExcludeDefaults(props)
+          const kindName = kind.name as c4.RelationshipKind
+          c4Specification.relationships[kindName] = {
+            ...c4Specification.relationships[kindName],
+            ...toRelationshipStyleExcludeDefaults(props)
+          }
         } catch (e) {
           logWarnError(e)
         }
