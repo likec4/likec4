@@ -51,7 +51,7 @@
     "remeda": "^1.29.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
-    "type-fest": "^4.8.2",
+    "type-fest": "^4.8.3",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
