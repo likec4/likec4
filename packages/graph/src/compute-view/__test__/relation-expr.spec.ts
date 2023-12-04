@@ -20,6 +20,12 @@ describe('relation-expr', () => {
     expect(edgeIds).toEqual(['customer:cloud.frontend', 'support:cloud.frontend'])
   })
 
+  it('* -> cloud.backend.*', () => {
+    const { nodeIds, edgeIds } = computeView([$include('* -> cloud.backend.*')])
+    expect(nodeIds).toEqual(['cloud.frontend', 'cloud.backend.graphql'])
+    expect(edgeIds).toEqual(['cloud.frontend:cloud.backend.graphql'])
+  })
+
   it('* -> amazon.*', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> amazon.*')])
     expect(nodeIds).toEqual(['cloud', 'amazon.s3'])
