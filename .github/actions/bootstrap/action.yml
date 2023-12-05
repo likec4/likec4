@@ -45,9 +45,10 @@ runs:
       uses: actions/cache@v3
       with:
         path: 'node_modules/.cache/turbo'
-        key: turbo-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('packages/*/src/**/*') }}
+        key: turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('packages/*/src/**/*') }}
         restore-keys: |
-          turbo-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-
+          turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-
+          turbo-${{ runner.os }}-node${{ inputs.node-version }}-
           turbo-${{ runner.os }}-
           turbo-
 
