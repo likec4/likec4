@@ -51,11 +51,11 @@
     "remeda": "^1.29.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.1",
-    "type-fest": "^4.8.2",
+    "type-fest": "^4.8.3",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20.10.1",
+    "@types/node": "^20.10.3",
     "execa": "^8.0.1",
     "typescript": "^5.3.2",
     "unbuild": "^2.0.0",
