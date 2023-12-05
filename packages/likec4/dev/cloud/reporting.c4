@@ -16,7 +16,7 @@ views {
 
   view reporting of cloud.reporting {
     title "[context] Reporting"
-    include *, cloud
+    include cloud, *
     autoLayout BottomTop
 
     style * {

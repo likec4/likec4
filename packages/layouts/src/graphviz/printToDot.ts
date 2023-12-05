@@ -32,6 +32,7 @@ import {
   last,
   map,
   omitBy,
+  partition,
   pipe,
   reverse,
   sort,
@@ -374,20 +375,22 @@ export function toGraphvisModel({
 
     const edgeParentId = edge.parent
 
-    let weight =
-      [
+    const [visibleEdges, hiddenEdges] = partition(
+      uniq([
         ...targetNode.inEdges,
         // ...targetNode.outEdges,
         // ...sourceNode.inEdges,
         ...sourceNode.outEdges
-      ].filter(e => {
-        const edge = getEdge(e)
-        return isEdgeVisible(edge)
-      }).length - 1
+      ]),
+      e => isEdgeVisible(e)
+    )
+
+    let weight = visibleEdges.length + hiddenEdges.length
 
     let e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle
+      [_.style]: edge.line ?? DefaultEdgeStyle,
+      [_.weight]: weight
     })
 
     // Hide edges between clusters
@@ -397,7 +400,7 @@ export function toGraphvisModel({
       e.attributes.apply({
         [_.minlen]: 1,
         [_.style]: 'invis',
-        [_.weight]: 0
+        [_.weight]: 1
       })
       e.attributes.delete(_.likec4_id)
       return
