@@ -58,7 +58,7 @@
     "jotai": "^2.6.0",
     "nanostores": "^0.9.5",
     "playwright-core": "^1.40.1",
-    "postcss": "^8.4.31",
+    "postcss": "^8.4.32",
     "postcss-nested": "^6.0.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
