@@ -1206,7 +1206,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^6.13.1"
     "@typescript-eslint/parser": "npm:^6.13.1"
     "@vitest/ui": "npm:^1.0.1"
-    eslint: "npm:^8.55.0"    
+    eslint: "npm:^8.55.0"
     execa: "npm:^8.0.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
@@ -3631,12 +3631,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
-  version: 20.10.1
-  resolution: "@types/node@npm:20.10.1"
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.10.3":
+  version: 20.10.3
+  resolution: "@types/node@npm:20.10.3"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 703c3cc5bdb2818a16f87019fe4072bfd66489bb300338970260c5b84dd2129595995c41b28773c3b7d9d1a64f36fec59a741629ec466f2aeddad7a9d0c027ac
+  checksum: 7cb506abb0d570bb5133bd06a47115109a813b507323c985c3b4aef2993eed79b6bb62b82194cb5c558b4d349de3d199ee2e8c693b913065a1cd7f526cc65a68
   languageName: node
   linkType: hard
 
@@ -3644,15 +3644,6 @@ __metadata:
   version: 16.18.66
   resolution: "@types/node@npm:16.18.66"
   checksum: 992b264562c11de1332f8fe637c4b5d3df986348b972a57d09eca33db7b7d9abf5d348e70c37a4f05e42a717820bb7d5120b9a5a956fd0f975296a8fd910f2b5
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.10.3":
-  version: 20.10.3
-  resolution: "@types/node@npm:20.10.3"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 7cb506abb0d570bb5133bd06a47115109a813b507323c985c3b4aef2993eed79b6bb62b82194cb5c558b4d349de3d199ee2e8c693b913065a1cd7f526cc65a68
   languageName: node
   linkType: hard
 
