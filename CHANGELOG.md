@@ -1,16 +1,17 @@
 # [0.51.0](https://github.com/likec4/likec4/compare/v0.50.0...v0.51.0) (2023-12-05)
 
+### 🚀 Features
+
+- **language-server:** tolerant parser, exclude only erroneous elements (previously ignored whole document) ([2c9c456](https://github.com/likec4/likec4/commit/2c9c456fff57a54a811b0e86d3e5f11aa148685b))
+
 ### Bug Fixes
 
-- compouind layouts ([feec3b3](https://github.com/likec4/likec4/commit/feec3b38d4714ddfe89a5be50a445f9859a99af9))
+- **graph:**  improve compound layouts ([feec3b3](https://github.com/likec4/likec4/commit/feec3b38d4714ddfe89a5be50a445f9859a99af9))
+- **graph:** correct relationship predicate ([eba2be6](https://github.com/likec4/likec4/commit/eba2be6523fee49931000548fba679453df05931))
+- **generators:** indent in mermaid ([6d27249](https://github.com/likec4/likec4/commit/6d272498ba0ac8cf19e16e3facf069266fac1ce8))
 - **deps:** bump `vitest` to 1.0.1 ([0666acd](https://github.com/likec4/likec4/commit/0666acd7d386a25326cba17940d7299058fa5457))
 - **deps:** update dependency jotai to ^2.6.0 ([62e46f2](https://github.com/likec4/likec4/commit/62e46f2d3d602591354d1be19b022b20eb4c1fec))
-- **graph:** correct relationship predicate ([eba2be6](https://github.com/likec4/likec4/commit/eba2be6523fee49931000548fba679453df05931))
-- indent in mermaid ([6d27249](https://github.com/likec4/likec4/commit/6d272498ba0ac8cf19e16e3facf069266fac1ce8))
 
-### Features
-
-- **language-server:** tolerant parser, exclude only erroneous elements ([2c9c456](https://github.com/likec4/likec4/commit/2c9c456fff57a54a811b0e86d3e5f11aa148685b))
 
 # [0.50.0](https://github.com/likec4/likec4/compare/v0.49.0...v0.50.0) (2023-12-01)
 
@@ -30,8 +31,6 @@
 - **graph:** sort graph nodes considering implicit edges ([a1e33a4](https://github.com/likec4/likec4/commit/a1e33a4b9a7a52ccf2e8e97bb0c01a8bf06f4b6f))
 - **layouts:** improve graph layout ([e71abfe](https://github.com/likec4/likec4/commit/e71abfe923febad88e190a66e8aced13a559bba6))
 - **graph:** removeRedundantImplicitEdges ([a6420dc](https://github.com/likec4/likec4/commit/a6420dca92dc3ceea079b12ee4cab1711b841757))
-
-### Features
 
 # [0.49.0](https://github.com/likec4/likec4/compare/v0.48.0...v0.49.0) (2023-11-23)
 
