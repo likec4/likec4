@@ -11,7 +11,7 @@ import type {
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
-import { printToDot } from './printToDot'
+import { toDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
@@ -118,13 +118,6 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
   const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
   invariant(hasAtLeast(points, 1))
   return points
-}
-
-export function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  const unflattened = graphviz.unflatten(printToDot(computedView), 1, false, 2)
-  // const model = fromDot(unflattened)
-  // use ts-graphviz to pretty print the model
-  return unflattened.replaceAll('\t', '    ')
 }
 
 export type DotLayoutResult = {
