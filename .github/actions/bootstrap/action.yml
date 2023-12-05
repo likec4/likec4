@@ -24,10 +24,11 @@ runs:
       if: github.ref == 'refs/heads/main'
       with:
         path: '.yarn/cache'
-        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
         enableCrossOsArchive: true
         restore-keys: |
-          yarn-${{ runner.os }}-
+          yarn-${{ inputs.node-version }}-${{ runner.os }}-
+          yarn-${{ inputs.node-version }}-
           yarn-
 
     - name: restore only caches
@@ -35,24 +36,12 @@ runs:
       if: github.ref != 'refs/heads/main'
       with:
         path: '.yarn/cache'
-        key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+        key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
         enableCrossOsArchive: true
         restore-keys: |
-          yarn-${{ runner.os }}-
+          yarn-${{ inputs.node-version }}-${{ runner.os }}-
+          yarn-${{ inputs.node-version }}-
           yarn-
-
-    - name: turbo caches
-      uses: actions/cache@v3
-      with:
-        path: |
-          node_modules/.cache/turbo
-          **/*/.turbo
-        key: turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('packages/*/src/**/*') }}
-        restore-keys: |
-          turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-
-          turbo-${{ runner.os }}-node${{ inputs.node-version }}-
-          turbo-${{ runner.os }}-
-          turbo-
 
     - name: install dependencies
       shell: bash

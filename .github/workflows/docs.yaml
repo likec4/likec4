@@ -42,8 +42,8 @@ jobs:
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
 
-      # - name: Turborepo-cache
-      #   uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - name: Turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Prebuild dependencies
         run: yarn turbo run build --filter='docs-website^...'
