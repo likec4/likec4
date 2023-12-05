@@ -234,7 +234,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'cloud.backend']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon', 'cloud'])
+      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
     })
 
     it('should sort nodes using edges and ignore cycles (2)', () => {
@@ -244,7 +244,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'customer']
-      ]).toEqual(['customer', 'amazon', 'cloud.frontend', 'cloud', 'cloud.db', 'cloud.backend'])
+      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
     })
   })
 
@@ -310,7 +310,7 @@ describe('sortNodes', () => {
         ['customer', 'cloud'],
         ['cloud', 'amazon']
       ]).toEqual([
-        // they have no edges, besised link to parent
+        // they have no edges, besides link to parent
         'cloud.frontend.dashboard',
         'cloud.frontend.adminPanel',
         'cloud.backend.storage',

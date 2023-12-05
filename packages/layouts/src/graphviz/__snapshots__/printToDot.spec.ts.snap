@@ -25,6 +25,7 @@ exports[`printToDot > computedAmazonView 1`] = `
     weight = 1;
     penwidth = 1;
     nojustify = true;
+    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -82,9 +83,9 @@ exports[`printToDot > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
-    weight = 1;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
     minlen = 0;
+    weight = 2;
   ];
 }"
 `;
@@ -114,6 +115,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
     weight = 1;
     penwidth = 1;
     nojustify = true;
+    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -217,39 +219,36 @@ exports[`printToDot > computedCloud3levels 1`] = `
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
         style = "dashed";
-        weight = 6;
         minlen = 0;
+        weight = 4;
       ];
     }
     "adminpanel" -> "graphql" [
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       style = "dashed";
-      weight = 5;
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">fetches data in zero trust network</FONT></TD></TR>,<TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">with sso authentification</FONT></TD></TR></TABLE>>;
+      weight = 3;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       style = "dashed";
-      weight = 5;
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">fetches data</FONT></TD></TR></TABLE>>;
+      weight = 3;
     ];
   }
   "support" -> "adminpanel" [
     likec4_id = "support:cloud.frontend.adminPanel";
     style = "dashed";
-    weight = 2;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">manages</FONT></TD></TR></TABLE>>;
   ];
   "customer" -> "dashboard" [
     likec4_id = "customer:cloud.frontend.dashboard";
     style = "dashed";
-    weight = 2;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "storage" -> "amazon" [
     likec4_id = "cloud.backend.storage:amazon";
     style = "dashed";
-    weight = 2;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
 }"
@@ -280,6 +279,7 @@ exports[`printToDot > computedCloudView 1`] = `
     weight = 1;
     penwidth = 1;
     nojustify = true;
+    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -346,27 +346,26 @@ exports[`printToDot > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       style = "dashed";
-      weight = 4;
       label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><B><FONT POINT-SIZE="13">[...]</FONT></B></TD></TR></TABLE>>;
       minlen = 0;
+      weight = 3;
     ];
   }
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     style = "dashed";
-    weight = 3;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">opens in browser</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     style = "dashed";
-    weight = 3;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">manages</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "backend" -> "amazon" [
     likec4_id = "cloud.backend:amazon";
     style = "dashed";
-    weight = 2;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
 }"
@@ -397,6 +396,7 @@ exports[`printToDot > computedIndexView 1`] = `
     weight = 1;
     penwidth = 1;
     nojustify = true;
+    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -447,19 +447,18 @@ exports[`printToDot > computedIndexView 1`] = `
   "customer" -> "cloud" [
     likec4_id = "customer:cloud";
     style = "dashed";
-    weight = 3;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">opens in browser</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
     style = "dashed";
-    weight = 3;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">manages</FONT></TD></TR></TABLE>>;
+    weight = 2;
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     style = "dashed";
-    weight = 3;
     label = <<TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE>>;
   ];
 }"

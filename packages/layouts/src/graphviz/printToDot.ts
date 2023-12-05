@@ -155,6 +155,7 @@ export function toGraphvisModel({
     [_.penwidth]: pxToPoints(1),
     // [_.arrowsize]: 0.9,
     [_.nojustify]: true,
+    [_.style]: DefaultEdgeStyle,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -340,9 +341,9 @@ export function toGraphvisModel({
     let source = graphvizNodes.get(edge.source)
     let target = graphvizNodes.get(edge.target)
 
-    if (!source && !target) {
-      return
-    }
+    // if (!source && !target) {
+    //   return
+    // }
 
     let lhead, ltail: string | undefined
 
@@ -360,11 +361,6 @@ export function toGraphvisModel({
       const targetElement = first(leafElements(edge.target))
       target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
     }
-    // source = isArray(source) && source.length === 0 ? undefined : source
-    // source = isArray(source) && source.length === 1 ? source[0] : source
-
-    // target = isArray(target) && target.length === 0 ? undefined : target
-    // target = isArray(target) && target.length === 1 ? target[0] : target
     if (!source || !target) {
       return
     }
@@ -378,44 +374,30 @@ export function toGraphvisModel({
 
     const edgeParentId = edge.parent
 
-    let weight = uniq([
-      ...targetNode.inEdges,
-      ...targetNode.outEdges,
-      ...sourceNode.inEdges,
-      ...sourceNode.outEdges
-    ]).filter(e => {
-      const edge = getEdge(e)
-      if (!isEdgeVisible(edge)) {
-        return false
-      }
-      // if (edge.parent !== edgeParentId && (edge.parent == null || edgeParentId == null)) {
-      //   return false
-      // }
-      return true
-    }).length
-
-    // weight -= uniq([
-    //   ...targetNode.outEdges,
-    //   // ...targetNode.outEdges,
-    //   // ...sourceNode.inEdges,
-    //   // ...sourceNode.outEdges
-    // ]).filter(isEdgeVisible).length
-    // weight = Math.max(weight, 1)
+    let weight =
+      [
+        ...targetNode.inEdges,
+        // ...targetNode.outEdges,
+        // ...sourceNode.inEdges,
+        ...sourceNode.outEdges
+      ].filter(e => {
+        const edge = getEdge(e)
+        return isEdgeVisible(edge)
+      }).length - 1
 
     let e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
-      [_.weight]: weight
+      [_.style]: edge.line ?? DefaultEdgeStyle
     })
 
     // Hide edges between clusters
     if (lhead || ltail) {
-      lhead && e.attributes.set(_.lhead, lhead)
       ltail && e.attributes.set(_.ltail, ltail)
+      lhead && e.attributes.set(_.lhead, lhead)
       e.attributes.apply({
         [_.minlen]: 1,
-        [_.style]: 'invis'
-        // [_.constraint]: false,
+        [_.style]: 'invis',
+        [_.weight]: 0
       })
       e.attributes.delete(_.likec4_id)
       return
@@ -460,7 +442,8 @@ export function toGraphvisModel({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.minlen]: 0
+        [_.minlen]: 0,
+        [_.weight]: weight
         // [_.constraint]: false
       })
       return
@@ -501,10 +484,12 @@ export function toGraphvisModel({
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
       }
-      weight = viewEdges.length
+      weight += 1
     }
 
-    e.attributes.set(_.weight, weight)
+    if (weight > 1) {
+      e.attributes.set(_.weight, weight)
+    }
   }
 
   // ----------------------------------------------
