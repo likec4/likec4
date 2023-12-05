@@ -1,7 +1,7 @@
 import type { Element } from '@likec4/core'
-import { Expr, parentFqn } from '@likec4/core'
+import { Expr, isAncestor, isSameHierarchy, parentFqn } from '@likec4/core'
 import type { Predicate } from 'rambdax'
-import { isNil, uniq } from 'remeda'
+import { isNil } from 'remeda'
 import type { ComputeCtx } from './compute'
 
 export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
@@ -142,13 +142,10 @@ export function excludeElementKindOrTag(
 }
 
 function resolveNeighbours(this: ComputeCtx, expr: Expr.ElementExpression): Element[] {
-  const neighboursOf = this.root ?? (Expr.isElementRef(expr) ? expr.element : undefined)
-  return neighboursOf
-    ? [
-        ...this.graph.siblings(neighboursOf),
-        ...this.graph.ancestors(neighboursOf).flatMap(a => this.graph.siblings(a.id))
-      ]
-    : []
+  if (Expr.isElementRef(expr)) {
+    return this.graph.ascendingSiblings(expr.element)
+  }
+  return this.root ? this.graph.ascendingSiblings(this.root) : this.graph.rootElements
 }
 
 function resolveElements(this: ComputeCtx, expr: Expr.ElementExpression): Element[] {
@@ -195,22 +192,19 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
     if (!this.root) {
       return []
     }
-    const neighbours = resolveNeighbours.call(this, expr)
-    if (neighbours.length === 0) {
-      return []
-    }
-    const children = this.graph.childrenOrElement(this.root)
-    return this.graph.edgesBetween(neighbours, children)
+    const sources = this.graph.ascendingSiblings(this.root)
+    const targets = [...this.graph.children(this.root), this.graph.element(this.root)]
+    return this.graph.edgesBetween(sources, targets)
   }
-  const elements = resolveElements.call(this, expr)
-  if (elements.length === 0) {
+  const targets = resolveElements.call(this, expr)
+  if (targets.length === 0) {
     return []
   }
-  const currentElements = [...this.elements, ...resolveNeighbours.call(this, expr)]
+  const currentElements = [...this.elements]
   if (currentElements.length === 0) {
-    currentElements.push(...this.graph.rootElements)
+    currentElements.push(...resolveNeighbours.call(this, expr))
   }
-  return this.graph.edgesBetween(currentElements, elements)
+  return this.graph.edgesBetween(currentElements, targets)
 }
 
 export function includeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr) {
@@ -234,22 +228,19 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
     if (!this.root) {
       return []
     }
-    const neighbours = resolveNeighbours.call(this, expr)
-    if (neighbours.length === 0) {
-      return []
-    }
-    const from = this.graph.childrenOrElement(this.root)
-    return this.graph.edgesBetween(from, neighbours)
+    const targets = this.graph.ascendingSiblings(this.root)
+    const sources = [...this.graph.children(this.root), this.graph.element(this.root)]
+    return this.graph.edgesBetween(sources, targets)
   }
-  const from = resolveElements.call(this, expr)
-  if (from.length === 0) {
+  const sources = resolveElements.call(this, expr)
+  if (sources.length === 0) {
     return []
   }
-  const currentElements = [...this.elements, ...resolveNeighbours.call(this, expr)]
-  if (currentElements.length === 0) {
-    currentElements.push(...this.graph.rootElements)
+  const targets = [...this.elements]
+  if (targets.length === 0) {
+    targets.push(...resolveNeighbours.call(this, expr))
   }
-  return this.graph.edgesBetween(from, currentElements)
+  return this.graph.edgesBetween(sources, targets)
 }
 
 export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
@@ -269,16 +260,20 @@ export function excludeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
 //  InOut Expr
 
 function edgesInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
-  if (Expr.isWildcard(expr.inout) && !this.root) {
-    return []
+  if (Expr.isWildcard(expr.inout)) {
+    if (!this.root) {
+      return []
+    }
+    const neighbours = this.graph.ascendingSiblings(this.root)
+    return this.graph.anyEdgesBetween(this.graph.element(this.root), neighbours)
   }
   const elements = resolveElements.call(this, expr.inout)
   if (elements.length === 0) {
     return []
   }
-  const currentElements = [...this.elements, ...resolveNeighbours.call(this, expr.inout)]
+  const currentElements = [...this.elements]
   if (currentElements.length === 0) {
-    currentElements.push(...this.graph.rootElements)
+    currentElements.push(...resolveNeighbours.call(this, expr.inout))
   }
   return elements.flatMap(el => this.graph.anyEdgesBetween(el, currentElements))
 }
@@ -319,17 +314,18 @@ function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpress
 }
 
 export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
-  let edges
+  let sources, targets
   if (Expr.isWildcard(expr.source) && !Expr.isWildcard(expr.target)) {
-    edges = edgesIncomingExpr.call(this, expr.target)
+    sources = resolveNeighbours.call(this, expr.target)
+    targets = resolveRelationExprElements.call(this, expr.target)
   } else if (!Expr.isWildcard(expr.source) && Expr.isWildcard(expr.target)) {
-    edges = edgesOutgoingExpr.call(this, expr.source)
+    sources = resolveRelationExprElements.call(this, expr.source)
+    targets = resolveNeighbours.call(this, expr.source)
   } else {
-    const sources = resolveRelationExprElements.call(this, expr.source)
-    const targets = resolveRelationExprElements.call(this, expr.target)
-    edges = this.graph.edgesBetween(sources, targets)
+    sources = resolveRelationExprElements.call(this, expr.source)
+    targets = resolveRelationExprElements.call(this, expr.target)
   }
-  this.addEdges(edges)
+  this.addEdges(this.graph.edgesBetween(sources, targets))
 }
 
 export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {

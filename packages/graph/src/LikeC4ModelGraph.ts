@@ -91,12 +91,20 @@ export class LikeC4ModelGraph {
     const id = isString(element) ? element : element.id
     const parent = parentFqn(id)
     const fqns = parent ? this._childrenOf(parent) : [...this.#rootElements].map(e => e.id)
-    return fqns.flatMap(fqn => (fqn !== id ? this.#elements.get(fqn) ?? [] : []))
+    return fqns.flatMap(fqn => (fqn !== id && this.#elements.get(fqn)) || [])
   }
 
   public ancestors(element: Fqn | Element) {
     const id = isString(element) ? element : element.id
     return ancestorsFqn(id).flatMap(id => this.#elements.get(id) ?? [])
+  }
+
+  /**
+   * Resolve siblings of the element and its ancestors
+   */
+  public ascendingSiblings(element: Fqn | Element) {
+    const id = isString(element) ? element : element.id
+    return [...this.siblings(id), ...this.ancestors(id).flatMap(a => this.siblings(a.id))]
   }
 
   /**
@@ -234,9 +242,9 @@ export class LikeC4ModelGraph {
     const relParent = commonAncestor(rel.source, rel.target)
     // Process internal relationships
     if (relParent) {
-      ;[relParent, ...ancestorsFqn(relParent)].forEach(ancestor => {
+      for (const ancestor of [relParent, ...ancestorsFqn(relParent)]) {
         this._internalOf(ancestor).push(rel.id)
-      })
+      }
     }
     // Process source hierarchy
     for (const sourceAncestor of ancestorsFqn(rel.source)) {

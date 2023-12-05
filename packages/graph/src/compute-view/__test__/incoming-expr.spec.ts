@@ -43,8 +43,8 @@ describe('incoming-expr', () => {
       expect(edgeIds).toEqual([
         'customer:cloud.frontend.dashboard',
         'support:cloud.frontend.adminPanel',
-        'cloud.frontend:cloud.backend',
-        'cloud.backend:amazon'
+        'cloud.backend:amazon',
+        'cloud.frontend:cloud.backend'
       ])
     })
 
