@@ -128,7 +128,7 @@ views {
 
     include
       *,
-      * -> amazon.*,
+      ui -> amazon.*,
       cloud,
       amazon,
 
@@ -149,7 +149,7 @@ views {
     include
       *,
       cloud,
-      * -> amazon.*,
+      backend.* -> amazon.*,
       amazon
 
     style * {
