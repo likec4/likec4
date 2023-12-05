@@ -44,7 +44,9 @@ runs:
     - name: turbo caches
       uses: actions/cache@v3
       with:
-        path: 'node_modules/.cache/turbo'
+        path: |
+          node_modules/.cache/turbo
+          **/*/.turbo
         key: turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('packages/*/src/**/*') }}
         restore-keys: |
           turbo-${{ runner.os }}-node${{ inputs.node-version }}-${{ hashFiles('yarn.lock') }}-
