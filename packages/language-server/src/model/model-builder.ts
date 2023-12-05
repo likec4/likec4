@@ -18,7 +18,7 @@ import type {
   ParsedAstSpecification,
   ParsedLikeC4LangiumDocument
 } from '../ast'
-import { isValidLikeC4LangiumDocument } from '../ast'
+import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logWarnError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils'
@@ -293,7 +293,7 @@ export class LikeC4ModelBuilder {
   }
 
   private documents() {
-    return this.langiumDocuments.all.filter(isValidLikeC4LangiumDocument).toArray()
+    return this.langiumDocuments.all.filter(isParsedLikeC4LangiumDocument).toArray()
   }
 
   private notifyListeners(docs: URI[]) {

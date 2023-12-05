@@ -8,15 +8,16 @@ import {
   nonexhaustive,
   type c4
 } from '@likec4/core'
-import type { LangiumDocument, MultiMap } from 'langium'
-import type { SetRequired } from 'type-fest'
-import { DocumentState } from 'langium'
+import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
+import { DocumentState, getContainerOfType } from 'langium'
 import { isNil } from 'remeda'
+import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
+import type { Diagnostic } from 'vscode-languageserver-protocol'
+import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { elementRef } from './elementRef'
 import type { LikeC4Grammar } from './generated/ast'
 import * as ast from './generated/ast'
 import { LikeC4LanguageMetaData } from './generated/module'
-import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 
 export { ast }
 
@@ -116,7 +117,12 @@ export interface DocFqnIndexEntry {
   path: string
 }
 
+// export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
+export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
+type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
+
 export interface LikeC4DocumentProps {
+  diagnostics?: Array<LikeC4DocumentDiagnostic>
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
   c4Relations?: ParsedAstRelation[]
@@ -127,19 +133,19 @@ export interface LikeC4DocumentProps {
 }
 
 export interface LikeC4LangiumDocument
-  extends LangiumDocument<LikeC4Grammar>,
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
     LikeC4DocumentProps {}
 export interface FqnIndexedDocument
-  extends LangiumDocument<LikeC4Grammar>,
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
     SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
 
 // export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
 export interface ParsedLikeC4LangiumDocument
-  extends LangiumDocument<LikeC4Grammar>,
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
     Required<LikeC4DocumentProps> {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns'>> = {
+  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns' | 'diagnostics'>> = {
     c4Specification: {
       kinds: {},
       relationships: {}
@@ -173,6 +179,45 @@ export function isParsedLikeC4LangiumDocument(
   )
 }
 
+type Guard<N extends AstNode> = (n: AstNode) => n is N
+type Guarded<G> = G extends Guard<infer N> ? N : never
+
+function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
+  predicates: Predicates
+) {
+  return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
+}
+const isValidatableAstNode = validatableAstNodeGuards([
+  ast.isModel,
+  ast.isRelation,
+  ast.isElement,
+  ast.isExtendElement,
+  ast.isSpecificationRule,
+  ast.isSpecificationElementKind,
+  ast.isSpecificationRelationshipKind,
+  ast.isSpecificationTag,
+  ast.isElementView,
+  ast.isModelViews
+])
+type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
+
+export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
+  const invalidNodes = new WeakSet(
+    doc.diagnostics?.flatMap(d => {
+      if (d.severity === DiagnosticSeverity.Error) {
+        return getContainerOfType(d.node, isValidatableAstNode) ?? []
+      }
+      return []
+    }) ?? []
+  )
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isValid = (n: ValidatableAstNode) => !invalidNodes.has(n)
+  return {
+    isValid,
+    invalidNodes
+  }
+}
+
 export const isValidLikeC4LangiumDocument = (
   doc: LangiumDocument
 ): doc is ParsedLikeC4LangiumDocument => {
@@ -180,16 +225,24 @@ export const isValidLikeC4LangiumDocument = (
   const { parseResult, diagnostics } = doc
   return (
     parseResult.lexerErrors.length === 0 &&
-    (!diagnostics || diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
+    parseResult.parserErrors.length === 0 &&
+    (!diagnostics ||
+      diagnostics.length === 0 ||
+      diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
   )
 }
 
 export function* streamModel(doc: LikeC4LangiumDocument) {
-  const elements = doc.parseResult.value.models.flatMap(m => m.elements)
+  const { isValid } = checksFromDiagnostics(doc)
+
+  const elements = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
   const traverseStack = [...elements]
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {
+    if (!isValid(el)) {
+      continue
+    }
     if (ast.isRelation(el)) {
       relations.push(el)
       continue
@@ -241,11 +294,11 @@ export function resolveRelationPoints(node: ast.Relation): {
 }
 
 export function toElementStyle(props?: Array<ast.StyleProperty>) {
-  const result: {
+  const result = {} as {
     color?: c4.ThemeColor
     shape?: c4.ElementShape
     icon?: c4.IconUrl
-  } = {}
+  }
   if (!props || props.length === 0) {
     return result
   }
@@ -277,12 +330,12 @@ export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props
 }
 
 export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['props']) {
-  const result: {
+  const result = {} as {
     color?: c4.ThemeColor
     line?: c4.RelationshipLineType
     head?: c4.RelationshipArrowType
     tail?: c4.RelationshipArrowType
-  } = {}
+  }
   if (!props || props.length === 0) {
     return result
   }
@@ -324,7 +377,7 @@ export function toRelationshipStyleExcludeDefaults(
     ...(color && color !== DefaultRelationshipColor ? { color } : {}),
     ...(line && line !== DefaultLineStyle ? { line } : {}),
     ...(head && head !== DefaultArrowType ? { head } : {}),
-    ...(tail && tail !== DefaultArrowType ? { tail } : {})
+    ...(tail ? { tail } : {})
   }
 }
 

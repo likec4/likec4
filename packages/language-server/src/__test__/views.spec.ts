@@ -36,7 +36,7 @@ const model = `
   }
 `
 
-describe('views', () => {
+describe.concurrent('views', () => {
   test('valid index').valid`${model}
     views {
       view index {

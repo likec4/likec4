@@ -15,6 +15,7 @@ import {
   ElementViewOps,
   ast,
   cleanParsedModel,
+  checksFromDiagnostics,
   isFqnIndexedDocument,
   resolveRelationPoints,
   streamModel,
@@ -73,34 +74,34 @@ export class LikeC4ModelParser {
     // return prevHash !== doc.c4hash
   }
 
-  private parseSpecification({ parseResult, c4Specification }: ParsedLikeC4LangiumDocument) {
-    const element_specs = parseResult.value.specifications.flatMap(s => s.elements)
-    if (element_specs.length > 0) {
-      for (const { kind, style } of element_specs) {
-        try {
-          const kindName = kind.name as c4.ElementKind
-          c4Specification.kinds[kindName] = {
-            ...c4Specification.kinds[kindName],
-            ...toElementStyleExcludeDefaults(style?.props)
-          }
-        } catch (e) {
-          logWarnError(e)
+  private parseSpecification(doc: ParsedLikeC4LangiumDocument) {
+    const { isValid } = checksFromDiagnostics(doc)
+    const { parseResult, c4Specification } = doc
+
+    const specifications = parseResult.value.specifications.filter(isValid)
+    const element_specs = specifications.flatMap(s => s.elements.filter(isValid))
+    for (const { kind, style } of element_specs) {
+      try {
+        const kindName = kind.name as c4.ElementKind
+        c4Specification.kinds[kindName] = {
+          ...c4Specification.kinds[kindName],
+          ...toElementStyleExcludeDefaults(style?.props)
         }
+      } catch (e) {
+        logWarnError(e)
       }
     }
 
-    const relations_specs = parseResult.value.specifications.flatMap(s => s.relationships)
-    if (relations_specs.length > 0) {
-      for (const { kind, props } of relations_specs) {
-        try {
-          const kindName = kind.name as c4.RelationshipKind
-          c4Specification.relationships[kindName] = {
-            ...c4Specification.relationships[kindName],
-            ...toRelationshipStyleExcludeDefaults(props)
-          }
-        } catch (e) {
-          logWarnError(e)
+    const relations_specs = specifications.flatMap(s => s.relationships.filter(isValid))
+    for (const { kind, props } of relations_specs) {
+      try {
+        const kindName = kind.name as c4.RelationshipKind
+        c4Specification.relationships[kindName] = {
+          ...c4Specification.relationships[kindName],
+          ...toRelationshipStyleExcludeDefaults(props)
         }
+      } catch (e) {
+        logWarnError(e)
       }
     }
   }
@@ -184,7 +185,10 @@ export class LikeC4ModelParser {
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument) {
-    const views = doc.parseResult.value.views.flatMap(v => v.views)
+    const { isValid } = checksFromDiagnostics(doc)
+    const views = doc.parseResult.value.views.flatMap(v =>
+      isValid(v) ? v.views.filter(isValid) : []
+    )
     for (const view of views) {
       try {
         const v = this.parseElementView(view)
