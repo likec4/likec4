@@ -1,6 +1,21 @@
+# [0.51.0](https://github.com/likec4/likec4/compare/v0.50.0...v0.51.0) (2023-12-05)
+
+### Bug Fixes
+
+- compouind layouts ([feec3b3](https://github.com/likec4/likec4/commit/feec3b38d4714ddfe89a5be50a445f9859a99af9))
+- **deps:** bump `vitest` to 1.0.1 ([0666acd](https://github.com/likec4/likec4/commit/0666acd7d386a25326cba17940d7299058fa5457))
+- **deps:** update dependency jotai to ^2.6.0 ([62e46f2](https://github.com/likec4/likec4/commit/62e46f2d3d602591354d1be19b022b20eb4c1fec))
+- **graph:** correct relationship predicate ([eba2be6](https://github.com/likec4/likec4/commit/eba2be6523fee49931000548fba679453df05931))
+- indent in mermaid ([6d27249](https://github.com/likec4/likec4/commit/6d272498ba0ac8cf19e16e3facf069266fac1ce8))
+
+### Features
+
+- **language-server:** tolerant parser, exclude only erroneous elements ([2c9c456](https://github.com/likec4/likec4/commit/2c9c456fff57a54a811b0e86d3e5f11aa148685b))
+
 # [0.50.0](https://github.com/likec4/likec4/compare/v0.49.0...v0.50.0) (2023-12-01)
 
 ### 🚀 Features
+
 - **diagrams:** navigate button ([44d2182](https://github.com/likec4/likec4/commit/44d218257916a449ce0e3ce2a039a0e460196d6a))
 - **likec4:** display other formats ([c2f5823](https://github.com/likec4/likec4/commit/c2f5823e378cca00e16e548e10db53b133a768a0))
 - **likec4:** copy-to-clipboard button ([ee444ac](https://github.com/likec4/likec4/commit/ee444ac1fd6f7f6ad937bf58182a12862aecb0f9))
@@ -17,7 +32,6 @@
 - **graph:** removeRedundantImplicitEdges ([a6420dc](https://github.com/likec4/likec4/commit/a6420dca92dc3ceea079b12ee4cab1711b841757))
 
 ### Features
-
 
 # [0.49.0](https://github.com/likec4/likec4/compare/v0.48.0...v0.49.0) (2023-11-23)
 
