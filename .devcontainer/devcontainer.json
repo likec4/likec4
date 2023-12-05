@@ -1,12 +1,11 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-  "name": "LikeC4 Dev Container",
+  "name": "LikeC4 Dev",
   "build": {
     "dockerfile": "Dockerfile"
   },
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
@@ -20,15 +19,37 @@
     62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn install && yarn build",
+  "postCreateCommand": "sudo chown -R node node_modules .yarn/cache  && yarn install && yarn build",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
-      "extensions": ["langium.langium-vscode", "dbaeumer.vscode-eslint"]
+      "extensions": [
+        "langium.langium-vscode",
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+        "folke.vscode-monorepo-workspace",
+        "meganrogge.template-string-converter",
+        "redhat.vscode-yaml",
+        "visualstudioexptteam.vscodeintellicode",
+        "zixuanchen.vitest-explorer",
+        "github.copilot",
+        "codezombiech.gitignore",
+        "unifiedjs.vscode-mdx"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.osx": "zsh",
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
     }
   },
+  "mounts": [
+    "source=likec4-yarn-cache,target=${containerWorkspaceFolder}/.yarn/cache,type=volume",
+    "source=${devcontainerId}-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   "remoteUser": "node"
 }
