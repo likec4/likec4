@@ -12,27 +12,49 @@ import type {
 import {
   DefaultRelationshipColor,
   DefaultThemeColor,
+  compareFqnHierarchically,
   defaultTheme,
   invariant,
+  isSameHierarchy,
   nameFromFqn,
   nonNullable,
   parentFqn
 } from '@likec4/core'
-import { first, isNil, isNumber, isTruthy, last } from 'remeda'
+import {
+  filter,
+  first,
+  groupBy,
+  isArray,
+  isNil,
+  isNumber,
+  isTruthy,
+  keys,
+  last,
+  map,
+  omitBy,
+  partition,
+  pipe,
+  reverse,
+  sort,
+  uniq
+} from 'remeda'
 import {
   attribute as _,
+  strict,
   digraph,
-  toDot,
+  toDot as modelToDot,
   type $keywords,
   type ArrowType,
   type GraphBaseModel,
   type NodeModel,
   type RootGraphModel,
-  type SubgraphModel
+  type SubgraphModel,
+  type EdgeTargetLike
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
 import type { DotSource } from './types'
+import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -85,10 +107,11 @@ export function toGraphvisModel({
     [_.layout]: 'dot',
     [_.compound]: true,
     [_.rankdir]: autoLayout,
+    [_.TBbalance]: 'min',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(110),
-    [_.ranksep]: pxToInch(100),
+    [_.nodesep]: pxToInch(120),
+    [_.ranksep]: pxToInch(120),
     // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
     // [_.ratio]: 'fill',
     // [_.concentrate]: false,
@@ -112,7 +135,7 @@ export function toGraphvisModel({
 
   G.attributes.node.apply({
     [_.fontname]: Theme.font,
-    [_.fontsize]: pxToPoints(18),
+    [_.fontsize]: pxToPoints(20),
     [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
@@ -124,17 +147,16 @@ export function toGraphvisModel({
     [_.penwidth]: 0,
     [_.nojustify]: true,
     [_.margin]: pxToInch(26)
-    // [_.ordering]: 'out'
   })
 
   G.attributes.edge.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
-    [_.style]: DefaultEdgeStyle,
     [_.weight]: 1,
     [_.penwidth]: pxToPoints(1),
     // [_.arrowsize]: 0.9,
     [_.nojustify]: true,
+    [_.style]: DefaultEdgeStyle,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -252,7 +274,8 @@ export function toGraphvisModel({
       [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
       [_.style]: 'filled,rounded',
-      [_.margin]: `${pxToPoints(28)},${pxToPoints(32)}`
+      [_.margin]: `${pxToPoints(28)},${pxToPoints(32)}`,
+      [_.penwidth]: pxToPoints(2)
     })
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
@@ -287,11 +310,16 @@ export function toGraphvisModel({
    * At the moment, we don't show edges between clusters.
    * But they are still used to calculate the rank of nodes.
    */
+  const cacheIsEdgeVisible = new WeakMap<ComputedEdge, boolean>()
   function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
     const edge = getEdge(_edge)
+    if (cacheIsEdgeVisible.has(edge)) {
+      return cacheIsEdgeVisible.get(edge)!
+    }
     const hasCompoundEndpoint = viewNodes.some(
       n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
     )
+    cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
     return !hasCompoundEndpoint
   }
 
@@ -314,6 +342,10 @@ export function toGraphvisModel({
     let source = graphvizNodes.get(edge.source)
     let target = graphvizNodes.get(edge.target)
 
+    // if (!source && !target) {
+    //   return
+    // }
+
     let lhead, ltail: string | undefined
 
     if (!source) {
@@ -321,18 +353,18 @@ export function toGraphvisModel({
       ltail = subgraphs.get(edge.source)?.id
       const sourceElement = last(leafElements(edge.source))
       source = !!ltail && !!sourceElement ? graphvizNodes.get(sourceElement.id) : undefined
+      // source = leafElements(edge.source).flatMap(n => graphvizNodes.get(n.id) ?? [])
     }
     if (!target) {
       // Edge with cluster as target
       lhead = subgraphs.get(edge.target)?.id
+      // target = leafElements(edge.target).flatMap(n => graphvizNodes.get(n.id) ?? [])
       const targetElement = first(leafElements(edge.target))
       target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
     }
-
     if (!source || !target) {
       return
     }
-
     if (lhead || ltail) {
       const sourceId = source.attributes.get(_.likec4_id)
       const targetId = target.attributes.get(_.likec4_id)
@@ -341,18 +373,34 @@ export function toGraphvisModel({
       }
     }
 
-    const e = parent.edge([source, target], {
-      [_.likec4_id]: edge.id
+    const edgeParentId = edge.parent
+
+    const [visibleEdges, hiddenEdges] = partition(
+      uniq([
+        ...targetNode.inEdges,
+        // ...targetNode.outEdges,
+        // ...sourceNode.inEdges,
+        ...sourceNode.outEdges
+      ]),
+      e => isEdgeVisible(e)
+    )
+
+    let weight = visibleEdges.length + hiddenEdges.length
+
+    let e = parent.edge([source, target], {
+      [_.likec4_id]: edge.id,
+      [_.style]: edge.line ?? DefaultEdgeStyle,
+      [_.weight]: weight
     })
 
     // Hide edges between clusters
     if (lhead || ltail) {
-      lhead && e.attributes.set(_.lhead, lhead)
       ltail && e.attributes.set(_.ltail, ltail)
+      lhead && e.attributes.set(_.lhead, lhead)
       e.attributes.apply({
-        [_.weight]: 0,
         [_.minlen]: 1,
-        [_.style]: 'invis'
+        [_.style]: 'invis',
+        [_.weight]: 1
       })
       e.attributes.delete(_.likec4_id)
       return
@@ -370,45 +418,42 @@ export function toGraphvisModel({
         [_.fontcolor]: Theme.relationships[edge.color].labelColor
       })
     }
-    if (edge.line && edge.line !== DefaultEdgeStyle) {
-      e.attributes.apply({
-        [_.style]: edge.line
-      })
-    }
     if (edge.head) {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(edge.head)
       })
     }
-    if (edge.tail) {
-      e.attributes.apply({
-        [_.arrowtail]: toArrowType(edge.tail)
-      })
+    if (edge.tail && edge.tail !== 'none') {
       if (edge.head === 'none') {
-        e.attributes.set(_.dir, 'back')
+        const reverseE = parent.edge([e.targets[1], e.targets[0]])
+        reverseE.attributes.apply(e.attributes.values)
+        reverseE.attributes.apply({
+          [_.arrowhead]: toArrowType(edge.tail)
+        })
+        reverseE.attributes.delete(_.arrowtail)
+        parent.removeEdge(e)
+        e = reverseE
       } else {
         e.attributes.apply({
-          [_.dir]: 'both',
-          [_.minlen]: 0
+          [_.arrowtail]: toArrowType(edge.tail),
+          [_.dir]: 'both'
         })
       }
     }
     if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
-      e.attributes.delete(_.arrowhead)
-      e.attributes.delete(_.arrowtail)
       e.attributes.apply({
+        [_.arrowtail]: 'none',
+        [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.weight]: 0,
-        [_.minlen]: 0
+        [_.minlen]: 0,
+        [_.weight]: weight
         // [_.constraint]: false
       })
       return
     }
 
-    const parentId = edge.parent
-
     let otherEdges
-    if (parentId === null && sourceNode.parent == null && targetNode.parent == null) {
+    if (edgeParentId === null && sourceNode.parent == null && targetNode.parent == null) {
       otherEdges = viewEdges.filter(e => {
         // hide self
         if (e.id === edge.id) {
@@ -428,52 +473,24 @@ export function toGraphvisModel({
         return edgeSource.parent == null && edgeTarget.parent == null
       })
     } else {
-      otherEdges = findNestedEdges(parentId).filter(e => e.id !== edge.id)
+      otherEdges = findNestedEdges(edgeParentId).filter(e => e.id !== edge.id)
     }
     const isTheOnlyEdge = otherEdges.length === 0
-
-    function filterNeighboursEdges(_edgeId: EdgeId) {
-      if (_edgeId === edge.id) {
-        return false
+    if (edgeParentId !== null) {
+      const parentNode = viewNodes.find(n => n.id === edgeParentId)
+      if (parentNode) {
+        weight += parentNode.level + 1
       }
-      const _edge = getEdge(_edgeId)
-      if (!isEdgeVisible(_edge)) {
-        return false
-      }
-      return true
-      // if (_edge.parent === parentId) {
-      //   return true
-      // }
-      // if (parentId === null || _edge.parent === null) {
-      //   return false
-      // }
-      // return isSameHierarchy(parentId, _edge.parent)
     }
-
-    let weight = [...sourceNode.outEdges, ...targetNode.inEdges].filter(
-      filterNeighboursEdges
-    ).length
-    const weightMinus = [...sourceNode.inEdges, ...targetNode.outEdges].filter(
-      filterNeighboursEdges
-    ).length
-
-    weight = Math.max(weight - weightMinus, 1)
-
     if (isTheOnlyEdge) {
-      if (parentId === null || leafElements(parentId).length <= 3) {
+      if (edgeParentId === null || leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
       }
       weight += 1
     }
 
-    if (parentId !== null) {
-      const parentNode = viewNodes.find(n => n.id === parentId)
-      invariant(parentNode, 'parentNode should be defined')
-      weight += parentNode.level + 1
-    }
-
-    if (weight > 0) {
+    if (weight > 1) {
       e.attributes.set(_.weight, weight)
     }
   }
@@ -504,26 +521,21 @@ export function toGraphvisModel({
   //   viewEdges,
   //   filter(e => !!e.parent && isEdgeVisible(e)),
   //   groupBy(e => e.parent!),
-  //   omitBy((v,_k) => v.length <= 1),
+  //   omitBy((v, _k) => v.length <= 1),
   //   keys,
   //   map(k => k as Fqn),
   //   sort<Fqn>(compareFqnHierarchically),
-  //   reverse(),
-  //   // flatMap(e => (e.parent && isEdgeVisible(e) ? [e.parent] : [])),
-  //   // uniq(),
-  //   // sort<Fqn>(compareFqnHierarchically),
-  //   // reverse()
+  //   reverse()
   // )
 
   // const processed = new Set<Fqn>()
   // for (const groupId of groupIds) {
-  //   const id = nameFromFqn(groupId).toLowerCase()
   //   for (const element of leafElements(groupId)) {
   //     if (processed.has(element.id)) {
   //       continue
   //     }
   //     processed.add(element.id)
-  //     graphvizNodes.get(element.id)?.attributes.set(_.group, id)
+  //     graphvizNodes.get(element.id)?.attributes.set(_.group, groupId)
   //   }
   // }
 
@@ -531,5 +543,14 @@ export function toGraphvisModel({
 }
 
 export function printToDot(view: ComputedView): DotSource {
-  return toDot(toGraphvisModel(view)) as DotSource
+  return modelToDot(toGraphvisModel(view)) as DotSource
+}
+
+export function toDot(graphviz: Graphviz, computedView: ComputedView) {
+  // return printToDot(computedView)
+  const unflattened = graphviz.unflatten(printToDot(computedView), 1, undefined, 2)
+  // // const model = fromDot(unflattened)
+  // // use ts-graphviz to pretty print the model
+  return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ')
+  // return unflattened
 }

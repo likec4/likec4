@@ -133,7 +133,9 @@ export class ComputeCtx {
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
 
     const sortedEdges = new Set([
-      ...nodes.flatMap(n => n.outEdges.flatMap(id => edgesMap.get(id) ?? [])),
+      ...nodes.flatMap(n =>
+        n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []
+      ),
       ...edges
     ])
 
@@ -142,7 +144,7 @@ export class ComputeCtx {
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
       nodes,
-      edges: Array.from(sortedEdges)
+      edges: [...sortedEdges]
     }
   }
 
@@ -243,10 +245,7 @@ export class ComputeCtx {
           this.ctxEdges.splice(this.ctxEdges.indexOf(edge), 1)
           continue
         }
-        this.ctxEdges[this.ctxEdges.indexOf(edge)] = {
-          ...edge,
-          relations: edge.relations.filter(r => r !== relation)
-        }
+        edge.relations = edge.relations.filter(r => r !== relation)
       }
     }
   }
@@ -283,7 +282,8 @@ export class ComputeCtx {
       if (relations.length > 0) {
         relations.forEach(rel => processedRelations.add(rel))
         acc.push({
-          ...e,
+          source: e.source,
+          target: e.target,
           relations
         })
       }

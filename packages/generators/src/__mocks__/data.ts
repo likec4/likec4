@@ -455,6 +455,6 @@ export const fakeComputedView3Levels: ComputedView = {
       isInclude: false
     }
   ],
-  title: '',
+  title: 'Context: Cloud',
   viewOf: 'cloud'
 } as any

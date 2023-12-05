@@ -6,7 +6,7 @@ import {
   type ComputedNode,
   type EdgeId
 } from '@likec4/core'
-import { difference } from 'remeda'
+import { difference, filter, map, pipe, take } from 'remeda'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
@@ -51,13 +51,13 @@ export function sortNodes({
   for (const n of nodes) {
     g.setNode(n.id)
     if (n.children.length > 0) {
-      n.inEdges.forEach(e => {
-        const edge = getEdge(e)
-        if (edge.target !== n.id) {
-          const id = `${edge.source}:${n.id}`
-          g.setEdge(edge.source, n.id, undefined, id)
-        }
-      })
+      // n.inEdges.forEach(e => {
+      //   const edge = getEdge(e)
+      //   if (edge.target !== n.id) {
+      //     const id = `${edge.source}:${n.id}`
+      //     g.setEdge(edge.source, n.id, undefined, id)
+      //   }
+      // })
       n.outEdges.forEach(e => {
         const edge = getEdge(e)
         if (edge.source !== n.id) {
@@ -71,7 +71,16 @@ export function sortNodes({
     }
   }
 
-  const orderedIds = alg.postorder(g, g.sources()).reverse()
+  let sources = g.sources()
+  if (sources.length === 0) {
+    sources = pipe(
+      nodes,
+      filter(n => n.children.length === 0),
+      take(2),
+      map(n => n.id)
+    )
+  }
+  const orderedIds = alg.postorder(g, sources).reverse()
 
   if (orderedIds.length < nodes.length) {
     const nodeIds = nodes.map(n => n.id)

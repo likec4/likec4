@@ -1,61 +1,55 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`generate mermaid - fakeComputedView 3 Levels 1`] = `
-"graph 
-
-Amazon[amazon]
-subgraph Cloud["cloud"]
-
-  subgraph Cloud.Backend["backend"]
-
-    Cloud.Backend.Graphql[graphql]
-    Cloud.Backend.Storage[storage]
+"---
+title: "Context: Cloud"
+---
+graph 
+  Amazon[amazon]
+  subgraph Cloud["cloud"]
+    subgraph Cloud.Backend["backend"]
+      Cloud.Backend.Graphql[graphql]
+      Cloud.Backend.Storage[storage]
+    end
+    Cloud.FrontendAdminPanel[adminPanel]
+    Cloud.FrontendDashboard[dashboard]
   end
-  Cloud.FrontendAdminPanel[adminPanel]
-  Cloud.FrontendDashboard[dashboard]
-end
-Customer[customer]
-Support[support]
-
-Cloud.FrontendDashboard --> Cloud.Backend.Graphql
-Cloud.FrontendAdminPanel --> Cloud.Backend.Graphql
-Cloud.Backend.Storage --> Amazon
-Cloud.Backend.Graphql --> Cloud.Backend.Storage
-Support --> Cloud.FrontendAdminPanel
-Customer --> Cloud.FrontendDashboard
+  Customer[customer]
+  Support[support]
+  Cloud.FrontendDashboard --> Cloud.Backend.Graphql
+  Cloud.FrontendAdminPanel --> Cloud.Backend.Graphql
+  Cloud.Backend.Storage --> Amazon
+  Cloud.Backend.Graphql --> Cloud.Backend.Storage
+  Support --> Cloud.FrontendAdminPanel
+  Customer --> Cloud.FrontendDashboard
 "
 `;
 
 exports[`generate mermaid - fakeDiagram 1`] = `
 "graph 
-
-Amazon[amazon]
-subgraph Cloud["cloud"]
-
-  Cloud.Backend[backend]
-  Cloud.Frontend[frontend]
-end
-Customer[customer]
-Support[support]
-
-Cloud.Frontend --"requests"--> Cloud.Backend
-Cloud.Backend --> Amazon
-Support --> Cloud.Frontend
-Customer --"opens"--> Cloud.Frontend
+  Amazon[amazon]
+  subgraph Cloud["cloud"]
+    Cloud.Backend[backend]
+    Cloud.Frontend[frontend]
+  end
+  Customer[customer]
+  Support[support]
+  Cloud.Frontend --"requests"--> Cloud.Backend
+  Cloud.Backend --> Amazon
+  Support --> Cloud.Frontend
+  Customer --"opens"--> Cloud.Frontend
 "
 `;
 
 exports[`generate mermaid - fakeDiagram2 1`] = `
 "---
-title: frontend
+title: "frontend"
 ---
 graph 
-
-Client[client]
-SystemBackend[backend]
-SystemFrontend[frontend]
-
-SystemFrontend --"requests"--> SystemBackend
-Client --"opens"--> SystemFrontend
+  Client[client]
+  SystemBackend[backend]
+  SystemFrontend[frontend]
+  SystemFrontend --"requests"--> SystemBackend
+  Client --"opens"--> SystemFrontend
 "
 `;

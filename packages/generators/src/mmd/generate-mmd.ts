@@ -1,5 +1,5 @@
 import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
-import { CompositeGeneratorNode, NL, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, NL, NLEmpty, expandToNode, joinToNode, toString } from 'langium'
 import { isNil } from 'rambdax'
 
 const capitalizeFirstLetter = (value: string) =>
@@ -46,20 +46,20 @@ export function generateMermaid<V extends ComputedView>(view: V) {
       baseNode
         .append('subgraph ', fqnName, '["', label, '"]', NL)
         .indent({
-          indentedChildren: indent =>
-            indent.appendIf(
-              node.children.length > 0,
-              NL,
-              joinToNode(
-                nodes.filter(n => n.parent === node.id),
-                n => printNode(n, fqnName)
-              )
-            ),
+          indentedChildren: [
+            joinToNode(
+              nodes.filter(n => n.parent === node.id),
+              n => printNode(n, fqnName),
+              {
+                appendNewLineIfNotEmpty: true
+              }
+            )
+          ],
           indentation: 2
         })
         .append('end', NL)
     } else {
-      baseNode.append(fqnName, shape[0], label, shape[1], NL)
+      baseNode.append(fqnName, shape[0], label, shape[1])
     }
     return baseNode
   }
@@ -80,27 +80,32 @@ export function generateMermaid<V extends ComputedView>(view: V) {
         view.title !== null && view.title.length > 0,
         '---',
         NL,
-        `title: ${view.title}`,
+        `title: ${JSON.stringify(view.title)}`,
         NL,
         '---',
         NL
       )
-      .append('graph ', view.autoLayout, NL, NL)
-      .append(
-        joinToNode(
-          nodes.filter(n => isNil(n.parent)),
-          n => printNode(n),
-          {
-            appendNewLineIfNotEmpty: true
-          }
-        )
-      )
-      .appendIf(
-        edges.length > 0,
-        NL,
-        joinToNode(edges, e => printEdge(e), {
-          appendNewLineIfNotEmpty: true
-        })
-      )
+      .append('graph ', view.autoLayout, NL)
+      .indent({
+        indentedChildren: indent => {
+          indent
+            .append(
+              joinToNode(
+                nodes.filter(n => isNil(n.parent)),
+                n => printNode(n),
+                {
+                  appendNewLineIfNotEmpty: true
+                }
+              )
+            )
+            .appendIf(
+              edges.length > 0,
+              joinToNode(edges, e => printEdge(e), {
+                appendNewLineIfNotEmpty: true
+              })
+            )
+        },
+        indentation: 2
+      })
   )
 }

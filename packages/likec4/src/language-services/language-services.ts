@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { normalizeError, type ComputedView, type LikeC4Model, type ViewID } from '@likec4/core'
+import { type ComputedView, type LikeC4Model } from '@likec4/core'
 import {
   createLanguageServices as createLangium,
   logger as lspLogger,
@@ -141,8 +141,8 @@ export async function mkLanguageServices({
         try {
           results.push(await layoutView(view))
         } catch (e) {
-          const err = normalizeError(e)
-          logger.error(`layout failed for ${view.id}: ${err.stack ?? err.message}`)
+          logger.error(`layout failed for ${view.id}`)
+          logger.error(e)
         }
       }
       return results
@@ -222,8 +222,10 @@ export namespace LanguageServices {
         logValidationErrors: opts?.logValidationErrors ?? true
       })
       if (instance.printValidationErrors()) {
-        process.exitCode = 1
-        return Promise.reject(new Error('validation failed'))
+        // setImmediate(() => {
+        process.exit(1)
+        // })
+        // return Promise.reject(new Error('validation failed'))
       }
       ;(globalThis as any)['LikeC4LanguageServices'] = instance
     }

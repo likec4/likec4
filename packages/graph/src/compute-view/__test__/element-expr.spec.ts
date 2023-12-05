@@ -269,9 +269,9 @@ describe('element-expr', () => {
       expect(edgeIds).toEqual([
         'cloud.frontend.adminPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
-        'cloud.frontend:cloud.backend',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon'
+        'cloud.backend.storage:amazon',
+        'cloud.frontend:cloud.backend'
       ])
     })
     it('include *, cloud', () => {

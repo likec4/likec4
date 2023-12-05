@@ -5,6 +5,12 @@ on:
   release:
     types: [published]
 
+
+permissions:
+  id-token: read
+  contents: read
+  actions: read
+
 jobs:
   trigger-deploy-template:
     name: trigger deploy template
