@@ -4,12 +4,6 @@ exports[`sortNodes > should generate valid testnodes 1`] = `
 {
   "edges": [
     {
-      "id": "customer:cloud.frontend.ui",
-      "parent": null,
-      "source": "customer",
-      "target": "cloud.frontend.ui",
-    },
-    {
       "id": "cloud.frontend.ui:cloud.backend",
       "parent": "cloud",
       "source": "cloud.frontend.ui",
@@ -26,6 +20,12 @@ exports[`sortNodes > should generate valid testnodes 1`] = `
       "parent": null,
       "source": "cloud.db",
       "target": "amazon",
+    },
+    {
+      "id": "customer:cloud.frontend.ui",
+      "parent": null,
+      "source": "customer",
+      "target": "cloud.frontend.ui",
     },
   ],
   "nodes": [

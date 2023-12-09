@@ -1,5 +1,6 @@
 import type {
   ComputedEdge,
+  ComputedNode,
   ComputedView,
   EdgeId,
   Element,
@@ -90,12 +91,19 @@ export class ComputeCtx {
     const resolvedElements = [...this.elements]
     const nodesMap = buildComputeNodes(resolvedElements)
 
-    const edges = this.computedEdges.map(edge => {
+    const edges = this.computedEdges.reduce((acc, edge) => {
+      const source = nodesMap.get(edge.source)
+      const target = nodesMap.get(edge.target)
+      invariant(source, `Source node ${edge.source} not found`)
+      invariant(target, `Target node ${edge.target} not found`)
+      // if (isCompound(source) && isCompound(target)) {
+      //   const nestedEdge
+      // }
       while (edge.parent && !nodesMap.has(edge.parent)) {
         edge.parent = parentFqn(edge.parent)
       }
-      nonNullable(nodesMap.get(edge.source)).outEdges.push(edge.id)
-      nonNullable(nodesMap.get(edge.target)).inEdges.push(edge.id)
+      source.outEdges.push(edge.id)
+      target.inEdges.push(edge.id)
       // Process source hierarchy
       for (const sourceAncestor of ancestorsFqn(edge.source)) {
         if (sourceAncestor === edge.parent) {
@@ -110,9 +118,9 @@ export class ComputeCtx {
         }
         nodesMap.get(targetAncestor)?.inEdges.push(edge.id)
       }
-
-      return edge
-    })
+      acc.push(edge)
+      return acc
+    }, [] as ComputedEdge[])
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
@@ -177,7 +185,7 @@ export class ComputeCtx {
       }
 
       // This edge represents mutliple relations
-      // we can't use relation.title, because it is not unique
+      // We use label if only it is the same for all relations
       if (!relation) {
         const labels = uniq(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
         if (hasAtLeast(labels, 1)) {
@@ -258,20 +266,12 @@ export class ComputeCtx {
   // Filter out edges if there are edges between descendants
   // i.e. remove implicit edges, derived from childs
   protected removeRedundantImplicitEdges() {
-    // Keep the edge, if there is only one relation and it has same source and target as edge
-    const isDirectEdge = ({ relations: [rel, ...tail], source, target }: ComputeCtx.Edge) => {
-      if (rel && tail.length === 0) {
-        return rel.source === source.id && rel.target === target.id
-      }
-      return false
-    }
-
-    const processedRelations = new Set<Relation>()
+    const processedRelations = new WeakSet<Relation>()
 
     // Sort edges from bottom to top (i.e. implicit edges are at the end)
     const edges = [...this.ctxEdges].sort(compareEdges).reverse()
     this.ctxEdges = edges.reduce((acc, e) => {
-      if (acc.length === 0 || isDirectEdge(e)) {
+      if (acc.length === 0) {
         e.relations.forEach(rel => processedRelations.add(rel))
         acc.push(e)
         return acc
@@ -337,4 +337,7 @@ export class ComputeCtx {
     }
     return this
   }
+}
+function isCompound(source: ComputedNode) {
+  return source.children.length > 0
 }
