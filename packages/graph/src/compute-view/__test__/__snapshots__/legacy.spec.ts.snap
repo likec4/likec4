@@ -88,6 +88,31 @@ exports[`compute-element-view > view of cloud 1`] = `
       "title": "support",
     },
     {
+      "children": [
+        "cloud.frontend",
+        "cloud.backend",
+      ],
+      "color": "primary",
+      "depth": 1,
+      "description": null,
+      "id": "cloud",
+      "inEdges": [
+        "support:cloud.frontend",
+        "customer:cloud.frontend",
+      ],
+      "kind": "system",
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "cloud.backend:amazon",
+      ],
+      "parent": null,
+      "shape": "rectangle",
+      "tags": null,
+      "technology": null,
+      "title": "cloud",
+    },
+    {
       "children": [],
       "color": "primary",
       "description": null,
@@ -127,31 +152,6 @@ exports[`compute-element-view > view of cloud 1`] = `
       "tags": null,
       "technology": null,
       "title": "backend",
-    },
-    {
-      "children": [
-        "cloud.frontend",
-        "cloud.backend",
-      ],
-      "color": "primary",
-      "depth": 1,
-      "description": null,
-      "id": "cloud",
-      "inEdges": [
-        "support:cloud.frontend",
-        "customer:cloud.frontend",
-      ],
-      "kind": "system",
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "cloud.backend:amazon",
-      ],
-      "parent": null,
-      "shape": "rectangle",
-      "tags": null,
-      "technology": null,
-      "title": "cloud",
     },
     {
       "children": [],

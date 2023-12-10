@@ -23,11 +23,14 @@ export const compareRelations = <T extends { source: string; target: string }>(a
     return -1
   }
   const compareParents = parentA && parentB ? compareFqnHierarchically(parentA, parentB) : 0
-  return (
-    compareParents ||
-    compareFqnHierarchically(a.source, b.source) ||
-    compareFqnHierarchically(a.target, b.target)
-  )
+  if (compareParents === 0) {
+    const compareSource = compareFqnHierarchically(a.source, b.source)
+    if (compareSource !== 0) {
+      return compareSource
+    }
+    return compareFqnHierarchically(a.target, b.target)
+  }
+  return compareParents
 }
 
 const isInside = (parent: Fqn): RelationPredicate => {

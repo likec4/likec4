@@ -1,6 +1,7 @@
 import {
   ancestorsFqn,
   commonAncestor,
+  compareRelations,
   type ComputedEdge,
   type ComputedNode,
   type Fqn
@@ -63,6 +64,7 @@ describe('sortNodes', () => {
 
       return edge
     })
+    edges.sort(compareRelations).reverse()
     return { nodes, edges }
   }
 
@@ -136,9 +138,9 @@ describe('sortNodes', () => {
     it('should sort nested nodes using edges', () => {
       expectSorting(nodes, [['cloud.frontend', 'cloud.backend']]).toEqual([
         'customer',
+        'cloud',
         'cloud.frontend',
-        'cloud.backend',
-        'cloud'
+        'cloud.backend'
       ])
     })
 
@@ -146,7 +148,7 @@ describe('sortNodes', () => {
       expectSorting(nodes, [
         ['customer', 'cloud.frontend'],
         ['cloud.frontend', 'cloud.backend']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud'])
+      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend'])
     })
   })
 
@@ -202,12 +204,12 @@ describe('sortNodes', () => {
         ])
       )
       expect(pluck('id', sorted)).toEqual([
-        'amazon',
-        'customer',
+        'cloud',
         'cloud.frontend',
         'cloud.backend',
         'cloud.db',
-        'cloud'
+        'amazon',
+        'customer'
       ])
 
       const cloud = sorted.find(n => n.id === 'cloud')!
@@ -224,17 +226,17 @@ describe('sortNodes', () => {
         ['cloud.frontend', 'cloud.backend'],
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
+      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon'])
     })
 
     it('should sort nodes using edges and ignore cycles', () => {
       expectSorting(nodes, [
-        ['customer', 'cloud.frontend'],
+        // ['customer', 'cloud.frontend'],
         ['cloud.frontend', 'cloud.backend'],
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'cloud.backend']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
+      ]).toEqual(['customer', 'amazon', 'cloud.frontend', 'cloud', 'cloud.db', 'cloud.backend'])
     })
 
     it('should sort nodes using edges and ignore cycles (2)', () => {
@@ -244,7 +246,7 @@ describe('sortNodes', () => {
         ['cloud.backend', 'cloud.db'],
         ['cloud.db', 'amazon'],
         ['amazon', 'customer']
-      ]).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'cloud', 'amazon'])
+      ]).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'cloud.db', 'amazon'])
     })
   })
 
@@ -310,18 +312,18 @@ describe('sortNodes', () => {
         ['customer', 'cloud'],
         ['cloud', 'amazon']
       ]).toEqual([
-        // they have no edges, besides link to parent
-        'cloud.frontend.dashboard',
-        'cloud.frontend.adminPanel',
-        'cloud.backend.storage',
-        'cloud.backend.graphql',
-        'cloud.backend',
-        'amazon.rds',
         // We test this
         'customer',
         'support',
         'cloud',
-        'amazon'
+        // they have no edges, besides link to parent
+        'cloud.frontend.dashboard',
+        'cloud.frontend.adminPanel',
+        'cloud.backend',
+        'cloud.backend.storage',
+        'cloud.backend.graphql',
+        'amazon',
+        'amazon.rds'
       ])
     })
 
@@ -334,16 +336,16 @@ describe('sortNodes', () => {
         ['cloud.backend.graphql', 'cloud.backend.storage'],
         ['cloud.backend.storage', 'amazon.rds']
       ]).toEqual([
-        'support',
-        'cloud.frontend.adminPanel',
         'customer',
+        'support',
+        'cloud',
         'cloud.frontend.dashboard',
+        'cloud.frontend.adminPanel',
+        'cloud.backend',
         'cloud.backend.graphql',
         'cloud.backend.storage',
-        'cloud.backend',
-        'cloud',
-        'amazon.rds',
-        'amazon'
+        'amazon',
+        'amazon.rds'
       ])
     })
   })

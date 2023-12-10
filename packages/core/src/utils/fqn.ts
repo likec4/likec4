@@ -95,11 +95,16 @@ export function ancestorsFqn(fqn: Fqn): Fqn[] {
 export function compareFqnHierarchically(a: string, b: string): number {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
-  if (depthA === depthB) {
-    // return a.localeCompare(b)
-    return 0
-  } else {
-    return depthA - depthB
+  switch (true) {
+    case depthA > depthB: {
+      return 1
+    }
+    case depthA < depthB: {
+      return -1
+    }
+    default: {
+      return 0
+    }
   }
 }
 

@@ -4,9 +4,12 @@ import {
   nonNullable,
   type ComputedEdge,
   type ComputedNode,
-  type EdgeId
+  type EdgeId,
+  type Fqn,
+  compareRelations,
+  compareByFqnHierarchically
 } from '@likec4/core'
-import { difference, filter, map, pipe, take } from 'remeda'
+import { difference, filter, map, pipe, sort, take } from 'remeda'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
@@ -35,39 +38,48 @@ export function sortNodes({
   const g = new Graph({
     compound: false,
     directed: true,
-    multigraph: true
+    multigraph: false
   })
 
-  for (const e of edges) {
-    g.setEdge(e.source, e.target, undefined, e.id)
-  }
-
+  const getNode = (id: Fqn) =>
+    nonNullable(
+      nodes.find(n => n.id === id),
+      'Edge not found'
+    )
   const getEdge = (id: EdgeId) =>
     nonNullable(
       edges.find(edge => edge.id === id),
       'Edge not found'
     )
 
+  for (const e of [...edges].sort(compareRelations)) {
+    g.setEdge(e.source, e.target)
+  }
+
   for (const n of nodes) {
     g.setNode(n.id)
     if (n.children.length > 0) {
-      // n.inEdges.forEach(e => {
-      //   const edge = getEdge(e)
-      //   if (edge.target !== n.id) {
-      //     const id = `${edge.source}:${n.id}`
-      //     g.setEdge(edge.source, n.id, undefined, id)
-      //   }
+      // n.children.forEach(c => {
+      //   g.setEdge(n.id, c, undefined, `${n.id}:${c}`)
       // })
-      n.outEdges.forEach(e => {
+      n.inEdges.forEach(e => {
         const edge = getEdge(e)
-        if (edge.source !== n.id) {
-          const id = `${n.id}:${edge.target}`
-          g.setEdge(n.id, edge.target, undefined, id)
+        // if this edge from leaf to the child of this node
+        if (edge.target !== n.id && getNode(edge.source).children.length === 0) {
+          // const id = `${edge.source}:${n.id}`
+          g.setEdge(edge.source, n.id)
         }
       })
+      // n.outEdges.forEach(e => {
+      //   const edge = getEdge(e)
+      //   if (edge.source !== n.id) {
+      //     const id = `${n.id}:${edge.target}`
+      //     g.setEdge(n.id, edge.target, undefined, id)
+      //   }
+      // })
     }
     if (n.parent) {
-      g.setEdge(n.id, n.parent, undefined, `${n.id}:${n.parent}`)
+      g.setEdge(n.parent, n.id)
     }
   }
 
@@ -75,23 +87,19 @@ export function sortNodes({
   if (sources.length === 0) {
     sources = pipe(
       nodes,
-      filter(n => n.children.length === 0),
-      take(2),
+      sort(compareByFqnHierarchically),
+      filter(n => n.inEdges.length === 0 || n.parent === null),
       map(n => n.id)
     )
   }
-  const orderedIds = alg.postorder(g, sources).reverse()
-
-  if (orderedIds.length < nodes.length) {
-    const nodeIds = nodes.map(n => n.id)
-    const unsorted = difference(nodeIds, orderedIds)
-    orderedIds.unshift(...unsorted)
+  const orderedIds = alg.postorder(g, sources).reverse() as Fqn[]
+  const sorted = orderedIds.map(getNode)
+  if (sorted.length < nodes.length) {
+    const unsorted = difference(nodes, sorted)
+    sorted.push(...unsorted)
   }
-  invariant(orderedIds.length === nodes.length, 'Not all nodes were processed by graphlib')
 
-  const sorted = orderedIds.flatMap(id => nodes.find(n => n.id === id) ?? [])
-  invariant(sorted.length === nodes.length, 'Not all sorted nodes were found')
-
+  invariant(sorted.length === nodes.length, 'Not all nodes were processed by graphlib')
   sortChildren(sorted)
   return sorted
 }

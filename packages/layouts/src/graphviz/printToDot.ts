@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
   ComputedEdge,
   ComputedNode,
@@ -15,7 +16,6 @@ import {
   compareFqnHierarchically,
   defaultTheme,
   invariant,
-  isSameHierarchy,
   nameFromFqn,
   nonNullable,
   parentFqn
@@ -24,7 +24,6 @@ import {
   filter,
   first,
   groupBy,
-  isArray,
   isNil,
   isNumber,
   isTruthy,
@@ -32,7 +31,6 @@ import {
   last,
   map,
   omitBy,
-  partition,
   pipe,
   reverse,
   sort,
@@ -40,21 +38,23 @@ import {
 } from 'remeda'
 import {
   attribute as _,
-  strict,
   digraph,
   toDot as modelToDot,
   type $keywords,
   type ArrowType,
+  type EdgeModel,
   type GraphBaseModel,
   type NodeModel,
   type RootGraphModel,
-  type SubgraphModel,
-  type EdgeTargetLike
+  type SubgraphModel
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
-import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
 import type { DotSource } from './types'
-import type { Graphviz } from '@hpcc-js/wasm/graphviz'
+import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
+
+// '@dagrejs/graphlib' is a CommonJS module
+// Here is a workaround to import it
+// const { Graph, alg } = pkg
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -101,6 +101,84 @@ export function toGraphvisModel({
   nodes: viewNodes,
   edges: viewEdges
 }: ComputedView): RootGraphModel {
+  function leafElements(parentId: Fqn | null): ComputedNode[] {
+    if (parentId === null) {
+      return viewNodes.filter(n => !isCompound(n))
+    }
+    const prefix = parentId + '.'
+    return viewNodes.filter(
+      n => !isCompound(n) && (n.parent === parentId || n.parent?.startsWith(prefix))
+    )
+  }
+
+  function getComputedNode(id: Fqn) {
+    return nonNullable(
+      viewNodes.find(n => n.id === id),
+      `Node ${id} not found`
+    )
+  }
+
+  function getEdge(_edge: ComputedEdge | EdgeId) {
+    return typeof _edge === 'string' ? nonNullable(viewEdges.find(e => e.id === _edge)) : _edge
+  }
+
+  /**
+   * At the moment, we don't show edges between clusters.
+   * But they are still used to calculate the rank of nodes.
+   */
+  const cacheIsEdgeVisible = new WeakMap<ComputedEdge, boolean>()
+  function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
+    const edge = getEdge(_edge)
+    if (cacheIsEdgeVisible.has(edge)) {
+      return cacheIsEdgeVisible.get(edge)!
+    }
+    const hasCompoundEndpoint = viewNodes.some(
+      n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
+    )
+    cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
+    return !hasCompoundEndpoint
+  }
+
+  function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
+    if (parentId === null) {
+      return viewEdges.filter(isEdgeVisible)
+    }
+    const prefix = parentId + '.'
+    return viewEdges.filter(
+      e => e.parent && (e.parent === parentId || e.parent.startsWith(prefix)) && isEdgeVisible(e)
+    )
+  }
+
+  /**
+   * Hidden edges between clusters (with lhead/ltail) are not shown in the graph.
+   * But they are still used to calculate weights of visible edges.
+   */
+  const derivedEdges = new Map<Fqn, EdgeId[]>()
+
+  function addDerivedEdge(node: Fqn, edge: ComputedEdge) {
+    const edges = derivedEdges.get(node) ?? []
+    edges.push(edge.id)
+    derivedEdges.set(node, edges)
+  }
+
+  function edgeWeight(source: ComputedNode, target: ComputedNode) {
+    const visibleEdges = uniq([
+      ...source.inEdges,
+      ...source.outEdges,
+      ...target.inEdges,
+      ...target.outEdges
+    ]).filter(isEdgeVisible)
+    let weight = visibleEdges.length
+    if (derivedEdges.has(source.id) || derivedEdges.has(target.id)) {
+      weight = uniq([
+        ...visibleEdges,
+        ...(derivedEdges.get(source.id) ?? []),
+        ...(derivedEdges.get(target.id) ?? [])
+      ]).length
+    }
+    return weight
+  }
+
   const Theme = defaultTheme
   const G = digraph({
     [_.bgcolor]: 'transparent',
@@ -110,23 +188,23 @@ export function toGraphvisModel({
     [_.TBbalance]: 'min',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(120),
-    [_.ranksep]: pxToInch(120),
+    [_.nodesep]: pxToInch(110),
+    [_.ranksep]: pxToInch(130),
     // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
     // [_.ratio]: 'fill',
     // [_.concentrate]: false,
-    // [_.mclimit]: 3,
-    // [_.nslimit]: 10,
-    // [_.nslimit1]: 10,
+    // [_.mclimit]: 10,
+    // [_.nslimit]: viewNodes.length * 4,
+    // [_.nslimit1]: (viewNodes.length + viewEdges.length) * 4,
     // [_.searchsize]: Math.max(50, viewNodes.length + viewEdges.length),
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
-    [_.pack]: pxToPoints(120),
-    [_.packmode]: 'array_3'
+    [_.pack]: pxToPoints(100),
+    [_.packmode]: 'array_3',
+    [_.pad]: pxToInch(10)
   })
 
   G.attributes.graph.apply({
-    // [_.margin]: pxToPoints(40),
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
@@ -164,6 +242,7 @@ export function toGraphvisModel({
   const ids = new Set<string>()
   const subgraphs = new Map<Fqn, SubgraphModel>()
   const graphvizNodes = new Map<Fqn, NodeModel>()
+  const graphvizEdges = new Map<EdgeId, EdgeModel>()
 
   function checkNodeId(name: string, isCompound = false) {
     if (isCompound) {
@@ -292,119 +371,100 @@ export function toGraphvisModel({
     }
   }
 
-  function leafElements(parentId: Fqn | null): ComputedNode[] {
-    if (parentId === null) {
-      return viewNodes.filter(n => !isCompound(n))
-    }
-    const prefix = parentId + '.'
-    return viewNodes.filter(
-      n => !isCompound(n) && (n.parent === parentId || n.parent?.startsWith(prefix))
-    )
-  }
-
-  function getEdge(_edge: ComputedEdge | EdgeId) {
-    return typeof _edge === 'string' ? nonNullable(viewEdges.find(e => e.id === _edge)) : _edge
-  }
-
-  /**
-   * At the moment, we don't show edges between clusters.
-   * But they are still used to calculate the rank of nodes.
-   */
-  const cacheIsEdgeVisible = new WeakMap<ComputedEdge, boolean>()
-  function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
-    const edge = getEdge(_edge)
-    if (cacheIsEdgeVisible.has(edge)) {
-      return cacheIsEdgeVisible.get(edge)!
-    }
-    const hasCompoundEndpoint = viewNodes.some(
-      n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
-    )
-    cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
-    return !hasCompoundEndpoint
-  }
-
-  function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
-    if (parentId === null) {
-      return viewEdges.filter(isEdgeVisible)
-    }
-    const prefix = parentId + '.'
-    return viewEdges.filter(
-      e => e.parent && (e.parent === parentId || e.parent.startsWith(prefix)) && isEdgeVisible(e)
-    )
-  }
-
-  function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
-    const sourceNode = viewNodes.find(n => n.id === edge.source)
-    const targetNode = viewNodes.find(n => n.id === edge.target)
-    if (!sourceNode || !targetNode) {
-      return
-    }
+  function resolveEdgeSource(edge: ComputedEdge) {
+    let sourceNode = getComputedNode(edge.source)
     let source = graphvizNodes.get(edge.source)
-    let target = graphvizNodes.get(edge.target)
-
-    // if (!source && !target) {
-    //   return
-    // }
-
-    let lhead, ltail: string | undefined
-
+    let ltail: string | undefined
     if (!source) {
+      invariant(isCompound(sourceNode), 'source node should be compound')
       // Edge with cluster as source
       ltail = subgraphs.get(edge.source)?.id
-      const sourceElement = last(leafElements(edge.source))
-      source = !!ltail && !!sourceElement ? graphvizNodes.get(sourceElement.id) : undefined
-      // source = leafElements(edge.source).flatMap(n => graphvizNodes.get(n.id) ?? [])
+      invariant(ltail, `subgraph ${edge.source} not found`)
+      // const sourceElement = last(path.filter(n => !isCompound(n) && isAncestor(edge.source, n.id)))
+      sourceNode = nonNullable(
+        last(leafElements(edge.source)),
+        `last leaf element in ${edge.source} not found`
+      )
+      // sourceNode = sourceElement
+      source = graphvizNodes.get(sourceNode.id)
     }
+    invariant(source, `source node ${edge.source} not found`)
+    return [sourceNode, source, ltail] as const
+  }
+
+  function resolveEdgeTarget(edge: ComputedEdge) {
+    let targetNode = getComputedNode(edge.target)
+    let target = graphvizNodes.get(edge.target)
+    let lhead: string | undefined
     if (!target) {
       // Edge with cluster as target
       lhead = subgraphs.get(edge.target)?.id
-      // target = leafElements(edge.target).flatMap(n => graphvizNodes.get(n.id) ?? [])
-      const targetElement = first(leafElements(edge.target))
-      target = !!lhead && !!targetElement ? graphvizNodes.get(targetElement.id) : undefined
+      invariant(lhead, `subgraph ${edge.target} not found`)
+      targetNode = nonNullable(
+        first(leafElements(edge.target)),
+        `first leaf element in ${edge.target} not found`
+      )
+      // targetNode = targetElement
+      target = graphvizNodes.get(targetNode.id)
     }
-    if (!source || !target) {
+    invariant(target, `target node ${edge.target} not found`)
+    return [targetNode, target, lhead] as const
+  }
+
+  function addHiddenEdge({
+    source,
+    target,
+    lhead,
+    ltail,
+    parent
+  }: {
+    source: NodeModel
+    target: NodeModel
+    lhead: string | undefined
+    ltail: string | undefined
+    edge: ComputedEdge
+    parent: GraphBaseModel
+  }) {
+    const sourceId = source.attributes.get(_.likec4_id) as Fqn
+    const targetId = target.attributes.get(_.likec4_id) as Fqn
+    const sourceNode = getComputedNode(sourceId)
+    const targetNode = getComputedNode(targetId)
+    const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
+    const weight = existingVisibleEdge ? 0 : edgeWeight(sourceNode, targetNode)
+    const e = parent.edge([source, target], {
+      [_.style]: 'invis',
+      // [_.likec4_id]: edge.id,
+      [_.weight]: weight,
+      [_.minlen]: 1
+    })
+    lhead && e.attributes.set(_.lhead, lhead)
+    ltail && e.attributes.set(_.ltail, ltail)
+  }
+
+  function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
+    const [sourceNode, source, ltail] = resolveEdgeSource(edge)
+    const [targetNode, target, lhead] = resolveEdgeTarget(edge)
+
+    // Hide edges between clusters
+    if (lhead || ltail) {
+      addHiddenEdge({
+        source,
+        target,
+        lhead,
+        ltail,
+        edge,
+        parent
+      })
       return
     }
-    if (lhead || ltail) {
-      const sourceId = source.attributes.get(_.likec4_id)
-      const targetId = target.attributes.get(_.likec4_id)
-      if (viewEdges.some(e => e.source === sourceId && e.target === targetId)) {
-        return
-      }
-    }
-
     const edgeParentId = edge.parent
-
-    const [visibleEdges, hiddenEdges] = partition(
-      uniq([
-        ...targetNode.inEdges,
-        // ...targetNode.outEdges,
-        // ...sourceNode.inEdges,
-        ...sourceNode.outEdges
-      ]),
-      e => isEdgeVisible(e)
-    )
-
-    let weight = visibleEdges.length + hiddenEdges.length
+    const weight = edgeWeight(sourceNode, targetNode)
 
     let e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.style]: edge.line ?? DefaultEdgeStyle,
       [_.weight]: weight
     })
-
-    // Hide edges between clusters
-    if (lhead || ltail) {
-      ltail && e.attributes.set(_.ltail, ltail)
-      lhead && e.attributes.set(_.lhead, lhead)
-      e.attributes.apply({
-        [_.minlen]: 1,
-        [_.style]: 'invis',
-        [_.weight]: 1
-      })
-      e.attributes.delete(_.likec4_id)
-      return
-    }
 
     const label = edge.label?.trim() ?? ''
     if (isTruthy(label)) {
@@ -433,6 +493,7 @@ export function toGraphvisModel({
         reverseE.attributes.delete(_.arrowtail)
         parent.removeEdge(e)
         e = reverseE
+        graphvizEdges.set(edge.id, e)
       } else {
         e.attributes.apply({
           [_.arrowtail]: toArrowType(edge.tail),
@@ -440,13 +501,13 @@ export function toGraphvisModel({
         })
       }
     }
+
     if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
       e.attributes.apply({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.minlen]: 0,
-        [_.weight]: weight
+        [_.minlen]: 0
         // [_.constraint]: false
       })
       return
@@ -463,8 +524,8 @@ export function toGraphvisModel({
         if (e.parent !== null) {
           return false
         }
-        const edgeSource = viewNodes.find(n => n.id === e.source)
-        const edgeTarget = viewNodes.find(n => n.id === e.target)
+        const edgeSource = getComputedNode(e.source)
+        const edgeTarget = getComputedNode(e.target)
         // hide edges with compound endpoints
         if (!edgeSource || !edgeTarget || isCompound(edgeSource) || isCompound(edgeTarget)) {
           return false
@@ -476,23 +537,23 @@ export function toGraphvisModel({
       otherEdges = findNestedEdges(edgeParentId).filter(e => e.id !== edge.id)
     }
     const isTheOnlyEdge = otherEdges.length === 0
-    if (edgeParentId !== null) {
-      const parentNode = viewNodes.find(n => n.id === edgeParentId)
-      if (parentNode) {
-        weight += parentNode.level + 1
-      }
-    }
+    // if (edgeParentId !== null) {
+    //   const parentNode = viewNodes.find(n => n.id === edgeParentId)
+    //   if (parentNode) {
+    //     weight += parentNode.level + 1
+    //   }
+    // }
     if (isTheOnlyEdge) {
       if (edgeParentId === null || leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
       }
-      weight += 1
+      // weight += 1
     }
 
-    if (weight > 1) {
-      e.attributes.set(_.weight, weight)
-    }
+    // if (weight > 1) {
+    //   e.attributes.set(_.weight, weight)
+    // }
   }
 
   // ----------------------------------------------
@@ -511,33 +572,42 @@ export function toGraphvisModel({
   for (const node of leafNodes) {
     addNode(node)
   }
+  // Preprocess edges (to derive hidden edges)
+  for (const edge of viewEdges) {
+    const [sourceNode, _source, ltail] = resolveEdgeSource(edge)
+    const [targetNode, _target, lhead] = resolveEdgeTarget(edge)
+    if (ltail || lhead) {
+      addDerivedEdge(sourceNode.id, edge)
+      addDerivedEdge(targetNode.id, edge)
+    }
+  }
   for (const edge of viewEdges) {
     const parent = edge.parent ? subgraphs.get(edge.parent) : G
     invariant(parent, 'Edge parent graph should be defined')
     addEdge(edge, parent)
   }
 
-  // const groupIds = pipe(
-  //   viewEdges,
-  //   filter(e => !!e.parent && isEdgeVisible(e)),
-  //   groupBy(e => e.parent!),
-  //   omitBy((v, _k) => v.length <= 1),
-  //   keys,
-  //   map(k => k as Fqn),
-  //   sort<Fqn>(compareFqnHierarchically),
-  //   reverse()
-  // )
+  const groupIds = pipe(
+    viewEdges,
+    filter(e => !!e.parent && isEdgeVisible(e)),
+    groupBy(e => e.parent!),
+    omitBy((v, _k) => v.length <= 1 || v.length >= 8),
+    keys,
+    map(k => k as Fqn),
+    sort<Fqn>(compareFqnHierarchically),
+    reverse()
+  )
 
-  // const processed = new Set<Fqn>()
-  // for (const groupId of groupIds) {
-  //   for (const element of leafElements(groupId)) {
-  //     if (processed.has(element.id)) {
-  //       continue
-  //     }
-  //     processed.add(element.id)
-  //     graphvizNodes.get(element.id)?.attributes.set(_.group, groupId)
-  //   }
-  // }
+  const processed = new Set<Fqn>()
+  for (const groupId of groupIds) {
+    for (const element of leafElements(groupId)) {
+      if (processed.has(element.id)) {
+        continue
+      }
+      processed.add(element.id)
+      graphvizNodes.get(element.id)?.attributes.set(_.group, groupId)
+    }
+  }
 
   return G
 }
@@ -548,9 +618,7 @@ export function printToDot(view: ComputedView): DotSource {
 
 export function toDot(graphviz: Graphviz, computedView: ComputedView) {
   // return printToDot(computedView)
-  const unflattened = graphviz.unflatten(printToDot(computedView), 1, undefined, 2)
-  // // const model = fromDot(unflattened)
-  // // use ts-graphviz to pretty print the model
+  const unflattened = graphviz.unflatten(printToDot(computedView), 1, true, 2)
   return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ')
   // return unflattened
 }

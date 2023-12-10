@@ -5,10 +5,10 @@ describe('inout-expr', () => {
   it('-> cloud.backend.* ->', () => {
     const { nodeIds } = computeView([$include('-> cloud.backend.* ->')])
     expect(nodeIds).toEqual([
-      'cloud.backend.storage',
-      'amazon',
       'cloud.frontend',
-      'cloud.backend.graphql'
+      'cloud.backend.graphql',
+      'cloud.backend.storage',
+      'amazon'
     ])
   })
 
@@ -20,9 +20,9 @@ describe('inout-expr', () => {
     expect(nodeIds).toEqual([
       'customer',
       'cloud.frontend',
+      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
-      'cloud.backend',
       'amazon'
     ])
 
@@ -32,9 +32,9 @@ describe('inout-expr', () => {
       $include('-> customer ->') // customer will not be included
     ])
     expect(withoutFrontend).toEqual([
+      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
-      'cloud.backend',
       'amazon'
     ])
   })
@@ -47,9 +47,9 @@ describe('inout-expr', () => {
       $exclude('cloud.frontend')
     ])
     expect(nodeIds).toEqual([
+      'cloud.backend',
       'cloud.backend.graphql',
       'cloud.backend.storage',
-      'cloud.backend',
       'amazon'
     ])
   })

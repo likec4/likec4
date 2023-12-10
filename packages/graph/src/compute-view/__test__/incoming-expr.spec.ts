@@ -32,13 +32,13 @@ describe('incoming-expr', () => {
       ])
       expect(nodeIds).toEqual([
         'customer',
-        'cloud.frontend.dashboard',
         'support',
-        'cloud.frontend.adminPanel',
-        'cloud.frontend',
-        'cloud.backend',
         'cloud',
-        'amazon'
+        'cloud.frontend',
+        'cloud.frontend.dashboard',
+        'cloud.backend',
+        'amazon',
+        'cloud.frontend.adminPanel'
       ])
       expect(edgeIds).toEqual([
         'customer:cloud.frontend.dashboard',
@@ -50,7 +50,7 @@ describe('incoming-expr', () => {
 
     it('exclude -> amazon', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('-> amazon')])
-      expect(nodeIds).toEqual(['customer', 'support', 'cloud.frontend', 'cloud.backend', 'cloud'])
+      expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'cloud.frontend', 'cloud.backend'])
       expect(edgeIds).toEqual([
         'customer:cloud.frontend',
         'support:cloud.frontend',
@@ -60,7 +60,7 @@ describe('incoming-expr', () => {
 
     it('exclude -> *', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('-> *')])
-      expect(nodeIds).toEqual(['cloud.frontend', 'cloud.backend', 'cloud', 'amazon'])
+      expect(nodeIds).toEqual(['cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
       expect(edgeIds).to.have.same.members(['cloud.frontend:cloud.backend', 'cloud.backend:amazon'])
     })
 
@@ -69,7 +69,7 @@ describe('incoming-expr', () => {
         $include('*'),
         $exclude('-> cloud.frontend.dashboard')
       ])
-      expect(nodeIds).toEqual(['support', 'cloud.frontend', 'cloud.backend', 'cloud', 'amazon'])
+      expect(nodeIds).toEqual(['support', 'cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
       expect(edgeIds).to.have.same.members([
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',
@@ -86,10 +86,10 @@ describe('incoming-expr', () => {
       ])
       expect(nodeIds).toEqual([
         'support',
-        'cloud.frontend.adminPanel',
         'customer',
-        'cloud.frontend.dashboard',
         'cloud.frontend',
+        'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard',
         // 'cloud.backend', // implicit is removed, due to `-> cloud.backend.*`
         'cloud.backend.graphql'
       ])

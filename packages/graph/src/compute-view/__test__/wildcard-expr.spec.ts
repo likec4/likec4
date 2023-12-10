@@ -7,9 +7,9 @@ describe('wildcard-expr', () => {
     expect(nodeIds).toEqual([
       'customer',
       'support',
+      'cloud',
       'cloud.frontend',
       'cloud.backend',
-      'cloud',
       'amazon'
     ])
     expect(edgeIds).to.have.same.members([
@@ -25,7 +25,7 @@ describe('wildcard-expr', () => {
     // has no siblings
     it('should add amazon for s3', () => {
       const { nodeIds, edgeIds } = computeView('amazon.s3', [$include('*')])
-      expect(nodeIds).toEqual(['cloud', 'amazon.s3', 'amazon'])
+      expect(nodeIds).toEqual(['cloud', 'amazon', 'amazon.s3'])
       expect(edgeIds).to.have.same.members(['cloud:amazon.s3'])
     })
 
