@@ -42,7 +42,6 @@ import {
   toDot as modelToDot,
   type $keywords,
   type ArrowType,
-  type EdgeModel,
   type GraphBaseModel,
   type NodeModel,
   type RootGraphModel,
@@ -242,7 +241,6 @@ export function toGraphvisModel({
   const ids = new Set<string>()
   const subgraphs = new Map<Fqn, SubgraphModel>()
   const graphvizNodes = new Map<Fqn, NodeModel>()
-  const graphvizEdges = new Map<EdgeId, EdgeModel>()
 
   function checkNodeId(name: string, isCompound = false) {
     if (isCompound) {
@@ -433,7 +431,7 @@ export function toGraphvisModel({
     const weight = existingVisibleEdge ? 0 : edgeWeight(sourceNode, targetNode)
     const e = parent.edge([source, target], {
       [_.style]: 'invis',
-      // [_.likec4_id]: edge.id,
+      // [_.likec4_id]: edge.id, //hidden edge should not have id
       [_.weight]: weight,
       [_.minlen]: 1
     })
@@ -493,7 +491,6 @@ export function toGraphvisModel({
         reverseE.attributes.delete(_.arrowtail)
         parent.removeEdge(e)
         e = reverseE
-        graphvizEdges.set(edge.id, e)
       } else {
         e.attributes.apply({
           [_.arrowtail]: toArrowType(edge.tail),
