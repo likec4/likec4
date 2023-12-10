@@ -125,20 +125,54 @@ export type DotLayoutResult = {
   diagram: DiagramView
 }
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
-  const dot = toDot(graphviz, computedView)
+  const initialDot = toDot(graphviz, computedView)
+  const dot = initialDot
 
   const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
-  const icons = uniq(computedNodes.flatMap(node => (node.icon ? [node.icon] : [])))
+  const images = uniq(computedNodes.flatMap(node => (node.icon ? [node.icon] : []))).map(path => ({
+    path,
+    width: IconSize,
+    height: IconSize
+  }))
 
   const rawjson = graphviz.dot(dot, 'json', {
-    images: icons.map(path => ({ path, width: IconSize, height: IconSize })),
+    images,
     yInvert: true
   })
 
   const graphvizJson = JSON.parse(rawjson) as GraphvizJson
-
   const page = parseBB(graphvizJson.bb)
+
+  // const fixedDot = dot.replace(/label=(<<[^\n\r]*>>)/g,(match, p1) => `label="${p1.replace(/"/g, '\\"')}"`)
+  // try {
+  //   const width = page.x + page.width,
+  //     height = page.y + page.height
+  //   const model = fromDot(fixedDot, {
+  //     parse: {
+  //       startRule: 'Dot'
+  //     }
+  //   })
+  //   model.attributes.graph.set(_.size, `${pxToInch(width + 10)},${pxToInch(height + 10)}!`)
+  //   model.attributes.graph.set(_.ratio, 'fill')
+  //   dot = printToDot(model)
+  //   Graphviz.unload()
+  //   graphviz = await Graphviz.load()
+  //   const newjsonn = graphviz.dot(dot, 'json', {
+  //     images,
+  //     yInvert: true
+  //   })
+  //   graphvizJson = JSON.parse(newjsonn) as GraphvizJson
+  //   page = parseBB(graphvizJson.bb)
+  // } catch (e) {
+  //   console.error(e)
+  //   console.error('initial ---------------------------------')
+  //   console.error(initialDot)
+  //   console.error('fixedDot ---------------------------------')
+  //   console.error(fixedDot)
+  //   console.error('dot ---------------------------------')
+  //   console.error(dot)
+  // }
 
   const diagram: DiagramView = {
     ...view,

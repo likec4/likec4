@@ -90,9 +90,9 @@ export function nodeLabel(node: ComputedNode) {
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">\n${rows
-    .map(l => '   ' + l)
-    .join('\n')}\n</TABLE>>`
+  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">${rows.join(
+    ''
+  )}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

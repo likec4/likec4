@@ -1,6 +1,5 @@
 import type {
   ComputedEdge,
-  ComputedNode,
   ComputedView,
   EdgeId,
   Element,
@@ -17,7 +16,6 @@ import {
   isStrictElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
-  nonNullable,
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
@@ -268,6 +266,25 @@ export class ComputeCtx {
   protected removeRedundantImplicitEdges() {
     const processedRelations = new WeakSet<Relation>()
 
+    // Returns predicate, that checks if edge is between descendants of given edge
+    // const isNestedEdgeOf = ({ source, target }: ComputeCtx.Edge) => {
+    //   return (edge: ComputeCtx.Edge) => {
+    //     invariant(
+    //       source.id !== edge.source.id || target.id !== edge.target.id,
+    //       'Edge must not be the same'
+    //     )
+    //     const isSameSource = source.id === edge.source.id
+    //     const isSameTarget = target.id === edge.target.id
+    //     const isSourceNested = isAncestor(source.id, edge.source.id)
+    //     const isTargetNested = isAncestor(target.id, edge.target.id)
+    //     return (
+    //       (isSourceNested && isTargetNested) ||
+    //       (isSameSource && isTargetNested) ||
+    //       (isSameTarget && isSourceNested)
+    //     )
+    //   }
+    // }
+
     // Sort edges from bottom to top (i.e. implicit edges are at the end)
     const edges = [...this.ctxEdges].sort(compareEdges).reverse()
     this.ctxEdges = edges.reduce((acc, e) => {
@@ -277,16 +294,23 @@ export class ComputeCtx {
         return acc
       }
       const relations = e.relations.filter(rel => !processedRelations.has(rel))
+      if (relations.length === 0) {
+        return acc
+      }
       // this edge represents some relations
       // that are not processed by previous edges
-      if (relations.length > 0) {
-        relations.forEach(rel => processedRelations.add(rel))
-        acc.push({
-          source: e.source,
-          target: e.target,
-          relations
-        })
-      }
+      relations.forEach(rel => processedRelations.add(rel))
+
+      // // If there is an edge between descendants of current edge,
+      // // then we don't need to add this edge
+      // if (acc.some(isNestedEdgeOf(e))) {
+      //   return acc
+      // }
+      acc.push({
+        source: e.source,
+        target: e.target,
+        relations
+      })
       return acc
     }, [] as ComputeCtx.Edge[])
   }
@@ -337,7 +361,4 @@ export class ComputeCtx {
     }
     return this
   }
-}
-function isCompound(source: ComputedNode) {
-  return source.children.length > 0
 }
