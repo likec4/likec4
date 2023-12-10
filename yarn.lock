@@ -1130,7 +1130,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
-    p-throttle: "npm:^5.1.0"
+    p-throttle: "npm:^6.1.0"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
@@ -11735,10 +11735,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "p-throttle@npm:5.1.0"
-  checksum: 025209cfd007f0a2e3b328cb780542fc1b8cfaaaa749c9cef1e98f37f4431b037728d49c66ebcc6419933fb06c1544976e9b1be1b57d651c4e07437cde74ac1e
+"p-throttle@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "p-throttle@npm:6.1.0"
+  checksum: 19524a116a536e1b0503df2c881fb54234337b8587751b5faac953690a660e5f647a20b33b2aad444ac7b3eba7b2c9233ab530a36a196745f93f1eba69e21c03
   languageName: node
   linkType: hard
 
