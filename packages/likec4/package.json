@@ -65,7 +65,7 @@
     "react-accessible-treeview": "^2.8.0",
     "react-dom": "^18.2.0",
     "remeda": "^1.29.0",
-    "vite": "^5.0.5"
+    "vite": "^5.0.6"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",
