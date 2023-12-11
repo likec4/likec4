@@ -33,8 +33,7 @@ import {
   omitBy,
   pipe,
   reverse,
-  sort,
-  uniq
+  sort
 } from 'remeda'
 import {
   attribute as _,
@@ -50,10 +49,6 @@ import {
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
-
-// '@dagrejs/graphlib' is a CommonJS module
-// Here is a workaround to import it
-// const { Graph, alg } = pkg
 
 // Declare custom attributes.
 declare module 'ts-graphviz' {
@@ -152,31 +147,120 @@ export function toGraphvisModel({
    * Hidden edges between clusters (with lhead/ltail) are not shown in the graph.
    * But they are still used to calculate weights of visible edges.
    */
-  const derivedEdges = new Map<Fqn, EdgeId[]>()
+  // const derivedEdges = new Map<Fqn, EdgeId[]>()
 
-  function addDerivedEdge(node: Fqn, edge: ComputedEdge) {
-    const edges = derivedEdges.get(node) ?? []
-    edges.push(edge.id)
-    derivedEdges.set(node, edges)
-  }
+  // function addDerivedEdge(node: Fqn, edge: ComputedEdge) {
+  //   const edges = derivedEdges.get(node) ?? []
+  //   edges.push(edge.id)
+  //   derivedEdges.set(node, edges)
+  // }
 
-  function edgeWeight(source: ComputedNode, target: ComputedNode) {
-    const visibleEdges = uniq([
-      ...source.inEdges,
-      ...source.outEdges,
-      ...target.inEdges,
-      ...target.outEdges
-    ]).filter(isEdgeVisible)
-    let weight = visibleEdges.length
-    if (derivedEdges.has(source.id) || derivedEdges.has(target.id)) {
-      weight = uniq([
-        ...visibleEdges,
-        ...(derivedEdges.get(source.id) ?? []),
-        ...(derivedEdges.get(target.id) ?? [])
-      ]).length
-    }
-    return weight
-  }
+  // // function edgeWeight(edge: ComputedEdge): number
+  // // function edgeWeight(source: ComputedNode, target: ComputedNode): number
+  // function edgeWeight(...args: [ComputedEdge] | [ComputedNode, ComputedNode]) {
+  //   const sourceNd = args.length === 1 ? getComputedNode(args[0].source) : args[0]
+  //   const targetNd = args.length === 1 ? getComputedNode(args[0].target) : args[1]
+
+  // const sourceWeight = uniq([
+  //   ...sourceNd.outEdges,
+  //   ...sourceNd.inEdges,
+  // ]).filter(isEdgeVisible).length
+
+  // const targetWeight = uniq([
+  //   ...targetNd.outEdges,
+  //   ...targetNd.inEdges,
+  // ]).filter(isEdgeVisible).length
+
+  // if (targetWeight < sourceWeight) {
+  //   return targetWeight
+  // }
+
+  // const edges = uniq([
+  //   ...sourceNd.outEdges,
+  //   ...sourceNd.inEdges,
+  //   ...targetNd.outEdges,
+  //   ...targetNd.inEdges
+  // ]).filter(isEdgeVisible)
+  //   const _edge = getEdge(_edgeId)
+  //   if (!isEdgeVisible(_edge)) {
+  //     return false
+  //   }
+  //   if (_edgeId === edge.id) {
+  //     return true
+  //   }
+  //   if (
+  //     (_edge.target === edge.target && _edge.source === edge.source) ||
+  //     (_edge.target === edge.source && _edge.source === edge.target)
+  //   ) {
+  //     return true
+  //   }
+  //   if (edge.parent !== null) {
+  //     return (
+  //       edge.parent === _edge.parent ||
+  //       (isAncestor(edge.parent, _edge.source) && isAncestor(edge.parent, _edge.target))
+  //     )
+  //   }
+  //   const sourceHasCommonAncestor =
+  //     commonAncestor(edge.source, _edge.source) !== null ||
+  //     (parentFqn(edge.source) === null && parentFqn(_edge.source) === null)
+  //   if (!sourceHasCommonAncestor) {
+  //     return false
+  //   }
+  //   const targetHasCommonAncestor =
+  //     commonAncestor(edge.target, _edge.target) !== null ||
+  //     (parentFqn(edge.target) === null && parentFqn(_edge.target) === null)
+  //   return targetHasCommonAncestor
+  // })
+
+  // const sourceOut = sourceNd.outEdges.filter(_edgeId => {
+  //   if (_edgeId === edge.id) {
+  //     return false
+  //   }
+  //   const _edge = getEdge(_edgeId)
+  //   if (!isEdgeVisible(_edge)) {
+  //     return false
+  //   }
+  //   if (_edge.target === edge.target) {
+  //     return true
+  //   }
+  //   if (edge.parent !== null) {
+  //     return isAncestor(edge.parent, _edge.target)
+  //   }
+  //   const _edgeTarget = getComputedNode(_edge.target)
+  //   return (
+  //     targetNd.parent === _edgeTarget.parent ||
+  //     commonAncestor(targetNd.id, _edgeTarget.id) !== null
+  //   )
+  // })
+  // const targetIn = targetNd.inEdges.filter(_edgeId => {
+  //   if (_edgeId === edge.id) {
+  //     return false
+  //   }
+  //   const _edge = getEdge(_edgeId)
+  //   if (!isEdgeVisible(_edge)) {
+  //     return false
+  //   }
+  //   if (_edge.source === edge.source) {
+  //     return true
+  //   }
+  //   if (edge.parent !== null) {
+  //     return isAncestor(edge.parent, _edge.source)
+  //   }
+  //   const _edgeSource = getComputedNode(_edge.source)
+  //   return (
+  //     sourceNd.parent === _edgeSource.parent ||
+  //     commonAncestor(sourceNd.id, _edgeSource.id) !== null
+  //   )
+  // let weight = edges.length
+  //   if (derivedEdges.has(sourceNd.id) || derivedEdges.has(targetNd.id)) {
+  //     return uniq([
+  //       ...(derivedEdges.get(sourceNd.id) ?? []),
+  //       ...(derivedEdges.get(targetNd.id) ?? [])
+  //     ]).length
+  //   }
+  //   // })
+  //   return undefined
+  // }
 
   const Theme = defaultTheme
   const G = digraph({
@@ -229,7 +313,6 @@ export function toGraphvisModel({
   G.attributes.edge.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
-    [_.weight]: 1,
     [_.penwidth]: pxToPoints(1),
     // [_.arrowsize]: 0.9,
     [_.nojustify]: true,
@@ -351,14 +434,16 @@ export function toGraphvisModel({
       [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
       [_.style]: 'filled,rounded',
-      [_.margin]: `${pxToPoints(28)},${pxToPoints(32)}`,
+      [_.margin]:
+        elementNode.children.length > 2 ? `${pxToPoints(32)},${pxToPoints(50)}` : pxToPoints(30),
       [_.penwidth]: pxToPoints(2)
     })
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
       const color = compoundLabelColor(Theme.elements[elementNode.color].loContrast)
       subgraph.apply({
-        [_.label]: `<<FONT COLOR="${color}"><B>${label}</B></FONT>>`
+        [_.fontcolor]: color,
+        [_.label]: `<<B>${label}</B>>`
       })
     }
     subgraphs.set(elementNode.id, subgraph)
@@ -378,15 +463,15 @@ export function toGraphvisModel({
       // Edge with cluster as source
       ltail = subgraphs.get(edge.source)?.id
       invariant(ltail, `subgraph ${edge.source} not found`)
-      // const sourceElement = last(path.filter(n => !isCompound(n) && isAncestor(edge.source, n.id)))
       sourceNode = nonNullable(
         last(leafElements(edge.source)),
         `last leaf element in ${edge.source} not found`
       )
-      // sourceNode = sourceElement
-      source = graphvizNodes.get(sourceNode.id)
+      source = nonNullable(
+        graphvizNodes.get(sourceNode.id),
+        `source graphviz node ${sourceNode.id} not found`
+      )
     }
-    invariant(source, `source node ${edge.source} not found`)
     return [sourceNode, source, ltail] as const
   }
 
@@ -395,6 +480,7 @@ export function toGraphvisModel({
     let target = graphvizNodes.get(edge.target)
     let lhead: string | undefined
     if (!target) {
+      invariant(isCompound(targetNode), 'target node should be compound')
       // Edge with cluster as target
       lhead = subgraphs.get(edge.target)?.id
       invariant(lhead, `subgraph ${edge.target} not found`)
@@ -402,10 +488,11 @@ export function toGraphvisModel({
         first(leafElements(edge.target)),
         `first leaf element in ${edge.target} not found`
       )
-      // targetNode = targetElement
-      target = graphvizNodes.get(targetNode.id)
+      target = nonNullable(
+        graphvizNodes.get(targetNode.id),
+        `target graphviz node ${targetNode.id} not found`
+      )
     }
-    invariant(target, `target node ${edge.target} not found`)
     return [targetNode, target, lhead] as const
   }
 
@@ -425,16 +512,15 @@ export function toGraphvisModel({
   }) {
     const sourceId = source.attributes.get(_.likec4_id) as Fqn
     const targetId = target.attributes.get(_.likec4_id) as Fqn
-    const sourceNode = getComputedNode(sourceId)
-    const targetNode = getComputedNode(targetId)
     const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
-    const weight = existingVisibleEdge ? 0 : edgeWeight(sourceNode, targetNode)
     const e = parent.edge([source, target], {
       [_.style]: 'invis',
       // [_.likec4_id]: edge.id, //hidden edge should not have id
-      [_.weight]: weight,
       [_.minlen]: 1
     })
+    if (existingVisibleEdge) {
+      e.attributes.set(_.weight, 0)
+    }
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
   }
@@ -456,12 +542,10 @@ export function toGraphvisModel({
       return
     }
     const edgeParentId = edge.parent
-    const weight = edgeWeight(sourceNode, targetNode)
 
     let e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
-      [_.style]: edge.line ?? DefaultEdgeStyle,
-      [_.weight]: weight
+      [_.style]: edge.line ?? DefaultEdgeStyle
     })
 
     const label = edge.label?.trim() ?? ''
@@ -524,7 +608,7 @@ export function toGraphvisModel({
         const edgeSource = getComputedNode(e.source)
         const edgeTarget = getComputedNode(e.target)
         // hide edges with compound endpoints
-        if (!edgeSource || !edgeTarget || isCompound(edgeSource) || isCompound(edgeTarget)) {
+        if (isCompound(edgeSource) || isCompound(edgeTarget)) {
           return false
         }
         // only edges between top-level nodes
@@ -534,23 +618,12 @@ export function toGraphvisModel({
       otherEdges = findNestedEdges(edgeParentId).filter(e => e.id !== edge.id)
     }
     const isTheOnlyEdge = otherEdges.length === 0
-    // if (edgeParentId !== null) {
-    //   const parentNode = viewNodes.find(n => n.id === edgeParentId)
-    //   if (parentNode) {
-    //     weight += parentNode.level + 1
-    //   }
-    // }
     if (isTheOnlyEdge) {
       if (edgeParentId === null || leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
         e.attributes.set(_.minlen, 0)
       }
-      // weight += 1
     }
-
-    // if (weight > 1) {
-    //   e.attributes.set(_.weight, weight)
-    // }
   }
 
   // ----------------------------------------------
@@ -569,15 +642,7 @@ export function toGraphvisModel({
   for (const node of leafNodes) {
     addNode(node)
   }
-  // Preprocess edges (to derive hidden edges)
-  for (const edge of viewEdges) {
-    const [sourceNode, _source, ltail] = resolveEdgeSource(edge)
-    const [targetNode, _target, lhead] = resolveEdgeTarget(edge)
-    if (ltail || lhead) {
-      addDerivedEdge(sourceNode.id, edge)
-      addDerivedEdge(targetNode.id, edge)
-    }
-  }
+
   for (const edge of viewEdges) {
     const parent = edge.parent ? subgraphs.get(edge.parent) : G
     invariant(parent, 'Edge parent graph should be defined')
@@ -586,9 +651,8 @@ export function toGraphvisModel({
 
   const groupIds = pipe(
     viewEdges,
-    filter(e => !!e.parent && isEdgeVisible(e)),
-    groupBy(e => e.parent!),
-    omitBy((v, _k) => v.length <= 1 || v.length >= 8),
+    groupBy(e => (e.parent && isEdgeVisible(e) ? e.parent : undefined)),
+    omitBy((v, _k) => v.length <= 1 || v.length > 8),
     keys,
     map(k => k as Fqn),
     sort<Fqn>(compareFqnHierarchically),
