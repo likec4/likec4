@@ -10,5 +10,5 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "packages/*/dist", "packages/*/bin"]
+  "exclude": ["node_modules", "**/node_modules/**/*", "dist", "packages/*/dist", "packages/*/bin"]
 }
