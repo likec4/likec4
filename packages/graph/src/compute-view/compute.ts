@@ -13,6 +13,7 @@ import {
   commonAncestor,
   compareRelations,
   invariant,
+  isAncestor,
   isStrictElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
@@ -267,23 +268,23 @@ export class ComputeCtx {
     const processedRelations = new WeakSet<Relation>()
 
     // Returns predicate, that checks if edge is between descendants of given edge
-    // const isNestedEdgeOf = ({ source, target }: ComputeCtx.Edge) => {
-    //   return (edge: ComputeCtx.Edge) => {
-    //     invariant(
-    //       source.id !== edge.source.id || target.id !== edge.target.id,
-    //       'Edge must not be the same'
-    //     )
-    //     const isSameSource = source.id === edge.source.id
-    //     const isSameTarget = target.id === edge.target.id
-    //     const isSourceNested = isAncestor(source.id, edge.source.id)
-    //     const isTargetNested = isAncestor(target.id, edge.target.id)
-    //     return (
-    //       (isSourceNested && isTargetNested) ||
-    //       (isSameSource && isTargetNested) ||
-    //       (isSameTarget && isSourceNested)
-    //     )
-    //   }
-    // }
+    const isNestedEdgeOf = ({ source, target }: ComputeCtx.Edge) => {
+      return (edge: ComputeCtx.Edge) => {
+        invariant(
+          source.id !== edge.source.id || target.id !== edge.target.id,
+          'Edge must not be the same'
+        )
+        const isSameSource = source.id === edge.source.id
+        const isSameTarget = target.id === edge.target.id
+        const isSourceNested = isAncestor(source.id, edge.source.id)
+        const isTargetNested = isAncestor(target.id, edge.target.id)
+        return (
+          (isSourceNested && isTargetNested) ||
+          (isSameSource && isTargetNested) ||
+          (isSameTarget && isSourceNested)
+        )
+      }
+    }
 
     // Sort edges from bottom to top (i.e. implicit edges are at the end)
     const edges = [...this.ctxEdges].sort(compareEdges).reverse()
@@ -301,11 +302,11 @@ export class ComputeCtx {
       // that are not processed by previous edges
       relations.forEach(rel => processedRelations.add(rel))
 
-      // // If there is an edge between descendants of current edge,
-      // // then we don't need to add this edge
-      // if (acc.some(isNestedEdgeOf(e))) {
-      //   return acc
-      // }
+      // If there is an edge between descendants of current edge,
+      // then we don't add this edge
+      if (acc.some(isNestedEdgeOf(e))) {
+        return acc
+      }
       acc.push({
         source: e.source,
         target: e.target,

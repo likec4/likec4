@@ -45,12 +45,8 @@ describe('element-expr', () => {
       $include('support'),
       $exclude('cloud.backend')
     ])
-    expect(nodeIds).toEqual(['support', 'customer', 'cloud', 'cloud.frontend'])
-    expect(edgeIds).to.have.same.members([
-      'customer:cloud.frontend',
-      'customer:cloud',
-      'support:cloud.frontend'
-    ])
+    expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'cloud.frontend'])
+    expect(edgeIds).to.have.same.members(['customer:cloud.frontend', 'support:cloud.frontend'])
   })
 
   describe('view of cloud', () => {
@@ -127,10 +123,9 @@ describe('element-expr', () => {
       ])
       expect(edgeIds).to.have.same.members([
         'support:cloud.frontend.adminPanel',
-        'cloud.frontend.adminPanel:cloud.backend',
         'customer:cloud.frontend.dashboard',
+        'cloud.frontend.adminPanel:cloud.backend',
         'cloud.frontend.dashboard:cloud.backend',
-        'cloud.frontend:cloud.backend',
         'cloud.backend:amazon'
       ])
 
@@ -167,15 +162,14 @@ describe('element-expr', () => {
         'customer',
         'cloud',
         'cloud.frontend',
-        'cloud.frontend.dashboard',
         'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard',
         'cloud.backend'
       ])
       expect(edgeIds).to.have.same.members([
         'support:cloud.frontend.adminPanel',
-        'cloud.frontend.adminPanel:cloud.backend',
         'customer:cloud.frontend.dashboard',
-        'customer:cloud',
+        'cloud.frontend.adminPanel:cloud.backend',
         'cloud.frontend.dashboard:cloud.backend'
       ])
     })
@@ -208,13 +202,12 @@ describe('element-expr', () => {
         'customer',
         'cloud',
         'cloud.frontend',
-        'cloud.frontend.dashboard',
-        'cloud.frontend.adminPanel'
+        'cloud.frontend.adminPanel',
+        'cloud.frontend.dashboard'
       ])
       expect(edgeIds).to.have.same.members([
         'support:cloud.frontend.adminPanel',
-        'customer:cloud.frontend.dashboard',
-        'customer:cloud'
+        'customer:cloud.frontend.dashboard'
       ])
     })
   })
@@ -274,8 +267,7 @@ describe('element-expr', () => {
         'cloud.frontend.adminPanel:cloud.backend.graphql',
         'cloud.frontend.dashboard:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon',
-        'cloud.frontend:cloud.backend'
+        'cloud.backend.storage:amazon'
       ])
     })
     it('include *, cloud', () => {
@@ -291,8 +283,7 @@ describe('element-expr', () => {
       expect(edgeIds).toEqual([
         'cloud.frontend:cloud.backend.graphql',
         'cloud.backend.graphql:cloud.backend.storage',
-        'cloud.backend.storage:amazon',
-        'cloud:amazon'
+        'cloud.backend.storage:amazon'
       ])
     })
   })

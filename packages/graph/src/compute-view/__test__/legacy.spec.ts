@@ -122,16 +122,15 @@ describe('compute-element-view', () => {
       'customer',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.dashboard',
       'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
       'cloud.backend'
     ])
 
     expect(edgeIds).to.have.same.members([
       'support:cloud.frontend.adminPanel',
-      'cloud.frontend.adminPanel:cloud.backend',
       'customer:cloud.frontend.dashboard',
-      'customer:cloud',
+      'cloud.frontend.adminPanel:cloud.backend',
       'cloud.frontend.dashboard:cloud.backend'
     ])
   })
@@ -148,8 +147,8 @@ describe('compute-element-view', () => {
       'customer',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.dashboard',
       'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
       'cloud.backend.graphql',
       'cloud.backend.storage'
     ])
@@ -157,9 +156,8 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual([
       'support:cloud.frontend.adminPanel',
       'customer:cloud.frontend.dashboard',
-      'customer:cloud',
-      'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
+      'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.backend.graphql:cloud.backend.storage'
     ])
   })
@@ -176,16 +174,15 @@ describe('compute-element-view', () => {
       'customer',
       'cloud',
       'cloud.frontend',
-      'cloud.frontend.dashboard',
       'cloud.frontend.adminPanel',
+      'cloud.frontend.dashboard',
       'cloud.backend.graphql'
     ])
 
     expect(edgeIds).to.have.same.members([
       'support:cloud.frontend.adminPanel',
-      'cloud.frontend.adminPanel:cloud.backend.graphql',
       'customer:cloud.frontend.dashboard',
-      'customer:cloud',
+      'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.frontend.dashboard:cloud.backend.graphql'
     ])
   })
@@ -262,7 +259,6 @@ describe('compute-element-view', () => {
       'support:cloud.frontend.adminPanel',
       'cloud.frontend.dashboard:cloud.backend.graphql',
       'cloud.frontend.adminPanel:cloud.backend.graphql',
-      'cloud.frontend:cloud.backend',
       'cloud.backend:amazon'
     ])
   })
@@ -397,8 +393,6 @@ describe('compute-element-view', () => {
 
     expect(edgeIds).to.have.same.members([
       'cloud.frontend.dashboard:cloud.backend.graphql',
-      'cloud.frontend:cloud.backend.graphql',
-      'cloud.frontend:cloud.backend',
       'cloud.backend:amazon'
     ])
   })
