@@ -271,8 +271,8 @@ export function toGraphvisModel({
     [_.TBbalance]: 'min',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(110),
-    [_.ranksep]: pxToInch(130),
+    [_.nodesep]: pxToInch(120),
+    [_.ranksep]: pxToInch(120),
     // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
     // [_.ratio]: 'fill',
     // [_.concentrate]: false,
@@ -282,7 +282,7 @@ export function toGraphvisModel({
     // [_.searchsize]: Math.max(50, viewNodes.length + viewEdges.length),
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
-    [_.pack]: pxToPoints(100),
+    [_.pack]: pxToPoints(120),
     [_.packmode]: 'array_3',
     [_.pad]: pxToInch(10)
   })
@@ -435,7 +435,7 @@ export function toGraphvisModel({
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
       [_.style]: 'filled,rounded',
       [_.margin]:
-        elementNode.children.length > 2 ? `${pxToPoints(32)},${pxToPoints(50)}` : pxToPoints(30),
+        elementNode.children.length > 2 ? `${pxToPoints(32)},${pxToPoints(50)}` : pxToPoints(32),
       [_.penwidth]: pxToPoints(2)
     })
     const label = sanitize(elementNode.title.toUpperCase())

@@ -950,21 +950,6 @@ model {
     }
   }
 
-  // Col1
-  primary -> secondary
-  secondary -> muted
-
-  // Col2
-  blue -> sky
-  sky -> indigo
-
-  // Col3
-  gray -> slate
-
-  // Col4
-  red -> amber
-  amber -> green
-
 }
 
 views {
@@ -978,7 +963,7 @@ views {
 
   view themecolor_primary of primary {
     title "Theme Color: primary"
-    include colors, primary, primary.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -988,7 +973,7 @@ views {
 
   view themecolor_blue of blue {
     title "Theme Color: blue"
-    include colors, blue, blue.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -998,7 +983,7 @@ views {
 
   view themecolor_secondary of secondary {
     title "Theme Color: secondary"
-    include colors, secondary, secondary.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1008,7 +993,7 @@ views {
 
   view themecolor_sky of sky {
     title "Theme Color: sky"
-    include colors, sky, sky.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1018,7 +1003,7 @@ views {
 
   view themecolor_muted of muted {
     title "Theme Color: muted"
-    include colors, muted, muted.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1028,7 +1013,7 @@ views {
 
   view themecolor_slate of slate {
     title "Theme Color: slate"
-    include colors, slate, slate.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1038,7 +1023,7 @@ views {
 
   view themecolor_gray of gray {
     title "Theme Color: gray"
-    include colors, gray, gray.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1048,7 +1033,7 @@ views {
 
   view themecolor_red of red {
     title "Theme Color: red"
-    include colors, red, red.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1058,7 +1043,7 @@ views {
 
   view themecolor_green of green {
     title "Theme Color: green"
-    include colors, green, green.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1068,7 +1053,7 @@ views {
 
   view themecolor_amber of amber {
     title "Theme Color: amber"
-    include colors, amber, amber.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
@@ -1078,7 +1063,7 @@ views {
 
   view themecolor_indigo of indigo {
     title "Theme Color: indigo"
-    include colors, indigo, indigo.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {

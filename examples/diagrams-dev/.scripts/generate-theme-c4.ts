@@ -156,21 +156,6 @@ ${colors
     }
   }
 
-  // Col1
-  primary -> secondary
-  secondary -> muted
-
-  // Col2
-  blue -> sky
-  sky -> indigo
-
-  // Col3
-  gray -> slate
-
-  // Col4
-  red -> amber
-  amber -> green
-
 }
 
 views {
@@ -186,7 +171,7 @@ ${colors
     key => `
   view themecolor_${key} of ${key} {
     title "Theme Color: ${key}"
-    include colors, ${key}, ${key}.*
+    include *, colors
 
     include element.kind = compound
     style element.kind = compound {
