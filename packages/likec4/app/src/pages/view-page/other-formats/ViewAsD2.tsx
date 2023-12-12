@@ -1,5 +1,5 @@
-import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
-import useSWR from 'swr'
+import { Box, Button, Code, Flex, ScrollArea } from '@radix-ui/themes'
+import { useAsync } from '@react-hookz/web/esm'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../../../components'
 
@@ -28,10 +28,7 @@ const fetchFromKroki = async (d2: string) => {
 export default function ViewAsD2({ viewId }: ViewAsDotProps) {
   const src = d2Source(viewId)
 
-  const { data: krokiSvg } = useSWR(src, fetchFromKroki, {
-    keepPreviousData: true,
-    revalidateIfStale: false
-  })
+  const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
   return (
     <Flex
       gap='2'
@@ -46,6 +43,7 @@ export default function ViewAsD2({ viewId }: ViewAsDotProps) {
       <Box
         py={'2'}
         position={'relative'}
+        grow={'1'}
         style={{
           overflow: 'scroll'
         }}
@@ -67,23 +65,35 @@ export default function ViewAsD2({ viewId }: ViewAsDotProps) {
         </ScrollArea>
         <CopyToClipboard text={src} />
       </Box>
-      {krokiSvg && (
-        <Box
-          py={'2'}
-          grow={'1'}
-          shrink={'0'}
-          style={{
-            width: '50%',
-            overflow: 'scroll'
-          }}
-        >
-          <ScrollArea scrollbars='both'>
+      <Box
+        py={'2'}
+        grow={'1'}
+        shrink={'0'}
+        style={{
+          width: '50%',
+          overflow: 'scroll'
+        }}
+      >
+        <ScrollArea scrollbars='both'>
+          {krokiSvg.status !== 'success' && (
+            <>
+              <Button disabled={krokiSvg.status === 'loading'} onClick={() => void execute(src)}>
+                {krokiSvg.status === 'loading' ? 'Loading...' : 'Render with Kroki'}
+              </Button>
+              {krokiSvg.status === 'error' && <Box>{krokiSvg.error?.message}</Box>}
+            </>
+          )}
+          {krokiSvg.status === 'success' && (
             <Box grow={'1'} asChild className={'svg-container'}>
-              <div dangerouslySetInnerHTML={{ __html: krokiSvg }}></div>
+              {!krokiSvg.result ? (
+                <Box>Empty result</Box>
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: krokiSvg.result }}></div>
+              )}
             </Box>
-          </ScrollArea>
-        </Box>
-      )}
+          )}
+        </ScrollArea>
+      </Box>
     </Flex>
   )
 }

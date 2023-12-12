@@ -65,7 +65,6 @@
     "react-accessible-treeview": "^2.8.1",
     "react-dom": "^18.2.0",
     "remeda": "^1.29.0",
-    "swr": "^2.2.4",
     "vite": "^5.0.8"
   },
   "devDependencies": {

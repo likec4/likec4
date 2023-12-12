@@ -9738,7 +9738,6 @@ __metadata:
     react-dom: "npm:^18.2.0"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
-    swr: "npm:^2.2.4"
     tsx: "npm:^4.6.2"
     type-fest: "npm:^4.8.3"
     typescript: "npm:^5.3.3"

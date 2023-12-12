@@ -42,6 +42,7 @@ export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
       <Box
         py={'2'}
         position={'relative'}
+        grow={'1'}
         style={{
           overflow: 'scroll'
         }}
