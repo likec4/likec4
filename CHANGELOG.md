@@ -1,3 +1,16 @@
+# [0.52.0](https://github.com/likec4/likec4/compare/v0.51.0...v0.52.0) (2023-12-12)
+
+- **likec4:** preview mermaid and d2 ([02f0be2](https://github.com/likec4/likec4/commit/02f0be2cfbe79331e9db0d41352b522d1bb78e24))
+- **likec4:** improve graphviz output ([954e7d0](https://github.com/likec4/likec4/commit/954e7d0ed7f0714b08f98f0a56d073f39edf1dbb))
+
+### Bug Fixes
+
+- **deps:** bump `@hpcc-js/wasm` to 2.15.1 ([8e51156](https://github.com/likec4/likec4/commit/8e5115685beb889dbfdf91e754ae9282f837111a))
+- **graph:** remove implicit edges if there is any nested already included ([94f935f](https://github.com/likec4/likec4/commit/94f935fc38a473315eb9d8891ea9ceee26ef45f7))
+- **graph:** sort graph nodes ([3c8adf7](https://github.com/likec4/likec4/commit/3c8adf779c6dc5229bca51ce1ff27b6377085890))
+- **layout:** edges with reverse direction ([09edfb8](https://github.com/likec4/likec4/commit/09edfb8be5842ef28414a47b0cea9ad748b96e2d))
+- **layouts:** don't use `weight` edges in graphviz layout ([60917eb](https://github.com/likec4/likec4/commit/60917eb301fc65c86c4cabee50e9689d91edf4f6))
+
 # [0.51.0](https://github.com/likec4/likec4/compare/v0.50.0...v0.51.0) (2023-12-05)
 
 ### 🚀 Features
@@ -6,12 +19,11 @@
 
 ### Bug Fixes
 
-- **graph:**  improve compound layouts ([feec3b3](https://github.com/likec4/likec4/commit/feec3b38d4714ddfe89a5be50a445f9859a99af9))
+- **graph:** improve compound layouts ([feec3b3](https://github.com/likec4/likec4/commit/feec3b38d4714ddfe89a5be50a445f9859a99af9))
 - **graph:** correct relationship predicate ([eba2be6](https://github.com/likec4/likec4/commit/eba2be6523fee49931000548fba679453df05931))
 - **generators:** indent in mermaid ([6d27249](https://github.com/likec4/likec4/commit/6d272498ba0ac8cf19e16e3facf069266fac1ce8))
 - **deps:** bump `vitest` to 1.0.1 ([0666acd](https://github.com/likec4/likec4/commit/0666acd7d386a25326cba17940d7299058fa5457))
 - **deps:** update dependency jotai to ^2.6.0 ([62e46f2](https://github.com/likec4/likec4/commit/62e46f2d3d602591354d1be19b022b20eb4c1fec))
-
 
 # [0.50.0](https://github.com/likec4/likec4/compare/v0.49.0...v0.50.0) (2023-12-01)
 
