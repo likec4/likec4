@@ -44,7 +44,7 @@ export function generateMermaid<V extends ComputedView>(view: V) {
     const baseNode = new CompositeGeneratorNode()
     if (node.children.length > 0) {
       baseNode
-        .append('subgraph ', fqnName, '["', label, '"]', NL)
+        .append('subgraph ', fqnName, '[', JSON.stringify(node.title), ']', NL)
         .indent({
           indentedChildren: [
             joinToNode(
@@ -67,8 +67,8 @@ export function generateMermaid<V extends ComputedView>(view: V) {
   const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode().append(
       names.get(edge.source),
-      ' --',
-      edge.label ? '"' + edge.label.replaceAll('\n', '\\n') + '"--' : '',
+      ' -.',
+      edge.label ? ' "' + edge.label.replaceAll('\n', '\\n') + '" .-' : '-',
       '> ',
       names.get(edge.target)
     )

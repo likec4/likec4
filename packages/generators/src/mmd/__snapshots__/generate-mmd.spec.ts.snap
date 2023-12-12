@@ -16,12 +16,12 @@ graph
   end
   Customer[customer]
   Support[support]
-  Cloud.FrontendDashboard --> Cloud.Backend.Graphql
-  Cloud.FrontendAdminPanel --> Cloud.Backend.Graphql
-  Cloud.Backend.Storage --> Amazon
-  Cloud.Backend.Graphql --> Cloud.Backend.Storage
-  Support --> Cloud.FrontendAdminPanel
-  Customer --> Cloud.FrontendDashboard
+  Cloud.FrontendDashboard -.-> Cloud.Backend.Graphql
+  Cloud.FrontendAdminPanel -.-> Cloud.Backend.Graphql
+  Cloud.Backend.Storage -.-> Amazon
+  Cloud.Backend.Graphql -.-> Cloud.Backend.Storage
+  Support -.-> Cloud.FrontendAdminPanel
+  Customer -.-> Cloud.FrontendDashboard
 "
 `;
 
@@ -34,10 +34,10 @@ exports[`generate mermaid - fakeDiagram 1`] = `
   end
   Customer[customer]
   Support[support]
-  Cloud.Frontend --"requests"--> Cloud.Backend
-  Cloud.Backend --> Amazon
-  Support --> Cloud.Frontend
-  Customer --"opens"--> Cloud.Frontend
+  Cloud.Frontend -. "requests" .-> Cloud.Backend
+  Cloud.Backend -.-> Amazon
+  Support -.-> Cloud.Frontend
+  Customer -. "opens" .-> Cloud.Frontend
 "
 `;
 
@@ -49,7 +49,7 @@ graph
   Client[client]
   SystemBackend[backend]
   SystemFrontend[frontend]
-  SystemFrontend --"requests"--> SystemBackend
-  Client --"opens"--> SystemFrontend
+  SystemFrontend -. "requests" .-> SystemBackend
+  Client -. "opens" .-> SystemFrontend
 "
 `;

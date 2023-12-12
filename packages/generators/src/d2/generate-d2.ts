@@ -55,7 +55,7 @@ export function generateD2<V extends ComputedView>(view: V) {
     const fqnName = (parentName ? parentName + '.' : '') + name
     names.set(node.id, fqnName)
 
-    const label = node.title.replaceAll('\n', '\\n')
+    const label = JSON.stringify(node.title)
     const shape = d2shape(node)
 
     return new CompositeGeneratorNode()
@@ -63,7 +63,7 @@ export function generateD2<V extends ComputedView>(view: V) {
       .indent({
         indentedChildren: indent =>
           indent
-            .append('label: "', label, '"', NL)
+            .append('label: ', label, NL)
             .appendIf(shape !== 'rectangle', 'shape: ', shape, NL)
             .appendIf(
               node.children.length > 0,
@@ -81,7 +81,7 @@ export function generateD2<V extends ComputedView>(view: V) {
   const printEdge = (edge: ComputedEdge): CompositeGeneratorNode => {
     return new CompositeGeneratorNode()
       .append(names.get(edge.source), ' -> ', names.get(edge.target))
-      .append(out => edge.label && out.append(': ', edge.label.replaceAll('\n', '\\n')))
+      .append(out => edge.label && out.append(': ', JSON.stringify(edge.label)))
   }
 
   return toString(

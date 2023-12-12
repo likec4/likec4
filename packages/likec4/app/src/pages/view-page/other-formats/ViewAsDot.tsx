@@ -1,6 +1,5 @@
 import { Box, Code, Grid, ScrollArea } from '@radix-ui/themes'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
-import styles from '../view-page.module.css'
 import { CopyToClipboard } from '../../../components'
 
 type ViewAsDotProps = {
@@ -30,7 +29,8 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
             display={'block'}
             p='2'
             style={{
-              whiteSpace: 'pre'
+              whiteSpace: 'pre',
+              minHeight: '100%'
             }}
           >
             <Code variant='soft' autoFocus>
@@ -47,7 +47,7 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
           overscrollBehavior: 'none'
         }}
       >
-        <Box asChild position={'relative'} className={styles.dotSvg}>
+        <Box asChild position={'relative'} className={'svg-container'}>
           <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
         </Box>
       </Box>

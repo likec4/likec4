@@ -65,10 +65,10 @@ Support: {
   label: "support"
 }
 
-Cloud.Frontend -> Cloud.Backend: requests
+Cloud.Frontend -> Cloud.Backend: "requests"
 Cloud.Backend -> Amazon
 Support -> Cloud.Frontend
-Customer -> Cloud.Frontend: opens
+Customer -> Cloud.Frontend: "opens"
 "
 `;
 
@@ -85,7 +85,7 @@ SystemFrontend: {
   label: "frontend"
 }
 
-SystemFrontend -> SystemBackend: requests
-Client -> SystemFrontend: opens
+SystemFrontend -> SystemBackend: "requests"
+Client -> SystemFrontend: "opens"
 "
 `;

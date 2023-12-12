@@ -2,7 +2,7 @@
 import { lazy } from 'react'
 export * from './ViewAsReact'
 
-export const ViewAs = lazy(() => import('./other-formats'))
+export const ViewAs = lazy(async () => await import('./other-formats'))
 
 // export const ViewAs = {
 //   Dot: ViewAsDot,

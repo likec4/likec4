@@ -24,3 +24,8 @@ declare module 'virtual:likec4/d2-sources' {
 declare module 'virtual:likec4/mmd-sources' {
   export function mmdSource(viewId: string): string
 }
+
+declare module 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs' {
+  import mermaid from 'mermaid'
+  export default mermaid
+}

@@ -56,7 +56,8 @@
   }
 } */
 
-.dotSvg {
+:global(.svg-container) {
+  min-width: 300px;
   & > svg {
     width: 100%;
     height: auto;
@@ -76,6 +77,10 @@
     overflow: scroll;
     &[hidden] {
       display: none;
+    }
+
+    & :global(.rt-ScrollAreaViewport) > div {
+      height: inherit;
     }
   }
 }
