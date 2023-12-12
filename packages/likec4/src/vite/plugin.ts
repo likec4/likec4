@@ -1,6 +1,7 @@
 import { invariant } from '@likec4/core'
 import { generateViewsDataJs } from '@likec4/generators'
 import pDebounce from 'p-debounce'
+import k from 'picocolors'
 import { values } from 'remeda'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
@@ -176,7 +177,11 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
         task.then(() => scheduleHMR()).catch(err => server.ws.send({ type: 'error', err }))
       }
 
+      const pattern = likec4.workspace
+      logger.info(`${k.dim('watch')} ${pattern}`)
+
       server.watcher
+        .add(pattern)
         .on('add', path => {
           if (isTarget(path)) {
             handleUpdate(likec4.notifyUpdate({ changed: path }))

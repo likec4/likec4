@@ -29,22 +29,12 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
           port: hmrPort
         },
         fs: {
-          allow: [
-            isDev ? searchForWorkspaceRoot(process.cwd()) : process.cwd(),
-            config.root,
-            config.languageServices.workspace
-          ]
+          strict: false
         },
         open: true
       }
     } satisfies InlineConfig)
   )
-
-  if (!config.languageServices.workspace.startsWith(config.root)) {
-    const pattern = config.languageServices.workspace
-    server.config.logger.info(`${k.dim('`add to watcher')} ${pattern}`)
-    server.watcher.add(pattern)
-  }
 
   await server.listen()
 
