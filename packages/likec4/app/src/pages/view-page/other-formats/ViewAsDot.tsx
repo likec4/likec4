@@ -1,6 +1,7 @@
 import { Box, Code, Grid, ScrollArea } from '@radix-ui/themes'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import { CopyToClipboard } from '../../../components'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 type ViewAsDotProps = {
   viewId: string
@@ -9,20 +10,8 @@ type ViewAsDotProps = {
 export default function ViewAsDot({ viewId }: ViewAsDotProps) {
   const dot = dotSource(viewId)
   return (
-    <Grid
-      //@ts-expect-error TODO: fails on columns prop due to `exactOptionalPropertyTypes: true` in tsconfig
-      columns='2'
-      gap='2'
-      shrink='1'
-      grow='1'
-    >
-      <Box
-        py={'2'}
-        position={'relative'}
-        style={{
-          overflow: 'scroll'
-        }}
-      >
+    <PanelGroup direction='horizontal' autoSaveId='viewAsDot'>
+      <Panel minSizePixels={100}>
         <ScrollArea scrollbars='both'>
           <Box
             asChild
@@ -37,20 +26,29 @@ export default function ViewAsDot({ viewId }: ViewAsDotProps) {
               {dot}
             </Code>
           </Box>
+          <CopyToClipboard text={dot} />
         </ScrollArea>
-        <CopyToClipboard text={dot} />
-      </Box>
-      <Box
-        py={'2'}
+      </Panel>
+      <PanelResizeHandle
         style={{
-          overflow: 'scroll',
-          overscrollBehavior: 'none'
+          width: 10
         }}
-      >
-        <Box asChild position={'relative'} className={'svg-container'}>
-          <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
-        </Box>
-      </Box>
-    </Grid>
+      />
+      <Panel minSizePixels={100}>
+        <ScrollArea scrollbars='both'>
+          <Box
+            py={'2'}
+            style={{
+              overflow: 'scroll',
+              overscrollBehavior: 'none'
+            }}
+          >
+            <Box asChild position={'relative'} className={'svg-container'}>
+              <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
+            </Box>
+          </Box>
+        </ScrollArea>
+      </Panel>
+    </PanelGroup>
   )
 }

@@ -2,6 +2,7 @@ import { Box, Button, Code, Flex, ScrollArea } from '@radix-ui/themes'
 import { useAsync } from '@react-hookz/web/esm'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../../../components'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 type ViewAsDotProps = {
   viewId: string
@@ -30,24 +31,8 @@ export default function ViewAsD2({ viewId }: ViewAsDotProps) {
 
   const [krokiSvg, { execute }] = useAsync(fetchFromKroki, null)
   return (
-    <Flex
-      gap='2'
-      shrink='1'
-      grow='1'
-      align={'stretch'}
-      wrap={'nowrap'}
-      style={{
-        overflow: 'hidden'
-      }}
-    >
-      <Box
-        py={'2'}
-        position={'relative'}
-        grow={'1'}
-        style={{
-          overflow: 'scroll'
-        }}
-      >
+    <PanelGroup direction='horizontal' autoSaveId='ViewAsD2'>
+      <Panel minSizePixels={100}>
         <ScrollArea scrollbars='both'>
           <Box
             asChild
@@ -62,18 +47,15 @@ export default function ViewAsD2({ viewId }: ViewAsDotProps) {
               {src}
             </Code>
           </Box>
+          <CopyToClipboard text={src} />
         </ScrollArea>
-        <CopyToClipboard text={src} />
-      </Box>
-      <Box
-        py={'2'}
-        grow={'1'}
-        shrink={'0'}
+      </Panel>
+      <PanelResizeHandle
         style={{
-          width: '50%',
-          overflow: 'scroll'
+          width: 10
         }}
-      >
+      />
+      <Panel minSizePixels={100}>
         <ScrollArea scrollbars='both'>
           {krokiSvg.status !== 'success' && (
             <>
@@ -93,7 +75,7 @@ export default function ViewAsD2({ viewId }: ViewAsDotProps) {
             </Box>
           )}
         </ScrollArea>
-      </Box>
-    </Flex>
+      </Panel>
+    </PanelGroup>
   )
 }

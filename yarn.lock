@@ -9736,6 +9736,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-accessible-treeview: "npm:^2.8.1"
     react-dom: "npm:^18.2.0"
+    react-resizable-panels: "npm:^0.0.63"
     remeda: "npm:^1.29.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.6.2"
@@ -13594,6 +13595,16 @@ __metadata:
     "@types/react":
       optional: true
   checksum: f0646ac384ce3852d1f41e30a9f9e251b11cf3b430d1d114c937c8fa7f90a895c06378d0d6b6ff0b2d00cbccf15e845921944fd6074ae67a0fb347a718106d88
+  languageName: node
+  linkType: hard
+
+"react-resizable-panels@npm:^0.0.63":
+  version: 0.0.63
+  resolution: "react-resizable-panels@npm:0.0.63"
+  peerDependencies:
+    react: ^16.14.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+  checksum: 410370c708d09f9d4adc68a6e7863ff134e756fb9b26be31b41017a86c2cc2ea4d2ab3236d2c1647543f7f66700e3308a51a90473ff943212b299eae54a0cbe8
   languageName: node
   linkType: hard
 

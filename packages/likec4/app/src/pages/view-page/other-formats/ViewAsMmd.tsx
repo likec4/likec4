@@ -3,6 +3,7 @@ import { useAsync } from '@react-hookz/web/esm'
 import { useEffect } from 'react'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../../../components'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 type ViewAsMmdProps = {
   viewId: string
@@ -29,24 +30,8 @@ export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
   }, [src])
 
   return (
-    <Flex
-      gap='2'
-      shrink='1'
-      grow='1'
-      align={'stretch'}
-      wrap={'nowrap'}
-      style={{
-        overflow: 'hidden'
-      }}
-    >
-      <Box
-        py={'2'}
-        position={'relative'}
-        grow={'1'}
-        style={{
-          overflow: 'scroll'
-        }}
-      >
+    <PanelGroup direction='horizontal' autoSaveId='ViewAsD2'>
+      <Panel minSizePixels={100}>
         <ScrollArea scrollbars='both'>
           <Box
             asChild
@@ -63,17 +48,13 @@ export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
           </Box>
           <CopyToClipboard text={src} />
         </ScrollArea>
-      </Box>
-      <Box
-        py={'2'}
-        position={'relative'}
-        grow={'1'}
-        shrink={'0'}
+      </Panel>
+      <PanelResizeHandle
         style={{
-          minWidth: '50vw',
-          overflow: 'scroll'
+          width: 10
         }}
-      >
+      />
+      <Panel minSizePixels={100}>
         <ScrollArea scrollbars='both'>
           {mmdSvg.result && (
             <Box grow={'1'} asChild position={'relative'} className={'svg-container'}>
@@ -81,7 +62,7 @@ export default function ViewAsMmd({ viewId }: ViewAsMmdProps) {
             </Box>
           )}
         </ScrollArea>
-      </Box>
-    </Flex>
+      </Panel>
+    </PanelGroup>
   )
 }
