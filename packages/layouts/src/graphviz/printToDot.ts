@@ -543,7 +543,7 @@ export function toGraphvisModel({
     }
     const edgeParentId = edge.parent
 
-    let e = parent.edge([source, target], {
+    const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.style]: edge.line ?? DefaultEdgeStyle
     })
@@ -567,18 +567,15 @@ export function toGraphvisModel({
     }
     if (edge.tail && edge.tail !== 'none') {
       if (edge.head === 'none') {
-        const reverseE = parent.edge([e.targets[1], e.targets[0]])
-        reverseE.attributes.apply(e.attributes.values)
-        reverseE.attributes.apply({
-          [_.arrowhead]: toArrowType(edge.tail)
+        e.attributes.apply({
+          [_.arrowhead]: toArrowType(edge.tail),
+          [_.dir]: 'back'
         })
-        reverseE.attributes.delete(_.arrowtail)
-        parent.removeEdge(e)
-        e = reverseE
       } else {
         e.attributes.apply({
           [_.arrowtail]: toArrowType(edge.tail),
-          [_.dir]: 'both'
+          [_.dir]: 'both',
+          [_.constraint]: false
         })
       }
     }
@@ -588,8 +585,8 @@ export function toGraphvisModel({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.minlen]: 0
-        // [_.constraint]: false
+        // [_.minlen]: 0
+        [_.constraint]: false
       })
       return
     }
@@ -641,7 +638,8 @@ export function toGraphvisModel({
     if (isTheOnlyEdge) {
       if (edgeParentId === null || leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
-        e.attributes.set(_.minlen, 0)
+        // e.attributes.set(_.minlen, 0)
+        e.attributes.set(_.constraint, false)
       }
     }
   }

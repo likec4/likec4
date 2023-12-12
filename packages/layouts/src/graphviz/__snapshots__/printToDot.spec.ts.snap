@@ -82,7 +82,7 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-    minlen = 0;
+    constraint = false;
   ];
 }"
 `;
@@ -203,7 +203,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
         style = "dashed";
-        minlen = 0;
+        constraint = false;
       ];
     }
     "adminpanel" -> "graphql" [
@@ -322,7 +322,7 @@ exports[`printToDot > computedCloudView 1`] = `
       likec4_id = "cloud.frontend:cloud.backend";
       style = "dashed";
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><B><FONT POINT-SIZE="13">[...]</FONT></B></TD></TR></TABLE></TD></TR></TABLE>>;
-      minlen = 0;
+      constraint = false;
     ];
   }
   "customer" -> "frontend" [

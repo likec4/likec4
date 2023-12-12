@@ -233,7 +233,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
         height: 0
       } as LabelBBox
       // edge label is inside table with cell spacing 4
-      const labelPadding = pointToPx(4)
+      const labelPadding = pointToPx(3)
       // first label has the lowest y
       const _first = first(labels)
       labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding
@@ -254,22 +254,22 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
     const hdraw = e._hdraw_ && parseEdgeArrowPolygon(e._hdraw_)
     const tdraw = e._tdraw_ && parseEdgeArrowPolygon(e._tdraw_)
 
-    if (edgeData.head === 'none' && edgeData.tail && edgeData.tail !== 'none') {
-      // edge is reversed inside printToDot
-      if (hdraw) {
-        edge.tailArrow = hdraw
-      }
-      if (tdraw) {
-        edge.headArrow = tdraw
-      }
-    } else {
-      if (hdraw) {
-        edge.headArrow = hdraw
-      }
-      if (tdraw) {
-        edge.tailArrow = tdraw
-      }
+    // if (edgeData.head === 'none' && edgeData.tail && edgeData.tail !== 'none') {
+    //   // edge is reversed inside printToDot
+    //   if (hdraw) {
+    //     edge.tailArrow = hdraw
+    //   }
+    //   if (tdraw) {
+    //     edge.headArrow = tdraw
+    //   }
+    // } else {
+    if (hdraw) {
+      edge.headArrow = hdraw
     }
+    if (tdraw) {
+      edge.tailArrow = tdraw
+    }
+    // }
 
     diagram.edges.push(edge)
   }
