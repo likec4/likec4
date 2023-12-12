@@ -47,7 +47,7 @@ export class C4Model extends AbstractDisposable {
       .create<number>({
         start: listener => {
           invariant(this.#activeSubscription == null, 'changesStream already started')
-          Logger.info('[Extension.C4Model.changesStream] subscribe onDidChangeModel')
+          Logger.info('[Extension.C4Model.changes] subscribe onDidChangeModel')
           let changes = 0
           const unsubscribe = this.rpc.onDidChangeModel(() => {
             listener.next(changes++)
@@ -56,11 +56,11 @@ export class C4Model extends AbstractDisposable {
             this.#activeSubscription = null
             unsubscribe.dispose()
             listener.complete()
-            Logger.info('[Extension.C4Model.changesStream] unsubscribe onDidChangeModel')
+            Logger.info('[Extension.C4Model.changes] unsubscribe onDidChangeModel')
           })
         },
         stop: () => {
-          Logger.info('[Extension.C4Model.changesStream] stop')
+          Logger.info('[Extension.C4Model.changes] stop')
           this.#activeSubscription?.dispose()
         }
       })

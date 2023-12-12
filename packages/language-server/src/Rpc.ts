@@ -1,6 +1,6 @@
 import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
-import pThrottle from 'p-throttle'
+import debounceFunction from 'debounce-fn'
 
 import { nonexhaustive } from '@likec4/core'
 import { URI, UriUtils } from 'langium'
@@ -29,14 +29,17 @@ export class Rpc {
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
-    const notifyClient = pThrottle({
-      limit: 4,
-      interval: 1000
-    })(() => connection.sendNotification(onDidChangeModel, ''))
-
-    modelBuilder.onModelParsed(() => {
-      void notifyClient()
-    })
+    modelBuilder.onModelParsed(
+      debounceFunction(
+        () => void connection.sendNotification(onDidChangeModel, '').catch(logError),
+        {
+          before: true,
+          after: true,
+          wait: 400,
+          maxWait: 1000
+        }
+      )
+    )
 
     connection.onRequest(fetchModel, async _cancelToken => {
       let model
