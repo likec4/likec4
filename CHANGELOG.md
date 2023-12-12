@@ -1,17 +1,15 @@
 # [0.52.0](https://github.com/likec4/likec4/compare/v0.51.0...v0.52.0) (2023-12-12)
 
+- **likec4:** preview mermaid and d2 ([02f0be2](https://github.com/likec4/likec4/commit/02f0be2cfbe79331e9db0d41352b522d1bb78e24))
+- **likec4:** improve graphviz output ([954e7d0](https://github.com/likec4/likec4/commit/954e7d0ed7f0714b08f98f0a56d073f39edf1dbb))
+
 ### Bug Fixes
 
 - **deps:** bump `@hpcc-js/wasm` to 2.15.1 ([8e51156](https://github.com/likec4/likec4/commit/8e5115685beb889dbfdf91e754ae9282f837111a))
 - **graph:** remove implicit edges if there is any nested already included ([94f935f](https://github.com/likec4/likec4/commit/94f935fc38a473315eb9d8891ea9ceee26ef45f7))
 - **graph:** sort graph nodes ([3c8adf7](https://github.com/likec4/likec4/commit/3c8adf779c6dc5229bca51ce1ff27b6377085890))
-- improve graphviz output ([954e7d0](https://github.com/likec4/likec4/commit/954e7d0ed7f0714b08f98f0a56d073f39edf1dbb))
 - **layout:** edges with reverse direction ([09edfb8](https://github.com/likec4/likec4/commit/09edfb8be5842ef28414a47b0cea9ad748b96e2d))
 - **layouts:** don't use `weight` edges in graphviz layout ([60917eb](https://github.com/likec4/likec4/commit/60917eb301fc65c86c4cabee50e9689d91edf4f6))
-
-### Features
-
-- **likec4:** preview mermaid and d2 ([02f0be2](https://github.com/likec4/likec4/commit/02f0be2cfbe79331e9db0d41352b522d1bb78e24))
 
 # [0.51.0](https://github.com/likec4/likec4/compare/v0.50.0...v0.51.0) (2023-12-05)
 
