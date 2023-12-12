@@ -198,6 +198,7 @@ const relationships = `// DO NOT EDIT MANUALLY
 specification {
 
   element themerelationships
+  tag source
 
   relationship solid {
     line solid
@@ -208,7 +209,11 @@ ${colors
     key => `
   relationship ${key} {
     color ${key}
-    head vee
+  }
+  relationship back_${key} {
+    color ${key}
+    head none
+    tail onormal
   }
 `
   )
@@ -227,50 +232,56 @@ model {
 ${colors
   .map(
     key => `
-    ${key}_source = rect '${key.toUpperCase()} Source' {
+    ${key}_source = rect '${key.toUpperCase()}' {
+      #source
       style { color ${key} }
     }
-    ${key}_target = rect '${key.toUpperCase()} Target' {
+    ${key}_target = rect '${key.toUpperCase()}' {
       style { color ${key} }
     }
     ${key}_source -[${key}]-> ${key}_target 'relation with ${key} color'
+    ${key}_target -[back_${key}]-> ${key}_source 'back relation with ${key} color'
 `
   )
   .join('')}
   }
-
-  // Col1
-  primary_target -[solid]-> secondary_source
-  secondary_target -[solid]-> muted_source
-
-  // Col2
-  blue_target -[solid]-> sky_source
-  sky_target -[solid]-> indigo_source
-
-  // Col3
-  gray_target -[solid]-> slate_source
-
-  // Col4
-  red_target -[solid]-> amber_source
-  amber_target -[solid]-> green_source
 }
 
 views {
 
   view relationshipcolors of relationship_colors {
-    include *
+    include relationship_colors
+    include element.tag == #source
   }
 
   ${colors
     .map(
       key => `
   view relationship_${key} of ${key}_source {
-    include *, relationship_colors
-    exclude -> ${key}_source
+    include relationship_colors,
+      ${key}_source with {
+        description: '
+          Example of ${key} relationship color
+          above muted color'
+      },
+      ${key}_target with {
+        description: '
+          Example of ${key} relationship color
+          above ${key} color'
+      }
   }
   view relationship_${key}_target of ${key}_target {
-    include *, relationship_colors
-    exclude ${key}_target ->
+    include relationship_colors,
+      ${key}_source with {
+        description: '
+          Example of ${key} relationship color
+          above muted color'
+      },
+      ${key}_target with {
+        description: '
+          Example of ${key} relationship color
+          above ${key} color'
+      }
     style relationship_colors {
       color ${key}
     }

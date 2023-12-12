@@ -42,9 +42,7 @@ function wrapToHTML({
     .map(text => `<FONT${fontOpts}>${text}</FONT>`)
     .map(text => (bold ? `<B>${text}</B>` : text))
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
-  return `<TABLE${
-    ALIGN || ' ALIGN="TEXT"'
-  } BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
+  return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
 export function nodeIcon(src: string) {
   return `<IMG SRC="${src}" SCALE="TRUE"/>`
@@ -90,7 +88,7 @@ export function nodeLabel(node: ComputedNode) {
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE ALIGN="CENTER" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="6">${rows.join(
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows.join(
     ''
   )}</TABLE>>`
 }
@@ -104,5 +102,5 @@ export function edgeLabel(text: string) {
     bold: text === '[...]',
     align: 'left'
   })
-  return `<${html}>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD>${html}</TD></TR></TABLE>>`
 }

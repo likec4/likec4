@@ -149,8 +149,9 @@ views {
     include
       *,
       cloud,
-      backend.* -> amazon.*,
-      amazon
+      amazon,
+      backend -> amazon.*
+
 
     style * {
       color secondary

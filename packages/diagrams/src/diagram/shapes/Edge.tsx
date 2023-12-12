@@ -86,14 +86,15 @@ function EdgeLabelBg({
   isHovered: boolean
   springs: EdgeProps['springs']
 }) {
-  const padding = 2
+  const paddingX = 2
+  const paddingY = 1
   const props = useSpring({
     to: {
-      x: labelBBox.x - padding,
-      y: labelBBox.y - padding,
-      width: labelBBox.width + padding * 2,
-      height: labelBBox.height + padding * 2,
-      opacity: isHovered ? 0.75 : 0.65
+      x: labelBBox.x - paddingX,
+      y: labelBBox.y - paddingY,
+      width: labelBBox.width + paddingX * 2,
+      height: labelBBox.height + paddingY * 2,
+      opacity: isHovered ? 0.8 : 0.55
     },
     immediate: !animate
   })
@@ -102,7 +103,7 @@ function EdgeLabelBg({
       {...props}
       perfectDrawEnabled={false}
       fill={springs.labelBgColor}
-      cornerRadius={2}
+      cornerRadius={3}
       globalCompositeOperation='lighten'
       hitStrokeWidth={20}
     />

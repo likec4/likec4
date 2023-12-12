@@ -2,6 +2,7 @@
 specification {
 
   element themerelationships
+  tag source
 
   relationship solid {
     line solid
@@ -10,57 +11,101 @@ specification {
 
   relationship primary {
     color primary
-    head vee
+  }
+  relationship back_primary {
+    color primary
+    head none
+    tail onormal
   }
 
   relationship blue {
     color blue
-    head vee
+  }
+  relationship back_blue {
+    color blue
+    head none
+    tail onormal
   }
 
   relationship secondary {
     color secondary
-    head vee
+  }
+  relationship back_secondary {
+    color secondary
+    head none
+    tail onormal
   }
 
   relationship sky {
     color sky
-    head vee
+  }
+  relationship back_sky {
+    color sky
+    head none
+    tail onormal
   }
 
   relationship muted {
     color muted
-    head vee
+  }
+  relationship back_muted {
+    color muted
+    head none
+    tail onormal
   }
 
   relationship slate {
     color slate
-    head vee
+  }
+  relationship back_slate {
+    color slate
+    head none
+    tail onormal
   }
 
   relationship gray {
     color gray
-    head vee
+  }
+  relationship back_gray {
+    color gray
+    head none
+    tail onormal
   }
 
   relationship red {
     color red
-    head vee
+  }
+  relationship back_red {
+    color red
+    head none
+    tail onormal
   }
 
   relationship green {
     color green
-    head vee
+  }
+  relationship back_green {
+    color green
+    head none
+    tail onormal
   }
 
   relationship amber {
     color amber
-    head vee
+  }
+  relationship back_amber {
+    color amber
+    head none
+    tail onormal
   }
 
   relationship indigo {
     color indigo
-    head vee
+  }
+  relationship back_indigo {
+    color indigo
+    head none
+    tail onormal
   }
 
 
@@ -75,246 +120,452 @@ model {
     }
 
 
-    primary_source = rect 'PRIMARY Source' {
+    primary_source = rect 'PRIMARY' {
+      #source
       style { color primary }
     }
-    primary_target = rect 'PRIMARY Target' {
+    primary_target = rect 'PRIMARY' {
       style { color primary }
     }
     primary_source -[primary]-> primary_target 'relation with primary color'
+    primary_target -[back_primary]-> primary_source 'back relation with primary color'
 
-    blue_source = rect 'BLUE Source' {
+    blue_source = rect 'BLUE' {
+      #source
       style { color blue }
     }
-    blue_target = rect 'BLUE Target' {
+    blue_target = rect 'BLUE' {
       style { color blue }
     }
     blue_source -[blue]-> blue_target 'relation with blue color'
+    blue_target -[back_blue]-> blue_source 'back relation with blue color'
 
-    secondary_source = rect 'SECONDARY Source' {
+    secondary_source = rect 'SECONDARY' {
+      #source
       style { color secondary }
     }
-    secondary_target = rect 'SECONDARY Target' {
+    secondary_target = rect 'SECONDARY' {
       style { color secondary }
     }
     secondary_source -[secondary]-> secondary_target 'relation with secondary color'
+    secondary_target -[back_secondary]-> secondary_source 'back relation with secondary color'
 
-    sky_source = rect 'SKY Source' {
+    sky_source = rect 'SKY' {
+      #source
       style { color sky }
     }
-    sky_target = rect 'SKY Target' {
+    sky_target = rect 'SKY' {
       style { color sky }
     }
     sky_source -[sky]-> sky_target 'relation with sky color'
+    sky_target -[back_sky]-> sky_source 'back relation with sky color'
 
-    muted_source = rect 'MUTED Source' {
+    muted_source = rect 'MUTED' {
+      #source
       style { color muted }
     }
-    muted_target = rect 'MUTED Target' {
+    muted_target = rect 'MUTED' {
       style { color muted }
     }
     muted_source -[muted]-> muted_target 'relation with muted color'
+    muted_target -[back_muted]-> muted_source 'back relation with muted color'
 
-    slate_source = rect 'SLATE Source' {
+    slate_source = rect 'SLATE' {
+      #source
       style { color slate }
     }
-    slate_target = rect 'SLATE Target' {
+    slate_target = rect 'SLATE' {
       style { color slate }
     }
     slate_source -[slate]-> slate_target 'relation with slate color'
+    slate_target -[back_slate]-> slate_source 'back relation with slate color'
 
-    gray_source = rect 'GRAY Source' {
+    gray_source = rect 'GRAY' {
+      #source
       style { color gray }
     }
-    gray_target = rect 'GRAY Target' {
+    gray_target = rect 'GRAY' {
       style { color gray }
     }
     gray_source -[gray]-> gray_target 'relation with gray color'
+    gray_target -[back_gray]-> gray_source 'back relation with gray color'
 
-    red_source = rect 'RED Source' {
+    red_source = rect 'RED' {
+      #source
       style { color red }
     }
-    red_target = rect 'RED Target' {
+    red_target = rect 'RED' {
       style { color red }
     }
     red_source -[red]-> red_target 'relation with red color'
+    red_target -[back_red]-> red_source 'back relation with red color'
 
-    green_source = rect 'GREEN Source' {
+    green_source = rect 'GREEN' {
+      #source
       style { color green }
     }
-    green_target = rect 'GREEN Target' {
+    green_target = rect 'GREEN' {
       style { color green }
     }
     green_source -[green]-> green_target 'relation with green color'
+    green_target -[back_green]-> green_source 'back relation with green color'
 
-    amber_source = rect 'AMBER Source' {
+    amber_source = rect 'AMBER' {
+      #source
       style { color amber }
     }
-    amber_target = rect 'AMBER Target' {
+    amber_target = rect 'AMBER' {
       style { color amber }
     }
     amber_source -[amber]-> amber_target 'relation with amber color'
+    amber_target -[back_amber]-> amber_source 'back relation with amber color'
 
-    indigo_source = rect 'INDIGO Source' {
+    indigo_source = rect 'INDIGO' {
+      #source
       style { color indigo }
     }
-    indigo_target = rect 'INDIGO Target' {
+    indigo_target = rect 'INDIGO' {
       style { color indigo }
     }
     indigo_source -[indigo]-> indigo_target 'relation with indigo color'
+    indigo_target -[back_indigo]-> indigo_source 'back relation with indigo color'
 
   }
-
-  // Col1
-  primary_target -[solid]-> secondary_source
-  secondary_target -[solid]-> muted_source
-
-  // Col2
-  blue_target -[solid]-> sky_source
-  sky_target -[solid]-> indigo_source
-
-  // Col3
-  gray_target -[solid]-> slate_source
-
-  // Col4
-  red_target -[solid]-> amber_source
-  amber_target -[solid]-> green_source
 }
 
 views {
 
   view relationshipcolors of relationship_colors {
-    include *
+    include relationship_colors
+    include element.tag == #source
   }
 
   
   view relationship_primary of primary_source {
-    include *, relationship_colors
-    exclude -> primary_source
+    include relationship_colors,
+      primary_source with {
+        description: '
+          Example of primary relationship color
+          above muted color'
+      },
+      primary_target with {
+        description: '
+          Example of primary relationship color
+          above primary color'
+      }
   }
   view relationship_primary_target of primary_target {
-    include *, relationship_colors
-    exclude primary_target ->
+    include relationship_colors,
+      primary_source with {
+        description: '
+          Example of primary relationship color
+          above muted color'
+      },
+      primary_target with {
+        description: '
+          Example of primary relationship color
+          above primary color'
+      }
     style relationship_colors {
       color primary
     }
   }
   
   view relationship_blue of blue_source {
-    include *, relationship_colors
-    exclude -> blue_source
+    include relationship_colors,
+      blue_source with {
+        description: '
+          Example of blue relationship color
+          above muted color'
+      },
+      blue_target with {
+        description: '
+          Example of blue relationship color
+          above blue color'
+      }
   }
   view relationship_blue_target of blue_target {
-    include *, relationship_colors
-    exclude blue_target ->
+    include relationship_colors,
+      blue_source with {
+        description: '
+          Example of blue relationship color
+          above muted color'
+      },
+      blue_target with {
+        description: '
+          Example of blue relationship color
+          above blue color'
+      }
     style relationship_colors {
       color blue
     }
   }
   
   view relationship_secondary of secondary_source {
-    include *, relationship_colors
-    exclude -> secondary_source
+    include relationship_colors,
+      secondary_source with {
+        description: '
+          Example of secondary relationship color
+          above muted color'
+      },
+      secondary_target with {
+        description: '
+          Example of secondary relationship color
+          above secondary color'
+      }
   }
   view relationship_secondary_target of secondary_target {
-    include *, relationship_colors
-    exclude secondary_target ->
+    include relationship_colors,
+      secondary_source with {
+        description: '
+          Example of secondary relationship color
+          above muted color'
+      },
+      secondary_target with {
+        description: '
+          Example of secondary relationship color
+          above secondary color'
+      }
     style relationship_colors {
       color secondary
     }
   }
   
   view relationship_sky of sky_source {
-    include *, relationship_colors
-    exclude -> sky_source
+    include relationship_colors,
+      sky_source with {
+        description: '
+          Example of sky relationship color
+          above muted color'
+      },
+      sky_target with {
+        description: '
+          Example of sky relationship color
+          above sky color'
+      }
   }
   view relationship_sky_target of sky_target {
-    include *, relationship_colors
-    exclude sky_target ->
+    include relationship_colors,
+      sky_source with {
+        description: '
+          Example of sky relationship color
+          above muted color'
+      },
+      sky_target with {
+        description: '
+          Example of sky relationship color
+          above sky color'
+      }
     style relationship_colors {
       color sky
     }
   }
   
   view relationship_muted of muted_source {
-    include *, relationship_colors
-    exclude -> muted_source
+    include relationship_colors,
+      muted_source with {
+        description: '
+          Example of muted relationship color
+          above muted color'
+      },
+      muted_target with {
+        description: '
+          Example of muted relationship color
+          above muted color'
+      }
   }
   view relationship_muted_target of muted_target {
-    include *, relationship_colors
-    exclude muted_target ->
+    include relationship_colors,
+      muted_source with {
+        description: '
+          Example of muted relationship color
+          above muted color'
+      },
+      muted_target with {
+        description: '
+          Example of muted relationship color
+          above muted color'
+      }
     style relationship_colors {
       color muted
     }
   }
   
   view relationship_slate of slate_source {
-    include *, relationship_colors
-    exclude -> slate_source
+    include relationship_colors,
+      slate_source with {
+        description: '
+          Example of slate relationship color
+          above muted color'
+      },
+      slate_target with {
+        description: '
+          Example of slate relationship color
+          above slate color'
+      }
   }
   view relationship_slate_target of slate_target {
-    include *, relationship_colors
-    exclude slate_target ->
+    include relationship_colors,
+      slate_source with {
+        description: '
+          Example of slate relationship color
+          above muted color'
+      },
+      slate_target with {
+        description: '
+          Example of slate relationship color
+          above slate color'
+      }
     style relationship_colors {
       color slate
     }
   }
   
   view relationship_gray of gray_source {
-    include *, relationship_colors
-    exclude -> gray_source
+    include relationship_colors,
+      gray_source with {
+        description: '
+          Example of gray relationship color
+          above muted color'
+      },
+      gray_target with {
+        description: '
+          Example of gray relationship color
+          above gray color'
+      }
   }
   view relationship_gray_target of gray_target {
-    include *, relationship_colors
-    exclude gray_target ->
+    include relationship_colors,
+      gray_source with {
+        description: '
+          Example of gray relationship color
+          above muted color'
+      },
+      gray_target with {
+        description: '
+          Example of gray relationship color
+          above gray color'
+      }
     style relationship_colors {
       color gray
     }
   }
   
   view relationship_red of red_source {
-    include *, relationship_colors
-    exclude -> red_source
+    include relationship_colors,
+      red_source with {
+        description: '
+          Example of red relationship color
+          above muted color'
+      },
+      red_target with {
+        description: '
+          Example of red relationship color
+          above red color'
+      }
   }
   view relationship_red_target of red_target {
-    include *, relationship_colors
-    exclude red_target ->
+    include relationship_colors,
+      red_source with {
+        description: '
+          Example of red relationship color
+          above muted color'
+      },
+      red_target with {
+        description: '
+          Example of red relationship color
+          above red color'
+      }
     style relationship_colors {
       color red
     }
   }
   
   view relationship_green of green_source {
-    include *, relationship_colors
-    exclude -> green_source
+    include relationship_colors,
+      green_source with {
+        description: '
+          Example of green relationship color
+          above muted color'
+      },
+      green_target with {
+        description: '
+          Example of green relationship color
+          above green color'
+      }
   }
   view relationship_green_target of green_target {
-    include *, relationship_colors
-    exclude green_target ->
+    include relationship_colors,
+      green_source with {
+        description: '
+          Example of green relationship color
+          above muted color'
+      },
+      green_target with {
+        description: '
+          Example of green relationship color
+          above green color'
+      }
     style relationship_colors {
       color green
     }
   }
   
   view relationship_amber of amber_source {
-    include *, relationship_colors
-    exclude -> amber_source
+    include relationship_colors,
+      amber_source with {
+        description: '
+          Example of amber relationship color
+          above muted color'
+      },
+      amber_target with {
+        description: '
+          Example of amber relationship color
+          above amber color'
+      }
   }
   view relationship_amber_target of amber_target {
-    include *, relationship_colors
-    exclude amber_target ->
+    include relationship_colors,
+      amber_source with {
+        description: '
+          Example of amber relationship color
+          above muted color'
+      },
+      amber_target with {
+        description: '
+          Example of amber relationship color
+          above amber color'
+      }
     style relationship_colors {
       color amber
     }
   }
   
   view relationship_indigo of indigo_source {
-    include *, relationship_colors
-    exclude -> indigo_source
+    include relationship_colors,
+      indigo_source with {
+        description: '
+          Example of indigo relationship color
+          above muted color'
+      },
+      indigo_target with {
+        description: '
+          Example of indigo relationship color
+          above indigo color'
+      }
   }
   view relationship_indigo_target of indigo_target {
-    include *, relationship_colors
-    exclude indigo_target ->
+    include relationship_colors,
+      indigo_source with {
+        description: '
+          Example of indigo relationship color
+          above muted color'
+      },
+      indigo_target with {
+        description: '
+          Example of indigo relationship color
+          above indigo color'
+      }
     style relationship_colors {
       color indigo
     }

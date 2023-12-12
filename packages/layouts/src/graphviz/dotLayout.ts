@@ -10,7 +10,7 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
+import { first, hasAtLeast, isTruthy, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
@@ -110,11 +110,10 @@ function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
 }
 
 function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point> | undefined {
-  const p = ops.find(({ op }) => op === 'P' || op === 'p')
-  if (!p) {
-    return undefined
-  }
-  invariant(p.op === 'p' || p.op === 'P')
+  const polygons = ops.filter(({ op }) => op === 'P' || op === 'p')
+  invariant(polygons.length === 1, 'edge arrow should have only one polygon')
+  const p = polygons[0]
+  invariant(p && (p.op === 'p' || p.op === 'P'))
   const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
   invariant(hasAtLeast(points, 1))
   return points
@@ -233,8 +232,8 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
         width: 0,
         height: 0
       } as LabelBBox
-      // edge label is inside table with 2point padding
-      const labelPadding = pointToPx(2)
+      // edge label is inside table with cell spacing 4
+      const labelPadding = pointToPx(4)
       // first label has the lowest y
       const _first = first(labels)
       labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding
@@ -252,21 +251,34 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
       edge.labelBBox = labelBBox
     }
 
-    const headArrow = e._hdraw_ && parseEdgeArrowPolygon(e._hdraw_)
-    if (headArrow) {
-      edge.headArrow = headArrow
-    }
+    const hdraw = e._hdraw_ && parseEdgeArrowPolygon(e._hdraw_)
+    const tdraw = e._tdraw_ && parseEdgeArrowPolygon(e._tdraw_)
 
-    const tailArrow = e._tdraw_ && parseEdgeArrowPolygon(e._tdraw_)
-    if (tailArrow) {
-      edge.tailArrow = tailArrow
+    if (edgeData.head === 'none' && edgeData.tail && edgeData.tail !== 'none') {
+      // edge is reversed inside printToDot
+      if (hdraw) {
+        edge.tailArrow = hdraw
+      }
+      if (tdraw) {
+        edge.headArrow = tdraw
+      }
+    } else {
+      if (hdraw) {
+        edge.headArrow = hdraw
+      }
+      if (tdraw) {
+        edge.tailArrow = tdraw
+      }
     }
 
     diagram.edges.push(edge)
   }
 
   return {
-    dot,
+    dot: dot
+      .split('\n')
+      .filter(l => !l.includes('margin=33.21'))
+      .join('\n'),
     diagram
   }
 }

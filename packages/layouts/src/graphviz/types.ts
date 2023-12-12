@@ -81,7 +81,7 @@ export namespace GraphvizJson {
         points: Point[]
       }
 
-  export type Ldraw =
+  export type LabelDrawOps =
     | {
         op: 'F'
         size: number
@@ -107,7 +107,7 @@ export namespace GraphvizJson {
   export interface GvSubgraph {
     bb: string
     compound: 'true'
-    _ldraw_?: Ldraw[]
+    _ldraw_?: LabelDrawOps[]
     likec4_id?: Fqn
     likec4_level?: number
     likec4_depth?: number
@@ -118,7 +118,7 @@ export namespace GraphvizJson {
 
   export interface GvNodeObject {
     _draw_: Draw[]
-    _ldraw_?: Ldraw[]
+    _ldraw_?: LabelDrawOps[]
     likec4_id?: Fqn
     likec4_level?: number
     _gvid: GvId
@@ -145,14 +145,15 @@ export namespace GraphvizJson {
 
   export interface Edge {
     _gvid: GvId
-    tail: number
-    head: number
+    tail: GvId
+    head: GvId
+    dir?: 'forward' | 'back' | 'both' | 'none'
     _draw_: DrawOps[]
     // head arrow
     _hdraw_?: DrawOps[]
     // tail arrow
     _tdraw_?: DrawOps[]
-    _ldraw_?: Ldraw[]
+    _ldraw_?: LabelDrawOps[]
     fontname: string
     fontsize: string
     likec4_id?: EdgeId

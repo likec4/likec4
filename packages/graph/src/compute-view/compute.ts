@@ -61,6 +61,14 @@ function compareEdges(a: ComputeCtx.Edge, b: ComputeCtx.Edge) {
   )
 }
 
+// If there is only one relation and it has same source and target as edge
+function isDirectEdge({ relations: [rel, ...tail], source, target }: ComputeCtx.Edge) {
+  if (rel && tail.length === 0) {
+    return rel.source === source.id && rel.target === target.id
+  }
+  return false
+}
+
 export class ComputeCtx {
   // Intermediate state
   private ctxElements = new Set<Element>()
@@ -267,15 +275,26 @@ export class ComputeCtx {
   protected removeRedundantImplicitEdges() {
     const processedRelations = new WeakSet<Relation>()
 
-    // Returns predicate, that checks if edge is between descendants of given edge
-    const isNestedEdgeOf = ({ source, target }: ComputeCtx.Edge) => {
+    // Returns relations, that are not processed/included
+    const excludeProcessed = (relations: Relation[]) =>
+      relations.reduce((acc, rel) => {
+        if (!processedRelations.has(rel)) {
+          acc.push(rel)
+          processedRelations.add(rel)
+        }
+        return acc
+      }, [] as Relation[])
+
+    // Returns predicate
+    const isNestedEdgeOf = (parent: ComputeCtx.Edge) => {
+      const { source, target } = parent
+      // Checks if edge is between descendants of source and target of the parent edge
       return (edge: ComputeCtx.Edge) => {
-        invariant(
-          source.id !== edge.source.id || target.id !== edge.target.id,
-          'Edge must not be the same'
-        )
         const isSameSource = source.id === edge.source.id
         const isSameTarget = target.id === edge.target.id
+        if (isSameSource && isSameTarget) {
+          return true
+        }
         const isSourceNested = isAncestor(source.id, edge.source.id)
         const isTargetNested = isAncestor(target.id, edge.target.id)
         return (
@@ -286,25 +305,16 @@ export class ComputeCtx {
       }
     }
 
-    // Sort edges from bottom to top (i.e. implicit edges are at the end)
+    // Sort edges from bottom to top (i.e. from more specific edges to implicit or between ancestors)
     const edges = [...this.ctxEdges].sort(compareEdges).reverse()
     this.ctxEdges = edges.reduce((acc, e) => {
-      if (acc.length === 0) {
-        e.relations.forEach(rel => processedRelations.add(rel))
-        acc.push(e)
-        return acc
-      }
-      const relations = e.relations.filter(rel => !processedRelations.has(rel))
+      const relations = excludeProcessed(e.relations)
       if (relations.length === 0) {
         return acc
       }
-      // this edge represents some relations
-      // that are not processed by previous edges
-      relations.forEach(rel => processedRelations.add(rel))
-
       // If there is an edge between descendants of current edge,
       // then we don't add this edge
-      if (acc.some(isNestedEdgeOf(e))) {
+      if (acc.length > 0 && acc.some(isNestedEdgeOf(e))) {
         return acc
       }
       acc.push({

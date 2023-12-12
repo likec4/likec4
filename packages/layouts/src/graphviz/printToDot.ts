@@ -271,27 +271,29 @@ export function toGraphvisModel({
     [_.TBbalance]: 'min',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(120),
-    [_.ranksep]: pxToInch(120),
+    [_.nodesep]: pxToInch(90),
+    [_.ranksep]: pxToInch(90),
+    // [_.ranksep]: `equally`,
+    // [_.ranksep]: pxToInch(120),
     // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
     // [_.ratio]: 'fill',
     // [_.concentrate]: false,
-    // [_.mclimit]: 10,
-    // [_.nslimit]: viewNodes.length * 4,
-    // [_.nslimit1]: (viewNodes.length + viewEdges.length) * 4,
-    // [_.searchsize]: Math.max(50, viewNodes.length + viewEdges.length),
+    // [_.mclimit]: 100,
+    // [_.nslimit]: 10,
+    // [_.nslimit1]: 10,
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
-    [_.pack]: pxToPoints(120),
+    [_.pack]: pxToPoints(90),
     [_.packmode]: 'array_3',
-    [_.pad]: pxToInch(10)
+    [_.searchsize]: Math.max(viewEdges.length, 50)
   })
 
   G.attributes.graph.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
-    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't'
+    [_.labelloc]: autoLayout === 'BT' ? 'b' : 't',
+    [_.margin]: 33.21 // hack for svg output/*  */
   })
 
   G.attributes.node.apply({
@@ -306,16 +308,15 @@ export function toGraphvisModel({
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
-    [_.nojustify]: true,
     [_.margin]: pxToInch(26)
   })
 
   G.attributes.edge.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
-    [_.penwidth]: pxToPoints(1),
+    [_.penwidth]: pxToPoints(2),
     // [_.arrowsize]: 0.9,
-    [_.nojustify]: true,
+    // [_.nojustify]: true,
     [_.style]: DefaultEdgeStyle,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
@@ -434,8 +435,7 @@ export function toGraphvisModel({
       [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
       [_.style]: 'filled,rounded',
-      [_.margin]:
-        elementNode.children.length > 2 ? `${pxToPoints(32)},${pxToPoints(50)}` : pxToPoints(32),
+      [_.margin]: pxToPoints(32),
       [_.penwidth]: pxToPoints(2)
     })
     const label = sanitize(elementNode.title.toUpperCase())
@@ -601,6 +601,13 @@ export function toGraphvisModel({
         if (e.id === edge.id) {
           return false
         }
+        // hide edges with the same endpoints
+        if (
+          (e.source === edge.source && e.target === edge.target) ||
+          (e.source === edge.target && e.target === edge.source)
+        ) {
+          return false
+        }
         // hide edges inside clusters
         if (e.parent !== null) {
           return false
@@ -615,7 +622,20 @@ export function toGraphvisModel({
         return edgeSource.parent == null && edgeTarget.parent == null
       })
     } else {
-      otherEdges = findNestedEdges(edgeParentId).filter(e => e.id !== edge.id)
+      otherEdges = findNestedEdges(edgeParentId).filter(e => {
+        // hide self
+        if (e.id === edge.id) {
+          return false
+        }
+        // hide edges with the same endpoints
+        if (
+          (e.source === edge.source && e.target === edge.target) ||
+          (e.source === edge.target && e.target === edge.source)
+        ) {
+          return false
+        }
+        return true
+      })
     }
     const isTheOnlyEdge = otherEdges.length === 0
     if (isTheOnlyEdge) {
@@ -651,7 +671,8 @@ export function toGraphvisModel({
 
   const groupIds = pipe(
     viewEdges,
-    groupBy(e => (e.parent && isEdgeVisible(e) ? e.parent : undefined)),
+    filter(e => !!e.parent && isEdgeVisible(e)),
+    groupBy(e => e.parent!),
     omitBy((v, _k) => v.length <= 1 || v.length > 8),
     keys,
     map(k => k as Fqn),
