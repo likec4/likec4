@@ -1,5 +1,6 @@
 import type {
   Expression as C4Expression,
+  ElementExpression as C4ElementExpression,
   ComputedView,
   Element,
   ElementKind,
@@ -11,7 +12,8 @@ import type {
   ThemeColor,
   ViewID,
   ViewRule,
-  ViewRuleExpression
+  ViewRuleExpression,
+  ViewRuleStyle
 } from '@likec4/core'
 import { pluck } from 'rambdax'
 import { indexBy, isString, pick } from 'remeda'
@@ -343,6 +345,13 @@ export function $include(expr: Expression): ViewRuleExpression {
 export function $exclude(expr: Expression): ViewRuleExpression {
   return {
     exclude: [toExpression(expr)]
+  }
+}
+
+export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
+  return {
+    targets: [toExpression(element) as C4ElementExpression],
+    style: Object.assign({}, style)
   }
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { $include, computeView } from './fixture'
+import { $include, $style, computeView } from './fixture'
 
 describe('custom-element-expr', () => {
   it('include element and apply props', () => {
@@ -36,6 +36,51 @@ describe('custom-element-expr', () => {
       technology: null,
       description: null,
       navigateTo: 'custom'
+    })
+  })
+
+  it('takes precedence over style rules', () => {
+    const { nodes } = computeView([
+      // has shape browser and primary color
+      $include('cloud.frontend'),
+      // style all elements
+      $style('*', {
+        color: 'muted'
+      }),
+      // override color
+      $include({
+        custom: {
+          element: 'cloud',
+          color: 'red'
+        }
+      }),
+      // override shape
+      $include({
+        custom: {
+          element: 'amazon',
+          shape: 'queue'
+        }
+      }),
+      // style only cloud, color should be red
+      $style('cloud', {
+        color: 'green',
+        shape: 'cylinder'
+      })
+    ])
+    const cloud = nodes.find(n => n.id === 'cloud')
+    expect(cloud).toMatchObject({
+      color: 'red',
+      shape: 'cylinder'
+    })
+    const amazon = nodes.find(n => n.id === 'amazon')
+    expect(amazon).toMatchObject({
+      color: 'muted',
+      shape: 'queue'
+    })
+    const frontend = nodes.find(n => n.id === 'cloud.frontend')
+    expect(frontend).toMatchObject({
+      color: 'muted',
+      shape: 'browser'
     })
   })
 })
