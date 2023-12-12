@@ -9717,7 +9717,7 @@ __metadata:
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:^0.9.5"
-    p-queue: "npm:^7.4.1"
+    p-queue: "npm:^8.0.0"
     picocolors: "npm:^1.0.0"
     playwright-core: "npm:^1.40.1"
     postcss: "npm:^8.4.32"
@@ -12625,13 +12625,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-queue@npm:^7.4.1":
-  version: 7.4.1
-  resolution: "p-queue@npm:7.4.1"
+"p-queue@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "p-queue@npm:8.0.0"
   dependencies:
     eventemitter3: "npm:^5.0.1"
-    p-timeout: "npm:^5.0.2"
-  checksum: 82934551f20a38cc19b31cda7200f2db93ca99b8c642d3ac861d12a7a9160eb32235738a8cd53f1a7ea0c7b52d6c0bb27644b6461e9a51e6a59f1e8d65904b78
+    p-timeout: "npm:^6.1.2"
+  checksum: 3d11784d48e5713989f712ccf33899157e88860a84c0e694fb8a1477f01ef1594a7633698ec1a4aebd38020f452a87adbe07733137c069f2fa5c392fe8e3fe99
   languageName: node
   linkType: hard
 
@@ -12639,13 +12639,6 @@ __metadata:
   version: 5.1.0
   resolution: "p-throttle@npm:5.1.0"
   checksum: 025209cfd007f0a2e3b328cb780542fc1b8cfaaaa749c9cef1e98f37f4431b037728d49c66ebcc6419933fb06c1544976e9b1be1b57d651c4e07437cde74ac1e
-  languageName: node
-  linkType: hard
-
-"p-timeout@npm:^5.0.2":
-  version: 5.1.0
-  resolution: "p-timeout@npm:5.1.0"
-  checksum: f5cd4e17301ff1ff1d8dbf2817df0ad88c6bba99349fc24d8d181827176ad4f8aca649190b8a5b1a428dfd6ddc091af4606835d3e0cb0656e04045da5c9e270c
   languageName: node
   linkType: hard
 

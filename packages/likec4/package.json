@@ -88,7 +88,7 @@
     "get-port": "^7.0.0",
     "json5": "^2.2.3",
     "mkdirp": "^3.0.1",
-    "p-queue": "^7.4.1",
+    "p-queue": "^8.0.0",
     "picocolors": "^1.0.0",
     "pretty-ms": "^8.0.0",
     "strip-indent": "^4.0.0",
