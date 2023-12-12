@@ -60,10 +60,10 @@ export const useShadowSprings = (
 ) => {
   const [values] = useSpring(
     {
-      shadowBlur: isHovered ? 30 : 12,
-      shadowOpacity: isHovered ? 0.5 : 0.35,
+      shadowBlur: isHovered ? 30 : 10,
+      shadowOpacity: isHovered ? 0.5 : 0.3,
       shadowOffsetX: 0,
-      shadowOffsetY: isHovered ? 16 : 4,
+      shadowOffsetY: isHovered ? 16 : 5,
       shadowColor: theme.shadow
     },
     [isHovered, theme]
