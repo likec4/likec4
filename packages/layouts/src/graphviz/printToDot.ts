@@ -143,125 +143,6 @@ export function toGraphvisModel({
     )
   }
 
-  /**
-   * Hidden edges between clusters (with lhead/ltail) are not shown in the graph.
-   * But they are still used to calculate weights of visible edges.
-   */
-  // const derivedEdges = new Map<Fqn, EdgeId[]>()
-
-  // function addDerivedEdge(node: Fqn, edge: ComputedEdge) {
-  //   const edges = derivedEdges.get(node) ?? []
-  //   edges.push(edge.id)
-  //   derivedEdges.set(node, edges)
-  // }
-
-  // // function edgeWeight(edge: ComputedEdge): number
-  // // function edgeWeight(source: ComputedNode, target: ComputedNode): number
-  // function edgeWeight(...args: [ComputedEdge] | [ComputedNode, ComputedNode]) {
-  //   const sourceNd = args.length === 1 ? getComputedNode(args[0].source) : args[0]
-  //   const targetNd = args.length === 1 ? getComputedNode(args[0].target) : args[1]
-
-  // const sourceWeight = uniq([
-  //   ...sourceNd.outEdges,
-  //   ...sourceNd.inEdges,
-  // ]).filter(isEdgeVisible).length
-
-  // const targetWeight = uniq([
-  //   ...targetNd.outEdges,
-  //   ...targetNd.inEdges,
-  // ]).filter(isEdgeVisible).length
-
-  // if (targetWeight < sourceWeight) {
-  //   return targetWeight
-  // }
-
-  // const edges = uniq([
-  //   ...sourceNd.outEdges,
-  //   ...sourceNd.inEdges,
-  //   ...targetNd.outEdges,
-  //   ...targetNd.inEdges
-  // ]).filter(isEdgeVisible)
-  //   const _edge = getEdge(_edgeId)
-  //   if (!isEdgeVisible(_edge)) {
-  //     return false
-  //   }
-  //   if (_edgeId === edge.id) {
-  //     return true
-  //   }
-  //   if (
-  //     (_edge.target === edge.target && _edge.source === edge.source) ||
-  //     (_edge.target === edge.source && _edge.source === edge.target)
-  //   ) {
-  //     return true
-  //   }
-  //   if (edge.parent !== null) {
-  //     return (
-  //       edge.parent === _edge.parent ||
-  //       (isAncestor(edge.parent, _edge.source) && isAncestor(edge.parent, _edge.target))
-  //     )
-  //   }
-  //   const sourceHasCommonAncestor =
-  //     commonAncestor(edge.source, _edge.source) !== null ||
-  //     (parentFqn(edge.source) === null && parentFqn(_edge.source) === null)
-  //   if (!sourceHasCommonAncestor) {
-  //     return false
-  //   }
-  //   const targetHasCommonAncestor =
-  //     commonAncestor(edge.target, _edge.target) !== null ||
-  //     (parentFqn(edge.target) === null && parentFqn(_edge.target) === null)
-  //   return targetHasCommonAncestor
-  // })
-
-  // const sourceOut = sourceNd.outEdges.filter(_edgeId => {
-  //   if (_edgeId === edge.id) {
-  //     return false
-  //   }
-  //   const _edge = getEdge(_edgeId)
-  //   if (!isEdgeVisible(_edge)) {
-  //     return false
-  //   }
-  //   if (_edge.target === edge.target) {
-  //     return true
-  //   }
-  //   if (edge.parent !== null) {
-  //     return isAncestor(edge.parent, _edge.target)
-  //   }
-  //   const _edgeTarget = getComputedNode(_edge.target)
-  //   return (
-  //     targetNd.parent === _edgeTarget.parent ||
-  //     commonAncestor(targetNd.id, _edgeTarget.id) !== null
-  //   )
-  // })
-  // const targetIn = targetNd.inEdges.filter(_edgeId => {
-  //   if (_edgeId === edge.id) {
-  //     return false
-  //   }
-  //   const _edge = getEdge(_edgeId)
-  //   if (!isEdgeVisible(_edge)) {
-  //     return false
-  //   }
-  //   if (_edge.source === edge.source) {
-  //     return true
-  //   }
-  //   if (edge.parent !== null) {
-  //     return isAncestor(edge.parent, _edge.source)
-  //   }
-  //   const _edgeSource = getComputedNode(_edge.source)
-  //   return (
-  //     sourceNd.parent === _edgeSource.parent ||
-  //     commonAncestor(sourceNd.id, _edgeSource.id) !== null
-  //   )
-  // let weight = edges.length
-  //   if (derivedEdges.has(sourceNd.id) || derivedEdges.has(targetNd.id)) {
-  //     return uniq([
-  //       ...(derivedEdges.get(sourceNd.id) ?? []),
-  //       ...(derivedEdges.get(targetNd.id) ?? [])
-  //     ]).length
-  //   }
-  //   // })
-  //   return undefined
-  // }
-
   const Theme = defaultTheme
   const G = digraph({
     [_.bgcolor]: 'transparent',
@@ -273,17 +154,6 @@ export function toGraphvisModel({
     [_.outputorder]: 'nodesfirst',
     [_.nodesep]: pxToInch(90),
     [_.ranksep]: pxToInch(90),
-    // [_.ranksep]: `equally`,
-    // [_.ranksep]: pxToInch(120),
-    // [_.size]: `${pxToInch(300)},${pxToInch(200)}!`,
-    // [_.ratio]: 'fill',
-    // [_.concentrate]: false,
-    // [_.mclimit]: 100,
-    // [_.nslimit]: 10,
-    // [_.nslimit1]: 10,
-    // [_.nslimit1]: 10,
-    // [_.newrank]: true,
-    [_.penwidth]: pxToPoints(1),
     [_.pack]: pxToPoints(90),
     [_.packmode]: 'array_3',
     [_.searchsize]: Math.max(viewEdges.length, 50)
@@ -294,7 +164,8 @@ export function toGraphvisModel({
     [_.fontsize]: pxToPoints(13),
     [_.labeljust]: autoLayout === 'RL' ? 'r' : 'l',
     [_.labelloc]: autoLayout === 'BT' ? 'b' : 't',
-    [_.margin]: 33.21 // hack for svg output/*  */
+    [_.margin]: 33.21, // hack for svg output/*  */
+    [_.penwidth]: pxToPoints(1)
   })
 
   G.attributes.node.apply({
@@ -304,7 +175,6 @@ export function toGraphvisModel({
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
-    // [_.fixedsize]: false,
     [_.style]: 'filled',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
@@ -316,8 +186,6 @@ export function toGraphvisModel({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.penwidth]: pxToPoints(2),
-    // [_.arrowsize]: 0.9,
-    // [_.nojustify]: true,
     [_.style]: DefaultEdgeStyle,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
@@ -697,8 +565,6 @@ export function printToDot(view: ComputedView): DotSource {
 }
 
 export function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  // return printToDot(computedView)
   const unflattened = graphviz.unflatten(printToDot(computedView), 1, true, 2)
   return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ')
-  // return unflattened
 }

@@ -11,7 +11,6 @@ exports[`printToDot > computedAmazonView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.25;
   ranksep = 1.25;
-  penwidth = 1;
   pack = 90;
   packmode = "array_3";
   searchsize = 50;
@@ -21,6 +20,7 @@ exports[`printToDot > computedAmazonView 1`] = `
     labeljust = "l";
     labelloc = "t";
     margin = 33.21;
+    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -97,7 +97,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.25;
   ranksep = 1.25;
-  penwidth = 1;
   pack = 90;
   packmode = "array_3";
   searchsize = 50;
@@ -107,6 +106,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
     labeljust = "l";
     labelloc = "t";
     margin = 33.21;
+    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -244,7 +244,6 @@ exports[`printToDot > computedCloudView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.25;
   ranksep = 1.25;
-  penwidth = 1;
   pack = 90;
   packmode = "array_3";
   searchsize = 50;
@@ -254,6 +253,7 @@ exports[`printToDot > computedCloudView 1`] = `
     labeljust = "l";
     labelloc = "t";
     margin = 33.21;
+    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -352,7 +352,6 @@ exports[`printToDot > computedIndexView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.25;
   ranksep = 1.25;
-  penwidth = 1;
   pack = 90;
   packmode = "array_3";
   searchsize = 50;
@@ -362,6 +361,7 @@ exports[`printToDot > computedIndexView 1`] = `
     labeljust = "l";
     labelloc = "t";
     margin = 33.21;
+    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
