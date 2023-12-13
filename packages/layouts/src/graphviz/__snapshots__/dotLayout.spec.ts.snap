@@ -8,25 +8,25 @@ exports[`dotLayout: > computedAmazonView 1`] = `
     {
       "headArrow": [
         [
-          539,
+          546,
           151,
         ],
         [
-          549,
+          556,
           154,
         ],
         [
-          539,
+          546,
           158,
         ],
       ],
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 19,
-        "width": 100,
-        "x": 407,
-        "y": 127,
+        "height": 21,
+        "width": 102,
+        "x": 412,
+        "y": 126,
       },
       "labels": [
         {
@@ -34,7 +34,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            410,
+            416,
             143,
           ],
           "text": "persists artifacts",
@@ -48,15 +48,15 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           154,
         ],
         [
-          417,
+          419,
           154,
         ],
         [
-          482,
+          486,
           154,
         ],
         [
-          540,
+          546,
           154,
         ],
       ],
@@ -145,7 +145,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        520,
+        526,
         8,
       ],
       "shape": "rectangle",
@@ -234,7 +234,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        551,
+        557,
         64,
       ],
       "shape": "rectangle",
@@ -250,7 +250,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 912,
+  "width": 918,
 }
 `;
 
@@ -304,25 +304,25 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          594,
+          589,
           632,
         ],
         [
-          600,
+          596,
           641,
         ],
         [
-          590,
+          585,
           638,
         ],
       ],
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network with sso authentification",
       "labelBBox": {
-        "height": 35,
-        "width": 198,
-        "x": 517,
-        "y": 537,
+        "height": 37,
+        "width": 200,
+        "x": 516,
+        "y": 536,
       },
       "labels": [
         {
@@ -351,31 +351,31 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "points": [
         [
-          421,
+          417,
           492,
         ],
         [
-          451,
+          446,
           520,
         ],
         [
-          485,
+          479,
           551,
         ],
         [
-          517,
+          511,
           577,
         ],
         [
-          541,
-          596,
+          535,
+          597,
         ],
         [
-          567,
+          562,
           616,
         ],
         [
-          592,
+          588,
           635,
         ],
       ],
@@ -403,10 +403,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
-        "height": 19,
-        "width": 77,
-        "x": 740,
-        "y": 545,
+        "height": 21,
+        "width": 79,
+        "x": 745,
+        "y": 544,
       },
       "labels": [
         {
@@ -414,7 +414,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            743,
+            749,
             561,
           ],
           "text": "fetches data",
@@ -464,10 +464,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
-        "height": 19,
-        "width": 60,
-        "x": 330,
-        "y": 225,
+        "height": 21,
+        "width": 62,
+        "x": 335,
+        "y": 224,
       },
       "labels": [
         {
@@ -475,7 +475,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            333,
+            339,
             241,
           ],
           "text": "manages",
@@ -525,10 +525,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 19,
-        "width": 105,
-        "x": 746,
-        "y": 225,
+        "height": 21,
+        "width": 107,
+        "x": 751,
+        "y": 224,
       },
       "labels": [
         {
@@ -536,7 +536,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            749,
+            755,
             241,
           ],
           "text": "opens in browser",
@@ -586,10 +586,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 19,
-        "width": 100,
-        "x": 233,
-        "y": 896,
+        "height": 21,
+        "width": 102,
+        "x": 238,
+        "y": 895,
       },
       "labels": [
         {
@@ -597,7 +597,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            236,
+            242,
             912,
           ],
           "text": "persists artifacts",
@@ -1163,10 +1163,10 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
-        "height": 19,
-        "width": 26,
-        "x": 438,
-        "y": 375,
+        "height": 21,
+        "width": 28,
+        "x": 440,
+        "y": 374,
       },
       "labels": [
         {
@@ -1175,7 +1175,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "fontSize": 13,
           "fontStyle": "bold",
           "pt": [
-            441,
+            444,
             391,
           ],
           "text": "[...]",
@@ -1226,10 +1226,10 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 19,
-        "width": 105,
-        "x": 599,
-        "y": 225,
+        "height": 21,
+        "width": 107,
+        "x": 604,
+        "y": 224,
       },
       "labels": [
         {
@@ -1237,7 +1237,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            602,
+            608,
             241,
           ],
           "text": "opens in browser",
@@ -1287,10 +1287,10 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "id": "support:cloud.frontend",
       "label": "manages",
       "labelBBox": {
-        "height": 19,
-        "width": 60,
-        "x": 816,
-        "y": 225,
+        "height": 21,
+        "width": 62,
+        "x": 821,
+        "y": 224,
       },
       "labels": [
         {
@@ -1298,7 +1298,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            819,
+            825,
             241,
           ],
           "text": "manages",
@@ -1348,10 +1348,10 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 19,
-        "width": 100,
-        "x": 201,
-        "y": 537,
+        "height": 21,
+        "width": 102,
+        "x": 206,
+        "y": 536,
       },
       "labels": [
         {
@@ -1359,7 +1359,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            204,
+            210,
             553,
           ],
           "text": "persists artifacts",
@@ -1707,10 +1707,10 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 19,
-        "width": 105,
-        "x": 271,
-        "y": 225,
+        "height": 21,
+        "width": 107,
+        "x": 276,
+        "y": 224,
       },
       "labels": [
         {
@@ -1718,7 +1718,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            274,
+            280,
             241,
           ],
           "text": "opens in browser",
@@ -1768,10 +1768,10 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
-        "height": 19,
-        "width": 60,
-        "x": 475,
-        "y": 225,
+        "height": 21,
+        "width": 62,
+        "x": 480,
+        "y": 224,
       },
       "labels": [
         {
@@ -1779,7 +1779,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            478,
+            484,
             241,
           ],
           "text": "manages",
@@ -1829,10 +1829,10 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 19,
-        "width": 100,
-        "x": 367,
-        "y": 519,
+        "height": 21,
+        "width": 102,
+        "x": 372,
+        "y": 518,
       },
       "labels": [
         {
@@ -1840,7 +1840,7 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            370,
+            376,
             535,
           ],
           "text": "persists artifacts",

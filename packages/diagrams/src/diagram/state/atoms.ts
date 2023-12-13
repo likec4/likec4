@@ -32,7 +32,7 @@ export const hoveredNodeAtom = atom(
       return false
     }
     // update faster if there is one already hovered
-    const timeout = !!_next && !!_prev ? 120 : 175
+    const timeout = !!_next && !!_prev ? 50 : 120
     if (_next != null) {
       // clean hovered edge
       clearTimeout(get(edgeTimeoutAtom))
@@ -70,10 +70,9 @@ export const hoveredEdgeAtom = atom(
     if (equals(_prev, _next)) {
       return false
     }
-    let timeout = 175
+    // update faster if there is one already hovered
+    const timeout = !!_next && !!_prev ? 50 : 120
     if (_next != null) {
-      // update faster if there is one already hovered
-      timeout = _prev != null ? 120 : 300
       // clean hovered node
       clearTimeout(get(nodeTimeoutAtom))
       scheduleHoveredNode(set, null, timeout)

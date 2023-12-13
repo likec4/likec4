@@ -102,5 +102,5 @@ export function edgeLabel(text: string) {
     bold: text === '[...]',
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD>${html}</TD></TR></TABLE>>`
 }

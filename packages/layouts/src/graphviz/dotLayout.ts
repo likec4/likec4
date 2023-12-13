@@ -103,7 +103,8 @@ function parseLabelDraws(
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
 function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
   const p = _draw_.find(({ op }) => op.toLowerCase() === 'b')
-  invariant(p?.op === 'b' || p?.op === 'B', 'edge should have points for spline')
+  invariant(p, 'edge should have bezier draw ops')
+  invariant(p.op === 'b' || p.op === 'B', 'edge should have points for spline')
   const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
   invariant(hasAtLeast(points, 1))
   return points
@@ -233,7 +234,7 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
         height: 0
       } as LabelBBox
       // edge label is inside table with cell spacing 4
-      const labelPadding = pointToPx(3)
+      const labelPadding = pointToPx(4)
       // first label has the lowest y
       const _first = first(labels)
       labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding

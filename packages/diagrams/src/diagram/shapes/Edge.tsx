@@ -103,7 +103,7 @@ function EdgeLabelBg({
       {...props}
       perfectDrawEnabled={false}
       fill={springs.labelBgColor}
-      cornerRadius={3}
+      cornerRadius={2}
       globalCompositeOperation='lighten'
       hitStrokeWidth={20}
     />

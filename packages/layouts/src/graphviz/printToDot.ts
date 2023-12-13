@@ -283,6 +283,7 @@ export function toGraphvisModel({
     // [_.nslimit1]: 10,
     // [_.nslimit1]: 10,
     // [_.newrank]: true,
+    [_.penwidth]: pxToPoints(1),
     [_.pack]: pxToPoints(90),
     [_.packmode]: 'array_3',
     [_.searchsize]: Math.max(viewEdges.length, 50)
@@ -304,7 +305,7 @@ export function toGraphvisModel({
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
     // [_.fixedsize]: false,
-    [_.style]: 'filled,rounded',
+    [_.style]: 'filled',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
@@ -434,9 +435,8 @@ export function toGraphvisModel({
       [_.likec4_depth]: elementNode.depth,
       [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
-      [_.style]: 'filled,rounded',
-      [_.margin]: pxToPoints(32),
-      [_.penwidth]: pxToPoints(2)
+      [_.style]: 'filled',
+      [_.margin]: pxToPoints(32)
     })
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
@@ -674,7 +674,7 @@ export function toGraphvisModel({
     omitBy((v, _k) => v.length <= 1 || v.length > 8),
     keys,
     map(k => k as Fqn),
-    sort<Fqn>(compareFqnHierarchically),
+    sort(compareFqnHierarchically),
     reverse()
   )
 

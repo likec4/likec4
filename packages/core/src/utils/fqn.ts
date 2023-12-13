@@ -92,7 +92,7 @@ export function ancestorsFqn(fqn: Fqn): Fqn[] {
  *                    - Positive number if a is deeper than b.
  *                    - Negative number if b is deeper than a.
  */
-export function compareFqnHierarchically(a: string, b: string): number {
+export function compareFqnHierarchically<T extends string = string>(a: T, b: T): number {
   const depthA = a.split('.').length
   const depthB = b.split('.').length
   switch (true) {

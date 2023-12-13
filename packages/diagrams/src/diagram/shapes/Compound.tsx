@@ -18,9 +18,9 @@ export function CompoundShape({ node, theme, springs, labelOffsetX = 0 }: Compou
         cornerRadius={4}
         shadowColor={theme.shadow}
         shadowBlur={node.level > 0 ? 20 : 10}
-        shadowOpacity={node.level > 0 ? 0.35 : 0.8}
+        shadowOpacity={node.level > 0 ? 0.35 : 0.6}
         shadowOffsetX={0}
-        shadowOffsetY={4}
+        shadowOffsetY={5}
         shadowEnabled={springs.opacity.to(v => v > 0.7)}
         width={springs.width}
         height={springs.height}
