@@ -48,7 +48,7 @@
     "body-scroll-lock-upgrade": "^1.1.0",
     "jotai": "^2.6.0",
     "khroma": "^2.1.0",
-    "konva": "^9.2.3",
+    "konva": "^9.3.0",
     "rambdax": "^9.1.1",
     "react-konva": "^18.2.10"
   },
