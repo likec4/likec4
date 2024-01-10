@@ -1,3 +1,4 @@
-export * from './ExternalLink'
-export * from './BrainIcon'
-export * from './ZoomIn'
+// export * from './ExternalLink'
+// export * from './BrainIcon'
+export * from './LinkIcon'
+export * from './ZoomInIcon'

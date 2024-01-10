@@ -1,15 +1,18 @@
 model {
 
   amazon = system 'Amazon' {
+    link https://console.aws.amazon.com
     description 'Cloud and managed services provider'
 
     rds = container 'RDS' {
+      link https://aws.amazon.com/rds/
       description 'Relational Databases'
       style {
         shape cylinder
       }
 
       pg = database 'PostgreSQL' {
+        link https://aws.amazon.com/rds/postgresql/
         technology 'AWS Aurora'
         description 'Database for storing relational data'
         style {
@@ -18,6 +21,7 @@ model {
       }
 
       mysql = database 'MySQL' {
+        link https://aws.amazon.com/rds/mysql/
         technology 'AWS Aurora'
         description 'Database for storing relational data'
         style {
@@ -29,10 +33,12 @@ model {
     }
 
     cognito = component 'Cognito' {
+      link https://aws.amazon.com/cognito/
       description 'User management and authentication'
     }
 
     sqs = component 'SQS' {
+      link https://aws.amazon.com/sqs/
       description 'Message Queues'
       style {
         shape queue

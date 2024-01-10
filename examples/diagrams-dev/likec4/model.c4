@@ -5,6 +5,7 @@ model {
   }
 
   cloud = system 'Cloud System' {
+    link https://likec4.dev/docs/dsl/model/
 
     description '
       Our SaaS platfrom that allows
@@ -14,6 +15,7 @@ model {
 
     ui = container 'Frontend' {
       description 'All the frontend applications of the cloud system'
+      link https://likec4.dev/docs/dsl/model/
       style {
         shape browser
       }
@@ -22,6 +24,8 @@ model {
         #team-a
         technology '[ nextjs ]'
         description 'Web application, that allows customers to interact with the cloud system'
+        link https://likec4.dev/docs/dsl/model/
+
         style {
           shape browser
         }
@@ -33,6 +37,8 @@ model {
       mobile = mobileApp 'Mobile App' {
         #team-b
         description 'The mobile app of the cloud system'
+        link https://likec4.dev/docs/dsl/model/
+
         -> amazon.cognito 'authenticates'
         -> graphql 'fetches data'
       }
@@ -40,6 +46,7 @@ model {
 
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
+      link https://likec4.dev/docs/dsl/relations/
 
       graphql = app 'GraphQL API' {
         description 'The GraphQL API of the cloud system'
@@ -188,7 +195,29 @@ views {
     }
   }
 
-  view cloud_graphql {
+  view cloud_backend_services of services {
+    title "Overview Backend Services"
+    include
+      *,
+      backend,
+      cloud,
+      cloud.* -> backend.*
+    exclude services
+
+    style * {
+      color secondary
+    }
+
+    style cloud, backend {
+      color muted
+    }
+
+    style services, services.* {
+      color green
+    }
+  }  
+
+  view cloud_graphql of graphql {
     include
       -> graphql ->
       // graphql,
