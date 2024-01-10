@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import watchAndRun from 'vite-plugin-watch-and-run'
+import { watchAndRun } from 'vite-plugin-watch-and-run'
 
 export default defineConfig({
   mode: 'development',
