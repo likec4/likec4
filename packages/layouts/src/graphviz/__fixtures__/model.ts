@@ -187,7 +187,8 @@ const fakeRelations = {
     id: 'cloud.backend.storage:amazon.s3' as RelationID,
     source: 'cloud.backend.storage' as Fqn,
     target: 'amazon.s3' as Fqn,
-    title: 'persists artifacts'
+    title: 'persists artifacts',
+    tail: 'odiamond'
   },
   'cloud.backend.graphql:cloud.backend.storage': {
     id: 'cloud.backend.graphql:cloud.backend.storage' as RelationID,

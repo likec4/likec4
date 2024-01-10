@@ -81,6 +81,8 @@ exports[`printToDot > computedAmazonView 1`] = `
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+    arrowtail = "odiamond";
+    dir = "both";
     constraint = false;
   ];
 }"
@@ -229,6 +231,9 @@ exports[`printToDot > computedCloud3levels 1`] = `
     likec4_id = "cloud.backend.storage:amazon";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+    arrowtail = "odiamond";
+    dir = "both";
+    constraint = false;
   ];
 }"
 `;
@@ -337,6 +342,9 @@ exports[`printToDot > computedCloudView 1`] = `
     likec4_id = "cloud.backend:amazon";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+    arrowtail = "odiamond";
+    dir = "both";
+    constraint = false;
   ];
 }"
 `;
@@ -422,6 +430,9 @@ exports[`printToDot > computedIndexView 1`] = `
     likec4_id = "cloud:amazon";
     style = "dashed";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+    arrowtail = "odiamond";
+    dir = "both";
+    constraint = false;
   ];
 }"
 `;

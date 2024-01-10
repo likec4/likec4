@@ -10,7 +10,7 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { first, hasAtLeast, isTruthy, last, maxBy, uniq } from 'remeda'
+import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
 import type { BoundingBox, GVPos, GraphvizJson } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
@@ -32,10 +32,15 @@ function parseBB(bb: string | undefined): BoundingBox {
 }
 
 function parsePos(pos: string): GVPos {
-  const [x, y] = pos.split(',') as [string, string]
-  return {
-    x: pointToPx(+x),
-    y: pointToPx(+y)
+  try {
+    const [x, y] = pos.split(',') as [string, string]
+    return {
+      x: pointToPx(parseFloat(x)),
+      y: pointToPx(parseFloat(y))
+    }
+  } catch (e) {
+    console.error(`failed on parsing pos: ${pos}`)
+    throw e
   }
 }
 
@@ -102,16 +107,45 @@ function parseLabelDraws(
 // Example:
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
 function parseEdgePoints({ _draw_ }: GraphvizJson.Edge): DiagramEdge['points'] {
-  const p = _draw_.find(({ op }) => op.toLowerCase() === 'b')
-  invariant(p, 'edge should have bezier draw ops')
-  invariant(p.op === 'b' || p.op === 'B', 'edge should have points for spline')
-  const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] satisfies Point)
-  invariant(hasAtLeast(points, 1))
-  return points
+  try {
+    const bezierOps = _draw_.filter(({ op }) => op.toLowerCase() === 'b')
+    invariant(bezierOps.length === 1, 'edge should have only one bezier draw op')
+    const p = bezierOps[0]
+    invariant(p && (p.op === 'b' || p.op === 'B'), 'edge should have points for spline')
+    const points = p.points.map(([x, y]) => [pointToPx(x), pointToPx(y)] as Point)
+    invariant(hasAtLeast(points, 2), 'edge should have at least two points')
+    return points
+  } catch (e) {
+    console.error(`failed on parsing edge _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
+    throw e
+  }
+}
+function parseEdgeArrowPos(pos: string): Pick<DiagramEdge, 'headArrowPoint' | 'tailArrowPoint'> {
+  try {
+    const result = {} as Pick<DiagramEdge, 'headArrowPoint' | 'tailArrowPoint'>
+    // we interested only in the first two parts (according to the graphviz docs)
+    const parts = pos.split(' ').slice(0, 3)
+    for (const part of parts) {
+      const isTail = part.startsWith('s,')
+      const isHead = part.startsWith('e,')
+      if (isTail || isHead) {
+        const { x, y } = parsePos(part.substring(2))
+        if (isTail) {
+          result.tailArrowPoint = [x, y]
+        } else {
+          result.headArrowPoint = [x, y]
+        }
+      }
+    }
+    return result
+  } catch (e) {
+    console.error(`failed on parsing edge pos: ${pos}`)
+    throw e
+  }
 }
 
 function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point> | undefined {
-  const polygons = ops.filter(({ op }) => op === 'P' || op === 'p')
+  const polygons = ops.filter(({ op }) => op.toLowerCase() === 'p')
   invariant(polygons.length === 1, 'edge arrow should have only one polygon')
   const p = polygons[0]
   invariant(p && (p.op === 'p' || p.op === 'P'))
@@ -224,6 +258,9 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
       ...edgeData,
       points: parseEdgePoints(e)
     }
+    if (e.pos) {
+      Object.assign(edge, parseEdgeArrowPos(e.pos))
+    }
 
     const labels = parseLabelDraws(e)
     if (hasAtLeast(labels, 1)) {
@@ -255,15 +292,6 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
     const hdraw = e._hdraw_ && parseEdgeArrowPolygon(e._hdraw_)
     const tdraw = e._tdraw_ && parseEdgeArrowPolygon(e._tdraw_)
 
-    // if (edgeData.head === 'none' && edgeData.tail && edgeData.tail !== 'none') {
-    //   // edge is reversed inside printToDot
-    //   if (hdraw) {
-    //     edge.tailArrow = hdraw
-    //   }
-    //   if (tdraw) {
-    //     edge.headArrow = tdraw
-    //   }
-    // } else {
     if (hdraw) {
       edge.headArrow = hdraw
     }

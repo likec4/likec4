@@ -30,14 +30,17 @@ export interface DiagramNode extends ComputedNode {
   labels: DiagramLabel[]
   position: Point // Absolute position, top left
   // relative: Point // Top left, relative to parent
-  depth?: number
 }
 
 export interface DiagramEdge extends ComputedEdge {
   points: NonEmptyArray<Point>
   // Polygons are used to draw arrows
   headArrow?: NonEmptyArray<Point>
+  // Draw arrow from the last point of the edge to this point
+  headArrowPoint?: Point
   tailArrow?: NonEmptyArray<Point>
+  // Draw arrow from the first point of the edge to this point
+  tailArrowPoint?: Point
   labels?: NonEmptyArray<DiagramLabel>
   labelBBox?: BBox
 }

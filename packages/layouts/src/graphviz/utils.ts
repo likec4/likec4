@@ -1,4 +1,4 @@
-import { nonexhaustive } from '@likec4/core'
+import { invariant, nonexhaustive } from '@likec4/core'
 import { toHex, scale, transparentize } from 'khroma'
 import type { Color } from 'ts-graphviz'
 
@@ -7,8 +7,14 @@ import type { Color } from 'ts-graphviz'
 // export const pxToInch = (px: number) => Math.ceil((px / 96) * 1000) / 1000
 // export const pxToPoints = (px: number) => Math.ceil(px * 0.75 * 100) / 100
 
-export const pointToPx = (pt: number) => Math.ceil(pt)
-export const inchToPx = (inch: number) => Math.ceil(inch * 72)
+export const pointToPx = (pt: number) => {
+  invariant(isFinite(pt), `Invalid not finite point value ${pt}`)
+  return Math.ceil(pt)
+}
+export const inchToPx = (inch: number) => {
+  invariant(isFinite(inch), `Invalid not finite inch value ${inch}`)
+  return Math.ceil(inch * 72)
+}
 export const pxToInch = (px: number) => Math.ceil((px / 72) * 1000) / 1000
 export const pxToPoints = (px: number) => Math.ceil(px)
 
