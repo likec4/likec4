@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import { Box, Theme } from '@radix-ui/themes'
+import { Theme } from '@radix-ui/themes'
 import { Provider } from 'jotai'
 import { Fragment, useDeferredValue } from 'react'
 import { isNil } from 'remeda'
@@ -11,36 +11,27 @@ const Routes = () => {
   const r = useDeferredValue(useRoute())
 
   const theme = r.params?.theme
-  let page: JSX.Element | null = null
 
-  switch (r.route) {
-    case 'view': {
-      page = (
-        <ViewPage key='view' viewId={r.params.viewId} viewMode={r.params.mode} showUI={r.showUI} />
-      )
-      break
+  const page = () => {
+    switch (r.route) {
+      case 'view':
+        return <ViewPage viewId={r.params.viewId} viewMode={r.params.mode} showUI={r.showUI} />
+      case 'export':
+        return <ExportPage viewId={r.params.viewId} padding={r.params.padding} />
+
+      case 'embed':
+        return (
+          <EmbedPage
+            viewId={r.params.viewId}
+            padding={r.params.padding}
+            transparentBg={isNil(r.params.theme)}
+          />
+        )
+      case 'index':
+        return <IndexPage />
+      default:
+        nonexhaustive(r)
     }
-    case 'export': {
-      page = <ExportPage key='export' viewId={r.params.viewId} padding={r.params.padding} />
-      break
-    }
-    case 'embed': {
-      page = (
-        <EmbedPage
-          key='embed'
-          viewId={r.params.viewId}
-          padding={r.params.padding}
-          transparentBg={isNil(r.params.theme)}
-        />
-      )
-      break
-    }
-    case 'index': {
-      page = <IndexPage key='index' />
-      break
-    }
-    default:
-      nonexhaustive(r)
   }
 
   return (
@@ -50,7 +41,7 @@ const Routes = () => {
       radius='small'
       appearance={theme ?? 'inherit'}
     >
-      {page}
+      {page()}
       <Fragment key='ui'>{r.showUI && <Sidebar />}</Fragment>
     </Theme>
   )
