@@ -1,19 +1,30 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "prettier.enable": true,
   "npm.packageManager": "yarn",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-  },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "dprint.dprint",
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "dprint.dprint",
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "dprint.dprint",
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dprint.dprint",
+  },
+  "[json]": {
+    "editor.defaultFormatter": "dprint.dprint",
+  },
+  "[json5]": {
+    "editor.defaultFormatter": "dprint.dprint",
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "dprint.dprint",
+  },
+  "[mdx]": {
+    "editor.defaultFormatter": "dprint.dprint",
   },
   "search.exclude": {
     "node_modules/**": true,
@@ -27,7 +38,7 @@
     "**/.turbo": true,
     "packages/*/.vscode-test-web": true
   },
-  "mdx.experimentalLanguageServer": true,
+  "mdx.server.enable": true,
   "vitest.commandLine": "yarn vitest",
   "exportall.config.semis": false,
   "json.schemas": [

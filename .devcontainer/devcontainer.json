@@ -36,7 +36,8 @@
         "zixuanchen.vitest-explorer",
         "github.copilot",
         "codezombiech.gitignore",
-        "unifiedjs.vscode-mdx"
+        "unifiedjs.vscode-mdx",
+        "dprint.dprint"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.osx": "zsh",

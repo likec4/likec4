@@ -1,0 +1,47 @@
+{
+  "lineWidth": 120,
+  "useTabs": false,
+  "typescript": {
+    "semiColons": "asi",
+    "trailingCommas": "never",
+    "importDeclaration.preferSingleLine": true,
+    "quoteStyle": "alwaysSingle",
+    "jsxOpeningElement.bracketPosition": "maintain",
+    "jsx.quoteStyle": "preferDouble",
+    "jsxSelfClosingElement.bracketPosition": "maintain",
+    "jsx.bracketPosition": "maintain"
+  },
+  "json": {
+  },
+  "prettier": {
+    "proseWrap": "preserve",
+    "singleQuote": true,
+    "semi": false,
+    "embeddedLanguageFormatting": "auto",
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "quoteProps": "consistent"
+  },
+  "excludes": [
+    "**/node_modules",
+    "**/*-lock.json",
+    ".yarn/*",
+    ".turbo",
+    ".vscode",
+    ".vscode-test-web",
+    ".next",
+    "docs/tsconfig.*",
+    "docs/out",
+    "docs/components/ui/",
+    "examples/*/dist",
+    "packages/*/dist",
+    "packages/*/contrib",
+    "packages/*/src/generated"
+  ],
+  "plugins": [
+    "https://plugins.dprint.dev/typescript-0.88.8.wasm",
+    "https://plugins.dprint.dev/json-0.19.1.wasm",
+    "https://plugins.dprint.dev/markdown-0.16.3.wasm",
+    "https://plugins.dprint.dev/prettier-0.32.1.json@19aa403ef0862ba8c41164e3dc6f84c0b7a66c2b11e42726b23dd25e6302ada9"
+  ]
+}
