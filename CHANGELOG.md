@@ -1,21 +1,19 @@
 # [0.53.0](https://github.com/likec4/likec4/compare/v0.52.0...v0.53.0) (2024-01-10)
 
-### Bug Fixes
+### Features
+
+- **diagrams:** element links [#525](https://github.com/likec4/likec4/issues/525) ([bed13b5](https://github.com/likec4/likec4/commit/bed13b54463cc4e2b66a3a644a05709e0b8ff38c))
+- **lsp:** DocumentHighlightProvider ([62d31b3](https://github.com/likec4/likec4/commit/62d31b3b97fc3490e7ada7dc6702d93575eca8ee))
+
+### Fixes
 
 - **cli:** add fs watcher inside plugin on server configuration ([73f4263](https://github.com/likec4/likec4/commit/73f4263bb185167c0ebf73609794904a77a1b1f2))
-- d2 view fails to load ([5f7690f](https://github.com/likec4/likec4/commit/5f7690fef6393df4752e3e91c21eb43bee23edd5))
-- **deps:** update dependency konva to ^9.3.0 ([22e68af](https://github.com/likec4/likec4/commit/22e68af8b6c61663c08f03283dc70626305aee32))
-- **deps:** update dependency remeda to ^1.30.0 ([89cfdea](https://github.com/likec4/likec4/commit/89cfdeab5ce45076add27396ad309dd724e8e899))
+- **cli:** d2 view fails to load ([5f7690f](https://github.com/likec4/likec4/commit/5f7690fef6393df4752e3e91c21eb43bee23edd5))
 - **diagrams:** minor ui improvements ([2f38eb4](https://github.com/likec4/likec4/commit/2f38eb448a5e9c6269b06b499a0d6bb3f13febde))
 - **layout:** add `headArrowPoint` and `tailArrowPoint` to edges ([89a9171](https://github.com/likec4/likec4/commit/89a91711bab7c57ffb183cd5e784efdda72543b9))
 - **layouts:** ts compile error and remove dead code ([667bc00](https://github.com/likec4/likec4/commit/667bc000447640b5254d9be43f3ea5bca9a8d4fb))
 - **layout:** use `constraint=false` instead of `minlen=0` ([1fdc6ba](https://github.com/likec4/likec4/commit/1fdc6ba4b91766a96827beee6f92422612371f10))
 - **types:** `NonEmptyArray` has defined either head or tail ([dccc52a](https://github.com/likec4/likec4/commit/dccc52a131ad4ddf29b0d09cd35661edf03c129c))
-
-### Features
-
-- element link on views ([bed13b5](https://github.com/likec4/likec4/commit/bed13b54463cc4e2b66a3a644a05709e0b8ff38c))
-- **lsp:** DocumentHighlightProvider ([62d31b3](https://github.com/likec4/likec4/commit/62d31b3b97fc3490e7ada7dc6702d93575eca8ee))
 
 # [0.52.0](https://github.com/likec4/likec4/compare/v0.51.0...v0.52.0) (2023-12-12)
 
