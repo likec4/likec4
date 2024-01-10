@@ -1,3 +1,20 @@
+# [0.53.0](https://github.com/likec4/likec4/compare/v0.52.0...v0.53.0) (2024-01-10)
+
+### Features
+
+- **diagrams:** element links [#525](https://github.com/likec4/likec4/issues/525) ([bed13b5](https://github.com/likec4/likec4/commit/bed13b54463cc4e2b66a3a644a05709e0b8ff38c))
+- **lsp:** DocumentHighlightProvider ([62d31b3](https://github.com/likec4/likec4/commit/62d31b3b97fc3490e7ada7dc6702d93575eca8ee))
+
+### Fixes
+
+- **cli:** add fs watcher inside plugin on server configuration ([73f4263](https://github.com/likec4/likec4/commit/73f4263bb185167c0ebf73609794904a77a1b1f2))
+- **cli:** d2 view fails to load ([5f7690f](https://github.com/likec4/likec4/commit/5f7690fef6393df4752e3e91c21eb43bee23edd5))
+- **diagrams:** minor ui improvements ([2f38eb4](https://github.com/likec4/likec4/commit/2f38eb448a5e9c6269b06b499a0d6bb3f13febde))
+- **layout:** add `headArrowPoint` and `tailArrowPoint` to edges ([89a9171](https://github.com/likec4/likec4/commit/89a91711bab7c57ffb183cd5e784efdda72543b9))
+- **layouts:** ts compile error and remove dead code ([667bc00](https://github.com/likec4/likec4/commit/667bc000447640b5254d9be43f3ea5bca9a8d4fb))
+- **layout:** use `constraint=false` instead of `minlen=0` ([1fdc6ba](https://github.com/likec4/likec4/commit/1fdc6ba4b91766a96827beee6f92422612371f10))
+- **types:** `NonEmptyArray` has defined either head or tail ([dccc52a](https://github.com/likec4/likec4/commit/dccc52a131ad4ddf29b0d09cd35661edf03c129c))
+
 # [0.52.0](https://github.com/likec4/likec4/compare/v0.51.0...v0.52.0) (2023-12-12)
 
 - **likec4:** preview mermaid and d2 ([02f0be2](https://github.com/likec4/likec4/commit/02f0be2cfbe79331e9db0d41352b522d1bb78e24))
@@ -201,7 +218,7 @@ With the Langium update to version 2.1.2, the code completions in VSCode have si
 
 ### 🚀 Features
 
-- **diagrams:** relationship kinds by @MoBoo ([#342](https://github.com/likec4/likec4/issues/342))  
+- **diagrams:** relationship kinds by @MoBoo ([#342](https://github.com/likec4/likec4/issues/342))\
   [Docs](https://likec4.dev/docs/dsl/specification/#relationships)
 
   Relationship kinds allow you to express different types of relations in a model and customize styling.
@@ -283,7 +300,7 @@ With the Langium update to version 2.1.2, the code completions in VSCode have si
 
 ### Features
 
-- **language:** extends from another view ([e2a4d59](https://github.com/likec4/likec4/commit/e2a4d590921adefba1e6a951d3eaf5fda74fbd9b))  
+- **language:** extends from another view ([e2a4d59](https://github.com/likec4/likec4/commit/e2a4d590921adefba1e6a951d3eaf5fda74fbd9b))\
   [Documentation](https://likec4.dev/docs/dsl/views/#extend-views)
 - **cli:** export views to Mermaid ([#314](https://github.com/likec4/likec4/pull/314)), thanks to [@kcaswick](https://github.com/kcaswick)
 
@@ -291,8 +308,8 @@ With the Langium update to version 2.1.2, the code completions in VSCode have si
 
 ### Features
 
-- **cli:** option to use custom HTML template for exported png ([4e7ef2c](https://github.com/likec4/likec4/commit/4e7ef2c50ba1d00b32e061ff4ce6704b8011005b))  
-  This allows use custom CSS styling and render additional elements, like View title, description or watermarks.  
+- **cli:** option to use custom HTML template for exported png ([4e7ef2c](https://github.com/likec4/likec4/commit/4e7ef2c50ba1d00b32e061ff4ce6704b8011005b))\
+  This allows use custom CSS styling and render additional elements, like View title, description or watermarks.\
   [Documentation](https://likec4.dev/docs/tools/cli/#export)
 
 ### Bug Fixes
@@ -339,9 +356,9 @@ No changes, just trigger release.
 
 This release includes breaking changes in `@likec4/diagrams`:
 
-- **diagrams:** DiagramsBrowser  
+- **diagrams:** DiagramsBrowser\
   You've already seen this component working on the project website, but it was not back-ported to the npm-module
-- **diagrams:** LikeC4 factory  
+- **diagrams:** LikeC4 factory\
   Creates components, "bound" to your model, with type checks. It ensures that only existing views can be rendered.
 
 With [`codegen`](https://www.likec4.dev/docs/tools/cli/#codegen) command, CLI generates structured data, like:
