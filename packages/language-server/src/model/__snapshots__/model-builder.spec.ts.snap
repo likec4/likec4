@@ -516,3 +516,201 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec 1`] = `
   },
 }
 `;
+
+exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = `
+{
+  "elements": {
+    "user1": {
+      "description": null,
+      "id": "user1",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user1",
+    },
+    "user2": {
+      "description": null,
+      "id": "user2",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user2",
+    },
+  },
+  "relations": {
+    "6af4d5e25f365ec73b16b0625641967bfdcf1b90": {
+      "id": "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+      "kind": "async",
+      "source": "user1",
+      "tags": [
+        "next",
+      ],
+      "target": "user2",
+      "title": "",
+    },
+  },
+  "views": {
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "id": "user1:user2",
+          "label": null,
+          "parent": null,
+          "relations": [
+            "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+          ],
+          "source": "user1",
+          "target": "user2",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user1",
+          "inEdges": [],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "user1:user2",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user1",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user2",
+          "inEdges": [
+            "user1:user2",
+          ],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user2",
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
+}
+`;
+
+exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
+{
+  "elements": {
+    "user1": {
+      "description": null,
+      "id": "user1",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user1",
+    },
+    "user2": {
+      "description": null,
+      "id": "user2",
+      "kind": "person",
+      "links": null,
+      "tags": null,
+      "technology": null,
+      "title": "user2",
+    },
+  },
+  "relations": {
+    "6af4d5e25f365ec73b16b0625641967bfdcf1b90": {
+      "color": "red",
+      "head": "diamond",
+      "id": "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+      "line": "dotted",
+      "source": "user1",
+      "tail": "none",
+      "target": "user2",
+      "title": "",
+    },
+  },
+  "views": {
+    "index": {
+      "autoLayout": "TB",
+      "description": null,
+      "edges": [
+        {
+          "color": "red",
+          "head": "diamond",
+          "id": "user1:user2",
+          "label": null,
+          "line": "dotted",
+          "parent": null,
+          "relations": [
+            "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+          ],
+          "source": "user1",
+          "tail": "none",
+          "target": "user2",
+        },
+      ],
+      "id": "index",
+      "links": null,
+      "nodes": [
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user1",
+          "inEdges": [],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [
+            "user1:user2",
+          ],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user1",
+        },
+        {
+          "children": [],
+          "color": "primary",
+          "description": null,
+          "id": "user2",
+          "inEdges": [
+            "user1:user2",
+          ],
+          "kind": "person",
+          "level": 0,
+          "links": null,
+          "outEdges": [],
+          "parent": null,
+          "shape": "rectangle",
+          "tags": null,
+          "technology": null,
+          "title": "user2",
+        },
+      ],
+      "tags": null,
+      "title": "Landscape",
+    },
+  },
+}
+`;

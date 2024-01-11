@@ -1,7 +1,7 @@
+import type { Element, ViewID } from '@likec4/core'
+import { keys, values } from 'rambdax'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
-import { keys, values } from 'rambdax'
-import type { Element, ViewID } from '@likec4/core'
 
 vi.mock('../logger')
 
@@ -570,19 +570,19 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with relationship spec', async ({ expect }) => {
+  it('builds model with relationship spec and tag', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
       element person
       relationship async
-
+      tag next
     }
     model {
       person user1
       person user2
 
-      user1 -[async]-> user2
+      user1 -[async]-> user2 #next
     }
     `)
     expect(diagnostics).toHaveLength(0)
@@ -591,7 +591,41 @@ describe('LikeC4ModelBuilder', () => {
     expect(values(model.relations)[0]).toMatchObject({
       source: 'user1',
       target: 'user2',
-      kind: 'async'
+      kind: 'async',
+      tags: ['next']
+    })
+    expect(model).toMatchSnapshot()
+  })
+
+  it.concurrent('builds model with styled relationship', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element person
+    }
+    model {
+      person user1
+      person user2
+      user1 -> user2 {
+        style {
+          color red
+          line dotted
+          head diamond
+          tail none
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    expect(values(model.relations)[0]).toMatchObject({
+      source: 'user1',
+      target: 'user2',
+      color: 'red',
+      line: 'dotted',
+      head: 'diamond',
+      tail: 'none'
     })
     expect(model).toMatchSnapshot()
   })

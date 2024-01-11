@@ -3,8 +3,8 @@
 import { type ComputedView, type LikeC4Model } from '@likec4/core'
 import {
   createLanguageServices as createLangium,
-  logger as lspLogger,
-  type LikeC4Services
+  type LikeC4Services,
+  logger as lspLogger
 } from '@likec4/language-server'
 import { DotLayouter, type DotLayoutResult } from '@likec4/layouts'
 import type { LangiumDocument, WorkspaceCache } from 'langium'
@@ -95,7 +95,7 @@ export async function mkLanguageServices({
   lspLogger.silent(true)
 
   const workspace = resolve(path)
-  const services = createLangium(NodeFileSystem).likec4
+  const { likec4: services, shared } = createLangium(NodeFileSystem)
   const LangiumDocuments = services.shared.workspace.LangiumDocuments
   const DocumentBuilder = services.shared.workspace.DocumentBuilder
 
@@ -149,15 +149,23 @@ export async function mkLanguageServices({
     })
   }
 
+  const mutex = shared.workspace.MutexLock
+
   // Returns true if the update was successful
   async function notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
     logger.info(`watcher update: ${changed ?? ''} ${removed ?? ''}`)
     try {
-      await DocumentBuilder.update(
-        changed ? [URI.file(changed)] : [],
-        removed ? [URI.file(removed)] : []
-      )
-      return !hasValidationErrors()
+      let cancelled = true
+      await mutex.lock(async token => {
+        await DocumentBuilder.update(
+          changed ? [URI.file(changed)] : [],
+          removed ? [URI.file(removed)] : [],
+          token
+        )
+        // we come here if only the update was successful (and not cancelled)
+        cancelled = token.isCancellationRequested
+      })
+      return !cancelled && !hasValidationErrors()
     } catch (e) {
       logger.error(e)
       return false
@@ -189,7 +197,7 @@ export async function mkLanguageServices({
   }
 
   return {
-    //Resolved workspace directory
+    // Resolved workspace directory
     dotlayouter: dot,
     workspace,
     getModel,
@@ -201,8 +209,8 @@ export async function mkLanguageServices({
       return LangiumDocuments.all
         .flatMap(d => {
           return (
-            d.diagnostics?.flatMap(e => (e.severity === 1 ? { ...e, source: d.uri.fsPath } : [])) ??
-            []
+            d.diagnostics?.flatMap(e => (e.severity === 1 ? { ...e, source: d.uri.fsPath } : []))
+              ?? []
           )
         })
         .toArray()
