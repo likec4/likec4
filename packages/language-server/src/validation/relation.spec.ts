@@ -127,4 +127,41 @@ describe('relationChecks', () => {
     `)
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
+
+  it('should not report for valid tags', async () => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+        tag one
+      }
+      model {
+        component c1
+        component c2
+        c1 -> c2 #one
+        c2 -> c1 {
+          #one
+        }
+      }
+    `)
+    expect(errors).toEqual([])
+  })
+
+  it('should report invalid tags', async () => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+        tag one
+      }
+      model {
+        component c1
+        component c2
+        c1 -> c2 #one {
+          #one
+        }
+      }
+    `)
+    expect(errors).toEqual(['Relation cannot have tags in both header and body'])
+  })
 })

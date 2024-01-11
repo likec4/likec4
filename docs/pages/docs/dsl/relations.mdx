@@ -55,8 +55,7 @@ model {
 }
 ```
 
-
-Relationships may have a label (and better to have one)
+Relationships may have a title (and better to have one)
 
 ```likec4
 model {
@@ -68,7 +67,20 @@ model {
     frontend -> backend 'requests data'
   }
 
-  customer -> frontend 'opens in browser'
+  customer -> frontend {
+    title 'opens in browser' // or nested
+  }
+
+```
+
+Relationships may be tagged
+
+```likec4
+model {
+  frontend -> backend 'requests data' #graphql #team1
+  customer -> frontend 'opens in browser' {
+    #graphql #team1 // or nested
+  }
 }
 ```
 
@@ -79,7 +91,7 @@ specification {
   relationship graphql
 }
 model {
-  customer = actor {    
+  customer = actor {
     -> frontend 'opens in browser' // same as customer -> frontend
   }
   service cloud {
@@ -93,7 +105,7 @@ model {
   customer = actor {
     it -> frontend 'opens in browser'
     this -> frontend 'opens in browser'
-  }   
+  }
 
   -> backend 'requests data' // ⛔️ Error: model can't be a source
 }

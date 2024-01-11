@@ -108,11 +108,9 @@ Relation:
 fragment RelationFragment:
   ('->' | '-[' kind=[RelationshipKind] ']->')
   target=ElementRef
-  (title=String)?
-  ('{'
-    tags=Tags?
-    props+=RelationStringProperty*
-  '}')?
+  title=String?
+  tags=Tags?
+  ('{' body=RelationBody '}')?
 ;
 
 ImplicitRelation:
@@ -121,8 +119,22 @@ ImplicitRelation:
 ExplicitRelation:
   source=ElementRef RelationFragment;
 
+RelationBody:
+  tags=Tags?
+  props+=RelationProperty*
+;
+
+RelationProperty:
+  RelationStringProperty | RelationStyleProperty;
+
 RelationStringProperty:
   key='title' Colon? value=String SemiColon?;
+
+RelationStyleProperty:
+  key='style' '{'
+    props+=RelationshipStyleProperty*
+  '}'
+;
 
 
 // Views -------------------------------------

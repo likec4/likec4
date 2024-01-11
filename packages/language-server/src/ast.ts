@@ -1,12 +1,12 @@
 import {
+  type c4,
   DefaultArrowType,
   DefaultElementShape,
   DefaultLineStyle,
   DefaultRelationshipColor,
   DefaultThemeColor,
-  RelationRefError,
   nonexhaustive,
-  type c4
+  RelationRefError
 } from '@likec4/core'
 import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { DocumentState, getContainerOfType } from 'langium'
@@ -38,7 +38,7 @@ export interface ParsedAstSpecification {
     shape?: c4.ElementShape
     color?: c4.ThemeColor
     icon?: c4.IconUrl
-  }>,
+  }>
   relationships: Record<
     c4.RelationshipKind,
     {
@@ -72,6 +72,10 @@ export interface ParsedAstRelation {
   kind?: c4.RelationshipKind
   tags?: c4.NonEmptyArray<c4.Tag>
   title: string
+  color?: c4.ThemeColor
+  line?: c4.RelationshipLineType
+  head?: c4.RelationshipArrowType
+  tail?: c4.RelationshipArrowType
 }
 
 export interface ParsedAstElementView {
@@ -133,16 +137,16 @@ export interface LikeC4DocumentProps {
 }
 
 export interface LikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
-    LikeC4DocumentProps {}
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4DocumentProps
+{}
 export interface FqnIndexedDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
-    SetRequired<LikeC4DocumentProps, 'c4fqns'> {}
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqns'>
+{}
 
 // export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
 export interface ParsedLikeC4LangiumDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>,
-    Required<LikeC4DocumentProps> {}
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, Required<LikeC4DocumentProps>
+{}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
   const props: Required<Omit<LikeC4DocumentProps, 'c4fqns' | 'diagnostics'>> = {
@@ -169,13 +173,13 @@ export function isParsedLikeC4LangiumDocument(
   doc: LangiumDocument
 ): doc is ParsedLikeC4LangiumDocument {
   return (
-    isLikeC4LangiumDocument(doc) &&
-    doc.state == DocumentState.Validated &&
-    !!doc.c4Specification &&
-    !!doc.c4Elements &&
-    !!doc.c4Relations &&
-    !!doc.c4Views &&
-    !!doc.c4fqns
+    isLikeC4LangiumDocument(doc)
+    && doc.state == DocumentState.Validated
+    && !!doc.c4Specification
+    && !!doc.c4Elements
+    && !!doc.c4Relations
+    && !!doc.c4Views
+    && !!doc.c4fqns
   )
 }
 
@@ -224,11 +228,11 @@ export const isValidLikeC4LangiumDocument = (
   if (!isParsedLikeC4LangiumDocument(doc)) return false
   const { parseResult, diagnostics } = doc
   return (
-    parseResult.lexerErrors.length === 0 &&
-    parseResult.parserErrors.length === 0 &&
-    (!diagnostics ||
-      diagnostics.length === 0 ||
-      diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
+    parseResult.lexerErrors.length === 0
+    && parseResult.parserErrors.length === 0
+    && (!diagnostics
+      || diagnostics.length === 0
+      || diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
   )
 }
 

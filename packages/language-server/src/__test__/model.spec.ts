@@ -59,6 +59,16 @@ describe('model', () => {
       user3 = person // unnamed
     }`
 
+  test('element with unicode and emoji in title').valid`
+    specification {
+      element person
+    }
+    model {
+      person user1 'Пользователь 1'
+      user2 = person 'Person 👨‍💻'
+      user3 = person // unnamed
+    }`
+
   test('element with style').valid`
     specification {
       element person

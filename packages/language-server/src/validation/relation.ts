@@ -43,6 +43,13 @@ export const relationChecks = (services: LikeC4Services): ValidationCheck<ast.Re
           node: el
         })
       }
+
+      if (el.tags?.value && el.body?.tags?.value) {
+        accept('error', 'Relation cannot have tags in both header and body', {
+          node: el,
+          property: 'tags'
+        })
+      }
     } catch (e) {
       logError(e)
     }

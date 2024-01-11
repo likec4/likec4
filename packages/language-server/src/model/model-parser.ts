@@ -1,4 +1,4 @@
-import { InvalidModelError, invariant, isNonEmptyArray, nonexhaustive, type c4 } from '@likec4/core'
+import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { getDocument } from 'langium'
 import objectHash from 'object-hash'
@@ -12,10 +12,10 @@ import type {
   ParsedLikeC4LangiumDocument
 } from '../ast'
 import {
-  ElementViewOps,
   ast,
-  cleanParsedModel,
   checksFromDiagnostics,
+  cleanParsedModel,
+  ElementViewOps,
   isFqnIndexedDocument,
   resolveRelationPoints,
   streamModel,
@@ -25,7 +25,7 @@ import {
   toRelationshipStyleExcludeDefaults
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
-import { logError, logWarnError, logger } from '../logger'
+import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
 
@@ -163,11 +163,13 @@ export class LikeC4ModelParser {
     const coupling = resolveRelationPoints(astNode)
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
-    const tags = this.convertTags(astNode)
+    const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title =
-      toSingleLine(astNode.title ?? astNode.props.find(p => p.key === 'title')?.value) ?? ''
+    const title = toSingleLine(
+      astNode.title ?? astNode.body?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
+    ) ?? ''
+    const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
     const id = objectHash({
       astPath,
       source,
@@ -180,15 +182,14 @@ export class LikeC4ModelParser {
       target,
       title,
       ...(kind && { kind }),
-      ...(tags && { tags })
+      ...(tags && { tags }),
+      ...toRelationshipStyleExcludeDefaults(styleProp?.props)
     }
   }
 
   private parseViews(doc: ParsedLikeC4LangiumDocument) {
     const { isValid } = checksFromDiagnostics(doc)
-    const views = doc.parseResult.value.views.flatMap(v =>
-      isValid(v) ? v.views.filter(isValid) : []
-    )
+    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views.filter(isValid) : [])
     for (const view of views) {
       try {
         const v = this.parseElementView(view)
@@ -259,8 +260,7 @@ export class LikeC4ModelParser {
           return acc
         }
         if (ast.isElementStringProperty(prop)) {
-          const value =
-            prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
+          const value = prop.key === 'description' ? removeIndent(prop.value) : toSingleLine(prop.value)
           acc.custom[prop.key] = value.trim()
           return acc
         }

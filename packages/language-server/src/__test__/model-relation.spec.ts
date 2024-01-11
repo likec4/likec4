@@ -125,6 +125,24 @@ describe('model relation', () => {
   )
 
   test(
+    'relation with tags',
+    valid`
+      specification {
+        element person
+        tag next
+      }
+      model {
+        person user1
+        person user2 {
+          -> user1 #next
+        }
+        user1 -> user2 'responds to' {
+          #next
+        }
+      }`
+  )
+
+  test(
     'relation with properties',
     valid`
     specification {
@@ -144,7 +162,7 @@ describe('model relation', () => {
   )
 
   test(
-    'styled relationship',
+    'relationship with kind',
     valid`
     specification {
       element person
@@ -157,10 +175,30 @@ describe('model relation', () => {
     }
     model {
       person user1
-      person user2 
+      person user2
       person user3
       user1 -> user2
       user1 -[async]-> user3
+    }`
+  )
+
+  test(
+    'relationship with style',
+    valid`
+    specification {
+      element person
+    }
+    model {
+      person user1
+      person user2
+      user1 -> user2 {
+        style {
+          color red
+          line dotted
+          head normal
+          tail none
+        }
+      }
     }`
   )
 })

@@ -1,5 +1,6 @@
-import type { Opaque } from './opaque'
+import type { NonEmptyArray } from './_common'
 import type { Fqn, Tag } from './element'
+import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
 export type RelationID = Opaque<string, 'RelationID'>
@@ -27,7 +28,7 @@ export interface Relation {
   readonly source: Fqn
   readonly target: Fqn
   readonly title: string
-  readonly tags?: Tag[]
+  readonly tags?: NonEmptyArray<Tag>
   readonly kind?: RelationshipKind
   readonly color?: ThemeColor
   readonly line?: RelationshipLineType
