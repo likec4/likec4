@@ -71,6 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ github.ref }}
 
       - name: download artifact
@@ -97,7 +98,6 @@ jobs:
     # or if we are in a workflow_call and the commit message contains 'chore: release'
     if: |
       github.event_name == 'workflow_dispatch' || (
-        github.event_name == 'workflow_call' &&
         contains(github.event.head_commit.message, 'chore: release')
       )
     runs-on: ubuntu-latest
@@ -109,6 +109,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ github.ref }}
 
       - name: download artifact
@@ -117,7 +118,8 @@ jobs:
           name: docs-website
           path: docs/out/
 
-      - name: publish to cloudflare
+      - id: cloudflare
+        name: publish to cloudflare
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

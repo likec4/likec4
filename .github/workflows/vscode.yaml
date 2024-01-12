@@ -20,7 +20,7 @@ jobs:
     # by workflow_call on main with a commit message containing "chore: release"
     if: |
       github.event_name == 'workflow_dispatch' || (
-        github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'chore: release')
+        contains(github.event.head_commit.message, 'chore: release')
       )
     steps:
       - uses: actions/checkout@v4
