@@ -1,3 +1,14 @@
+# [0.54.0](https://github.com/likec4/likec4/compare/v0.53.0...v0.54.0) (2024-01-12)
+
+### Features
+
+- **lsp:** add tags to relationships ([a7e6e06](https://github.com/likec4/likec4/commit/a7e6e065759ede641dd40b9cb3d49630666bcd79))
+
+### Bug Fixes
+
+- **vscode:** document selector on windows ([2540f88](https://github.com/likec4/likec4/commit/2540f88094eb3b7ee620712611e7deffb545af78))
+
+
 # [0.53.0](https://github.com/likec4/likec4/compare/v0.52.0...v0.53.0) (2024-01-10)
 
 ### Features
