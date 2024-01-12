@@ -1,15 +1,20 @@
+import os from 'node:os'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
-  RevealOutputChannelOn,
-  TransportKind,
   type LanguageClientOptions,
+  RevealOutputChannelOn,
   type ServerOptions,
-  type TextDocumentFilter
+  type TextDocumentFilter,
+  TransportKind
 } from 'vscode-languageclient/node'
 import { ExtensionController } from '../common/ExtensionController'
 import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
 import { Logger } from '../logger'
+
+function isWindows() {
+  return os.platform() === 'win32'
+}
 
 let controller: ExtensionController | undefined
 
@@ -43,9 +48,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const debugOptions = {
     execArgv: [
       '--nolazy',
-      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${
-        process.env['DEBUG_SOCKET'] || '6009'
-      }`
+      `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '6009'}`
     ]
   }
 
@@ -73,12 +76,14 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   // The glob pattern used to find likec4 source files inside the workspace
   const scheme = isVirtual() ? 'vscode-vfs' : 'file'
-  const documentSelector = workspaceFolders.map((f): TextDocumentFilter => {
-    const w = vscode.Uri.joinPath(f.uri, globPattern)
-    return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
-  })
-
-  outputChannel.info(`Document selector: ${JSON.stringify(documentSelector, null, 2)}`)
+  const documentSelector = isWindows()
+    ? [
+      { language: languageId, scheme } // TODO: Can't figure out why
+    ]
+    : workspaceFolders.map((f): TextDocumentFilter => {
+      const w = vscode.Uri.joinPath(f.uri, globPattern)
+      return { language: languageId, scheme, pattern: w.scheme === 'file' ? w.fsPath : w.path }
+    })
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
@@ -91,6 +96,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
       fileEvents: watcher
     }
   }
+  outputChannel.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
 
   // Create the language client and start the client.
   return new NodeLanguageClient(languageId, extensionTitle, serverOptions, clientOptions)
