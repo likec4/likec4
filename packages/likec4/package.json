@@ -49,7 +49,7 @@
     "@nanostores/react": "^0.7.1",
     "@nanostores/router": "^0.11.0",
     "@radix-ui/react-icons": "^1.3.0",
-    "@radix-ui/themes": "^2.0.2",
+    "@radix-ui/themes": "^2.0.3",
     "@react-hookz/web": "^23.1.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
