@@ -25,7 +25,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
-    "@react-hookz/web": "^23.1.0",
+    "@react-hookz/web": "^24.0.3",
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

@@ -1,5 +1,5 @@
 import { Box, Button, Flex, IconButton, ScrollArea, Separator } from '@radix-ui/themes'
-import { useClickOutside, useToggle } from '@react-hookz/web/esm'
+import { useClickOutside, useToggle } from '@react-hookz/web'
 
 import { HamburgerMenuIcon, ArrowLeftIcon } from '@radix-ui/react-icons'
 import { useRef } from 'react'

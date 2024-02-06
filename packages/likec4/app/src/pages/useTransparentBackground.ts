@@ -1,4 +1,4 @@
-import { useIsomorphicLayoutEffect } from '@react-hookz/web/esm'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 
 // To get the transparent background
 // We need to add a class to the HTML element
