@@ -1086,7 +1086,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
-    "@react-hookz/web": "npm:^23.1.0"
+    "@react-hookz/web": "npm:^24.0.3"
     "@react-spring/konva": "npm:^9.7.3"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -1120,7 +1120,7 @@ __metadata:
     "@monaco-editor/react": "npm:^4.5.0"
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
-    "@react-hookz/web": "npm:^23.1.0"
+    "@react-hookz/web": "npm:^24.0.3"
     "@types/node": "npm:^20.10.4"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -1259,7 +1259,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
-    "@react-hookz/web": "npm:^23.1.0"
+    "@react-hookz/web": "npm:^24.0.3"
     "@types/node": "npm:^20.10.4"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -3160,6 +3160,22 @@ __metadata:
     js-cookie:
       optional: true
   checksum: 7f345fc286ee3bae74b76b909898213a589250856783805d0356d8ef9ca0e3d1638e7499d8b77ae1dff6350dec230fda468e0e4c8fc05a9997902569d3d81b49
+  languageName: node
+  linkType: hard
+
+"@react-hookz/web@npm:^24.0.3":
+  version: 24.0.4
+  resolution: "@react-hookz/web@npm:24.0.4"
+  dependencies:
+    "@react-hookz/deep-equal": "npm:^1.0.4"
+  peerDependencies:
+    js-cookie: ^3.0.5
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  peerDependenciesMeta:
+    js-cookie:
+      optional: true
+  checksum: 6a841c648edbc54b11fd90de9bb61c3059255598fc4a714c508c269a03c4ca9bbf32cf017d3bd2b3a1bf7cd1d9bf4bb56028f64ad455f796079632f4a7cd4f00
   languageName: node
   linkType: hard
 
@@ -9531,7 +9547,7 @@ __metadata:
     "@nanostores/router": "npm:^0.11.0"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
-    "@react-hookz/web": "npm:^23.1.0"
+    "@react-hookz/web": "npm:^24.0.3"
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.10.4"
     "@types/prop-types": "npm:^15.7.11"
