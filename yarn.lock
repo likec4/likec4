@@ -1121,7 +1121,7 @@ __metadata:
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
     "@react-hookz/web": "npm:^24.0.3"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1174,7 +1174,7 @@ __metadata:
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     json5: "npm:^2.2.3"
     langium: "npm:^2.1.3"
     rambdax: "npm:^9.1.1"
@@ -1205,7 +1205,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@types/object-hash": "npm:^3.0.6"
     debounce-fn: "npm:^6.0.0"
     execa: "npm:^8.0.1"
@@ -1235,7 +1235,7 @@ __metadata:
     "@hpcc-js/wasm": "npm:^2.15.3"
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -1260,7 +1260,7 @@ __metadata:
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
     "@react-hookz/web": "npm:^24.0.3"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1284,7 +1284,7 @@ __metadata:
   resolution: "@likec4/workspaces@workspace:."
   dependencies:
     "@types/eslint": "npm:^8.44.9"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@typescript-eslint/eslint-plugin": "npm:^6.14.0"
     "@typescript-eslint/parser": "npm:^6.14.0"
     "@vitest/ui": "npm:^1.1.3"
@@ -3175,7 +3175,7 @@ __metadata:
   peerDependenciesMeta:
     js-cookie:
       optional: true
-  checksum: 6a841c648edbc54b11fd90de9bb61c3059255598fc4a714c508c269a03c4ca9bbf32cf017d3bd2b3a1bf7cd1d9bf4bb56028f64ad455f796079632f4a7cd4f00
+  checksum: 10/6a841c648edbc54b11fd90de9bb61c3059255598fc4a714c508c269a03c4ca9bbf32cf017d3bd2b3a1bf7cd1d9bf4bb56028f64ad455f796079632f4a7cd4f00
   languageName: node
   linkType: hard
 
@@ -3835,7 +3835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.10.4":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
   version: 20.10.4
   resolution: "@types/node@npm:20.10.4"
   dependencies:
@@ -3848,6 +3848,15 @@ __metadata:
   version: 16.18.66
   resolution: "@types/node@npm:16.18.66"
   checksum: 10/992b264562c11de1332f8fe637c4b5d3df986348b972a57d09eca33db7b7d9abf5d348e70c37a4f05e42a717820bb7d5120b9a5a956fd0f975296a8fd910f2b5
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.16":
+  version: 20.11.16
+  resolution: "@types/node@npm:20.11.16"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10/751f50ec5c9332b11515e82fe37c71479ac4449b711280aa3c7910edf67b1e3f5ac00041512add543f9a892096a68356406998bf02a2c809a73d176c44c28414
   languageName: node
   linkType: hard
 
@@ -5688,7 +5697,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
@@ -9549,7 +9558,7 @@ __metadata:
     "@radix-ui/themes": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.3"
     "@types/mermaid": "npm:^9.2.0"
-    "@types/node": "npm:^20.10.4"
+    "@types/node": "npm:^20.11.16"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
