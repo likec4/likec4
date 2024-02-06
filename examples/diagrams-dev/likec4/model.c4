@@ -215,7 +215,7 @@ views {
     style services, services.* {
       color green
     }
-  }  
+  }
 
   view cloud_graphql of graphql {
     include

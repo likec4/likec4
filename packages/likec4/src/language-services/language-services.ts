@@ -165,7 +165,7 @@ export async function mkLanguageServices({
         // we come here if only the update was successful (and not cancelled)
         cancelled = token.isCancellationRequested
       })
-      return !cancelled && !hasValidationErrors()
+      return !cancelled
     } catch (e) {
       logger.error(e)
       return false

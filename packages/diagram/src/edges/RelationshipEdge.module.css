@@ -1,0 +1,41 @@
+:global(.react-flow__edge-path).edgePath {
+  stroke: var(--likec4-relation-lineColor);
+  stroke-width: 2;
+  transition: all 110ms ease-in-out;
+
+  &[data-edge-hovered="true"],
+  :where(:global(.react-flow__edge.selected)) & {
+    stroke: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
+    stroke-width: 2.2;
+  }
+
+}
+
+.edgeLabel {
+  position: absolute;
+  padding: 2px;
+
+  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
+  border-radius: 3px;
+  color: var(--likec4-relation-labelColor);
+  pointer-events: all;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transition: all 120ms ease-out;
+
+  /* & > div {
+    flex: 1;
+  } */
+
+  &[data-edge-hovered="true"] {
+    transform: scale(1.04);
+    /* color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white); */
+  }
+
+  /* &[data-hovered="true"] {
+    transform: scale(1.05);
+    color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white);
+  } */
+
+  /* background-drop: drop(var(--likec4-relation-labelBg) 0% 0% 0% 0% var(--likec4-relation-labelBg) 0% 0% 0% 0%); */
+}

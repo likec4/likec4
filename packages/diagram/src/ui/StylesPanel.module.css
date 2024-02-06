@@ -1,0 +1,7 @@
+.stylesPanel {
+  position: absolute;
+  z-index: calc(var(--layer-panels) + 1);
+
+  top: rem(56px);
+  right: rem(16px);
+}

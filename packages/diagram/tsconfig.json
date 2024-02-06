@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "classnameTransform": "camelCase"
+        }
+      }
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "src/css.d.ts",
+    "src/reset.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
+}

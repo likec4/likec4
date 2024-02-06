@@ -174,7 +174,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
       const scheduleHMR = pDebounce(triggerHMR, 200)
 
       const handleUpdate = (task: Promise<boolean>) => {
-        task.then(() => scheduleHMR()).catch(err => server.ws.send({ type: 'error', err }))
+        task.then(isSuccess => isSuccess ? void scheduleHMR() : null).catch(err =>
+          server.ws.send({ type: 'error', err })
+        )
       }
 
       const pattern = likec4.workspace

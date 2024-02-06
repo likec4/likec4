@@ -20,6 +20,7 @@
   "devDependencies": {
     "@ladle/react": "^4.0.2",
     "@likec4/core": "workspace:*",
+    "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/web": "^23.1.0",
     "@types/react": "^18.2.0",
@@ -29,7 +30,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "tsx": "^4.6.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "vite-plugin-watch-and-run": "^1.5.0"

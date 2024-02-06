@@ -1,4 +1,8 @@
-import { ActionType, action, useLadleContext, type Story, type StoryDefault } from '@ladle/react'
+import '@mantine/core/styles.css'
+import '@xyflow/react/dist/style.css'
+
+import { action, ActionType, type Story, type StoryDefault, useLadleContext } from '@ladle/react'
+import { LikeC4ViewEditor } from '@likec4/diagram'
 import { Diagram, DiagramStateProvider } from '@likec4/diagrams'
 import { useStoryViewport } from '../.ladle/components'
 import type { LikeC4ViewId } from './likec4'
@@ -68,36 +72,32 @@ export const DiagramDevelopment: Story<Props> = ({
   return (
     <DiagramStateProvider>
       <Diagram
-        className='dev-app'
+        className="dev-app"
         diagram={diagram}
         {...props}
         width={measures.width}
         height={measures.height}
-        onNodeClick={
-          onNodeClick
-            ? (node, event) => {
-                if (node.navigateTo) {
-                  dispatch({
-                    type: ActionType.UpdateControl,
-                    value: {
-                      ...controlState,
-                      viewId: {
-                        ...controlState['viewId'],
-                        value: node.navigateTo
-                      }
-                    }
-                  })
+        onNodeClick={onNodeClick
+          ? (node, event) => {
+            if (node.navigateTo) {
+              dispatch({
+                type: ActionType.UpdateControl,
+                value: {
+                  ...controlState,
+                  viewId: {
+                    ...controlState['viewId'],
+                    value: node.navigateTo
+                  }
                 }
-                action('onNodeClick')({
-                  node,
-                  event
-                })
-              }
-            : undefined
-        }
-        onEdgeClick={
-          onEdgeClick ? (edge, event) => action('onEdgeClick')({ edge, event }) : undefined
-        }
+              })
+            }
+            action('onNodeClick')({
+              node,
+              event
+            })
+          }
+          : undefined}
+        onEdgeClick={onEdgeClick ? (edge, event) => action('onEdgeClick')({ edge, event }) : undefined}
         onStageClick={(stage, event) => action('onStageClick')({ stage, event })}
         onStageContextMenu={(stage, event) => {
           event.evt.preventDefault()
@@ -112,6 +112,48 @@ export const DiagramDevelopment: Story<Props> = ({
   )
 }
 DiagramDevelopment.storyName = 'Diagram'
+
+export const LikeC4ViewEditorStory: Story<Props> = ({
+  viewId,
+  onNodeClick = true,
+  onEdgeClick = true,
+  ...props
+}) => {
+  const {
+    dispatch,
+    globalState: { control: controlState }
+  } = useLadleContext()
+  const diagram = LikeC4Views[viewId]
+
+  return (
+    <LikeC4ViewEditor
+      view={diagram}
+      onNavigateTo={onNodeClick
+        ? (node) => {
+          action('onNodeClick')({
+            node
+          })
+          dispatch({
+            type: ActionType.UpdateControl,
+            value: {
+              ...controlState,
+              viewId: {
+                ...controlState['viewId'],
+                value: node.navigateTo
+              }
+            }
+          })
+        }
+        : undefined}
+      //    {...(onNodeClick && ({
+      // onNavigateTo={node => {
+
+      //       }}
+      //   })
+    />
+  )
+}
+LikeC4ViewEditorStory.storyName = 'Diagram Editor'
 
 export const ThemeColors: Story<Props> = props => {
   return <DiagramDevelopment {...props} />

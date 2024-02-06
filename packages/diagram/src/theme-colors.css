@@ -1,0 +1,99 @@
+:where([data-likec4-color=primary]) {
+  --likec4-element-fill: #3b82f6;
+  --likec4-element-stroke: #2563eb;
+  --likec4-element-hiContrast: #eff6ff;
+  --likec4-element-loContrast: #bfdbfe;
+  --likec4-relation-lineColor: #3b82f6;
+  --likec4-relation-labelColor: #60a5fa;
+  --likec4-relation-labelBg: #172554;
+}
+:where([data-likec4-color=blue]) {
+  --likec4-element-fill: #3b82f6;
+  --likec4-element-stroke: #2563eb;
+  --likec4-element-hiContrast: #eff6ff;
+  --likec4-element-loContrast: #bfdbfe;
+  --likec4-relation-lineColor: #3b82f6;
+  --likec4-relation-labelColor: #60a5fa;
+  --likec4-relation-labelBg: #172554;
+}
+:where([data-likec4-color=secondary]) {
+  --likec4-element-fill: #0284c7;
+  --likec4-element-stroke: #0369a1;
+  --likec4-element-hiContrast: #f0f9ff;
+  --likec4-element-loContrast: #B6ECF7;
+  --likec4-relation-lineColor: #0ea5e9;
+  --likec4-relation-labelColor: #38bdf8;
+  --likec4-relation-labelBg: #082f49;
+}
+:where([data-likec4-color=sky]) {
+  --likec4-element-fill: #0284c7;
+  --likec4-element-stroke: #0369a1;
+  --likec4-element-hiContrast: #f0f9ff;
+  --likec4-element-loContrast: #B6ECF7;
+  --likec4-relation-lineColor: #0ea5e9;
+  --likec4-relation-labelColor: #38bdf8;
+  --likec4-relation-labelBg: #082f49;
+}
+:where([data-likec4-color=muted]) {
+  --likec4-element-fill: #64748b;
+  --likec4-element-stroke: #475569;
+  --likec4-element-hiContrast: #f8fafc;
+  --likec4-element-loContrast: #cbd5e1;
+  --likec4-relation-lineColor: #64748b;
+  --likec4-relation-labelColor: #cbd5e1;
+  --likec4-relation-labelBg: #0f172a;
+}
+:where([data-likec4-color=slate]) {
+  --likec4-element-fill: #64748b;
+  --likec4-element-stroke: #475569;
+  --likec4-element-hiContrast: #f8fafc;
+  --likec4-element-loContrast: #cbd5e1;
+  --likec4-relation-lineColor: #64748b;
+  --likec4-relation-labelColor: #cbd5e1;
+  --likec4-relation-labelBg: #0f172a;
+}
+:where([data-likec4-color=gray]) {
+  --likec4-element-fill: #737373;
+  --likec4-element-stroke: #525252;
+  --likec4-element-hiContrast: #fafafa;
+  --likec4-element-loContrast: #d4d4d4;
+  --likec4-relation-lineColor: #6E6E6E;
+  --likec4-relation-labelColor: #C6C6C6;
+  --likec4-relation-labelBg: #18191b;
+}
+:where([data-likec4-color=red]) {
+  --likec4-element-fill: #AC4D39;
+  --likec4-element-stroke: #853A2D;
+  --likec4-element-hiContrast: #FBD3CB;
+  --likec4-element-loContrast: #FF977D;
+  --likec4-relation-lineColor: #AC4D39;
+  --likec4-relation-labelColor: #FF977D;
+  --likec4-relation-labelBg: #b91c1c;
+}
+:where([data-likec4-color=green]) {
+  --likec4-element-fill: #428a4f;
+  --likec4-element-stroke: #2d5d39;
+  --likec4-element-hiContrast: #f8fafc;
+  --likec4-element-loContrast: #c2f0c2;
+  --likec4-relation-lineColor: #15803d;
+  --likec4-relation-labelColor: #22c55e;
+  --likec4-relation-labelBg: #052e16;
+}
+:where([data-likec4-color=amber]) {
+  --likec4-element-fill: #A35829;
+  --likec4-element-stroke: #7E451D;
+  --likec4-element-hiContrast: #FFE0C2;
+  --likec4-element-loContrast: #FFA057;
+  --likec4-relation-lineColor: #b45309;
+  --likec4-relation-labelColor: #FFE0C2;
+  --likec4-relation-labelBg: #78350f;
+}
+:where([data-likec4-color=indigo]) {
+  --likec4-element-fill: #6366f1;
+  --likec4-element-stroke: #4f46e5;
+  --likec4-element-hiContrast: #eef2ff;
+  --likec4-element-loContrast: #c7d2fe;
+  --likec4-relation-lineColor: #6366f1;
+  --likec4-relation-labelColor: #818cf8;
+  --likec4-relation-labelBg: #1e1b4b;
+}

@@ -1,0 +1,75 @@
+{
+  "name": "@likec4/diagram",
+  "private": true,
+  "version": "0.54.0",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/diagram"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!**/*.spec.*",
+    "!**/*.map"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "packageManager": "yarn@4.0.2",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build:turbo": "run -T turbo build --filter='diagram'",
+    "build": "unbuild",
+    "prepack": "unbuild",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "run -T rimraf dist"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "@mantine/core": "^7.5.1",
+    "@mantine/hooks": "^7.5.1",
+    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/web": "^23.1.0",
+    "@xyflow/react": "^12.0.0-next.8",
+    "clsx": "^2.0.0",
+    "d3-shape": "^3.2.0",
+    "framer-motion": "^10.18.0",
+    "jotai": "^2.6.0",
+    "jotai-scope": "^0.4.1",
+    "khroma": "^2.1.0",
+    "react-icons": "^4.12.0",
+    "react-tracked": "^1.7.11",
+    "remeda": "^1.40.0",
+    "tilg": "^0.1.1"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1",
+    "@types/d3-shape": "^3",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "execa": "^8.0.1",
+    "postcss": "^8.4.33",
+    "postcss-preset-mantine": "^1.13.0",
+    "postcss-simple-vars": "^7.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "type-fest": "^4.9.0",
+    "typescript": "^5.3.3",
+    "typescript-plugin-css-modules": "^5.0.2",
+    "unbuild": "^2.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

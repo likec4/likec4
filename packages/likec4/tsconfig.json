@@ -4,13 +4,21 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src", "scripts"],
+  "include": [
+    "src",
+    "scripts"
+  ],
   "references": [
     {
       "path": "../core"
+    },
+    {
+      "path": "../diagram"
     },
     {
       "path": "../diagrams"
