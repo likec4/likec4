@@ -38,7 +38,7 @@
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0"
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.0",
   "volta": {
     "extends": "../../package.json"
   }

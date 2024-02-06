@@ -201,7 +201,7 @@
     "vscode-uri": "3.0.8",
     "xstream": "^11.14.0"
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.0",
   "volta": {
     "extends": "../../package.json"
   }
