@@ -1,5 +1,5 @@
 import { invariant } from '@likec4/core'
-import { useSyncedRef } from '@react-hookz/web/esm'
+import { useSyncedRef } from '@react-hookz/web'
 import type { HTMLAttributes } from 'react'
 import { useCallback } from 'react'
 import { createPortal } from 'react-dom'

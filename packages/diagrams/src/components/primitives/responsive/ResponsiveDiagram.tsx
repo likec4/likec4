@@ -1,4 +1,4 @@
-import { useMeasure } from '@react-hookz/web/esm'
+import { useMeasure } from '@react-hookz/web'
 import { forwardRef } from 'react'
 import { Diagram } from '../../../diagram'
 import type { DiagramApi, DiagramProps } from '../../../diagram'

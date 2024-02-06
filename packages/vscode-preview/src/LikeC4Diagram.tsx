@@ -1,5 +1,5 @@
 import { Diagram, useDiagramApi, type DiagramProps } from '@likec4/diagrams'
-import { useUpdateEffect, useWindowSize } from '@react-hookz/web/esm'
+import { useUpdateEffect, useWindowSize } from '@react-hookz/web'
 import { useCallback, useEffect, useRef } from 'react'
 
 const Paddings = [30, 20, 20, 20] as const

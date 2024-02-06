@@ -1,5 +1,5 @@
 import type { ComputedView } from '@likec4/core'
-import { useUnmountEffect } from '@react-hookz/web/esm'
+import { useUnmountEffect } from '@react-hookz/web'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { useCallback, useRef } from 'react'

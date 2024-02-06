@@ -1,5 +1,5 @@
 import { invariant } from '@likec4/core'
-import { useKeyboardEvent, useMeasure } from '@react-hookz/web/esm'
+import { useKeyboardEvent, useMeasure } from '@react-hookz/web'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
 import type { HTMLAttributes } from 'react'
 import { useEffect, useRef, type CSSProperties } from 'react'

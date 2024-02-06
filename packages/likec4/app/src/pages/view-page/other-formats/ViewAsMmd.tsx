@@ -1,5 +1,5 @@
 import { Box, Code, Flex, ScrollArea } from '@radix-ui/themes'
-import { useAsync } from '@react-hookz/web/esm'
+import { useAsync } from '@react-hookz/web'
 import { useEffect } from 'react'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../../../components'

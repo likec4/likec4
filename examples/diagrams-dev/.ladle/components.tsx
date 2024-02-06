@@ -1,5 +1,5 @@
 import { ModeState, type GlobalProvider } from '@ladle/react'
-import { useMeasure, type Measures } from '@react-hookz/web/esm'
+import { useMeasure, type Measures } from '@react-hookz/web'
 import { createContext, useContext } from 'react'
 
 const MeasuresContext = createContext<Measures>({} as Measures)

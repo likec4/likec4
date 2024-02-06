@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@react-hookz/web/esm'
+import { useMediaQuery } from '@react-hookz/web'
 
 const COLOR_SCHEME_QUERY = '(prefers-color-scheme: light)'
 

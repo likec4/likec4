@@ -1,7 +1,7 @@
 import type { DiagramView } from '@likec4/diagrams'
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box } from '@radix-ui/themes'
-import { useWindowSize } from '@react-hookz/web/esm'
+import { useWindowSize } from '@react-hookz/web'
 import { useCallback, useEffect, useRef } from 'react'
 import { $pages } from '../../router'
 import { cn } from '../../utils'

@@ -1,5 +1,5 @@
 import { Diagram } from '@likec4/diagrams'
-import { useWindowSize } from '@react-hookz/web/esm'
+import { useWindowSize } from '@react-hookz/web'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from './useTransparentBackground'
