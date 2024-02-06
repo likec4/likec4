@@ -30,7 +30,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
-    "@types/vscode-webview": "^1.57.4",
+    "@types/vscode-webview": "^1.57.5",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "lucide-react": "^0.294.0",
