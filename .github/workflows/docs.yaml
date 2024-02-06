@@ -75,7 +75,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docs-website
           path: docs/out/
@@ -113,7 +113,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docs-website
           path: docs/out/
