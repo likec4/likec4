@@ -9576,7 +9576,7 @@ __metadata:
     pretty-ms: "npm:^8.0.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.2.0"
-    react-accessible-treeview: "npm:^2.8.1"
+    react-accessible-treeview: "npm:^2.8.3"
     react-dom: "npm:^18.2.0"
     react-resizable-panels: "npm:^0.0.63"
     remeda: "npm:^1.30.0"
@@ -13270,15 +13270,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-accessible-treeview@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "react-accessible-treeview@npm:2.8.1"
+"react-accessible-treeview@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "react-accessible-treeview@npm:2.8.3"
   peerDependencies:
     classnames: ^2.2.6
     prop-types: ^15.7.2
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/1859547d82f29fdf6acf7ac62d975a0396b7f5372578864878741cb7f4eb2d1f588a17d4e6040e302e3adbd959615022a957e6d2ba37120d13d101263dde0556
+  checksum: 10/97de182a2ea21d3d9abeca1e81080802e5df0ec1fcad06b891e15da1535a810bcb5d7a8c32bd18e05a97725ccfed068ddb1c5ea062aeba6bf6e82b3238b8ba89
   languageName: node
   linkType: hard
 
