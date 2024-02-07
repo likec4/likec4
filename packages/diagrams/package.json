@@ -46,7 +46,7 @@
     "@react-spring/konva": "^9.7.3",
     "@use-gesture/react": "^10.3.0",
     "body-scroll-lock-upgrade": "^1.1.0",
-    "jotai": "^2.6.0",
+    "jotai": "^2.6.4",
     "khroma": "^2.1.0",
     "konva": "^9.3.2",
     "rambdax": "^9.1.1",
