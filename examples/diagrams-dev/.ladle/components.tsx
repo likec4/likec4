@@ -1,5 +1,5 @@
 import { type GlobalProvider, ModeState } from '@ladle/react'
-import { type Measures, useMeasure } from '@react-hookz/web/esm'
+import { type Measures, useMeasure } from '@react-hookz/web'
 import { createContext, useContext } from 'react'
 
 // import '@mantine/core/styles.css';

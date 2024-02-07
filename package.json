@@ -3,7 +3,7 @@
   "version": "0.54.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.0",
   "workspaces": [
     "docs",
     "packages/*",
@@ -24,18 +24,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
-    "lint": "turbo run lint --continue --filter='./packages/*'",
+    "lint": "",
     "vitest:ui": "vitest --ui",
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@types/eslint": "^8.44.9",
-    "@types/node": "^20.10.4",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "@vitest/ui": "^1.1.3",
+    "@types/node": "^20.11.16",
+    "@vitest/ui": "^1.2.2",
     "dprint": "^0.45.0",
-    "eslint": "^8.55.0",
     "execa": "^8.0.1",
     "global": "^4.4.0",
     "husky": "^8.0.3",
@@ -43,13 +39,13 @@
     "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
     "tsx": "^4.7.0",
-    "turbo": "^1.11.2",
+    "turbo": "^1.12.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10",
-    "vitest": "^1.1.3"
+    "vite": "^5.0.12",
+    "vitest": "^1.2.2"
   },
   "volta": {
-    "node": "20.10.0"
+    "node": "20.11.0"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",

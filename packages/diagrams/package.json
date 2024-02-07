@@ -30,7 +30,7 @@
       }
     }
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo build --filter='diagrams'",
@@ -42,13 +42,13 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
-    "@react-hookz/web": "^23.1.0",
+    "@react-hookz/web": "^24.0.3",
     "@react-spring/konva": "^9.7.3",
     "@use-gesture/react": "^10.3.0",
     "body-scroll-lock-upgrade": "^1.1.0",
-    "jotai": "^2.6.0",
+    "jotai": "^2.6.4",
     "khroma": "^2.1.0",
-    "konva": "^9.3.0",
+    "konva": "^9.3.2",
     "rambdax": "^9.1.1",
     "react-konva": "^18.2.10"
   },

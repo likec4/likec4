@@ -1,5 +1,5 @@
 import { Box, Button, Code, Flex, ScrollArea } from '@radix-ui/themes'
-import { useAsync } from '@react-hookz/web/esm'
+import { useAsync } from '@react-hookz/web'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../../../components'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'

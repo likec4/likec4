@@ -8,7 +8,7 @@ import {
 import { cn } from '$/lib'
 import type { DiagramView, DiagramPaddings } from '@likec4/diagrams'
 import { Diagram } from '@likec4/diagrams'
-import { useMeasure, type Measures } from '@react-hookz/web/esm'
+import { useMeasure, type Measures } from '@react-hookz/web'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
 import MonacoEditor from './editor/monaco'
 import { useAtom, useAtomValue } from 'jotai'

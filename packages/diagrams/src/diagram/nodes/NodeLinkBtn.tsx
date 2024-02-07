@@ -1,6 +1,6 @@
 import { invariant } from '@likec4/core'
 import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
-import { useToggle } from '@react-hookz/web/esm'
+import { useToggle } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import { mix, toHex } from 'khroma'
 import { memo } from 'react'

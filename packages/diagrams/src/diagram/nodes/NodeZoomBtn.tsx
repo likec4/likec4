@@ -1,5 +1,5 @@
 import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
-import { useToggle } from '@react-hookz/web/esm'
+import { useToggle } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import { lighten, mix, toHex } from 'khroma'
 import { memo } from 'react'

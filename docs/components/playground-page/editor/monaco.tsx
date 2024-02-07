@@ -23,7 +23,7 @@ import { once, toPairs } from 'rambdax'
 import { useCallback, useEffect, useRef } from 'react'
 
 import type { ViewID } from '@likec4/core'
-import { useUnmountEffect } from '@react-hookz/web/esm'
+import { useUnmountEffect } from '@react-hookz/web'
 import { useSetAtom } from 'jotai'
 import { diagramIdAtom } from '../data/atoms'
 import { useRevealRequestsHandler } from './useRevealRequestsHandler'

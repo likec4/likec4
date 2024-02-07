@@ -1,7 +1,7 @@
 import type { DiagramView } from '@likec4/diagrams'
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box, Portal } from '@radix-ui/themes'
-import { useDebouncedEffect } from '@react-hookz/web/esm'
+import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useRef } from 'react'
 
 function downloadBlob(blob: Blob, name: string) {

@@ -12,7 +12,7 @@ import {
   Separator,
   Text
 } from '@radix-ui/themes'
-import { useDebouncedEffect } from '@react-hookz/web/esm'
+import { useDebouncedEffect } from '@react-hookz/web'
 import type { Atom } from 'jotai'
 import { useAtomValue } from 'jotai'
 import { memo, useState } from 'react'

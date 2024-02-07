@@ -1,6 +1,6 @@
 import { MoonIcon } from '@radix-ui/react-icons'
 import { IconButton, ThemePanel } from '@radix-ui/themes'
-import { useToggle } from '@react-hookz/web/esm'
+import { useToggle } from '@react-hookz/web'
 
 export const ThemePanelToggle = import.meta.env.PROD
   ? () => null

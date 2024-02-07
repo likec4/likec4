@@ -159,7 +159,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'react-konva',
         'konva',
         'react-accessible-treeview',
-        '@react-hookz/web/esm',
+        '@react-hookz/web',
         '@react-spring/core',
         '@react-spring/animated',
         '@react-spring/shared',
