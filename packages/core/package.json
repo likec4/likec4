@@ -63,7 +63,7 @@
   "dependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
     "rambdax": "^9.1.1",
-    "remeda": "^1.40.0",
+    "remeda": "^1.40.1",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },

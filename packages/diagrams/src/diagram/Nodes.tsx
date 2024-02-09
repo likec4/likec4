@@ -1,6 +1,6 @@
 import type { Fqn } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
-import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
+import { isEqualSimple } from '@react-hookz/deep-equal'
 import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
 import { memo, useRef } from 'react'

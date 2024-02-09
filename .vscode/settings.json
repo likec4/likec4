@@ -50,11 +50,7 @@
       ]
     }
   ],
-  "cssVariables.lookupFiles": [
-    "**/*.css",
-    "**/*.scss",
-    "**/*.sass",
-    "**/*.less",
-    "node_modules/@mantine/core/styles.css"
+  "exportall.config.folderListener": [
+    "/packages/diagram/src/icons"
   ]
 }

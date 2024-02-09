@@ -1,4 +1,4 @@
-import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
+import { isEqualSimple } from '@react-hookz/deep-equal'
 import { useToggle } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import { lighten, mix, toHex } from 'khroma'

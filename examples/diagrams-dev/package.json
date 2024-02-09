@@ -22,7 +22,7 @@
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
-    "@react-hookz/web": "^23.1.0",
+    "@react-hookz/web": "^24.0.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -32,7 +32,7 @@
     "tilg": "^0.1.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8",
+    "vite": "^5.0.12",
     "vite-plugin-watch-and-run": "^1.5.0"
   },
   "volta": {
