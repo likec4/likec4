@@ -1,18 +1,27 @@
 import { nonexhaustive } from '@likec4/core'
 import { Text } from '@mantine/core'
+import { isEqualReactSimple, isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
-import { motion } from 'framer-motion'
+import { motion, type Variant, type Variants } from 'framer-motion'
 import { memo } from 'react'
-import useTilg from 'tilg'
-import type { SetNonNullable } from 'type-fest'
-import { useLikeC4Editor } from '../LikeC4ViewEditorApi'
 import type { ElementNodeData } from '../types'
 import { toDomPrecision } from '../utils'
+import { useLikeC4Editor } from '../ViewEditorApi'
 import classes from './ElementReactFlowNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
-type ElementReactFlowNodeProps = NodeProps<ElementNodeData>
-// 'id' | 'data'
+type ElementReactFlowNodeProps = Pick<
+  NodeProps<ElementNodeData>,
+  'id' | 'data' | 'width' | 'height' | 'selected' | 'dragging'
+>
+const isEqualProps = (prev: ElementReactFlowNodeProps, next: ElementReactFlowNodeProps) => (
+  prev.id === next.id
+  && prev.selected === next.selected
+  && prev.dragging === next.dragging
+  && prev.width === next.width
+  && prev.height === next.height
+  && isEqualSimple(prev.data, next.data)
+)
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
   const radius = Math.round(diameter / 2)
@@ -76,7 +85,11 @@ export function ElementCanvasSvgDefs() {
   )
 }
 
-type ElementSvgProps = SetNonNullable<Pick<ElementNodeData, 'shape' | 'w' | 'h'>, 'w' | 'h'>
+type ElementSvgProps = {
+  shape: ElementNodeData['shape']
+  w: number
+  h: number
+}
 
 const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
   shape,
@@ -91,10 +104,10 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             width={w}
             height={h}
             rx={6}
-            fill="var(--likec4-element-stroke)"
+            className={classes.fillElementStroke}
             strokeWidth={0}
           />
-          <g fill="var(--likec4-element-fill)" strokeWidth={0}>
+          <g className={classes.fillElementFill} strokeWidth={0}>
             <circle cx={17} cy={h / 2} r={12} />
             <rect x={33} y={12} width={w - 44} height={h - 24} rx={5} />
           </g>
@@ -108,7 +121,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             width={w}
             height={h}
             rx={6}
-            fill="var(--likec4-element-stroke)"
+            className={classes.fillElementStroke}
             strokeWidth={0}
           />
           <g strokeWidth={0}>
@@ -138,7 +151,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             viewBox={`0 0 ${PersonIcon.width} ${PersonIcon.height}`}
           >
             <path
-              fill="var(--stroke-fill-color)"
+              className={classes.fillMixedStrokeFill}
               strokeWidth={0}
               d="M57.9197 0C10.9124 0 33.5766 54.75 33.5766 54.75C38.6131 62.25 45.3285 60.75 45.3285 66C45.3285 70.5 39.4526 72 33.5766 72.75C24.3431 72.75 15.9489 71.25 7.55474 84.75C2.51825 93 0 120 0 120H115C115 120 112.482 93 108.285 84.75C99.8905 70.5 91.4963 72.75 82.2628 72C76.3869 71.25 70.5109 69.75 70.5109 65.25C70.5109 60.75 77.2263 62.25 82.2628 54C82.2628 54.75 104.927 0 57.9197 0V0Z"
             />
@@ -151,7 +164,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} fill="var(--stroke-fill-color)" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} className={classes.fillMixedStrokeFill} strokeWidth={2} />
         </>
       )
     }
@@ -161,7 +174,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} fill="var(--stroke-fill-color)" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} className={classes.fillMixedStrokeFill} strokeWidth={2} />
         </>
       )
     }
@@ -179,7 +192,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
       return nonexhaustive(shape)
     }
   }
-})
+}, isEqualReactSimple)
 
 const ElementIndicatorSvg = memo<ElementSvgProps>(function ElementIndicatorSvg({
   shape,
@@ -208,37 +221,62 @@ const ElementIndicatorSvg = memo<ElementSvgProps>(function ElementIndicatorSvg({
       )
     }
   }
-})
+}, isEqualReactSimple)
 
-// export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function ElementNode({
-export const ElementReactFlowNode = function ElementNode(props: ElementReactFlowNodeProps) {
-  useTilg()`
-    selected ${props.selected} ${props.type}
-  `
-  const element = props.data
+// Frame-motion variants
+const variants = {
+  idle: {
+    transformOrigin: '50% 50%'
+  },
+  hover: {
+    scale: 1.08,
+    transition: {
+      when: 'beforeChildren',
+      delay: 0.1
+    }
+  },
+  dragging: {
+    scale: 1,
+    transition: {
+      type: 'spring'
+    }
+  }
+} satisfies Variants
+
+export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function ElementNode({
+  id,
+  data: element,
+  dragging,
+  width,
+  height
+}) {
+  // export const ElementReactFlowNode = function ElementNode(props: ElementReactFlowNodeProps) {
+  // useTilg()
+  // useNodesState
+  // useTilg()`
+  //   selected ${props.selected} ${props.type}
+  // `
+  // const element = props.data
   // const inOutEdgesSelector = useCallback((s: ReactFlowState) => s.edges.filter(e => element.inEdges.includes(e.id) || element.outEdges.includes(e.id)), [element.inEdges, element.outEdges])
   // consedt edges = useStore(inOutEdgesSelector, (a, b) => shallowEqual(a.map(e => e.data), b.map(e => e.data)))
   const editor = useLikeC4Editor()
 
-  const w = toDomPrecision(element.w)
-  const h = toDomPrecision(element.h)
+  const w = toDomPrecision(width ?? element.size.width)
+  const h = toDomPrecision(height ?? element.size.height)
 
   return (
     <motion.div
-      id={props.id}
+      id={id}
       className={classes.container}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
-      // style={{
-      //   width: w,
-      //   height: h,
-      // }}
-      whileHover={{
-        scale: 1.08,
-        transition: {
-          delay: 0.1
-        }
-      }}
+      variants={variants}
+      initial={'idle'}
+      whileTap={'dragging'}
+      whileHover={'hover'}
+      // {...(dragging ? { animate: 'dragging' } : {
+      //   whileHover: 'hover'
+      // })}
     >
       <Handle
         type="target"
@@ -266,7 +304,7 @@ export const ElementReactFlowNode = function ElementNode(props: ElementReactFlow
       </svg>
       <Handle
         type="source"
-        id={element.fqn}
+        id={element.id}
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}
       />
@@ -303,7 +341,4 @@ export const ElementReactFlowNode = function ElementNode(props: ElementReactFlow
       )}
     </motion.div>
   )
-}
-// }, (prev, next) => (
-//   prev.id === next.id
-//   && equals(prev.data, next.data
+}, isEqualProps)

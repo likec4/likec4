@@ -1,135 +1,194 @@
 import { nonNullable } from '@likec4/core'
-import { useDebouncedCallback, useIsMounted, useUpdateEffect } from '@react-hookz/web'
-import { useOnSelectionChange, useOnViewportChange, useReactFlow, useStoreApi, type Viewport } from '@xyflow/react'
-import { memo, useEffect, useRef } from 'react'
-import { hasAtLeast } from 'remeda'
+import { useShallowEffect } from '@mantine/hooks'
+import {
+  useDebouncedCallback,
+  useDebouncedEffect,
+  useIsMounted,
+  useList,
+  useMap,
+  useUpdateEffect
+} from '@react-hookz/web'
+import {
+  type Node as ReactFlowNode,
+  type ReactFlowState,
+  useOnSelectionChange,
+  useOnViewportChange,
+  useReactFlow,
+  useStore,
+  useStoreApi,
+  useUpdateNodeInternals,
+  type Viewport
+} from '@xyflow/react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { difference, hasAtLeast, uniq } from 'remeda'
 import useTilg from 'tilg'
 import { distance } from '../utils'
 
-const Ignore = Symbol.for('Ignore') as unknown as Viewport
+const selectUserSelectionActive = (state: ReactFlowState) => state.userSelectionActive
 
 const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
-  useTilg()
   const isMounted = useIsMounted()
-  const reactflowApi = useReactFlow()
+  const isUserSelectionActive = useStore(selectUserSelectionActive)
+  const reactflow = useReactFlow()
+  const updateNd = useUpdateNodeInternals()
+
   const previousViewport = useRef<Viewport | null>(null)
   const viewportChangeStart = useRef<Viewport | null>(null)
-  // const [selectedNodes, setSelectedNodes] = useState([] as EditorNode[])
+  const prevViewId = useRef<string | null>(null)
+  const isReady = reactflow.viewportInitialized
+  const selectedNodesRef = useRef([] as string[])
+
+  const [selectedNodes, setSelectedNodes] = useState([] as ReactFlowNode[])
+
+  // WORKAROUND
 
   useOnViewportChange({
     onStart: (viewport) => {
-      if (viewportChangeStart.current === Ignore) {
-        viewportChangeStart.current === null
-        return
-      }
       viewportChangeStart.current = { ...viewport }
     },
     onEnd: (end) => {
-      if (!viewportChangeStart.current) {
+      if (!viewportChangeStart.current || !previousViewport.current) {
+        viewportChangeStart.current = null
         return
       }
-      if (viewportChangeStart.current === Ignore) {
-        viewportChangeStart.current === null
-        return
+      const start = {
+        ...viewportChangeStart.current
       }
-      if (previousViewport.current) {
-        const start = {
-          ...viewportChangeStart.current
-        }
-        const d = distance(start, end)
-        console.log(`Camera: useOnViewportChange distance=${d}`)
-        if (d > 10) {
-          previousViewport.current = null
-        }
+      const d = distance(start, end)
+      if (d > 15) {
+        previousViewport.current = null
       }
       viewportChangeStart.current = null
     }
   })
 
+  const fixUseOnViewportChange = () => {
+    // WORKAROUND:
+    // react-flow triggers useOnViewportChange
+    // We reset the viewportChangeStart, before useOnViewportChange.onEnd called
+    setTimeout(() => {
+      viewportChangeStart.current = null
+    }, 30)
+  }
+
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      if (!isMounted()) {
+      if (!isMounted() || !reactflow.viewportInitialized) {
         return
       }
+      // storeApi.getState().
+      // if (storeApi.getState().userSelectionActive) {
+      //   return
+      // }
       if (nodes.length === 0 && edges.length === 0) {
+        setSelectedNodes([])
+        return
+      }
+      //   if (previousViewport.current) {
+      //     console.log(`Camera: revert viewport`)
+      //     reactflow.setViewport(previousViewport.current, {
+      //       duration: 300
+      //     })
+      //     previousViewport.current = null
+      //   }
+      //   updateSelectedNodes([])
+      //   return
+      // }
+
+      const selected = new Set<ReactFlowNode>([
+        ...nodes,
+        ...edges.flatMap((edge) => [
+          reactflow.getNode(edge.source),
+          reactflow.getNode(edge.target)
+        ]).filter(Boolean)
+      ])
+      setSelectedNodes([...selected])
+      // updateSelectedNodes(nodes)
+
+      // previousViewport.current ??= { ...reactflow.getViewport() }
+      // const zoom = reactflow.getZoom()
+      // reactflow.fitView({
+      //   duration: 350,
+      //   maxZoom: Math.max(1.07, zoom),
+      //   padding: 0.1,
+      //   nodes
+      // })
+      // fixUseOnViewportChange()
+    }
+  })
+
+  const selectedNodesHash = selectedNodes.map((node) => node.id).sort().join(',')
+  useEffect(
+    () => {
+      if (isUserSelectionActive) {
+        return
+      }
+      if (selectedNodes.length === 0) {
         if (previousViewport.current) {
           console.log(`Camera: revert viewport`)
-          reactflowApi.setViewport(previousViewport.current, {
-            duration: 200
+          reactflow.setViewport(previousViewport.current, {
+            duration: 300
           })
           previousViewport.current = null
         }
         return
       }
-      if (nodes.length === 0 && hasAtLeast(edges, 1)) {
-        previousViewport.current ??= reactflowApi.getViewport()
-        const edge = edges[0]
-        // WORKAROUND: react-flow triggers useOnViewportChange
-        viewportChangeStart.current = Ignore
-        reactflowApi.fitView({
-          duration: 350,
-          maxZoom: 1.05,
-          padding: 0.1,
-          nodes: [
-            reactflowApi.getNode(edge.source),
-            reactflowApi.getNode(edge.target)
-          ].filter(Boolean)
-        })
-        // // WORKAROUND: react-flow triggers useOnViewportChange
-        // setTimeout(() => {
-        //   viewportChangeStart.current = null
-        // }, 50)
-        return
-      }
-      if (nodes.length > 0 && edges.length === 0) {
-        previousViewport.current ??= reactflowApi.getViewport()
-        const zoom = reactflowApi.getZoom()
-        viewportChangeStart.current = Ignore
-        reactflowApi.fitView({
-          duration: 350,
-          maxZoom: Math.max(1.07, zoom),
-          padding: 0.1,
-          nodes
-        })
-        // WORKAROUND: react-flow triggers useOnViewportChange
-        // setTimeout(() => {
-        //   viewportChangeStart.current = null
-        // }, 50)
-        return
+      previousViewport.current ??= { ...reactflow.getViewport() }
+      const zoom = reactflow.getZoom()
+      reactflow.fitView({
+        duration: 350,
+        maxZoom: Math.max(1.07, zoom),
+        padding: 0.1,
+        nodes: selectedNodes
+      })
+      fixUseOnViewportChange()
+    },
+    [selectedNodesHash, isUserSelectionActive]
+    // 100
+  )
+
+  useShallowEffect(() => {
+    const ids = selectedNodes.map((node) => node.id)
+    const toUpdate = difference
+    for (const id of uniq([...selectedNodesRef.current, ...ids])) {
+      try {
+        updateNd(id)
+      } catch (e) {
+        console.warn(`Camera: failed useUpdateNodeInternals`, e)
       }
     }
-  })
+    selectedNodesRef.current = ids
+  }, [selectedNodesHash])
 
   const scheduleFitViewAnimation = useDebouncedCallback(
     () => {
       if (isMounted()) {
-        console.log(`scheduleFitViewAnimation`)
         previousViewport.current = null
-        viewportChangeStart.current = Ignore
-        const zoom = reactflowApi.getZoom()
-        reactflowApi.fitView({
+        const zoom = reactflow.getZoom()
+        reactflow.fitView({
           duration: 350,
           maxZoom: Math.max(1.05, zoom),
           padding: 0.1
         })
       }
     },
-    [reactflowApi],
+    [reactflow],
     100
   )
 
-  useUpdateEffect(() => {
-    previousViewport.current = null
-    viewportChangeStart.current = Ignore
-    const zoom = reactflowApi.getZoom()
-    reactflowApi.fitView({
-      maxZoom: zoom,
-      minZoom: zoom
-    })
-    scheduleFitViewAnimation()
-  }, [viewId])
+  useEffect(() => {
+    if (!isReady || prevViewId.current === viewId) {
+      return
+    }
+    if (prevViewId.current) {
+      scheduleFitViewAnimation()
+    } else {
+      reactflow.fitView()
+    }
+    prevViewId.current = viewId
+  }, [isReady, viewId])
 
   return null
-}, (prev, next) => prev.viewId === next.viewId)
+})
 
 export default CameraMemo

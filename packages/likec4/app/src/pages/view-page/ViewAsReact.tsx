@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/diagrams'
+import type { DiagramView, OnNodeClick } from '@likec4/diagrams'
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box } from '@radix-ui/themes'
 import { useWindowSize } from '@react-hookz/web'
@@ -11,6 +11,7 @@ const Paddings = [70, 20, 20, 40] as const
 
 type ViewAsReactProps = {
   diagram: DiagramView
+  onNodeClick?: OnNodeClick | undefined
 }
 
 function round(n: number, d = 1) {
@@ -18,7 +19,7 @@ function round(n: number, d = 1) {
   return Math.round(n * m) / m
 }
 
-export function ViewAsReact({ diagram }: ViewAsReactProps) {
+export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
   const { width, height } = useWindowSize()
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()
@@ -57,7 +58,7 @@ export function ViewAsReact({ diagram }: ViewAsReactProps) {
   return (
     <Box
       position={'fixed'}
-      inset='0'
+      inset="0"
       className={cn(
         styles.reactDiagram
         // isActive && styles.active
@@ -71,7 +72,10 @@ export function ViewAsReact({ diagram }: ViewAsReactProps) {
         maxZoom={1.05}
         width={width}
         height={height}
-        onNodeClick={node => {
+        onNodeClick={(node, event) => {
+          if (onNodeClick) {
+            return onNodeClick(node, event)
+          }
           if (node.navigateTo) {
             $pages.view.open(node.navigateTo)
           } else {

@@ -1,11 +1,11 @@
-import { defaultTheme, type Fqn, invariant } from '@likec4/core'
+import { defaultTheme } from '@likec4/core'
 import { Card, CheckIcon, ColorSwatch, rem, SimpleGrid } from '@mantine/core'
-import { useOnSelectionChange, useReactFlow } from '@xyflow/react'
+import { useNodesData, useOnSelectionChange, useReactFlow } from '@xyflow/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
 import { first, hasAtLeast, keys, takeWhile } from 'remeda'
-import { useDiagramViewEditor } from '../LikeC4ViewEditor'
-import type { EditorNode } from '../types'
+import { type EditorEdge, EditorNode } from '../types'
+import { useLikeC4Editor } from '../ViewEditorApi'
 import styles from './StylesPanel.module.css'
 
 const colors = keys.strict(defaultTheme.elements).map(key => ({
@@ -20,22 +20,23 @@ type ColorKey = typeof colors[0]['key']
 // }
 
 const StylesPanel = memo(function StylesPanel() {
-  const api = useReactFlow()
-  const likec4Editor = useDiagramViewEditor()
+  const api = useReactFlow<EditorNode, EditorEdge>()
+  const likec4Editor = useLikeC4Editor()
 
-  const [selectedNodes, setSelectedNodes] = useState([] as EditorNode[])
+  const [selectedNodes, setSelectedNodes] = useState([] as string[])
+  const nodesData = useNodesData<EditorNode>(selectedNodes)
 
   useOnSelectionChange({
     onChange: ({ nodes }) => {
-      setSelectedNodes(nodes as EditorNode[])
+      setSelectedNodes(nodes.map(node => node.id))
     }
   })
 
-  let selectedColor = first(selectedNodes)?.data.color ?? null
+  let selectedColor = first(nodesData)?.color ?? null
 
-  if (selectedNodes.length > 1) {
-    takeWhile(selectedNodes, node => {
-      if (node.data.color !== selectedColor) {
+  if (nodesData.length > 1) {
+    takeWhile(nodesData, node => {
+      if (node.color !== selectedColor) {
         selectedColor = null
         return false
       }
@@ -48,30 +49,36 @@ const StylesPanel = memo(function StylesPanel() {
       return
     }
     if (hasAtLeast(selectedNodes, 1)) {
-      const { ids, fqns } = selectedNodes.reduce((acc, node) => {
-        acc.ids.add(node.id)
-        acc.fqns.push(node.data.fqn)
-        return acc
-      }, { ids: new Set<string>(), fqns: [] as Fqn[] })
-      const newSelectedNodes = [] as EditorNode[]
-      api.setNodes(current =>
-        current.map(node => {
-          if (ids.has(node.id)) {
-            node = {
-              ...node,
-              data: {
-                ...node.data,
-                color
-              }
-            }
-            newSelectedNodes.push(node as EditorNode)
-          }
-          return node
-        })
-      )
-      invariant(hasAtLeast(fqns, 1), 'fqns.length > 0')
-      likec4Editor.changeColor(fqns, color)
-      setSelectedNodes(newSelectedNodes)
+      for (const node of selectedNodes) {
+        api.updateNodeData(node, { color })
+      }
+      // setSelectedNodes([...selectedNodes])
+      // const { ids, fqns } = selectedNodes.reduce((acc, node) => {
+      //   acc.ids.add(node.id)
+      //   acc.fqns.push(node.data.id)
+      //   return acc
+      // }, { ids: new Set<string>(), fqns: [] as Fqn[] })
+      // const newSelectedNodes = [] as EditorNode[]
+      // api.updateNode
+      // api.setNodes(current =>
+      //   current.map(node => {
+      //     if (ids.has(node.id) && EditorNode.is(node)) {
+      //       // set(node, 'data.color', color)
+      //       node.data = {
+      //         // ...node,
+      //         // data: {
+      //         ...node.data,
+      //         color
+      //         // }
+      //       }
+      //       newSelectedNodes.push(node as EditorNode)
+      //     }
+      //     return node
+      //   })
+      // )
+      // invariant(hasAtLeast(fqns, 1), 'fqns.length > 0')
+      // // likec4Editor.changeColor(fqns, color)
+      // setSelectedNodes(newSelectedNodes)
     }
   }
 

@@ -8,17 +8,16 @@ import {
   nonNullable,
   type Point
 } from '@likec4/core'
-import { getBezierEdgeCenter, MarkerType, type Node } from '@xyflow/react'
-import { hasAtLeast } from 'remeda'
-import type { EditorNode } from './types'
-import { dataFromComputedNode, type EditorEdge } from './types'
+import { getBezierEdgeCenter, MarkerType } from '@xyflow/react'
+import { hasAtLeast, isNil } from 'remeda'
+import type { EditorEdge, EditorNode } from './types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
   invariant(start, 'start should be defined')
   const handles = [
-    start
-  ]
+    // start
+  ] as Point[]
 
   while (hasAtLeast(bezierPoints, 3)) {
     const [cp1, cp2, end, ...rest] = bezierPoints
@@ -35,11 +34,11 @@ function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
     handles.push(
       [centerX, centerY]
     )
-    if (rest.length === 0) {
-      handles.push(
-        end
-      )
-    }
+    // if (rest.length === 0) {
+    //   handles.push(
+    //     end
+    //   )
+    // }
     bezierPoints = rest
     start = end
   }
@@ -52,15 +51,68 @@ function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) 
   return node.children.length > 0 ? 0 : node.level + 1
 }
 
+type EditorData = { nodes: EditorNode[]; edges: EditorEdge[] }
+
 export function fromDiagramView(
-  view: DiagramView
-): { nodes: EditorNode[]; edges: EditorEdge[] } {
-  const nodes: EditorNode[] = []
-  const edges: EditorEdge[] = []
+  view: DiagramView,
+  dragEnabled = true
+): EditorData {
+  const editor: EditorData = {
+    nodes: [],
+    edges: []
+  }
 
   const ns = view.id + ':'
 
   const nodeById = (id: Fqn) => nonNullable(view.nodes.find(n => n.id === id))
+
+  const createNode = (node: DiagramNode) => {
+    // const children = [...node.children]
+    const isCompound = hasAtLeast(node.children, 1)
+    const id = ns + node.id
+    const position = {
+      x: node.position[0],
+      y: node.position[1]
+    }
+    const parent = node.parent ? nodeById(node.parent) : null
+    if (parent) {
+      position.x -= parent.position[0]
+      position.y -= parent.position[1]
+    }
+    const zIndex = nodeZIndex(node)
+
+    const draggable = dragEnabled && (!parent || parent.children.length > 1)
+
+    editor.nodes.push({
+      id,
+      type: isCompound ? 'compound' : 'element',
+      data: node,
+      draggable,
+      deletable: false,
+      position,
+      zIndex,
+      ...node.size,
+      ...(parent
+        ? {
+          parentNode: ns + parent.id,
+          extent: [
+            [-10, -10],
+            [parent.size.width - node.size.width + 10, parent.size.height - node.size.height + 10]
+          ]
+        }
+        : {})
+    })
+
+    if (node.children.length > 0) {
+      for (const child of view.nodes.filter(n => n.parent === node.id)) {
+        createNode(child)
+      }
+    }
+  }
+
+  for (const node of view.nodes.filter(n => isNil(n.parent))) {
+    createNode(node)
+  }
 
   const createEdge = (edge: DiagramEdge) => {
     const source = edge.source
@@ -75,22 +127,21 @@ export function fromDiagramView(
     //   controlPoints.push([...edge.headArrowPoint])
     // }
     invariant(hasAtLeast(edge.points, 2), 'edge should have at least 2 points')
-    invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
+    // invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
 
     const level = Math.min(nodeById(source).level, nodeById(target).level)
 
-    edges.push({
+    editor.edges.push({
       id,
       type: 'relationship',
       source: ns + source,
       target: ns + target,
       zIndex: level + 1,
+      deletable: false,
       data: {
-        id: edge.id,
+        edge,
         type: 'bezier',
-        source,
-        target,
-        points: edge.points,
+        controlPoints,
         headPoint: edge.headArrowPoint ?? null,
         tailPoint: edge.tailArrowPoint ?? null,
         label: edge.labelBBox
@@ -98,9 +149,7 @@ export function fromDiagramView(
             bbox: edge.labelBBox,
             text: edge.labels ? edge.labels.map(l => l.text).join('\n') : ''
           }
-          : null,
-        color: edge.color ?? null,
-        line: edge.line ?? null
+          : null
       },
       markerEnd: {
         type: MarkerType.ArrowClosed
@@ -109,81 +158,9 @@ export function fromDiagramView(
     })
   }
 
-  const createNode = (node: DiagramNode) => {
-    const children = [...node.children]
-    const isCompound = hasAtLeast(children, 1)
-    const id = ns + node.id
-    const position = {
-      x: node.position[0],
-      y: node.position[1]
-    }
-    const parent = node.parent ? view.nodes.find(n => n.id === node.parent) : null
-    if (parent) {
-      position.x -= parent.position[0]
-      position.y -= parent.position[1]
-    }
-    const zIndex = nodeZIndex(node)
-
-    const base = {
-      id,
-      data: {
-        ...dataFromComputedNode(node),
-        w: node.size.width,
-        h: node.size.height,
-        inEdges: [...node.inEdges],
-        outEdges: [...node.outEdges]
-      },
-      draggable: false,
-      deletable: false,
-      position,
-      zIndex,
-      style: {
-        width: node.size.width,
-        height: node.size.height
-      },
-      ...node.size,
-      ...(parent
-        ? {
-          parentNode: ns + parent.id
-        }
-        : {})
-    } satisfies Node<EditorNode.BaseData>
-
-    nodes.push(
-      isCompound
-        ? {
-          ...base,
-          type: 'compound',
-          data: {
-            ...base.data,
-            depth: node.depth ?? 0
-            // children: children.map(c => ns + c),
-          }
-        }
-        : {
-          ...base,
-          selectable: true,
-          type: 'element'
-        }
-    )
-
-    if (node.children) {
-      for (const childId of node.children) {
-        const child = view.nodes.find(n => n.id === childId)
-        invariant(child, 'child not found')
-        createNode(child)
-      }
-    }
-  }
-
-  const rootNodes = view.nodes.filter(n => !n.parent)
-  for (const node of rootNodes) {
-    createNode(node)
-  }
-
   for (const edge of view.edges) {
     createEdge(edge)
   }
 
-  return { nodes, edges }
+  return editor
 }

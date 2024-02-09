@@ -49,6 +49,7 @@ export const diagramsTreeAtom = atom(get => {
 })
 
 export const selectLikeC4ViewAtom = (viewId: string) => {
+  console.log('selectLikeC4ViewAtom', viewId)
   return atom(get => {
     const viewAtom = get(viewsAtom)[viewId]
     return viewAtom ? get(viewAtom) : null

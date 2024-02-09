@@ -1,16 +1,18 @@
 import { createLikeC4Logger } from '@/logger'
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
+import { isCI } from 'ci-info'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
+// import postcssNested from 'postcss-nested'
+import postcssPresetMantine from 'postcss-preset-mantine'
 import type { Alias, InlineConfig, Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-import { isCI } from 'ci-info'
-import autoprefixer from 'autoprefixer'
-import postcssNested from 'postcss-nested'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -40,17 +42,17 @@ function resolveAliases(aliases: Record<string, string>, logger: Logger): Array<
 
 export type LikeC4ViteConfig =
   | {
-      languageServices: LanguageServices
-      workspaceDir?: never
-      outputDir?: string | undefined
-      base?: string | undefined
-    }
+    languageServices: LanguageServices
+    workspaceDir?: never
+    outputDir?: string | undefined
+    base?: string | undefined
+  }
   | {
-      languageServices?: never
-      workspaceDir: string
-      outputDir?: string | undefined
-      base?: string | undefined
-    }
+    languageServices?: never
+    workspaceDir: string
+    outputDir?: string | undefined
+    base?: string | undefined
+  }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
@@ -69,9 +71,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.dim('app root')} ${root}`)
   }
 
-  const languageServices =
-    cfg?.languageServices ??
-    (await LanguageServices.get({
+  const languageServices = cfg?.languageServices
+    ?? (await LanguageServices.get({
       path: cfg?.workspaceDir ?? process.cwd(),
       logValidationErrors: true
     }))
@@ -79,20 +80,17 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
   customLogger.info(k.dim('outDir') + ' ' + outDir)
 
-  let coreSrc, diagramsSrc
-
-  if (isDev) {
-    coreSrc = resolve(_dirname, '../../../core/src/index.ts')
-    diagramsSrc = resolve(_dirname, '../../../diagrams/src/index.ts')
-  } else {
-    coreSrc = resolve(_dirname, '../@likec4/core/index.js')
-    diagramsSrc = resolve(_dirname, '../@likec4/diagrams/index.js')
+  const sources = {
+    core: resolve(_dirname, isDev ? '../../../core/src/index.ts' : '../@likec4/core/index.js'),
+    diagram: resolve(_dirname, isDev ? '../../../diagram/src/index.ts' : '../@likec4/diagram/index.js'),
+    diagrams: resolve(_dirname, isDev ? '../../../diagrams/src/index.ts' : '../@likec4/diagrams/index.js')
   }
 
   const aliases = resolveAliases(
     {
-      ['@likec4/core']: coreSrc,
-      ['@likec4/diagrams']: diagramsSrc
+      ['@likec4/core']: sources.core,
+      ['@likec4/diagram']: sources.diagram,
+      ['@likec4/diagrams']: sources.diagrams
     },
     customLogger
   )
@@ -106,7 +104,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     if (!base.endsWith('/')) {
       base = base + '/'
     }
-    customLogger.info(`${k.dim('app base url')} ${base}`)
+  }
+  if (base !== '/') {
+    customLogger.info(`${k.dim('app base')} ${base}`)
   }
 
   return {
@@ -134,7 +134,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     css: {
       postcss: {
-        plugins: [autoprefixer(), postcssNested()]
+        plugins: [
+          postcssPresetMantine()
+        ]
       },
       modules: {
         localsConvention: 'camelCaseOnly'
@@ -166,7 +168,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         '@react-spring/konva',
         '@use-gesture/core',
         '@use-gesture/react',
-        ...(!isDev ? ['@likec4/core', '@likec4/diagrams'] : [])
+        ...(isDev ? [] : ['@likec4/core', '@likec4/diagram', '@likec4/diagrams'])
       ]
     },
     plugins: [
@@ -175,6 +177,10 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         //   ['@swc-jotai/debug-label', {}],
         //   ['@swc-jotai/react-refresh', {}]
         // ]
+      }),
+      TanStackRouterVite({
+        generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
+        routesDirectory: resolve(root, 'src/routes')
       }),
       likec4Plugin({ languageServices })
     ]

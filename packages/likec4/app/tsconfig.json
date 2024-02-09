@@ -38,6 +38,9 @@
       "path": "../../core"
     },
     {
+      "path": "../../diagram"
+    },
+    {
       "path": "../../diagrams"
     }
   ]

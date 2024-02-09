@@ -1,27 +1,25 @@
 import { type DiagramView } from '@likec4/diagrams'
 import { CaretDownIcon, Share1Icon as ShareIcon } from '@radix-ui/react-icons'
 import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
-import React, { useState, type PropsWithChildren } from 'react'
+import React, { type PropsWithChildren, useState } from 'react'
 // import { ThemePanelToggle } from '../ThemePanelToggle'
 import { DisplayModeSelector } from './DisplayModeSelector'
 import ExportDiagram from './ExportDiagram'
 import { ShareDialog } from './ShareDialog'
-import type { ViewMode } from '../../router'
-import { updateSearchParams } from '../../router'
 
 const ExportMenu = ({
   onExport,
   children
 }: PropsWithChildren<{ onExport: (format: 'png') => void }>) => {
-  const changeMode = (mode: ViewMode) => (_: React.MouseEvent) => {
-    updateSearchParams({ mode })
+  const changeMode = (mode: string) => (_: React.MouseEvent) => {
+    // updateSearchParams({ mode })
   }
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>{children}</DropdownMenu.Trigger>
-      <DropdownMenu.Content variant='soft'>
+      <DropdownMenu.Content variant="soft">
         <DropdownMenu.Label>
-          <Text weight='medium'>Current view</Text>
+          <Text weight="medium">Current view</Text>
         </DropdownMenu.Label>
         <DropdownMenu.Group>
           <DropdownMenu.Item
@@ -39,7 +37,7 @@ const ExportMenu = ({
         </DropdownMenu.Group>
         <DropdownMenu.Separator />
         <DropdownMenu.Label>
-          <Text weight='medium'>All views</Text>
+          <Text weight="medium">All views</Text>
         </DropdownMenu.Label>
         <DropdownMenu.Group>
           <DropdownMenu.Item disabled>Download as ZIP</DropdownMenu.Item>
@@ -53,12 +51,12 @@ export const ViewActions = ({ diagram }: { diagram: DiagramView }) => {
   const [exportTo, setExportTo] = useState<'png' | null>(null)
 
   return (
-    <Flex shrink={'0'} grow={'0'} gap={'3'} align='center' wrap={'nowrap'}>
+    <Flex shrink={'0'} grow={'0'} gap={'3'} align="center" wrap={'nowrap'}>
       <DisplayModeSelector />
       <Dialog.Root>
         <Dialog.Trigger>
           <Button
-            variant='solid'
+            variant="solid"
             size={{
               initial: '1',
               md: '2'
@@ -72,8 +70,8 @@ export const ViewActions = ({ diagram }: { diagram: DiagramView }) => {
       </Dialog.Root>
       <ExportMenu onExport={setExportTo}>
         <Button
-          variant='soft'
-          color='gray'
+          variant="soft"
+          color="gray"
           size={{
             initial: '1',
             md: '2'

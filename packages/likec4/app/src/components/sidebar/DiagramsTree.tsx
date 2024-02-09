@@ -1,5 +1,6 @@
 import { DashboardIcon, TriangleRightIcon } from '@radix-ui/react-icons'
 import { Box, Flex, Text } from '@radix-ui/themes'
+import { useParams } from '@tanstack/react-router'
 import TreeView, { type INode } from 'react-accessible-treeview'
 import { useDiagramsTree } from '../../data'
 import { $pages, useRoute } from '../../router'
@@ -12,9 +13,10 @@ function inTree(id: string, data: INode[]): boolean {
 
 export function DiagramsTree() {
   const data = useDiagramsTree()
-  const r = useRoute()
-
-  const viewId = r.route === 'view' || r.route === 'export' ? r.params.viewId : null
+  const { viewId } = useParams({
+    select: (params) => 'viewId' in params ? { viewId: params.viewId } : { viewId: null },
+    strict: false
+  })
   const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
@@ -28,7 +30,7 @@ export function DiagramsTree() {
           if (isBranch) {
             return
           }
-          $pages.view.open('' + element.id)
+          // $pages.view.open('' + element.id)
         }}
         nodeRenderer={({
           element,
@@ -60,10 +62,10 @@ export function DiagramsTree() {
               )}
               <Box asChild grow={'1'}>
                 <Text
-                  as='div'
+                  as="div"
                   size={'2'}
                   weight={isBranch ? 'bold' : undefined}
-                  className='truncate'
+                  className="truncate"
                 >
                   {(isBranch ? '🗂️ ' : '') + element.name}
                 </Text>

@@ -1,7 +1,7 @@
 import { createIsolation } from 'jotai-scope'
 
 export const {
-  Provider: JotaiProvider,
+  Provider: IsolatedJotaiProvider,
   useAtom,
   useSetAtom,
   useAtomValue

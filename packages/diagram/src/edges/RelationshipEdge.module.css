@@ -3,17 +3,52 @@
   stroke-width: 2;
   transition: all 110ms ease-in-out;
 
-  &[data-edge-hovered="true"],
+  :where([data-edge-hovered="true"]) &,
   :where(:global(.react-flow__edge.selected)) & {
     stroke: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
     stroke-width: 2.2;
   }
 
 }
+.edgeArrow {
+  --_color: var(--likec4-relation-lineColor);
+  fill: var(--_color);
+  stroke: var(--_color);
+  transition: all 110ms ease-in-out;
+  stroke-width: 0.5;
+
+  :where([data-edge-hovered="true"]) &,
+  :where(:global(.react-flow__edge.selected)) & {
+    --_color: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
+  }
+
+}
+.controlPoint {
+  --_color: var(--mantine-primary-color-5);
+
+  fill: var(--_color);
+  radius: 5;
+  transition: all 120ms ease-out;
+  stroke: transparent;
+  stroke-width: 15;
+  opacity: 0;
+  cursor: move;
+  pointer-events: all;
+  transform-origin: 50% 50%;
+
+  :where([data-edge-hovered="true"]) &,
+  :where(:global(.react-flow__edge.selected)) & {
+    opacity: 1;
+  }
+
+  &:hover {
+    --_color: var(--mantine-color-red-6);
+  }
+}
 
 .edgeLabel {
   position: absolute;
-  padding: 2px;
+  padding: 2px 5px;
 
   background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
   border-radius: 3px;
@@ -22,14 +57,12 @@
   cursor: pointer;
   transform-origin: 50% 50%;
   transition: all 120ms ease-out;
+  /* transform: translate(-50%, -50%); */
+  white-space: pre;
 
-  /* & > div {
-    flex: 1;
-  } */
 
   &[data-edge-hovered="true"] {
     transform: scale(1.04);
-    /* color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white); */
   }
 
   /* &[data-hovered="true"] {
@@ -38,4 +71,11 @@
   } */
 
   /* background-drop: drop(var(--likec4-relation-labelBg) 0% 0% 0% 0% var(--likec4-relation-labelBg) 0% 0% 0% 0%); */
+}
+
+.container {
+  --xy-edge-label-color: var(--likec4-relation-labelColor);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
+  :global(.react-flow__edge-textbg) {
+  }
 }

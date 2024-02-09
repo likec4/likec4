@@ -9,8 +9,6 @@
       "webworker"
     ],
     "outDir": "dist",
-    "rootDir": "src",
-    "baseUrl": ".",
     "jsx": "preserve",
     "plugins": [
       {
@@ -22,9 +20,7 @@
     ]
   },
   "include": [
-    "src/**/*",
-    "src/css.d.ts",
-    "src/reset.d.ts"
+    "src"
   ],
   "references": [
     {

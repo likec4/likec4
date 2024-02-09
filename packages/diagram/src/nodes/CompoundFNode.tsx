@@ -4,14 +4,13 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { clsx } from 'clsx'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
-import { equals } from 'remeda'
-import useTilg from 'tilg'
-import { useLikeC4Editor } from '../LikeC4ViewEditorApi'
 import type { CompoundNodeData } from '../types'
 import { toDomPrecision } from '../utils'
+import { useLikeC4Editor } from '../ViewEditorApi'
 import classes from './CompoundFNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
+// type CompoundFNodeProps = Pick<NodeProps<CompoundNodeData>, 'id' | 'data'>
 type CompoundFNodeProps = NodeProps<CompoundNodeData>
 
 const compoundColor = (color: string, depth: number) =>
@@ -22,9 +21,9 @@ const compoundColor = (color: string, depth: number) =>
     })
   )
 
-export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ data }) {
-  useTilg()
-  const { color, depth, ...compound } = data
+export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id, data, width, height }) {
+  // useTilg()
+  const { color, depth = 0, ...compound } = data
   const colors = useMemo(() => {
     const colors = defaultTheme.elements[color]
     return {
@@ -34,8 +33,8 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ da
     }
   }, [color, depth])
 
-  const w = toDomPrecision(compound.w)
-  const h = toDomPrecision(compound.h)
+  const w = toDomPrecision(width ?? compound.size.width)
+  const h = toDomPrecision(height ?? compound.size.height)
 
   const editor = useLikeC4Editor()
 
@@ -46,8 +45,6 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ da
       data-likec4-shape={compound.shape}
       data-likec4-navigatable={!!compound.navigateTo}
       style={{
-        width: w,
-        height: h,
         // @ts-expect-error
         '--likec4-element-fill': colors.fill,
         '--likec4-element-stroke': colors.stroke
@@ -86,4 +83,5 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ da
       />
     </div>
   )
-}, (prev, next) => equals(prev.data, next.data))
+})
+// }, (prev, next) => prev.id == next.id && isEqualSimple(prev.data, next.data))

@@ -1,9 +1,12 @@
 import type {
   BBox,
   ComputedNode,
+  DiagramEdge,
+  DiagramNode,
   EdgeId,
   ElementShape,
   Fqn,
+  NonEmptyArray,
   Point,
   RelationshipLineType,
   ThemeColor,
@@ -13,44 +16,12 @@ import { type Edge, isNode, type Node } from '@xyflow/react'
 import { isNil, isTruthy } from 'remeda'
 import type { SetRequired, Simplify } from 'type-fest'
 
-interface BaseLikec4NodeData {
-  fqn: Fqn
-  parent: Fqn | null
-  title: string
-  description: string | null
-  technology: string | null
-  shape: ElementShape
-  color: ThemeColor
-  level: number
-  w: number
-  h: number
-  navigateTo: ViewID | null
-  inEdges: string[]
-  outEdges: string[]
-}
-
-export const dataFromComputedNode = (
-  node: ComputedNode
-): Omit<BaseLikec4NodeData, 'w' | 'h' | 'inEdges' | 'outEdges'> => ({
-  fqn: node.id,
-  parent: node.parent,
-  title: node.title,
-  description: node.description,
-  technology: node.technology,
-  shape: node.shape,
-  color: node.color,
-  level: node.level,
-  navigateTo: node.navigateTo ?? null
-})
-
-export interface ElementNodeData extends BaseLikec4NodeData {
+export interface ElementNodeData extends DiagramNode {
 }
 
 export type ElementNode = Node<ElementNodeData, 'element'>
 
-export interface CompoundNodeData extends BaseLikec4NodeData {
-  // children: NonEmptyArray<Fqn>
-  depth: number
+export interface CompoundNodeData extends DiagramNode {
 }
 
 export type CompoundNode = SetRequired<Node<CompoundNodeData, 'compound'>, 'type'>
@@ -58,8 +29,6 @@ export type CompoundNode = SetRequired<Node<CompoundNodeData, 'compound'>, 'type
 export type EditorNode = ElementNode | CompoundNode
 
 export namespace EditorNode {
-  export type BaseData = BaseLikec4NodeData
-
   export type Data = CompoundNodeData | ElementNodeData
 
   export function isCompound(node: unknown): node is CompoundNode {
@@ -73,10 +42,8 @@ export namespace EditorNode {
 }
 
 export interface RelationshipData {
-  id: EdgeId
-  source: Fqn
-  target: Fqn
-  points: [Point, Point, ...Point[]]
+  edge: DiagramEdge
+  controlPoints: Point[]
   headPoint: Point | null
   tailPoint: Point | null
   type: 'bezier' | 'poly'
@@ -84,8 +51,6 @@ export interface RelationshipData {
     bbox: BBox
     text: string
   }
-  color: ThemeColor | null
-  line: RelationshipLineType | null
 }
 
 export type RelationshipEdge = Simplify<
@@ -104,3 +69,11 @@ export namespace EditorEdge {
 
   export const isRelationship = (e: Edge): e is RelationshipEdge => e.type === 'relationship' && isTruthy(e.data)
 }
+
+export interface ChangeColor {
+  op: 'change-color'
+  color: ThemeColor
+  elements: NonEmptyArray<Fqn>
+}
+
+export type ChangeCommand = ChangeColor
