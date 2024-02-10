@@ -112,17 +112,6 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-// const curvePoly = d3line<Point>()
-// const curveBez = d3line<Point>().curve(curveCatmullRom)
-
-const closedPath = ([head, ...rest]: NonEmptyArray<Point>) => {
-  let path = `M ${toDomPrecision(head[0])},${toDomPrecision(head[1])}`
-  for (const p of rest) {
-    path = path + ` L ${toDomPrecision(p[0])},${toDomPrecision(p[1])}`
-  }
-  return path + ' Z'
-}
-
 const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function RelationshipEdge(props) {
   // useTilg()
   const {
@@ -148,9 +137,6 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
   // }
   const color = edge.color ?? 'gray'
   const isHovered = useIsEdgeHovered(id)
-  // console.log(`isHovered: ${id}`, isHovered)
-
-  const edgePathClass = clsx('react-flow__edge-path', styles.edgePath)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -165,17 +151,30 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
 
   return (
     <g className={styles.container} data-likec4-color={color} data-edge-hovered={isHovered}>
+      <g className={clsx(styles.fillStrokeCtx)}>
+        <defs>
+          <marker
+            id={`arrow-${id}`}
+            viewBox="0 0 10 8"
+            refX="0"
+            refY="4"
+            markerWidth="5"
+            markerHeight="5"
+            markerUnits="strokeWidth"
+            preserveAspectRatio="xMaxYMid meet"
+            orient="auto-start-reverse">
+            <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-fill" />
+          </marker>
+        </defs>
+      </g>
       <path
-        className={edgePathClass}
+        className={clsx('react-flow__edge-path', styles.edgePath)}
         d={edgePath}
-        fill="none"
-        {...(strokeDasharray ? { strokeDasharray } : {})}
+        {...(strokeDasharray ? { strokeDasharray, strokeDashoffset: 4 } : {})}
         style={style}
+        markerEnd={`url(#arrow-${id})`}
       />
-      {edge.headArrow && <path d={closedPath(edge.headArrow)} className={styles.edgeArrow} />}
-      {edge.tailArrow && <path d={closedPath(edge.tailArrow)} className={styles.edgeArrow} />}
       <path
-        id={id}
         className={clsx('react-flow__edge-interaction')}
         d={edgePath}
         fill="none"

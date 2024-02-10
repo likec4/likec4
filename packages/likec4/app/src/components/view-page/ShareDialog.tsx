@@ -1,4 +1,5 @@
 import type { DiagramView } from '@likec4/diagrams'
+import { useMantineColorScheme } from '@mantine/core'
 import { ExclamationTriangleIcon, InfoCircledIcon, OpenInNewWindowIcon } from '@radix-ui/react-icons'
 import { Box, Button, Callout, Code, Dialog, Flex, Link, ScrollArea, Select, Tabs, Text } from '@radix-ui/themes'
 import { useState } from 'react'
@@ -6,8 +7,7 @@ import { $pages } from '../../router'
 import { CopyToClipboard } from '../CopyToClipboard'
 
 const embedCode = (diagram: DiagramView, theme: string) => {
-  // const url = new URL($pages.embed.path(diagram.id), window.location.href)
-  const url = new URL($pages.embed.path(diagram.id), window.location.href)
+  const url = $pages.embed.url(diagram.id)
   const padding = 20
 
   url.searchParams.set('padding', `${padding}`)
@@ -33,7 +33,8 @@ const embedCode = (diagram: DiagramView, theme: string) => {
 }
 
 export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
-  const [theme, setTheme] = useState('system')
+  const { colorScheme } = useMantineColorScheme()
+  const [theme, setTheme] = useState(colorScheme === 'auto' ? 'system' : colorScheme)
 
   const { code, href } = embedCode(diagram, theme)
 

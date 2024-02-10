@@ -13,12 +13,14 @@ function ViewEditor() {
   const router = useRouter()
   const { viewAtom, viewId } = Route.useRouteContext()
   const view = useAtomValue(viewAtom)
+  const { theme } = Route.useSearch()
 
   const navigateTo = useCallback((node: { navigateTo: string }) => {
     router.navigate({
       to: '/view/$viewId/editor',
       params: { viewId: node.navigateTo },
-      startTransition: true
+      startTransition: true,
+      search: true
     })
   }, [router])
 
@@ -29,11 +31,13 @@ function ViewEditor() {
   return (
     <Box
       position={'absolute'}
-      style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
+      style={{ top: 50, left: 0, width: '100vw', height: 'calc(100vh - 50px)' }}
     >
       <LikeC4ViewEditor
+        colorMode={theme}
         view={view}
         onNavigateTo={navigateTo}
+        controls={false}
       />
     </Box>
   )

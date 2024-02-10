@@ -1,13 +1,13 @@
-import { hasAtLeast, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
+import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
+import { LikeC4ViewEditor } from '@likec4/diagram'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LikeC4Diagram } from './LikeC4Diagram'
 import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <div className='likec4-error-message'>
+  <div className="likec4-error-message">
     <p>
       Oops, something went wrong
       {error && (
@@ -56,26 +56,9 @@ const App = () => {
 
   const prevView = useViewHistory(view)
 
-  const onNodeClick = useCallback((node: DiagramNode) => {
-    lastNodeContextMenuRef.current = null
-    if (node.navigateTo) {
-      extensionApi.goToViewSource(node.navigateTo)
-      extensionApi.openView(node.navigateTo)
-      return
-    }
-    extensionApi.goToElement(node.id)
-  }, [])
-
-  const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    lastNodeContextMenuRef.current = null
-    if (hasAtLeast(edge.relations, 1)) {
-      extensionApi.goToRelation(edge.relations[0])
-    }
-  }, [])
-
   if (!view) {
     return (
-      <div className='likec4-parsing-screen'>
+      <div className="likec4-parsing-screen">
         {state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
@@ -98,7 +81,7 @@ const App = () => {
         )}
         <section>
           <p>
-            <VSCodeButton appearance='secondary' onClick={extensionApi.closeMe}>
+            <VSCodeButton appearance="secondary" onClick={extensionApi.closeMe}>
               Close
             </VSCodeButton>
           </p>
@@ -109,33 +92,48 @@ const App = () => {
 
   return (
     <>
-      <LikeC4Diagram
-        diagram={view}
-        onNodeClick={onNodeClick}
-        onNodeContextMenu={(nd, e) => {
-          lastNodeContextMenuRef.current = nd
-          e.cancelBubble = true
-        }}
-        onEdgeClick={onEdgeClick}
-        onStageClick={() => {
-          extensionApi.goToViewSource(view.id)
-        }}
-      />
+      <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
+        <LikeC4ViewEditor
+          view={view}
+          onNavigateTo={(node) => {
+            lastNodeContextMenuRef.current = null
+            extensionApi.goToViewSource(node.navigateTo)
+            extensionApi.openView(node.navigateTo)
+          }}
+          onNodeClick={(node, e) => {
+            lastNodeContextMenuRef.current = null
+            extensionApi.goToElement(node.id)
+            e.stopPropagation()
+          }}
+          onNodeContextMenu={(node, e) => {
+            lastNodeContextMenuRef.current = node
+            // e.stopPropagation()
+            // e.preventDefaulzt()
+          }}
+          onEdgeClick={(edge, e) => {
+            lastNodeContextMenuRef.current = null
+            if (hasAtLeast(edge.relations, 1)) {
+              extensionApi.goToRelation(edge.relations[0])
+              e.stopPropagation()
+            }
+          }}
+        />
+      </div>
       {state === 'error' && <ErrorMessage error={error} />},
       {state === 'loading' && (
         <>
-          <div className='likec4-diagram-loading-overlay'></div>
-          <div className='likec4-diagram-loading'>
+          <div className="likec4-diagram-loading-overlay"></div>
+          <div className="likec4-diagram-loading">
             <p>Updating...</p>
             <VSCodeProgressRing />
           </div>
         </>
       )}
       {prevView && (
-        <div className='likec4-toolbar'>
-          <div className='likec4-toolbar-left'>
+        <div className="likec4-toolbar">
+          <div className="likec4-toolbar-left">
             <VSCodeButton
-              appearance='icon'
+              appearance="icon"
               onClick={e => {
                 e.stopPropagation()
                 extensionApi.goToViewSource(prevView.id)

@@ -23,6 +23,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { difference, hasAtLeast, uniq } from 'remeda'
 import useTilg from 'tilg'
 import { distance } from '../utils'
+import { useLikeC4Editor } from '../ViewEditorApi'
 
 const selectUserSelectionActive = (state: ReactFlowState) => state.userSelectionActive
 
@@ -31,6 +32,8 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
   const isUserSelectionActive = useStore(selectUserSelectionActive)
   const reactflow = useReactFlow()
   const updateNd = useUpdateNodeInternals()
+
+  const padding = useLikeC4Editor().fitViewPadding
 
   const previousViewport = useRef<Viewport | null>(null)
   const viewportChangeStart = useRef<Viewport | null>(null)
@@ -76,25 +79,10 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
       if (!isMounted() || !reactflow.viewportInitialized) {
         return
       }
-      // storeApi.getState().
-      // if (storeApi.getState().userSelectionActive) {
-      //   return
-      // }
       if (nodes.length === 0 && edges.length === 0) {
         setSelectedNodes([])
         return
       }
-      //   if (previousViewport.current) {
-      //     console.log(`Camera: revert viewport`)
-      //     reactflow.setViewport(previousViewport.current, {
-      //       duration: 300
-      //     })
-      //     previousViewport.current = null
-      //   }
-      //   updateSelectedNodes([])
-      //   return
-      // }
-
       const selected = new Set<ReactFlowNode>([
         ...nodes,
         ...edges.flatMap((edge) => [
@@ -103,17 +91,6 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
         ]).filter(Boolean)
       ])
       setSelectedNodes([...selected])
-      // updateSelectedNodes(nodes)
-
-      // previousViewport.current ??= { ...reactflow.getViewport() }
-      // const zoom = reactflow.getZoom()
-      // reactflow.fitView({
-      //   duration: 350,
-      //   maxZoom: Math.max(1.07, zoom),
-      //   padding: 0.1,
-      //   nodes
-      // })
-      // fixUseOnViewportChange()
     }
   })
 
@@ -138,18 +115,16 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
       reactflow.fitView({
         duration: 350,
         maxZoom: Math.max(1.07, zoom),
-        padding: 0.1,
+        padding,
         nodes: selectedNodes
       })
       fixUseOnViewportChange()
     },
     [selectedNodesHash, isUserSelectionActive]
-    // 100
   )
 
   useShallowEffect(() => {
     const ids = selectedNodes.map((node) => node.id)
-    const toUpdate = difference
     for (const id of uniq([...selectedNodesRef.current, ...ids])) {
       try {
         updateNd(id)
@@ -168,7 +143,7 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
         reactflow.fitView({
           duration: 350,
           maxZoom: Math.max(1.05, zoom),
-          padding: 0.1
+          padding
         })
       }
     },

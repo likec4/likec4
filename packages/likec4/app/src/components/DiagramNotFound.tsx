@@ -26,7 +26,7 @@ export const DiagramNotFound = ({ viewId }: { viewId: string }) => {
             </Text>
             <Box pt="2">
               <Button asChild variant="soft" color="amber">
-                <Link to="/">Go to overview</Link>
+                <Link to="/" search>Go to overview</Link>
               </Button>
             </Box>
           </Flex>

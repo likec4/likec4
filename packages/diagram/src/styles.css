@@ -1,10 +1,30 @@
-@import url("@xyflow/react/dist/style.css");
-@import url("./theme-colors.css");
-
+@import url('@xyflow/react/dist/style.css');
+@import url('./theme-colors.css');
 
 .mantine-ActionIcon-icon {
   svg {
     width: 75%;
     height: 75%;
+  }
+}
+
+.transparent-bg {
+}
+
+.react-flow {
+
+  &[data-likec4-view-no-pan='true'] {
+    .react-flow__pane {
+      cursor: default;
+    }
+  }
+
+  &[data-likec4-view-no-bg='true'] {
+    --xy-background-color: transparent !important;
+    background-color: transparent !important;
+
+    .react-flow__attribution {
+      display: none;
+    }
   }
 }

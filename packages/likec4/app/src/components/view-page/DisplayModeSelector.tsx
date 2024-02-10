@@ -1,9 +1,6 @@
-import { CaretDownIcon } from '@radix-ui/react-icons'
-import { Button, DropdownMenu, Flex, IconButton, Separator } from '@radix-ui/themes'
+import { Flex, Separator } from '@radix-ui/themes'
 import { Link, useParams } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { keys } from 'remeda'
-import { updateSearchParams, useSearchParams } from '../../router'
 
 const Mode = {
   editor: 'Editor',
@@ -53,6 +50,10 @@ export const DisplayModeSelector = () => {
     >
       <Link
         to="/view/$viewId/editor"
+        search
+        activeOptions={{
+          includeSearch: false
+        }}
         startTransition
         className="rt-reset rt-BaseButton rt-Button rt-r-size-1"
         params={params}
@@ -67,7 +68,11 @@ export const DisplayModeSelector = () => {
       </Link>
       <Link
         to="/view/$viewId/react"
+        search
         startTransition
+        activeOptions={{
+          includeSearch: false
+        }}
         className="rt-reset rt-BaseButton rt-Button rt-r-size-1"
         params={params}
         activeProps={{

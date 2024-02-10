@@ -1,5 +1,6 @@
 import { defaultTheme } from '@likec4/core'
 import { Text } from '@mantine/core'
+import { isEqual } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { clsx } from 'clsx'
 import { scale, toHex } from 'khroma'
@@ -11,7 +12,17 @@ import classes from './CompoundFNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
 // type CompoundFNodeProps = Pick<NodeProps<CompoundNodeData>, 'id' | 'data'>
-type CompoundFNodeProps = NodeProps<CompoundNodeData>
+type CompoundFNodeProps = Pick<
+  NodeProps<CompoundNodeData>,
+  'id' | 'data' | 'width' | 'height' | 'selected'
+>
+const isEqualProps = (prev: CompoundFNodeProps, next: CompoundFNodeProps) => (
+  prev.id === next.id
+  && prev.selected === next.selected
+  && prev.width === next.width
+  && prev.height === next.height
+  && isEqual(prev.data, next.data)
+)
 
 const compoundColor = (color: string, depth: number) =>
   toHex(
@@ -38,12 +49,14 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
 
   const editor = useLikeC4Editor()
 
+  const isNavigatable = !!compound.navigateTo && editor.isNavigateBtnVisible
+
   return (
     <div
       className={classes.container}
       data-likec4-color={color}
       data-likec4-shape={compound.shape}
-      data-likec4-navigatable={!!compound.navigateTo}
+      data-likec4-navigatable={isNavigatable}
       style={{
         // @ts-expect-error
         '--likec4-element-fill': colors.fill,
@@ -69,7 +82,7 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
       >
         <Text component="div" className={classes.title}>{compound.title}</Text>
       </div>
-      {compound.navigateTo && editor.isNavigateBtnVisible && (
+      {isNavigatable && (
         <NavigateToBtn
           onClick={() => {
             editor.navigateTo(data)
@@ -83,5 +96,4 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
       />
     </div>
   )
-})
-// }, (prev, next) => prev.id == next.id && isEqualSimple(prev.data, next.data))
+}, isEqualProps)

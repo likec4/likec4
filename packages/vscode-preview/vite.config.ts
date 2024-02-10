@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       cssCodeSplit: false,
       sourcemap: isDev,
-      chunkSizeWarningLimit: 800,
+      chunkSizeWarningLimit: 1000,
       assetsDir: '',
       rollupOptions: {
         external: ['vscode'],

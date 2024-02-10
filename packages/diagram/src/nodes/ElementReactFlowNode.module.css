@@ -6,6 +6,8 @@
   :where(:global(.react-flow__node:focus-within)) & {
     /* border: 20px solid red; */
   }
+
+  --stroke-fill-color: color-mix(in srgb, var(--likec4-element-stroke) 70%, var(--likec4-element-fill));
 }
 
 .shapeSvg {
@@ -17,13 +19,13 @@
   stroke: var(--likec4-element-stroke);
   overflow: visible;
 
-  --stroke-fill-color: color-mix(in srgb, var(--likec4-element-stroke) 70%, var(--likec4-element-fill));
+
 
   --shadow-color: rgba(0, 0, 0, 0.05);
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0px 20px 25px var(--shadow-color))
     drop-shadow(0px 10px 10px var(--shadow-color));
 
-  & >,
+  &,
   :where(:not(.indicator)) {
     path,
     ellipse,
@@ -80,20 +82,17 @@
 .fill-elementStroke {
   fill: var(--likec4-element-stroke);
 }
-.fill-mixedStrokeFill {
-  fill: var(--stroke-fill-color);
-}
 
 .element {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: rem(26px);
+  padding: rem(24px);
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  gap: rem(8px);
+  gap: rem(10px);
 
   &:has(.description):has(.technology) {
     gap: rem(6px);
@@ -109,6 +108,17 @@
 
   :where([data-likec4-shape='browser']) & {
     padding-top: rem(36px);
+  }
+
+  .elementIcon {
+    img {
+      margin: 0 auto;
+      width: auto;
+      height: auto;
+      mix-blend-mode: hard-light;
+    }
+    user-select: none;
+    pointer-events: none;
   }
 
   .title {

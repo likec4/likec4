@@ -8,6 +8,7 @@ import { useLikeC4Editor } from './ViewEditorApi'
 export const DataSync = ({ view }: {
   view: DiagramView
 }) => {
+  useTilg()
   const editor = useLikeC4Editor()
   const reactflow = editor.reactflow
   const initialized = reactflow?.viewportInitialized

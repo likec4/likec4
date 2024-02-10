@@ -73,7 +73,15 @@ export namespace EditorEdge {
 export interface ChangeColor {
   op: 'change-color'
   color: ThemeColor
-  elements: NonEmptyArray<Fqn>
+  targets: NonEmptyArray<Fqn>
 }
 
-export type ChangeCommand = ChangeColor
+export interface ChangeShape {
+  op: 'change-shape'
+  shape: ElementShape
+  targets: NonEmptyArray<Fqn>
+}
+
+export type ChangeCommand = ChangeColor | ChangeShape
+
+export type OnChange = (operation: ChangeCommand) => void

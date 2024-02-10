@@ -15,9 +15,10 @@ function ViewReact() {
 
   const navigateTo = useCallback((node: { navigateTo: string }) => {
     router.navigate({
-      to: '/view/$viewId/editor',
+      to: '/view/$viewId/react',
       params: { viewId: node.navigateTo },
-      startTransition: true
+      startTransition: true,
+      search: true
     })
   }, [router])
 
@@ -25,5 +26,14 @@ function ViewReact() {
     return <DiagramNotFound viewId={viewId} />
   }
 
-  return <ViewAsReact diagram={view} />
+  return (
+    <ViewAsReact
+      diagram={view}
+      onNodeClick={(node) => {
+        if (node.navigateTo) {
+          navigateTo({ navigateTo: node.navigateTo })
+        }
+      }}
+    />
+  )
 }

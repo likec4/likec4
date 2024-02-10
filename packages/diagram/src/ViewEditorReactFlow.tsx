@@ -1,11 +1,21 @@
+import { invariant } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web'
-import { Background, Controls, ReactFlow, type ReactFlowInstance, ViewportPortal } from '@xyflow/react'
+import {
+  Background,
+  Controls,
+  type EdgeMouseHandler,
+  type NodeMouseHandler,
+  ReactFlow as ReactXYFlow,
+  type ReactFlowInstance,
+  ViewportPortal
+} from '@xyflow/react'
 import { memo, useCallback, useMemo, useRef } from 'react'
+import { isNumber } from 'remeda'
 import useTilg from 'tilg'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { useSetHoveredEdgeId } from './state'
-import type { EditorEdge, EditorNode } from './types'
+import { EditorEdge, EditorNode } from './types'
 import StylesPanel from './ui/StylesPanel'
 import { useLikeC4Editor, useLikeC4EditorState, useLikeC4EditorUpdate } from './ViewEditorApi'
 
@@ -13,7 +23,7 @@ type LikeC4ReactFlowProps = {
   defaultNodes?: EditorNode[] | undefined
   defaultEdges?: EditorEdge[] | undefined
 }
-export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function LikeC4ReactFlow({
+export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
   defaultNodes = [],
   defaultEdges = []
 }) {
@@ -30,46 +40,96 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function LikeC4ReactFl
   })
 
   return (
-    <ReactFlow
-      colorMode="dark"
+    <ReactXYFlow
+      colorMode={editor.colorMode}
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      zoomOnPinch={editor.zoomable}
+      zoomOnScroll={editor.zoomable && !editor.pannable}
+      {...(!editor.zoomable && {
+        zoomActivationKeyCode: null
+      })}
       maxZoom={1.9}
       minZoom={0.1}
       fitView
-      panOnScroll
+      fitViewOptions={useMemo(() => ({
+        maxZoom: 1.05,
+        padding: editor.fitViewPadding
+      }), [editor.fitViewPadding])}
+      defaultMarkerColor="var(--xy-edge-stroke)"
+      noDragClassName="nodrag"
+      noPanClassName="nopan"
+      panOnScroll={editor.pannable}
+      panOnDrag={editor.pannable}
       elementsSelectable={editor.nodesSelectable}
+      {...(!editor.nodesSelectable && {
+        selectionKeyCode: null
+      })}
       nodesDraggable={editor.nodesDraggable}
-      edgesUpdatable={false}
+      // edgesUpdatable={false}
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
-      fitViewOptions={useMemo(() => ({
-        maxZoom: 1.05,
-        padding: 0.1
-      }), [])}
-      // onNodeClick={useCallback((event, node) => {
-      //   const api = instanceRef.current
-      //   if (!api) {
-      //     return
-      //   }
-      //   api.
-      //   api.setCenter(node.position.x, node.position.y)
-      // }, [])}
-      onEdgeMouseEnter={useCallback((event, edge) => {
-        setHoveredEdgeId(edge.id)
-      }, [])}
-      onEdgeMouseLeave={useCallback((event, edge) => {
-        setHoveredEdgeId(null)
-      }, [])}
-      onInit={useCallback((instance) => {
-        instanceRef.current = instance
-        updateState({
-          reactflow: instance as any
-        })
-      }, [updateState])}
+      onNodeClick={useCallback(
+        (event, node) => {
+          invariant(EditorNode.is(node), `node is not a EditorNode`)
+          editor.onNodeClick(node.data, event)
+        },
+        [editor.onNodeClick]
+      )}
+      onEdgeClick={useCallback(
+        (event, edge) => {
+          invariant(EditorEdge.isRelationship(edge), `edge is not a relationship`)
+          editor.onEdgeClick(edge.data.edge, event)
+        },
+        [editor.onEdgeClick]
+      )}
+      onEdgeMouseEnter={useCallback(
+        (event, edge) => setHoveredEdgeId(edge.id),
+        []
+      )}
+      onEdgeMouseLeave={useCallback(
+        (event, edge) => {
+          setHoveredEdgeId(null)
+        },
+        []
+      )}
+      onEdgeContextMenu={useCallback(
+        (event, edge) => {
+          event.preventDefault()
+          event.stopPropagation()
+          // invariant(EditorNode.is(node), `node is not a EditorNode`)
+          // editor.onNodeContextMenu(node.data, event)
+        },
+        []
+      )}
+      onNodeContextMenu={useCallback(
+        (event, node) => {
+          invariant(EditorNode.is(node), `node is not a EditorNode`)
+          editor.onNodeContextMenu(node.data, event)
+        },
+        [editor.onNodeContextMenu]
+      )}
+      onPaneContextMenu={useCallback(
+        (event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          // invariant(EditorNode.is(node), `node is not a EditorNode`)
+          // editor.onNodeContextMenu(node.data, event)
+        },
+        []
+      )}
+      onInit={useCallback(
+        (instance) => {
+          instanceRef.current = instance
+          updateState({
+            reactflow: instance as any
+          })
+        },
+        [updateState]
+      )}
       onPaneClick={useCallback(e => {
         // Workaround for dbl click
         const ts = e.timeStamp
@@ -107,10 +167,12 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function LikeC4ReactFl
       //     }
       //   }
       // }, [])}
+      data-likec4-view-no-pan={!editor.pannable}
+      data-likec4-view-no-bg={editor.disableBackground}
     >
       {!editor.disableBackground && <Background />}
-      <Controls />
-    </ReactFlow>
+      {editor.controls && <Controls />}
+    </ReactXYFlow>
   )
 }, (prev, next) => true)
 LikeC4ReactFlow.displayName = 'LikeC4ReactFlow'

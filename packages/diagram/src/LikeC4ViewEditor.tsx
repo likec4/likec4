@@ -8,20 +8,22 @@ import { LikeC4EditorProvider } from './ViewEditorApi'
 import { DataSync } from './ViewEditorDataSync'
 import { LikeC4ReactFlow } from './ViewEditorReactFlow'
 import './styles.css'
+import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
 import Camera from './ui/Camera'
 import StylesPanel from './ui/StylesPanel'
 
-type LikeC4ViewEditorProps = LikeC4ViewEditorApiProps & {
+export type LikeC4ViewEditorProps = LikeC4ViewEditorApiProps & {
   view: DiagramView
 }
 
-export const LikeC4ViewEditor = memo<LikeC4ViewEditorProps>(({
+export function LikeC4ViewEditor({
   view,
   readonly = false,
   nodesDraggable = !readonly,
   ...apiProps
-}) => {
+}: LikeC4ViewEditorProps) {
+  useTilg()
   const initial = useMemo(() => fromDiagramView(view, nodesDraggable), [])
   return (
     <IsolatedJotaiProvider>
@@ -34,8 +36,7 @@ export const LikeC4ViewEditor = memo<LikeC4ViewEditorProps>(({
         >
           <LikeC4ReactFlow
             defaultNodes={initial.nodes}
-            defaultEdges={initial.edges}
-          />
+            defaultEdges={initial.edges} />
           <DataSync view={view} />
           <Camera viewId={view.id} />
           {!readonly && <StylesPanel />}
@@ -43,4 +44,4 @@ export const LikeC4ViewEditor = memo<LikeC4ViewEditorProps>(({
       </ReactFlowProvider>
     </IsolatedJotaiProvider>
   )
-})
+}

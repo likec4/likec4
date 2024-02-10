@@ -1,10 +1,11 @@
+import { invariant } from '@likec4/core'
 import { DashboardIcon, TriangleRightIcon } from '@radix-ui/react-icons'
 import { Box, Flex, Text } from '@radix-ui/themes'
-import { useParams } from '@tanstack/react-router'
+import { useParams, useRouter, useRouterState } from '@tanstack/react-router'
+import clsx from 'clsx'
 import TreeView, { type INode } from 'react-accessible-treeview'
+import { last } from 'remeda'
 import { useDiagramsTree } from '../../data'
-import { $pages, useRoute } from '../../router'
-import { cn } from '../../utils'
 import styles from './DiagramsTree.module.css'
 
 function inTree(id: string, data: INode[]): boolean {
@@ -17,6 +18,8 @@ export function DiagramsTree() {
     select: (params) => 'viewId' in params ? { viewId: params.viewId } : { viewId: null },
     strict: false
   })
+  const router = useRouter()
+  const routerState = useRouterState()
   const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
@@ -30,6 +33,27 @@ export function DiagramsTree() {
           if (isBranch) {
             return
           }
+          const m = last(routerState.matches)
+          invariant(m, 'routerState.matches is empty')
+          router.navigate({
+            to: m.routeId as string,
+            params: { viewId: element.id },
+            search: m.search,
+            startTransition: true
+          })
+          // console.log(routerState)
+          // console.log(router.buildLocation({
+          //   params: { viewId: element.id },
+          // }).href)
+          // router.update({
+
+          //   params: { viewId: element.id },
+          //   startTransition: true
+          // })
+          // router.buildAndCommitLocation({
+          //   params: { viewId: element.id},
+          //   startTransition: true
+          // })
           // $pages.view.open('' + element.id)
         }}
         nodeRenderer={({
@@ -51,7 +75,7 @@ export function DiagramsTree() {
                   <TriangleRightIcon
                     width={15}
                     height={15}
-                    className={cn('transition duration-200 ease-out', isExpanded && 'rotate-90')}
+                    className={clsx('transition duration-200 ease-out', isExpanded && 'rotate-90')}
                   />
                 </Box>
               )}

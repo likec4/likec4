@@ -11,12 +11,7 @@
   height: 100%;
   position: relative;
   border-radius: rem(6px);
-  //--shadow-color: 0deg 0% 0%;
-  /* box-shadow: var(--mantine-shadow-md); */
   box-shadow: rgba(17, 17, 26, 0.05) 0px 3px 1px 1px, rgba(17, 17, 26, 0.1) 0px 1px 8px 1px;
-  /* box-shadow:
-    rgba(17, 17, 26, 0.05) 0px 1px 0px,
-    rgba(17, 17, 26, 0.1) 0px 0px 8px; */
   padding: rem(8px);
   background: var(--likec4-element-fill);
 
@@ -25,10 +20,10 @@
   .title {
     display: inline-block;
     font-weight: 600;
-    font-size: rem(14px);
+    font-size: rem(13px);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    line-height: 1;
+    letter-spacing: 0.2px;
+    line-height: 0;
     opacity: 0.75;
     color: var(--likec4-element-loContrast);
     padding-left: rem(4px);
@@ -82,49 +77,60 @@
   position: absolute;
   pointer-events: all;
   left: 3px;
-  top: 8px;
+  top: 6px;
   color: var(--likec4-element-loContrast);
-  --ai-bg: transparent;
   transform-origin: 90% 70%;
   opacity: 0.8;
   transition: all 165ms ease-out;
   transition-delay: 0ms;
 
-  &>svg {
+  & svg {
     width: 75%;
     height: 75%;
     stroke-width: 1.5;
   }
 
-  /* .container:hover & {
-    --ai-bg: color-mix(in srgb, var(--likec4-element-fill) 65%, var(--likec4-element-stroke));
-    box-shadow: var(--mantine-shadow-lg);
-    transform: translateX(-2px) scale(1.31);
-    opacity: 1;
-    transition-delay: 100ms;
+  --ai-bg: color-mix(in srgb, var(--likec4-element-fill) 1%, transparent);
+  --ai-bg-hover: color-mix(in srgb, var(--likec4-element-fill) 65%, var(--likec4-element-stroke));
+  background-color: var(--ai-bg);
+
+  & svg:global(.icon) {
+    width: 70%;
+    height: 70%;
+    stroke-width: 1.5;
   }
 
-  &:hover {
-    --ai-hover: color-mix(in srgb, var(--likec4-element-fill) 50%, var(--likec4-element-stroke));
-      transform: translateX(-2px) scale(1.4);
-      transition-delay: 0;
-  } */
+  :where([data-likec4-shape='browser']) & {
+    bottom: 3px;
+  }
 }
 
 .container {
-  @mixin hover {
-    & .navigateBtn {
-      --ai-bg: color-mix(in srgb, var(--likec4-element-fill) 65%, var(--likec4-element-stroke));
-      box-shadow: var(--mantine-shadow-md);
-      transform: scale(1.3);
-      opacity: 1;
-      transition-delay: 100ms;
+  :where(:global(.react-flow__node):not(:global(.dragging))) & {
+    @mixin hover {
+      & .navigateBtn {
+        --ai-bg: var(--ai-bg-hover);
+        box-shadow: var(--mantine-shadow-lg);
+        transform: scale(1.25);
+        opacity: 1;
+        transition-delay: 130ms;
 
-      @mixin hover {
-        --ai-hover: color-mix(in srgb, var(--likec4-element-fill) 50%, var(--likec4-element-stroke));
-        transform: scale(1.4);
-        transition-delay: 0ms;
+        @mixin hover {
+          --ai-hover: color-mix(in srgb, var(--likec4-element-fill) 50%, var(--likec4-element-stroke));
+          transform: scale(1.45);
+          transition-delay: 0ms;
+        }
+
+        &:active {
+          transform: scale(1.15);
+          transition: transform 150ms ease-out;
+        }
       }
     }
   }
+  :where(:global(.react-flow__node.dragging)) & {
+  & .navigateBtn {
+    transition-delay: 0ms;
+  }
+}
 }

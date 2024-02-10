@@ -1,5 +1,27 @@
+.container {
+  --xy-edge-stroke: var(--likec4-relation-lineColor);
+  --xy-edge-stroke-selected: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
+  --xy-edge-label-color: var(--likec4-relation-labelColor);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
+  --xy-edge-stroke-width: 2;
+
+  :global(.react-flow__edge-textbg) {
+  }
+
+  &[data-edge-hovered="true"],
+  :where(:global(.react-flow__edge.selected)) & {
+    --xy-edge-stroke: var(--xy-edge-stroke-selected);
+    --xy-edge-stroke-width: 2.2;
+  }
+}
+
+.fillStrokeCtx {
+  fill: var(--xy-edge-stroke);
+  stroke: var(--xy-edge-stroke);
+}
+
 :global(.react-flow__edge-path).edgePath {
-  stroke: var(--likec4-relation-lineColor);
+  /* stroke: var(--likec4-relation-lineColor);
   stroke-width: 2;
   transition: all 110ms ease-in-out;
 
@@ -7,22 +29,10 @@
   :where(:global(.react-flow__edge.selected)) & {
     stroke: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
     stroke-width: 2.2;
-  }
-
+  } */
+mix-blend-mode: luminosity;
 }
-.edgeArrow {
-  --_color: var(--likec4-relation-lineColor);
-  fill: var(--_color);
-  stroke: var(--_color);
-  transition: all 110ms ease-in-out;
-  stroke-width: 0.5;
 
-  :where([data-edge-hovered="true"]) &,
-  :where(:global(.react-flow__edge.selected)) & {
-    --_color: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
-  }
-
-}
 .controlPoint {
   --_color: var(--mantine-primary-color-5);
 
@@ -50,32 +60,19 @@
   position: absolute;
   padding: 2px 5px;
 
-  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
+  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 20%, transparent);
   border-radius: 3px;
-  color: var(--likec4-relation-labelColor);
+  --text-color: var(--likec4-relation-labelColor);
   pointer-events: all;
   cursor: pointer;
   transform-origin: 50% 50%;
   transition: all 120ms ease-out;
-  /* transform: translate(-50%, -50%); */
   white-space: pre;
-
+  mix-blend-mode: luminosity;
 
   &[data-edge-hovered="true"] {
     transform: scale(1.04);
+    --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white);
   }
-
-  /* &[data-hovered="true"] {
-    transform: scale(1.05);
-    color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white);
-  } */
-
   /* background-drop: drop(var(--likec4-relation-labelBg) 0% 0% 0% 0% var(--likec4-relation-labelBg) 0% 0% 0% 0%); */
-}
-
-.container {
-  --xy-edge-label-color: var(--likec4-relation-labelColor);
-  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
-  :global(.react-flow__edge-textbg) {
-  }
 }

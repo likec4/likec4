@@ -1,11 +1,12 @@
 import { Box, Flex, Tabs } from '@radix-ui/themes'
-import { updateSearchParams, type ViewMode } from '../../router'
+// import { updateSearchParams, type ViewMode } from '../../router'
 import ViewAsD2 from './other-formats/ViewAsD2'
 import ViewAsDot from './other-formats/ViewAsDot'
 import ViewAsMmd from './other-formats/ViewAsMmd'
 import styles from './view-page.module.css'
 type Props = {
-  viewMode: Exclude<ViewMode, 'react'>
+  // viewMode: Exclude<ViewMode, 'react'>
+  viewMode: string
   viewId: string
 }
 export default function ViewDiagramInOtherFormats({ viewId, viewMode }: Props) {
@@ -22,29 +23,29 @@ export default function ViewDiagramInOtherFormats({ viewId, viewMode }: Props) {
     >
       <Tabs.Root
         value={viewMode}
-        onValueChange={mode => mode !== viewMode && updateSearchParams({ mode: mode as ViewMode })}
+        // onValueChange={mode => mode !== viewMode && updateSearchParams({ mode: mode as ViewMode })}
       >
         <Box asChild shrink={'0'} grow={'0'}>
           <Tabs.List>
-            <Tabs.Trigger value='react'>React</Tabs.Trigger>
-            <Tabs.Trigger value='dot'>Graphviz</Tabs.Trigger>
-            <Tabs.Trigger value='mmd'>Mermaid</Tabs.Trigger>
-            <Tabs.Trigger value='d2'>D2</Tabs.Trigger>
+            <Tabs.Trigger value="react">React</Tabs.Trigger>
+            <Tabs.Trigger value="dot">Graphviz</Tabs.Trigger>
+            <Tabs.Trigger value="mmd">Mermaid</Tabs.Trigger>
+            <Tabs.Trigger value="d2">D2</Tabs.Trigger>
           </Tabs.List>
         </Box>
 
-        <Box p='2' className={styles.otherFormats} position={'relative'}>
-          <Tabs.Content value='react'>{''}</Tabs.Content>
+        <Box p="2" className={styles.otherFormats} position={'relative'}>
+          <Tabs.Content value="react">{''}</Tabs.Content>
 
-          <Tabs.Content value='dot'>
+          <Tabs.Content value="dot">
             <ViewAsDot viewId={viewId} />
           </Tabs.Content>
 
-          <Tabs.Content value='mmd'>
+          <Tabs.Content value="mmd">
             <ViewAsMmd viewId={viewId} />
           </Tabs.Content>
 
-          <Tabs.Content value='d2'>
+          <Tabs.Content value="d2">
             <ViewAsD2 viewId={viewId} />
           </Tabs.Content>
         </Box>

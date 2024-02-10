@@ -55,7 +55,7 @@ export function NavigateToBtn({ onClick, className }: NavigateToBtnProps) {
   // )
   return (
     <ActionIcon
-      className={clsx('nodrag', className)}
+      className={clsx('nodrag nopan', className)}
       radius="xl"
       autoFocus={false}
       onClick={(e) => {

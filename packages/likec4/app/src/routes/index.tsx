@@ -17,7 +17,7 @@ const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
   return (
     <Box asChild shrink="0" grow="1">
       <Card asChild style={{ width: 350, maxWidth: 350 }} variant="surface" size="1">
-        <Link to="/view/$viewId/editor" params={{ viewId: id }}>
+        <Link to="/view/$viewId/editor" params={{ viewId: id }} search>
           <Inset clip="padding-box" side="top" pb="current">
             {/* <DiagramPreview diagram={diagram} /> */}
           </Inset>
