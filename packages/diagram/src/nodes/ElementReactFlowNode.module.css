@@ -1,7 +1,9 @@
 .container {
   position: relative;
   width: 100%;
+  width: -webkit-fill-available;
   height: 100%;
+  height: -webkit-fill-available;
 
   :where(:global(.react-flow__node:focus-within)) & {
     /* border: 20px solid red; */
@@ -18,9 +20,7 @@
   fill: var(--likec4-element-fill);
   stroke: var(--likec4-element-stroke);
   overflow: visible;
-
-
-
+  
   --shadow-color: rgba(0, 0, 0, 0.05);
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0px 20px 25px var(--shadow-color))
     drop-shadow(0px 10px 10px var(--shadow-color));
@@ -86,7 +86,9 @@
 .element {
   position: relative;
   width: 100%;
+  width: -webkit-fill-available;
   height: 100%;
+  height: -webkit-fill-available;
   padding: rem(24px);
   display: flex;
   flex-direction: column;

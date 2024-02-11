@@ -1,23 +1,13 @@
 import { invariant } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web'
-import {
-  Background,
-  Controls,
-  type EdgeMouseHandler,
-  type NodeMouseHandler,
-  ReactFlow as ReactXYFlow,
-  type ReactFlowInstance,
-  ViewportPortal
-} from '@xyflow/react'
+import { Background, Controls, ReactFlow as ReactXYFlow, type ReactFlowInstance } from '@xyflow/react'
 import { memo, useCallback, useMemo, useRef } from 'react'
-import { isNumber } from 'remeda'
 import useTilg from 'tilg'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { useSetHoveredEdgeId } from './state'
 import { EditorEdge, EditorNode } from './types'
-import StylesPanel from './ui/StylesPanel'
-import { useLikeC4Editor, useLikeC4EditorState, useLikeC4EditorUpdate } from './ViewEditorApi'
+import { useLikeC4EditorState } from './ViewEditorApi'
 
 type LikeC4ReactFlowProps = {
   defaultNodes?: EditorNode[] | undefined

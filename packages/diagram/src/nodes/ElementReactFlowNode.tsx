@@ -297,16 +297,13 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
         style={{ visibility: 'hidden' }}
       />
       <div
-        className={classes.element}
-        style={{
-          maxHeight: h
-        }}>
+        className={classes.element}>
         {element.icon && (
           <div className={classes.elementIcon}>
             <Image
               fit="contain"
               maw={w}
-              mah={65}
+              mah={60}
               src={element.icon}
               alt={element.title} />
           </div>

@@ -8,10 +8,11 @@ import { LikeC4EditorProvider } from './ViewEditorApi'
 import { DataSync } from './ViewEditorDataSync'
 import { LikeC4ReactFlow } from './ViewEditorReactFlow'
 import './styles.css'
+import { useMantineContext } from '@mantine/core'
 import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
 import Camera from './ui/Camera'
-import StylesPanel from './ui/StylesPanel'
+import OptionsPanel from './ui/OptionsPanel'
 
 export type LikeC4ViewEditorProps = LikeC4ViewEditorApiProps & {
   view: DiagramView
@@ -24,6 +25,8 @@ export function LikeC4ViewEditor({
   ...apiProps
 }: LikeC4ViewEditorProps) {
   useTilg()
+  // Verify that the MantineProvider is available
+  useMantineContext()
   const initial = useMemo(() => fromDiagramView(view, nodesDraggable), [])
   return (
     <IsolatedJotaiProvider>
@@ -39,7 +42,7 @@ export function LikeC4ViewEditor({
             defaultEdges={initial.edges} />
           <DataSync view={view} />
           <Camera viewId={view.id} />
-          {!readonly && <StylesPanel />}
+          {!readonly && <OptionsPanel />}
         </LikeC4EditorProvider>
       </ReactFlowProvider>
     </IsolatedJotaiProvider>

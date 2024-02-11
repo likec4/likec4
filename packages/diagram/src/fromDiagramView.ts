@@ -151,9 +151,9 @@ export function fromDiagramView(
           }
           : null
       },
-      markerEnd: {
-        type: MarkerType.ArrowClosed
-      },
+      // markerEnd: {
+      //   type: MarkerType.ArrowClosed
+      // },
       interactionWidth: 20
     })
   }

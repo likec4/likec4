@@ -4,10 +4,10 @@ import { type DiagramView } from '@likec4/core'
 import { ExtensionToPanel, WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import { Messenger as VsCodeMessenger } from 'vscode-messenger'
 import { type WebviewTypeMessageParticipant } from 'vscode-messenger-common'
+import { cmdLocate } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { PreviewPanel } from './panel/PreviewPanel'
-import { cmdLocate } from '../const'
 
 const toPreviewPanel = {
   type: 'webview',
@@ -39,6 +39,11 @@ export default class Messenger extends AbstractDisposable {
     this.onDispose(
       this.messenger.onNotification(WebviewToExtension.locate, async params => {
         await vscode.commands.executeCommand(cmdLocate, params)
+      })
+    )
+    this.onDispose(
+      this.messenger.onNotification(WebviewToExtension.onChange, async params => {
+        Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.change, null, 4)}`)
       })
     )
   }

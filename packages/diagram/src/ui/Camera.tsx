@@ -114,7 +114,7 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
       const zoom = reactflow.getZoom()
       reactflow.fitView({
         duration: 350,
-        maxZoom: Math.max(1.07, zoom),
+        maxZoom: Math.max(1.05, zoom),
         padding,
         nodes: selectedNodes
       })

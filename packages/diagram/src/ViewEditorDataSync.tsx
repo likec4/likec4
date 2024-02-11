@@ -1,6 +1,7 @@
 import { type DiagramView } from '@likec4/core'
 import { isEqual } from '@react-hookz/deep-equal'
 import { useDeepCompareEffect } from '@react-hookz/web'
+import { useEffect } from 'react'
 import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
 import { useLikeC4Editor } from './ViewEditorApi'
@@ -13,10 +14,17 @@ export const DataSync = ({ view }: {
   const reactflow = editor.reactflow
   const initialized = reactflow?.viewportInitialized
 
+  useEffect(() => {
+    if (initialized) {
+      editor.triggerOnInitialized(reactflow)
+    }
+  }, [initialized ?? false])
+
   useDeepCompareEffect(() => {
     if (!initialized) {
       return
     }
+    console.log('useDeepCompareEffect', initialized)
     const update = fromDiagramView(view, editor.nodesDraggable)
 
     reactflow.setNodes(prev =>

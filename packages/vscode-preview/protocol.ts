@@ -1,4 +1,4 @@
-import type { DiagramView, Fqn, RelationID, ViewID } from '@likec4/core'
+import type { DiagramView, ElementShape, Fqn, NonEmptyArray, RelationID, ThemeColor, ViewID } from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 export namespace ExtensionToPanel {
@@ -14,21 +14,41 @@ export namespace WebviewToExtension {
   export const openView: NotificationType<{ viewId: ViewID }> = { method: 'openView' }
   export const closeMe: NotificationType<never> = { method: 'closeMe' }
 
+  export namespace Changes {
+    export interface ChangeColor {
+      viewId: ViewID
+      op: 'change-color'
+      color: ThemeColor
+      targets: NonEmptyArray<Fqn>
+    }
+
+    export interface ChangeShape {
+      viewId: ViewID
+      op: 'change-shape'
+      shape: ElementShape
+      targets: NonEmptyArray<Fqn>
+    }
+  }
+
+  export type ChangeCommand = Changes.ChangeColor | Changes.ChangeShape
+
+  export const onChange: NotificationType<{ change: ChangeCommand }> = { method: 'onChange' }
+
   export type LocateParams =
     | {
-        element: Fqn
-        relation?: never
-        view?: never
-      }
+      element: Fqn
+      relation?: never
+      view?: never
+    }
     | {
-        relation: RelationID
-        element?: never
-        view?: never
-      }
+      relation: RelationID
+      element?: never
+      view?: never
+    }
     | {
-        view: ViewID
-        relation?: never
-        element?: never
-      }
+      view: ViewID
+      relation?: never
+      element?: never
+    }
   export const locate: NotificationType<LocateParams> = { method: 'locate' }
 }

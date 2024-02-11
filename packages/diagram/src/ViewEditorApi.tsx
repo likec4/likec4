@@ -5,7 +5,7 @@ import type { ReactFlowInstance } from '@xyflow/react'
 import { useRef } from 'react'
 import { createContainer } from 'react-tracked'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { ChangeCommand, EditorNode, OnChange } from './types'
+import type { ChangeCommand, EditorEdge, EditorNode, OnChange } from './types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
@@ -54,6 +54,7 @@ export type LikeC4ViewEditorApiProps = {
   onNodeClick?: OnNodeClick | undefined
   onNodeContextMenu?: OnNodeClick | undefined
   onEdgeClick?: OnEdgeClick | undefined
+  onInitialized?: ((reactflow: ReactFlowInstance) => void) | undefined
 }
 
 const useEditorState = ({
@@ -122,6 +123,9 @@ const useEditorState = ({
         event.preventDefault()
         event.stopPropagation()
       }
+    },
+    triggerOnInitialized: (reactflow: ReactFlowInstance) => {
+      eventsRef.current.onInitialized?.(reactflow)
     }
     // fitView: () => {
     //   const reactflowApi = reactflowRef.current

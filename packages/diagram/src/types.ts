@@ -84,4 +84,4 @@ export interface ChangeShape {
 
 export type ChangeCommand = ChangeColor | ChangeShape
 
-export type OnChange = (operation: ChangeCommand) => void
+export type OnChange = (change: ChangeCommand) => void

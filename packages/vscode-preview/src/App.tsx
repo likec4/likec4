@@ -95,6 +95,7 @@ const App = () => {
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LikeC4ViewEditor
           view={view}
+          nodesDraggable={false}
           onNavigateTo={(node) => {
             lastNodeContextMenuRef.current = null
             extensionApi.goToViewSource(node.navigateTo)
@@ -116,6 +117,9 @@ const App = () => {
               extensionApi.goToRelation(edge.relations[0])
               e.stopPropagation()
             }
+          }}
+          onChange={(change) => {
+            extensionApi.triggerChange({ ...change, viewId: view.id })
           }}
         />
       </div>
