@@ -223,8 +223,8 @@ const NodeShape = memo<NodeShapeProps>(
                   <Rect
                     x={0}
                     y={0}
-                    width={node.size.width}
-                    height={Math.min(node.size.height, 150)}
+                    width={node.width}
+                    height={Math.min(node.height, 150)}
                     perfectDrawEnabled={false}
                   />
                   <CompoundZoomBtn

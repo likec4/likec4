@@ -1,4 +1,4 @@
-import { ElementColors as Colors, type ComputedNode } from '@likec4/core'
+import { type ComputedNode, ElementColors as Colors } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
@@ -34,8 +34,7 @@ function wrapToHTML({
 }) {
   // Change row height if line height is not 1
   const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
-  const TDheight =
-    lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
+  const TDheight = lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
   const fontOpts = ` POINT-SIZE="${pxToPoints(fontsize)}"${color ? ` COLOR="${color}"` : ``}`
   const rows = wrap(text, maxchars)
     .map(text => (isEmpty(text) ? ' ' : text))
@@ -44,22 +43,67 @@ function wrapToHTML({
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
   return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
+
+function labelBlocks({
+  text,
+  maxchars,
+  fontsize,
+  lineHeight = 1.25,
+  color
+}: {
+  text: string
+  maxchars: number
+  fontsize: number
+  lineHeight?: number
+  color?: string
+}) {
+  const rows = wrap(text, maxchars)
+  const maxChars = Math.max(...rows.map(row => row.length))
+
+  const width = pxToPoints(maxChars * fontsize * 0.6)
+  const height = pxToPoints(rows.length * fontsize * lineHeight)
+  const attrs = [
+    'BORDER="0"',
+    'CELLBORDER="0"',
+    'CELLPADDING="0"',
+    'CELLSPACING="0"',
+    `WIDTH="${width}"`,
+    `HEIGHT="${height}"`,
+    `BGCOLOR="${color ?? '#000'}"`,
+    'FIXEDSIZE="TRUE"'
+  ].join(' ')
+  return `<TABLE ${attrs}><TR><TD> </TD></TR></TABLE>`
+}
+
 export function nodeIcon(src: string) {
-  return `<IMG SRC="${src}" SCALE="TRUE"/>`
+  const attrs = [
+    'BORDER="0"',
+    'CELLBORDER="0"',
+    'CELLPADDING="0"',
+    'CELLSPACING="0"',
+    `WIDTH="${IconSizePoints}"`,
+    `HEIGHT="${IconSizePoints}"`,
+    `BGCOLOR="#ABCDEF"`,
+    'FIXEDSIZE="TRUE"'
+  ].join(' ')
+  return `<TABLE ${attrs}><TR><TD> </TD></TR></TABLE>`
+  // const td = `<TD WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BGCOLOR="${'#000'}"> </TD>`
+  // return `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR>${td}</TR></TABLE>`
+  // return `<IMG SRC="${src}" SCALE="TRUE"/>`
 }
 
 export function nodeLabel(node: ComputedNode) {
   const lines = [
-    wrapToHTML({
+    labelBlocks({
       text: node.title,
-      fontsize: 20,
+      fontsize: 19,
       maxchars: 35,
       color: Colors[node.color].hiContrast
     })
   ]
   if (isTruthy(node.technology)) {
     lines.push(
-      wrapToHTML({
+      labelBlocks({
         text: node.technology,
         fontsize: 12,
         lineHeight: 1,
@@ -70,10 +114,10 @@ export function nodeLabel(node: ComputedNode) {
   }
   if (isTruthy(node.description)) {
     lines.push(
-      wrapToHTML({
+      labelBlocks({
         text: node.description,
         fontsize: 14,
-        lineHeight: 1.1,
+        lineHeight: 1.25,
         maxchars: 45,
         color: Colors[node.color].loContrast
       })
@@ -82,15 +126,17 @@ export function nodeLabel(node: ComputedNode) {
   if (lines.length === 1 && !node.icon) {
     return `<${lines[0]}>`
   }
-  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
+  const rows = lines.map(line => `<TR><TD ALIGN="CENTER">${line}</TD></TR>`)
   if (node.icon) {
     rows.unshift(
-      `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
+      `<TR><TD ALIGN="CENTER">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows.join(
-    ''
-  )}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${
+    rows.join(
+      ''
+    )
+  }</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

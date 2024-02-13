@@ -1,5 +1,5 @@
 import type { DiagramNode, NodeId } from '@likec4/core'
-import { nonNullable, defaultTheme as theme } from '@likec4/core'
+import { defaultTheme as theme, nonNullable } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
@@ -91,16 +91,15 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const toCenterOnRect = (centerTo: IRect, opts?: CenteringOpts) => {
       const keepZoom = opts?.keepZoom ?? false
       const container = containerRef.current
-      const _maxZoom =
-        keepZoom === true && !isNil(stageRef.current) ? stageRef.current.scaleX() : maxZoom
+      const _maxZoom = keepZoom === true && !isNil(stageRef.current) ? stageRef.current.scaleX() : maxZoom
 
       const // Get the space we can see in the web page = size of div containing stage
-        // or stage size, whichever is the smaller
-        // and Exclude padding
-        viewRect = {
-          width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
-          height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
-        },
+      // or stage size, whichever is the smaller
+      // and Exclude padding
+      viewRect = {
+        width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
+        height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
+      },
         // Get the ratios of target shape v's view space widths and heights
         // decide on best scale to fit longest side of shape into view
         viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
@@ -122,21 +121,20 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
     }
 
-    const toFitDiagram = () =>
-      toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
+    const toFitDiagram = () => toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
 
     const [stageProps, stageSpringApi] = useSpring(
       () =>
         initialPosition
           ? {
-              from: initialPosition,
-              to: toFitDiagram(),
-              immediate
-            }
+            from: initialPosition,
+            to: toFitDiagram(),
+            immediate
+          }
           : {
-              to: toFitDiagram(),
-              immediate
-            },
+            to: toFitDiagram(),
+            immediate
+          },
       []
     )
 
@@ -202,13 +200,12 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               {
                 x: node.position[0],
                 y: node.position[1],
-                width: node.size.width,
-                height: node.size.height
+                width: node.width,
+                height: node.height
               },
               opts
             ),
-          centerOnRect: (rect: IRect, opts?: CenteringOpts) =>
-            refs.current.centerOnRect(rect, opts),
+          centerOnRect: (rect: IRect, opts?: CenteringOpts) => refs.current.centerOnRect(rect, opts),
           centerAndFit: (opts?: CenteringOpts) => refs.current.centerAndFit(opts)
         }) satisfies DiagramApi,
       [refs, stageRef]
@@ -309,8 +306,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             },
             !onNodeContextMenu && !onStageContextMenu
               ? {
-                  buttons: -1
-                }
+                buttons: -1
+              }
               : undefined
           )
         },
@@ -410,7 +407,7 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           <Nodes {...sharedProps} onNodeClick={onNodeClick} />
           <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
         </Layer>
-        <Layer name='top'></Layer>
+        <Layer name="top"></Layer>
       </AnimatedStage>
     )
   }

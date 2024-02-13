@@ -53,20 +53,20 @@ export const NodeLinkBtn = memo<NodeLinkBtnProps>(
     let iconY: number
     switch (node.shape) {
       case 'browser': {
-        iconY = node.size.height - 20
+        iconY = node.height - 20
         break
       }
       case 'queue': {
-        iconY = node.size.height - 14
+        iconY = node.height - 14
         break
       }
       case 'cylinder':
       case 'storage': {
-        iconY = node.size.height - 22
+        iconY = node.height - 22
         break
       }
       default:
-        iconY = node.size.height - 16
+        iconY = node.height - 16
     }
 
     const fill = toHex(mix(colors.fill, colors.stroke, 65))

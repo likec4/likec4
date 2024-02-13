@@ -1,5 +1,6 @@
-import '@mantine/core/styles.css'
 import '@radix-ui/themes/styles.css'
+import '@mantine/core/styles.css'
+import '@fontsource-variable/rubik'
 import './main.css'
 import { RouterProvider } from '@tanstack/react-router'
 import { Provider } from 'jotai'

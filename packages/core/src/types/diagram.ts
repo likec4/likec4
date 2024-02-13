@@ -1,8 +1,8 @@
-import type { ColorLiteral } from './theme'
-import type { ComputedEdge, ComputedNode, ComputedView } from './computed-view'
 import type { NonEmptyArray } from './_common'
+import type { ComputedEdge, ComputedNode, ComputedView } from './computed-view'
+import type { ColorLiteral } from './theme'
 
-export type Point = [x: number, y: number]
+export type Point = readonly [x: number, y: number]
 
 // Bounding box
 export type BBox = {
@@ -23,13 +23,11 @@ export interface DiagramLabel {
 }
 
 export interface DiagramNode extends ComputedNode {
-  size: {
-    width: number
-    height: number
-  }
-  labels: DiagramLabel[]
+  width: number
+  height: number
   position: Point // Absolute position, top left
   // relative: Point // Top left, relative to parent
+  labels: DiagramLabel[]
 }
 
 export interface DiagramEdge extends ComputedEdge {

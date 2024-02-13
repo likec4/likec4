@@ -49,5 +49,8 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "dependencies": {
+    "@fontsource-variable/rubik": "^5.0.20"
   }
 }

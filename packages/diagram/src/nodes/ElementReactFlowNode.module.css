@@ -20,7 +20,7 @@
   fill: var(--likec4-element-fill);
   stroke: var(--likec4-element-stroke);
   overflow: visible;
-  
+
   --shadow-color: rgba(0, 0, 0, 0.05);
   filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0px 20px 25px var(--shadow-color))
     drop-shadow(0px 10px 10px var(--shadow-color));
@@ -94,6 +94,7 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+  overflow: hidden;
   gap: rem(10px);
 
   &:has(.description):has(.technology) {
@@ -105,7 +106,7 @@
   }
 
   :where([data-likec4-shape='cylinder'], [data-likec4-shape='storage']) & {
-    padding-top: rem(30px);
+    padding-top: rem(34px);
   }
 
   :where([data-likec4-shape='browser']) & {
@@ -113,52 +114,76 @@
   }
 
   .elementIcon {
-    img {
-      margin: 0 auto;
-      width: auto;
-      height: auto;
-      mix-blend-mode: hard-light;
-    }
+    --max-h: 50px;
+    flex: 0 1 auto;
+    max-height: calc(var(--max-h) / 2);
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
     user-select: none;
     pointer-events: none;
+    overflow: visible;
+    img {
+      width: 100%;
+      height: auto;
+      mix-blend-mode: hard-light;
+      max-height: var(--max-h);
+    }
+
+    :where([data-likec4-shape='cylinder'], [data-likec4-shape='storage']) & {
+      --max-h: 40px;
+      max-height: calc(var(--max-h) / 2 + 10px);
+    }
+  }
+
+  &:has(.elementIcon) {
+    /* justify-content: flex-start; */
   }
 
   .title {
+    flex: 0 0 auto;
+    font-family: var(--likec4-element-title-font-family, var(--likec4-element-font-family));
+    font-optical-sizing: auto;
+    font-style: normal;
     text-align: center;
-    font-weight: 500;
-    font-size: rem(18px);
+    font-weight: var(--likec4-element-title-font-weight, 500);
+    font-size: rem(19px);
     line-height: 1.1;
     text-wrap: balance;
     color: var(--likec4-element-hiContrast);
   }
 
   .technology {
-    font-weight: 300;
-    font-size: rem(13px);
-    line-height: 1;
+    flex: 0 0 auto;
+    font-family: var(--likec4-element-technology-font-family, var(--likec4-element-font-family));
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: var(--likec4-element-technology-font-weight, 400);
+    font-size: rem(12px);
+    line-height: 1.25;
     text-align: center;
     text-wrap: balance;
     color: var(--likec4-element-loContrast);
-
-    &:has(+ .description) {
-      margin-bottom: rem(2px);
-    }
   }
 
   .description {
-    font-weight: 400;
-    font-size: rem(15px);
+    flex: 0 1 auto;
+    font-family: var(--likec4-element-description-font-family, var(--likec4-element-font-family));
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: var(--likec4-element-technology-font-weight, 400);
+    font-size: rem(16px);
     line-height: 1.25;
-    text-align: center;
-    text-align: center;
-    text-wrap: pretty;
     text-align: center;
     text-wrap: pretty;
     color: var(--likec4-element-loContrast);
-    letter-spacing: -0.01em;
-    text-wrap: pretty;
+    /* letter-spacing: -0.1px; */
     white-space-collapse: preserve-breaks;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
+
 }
 
 .navigateBtn {

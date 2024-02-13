@@ -10,11 +10,11 @@ type NodeLabelsProps = {
 }
 
 export function NodeLabels({ node, theme, offsetX = 0, offsetY = 0, maxWidth }: NodeLabelsProps) {
-  const { labels, size, color } = node
+  const { labels, color } = node
   const colors = theme.elements[color]
-  const width = maxWidth ?? size.width - 40
+  const width = maxWidth ?? node.width - 40
   const titleFontSize = labels[0]?.fontSize ?? 18
-  const x = Math.ceil((size.width - width) / 2)
+  const x = Math.ceil((node.width - width) / 2)
 
   return (
     <Group x={x} y={3} offsetX={offsetX} offsetY={offsetY}>

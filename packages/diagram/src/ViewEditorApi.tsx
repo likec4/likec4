@@ -1,9 +1,9 @@
-import { type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
-import { useSetState } from '@mantine/hooks'
-import { useSyncedRef, useUpdateEffect } from '@react-hookz/web'
+import { type DiagramEdge, type DiagramNode, type DiagramView, invariant } from '@likec4/core'
+import { useSetState, useShallowEffect } from '@mantine/hooks'
+import { useCustomCompareEffect, useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import type { ReactFlowInstance } from '@xyflow/react'
-import { useRef } from 'react'
-import { createContainer } from 'react-tracked'
+import { useMemo, useRef } from 'react'
+import { createContainer, getUntrackedObject } from 'react-tracked'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { ChangeCommand, EditorEdge, EditorNode, OnChange } from './types'
 
@@ -76,18 +76,19 @@ const useEditorState = ({
   // onEdgeClick
 }: LikeC4ViewEditorApiProps) => {
   const eventsRef = useSyncedRef(eventHandlers)
-  // const onChangeRef = useSyncedRef(onChange)
-  // const onNavigateToRef = useSyncedRef(onNavigateTo)
-  // const onNodeClickRef = useSyncedRef(onNodeClick)
-  // const onNodeContextMenu = useSyncedRef(onNodeContextMenu)
-  // const onEdgeClickRef = useSyncedRef(onEdgeClick)
+
+  const hasEventHandlers = {
+    hasOnChange: !!eventHandlers.onChange,
+    hasOnNavigateTo: !!eventHandlers.onNavigateTo,
+    hasOnNodeClick: !!eventHandlers.onNodeClick,
+    hasOnNodeContextMenu: !!eventHandlers.onNodeContextMenu,
+    hasOnEdgeClick: !!eventHandlers.onEdgeClick
+  }
 
   const reactflowRef = useRef<ReactFlowInstance | null>(null)
 
-  // const storeApi = useStoreApi()
-  const isNavigateBtnVisible = !!eventHandlers.onNavigateTo
-
   const [state, setState] = useSetState({
+    eventHandlers: eventsRef,
     disableBackground,
     fitViewPadding,
     colorMode,
@@ -98,35 +99,8 @@ const useEditorState = ({
     nodesSelectable,
     nodesDraggable,
     viewId: view.id,
-    reactflow: null as null | ReactFlowInstance,
-    isNavigateBtnVisible,
-    triggerChange: (changeCommand: ChangeCommand) => {
-      eventsRef.current.onChange?.(changeCommand)
-    },
-    navigateTo: (elementnode: EditorNode.Data) => {
-      const callback = eventsRef.current.onNavigateTo
-      if (elementnode.navigateTo && callback) {
-        callback(elementnode as DiagramNodeWithNavigate)
-      }
-    },
-    onNodeClick: (element: DiagramNode, event: React.MouseEvent) => {
-      eventsRef.current.onNodeClick?.(element, event)
-    },
-    onEdgeClick: (edge: DiagramEdge, event: React.MouseEvent) => {
-      eventsRef.current.onEdgeClick?.(edge, event)
-    },
-    onNodeContextMenu: (element: DiagramNode, event: React.MouseEvent) => {
-      const callback = eventsRef.current.onNodeContextMenu
-      if (callback) {
-        callback(element, event)
-      } else {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-    },
-    triggerOnInitialized: (reactflow: ReactFlowInstance) => {
-      eventsRef.current.onInitialized?.(reactflow)
-    }
+    ...hasEventHandlers,
+    reactflow: null as null | ReactFlowInstance
     // fitView: () => {
     //   const reactflowApi = reactflowRef.current
     //   invariant(reactflowApi, `reactflowApi is null`)
@@ -159,11 +133,26 @@ const useEditorState = ({
 
   useUpdateEffect(() => {
     setState({
-      isNavigateBtnVisible,
+      eventHandlers: eventsRef
+    })
+  }, [eventsRef])
+
+  useShallowEffect(() => {
+    setState({
+      ...hasEventHandlers
+    })
+  }, [hasEventHandlers])
+
+  const viewId = view.id
+  useUpdateEffect(() => {
+    setState({ viewId })
+  }, [viewId])
+
+  useUpdateEffect(() => {
+    setState({
       fitViewPadding,
       colorMode,
       controls,
-      viewId: view.id,
       pannable,
       zoomable,
       readonly,
@@ -172,11 +161,9 @@ const useEditorState = ({
       nodesDraggable
     })
   }, [
-    isNavigateBtnVisible,
     fitViewPadding,
     colorMode,
     controls,
-    view.id,
     pannable,
     zoomable,
     readonly,
@@ -190,8 +177,53 @@ const useEditorState = ({
 
 export const {
   Provider: LikeC4EditorProvider,
-  useTracked: useLikeC4EditorState,
+  useTracked: useLikeC4EditorTracked,
   useTrackedState: useLikeC4Editor,
   useUpdate: useLikeC4EditorUpdate,
   useSelector: useLikeC4EditorSelector
 } = createContainer(useEditorState)
+
+export const useEventTriggers = () => {
+  const [editor, update] = useLikeC4EditorTracked()
+  const eventsRef = getUntrackedObject(editor.eventHandlers)
+  invariant(eventsRef, `eventsRef is null`)
+  return useMemo(() => {
+    // const eventsRef =
+    return ({
+      onChange: (changeCommand: ChangeCommand) => {
+        console.debug('Trigger.onChange', changeCommand)
+        eventsRef.current.onChange?.(changeCommand)
+      },
+      onNavigateTo: (elementnode: EditorNode.Data) => {
+        const callback = eventsRef.current.onNavigateTo
+        if (elementnode.navigateTo && callback) {
+          callback(elementnode as DiagramNodeWithNavigate)
+        }
+      },
+
+      onNodeClick: (element: DiagramNode, event: React.MouseEvent) => {
+        eventsRef.current.onNodeClick?.(element, event)
+      },
+
+      onEdgeClick: (edge: DiagramEdge, event: React.MouseEvent) => {
+        eventsRef.current.onEdgeClick?.(edge, event)
+      },
+
+      onNodeContextMenu: (element: DiagramNode, event: React.MouseEvent) => {
+        const callback = eventsRef.current.onNodeContextMenu
+        if (callback) {
+          callback(element, event)
+        } else {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+      },
+
+      onInitialized: (reactflow: ReactFlowInstance) => {
+        console.debug('Trigger.onInitialized', { reactflow })
+        update({ reactflow })
+        eventsRef.current.onInitialized?.(reactflow)
+      }
+    })
+  }, [eventsRef, update])
+}

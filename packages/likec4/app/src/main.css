@@ -40,3 +40,10 @@ html, body {
     background-color: transparent !important;
   }
 }
+
+body {
+  --mantine-font-family: 'Rubik Variable', sans-serif;
+  --default-font-family: 'Rubik Variable', sans-serif;
+  --likec4-font-family: 'Rubik Variable', sans-serif;
+  font-family:  'Rubik Variable', sans-serif;
+}

@@ -1,18 +1,18 @@
 import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
+  BBox as LabelBBox,
   ComputedView,
   DiagramEdge,
   DiagramLabel,
   DiagramNode,
   DiagramView,
-  BBox as LabelBBox,
   NonEmptyArray,
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
-import type { BoundingBox, GVPos, GraphvizJson } from './types'
+import type { BoundingBox, GraphvizJson, GVPos } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -231,15 +231,16 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
       continue
     }
 
-    const { x, y, ...size } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+    const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
     const position = [x, y] as Point
 
     const node: DiagramNode = {
       ...computed,
       position,
-      size,
-      labels: parseLabelDraws(obj, position)
+      width,
+      height,
+      labels: [] // parseLabelDraws(obj, position)
     }
     diagram.nodes.push(node)
   }
@@ -304,10 +305,10 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
   }
 
   return {
-    dot: dot
-      .split('\n')
-      .filter(l => !l.includes('margin=33.21'))
-      .join('\n'),
+    dot: dot,
+    // .split('\n')
+    // .filter(l => !l.includes('margin=33.21'))
+    // .join('\n'),
     diagram
   }
 }

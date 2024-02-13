@@ -27,10 +27,10 @@ export const NodeZoomBtn = memo<NodeZoomBtn>(({ animate, node, theme, isHovered:
   switch (node.shape) {
     case 'browser':
     case 'mobile':
-      zoomInIconY = node.size.height - 20
+      zoomInIconY = node.height - 20
       break
     default:
-      zoomInIconY = node.size.height - 16
+      zoomInIconY = node.height - 16
   }
   const fill = toHex(mix(colors.fill, colors.stroke, 65))
   const onOver = toHex(mix(colors.fill, colors.stroke, 75))
@@ -51,7 +51,7 @@ export const NodeZoomBtn = memo<NodeZoomBtn>(({ animate, node, theme, isHovered:
   })
   return (
     <AnimatedGroup
-      x={node.size.width / 2}
+      x={node.width / 2}
       y={props.y}
       offsetX={halfSize}
       offsetY={halfSize}

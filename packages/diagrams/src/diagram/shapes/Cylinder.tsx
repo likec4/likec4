@@ -1,9 +1,9 @@
 import { useSpring } from '@react-spring/konva'
 import { AnimatedEllipse, AnimatedPath } from '../../konva'
-import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
-import type { NodeShapeProps } from './types'
 import { NodeIcon } from './NodeIcon'
+import { NodeLabels } from './NodeLabel'
+import type { NodeShapeProps } from './types'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
   const radius = Math.round(diameter / 2)
@@ -29,7 +29,8 @@ function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
 
 export function CylinderShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const {
-    size: { width, height }
+    width,
+    height
   } = node
 
   const { path, rx, ry } = cylinderSVGPath(width, height)

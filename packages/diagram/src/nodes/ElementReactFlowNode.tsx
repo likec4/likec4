@@ -6,7 +6,7 @@ import { motion, type Variant, type Variants } from 'framer-motion'
 import { memo } from 'react'
 import type { ElementNodeData } from '../types'
 import { toDomPrecision } from '../utils'
-import { useLikeC4Editor } from '../ViewEditorApi'
+import { useEventTriggers, useLikeC4Editor } from '../ViewEditorApi'
 import classes from './ElementReactFlowNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
@@ -23,7 +23,7 @@ const isEqualProps = (prev: ElementReactFlowNodeProps, next: ElementReactFlowNod
   && isEqualSimple(prev.data, next.data)
 )
 
-function cylinderSVGPath(diameter: number, height: number, tilt = 0.0825) {
+function cylinderSVGPath(diameter: number, height: number, tilt = 0.0725) {
   const radius = Math.round(diameter / 2)
   // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
   const rx = radius
@@ -251,9 +251,12 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
   height
 }) {
   const editor = useLikeC4Editor()
+  const trigger = useEventTriggers()
 
-  const w = toDomPrecision(width ?? element.size.width)
-  const h = toDomPrecision(height ?? element.size.height)
+  const isNavigatable = editor.hasOnNavigateTo && !!element.navigateTo
+
+  const w = toDomPrecision(width ?? element.width)
+  const h = toDomPrecision(height ?? element.height)
 
   return (
     <motion.div
@@ -302,8 +305,6 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
           <div className={classes.elementIcon}>
             <Image
               fit="contain"
-              maw={w}
-              mah={60}
               src={element.icon}
               alt={element.title} />
           </div>
@@ -325,10 +326,10 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
           </Text>
         )}
       </div>
-      {element.navigateTo && editor.isNavigateBtnVisible && (
+      {isNavigatable && (
         <NavigateToBtn
           onClick={() => {
-            editor.navigateTo(element)
+            trigger.onNavigateTo(element)
           }}
           className={classes.navigateBtn} />
       )}

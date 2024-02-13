@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
+  fontFamily: 'var(--default-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {

@@ -21,7 +21,8 @@ export function isCompound(node: DiagramNode) {
 function nodeSprings(theme: DiagramTheme, node: DiagramNode) {
   const {
     position: [x, y],
-    size: { width, height },
+    width,
+    height,
     color
   } = node
   const colors = theme.elements[color]

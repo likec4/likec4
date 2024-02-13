@@ -27,4 +27,8 @@
       display: none;
     }
   }
+  --likec4-default-font: var(--likec4-font-family, var(--mantine-font-family));
+  --likec4-compound-font-family: var(--likec4-default-font);
+  --likec4-element-font-family: var(--likec4-default-font);
+  --likec4-edge-font-family: var(--likec4-default-font);
 }

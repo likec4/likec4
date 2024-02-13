@@ -91,13 +91,22 @@ export function fromDiagramView(
       deletable: false,
       position,
       zIndex,
-      ...node.size,
+      width: node.width,
+      height: node.height,
+      // ...node.size,
+      // style: {
+      //   display: 'flex',
+      //   width: 'auto',
+      //   minWidth: node.size.width,
+      //   height: 'auto',
+      //   minHeight: node.size.height
+      // },
       ...(parent
         ? {
           parentNode: ns + parent.id,
           extent: [
             [-10, -10],
-            [parent.size.width - node.size.width + 10, parent.size.height - node.size.height + 10]
+            [parent.width - node.width + 10, parent.height - node.height + 10]
           ]
         }
         : {})
@@ -144,10 +153,11 @@ export function fromDiagramView(
         controlPoints,
         headPoint: edge.headArrowPoint ?? null,
         tailPoint: edge.tailArrowPoint ?? null,
-        label: edge.labelBBox
+        label: edge.labelBBox && edge.label
           ? {
             bbox: edge.labelBBox,
-            text: edge.labels ? edge.labels.map(l => l.text).join('\n') : ''
+            // text: edge.labels ? edge.labels.map(l => l.text).join('\n') : ''
+            text: edge.label
           }
           : null
       },

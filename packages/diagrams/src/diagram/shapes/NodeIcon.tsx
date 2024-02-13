@@ -39,7 +39,7 @@ function IconImage({
       width={iconWidth}
       height={iconHeight}
       listening={false}
-      globalCompositeOperation='hard-light'
+      globalCompositeOperation="hard-light"
     />
   )
 }
@@ -71,10 +71,10 @@ export function NodeIcon({
 
   const firstLabelY = Math.floor(firstLabel.pt[1] - firstLabel.fontSize * 1.25)
   const maxIconHeight = Math.round(firstLabelY - paddingY - 8)
-  const maxIconWidth = maxWidth ?? node.size.width - paddingX * 2
+  const maxIconWidth = maxWidth ?? node.width - paddingX * 2
 
   const centerY = paddingY + Math.floor(maxIconHeight / 2)
-  const centerX = Math.floor(node.size.width / 2)
+  const centerX = Math.floor(node.width / 2)
 
   return (
     <IconImage

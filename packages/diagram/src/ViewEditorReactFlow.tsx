@@ -7,7 +7,7 @@ import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { useSetHoveredEdgeId } from './state'
 import { EditorEdge, EditorNode } from './types'
-import { useLikeC4EditorState } from './ViewEditorApi'
+import { useEventTriggers, useLikeC4Editor, useLikeC4EditorUpdate } from './ViewEditorApi'
 
 type LikeC4ReactFlowProps = {
   defaultNodes?: EditorNode[] | undefined
@@ -18,13 +18,16 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
   defaultEdges = []
 }) {
   useTilg()
-  const [editor, updateState] = useLikeC4EditorState()
+  const editor = useLikeC4Editor()
+  const update = useLikeC4EditorUpdate()
+  const trigger = useEventTriggers()
+
   const instanceRef = useRef<ReactFlowInstance>()
   const setHoveredEdgeId = useSetHoveredEdgeId()
   const lastClickTimeRef = useRef<number>(0)
 
   useUnmountEffect(() => {
-    updateState({
+    update({
       reactflow: null
     })
   })
@@ -62,63 +65,43 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
-      onNodeClick={useCallback(
-        (event, node) => {
+      onEdgeMouseEnter={(event, edge) => setHoveredEdgeId(edge.id)}
+      onEdgeMouseLeave={(event, edge) => setHoveredEdgeId(null)}
+      {...(editor.hasOnNodeClick && {
+        onNodeClick: (event, node) => {
           invariant(EditorNode.is(node), `node is not a EditorNode`)
-          editor.onNodeClick(node.data, event)
-        },
-        [editor.onNodeClick]
-      )}
-      onEdgeClick={useCallback(
-        (event, edge) => {
+          trigger.onNodeClick(node.data, event)
+        }
+      })}
+      {...(editor.hasOnEdgeClick && {
+        onEdgeClick: (event, edge) => {
           invariant(EditorEdge.isRelationship(edge), `edge is not a relationship`)
-          editor.onEdgeClick(edge.data.edge, event)
-        },
-        [editor.onEdgeClick]
-      )}
-      onEdgeMouseEnter={useCallback(
-        (event, edge) => setHoveredEdgeId(edge.id),
-        []
-      )}
-      onEdgeMouseLeave={useCallback(
-        (event, edge) => {
-          setHoveredEdgeId(null)
-        },
-        []
-      )}
-      onEdgeContextMenu={useCallback(
-        (event, edge) => {
+          trigger.onEdgeClick(edge.data.edge, event)
+        }
+      })}
+      {...(editor.hasOnNodeContextMenu && {
+        onEdgeContextMenu: (event, edge) => {
           event.preventDefault()
           event.stopPropagation()
-          // invariant(EditorNode.is(node), `node is not a EditorNode`)
-          // editor.onNodeContextMenu(node.data, event)
         },
-        []
-      )}
-      onNodeContextMenu={useCallback(
-        (event, node) => {
+        onNodeContextMenu: (event, node) => {
           invariant(EditorNode.is(node), `node is not a EditorNode`)
-          editor.onNodeContextMenu(node.data, event)
+          trigger.onNodeContextMenu(node.data, event)
         },
-        [editor.onNodeContextMenu]
-      )}
-      onPaneContextMenu={useCallback(
-        (event) => {
+        onPaneContextMenu: (event) => {
           event.preventDefault()
           event.stopPropagation()
           // invariant(EditorNode.is(node), `node is not a EditorNode`)
           // editor.onNodeContextMenu(node.data, event)
-        },
-        []
-      )}
+        }
+      })}
       onInit={useCallback(
         (instance) => {
           instanceRef.current = instance
-          updateState({
-            reactflow: instance as any
-          })
+          invariant(instance.viewportInitialized, `viewportInitialized is not true`)
+          trigger.onInitialized(instance as any)
         },
-        [updateState]
+        [update, trigger.onInitialized]
       )}
       onPaneClick={useCallback(e => {
         // Workaround for dbl click
