@@ -14,9 +14,13 @@
       ],
       "promptOnClose": false,
       "presentation": {
-        "panel": "shared",
+        "panel": "dedicated",
         "echo": false,
-        "showReuseMessage": false
+        "showReuseMessage": false,
+        "reveal": "silent",
+        "group": "build",
+        "revealProblems": "onProblem",
+        "clear": true,
       }
     }
   ]
