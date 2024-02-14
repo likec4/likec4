@@ -21,6 +21,7 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 )
 
 const App = () => {
+  const lastClickedNodeRef = useRef<string>()
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [view, setView] = useState(getPreviewWindowState)
@@ -28,6 +29,7 @@ const App = () => {
 
   const updateView = useCallback((view: DiagramView | null) => {
     if (view) {
+      lastClickedNodeRef.current = undefined
       lastNodeContextMenuRef.current = null
       savePreviewWindowState(view)
       setState('ready')
@@ -97,25 +99,36 @@ const App = () => {
           view={view}
           nodesDraggable={false}
           onNavigateTo={(node) => {
+            lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = null
             extensionApi.goToViewSource(node.navigateTo)
             extensionApi.openView(node.navigateTo)
           }}
-          onNodeClick={(node, e) => {
-            lastNodeContextMenuRef.current = null
-            extensionApi.goToElement(node.id)
-            e.stopPropagation()
+          onNodeClick={({ element, node, event }) => {
+            console.log(`onNodeClick: ${element.id}`, {
+              selected: node.selected,
+              node
+            })
+            if (lastClickedNodeRef.current === element.id) {
+              lastNodeContextMenuRef.current = null
+              extensionApi.goToElement(element.id)
+              event.stopPropagation()
+              return
+            }
+            lastClickedNodeRef.current = element.id
           }}
-          onNodeContextMenu={(node, e) => {
-            lastNodeContextMenuRef.current = node
+          onNodeContextMenu={({ element, node, event }) => {
+            lastClickedNodeRef.current = undefined
+            lastNodeContextMenuRef.current = element
             // e.stopPropagation()
             // e.preventDefaulzt()
           }}
-          onEdgeClick={(edge, e) => {
+          onEdgeClick={({ relation, event }) => {
+            lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = null
-            if (hasAtLeast(edge.relations, 1)) {
-              extensionApi.goToRelation(edge.relations[0])
-              e.stopPropagation()
+            if (hasAtLeast(relation.relations, 1)) {
+              extensionApi.goToRelation(relation.relations[0])
+              event.stopPropagation()
             }
           }}
           onChange={(change) => {

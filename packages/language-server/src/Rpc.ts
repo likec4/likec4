@@ -1,12 +1,13 @@
+import debounceFunction from 'debounce-fn'
 import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
-import debounceFunction from 'debounce-fn'
 
 import { nonexhaustive } from '@likec4/core'
 import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
 import {
   buildDocuments,
+  changeView,
   computeView,
   fetchModel,
   fetchRawModel,
@@ -20,6 +21,7 @@ export class Rpc {
   init() {
     const modelBuilder = this.services.likec4.ModelBuilder
     const modelLocator = this.services.likec4.ModelLocator
+    const viewEditor = this.services.likec4.ViewEditor
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)
@@ -95,6 +97,10 @@ export class Rpc {
         return modelLocator.locateView(params.view)
       }
       nonexhaustive(params)
+    })
+
+    connection.onRequest(changeView, async ({ change }, _cancelToken) => {
+      return await viewEditor.applyChange(change)
     })
   }
 }

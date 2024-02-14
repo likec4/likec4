@@ -7,12 +7,12 @@ import clsx from 'clsx'
 //   curveCatmullRom,
 //   line as d3line
 // } from 'd3-shape'
-import { memo, type SVGProps } from 'react'
+import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
 // import { hoveredEdgeIdAtom } from '../state'
+import { motion } from 'framer-motion'
 import { useIsEdgeHovered } from '../state'
 import type { RelationshipData } from '../types'
-import { toDomPrecision } from '../utils'
 import styles from './RelationshipEdge.module.css'
 
 // const distance = (a: XYPosition, b: XYPosition) => Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
@@ -144,10 +144,12 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
 
   let strokeDasharray: string | undefined
   if (isDotted) {
-    strokeDasharray = '1,5'
+    strokeDasharray = '2,4'
   } else if (isDashed) {
     strokeDasharray = '10,8'
   }
+
+  const marker = `url(#arrow-${id})`
 
   return (
     <g className={styles.container} data-likec4-color={color} data-edge-hovered={isHovered}>
@@ -172,7 +174,8 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
         d={edgePath}
         {...(strokeDasharray ? { strokeDasharray, strokeDashoffset: 4 } : {})}
         style={style}
-        markerEnd={`url(#arrow-${id})`}
+        {...(edge.headArrow ? { markerEnd: marker } : {})}
+        {...(edge.tailArrow ? { markerStart: marker } : {})}
       />
       <path
         className={clsx('react-flow__edge-interaction')}
@@ -182,16 +185,18 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
         strokeWidth={interactionWidth ?? 10}
       />
       {controlPoints.map((p, i) => (
-        <circle
+        <motion.circle
+          drag
           className={styles.controlPoint}
           key={i}
           cx={p[0]}
           cy={p[1]}
           r={5}
+          onDrag={(event, info) => {
+            console.log(`${info.point.x}x${info.point.y}`)
+          }}
         />
       ))}
-      {/* {selected || isHovered ? (} */}
-
       {data.label && (
         <>
           {

@@ -13,7 +13,10 @@
   height: 100%;
   position: relative;
   border-radius: rem(6px);
-  box-shadow: rgba(17, 17, 26, 0.05) 0px 3px 1px 1px, rgba(17, 17, 26, 0.1) 0px 1px 8px 1px;
+  box-shadow:
+    0 4px 10px 0.5px rgba(0, 0, 0, 0.1),
+    0 2px 2px -1px rgba(0, 0, 0, 0.4);
+  ;
   padding: rem(8px);
   background: var(--likec4-element-fill);
 

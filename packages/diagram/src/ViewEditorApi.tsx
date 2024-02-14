@@ -1,5 +1,6 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, invariant } from '@likec4/core'
 import { useSetState, useShallowEffect } from '@mantine/hooks'
+import { isEqual } from '@react-hookz/deep-equal'
 import { useCustomCompareEffect, useSyncedRef, useUpdateEffect } from '@react-hookz/web'
 import type { ReactFlowInstance } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
@@ -10,8 +11,8 @@ import type { ChangeCommand, EditorEdge, EditorNode, OnChange } from './types'
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
 export type OnNavigateTo = (elementNode: DiagramNodeWithNavigate) => void
-export type OnNodeClick = (element: DiagramNode, event: React.MouseEvent) => void
-export type OnEdgeClick = (relation: DiagramEdge, event: React.MouseEvent) => void
+export type OnNodeClick = (args: { element: DiagramNode; node: EditorNode; event: React.MouseEvent }) => void
+export type OnEdgeClick = (args: { relation: DiagramEdge; edge: EditorEdge; event: React.MouseEvent }) => void
 
 export type LikeC4ViewEditorApiProps = {
   view: DiagramView
@@ -88,6 +89,9 @@ const useEditorState = ({
   const reactflowRef = useRef<ReactFlowInstance | null>(null)
 
   const [state, setState] = useSetState({
+    view,
+    viewNodes: view.nodes,
+    viewEdges: view.edges,
     eventHandlers: eventsRef,
     disableBackground,
     fitViewPadding,
@@ -149,6 +153,14 @@ const useEditorState = ({
   }, [viewId])
 
   useUpdateEffect(() => {
+    setState(({ viewNodes, viewEdges }) => ({
+      viewNodes: isEqual(viewNodes, view.nodes) ? viewNodes : view.nodes,
+      viewEdges: isEqual(viewEdges, view.edges) ? viewEdges : view.edges,
+      view
+    }))
+  }, [view])
+
+  useUpdateEffect(() => {
     setState({
       fitViewPadding,
       colorMode,
@@ -183,7 +195,7 @@ export const {
   useSelector: useLikeC4EditorSelector
 } = createContainer(useEditorState)
 
-export const useEventTriggers = () => {
+export const useLikeC4EditorTriggers = () => {
   const [editor, update] = useLikeC4EditorTracked()
   const eventsRef = getUntrackedObject(editor.eventHandlers)
   invariant(eventsRef, `eventsRef is null`)
@@ -194,25 +206,40 @@ export const useEventTriggers = () => {
         console.debug('Trigger.onChange', changeCommand)
         eventsRef.current.onChange?.(changeCommand)
       },
-      onNavigateTo: (elementnode: EditorNode.Data) => {
+      onNavigateTo: <N extends Pick<EditorNode, 'id' | 'data'>>(node: N) => {
         const callback = eventsRef.current.onNavigateTo
-        if (elementnode.navigateTo && callback) {
-          callback(elementnode as DiagramNodeWithNavigate)
+        if (node.data.navigateTo && callback) {
+          callback({
+            ...node.data,
+            navigateTo: node.data.navigateTo
+          })
         }
       },
 
-      onNodeClick: (element: DiagramNode, event: React.MouseEvent) => {
-        eventsRef.current.onNodeClick?.(element, event)
+      onNodeClick: (node: EditorNode, event: React.MouseEvent) => {
+        eventsRef.current.onNodeClick?.({
+          element: node.data,
+          node,
+          event
+        })
       },
 
-      onEdgeClick: (edge: DiagramEdge, event: React.MouseEvent) => {
-        eventsRef.current.onEdgeClick?.(edge, event)
+      onEdgeClick: (edge: EditorEdge, event: React.MouseEvent) => {
+        eventsRef.current.onEdgeClick?.({
+          relation: edge.data.edge,
+          edge,
+          event
+        })
       },
 
-      onNodeContextMenu: (element: DiagramNode, event: React.MouseEvent) => {
+      onNodeContextMenu: (node: EditorNode, event: React.MouseEvent) => {
         const callback = eventsRef.current.onNodeContextMenu
         if (callback) {
-          callback(element, event)
+          callback({
+            element: node.data,
+            node,
+            event
+          })
         } else {
           event.preventDefault()
           event.stopPropagation()

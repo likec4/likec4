@@ -4,12 +4,6 @@
   width: -webkit-fill-available;
   height: 100%;
   height: -webkit-fill-available;
-
-  :where(:global(.react-flow__node:focus-within)) & {
-    /* border: 20px solid red; */
-  }
-
-  --stroke-fill-color: color-mix(in srgb, var(--likec4-element-stroke) 70%, var(--likec4-element-fill));
 }
 
 .shapeSvg {
@@ -21,9 +15,19 @@
   stroke: var(--likec4-element-stroke);
   overflow: visible;
 
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.15)) drop-shadow(0px 20px 25px var(--shadow-color))
-    drop-shadow(0px 10px 10px var(--shadow-color));
+  --stroke-fill-color: color-mix(in srgb, var(--likec4-element-stroke) 70%, var(--likec4-element-fill));
+
+  filter:
+    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 1px 1px color-mix(in srgb, var(--likec4-element-stroke) 70%, transparent))
+    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.12))
+  ;
+
+  :where(:global(.react-flow__node.selected)) & {
+    filter: none;
+      /* drop-shadow(0 16px 8px rgba(0, 0, 0, 0.2)) */
+      /* drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)) */
+  }
 
   &,
   :where(:not(.indicator)) {
@@ -82,14 +86,18 @@
 .fill-elementStroke {
   fill: var(--likec4-element-stroke);
 }
+.fill-mix-stroke {
+  fill: var(--stroke-fill-color);
+}
 
 .element {
+  --el-padding: 24px;
   position: relative;
   width: 100%;
   width: -webkit-fill-available;
   height: 100%;
   height: -webkit-fill-available;
-  padding: rem(24px);
+  padding: var(--el-padding);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -114,9 +122,9 @@
   }
 
   .elementIcon {
-    --max-h: 50px;
+    --max-h: 30px;
     flex: 0 1 auto;
-    max-height: calc(var(--max-h) / 2);
+    max-height: var(--max-h);
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
@@ -128,12 +136,11 @@
       width: 100%;
       height: auto;
       mix-blend-mode: hard-light;
-      max-height: var(--max-h);
+      max-height: calc(var(--max-h) + var(--el-padding));
     }
 
     :where([data-likec4-shape='cylinder'], [data-likec4-shape='storage']) & {
       --max-h: 40px;
-      max-height: calc(var(--max-h) / 2 + 10px);
     }
   }
 

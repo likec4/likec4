@@ -7,8 +7,8 @@ import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
 import type { CompoundNodeData } from '../types'
 import { toDomPrecision } from '../utils'
-import { useEventTriggers, useLikeC4Editor } from '../ViewEditorApi'
-import classes from './CompoundFNode.module.css'
+import { useLikeC4Editor, useLikeC4EditorTriggers } from '../ViewEditorApi'
+import classes from './CompoundReactFlowNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
 // type CompoundFNodeProps = Pick<NodeProps<CompoundNodeData>, 'id' | 'data'>
@@ -32,7 +32,8 @@ const compoundColor = (color: string, depth: number) =>
     })
   )
 
-export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id, data, width, height }) {
+export const CompoundReactFlowNode = memo<CompoundFNodeProps>(function CompoundNode(props) {
+  const { id, data, width, height } = props
   // useTilg()
   const { color, depth = 0, ...compound } = data
   const colors = useMemo(() => {
@@ -48,7 +49,7 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
   const h = toDomPrecision(height ?? compound.height)
 
   const editor = useLikeC4Editor()
-  const trigger = useEventTriggers()
+  const trigger = useLikeC4EditorTriggers()
 
   const isNavigatable = editor.hasOnNavigateTo && !!compound.navigateTo
 
@@ -86,7 +87,7 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
       {isNavigatable && (
         <NavigateToBtn
           onClick={() => {
-            trigger.onNavigateTo(data)
+            trigger.onNavigateTo(props)
           }}
           className={classes.navigateBtn} />
       )}
@@ -98,3 +99,4 @@ export const CompoundFNode = memo<CompoundFNodeProps>(function CompoundNode({ id
     </div>
   )
 }, isEqualProps)
+CompoundReactFlowNode.displayName = 'CompoundReactFlowNode'

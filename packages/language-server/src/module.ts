@@ -1,18 +1,18 @@
 import { serializeError } from '@likec4/core'
 import {
-  EmptyFileSystem,
-  WorkspaceCache,
   createDefaultModule,
   createDefaultSharedModule,
-  inject,
   type DefaultSharedModuleContext,
+  EmptyFileSystem,
+  inject,
   type LangiumServices,
   type LangiumSharedServices,
   type Module,
   type PartialLangiumServices,
-  type PartialLangiumSharedServices
+  type PartialLangiumSharedServices,
+  WorkspaceCache
 } from 'langium'
-import { Rpc } from './Rpc'
+import { ViewEditor } from './editor/ViewEditor'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logger } from './logger'
 import {
@@ -25,11 +25,12 @@ import {
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
+import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
+type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
 
 interface LikeC4AddedSharedServices {
   lsp: {
@@ -64,6 +65,7 @@ export interface LikeC4AddedServices {
   WorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
+    ViewEditor: ViewEditor
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
@@ -94,6 +96,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
+    ViewEditor: bind(ViewEditor),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),

@@ -1,5 +1,5 @@
-import { hasAtLeast, type DiagramView } from '@likec4/core'
-import { useRef } from 'react'
+import { type DiagramView, hasAtLeast } from '@likec4/core'
+import { useEffect, useRef } from 'react'
 
 export function useViewHistory(view?: DiagramView | null) {
   const viewsHistoryRef = useRef<DiagramView[]>(view ? [view] : [])
@@ -8,6 +8,8 @@ export function useViewHistory(view?: DiagramView | null) {
     if (head && prev) {
       if (view.id === prev.id) {
         viewsHistoryRef.current.shift()
+      } else if (view.id === head.id) {
+        viewsHistoryRef.current[0] = view
       } else if (view.id !== head.id) {
         viewsHistoryRef.current.unshift(view)
       }
@@ -15,8 +17,12 @@ export function useViewHistory(view?: DiagramView | null) {
         viewsHistoryRef.current.pop()
       }
     } else {
-      if (!head || head.id !== view.id) {
+      if (!head) {
         viewsHistoryRef.current.unshift(view)
+      } else if (head.id !== view.id) {
+        viewsHistoryRef.current.unshift(view)
+      } else {
+        viewsHistoryRef.current[0] = view
       }
     }
   }

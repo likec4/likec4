@@ -6,9 +6,7 @@ import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
 import { useLikeC4Editor } from './ViewEditorApi'
 
-const DataSyncMemo = memo<{
-  view: DiagramView
-}>(function DataSync({ view }) {
+const DataSyncMemo = memo(function DataSync() {
   useTilg()
   const editor = useLikeC4Editor()
   const reactflow = editor.reactflow
@@ -18,14 +16,23 @@ const DataSyncMemo = memo<{
     if (!initialized) {
       return
     }
-    console.log('useDeepCompareEffect', initialized)
-    const update = fromDiagramView(view, editor.nodesDraggable)
+    console.debug('DataSync: update reactflow')
+    const update = fromDiagramView({
+      nodes: editor.viewNodes,
+      edges: editor.viewEdges
+    }, editor.nodesDraggable)
 
     reactflow.setNodes(prev =>
       update.nodes.map(node => {
         const existing = prev.find(n => n.id === node.id)
-        if (existing && isEqual(existing.data, node.data)) {
-          return existing
+        if (existing) {
+          if (isEqual(existing.data, node.data)) {
+            return existing
+          }
+          return {
+            ...existing,
+            ...node
+          }
         } else {
           return node
         }
@@ -35,14 +42,20 @@ const DataSyncMemo = memo<{
     reactflow.setEdges(prev =>
       update.edges.map(edge => {
         const existing = prev.find(e => e.id === edge.id)
-        if (existing && isEqual(existing.data.edge, edge.data.edge)) {
-          return existing
+        if (existing) {
+          if (isEqual(existing.data.edge, edge.data.edge)) {
+            return existing
+          }
+          return {
+            ...existing,
+            ...edge
+          }
         } else {
           return edge
         }
       })
     )
-  }, [initialized ?? false, view.nodes, view.edges])
+  }, [initialized ?? false, editor.viewNodes, editor.viewEdges])
 
   return null
 })

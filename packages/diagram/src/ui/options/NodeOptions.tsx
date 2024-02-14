@@ -11,7 +11,7 @@ import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Tooltip
 import { useNodes, useReactFlow } from '@xyflow/react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { type EditorEdge, EditorNode } from '../../types'
-import { useEventTriggers } from '../../ViewEditorApi'
+import { useLikeC4EditorTriggers } from '../../ViewEditorApi'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -41,7 +41,7 @@ export type ColorKey = typeof colors[0]['key']
 export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
   const nodes = useNodes<EditorNode>().filter(node => selectedNodeIds.includes(node.id))
   const api = useReactFlow<EditorNode, EditorEdge>()
-  const trigger = useEventTriggers()
+  const trigger = useLikeC4EditorTriggers()
   if (!hasAtLeast(nodes, 1)) {
     return null
   }

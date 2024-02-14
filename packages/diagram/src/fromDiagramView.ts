@@ -54,7 +54,7 @@ function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) 
 type EditorData = { nodes: EditorNode[]; edges: EditorEdge[] }
 
 export function fromDiagramView(
-  view: DiagramView,
+  view: Pick<DiagramView, 'nodes' | 'edges'>,
   dragEnabled = true
 ): EditorData {
   const editor: EditorData = {
@@ -62,7 +62,8 @@ export function fromDiagramView(
     edges: []
   }
 
-  const ns = view.id + ':'
+  // const ns = view.id + ':'
+  const ns = ''
 
   const nodeById = (id: Fqn) => nonNullable(view.nodes.find(n => n.id === id))
 

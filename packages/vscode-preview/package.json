@@ -44,13 +44,11 @@
     "react-error-boundary": "^4.0.12",
     "typescript": "^5.3.3",
     "vite": "^5.1.1",
+    "vite-plugin-singlefile": "^2.0.0",
     "vite-tsconfig-paths": "^4.3.1",
     "vscode-messenger-webview": "^0.4.5"
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "dependencies": {
-    "@fontsource-variable/rubik": "^5.0.20"
   }
 }

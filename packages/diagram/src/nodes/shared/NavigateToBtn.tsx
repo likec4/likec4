@@ -60,6 +60,7 @@ export function NavigateToBtn({ onClick, className }: NavigateToBtnProps) {
       autoFocus={false}
       onClick={(e) => {
         e.stopPropagation()
+        e.preventDefault()
         onClick()
       }}
     >

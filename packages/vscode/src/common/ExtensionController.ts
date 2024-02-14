@@ -4,13 +4,7 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 import { normalizeError, serializeError, type ViewID } from '@likec4/core'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
-import {
-  cmdLocate,
-  cmdOpenPreview,
-  cmdPreviewContextOpenSource,
-  cmdRebuild,
-  telemetryKey
-} from '../const'
+import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
@@ -78,9 +72,11 @@ export class ExtensionController extends AbstractDisposable {
     try {
       const workspaceFolders = vscode.workspace.workspaceFolders ?? []
       Logger.info(
-        `[Extension] Activate in ${workspaceFolders.length} workspace folders${workspaceFolders
-          .map(w => `\n  ${w.name}: ${w.uri}`)
-          .join('')}`
+        `[Extension] Activate in ${workspaceFolders.length} workspace folders${
+          workspaceFolders
+            .map(w => `\n  ${w.name}: ${w.uri}`)
+            .join('')
+        }`
       )
       Logger.info(`[Extension] Starting LanguageClient...`)
       this.client.outputChannel.show(true)
@@ -89,11 +85,11 @@ export class ExtensionController extends AbstractDisposable {
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
-      const messenger = new Messenger()
-      this.onDispose(messenger)
-
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
+
+      const messenger = new Messenger(rpc)
+      this.onDispose(messenger)
 
       const c4model = new C4Model(rpc, this._telemetry)
       c4model.turnOnTelemetry()
@@ -115,9 +111,12 @@ export class ExtensionController extends AbstractDisposable {
       this.registerCommand(cmdPreviewContextOpenSource, async () => {
         const { elementId } = await messenger.getHoveredElement()
         if (!elementId) return
-        await vscode.commands.executeCommand(cmdLocate, {
-          element: elementId
-        } satisfies WebviewToExtension.LocateParams)
+        await vscode.commands.executeCommand(
+          cmdLocate,
+          {
+            element: elementId
+          } satisfies WebviewToExtension.LocateParams
+        )
       })
 
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {

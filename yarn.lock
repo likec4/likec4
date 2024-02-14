@@ -1455,6 +1455,7 @@ __metadata:
     react-error-boundary: "npm:^4.0.12"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.1.1"
+    vite-plugin-singlefile: "npm:^2.0.0"
     vite-tsconfig-paths: "npm:^4.3.1"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
@@ -16620,6 +16621,18 @@ __metadata:
   bin:
     vite-node: vite-node.mjs
   checksum: 10/a4b39361011ebf890fb2be83babd24aa29de76185f1683f57a76b6dfcfbdcd7700b83c9d0cd3b5bebc4a114427d7c2612095ab59d0d12732ce21ef816fe86b07
+  languageName: node
+  linkType: hard
+
+"vite-plugin-singlefile@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "vite-plugin-singlefile@npm:2.0.0"
+  dependencies:
+    micromatch: "npm:^4.0.5"
+  peerDependencies:
+    rollup: ^4.10.0
+    vite: ^5.1.1
+  checksum: 10/0c4dd3de5e279b164126813ceb9af0ac01bccebfc9e0e206d9b2f70276b2d2bbabd2c6ea42f116e1b9cd3d3cc33918e796583c276dcf81acc4923242ea438adb
   languageName: node
   linkType: hard
 

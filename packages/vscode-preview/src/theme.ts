@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
+  fontFamily: 'var(--likec4-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {
@@ -14,8 +15,5 @@ export const theme = createTheme({
         // fontSize: '1.85rem',
       }
     }
-  },
-  components: {
-    Button: Button.extend({})
   }
 })

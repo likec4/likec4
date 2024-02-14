@@ -9,7 +9,6 @@ const watch = process.argv.includes('--watch')
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'prod'
 console.log(`VSCode build isDev=${isDev}`)
 
-
 /**
  * @type {esbuild.BuildOptions}
  */
@@ -54,7 +53,8 @@ const extensionWebCfg = {
   entryPoints: ['src/browser/extension.ts'],
   format: 'cjs',
   target: 'es2022',
-  platform: 'browser'
+  platform: 'browser',
+  plugins: [nodeModulesPolyfillPlugin()]
 }
 /**
  * @type {esbuild.BuildOptions}
@@ -64,41 +64,43 @@ const serverWebCfg = {
   entryPoints: ['src/browser/language-server-worker.ts'],
   format: 'iife',
   target: 'es2022',
-  platform: 'browser'
+  platform: 'browser',
+  plugins: [nodeModulesPolyfillPlugin()]
 }
 
 const builds = [extensionNodeCfg, serverNodeCfg, extensionWebCfg, serverWebCfg]
 
-const bundles = await Promise.all(builds.map(cfg => build(cfg)))
-bundles.forEach(bundle => {
-  if (bundle.metafile) {
-    const out = Object.keys(bundle.metafile.outputs).find(k => k.endsWith('.js'))
+let hasErrors = false
+const bundles = await Promise.all(builds.map(cfg => Promise.resolve().then(() => build(cfg))))
+bundles.forEach(({ errors, warnings, metafile }) => {
+  if (metafile) {
+    esbuild.analyzeMetafileSync(metafile)
+    const out = Object.keys(metafile.outputs).find(k => k.endsWith('.js'))
     if (out) {
       const metafilepath = path.resolve(out + '.metafile.json')
-      writeFileSync(metafilepath, JSON.stringify(bundle.metafile))
-      console.log(metafilepath)
+      writeFileSync(metafilepath, JSON.stringify(metafile))
+      console.debug(metafilepath)
     }
+  }
+  if (errors.length) {
+    hasErrors = true
+    console.error(formatMessagesSync(errors, {
+      kind: 'error',
+      color: true,
+      terminalWidth: process.stdout.columns
+    }))
+  }
+  if (warnings.length) {
+    console.warn(formatMessagesSync(warnings, {
+      kind: 'warning',
+      color: true,
+      terminalWidth: process.stdout.columns
+    }))
   }
 })
 
-const errors = bundles.flatMap(b => b.errors)
-const warnings = bundles.flatMap(b => b.warnings)
-if (errors.length || warnings.length) {
-  console.error(
-    [
-      ...formatMessagesSync(warnings, {
-        kind: 'warning',
-        color: true,
-        terminalWidth: process.stdout.columns
-      }),
-      ...formatMessagesSync(errors, {
-        kind: 'error',
-        color: true,
-        terminalWidth: process.stdout.columns
-      })
-    ].join('\n')
-  )
-  console.error('\n ⛔️ Build failed')
+if (hasErrors) {
+  console.error('⛔️ Build failed')
   process.exit(1)
 }
 

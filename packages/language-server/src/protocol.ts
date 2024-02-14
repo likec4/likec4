@@ -1,19 +1,22 @@
 import type {
   ComputedView,
+  ElementShape,
   Fqn,
   LikeC4Model,
   LikeC4RawModel,
+  NonEmptyArray,
   RelationID,
+  ThemeColor,
   ViewID
 } from '@likec4/core'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
 import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserver-protocol'
 
-//#region From server
+// #region From server
 export const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
-//#endregion
+// #endregion
 
-//#region To server
+// #region To server
 export const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>(
   'likec4/fetchRaw'
 )
@@ -30,14 +33,36 @@ export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>(
 
 export type LocateParams =
   | {
-      element: Fqn
-      property?: string
-    }
+    element: Fqn
+    property?: string
+  }
   | {
-      relation: RelationID
-    }
+    relation: RelationID
+  }
   | {
-      view: ViewID
-    }
+    view: ViewID
+  }
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-//#endregion
+// #endregion
+
+export namespace ChangeView {
+  export interface ChangeColor {
+    viewId: ViewID
+    op: 'change-color'
+    color: ThemeColor
+    targets: NonEmptyArray<Fqn>
+  }
+
+  export interface ChangeShape {
+    viewId: ViewID
+    op: 'change-shape'
+    shape: ElementShape
+    targets: NonEmptyArray<Fqn>
+  }
+
+  export type Operation = ChangeColor | ChangeShape
+}
+export interface ChangeViewParams {
+  change: ChangeView.Operation
+}
+export const changeView = new RequestType<ChangeViewParams, Location | null, void>('likec4/change-view')

@@ -1,12 +1,12 @@
 import { nonexhaustive } from '@likec4/core'
 import { Image, Text } from '@mantine/core'
 import { isEqualReactSimple, isEqualSimple } from '@react-hookz/deep-equal'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { Handle, type NodeProps, NodeResizer, NodeToolbar, Position } from '@xyflow/react'
 import { motion, type Variant, type Variants } from 'framer-motion'
 import { memo } from 'react'
 import type { ElementNodeData } from '../types'
 import { toDomPrecision } from '../utils'
-import { useEventTriggers, useLikeC4Editor } from '../ViewEditorApi'
+import { useLikeC4Editor, useLikeC4EditorTriggers } from '../ViewEditorApi'
 import classes from './ElementReactFlowNode.module.css'
 import { NavigateToBtn } from './shared/NavigateToBtn'
 
@@ -58,8 +58,7 @@ function queueSVGPath(width: number, height: number, tilt = 0.2) {
     a ${rx},${ry} 0,0,0 0 ${diameter}
     l ${tiltAdjustedWidth},0
     a ${rx},${ry} 0,0,0 0 ${-diameter}
-    z
-        `
+    z`
     .replace(/\s+/g, ' ')
     .trim()
   return {
@@ -79,8 +78,11 @@ const PersonIcon = {
 export function ElementCanvasSvgDefs() {
   return (
     <filter id="elementShadow">
-      <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor={'rgb(0 0 0 / 0.05)'} />
-      <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor={'rgb(0 0 0 / 0.1)'} />
+      {
+        /* <feDropShadow dx="2" dy="12" stdDeviation="10" floodColor={'rgb(0 0 0 / 0.02)'} />
+      <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor={'rgb(0 0 0 / 0.05)'} /> */
+      }
+      {/* <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor={'rgb(0 0 0 / 0.1)'} /> */}
     </filter>
   )
 }
@@ -104,7 +106,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             width={w}
             height={h}
             rx={6}
-            className={classes.fillElementStroke}
+            className={classes.fillMixStroke}
             strokeWidth={0}
           />
           <g className={classes.fillElementFill} strokeWidth={0}>
@@ -121,10 +123,10 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             width={w}
             height={h}
             rx={6}
-            className={classes.fillElementStroke}
+            className={classes.fillMixStroke}
             strokeWidth={0}
           />
-          <g strokeWidth={0}>
+          <g className={classes.fillElementFill} strokeWidth={0}>
             <circle cx={16} cy={17} r={7} />
             <circle cx={36} cy={17} r={7} />
             <circle cx={56} cy={17} r={7} />
@@ -149,9 +151,9 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
             width={PersonIcon.width}
             height={PersonIcon.height}
             viewBox={`0 0 ${PersonIcon.width} ${PersonIcon.height}`}
+            className={classes.fillMixStroke}
           >
             <path
-              fill="var(--stroke-fill-color)"
               strokeWidth={0}
               d="M57.9197 0C10.9124 0 33.5766 54.75 33.5766 54.75C38.6131 62.25 45.3285 60.75 45.3285 66C45.3285 70.5 39.4526 72 33.5766 72.75C24.3431 72.75 15.9489 71.25 7.55474 84.75C2.51825 93 0 120 0 120H115C115 120 112.482 93 108.285 84.75C99.8905 70.5 91.4963 72.75 82.2628 72C76.3869 71.25 70.5109 69.75 70.5109 65.25C70.5109 60.75 77.2263 62.25 82.2628 54C82.2628 54.75 104.927 0 57.9197 0V0Z"
             />
@@ -164,7 +166,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} fill="var(--stroke-fill-color)" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} className={classes.fillMixStroke} strokeWidth={2} />
         </>
       )
     }
@@ -174,7 +176,7 @@ const ElementSvg = memo<ElementSvgProps>(function ElementSvg({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} fill="var(--stroke-fill-color)" strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} className={classes.fillMixStroke} strokeWidth={2} />
         </>
       )
     }
@@ -243,15 +245,16 @@ const variants = {
   }
 } satisfies Variants
 
-export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function ElementNode({
-  id,
-  data: element,
-  dragging,
-  width,
-  height
-}) {
+export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function ElementNode(props) {
+  const {
+    id,
+    data: element,
+    dragging,
+    width,
+    height
+  } = props
   const editor = useLikeC4Editor()
-  const trigger = useEventTriggers()
+  const trigger = useLikeC4EditorTriggers()
 
   const isNavigatable = editor.hasOnNavigateTo && !!element.navigateTo
 
@@ -269,6 +272,13 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
       whileTap={'dragging'}
       whileHover={'hover'}
     >
+      <NodeResizer minWidth={100} minHeight={30} />
+      <NodeToolbar>
+        <button>delete</button>
+        <button>copy</button>
+        <button>expand</button>
+      </NodeToolbar>
+
       <Handle
         type="target"
         position={Position.Top}
@@ -329,7 +339,7 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
       {isNavigatable && (
         <NavigateToBtn
           onClick={() => {
-            trigger.onNavigateTo(element)
+            trigger.onNavigateTo(props)
           }}
           className={classes.navigateBtn} />
       )}

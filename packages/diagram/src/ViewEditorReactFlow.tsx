@@ -1,13 +1,13 @@
 import { invariant } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web'
 import { Background, Controls, ReactFlow as ReactXYFlow, type ReactFlowInstance } from '@xyflow/react'
-import { memo, useCallback, useMemo, useRef } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { useSetHoveredEdgeId } from './state'
 import { EditorEdge, EditorNode } from './types'
-import { useEventTriggers, useLikeC4Editor, useLikeC4EditorUpdate } from './ViewEditorApi'
+import { useLikeC4Editor, useLikeC4EditorTriggers, useLikeC4EditorUpdate } from './ViewEditorApi'
 
 type LikeC4ReactFlowProps = {
   defaultNodes?: EditorNode[] | undefined
@@ -20,7 +20,7 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
   useTilg()
   const editor = useLikeC4Editor()
   const update = useLikeC4EditorUpdate()
-  const trigger = useEventTriggers()
+  const trigger = useLikeC4EditorTriggers()
 
   const instanceRef = useRef<ReactFlowInstance>()
   const setHoveredEdgeId = useSetHoveredEdgeId()
@@ -47,10 +47,10 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       maxZoom={1.9}
       minZoom={0.1}
       fitView
-      fitViewOptions={useMemo(() => ({
-        maxZoom: 1.05,
+      fitViewOptions={{
+        maxZoom: 1,
         padding: editor.fitViewPadding
-      }), [editor.fitViewPadding])}
+      }}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
       noPanClassName="nopan"
@@ -70,13 +70,13 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       {...(editor.hasOnNodeClick && {
         onNodeClick: (event, node) => {
           invariant(EditorNode.is(node), `node is not a EditorNode`)
-          trigger.onNodeClick(node.data, event)
+          trigger.onNodeClick(node, event)
         }
       })}
       {...(editor.hasOnEdgeClick && {
         onEdgeClick: (event, edge) => {
           invariant(EditorEdge.isRelationship(edge), `edge is not a relationship`)
-          trigger.onEdgeClick(edge.data.edge, event)
+          trigger.onEdgeClick(edge, event)
         }
       })}
       {...(editor.hasOnNodeContextMenu && {
@@ -86,7 +86,7 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
         },
         onNodeContextMenu: (event, node) => {
           invariant(EditorNode.is(node), `node is not a EditorNode`)
-          trigger.onNodeContextMenu(node.data, event)
+          trigger.onNodeContextMenu(node, event)
         },
         onPaneContextMenu: (event) => {
           event.preventDefault()

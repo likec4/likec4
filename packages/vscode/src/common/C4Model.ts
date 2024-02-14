@@ -8,7 +8,7 @@ import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { Logger, logError } from '../logger'
+import { logError, Logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
 import type { Rpc } from './Rpc'
 
@@ -20,15 +20,15 @@ function isNotNullish<T>(x: T): x is NonNullable<T> {
 
 type Callback =
   | {
-      success: true
-      diagram: LayoutedView
-      error?: never
-    }
+    success: true
+    diagram: LayoutedView
+    error?: never
+  }
   | {
-      success: false
-      diagram?: never
-      error: string
-    }
+    success: false
+    diagram?: never
+    error: string
+  }
 export class C4Model extends AbstractDisposable {
   #activeSubscription: vscode.Disposable | null = null
 
@@ -124,10 +124,9 @@ export class C4Model extends AbstractDisposable {
           logError(err)
           callback({
             success: false,
-            error:
-              err instanceof Error
-                ? err.stack ?? `${err.name}: ${err.message}`
-                : serializeError(err).message
+            error: err instanceof Error
+              ? err.stack ?? `${err.name}: ${err.message}`
+              : serializeError(err).message
           })
         }
       })
@@ -140,9 +139,9 @@ export class C4Model extends AbstractDisposable {
 
   public turnOnTelemetry() {
     Logger.info(`[Extension.C4Model] turnOnTelemetry`)
-    const Minute = 1000 * 60
+    const Minute = 60_000
     const telemetry = xs
-      .periodic(20 * Minute)
+      .periodic(30 * Minute)
       .drop(1)
       .map(() => xs.from(this.fetchTelemetry()))
       .replaceError(err => {
@@ -171,10 +170,10 @@ export class C4Model extends AbstractDisposable {
     return {
       metrics: model
         ? {
-            elements: Object.keys(model.elements).length,
-            relationships: Object.keys(model.relations).length,
-            views: Object.keys(model.views).length
-          }
+          elements: Object.keys(model.elements).length,
+          relationships: Object.keys(model.relations).length,
+          views: Object.keys(model.views).length
+        }
         : null,
       ms: t1 - t0
     }

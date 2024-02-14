@@ -2,12 +2,12 @@
 import { invariant, type ViewID } from '@likec4/core'
 import { random } from 'rambdax'
 import * as vscode from 'vscode'
-import { ViewColumn, type Disposable, type Webview, type WebviewPanel } from 'vscode'
+import { type Disposable, ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { Logger } from '../../logger'
 import { AbstractDisposable, disposable, getNonce } from '../../util'
 import type { C4Model } from '../C4Model'
-import type Messenger from '../Messenger'
 import { ExtensionController } from '../ExtensionController'
+import type Messenger from '../Messenger'
 
 function getUri(webview: Webview, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(ExtensionController.extensionUri, ...pathList))
@@ -29,13 +29,13 @@ export class PreviewPanel extends AbstractDisposable {
     deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
       let viewId: ViewID
       if (
-        state != null &&
-        typeof state === 'object' &&
-        'view' in state &&
-        state.view != null &&
-        typeof state.view === 'object' &&
-        'id' in state.view &&
-        typeof state.view.id === 'string'
+        state != null
+        && typeof state === 'object'
+        && 'view' in state
+        && state.view != null
+        && typeof state.view === 'object'
+        && 'id' in state.view
+        && typeof state.view.id === 'string'
       ) {
         viewId = state.view.id as ViewID
       } else {
@@ -201,10 +201,13 @@ export class PreviewPanel extends AbstractDisposable {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'none';
-      style-src 'unsafe-inline' ${cspSource};
+      font-src https://fonts.googleapis.com https://fonts.gstatic.com ${cspSource};
+      style-src 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com ${cspSource};
       img-src ${cspSource} https:;
       script-src 'nonce-${nonce}' ${cspSource};
     ">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap"
+      rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
   </head>
   <body>

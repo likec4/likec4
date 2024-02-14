@@ -8,6 +8,7 @@ import { cmdLocate } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { PreviewPanel } from './panel/PreviewPanel'
+import type { Rpc } from './Rpc'
 
 const toPreviewPanel = {
   type: 'webview',
@@ -19,7 +20,9 @@ export default class Messenger extends AbstractDisposable {
     debugLog: true
   })
 
-  constructor() {
+  constructor(
+    private rpc: Rpc
+  ) {
     super()
     this.onDispose(
       this.messenger.onNotification(WebviewToExtension.imReady, () => {
@@ -44,6 +47,15 @@ export default class Messenger extends AbstractDisposable {
     this.onDispose(
       this.messenger.onNotification(WebviewToExtension.onChange, async params => {
         Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.change, null, 4)}`)
+        const loc = await this.rpc.changeView(params.change)
+        if (loc) {
+          const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
+          const editor = await vscode.window.showTextDocument(location.uri, {
+            viewColumn: vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+            selection: location.range
+          })
+          editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
+        }
       })
     )
   }

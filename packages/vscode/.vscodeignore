@@ -1,5 +1,6 @@
 **/*
 
+!dist/**/*.html
 !dist/**/*.js
 !dist/**/*.css
 !data/

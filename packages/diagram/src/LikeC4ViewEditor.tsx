@@ -40,8 +40,8 @@ export function LikeC4ViewEditor({
           <LikeC4ReactFlow
             defaultNodes={initial.nodes}
             defaultEdges={initial.edges} />
-          <DataSync view={view} />
-          <Camera viewId={view.id} />
+          <DataSync />
+          <Camera />
           {!readonly && <OptionsPanel />}
         </LikeC4EditorProvider>
       </ReactFlowProvider>

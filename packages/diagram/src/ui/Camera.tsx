@@ -6,6 +6,7 @@ import {
   useIsMounted,
   useList,
   useMap,
+  useSyncedRef,
   useUpdateEffect
 } from '@react-hookz/web'
 import {
@@ -27,17 +28,21 @@ import { useLikeC4Editor } from '../ViewEditorApi'
 
 const selectUserSelectionActive = (state: ReactFlowState) => state.userSelectionActive
 
-const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
+const CameraMemo = memo(function Camera() {
+  useTilg()
   const isMounted = useIsMounted()
   const isUserSelectionActive = useStore(selectUserSelectionActive)
   const reactflow = useReactFlow()
+  const reactflowRef = useSyncedRef(reactflow)
   const updateNd = useUpdateNodeInternals()
 
-  const padding = useLikeC4Editor().fitViewPadding
+  const editor = useLikeC4Editor()
+  const padding = editor.fitViewPadding
+  const viewId = editor.viewId
 
   const previousViewport = useRef<Viewport | null>(null)
   const viewportChangeStart = useRef<Viewport | null>(null)
-  const prevViewId = useRef<string | null>(null)
+  const prevViewId = useRef(viewId)
   const isReady = reactflow.viewportInitialized
   const selectedNodesRef = useRef([] as string[])
 
@@ -71,18 +76,20 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
     // We reset the viewportChangeStart, before useOnViewportChange.onEnd called
     setTimeout(() => {
       viewportChangeStart.current = null
-    }, 30)
+    }, 50)
   }
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      if (!isMounted() || !reactflow.viewportInitialized) {
+      if (!isMounted()) {
         return
       }
+      console.debug(`Camera: onSelectionChange`)
       if (nodes.length === 0 && edges.length === 0) {
         setSelectedNodes([])
         return
       }
+      const reactflow = reactflowRef.current
       const selected = new Set<ReactFlowNode>([
         ...nodes,
         ...edges.flatMap((edge) => [
@@ -94,12 +101,13 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
     }
   })
 
-  const selectedNodesHash = selectedNodes.map((node) => node.id).sort().join(',')
+  const selectedNodesHash = useTilg(selectedNodes.map((node) => node.id).sort().join('\n'))
   useEffect(
     () => {
-      if (isUserSelectionActive) {
+      if (isUserSelectionActive || !isReady) {
         return
       }
+      const reactflow = reactflowRef.current
       if (selectedNodes.length === 0) {
         if (previousViewport.current) {
           console.log(`Camera: revert viewport`)
@@ -111,19 +119,19 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
         return
       }
       previousViewport.current ??= { ...reactflow.getViewport() }
-      const zoom = reactflow.getZoom()
+      const zoom = previousViewport.current.zoom
       reactflow.fitView({
         duration: 350,
-        maxZoom: Math.max(1.05, zoom),
+        maxZoom: Math.max(1, zoom),
         padding,
         nodes: selectedNodes
       })
       fixUseOnViewportChange()
     },
-    [selectedNodesHash, isUserSelectionActive]
+    [selectedNodesHash, isReady, isUserSelectionActive]
   )
 
-  useShallowEffect(() => {
+  useEffect(() => {
     const ids = selectedNodes.map((node) => node.id)
     for (const id of uniq([...selectedNodesRef.current, ...ids])) {
       try {
@@ -133,35 +141,28 @@ const CameraMemo = memo(function Camera({ viewId }: { viewId: string }) {
       }
     }
     selectedNodesRef.current = ids
-  }, [selectedNodesHash])
+  }, [selectedNodesHash, updateNd])
 
-  const scheduleFitViewAnimation = useDebouncedCallback(
+  useDebouncedEffect(
     () => {
-      if (isMounted()) {
-        previousViewport.current = null
-        const zoom = reactflow.getZoom()
-        reactflow.fitView({
-          duration: 350,
-          maxZoom: Math.max(1.05, zoom),
-          padding
-        })
+      if (!isReady || prevViewId.current === viewId) {
+        return
       }
+      console.debug(`Camera: fitViewAnimation`)
+      const reactflow = reactflowRef.current
+      const zoom = previousViewport.current?.zoom ?? reactflow.getZoom()
+      reactflow.fitView({
+        duration: 400,
+        maxZoom: Math.max(1, zoom),
+        padding
+      })
+      previousViewport.current = null
+      prevViewId.current = viewId
     },
-    [reactflow],
-    100
+    [isReady, viewId],
+    100,
+    500
   )
-
-  useEffect(() => {
-    if (!isReady || prevViewId.current === viewId) {
-      return
-    }
-    if (prevViewId.current) {
-      scheduleFitViewAnimation()
-    } else {
-      reactflow.fitView()
-    }
-    prevViewId.current = viewId
-  }, [isReady, viewId])
 
   return null
 })
