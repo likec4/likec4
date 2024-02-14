@@ -1,5 +1,5 @@
 import { nonexhaustive } from '@likec4/core'
-import { Image, Text } from '@mantine/core'
+import { Button, Image, Stack, Text } from '@mantine/core'
 import { isEqualReactSimple, isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, NodeResizer, NodeToolbar, Position } from '@xyflow/react'
 import { motion, type Variant, type Variants } from 'framer-motion'
@@ -272,12 +272,21 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
       whileTap={'dragging'}
       whileHover={'hover'}
     >
-      <NodeResizer minWidth={100} minHeight={30} />
-      <NodeToolbar>
-        <button>delete</button>
-        <button>copy</button>
-        <button>expand</button>
+      {
+        /* <NodeResizer minWidth={100} minHeight={30} />
+      <NodeToolbar
+        position={Position.Right}
+        align={'start'}
+        style={{
+          background: 'blue'
+        }}>
+        <Stack>
+          <Button>edit</Button>
+
+        </Stack>
       </NodeToolbar>
+      </NodeToolbar> */
+      }
 
       <Handle
         type="target"

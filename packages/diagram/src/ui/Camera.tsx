@@ -1,5 +1,5 @@
 import { nonNullable } from '@likec4/core'
-import { useShallowEffect } from '@mantine/hooks'
+import { shallowEqual, useShallowEffect } from '@mantine/hooks'
 import {
   useDebouncedCallback,
   useDebouncedEffect,
@@ -7,6 +7,7 @@ import {
   useList,
   useMap,
   useSyncedRef,
+  useToggle,
   useUpdateEffect
 } from '@react-hookz/web'
 import {
@@ -26,12 +27,21 @@ import useTilg from 'tilg'
 import { distance } from '../utils'
 import { useLikeC4Editor } from '../ViewEditorApi'
 
-const selectUserSelectionActive = (state: ReactFlowState) => state.userSelectionActive
+const selector = (state: ReactFlowState) => {
+  return {
+    isUserSelectionActive: state.userSelectionActive,
+    isDragging: state.paneDragging || state.nodes.some(n => n.dragging ?? false)
+  }
+}
 
 const CameraMemo = memo(function Camera() {
   useTilg()
   const isMounted = useIsMounted()
-  const isUserSelectionActive = useStore(selectUserSelectionActive)
+  // const isUserSelectionActive = useStore(selectUserSelectionActive)
+  const {
+    isUserSelectionActive,
+    isDragging
+  } = useStore(selector, shallowEqual)
   const reactflow = useReactFlow()
   const reactflowRef = useSyncedRef(reactflow)
   const updateNd = useUpdateNodeInternals()
@@ -41,6 +51,8 @@ const CameraMemo = memo(function Camera() {
   const viewId = editor.viewId
 
   const previousViewport = useRef<Viewport | null>(null)
+  const isZoomPendingRef = useRef(false)
+
   const viewportChangeStart = useRef<Viewport | null>(null)
   const prevViewId = useRef(viewId)
   const isReady = reactflow.viewportInitialized
@@ -102,9 +114,13 @@ const CameraMemo = memo(function Camera() {
   })
 
   const selectedNodesHash = useTilg(selectedNodes.map((node) => node.id).sort().join('\n'))
-  useEffect(
+  useEffect(() => {
+    isZoomPendingRef.current = selectedNodesHash !== ''
+  }, [selectedNodesHash])
+
+  useDebouncedEffect(
     () => {
-      if (isUserSelectionActive || !isReady) {
+      if (isUserSelectionActive || isDragging || !isReady) {
         return
       }
       const reactflow = reactflowRef.current
@@ -118,6 +134,10 @@ const CameraMemo = memo(function Camera() {
         }
         return
       }
+      if (!isZoomPendingRef.current) {
+        return
+      }
+      isZoomPendingRef.current = false
       previousViewport.current ??= { ...reactflow.getViewport() }
       const zoom = previousViewport.current.zoom
       reactflow.fitView({
@@ -128,7 +148,9 @@ const CameraMemo = memo(function Camera() {
       })
       fixUseOnViewportChange()
     },
-    [selectedNodesHash, isReady, isUserSelectionActive]
+    [selectedNodesHash, isReady, isDragging, isUserSelectionActive],
+    previousViewport.current ? 50 : 1100,
+    previousViewport.current ? 200 : 2500
   )
 
   useEffect(() => {
