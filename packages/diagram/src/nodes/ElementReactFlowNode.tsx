@@ -231,14 +231,13 @@ const variants = {
     transformOrigin: '50% 50%'
   },
   hover: {
-    scale: 1.06,
+    scale: 1.0455,
     transition: {
-      when: 'beforeChildren',
-      delay: 0.1
+      delay: 0.2
     }
   },
-  dragging: {
-    scale: 1.02,
+  tap: {
+    scale: 0.985,
     transition: {
       type: 'spring'
     }
@@ -269,7 +268,7 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
       data-likec4-shape={element.shape}
       variants={variants}
       initial={'idle'}
-      whileTap={'dragging'}
+      whileTap={'tap'}
       whileHover={'hover'}
     >
       {
