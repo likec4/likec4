@@ -65,7 +65,7 @@
     "react-accessible-treeview": "^2.8.3",
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^0.0.63",
-    "remeda": "^1.40.0",
+    "remeda": "^1.40.1",
     "vite": "^5.0.12"
   },
   "devDependencies": {

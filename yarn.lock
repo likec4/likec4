@@ -975,7 +975,7 @@ __metadata:
   dependencies:
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.0"
+    remeda: "npm:^1.40.1"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
     typescript: "npm:^5.3.3"
@@ -1118,7 +1118,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.0"
+    remeda: "npm:^1.40.1"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.2.2"
@@ -1141,7 +1141,7 @@ __metadata:
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.0"
+    remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
@@ -1167,7 +1167,7 @@ __metadata:
     khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.0"
+    remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.1"
     type-fest: "npm:^4.10.2"
@@ -9094,7 +9094,7 @@ __metadata:
     react-accessible-treeview: "npm:^2.8.3"
     react-dom: "npm:^18.2.0"
     react-resizable-panels: "npm:^0.0.63"
-    remeda: "npm:^1.40.0"
+    remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.0"
     type-fest: "npm:^4.10.2"
@@ -13238,7 +13238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.40.0":
+"remeda@npm:^1.40.1":
   version: 1.40.1
   resolution: "remeda@npm:1.40.1"
   checksum: 10/d71965385f509c3a6e5db2f33cad78838c873bbbc15e1dc0736a4cf9659bd8bd1b372dfc4beb701361049fa4363992845bdc8d3e73697d13d337f5002d836f1d
