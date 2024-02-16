@@ -52,7 +52,7 @@
     "@radix-ui/themes": "^2.0.3",
     "@react-hookz/web": "^24.0.4",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
+    "autoprefixer": "^10.4.17",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "jotai": "^2.6.4",
