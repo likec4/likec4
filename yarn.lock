@@ -1218,7 +1218,7 @@ __metadata:
     lint-staged: "npm:^15.2.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^4.7.0"
+    tsx: "npm:^4.7.1"
     turbo: "npm:^1.12.2"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.0.12"
@@ -5470,7 +5470,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^4.7.0"
+    tsx: "npm:^4.7.1"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
   bin:
@@ -9124,7 +9124,7 @@ __metadata:
     react-resizable-panels: "npm:^0.0.63"
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
-    tsx: "npm:^4.7.0"
+    tsx: "npm:^4.7.1"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
     typescript-plugin-css-modules: "npm:^5.0.2"
@@ -14835,7 +14835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.6.2, tsx@npm:^4.7.0":
+"tsx@npm:^4.6.2":
   version: 4.7.0
   resolution: "tsx@npm:4.7.0"
   dependencies:
@@ -14848,6 +14848,22 @@ __metadata:
   bin:
     tsx: dist/cli.mjs
   checksum: 10/3e6ee0a0a8adb7b1cb58875f50b143b41df0132ade3a7cdda16a166ac473eee446197762ba6afb235ace4c6adae7e55f61a420ee55b17438717eea1e55e611c0
+  languageName: node
+  linkType: hard
+
+"tsx@npm:^4.7.1":
+  version: 4.7.1
+  resolution: "tsx@npm:4.7.1"
+  dependencies:
+    esbuild: "npm:~0.19.10"
+    fsevents: "npm:~2.3.3"
+    get-tsconfig: "npm:^4.7.2"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10/3a462b595f31ae58b31f9c6e8c450577dc87660b1225012bd972b6b58d7d2f6c4034728763ebc53bb731acff68de8b0fa50586e4c1ec4c086226f1788ccf9b7d
   languageName: node
   linkType: hard
 
