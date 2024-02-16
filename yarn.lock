@@ -1169,7 +1169,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
-    ts-graphviz: "npm:^1.8.1"
+    ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
@@ -14775,10 +14775,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-graphviz@npm:^1.8.1":
-  version: 1.8.1
-  resolution: "ts-graphviz@npm:1.8.1"
-  checksum: 10/4936292e2b6104363b2d37f995fea766f8aefdabaecae10c963785e0c0b09da35bce78f961ac48897278f4f2148c2d71c7eeafaedcf273d8af06971ae5a01abc
+"ts-graphviz@npm:^1.8.2":
+  version: 1.8.2
+  resolution: "ts-graphviz@npm:1.8.2"
+  checksum: 10/969b06332ca622c148f7b404569af1b972bbe7ee9ba1226350dd0d99bc92c1c95eb6bf9e69aafce51a6c2493a1342b25a8edd6883f27bd516778d401b2a3623f
   languageName: node
   linkType: hard
 
