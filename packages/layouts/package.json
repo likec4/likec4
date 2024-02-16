@@ -50,7 +50,7 @@
     "rambdax": "^9.1.1",
     "remeda": "^1.40.1",
     "strip-indent": "^4.0.0",
-    "ts-graphviz": "^1.8.1",
+    "ts-graphviz": "^1.8.2",
     "type-fest": "^4.10.2",
     "word-wrap": "^1.2.5"
   },
