@@ -50,11 +50,14 @@ export default class Messenger extends AbstractDisposable {
         const loc = await this.rpc.changeView(params.change)
         if (loc) {
           const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
+          const isPreviewInColumnOne = PreviewPanel.current?.panel.viewColumn === vscode.ViewColumn.One
           const editor = await vscode.window.showTextDocument(location.uri, {
-            viewColumn: vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+            viewColumn: isPreviewInColumnOne ? vscode.ViewColumn.Beside : vscode.ViewColumn.One,
+            preview: true,
+            preserveFocus: true,
             selection: location.range
           })
-          editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
+          editor.revealRange(location.range, vscode.TextEditorRevealType.InCenter)
         }
       })
     )

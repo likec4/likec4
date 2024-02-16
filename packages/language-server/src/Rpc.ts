@@ -21,7 +21,7 @@ export class Rpc {
   init() {
     const modelBuilder = this.services.likec4.ModelBuilder
     const modelLocator = this.services.likec4.ModelLocator
-    const viewEditor = this.services.likec4.ViewEditor
+    const viewEditor = this.services.likec4.ViewsEditor
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)

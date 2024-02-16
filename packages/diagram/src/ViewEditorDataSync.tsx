@@ -12,7 +12,7 @@ const DataSyncMemo = memo(function DataSync() {
   const reactflow = editor.reactflow
   const initialized = reactflow?.viewportInitialized
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     if (!initialized) {
       return
     }
@@ -25,7 +25,7 @@ const DataSyncMemo = memo(function DataSync() {
     reactflow.setNodes(prev =>
       update.nodes.map(node => {
         const existing = prev.find(n => n.id === node.id)
-        if (existing) {
+        if (existing && existing.parentNode == node.parentNode) {
           if (isEqual(existing.data, node.data)) {
             return existing
           }

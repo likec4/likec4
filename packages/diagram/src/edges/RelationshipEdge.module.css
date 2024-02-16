@@ -1,26 +1,34 @@
 .container {
   --xy-edge-stroke: var(--likec4-relation-lineColor);
-  --xy-edge-stroke-selected: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
+  --xy-edge-stroke-selected: color-mix(in srgb, var(--likec4-relation-lineColor) 50%, white);
   --xy-edge-label-color: var(--likec4-relation-labelColor);
-  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 40%, transparent);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 50%, transparent);
   --xy-edge-stroke-width: 2;
 
   :global(.react-flow__edge-textbg) {
   }
 
-  &[data-edge-hovered="true"],
+  &[data-edge-hovered='true'] {
+    /* to highlight marker */
+    --xy-edge-stroke: color-mix(in srgb, var(--likec4-relation-lineColor) 70%, white);
+  }
+
   :where(:global(.react-flow__edge.selected)) & {
-    --xy-edge-stroke: var(--xy-edge-stroke-selected);
-    --xy-edge-stroke-width: 2.2;
+    --xy-edge-stroke-width: 2.5;
   }
 }
 
 .fillStrokeCtx {
   fill: var(--xy-edge-stroke);
   stroke: var(--xy-edge-stroke);
+
+  :where(:global(.react-flow__edge.selected)) & {
+    --xy-edge-stroke: var(--xy-edge-stroke-selected);
+  }
 }
 
 :global(.react-flow__edge-path).edgePath {
+  transition: all 110ms ease-out;
   /* stroke: var(--likec4-relation-lineColor);
   stroke-width: 2;
   transition: all 110ms ease-in-out;
@@ -30,7 +38,7 @@
     stroke: color-mix(in srgb, var(--likec4-relation-lineColor) 80%, white);
     stroke-width: 2.2;
   } */
-mix-blend-mode: luminosity;
+  mix-blend-mode: luminosity;
 }
 
 .controlPoint {
@@ -46,7 +54,7 @@ mix-blend-mode: luminosity;
   pointer-events: all;
   transform-origin: 50% 50%;
 
-  :where([data-edge-hovered="true"]) &,
+  :where([data-edge-hovered='true']) &,
   :where(:global(.react-flow__edge.selected)) & {
     opacity: 1;
   }
@@ -56,11 +64,16 @@ mix-blend-mode: luminosity;
   }
 }
 
+.edgeLabelBbox {
+  fill: var(--likec4-relation-labelBg);
+  visibility: hidden;
+}
+
 .edgeLabel {
   position: absolute;
   padding: 2px 5px;
 
-  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 20%, transparent);
+  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 50%, transparent);
   border-radius: 3px;
   --text-color: var(--likec4-relation-labelColor);
   pointer-events: all;
@@ -68,11 +81,21 @@ mix-blend-mode: luminosity;
   transform-origin: 50% 50%;
   transition: all 120ms ease-out;
   white-space: pre;
-  mix-blend-mode: luminosity;
+  isolation: auto;
+  /* mix-blend-mode: soft-light; */
+  /* backdrop-filter: opacity(0.01);
 
-  &[data-edge-hovered="true"] {
-    transform: scale(1.04);
-    --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 80%, white);
+  & :global(.mantine-Text-root) {
+    background: var(--likec4-relation-labelColor);
+    -webkit-background-clip: text; */
+    /* -webkit-text-fill-color: transparent; */
+    /* mix-blend-mode: luminosity;
+    background-blend-mode: luminosity;
+  } */
+
+  &[data-edge-hovered='true'] {
+    transform: scale(1.08);
+    transition-delay: 120ms;
+    --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 70%, white);
   }
-  /* background-drop: drop(var(--likec4-relation-labelBg) 0% 0% 0% 0% var(--likec4-relation-labelBg) 0% 0% 0% 0%); */
 }

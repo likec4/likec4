@@ -96,7 +96,6 @@ const CameraMemo = memo(function Camera() {
       if (!isMounted()) {
         return
       }
-      console.debug(`Camera: onSelectionChange`)
       if (nodes.length === 0 && edges.length === 0) {
         setSelectedNodes([])
         return
@@ -113,7 +112,7 @@ const CameraMemo = memo(function Camera() {
     }
   })
 
-  const selectedNodesHash = useTilg(selectedNodes.map((node) => node.id).sort().join('\n'))
+  const selectedNodesHash = selectedNodes.map((node) => node.id).sort().join('\n')
   useEffect(() => {
     isZoomPendingRef.current = selectedNodesHash !== ''
   }, [selectedNodesHash])
@@ -149,8 +148,8 @@ const CameraMemo = memo(function Camera() {
       fixUseOnViewportChange()
     },
     [selectedNodesHash, isReady, isDragging, isUserSelectionActive],
-    previousViewport.current ? 50 : 1100,
-    previousViewport.current ? 200 : 2500
+    previousViewport.current ? 100 : 1500
+    // previousViewport.current ? 200 : 2500
   )
 
   useEffect(() => {
@@ -170,7 +169,6 @@ const CameraMemo = memo(function Camera() {
       if (!isReady || prevViewId.current === viewId) {
         return
       }
-      console.debug(`Camera: fitViewAnimation`)
       const reactflow = reactflowRef.current
       const zoom = previousViewport.current?.zoom ?? reactflow.getZoom()
       reactflow.fitView({

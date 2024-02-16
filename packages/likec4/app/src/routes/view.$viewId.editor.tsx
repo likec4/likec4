@@ -13,7 +13,6 @@ function ViewEditor() {
   const router = useRouter()
   const { viewAtom, viewId } = Route.useRouteContext()
   const view = useAtomValue(viewAtom)
-  const { theme } = Route.useSearch()
 
   const navigateTo = useCallback((node: { navigateTo: string }) => {
     router.navigate({
@@ -34,10 +33,10 @@ function ViewEditor() {
       style={{ top: 50, left: 0, width: '100vw', height: 'calc(100vh - 50px)' }}
     >
       <LikeC4ViewEditor
-        colorMode={theme}
         view={view}
         onNavigateTo={navigateTo}
         controls={false}
+        nodesDraggable={false}
       />
     </Box>
   )

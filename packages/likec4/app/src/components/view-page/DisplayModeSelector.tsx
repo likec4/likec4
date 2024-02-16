@@ -3,9 +3,18 @@ import { Link, useParams } from '@tanstack/react-router'
 import { keys } from 'remeda'
 
 const Mode = {
-  editor: 'Editor',
-  react: 'React',
-  dot: 'Graphviz',
+  editor: {
+    label: 'Editor',
+    to: '/view/$viewId/editor'
+  },
+  react: {
+    label: 'React',
+    to: '/view/$viewId/react'
+  },
+  dot: {
+    label: 'Dot',
+    to: '/view/$viewId/dot'
+  },
   mmd: 'Mermaid',
   d2: 'D2'
 } as const

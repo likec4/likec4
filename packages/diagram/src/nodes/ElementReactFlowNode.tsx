@@ -255,7 +255,7 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
   const editor = useLikeC4Editor()
   const trigger = useLikeC4EditorTriggers()
 
-  const isNavigatable = editor.hasOnNavigateTo && !!element.navigateTo
+  const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -344,7 +344,7 @@ export const ElementReactFlowNode = memo<ElementReactFlowNodeProps>(function Ele
           </Text>
         )}
       </div>
-      {isNavigatable && (
+      {isNavigable && (
         <NavigateToBtn
           onClick={() => {
             trigger.onNavigateTo(props)

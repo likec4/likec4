@@ -5,7 +5,6 @@ import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
-import { useSetHoveredEdgeId } from './state'
 import { EditorEdge, EditorNode } from './types'
 import { useLikeC4Editor, useLikeC4EditorTriggers, useLikeC4EditorUpdate } from './ViewEditorApi'
 
@@ -23,7 +22,6 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
   const trigger = useLikeC4EditorTriggers()
 
   const instanceRef = useRef<ReactFlowInstance>()
-  const setHoveredEdgeId = useSetHoveredEdgeId()
   const lastClickTimeRef = useRef<number>(0)
 
   useUnmountEffect(() => {
@@ -65,8 +63,16 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
-      onEdgeMouseEnter={(event, edge) => setHoveredEdgeId(edge.id)}
-      onEdgeMouseLeave={(event, edge) => setHoveredEdgeId(null)}
+      onEdgeMouseEnter={(event, edge) => {
+        update({
+          hoveredEdgeId: edge.id
+        })
+      }}
+      onEdgeMouseLeave={(event, edge) => {
+        update({
+          hoveredEdgeId: null
+        })
+      }}
       {...(editor.hasOnNodeClick && {
         onNodeClick: (event, node) => {
           invariant(EditorNode.is(node), `node is not a EditorNode`)
@@ -91,19 +97,14 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
         onPaneContextMenu: (event) => {
           event.preventDefault()
           event.stopPropagation()
-          // invariant(EditorNode.is(node), `node is not a EditorNode`)
-          // editor.onNodeContextMenu(node.data, event)
         }
       })}
-      onInit={useCallback(
-        (instance) => {
-          instanceRef.current = instance
-          invariant(instance.viewportInitialized, `viewportInitialized is not true`)
-          trigger.onInitialized(instance as any)
-        },
-        [update, trigger.onInitialized]
-      )}
-      onPaneClick={useCallback(e => {
+      onInit={(instance) => {
+        instanceRef.current = instance
+        invariant(instance.viewportInitialized, `viewportInitialized is not true`)
+        trigger.onInitialized(instance as any)
+      }}
+      onPaneClick={(e) => {
         // Workaround for dbl click
         const ts = e.timeStamp
         if (lastClickTimeRef.current > 0) {
@@ -111,15 +112,16 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
           if (diff < 300) {
             instanceRef.current?.fitView({
               duration: 350,
-              maxZoom: 1.05,
-              padding: 0.1
+              maxZoom: 1,
+              padding: editor.fitViewPadding
             })
             lastClickTimeRef.current = 0
+            trigger.onCanvasDblClick(e)
             return
           }
         }
         lastClickTimeRef.current = ts
-      }, [])}
+      }}
       // onNodeDrag={useCallback((event, node) => {
       //   // console.log('onNodeDrag', node)
       //   const api = instanceRef.current
@@ -147,5 +149,5 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       {editor.controls && <Controls />}
     </ReactXYFlow>
   )
-}, (prev, next) => true)
+}, (prev, next) => true /* always skip render */)
 LikeC4ReactFlow.displayName = 'LikeC4ReactFlow'

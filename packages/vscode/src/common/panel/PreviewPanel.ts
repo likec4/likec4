@@ -151,6 +151,8 @@ export class PreviewPanel extends AbstractDisposable {
       Logger.warn(`[Extension.PreviewPanel] _activate: already activated`)
       this._deactivate()
     }
+    const id = '' + random(1000, 9999) + '_' + this._viewId
+    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activating...`)
     const subscribeToView = this.c4model.subscribeToView(this._viewId, result => {
       if (result.success) {
         this._panel.title = result.diagram.title || 'Untitled'
@@ -159,13 +161,12 @@ export class PreviewPanel extends AbstractDisposable {
         this.messenger.sendError(result.error)
       }
     })
-    const id = '' + random(1000, 9999) + '_' + this._viewId
     this._listener = disposable(() => {
       subscribeToView.dispose()
       this._listener = null
       Logger.debug(`[Extension.PreviewPanel.listener.${id}] disposed`)
     })
-    Logger.debug(`[Extension.PreviewPanel] _activated`)
+    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activated`)
   }
 
   private _deactivate() {

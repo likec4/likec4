@@ -33,16 +33,12 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@mantine/core": "^7.5.2",
-    "@mantine/hooks": "^7.5.2",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@xyflow/react": "^12.0.0-next.8",
     "clsx": "^2.1.0",
     "d3-shape": "^3.2.0",
     "framer-motion": "^11.0.3",
-    "jotai": "^2.6.4",
-    "jotai-scope": "^0.5.1",
     "khroma": "^2.1.0",
     "react-icons": "^4.12.0",
     "react-tracked": "^1.7.11",
@@ -51,13 +47,17 @@
   },
   "peerDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "@mantine/core": "^7.5.2",
+    "@mantine/hooks": "^7.5.2"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/d3-shape": "^3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@mantine/core": "^7.5.2",
+    "@mantine/hooks": "^7.5.2",
     "execa": "^8.0.1",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",

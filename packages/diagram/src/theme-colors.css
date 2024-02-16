@@ -1,3 +1,13 @@
+:root {
+  --likec4-element-fill: #3b82f6;
+  --likec4-element-stroke: #2563eb;
+  --likec4-element-hiContrast: #eff6ff;
+  --likec4-element-loContrast: #bfdbfe;
+  --likec4-relation-lineColor: #3b82f6;
+  --likec4-relation-labelColor: #60a5fa;
+  --likec4-relation-labelBg: #172554;
+}
+
 :where([data-likec4-color=primary]) {
   --likec4-element-fill: #3b82f6;
   --likec4-element-stroke: #2563eb;
@@ -96,4 +106,12 @@
   --likec4-relation-lineColor: #6366f1;
   --likec4-relation-labelColor: #818cf8;
   --likec4-relation-labelBg: #1e1b4b;
+}
+
+:root[data-mantine-color-scheme=light] {
+  :where([data-likec4-color=gray]) {
+    --likec4-relation-lineColor: #919191;
+    --likec4-relation-labelColor: #404040;
+    --likec4-relation-labelBg: #919192;
+  }
 }

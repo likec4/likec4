@@ -12,7 +12,6 @@ import {
   type PartialLangiumSharedServices,
   WorkspaceCache
 } from 'langium'
-import { ViewEditor } from './editor/ViewEditor'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logger } from './logger'
 import {
@@ -24,6 +23,7 @@ import {
   LikeC4SemanticTokenProvider
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
+import { LikeC4ViewsEditor } from './model-editor'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
@@ -65,7 +65,7 @@ export interface LikeC4AddedServices {
   WorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
-    ViewEditor: ViewEditor
+    ViewsEditor: LikeC4ViewsEditor
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
@@ -96,7 +96,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
-    ViewEditor: bind(ViewEditor),
+    ViewsEditor: bind(LikeC4ViewsEditor),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),

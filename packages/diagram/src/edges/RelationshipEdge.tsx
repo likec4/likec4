@@ -3,19 +3,13 @@ import { Box, rem, Text } from '@mantine/core'
 import type { EdgeProps } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
-// import {
-//   curveCatmullRom,
-//   line as d3line
-// } from 'd3-shape'
+import { motion } from 'framer-motion'
 import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
-// import { hoveredEdgeIdAtom } from '../state'
-import { motion } from 'framer-motion'
-import { useIsEdgeHovered } from '../state'
+import { ZIndexes } from '../const'
 import type { RelationshipData } from '../types'
+import { useLikeC4EditorSelector } from '../ViewEditorApi'
 import styles from './RelationshipEdge.module.css'
-
-// const distance = (a: XYPosition, b: XYPosition) => Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
 //   const bendSize = Math.min(distance(a, b) / 2, distance(b, c) / 2, size)
@@ -47,57 +41,7 @@ import styles from './RelationshipEdge.module.css'
 //   return path + segment
 // }
 
-// const RelationshipEdge = memo<EdgeProps<RelationshipData>>(
-//   function RelationshipEdge({
-//     sourceX,
-//     sourceY,
-//     targetX,
-//     targetY,
-//     data,
-//     ...rest
-//   }) {
-//     // useLogger(`RelationshipEdge`, rest.id)
-//     invariant(data, 'data is required')
-//     // const [edgePath] = getStraightPath({
-//     //   sourceX,
-//     //   sourceY,
-//     //   targetX,
-//     //   targetY,
-//     // });
-
-//     // const path = data.
-
-//     // const edgePath = [data.start, ...data.points, data.end].reduce(reduceToPath, '')
-//     const edgepPath = [
-//       {
-//         x: sourceX,
-//         y: sourceY,
-//       },
-//       // data.start,
-//       ...data.points,
-//       // data.end,
-//       {
-//         x: targetX,
-//         y: targetY,
-//       },
-//     ].reduce(reduceToPath, '')
-//     // const edgePath = line(data.points)
-//     // invariant(edgePath, 'edgePath is required')
-
-//     return <BaseEdge {...rest} path={edgePath} />
-//   },
-//   (a, b) =>
-//     a.sourceX === b.sourceX
-//     && b.sourceY === b.sourceY
-//     && a.targetX === b.targetX
-//     && a.targetY === b.targetY
-//     && equals(a.data, b.data),
-// )r
-
-// type RelationshipEdgeProps = SetRequired<EdgeProps<RelationshipData>, 'data'>
-
 function bezierPath(bezierSpline: NonEmptyArray<Point>) {
-  // eslint-disable-next-line prefer-const
   let [start, ...points] = bezierSpline
   invariant(start, 'start should be defined')
   let path = `M ${start[0]},${start[1]}`
@@ -112,31 +56,24 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function RelationshipEdge(props) {
+const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function RelationshipEdge({
+  id,
+  data,
+  selected,
+  markerEnd,
+  style,
+  interactionWidth,
+  ...props
+}) {
   // useTilg()
-  const {
-    id,
-    data,
-    selected,
-    markerEnd,
-    style,
-    interactionWidth
-  } = props
   invariant(data, 'data is required')
   const {
     edge,
     controlPoints
   } = data
-  let edgePath = bezierPath(edge.points)
-  // if (data.headPoint) {
-  //   edgePath = edgePath + ` L ${data.headPoint[0]},${data.headPoint[1]}`
-  // }
-  // if (data.tailPoint) {
-  //   edgePath = `M ${data.tailPoint[0]},${data.tailPoint[1]} L ${edge.points[0][0]},${edge.points[0][1]}`
-  //     + edgePath
-  // }
+  const edgePath = bezierPath(edge.points)
   const color = edge.color ?? 'gray'
-  const isHovered = useIsEdgeHovered(id)
+  const isHovered = useLikeC4EditorSelector(state => state.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -172,8 +109,8 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
       <path
         className={clsx('react-flow__edge-path', styles.edgePath)}
         d={edgePath}
-        {...(strokeDasharray ? { strokeDasharray, strokeDashoffset: 4 } : {})}
         style={style}
+        {...(strokeDasharray ? { strokeDasharray } : {})}
         {...(edge.headArrow ? { markerEnd: marker } : {})}
         {...(edge.tailArrow ? { markerStart: marker } : {})}
       />
@@ -200,12 +137,13 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
       {data.label && (
         <>
           {
-            /* <EdgeText
-            x={data.label.bbox.x + 4}
-            y={data.label.bbox.y + 3}
-            label={data.label.text}
-            labelBgBorderRadius={3}
-            labelBgPadding={[4, 3]}
+            /* <rect
+            x={data.label.bbox.x}
+            y={data.label.bbox.y}
+            width={data.label.bbox.width + 2}
+            height={data.label.bbox.height + 2}
+            className={styles.edgeLabelBbox}
+            rx={3}
           /> */
           }
           <EdgeLabelRenderer>
@@ -217,7 +155,7 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
                 top: data.label.bbox.y,
                 left: data.label.bbox.x,
                 maxWidth: data.label.bbox.width + 25,
-                zIndex: 2
+                zIndex: ZIndexes.Edge
               }}
             >
               <Text component="div" ta={'left'} fz={rem(12)}>{data.label.text}</Text>

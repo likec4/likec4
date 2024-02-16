@@ -2,9 +2,7 @@ import { type c4 } from '@likec4/core'
 import type { ast } from './ast'
 /**
  * Returns referenced AST Element
- *
  */
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export function elementRef(node: ast.ElementRef | ast.FqnElementRef) {
   return node.el.ref
 }

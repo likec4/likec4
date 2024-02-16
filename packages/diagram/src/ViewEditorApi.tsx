@@ -1,4 +1,5 @@
 import { type DiagramEdge, type DiagramNode, type DiagramView, invariant } from '@likec4/core'
+import { useMantineColorScheme } from '@mantine/core'
 import { useSetState, useShallowEffect } from '@mantine/hooks'
 import { isEqual } from '@react-hookz/deep-equal'
 import { useCustomCompareEffect, useSyncedRef, useUpdateEffect } from '@react-hookz/web'
@@ -14,13 +15,17 @@ export type OnNavigateTo = (elementNode: DiagramNodeWithNavigate) => void
 export type OnNodeClick = (args: { element: DiagramNode; node: EditorNode; event: React.MouseEvent }) => void
 export type OnEdgeClick = (args: { relation: DiagramEdge; edge: EditorEdge; event: React.MouseEvent }) => void
 
+export type OnCanvasClick = (event: React.MouseEvent) => void
+
+type ColorMode = 'system' | 'light' | 'dark'
+
 export type LikeC4ViewEditorApiProps = {
   view: DiagramView
   /** Controls color scheme used for styling the flow
    * @default 'system'
    * @example 'system' | 'light' | 'dark'
    */
-  colorMode?: 'system' | 'light' | 'dark' | undefined
+  // colorMode?: 'system' | 'light' | 'dark' | undefined
   /**
    * Show/hide controls menu
    * @default true
@@ -55,12 +60,14 @@ export type LikeC4ViewEditorApiProps = {
   onNodeClick?: OnNodeClick | undefined
   onNodeContextMenu?: OnNodeClick | undefined
   onEdgeClick?: OnEdgeClick | undefined
+  onCanvasClick?: OnCanvasClick | undefined
+  onCanvasDblClick?: OnCanvasClick | undefined
   onInitialized?: ((reactflow: ReactFlowInstance) => void) | undefined
 }
 
 const useEditorState = ({
   view,
-  colorMode = 'system',
+  // colorMode = 'system',
   readonly = false,
   pannable = true,
   zoomable = true,
@@ -70,11 +77,6 @@ const useEditorState = ({
   disableBackground = false,
   fitViewPadding = 0.05,
   ...eventHandlers
-  // onChange,
-  // onNavigateTo,
-  // onNodeClick,
-  // onNodeContextMenu,
-  // onEdgeClick
 }: LikeC4ViewEditorApiProps) => {
   const eventsRef = useSyncedRef(eventHandlers)
 
@@ -83,15 +85,20 @@ const useEditorState = ({
     hasOnNavigateTo: !!eventHandlers.onNavigateTo,
     hasOnNodeClick: !!eventHandlers.onNodeClick,
     hasOnNodeContextMenu: !!eventHandlers.onNodeContextMenu,
-    hasOnEdgeClick: !!eventHandlers.onEdgeClick
+    hasOnEdgeClick: !!eventHandlers.onEdgeClick,
+    hasOnCanvasClick: !!eventHandlers.onCanvasClick || !!eventHandlers.onCanvasDblClick
   }
 
   const reactflowRef = useRef<ReactFlowInstance | null>(null)
+
+  const { colorScheme } = useMantineColorScheme()
+  const colorMode: ColorMode = colorScheme === 'auto' ? 'system' : colorScheme
 
   const [state, setState] = useSetState({
     view,
     viewNodes: view.nodes,
     viewEdges: view.edges,
+    hoveredEdgeId: null as null | string,
     eventHandlers: eventsRef,
     disableBackground,
     fitViewPadding,
@@ -105,32 +112,6 @@ const useEditorState = ({
     viewId: view.id,
     ...hasEventHandlers,
     reactflow: null as null | ReactFlowInstance
-    // fitView: () => {
-    //   const reactflowApi = reactflowRef.current
-    //   invariant(reactflowApi, `reactflowApi is null`)
-    //   const zoom = reactflowApi.getZoom()
-    //   reactflowApi.fitView({
-    //     // duration: 350,
-    //     maxZoom: Math.max(1.05, zoom),
-    //     padding: 0.1
-    //   })
-    // }
-    // const scheduleFitViewAnimation = useDebouncedCallback(
-    //   () => {
-    //     if (isMounted()) {
-    //       console.log(`scheduleFitViewAnimation`)
-    //       previousViewport.current = null
-    //       const zoom = reactflowApi.getZoom()
-    //       reactflowApi.fitView({
-    //         // duration: 350,
-    //         maxZoom: Math.max(1.05, zoom),
-    //         padding: 0.1
-    //       })
-    //     }
-    //   },
-    //   [reactflowApi],
-    //   200
-    // )
   })
 
   reactflowRef.current = state.reactflow
@@ -200,10 +181,8 @@ export const useLikeC4EditorTriggers = () => {
   const eventsRef = getUntrackedObject(editor.eventHandlers)
   invariant(eventsRef, `eventsRef is null`)
   return useMemo(() => {
-    // const eventsRef =
     return ({
       onChange: (changeCommand: ChangeCommand) => {
-        console.debug('Trigger.onChange', changeCommand)
         eventsRef.current.onChange?.(changeCommand)
       },
       onNavigateTo: <N extends Pick<EditorNode, 'id' | 'data'>>(node: N) => {
@@ -233,21 +212,18 @@ export const useLikeC4EditorTriggers = () => {
       },
 
       onNodeContextMenu: (node: EditorNode, event: React.MouseEvent) => {
-        const callback = eventsRef.current.onNodeContextMenu
-        if (callback) {
-          callback({
-            element: node.data,
-            node,
-            event
-          })
-        } else {
-          event.preventDefault()
-          event.stopPropagation()
-        }
+        eventsRef.current.onNodeContextMenu?.({
+          element: node.data,
+          node,
+          event
+        })
+      },
+
+      onCanvasDblClick: (event: React.MouseEvent) => {
+        eventsRef.current.onCanvasDblClick?.(event)
       },
 
       onInitialized: (reactflow: ReactFlowInstance) => {
-        console.debug('Trigger.onInitialized', { reactflow })
         update({ reactflow })
         eventsRef.current.onInitialized?.(reactflow)
       }

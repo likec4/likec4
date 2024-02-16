@@ -49,6 +49,7 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
+    "@total-typescript/ts-reset": "^0.5.1",
     "debounce-fn": "^6.0.0",
     "langium": "^2.1.3",
     "object-hash": "^3.0.0",

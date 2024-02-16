@@ -134,6 +134,9 @@ const App = () => {
           onChange={(change) => {
             extensionApi.triggerChange({ ...change, viewId: view.id })
           }}
+          onCanvasDblClick={() => {
+            extensionApi.goToViewSource(view.id)
+          }}
         />
       </div>
       {state === 'error' && <ErrorMessage error={error} />},

@@ -80,13 +80,13 @@
   }
 }
 
-.fill-elementFill {
+.fillElementFill {
   fill: var(--likec4-element-fill);
 }
-.fill-elementStroke {
+.fillElementStroke {
   fill: var(--likec4-element-stroke);
 }
-.fill-mix-stroke {
+.fillMixStroke {
   fill: var(--stroke-fill-color);
 }
 

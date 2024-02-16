@@ -108,6 +108,6 @@ export function compareFqnHierarchically<T extends string = string>(a: T, b: T):
   }
 }
 
-export function compareByFqnHierarchically<T extends { id: Fqn }>(a: T, b: T) {
+export function compareByFqnHierarchically<T extends { id: string }>(a: T, b: T) {
   return compareFqnHierarchically(a.id, b.id)
 }
