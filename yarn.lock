@@ -1012,7 +1012,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
-    "@react-hookz/web": "npm:^24.0.3"
+    "@react-hookz/web": "npm:^24.0.4"
     "@react-spring/konva": "npm:^9.7.3"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -1046,7 +1046,7 @@ __metadata:
     "@monaco-editor/react": "npm:^4.5.0"
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
-    "@react-hookz/web": "npm:^24.0.3"
+    "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.11.16"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -1185,7 +1185,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
-    "@react-hookz/web": "npm:^24.0.3"
+    "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.11.16"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -3085,7 +3085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-hookz/web@npm:^24.0.3":
+"@react-hookz/web@npm:^24.0.4":
   version: 24.0.4
   resolution: "@react-hookz/web@npm:24.0.4"
   dependencies:
@@ -9062,7 +9062,7 @@ __metadata:
     "@nanostores/router": "npm:^0.11.0"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
-    "@react-hookz/web": "npm:^24.0.3"
+    "@react-hookz/web": "npm:^24.0.4"
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.11.16"
     "@types/prop-types": "npm:^15.7.11"
