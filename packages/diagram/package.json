@@ -46,18 +46,18 @@
     "tilg": "^0.1.1"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@mantine/core": "^7.5.2",
-    "@mantine/hooks": "^7.5.2"
+    "@mantine/hooks": "^7.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@mantine/core": "^7.5.2",
+    "@mantine/hooks": "^7.5.2",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/d3-shape": "^3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@mantine/core": "^7.5.2",
-    "@mantine/hooks": "^7.5.2",
     "execa": "^8.0.1",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",
