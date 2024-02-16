@@ -92,7 +92,7 @@
     "picocolors": "^1.0.0",
     "pretty-ms": "^8.0.0",
     "strip-indent": "^4.0.0",
-    "tsx": "^4.7.0",
+    "tsx": "^4.7.1",
     "type-fest": "^4.10.2",
     "typescript": "^5.3.3",
     "typescript-plugin-css-modules": "^5.0.2",
