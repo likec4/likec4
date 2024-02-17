@@ -1,4 +1,5 @@
 module.exports = {
+  
   monorepo: {
     updateDependencies: false,
     mainVersionFile: 'package.json', // or `lerna.json`, or whatever a json file you can read the latest `version` from.
