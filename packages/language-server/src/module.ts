@@ -1,4 +1,4 @@
-import { serializeError } from '@likec4/core'
+import { normalizeError } from '@likec4/core'
 import {
   createDefaultModule,
   createDefaultSharedModule,
@@ -131,9 +131,9 @@ export function createLanguageServices(context?: LanguageServicesContext): {
         connection.telemetry.logEvent({ eventName: 'error', error: arg })
         return
       }
-      const { message, error } = serializeError(arg)
+      const error = normalizeError(arg)
       original(error)
-      connection.telemetry.logEvent({ eventName: 'error', error: message })
+      connection.telemetry.logEvent({ eventName: 'error', error: error.stack ?? error.message })
     }
   }
 

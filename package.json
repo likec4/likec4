@@ -1,6 +1,6 @@
 {
   "name": "@likec4/workspaces",
-  "version": "0.54.0",
+  "version": "0.56.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.1.0",
@@ -29,7 +29,7 @@
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "@vitest/ui": "^1.2.2",
     "dprint": "^0.45.0",
     "execa": "^8.0.1",
@@ -45,7 +45,7 @@
     "vitest": "^1.2.2"
   },
   "volta": {
-    "node": "20.11.0"
+    "node": "20.11.1"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",

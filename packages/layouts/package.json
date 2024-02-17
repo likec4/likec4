@@ -1,7 +1,7 @@
 {
   "name": "@likec4/layouts",
   "license": "MIT",
-  "version": "0.54.0",
+  "version": "0.56.0",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -50,12 +50,12 @@
     "rambdax": "^9.1.1",
     "remeda": "^1.40.1",
     "strip-indent": "^4.0.0",
-    "ts-graphviz": "^1.8.1",
+    "ts-graphviz": "^1.8.2",
     "type-fest": "^4.10.2",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "execa": "^8.0.1",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",

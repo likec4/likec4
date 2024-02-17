@@ -1,6 +1,6 @@
 {
   "name": "create-likec4",
-  "version": "0.54.0",
+  "version": "0.56.0",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -30,7 +30,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "@types/prompts": "^2.4.8",
     "execa": "^8.0.1",
     "prompts": "^2.4.2",

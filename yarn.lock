@@ -1136,7 +1136,7 @@ __metadata:
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1189,7 +1189,7 @@ __metadata:
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     json5: "npm:^2.2.3"
     langium: "npm:^2.1.3"
     rambdax: "npm:^9.1.1"
@@ -1221,7 +1221,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
     "@total-typescript/ts-reset": "npm:^0.5.1"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@types/object-hash": "npm:^3.0.6"
     debounce-fn: "npm:^6.0.0"
     execa: "npm:^8.0.1"
@@ -1251,7 +1251,7 @@ __metadata:
     "@hpcc-js/wasm": "npm:^2.15.3"
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -1259,7 +1259,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
-    ts-graphviz: "npm:^1.8.1"
+    ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
@@ -1278,7 +1278,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.5.2"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1304,7 +1304,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/workspaces@workspace:."
   dependencies:
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@vitest/ui": "npm:^1.2.2"
     dprint: "npm:^0.45.0"
     execa: "npm:^8.0.1"
@@ -4158,12 +4158,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.11.16":
-  version: 20.11.16
-  resolution: "@types/node@npm:20.11.16"
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.11.17":
+  version: 20.11.19
+  resolution: "@types/node@npm:20.11.19"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10/751f50ec5c9332b11515e82fe37c71479ac4449b711280aa3c7910edf67b1e3f5ac00041512add543f9a892096a68356406998bf02a2c809a73d176c44c28414
+  checksum: 10/c7f4705d6c84aa21679ad180c33c13ca9567f650e66e14bcee77c7c43d14619c7cd3b4d7b2458947143030b7b1930180efa6d12d999b45366abff9fed7a17472
   languageName: node
   linkType: hard
 
@@ -4305,6 +4305,13 @@ __metadata:
   version: 1.77.0
   resolution: "@types/vscode@npm:1.77.0"
   checksum: 10/c2b99fa17f58081ff67965a2ae75c53a48bf9063c40039050097668f0bb7672de37e083acaea3853ea3d9737cee6e1179abebdf3f840c142d704eee5acc7ebbf
+  languageName: node
+  linkType: hard
+
+"@types/which@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/which@npm:3.0.3"
+  checksum: 10/eee298875ff62f7d56a2267cd70789a7032647c599d6abc684864281923763c082626b9742d4cfa7ea3e0790ac5d05aff48edd6ecba0f61eb69a6d57cc83c6f5
   languageName: node
   linkType: hard
 
@@ -5899,7 +5906,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
@@ -9102,6 +9109,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isexe@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "isexe@npm:3.1.1"
+  checksum: 10/7fe1931ee4e88eb5aa524cd3ceb8c882537bc3a81b02e438b240e47012eef49c86904d0f0e593ea7c3a9996d18d0f1f3be8d3eaa92333977b0c3a9d353d5563e
+  languageName: node
+  linkType: hard
+
 "its-fine@npm:^1.1.1":
   version: 1.1.1
   resolution: "its-fine@npm:1.1.1"
@@ -9509,6 +9523,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": "npm:^16.18.66"
     "@types/vscode": "npm:~1.77.0"
+    "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.1"
     "@vscode/vsce": "npm:^2.22.0"
     esbuild: "npm:^0.19.12"
@@ -9527,6 +9542,7 @@ __metadata:
     vscode-languageserver-protocol: "npm:3.17.5"
     vscode-messenger: "npm:^0.4.5"
     vscode-uri: "npm:3.0.8"
+    which: "npm:^4.0.0"
     xstream: "npm:^11.14.0"
   languageName: unknown
   linkType: soft
@@ -9550,7 +9566,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.16.0"
     "@tanstack/router-vite-plugin": "npm:^1.16.0"
     "@types/mermaid": "npm:^9.2.0"
-    "@types/node": "npm:^20.11.16"
+    "@types/node": "npm:^20.11.17"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -9570,7 +9586,7 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     p-queue: "npm:^7.4.1"
     picocolors: "npm:^1.0.0"
-    playwright-core: "npm:^1.40.1"
+    playwright-core: "npm:1.41.2"
     postcss: "npm:^8.4.35"
     postcss-nested: "npm:^6.0.1"
     postcss-preset-mantine: "npm:^1.13.0"
@@ -12822,12 +12838,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:^1.40.1":
-  version: 1.40.1
-  resolution: "playwright-core@npm:1.40.1"
+"playwright-core@npm:1.41.2":
+  version: 1.41.2
+  resolution: "playwright-core@npm:1.41.2"
   bin:
     playwright-core: cli.js
-  checksum: 10/b8945a5eec68a2772be537219c81f74b8fbd1545650c908c41fdcb2b9eb40f488968d1fb59c61ca58afb923af1e390dd621bba3099521fcd3d9a63ef3645a203
+  checksum: 10/77ff881ebb9cc0654edd00c5ff202f5f61aee7a5318e1f12a82e30a3636de21e8b5982fae6138e5bb90115ae509c15a640cf85b10b3e2daebb2bb286da54fd4c
   languageName: node
   linkType: hard
 
@@ -15373,10 +15389,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-graphviz@npm:^1.8.1":
-  version: 1.8.1
-  resolution: "ts-graphviz@npm:1.8.1"
-  checksum: 10/4936292e2b6104363b2d37f995fea766f8aefdabaecae10c963785e0c0b09da35bce78f961ac48897278f4f2148c2d71c7eeafaedcf273d8af06971ae5a01abc
+"ts-graphviz@npm:^1.8.2":
+  version: 1.8.2
+  resolution: "ts-graphviz@npm:1.8.2"
+  checksum: 10/969b06332ca622c148f7b404569af1b972bbe7ee9ba1226350dd0d99bc92c1c95eb6bf9e69aafce51a6c2493a1342b25a8edd6883f27bd516778d401b2a3623f
   languageName: node
   linkType: hard
 
@@ -15465,58 +15481,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-darwin-64@npm:1.12.3"
+"turbo-darwin-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-darwin-64@npm:1.12.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-darwin-arm64@npm:1.12.3"
+"turbo-darwin-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-darwin-arm64@npm:1.12.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-linux-64@npm:1.12.3"
+"turbo-linux-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-linux-64@npm:1.12.4"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-linux-arm64@npm:1.12.3"
+"turbo-linux-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-linux-arm64@npm:1.12.4"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-windows-64@npm:1.12.3"
+"turbo-windows-64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-windows-64@npm:1.12.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.12.3":
-  version: 1.12.3
-  resolution: "turbo-windows-arm64@npm:1.12.3"
+"turbo-windows-arm64@npm:1.12.4":
+  version: 1.12.4
+  resolution: "turbo-windows-arm64@npm:1.12.4"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
 "turbo@npm:^1.12.3":
-  version: 1.12.3
-  resolution: "turbo@npm:1.12.3"
+  version: 1.12.4
+  resolution: "turbo@npm:1.12.4"
   dependencies:
-    turbo-darwin-64: "npm:1.12.3"
-    turbo-darwin-arm64: "npm:1.12.3"
-    turbo-linux-64: "npm:1.12.3"
-    turbo-linux-arm64: "npm:1.12.3"
-    turbo-windows-64: "npm:1.12.3"
-    turbo-windows-arm64: "npm:1.12.3"
+    turbo-darwin-64: "npm:1.12.4"
+    turbo-darwin-arm64: "npm:1.12.4"
+    turbo-linux-64: "npm:1.12.4"
+    turbo-linux-arm64: "npm:1.12.4"
+    turbo-windows-64: "npm:1.12.4"
+    turbo-windows-arm64: "npm:1.12.4"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -15532,7 +15548,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/f768d83ae0bb19b81ec9366cd2dfd4d9a1f5a4d01efb4054e88ebd2a4356bccc015e3bda62f655d124c3e89b1fe1227eed3ebd2ab533dacd0424c3b96bbdf432
+  checksum: 10/c58920f24aed084c59813543bcbd7617977798611a59e791595e965097f86bfad1014a2442ae04de59e363e45e48b2e0cc881f90dab5f97c40cc2f7b7db8bdee
   languageName: node
   linkType: hard
 
@@ -16649,6 +16665,17 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10/4782f8a1d6b8fc12c65e968fea49f59752bf6302dc43036c3bf87da718a80710f61a062516e9764c70008b487929a73546125570acea95c5b5dcc8ac3052c70f
+  languageName: node
+  linkType: hard
+
+"which@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "which@npm:4.0.0"
+  dependencies:
+    isexe: "npm:^3.1.1"
+  bin:
+    node-which: bin/which.js
+  checksum: 10/f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
   languageName: node
   linkType: hard
 

@@ -38,7 +38,8 @@ jobs:
         run: |
           VERSION=$(node -e "console.log(require('./package.json').version)")
           echo " version: $VERSION"
-          yarn vsce publish $VERSION
+          yarn vsce publish --skip-duplicate $VERSION
         working-directory: packages/vscode
         env:
+          NODE_ENV: production
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
