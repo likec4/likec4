@@ -1,3 +1,7 @@
+# 0.56.0 (2024-02-17)
+
+
+
 # [0.54.0](https://github.com/likec4/likec4/compare/v0.53.0...v0.54.0) (2024-01-12)
 
 ### Features
