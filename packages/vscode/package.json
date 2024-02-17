@@ -44,7 +44,7 @@
     "dev": "$npm_node_execpath esbuild.mjs --watch",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist src/generated",
-    "vsce:publish": "vsce publish"
+    "vsce:publish": "vsce publish --skip-duplicate"
   },
   "engines": {
     "vscode": "^1.77.0"
