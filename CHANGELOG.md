@@ -1,6 +1,32 @@
-# [0.54.0](https://github.com/likec4/likec4/compare/v0.53.0...v0.54.0) (2024-01-12)
+# [0.56.0](https://github.com/likec4/likec4/compare/v0.54.0...v0.56.0) (2024-02-17)
 
 ### Features
+* **vscode:** setting to use local graphviz binaries (see [#534](https://github.com/likec4/likec4/issues/534) [7e93e86](https://github.com/likec4/likec4/commit/7e93e86b3406f86da48d8d302805a69a16c1a31e))
+
+### Bug Fixes
+
+* **core:** improve error stack trace ([06ebf81](https://github.com/likec4/likec4/commit/06ebf81806d9386ba88fde8b829b162b81ca4d9d))
+* **deps:** update dependency @hpcc-js/wasm to ^2.15.3 ([#537](https://github.com/likec4/likec4/issues/537)) ([b2fc368](https://github.com/likec4/likec4/commit/b2fc368ab08c51bf1d8493a31b8f6db3957d5687))
+* **deps:** update dependency @radix-ui/themes to ^2.0.3 ([#544](https://github.com/likec4/likec4/issues/544)) ([c0929a1](https://github.com/likec4/likec4/commit/c0929a1b9a6e46546ff9e9bc69bddbf2124e23bb))
+* **deps:** update dependency autoprefixer to ^10.4.17 ([#561](https://github.com/likec4/likec4/issues/561)) ([56f462f](https://github.com/likec4/likec4/commit/56f462f52f986771341c27a05b63fe10676c2970))
+* **deps:** update dependency jotai to ^2.6.4 ([#545](https://github.com/likec4/likec4/issues/545)) ([1f97776](https://github.com/likec4/likec4/commit/1f977764269bc4c87ca49795a92cc387260abfb5))
+* **deps:** update dependency konva to ^9.3.2 ([#546](https://github.com/likec4/likec4/issues/546)) ([469c3bc](https://github.com/likec4/likec4/commit/469c3bc9f87faef0b4649f9f710677efce97367c))
+* **deps:** update dependency konva to ^9.3.3 ([58db259](https://github.com/likec4/likec4/commit/58db25940db0183d125e47623a76cf4b32b0e7b3))
+* **deps:** update dependency react-accessible-treeview to ^2.8.3 ([#556](https://github.com/likec4/likec4/issues/556)) ([919aede](https://github.com/likec4/likec4/commit/919aeded60b9b2382793c1adfe9b61cb04bdb1d3))
+* **deps:** update dependency remeda to ^1.40.0 ([#555](https://github.com/likec4/likec4/issues/555)) ([a5797f6](https://github.com/likec4/likec4/commit/a5797f6259c46521d359460a929467694738956b))
+* **deps:** update dependency remeda to ^1.40.1 ([#559](https://github.com/likec4/likec4/issues/559)) ([8815004](https://github.com/likec4/likec4/commit/8815004190e73073addf942365a770222050d9a9))
+* **deps:** update dependency ts-graphviz to ^1.8.2 ([ea80d34](https://github.com/likec4/likec4/commit/ea80d34db2ad209188170243b0909f4b6d4ed177))
+* **deps:** update playwright to 1.41.2 ([18416f1](https://github.com/likec4/likec4/commit/18416f1369643b827e01295e3583bdbc82ba1d3b))
+
+
+# [0.55.0]
+
+Skipped due manual (and erroneous) publishing to marketplace.
+
+
+# [0.54.0](https://github.com/likec4/likec4/compare/v0.53.0...v0.54.0) (2024-01-12)
+
+### 🚀 Features
 
 - **lsp:** add tags to relationships ([a7e6e06](https://github.com/likec4/likec4/commit/a7e6e065759ede641dd40b9cb3d49630666bcd79))
 
