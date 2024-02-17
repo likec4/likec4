@@ -3890,6 +3890,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/which@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/which@npm:3.0.3"
+  checksum: 10/eee298875ff62f7d56a2267cd70789a7032647c599d6abc684864281923763c082626b9742d4cfa7ea3e0790ac5d05aff48edd6ecba0f61eb69a6d57cc83c6f5
+  languageName: node
+  linkType: hard
+
 "@types/yargs-parser@npm:*":
   version: 21.0.1
   resolution: "@types/yargs-parser@npm:21.0.1"
@@ -4560,21 +4567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.21.9":
-  version: 4.21.10
-  resolution: "browserslist@npm:4.21.10"
-  dependencies:
-    caniuse-lite: "npm:^1.0.30001517"
-    electron-to-chromium: "npm:^1.4.477"
-    node-releases: "npm:^2.0.13"
-    update-browserslist-db: "npm:^1.0.11"
-  bin:
-    browserslist: cli.js
-  checksum: 10/cdb9272433994393a995235720c304e8c7123b4994b02fc0b24ca0f483db482c4f85fe8b40995aa6193d47d781e5535cf5d0efe96e465d2af42058fb3251b13a
-  languageName: node
-  linkType: hard
-
-"browserslist@npm:^4.22.2":
+"browserslist@npm:^4.21.9, browserslist@npm:^4.22.2":
   version: 4.22.3
   resolution: "browserslist@npm:4.22.3"
   dependencies:
@@ -4725,14 +4718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001406, caniuse-lite@npm:^1.0.30001517":
-  version: 1.0.30001546
-  resolution: "caniuse-lite@npm:1.0.30001546"
-  checksum: 10/efa765c9891beb187715dc794b6b21cd30c23cdaea5788b736b58dbea7a568d73577fd9e97202874ee19fea5e783a55a20296606d473153250b4f9a36aba58de
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001578, caniuse-lite@npm:^1.0.30001580":
+"caniuse-lite@npm:^1.0.30001406, caniuse-lite@npm:^1.0.30001578, caniuse-lite@npm:^1.0.30001580":
   version: 1.0.30001584
   resolution: "caniuse-lite@npm:1.0.30001584"
   checksum: 10/908e4fcafa1e8d52d6c5d79e8c614c4d0cf62af544935f7a78fb5a434157505571ce4c2eacfb549e5d4a6e6e38525350c7a9bf696068ad86eb74e890df1d688f
@@ -6388,13 +6374,6 @@ __metadata:
   bin:
     ejs: bin/cli.js
   checksum: 10/71f56d37540d2c2d71701f0116710c676f75314a3e997ef8b83515d5d4d2b111c5a72725377caeecb928671bacb84a0d38135f345904812e989847057d59f21a
-  languageName: node
-  linkType: hard
-
-"electron-to-chromium@npm:^1.4.477":
-  version: 1.4.484
-  resolution: "electron-to-chromium@npm:1.4.484"
-  checksum: 10/65958be4db4a7aa8dae1691a218bdbc9fd9732553319a0698cb1a7db9f77c532874fcb5f598a1e77160e6b1c6ef11cc31ff94aa35a0c2bdfc261b4f92c09c54f
   languageName: node
   linkType: hard
 
@@ -8655,6 +8634,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isexe@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "isexe@npm:3.1.1"
+  checksum: 10/7fe1931ee4e88eb5aa524cd3ceb8c882537bc3a81b02e438b240e47012eef49c86904d0f0e593ea7c3a9996d18d0f1f3be8d3eaa92333977b0c3a9d353d5563e
+  languageName: node
+  linkType: hard
+
 "its-fine@npm:^1.1.1":
   version: 1.1.1
   resolution: "its-fine@npm:1.1.1"
@@ -9055,6 +9041,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": "npm:^16.18.66"
     "@types/vscode": "npm:~1.77.0"
+    "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.1"
     "@vscode/vsce": "npm:^2.22.0"
     esbuild: "npm:^0.19.9"
@@ -9073,6 +9060,7 @@ __metadata:
     vscode-languageserver-protocol: "npm:3.17.5"
     vscode-messenger: "npm:^0.4.5"
     vscode-uri: "npm:3.0.8"
+    which: "npm:^4.0.0"
     xstream: "npm:^11.14.0"
   languageName: unknown
   linkType: soft
@@ -11608,13 +11596,6 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10/e9345b22be0a3256af87a16ba9604362cd8e4db304e67e71dd83bb8e573f3fdbaf69e359b5af572a14a98730cc3e1813679444ee029093d2a2f38ba3cac4ed7e
-  languageName: node
-  linkType: hard
-
-"node-releases@npm:^2.0.13":
-  version: 2.0.13
-  resolution: "node-releases@npm:2.0.13"
-  checksum: 10/c9bb813aab2717ff8b3015ecd4c7c5670a5546e9577699a7c84e8d69230cd3b1ce8f863f8e9b50f18b19a5ffa4b9c1a706bbbfe4c378de955fedbab04488a338
   languageName: node
   linkType: hard
 
@@ -14835,23 +14816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.6.2":
-  version: 4.7.0
-  resolution: "tsx@npm:4.7.0"
-  dependencies:
-    esbuild: "npm:~0.19.10"
-    fsevents: "npm:~2.3.3"
-    get-tsconfig: "npm:^4.7.2"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    tsx: dist/cli.mjs
-  checksum: 10/3e6ee0a0a8adb7b1cb58875f50b143b41df0132ade3a7cdda16a166ac473eee446197762ba6afb235ace4c6adae7e55f61a420ee55b17438717eea1e55e611c0
-  languageName: node
-  linkType: hard
-
-"tsx@npm:^4.7.1":
+"tsx@npm:^4.6.2, tsx@npm:^4.7.1":
   version: 4.7.1
   resolution: "tsx@npm:4.7.1"
   dependencies:
@@ -15454,20 +15419,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.0.11":
-  version: 1.0.11
-  resolution: "update-browserslist-db@npm:1.0.11"
-  dependencies:
-    escalade: "npm:^3.1.1"
-    picocolors: "npm:^1.0.0"
-  peerDependencies:
-    browserslist: ">= 4.21.0"
-  bin:
-    update-browserslist-db: cli.js
-  checksum: 10/cc1c7a38d15413046bea28ff3c7668a7cb6b4a53d83e8089fa960efd896deb6d1a9deffc2beb8dc0506186a352c8d19804efe5ec7eeb401037e14cf3ea5363f8
-  languageName: node
-  linkType: hard
-
 "update-browserslist-db@npm:^1.0.13":
   version: 1.0.13
   resolution: "update-browserslist-db@npm:1.0.13"
@@ -16017,6 +15968,17 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10/4782f8a1d6b8fc12c65e968fea49f59752bf6302dc43036c3bf87da718a80710f61a062516e9764c70008b487929a73546125570acea95c5b5dcc8ac3052c70f
+  languageName: node
+  linkType: hard
+
+"which@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "which@npm:4.0.0"
+  dependencies:
+    isexe: "npm:^3.1.1"
+  bin:
+    node-which: bin/which.js
+  checksum: 10/f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
   languageName: node
   linkType: hard
 

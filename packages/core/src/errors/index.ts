@@ -70,31 +70,14 @@ export class RelationRefError extends BaseError {
   }
 }
 
-export function normalizeError(e: unknown): BaseError {
-  if (e instanceof BaseError) {
+export function normalizeError(e: unknown): Error {
+  if (e instanceof BaseError || e instanceof Error) {
     return e
   }
-  if (e instanceof Error) {
-    return new UnknownError(e.message, { cause: e })
-  }
-  if (e === null || e === undefined) {
-    return new UnknownError('Undefined error')
-  }
   const message = isString(e) ? e : stringify(e as object)
-  return new UnknownError(message)
-}
-
-export function serializeError(e: unknown) {
-  const error = normalizeError(e)
-  return {
-    name: error.name,
-    message: error.stack ? error.stack : `${error.name}: ${error.message}`,
-    error
-  }
-}
-
-export function throwNormalizedError(e: unknown): never {
-  throw normalizeError(e)
+  const error = new UnknownError(message)
+  Error.captureStackTrace(error, normalizeError)
+  return error
 }
 
 // Throw an error if the condition fails

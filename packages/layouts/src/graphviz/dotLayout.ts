@@ -1,18 +1,18 @@
 import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
+  BBox as LabelBBox,
   ComputedView,
   DiagramEdge,
   DiagramLabel,
   DiagramNode,
   DiagramView,
-  BBox as LabelBBox,
   NonEmptyArray,
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
-import type { BoundingBox, GVPos, GraphvizJson } from './types'
+import type { BoundingBox, GraphvizJson, GVPos } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -162,9 +162,9 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
   const initialDot = toDot(graphviz, computedView)
   const dot = initialDot
 
-  const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
+  const { nodes } = computedView
 
-  const images = uniq(computedNodes.flatMap(node => (node.icon ? [node.icon] : []))).map(path => ({
+  const images = uniq(nodes.flatMap(node => (node.icon ? [node.icon] : []))).map(path => ({
     path,
     width: IconSize,
     height: IconSize
@@ -175,38 +175,21 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
     yInvert: true
   })
 
-  const graphvizJson = JSON.parse(rawjson) as GraphvizJson
-  const page = parseBB(graphvizJson.bb)
+  const diagram = parseGraphvizJson(rawjson, computedView)
 
-  // const fixedDot = dot.replace(/label=(<<[^\n\r]*>>)/g,(match, p1) => `label="${p1.replace(/"/g, '\\"')}"`)
-  // try {
-  //   const width = page.x + page.width,
-  //     height = page.y + page.height
-  //   const model = fromDot(fixedDot, {
-  //     parse: {
-  //       startRule: 'Dot'
-  //     }
-  //   })
-  //   model.attributes.graph.set(_.size, `${pxToInch(width + 10)},${pxToInch(height + 10)}!`)
-  //   model.attributes.graph.set(_.ratio, 'fill')
-  //   dot = printToDot(model)
-  //   Graphviz.unload()
-  //   graphviz = await Graphviz.load()
-  //   const newjsonn = graphviz.dot(dot, 'json', {
-  //     images,
-  //     yInvert: true
-  //   })
-  //   graphvizJson = JSON.parse(newjsonn) as GraphvizJson
-  //   page = parseBB(graphvizJson.bb)
-  // } catch (e) {
-  //   console.error(e)
-  //   console.error('initial ---------------------------------')
-  //   console.error(initialDot)
-  //   console.error('fixedDot ---------------------------------')
-  //   console.error(fixedDot)
-  //   console.error('dot ---------------------------------')
-  //   console.error(dot)
-  // }
+  return {
+    dot: dot
+      .split('\n')
+      .filter(l => !l.includes('margin=33.21'))
+      .join('\n'),
+    diagram
+  }
+}
+
+export function parseGraphvizJson(json: string, computedView: ComputedView): DiagramView {
+  const graphvizJson = JSON.parse(json) as GraphvizJson
+  const page = parseBB(graphvizJson.bb)
+  const { nodes: computedNodes, edges: computedEdges, ...view } = computedView
 
   const diagram: DiagramView = {
     ...view,
@@ -303,11 +286,5 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
     diagram.edges.push(edge)
   }
 
-  return {
-    dot: dot
-      .split('\n')
-      .filter(l => !l.includes('margin=33.21'))
-      .join('\n'),
-    diagram
-  }
+  return diagram
 }
