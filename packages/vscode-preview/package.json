@@ -26,7 +26,7 @@
     "@likec4/diagrams": "workspace:*",
     "@react-hookz/deep-equal": "^1.0.4",
     "@react-hookz/web": "^24.0.4",
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.17",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
