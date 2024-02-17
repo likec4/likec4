@@ -1219,7 +1219,7 @@ __metadata:
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
     tsx: "npm:^4.7.1"
-    turbo: "npm:^1.12.3"
+    turbo: "npm:^1.12.4"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.0.12"
     vitest: "npm:^1.2.2"
@@ -14899,7 +14899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.12.3":
+"turbo@npm:^1.12.4":
   version: 1.12.4
   resolution: "turbo@npm:1.12.4"
   dependencies:
