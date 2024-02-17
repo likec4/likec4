@@ -1,6 +1,6 @@
 {
   "name": "likec4-vscode",
-  "version": "0.54.0",
+  "version": "0.55.0",
   "private": true,
   "publisher": "likec4",
   "displayName": "LikeC4",
@@ -104,6 +104,26 @@
     "configuration": {
       "title": "%ext.title%",
       "properties": {
+        "likec4.graphviz.mode": {
+          "title": "Graphviz mode",
+          "description": "If you are experiencing issues with the bundled WASM Graphviz, you switch to local binary (\"dot\").",
+          "type": "string",
+          "enum": [
+            "wasm",
+            "binary"
+          ],
+          "default": "wasm",
+          "enumDescriptions": [
+            "Bundled wasm (faster)",
+            "Local binary (slower)"
+          ]
+        },
+        "likec4.graphviz.path": {
+          "type": "string",
+          "title": "Graphviz binary path",
+          "default": "",
+          "description": "Path to the Graphviz dot executable.\nIf empty, extension will try to find it in the PATH."
+        },
         "likec4.trace.extension": {
           "type": "string",
           "enum": [
@@ -181,6 +201,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^16.18.66",
     "@types/vscode": "~1.77.0",
+    "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.1",
     "@vscode/vsce": "^2.22.0",
     "esbuild": "^0.19.9",
@@ -199,6 +220,7 @@
     "vscode-languageserver-protocol": "3.17.5",
     "vscode-messenger": "^0.4.5",
     "vscode-uri": "3.0.8",
+    "which": "^4.0.0",
     "xstream": "^11.14.0"
   },
   "packageManager": "yarn@4.1.0",

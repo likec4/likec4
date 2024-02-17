@@ -16,18 +16,31 @@ export class DotLayouter {
 
   layout(view: ComputedView): Promise<DotLayoutResult> {
     return limit(async () => {
-      try {
-        const graphviz = await Graphviz.load()
-        return dotLayoutFn(graphviz, view)
-      } catch (err) {
-        Graphviz.unload()
-        await delay(20)
-        const graphviz = await Graphviz.load()
-        return dotLayoutFn(graphviz, view)
-      } finally {
-        Graphviz.unload()
+      // Attempt 1
+      let result = await this.attempt(view)
+      if (result) {
+        return result
       }
+      await delay(50)
+      // Attempt 2
+      result = await this.attempt(view)
+      if (result) {
+        return result
+      }
+      throw new Error('Failed to layout with graphviz')
     })
+  }
+
+  private async attempt(view: ComputedView) {
+    try {
+      const graphviz = await Graphviz.load()
+      return dotLayoutFn(graphviz, view)
+    } catch (err) {
+      console.error('Failed attempt to layout with graphviz:', err)
+      return null
+    } finally {
+      Graphviz.unload()
+    }
   }
 
   svg(dot: string, { nodes }: ComputedView): Promise<string> {

@@ -11,6 +11,7 @@ import {
 import { ExtensionController } from '../common/ExtensionController'
 import { extensionTitle, globPattern, isVirtual, languageId } from '../const'
 import { Logger } from '../logger'
+import { manageGraphvizLayout } from './BinaryGraphvizLayout'
 
 function isWindows() {
   return os.platform() === 'win32'
@@ -24,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
   const client = createLanguageClient(context)
   const ctrl = (controller = new ExtensionController(context, client))
   void ctrl.activate()
+  manageGraphvizLayout(ctrl)
 }
 
 // This function is called when the extension is deactivated.

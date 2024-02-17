@@ -1,15 +1,17 @@
 import type { ComputedView, DiagramView as LayoutedView, ViewID } from '@likec4/core'
-import { invariant, serializeError } from '@likec4/core'
-import { DotLayouter } from '@likec4/layouts'
+import { invariant } from '@likec4/core'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
+import pTimeout from 'p-timeout'
 import { equals } from 'rambdax'
 import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
+
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { Logger, logError } from '../logger'
+import { logError, Logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
+import type { ExtensionController } from './ExtensionController'
 import type { Rpc } from './Rpc'
 
 function isNotNullish<T>(x: T): x is NonNullable<T> {
@@ -20,29 +22,26 @@ function isNotNullish<T>(x: T): x is NonNullable<T> {
 
 type Callback =
   | {
-      success: true
-      diagram: LayoutedView
-      error?: never
-    }
+    success: true
+    diagram: LayoutedView
+    error?: never
+  }
   | {
-      success: false
-      diagram?: never
-      error: string
-    }
+    success: false
+    diagram?: never
+    error: string
+  }
 export class C4Model extends AbstractDisposable {
   #activeSubscription: vscode.Disposable | null = null
 
   private changesStream: MemoryStream<number>
 
-  private dot: DotLayouter
-
   constructor(
+    private ctrl: ExtensionController,
     private rpc: Rpc,
     private telemetry: TelemetryReporter
   ) {
     super()
-    this.dot = new DotLayouter()
-    this.onDispose(this.dot)
     this.changesStream = xs
       .create<number>({
         start: listener => {
@@ -78,27 +77,26 @@ export class C4Model extends AbstractDisposable {
   }
 
   private fetchView(viewId: ViewID) {
-    Logger.info(`[Extension.C4Model] fetchView ${viewId}`)
-    // microtask
+    Logger.debug(`[Extension.C4Model] fetchView ${viewId}`)
     const promise = Promise.resolve().then(() => this.rpc.computeView(viewId))
-    return xs.fromPromise(promise)
-    // .filter(isNotNullish)
-    // .replaceError(err => {
-    //   logError(err)
-    //   return xs.empty()
-    // })
+    return xs.fromPromise(pTimeout(promise, {
+      milliseconds: 5_000,
+      message: `fetchView ${viewId} timeout`
+    }))
   }
 
   private layoutView(view: ComputedView) {
-    // microtask
-    const promise = Promise.resolve()
-      .then(() => this.dot.layout(view))
-      .then(({ diagram }) => diagram)
-    return xs.from(promise)
+    Logger.debug(`[Extension.C4Model] layoutView ${view.id}`)
+    const promise = Promise.resolve().then(() => this.ctrl.graphviz.layout(view))
+    return xs.fromPromise(pTimeout(promise, {
+      milliseconds: 5_000,
+      message: `layoutView ${view.id} timeout`
+    }))
   }
 
   public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
     Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
+    let t1 = null as null | number
     const subscription = this.changesStream
       .map(() => this.fetchView(viewId))
       .flatten()
@@ -109,25 +107,44 @@ export class C4Model extends AbstractDisposable {
             success: false,
             error: 'View not found'
           })
-          return xs.empty()
         }
+        return view
+      })
+      .filter(isNotNullish)
+      .map(view => {
+        t1 = performance.now()
         return this.layoutView(view)
       })
       .flatten()
       .subscribe({
-        next: diagram =>
+        next: diagram => {
+          if (t1) {
+            const ms = (performance.now() - t1).toFixed(3)
+            Logger.debug(`[Extension.C4Model.layoutView] ${viewId} in ${ms}ms`)
+            t1 = null
+          }
           callback({
             success: true,
             diagram
-          }),
+          })
+        },
         error: err => {
-          logError(err)
+          const errMessage = err instanceof Error
+            ? `${err.name}: ${err.stack ?? err.message}`
+            : '' + err
+          if (t1) {
+            const ms = (performance.now() - t1).toFixed(3)
+            Logger.warn(
+              `[Extension.C4Model.layoutView] failed ${viewId} in ${ms}ms\n${errMessage}`
+            )
+            t1 = null
+          } else {
+            logError(err)
+          }
+
           callback({
             success: false,
-            error:
-              err instanceof Error
-                ? err.stack ?? `${err.name}: ${err.message}`
-                : serializeError(err).message
+            error: errMessage
           })
         }
       })
@@ -145,10 +162,6 @@ export class C4Model extends AbstractDisposable {
       .periodic(20 * Minute)
       .drop(1)
       .map(() => xs.from(this.fetchTelemetry()))
-      .replaceError(err => {
-        logError(err)
-        return xs.empty()
-      })
       .flatten()
       .compose(dropRepeats((a, b) => equals(a.metrics, b.metrics)))
       .map(({ metrics, ms }) => (metrics ? { ...metrics, ms } : null))
@@ -171,10 +184,10 @@ export class C4Model extends AbstractDisposable {
     return {
       metrics: model
         ? {
-            elements: Object.keys(model.elements).length,
-            relationships: Object.keys(model.relations).length,
-            views: Object.keys(model.views).length
-          }
+          elements: Object.keys(model.elements).length,
+          relationships: Object.keys(model.relations).length,
+          views: Object.keys(model.views).length
+        }
         : null,
       ms: t1 - t0
     }

@@ -4,16 +4,11 @@ import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient
 import { normalizeError, serializeError, type ViewID } from '@likec4/core'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
-import {
-  cmdLocate,
-  cmdOpenPreview,
-  cmdPreviewContextOpenSource,
-  cmdRebuild,
-  telemetryKey
-} from '../const'
+import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
+import { type GraphvizLayout, WasmGraphvizLayout } from './GraphvizLayout'
 import { initWorkspace, rebuildWorkspace } from './initWorkspace'
 import Messenger from './Messenger'
 import { PreviewPanel } from './panel/PreviewPanel'
@@ -23,6 +18,8 @@ export class ExtensionController extends AbstractDisposable {
   public static extensionUri: vscode.Uri
 
   private _telemetry: TelemetryReporter
+
+  public graphviz: GraphvizLayout = new WasmGraphvizLayout()
 
   constructor(
     private _context: vscode.ExtensionContext,
@@ -78,9 +75,11 @@ export class ExtensionController extends AbstractDisposable {
     try {
       const workspaceFolders = vscode.workspace.workspaceFolders ?? []
       Logger.info(
-        `[Extension] Activate in ${workspaceFolders.length} workspace folders${workspaceFolders
-          .map(w => `\n  ${w.name}: ${w.uri}`)
-          .join('')}`
+        `[Extension] Activate in ${workspaceFolders.length} workspace folders${
+          workspaceFolders
+            .map(w => `\n  ${w.name}: ${w.uri}`)
+            .join('')
+        }`
       )
       Logger.info(`[Extension] Starting LanguageClient...`)
       this.client.outputChannel.show(true)
@@ -95,7 +94,7 @@ export class ExtensionController extends AbstractDisposable {
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
 
-      const c4model = new C4Model(rpc, this._telemetry)
+      const c4model = new C4Model(this, rpc, this._telemetry)
       c4model.turnOnTelemetry()
       this.onDispose(c4model)
 
@@ -115,9 +114,12 @@ export class ExtensionController extends AbstractDisposable {
       this.registerCommand(cmdPreviewContextOpenSource, async () => {
         const { elementId } = await messenger.getHoveredElement()
         if (!elementId) return
-        await vscode.commands.executeCommand(cmdLocate, {
-          element: elementId
-        } satisfies WebviewToExtension.LocateParams)
+        await vscode.commands.executeCommand(
+          cmdLocate,
+          {
+            element: elementId
+          } satisfies WebviewToExtension.LocateParams
+        )
       })
 
       this.registerCommand(cmdOpenPreview, (viewId?: ViewID) => {

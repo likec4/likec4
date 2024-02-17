@@ -1,3 +1,5 @@
 export { type DotLayoutResult } from './graphviz/dotLayout'
-export { printToDot } from './graphviz/printToDot'
+export { parseGraphvizJson } from './graphviz/dotLayout'
 export { DotLayouter } from './graphviz/DotLayouter'
+export { printToDot } from './graphviz/printToDot'
+export { type DotSource } from './graphviz/types'
