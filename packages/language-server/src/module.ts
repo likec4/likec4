@@ -1,18 +1,17 @@
-import { serializeError } from '@likec4/core'
+import { normalizeError } from '@likec4/core'
 import {
-  EmptyFileSystem,
-  WorkspaceCache,
   createDefaultModule,
   createDefaultSharedModule,
-  inject,
   type DefaultSharedModuleContext,
+  EmptyFileSystem,
+  inject,
   type LangiumServices,
   type LangiumSharedServices,
   type Module,
   type PartialLangiumServices,
-  type PartialLangiumSharedServices
+  type PartialLangiumSharedServices,
+  WorkspaceCache
 } from 'langium'
-import { Rpc } from './Rpc'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logger } from './logger'
 import {
@@ -25,11 +24,12 @@ import {
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
+import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
 import { registerValidationChecks } from './validation'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Constructor<T, Arguments extends unknown[] = any[]> = new (...arguments_: Arguments) => T
+type Constructor<T, Arguments extends unknown[] = any[]> = new(...arguments_: Arguments) => T
 
 interface LikeC4AddedSharedServices {
   lsp: {
@@ -128,9 +128,9 @@ export function createLanguageServices(context?: LanguageServicesContext): {
         connection.telemetry.logEvent({ eventName: 'error', error: arg })
         return
       }
-      const { message, error } = serializeError(arg)
+      const error = normalizeError(arg)
       original(error)
-      connection.telemetry.logEvent({ eventName: 'error', error: message })
+      connection.telemetry.logEvent({ eventName: 'error', error: error.stack ?? error.message })
     }
   }
 

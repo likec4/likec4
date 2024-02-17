@@ -46,7 +46,7 @@ export class C4Model extends AbstractDisposable {
       .create<number>({
         start: listener => {
           invariant(this.#activeSubscription == null, 'changesStream already started')
-          Logger.info('[Extension.C4Model.changes] subscribe onDidChangeModel')
+          Logger.debug('[Extension.C4Model.changes] subscribe onDidChangeModel')
           let changes = 0
           const unsubscribe = this.rpc.onDidChangeModel(() => {
             listener.next(changes++)
@@ -55,11 +55,11 @@ export class C4Model extends AbstractDisposable {
             this.#activeSubscription = null
             unsubscribe.dispose()
             listener.complete()
-            Logger.info('[Extension.C4Model.changes] unsubscribe onDidChangeModel')
+            Logger.debug('[Extension.C4Model.changes] unsubscribe onDidChangeModel')
           })
         },
         stop: () => {
-          Logger.info('[Extension.C4Model.changes] stop')
+          Logger.debug('[Extension.C4Model.changes] stop')
           this.#activeSubscription?.dispose()
         }
       })
@@ -68,17 +68,17 @@ export class C4Model extends AbstractDisposable {
     this.onDispose(() => {
       this.#activeSubscription?.dispose()
     })
-    Logger.info(`[Extension.C4Model] created`)
+    Logger.debug(`[Extension.C4Model] created`)
   }
 
   override dispose() {
     super.dispose()
-    Logger.info(`[Extension.C4Model] disposed`)
+    Logger.debug(`[Extension.C4Model] disposed`)
   }
 
   private fetchView(viewId: ViewID) {
     Logger.debug(`[Extension.C4Model] fetchView ${viewId}`)
-    const promise = Promise.resolve().then(() => this.rpc.computeView(viewId))
+    const promise = this.rpc.computeView(viewId)
     return xs.fromPromise(pTimeout(promise, {
       milliseconds: 5_000,
       message: `fetchView ${viewId} timeout`
@@ -87,7 +87,7 @@ export class C4Model extends AbstractDisposable {
 
   private layoutView(view: ComputedView) {
     Logger.debug(`[Extension.C4Model] layoutView ${view.id}`)
-    const promise = Promise.resolve().then(() => this.ctrl.graphviz.layout(view))
+    const promise = this.ctrl.graphviz.layout(view)
     return xs.fromPromise(pTimeout(promise, {
       milliseconds: 5_000,
       message: `layoutView ${view.id} timeout`
@@ -95,7 +95,7 @@ export class C4Model extends AbstractDisposable {
   }
 
   public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
-    Logger.info(`[Extension.C4Model.subscribe] >> ${viewId}`)
+    Logger.debug(`[Extension.C4Model.subscribe] >> ${viewId}`)
     let t1 = null as null | number
     const subscription = this.changesStream
       .map(() => this.fetchView(viewId))
@@ -130,7 +130,7 @@ export class C4Model extends AbstractDisposable {
         },
         error: err => {
           const errMessage = err instanceof Error
-            ? `${err.name}: ${err.stack ?? err.message}`
+            ? (err.stack ?? err.name + ': ' + err.message)
             : '' + err
           if (t1) {
             const ms = (performance.now() - t1).toFixed(3)
@@ -150,13 +150,13 @@ export class C4Model extends AbstractDisposable {
       })
 
     return disposable(() => {
-      Logger.info(`[Extension.C4Model.unsubscribe] -- ${viewId}`)
+      Logger.debug(`[Extension.C4Model.unsubscribe] -- ${viewId}`)
       subscription.unsubscribe()
     })
   }
 
   public turnOnTelemetry() {
-    Logger.info(`[Extension.C4Model] turnOnTelemetry`)
+    Logger.debug(`[Extension.C4Model] turnOnTelemetry`)
     const Minute = 1000 * 60
     const telemetry = xs
       .periodic(20 * Minute)
@@ -196,7 +196,7 @@ export class C4Model extends AbstractDisposable {
   private sendTelemetry(measurements: TelemetryEventMeasurements) {
     try {
       this.telemetry.sendTelemetryEvent('model-metrics', {}, measurements)
-      Logger.info(`[Extension.C4Model] send telemetry`)
+      Logger.debug(`[Extension.C4Model] send telemetry`)
     } catch (e) {
       logError(e)
     }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { BaseError } from '@likec4/core'
 import { normalizeError } from '@likec4/core'
-import type { LogOutputChannel } from 'vscode'
 import type TelemetryReporter from '@vscode/extension-telemetry'
+import type { LogOutputChannel } from 'vscode'
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Logger {
@@ -28,7 +28,7 @@ export class Logger {
     Logger.channel?.info(message)
   }
 
-  static error(message: string | BaseError) {
+  static error(message: string | Error) {
     if (typeof message !== 'string') {
       message = message.stack ? message.stack : `${message.name}: ${message.message}`
     }
