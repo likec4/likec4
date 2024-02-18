@@ -42,7 +42,7 @@
     "khroma": "^2.1.0",
     "react-icons": "^4.12.0",
     "react-tracked": "^1.7.11",
-    "remeda": "^1.40.1",
+    "remeda": "^1.43.0",
     "tilg": "^0.1.1"
   },
   "peerDependencies": {

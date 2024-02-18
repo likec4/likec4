@@ -1023,7 +1023,7 @@ __metadata:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
     typescript: "npm:^5.3.3"
@@ -1058,7 +1058,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-icons: "npm:^4.12.0"
     react-tracked: "npm:^1.7.11"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
@@ -1207,7 +1207,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.2.2"
@@ -1231,7 +1231,7 @@ __metadata:
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     strip-indent: "npm:^4.0.0"
     type-fest: "npm:^4.10.2"
     typescript: "npm:^5.3.3"
@@ -1257,7 +1257,7 @@ __metadata:
     khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.10.2"
@@ -9596,7 +9596,7 @@ __metadata:
     react-accessible-treeview: "npm:^2.8.3"
     react-dom: "npm:^18.2.0"
     react-resizable-panels: "npm:^0.0.63"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.43.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.1"
     type-fest: "npm:^4.10.2"
@@ -13857,10 +13857,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.40.1":
-  version: 1.40.1
-  resolution: "remeda@npm:1.40.1"
-  checksum: 10/d71965385f509c3a6e5db2f33cad78838c873bbbc15e1dc0736a4cf9659bd8bd1b372dfc4beb701361049fa4363992845bdc8d3e73697d13d337f5002d836f1d
+"remeda@npm:^1.43.0":
+  version: 1.43.0
+  resolution: "remeda@npm:1.43.0"
+  checksum: 10/b725fa7a6a71aa1f8ec26bf5e52ae342d750acada0974532c561831ca0c723460d87363da5fef9207f6e7aef93ed2649cd4d7649e3161dd752e60552efec3510
   languageName: node
   linkType: hard
 
