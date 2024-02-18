@@ -3,6 +3,7 @@ import type {
   ElementKind,
   ElementView,
   Fqn,
+  IconUrl,
   Opaque,
   Relation,
   RelationID
@@ -164,7 +165,7 @@ export const fakeElements = {
     id: 'amazon.s3',
     kind: 'component',
     title: 'S3',
-    description: 'S3 is a storage service'
+    description: 'S3 is a storage service',
   })
 } satisfies Record<string, Element>
 
@@ -291,6 +292,32 @@ export const amazonView = {
     }
   ]
 } satisfies ElementView
+
+// see https://github.com/likec4/likec4/issues/577
+export const issue577View = (icon: string) => ({
+  id: 'issue577' as Opaque<'issue577', 'ViewID'>,
+  title: '',
+  description: null,
+  tags: null,
+  links: null,
+  viewOf: 'amazon' as Fqn,
+  rules: [
+    {
+      include: [
+        // include *
+        { wildcard: true }
+      ]
+    }, {
+      targets: [
+        { wildcard: true }
+      ],
+      style: {
+        color: 'red',
+        icon: icon as IconUrl
+      }
+    }
+  ]
+} satisfies ElementView)
 
 export const fakeModel = () =>
   new LikeC4ModelGraph({
