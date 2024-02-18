@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
-import { func } from 'prop-types'
-import { DiagramNotFound } from '../components'
+import { Sidebar } from '../components'
 import { Header } from '../components/view-page/Header'
 import { selectLikeC4ViewAtom } from '../data/atoms'
 
@@ -18,6 +17,7 @@ function ViewLayout() {
     <>
       <Outlet />
       <ViewHeader />
+      <Sidebar />
     </>
   )
 }

@@ -88,9 +88,9 @@ export function fromDiagramView(
       id,
       type: isCompound ? 'compound' : 'element',
       data: {
+        id,
         element: node
       },
-
       draggable,
       deletable: false,
       position,

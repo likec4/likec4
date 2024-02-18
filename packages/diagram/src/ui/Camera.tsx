@@ -1,15 +1,5 @@
-import { nonNullable } from '@likec4/core'
-import { shallowEqual, useShallowEffect } from '@mantine/hooks'
-import {
-  useDebouncedCallback,
-  useDebouncedEffect,
-  useIsMounted,
-  useList,
-  useMap,
-  useSyncedRef,
-  useToggle,
-  useUpdateEffect
-} from '@react-hookz/web'
+import { shallowEqual } from '@mantine/hooks'
+import { useDebouncedEffect, useIsMounted, useSyncedRef } from '@react-hookz/web'
 import {
   type Node as ReactFlowNode,
   type ReactFlowState,
@@ -17,15 +7,15 @@ import {
   useOnViewportChange,
   useReactFlow,
   useStore,
-  useStoreApi,
   useUpdateNodeInternals,
   type Viewport
 } from '@xyflow/react'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { difference, hasAtLeast, uniq } from 'remeda'
+import { memo, useEffect, useRef, useState } from 'react'
+import { uniq } from 'remeda'
 import useTilg from 'tilg'
-import { useLikeC4View, useLikeC4ViewState } from '../likec4view_.state'
+import { useLikeC4ViewState } from '../state'
 import { distance } from '../utils'
+import { useXYFlow } from '../xyflow'
 
 const selector = (state: ReactFlowState) => {
   return {
@@ -42,8 +32,7 @@ const CameraMemo = memo(function Camera() {
     isUserSelectionActive,
     isDragging
   } = useStore(selector, shallowEqual)
-  const reactflow = useReactFlow()
-  const reactflowRef = useSyncedRef(reactflow)
+  const reactflow = useXYFlow()
   const updateNd = useUpdateNodeInternals()
 
   const editor = useLikeC4ViewState()
@@ -67,6 +56,7 @@ const CameraMemo = memo(function Camera() {
       viewportChangeStart.current = { ...viewport }
     },
     onEnd: (end) => {
+      reactflow.setCenter
       if (!viewportChangeStart.current || !previousViewport.current) {
         viewportChangeStart.current = null
         return
@@ -100,7 +90,6 @@ const CameraMemo = memo(function Camera() {
         setSelectedNodes([])
         return
       }
-      const reactflow = reactflowRef.current
       const selected = new Set<ReactFlowNode>([
         ...nodes,
         ...edges.flatMap((edge) => [
@@ -122,7 +111,6 @@ const CameraMemo = memo(function Camera() {
       if (isUserSelectionActive || isDragging || !isReady) {
         return
       }
-      const reactflow = reactflowRef.current
       if (selectedNodes.length === 0) {
         if (previousViewport.current) {
           console.log(`Camera: revert viewport`)
@@ -169,7 +157,6 @@ const CameraMemo = memo(function Camera() {
       if (!isReady || prevViewId.current === viewId) {
         return
       }
-      const reactflow = reactflowRef.current
       const zoom = previousViewport.current?.zoom ?? reactflow.getZoom()
       reactflow.fitView({
         duration: 400,

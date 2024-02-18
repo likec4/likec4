@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../const'
-import { useLikeC4ViewSelector } from '../likec4view_.state'
+import { useLikeC4ViewSelector } from '../../state'
 import type { RelationshipData } from '../types'
 import styles from './RelationshipEdge.module.css'
 

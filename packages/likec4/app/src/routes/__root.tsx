@@ -1,27 +1,7 @@
 import { MantineProvider, useMantineColorScheme } from '@mantine/core'
 import { Theme } from '@radix-ui/themes'
-import {
-  createRootRouteWithContext,
-  Outlet,
-  ScrollRestoration,
-  useChildMatches,
-  useMatch,
-  useMatchRoute,
-  useSearch
-} from '@tanstack/react-router'
-import { findLast } from 'remeda'
-import { Sidebar } from '../components'
+import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { theme as mantineTheme } from '../theme'
-
-// const searchParams = computed($searchParams, v => {
-//   return {
-//     theme: asTheme(v.theme),
-//     padding: asPadding(v.padding),
-//     mode: asViewMode(v.mode),
-//     showUI: 'showUI' in v ? v.showUI === 'true' : undefined
-//   }
-
-// })
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
   if (typeof v !== 'string') {
@@ -64,11 +44,6 @@ function RadixTheme({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { theme } = Route.useSearch()
-  const match = useChildMatches({
-    select: (r) => {
-      return findLast(r, (m) => 'viewId' in m.params)
-    }
-  })
   return (
     <>
       <ScrollRestoration />
@@ -78,7 +53,6 @@ function RootComponent() {
         theme={mantineTheme}>
         <RadixTheme>
           <Outlet />
-          {match && <Sidebar />}
         </RadixTheme>
       </MantineProvider>
     </>

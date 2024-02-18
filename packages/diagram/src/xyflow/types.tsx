@@ -3,7 +3,8 @@ import { type Edge, isNode, type Node, type ReactFlowInstance } from '@xyflow/re
 import { isTruthy } from 'remeda'
 import type { SetReadonly, SetRequired, Simplify } from 'type-fest'
 
-export interface ElementNodeData {
+export type ElementNodeData = {
+  id: string // xyflow id
   element: DiagramNode
 }
 
@@ -11,7 +12,8 @@ type TypedXYFlowNode<D, T extends string> = SetReadonly<SetRequired<Node<D, T>, 
 
 export type ElementXYFlowNode = TypedXYFlowNode<ElementNodeData, 'element'>
 
-export interface CompoundNodeData {
+export type CompoundNodeData = {
+  id: string // xyflow id
   element: DiagramNode
 }
 

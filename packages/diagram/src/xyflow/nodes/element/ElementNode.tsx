@@ -3,24 +3,24 @@ import { isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react'
+import { equals } from 'remeda'
+import { useLikeC4ViewState, useLikeC4ViewTriggers } from '../../../state'
 import { toDomPrecision } from '../../../utils'
-import { useLikeC4ViewState, useLikeC4ViewTriggers } from '../../likec4view_.state'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import classes from './element.module.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
-type ElementNodeProps = Pick<
-  NodeProps<ElementNodeData>,
-  'id' | 'data' | 'width' | 'height' | 'selected' | 'dragging'
->
+type ElementNodeProps = NodeProps<ElementNodeData>
+
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
-  prev.id === next.id
-  && prev.selected === next.selected
-  && prev.dragging === next.dragging
-  && prev.width === next.width
-  && prev.height === next.height
-  && isEqualSimple(prev.data, next.data)
+  isEqualSimple(prev, next)
+  // prev.id === next.id
+  // && prev.selected === next.selected
+  // && prev.dragging === next.dragging
+  // && prev.width === next.width
+  // && prev.height === next.height
+  // && isEqualSimple(prev.data, next.data)
 )
 
 // Frame-motion variants
