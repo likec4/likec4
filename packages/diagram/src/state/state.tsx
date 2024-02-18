@@ -1,14 +1,12 @@
-import { type DiagramNode, invariant } from '@likec4/core'
 import { useMantineColorScheme } from '@mantine/core'
 import { useShallowEffect } from '@mantine/hooks'
 import { isEqual } from '@react-hookz/deep-equal'
 import { useSyncedRef } from '@react-hookz/web'
-import { useMemo, useRef } from 'react'
-import { createContainer, getUntrackedObject } from 'react-tracked'
-import { isNil } from 'remeda'
-import { useSetState, useUpdateEffect, useXYFlow } from './hooks'
-import type { LikeC4ViewColorMode, LikeC4ViewProps } from './likec4view_.types'
-import { type XYFlowEdge, type XYFlowInstance, XYFlowNode } from './likec4view_.xyflow-types'
+import { useRef } from 'react'
+import { createContainer } from 'react-tracked'
+import { useSetState, useUpdateEffect } from '../hooks'
+import type { LikeC4ViewColorMode, LikeC4ViewProps } from '../props'
+import { type XYFlowInstance } from '../xyflow/types'
 
 const useLikeC4ViewState_ReactTracked = ({
   view,
@@ -119,64 +117,3 @@ export const {
   useUpdate: useLikeC4ViewUpdate,
   useSelector: useLikeC4ViewSelector
 } = createContainer(useLikeC4ViewState_ReactTracked)
-
-export const useLikeC4ViewTriggers = () => {
-  const [editor, update] = useLikeC4View()
-  const xyflow = useXYFlow()
-  const eventsRef = getUntrackedObject(editor.eventHandlers)
-  invariant(eventsRef, `eventsRef is null`)
-  return useMemo(() => {
-    return ({
-      // onChange: (changeCommand: ChangeCommand) => {
-      //   eventsRef.current.onChange?.(changeCommand)
-      // },
-      onNavigateTo: (element: DiagramNode, event: React.MouseEvent) => {
-        const callback = eventsRef.current.onNavigateTo
-        const xynode = xyflow.getNode(element.id)
-        if (!isNil(element.navigateTo) && xynode && callback) {
-          callback({
-            element: {
-              ...element,
-              navigateTo: element.navigateTo
-            },
-            xynode,
-            event
-          })
-        }
-      },
-
-      onNodeClick: (xynode: XYFlowNode, event: React.MouseEvent) => {
-        eventsRef.current.onNodeClick?.({
-          element: xynode.data.element,
-          xynode,
-          event
-        })
-      },
-
-      onEdgeClick: (xyedge: XYFlowEdge, event: React.MouseEvent) => {
-        eventsRef.current.onEdgeClick?.({
-          relation: xyedge.data.edge,
-          xyedge,
-          event
-        })
-      },
-
-      onNodeContextMenu: (xynode: XYFlowNode, event: React.MouseEvent) => {
-        eventsRef.current.onNodeContextMenu?.({
-          element: xynode.data.element,
-          xynode,
-          event
-        })
-      },
-
-      onCanvasDblClick: (event: React.MouseEvent) => {
-        eventsRef.current.onCanvasDblClick?.(event)
-      },
-
-      onInitialized: (xyflow: XYFlowInstance) => {
-        update({ xyflow })
-        eventsRef.current.onInitialized?.(xyflow)
-      }
-    })
-  }, [eventsRef, update])
-}

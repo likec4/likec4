@@ -1,6 +1,6 @@
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from './likec4view_.xyflow-types'
+import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 

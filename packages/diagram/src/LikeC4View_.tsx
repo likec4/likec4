@@ -2,11 +2,10 @@ import { useMantineContext } from '@mantine/core'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import useTilg from 'tilg'
-import { fromDiagramView } from './fromDiagramView'
-import { LikeC4ViewStateProvider } from './likec4view_.state'
-import { LikeC4ViewStateSync } from './likec4view_.state-sync'
-import { type LikeC4ViewProps } from './likec4view_.types'
-import { LikeC4ViewXYFlow } from './likec4view_.xyflow'
+import { type LikeC4ViewProps } from './props'
+import { LikeC4ViewStateProvider, LikeC4ViewStateSync } from './state'
+import { fromDiagramView } from './state/fromDiagramView'
+import { LikeC4XYFlow } from './xyflow'
 import './styles.css'
 import Camera from './ui/Camera'
 import OptionsPanel from './ui/OptionsPanel'
@@ -29,7 +28,7 @@ export function LikeC4View({
         nodesDraggable={nodesDraggable}
         {...apiProps}
       >
-        <LikeC4ViewXYFlow
+        <LikeC4XYFlow
           defaultNodes={initial.nodes}
           defaultEdges={initial.edges}
         />

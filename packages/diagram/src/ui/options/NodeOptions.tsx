@@ -12,7 +12,7 @@ import { useNodes, useNodesData, useReactFlow } from '@xyflow/react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../hooks'
 import { useLikeC4ViewTriggers } from '../../likec4view_.state'
-import type { XYFlowNode } from '../../likec4view_.xyflow-types'
+import type { XYFlowNode } from '../../xyflow/types'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals

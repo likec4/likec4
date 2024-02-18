@@ -3,17 +3,17 @@ import { useUnmountEffect } from '@react-hookz/web'
 import { Background, Controls, ReactFlow } from '@xyflow/react'
 import { memo, useRef } from 'react'
 import useTilg from 'tilg'
+import { useLikeC4View, useLikeC4ViewTriggers } from '../state'
 import { edgeTypes } from './edges'
-import { useLikeC4View, useLikeC4ViewTriggers } from './likec4view_.state'
-import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './likec4view_.xyflow-types'
 import { nodeTypes } from './nodes'
+import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
 
-type LikeC4ViewXYFlowProps = {
+type LikeC4XYFlowProps = {
   defaultNodes?: XYFlowNode[] | undefined
   defaultEdges?: XYFlowEdge[] | undefined
 }
 
-export const LikeC4ViewXYFlow = memo<LikeC4ViewXYFlowProps>(({
+export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
   defaultNodes = [],
   defaultEdges = []
 }) => {
@@ -132,4 +132,4 @@ export const LikeC4ViewXYFlow = memo<LikeC4ViewXYFlowProps>(({
     </ReactFlow>
   )
 }, (prev, next) => true /* always skip render */)
-LikeC4ViewXYFlow.displayName = 'LikeC4ViewXYFlow'
+LikeC4XYFlow.displayName = 'LikeC4ViewXYFlow'

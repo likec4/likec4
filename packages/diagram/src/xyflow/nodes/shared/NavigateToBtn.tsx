@@ -1,7 +1,7 @@
 import { ActionIcon } from '@mantine/core'
 import clsx from 'clsx'
 import { motion, type Variants } from 'framer-motion'
-import { ZoomIn } from '../../icons'
+import { ZoomIn } from '../../../icons'
 
 export type NavigateToBtnProps = {
   onClick: (event: React.MouseEvent) => void

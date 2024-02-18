@@ -6,9 +6,9 @@ import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
-import { ZIndexes } from '../const'
+import { ZIndexes } from '../../const'
 import { useLikeC4ViewSelector } from '../likec4view_.state'
-import type { RelationshipData } from '../likec4view_.xyflow-types'
+import type { RelationshipData } from '../types'
 import styles from './RelationshipEdge.module.css'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {

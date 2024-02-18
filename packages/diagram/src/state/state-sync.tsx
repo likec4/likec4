@@ -3,9 +3,9 @@ import { isEqual } from '@react-hookz/deep-equal'
 import { useDeepCompareEffect } from '@react-hookz/web'
 import { memo, useEffect } from 'react'
 import useTilg from 'tilg'
+import type { XYFlowNode } from '../xyflow/types'
 import { fromDiagramView } from './fromDiagramView'
-import { useLikeC4ViewState } from './likec4view_.state'
-import type { XYFlowNode } from './likec4view_.xyflow-types'
+import { useLikeC4ViewState } from './state'
 
 export const LikeC4ViewStateSync = memo(() => {
   useTilg()
