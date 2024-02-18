@@ -121,7 +121,7 @@
         box-shadow: var(--mantine-shadow-lg);
         transform: scale(1.25);
         opacity: 1;
-        transition-delay: 130ms;
+        transition-delay: 250ms;
 
         @mixin hover {
           --ai-hover: color-mix(in srgb, var(--likec4-element-fill) 50%, var(--likec4-element-stroke));

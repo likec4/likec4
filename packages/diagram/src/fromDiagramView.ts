@@ -10,7 +10,7 @@ import {
 } from '@likec4/core'
 import { getBezierEdgeCenter, MarkerType } from '@xyflow/react'
 import { hasAtLeast, isNil } from 'remeda'
-import type { EditorEdge, EditorNode } from './types'
+import type { XYFlowEdge, XYFlowNode } from './likec4view_.xyflow-types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
@@ -51,13 +51,13 @@ function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) 
   return node.children.length > 0 ? 0 : node.level + 1
 }
 
-type EditorData = { nodes: EditorNode[]; edges: EditorEdge[] }
+type XYFlowData = { nodes: XYFlowNode[]; edges: XYFlowEdge[] }
 
 export function fromDiagramView(
   view: Pick<DiagramView, 'nodes' | 'edges'>,
   dragEnabled = true
-): EditorData {
-  const editor: EditorData = {
+): XYFlowData {
+  const editor: XYFlowData = {
     nodes: [],
     edges: []
   }
@@ -87,7 +87,10 @@ export function fromDiagramView(
     editor.nodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
-      data: node,
+      data: {
+        element: node
+      },
+
       draggable,
       deletable: false,
       position,

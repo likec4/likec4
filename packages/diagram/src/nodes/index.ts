@@ -1,7 +1,7 @@
-import { CompoundReactFlowNode } from './CompoundReactFlowNode'
-import { ElementReactFlowNode } from './ElementReactFlowNode'
+import { CompoundNode } from './compound'
+import { ElementNode } from './element'
 
 export const nodeTypes = {
-  element: ElementReactFlowNode,
-  compound: CompoundReactFlowNode
+  element: ElementNode,
+  compound: CompoundNode
 }

@@ -1,27 +1,26 @@
 import { defaultTheme } from '@likec4/core'
-import { Text } from '@mantine/core'
-import { isEqual } from '@react-hookz/deep-equal'
+import { Image, Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
-import { clsx } from 'clsx'
+import clsx from 'clsx'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
-import type { CompoundNodeData } from '../types'
-import { toDomPrecision } from '../utils'
-import { useLikeC4Editor, useLikeC4EditorTriggers } from '../ViewEditorApi'
-import classes from './CompoundReactFlowNode.module.css'
-import { NavigateToBtn } from './shared/NavigateToBtn'
+import { equals } from 'remeda'
+import { useLikeC4ViewState, useLikeC4ViewTriggers } from '../../likec4view_.state'
+import type { CompoundNodeData, CompoundXYFlowNode } from '../../likec4view_.xyflow-types'
+import { toDomPrecision } from '../../utils'
+import { NavigateToBtn } from '../shared/NavigateToBtn'
+import classes from './compound.module.css'
 
-// type CompoundFNodeProps = Pick<NodeProps<CompoundNodeData>, 'id' | 'data'>
-type CompoundFNodeProps = Pick<
+type CompoundNodeProps = Pick<
   NodeProps<CompoundNodeData>,
   'id' | 'data' | 'width' | 'height' | 'selected'
 >
-const isEqualProps = (prev: CompoundFNodeProps, next: CompoundFNodeProps) => (
+const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
   && prev.selected === next.selected
   && prev.width === next.width
   && prev.height === next.height
-  && isEqual(prev.data, next.data)
+  && equals(prev.data, next.data)
 )
 
 const compoundColor = (color: string, depth: number) =>
@@ -32,10 +31,15 @@ const compoundColor = (color: string, depth: number) =>
     })
   )
 
-export const CompoundReactFlowNode = memo<CompoundFNodeProps>(function CompoundNode(props) {
-  const { id, data, width, height } = props
+export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
+  data: {
+    element
+  },
+  width,
+  height
+}) {
   // useTilg()
-  const { color, depth = 0, ...compound } = data
+  const { color, depth = 0, ...compound } = element
   const colors = useMemo(() => {
     const colors = defaultTheme.elements[color]
     return {
@@ -48,8 +52,8 @@ export const CompoundReactFlowNode = memo<CompoundFNodeProps>(function CompoundN
   const w = toDomPrecision(width ?? compound.width)
   const h = toDomPrecision(height ?? compound.height)
 
-  const editor = useLikeC4Editor()
-  const trigger = useLikeC4EditorTriggers()
+  const editor = useLikeC4ViewState()
+  const trigger = useLikeC4ViewTriggers()
 
   const isNavigatable = editor.hasOnNavigateTo && !!compound.navigateTo
 
@@ -86,8 +90,8 @@ export const CompoundReactFlowNode = memo<CompoundFNodeProps>(function CompoundN
       </div>
       {isNavigatable && (
         <NavigateToBtn
-          onClick={() => {
-            trigger.onNavigateTo(props)
+          onClick={(e) => {
+            trigger.onNavigateTo(element, e)
           }}
           className={classes.navigateBtn} />
       )}
@@ -99,4 +103,3 @@ export const CompoundReactFlowNode = memo<CompoundFNodeProps>(function CompoundN
     </div>
   )
 }, isEqualProps)
-CompoundReactFlowNode.displayName = 'CompoundReactFlowNode'

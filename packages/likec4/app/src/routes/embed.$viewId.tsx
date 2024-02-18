@@ -1,4 +1,4 @@
-import { LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4View } from '@likec4/diagram'
 import { Box } from '@radix-ui/themes'
 import { useWindowSize } from '@react-hookz/web'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
@@ -25,7 +25,7 @@ function EmbedPage() {
       position={'absolute'}
       style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
     >
-      <LikeC4ViewEditor
+      <LikeC4View
         view={diagram}
         readonly
         disableBackground

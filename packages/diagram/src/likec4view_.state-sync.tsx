@@ -4,13 +4,14 @@ import { useDeepCompareEffect } from '@react-hookz/web'
 import { memo, useEffect } from 'react'
 import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
-import { useLikeC4Editor } from './ViewEditorApi'
+import { useLikeC4ViewState } from './likec4view_.state'
+import type { XYFlowNode } from './likec4view_.xyflow-types'
 
-const DataSyncMemo = memo(function DataSync() {
+export const LikeC4ViewStateSync = memo(() => {
   useTilg()
-  const editor = useLikeC4Editor()
-  const reactflow = editor.reactflow
-  const initialized = reactflow?.viewportInitialized
+  const state = useLikeC4ViewState()
+  const xyflow = state.xyflow
+  const initialized = xyflow?.viewportInitialized
 
   useEffect(() => {
     if (!initialized) {
@@ -18,13 +19,13 @@ const DataSyncMemo = memo(function DataSync() {
     }
     console.debug('DataSync: update reactflow')
     const update = fromDiagramView({
-      nodes: editor.viewNodes,
-      edges: editor.viewEdges
-    }, editor.nodesDraggable)
+      nodes: state.viewNodes,
+      edges: state.viewEdges
+    }, state.nodesDraggable)
 
-    reactflow.setNodes(prev =>
-      update.nodes.map(node => {
-        const existing = prev.find(n => n.id === node.id)
+    xyflow.setNodes(prev =>
+      update.nodes.map(<N extends XYFlowNode>(node: N): N => {
+        const existing = prev.find((n): n is N => n.id === node.id && n.type === node.type)
         if (existing && existing.parentNode == node.parentNode) {
           if (isEqual(existing.data, node.data)) {
             return existing
@@ -39,7 +40,7 @@ const DataSyncMemo = memo(function DataSync() {
       })
     )
 
-    reactflow.setEdges(prev =>
+    xyflow.setEdges(prev =>
       update.edges.map(edge => {
         const existing = prev.find(e => e.id === edge.id)
         if (existing) {
@@ -55,9 +56,9 @@ const DataSyncMemo = memo(function DataSync() {
         }
       })
     )
-  }, [initialized ?? false, editor.viewNodes, editor.viewEdges])
+  }, [initialized ?? false, state.viewNodes, state.viewEdges])
 
   return null
 })
 
-export default DataSyncMemo
+export default LikeC4ViewStateSync

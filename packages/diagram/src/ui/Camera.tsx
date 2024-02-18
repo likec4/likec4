@@ -24,8 +24,8 @@ import {
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { difference, hasAtLeast, uniq } from 'remeda'
 import useTilg from 'tilg'
+import { useLikeC4View, useLikeC4ViewState } from '../likec4view_.state'
 import { distance } from '../utils'
-import { useLikeC4Editor } from '../ViewEditorApi'
 
 const selector = (state: ReactFlowState) => {
   return {
@@ -46,7 +46,7 @@ const CameraMemo = memo(function Camera() {
   const reactflowRef = useSyncedRef(reactflow)
   const updateNd = useUpdateNodeInternals()
 
-  const editor = useLikeC4Editor()
+  const editor = useLikeC4ViewState()
   const padding = editor.fitViewPadding
   const viewId = editor.viewId
 

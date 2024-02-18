@@ -1,5 +1,4 @@
-export type { LikeC4ViewEditorProps } from './LikeC4ViewEditor'
-export { LikeC4ViewEditor } from './LikeC4ViewEditor'
+export { LikeC4View } from './likec4view'
 
-export type * from './types'
-export type * from './ViewEditorApi'
+export type * from './likec4view_.types'
+export type * from './likec4view_.xyflow-types'

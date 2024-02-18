@@ -1,47 +1,42 @@
-import { type DiagramView } from '@likec4/core'
+import { useMantineContext } from '@mantine/core'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
-
-import { useMantineContext } from '@mantine/core'
 import useTilg from 'tilg'
 import { fromDiagramView } from './fromDiagramView'
-import type { LikeC4ViewEditorApiProps } from './ViewEditorApi'
-import { LikeC4EditorProvider } from './ViewEditorApi'
-import DataSync from './ViewEditorDataSync'
-import { LikeC4ReactFlow } from './ViewEditorReactFlow'
+import { LikeC4ViewStateProvider } from './likec4view_.state'
+import { LikeC4ViewStateSync } from './likec4view_.state-sync'
+import { type LikeC4ViewProps } from './likec4view_.types'
+import { LikeC4ViewXYFlow } from './likec4view_.xyflow'
 import './styles.css'
 import Camera from './ui/Camera'
 import OptionsPanel from './ui/OptionsPanel'
 
-export type LikeC4ViewEditorProps = LikeC4ViewEditorApiProps & {
-  view: DiagramView
-}
-
-export function LikeC4ViewEditor({
+export function LikeC4View({
   view,
   readonly = false,
   nodesDraggable = !readonly,
   ...apiProps
-}: LikeC4ViewEditorProps) {
+}: LikeC4ViewProps) {
   useTilg()
   // Verify that the MantineProvider is available
   useMantineContext()
   const initial = useMemo(() => fromDiagramView(view, nodesDraggable), [])
   return (
     <ReactFlowProvider>
-      <LikeC4EditorProvider
+      <LikeC4ViewStateProvider
         view={view}
         readonly={readonly}
         nodesDraggable={nodesDraggable}
         {...apiProps}
       >
-        <LikeC4ReactFlow
+        <LikeC4ViewXYFlow
           defaultNodes={initial.nodes}
-          defaultEdges={initial.edges} />
-        <DataSync />
+          defaultEdges={initial.edges}
+        />
+        <LikeC4ViewStateSync />
         <Camera />
         {!readonly && <OptionsPanel />}
-      </LikeC4EditorProvider>
+      </LikeC4ViewStateProvider>
     </ReactFlowProvider>
   )
 }

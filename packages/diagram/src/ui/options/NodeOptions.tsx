@@ -8,10 +8,11 @@ import {
   type ThemeColor
 } from '@likec4/core'
 import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Tooltip } from '@mantine/core'
-import { useNodes, useReactFlow } from '@xyflow/react'
+import { useNodes, useNodesData, useReactFlow } from '@xyflow/react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
-import { type EditorEdge, EditorNode } from '../../types'
-import { useLikeC4EditorTriggers } from '../../ViewEditorApi'
+import { useXYFlow, useXYNodesData } from '../../hooks'
+import { useLikeC4ViewTriggers } from '../../likec4view_.state'
+import type { XYFlowNode } from '../../likec4view_.xyflow-types'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -39,9 +40,9 @@ export type ThemeColorKey = typeof themedColors[0]['key']
 export type ColorKey = typeof colors[0]['key']
 
 export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
-  const nodes = useNodes<EditorNode>().filter(node => selectedNodeIds.includes(node.id))
-  const api = useReactFlow<EditorNode, EditorEdge>()
-  const trigger = useLikeC4EditorTriggers()
+  const nodes = useXYNodesData(selectedNodeIds)
+  const api = useXYFlow()
+  const trigger = useLikeC4ViewTriggers()
   if (!hasAtLeast(nodes, 1)) {
     return null
   }
@@ -51,32 +52,32 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         nodes={nodes}
         onShapeChange={(shape: ElementShape) => {
           const targets = [] as Fqn[]
-          for (const nd of nodes) {
-            api.updateNodeData(nd.id, { shape })
-            targets.push(nd.data.id)
-          }
-          invariant(hasAtLeast(targets, 1), 'targets.length < 1')
-          trigger.onChange({
-            op: 'change-shape',
-            shape,
-            targets
-          })
+          // for (const nd of nodes) {
+          //   api.updateNodeData(nd.id, { shape })
+          //   targets.push(nd.data.id)
+          // }
+          // invariant(hasAtLeast(targets, 1), 'targets.length < 1')
+          // trigger.onChange({
+          //   op: 'change-shape',
+          //   shape,
+          //   targets
+          // })
         }}
       />
       <Colors
         nodes={nodes}
         onColorChange={(color: ColorKey | ThemeColorKey) => {
           const targets = [] as Fqn[]
-          for (const nd of nodes) {
-            api.updateNodeData(nd.id, { color })
-            targets.push(nd.data.id)
-          }
-          invariant(hasAtLeast(targets, 1), 'targets.length < 1')
-          trigger.onChange({
-            op: 'change-color',
-            color,
-            targets
-          })
+          // for (const nd of nodes) {
+          //   api.updateNodeData(nd.id, { color })
+          //   targets.push(nd.data.id)
+          // }
+          // invariant(hasAtLeast(targets, 1), 'targets.length < 1')
+          // trigger.onChange({
+          //   op: 'change-color',
+          //   color,
+          //   targets
+          // })
         }}
       />
     </Stack>
@@ -87,12 +88,12 @@ const Colors = ({
   nodes: [firstNode, ...nodes],
   onColorChange
 }: {
-  nodes: NonEmptyArray<EditorNode>
+  nodes: NonEmptyArray<XYFlowNode.Data>
   onColorChange: (color: ColorKey | ThemeColorKey) => void
 }) => {
-  let selectedColor = firstNode.data.color as ThemeColor | null
+  let selectedColor = firstNode.element.color as ThemeColor | null
   takeWhile(nodes, node => {
-    if (node.data.color !== selectedColor) {
+    if (node.element.color !== selectedColor) {
       selectedColor = null
       return false
     }
@@ -159,12 +160,12 @@ const ShapeOption = ({
   nodes: [firstNode, ...nodes],
   onShapeChange
 }: {
-  nodes: NonEmptyArray<EditorNode>
+  nodes: NonEmptyArray<XYFlowNode.Data>
   onShapeChange: (shape: ElementShape) => void
 }) => {
-  let selectedShape = firstNode.data.shape as ElementShape | null
+  let selectedShape = firstNode.element.shape as ElementShape | null
   takeWhile(nodes, node => {
-    if (node.data.shape !== selectedShape) {
+    if (node.element.shape !== selectedShape) {
       selectedShape = null
       return false
     }

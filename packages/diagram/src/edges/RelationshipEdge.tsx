@@ -7,8 +7,8 @@ import { motion } from 'framer-motion'
 import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../const'
-import type { RelationshipData } from '../types'
-import { useLikeC4EditorSelector } from '../ViewEditorApi'
+import { useLikeC4ViewSelector } from '../likec4view_.state'
+import type { RelationshipData } from '../likec4view_.xyflow-types'
 import styles from './RelationshipEdge.module.css'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
@@ -73,7 +73,7 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
   } = data
   const edgePath = bezierPath(edge.points)
   const color = edge.color ?? 'gray'
-  const isHovered = useLikeC4EditorSelector(state => state.hoveredEdgeId === id)
+  const isHovered = useLikeC4ViewSelector(state => state.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'

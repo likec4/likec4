@@ -1,38 +1,40 @@
 import { invariant } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web'
-import { Background, Controls, ReactFlow as ReactXYFlow, type ReactFlowInstance } from '@xyflow/react'
-import { memo, useCallback, useRef } from 'react'
+import { Background, Controls, ReactFlow } from '@xyflow/react'
+import { memo, useRef } from 'react'
 import useTilg from 'tilg'
 import { edgeTypes } from './edges'
+import { useLikeC4View, useLikeC4ViewTriggers } from './likec4view_.state'
+import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './likec4view_.xyflow-types'
 import { nodeTypes } from './nodes'
-import { EditorEdge, EditorNode } from './types'
-import { useLikeC4Editor, useLikeC4EditorTriggers, useLikeC4EditorUpdate } from './ViewEditorApi'
 
-type LikeC4ReactFlowProps = {
-  defaultNodes?: EditorNode[] | undefined
-  defaultEdges?: EditorEdge[] | undefined
+type LikeC4ViewXYFlowProps = {
+  defaultNodes?: XYFlowNode[] | undefined
+  defaultEdges?: XYFlowEdge[] | undefined
 }
-export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
+
+export const LikeC4ViewXYFlow = memo<LikeC4ViewXYFlowProps>(({
   defaultNodes = [],
   defaultEdges = []
-}) {
+}) => {
   useTilg()
-  const editor = useLikeC4Editor()
-  const update = useLikeC4EditorUpdate()
-  const trigger = useLikeC4EditorTriggers()
+  const [editor, update] = useLikeC4View()
+  const trigger = useLikeC4ViewTriggers()
 
-  const instanceRef = useRef<ReactFlowInstance>()
+  const instanceRef = useRef<XYFlowInstance>()
   const lastClickTimeRef = useRef<number>(0)
 
   useUnmountEffect(() => {
     update({
-      reactflow: null
+      xyflow: null
     })
   })
 
+  const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
+
   return (
-    <ReactXYFlow
-      colorMode={editor.colorMode}
+    <ReactFlow
+      colorMode={colorMode}
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}
       nodeTypes={nodeTypes}
@@ -75,13 +77,13 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
       }}
       {...(editor.hasOnNodeClick && {
         onNodeClick: (event, node) => {
-          invariant(EditorNode.is(node), `node is not a EditorNode`)
+          invariant(XYFlowNode.is(node), `node is not a XYFlowNode`)
           trigger.onNodeClick(node, event)
         }
       })}
       {...(editor.hasOnEdgeClick && {
         onEdgeClick: (event, edge) => {
-          invariant(EditorEdge.isRelationship(edge), `edge is not a relationship`)
+          invariant(XYFlowEdge.isRelationship(edge), `edge is not a relationship`)
           trigger.onEdgeClick(edge, event)
         }
       })}
@@ -91,7 +93,7 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
           event.stopPropagation()
         },
         onNodeContextMenu: (event, node) => {
-          invariant(EditorNode.is(node), `node is not a EditorNode`)
+          invariant(XYFlowNode.is(node), `node is not a XYFlowNode`)
           trigger.onNodeContextMenu(node, event)
         },
         onPaneContextMenu: (event) => {
@@ -100,7 +102,7 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
         }
       })}
       onInit={(instance) => {
-        instanceRef.current = instance
+        instanceRef.current = instance as XYFlowInstance
         invariant(instance.viewportInitialized, `viewportInitialized is not true`)
         trigger.onInitialized(instance as any)
       }}
@@ -122,32 +124,12 @@ export const LikeC4ReactFlow = memo<LikeC4ReactFlowProps>(function ReactFlow({
         }
         lastClickTimeRef.current = ts
       }}
-      // onNodeDrag={useCallback((event, node) => {
-      //   // console.log('onNodeDrag', node)
-      //   const api = instanceRef.current
-      //   if (!api) {
-      //     return
-      //   }
-      //   if (node.parentNode && node.extent && Array.isArray(node.extent)) {
-      //     if (node.position.x > node.extent[1][0] - 20) {
-      //       api.updateNode(node.parentNode, (nd) => ({
-      //         width: (nd.width ?? 0) + 20
-      //       }))
-      //       api.updateNode(node.id, {
-      //         extent: [
-      //           node.extent[0],
-      //           [node.extent[1][0] + 20, node.extent[1][1]]
-      //         ]
-      //       })
-      //     }
-      //   }
-      // }, [])}
-      data-likec4-view-no-pan={!editor.pannable}
-      data-likec4-view-no-bg={editor.disableBackground}
+      {...(!editor.pannable && { [`data-likec4-view-nopan`]: '' })}
+      {...(editor.disableBackground && { [`data-likec4-view-nobg`]: '' })}
     >
       {!editor.disableBackground && <Background />}
       {editor.controls && <Controls />}
-    </ReactXYFlow>
+    </ReactFlow>
   )
 }, (prev, next) => true /* always skip render */)
-LikeC4ReactFlow.displayName = 'LikeC4ReactFlow'
+LikeC4ViewXYFlow.displayName = 'LikeC4ViewXYFlow'

@@ -4,7 +4,7 @@ import { motion, type Variants } from 'framer-motion'
 import { ZoomIn } from '../../icons'
 
 export type NavigateToBtnProps = {
-  onClick: () => void
+  onClick: (event: React.MouseEvent) => void
   className?: string
 }
 
@@ -61,7 +61,7 @@ export function NavigateToBtn({ onClick, className }: NavigateToBtnProps) {
       onClick={(e) => {
         e.stopPropagation()
         e.preventDefault()
-        onClick()
+        onClick(e)
       }}
     >
       <ZoomIn />

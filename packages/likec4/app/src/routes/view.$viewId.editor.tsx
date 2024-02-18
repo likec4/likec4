@@ -1,4 +1,4 @@
-import { LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4View, type OnNavigateTo } from '@likec4/diagram'
 import { Box } from '@radix-ui/themes'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
@@ -14,10 +14,10 @@ function ViewEditor() {
   const { viewAtom, viewId } = Route.useRouteContext()
   const view = useAtomValue(viewAtom)
 
-  const navigateTo = useCallback((node: { navigateTo: string }) => {
+  const navigateTo: OnNavigateTo = useCallback(({ element }) => {
     router.navigate({
       to: '/view/$viewId/editor',
-      params: { viewId: node.navigateTo },
+      params: { viewId: element.navigateTo },
       startTransition: true,
       search: true
     })
@@ -32,7 +32,7 @@ function ViewEditor() {
       position={'absolute'}
       style={{ top: 50, left: 0, width: '100vw', height: 'calc(100vh - 50px)' }}
     >
-      <LikeC4ViewEditor
+      <LikeC4View
         view={view}
         onNavigateTo={navigateTo}
         controls={false}
