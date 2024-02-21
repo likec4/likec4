@@ -570,7 +570,7 @@ describe('LikeC4ModelBuilder', () => {
     })
   })
 
-  it('builds model with relationship spec and tag', async ({ expect }) => {
+  it.concurrent('builds model with relationship spec and tag', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {
