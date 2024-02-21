@@ -27,9 +27,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         node-version: ['18', '20']
         include:
+
+          # Build on Windows only with Node 20
+          - os: windows-latest
+            node-version: '20'
 
           - os: ubuntu-latest
             node-version: '20'
