@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
@@ -12,22 +11,15 @@
       "DOM.Iterable",
       "ESNext"
     ],
-    "types": [
-      "vite/client"
-    ],
-    "jsx": "react-jsxdev"
+    "jsx": "react-jsx"
   },
   "include": [
-    "protocol.ts",
     "src"
   ],
   "exclude": [],
   "references": [
     {
       "path": "../core"
-    },
-    {
-      "path": "../diagrams"
     }
   ]
 }

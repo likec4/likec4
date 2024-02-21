@@ -1,28 +1,18 @@
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "../../tsconfig.base.json",
+  "include": [],
   "compilerOptions": {
-    "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
   },
-  "include": ["src", "scripts"],
   "references": [
     {
-      "path": "../core"
+      "path": "tsconfig.src.json"
     },
     {
-      "path": "../diagrams"
+      "path": "app/tsconfig.json"
     },
     {
-      "path": "../generators"
-    },
-    {
-      "path": "../layouts"
-    },
-    {
-      "path": "../language-server"
+      "path": "scripts/tsconfig.json"
     }
   ]
 }

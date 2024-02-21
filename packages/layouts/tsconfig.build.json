@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.src.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/build.tsbuildinfo",
+    "outDir": "dist/esm",
+    "declarationDir": "dist/dts",
+    "stripInternal": true
+  },
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../graph"
+    }
+  ]
+}

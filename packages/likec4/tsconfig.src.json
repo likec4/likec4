@@ -1,24 +1,19 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist",
+    "baseUrl": ".",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
-    "target": "ESNext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
     "types": [
-      "vite/client"
+      "node"
     ],
-    "jsx": "react-jsxdev"
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
-    "protocol.ts",
     "src"
   ],
   "exclude": [],
@@ -28,6 +23,15 @@
     },
     {
       "path": "../diagrams"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../layouts"
+    },
+    {
+      "path": "../language-server"
     }
   ]
 }

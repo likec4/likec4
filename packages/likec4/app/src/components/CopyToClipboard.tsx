@@ -19,34 +19,31 @@ export function CopyToClipboard({ text }: CopyToClipboardProps) {
   }, [text])
 
   useEffect(() => {
-    if (copied) {
-      const timeout = setTimeout(() => {
-        setCopied(false)
-      }, 800)
-      return () => clearTimeout(timeout)
+    if (!copied) {
+      return
     }
+    const timeout = setTimeout(() => {
+      setCopied(false)
+    }, 800)
+    return () => clearTimeout(timeout)
   }, [copied])
 
   return (
-    <Box position='absolute' top={'0'} right={'0'} p={'4'}>
+    <Box position="absolute" top={'0'} right={'0'} p={'4'}>
       <Tooltip
         content={copied ? 'Copied!' : 'Copy to clipboard'}
         {...(copied ? { open: true } : {})}
       >
         <IconButton
-          variant='soft'
+          variant="soft"
           color={copied ? 'green' : undefined}
           size={'2'}
-          radius='large'
+          radius="large"
           onClick={copy}
           data-copied={copied}
           className={styles.copyButton}
         >
-          {copied ? (
-            <CheckCircledIcon width={16} height={16} />
-          ) : (
-            <CopyIcon width={16} height={16} />
-          )}
+          {copied ? <CheckCircledIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
         </IconButton>
       </Tooltip>
     </Box>
