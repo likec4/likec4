@@ -3,17 +3,19 @@
   "compilerOptions": {
     "noEmit": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "declarationDir": "dist",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
-    "target": "ESNext",
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedParameters": false,
     "lib": [
       "DOM",
       "DOM.Iterable",
       "ESNext"
     ],
     "types": [
-      "vite/client"
+      "vite/client",
+      "vscode-webview"
     ],
     "jsx": "react-jsxdev"
   },
