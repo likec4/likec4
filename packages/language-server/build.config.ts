@@ -2,7 +2,7 @@
 import { $ } from 'execa'
 import { defineBuildConfig } from 'unbuild'
 
-const pattern = ['**/*.ts', '!**/*.spec.ts', '!__mocks__/', '!__test__/']
+const pattern = ['**/*.ts', '!**/*.spec.ts', '!__mocks__/', '!__tests__/']
 
 // prettier-ignore
 export default defineBuildConfig({

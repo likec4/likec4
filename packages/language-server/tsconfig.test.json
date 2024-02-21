@@ -5,11 +5,14 @@
     "tsBuildInfoFile": ".tsbuildinfo/test.tsbuildinfo",
     "noEmit": true
   },
+  "files": [
+    "vitest.config.ts"
+  ],
   "include": [
-    "**/__fixtures__/**/*",
-    "**/__mocks__/**/*",
-    "**/__test__/**/*",
-    "**/*.spec.ts"
+    "src/**/__fixtures__/**/*",
+    "src/**/__mocks__/**/*",
+    "src/**/__tests__/**/*",
+    "src/**/*.spec.ts"
   ],
   "references": [
     {

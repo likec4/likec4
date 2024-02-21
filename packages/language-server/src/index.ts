@@ -1,3 +1,3 @@
 export { logger } from './logger'
-export { createLanguageServices, LikeC4Module } from './module'
-export type { LikeC4Services } from './module'
+export { createCustomLanguageServices, createLanguageServices, LikeC4Module } from './module'
+export type { LanguageServicesContext, LikeC4Services, LikeC4SharedServices } from './module'

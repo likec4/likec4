@@ -47,12 +47,8 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     const document = typeof input === 'string' ? await parse(input, uri) : input
     await documentBuilder.build([document], { validation: true })
     const diagnostics = document.diagnostics ?? []
-    const warnings = diagnostics.flatMap(d =>
-      d.severity === DiagnosticSeverity.Warning ? d.message : []
-    )
-    const errors = diagnostics.flatMap(d =>
-      d.severity === DiagnosticSeverity.Error ? d.message : []
-    )
+    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
+    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
     return {
       document,
       diagnostics,
@@ -61,22 +57,30 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     }
   }
 
+  let previousPromise = Promise.resolve() as Promise<any>
   const validateAll = async () => {
-    const docs = langiumDocuments.all.toArray()
-    assert.ok(docs.length > 0, 'no documents to validate')
-    await documentBuilder.build(docs, { validation: true })
-    const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
-    const warnings = diagnostics.flatMap(d =>
-      d.severity === DiagnosticSeverity.Warning ? d.message : []
-    )
-    const errors = diagnostics.flatMap(d =>
-      d.severity === DiagnosticSeverity.Error ? d.message : []
-    )
-    return {
-      diagnostics,
-      errors,
-      warnings
-    }
+    const currentPromise = previousPromise
+      .catch(e => {
+        // Ignore errors from previousPromise
+        console.error(e)
+        return Promise.resolve()
+      })
+      .then(async () => {
+        const docs = langiumDocuments.all.toArray()
+        assert.ok(docs.length > 0, 'no documents to validate')
+        await documentBuilder.build(docs, { validation: true })
+        const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
+        const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
+        const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+        return {
+          diagnostics,
+          errors,
+          warnings
+        }
+      })
+    previousPromise = currentPromise
+
+    return await currentPromise
   }
 
   const buildModel = async () => {

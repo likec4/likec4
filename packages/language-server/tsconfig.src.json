@@ -7,13 +7,14 @@
     "noUnusedParameters": false,
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": ["./src"],
   "exclude": [
-    "src/browser",
-    "src/node",
+    "./src/browser",
+    "./src/node",
+    "./dist",
     "**/__fixtures__/**/*",
     "**/__mocks__/**/*",
-    "**/__test__/**/*",
+    "**/__tests__/**/*",
     "**/*.spec.ts"
   ],
   "references": [

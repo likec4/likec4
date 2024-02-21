@@ -66,7 +66,7 @@ describe('LikeC4ModelBuilder', () => {
     expect(elements['system']).not.toHaveProperty('color')
   })
 
-  it('builds model with description and technology', async ({ expect }) => {
+  it.concurrent('builds model with description and technology', async ({ expect }) => {
     const { validate, buildModel } = createTestServices()
     const { diagnostics } = await validate(`
     specification {

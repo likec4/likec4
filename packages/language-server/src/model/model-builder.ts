@@ -1,12 +1,12 @@
 import {
+  type c4,
   compareByFqnHierarchically,
   isStrictElementView,
   parentFqn,
   type StrictElementView,
-  type ViewID,
-  type c4
+  type ViewID
 } from '@likec4/core'
-import { LikeC4ModelGraph, computeView } from '@likec4/graph'
+import { computeView, LikeC4ModelGraph } from '@likec4/graph'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
 import * as R from 'remeda'
@@ -19,9 +19,9 @@ import type {
   ParsedLikeC4LangiumDocument
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
-import { logError, logWarnError, logger } from '../logger'
+import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
-import { printDocs } from '../utils'
+import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
 
 function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[]) {
@@ -30,13 +30,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     relationships: {}
   }
   R.forEach(R.map(docs, R.prop('c4Specification')), spec => {
-    Object.assign(c4Specification.kinds, spec.kinds),
-      Object.assign(c4Specification.relationships, spec.relationships)
+    Object.assign(c4Specification.kinds, spec.kinds), Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
-    return links.map(l =>
-      services.lsp.DocumentLinkProvider.resolveLink(doc, l)
-    ) as c4.NonEmptyArray<string>
+    return links.map(l => services.lsp.DocumentLinkProvider.resolveLink(doc, l)) as c4.NonEmptyArray<string>
   }
 
   const toModelElement = (doc: LangiumDocument) => {
@@ -199,7 +196,7 @@ export class LikeC4ModelBuilder {
         if (parsed.length > 0) {
           this.notifyListeners(parsed)
         }
-        return Promise.resolve()
+        return await Promise.resolve()
       }
     )
     logger.debug(`[ModelBuilder] Created`)
@@ -223,8 +220,11 @@ export class LikeC4ModelBuilder {
     })
   }
 
+  private previousViews: Record<ViewID, c4.ComputedView> = {}
+
   public buildModel(): c4.LikeC4Model | null {
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(MODEL_CACHE, () => {
       const model = this.buildRawModel()
       if (!model) {
@@ -232,54 +232,70 @@ export class LikeC4ModelBuilder {
       }
       const index = new LikeC4ModelGraph(model)
 
-      const views = [] as c4.ComputedView[]
+      const allViews = [] as c4.ComputedView[]
       for (const view of R.values(model.views)) {
         const result = computeView(view, index)
         if (!result.isSuccess) {
           logWarnError(result.error)
           continue
         }
-        views.push(result.view)
+        allViews.push(result.view)
       }
-      assignNavigateTo(views)
+      assignNavigateTo(allViews)
+      const views = R.mapToObj(allViews, v => {
+        const previous = this.previousViews[v.id]
+        const view = previous && R.equals(v, previous) ? previous : v
+        viewsCache.set(computedViewKey(v.id), view)
+        return [v.id, view] as const
+      })
+      this.previousViews = { ...views }
       return {
         elements: model.elements,
         relations: model.relations,
-        views: R.mapToObj(views, v => [v.id, v])
+        views
       }
     })
   }
 
   public computeView(viewId: ViewID): c4.ComputedView | null {
-    const model = this.buildRawModel()
-    const view = model?.views[viewId]
-    if (!view) {
-      logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
-      return null
-    }
-    const index = new LikeC4ModelGraph(model)
-    const result = computeView(view, index)
-    if (!result.isSuccess) {
-      logError(result.error)
-      return null
-    }
-
-    const allElementViews = R.values(model.views).filter(
-      (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
-    )
-
-    const computedView = result.view
-    computedView.nodes.forEach(node => {
-      if (!node.navigateTo) {
-        // find first element view that is not the current one
-        const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
-        if (navigateTo) {
-          node.navigateTo = navigateTo.id
-        }
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+    return cache.get(computedViewKey(viewId), () => {
+      const model = this.buildRawModel()
+      const view = model?.views[viewId]
+      if (!view) {
+        logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+        return null
       }
-    })
+      const index = new LikeC4ModelGraph(model)
+      const result = computeView(view, index)
+      if (!result.isSuccess) {
+        logError(result.error)
+        return null
+      }
 
-    return computedView
+      const allElementViews = R.values(model.views).filter(
+        (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
+      )
+
+      let computedView = result.view
+      computedView.nodes.forEach(node => {
+        if (!node.navigateTo) {
+          // find first element view that is not the current one
+          const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+          if (navigateTo) {
+            node.navigateTo = navigateTo.id
+          }
+        }
+      })
+
+      const previous = this.previousViews[viewId]
+      if (previous) {
+        computedView = R.equals(computedView, previous) ? previous : computedView
+      }
+      this.previousViews[viewId] = computedView
+
+      return computedView
+    })
   }
 
   public onModelParsed(callback: ModelParsedListener): Disposable {
@@ -305,4 +321,7 @@ export class LikeC4ModelBuilder {
       }
     }
   }
+}
+function computedViewKey(viewId: string): string {
+  return `computed-view-${viewId}`
 }

@@ -1,5 +1,5 @@
-import { vi, describe, test as viTest } from 'vitest'
-import { valid, likec4, invalid } from './asserts'
+import { describe, test as viTest, vi } from 'vitest'
+import { invalid, likec4, valid } from './asserts'
 
 vi.mock('../logger')
 
