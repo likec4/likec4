@@ -14,7 +14,8 @@
     }
   },
   "include": [
-    "src"
+    "src",
+    "package.json"
   ],
   "exclude": [],
   "references": [

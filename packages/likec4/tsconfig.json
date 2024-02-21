@@ -2,11 +2,16 @@
   "extends": "../../tsconfig.base.json",
   "include": [],
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
+    "paths": { // just for the tsx
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "references": [
     {
-      "path": "tsconfig.src.json"
+      "path": "./tsconfig.src.json"
     },
     {
       "path": "app/tsconfig.json"

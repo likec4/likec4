@@ -24,7 +24,7 @@
   "scripts": {
     "build:turbo": "run -T turbo run build --filter='likec4'",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
-    "typecheck:cli": "tsc --noEmit",
+    "typecheck:cli": "tsc --noEmit -p ./tsconfig.src.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "build": "tsx scripts/build.ts",
     "prepack": "tsx scripts/prepack.ts",
