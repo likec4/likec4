@@ -1,8 +1,8 @@
+import { BinaryGraphvizLayouter } from '@likec4/layouts/graphviz/binary'
 import * as vscode from 'vscode'
 import which from 'which'
 import type { ExtensionController } from '../common/ExtensionController'
 import { Logger } from '../logger'
-import { BinaryGraphvizLayouter } from './BinaryGraphvizLayout'
 
 function graphvizBinPath() {
   try {
