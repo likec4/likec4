@@ -14,7 +14,7 @@
       "path": "./tsconfig.src.json"
     },
     {
-      "path": "app/tsconfig.json"
+      "path": "./app/tsconfig.json"
     },
     {
       "path": "scripts/tsconfig.json"

@@ -7,21 +7,24 @@ import type { Logger } from 'vite'
 import { LanguageServices } from '../../language-services'
 import { createLikeC4Logger, startTimer } from '../../logger'
 
-type HandlerParams = {
-  /**
-   * The directory where c4 files are located.
-   */
-  path: string
-} & (
-  | {
+type HandlerParams =
+  & {
+    /**
+     * The directory where c4 files are located.
+     */
+    path: string
+    useDotBin: boolean
+  }
+  & (
+    | {
       format: 'react' | 'views'
       outfile: string | undefined
     }
-  | {
+    | {
       format: 'dot' | 'd2' | 'mermaid'
       outdir: string | undefined
     }
-)
+  )
 
 async function singleFileCodegenAction(
   languageServices: LanguageServices,
@@ -36,10 +39,10 @@ async function singleFileCodegenAction(
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = (await languageServices.getViews()).map(v => v.diagram)
+  const views = await languageServices.views.diagrams()
   const generator = format === 'react' ? generateReact : generateViewsDataTs
 
-  const generatedSource = generator(views)
+  const generatedSource = generator([...views])
 
   await writeFile(outfile, generatedSource)
 
@@ -57,7 +60,7 @@ async function dotCodegenAction(
   logger.info(`${k.dim('outdir')} ${outdir}`)
 
   const createdDirs = new Set<string>()
-  const views = await languageServices.getViews()
+  const views = await languageServices.views.layoutViews()
   let succeeded = 0
   for (const { diagram, dot } of views) {
     try {
@@ -108,7 +111,7 @@ async function multipleFilesCodegenAction(
   }
 
   const createdDirs = new Set<string>()
-  const views = (await languageServices.getViews()).map(v => v.diagram)
+  const views = await languageServices.views.diagrams()
   let succeeded = 0
   for (const view of views) {
     try {
@@ -132,13 +135,13 @@ async function multipleFilesCodegenAction(
   }
 }
 
-export async function handler({ path, ...outparams }: HandlerParams) {
+export async function handler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path })
+  const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const views = languageServices.getModel()?.views
-  if (!views || Object.keys(views).length === 0) {
+  const views = languageServices.views.computedViews()
+  if (views.length === 0) {
     logger.warn('no views found')
     process.exitCode = 1
     throw new Error('no views found')

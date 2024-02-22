@@ -1,7 +1,7 @@
 import { EmptyFileSystem } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
-import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
+import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI, Utils } from 'vscode-uri'
 import type { LikeC4LangiumDocument } from '../ast'
 import { createLanguageServices } from '../module'
@@ -57,14 +57,14 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     }
   }
 
+  type ValidateAllResult = {
+    diagnostics: Diagnostic[]
+    errors: string[]
+    warnings: string[]
+  }
   let previousPromise = Promise.resolve() as Promise<any>
   const validateAll = async () => {
-    const currentPromise = previousPromise
-      .catch(e => {
-        // Ignore errors from previousPromise
-        console.error(e)
-        return Promise.resolve()
-      })
+    const currentPromise: Promise<ValidateAllResult> = previousPromise
       .then(async () => {
         const docs = langiumDocuments.all.toArray()
         assert.ok(docs.length > 0, 'no documents to validate')
@@ -77,6 +77,15 @@ export function createTestServices(workspace = 'file:///test/workspace') {
           errors,
           warnings
         }
+      })
+      .catch(e => {
+        // Ignore errors from previousPromise
+        console.error(e)
+        return Promise.resolve({
+          diagnostics: [] as Diagnostic[],
+          errors: [] as string[],
+          warnings: [] as string[]
+        })
       })
     previousPromise = currentPromise
 

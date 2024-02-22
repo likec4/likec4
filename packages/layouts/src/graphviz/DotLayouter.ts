@@ -8,14 +8,21 @@ import { IconSize } from './utils'
 
 const limit = pLimit(1)
 
-export class DotLayouter {
+export interface GraphvizLayouter {
+  dispose(): void
+  layout(view: ComputedView): Promise<DotLayoutResult>
+  svg(dot: string, view: ComputedView): Promise<string>
+}
+
+// WASM Graphviz layouter
+export class DotLayouter implements GraphvizLayouter {
   dispose() {
     limit.clearQueue()
     Graphviz.unload()
   }
 
-  layout(view: ComputedView): Promise<DotLayoutResult> {
-    return limit(async () => {
+  async layout(view: ComputedView): Promise<DotLayoutResult> {
+    return await limit(async () => {
       // Attempt 1
       let result = await this.attempt(view)
       if (result) {
@@ -43,8 +50,8 @@ export class DotLayouter {
     }
   }
 
-  svg(dot: string, { nodes }: ComputedView): Promise<string> {
-    return limit(async () => {
+  async svg(dot: string, { nodes }: ComputedView): Promise<string> {
+    return await limit(async () => {
       try {
         const images = uniq(nodes.flatMap(node => (node.icon ? [node.icon] : []))).map(path => ({
           path,

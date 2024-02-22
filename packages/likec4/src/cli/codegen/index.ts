@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
+import { outdir, useDotBin } from '../options'
 
 export const codegenCmd = {
   command: 'codegen <command> [path]',
@@ -33,13 +34,15 @@ export const codegenCmd = {
                 type: 'string',
                 desc: '<file> output .tsx file',
                 normalize: true
-              }
+              },
+              useDotBin
             })
             .coerce(['outfile'], resolve),
         async args => {
           const { handler } = await import('./handler')
           await handler({
             format: 'react',
+            useDotBin: args.useDotBin,
             path: args.path,
             outfile: args.outfile
           })
@@ -59,7 +62,8 @@ export const codegenCmd = {
                 type: 'string',
                 desc: '<file> output .ts file',
                 normalize: true
-              }
+              },
+              useDotBin
             })
             .coerce(['outfile'], resolve),
         handler: async args => {
@@ -67,6 +71,7 @@ export const codegenCmd = {
           await handler({
             format: 'views',
             path: args.path,
+            useDotBin: args.useDotBin,
             outfile: args.outfile
           })
         }
@@ -79,12 +84,8 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .options({
-              outdir: {
-                alias: 'o',
-                type: 'string',
-                desc: '<directory> output directory',
-                normalize: true
-              }
+              outdir,
+              useDotBin
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
@@ -92,6 +93,7 @@ export const codegenCmd = {
           await handler({
             format: 'dot',
             path: args.path,
+            useDotBin: args.useDotBin,
             outdir: args.outdir
           })
         }
@@ -104,12 +106,8 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .options({
-              outdir: {
-                alias: 'o',
-                type: 'string',
-                desc: '<directory> output directory',
-                normalize: true
-              }
+              outdir,
+              useDotBin
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
@@ -117,6 +115,7 @@ export const codegenCmd = {
           await handler({
             format: 'd2',
             path: args.path,
+            useDotBin: args.useDotBin,
             outdir: args.outdir
           })
         }
@@ -130,18 +129,15 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .options({
-              outdir: {
-                alias: 'o',
-                type: 'string',
-                desc: '<directory> output directory',
-                normalize: true
-              }
+              outdir,
+              useDotBin
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
           const { handler } = await import('./handler')
           await handler({
             format: 'mermaid',
+            useDotBin: args.useDotBin,
             path: args.path,
             outdir: args.outdir
           })

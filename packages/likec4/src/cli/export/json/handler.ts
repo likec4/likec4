@@ -10,19 +10,20 @@ type HandlerParams = {
    * The directory where c4 files are located.
    */
   path: string
+  useDotBin: boolean
   /**
    * outfile directory
    */
   outfile: string
 }
 
-export async function handler({ path, outfile }: HandlerParams) {
+export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
 
   const timer = startTimer(logger)
-  const languageServices = await LanguageServices.get({ path })
+  const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const model = languageServices.getModel()
+  const model = languageServices.model.buildModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')
@@ -33,7 +34,7 @@ export async function handler({ path, outfile }: HandlerParams) {
   }
   await mkdir(dirname(outfile), { recursive: true })
 
-  const views = (await languageServices.getViews()).map(v => v.diagram)
+  const views = await languageServices.views.diagrams()
 
   const output = {
     ...model,

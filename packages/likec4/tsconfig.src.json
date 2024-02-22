@@ -14,10 +14,12 @@
     }
   },
   "include": [
-    "src",
+    "./src",
     "package.json"
   ],
-  "exclude": [],
+  "exclude": [
+    "dist"
+  ],
   "references": [
     {
       "path": "../core"

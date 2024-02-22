@@ -3,7 +3,6 @@
   "compilerOptions": {
     "noEmit": true,
     "outDir": "dist",
-    "rootDir": ".",
     "declarationDir": "dist",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "noPropertyAccessFromIndexSignature": false,
@@ -21,9 +20,11 @@
   },
   "include": [
     "protocol.ts",
-    "src"
+    "./src"
   ],
-  "exclude": [],
+  "exclude": [
+    "dist"
+  ],
   "references": [
     {
       "path": "../core"

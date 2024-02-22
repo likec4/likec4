@@ -6,9 +6,9 @@
     "declarationDir": "dist",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": ["./src"],
   "exclude": [
-    "src/compute-view/__test__/**/*",
+    "**/__test__/**/*",
     "**/*.spec.ts"
   ],
   "references": [

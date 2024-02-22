@@ -1,16 +1,16 @@
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
+import { isCI } from 'ci-info'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
+import postcssNested from 'postcss-nested'
 import type { Alias, InlineConfig, Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-import { isCI } from 'ci-info'
-import autoprefixer from 'autoprefixer'
-import postcssNested from 'postcss-nested'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -40,17 +40,17 @@ function resolveAliases(aliases: Record<string, string>, logger: Logger): Array<
 
 export type LikeC4ViteConfig =
   | {
-      languageServices: LanguageServices
-      workspaceDir?: never
-      outputDir?: string | undefined
-      base?: string | undefined
-    }
+    languageServices: LanguageServices
+    workspaceDir?: never
+    outputDir?: string | undefined
+    base?: string | undefined
+  }
   | {
-      languageServices?: never
-      workspaceDir: string
-      outputDir?: string | undefined
-      base?: string | undefined
-    }
+    languageServices?: never
+    workspaceDir: string
+    outputDir?: string | undefined
+    base?: string | undefined
+  }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
@@ -69,9 +69,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.dim('app root')} ${root}`)
   }
 
-  const languageServices =
-    cfg?.languageServices ??
-    (await LanguageServices.get({
+  const languageServices = cfg?.languageServices
+    ?? (await LanguageServices.get({
       path: cfg?.workspaceDir ?? process.cwd(),
       logValidationErrors: true
     }))
@@ -106,7 +105,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     if (!base.endsWith('/')) {
       base = base + '/'
     }
-    customLogger.info(`${k.dim('app base url')} ${base}`)
+    customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
   return {
@@ -126,7 +125,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       assetsInlineLimit: 200 * 1024,
       cssMinify: true,
       sourcemap: false,
-      chunkSizeWarningLimit: 5 * 1000 * 1000,
+      chunkSizeWarningLimit: 2_000_000,
       commonjsOptions: {
         esmExternals: true,
         sourceMap: false
@@ -137,7 +136,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         plugins: [autoprefixer(), postcssNested()]
       },
       modules: {
-        localsConvention: 'camelCaseOnly'
+        localsConvention: 'camelCase'
       }
     },
     customLogger,

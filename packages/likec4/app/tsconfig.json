@@ -17,14 +17,14 @@
       {
         "name": "typescript-plugin-css-modules",
         "options": {
-          "classnameTransform": "camelCaseOnly",
+          "classnameTransform": "camelCase",
           "postcssOptions": {},
           "rendererOptions": {}
         }
       }
     ]
   },
-  "include": ["src"],
+  "include": ["./src"],
   "references": [
     {
       "path": "../../core"

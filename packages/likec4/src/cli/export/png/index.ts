@@ -1,6 +1,7 @@
-import k from 'picocolors'
 import { resolve } from 'path'
+import k from 'picocolors'
 import type { CommandModule } from 'yargs'
+import { useDotBin } from '../../options'
 
 const exportPngCmd = {
   command: 'png [path]',
@@ -19,7 +20,8 @@ const exportPngCmd = {
           type: 'string',
           desc: 'output directory',
           normalize: true
-        }
+        },
+        useDotBin
       })
       .coerce(['path', 'output'], resolve)
       .default('path', resolve('.'), '.')
@@ -35,6 +37,6 @@ const exportPngCmd = {
     const { handler } = await import('./handler')
     await handler(args)
   }
-} satisfies CommandModule<unknown, { path: string; output: string }>
+} satisfies CommandModule<unknown, { path: string; output: string; useDotBin: boolean }>
 
 export default exportPngCmd

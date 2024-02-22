@@ -1,24 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { type ComputedView, type LikeC4Model } from '@likec4/core'
-import {
-  createLanguageServices as createLangium,
-  type LikeC4Services,
-  logger as lspLogger
-} from '@likec4/language-server'
-import { DotLayouter, type DotLayoutResult } from '@likec4/layouts'
-import type { LangiumDocument, WorkspaceCache } from 'langium'
-import { DocumentState, URI } from 'langium'
-import { NodeFileSystem } from 'langium/node'
-import { basename, resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { type LikeC4Services } from '@likec4/language-server'
+import { DocumentState } from 'langium'
+import { resolve } from 'node:path'
 import k from 'picocolors'
-import type { IdentityFunction } from 'rambdax'
-import { equals, keys } from 'rambdax'
-import * as R from 'remeda'
 import type { Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
-import { createLikeC4Logger } from '../logger'
+import { createServices } from './module'
+import { languageServicesUtils } from './utils'
 
 export type LanguageServicesOptions = {
   /**
@@ -26,36 +15,12 @@ export type LanguageServicesOptions = {
    */
   path: string
   logValidationErrors?: boolean
-}
-
-function mkGetModelFn(services: LikeC4Services) {
-  const modelBuilder = services.likec4.ModelBuilder
-  const workspaceCache = services.WorkspaceCache as WorkspaceCache<string, LikeC4Model | null>
-  let previous: LikeC4Model | null = null
-
-  type Views = Record<string, ComputedView>
-
-  const compareWithCache: IdentityFunction<Views> = R.mapValues(view => {
-    const _prev = previous?.views[view.id]
-    return _prev && equals(_prev, view) ? _prev : view
-  })
-
-  const build = () => {
-    const next = modelBuilder.buildModel()
-    if (!previous || !next) {
-      return (previous = next)
-    }
-    return (previous = {
-      ...next,
-      views: compareWithCache(next.views)
-    })
-  }
-
-  return () => workspaceCache.get('model', build)
-}
-
-function isInvalid(document: LangiumDocument) {
-  return document.diagnostics?.some(e => e.severity === 1) ?? false
+  /**
+   * If true, the graphviz layouter will use the binary version of graphviz.
+   * By default, it uses the wasm version.
+   * @default false
+   */
+  useDotBin: boolean
 }
 
 function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
@@ -88,133 +53,42 @@ function mkPrintValidationErrors(services: LikeC4Services, logger: Logger) {
 
 export async function mkLanguageServices({
   path,
-  logValidationErrors = true
+  logValidationErrors = true,
+  useDotBin = false
 }: LanguageServicesOptions) {
-  const logger = createLikeC4Logger('c4:lsp ')
+  const services = createServices({ useDotBin }).likec4
+  const logger = services.logger
   logger.info(`${k.dim('version')} ${pkg.version}`)
-  lspLogger.silent(true)
 
   const workspace = resolve(path)
-  const { likec4: services, shared } = createLangium(NodeFileSystem)
-  const LangiumDocuments = services.shared.workspace.LangiumDocuments
-  const DocumentBuilder = services.shared.workspace.DocumentBuilder
 
-  function hasValidationErrors() {
-    return LangiumDocuments.all.some(isInvalid)
-  }
+  await services.cli.Workspace.init(path)
+
+  const {
+    errorDiagnostics,
+    hasErrors,
+    notifyUpdate,
+    onModelUpdate
+  } = languageServicesUtils(services)
 
   const printValidationErrors = mkPrintValidationErrors(services, logger)
 
   if (logValidationErrors) {
-    DocumentBuilder.onBuildPhase(DocumentState.Validated, docs => {
+    services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, docs => {
       printValidationErrors(docs)
     })
   }
 
-  const getModel = mkGetModelFn(services)
-
-  const dot = new DotLayouter()
-  const dotCache = new WeakMap<ComputedView, DotLayoutResult>()
-
-  async function layoutView(view: ComputedView) {
-    let result = dotCache.get(view)
-    if (result) {
-      return result
-    }
-    result = await dot.layout(view)
-    dotCache.set(view, result)
-    return result
-  }
-
-  function getViews() {
-    const castedCache = services.WorkspaceCache as WorkspaceCache<
-      string,
-      Promise<DotLayoutResult[]>
-    >
-    return castedCache.get('getViews', async () => {
-      const views = getModel()?.views
-      if (!views || keys(views).length === 0) {
-        return []
-      }
-      const results = [] as DotLayoutResult[]
-      for (const view of Object.values(views)) {
-        try {
-          results.push(await layoutView(view))
-        } catch (e) {
-          logger.error(`layout failed for ${view.id}`)
-          logger.error(e)
-        }
-      }
-      return results
-    })
-  }
-
-  const mutex = shared.workspace.MutexLock
-
-  // Returns true if the update was successful
-  async function notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
-    logger.info(`watcher update: ${changed ?? ''} ${removed ?? ''}`)
-    try {
-      let cancelled = true
-      await mutex.lock(async token => {
-        await DocumentBuilder.update(
-          changed ? [URI.file(changed)] : [],
-          removed ? [URI.file(removed)] : [],
-          token
-        )
-        // we come here if only the update was successful (and not cancelled)
-        cancelled = token.isCancellationRequested
-      })
-      return !cancelled && !hasValidationErrors()
-    } catch (e) {
-      logger.error(e)
-      return false
-    }
-  }
-
-  // Initialize workspace
-
-  await services.shared.workspace.WorkspaceManager.initializeWorkspace([
-    {
-      name: basename(workspace),
-      uri: pathToFileURL(workspace).toString()
-    }
-  ])
-
-  logger.info(`${k.dim('workspace:')} ${workspace}`)
-
-  const documents = LangiumDocuments.all.toArray()
-  if (documents.length === 0) {
-    process.exitCode = 1
-    logger.error(`no LikeC4 sources found`)
-    throw new Error(`no LikeC4 sources found`)
-  }
-
-  await DocumentBuilder.build(documents, { validation: true })
-
-  if (!hasValidationErrors()) {
-    logger.info(k.green(`✓`) + ` ${documents.length} sources parsed`)
-  }
-
   return {
     // Resolved workspace directory
-    dotlayouter: dot,
     workspace,
-    getModel,
-    getViews,
+    model: services.likec4.ModelBuilder,
+    views: services.likec4.Views,
     notifyUpdate,
-    hasValidationErrors,
-    printValidationErrors: () => printValidationErrors(),
-    getValidationDiagnostics: () => {
-      return LangiumDocuments.all
-        .flatMap(d => {
-          return (
-            d.diagnostics?.flatMap(e => (e.severity === 1 ? { ...e, source: d.uri.fsPath } : []))
-              ?? []
-          )
-        })
-        .toArray()
-    }
+    onModelUpdate,
+    hasErrors,
+    getErrors: errorDiagnostics,
+    printErrors: () => printValidationErrors()
   }
 }
 
@@ -227,9 +101,10 @@ export namespace LanguageServices {
     if (!instance) {
       instance = await mkLanguageServices({
         path: opts?.path ?? process.cwd(),
-        logValidationErrors: opts?.logValidationErrors ?? true
+        logValidationErrors: opts?.logValidationErrors ?? true,
+        useDotBin: opts?.useDotBin ?? false
       })
-      if (instance.printValidationErrors()) {
+      if (instance.printErrors()) {
         // setImmediate(() => {
         process.exit(1)
         // })
