@@ -1,9 +1,10 @@
 import { invariant } from '@likec4/core'
-import { useUnmountEffect } from '@react-hookz/web'
+import { useRafCallback, useUnmountEffect } from '@react-hookz/web'
 import { Background, Controls, ReactFlow } from '@xyflow/react'
-import { memo, useRef } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import { useLikeC4View, useLikeC4ViewTriggers } from '../state'
+import { createLayoutConstraints } from '../state/cassowary'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
@@ -12,6 +13,8 @@ type LikeC4XYFlowProps = {
   defaultNodes?: XYFlowNode[] | undefined
   defaultEdges?: XYFlowEdge[] | undefined
 }
+
+type Solver = ReturnType<typeof createLayoutConstraints>
 
 export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
   defaultNodes = [],
@@ -22,6 +25,7 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
   const trigger = useLikeC4ViewTriggers()
 
   const instanceRef = useRef<XYFlowInstance>()
+  const solverRef = useRef<Solver>()
   const lastClickTimeRef = useRef<number>(0)
 
   useUnmountEffect(() => {
@@ -31,6 +35,36 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
   })
 
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
+
+  const onNodeDragStart = useCallback((event: React.MouseEvent) => {
+  }, [])
+
+  const [render, cancel] = useRafCallback(() => {
+    if (!solverRef.current) {
+      return
+    }
+    const positioned = new Map(solverRef.current.solve().map((r) => [r.id, r]))
+    instanceRef.current?.setNodes(nodes =>
+      nodes.map((n) => {
+        if (n.dragging) {
+          return n
+        }
+        const next = positioned.get(n.data.element.id)
+        if (!next || next.isEditing) {
+          return n
+        }
+        return {
+          ...n,
+          position: next.position,
+          width: next.width,
+          height: next.height
+          // computed: Object.assign(node.computed ?? {}, {
+          //   positionAbsolute: dim.positionAbsolute
+          // })
+        }
+      })
+    )
+  })
 
   return (
     <ReactFlow
@@ -65,6 +99,25 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
+      onNodeDragStart={(event, node) => {
+        cancel()
+        invariant(XYFlowNode.is(node), `node is not a EditorNode`)
+        solverRef.current = createLayoutConstraints(editor.viewNodes, node.data.element.id)
+      }}
+      onNodeDrag={(event, { computed }) => {
+        if (!solverRef.current) {
+          return
+        }
+        const next = computed?.positionAbsolute
+        if (next) {
+          solverRef.current.moveTo(next)
+          render()
+        }
+      }}
+      onNodeDragStop={(event, node) => {
+        cancel()
+        solverRef.current = undefined
+      }}
       onEdgeMouseEnter={(event, edge) => {
         update({
           hoveredEdgeId: edge.id

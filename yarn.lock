@@ -1037,6 +1037,7 @@ __metadata:
   resolution: "@likec4/diagram@workspace:packages/diagram"
   dependencies:
     "@likec4/core": "workspace:*"
+    "@lume/kiwi": "npm:^0.4.3"
     "@mantine/core": "npm:^7.5.2"
     "@mantine/hooks": "npm:^7.5.2"
     "@react-hookz/deep-equal": "npm:^2.0.2"
@@ -1320,6 +1321,13 @@ __metadata:
     vitest: "npm:^1.2.2"
   languageName: unknown
   linkType: soft
+
+"@lume/kiwi@npm:^0.4.3":
+  version: 0.4.3
+  resolution: "@lume/kiwi@npm:0.4.3"
+  checksum: 10/bb72166201c765273b74d5199c079c84f34015af8031d816402e9faff2ce91ee2379322a35c159da00136d7d17654545564f286a6e1122e8472327758e7eb437
+  languageName: node
+  linkType: hard
 
 "@mantine/core@npm:^7.5.2":
   version: 7.5.2

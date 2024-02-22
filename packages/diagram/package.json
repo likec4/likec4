@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@lume/kiwi": "^0.4.3",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@xyflow/react": "^12.0.0-next.8",
