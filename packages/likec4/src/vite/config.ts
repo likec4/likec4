@@ -7,7 +7,6 @@ import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
-// import postcssNested from 'postcss-nested'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import type { Alias, InlineConfig, Logger } from 'vite'
 import pkg from '../../package.json' assert { type: 'json' }
@@ -66,9 +65,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   }
 
   if (isDev) {
-    customLogger.warn(`${k.dim('dev app root')} ${root}`)
+    customLogger.info(`${k.cyan('dev app root')} ${k.dim(root)}`)
   } else {
-    customLogger.info(`${k.dim('app root')} ${root}`)
+    customLogger.info(`${k.cyan('app root')} ${k.dim(root)}`)
   }
 
   const languageServices = cfg?.languageServices
@@ -78,7 +77,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     }))
 
   const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
-  customLogger.info(k.dim('outDir') + ' ' + outDir)
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   const sources = {
     core: resolve(_dirname, isDev ? '../../../core/src/index.ts' : '../@likec4/core/index.js'),

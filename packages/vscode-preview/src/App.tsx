@@ -1,5 +1,5 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
-import { LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4View as LikeC4ViewEditor } from '@likec4/diagram'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -98,16 +98,16 @@ const App = () => {
         <LikeC4ViewEditor
           view={view}
           nodesDraggable={false}
-          onNavigateTo={(node) => {
+          onNavigateTo={({ element }) => {
             lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = null
-            extensionApi.goToViewSource(node.navigateTo)
-            extensionApi.openView(node.navigateTo)
+            extensionApi.goToViewSource(element.navigateTo)
+            extensionApi.openView(element.navigateTo)
           }}
-          onNodeClick={({ element, node, event }) => {
+          onNodeClick={({ element, xynode, event }) => {
             console.log(`onNodeClick: ${element.id}`, {
-              selected: node.selected,
-              node
+              selected: xynode.selected,
+              xynode
             })
             if (lastClickedNodeRef.current === element.id) {
               lastNodeContextMenuRef.current = null
@@ -117,7 +117,7 @@ const App = () => {
             }
             lastClickedNodeRef.current = element.id
           }}
-          onNodeContextMenu={({ element, node, event }) => {
+          onNodeContextMenu={({ element, xynode, event }) => {
             lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = element
             // e.stopPropagation()
@@ -131,9 +131,9 @@ const App = () => {
               event.stopPropagation()
             }
           }}
-          onChange={(change) => {
-            extensionApi.triggerChange({ ...change, viewId: view.id })
-          }}
+          // onChange={(change) => {
+          //   extensionApi.triggerChange({ ...change, viewId: view.id })
+          // }}
           onCanvasDblClick={() => {
             extensionApi.goToViewSource(view.id)
           }}

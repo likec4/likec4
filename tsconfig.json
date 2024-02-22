@@ -5,6 +5,7 @@
   "references": [
     { "path": "packages/core" },
     { "path": "packages/create-likec4" },
+    { "path": "packages/diagram" },
     { "path": "packages/diagrams" },
     { "path": "packages/generators" },
     { "path": "packages/graph" },

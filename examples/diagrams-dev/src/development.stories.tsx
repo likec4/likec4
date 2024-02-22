@@ -2,7 +2,7 @@ import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
 
 import { action, ActionType, type Story, type StoryDefault, useLadleContext } from '@ladle/react'
-import { LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4View as LikeC4ViewEditor } from '@likec4/diagram'
 import { Diagram, DiagramStateProvider } from '@likec4/diagrams'
 import { useStoryViewport } from '../.ladle/components'
 import type { LikeC4ViewId } from './likec4'
@@ -115,9 +115,9 @@ DiagramDevelopment.storyName = 'Diagram'
 
 export const LikeC4ViewEditorStory: Story<Props> = ({
   viewId,
-  onNodeClick = true,
-  onEdgeClick = true,
-  ...props
+  onNodeClick = true
+  // onEdgeClick = true,
+  // ...props
 }) => {
   const {
     dispatch,
@@ -133,16 +133,16 @@ export const LikeC4ViewEditorStory: Story<Props> = ({
           action('onNodeClick')({
             node
           })
-          dispatch({
-            type: ActionType.UpdateControl,
-            value: {
-              ...controlState,
-              viewId: {
-                ...controlState['viewId'],
-                value: node.navigateTo
-              }
-            }
-          })
+          // dispatch({
+          //   type: ActionType.UpdateControl,
+          //   value: {
+          //     ...controlState,
+          //     viewId: {
+          //       ...controlState['viewId'],
+          //       value: node.navigateTo
+          //     }
+          //   }
+          // })
         }
         : undefined}
       //    {...(onNodeClick && ({

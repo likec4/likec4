@@ -33,11 +33,11 @@
         "meganrogge.template-string-converter",
         "redhat.vscode-yaml",
         "visualstudioexptteam.vscodeintellicode",
-        "zixuanchen.vitest-explorer",
         "github.copilot",
         "codezombiech.gitignore",
         "unifiedjs.vscode-mdx",
-        "dprint.dprint"
+        "dprint.dprint",
+        "vitest.explorer"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.osx": "zsh",

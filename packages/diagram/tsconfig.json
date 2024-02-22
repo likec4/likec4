@@ -1,7 +1,7 @@
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
     "lib": [
       "dom",
       "dom.iterable",
@@ -9,7 +9,7 @@
       "webworker"
     ],
     "outDir": "dist",
-    "jsx": "preserve",
+    "jsx": "react-jsxdev",
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
@@ -17,10 +17,13 @@
           "classnameTransform": "camelCase"
         }
       }
-    ]
+    ],
+
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
-    "src"
+    "./src"
   ],
   "references": [
     {

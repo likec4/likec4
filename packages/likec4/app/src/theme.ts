@@ -1,5 +1,4 @@
-import { Button, createTheme } from '@mantine/core'
-import type { CSSProperties } from 'react'
+import { Button, createTheme, type MantineTheme } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
@@ -19,4 +18,4 @@ export const theme = createTheme({
   components: {
     Button: Button.extend({})
   }
-})
+}) as MantineTheme

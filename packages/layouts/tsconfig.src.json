@@ -4,6 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
+    "noUnusedParameters": false,
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
   "include": ["src"],
