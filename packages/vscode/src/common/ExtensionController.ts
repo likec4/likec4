@@ -9,7 +9,6 @@ import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, tel
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
-import { type GraphvizLayout, WasmGraphvizLayout } from './GraphvizLayout'
 import { initWorkspace, rebuildWorkspace } from './initWorkspace'
 import Messenger from './Messenger'
 import { PreviewPanel } from './panel/PreviewPanel'
