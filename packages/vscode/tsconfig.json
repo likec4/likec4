@@ -1,13 +1,13 @@
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "../../tsconfig.base.json",
+  "include": [],
   "compilerOptions": {
-    "lib": ["ESNext", "WebWorker"],
-    "outDir": "dist",
-    "rootDir": "src",
-    "baseUrl": "."
+    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
   },
-  "include": ["src"],
   "references": [
+    {
+      "path": "./tsconfig.src.json"
+    },
     {
       "path": "../core"
     },

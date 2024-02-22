@@ -1,8 +1,7 @@
-import { invariant } from '@likec4/core'
 import { generateViewsDataJs } from '@likec4/generators'
-import pDebounce from 'p-debounce'
+import pLimit from 'p-limit'
 import k from 'picocolors'
-import { values } from 'remeda'
+import { mapToObj } from 'remeda'
 import type { PluginOption } from 'vite'
 import type { LanguageServices } from '../language-services'
 import type { Logger } from '../logger'
@@ -23,19 +22,18 @@ const generatedViews = {
   id: 'virtual:likec4/views',
   virtualId: '/@vite-plugin-likec4/likec4-views',
   async load({ likec4, logger }) {
-    logger.info('generating virtual:likec4/views')
-    const views = (await likec4.getViews()).map(v => v.diagram)
-    return generateViewsDataJs(views)
+    logger.info(k.dim('generating virtual:likec4/views'))
+    const diagrams = await likec4.views.diagrams()
+    return generateViewsDataJs([...diagrams])
   }
 } satisfies Module
 
 const dimensionsModule = {
   id: 'virtual:likec4/dimensions',
   virtualId: '\0likec4/dimensions',
-  // virtualId: '/@vite-plugin-likec4/likec4-dimensions.ts',
   async load({ likec4, logger }) {
-    logger.info('generating virtual:likec4/dimensions')
-    const views = (await likec4.getViews()).map(v => v.diagram)
+    logger.info(k.dim('generating virtual:likec4/dimensions'))
+    const views = await likec4.views.diagrams()
     let code = `export const LikeC4Views = {\n`
     for (const view of views) {
       code += `  ${JSON.stringify(view.id)}: {width: ${view.width},height: ${view.height}},\n`
@@ -48,23 +46,10 @@ const dimensionsModule = {
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
   virtualId: '\0likec4/dot-sources',
-  // virtualId: '/@vite-plugin-likec4/likec4-dot-sources.ts',
   async load({ likec4, logger }) {
-    logger.info('generating virtual:likec4/dot-sources')
-    const views = await likec4.getViews()
-    const sources = {} as Record<
-      string,
-      {
-        dot: string
-        svg: string
-      }
-    >
-    for (const { diagram, dot } of views) {
-      sources[diagram.id] = {
-        dot,
-        svg: await likec4.dotlayouter.svg(dot, diagram)
-      }
-    }
+    logger.info(k.dim('generating virtual:likec4/dot-sources'))
+    const views = await likec4.views.viewsAsGraphvizOut()
+    const sources = mapToObj(views, ({ id, svg, dot }) => [id, { dot, svg }])
     return generateDotSources(sources)
   }
 } satisfies Module
@@ -74,10 +59,9 @@ const d2SourcesModule = {
   virtualId: '\0likec4/d2-sources',
   async load({ likec4, logger }) {
     await Promise.resolve()
-    logger.info('generating virtual:likec4/d2-sources')
-    const views = likec4.getModel()?.views
-    invariant(views, 'views must be defined')
-    return generateD2Sources(values(views))
+    logger.info(k.dim('generating virtual:likec4/d2-sources'))
+    const views = likec4.views.computedViews()
+    return generateD2Sources(views)
   }
 } satisfies Module
 
@@ -87,10 +71,9 @@ const mmdSourcesModule = {
   // virtualId: '/@vite-plugin-likec4/likec4-mmd-sources.ts',
   async load({ likec4, logger }) {
     await Promise.resolve()
-    logger.info('generating virtual:likec4/mmd-sources')
-    const views = likec4.getModel()?.views
-    invariant(views, 'views must be defined')
-    return generateMmdSources(values(views))
+    logger.info(k.dim('generating virtual:likec4/mmd-sources'))
+    const views = likec4.views.computedViews()
+    return generateMmdSources(views)
   }
 } satisfies Module
 
@@ -137,47 +120,41 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     },
 
     configureServer(server) {
-      const triggerHMR = async () => {
-        const [error] = likec4.getValidationDiagnostics()
-        if (error) {
-          server.ws.send({
-            type: 'error',
-            err: {
-              message: 'Validation error:\n\n' + error.message,
-              stack: '',
-              plugin: 'vite-plugin-likec4',
-              loc: {
-                file: error.source,
-                line: error.range.start.line + 1,
-                column: error.range.start.character + 1
+      const limit = pLimit(1)
+      const triggerHMR = () =>
+        limit(async () => {
+          const [error] = likec4.getErrors()
+          if (error) {
+            server.ws.send({
+              type: 'error',
+              err: {
+                message: 'Validation error:\n\n' + error.message,
+                stack: '',
+                plugin: 'vite-plugin-likec4',
+                loc: {
+                  file: error.sourceFsPath,
+                  line: error.range.start.line + 1,
+                  column: error.range.start.character + 1
+                }
               }
-            }
-          })
-          return
-        }
-
-        const reload = modules
-          .flatMap(m => {
-            const md = server.moduleGraph.getModuleById(m.virtualId)
-            return md ? [md] : []
-          })
-          .map(md => {
-            logger.info(`trigger HMR: ${md.url}`)
-            return server.reloadModule(md).catch(err => {
-              server.ws.send({ type: 'error', err })
-              logger.error(err)
             })
-          })
-        await Promise.all(reload)
-        return
-      }
-      const scheduleHMR = pDebounce(triggerHMR, 200)
-
-      const handleUpdate = (task: Promise<boolean>) => {
-        task.then(isSuccess => isSuccess ? void scheduleHMR() : null).catch(err =>
-          server.ws.send({ type: 'error', err })
-        )
-      }
+            return
+          }
+          const reload = modules
+            .flatMap(m => {
+              const md = server.moduleGraph.getModuleById(m.virtualId)
+              return md && md.importers.size > 0 ? [md] : []
+            })
+            .map(async md => {
+              logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)
+              return server.reloadModule(md).catch(err => {
+                server.ws.send({ type: 'error', err })
+                logger.error(err)
+              })
+            })
+          await Promise.allSettled(reload)
+          return
+        })
 
       const pattern = likec4.workspace
       logger.info(`${k.dim('watch')} ${pattern}`)
@@ -186,19 +163,23 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
         .add(pattern)
         .on('add', path => {
           if (isTarget(path)) {
-            handleUpdate(likec4.notifyUpdate({ changed: path }))
+            likec4.notifyUpdate({ changed: path })
           }
         })
         .on('change', path => {
           if (isTarget(path)) {
-            handleUpdate(likec4.notifyUpdate({ changed: path }))
+            likec4.notifyUpdate({ changed: path })
           }
         })
         .on('unlink', path => {
           if (isTarget(path)) {
-            handleUpdate(likec4.notifyUpdate({ removed: path }))
+            likec4.notifyUpdate({ removed: path })
           }
         })
+
+      likec4.onModelUpdate(() => {
+        triggerHMR().catch(err => logger.error(err))
+      })
     }
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { hasAtLeast, type DiagramView } from '@likec4/core'
+import { type DiagramView, hasAtLeast } from '@likec4/core'
 import { rm } from 'fs/promises'
 import { availableParallelism } from 'node:os'
 import { resolve } from 'node:path'
@@ -21,15 +21,17 @@ type HandlerParams = {
    * output directory
    */
   output: string
+
+  useDotBin: boolean
 }
 
-export async function handler({ path, output }: HandlerParams) {
+export async function handler({ path, useDotBin, output }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer(logger)
 
-  const languageServices = await LanguageServices.get({ path })
+  const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const views = (await languageServices.getViews()).map(v => v.diagram)
+  const views = await languageServices.views.diagrams()
   if (views.length === 0) {
     logger.warn('no views found')
     throw new Error('no views found')

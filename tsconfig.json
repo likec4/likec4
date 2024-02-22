@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "include": [],
+  "extends": "./tsconfig.base.json",
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/create-likec4" },
+    { "path": "packages/diagrams" },
+    { "path": "packages/generators" },
+    { "path": "packages/graph" },
+    { "path": "packages/language-server" },
+    { "path": "packages/layouts" },
+    { "path": "packages/likec4" },
+    { "path": "packages/likec4/app" },
+    { "path": "packages/vscode" },
+    { "path": "packages/vscode-preview" },
+    { "path": "examples/diagrams-dev" }
+  ]
+}

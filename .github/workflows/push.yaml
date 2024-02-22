@@ -27,9 +27,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         node-version: ['18', '20']
         include:
+
+          # Build on Windows only with Node 20
+          - os: windows-latest
+            node-version: '20'
 
           - os: ubuntu-latest
             node-version: '20'
@@ -50,11 +54,11 @@ jobs:
       - name: Build
         run: yarn ci:build
 
-      - name: Test
-        run: yarn test
-
       - name: TypeCheck
         run: yarn typecheck
+
+      - name: Test
+        run: yarn test
 
       - if: ${{ matrix.build-docs }}
         name: Build Docs

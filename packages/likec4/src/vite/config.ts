@@ -106,7 +106,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     }
   }
   if (base !== '/') {
-    customLogger.info(`${k.dim('app base')} ${base}`)
+    customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
   return {
@@ -126,7 +126,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       assetsInlineLimit: 200 * 1024,
       cssMinify: true,
       sourcemap: false,
-      chunkSizeWarningLimit: 5 * 1000 * 1000,
+      chunkSizeWarningLimit: 2_000_000,
       commonjsOptions: {
         esmExternals: true,
         sourceMap: false
@@ -139,7 +139,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         ]
       },
       modules: {
-        localsConvention: 'camelCaseOnly'
+        localsConvention: 'camelCase'
       }
     },
     customLogger,

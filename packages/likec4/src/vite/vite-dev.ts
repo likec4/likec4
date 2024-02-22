@@ -32,8 +32,8 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
           },
           fs: {
             strict: false
-          }
-          // open: true
+          },
+          open: !isDev
         }
       } satisfies InlineConfig
     )

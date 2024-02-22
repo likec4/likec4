@@ -12,7 +12,7 @@ import type {
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
-import type { BoundingBox, GraphvizJson, GVPos } from './types'
+import type { BoundingBox, DotSource, GraphvizJson, GVPos } from './types'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -155,7 +155,7 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
 }
 
 export type DotLayoutResult = {
-  dot: string
+  dot: DotSource
   diagram: DiagramView
 }
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
@@ -178,7 +178,10 @@ export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): Dot
   const diagram = parseGraphvizJson(rawjson, computedView)
 
   return {
-    dot,
+    dot: dot
+      .split('\n')
+      .filter(l => !l.includes('margin=33.21'))
+      .join('\n') as DotSource,
     diagram
   }
 }

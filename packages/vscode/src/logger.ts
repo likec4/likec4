@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { BaseError } from '@likec4/core'
 import { normalizeError } from '@likec4/core'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import type { LogOutputChannel } from 'vscode'
@@ -42,9 +41,4 @@ export class Logger {
 
 export function logError(error: unknown): void {
   Logger.error(normalizeError(error))
-}
-
-export function logWarnError(err: unknown): void {
-  const error = normalizeError(err)
-  Logger.warn(`${error.name}: ${error.message}`)
 }

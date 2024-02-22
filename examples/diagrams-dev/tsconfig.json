@@ -1,26 +1,38 @@
 {
-  "extends": "../../packages/tsconfig/vite-react.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
-
-    "lib": ["esnext"],
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
     "module": "esnext",
     "target": "es2022",
     "moduleResolution": "bundler",
-
-    "types": ["vite/client"]
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "jsx": "react-jsxdev",
+    "types": [
+      "vite/client"
+    ]
   },
-  "include": ["src", "./.ladle/*.ts", "./.scripts/*.ts"],
+  "include": [
+    "src",
+    "./.ladle/*",
+    "./.scripts/*.ts"
+  ],
   "references": [
     {
-      "path": "../../packages/core/"
+      "path": "../../packages/likec4"
     },
     {
-      "path": "../../packages/diagram/"
+      "path": "../../packages/core"
     },
     {
-      "path": "../../packages/diagrams/"
+      "path": "../../packages/diagram"
+    },
+    {
+      "path": "../../packages/diagrams"
     }
   ]
 }

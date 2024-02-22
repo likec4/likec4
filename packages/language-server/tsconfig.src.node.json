@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/src-node.tsbuildinfo",
+    "rootDir": "src/node",
+    "outDir": "dist/node",
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "./src/node"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.src.json"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../graph"
+    }
+  ]
+}

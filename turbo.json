@@ -9,7 +9,7 @@
     },
     "build": {
       "dependsOn": ["generate", "^build"],
-      "outputs": ["dist/**", "tsconfig.tsbuildinfo"]
+      "outputs": ["dist/**", ".tsbuildinfo/**"]
     },
     "lint": {
       "cache": false,
@@ -29,5 +29,9 @@
       "persistent": true
     }
   },
-  "globalDependencies": ["packages/tsconfig/*", "yarn.lock"]
+  "globalDependencies": [
+    "tsconfig.*.json",
+    "tsconfig.json",
+    "yarn.lock"
+  ]
 }

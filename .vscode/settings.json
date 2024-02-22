@@ -37,6 +37,7 @@
   },
   "files.exclude": {
     "**/.turbo": true,
+    "packages/*/.tsbuildinfo": true,
     "packages/*/.vscode-test-web": true
   },
   "vitest.commandLine": "yarn vitest -- ",

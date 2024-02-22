@@ -20,7 +20,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./graphviz/binary": "./src/graphviz/binary/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -29,6 +30,10 @@
       ".": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "./graphviz/binary": {
+        "types": "./dist/graphviz/binary/index.d.ts",
+        "default": "./dist/graphviz/binary/index.js"
       }
     }
   },
@@ -52,11 +57,11 @@
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
     "type-fest": "^4.10.2",
-    "word-wrap": "^1.2.5"
+    "word-wrap": "^1.2.5",
+    "execa": "^8.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "execa": "^8.0.1",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
     "vitest": "^1.2.2"

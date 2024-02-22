@@ -1,6 +1,7 @@
-import k from 'picocolors'
 import { resolve } from 'path'
+import k from 'picocolors'
 import type { CommandModule } from 'yargs'
+import { useDotBin } from '../../options'
 
 const exportJsonCmd = {
   command: 'json [path]',
@@ -19,7 +20,8 @@ const exportJsonCmd = {
           type: 'string',
           desc: '<file> output .json file',
           normalize: true
-        }
+        },
+        useDotBin
       })
       .coerce(['path', 'outfile'], resolve)
       .default('path', resolve('.'), '.')
@@ -35,6 +37,6 @@ const exportJsonCmd = {
     const { handler } = await import('./handler')
     await handler(args)
   }
-} satisfies CommandModule<unknown, { path: string; outfile: string }>
+} satisfies CommandModule<unknown, { path: string; useDotBin: boolean; outfile: string }>
 
 export default exportJsonCmd

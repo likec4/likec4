@@ -19,7 +19,7 @@ type HandlerParams = {
 }
 
 export async function handler({ path, output: outputDir, ...params }: HandlerParams) {
-  const languageServices = await LanguageServices.get({ path })
+  const languageServices = await LanguageServices.get({ path, useDotBin: false })
 
   const server = await vitePreview({ ...params, languageServices, outputDir, open: true })
 

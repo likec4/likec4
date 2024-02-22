@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "noUnusedParameters": false,
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
+  },
+  "include": ["./src"],
+  "exclude": [
+    "./src/browser",
+    "./src/node",
+    "./dist",
+    "**/__fixtures__/**/*",
+    "**/__mocks__/**/*",
+    "**/__tests__/**/*",
+    "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../graph"
+    }
+  ]
+}

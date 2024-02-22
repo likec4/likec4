@@ -1,0 +1,32 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "lib": [
+      "esnext",
+      "dom",
+      "WebWorker"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../language-server"
+    },
+    {
+      "path": "../layouts"
+    }
+  ]
+}

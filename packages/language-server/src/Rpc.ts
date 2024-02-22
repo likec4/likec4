@@ -37,7 +37,7 @@ export class Rpc {
         {
           before: true,
           after: true,
-          wait: 400,
+          wait: 250,
           maxWait: 1000
         }
       )
