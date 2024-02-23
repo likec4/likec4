@@ -3,12 +3,10 @@ import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import useTilg from 'tilg'
 import { type LikeC4ViewProps } from './props'
-import { LikeC4ViewStateProvider, LikeC4ViewStateSync } from './state'
+import { LikeC4ViewStateProvider } from './state'
 import { fromDiagramView } from './state/fromDiagramView'
-import { LikeC4XYFlow } from './xyflow'
 import './styles.css'
-import Camera from './ui/Camera'
-import OptionsPanel from './ui/OptionsPanel'
+import { LikeC4XYFlow } from './xyflow'
 
 export function LikeC4View({
   view,
@@ -24,7 +22,6 @@ export function LikeC4View({
     <ReactFlowProvider>
       <LikeC4ViewStateProvider
         view={view}
-        readonly={readonly}
         nodesDraggable={nodesDraggable}
         {...apiProps}
       >
@@ -32,9 +29,6 @@ export function LikeC4View({
           defaultNodes={initial.nodes}
           defaultEdges={initial.edges}
         />
-        <LikeC4ViewStateSync />
-        <Camera />
-        {!readonly && <OptionsPanel />}
       </LikeC4ViewStateProvider>
     </ReactFlowProvider>
   )

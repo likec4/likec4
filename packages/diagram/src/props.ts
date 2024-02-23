@@ -63,4 +63,6 @@ export type LikeC4ViewProps = {
   onCanvasClick?: OnCanvasClick | undefined
   onCanvasDblClick?: OnCanvasClick | undefined
   onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined
+  // onMoveStart?: OnMoveStart | undefined
+  // onMoveEnd?: OnMoveEnd | undefined
 }

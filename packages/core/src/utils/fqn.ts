@@ -12,7 +12,7 @@ export function nameFromFqn(fqn: Fqn) {
 }
 
 export function isAncestor<E extends { id: Fqn }>(
-  ...args: [ancestor: Fqn, another: Fqn] | [ancestor: E, another: E]
+  ...args: [ancestor: string, another: string] | [ancestor: E, another: E]
 ) {
   const ancestor = isString(args[0]) ? args[0] : args[0].id
   const another = isString(args[1]) ? args[1] : args[1].id

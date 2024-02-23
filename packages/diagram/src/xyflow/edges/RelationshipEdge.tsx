@@ -56,14 +56,13 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function RelationshipEdge({
+export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function RelationshipEdgeR({
   id,
   data,
   selected,
   markerEnd,
   style,
-  interactionWidth,
-  ...props
+  interactionWidth
 }) {
   // useTilg()
   invariant(data, 'data is required')
@@ -122,16 +121,12 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
         strokeWidth={interactionWidth ?? 10}
       />
       {controlPoints.map((p, i) => (
-        <motion.circle
-          drag
+        <circle
           className={styles.controlPoint}
           key={i}
           cx={p[0]}
           cy={p[1]}
           r={5}
-          onDrag={(event, info) => {
-            console.log(`${info.point.x}x${info.point.y}`)
-          }}
         />
       ))}
       {data.label && (
@@ -166,5 +161,3 @@ const RelationshipEdgeMemo = memo<EdgeProps<RelationshipData>>(function Relation
     </g>
   )
 })
-
-export default RelationshipEdgeMemo

@@ -12,8 +12,6 @@ import { getBezierEdgeCenter } from '@xyflow/react'
 import { hasAtLeast, isNil } from 'remeda'
 import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
-import { createLayoutConstraints } from './layout-constraints'
-
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
   invariant(start, 'start should be defined')

@@ -1,19 +1,161 @@
-import { type DiagramNode, type Fqn, invariant, nonNullable } from '@likec4/core'
-import { type Expression, Operator, Strength } from '@lume/kiwi'
+import { type DiagramNode, type Fqn, invariant, isAncestor, nonNullable } from '@likec4/core'
+import { Expression, Operator, Strength, type Variable } from '@lume/kiwi'
+import { Expression as Expr } from '@lume/kiwi'
 import * as kiwi from '@lume/kiwi'
 import type { XYPosition } from '@xyflow/react'
-import { isNil } from 'remeda'
+import { hasAtLeast, isNil } from 'remeda'
 import type { XYFlowNode } from '..'
 
-// interface RectVariables {
-//   // top left corner
-//   readonly minX: kiwi.Variable
-//   readonly minY: kiwi.Variable
+abstract class Rect {
+  readonly id!: string
+  // readonly width: Expression | Variable = new kiwi.Variable()
+  // readonly height: Expression | Variable = new kiwi.Variable()
+  readonly minX = new kiwi.Variable()
+  readonly minY = new kiwi.Variable()
+  maxX: Expression | Variable = new kiwi.Variable()
+  maxY: Expression | Variable = new kiwi.Variable()
+  width!: Expression
+  height!: Expression
 
-//   // bottom right corner
-//   readonly maxX: kiwi.Expression
-//   readonly maxY: kiwi.Expression
-// }
+  // readonly bbox = {
+  //   minX: new Expr(this.minX, -30),
+  //   minY: new Expr(this.minY, -30),
+  //   maxX: new Expr(this.minX, this.width, 30),
+  //   maxY: new Expr(this.minY, this.height, 30)
+  // } as const
+
+  get x() {
+    return this.minX
+  }
+
+  get y() {
+    return this.minY
+  }
+
+  get positionAbsolute(): XYPosition {
+    return {
+      x: this.x.value(),
+      y: this.y.value()
+    }
+  }
+
+  get position(): XYPosition {
+    const positionAbsolute = this.positionAbsolute
+    return this.parent
+      ? {
+        x: positionAbsolute.x - this.parent.x.value(),
+        y: positionAbsolute.y - this.parent.y.value()
+      }
+      : positionAbsolute
+  }
+  protected abstract parent: Compound | null
+}
+
+class Compound extends Rect {
+  protected readonly children = [] as Rect[]
+
+  override readonly id: string
+
+  constructor(
+    protected solver: kiwi.Solver,
+    xynode: XYFlowNode,
+    protected readonly parent: Compound | null = null
+  ) {
+    super()
+    this.id = xynode.id
+
+    this.width = this.maxX.minus(this.minX)
+    this.height = this.maxY.minus(this.minY)
+
+    solver.createConstraint(this.width, Operator.Ge, 10)
+    solver.createConstraint(this.height, Operator.Ge, 10)
+    // solver.createConstraint(this.maxY, Operator.Ge, this.minY)
+
+    // const width = xynode.computed?.width ?? xynode.data.element.width
+    // const height = xynode.computed?.height ?? xynode.data.element.height
+
+    // solver.createConstraint(this.width, Operator.Le, 300, Strength.weak)
+    // solver.createConstraint(this.height, Operator.Le, 200, Strength.weak)
+
+    // solver.createConstraint(this.width, Operator.Ge, 10, Strength.weak)
+    // solver.createConstraint(this.height, Operator.Ge, 10, Strength.weak)
+
+    if (parent) {
+      parent.addChild(this)
+    }
+  }
+
+  addChild<R extends Rect>(rect: R) {
+    this.children.push(rect)
+    const bbox = {
+      minX: new Expr(rect.minX, -30),
+      minY: new Expr(rect.minY, -30),
+      maxX: new Expr(rect.maxX, 30),
+      maxY: new Expr(rect.maxY, 30)
+    } as const
+
+    this.solver.createConstraint(this.minX, Operator.Le, bbox.minX)
+    this.solver.createConstraint(this.minY, Operator.Le, bbox.minY)
+    this.solver.createConstraint(this.maxX, Operator.Ge, bbox.maxX)
+    this.solver.createConstraint(this.maxY, Operator.Ge, bbox.maxY)
+  }
+}
+
+class Leaf extends Rect {
+  override readonly id: string
+
+  constructor(
+    solver: kiwi.Solver,
+    xynode: XYFlowNode,
+    public readonly parent: Compound | null = null,
+    public readonly isEditing: boolean = false
+  ) {
+    super()
+    this.id = xynode.id
+
+    // const isEditing: boolean = xynode.dragging ?? false
+    const pos = xynode.computed?.positionAbsolute ?? {
+      x: xynode.data.element.position[0],
+      y: xynode.data.element.position[1]
+    }
+
+    const width = xynode.computed?.width ?? xynode.data.element.width
+    const height = xynode.computed?.height ?? xynode.data.element.height
+
+    this.width = new kiwi.Expression(width)
+    this.height = new kiwi.Expression(height)
+
+    this.maxX = new kiwi.Expression(this.minX, width)
+    this.maxY = new kiwi.Expression(this.minY, height)
+
+    // solver.createConstraint(this.width, Operator.Eq, width, Strength.required)
+    // solver.createConstraint(this.height, Operator.Eq, height, Strength.required)
+
+    if (isEditing) {
+      solver.addEditVariable(this.minX, Strength.strong)
+      solver.addEditVariable(this.minY, Strength.strong)
+      solver.suggestValue(this.minX, pos.x)
+      solver.suggestValue(this.minY, pos.y)
+    } else {
+      solver.createConstraint(this.minX, Operator.Eq, pos.x, Strength.strong)
+      solver.createConstraint(this.minY, Operator.Eq, pos.y, Strength.strong)
+
+      // solver.createConstraint(this.minX, Operator.Ge, pos.x - 50, Strength.weak)
+      // solver.createConstraint(this.minX, Operator.Le, pos.x + 50, Strength.weak)
+      // solver.createConstraint(this.minY, Operator.Ge, pos.y - 50, Strength.weak)
+      // solver.createConstraint(this.minY, Operator.Le, pos.y + 50, Strength.weak)
+    }
+
+    // solver.addEditVariable(this.minX, isEditing ? Strength.strong : Strength.weak)
+    // solver.addEditVariable(this.minY, isEditing ? Strength.strong : Strength.weak)
+    // solver.suggestValue(this.minX, pos.x)
+    // solver.suggestValue(this.minY, pos.y)
+
+    if (parent) {
+      parent.addChild(this)
+    }
+  }
+}
 
 class RectConstraints {
   readonly width = new kiwi.Variable()
@@ -24,6 +166,13 @@ class RectConstraints {
   readonly maxX = new kiwi.Expression(this.minX, this.width)
   readonly maxY = new kiwi.Expression(this.minY, this.height)
   readonly children = [] as RectConstraints[]
+
+  get x() {
+    return this.minX
+  }
+  get y() {
+    return this.minY
+  }
 
   constructor(
     private solver: kiwi.Solver,
@@ -42,8 +191,8 @@ class RectConstraints {
     // this.height = isEditing || !isCompound ? new kiwi.Expression(height) : new kiwi.Variable()
 
     if (isEditing) {
-      solver.addEditVariable(this.minX, Strength.strong)
-      solver.addEditVariable(this.minY, Strength.strong)
+      solver.addEditVariable(this.minX, Strength.medium)
+      solver.addEditVariable(this.minY, Strength.medium)
       solver.suggestValue(this.minX, pos.x)
       solver.suggestValue(this.minY, pos.y)
 
@@ -56,10 +205,14 @@ class RectConstraints {
         solver.createConstraint(this.width, Operator.Le, width, Strength.weak)
         solver.createConstraint(this.height, Operator.Le, height, Strength.weak)
       } else {
-        solver.createConstraint(this.minX, Operator.Eq, pos.x, Strength.weak)
-        solver.createConstraint(this.minY, Operator.Eq, pos.y, Strength.weak)
-        solver.createConstraint(this.width, Operator.Eq, width, Strength.strong)
-        solver.createConstraint(this.height, Operator.Eq, height, Strength.strong)
+        solver.addEditVariable(this.minX, Strength.weak)
+        solver.addEditVariable(this.minY, Strength.weak)
+        solver.suggestValue(this.minX, pos.x)
+        solver.suggestValue(this.minY, pos.y)
+        // solver.createConstraint(this.minX, Operator.Eq, pos.x, Strength.weak)
+        // solver.createConstraint(this.minY, Operator.Eq, pos.y, Strength.weak)
+        solver.createConstraint(this.width, Operator.Eq, width, Strength.required)
+        solver.createConstraint(this.height, Operator.Eq, height, Strength.required)
       }
     }
 
@@ -83,31 +236,34 @@ class RectConstraints {
   }
 }
 
-export function createLayoutConstraints(xynodes: XYFlowNode[], draggingNodeId: string | null = null) {
+export function createLayoutConstraints(xynodes: XYFlowNode[], draggingNodeId: string) {
   const solver = new kiwi.Solver()
-  const rects = new Map<string, RectConstraints>()
+  const rects = new Map<string, Leaf | Compound>()
 
   const rootNodes = xynodes.filter(n => isNil(n.parentNode))
 
   const traverse = rootNodes.map(xynode => ({
     xynode,
-    parentRect: null as RectConstraints | null
+    parent: null as Compound | null
   }))
 
+  const rootRects = [] as Array<Leaf | Compound>
+
   while (traverse.length > 0) {
-    const { xynode, parentRect } = traverse.pop()!
+    const { xynode, parent } = traverse.pop()!
     const isDragging = xynode.dragging === true || xynode.id === draggingNodeId
-    const rect = new RectConstraints(solver, xynode, parentRect, isDragging)
+    const isCompound = !isDragging && xynode.type === 'compound' && isAncestor(xynode.id, draggingNodeId)
+    const rect = isCompound ? new Compound(solver, xynode, parent) : new Leaf(solver, xynode, parent, isDragging)
     rects.set(xynode.id, rect)
-    if (isDragging) {
-      continue
+    if (!parent) {
+      rootRects.push(rect)
     }
-    if (xynode.data.element.children.length > 0) {
+    if (isCompound) {
       const children = xynodes.flatMap(child =>
         child.parentNode === xynode.id
           ? ({
             xynode: child,
-            parentRect: rect
+            parent: rect as Compound
           })
           : []
       )
@@ -117,9 +273,115 @@ export function createLayoutConstraints(xynodes: XYFlowNode[], draggingNodeId: s
     }
   }
 
+  const createZVar = () => {
+    const z1 = new kiwi.Variable()
+    solver.createConstraint(z1, Operator.Ge, 0)
+    solver.createConstraint(z1, Operator.Le, 1)
+    return z1
+  }
+
+  const M_X = 600
+  const M_Y = 600
+
+  if (hasAtLeast(rootRects, 2)) {
+    let acc = 0
+    for (const one of rootRects) {
+      for (const two of rootRects) {
+        if (one === two) {
+          continue
+        }
+        const [z1, z2, z3, z4] = [createZVar(), createZVar(), createZVar(), createZVar()]
+
+        // 𝑥2+𝑤2≤𝑥1+𝑀𝑧1
+        solver.createConstraint(
+          two.maxX,
+          Operator.Le,
+          one.x.plus(z1.multiply(M_X))
+          // Strength.strong
+        )
+
+        // 𝑥1+𝑤1≤𝑥2+𝑀𝑧2
+        solver.createConstraint(
+          one.maxX,
+          Operator.Le,
+          two.x.plus(z2.multiply(M_X))
+          // Strength.strong
+        )
+
+        // 𝑦1+ℎ1≤𝑦2+𝑀𝑧3
+        solver.createConstraint(
+          one.maxY,
+          Operator.Le,
+          two.y.plus(z3.multiply(M_Y))
+          // Strength.strong
+        )
+        // 𝑦2+ℎ2≤𝑦1+𝑀𝑧4
+        solver.createConstraint(
+          two.maxY,
+          Operator.Le,
+          one.y.plus(z4.multiply(M_Y))
+          // Strength.strong
+        )
+
+        // 𝑧1+𝑧2+𝑧3+𝑧4≤3
+        solver.createConstraint(new Expr(z1, z2, z3, z4), Operator.Le, 3)
+
+        acc = acc + 1
+      }
+    }
+    // acc = rootRects.reduce((acc, one, i, all) => {
+    //   if (i === all.length - 1) {
+    //     return acc
+    //   }
+    //   for (let j = i + 1; j < all.length; j++) {
+    //     const two = all[j]!
+
+    //     const [z1,z2,z3,z4] = [createZVar(), createZVar(), createZVar(), createZVar()]
+
+    //     // 𝑥2+𝑤2≤𝑥1+𝑀𝑧1
+    //     solver.createConstraint(
+    //       two.maxX,
+    //       Operator.Le,
+    //       one.x.plus(z1.multiply(M_X)),
+    //       Strength.weak
+    //     )
+
+    //     // 𝑥1+𝑤1≤𝑥2+𝑀𝑧2
+    //     solver.createConstraint(
+    //       one.maxX,
+    //       Operator.Le,
+    //       two.x.plus(z2.multiply(M_X)),
+    //       Strength.weak
+    //     )
+
+    //     // 𝑦1+ℎ1≤𝑦2+𝑀𝑧3
+    //     solver.createConstraint(
+    //       one.maxY,
+    //       Operator.Le,
+    //       two.y.plus(z3.multiply(M_Y)),
+    //       Strength.weak
+    //     )
+    //     // 𝑦2+ℎ2≤𝑦1+𝑀𝑧4
+    //     solver.createConstraint(
+    //       two.maxY,
+    //       Operator.Le,
+    //       one.y.plus(z4.multiply(M_Y)),
+    //       Strength.weak
+    //     )
+
+    //     // 𝑧1+𝑧2+𝑧3+𝑧4≤3
+    //     solver.createConstraint(new Expr(z1,z2,z3,z4), Operator.Le, 3)
+
+    //     acc = acc + 1
+    //   }
+    //   return acc
+    // }, 0)
+    console.log('processed', acc)
+  }
+
   solver.updateVariables()
 
-  solver.maxIterations = 1000
+  // solver.maxIterations = 1000
 
   /**
    * Move the editing node to the given position.
@@ -131,23 +393,12 @@ export function createLayoutConstraints(xynodes: XYFlowNode[], draggingNodeId: s
     solver.suggestValue(rect.minY, pos.y)
   }
 
-  function updatePositions() {
+  function calcNodePositions() {
     solver.updateVariables()
     return new Map([...rects.values()].map(rect => {
-      const positionAbsolute = {
-        x: rect.minX.value(),
-        y: rect.minY.value()
-      }
-      const position = rect.parent
-        ? {
-          x: positionAbsolute.x - rect.parent.minX.value(),
-          y: positionAbsolute.y - rect.parent.minY.value()
-        }
-        : positionAbsolute
-
-      return [rect.xynode.id, {
-        position,
-        positionAbsolute,
+      return [rect.id, {
+        position: rect.position,
+        positionAbsolute: rect.positionAbsolute,
         width: rect.width.value(),
         height: rect.height.value()
       }]
@@ -156,6 +407,6 @@ export function createLayoutConstraints(xynodes: XYFlowNode[], draggingNodeId: s
 
   return {
     onNodeDrag,
-    updatePositions
+    calcNodePositions
   }
 }
