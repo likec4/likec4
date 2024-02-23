@@ -117,7 +117,7 @@ export class C4Model extends AbstractDisposable {
       })
       .flatten()
       .subscribe({
-        next: diagram => {
+        next: ({ diagram }) => {
           if (t1) {
             const ms = (performance.now() - t1).toFixed(3)
             Logger.debug(`[Extension.C4Model.layoutView] ${viewId} in ${ms}ms`)

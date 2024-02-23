@@ -1,6 +1,6 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { pluck } from 'rambdax'
-import { vi, describe, it, expect } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
 vi.mock('../../logger')

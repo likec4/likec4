@@ -1,7 +1,7 @@
 /* eslint-disable */
+import { $ } from 'execa'
 import type { MkdistOptions } from 'mkdist'
 import { defineBuildConfig } from 'unbuild'
-import { $ } from 'execa'
 
 const opts = {
   pattern: ['**/*.{ts,tsx}', '!stories/**'],
@@ -15,10 +15,10 @@ const opts = {
 export default defineBuildConfig({
   entries: [
     {
-      builder: "mkdist",
-      input: "./src/",
-      outDir: "./dist/",
-      format: "esm",
+      builder: 'mkdist',
+      input: './src/',
+      outDir: './dist/',
+      format: 'esm',
       ext: 'js',
       ...opts
     }
@@ -27,7 +27,7 @@ export default defineBuildConfig({
   clean: false,
   hooks: {
     'build:before': async (ctx) => {
-      await $`tsc --emitDeclarationOnly --declaration --declarationMap --listFiles`
+      await $`tsc --emitDeclarationOnly --declaration --declarationMap -p tsconfig.src.json`
     }
   }
 })

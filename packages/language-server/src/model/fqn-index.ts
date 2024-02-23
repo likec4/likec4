@@ -1,12 +1,12 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
 import type { LangiumDocuments, Stream } from 'langium'
-import { DONE_RESULT, DocumentState, MultiMap, StreamImpl, stream } from 'langium'
-import type { FqnIndexedDocument, ast } from '../ast'
+import { DocumentState, DONE_RESULT, MultiMap, stream, StreamImpl } from 'langium'
+import type { ast, FqnIndexedDocument } from '../ast'
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
-import { printDocs } from '../utils'
+import { printDocs } from '../utils/printDocs'
 import { computeDocumentFqn } from './fqn-computation'
 
 export interface FqnIndexEntry {

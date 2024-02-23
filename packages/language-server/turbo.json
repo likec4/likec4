@@ -13,7 +13,7 @@
     },
     "build": {
       "dependsOn": ["generate", "^build"],
-      "outputs": ["dist/**", "tsconfig.tsbuildinfo"]
+      "outputs": ["dist/**", ".tsbuildinfo/**"]
     }
   }
 }

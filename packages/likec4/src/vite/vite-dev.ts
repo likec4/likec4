@@ -1,9 +1,9 @@
 import getPort, { portNumbers } from 'get-port'
+import k from 'picocolors'
 import type { InlineConfig, ViteDevServer } from 'vite'
 import { createServer, mergeConfig, searchForWorkspaceRoot } from 'vite'
 import type { LikeC4ViteConfig } from './config'
 import { viteConfig } from './config'
-import k from 'picocolors'
 
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
   const { isDev, ...config } = await viteConfig(cfg)
@@ -15,25 +15,28 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
   })
 
   const server = await createServer(
-    mergeConfig(config, {
-      configFile: false,
-      mode: 'development',
-      // cacheDir: resolve(config.languageServices.workspace, '.cache'),
-      server: {
-        host: '0.0.0.0',
-        port,
-        hmr: {
-          overlay: true,
-          // needed for hmr to work over network aka WSL2
-          host: 'localhost',
-          port: hmrPort
-        },
-        fs: {
-          strict: false
-        },
-        open: true
-      }
-    } satisfies InlineConfig)
+    mergeConfig(
+      config,
+      {
+        configFile: false,
+        mode: 'development',
+        // cacheDir: resolve(config.languageServices.workspace, '.cache'),
+        server: {
+          host: '0.0.0.0',
+          port,
+          hmr: {
+            overlay: true,
+            // needed for hmr to work over network aka WSL2
+            host: 'localhost',
+            port: hmrPort
+          },
+          fs: {
+            strict: false
+          },
+          open: !isDev
+        }
+      } satisfies InlineConfig
+    )
   )
 
   await server.listen()

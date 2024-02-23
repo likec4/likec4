@@ -28,8 +28,9 @@ async function buildCli() {
     target: 'esnext',
     platform: 'node',
     banner: {
-      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
+      js: 'import { createRequire } from \'module\'; const require = createRequire(import.meta.url);'
     },
+    tsconfig: 'tsconfig.src.json',
     plugins: [
       nodeExternalsPlugin({
         devDependencies: false,
@@ -71,15 +72,19 @@ await buildCli()
 await mkdir('dist/__app__')
 await cp('app/', 'dist/__app__/', {
   recursive: true,
-  filter: src => !src.endsWith('.ts') && !src.endsWith('.tsx')
+  filter: src =>
+    !src.includes('tsconfig.')
+    && !src.endsWith('.ts')
+    && !src.endsWith('.tsx')
 })
 await $({ all: true })`tsc -p ./app/tsconfig.json`
 
-const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
-tsconfig.compilerOptions.outDir = 'dist'
-delete tsconfig.compilerOptions.plugins
-delete tsconfig.references
-await writeFile('dist/__app__/tsconfig.json', JSON.stringify(tsconfig, null, 2))
+// const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
+// tsconfig.compilerOptions.outDir = 'dist'
+// delete tsconfig.compilerOptions.plugins
+// delete tsconfig.references
+// delete tsconfig.extends
+// await writeFile('dist/__app__/tsconfig.json', JSON.stringify(tsconfig, null, 2))
 
 console.info(`✔️ copied app files to dist/__app__`)
 

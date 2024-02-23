@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist/esm",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
+  },
+  "include": ["src"],
+  "exclude": [
+    "**/*.spec.ts"
+  ]
+}

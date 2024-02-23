@@ -1,18 +1,11 @@
+import debounceFunction from 'debounce-fn'
 import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
-import debounceFunction from 'debounce-fn'
 
 import { nonexhaustive } from '@likec4/core'
 import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
-import {
-  buildDocuments,
-  computeView,
-  fetchModel,
-  fetchRawModel,
-  locate,
-  onDidChangeModel
-} from './protocol'
+import { buildDocuments, computeView, fetchModel, fetchRawModel, locate, onDidChangeModel } from './protocol'
 
 export class Rpc {
   constructor(private services: LikeC4Services) {}
@@ -35,7 +28,7 @@ export class Rpc {
         {
           before: true,
           after: true,
-          wait: 400,
+          wait: 250,
           maxWait: 1000
         }
       )

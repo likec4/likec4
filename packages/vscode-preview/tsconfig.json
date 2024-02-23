@@ -1,11 +1,30 @@
 {
-  "extends": "../tsconfig/vite-react.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
+    "noEmit": true,
     "outDir": "dist",
-    "baseUrl": "."
+    "declarationDir": "dist",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedParameters": false,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+      "vite/client",
+      "vscode-webview"
+    ],
+    "jsx": "react-jsxdev"
   },
-  "include": ["./protocol.ts", "src"],
+  "include": [
+    "protocol.ts",
+    "./src"
+  ],
+  "exclude": [
+    "dist"
+  ],
   "references": [
     {
       "path": "../core"

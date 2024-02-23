@@ -1,4 +1,4 @@
-import { hasAtLeast, type DiagramEdge, type DiagramNode, type DiagramView } from '@likec4/core'
+import { type DiagramEdge, type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -7,7 +7,7 @@ import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <div className='likec4-error-message'>
+  <div className="likec4-error-message">
     <p>
       Oops, something went wrong
       {error && (
@@ -75,7 +75,7 @@ const App = () => {
 
   if (!view) {
     return (
-      <div className='likec4-parsing-screen'>
+      <div className="likec4-parsing-screen">
         {state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
@@ -98,7 +98,7 @@ const App = () => {
         )}
         <section>
           <p>
-            <VSCodeButton appearance='secondary' onClick={extensionApi.closeMe}>
+            <VSCodeButton appearance="secondary" onClick={extensionApi.closeMe}>
               Close
             </VSCodeButton>
           </p>
@@ -124,24 +124,24 @@ const App = () => {
       {state === 'error' && <ErrorMessage error={error} />},
       {state === 'loading' && (
         <>
-          <div className='likec4-diagram-loading-overlay'></div>
-          <div className='likec4-diagram-loading'>
+          <div className="likec4-diagram-loading-overlay"></div>
+          <div className="likec4-diagram-loading">
             <p>Updating...</p>
             <VSCodeProgressRing />
           </div>
         </>
       )}
       {prevView && (
-        <div className='likec4-toolbar'>
-          <div className='likec4-toolbar-left'>
+        <div className="likec4-toolbar">
+          <div className="likec4-toolbar-left">
             <VSCodeButton
-              appearance='icon'
+              appearance="icon"
               onClick={e => {
                 e.stopPropagation()
-                extensionApi.goToViewSource(prevView.id)
-                extensionApi.openView(prevView.id)
                 // optimistic update
                 updateView(prevView)
+                extensionApi.goToViewSource(prevView.id)
+                extensionApi.openView(prevView.id)
               }}
             >
               <ArrowLeftIcon />

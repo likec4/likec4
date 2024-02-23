@@ -1,38 +1,30 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
     "target": "ES2022",
-    "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "skipLibCheck": true,
     "outDir": "../dist/__app__",
-    "allowJs": true,
-    "exactOptionalPropertyTypes": true,
-    /* Bundler mode */
-    "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "allowArbitraryExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedParameters": false,
     "jsx": "preserve",
-    /* Linting */
-    "strict": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "rootDir": ".",
+    "rootDir": "src",
     "types": ["vite/client"],
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
         "options": {
-          "classnameTransform": "camelCaseOnly",
+          "classnameTransform": "camelCase",
           "postcssOptions": {},
           "rendererOptions": {}
         }
       }
     ]
   },
-  "include": ["src"],
+  "include": ["./src"],
   "references": [
     {
       "path": "../../core"

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CommandModule } from 'yargs'
-import k from 'picocolors'
 import { resolve } from 'node:path'
+import k from 'picocolors'
+import type { CommandModule } from 'yargs'
+import { useDotBin } from '../options'
 
 export const buildCmd = {
   command: 'build [path]',
@@ -21,6 +22,7 @@ export const buildCmd = {
           desc: 'output directory for production build',
           normalize: true
         },
+        useDotBin,
         base: {
           type: 'string',
           desc: 'base url the app is being served from'
@@ -30,7 +32,7 @@ export const buildCmd = {
       .default('path', resolve('.'), '.')
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
-        k.gray("Search for likec4 files in 'src' and output static site to 'build'")
+        k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
       ),
   handler: async args => {
     const { handler } = await import('./build')
@@ -38,7 +40,12 @@ export const buildCmd = {
   }
 } satisfies CommandModule<
   object,
-  { path: string; output: string | undefined; base: string | undefined }
+  {
+    path: string
+    useDotBin: boolean
+    output: string | undefined
+    base: string | undefined
+  }
 >
 
 export default buildCmd
