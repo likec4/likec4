@@ -11,7 +11,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
     "jsx": "preserve",
-    "rootDir": "src",
+    "rootDir": ".",
     "types": ["vite/client"],
     "plugins": [
       {

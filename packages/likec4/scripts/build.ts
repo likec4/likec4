@@ -77,7 +77,9 @@ await cp('app/', 'dist/__app__/', {
     && !src.endsWith('.ts')
     && !src.endsWith('.tsx')
 })
-await $({ all: true })`tsc -p ./app/tsconfig.json`
+await $({
+  all: true
+})`tsc -p ./app/tsconfig.json --composite false --declarationMap false --declaration false --incremental false --tsBuildInfoFile null`
 
 // const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
 // tsconfig.compilerOptions.outDir = 'dist'
