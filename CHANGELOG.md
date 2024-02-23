@@ -1,14 +1,14 @@
 # [0.57.0](https://github.com/likec4/likec4/compare/v0.56.0...v0.57.0) (2024-02-23)
 
+### 🚀 Features
+
+- **cli:** add option to use graphviz binary (instead of bundled WASM) [#534](https://github.com/likec4/likec4/issues/534) ([205e334](https://github.com/likec4/likec4/commit/205e334d090595eac3f248660eeb1a56a1d1d307))
+
 ### Bug Fixes
 
 - **cli:** tsx default tsconfig ([2f5b3f0](https://github.com/likec4/likec4/commit/2f5b3f00873bfa395651c1dba4fdc47d81a096a6))
 - **lsp:** returns references to the same views if no changes are made ([56333e1](https://github.com/likec4/likec4/commit/56333e1e357bd37e77aaf25519ff3d86288c2a0d))
 - **vscode:** use browser and node `startServer` from `@likec4/language-server` ([67e3bab](https://github.com/likec4/likec4/commit/67e3bab0431e9011e198cfd81af7c110a821b47c))
-
-### Features
-
-- **cli:** add option to use local graphviz binary [#534](https://github.com/likec4/likec4/issues/534) ([205e334](https://github.com/likec4/likec4/commit/205e334d090595eac3f248660eeb1a56a1d1d307))
 
 # [0.56.0](https://github.com/likec4/likec4/compare/v0.54.0...v0.56.0) (2024-02-17)
 
