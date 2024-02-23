@@ -1,3 +1,9 @@
+## [0.57.1](https://github.com/likec4/likec4/compare/v0.57.0...v0.57.1) (2024-02-23)
+
+### Bug Fixes
+
+- **cli:** fix build ([d750521](https://github.com/likec4/likec4/commit/d75052171fa81bb87fa920e4f2f4c7fc274d6f1a))
+
 # [0.57.0](https://github.com/likec4/likec4/compare/v0.56.0...v0.57.0) (2024-02-23)
 
 ### 🚀 Features
