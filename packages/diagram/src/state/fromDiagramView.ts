@@ -12,7 +12,7 @@ import { getBezierEdgeCenter } from '@xyflow/react'
 import { hasAtLeast, isNil } from 'remeda'
 import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
-import { createLayoutConstraints } from './cassowary'
+import { createLayoutConstraints } from './layout-constraints'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
@@ -69,26 +69,26 @@ export function fromDiagramView(
 
   const nodeById = (id: Fqn) => nonNullable(view.nodes.find(n => n.id === id))
 
-  const positioned = new Map(createLayoutConstraints(view.nodes).solve().map(n => [n.id, n]))
+  // const positioned = new Map(createLayoutConstraints(view.nodes).solve().map(n => [n.id, n]))
 
   const createNode = (node: DiagramNode) => {
     // const children = [...node.children]
     const isCompound = hasAtLeast(node.children, 1)
     const id = ns + node.id
-    const {
-      position,
-      width,
-      height
-    } = nonNullable(positioned.get(node.id))
-    // const position = {
-    //   x: node.position[0],
-    //   y: node.position[1]
-    // }
+    // const {
+    //   position,
+    //   width,
+    //   height
+    // } = nonNullable(positioned.get(node.id))
+    const position = {
+      x: node.position[0],
+      y: node.position[1]
+    }
     const parent = node.parent ? nodeById(node.parent) : null
-    // if (parent) {
-    //   position.x -= parent.position[0]
-    //   position.y -= parent.position[1]
-    // }
+    if (parent) {
+      position.x -= parent.position[0]
+      position.y -= parent.position[1]
+    }
     const zIndex = nodeZIndex(node)
 
     const draggable = dragEnabled && (!parent || parent.children.length > 1)
@@ -104,8 +104,8 @@ export function fromDiagramView(
       deletable: false,
       position,
       zIndex,
-      width,
-      height,
+      width: node.width,
+      height: node.height,
       // ...node.size,
       // style: {
       //   display: 'flex',

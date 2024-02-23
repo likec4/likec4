@@ -4,7 +4,7 @@ import { Background, Controls, ReactFlow } from '@xyflow/react'
 import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import { useLikeC4View, useLikeC4ViewTriggers } from '../state'
-import { createLayoutConstraints } from '../state/cassowary'
+import { createLayoutConstraints } from '../state/layout-constraints'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
@@ -43,14 +43,12 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
     if (!solverRef.current) {
       return
     }
-    const positioned = new Map(solverRef.current.solve().map((r) => [r.id, r]))
+    console.time('updatePositions')
+    const positioned = solverRef.current.updatePositions()
     instanceRef.current?.setNodes(nodes =>
       nodes.map((n) => {
-        if (n.dragging) {
-          return n
-        }
         const next = positioned.get(n.data.element.id)
-        if (!next || next.isEditing) {
+        if (!next) {
           return n
         }
         return {
@@ -64,6 +62,7 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
         }
       })
     )
+    console.timeEnd('updatePositions')
   })
 
   return (
@@ -99,18 +98,18 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
-      onNodeDragStart={(event, node) => {
+      onNodeDragStart={(event, node, nodes) => {
         cancel()
-        invariant(XYFlowNode.is(node), `node is not a EditorNode`)
-        solverRef.current = createLayoutConstraints(editor.viewNodes, node.data.element.id)
+        invariant(instanceRef.current, `instance is not defined`)
+        // const nodes =
+        // invariant(XYFlowNode.is(node), `node is not a EditorNode`)
+
+        solverRef.current = createLayoutConstraints(instanceRef.current.getNodes(), node.id)
       }}
-      onNodeDrag={(event, { computed }) => {
-        if (!solverRef.current) {
-          return
-        }
-        const next = computed?.positionAbsolute
-        if (next) {
-          solverRef.current.moveTo(next)
+      onNodeDrag={(event, node) => {
+        if (solverRef.current) {
+          invariant(XYFlowNode.is(node), `node is not a EditorNode`)
+          solverRef.current.onNodeDrag(node)
           render()
         }
       }}
