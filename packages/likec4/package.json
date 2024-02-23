@@ -95,7 +95,7 @@
     "tsx": "^4.7.1",
     "type-fest": "^4.10.2",
     "typescript": "^5.3.3",
-    "typescript-plugin-css-modules": "^5.0.2",
+    "typescript-plugin-css-modules": "^5.1.0",
     "vitest": "^1.2.2",
     "yargs": "^17.7.2"
   },
