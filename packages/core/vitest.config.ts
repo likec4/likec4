@@ -8,7 +8,7 @@ const root = './' + relative(process.cwd(), __dirname)
 
 // console.log('__filename', __filename)
 // console.log('__dirname', __dirname)
-console.log('root', root)
+// console.log('root', root)
 
 export default defineProject({
   test: {

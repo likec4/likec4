@@ -32,9 +32,7 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
 
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
 
-  // const solverRef = useRef<Solver>()
-  // const onNodeDragStart = useCallback((event: React.MouseEvent) => {
-  // }, [])
+  // const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
 
   // const [render, cancel] = useRafCallback(() => {
   //   if (!solverRef.current) {
@@ -54,17 +52,6 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
   //         width: next.width,
   //         height: next.height
   //       }
-  //       // return n
-  //       // return {
-  //       //   ...n,
-  //       //   computed: next.computed
-  //       //   // position: next.position,
-  //       //   // width: next.width,
-  //       //   // height: next.height
-  //       //   // computed: Object.assign(node.computed ?? {}, {
-  //       //   //   positionAbsolute: dim.positionAbsolute
-  //       //   // })
-  //       // }
   //     })
   //   )
   //   console.timeEnd('updatePositions')
