@@ -9,6 +9,7 @@
       "webworker"
     ],
     "outDir": "dist",
+    "rootDir": ".",
     "jsx": "react-jsxdev",
     "plugins": [
       {

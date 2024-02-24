@@ -25,11 +25,12 @@
       "path": "../core"
     },
     {
-      "path": "../diagram"
+      "path": "../graph"
     },
     {
-      "path": "../diagrams"
+      "path": "../diagram"
     },
+
     {
       "path": "../generators"
     },
