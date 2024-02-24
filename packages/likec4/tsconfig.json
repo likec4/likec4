@@ -18,6 +18,24 @@
     },
     {
       "path": "./scripts/tsconfig.json"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../diagram"
+    },
+    {
+      "path": "../diagrams"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../layouts"
+    },
+    {
+      "path": "../language-server"
     }
   ]
 }

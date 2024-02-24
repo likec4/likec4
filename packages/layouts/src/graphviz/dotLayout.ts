@@ -12,7 +12,8 @@ import type {
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy, uniq } from 'remeda'
 import { toDot } from './printToDot'
-import type { BoundingBox, DotSource, GraphvizJson, GVPos } from './types'
+import type { DotLayoutResult, DotSource } from './types'
+import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { IconSize, inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -154,10 +155,6 @@ function parseEdgeArrowPolygon(ops: GraphvizJson.DrawOps[]): NonEmptyArray<Point
   return points
 }
 
-export type DotLayoutResult = {
-  dot: DotSource
-  diagram: DiagramView
-}
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
   const initialDot = toDot(graphviz, computedView)
   const dot = initialDot

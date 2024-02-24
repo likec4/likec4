@@ -20,8 +20,18 @@
         "reveal": "silent",
         "group": "build",
         "revealProblems": "onProblem",
-        "clear": true,
+        "clear": true
       }
+    },
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "option": "watch",
+      "problemMatcher": [
+        "$tsc-watch"
+      ],
+      "group": "build",
+      "label": "tsc: watch - tsconfig.json"
     }
   ]
 }

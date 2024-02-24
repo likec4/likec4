@@ -3,7 +3,8 @@ import { type ComputedView } from '@likec4/core'
 import pLimit from 'p-limit'
 import { delay } from 'rambdax'
 import { uniq } from 'remeda'
-import { dotLayoutFn, type DotLayoutResult } from './dotLayout'
+import { dotLayoutFn } from './dotLayout'
+import type { DotLayoutResult } from './types'
 import { IconSize } from './utils'
 
 const limit = pLimit(1)
@@ -15,7 +16,7 @@ export interface GraphvizLayouter {
 }
 
 // WASM Graphviz layouter
-export class DotLayouter implements GraphvizLayouter {
+export class WasmGraphvizLayouter implements GraphvizLayouter {
   dispose() {
     limit.clearQueue()
     Graphviz.unload()

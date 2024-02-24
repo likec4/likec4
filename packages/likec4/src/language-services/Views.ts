@@ -17,7 +17,7 @@ type GraphvizOut = {
 export class Views {
   private cache = new WeakMap<ComputedView, DotLayoutResult>()
 
-  private svgCache = new SimpleCache<DotSource, string>()
+  private svgCache = new SimpleCache<string, string>()
 
   private layouter: GraphvizLayouter
 
@@ -62,8 +62,8 @@ export class Views {
               let result = this.cache.get(view)
               if (!result) {
                 // console.debug(`cache miss layout: ${view.id}`)
-                result = await this.layouter.layout(view)
-                this.cache.set(view, result)
+                const r = result = await this.layouter.layout(view)
+                this.cache.set(view, r)
               } else {
                 // console.debug(`cache hit layout: ${view.id}`)
               }

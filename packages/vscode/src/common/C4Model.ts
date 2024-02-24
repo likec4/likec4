@@ -8,6 +8,7 @@ import type * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
 
+import type { DotLayoutResult } from '@likec4/layouts'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { logError, Logger } from '../logger'
 import { AbstractDisposable, disposable } from '../util'
@@ -117,7 +118,7 @@ export class C4Model extends AbstractDisposable {
       })
       .flatten()
       .subscribe({
-        next: ({ diagram }) => {
+        next: ({ diagram }: DotLayoutResult) => {
           if (t1) {
             const ms = (performance.now() - t1).toFixed(3)
             Logger.debug(`[Extension.C4Model.layoutView] ${viewId} in ${ms}ms`)

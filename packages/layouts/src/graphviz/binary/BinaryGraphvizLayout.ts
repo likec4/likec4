@@ -2,10 +2,10 @@ import type { ComputedView, DiagramView as LayoutedView } from '@likec4/core'
 import { execa } from 'execa'
 import { env as processenv } from 'node:process'
 import { omit } from 'rambdax'
-import { type DotLayoutResult, parseGraphvizJson } from '../dotLayout'
+import { parseGraphvizJson } from '../dotLayout'
 import type { GraphvizLayouter } from '../DotLayouter'
 import { printToDot } from '../printToDot'
-import type { DotSource } from '../types'
+import type { DotLayoutResult, DotSource } from '../types'
 
 // @ts-ignore
 const isDev = process.env.NODE_ENV === 'development'

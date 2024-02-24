@@ -7,7 +7,7 @@
     "noUnusedParameters": false,
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": ["./src"],
   "exclude": [
     "**/__fixtures__/**/*",
     "**/*.spec.ts"
