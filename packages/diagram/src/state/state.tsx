@@ -53,7 +53,8 @@ const useLikeC4ViewState_ReactTracked = ({
     nodesSelectable,
     nodesDraggable,
     ...hasEventHandlers,
-    xyflow: null as null | XYFlowInstance
+    xyflow: null as null | XYFlowInstance,
+    viewportInitialized: false
   })
 
   xyflowRef.current = state.xyflow
@@ -83,6 +84,7 @@ const useLikeC4ViewState_ReactTracked = ({
     }))
   }, [view])
 
+  const viewportInitialized = state.xyflow?.viewportInitialized ?? false
   useUpdateEffect(() => {
     setState({
       fitViewPadding,
@@ -93,7 +95,8 @@ const useLikeC4ViewState_ReactTracked = ({
       readonly,
       disableBackground,
       nodesSelectable,
-      nodesDraggable
+      nodesDraggable,
+      viewportInitialized
     })
   }, [
     fitViewPadding,
@@ -104,7 +107,8 @@ const useLikeC4ViewState_ReactTracked = ({
     readonly,
     disableBackground,
     nodesSelectable,
-    nodesDraggable
+    nodesDraggable,
+    viewportInitialized
   ])
 
   return [state, setState] as const

@@ -60,7 +60,10 @@ export const useLikeC4ViewTriggers = () => {
       },
 
       onInitialized: (xyflow: XYFlowInstance) => {
-        update({ xyflow })
+        update({
+          xyflow,
+          viewportInitialized: xyflow.viewportInitialized
+        })
         eventsRef.current.onInitialized?.(xyflow)
       }
     })
