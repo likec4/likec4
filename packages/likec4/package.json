@@ -46,7 +46,7 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@nanostores/react": "^0.7.1",
+    "@nanostores/react": "^0.7.2",
     "@nanostores/router": "^0.11.0",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/themes": "^2.0.3",

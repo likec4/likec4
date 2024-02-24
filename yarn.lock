@@ -1510,13 +1510,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nanostores/react@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@nanostores/react@npm:0.7.1"
+"@nanostores/react@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@nanostores/react@npm:0.7.2"
   peerDependencies:
-    nanostores: ^0.9.0
+    nanostores: ^0.9.0 || ^0.10.0
     react: ">=18.0.0"
-  checksum: 10/74437e518952cc17651046a056b84cd966cd880b2eb6720dee0957c31257a6946a5f14938a4beb723b01a12be919b5fdb9d0cb195d46d0ab6ef6606c1ceeb9e2
+  checksum: 10/6183ccbd31810fb48208d0cab940ec6532184f9503ce3879f17ad3f13e024cdd2c88ce08e09200f22d7ed6fdb5c7320cf8411c12e20ed197c0ac586f2995ae4a
   languageName: node
   linkType: hard
 
@@ -9074,7 +9074,7 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@nanostores/react": "npm:^0.7.1"
+    "@nanostores/react": "npm:^0.7.2"
     "@nanostores/router": "npm:^0.11.0"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
