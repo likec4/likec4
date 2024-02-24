@@ -1,7 +1,6 @@
 import { createLikeC4Logger } from '@/logger'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from '@vitejs/plugin-react'
-import autoprefixer from 'autoprefixer'
 import { isCI } from 'ci-info'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -9,7 +8,6 @@ import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import type { Alias, InlineConfig, Logger } from 'vite'
-import pkg from '../../package.json' assert { type: 'json' }
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 //
@@ -55,8 +53,6 @@ export type LikeC4ViteConfig =
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
-
-  customLogger.info(`${k.dim('version')} ${pkg.version}`)
 
   const [root, isDev] = getAppRoot()
   if (!fs.existsSync(root)) {
