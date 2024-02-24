@@ -1,17 +1,9 @@
-import { mergeConfig, defineConfig, defineProject } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default mergeConfig(
-  defineConfig({
-    test: {
-      snapshotFormat: {
-        escapeString: false
-      }
-    }
-  }),
-  // @ts-ignore
-  defineProject({
-    test: {
-      name: 'layouts'
-    }
-  })
-)
+export default defineProject({
+  test: {
+    root: __dirname,
+    dir: 'src',
+    name: 'layouts'
+  }
+})
