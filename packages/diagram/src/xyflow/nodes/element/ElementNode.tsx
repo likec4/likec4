@@ -29,9 +29,9 @@ const variants = {
     transformOrigin: '50% 50%'
   },
   hover: {
-    scale: 1.0455,
+    scale: 1.0655,
     transition: {
-      delay: 0.35
+      delay: 0.25
     }
   },
   tap: {

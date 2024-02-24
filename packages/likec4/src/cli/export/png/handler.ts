@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type DiagramView, hasAtLeast } from '@likec4/core'
 import { rm } from 'fs/promises'
-import { availableParallelism } from 'node:os'
 import { resolve } from 'node:path'
-import PQueue from 'p-queue'
 import k from 'picocolors'
 import { chromium } from 'playwright-core'
 import { LanguageServices } from '../../../language-services'
@@ -58,21 +56,29 @@ export async function handler({ path, useDotBin, output }: HandlerParams) {
   const pageUrl = (view: DiagramView) => `${hosts[0]}export/${encodeURIComponent(view.id)}`
 
   logger.info(k.cyan(`start chromium`))
+
   const browser = await chromium.launch()
-  const takeScreenshot = mkTakeScreenshotFn({ browser, pageUrl, outputDir: output, logger })
+  const page = await browser.newPage({
+    deviceScaleFactor: 2
+  })
 
-  const concurrency = Math.max(availableParallelism() - 1, 1)
-  logger.info(`${k.dim('concurrency')} ${concurrency}`)
-  logger.info(`${k.dim('output')} ${output}`)
-  const queue = new PQueue({ concurrency })
+  const takeScreenshot = mkTakeScreenshotFn({ page, pageUrl, outputDir: output, logger })
+  for (const view of views) {
+    await takeScreenshot(view)
+  }
+  await page.close()
+  // const concurrency = Math.max(availableParallelism() - 1, 1)
+  // logger.info(`${k.dim('concurrency')} ${concurrency}`)
+  // logger.info(`${k.dim('output')} ${output}`)
+  // const queue = new PQueue({ concurrency })
 
-  await queue.addAll(
-    views.map(v => () => takeScreenshot(v)),
-    {
-      throwOnTimeout: true,
-      timeout: 60000
-    }
-  )
+  // await queue.addAll(
+  //   views.map(v => () => takeScreenshot(v)),
+  //   {
+  //     throwOnTimeout: true,
+  //     timeout: 60000
+  //   }
+  // )
 
   // delete vite cache
   logger.info(k.dim('clean build outDir'))

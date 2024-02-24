@@ -17,11 +17,25 @@
 
   --stroke-fill-color: color-mix(in srgb, var(--likec4-element-stroke) 70%, var(--likec4-element-fill));
 
-  filter:
-    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25))
-    drop-shadow(0 1px 1px color-mix(in srgb, var(--likec4-element-stroke) 70%, transparent))
-    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.12))
+  --filter-shadow:
+    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.22))
+    drop-shadow(0 1px 1px color-mix(in srgb, var(--likec4-element-stroke) 50%, transparent))
+    drop-shadow(0 5px 3px rgba(0, 0, 0, 0.12))
   ;
+
+  filter: var(--filter-shadow-hovered, var(--filter-shadow));
+  transition: filter 300ms ease-out;
+  transition-delay: 0ms;
+
+  :where(.container:hover) & {
+    transition-delay: 150ms;
+    --filter-shadow-hovered:
+      drop-shadow(0 2px 1px rgba(0, 0, 0, 0.2))
+      drop-shadow(0 1px 2px color-mix(in srgb, var(--likec4-element-stroke) 50%, transparent))
+      drop-shadow(0 6px 3px rgba(0, 0, 0, 0.1))
+      drop-shadow(0 11px 9px rgba(0, 0, 0, 0.05))
+      drop-shadow(0 16px 12px rgba(0, 0, 0, 0.05))
+  }
 
   :where(:global(.react-flow__node.selected)) & {
     filter: none;
@@ -241,7 +255,8 @@
       }
     }
   }
-   :where(:global(.react-flow__node.dragging)) & {
+
+  :where(:global(.react-flow__node.dragging)) & {
     & .navigateBtn {
       transition-delay: 0ms;
     }

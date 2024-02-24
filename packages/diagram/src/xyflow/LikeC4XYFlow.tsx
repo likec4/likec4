@@ -6,6 +6,7 @@ import useTilg from 'tilg'
 import { LikeC4ViewStateSync, useLikeC4View, useLikeC4ViewTriggers } from '../state'
 import { Camera, OptionsPanel } from '../ui'
 import { edgeTypes } from './edges'
+import { useNodeDragConstraints } from './layout-constraints'
 import { nodeTypes } from './nodes'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
 
@@ -31,31 +32,6 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
   })
 
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
-
-  // const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
-
-  // const [render, cancel] = useRafCallback(() => {
-  //   if (!solverRef.current) {
-  //     return
-  //   }
-  //   console.time('updatePositions')
-  //   const positioned = solverRef.current.calcNodePositions()
-  //   instanceRef.current?.setNodes(nodes =>
-  //     nodes.map((n) => {
-  //       const next = positioned.get(n.id)
-  //       if (!next || n.dragging === true) {
-  //         return n
-  //       }
-  //       return {
-  //         ...n,
-  //         position: next.position,
-  //         width: next.width,
-  //         height: next.height
-  //       }
-  //     })
-  //   )
-  //   console.timeEnd('updatePositions')
-  // })
 
   return (
     <ReactFlow
@@ -90,25 +66,7 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
-      // onNodeDragStart={(event, node, nodes) => {
-      //   cancel()
-      //   invariant(instanceRef.current, `instance is not defined`)
-      //   // const nodes =
-      //   // invariant(XYFlowNode.is(node), `node is not a EditorNode`)
-
-      //   solverRef.current = createLayoutConstraints(instanceRef.current.getNodes(), node.id)
-      // }}
-      // onNodeDrag={(event, node) => {
-      //   if (solverRef.current) {
-      //     invariant(XYFlowNode.is(node), `node is not a EditorNode`)
-      //     solverRef.current.onNodeDrag(node)
-      //     render()
-      //   }
-      // }}
-      // onNodeDragStop={(event, node) => {
-      //   cancel()
-      //   solverRef.current = undefined
-      // }}
+      {...useNodeDragConstraints(instanceRef)}
       onEdgeMouseEnter={(event, edge) => {
         update({
           hoveredEdgeId: edge.id

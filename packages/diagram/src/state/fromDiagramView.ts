@@ -89,8 +89,6 @@ export function fromDiagramView(
     }
     const zIndex = nodeZIndex(node)
 
-    const draggable = dragEnabled && (!parent || parent.children.length > 1)
-
     editor.nodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
@@ -98,7 +96,7 @@ export function fromDiagramView(
         id,
         element: node
       },
-      draggable,
+      draggable: dragEnabled,
       deletable: false,
       position,
       zIndex,

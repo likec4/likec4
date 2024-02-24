@@ -35,9 +35,14 @@ html, body {
 
 .transparent-bg {
   --color-page-background: transparent !important;
+  --xy-background-color: transparent !important;
 
   body {
     background-color: transparent !important;
+  }
+
+  .react-flow__attribution {
+    display: none;
   }
 }
 

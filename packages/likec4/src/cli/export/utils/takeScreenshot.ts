@@ -1,71 +1,63 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Browser } from 'playwright-core'
-import type { Logger } from 'vite'
-import { resolve } from 'node:path'
 import type { DiagramView } from '@likec4/core'
+import { resolve } from 'node:path'
 import k from 'picocolors'
+import type { Browser, Page } from 'playwright-core'
+import type { Logger } from 'vite'
 
 type TakeScreenshotParams = {
-  browser: Browser
+  page: Page
   pageUrl: (view: DiagramView) => string
   outputDir: string
   logger: Logger
 }
 
-export function mkTakeScreenshotFn({ browser, pageUrl, outputDir, logger }: TakeScreenshotParams) {
+export function mkTakeScreenshotFn({ page, pageUrl, outputDir, logger }: TakeScreenshotParams) {
   return async function takeScreenshot(view: DiagramView) {
     const padding = 24
-    const url = pageUrl(view) + `?padding=${padding}`
-    logger.info(`${k.dim('export')} ${view.id} ${k.underline(k.dim(url))}`)
+    const url = pageUrl(view)
+    logger.info(`${k.cyan('export')} ${view.id} ${k.underline(k.dim(url))}`)
 
-    let page
+    await page.setViewportSize({
+      width: view.width + padding * 2,
+      height: view.height + padding * 2
+    })
+
     try {
-      page = await browser.newPage({
-        deviceScaleFactor: 2,
-        viewport: {
-          width: view.width + padding * 2,
-          height: view.height + padding * 2
-        }
+      await page.goto(url)
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        logger.error(`Timeout while loading page: ${url}`)
+      } else {
+        logger.error(`Page loading failed: ${url}\n${error}`, { error: error as any })
+      }
+      return
+    }
+
+    try {
+      // Wait for page to be fully loaded
+      await page.waitForLoadState()
+      // Wait for network to be idle (if there images to be loaded)
+      await page.waitForLoadState('networkidle', { timeout: 10000 })
+    } catch (error: unknown) {
+      logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
+        error: error as any
       })
+      return
+    }
 
-      try {
-        await page.goto(url)
-      } catch (error) {
-        if (error instanceof Error && error.name === 'TimeoutError') {
-          logger.error(`Timeout while loading page: ${url}`)
-        } else {
-          logger.error(`Page loading failed: ${url}\n${error}`, { error: error as any })
-        }
-        return
-      }
+    const path = resolve(outputDir, view.relativePath ?? '.', `${view.id}.png`)
 
-      try {
-        // Wait for page to be fully loaded
-        await page.waitForLoadState()
-        // Wait for network to be idle (if there images to be loaded)
-        await page.waitForLoadState('networkidle', { timeout: 10000 })
-      } catch (error: unknown) {
-        logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
-          error: error as any
-        })
-        return
-      }
-
-      const path = resolve(outputDir, view.relativePath ?? '.', `${view.id}.png`)
-
-      try {
-        await page.screenshot({
-          path,
-          animations: 'disabled',
-          timeout: 10000,
-          omitBackground: true
-        })
-      } catch (error: unknown) {
-        logger.error(`Error when taking screenshot: ${url}\n${error}`, { error: error as any })
-        return
-      }
-    } finally {
-      await page?.close()
+    try {
+      await page.screenshot({
+        path,
+        animations: 'disabled',
+        timeout: 10000,
+        omitBackground: true
+      })
+    } catch (error: unknown) {
+      logger.error(`Error when taking screenshot: ${url}\n${error}`, { error: error as any })
+      return
     }
   }
 }

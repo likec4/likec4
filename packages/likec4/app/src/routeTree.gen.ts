@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as EmbedViewIdImport } from './routes/embed.$viewId.tsx'
+import { Route as ExportViewIdImport } from './routes/export.$viewId.tsx'
 import { Route as IndexImport } from './routes/index.tsx'
 import { Route as ViewViewIdAsDotImport } from './routes/view.$viewId._as.dot.tsx'
 import { Route as ViewViewIdAsMmdImport } from './routes/view.$viewId._as.mmd.tsx'
@@ -29,6 +30,11 @@ const IndexRoute = IndexImport.update({
 
 const ViewViewIdRoute = ViewViewIdImport.update({
   path: '/view/$viewId',
+  getParentRoute: () => rootRoute
+} as any)
+
+const ExportViewIdRoute = ExportViewIdImport.update({
+  path: '/export/$viewId',
   getParentRoute: () => rootRoute
 } as any)
 
@@ -74,6 +80,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmbedViewIdImport
       parentRoute: typeof rootRoute
     }
+    '/export/$viewId': {
+      preLoaderRoute: typeof ExportViewIdImport
+      parentRoute: typeof rootRoute
+    }
     '/view/$viewId': {
       preLoaderRoute: typeof ViewViewIdImport
       parentRoute: typeof rootRoute
@@ -106,6 +116,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
   EmbedViewIdRoute,
+  ExportViewIdRoute,
   ViewViewIdRoute.addChildren([
     ViewViewIdAsRoute.addChildren([ViewViewIdAsDotRoute, ViewViewIdAsMmdRoute]),
     ViewViewIdEditorRoute,
