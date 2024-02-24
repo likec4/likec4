@@ -74,8 +74,8 @@ export const currentViewAtom = selectAtom(
 
 const getDotLayouter = once(async () => {
   console.debug('Loading dot layouter')
-  const { DotLayouter } = await import('@likec4/layouts')
-  return new DotLayouter()
+  const { WasmGraphvizLayouter } = await import('@likec4/layouts')
+  return new WasmGraphvizLayouter()
 })
 
 export const diagramAtom = atom(async get => {
