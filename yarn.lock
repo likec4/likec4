@@ -1070,7 +1070,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-icons: "npm:^4.12.0"
     remark-code-import: "npm:^1.2.0"
-    swr: "npm:^2.2.4"
+    swr: "npm:^2.2.5"
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.3.6"
     tailwindcss-animate: "npm:^1.0.7"
@@ -14387,15 +14387,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swr@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "swr@npm:2.2.4"
+"swr@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "swr@npm:2.2.5"
   dependencies:
     client-only: "npm:^0.0.1"
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/feb2fb5d3feb5accf93ce81108d659b941f9df6114d7744ccd148349255ed4d072e228e269d5aa3f81e4198cc120672929f5d1709cd52169d8e279314a5af4fd
+  checksum: 10/f02b3bd5a198a0f62f9a53d7c0528c4a58aa61a43310bea169614b6e873dadb52599e856ef0775405b6aa7409835343da0cf328948aa892aa309bf4b7e7d6902
   languageName: node
   linkType: hard
 
