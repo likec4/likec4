@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@react-spring/konva": "^9.7.3",
     "@use-gesture/react": "^10.3.0",

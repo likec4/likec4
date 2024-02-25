@@ -24,7 +24,7 @@
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/diagrams": "workspace:*",
-    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.0",

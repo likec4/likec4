@@ -1011,7 +1011,7 @@ __metadata:
   resolution: "@likec4/diagrams@workspace:packages/diagrams"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@react-hookz/deep-equal": "npm:^1.0.4"
+    "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@react-spring/konva": "npm:^9.7.3"
     "@types/react": "npm:^18.2.0"
@@ -1184,7 +1184,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/diagrams": "workspace:*"
-    "@react-hookz/deep-equal": "npm:^1.0.4"
+    "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.11.19"
     "@types/react": "npm:^18.2.0"
@@ -3066,6 +3066,13 @@ __metadata:
   version: 1.0.4
   resolution: "@react-hookz/deep-equal@npm:1.0.4"
   checksum: 10/0923e364d309e32ee54e0850471a86488faf149d7a04ee838552cf5d54f493964623a8d742880ec82410cc1105530123f056e66dfc72b7da235d4cc93fad708f
+  languageName: node
+  linkType: hard
+
+"@react-hookz/deep-equal@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@react-hookz/deep-equal@npm:2.0.2"
+  checksum: 10/c092d8060176a718abc36058631629daae6d13364d3ce89a00c3c704ab7fca1ea50316ed19d7948e0a0006138328688acd5e33b1a7c4e4187b36af66e4bbc724
   languageName: node
   linkType: hard
 
