@@ -30,7 +30,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Docs NextJS Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             docs/.next/cache

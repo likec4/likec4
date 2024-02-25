@@ -20,7 +20,7 @@ runs:
     #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
     - name: yarn caches
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: github.ref == 'refs/heads/main'
       with:
         path: '.yarn/cache'
@@ -32,7 +32,7 @@ runs:
           yarn-
 
     - name: restore only caches
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       if: github.ref != 'refs/heads/main'
       with:
         path: '.yarn/cache'
