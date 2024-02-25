@@ -23,11 +23,6 @@ function ExportPage() {
     <div style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh' }}>
       <LikeC4View
         view={diagram}
-        readonly
-        controls={false}
-        pannable={false}
-        zoomable={false}
-        disableBackground
         fitViewPadding={0}
       />
     </div>

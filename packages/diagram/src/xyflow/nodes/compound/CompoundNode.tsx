@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
 import { equals } from 'remeda'
-import { useLikeC4ViewState, useLikeC4ViewTriggers } from '../../../state'
+import { useDiagramState, useLikeC4ViewTriggers } from '../../../state'
 import { toDomPrecision } from '../../../utils'
 import type { CompoundNodeData, CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -52,7 +52,7 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
   const w = toDomPrecision(width ?? compound.width)
   const h = toDomPrecision(height ?? compound.height)
 
-  const editor = useLikeC4ViewState()
+  const editor = useDiagramState()
   const trigger = useLikeC4ViewTriggers()
 
   const isNavigatable = editor.hasOnNavigateTo && !!compound.navigateTo

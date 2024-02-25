@@ -8,31 +8,26 @@ import { fromDiagramView } from './state/fromDiagramView'
 import './styles.css'
 import { LikeC4XYFlow } from './xyflow'
 
-export function LikeC4View({
+export function LikeC4Diagram({
   view,
-  reactflowProps,
+  readonly = false,
+  nodesDraggable = !readonly,
   ...apiProps
-}: LikeC4ViewProps) {
+}: LikeC4DiagramProps) {
   useTilg()
   // Verify that the MantineProvider is available
   useMantineContext()
-  const initial = useMemo(() => fromDiagramView(view, false), [])
+  const initial = useMemo(() => fromDiagramView(view, nodesDraggable), [])
   return (
     <ReactFlowProvider>
       <DiagramStateProvider
         view={view}
-        readonly={true}
-        pannable={false}
-        zoomable={false}
-        controls={false}
-        disableBackground
-        nodesSelectable={false}
+        nodesDraggable={nodesDraggable}
         {...apiProps}
       >
         <LikeC4XYFlow
           defaultNodes={initial.nodes}
           defaultEdges={initial.edges}
-          {...reactflowProps}
         />
       </DiagramStateProvider>
     </ReactFlowProvider>

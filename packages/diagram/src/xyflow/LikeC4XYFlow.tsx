@@ -1,26 +1,34 @@
 import { invariant } from '@likec4/core'
+import { isEqualReactSimple } from '@react-hookz/deep-equal'
 import { useUnmountEffect } from '@react-hookz/web'
-import { Background, Controls, ReactFlow } from '@xyflow/react'
+import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
 import { memo, useRef } from 'react'
 import useTilg from 'tilg'
-import { LikeC4ViewStateSync, useLikeC4View, useLikeC4ViewTriggers } from '../state'
+import { useDiagramStateContext, useLikeC4ViewTriggers } from '../state'
 import { Camera, OptionsPanel } from '../ui'
 import { edgeTypes } from './edges'
-import { useNodeDragConstraints } from './layout-constraints'
+import { LikeC4ViewSync } from './LikeC4ViewSync'
 import { nodeTypes } from './nodes'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
+import { useNodeDragConstraints } from './useNodeDragConstraints'
 
-type LikeC4XYFlowProps = {
+export type LikeC4XYFlowProps = Pick<
+  ReactFlowProps,
+  'fitView' | 'fitViewOptions' | 'colorMode' | 'maxZoom' | 'minZoom' | 'className' | 'width' | 'height'
+>
+
+type DefaultData = {
   defaultNodes?: XYFlowNode[] | undefined
   defaultEdges?: XYFlowEdge[] | undefined
 }
 
-export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
+export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlow({
   defaultNodes = [],
-  defaultEdges = []
+  defaultEdges = [],
+  ...props
 }) {
   useTilg()
-  const [editor, update] = useLikeC4View()
+  const [editor, update] = useDiagramStateContext()
   const trigger = useLikeC4ViewTriggers()
   const instanceRef = useRef<XYFlowInstance>()
   const lastClickTimeRef = useRef<number>(0)
@@ -45,10 +53,11 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
       {...(!editor.zoomable && {
         zoomActivationKeyCode: null
       })}
-      maxZoom={1.9}
-      minZoom={0.1}
+      maxZoom={editor.zoomable ? 1.9 : 1}
+      minZoom={editor.zoomable ? 0.1 : 1}
       fitView
       fitViewOptions={{
+        minZoom: 0.1,
         maxZoom: 1,
         padding: editor.fitViewPadding
       }}
@@ -66,6 +75,7 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
+      {...props}
       {...useNodeDragConstraints(instanceRef)}
       onEdgeMouseEnter={(event, edge) => {
         update({
@@ -126,14 +136,14 @@ export const LikeC4XYFlow = memo<LikeC4XYFlowProps>(function XYFlow({
         }
         lastClickTimeRef.current = ts
       }}
-      {...(!editor.pannable && { [`data-likec4-view-nopan`]: '' })}
-      {...(editor.disableBackground && { [`data-likec4-view-nobg`]: '' })}
+      {...(!editor.pannable && { [`data-likec4-nopan`]: '' })}
+      {...(editor.disableBackground && { [`data-likec4-nobg`]: '' })}
     >
       {!editor.disableBackground && <Background />}
       {editor.controls && <Controls />}
-      <LikeC4ViewStateSync />
+      <LikeC4ViewSync />
       <Camera />
       {!editor.readonly && <OptionsPanel />}
     </ReactFlow>
   )
-}, (prev, next) => true /* always skip render */)
+}, isEqualReactSimple)

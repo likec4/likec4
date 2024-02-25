@@ -13,17 +13,17 @@
 
 .react-flow {
 
-  &[data-likec4-view-no-pan='true'] {
-    .react-flow__pane {
+  &[data-likec4-nopan] {
+    & .react-flow__pane {
       cursor: default;
     }
   }
 
-  &[data-likec4-view-no-bg='true'] {
+  &[data-likec4-nobg] {
     --xy-background-color: transparent !important;
     background-color: transparent !important;
 
-    .react-flow__attribution {
+    & .react-flow__attribution {
       display: none;
     }
   }

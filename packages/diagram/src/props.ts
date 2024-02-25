@@ -1,5 +1,6 @@
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import type { SetRequired, Simplify } from 'type-fest'
+import type { LikeC4XYFlowProps } from './xyflow/LikeC4XYFlow'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
@@ -17,14 +18,32 @@ export type OnCanvasClick = (event: React.MouseEvent) => void
 
 export type LikeC4ViewColorMode = 'auto' | 'light' | 'dark'
 
-export type LikeC4ViewProps = {
+export interface LikeC4ViewProps {
   view: DiagramView
 
   /** Controls color scheme used for styling the flow
    * @default 'auto'
    * @example 'auto' | 'light' | 'dark'
    */
-  // colorMode?: LikeC4ViewColorMode | undefined
+  colorMode?: LikeC4ViewColorMode | undefined
+
+  /**
+   * Seems like this is percentage of the view size
+   * @default 0.05
+   */
+  fitViewPadding?: number | undefined
+
+  reactflowProps?: LikeC4XYFlowProps | undefined
+}
+
+export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
+  view: DiagramView
+
+  /** Controls color scheme used for styling the flow
+   * @default 'auto'
+   * @example 'auto' | 'light' | 'dark'
+   */
+  colorMode?: LikeC4ViewColorMode | undefined
 
   /**
    * Show/hide controls menu
@@ -51,10 +70,12 @@ export type LikeC4ViewProps = {
    * @default 0.05
    */
   fitViewPadding?: number | undefined
-
   nodesSelectable?: boolean | undefined
   nodesDraggable?: boolean | undefined
   disableBackground?: boolean | undefined
+}
+
+export interface LikeC4DiagramEventHandlers {
   // onChange?: OnChange | undefined
   onNavigateTo?: OnNavigateTo | undefined
   onNodeClick?: OnNodeClick | undefined

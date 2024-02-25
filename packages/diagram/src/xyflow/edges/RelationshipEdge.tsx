@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { memo } from 'react'
 import { hasAtLeast } from 'remeda'
 import { ZIndexes } from '../../const'
-import { useLikeC4ViewSelector } from '../../state'
+import { useSelectDiagramState } from '../../state'
 import type { RelationshipData } from '../types'
 import styles from './RelationshipEdge.module.css'
 
@@ -72,7 +72,7 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   } = data
   const edgePath = bezierPath(edge.points)
   const color = edge.color ?? 'gray'
-  const isHovered = useLikeC4ViewSelector(state => state.hoveredEdgeId === id)
+  const isHovered = useSelectDiagramState(state => state.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'

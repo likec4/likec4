@@ -4,10 +4,10 @@ import { getUntrackedObject } from 'react-tracked'
 import { isNil } from 'remeda'
 import { useXYFlow } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
-import { useLikeC4View } from './state'
+import { useDiagramStateContext } from './state'
 
 export const useLikeC4ViewTriggers = () => {
-  const [editor, update] = useLikeC4View()
+  const [editor, update] = useDiagramStateContext()
   const xyflow = useXYFlow()
   const eventsRef = getUntrackedObject(editor.eventHandlers)
   invariant(eventsRef, `eventsRef is null`)

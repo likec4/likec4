@@ -2,10 +2,10 @@ import { isEqualReactSimple as eq } from '@react-hookz/deep-equal'
 import { memo } from 'react'
 import useTilg from 'tilg'
 import { useUpdateEffect } from '../hooks/use-update-effect'
-import { useXYFlow } from '../xyflow'
-import type { XYFlowNode } from '../xyflow/types'
-import { fromDiagramView } from './fromDiagramView'
-import { useLikeC4ViewState } from './state'
+import { fromDiagramView } from '../state/fromDiagramView'
+import { useDiagramState } from '../state/state'
+import { useXYFlow } from '.'
+import type { XYFlowNode } from './types'
 
 function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
   return a.id === b.id
@@ -15,9 +15,12 @@ function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
     && eq(a.height, b.height)
 }
 
-export const LikeC4ViewStateSync = memo(function ViewStateSync() {
+/**
+ * Syncs the diagram state with the XYFlow instance
+ */
+export const LikeC4ViewSync = memo(function DiagramStateSync() {
   useTilg()
-  const state = useLikeC4ViewState(),
+  const state = useDiagramState(),
     initialized = state.viewportInitialized,
     nodes = state.viewNodes,
     edges = state.viewEdges

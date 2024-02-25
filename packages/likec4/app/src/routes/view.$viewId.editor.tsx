@@ -1,4 +1,4 @@
-import { LikeC4View, type OnNavigateTo } from '@likec4/diagram'
+import { LikeC4Diagram, LikeC4View, type OnNavigateTo } from '@likec4/diagram'
 import { Box } from '@radix-ui/themes'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
@@ -32,11 +32,11 @@ function ViewEditor() {
       position={'absolute'}
       style={{ top: 50, left: 0, width: '100vw', height: 'calc(100vh - 50px)' }}
     >
-      <LikeC4View
+      <LikeC4Diagram
         view={view}
         onNavigateTo={navigateTo}
         controls={false}
-        // nodesDraggable={false}
+        nodesDraggable={false}
       />
     </Box>
   )

@@ -4,7 +4,7 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react'
 import { equals } from 'remeda'
-import { useLikeC4ViewState, useLikeC4ViewTriggers } from '../../../state'
+import { useDiagramState, useLikeC4ViewTriggers } from '../../../state'
 import { toDomPrecision } from '../../../utils'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -51,7 +51,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
   width,
   height
 }) {
-  const editor = useLikeC4ViewState()
+  const editor = useDiagramState()
   const trigger = useLikeC4ViewTriggers()
 
   const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo

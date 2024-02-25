@@ -13,7 +13,7 @@ import {
 import { memo, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import useTilg from 'tilg'
-import { useLikeC4ViewState } from '../state'
+import { useDiagramState } from '../state'
 import { distance } from '../utils'
 import { useXYFlow } from '../xyflow'
 
@@ -35,7 +35,7 @@ const CameraMemo = memo(function Camera() {
   const reactflow = useXYFlow()
   const updateNd = useUpdateNodeInternals()
 
-  const editor = useLikeC4ViewState()
+  const editor = useDiagramState()
   const padding = editor.fitViewPadding
   const viewId = editor.viewId
 

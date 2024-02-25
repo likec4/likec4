@@ -4,13 +4,19 @@ import { isEqual } from '@react-hookz/deep-equal'
 import { useSyncedRef } from '@react-hookz/web'
 import { useRef } from 'react'
 import { createContainer } from 'react-tracked'
+import type { Exact } from 'type-fest'
 import { useSetState, useUpdateEffect } from '../hooks'
-import type { LikeC4ViewColorMode, LikeC4ViewProps } from '../props'
+import type { LikeC4DiagramEventHandlers, LikeC4DiagramProps, LikeC4ViewColorMode } from '../props'
 import { type XYFlowInstance } from '../xyflow/types'
 
-const useLikeC4ViewState_ReactTracked = ({
+// Ensure that object contains only event handlers
+function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
+  return handlers
+}
+
+const useDiagramState_ReactTracked = ({
   view,
-  // colorMode = 'system',
+  colorMode: _colorMode,
   readonly = false,
   pannable = true,
   zoomable = true,
@@ -20,8 +26,8 @@ const useLikeC4ViewState_ReactTracked = ({
   disableBackground = false,
   fitViewPadding = 0.05,
   ...eventHandlers
-}: LikeC4ViewProps) => {
-  const eventsRef = useSyncedRef(eventHandlers)
+}: LikeC4DiagramProps) => {
+  const eventsRef = useSyncedRef(isOnlyEventHandlers(eventHandlers))
 
   const hasEventHandlers = {
     hasOnNavigateTo: !!eventHandlers.onNavigateTo,
@@ -34,7 +40,7 @@ const useLikeC4ViewState_ReactTracked = ({
   const xyflowRef = useRef<XYFlowInstance | null>(null)
 
   const { colorScheme } = useMantineColorScheme()
-  const colorMode: LikeC4ViewColorMode = colorScheme
+  const colorMode = _colorMode ?? colorScheme
 
   const [state, setState] = useSetState({
     viewId: view.id,
@@ -115,9 +121,9 @@ const useLikeC4ViewState_ReactTracked = ({
 }
 
 export const {
-  Provider: LikeC4ViewStateProvider,
-  useTracked: useLikeC4View,
-  useTrackedState: useLikeC4ViewState,
-  useUpdate: useLikeC4ViewUpdate,
-  useSelector: useLikeC4ViewSelector
-} = createContainer(useLikeC4ViewState_ReactTracked)
+  Provider: DiagramStateProvider,
+  useTracked: useDiagramStateContext,
+  useTrackedState: useDiagramState,
+  useUpdate: useUpdateDiagramState,
+  useSelector: useSelectDiagramState
+} = createContainer(useDiagramState_ReactTracked)

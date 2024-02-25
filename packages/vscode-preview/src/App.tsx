@@ -1,5 +1,5 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
-import { LikeC4View as LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4Diagram as LikeC4ViewEditor } from '@likec4/diagram'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
