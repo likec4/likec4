@@ -203,7 +203,7 @@
     "@types/vscode": "~1.77.0",
     "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.1",
-    "@vscode/vsce": "^2.22.0",
+    "@vscode/vsce": "^2.24.0",
     "esbuild": "^0.19.9",
     "esbuild-plugins-node-modules-polyfill": "^1.6.3",
     "langium": "^2.1.3",
