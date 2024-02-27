@@ -1030,7 +1030,7 @@ __metadata:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
     typescript: "npm:^5.3.3"
@@ -1045,8 +1045,8 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
-    "@mantine/core": "npm:^7.5.2"
-    "@mantine/hooks": "npm:^7.5.2"
+    "@mantine/core": "npm:^7.5.3"
+    "@mantine/hooks": "npm:^7.5.3"
     "@mantine/vanilla-extract": "npm:^7.5.3"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
@@ -1056,12 +1056,12 @@ __metadata:
     "@types/react-dom": "npm:^18.2.0"
     "@vanilla-extract/css": "npm:^1.14.1"
     "@vanilla-extract/recipes": "npm:^0.5.1"
-    "@xyflow/react": "npm:^12.0.0-next.8"
+    "@xyflow/react": "npm:^12.0.0-next.9"
     clsx: "npm:^2.1.0"
     d3-shape: "npm:^3.2.0"
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.0.3"
+    framer-motion: "npm:^11.0.6"
     khroma: "npm:^2.1.0"
     postcss: "npm:^8.4.35"
     postcss-preset-mantine: "npm:^1.13.0"
@@ -1070,12 +1070,12 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-icons: "npm:^4.12.0"
     react-tracked: "npm:^1.7.11"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
     scheduler: "npm:^0.23.0"
     tilg: "npm:^0.1.1"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
-    typescript-plugin-css-modules: "npm:^5.0.2"
+    typescript-plugin-css-modules: "npm:^5.1.0"
     unbuild: "npm:^2.0.0"
   peerDependencies:
     "@mantine/core": ^7.5.2
@@ -1224,7 +1224,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
@@ -1240,17 +1240,20 @@ __metadata:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/node": "npm:^20.11.17"
     "@types/object-hash": "npm:^3.0.6"
+    "@types/string-hash": "npm:^1"
     debounce-fn: "npm:^6.0.0"
     execa: "npm:^8.0.1"
+    fast-equals: "npm:^5.0.1"
     langium: "npm:^2.1.3"
     langium-cli: "npm:^2.1.0"
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
+    string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     ufo: "npm:^1.3.2"
     unbuild: "npm:^2.0.0"
@@ -1274,10 +1277,10 @@ __metadata:
     khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
@@ -1291,8 +1294,8 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
-    "@mantine/core": "npm:^7.5.2"
-    "@mantine/hooks": "npm:^7.5.2"
+    "@mantine/core": "npm:^7.5.3"
+    "@mantine/hooks": "npm:^7.5.3"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.11.17"
@@ -1345,9 +1348,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "@mantine/core@npm:7.5.2"
+"@mantine/core@npm:^7.5.3":
+  version: 7.5.3
+  resolution: "@mantine/core@npm:7.5.3"
   dependencies:
     "@floating-ui/react": "npm:^0.24.8"
     clsx: "npm:2.0.0"
@@ -1356,19 +1359,19 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^3.13.1"
   peerDependencies:
-    "@mantine/hooks": 7.5.2
+    "@mantine/hooks": 7.5.3
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10/843123f3cc013506d6aad486cde7bc837b517e5663c4242449dac8762ab0cef9bf73c4e3cfbcd063431c5286cfec6e9172d08e2c7e627fa60c6a147f7d2cd372
+  checksum: 10/d48c7c723d49f3114b492751a5a2620c8b081daf88b5429fe2ad5552eda58222d6b745445cf38ef8116219bca08a14a367922ca9d892d2355d5acdba82d70996
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "@mantine/hooks@npm:7.5.2"
+"@mantine/hooks@npm:^7.5.3":
+  version: 7.5.3
+  resolution: "@mantine/hooks@npm:7.5.3"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10/01063c6208399725d86272ec46ddfa1d01d0daa1ba8ec1448772c9531ff00c3ef198ef010e2b85a716ce2f40a083ebfc35be214616c347aa68156ac91bca3b85
+  checksum: 10/d38dfab324dac6615373c605381ea7c845bd886ee40d815fa3887853add08d38c25018fca68be193726d40409f648a17844c63ecc05895cb9f75bff702e8cccb
   languageName: node
   linkType: hard
 
@@ -4313,6 +4316,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/string-hash@npm:^1":
+  version: 1.1.3
+  resolution: "@types/string-hash@npm:1.1.3"
+  checksum: 10/39a546088123efb1af9beac3854aa1eb54cf24ab75d99c8dac9ccfa7d46d70ac7c99c10983f7cc623dda1e476b6e21e7acffe6c5b3be894751ae4b9cfd103aaf
+  languageName: node
+  linkType: hard
+
 "@types/unist@npm:*, @types/unist@npm:^3.0.0":
   version: 3.0.0
   resolution: "@types/unist@npm:3.0.0"
@@ -4580,23 +4590,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:^12.0.0-next.8":
-  version: 12.0.0-next.8
-  resolution: "@xyflow/react@npm:12.0.0-next.8"
+"@xyflow/react@npm:^12.0.0-next.9":
+  version: 12.0.0-next.9
+  resolution: "@xyflow/react@npm:12.0.0-next.9"
   dependencies:
-    "@xyflow/system": "npm:0.0.16"
+    "@xyflow/system": "npm:0.0.17"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10/9f424cec806bc99e93666e20b586fe2d95c6ac0ef998fd53bbba64ff7d258e542d26e123e62c1069e18d5ff7e8d618055f4c869d2b02c393d44f221d7f5ab9e1
+  checksum: 10/b4885cfe145bb76397e623cfb33c276f41542474740193f3dfaaba8cdde048a7675048bf18ceebd08ad9e79d7bc1d14f0be9eee1872b2a7c55b02deeb3a2c2a7
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.16":
-  version: 0.0.16
-  resolution: "@xyflow/system@npm:0.0.16"
+"@xyflow/system@npm:0.0.17":
+  version: 0.0.17
+  resolution: "@xyflow/system@npm:0.0.17"
   dependencies:
     "@types/d3": "npm:^7.4.0"
     "@types/d3-drag": "npm:^3.0.1"
@@ -4605,7 +4615,7 @@ __metadata:
     d3-drag: "npm:^3.0.0"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10/811f235ee1d57522552c6786cbd9b6a2326ac8ddcde380489ad027bd4559f9b7c7bc98e0af7a43ace8680c35b2fd329bbc7dc345a879c25f0325b4a70d807285
+  checksum: 10/5aa93a2affe79a9e4593a040501ced7adcf62d96906b40d339407030f2a2bc7184632d4375c95b4f0a8b4d317ba9eb7c0697367e35dcc0c98c3f5f5db95a4c0e
   languageName: node
   linkType: hard
 
@@ -7655,9 +7665,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.3":
-  version: 11.0.3
-  resolution: "framer-motion@npm:11.0.3"
+"framer-motion@npm:^11.0.6":
+  version: 11.0.6
+  resolution: "framer-motion@npm:11.0.6"
   dependencies:
     "@emotion/is-prop-valid": "npm:^0.8.2"
     tslib: "npm:^2.4.0"
@@ -7672,7 +7682,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/f1aaf7da810523ae0a4290f88dc7cb6c2fb1101443f20c4e5478dd6c155769573ffae0d0dc47a7ceaa63c4385aa8fd3e93d9835d257444cc99f741a5361eafb2
+  checksum: 10/f18f5d40045029238b9d05e646ff950856bc7d0b0d9210fca59e8419c7e42eabf96e4481f8a753c13a13f306626515d8bf746e456d8d246df2060b02ab320926
   languageName: node
   linkType: hard
 
@@ -9654,8 +9664,8 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@mantine/core": "npm:^7.5.2"
-    "@mantine/hooks": "npm:^7.5.2"
+    "@mantine/core": "npm:^7.5.3"
+    "@mantine/hooks": "npm:^7.5.3"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.4"
@@ -9690,10 +9700,10 @@ __metadata:
     react-accessible-treeview: "npm:^2.8.3"
     react-dom: "npm:^18.2.0"
     react-resizable-panels: "npm:^0.0.63"
-    remeda: "npm:^1.43.0"
+    remeda: "npm:^1.44.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.1"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     typescript-plugin-css-modules: "npm:^5.1.0"
     vite: "npm:^5.1.4"
@@ -13974,10 +13984,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.43.0":
-  version: 1.43.0
-  resolution: "remeda@npm:1.43.0"
-  checksum: 10/b725fa7a6a71aa1f8ec26bf5e52ae342d750acada0974532c561831ca0c723460d87363da5fef9207f6e7aef93ed2649cd4d7649e3161dd752e60552efec3510
+"remeda@npm:^1.44.0":
+  version: 1.44.0
+  resolution: "remeda@npm:1.44.0"
+  checksum: 10/7470f6a37ee43b6f80c26ea15515e8dca9de37740b3f4d1761555f87eb6a743a7a9d5f08f474c83372aa9aa4058c3d5ed2a724ce57aee31946cadaebbc0e48cd
   languageName: node
   linkType: hard
 
@@ -14841,6 +14851,13 @@ __metadata:
   version: 0.3.2
   resolution: "string-argv@npm:0.3.2"
   checksum: 10/f9d3addf887026b4b5f997a271149e93bf71efc8692e7dc0816e8807f960b18bcb9787b45beedf0f97ff459575ee389af3f189d8b649834cac602f2e857e75af
+  languageName: node
+  linkType: hard
+
+"string-hash@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "string-hash@npm:1.1.3"
+  checksum: 10/104b8667a5e0dc71bfcd29fee09cb88c6102e27bfb07c55f95535d90587d016731d52299380052e514266f4028a7a5172e0d9ac58e2f8f5001be61dc77c0754d
   languageName: node
   linkType: hard
 
@@ -15718,10 +15735,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.10.2":
-  version: 4.10.2
-  resolution: "type-fest@npm:4.10.2"
-  checksum: 10/2b1ad1270d9fabeeb506ba831d513caeb05bfc852e5e012511d785ce9dc68d773fe0a42bddf857a362c7f3406244809c5b8a698b743bb7617d4a8c470672087f
+"type-fest@npm:^4.10.3":
+  version: 4.10.3
+  resolution: "type-fest@npm:4.10.3"
+  checksum: 10/ab86ee1624efbb29be138f5582654b32bd0f0c55cdef9bab0eca76933936313933058de7ddc9e6b741aa2ee686f15b1c4451e777e2db93eff44ee69770c84046
   languageName: node
   linkType: hard
 
@@ -15746,7 +15763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-plugin-css-modules@npm:^5.0.2, typescript-plugin-css-modules@npm:^5.1.0":
+"typescript-plugin-css-modules@npm:^5.1.0":
   version: 5.1.0
   resolution: "typescript-plugin-css-modules@npm:5.1.0"
   dependencies:
