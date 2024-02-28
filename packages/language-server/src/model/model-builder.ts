@@ -7,6 +7,7 @@ import {
   type ViewID
 } from '@likec4/core'
 import { computeView, LikeC4ModelGraph } from '@likec4/graph'
+import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
 import * as R from 'remeda'
@@ -244,7 +245,7 @@ export class LikeC4ModelBuilder {
       assignNavigateTo(allViews)
       const views = R.mapToObj(allViews, v => {
         const previous = this.previousViews[v.id]
-        const view = previous && R.equals(v, previous) ? previous : v
+        const view = previous && eq(v, previous) ? previous : v
         viewsCache.set(computedViewKey(v.id), view)
         return [v.id, view] as const
       })
@@ -289,9 +290,7 @@ export class LikeC4ModelBuilder {
       })
 
       const previous = this.previousViews[viewId]
-      if (previous) {
-        computedView = R.equals(computedView, previous) ? previous : computedView
-      }
+      computedView = previous && eq(computedView, previous) ? previous : computedView
       this.previousViews[viewId] = computedView
 
       return computedView

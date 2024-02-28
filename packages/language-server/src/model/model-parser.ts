@@ -1,7 +1,6 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { getDocument } from 'langium'
-import objectHash from 'object-hash'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
@@ -27,6 +26,7 @@ import {
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { stringHash } from '../utils'
 import type { FqnIndex } from './fqn-index'
 
 export type ModelParsedListener = () => void
@@ -170,11 +170,11 @@ export class LikeC4ModelParser {
       astNode.title ?? astNode.body?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
     ) ?? ''
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
-    const id = objectHash({
+    const id = stringHash(
       astPath,
       source,
       target
-    }) as c4.RelationID
+    ) as c4.RelationID
     return {
       id,
       astPath,
@@ -349,10 +349,11 @@ export class LikeC4ModelParser {
     let id = astNode.name
     if (!id) {
       const doc = getDocument(astNode).uri.toString()
-      id = objectHash({
+      id = stringHash(
         doc,
-        astPath
-      }) as c4.ViewID
+        astPath,
+        astNode.viewOf?.$cstNode?.text ?? ''
+      ) as c4.ViewID
     }
 
     const title = body.props.find(p => p.key === 'title')?.value
