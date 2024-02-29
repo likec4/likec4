@@ -2,8 +2,8 @@ import { useMantineContext } from '@mantine/core'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import useTilg from 'tilg'
-import { type LikeC4DiagramProps, type LikeC4ViewProps } from './props'
-import { DiagramStateProvider } from './state'
+import { type LikeC4ViewProps } from './props'
+import { DiagramStateProvider, DiagramStateSync } from './state'
 import { fromDiagramView } from './state/fromDiagramView'
 import './styles.css'
 import { LikeC4XYFlow } from './xyflow'
@@ -25,7 +25,7 @@ export function LikeC4View({
         pannable={false}
         zoomable={false}
         controls={false}
-        disableBackground
+        disableBackground={true}
         nodesSelectable={false}
         {...apiProps}
       >
@@ -34,6 +34,7 @@ export function LikeC4View({
           defaultEdges={initial.edges}
           {...reactflowProps}
         />
+        <DiagramStateSync />
       </DiagramStateProvider>
     </ReactFlowProvider>
   )

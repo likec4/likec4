@@ -1,6 +1,5 @@
 .panel {
   position: absolute;
-  z-index: calc(var(--layer-panels) + 1);
   top: 56px;
   right: 16px;
 }

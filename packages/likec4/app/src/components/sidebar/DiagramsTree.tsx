@@ -35,26 +35,13 @@ export function DiagramsTree() {
           }
           const m = last(routerState.matches)
           invariant(m, 'routerState.matches is empty')
+          console.log({ m, element })
           router.navigate({
             to: m.routeId as string,
             params: { viewId: element.id },
             search: m.search,
             startTransition: true
           })
-          // console.log(routerState)
-          // console.log(router.buildLocation({
-          //   params: { viewId: element.id },
-          // }).href)
-          // router.update({
-
-          //   params: { viewId: element.id },
-          //   startTransition: true
-          // })
-          // router.buildAndCommitLocation({
-          //   params: { viewId: element.id},
-          //   startTransition: true
-          // })
-          // $pages.view.open('' + element.id)
         }}
         nodeRenderer={({
           element,

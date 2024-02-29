@@ -153,16 +153,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         '@radix-ui/themes',
         'react/jsx-dev-runtime',
         'react/jsx-runtime',
-        'react-konva',
-        'konva',
         'react-accessible-treeview',
         '@react-hookz/web',
-        '@react-spring/core',
-        '@react-spring/animated',
-        '@react-spring/shared',
-        '@react-spring/konva',
-        '@use-gesture/core',
-        '@use-gesture/react',
         ...(isDev ? [] : ['@likec4/core', '@likec4/diagram', '@likec4/diagrams'])
       ]
     },
@@ -175,7 +167,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }),
       TanStackRouterVite({
         generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
-        routesDirectory: resolve(root, 'src/routes')
+        routesDirectory: resolve(root, 'src/routes'),
+        quoteStyle: 'single'
       }),
       likec4Plugin({ languageServices })
     ]

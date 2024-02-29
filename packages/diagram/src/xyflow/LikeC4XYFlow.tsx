@@ -1,16 +1,12 @@
-import { invariant } from '@likec4/core'
-import { isEqualReactSimple } from '@react-hookz/deep-equal'
-import { useUnmountEffect } from '@react-hookz/web'
+import { isEqualReact } from '@react-hookz/deep-equal'
 import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
-import { memo, useRef } from 'react'
+import { memo } from 'react'
 import useTilg from 'tilg'
-import { useDiagramStateContext, useLikeC4ViewTriggers } from '../state'
+import { useDiagramStateTracked } from '../state'
 import { Camera, OptionsPanel } from '../ui'
 import { edgeTypes } from './edges'
-import { LikeC4ViewSync } from './LikeC4ViewSync'
 import { nodeTypes } from './nodes'
-import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
-import { useNodeDragConstraints } from './useNodeDragConstraints'
+import { XYFlowEdge, XYFlowNode } from './types'
 
 export type LikeC4XYFlowProps = Pick<
   ReactFlowProps,
@@ -28,18 +24,15 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
   ...props
 }) {
   useTilg()
-  const [editor, update] = useDiagramStateContext()
-  const trigger = useLikeC4ViewTriggers()
-  const instanceRef = useRef<XYFlowInstance>()
-  const lastClickTimeRef = useRef<number>(0)
-
-  useUnmountEffect(() => {
-    update({
-      xyflow: null
-    })
-  })
-
+  const editor = useDiagramStateTracked()
+  // const update = useUpdateDiagramState()
+  // const hoveredEdgeId = useDiagramState().onNavigateTo
+  // const instanceRef = useRef<XYFlowInstance>()
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
+
+  // const onNodeDrag = useNodeDragConstraints(instanceRef)
+  // const handlers = useBindEventHandlers(instanceRef)
+  // console.log('LikeC4XYFlow')
 
   return (
     <ReactFlow
@@ -75,75 +68,32 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
+      onInit={editor.onInit}
+      onNodeClick={editor.onNodeClick}
+      onEdgeClick={editor.onEdgeClick}
+      onEdgeMouseEnter={editor.onEdgeMouseEnter}
+      onEdgeMouseLeave={editor.onEdgeMouseLeave}
       {...props}
-      {...useNodeDragConstraints(instanceRef)}
-      onEdgeMouseEnter={(event, edge) => {
-        update({
-          hoveredEdgeId: edge.id
-        })
-      }}
-      onEdgeMouseLeave={(event, edge) => {
-        update({
-          hoveredEdgeId: null
-        })
-      }}
-      {...(editor.hasOnNodeClick && {
-        onNodeClick: (event, node) => {
-          invariant(XYFlowNode.is(node), `node is not a XYFlowNode`)
-          trigger.onNodeClick(node, event)
-        }
-      })}
-      {...(editor.hasOnEdgeClick && {
-        onEdgeClick: (event, edge) => {
-          invariant(XYFlowEdge.isRelationship(edge), `edge is not a relationship`)
-          trigger.onEdgeClick(edge, event)
-        }
-      })}
-      {...(editor.hasOnNodeContextMenu && {
-        onEdgeContextMenu: (event, edge) => {
-          event.preventDefault()
-          event.stopPropagation()
-        },
-        onNodeContextMenu: (event, node) => {
-          invariant(XYFlowNode.is(node), `node is not a XYFlowNode`)
-          trigger.onNodeContextMenu(node, event)
-        },
-        onPaneContextMenu: (event) => {
-          event.preventDefault()
-          event.stopPropagation()
-        }
-      })}
-      onInit={(instance) => {
-        instanceRef.current = instance as XYFlowInstance
-        invariant(instance.viewportInitialized, `viewportInitialized is not true`)
-        trigger.onInitialized(instance as any)
-      }}
-      onPaneClick={(e) => {
-        // Workaround for dbl click
-        const ts = e.timeStamp
-        if (lastClickTimeRef.current > 0) {
-          const diff = ts - lastClickTimeRef.current
-          if (diff < 300) {
-            instanceRef.current?.fitView({
-              duration: 350,
-              maxZoom: 1,
-              padding: editor.fitViewPadding
-            })
-            lastClickTimeRef.current = 0
-            trigger.onCanvasDblClick(e)
-            return
-          }
-        }
-        lastClickTimeRef.current = ts
-      }}
-      {...(!editor.pannable && { [`data-likec4-nopan`]: '' })}
+      {
+        // onEdgeMouseEnter={useCallback((event, edge) => {
+        //   update({
+        //     pannable: true
+        //     // hoveredEdgeId: edge.id
+        //   })
+        // }, [])}
+        // onEdgeMouseLeave={useCallback((event, edge) => {
+        //   // update({
+        //   //   hoveredEdgeId: null
+        //   // })
+        // }, [])}
+        ...(!editor.pannable && { [`data-likec4-nopan`]: '' })
+      }
       {...(editor.disableBackground && { [`data-likec4-nobg`]: '' })}
     >
       {!editor.disableBackground && <Background />}
       {editor.controls && <Controls />}
-      <LikeC4ViewSync />
       <Camera />
       {!editor.readonly && <OptionsPanel />}
     </ReactFlow>
   )
-}, isEqualReactSimple)
+}, isEqualReact)

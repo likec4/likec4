@@ -62,7 +62,7 @@
   overflow: visible; */
   /* fill: var(--mantine-color-dark-0); */
   /* stroke: color-mix(in srgb, var(--likec4-element-stroke) 25%, var(--likec4-element-loContrast)); */
-  stroke: var(--likec4-element-loContrast);
+  stroke: var(--likec4-element-indicator, var(--likec4-element-loContrast));
   transform-origin: center center;
   stroke-width: 6px;
 
@@ -77,8 +77,14 @@
 
   visibility: hidden;
 
+  :where(:global(.react-flow__node):focus-within) & {
+    visibility: visible;
+    --likec4-element-indicator: var(--likec4-element-hiContrast);
+  }
+
   :where(:global(.react-flow__node.selected)) & {
     visibility: visible;
+    --likec4-element-indicator: var(--likec4-element-loContrast);
   }
 }
 
@@ -167,7 +173,7 @@
     font-style: normal;
     text-align: center;
     font-weight: var(--likec4-element-title-font-weight, 500);
-    font-size: rem(19px);
+    font-size: rem(20px);
     line-height: 1.1;
     text-wrap: balance;
     color: var(--likec4-element-hiContrast);
@@ -192,8 +198,8 @@
     font-optical-sizing: auto;
     font-style: normal;
     font-weight: var(--likec4-element-technology-font-weight, 400);
-    font-size: rem(16px);
-    line-height: 1.25;
+    font-size: rem(14px);
+    line-height: 1.2;
     text-align: center;
     text-wrap: pretty;
     color: var(--likec4-element-loContrast);

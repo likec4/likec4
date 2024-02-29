@@ -9,13 +9,20 @@
 .previewBg {
   position: relative;
   overflow: hidden;
-  touch-action: none;
-  user-select: none;
-  pointer-events: none;
   padding: 0;
   margin: 0;
   background-origin: padding-box;
   background-image: radial-gradient(var(--gray-a5) 15%, var(--color-panel-translucent) 15%);
   background-position: 0 0;
   background-size: 12px 12px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
 }

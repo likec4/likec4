@@ -1,13 +1,15 @@
 import { defaultTheme } from '@likec4/core'
-import { Image, Text } from '@mantine/core'
+import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { scale, toHex } from 'khroma'
-import { memo, useMemo } from 'react'
+import { useMemo } from 'react'
+import { memo } from 'react-tracked'
 import { equals } from 'remeda'
-import { useDiagramState, useLikeC4ViewTriggers } from '../../../state'
+import useTilg from 'tilg'
+import { useDiagramStateTracked } from '../../../state'
 import { toDomPrecision } from '../../../utils'
-import type { CompoundNodeData, CompoundXYFlowNode } from '../../types'
+import type { CompoundNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import classes from './compound.module.css'
 
@@ -32,13 +34,14 @@ const compoundColor = (color: string, depth: number) =>
   )
 
 export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
+  id,
   data: {
     element
   },
   width,
   height
 }) {
-  // useTilg()
+  useTilg()
   const { color, depth = 0, ...compound } = element
   const colors = useMemo(() => {
     const colors = defaultTheme.elements[color]
@@ -52,9 +55,7 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
   const w = toDomPrecision(width ?? compound.width)
   const h = toDomPrecision(height ?? compound.height)
 
-  const editor = useDiagramState()
-  const trigger = useLikeC4ViewTriggers()
-
+  const editor = useDiagramStateTracked()
   const isNavigatable = editor.hasOnNavigateTo && !!compound.navigateTo
 
   return (
@@ -91,7 +92,7 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
       {isNavigatable && (
         <NavigateToBtn
           onClick={(e) => {
-            trigger.onNavigateTo(element, e)
+            editor.onNavigateTo(id, e)
           }}
           className={classes.navigateBtn} />
       )}

@@ -8,7 +8,6 @@ import {
 } from '@likec4/core'
 import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Tooltip } from '@mantine/core'
 import { hasAtLeast, identity, keys, pathOr, pipe, prop, setPath, takeWhile } from 'remeda'
-import { useLikeC4ViewTriggers } from '../../state'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { type ElementNodeData, type ElementXYFlowNode, XYFlowNode } from '../../xyflow/types'
 
@@ -40,7 +39,6 @@ export type ColorKey = typeof colors[0]['key']
 export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
-  const trigger = useLikeC4ViewTriggers()
   if (!hasAtLeast(nodes, 1)) {
     return null
   }

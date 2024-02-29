@@ -346,13 +346,24 @@ export class LikeC4ModelParser {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
+
+    let viewOf = null as c4.Fqn | null
+    if ('viewOf' in astNode) {
+      const viewOfEl = elementRef(astNode.viewOf)
+      const _viewOf = viewOfEl && this.resolveFqn(viewOfEl)
+      if (!_viewOf) {
+        logger.warn('viewOf is not resolved: ' + astNode.$cstNode?.text)
+      } else {
+        viewOf = _viewOf
+      }
+    }
+
     let id = astNode.name
     if (!id) {
-      const doc = getDocument(astNode).uri.toString()
-      id = stringHash(
-        doc,
+      id = 'view_' + stringHash(
+        getDocument(astNode).uri.toString(),
         astPath,
-        astNode.viewOf?.$cstNode?.text ?? ''
+        viewOf ?? ''
       ) as c4.ViewID
     }
 
@@ -365,6 +376,7 @@ export class LikeC4ModelParser {
     const basic: ParsedAstElementView = {
       id: id as c4.ViewID,
       astPath,
+      ...(viewOf && { viewOf }),
       ...(title && { title }),
       ...(description && { description }),
       ...(tags && { tags }),
@@ -379,16 +391,6 @@ export class LikeC4ModelParser {
       })
     }
     ElementViewOps.writeId(astNode, basic.id)
-
-    if ('viewOf' in astNode) {
-      const viewOfEl = elementRef(astNode.viewOf)
-      const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-      invariant(viewOf, ' viewOf is not resolved: ' + astNode.$cstNode?.text)
-      return {
-        ...basic,
-        viewOf
-      }
-    }
 
     if ('extends' in astNode) {
       const extendsView = astNode.extends.view.ref

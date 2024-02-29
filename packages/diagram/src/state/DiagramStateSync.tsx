@@ -1,11 +1,11 @@
-import { isEqualReactSimple as eq } from '@react-hookz/deep-equal'
-import { memo } from 'react'
+import { deepEqual as eq } from 'fast-equals'
+import { getUntrackedObject, memo } from 'react-tracked'
 import useTilg from 'tilg'
 import { useUpdateEffect } from '../hooks/use-update-effect'
-import { fromDiagramView } from '../state/fromDiagramView'
-import { useDiagramState } from '../state/state'
-import { useXYFlow } from '.'
-import type { XYFlowNode } from './types'
+import { useXYFlow } from '../xyflow'
+import type { XYFlowNode } from '../xyflow/types'
+import { fromDiagramView } from './fromDiagramView'
+import { useDiagramStateTracked } from './state'
 
 function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
   return a.id === b.id
@@ -18,9 +18,9 @@ function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
 /**
  * Syncs the diagram state with the XYFlow instance
  */
-export const LikeC4ViewSync = memo(function DiagramStateSync() {
+export const DiagramStateSync = memo(function DiagramStateSyncInner() {
   useTilg()
-  const state = useDiagramState(),
+  const state = useDiagramStateTracked(),
     initialized = state.viewportInitialized,
     nodes = state.viewNodes,
     edges = state.viewEdges
@@ -31,7 +31,10 @@ export const LikeC4ViewSync = memo(function DiagramStateSync() {
     if (!initialized) {
       return
     }
-    const updates = fromDiagramView({ nodes, edges }, state.nodesDraggable)
+    const updates = fromDiagramView({
+      nodes: getUntrackedObject(nodes)!,
+      edges: getUntrackedObject(edges)!
+    }, state.nodesDraggable)
 
     xyflow.setNodes(prev =>
       updates.nodes.map(<N extends XYFlowNode>(update: N): N => {

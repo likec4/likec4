@@ -71,31 +71,28 @@
 
 .edgeLabel {
   position: absolute;
-  padding: 2px 5px;
-
-  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 50%, transparent);
-  border-radius: 3px;
-  --text-color: var(--likec4-relation-labelColor);
   pointer-events: all;
   cursor: pointer;
   transform-origin: 50% 50%;
   transition: all 120ms ease-out;
-  white-space: pre;
   isolation: auto;
-  /* mix-blend-mode: soft-light; */
-  /* backdrop-filter: opacity(0.01);
-
-  & :global(.mantine-Text-root) {
-    background: var(--likec4-relation-labelColor);
-    -webkit-background-clip: text; */
-    /* -webkit-text-fill-color: transparent; */
-    /* mix-blend-mode: luminosity;
-    background-blend-mode: luminosity;
-  } */
+  text-align: left;
+  mix-blend-mode: luminosity;
+  --text-color: var(--likec4-relation-labelColor);
 
   &[data-edge-hovered='true'] {
     transform: scale(1.08);
     transition-delay: 120ms;
     --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 70%, white);
   }
+}
+
+.edgeLabelBody {
+  display: inline-block;
+  padding: 2px 5px;
+  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 35%, transparent);
+  border-radius: 3px;
+  color: var(--text-color);
+  font-size: rem(12);
+  line-height: 1.25;
 }

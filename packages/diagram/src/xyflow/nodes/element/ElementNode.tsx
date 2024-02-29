@@ -2,9 +2,9 @@ import { Image, Text } from '@mantine/core'
 import { isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { motion, type Variants } from 'framer-motion'
-import { memo } from 'react'
-import { equals } from 'remeda'
-import { useDiagramState, useLikeC4ViewTriggers } from '../../../state'
+import { memo } from 'react-tracked'
+import useTilg from 'tilg'
+import { useDiagramStateTracked } from '../../../state'
 import { toDomPrecision } from '../../../utils'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -51,10 +51,20 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
   width,
   height
 }) {
-  const editor = useDiagramState()
-  const trigger = useLikeC4ViewTriggers()
-
+  useTilg()
+  const editor = useDiagramStateTracked()
   const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo
+
+  // const onNavigateTo = useCallback(
+  //   (e: React.MouseEvent) => {
+  //     if (isNavigable) {
+  //       e.preventDefault()
+  //       e.stopPropagation()
+  //       editor.onNavigateTo(element.navigateTo)
+  //     }
+  //   },
+  //   [isNavigable, editor.onNavigateTo]
+  // )
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -146,7 +156,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
       {isNavigable && (
         <NavigateToBtn
           onClick={(e) => {
-            trigger.onNavigateTo(element, e)
+            editor.onNavigateTo(id, e)
           }}
           className={classes.navigateBtn} />
       )}

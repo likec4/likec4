@@ -4,8 +4,9 @@ import type { EdgeProps } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { memo } from 'react'
+import { memo } from 'react-tracked'
 import { hasAtLeast } from 'remeda'
+import useTilg from 'tilg'
 import { ZIndexes } from '../../const'
 import { useSelectDiagramState } from '../../state'
 import type { RelationshipData } from '../types'
@@ -64,7 +65,7 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   style,
   interactionWidth
 }) {
-  // useTilg()
+  useTilg()
   invariant(data, 'data is required')
   const {
     edge,
@@ -80,9 +81,9 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
 
   let strokeDasharray: string | undefined
   if (isDotted) {
-    strokeDasharray = '2,4'
+    strokeDasharray = '1,4'
   } else if (isDashed) {
-    strokeDasharray = '10,8'
+    strokeDasharray = '8,8'
   }
 
   const marker = `url(#arrow-${id})`
@@ -109,7 +110,13 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
         className={clsx('react-flow__edge-path', styles.edgePath)}
         d={edgePath}
         style={style}
-        {...(strokeDasharray ? { strokeDasharray } : {})}
+        strokeLinecap={'round'}
+        {
+          // strokeLinecap={isDotted ? 'butt' : 'round'}
+          // strokeMiterlimit={10}
+          // strokeLinejoin="bevel"
+          ...(strokeDasharray ? { strokeDasharray } : {})
+        }
         {...(edge.headArrow ? { markerEnd: marker } : {})}
         {...(edge.tailArrow ? { markerStart: marker } : {})}
       />
@@ -120,6 +127,8 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
         strokeOpacity={0}
         strokeWidth={interactionWidth ?? 10}
       />
+      {
+        /*
       {controlPoints.map((p, i) => (
         <circle
           className={styles.controlPoint}
@@ -128,7 +137,8 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
           cy={p[1]}
           r={5}
         />
-      ))}
+      ))} */
+      }
       {data.label && (
         <>
           {
@@ -149,11 +159,16 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
               style={{
                 top: data.label.bbox.y,
                 left: data.label.bbox.x,
-                maxWidth: data.label.bbox.width + 25,
+                width: data.label.bbox.width + 5,
+                // maxWidth: data.label.bbox.width + 25,
                 zIndex: ZIndexes.Edge
               }}
             >
-              <Text component="div" ta={'left'} fz={rem(12)}>{data.label.text}</Text>
+              <Box
+                className={styles.edgeLabelBody}>
+                <span>{data.label.text}</span>
+              </Box>
+              {/* <Text component="span" fz={rem(12)}></Text> */}
             </Box>
           </EdgeLabelRenderer>
         </>
