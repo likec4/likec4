@@ -77,14 +77,14 @@
 
   visibility: hidden;
 
-  :where(:global(.react-flow__node):focus-within) & {
+  /* :where(:global(.react-flow__node):focus-within) & {
     visibility: visible;
     --likec4-element-indicator: var(--likec4-element-hiContrast);
-  }
+  } */
 
   :where(:global(.react-flow__node.selected)) & {
     visibility: visible;
-    --likec4-element-indicator: var(--likec4-element-loContrast);
+       /* --likec4-element-indicator: var(--likec4-element-loContrast); */
   }
 }
 
@@ -174,7 +174,7 @@
     text-align: center;
     font-weight: var(--likec4-element-title-font-weight, 500);
     font-size: rem(20px);
-    line-height: 1.1;
+    line-height: 1.2;
     text-wrap: balance;
     color: var(--likec4-element-hiContrast);
   }
@@ -246,7 +246,7 @@
         box-shadow: var(--mantine-shadow-lg);
         transform: translate(-50%, 0) scale(1.25);
         opacity: 1;
-        transition-delay: 375ms;
+        transition-delay: 300ms;
 
         @mixin hover {
           --ai-hover: color-mix(in srgb, var(--likec4-element-fill) 50%, var(--likec4-element-stroke));

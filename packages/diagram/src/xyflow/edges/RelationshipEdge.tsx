@@ -65,7 +65,6 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   style,
   interactionWidth
 }) {
-  useTilg()
   invariant(data, 'data is required')
   const {
     edge,

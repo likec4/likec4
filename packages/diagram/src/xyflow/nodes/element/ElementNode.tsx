@@ -31,11 +31,11 @@ const variants = {
   hover: {
     scale: 1.0655,
     transition: {
-      delay: 0.25
+      delay: 0.2
     }
   },
   tap: {
-    scale: 0.985,
+    scale: 0.98,
     transition: {
       type: 'spring'
     }
@@ -51,20 +51,9 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
   width,
   height
 }) {
-  useTilg()
+  // useTilg()
   const editor = useDiagramStateTracked()
   const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo
-
-  // const onNavigateTo = useCallback(
-  //   (e: React.MouseEvent) => {
-  //     if (isNavigable) {
-  //       e.preventDefault()
-  //       e.stopPropagation()
-  //       editor.onNavigateTo(element.navigateTo)
-  //     }
-  //   },
-  //   [isNavigable, editor.onNavigateTo]
-  // )
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)

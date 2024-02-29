@@ -41,7 +41,7 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
   width,
   height
 }) {
-  useTilg()
+  // useTilg()
   const { color, depth = 0, ...compound } = element
   const colors = useMemo(() => {
     const colors = defaultTheme.elements[color]

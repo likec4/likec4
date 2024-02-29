@@ -1,8 +1,8 @@
 import { isEqualReact } from '@react-hookz/deep-equal'
 import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import useTilg from 'tilg'
-import { useDiagramStateTracked } from '../state'
+import { useDiagramStateTracked, useSelectDiagramState, useUpdateDiagramState } from '../state'
 import { Camera, OptionsPanel } from '../ui'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
@@ -25,15 +25,8 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
 }) {
   useTilg()
   const editor = useDiagramStateTracked()
-  // const update = useUpdateDiagramState()
-  // const hoveredEdgeId = useDiagramState().onNavigateTo
-  // const instanceRef = useRef<XYFlowInstance>()
+  const update = useUpdateDiagramState()
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
-
-  // const onNodeDrag = useNodeDragConstraints(instanceRef)
-  // const handlers = useBindEventHandlers(instanceRef)
-  // console.log('LikeC4XYFlow')
-
   return (
     <ReactFlow
       colorMode={colorMode}
@@ -42,7 +35,7 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       zoomOnPinch={editor.zoomable}
-      zoomOnScroll={editor.zoomable && !editor.pannable}
+      zoomOnScroll={!editor.pannable && editor.zoomable}
       {...(!editor.zoomable && {
         zoomActivationKeyCode: null
       })}
@@ -68,26 +61,11 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or camera does not work
+      {...props}
       onInit={editor.onInit}
-      onNodeClick={editor.onNodeClick}
-      onEdgeClick={editor.onEdgeClick}
       onEdgeMouseEnter={editor.onEdgeMouseEnter}
       onEdgeMouseLeave={editor.onEdgeMouseLeave}
-      {...props}
-      {
-        // onEdgeMouseEnter={useCallback((event, edge) => {
-        //   update({
-        //     pannable: true
-        //     // hoveredEdgeId: edge.id
-        //   })
-        // }, [])}
-        // onEdgeMouseLeave={useCallback((event, edge) => {
-        //   // update({
-        //   //   hoveredEdgeId: null
-        //   // })
-        // }, [])}
-        ...(!editor.pannable && { [`data-likec4-nopan`]: '' })
-      }
+      {...(!editor.pannable && { [`data-likec4-nopan`]: '' })}
       {...(editor.disableBackground && { [`data-likec4-nobg`]: '' })}
     >
       {!editor.disableBackground && <Background />}

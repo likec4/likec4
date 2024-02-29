@@ -25,16 +25,16 @@
     font-family: var(--likec4-compound-title-font-family, var(--_lkc4-default-font));
     font-optical-sizing: auto;
     font-style: normal;
-    text-align: center;
+    text-align: left;
     display: inline-block;
     font-weight: 600;
-    font-size: rem(13px);
+    font-size: 15px;
     text-transform: uppercase;
     letter-spacing: 0.2px;
-    line-height: 0;
+    line-height: 1;
     opacity: 0.75;
     color: var(--likec4-element-loContrast);
-    padding-left: rem(4px);
+    padding-left: rem(12px);
 
     :where([data-likec4-navigatable='true']) & {
       padding-left: rem(26px);

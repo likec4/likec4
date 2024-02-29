@@ -46,7 +46,6 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@fontsource-variable/rubik": "^5.0.20",
     "@mantine/core": "^7.5.3",
     "@mantine/hooks": "^7.5.3",
     "@radix-ui/react-icons": "^1.3.0",

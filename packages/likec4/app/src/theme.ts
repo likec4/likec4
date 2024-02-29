@@ -2,7 +2,7 @@ import { Button, createTheme, type MantineTheme } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
-  fontFamily: 'var(--default-font-family)',
+  // fontFamily: 'var(--default-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {
@@ -14,8 +14,5 @@ export const theme = createTheme({
         // fontSize: '1.85rem',
       }
     }
-  },
-  components: {
-    Button: Button.extend({})
   }
 }) as MantineTheme

@@ -1,5 +1,6 @@
 import { deepEqual as eq } from 'fast-equals'
-import { getUntrackedObject, memo } from 'react-tracked'
+import { memo } from 'react'
+import { getUntrackedObject } from 'react-tracked'
 import useTilg from 'tilg'
 import { useUpdateEffect } from '../hooks/use-update-effect'
 import { useXYFlow } from '../xyflow'
