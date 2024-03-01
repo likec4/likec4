@@ -1,4 +1,3 @@
-'use client'
 import { shallowEqual } from 'fast-equals'
 import { useCallback, useState } from 'react'
 

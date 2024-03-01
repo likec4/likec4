@@ -7,9 +7,9 @@ import {
   type ThemeColor
 } from '@likec4/core'
 import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Tooltip } from '@mantine/core'
-import { hasAtLeast, identity, keys, pathOr, pipe, prop, setPath, takeWhile } from 'remeda'
+import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
-import { type ElementNodeData, type ElementXYFlowNode, XYFlowNode } from '../../xyflow/types'
+import { XYFlowNode } from '../../xyflow/types'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -36,6 +36,8 @@ export const colors = keys.strict(otherColors).map(key => ({
 export type ThemeColorKey = typeof themedColors[0]['key']
 export type ColorKey = typeof colors[0]['key']
 
+type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
+
 export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
@@ -49,14 +51,13 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onShapeChange={(shape: ElementShape) => {
           const targets = [] as Fqn[]
           for (const nd of nodes) {
-            api.updateNodeData(nd.id, n => ({
+            api.updateNodeData(nd.id, (n: XYFlowNode) => ({
               ...n.data,
               element: {
                 ...n.data.element,
                 shape
               }
             }))
-            // targets.push(nd.data.id)
           }
           // invariant(hasAtLeast(targets, 1), 'targets.length < 1')
           // trigger.onChange({
@@ -71,7 +72,7 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onColorChange={(color: ColorKey | ThemeColorKey) => {
           const targets = [] as Fqn[]
           for (const nd of nodes) {
-            api.updateNodeData(nd.id, n => ({
+            api.updateNodeData(nd.id, (n: XYFlowNode) => ({
               ...n.data,
               element: {
                 ...n.data.element,
@@ -100,12 +101,12 @@ const Colors = ({
   nodes: [firstNode, ...nodes],
   onColorChange
 }: {
-  nodes: NonEmptyArray<XYFlowNode.Data>
+  nodes: NonEmptyArray<XYNodesData>
   onColorChange: (color: ColorKey | ThemeColorKey) => void
 }) => {
-  let selectedColor = firstNode.element.color as ThemeColor | null
+  let selectedColor = firstNode.data.element.color as ThemeColor | null
   takeWhile(nodes, node => {
-    if (node.element.color !== selectedColor) {
+    if (node.data.element.color !== selectedColor) {
       selectedColor = null
       return false
     }
@@ -172,12 +173,12 @@ const ShapeOption = ({
   nodes: [firstNode, ...nodes],
   onShapeChange
 }: {
-  nodes: NonEmptyArray<XYFlowNode.Data>
+  nodes: NonEmptyArray<XYNodesData>
   onShapeChange: (shape: ElementShape) => void
 }) => {
-  let selectedShape = firstNode.element.shape as ElementShape | null
+  let selectedShape = firstNode.data.element.shape as ElementShape | null
   takeWhile(nodes, node => {
-    if (node.element.shape !== selectedShape) {
+    if (node.data.element.shape !== selectedShape) {
       selectedShape = null
       return false
     }

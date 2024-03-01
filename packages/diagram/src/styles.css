@@ -1,6 +1,3 @@
-@import url('@xyflow/react/dist/style.css');
-@import url('./theme-colors.css');
-
 .mantine-ActionIcon-icon {
   svg {
     width: 75%;
@@ -28,8 +25,8 @@
     }
   }
 
-  --likec4-font-family: var(--likec4-default-font, var(--mantine-font-family));
+  /* --likec4-font-family: var(--likec4-default-font, var(--mantine-font-family));
   --likec4-compound-font-family: var(--likec4-font-family);
   --likec4-element-font-family: var(--likec4-font-family);
-  --likec4-edge-font-family: var(--likec4-font-family);
+  --likec4-edge-font-family: var(--likec4-font-family); */
 }

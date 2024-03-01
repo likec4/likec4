@@ -2,10 +2,10 @@ import { useMantineContext } from '@mantine/core'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useMemo } from 'react'
 import useTilg from 'tilg'
+import * as css from './index.css'
 import { type LikeC4DiagramProps } from './props'
 import { DiagramStateProvider, DiagramStateSync } from './state'
 import { fromDiagramView } from './state/fromDiagramView'
-import './styles.css'
 import { LikeC4XYFlow } from './xyflow'
 
 export function LikeC4Diagram({
@@ -27,6 +27,7 @@ export function LikeC4Diagram({
         {...apiProps}
       >
         <LikeC4XYFlow
+          className={css.scope}
           defaultNodes={initial.nodes}
           defaultEdges={initial.edges}
         />

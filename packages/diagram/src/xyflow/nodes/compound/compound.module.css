@@ -19,10 +19,9 @@
   background: var(--likec4-element-fill);
 
   transition: all 300ms ease-out;
-  --_lkc4-default-font: var(--likec4-compound-font-family, var(--likec4-font-family, var(--mantine-font-family)));
 
   .title {
-    font-family: var(--likec4-compound-title-font-family, var(--_lkc4-default-font));
+    font-family: var(--likec4-compound-title-font-family, var(--likec4-compound-font-family));
     font-optical-sizing: auto;
     font-style: normal;
     text-align: left;

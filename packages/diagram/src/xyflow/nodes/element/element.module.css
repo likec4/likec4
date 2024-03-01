@@ -1,9 +1,9 @@
 .container {
-  position: relative;
+  /* position: relative;
   width: 100%;
   width: -webkit-fill-available;
   height: 100%;
-  height: -webkit-fill-available;
+  height: -webkit-fill-available; */
 }
 
 .shapeSvg {
@@ -55,13 +55,6 @@
 }
 
 .indicator {
-  /* top: 0px;
-  left: 0px;
-  position: absolute;
-  pointer-events: none;
-  overflow: visible; */
-  /* fill: var(--mantine-color-dark-0); */
-  /* stroke: color-mix(in srgb, var(--likec4-element-stroke) 25%, var(--likec4-element-loContrast)); */
   stroke: var(--likec4-element-indicator, var(--likec4-element-loContrast));
   transform-origin: center center;
   stroke-width: 6px;
@@ -77,14 +70,8 @@
 
   visibility: hidden;
 
-  /* :where(:global(.react-flow__node):focus-within) & {
-    visibility: visible;
-    --likec4-element-indicator: var(--likec4-element-hiContrast);
-  } */
-
   :where(:global(.react-flow__node.selected)) & {
     visibility: visible;
-       /* --likec4-element-indicator: var(--likec4-element-loContrast); */
   }
 }
 

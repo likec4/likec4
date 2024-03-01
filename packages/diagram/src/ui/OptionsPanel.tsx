@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
 import { NodeOptions } from './options/NodeOptions'
-import classes from './OptionsPanel.module.css'
+import * as styles from './OptionsPanel.css'
 
 const OptionsPanelMemo = memo(function OptionsPanel() {
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
@@ -37,7 +37,7 @@ const OptionsPanelMemo = memo(function OptionsPanel() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
           transition={{ duration: 0.15 }}
-          className={clsx('react-flow__panel', classes.panel)}
+          className={clsx('react-flow__panel', styles.panel)}
           style={{
             transformOrigin: 'center right'
           }}

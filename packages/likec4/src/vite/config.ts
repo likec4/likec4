@@ -1,5 +1,6 @@
 import { createLikeC4Logger } from '@/logger'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { isCI } from 'ci-info'
 import fs from 'node:fs'
@@ -119,13 +120,17 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       reportCompressedSize: isDev || !isCI,
       // 200Kb
       assetsInlineLimit: 200 * 1024,
-      cssMinify: true,
+      cssCodeSplit: false,
+      // cssMinify: true,
       sourcemap: false,
       chunkSizeWarningLimit: 2_000_000,
       commonjsOptions: {
         esmExternals: true,
         sourceMap: false
       }
+    },
+    experimental: {
+      hmrPartialAccept: true
     },
     css: {
       postcss: {
@@ -170,7 +175,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'
       }),
-      likec4Plugin({ languageServices })
+      likec4Plugin({ languageServices }),
+      vanillaExtractPlugin({})
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

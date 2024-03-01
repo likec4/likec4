@@ -34,7 +34,7 @@ export namespace XYFlowNode {
   export const is = (node: Node): node is XYFlowNode => isCompound(node) || isElement(node)
 }
 
-export interface RelationshipData {
+export type RelationshipData = {
   edge: DiagramEdge
   controlPoints: Point[]
   headPoint: Point | null

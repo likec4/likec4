@@ -11,15 +11,15 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as EmbedViewIdImport } from './routes/embed.$viewId.tsx'
-import { Route as ExportViewIdImport } from './routes/export.$viewId.tsx'
-import { Route as IndexImport } from './routes/index.tsx'
-import { Route as ViewViewIdAsDotImport } from './routes/view.$viewId._as.dot.tsx'
-import { Route as ViewViewIdAsMmdImport } from './routes/view.$viewId._as.mmd.tsx'
-import { Route as ViewViewIdAsImport } from './routes/view.$viewId._as.tsx'
-import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor.tsx'
-import { Route as ViewViewIdReactImport } from './routes/view.$viewId.react.tsx'
-import { Route as ViewViewIdImport } from './routes/view.$viewId.tsx'
+import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
+import { Route as ExportViewIdImport } from './routes/export.$viewId'
+import { Route as IndexImport } from './routes/index'
+import { Route as ViewViewIdImport } from './routes/view.$viewId'
+import { Route as ViewViewIdAsImport } from './routes/view.$viewId._as'
+import { Route as ViewViewIdAsDotImport } from './routes/view.$viewId._as.dot'
+import { Route as ViewViewIdAsMmdImport } from './routes/view.$viewId._as.mmd'
+import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor'
+import { Route as ViewViewIdReactImport } from './routes/view.$viewId.react'
 
 // Create/Update Routes
 

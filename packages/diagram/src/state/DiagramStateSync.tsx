@@ -1,6 +1,7 @@
 import { deepEqual as eq } from 'fast-equals'
 import { memo } from 'react'
 import { getUntrackedObject } from 'react-tracked'
+import { find, omit } from 'remeda'
 import useTilg from 'tilg'
 import { useUpdateEffect } from '../hooks/use-update-effect'
 import { useXYFlow } from '../xyflow'
@@ -10,10 +11,15 @@ import { useDiagramStateTracked } from './state'
 
 function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
   return a.id === b.id
+    && eq(a.type, b.type)
     && eq(a.data, b.data)
     && eq(a.position, b.position)
     && eq(a.width, b.width)
     && eq(a.height, b.height)
+}
+
+function findById<T extends { id: string }>(arr: T[], id: string) {
+  return find(arr, e => e.id === id)
 }
 
 /**
@@ -39,13 +45,13 @@ export const DiagramStateSync = memo(function DiagramStateSyncInner() {
 
     xyflow.setNodes(prev =>
       updates.nodes.map(<N extends XYFlowNode>(update: N): N => {
-        const existing = prev.find((n): n is N => n.id === update.id && n.type === update.type)
-        if (existing && existing.parentNode == update.parentNode) {
-          if (isNodesEqual(existing, update)) {
-            return existing
+        const existing = findById(prev, update.id)
+        if (existing) {
+          if (isNodesEqual(existing, update) && existing.parentNode == update.parentNode) {
+            return existing as N
           }
           return {
-            ...existing,
+            ...omit(existing, ['parentNode']),
             ...update
           }
         }

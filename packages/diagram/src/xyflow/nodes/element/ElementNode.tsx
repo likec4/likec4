@@ -1,6 +1,7 @@
 import { Image, Text } from '@mantine/core'
 import { isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
+import clsx from 'clsx'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
 import useTilg from 'tilg'
@@ -8,6 +9,7 @@ import { useDiagramStateTracked } from '../../../state'
 import { toDomPrecision } from '../../../utils'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
+import * as css from './element.css'
 import classes from './element.module.css'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
@@ -29,9 +31,9 @@ const variants = {
     transformOrigin: '50% 50%'
   },
   hover: {
-    scale: 1.0655,
+    scale: 1.07,
     transition: {
-      delay: 0.2
+      delay: 0.15
     }
   },
   tap: {
@@ -61,7 +63,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
   return (
     <motion.div
       id={id}
-      className={classes.container}
+      className={clsx(classes.container, css.container)}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
@@ -96,7 +98,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
         width={w}
         height={h}
       >
-        <g className={classes.indicator}>
+        <g className={css.indicator}>
           <SelectedIndicator
             shape={element.shape}
             w={w}
