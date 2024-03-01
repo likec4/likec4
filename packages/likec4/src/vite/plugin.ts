@@ -58,9 +58,8 @@ const d2SourcesModule = {
   id: 'virtual:likec4/d2-sources',
   virtualId: '\0likec4/d2-sources',
   async load({ likec4, logger }) {
-    await Promise.resolve()
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
-    const views = likec4.views.computedViews()
+    const views = await likec4.views.computedViews()
     return generateD2Sources(views)
   }
 } satisfies Module
@@ -70,9 +69,8 @@ const mmdSourcesModule = {
   virtualId: '\0likec4/mmd-sources',
   // virtualId: '/@vite-plugin-likec4/likec4-mmd-sources.ts',
   async load({ likec4, logger }) {
-    await Promise.resolve()
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
-    const views = likec4.views.computedViews()
+    const views = await likec4.views.computedViews()
     return generateMmdSources(views)
   }
 } satisfies Module

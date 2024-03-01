@@ -1,4 +1,5 @@
-import type { CodeLensProvider, LangiumDocument, MaybePromise } from 'langium'
+import { DocumentState, type LangiumDocument, type MaybePromise } from 'langium'
+import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
 import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
@@ -8,11 +9,14 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     //
   }
 
-  provideCodeLens(
+  async provideCodeLens(
     doc: LangiumDocument,
     _params: CodeLensParams,
-    _cancelToken?: CancellationToken
-  ): MaybePromise<CodeLens[] | undefined> {
+    cancelToken?: CancellationToken
+  ): Promise<CodeLens[] | undefined> {
+    if (doc.state !== DocumentState.Validated) {
+      await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
+    }
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return
     }

@@ -1,12 +1,15 @@
 import type { likec4 as c4 } from '@likec4/core'
 import { InvalidModelError } from '@likec4/core'
 import type { CstNode, LangiumDocuments } from 'langium'
-import { findNodeForKeyword, findNodeForProperty, getDocument } from 'langium'
+import { AstUtils, GrammarUtils } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4Services } from '../module'
 import { type FqnIndex } from './fqn-index'
+
+const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
+const { getDocument } = AstUtils
 
 export class LikeC4ModelLocator {
   private fqnIndex: FqnIndex
@@ -71,18 +74,17 @@ export class LikeC4ModelLocator {
           }
         }
       }
-      const targetNode =
-        (node.kind
-          ? findNodeForProperty(node.$cstNode, 'kind')
-          : findNodeForKeyword(node.$cstNode, '->')) ?? findNodeForProperty(node.$cstNode, 'target')
+      const targetNode = (node.kind
+        ? findNodeForProperty(node.$cstNode, 'kind')
+        : findNodeForKeyword(node.$cstNode, '->')) ?? findNodeForProperty(node.$cstNode, 'target')
       return targetNode
         ? {
-            uri: doc.uri.toString(),
-            range: {
-              start: targetNode.range.start,
-              end: targetNode.range.end
-            }
+          uri: doc.uri.toString(),
+          range: {
+            start: targetNode.range.start,
+            end: targetNode.range.end
           }
+        }
         : null
     }
     return null

@@ -1,4 +1,4 @@
-import { EmptyFileSystem } from 'langium'
+import { DocumentState, EmptyFileSystem } from 'langium'
 import * as assert from 'node:assert'
 import stripIndent from 'strip-indent'
 import { type Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-protocol'
@@ -22,11 +22,16 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   const parse = async (input: string, uri?: string) => {
     if (!isInitialized) {
-      isInitialized = true
-      await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
-      // Workaround to set protected folders property
-      Object.assign(services.shared.workspace.WorkspaceManager, {
-        folders: [workspaceFolder]
+      await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+        if (isInitialized) {
+          return
+        }
+        isInitialized = true
+        await services.shared.workspace.WorkspaceManager.initializeWorkspace([workspaceFolder])
+        // Workaround to set protected folders property
+        Object.assign(services.shared.workspace.WorkspaceManager, {
+          folders: [workspaceFolder]
+        })
       })
     }
     const docUri = Utils.resolvePath(
@@ -39,13 +44,17 @@ export function createTestServices(workspace = 'file:///test/workspace') {
       docUri
     )
     langiumDocuments.addDocument(document)
-    await documentBuilder.build([document], { validation: false })
+    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      await documentBuilder.build([document], { validation: false })
+    })
     return document as LikeC4LangiumDocument
   }
 
   const validate = async (input: string | LikeC4LangiumDocument, uri?: string) => {
     const document = typeof input === 'string' ? await parse(input, uri) : input
-    await documentBuilder.build([document], { validation: true })
+    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      await documentBuilder.build([document], { validation: true })
+    })
     const diagnostics = document.diagnostics ?? []
     const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
     const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
@@ -64,39 +73,35 @@ export function createTestServices(workspace = 'file:///test/workspace') {
   }
   let previousPromise = Promise.resolve() as Promise<any>
   const validateAll = async () => {
-    const currentPromise: Promise<ValidateAllResult> = previousPromise
-      .then(async () => {
-        const docs = langiumDocuments.all.toArray()
-        assert.ok(docs.length > 0, 'no documents to validate')
-        await documentBuilder.build(docs, { validation: true })
-        const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
-        const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
-        const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
-        return {
-          diagnostics,
-          errors,
-          warnings
-        }
-      })
-      .catch(e => {
-        // Ignore errors from previousPromise
-        console.error(e)
-        return Promise.resolve({
-          diagnostics: [] as Diagnostic[],
-          errors: [] as string[],
-          warnings: [] as string[]
-        })
-      })
-    previousPromise = currentPromise
-
-    return await currentPromise
+    await services.shared.workspace.WorkspaceLock.write(async (_cancelToken) => {
+      const docs = langiumDocuments.all.toArray()
+      await documentBuilder.build(docs, { validation: true })
+    })
+    await documentBuilder.waitUntil(DocumentState.Validated)
+    const docs = langiumDocuments.all.toArray()
+    assert.ok(docs.length > 0, 'no documents to validate')
+    const diagnostics = docs.flatMap(doc => doc.diagnostics ?? [])
+    const warnings = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Warning ? d.message : [])
+    const errors = diagnostics.flatMap(d => d.severity === DiagnosticSeverity.Error ? d.message : [])
+    return {
+      diagnostics,
+      errors,
+      warnings
+    }
   }
 
   const buildModel = async () => {
     await validateAll()
-    const model = modelBuilder.buildModel()
+    const model = await modelBuilder.buildModel()
     if (!model) throw new Error('No model found')
     return model
+  }
+
+  const resetState = async () => {
+    await services.shared.workspace.WorkspaceLock.write(async (cancelToken) => {
+      const docs = langiumDocuments.all.toArray().map(doc => doc.uri)
+      await documentBuilder.update([], docs, cancelToken)
+    })
   }
 
   return {
@@ -104,7 +109,8 @@ export function createTestServices(workspace = 'file:///test/workspace') {
     parse,
     validate,
     validateAll,
-    buildModel
+    buildModel,
+    resetState
   }
 }
 

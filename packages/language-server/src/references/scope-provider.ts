@@ -1,25 +1,29 @@
 import type { likec4 as c4 } from '@likec4/core'
 import type { AstNode } from 'langium'
 import {
-  DONE_RESULT,
-  DefaultScopeProvider,
-  EMPTY_STREAM,
-  StreamImpl,
-  StreamScope,
-  findNodeForProperty,
-  getDocument,
-  stream,
-  toDocumentSegment,
   type AstNodeDescription,
+  AstUtils,
+  CstUtils,
+  DefaultScopeProvider,
+  DONE_RESULT,
+  EMPTY_STREAM,
+  GrammarUtils,
   type ReferenceInfo,
   type Scope,
-  type Stream
+  type Stream,
+  stream,
+  StreamImpl,
+  StreamScope
 } from 'langium'
 import { ast } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
+
+const { findNodeForProperty } = GrammarUtils
+const { toDocumentSegment } = CstUtils
+const { getDocument } = AstUtils
 
 function toAstNodeDescription(entry: FqnIndexEntry): AstNodeDescription {
   const $cstNode = findNodeForProperty(entry.el.$cstNode, 'name')
@@ -128,8 +132,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
     const precomputed = doc.precomputedScopes
 
     if (precomputed) {
-      const byReferenceType = (desc: AstNodeDescription) =>
-        this.reflection.isSubtype(desc.type, referenceType)
+      const byReferenceType = (desc: AstNodeDescription) => this.reflection.isSubtype(desc.type, referenceType)
 
       let container: AstNode | undefined = context.container
       while (container) {

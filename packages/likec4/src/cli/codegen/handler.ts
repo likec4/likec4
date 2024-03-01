@@ -140,7 +140,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   const timer = startTimer(logger)
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const views = languageServices.views.computedViews()
+  const views = await languageServices.views.computedViews()
   if (views.length === 0) {
     logger.warn('no views found')
     process.exitCode = 1

@@ -1056,7 +1056,7 @@ __metadata:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^1.2.1"
     jotai: "npm:^2.6.4"
-    langium: "npm:^2.1.3"
+    langium: "npm:^3.0.0"
     likec4: "workspace:*"
     lucide-react: "npm:^0.294.0"
     monaco-editor: "npm:0.36.1"
@@ -1102,7 +1102,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@types/node": "npm:^20.11.19"
     json5: "npm:^2.2.3"
-    langium: "npm:^2.1.3"
+    langium: "npm:^3.0.0"
     rambdax: "npm:^9.1.1"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
@@ -1135,8 +1135,8 @@ __metadata:
     "@types/object-hash": "npm:^3.0.6"
     debounce-fn: "npm:^6.0.0"
     execa: "npm:^8.0.1"
-    langium: "npm:^2.1.3"
-    langium-cli: "npm:^2.1.0"
+    langium: "npm:^3.0.0"
+    langium-cli: "npm:^3.0.1"
     npm-run-all2: "npm:^5.0.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
@@ -3740,12 +3740,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
-  version: 20.11.19
-  resolution: "@types/node@npm:20.11.19"
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.11.19":
+  version: 20.11.20
+  resolution: "@types/node@npm:20.11.20"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10/c7f4705d6c84aa21679ad180c33c13ca9567f650e66e14bcee77c7c43d14619c7cd3b4d7b2458947143030b7b1930180efa6d12d999b45366abff9fed7a17472
+  checksum: 10/ff449bdc94810dadb54e0f77dd587c6505ef79ffa5a208c16eb29b223365b188f4c935a3abaf0906a01d05257c3da1f72465594a841d35bcf7b6deac7a6938fb
   languageName: node
   linkType: hard
 
@@ -3753,15 +3753,6 @@ __metadata:
   version: 16.18.82
   resolution: "@types/node@npm:16.18.82"
   checksum: 10/baf1f8bb6f743c7d7bf3da24ccb9cd21676a74a7a03726344fd212db4cff376077cd31df8eeab3d4d4d741d2d3ee0bf2a8cb3f9cf89cca4e4b9e27e53ef1283e
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.11.19":
-  version: 20.11.20
-  resolution: "@types/node@npm:20.11.20"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10/ff449bdc94810dadb54e0f77dd587c6505ef79ffa5a208c16eb29b223365b188f4c935a3abaf0906a01d05257c3da1f72465594a841d35bcf7b6deac7a6938fb
   languageName: node
   linkType: hard
 
@@ -4919,7 +4910,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chevrotain-allstar@npm:0.3.1":
+"chevrotain-allstar@npm:~0.3.0":
   version: 0.3.1
   resolution: "chevrotain-allstar@npm:0.3.1"
   dependencies:
@@ -8950,43 +8941,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "langium-cli@npm:2.1.0"
+"langium-cli@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "langium-cli@npm:3.0.1"
   dependencies:
     chalk: "npm:~5.3.0"
     commander: "npm:~11.0.0"
     fs-extra: "npm:~11.1.1"
     jsonschema: "npm:~1.4.1"
-    langium: "npm:~2.1.0"
-    langium-railroad: "npm:~2.1.0"
+    langium: "npm:~3.0.0"
+    langium-railroad: "npm:~3.0.0"
     lodash: "npm:~4.17.21"
   bin:
     langium: bin/langium.js
-  checksum: 10/ab453578431f7a56420daf835cd0597d70ba1f8459771248bc01f3c40c71d4b47566e24c602e303728a46bdb9e116d0bcca545ba766d3d7e563ac59d94821912
+  checksum: 10/fa12106cf583c37c760127f26958a0af63e661c4fb538242aa43a2e553acce6d97e81f5d3cba30bd2df30c694c9705fb7372f26df03fa5bad2e995413ce2acb8
   languageName: node
   linkType: hard
 
-"langium-railroad@npm:~2.1.0":
-  version: 2.1.0
-  resolution: "langium-railroad@npm:2.1.0"
+"langium-railroad@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "langium-railroad@npm:3.0.0"
   dependencies:
-    langium: "npm:~2.1.0"
+    langium: "npm:~3.0.0"
     railroad-diagrams: "npm:~1.0.0"
-  checksum: 10/6060ffeb2a986bb0b7cccd7a944f091e29ae1524a24c92664a67f898c9a5581ab563cb1c883e1428accca189115f2afbce40e547b48e9e3ddb5d68fc7054cdb8
+  checksum: 10/66e70d80cd62dbdcac2bebd283a9c090a072043df1c5c32464113c4ffcc922a5a4fe36cecc416798aae2b14735d4bdae889427924c361eb3bc30175bb9846461
   languageName: node
   linkType: hard
 
-"langium@npm:^2.1.3, langium@npm:~2.1.0":
-  version: 2.1.3
-  resolution: "langium@npm:2.1.3"
+"langium@npm:^3.0.0, langium@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "langium@npm:3.0.0"
   dependencies:
     chevrotain: "npm:~11.0.3"
     chevrotain-allstar: "npm:~0.3.0"
     vscode-languageserver: "npm:~9.0.1"
     vscode-languageserver-textdocument: "npm:~1.0.11"
     vscode-uri: "npm:~3.0.8"
-  checksum: 10/5ca5e62df89f6906d0bf26aeffab74cc3b4b2b51059b39a855e1ceea0f011e712f98c443f5f855ee7b3cf7cc44279daead1903e174897fa69a68618533ccaf97
+  checksum: 10/2b0924373c09acb42ab88ddfe387bdafd33ce7f3cc36fcda4b9a9f864941c699b7e0a48c1afe81a9d9a15e15980d09d7889c8d89d046b92e7f813b9ea5514b12
   languageName: node
   linkType: hard
 
@@ -9062,7 +9053,7 @@ __metadata:
     "@vscode/vsce": "npm:^2.24.0"
     esbuild: "npm:^0.19.9"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
-    langium: "npm:^2.1.3"
+    langium: "npm:^3.0.0"
     npm-run-all2: "npm:^5.0.2"
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"

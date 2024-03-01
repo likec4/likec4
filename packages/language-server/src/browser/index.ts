@@ -1,4 +1,4 @@
-import { EmptyFileSystem, startLanguageServer as startLanguim } from 'langium'
+import { startLanguageServer as startLanguim } from 'langium/lsp'
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser'
 import { createLanguageServices } from '../module'
 
@@ -16,7 +16,7 @@ export function startLanguageServer() {
   const connection = createConnection(messageReader, messageWriter)
 
   // Inject the shared services and language-specific services
-  const services = createLanguageServices({ connection, ...EmptyFileSystem })
+  const services = createLanguageServices({ connection })
 
   // Start the language server with the shared services
   startLanguim(services.shared)

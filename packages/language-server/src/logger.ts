@@ -45,6 +45,10 @@ export function logWarnError(err: unknown): void {
     logger.warn(err)
     return
   }
+  if (err instanceof Error) {
+    logger.warn(err.stack ?? err.message)
+    return
+  }
   const error = normalizeError(err)
   logger.warn(`${error.name}: ${error.message}`)
 }
