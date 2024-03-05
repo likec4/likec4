@@ -10,9 +10,8 @@ function syncLikeC4Data(
   languageClient: MonacoLanguageClient,
   updateViews: (nextViews: Record<string, ComputedView>) => void
 ) {
-
   let tokenSource: monaco.CancellationTokenSource | undefined
-
+  let previousOp = Promise.resolve()
   let seqId = 1
 
   async function fetchModel(token: monaco.CancellationToken) {
@@ -38,17 +37,18 @@ function syncLikeC4Data(
   }
 
   const onDidChangeModel = languageClient.onNotification(Rpc.onDidChangeModel, () => {
-    console.debug('syncLikeC4Data: onDidChangeModel')
-    if (tokenSource) {
-      tokenSource.dispose(true)
-    }
-    const opToken = tokenSource = new monaco.CancellationTokenSource()
-    fetchModel(opToken.token).finally(() => {
-      if (opToken === tokenSource) {
-        tokenSource = undefined
-      }
-      opToken.dispose()
-    })
+    console.info('syncLikeC4Data: onDidChangeModel')
+    tokenSource?.cancel()
+    tokenSource?.dispose()
+    previousOp = previousOp
+      .catch(err => {
+        console.error(err)
+        return Promise.resolve()
+      })
+      .then(() => {
+        tokenSource = new monaco.CancellationTokenSource()
+        return fetchModel(tokenSource.token)
+      })
   })
   console.debug('syncLikeC4Data: on')
 
