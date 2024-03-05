@@ -3749,10 +3749,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.18.82":
-  version: 16.18.82
-  resolution: "@types/node@npm:16.18.82"
-  checksum: 10/baf1f8bb6f743c7d7bf3da24ccb9cd21676a74a7a03726344fd212db4cff376077cd31df8eeab3d4d4d741d2d3ee0bf2a8cb3f9cf89cca4e4b9e27e53ef1283e
+"@types/node@npm:^16.18.86":
+  version: 16.18.86
+  resolution: "@types/node@npm:16.18.86"
+  checksum: 10/a2d4f36698abd0da6ec548d72a154566729b80dbec7cf14ddcc444ced14f483733a29eaa65d4128ffc9720414b2b4d5c35085b9cebfdf8ef43bf644e12c991b9
   languageName: node
   linkType: hard
 
@@ -9055,7 +9055,7 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/vscode-preview": "workspace:*"
-    "@types/node": "npm:^16.18.82"
+    "@types/node": "npm:^16.18.86"
     "@types/vscode": "npm:~1.77.0"
     "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.1"
