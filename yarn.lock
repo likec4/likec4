@@ -1203,8 +1203,6 @@ __metadata:
     typescript-plugin-css-modules: "npm:^5.1.0"
     unbuild: "npm:^2.0.0"
   peerDependencies:
-    "@mantine/core": ^7.5.2
-    "@mantine/hooks": ^7.5.2
     react: ^18.2.0
     react-dom: ^18.2.0
     scheduler: ^0.23.0

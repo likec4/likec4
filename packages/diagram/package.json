@@ -34,6 +34,8 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.6.1",
+    "@mantine/hooks": "^7.6.1",
     "@mantine/vanilla-extract": "^7.6.1",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
@@ -51,8 +53,6 @@
     "tilg": "^0.1.1"
   },
   "peerDependencies": {
-    "@mantine/core": "^7.5.2",
-    "@mantine/hooks": "^7.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "scheduler": "^0.23.0"
@@ -63,8 +63,6 @@
     }
   },
   "devDependencies": {
-    "@mantine/core": "^7.6.1",
-    "@mantine/hooks": "^7.6.1",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/d3-shape": "^3",
     "@types/react": "^18.2.0",

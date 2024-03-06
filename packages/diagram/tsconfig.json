@@ -8,8 +8,10 @@
       "esnext",
       "webworker"
     ],
-    "outDir": "dist",
-    "rootDir": ".",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
     "jsx": "react-jsxdev",
     "plugins": [
       {

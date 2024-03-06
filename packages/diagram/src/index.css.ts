@@ -1,5 +1,5 @@
 import { defaultTheme, type ThemeColor } from '@likec4/core'
-import { createGlobalTheme, fallbackVar, style } from '@vanilla-extract/css'
+import { createGlobalTheme, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine, vars } from './theme'
 
 export const scope = style({})
@@ -38,37 +38,23 @@ for (const color of Object.keys(defaultTheme.elements)) {
   })
 }
 
-// createGlobalTheme('body', vars, {
-//   likec4: {
-//     font: fallbackVar(mantine.fontFamily),
-//     element: {
-//       fill: vars.likec4.element.fill,
-//       stroke: vars.likec4.element.stroke,
-//       hiContrast: vars.likec4.element.hiContrast,
-//       loContrast: vars.likec4.element.loContrast
-//     },
-//     relation: {
-//       lineColor: vars.likec4.relation.lineColor,
-//       labelColor: vars.likec4.relation.labelColor,
-//       labelBg: vars.likec4.relation.labelBg
-//     }
-//   }
-// });
-// createGlobalTheme(':where(.selected)', vars, {
-//     likec4: {
-//     font: fallbackVar(mantine.fontFamily),
-//     element: {
-//       fill: vars.likec4.element.fill,
-//       stroke: vars.likec4.element.stroke,
-//       hiContrast: vars.likec4.element.hiContrast,
-//       loContrast: vars.likec4.element.loContrast
-//     },
-//     relation: {
-//       lineColor: vars.likec4.relation.lineColor,
-//       labelColor: vars.likec4.relation.labelColor,
-//       labelBg: vars.likec4.relation.labelBg
-//     }
-//   }
-// })
+globalStyle('.mantine-ActionIcon-icon svg', {
+  width: '75%',
+  height: '75%'
+})
+
+globalStyle('.react-flow[data-likec4-nopan] .react-flow__pane', {
+  cursor: 'default'
+})
+
+globalStyle('.react-flow[data-likec4-nobg]', {
+  backgroundColor: 'transparent !important',
+  vars: {
+    '--xy-background-color': 'transparent'
+  }
+})
+globalStyle('.react-flow[data-likec4-nobg] .react-flow__attribution', {
+  display: 'none'
+})
 
 export {}

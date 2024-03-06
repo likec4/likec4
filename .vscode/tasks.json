@@ -5,10 +5,7 @@
       "label": "build",
       "type": "npm",
       "script": "vs:tasks:build",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "group": "build",
       "problemMatcher": [
         "$tsc"
       ],
@@ -27,11 +24,15 @@
       "type": "typescript",
       "tsconfig": "tsconfig.json",
       "option": "watch",
+      "isBackground": true,
       "problemMatcher": [
         "$tsc-watch"
       ],
-      "group": "build",
-      "label": "tsc: watch - tsconfig.json"
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "tsc: watch"
     }
   ]
 }
