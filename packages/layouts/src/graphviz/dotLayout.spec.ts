@@ -1,57 +1,49 @@
-import { describe, expect, it } from 'vitest'
+import type { ComputedView } from '@likec4/core'
+import { describe, it } from 'vitest'
 import {
   computedAmazonView,
-  computedCloudView,
   computedCloud3levels,
+  computedCloudView,
   computedIndexView,
   issue577_fail,
   issue577_valid
 } from './__fixtures__'
-import { dotLayoutFn } from './dotLayout'
-import type { ComputedView } from '@likec4/core'
-import { Graphviz } from '@hpcc-js/wasm/graphviz'
+import { DotLayouter } from './DotLayouter'
 
-export const dotLayout = async (computedView: ComputedView) => {
-  const graphviz = await Graphviz.load()
-  try {
-    return dotLayoutFn(graphviz, computedView).diagram
-  } finally {
-    Graphviz.unload()
-  }
+const wasmGraphviz = new DotLayouter()
+
+async function dotLayout(computedView: ComputedView) {
+  return (await wasmGraphviz.layout(computedView)).diagram
 }
 
 describe('dotLayout:', () => {
-  it('computedIndexView', async ({expect}) => {
+  it('computedIndexView', async ({ expect }) => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()
   })
 
-  it('computedAmazonView', async ({expect}) => {
+  it('computedAmazonView', async ({ expect }) => {
     const diagram = await dotLayout(computedAmazonView)
     expect(diagram).toMatchSnapshot()
   })
 
-  it('computedCloud3levels', async ({expect}) => {
+  it('computedCloud3levels', async ({ expect }) => {
     const diagram = await dotLayout(computedCloud3levels)
     expect(diagram).toMatchSnapshot()
   })
 
-  it('computedCloudView', async ({expect}) => {
+  it('computedCloudView', async ({ expect }) => {
     const diagram = await dotLayout(computedCloudView)
     expect(diagram).toMatchSnapshot()
   })
 
-  it('reproduce #577', async ({expect}) => {
-    try {
-      const diagram = await dotLayout(issue577_fail)
-      expect.fail('Expected failure, but got a diagram instead')
-    } catch (e: any) {
-      // expected
-      expect(e).to.be.instanceOf(Error)
-      expect(e.message).toContain('... <TD ALIGN="CENTER"')
-    }
-
-    const diagram = await dotLayout(issue577_valid)
+  it('reproduce #577', async ({ expect }) => {
+    // was failing with invalid URL
+    const diagram = await dotLayout(issue577_fail)
     expect(diagram).toBeDefined()
+    expect(diagram.nodes[0]?.icon).toEqual('https://icons/aws%20&%20CloudFront.svg')
+
+    // was valid
+    expect(await dotLayout(issue577_valid)).toBeDefined()
   })
 })
