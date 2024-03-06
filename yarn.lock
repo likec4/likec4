@@ -1180,6 +1180,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@vanilla-extract/css": "npm:^1.14.1"
+    "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/recipes": "npm:^0.5.1"
     "@xyflow/react": "npm:^12.0.0-next.10"
     clsx: "npm:^2.1.0"
@@ -4548,6 +4549,15 @@ __metadata:
     modern-ahocorasick: "npm:^1.0.0"
     outdent: "npm:^0.8.0"
   checksum: 10/7ecdddfc6d24e80ee43496577294b580c71fa6fdbaa022c91930abf0dbe0923dd3f886e452b1f5ebe12dbfb61b080a5e3ef8939a897bf5b5e0dd8c93f04267f0
+  languageName: node
+  linkType: hard
+
+"@vanilla-extract/dynamic@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@vanilla-extract/dynamic@npm:2.1.0"
+  dependencies:
+    "@vanilla-extract/private": "npm:^1.0.3"
+  checksum: 10/c4a49e20485889967bb1c71fc4d208ff5c500f61bf6390a03453d51a691736c85807f47727d10de55ac66260a3ac2a4a9df76354f10c75ce127f0c00e49fd64b
   languageName: node
   linkType: hard
 

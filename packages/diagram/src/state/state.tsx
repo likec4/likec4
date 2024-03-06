@@ -14,7 +14,7 @@ import type {
   LikeC4DiagramProps,
   LikeC4ViewColorMode
 } from '../props'
-import { useXYFlow } from '../xyflow'
+import { useXYFlow } from '../xyflow/hooks'
 import { type XYFlowInstance } from '../xyflow/types'
 
 // Guard, Ensure that object contains only event handlers
@@ -42,6 +42,7 @@ const useDiagramPropsHook = ({
   controls = !readonly,
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
+  fitOnSelect = zoomable && nodesSelectable,
   disableBackground = false,
   fitViewPadding = 0.05,
   ...eventHandlers
@@ -69,6 +70,7 @@ const useDiagramPropsHook = ({
     controls,
     pannable,
     zoomable,
+    fitOnSelect,
     readonly,
     nodesSelectable,
     nodesDraggable,
@@ -96,6 +98,7 @@ const useDiagramPropsHook = ({
       controls,
       pannable,
       zoomable,
+      fitOnSelect,
       readonly,
       disableBackground,
       nodesSelectable,
@@ -107,6 +110,7 @@ const useDiagramPropsHook = ({
     controls,
     pannable,
     zoomable,
+    fitOnSelect,
     readonly,
     disableBackground,
     nodesSelectable,

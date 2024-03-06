@@ -159,8 +159,8 @@ export function toGraphvisModel({
     [_.fontsize]: pxToPoints(20),
     [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
     [_.shape]: 'rect',
-    [_.width]: pxToInch(340),
-    [_.height]: pxToInch(190),
+    [_.width]: pxToInch(320),
+    [_.height]: pxToInch(180),
     [_.style]: 'filled',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
@@ -228,8 +228,8 @@ export function toGraphvisModel({
     invariant(parentGraph, 'parentGraph should be defined')
     const node = parentGraph.node(id, {
       [_.likec4_id]: elementNode.id,
-      [_.likec4_level]: elementNode.level
-      // [_.margin]: pxToInch(26)
+      [_.likec4_level]: elementNode.level,
+      [_.margin]: pxToInch(26)
     })
     if (elementNode.color !== DefaultThemeColor) {
       node.attributes.apply({
@@ -238,28 +238,28 @@ export function toGraphvisModel({
     }
     if (elementNode.icon) {
       node.attributes.apply({
-        // [_.width]: pxToInch(340),
-        [_.height]: pxToInch(200)
+        [_.imagescale]: true
       })
     }
     switch (elementNode.shape) {
       case 'browser': {
         node.attributes.apply({
-          // [_.margin]: `${pxToInch(26)},${pxToInch(30)}`
+          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`
         })
         break
       }
       case 'queue': {
         node.attributes.apply({
-          [_.height]: elementNode.icon ? pxToInch(200) : pxToInch(160)
-          // [_.margin]: `${pxToInch(30)},${pxToInch(26)}`
+          [_.width]: pxToInch(320),
+          [_.height]: pxToInch(160),
+          [_.margin]: `${pxToInch(30)},${pxToInch(26)}`
         })
         break
       }
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          // [_.margin]: `${pxToInch(26)},${pxToInch(30)}`,
+          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`,
           [_.color]: Theme.elements[elementNode.color].stroke,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder'
@@ -270,7 +270,7 @@ export function toGraphvisModel({
         break
     }
     // add label to the end
-    // node.attributes.set(_.label, nodeLabel(elementNode))
+    node.attributes.set(_.label, nodeLabel(elementNode))
     graphvizNodes.set(elementNode.id, node)
     return node
   }

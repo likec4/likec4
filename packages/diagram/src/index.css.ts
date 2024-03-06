@@ -43,17 +43,17 @@ globalStyle('.mantine-ActionIcon-icon svg', {
   height: '75%'
 })
 
-globalStyle('.react-flow[data-likec4-nopan] .react-flow__pane', {
+globalStyle('.react-flow[data-likec4-no-pan] .react-flow__pane', {
   cursor: 'default'
 })
 
-globalStyle('.react-flow[data-likec4-nobg]', {
+globalStyle('.react-flow[data-likec4-no-bg]', {
   backgroundColor: 'transparent !important',
   vars: {
-    '--xy-background-color': 'transparent'
+    '--xy-background-color': 'transparent !important'
   }
 })
-globalStyle('.react-flow[data-likec4-nobg] .react-flow__attribution', {
+globalStyle('.react-flow[data-likec4-no-bg] .react-flow__attribution', {
   display: 'none'
 })
 

@@ -43,67 +43,22 @@ function wrapToHTML({
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
   return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
-
-function labelBlocks({
-  text,
-  maxchars,
-  fontsize,
-  lineHeight = 1.25,
-  color
-}: {
-  text: string
-  maxchars: number
-  fontsize: number
-  lineHeight?: number
-  color?: string
-}) {
-  const rows = wrap(text, maxchars)
-  const maxChars = Math.max(...rows.map(row => row.length))
-
-  const width = pxToPoints(maxChars * fontsize * 0.6)
-  const height = pxToPoints(rows.length * fontsize * lineHeight)
-  const attrs = [
-    'BORDER="0"',
-    'CELLBORDER="0"',
-    'CELLPADDING="0"',
-    'CELLSPACING="0"',
-    `WIDTH="${width}"`,
-    `HEIGHT="${height}"`,
-    `BGCOLOR="${color ?? '#000'}"`,
-    'FIXEDSIZE="TRUE"'
-  ].join(' ')
-  return `<TABLE ${attrs}><TR><TD> </TD></TR></TABLE>`
-}
-
 export function nodeIcon(src: string) {
-  const attrs = [
-    'BORDER="0"',
-    'CELLBORDER="0"',
-    'CELLPADDING="0"',
-    'CELLSPACING="0"',
-    `WIDTH="${IconSizePoints}"`,
-    `HEIGHT="${IconSizePoints}"`,
-    `BGCOLOR="#ABCDEF"`,
-    'FIXEDSIZE="TRUE"'
-  ].join(' ')
-  return `<TABLE ${attrs}><TR><TD> </TD></TR></TABLE>`
-  // const td = `<TD WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BGCOLOR="${'#000'}"> </TD>`
-  // return `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR>${td}</TR></TABLE>`
-  // return `<IMG SRC="${src}" SCALE="TRUE"/>`
+  return `<IMG SRC="${src}" SCALE="TRUE"/>`
 }
 
 export function nodeLabel(node: ComputedNode) {
   const lines = [
-    labelBlocks({
+    wrapToHTML({
       text: node.title,
-      fontsize: 19,
+      fontsize: 20,
       maxchars: 35,
       color: Colors[node.color].hiContrast
     })
   ]
   if (isTruthy(node.technology)) {
     lines.push(
-      labelBlocks({
+      wrapToHTML({
         text: node.technology,
         fontsize: 12,
         lineHeight: 1,
@@ -114,10 +69,10 @@ export function nodeLabel(node: ComputedNode) {
   }
   if (isTruthy(node.description)) {
     lines.push(
-      labelBlocks({
+      wrapToHTML({
         text: node.description,
         fontsize: 14,
-        lineHeight: 1.25,
+        lineHeight: 1.1,
         maxchars: 45,
         color: Colors[node.color].loContrast
       })
@@ -126,17 +81,14 @@ export function nodeLabel(node: ComputedNode) {
   if (lines.length === 1 && !node.icon) {
     return `<${lines[0]}>`
   }
-  const rows = lines.map(line => `<TR><TD ALIGN="CENTER">${line}</TD></TR>`)
+  let rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
   if (node.icon) {
     rows.unshift(
-      `<TR><TD ALIGN="CENTER">${nodeIcon(node.icon)}</TD></TR>`
+      `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${
-    rows.join(
-      ''
-    )
-  }</TABLE>>`
+  rows = rows.join('')
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

@@ -15,7 +15,8 @@ import { uniq } from 'remeda'
 import useTilg from 'tilg'
 import { useDiagramStateTracked } from '../state'
 import { distance } from '../utils'
-import { useXYFlow } from '../xyflow'
+import { useXYFlow } from '../xyflow/hooks'
+import type { XYFlowNode } from '../xyflow/types'
 
 const selector = (state: ReactFlowState) => {
   return {
@@ -38,6 +39,7 @@ const CameraMemo = memo(function Camera() {
   const editor = useDiagramStateTracked()
   const padding = editor.fitViewPadding
   const viewId = editor.viewId
+  const fitOnSelect = editor.fitOnSelect
 
   const previousViewport = useRef<Viewport | null>(null)
   const isZoomPendingRef = useRef(false)
@@ -47,7 +49,7 @@ const CameraMemo = memo(function Camera() {
   const isReady = reactflow.viewportInitialized
   const selectedNodesRef = useRef([] as string[])
 
-  const [selectedNodes, setSelectedNodes] = useState([] as ReactFlowNode[])
+  const [selectedNodes, setSelectedNodes] = useState([] as XYFlowNode[])
 
   // WORKAROUND
 
@@ -56,9 +58,10 @@ const CameraMemo = memo(function Camera() {
       viewportChangeStart.current = { ...viewport }
     },
     onEnd: (end) => {
-      reactflow.setCenter
-      if (!viewportChangeStart.current || !previousViewport.current) {
+      if (!previousViewport.current) {
         viewportChangeStart.current = null
+      }
+      if (!viewportChangeStart.current) {
         return
       }
       const start = {
@@ -83,20 +86,20 @@ const CameraMemo = memo(function Camera() {
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      if (!isMounted()) {
+      if (!isMounted() || fitOnSelect === false) {
         return
       }
       if (nodes.length === 0 && edges.length === 0) {
         setSelectedNodes([])
         return
       }
-      const selected = new Set<ReactFlowNode>([
-        ...nodes,
+      const selected = new Set([
+        ...nodes.map(({ id }) => reactflow.getNode(id)),
         ...edges.flatMap((edge) => [
           reactflow.getNode(edge.source),
           reactflow.getNode(edge.target)
-        ]).filter(Boolean)
-      ])
+        ])
+      ].filter(Boolean))
       setSelectedNodes([...selected])
     }
   })
@@ -167,7 +170,7 @@ const CameraMemo = memo(function Camera() {
       prevViewId.current = viewId
     },
     [isReady, viewId],
-    100,
+    50,
     500
   )
 

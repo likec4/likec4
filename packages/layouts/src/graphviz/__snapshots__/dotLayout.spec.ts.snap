@@ -8,29 +8,29 @@ exports[`dotLayout: > computedAmazonView 1`] = `
     {
       "headArrow": [
         [
-          566,
-          156,
+          546,
+          151,
         ],
         [
-          576,
-          159,
+          556,
+          154,
         ],
         [
-          566,
-          163,
+          546,
+          158,
         ],
       ],
       "headArrowPoint": [
-        579,
-        159,
+        559,
+        154,
       ],
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 432,
-        "y": 131,
+        "x": 412,
+        "y": 126,
       },
       "labels": [
         {
@@ -38,8 +38,8 @@ exports[`dotLayout: > computedAmazonView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            436,
-            148,
+            416,
+            143,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -48,20 +48,20 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "parent": null,
       "points": [
         [
-          394,
-          159,
+          374,
+          154,
         ],
         [
-          450,
-          159,
+          430,
+          154,
         ],
         [
-          510,
-          159,
+          491,
+          154,
         ],
         [
-          566,
-          159,
+          546,
+          154,
         ],
       ],
       "relations": [
@@ -71,30 +71,30 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          394,
-          159,
+          374,
+          154,
         ],
         [
-          388,
-          155,
+          368,
+          150,
         ],
         [
-          382,
-          159,
+          362,
+          154,
         ],
         [
-          388,
-          163,
+          368,
+          158,
         ],
       ],
       "tailArrowPoint": [
-        380,
-        159,
+        360,
+        154,
       ],
       "target": "amazon.s3",
     },
   ],
-  "height": 294,
+  "height": 284,
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -105,11 +105,24 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 278,
+      "height": 268,
       "id": "cloud",
       "inEdges": [],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
+          "pt": [
+            8,
+            15,
+          ],
+          "text": "CLOUD",
+          "width": 47,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -124,7 +137,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 404,
+      "width": 384,
     },
     {
       "children": [
@@ -133,36 +146,61 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": "Amazon is a cloud provider",
-      "height": 278,
+      "height": 268,
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon.s3",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
+          "pt": [
+            8,
+            15,
+          ],
+          "text": "AMAZON",
+          "width": 58,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [],
       "parent": null,
       "position": [
-        546,
+        526,
         8,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 404,
+      "width": 384,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "cloud.backend",
       "inEdges": [],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            123,
+            97,
+          ],
+          "text": "Backend",
+          "width": 78,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -171,44 +209,67 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "parent": "cloud",
       "position": [
         39,
-        63,
+        64,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "S3 is a storage service",
-      "height": 191,
+      "height": 180,
       "id": "amazon.s3",
       "inEdges": [
         "cloud.backend:amazon.s3",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            149,
+            86,
+          ],
+          "text": "S3",
+          "width": 25,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            91,
+            109,
+          ],
+          "text": "S3 is a storage service",
+          "width": 142,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        577,
-        63,
+        557,
+        64,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "S3",
-      "width": 341,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 958,
+  "width": 918,
 }
 `;
 
@@ -220,41 +281,41 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          579,
-          752,
+          559,
+          729,
         ],
         [
-          589,
-          756,
+          569,
+          732,
         ],
         [
-          579,
-          759,
+          559,
+          736,
         ],
       ],
       "headArrowPoint": [
-        592,
-        756,
+        572,
+        732,
       ],
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
       "parent": "cloud.backend",
       "points": [
         [
-          412,
-          756,
+          392,
+          732,
         ],
         [
-          468,
-          756,
+          448,
+          732,
         ],
         [
-          523,
-          756,
+          503,
+          732,
         ],
         [
-          579,
-          756,
+          559,
+          732,
         ],
       ],
       "relations": [
@@ -266,29 +327,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          241,
-          647,
+          231,
+          629,
         ],
         [
-          238,
-          658,
+          228,
+          640,
         ],
         [
-          234,
-          648,
+          224,
+          630,
         ],
       ],
       "headArrowPoint": [
-        238,
-        661,
+        228,
+        643,
       ],
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network with sso authentification",
       "labelBBox": {
         "height": 37,
         "width": 200,
-        "x": 241,
-        "y": 556,
+        "x": 230,
+        "y": 536,
       },
       "labels": [
         {
@@ -296,8 +357,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            245,
-            573,
+            234,
+            553,
           ],
           "text": "fetches data in zero trust network",
           "width": 192,
@@ -307,8 +368,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            245,
-            589,
+            234,
+            569,
           ],
           "text": "with sso authentification",
           "width": 139,
@@ -317,20 +378,20 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "points": [
         [
-          231,
-          513,
+          221,
+          492,
         ],
         [
-          233,
-          555,
+          223,
+          535,
         ],
         [
-          235,
-          604,
+          225,
+          586,
         ],
         [
-          237,
-          648,
+          228,
+          630,
         ],
       ],
       "relations": [
@@ -342,29 +403,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          392,
-          656,
+          378,
+          638,
         ],
         [
-          382,
-          659,
+          368,
+          641,
         ],
         [
-          388,
-          650,
+          374,
+          632,
         ],
       ],
       "headArrowPoint": [
-        379,
-        661,
+        365,
+        643,
       ],
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
         "height": 21,
         "width": 79,
-        "x": 513,
-        "y": 564,
+        "x": 499,
+        "y": 544,
       },
       "labels": [
         {
@@ -372,8 +433,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            517,
-            581,
+            503,
+            561,
           ],
           "text": "fetches data",
           "width": 71,
@@ -382,32 +443,32 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "points": [
         [
-          559,
-          513,
+          545,
+          492,
         ],
         [
-          529,
-          541,
+          516,
+          520,
         ],
         [
-          495,
-          571,
+          483,
+          551,
         ],
         [
-          462,
+          451,
+          577,
+        ],
+        [
+          428,
           597,
         ],
         [
-          439,
-          616,
+          401,
+          617,
         ],
         [
-          414,
+          375,
           635,
-        ],
-        [
-          389,
-          653,
         ],
       ],
       "relations": [
@@ -419,29 +480,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          230,
+          220,
+          300,
+        ],
+        [
+          216,
           310,
         ],
         [
-          226,
-          320,
-        ],
-        [
-          223,
-          310,
+          213,
+          300,
         ],
       ],
       "headArrowPoint": [
-        226,
-        323,
+        216,
+        313,
       ],
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 232,
-        "y": 234,
+        "x": 222,
+        "y": 224,
       },
       "labels": [
         {
@@ -449,8 +510,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            236,
-            251,
+            226,
+            241,
           ],
           "text": "manages",
           "width": 54,
@@ -459,20 +520,20 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          226,
-          190,
+          216,
+          180,
         ],
         [
-          226,
-          228,
+          216,
+          218,
         ],
         [
-          226,
-          271,
+          216,
+          261,
         ],
         [
-          226,
-          310,
+          216,
+          300,
         ],
       ],
       "relations": [
@@ -484,29 +545,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          660,
+          636,
+          300,
+        ],
+        [
+          632,
           310,
         ],
         [
-          656,
-          320,
-        ],
-        [
-          653,
-          310,
+          629,
+          300,
         ],
       ],
       "headArrowPoint": [
-        656,
-        323,
+        632,
+        313,
       ],
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
         "height": 21,
         "width": 107,
-        "x": 662,
-        "y": 234,
+        "x": 638,
+        "y": 224,
       },
       "labels": [
         {
@@ -514,8 +575,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            666,
-            251,
+            642,
+            241,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -524,20 +585,20 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          656,
-          190,
+          632,
+          180,
         ],
         [
-          656,
-          228,
+          632,
+          218,
         ],
         [
-          656,
-          271,
+          632,
+          261,
         ],
         [
-          656,
-          310,
+          632,
+          300,
         ],
       ],
       "relations": [
@@ -549,29 +610,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          1044,
-          201,
+          1005,
+          192,
         ],
         [
-          1051,
-          193,
+          1012,
+          183,
         ],
         [
-          1051,
-          204,
+          1012,
+          194,
         ],
       ],
       "headArrowPoint": [
-        1052,
-        190,
+        1013,
+        180,
       ],
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 1026,
-        "y": 405,
+        "x": 989,
+        "y": 390,
       },
       "labels": [
         {
@@ -579,8 +640,8 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            1030,
-            422,
+            993,
+            407,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -589,32 +650,32 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          834,
-          648,
+          804,
+          628,
         ],
         [
-          860,
-          607,
+          831,
+          587,
         ],
         [
-          889,
-          558,
+          861,
+          539,
         ],
         [
-          912,
-          513,
+          884,
+          493,
         ],
         [
-          965,
-          410,
+          935,
+          394,
         ],
         [
-          1015,
-          288,
+          980,
+          275,
         ],
         [
-          1048,
-          202,
+          1009,
+          193,
         ],
       ],
       "relations": [
@@ -624,30 +685,30 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          834,
-          648,
+          804,
+          628,
         ],
         [
-          827,
-          651,
+          798,
+          631,
         ],
         [
-          827,
-          658,
+          798,
+          638,
         ],
         [
-          834,
-          655,
+          804,
+          635,
         ],
       ],
       "tailArrowPoint": [
-        826,
-        660,
+        797,
+        640,
       ],
       "target": "amazon",
     },
   ],
-  "height": 923,
+  "height": 896,
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -660,14 +721,27 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 2,
       "description": null,
-      "height": 648,
+      "height": 631,
       "id": "cloud",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
         "support:cloud.frontend.adminPanel",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
+          "pt": [
+            8,
+            15,
+          ],
+          "text": "CLOUD",
+          "width": 47,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -676,13 +750,13 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": null,
       "position": [
         8,
-        267,
+        257,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 988,
+      "width": 948,
     },
     {
       "children": [
@@ -692,14 +766,27 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 278,
+      "height": 271,
       "id": "cloud.backend",
       "inEdges": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
+          "pt": [
+            8,
+            15,
+          ],
+          "text": "BACKEND",
+          "width": 65,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -708,26 +795,60 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         40,
-        605,
+        585,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 924,
+      "width": 884,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Component that allows to query data via GraphQL.",
-      "height": 191,
+      "height": 180,
       "id": "cloud.backend.graphql",
       "inEdges": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            107,
+            78,
+          ],
+          "text": "Graphql API",
+          "width": 109,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            37,
+            101,
+          ],
+          "text": "Component that allows to query data via",
+          "width": 250,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            131,
+            118,
+          ],
+          "text": "GraphQL.",
+          "width": 62,
+        },
+      ],
       "level": 2,
       "links": null,
       "outEdges": [
@@ -736,25 +857,59 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud.backend",
       "position": [
         71,
-        660,
+        642,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Graphql API",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "The backend storage is a component that stores data.",
-      "height": 191,
+      "height": 184,
       "id": "cloud.backend.storage",
       "inEdges": [
         "cloud.backend.graphql:cloud.backend.storage",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            85,
+            80,
+          ],
+          "text": "Backend Storage",
+          "width": 154,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            33,
+            103,
+          ],
+          "text": "The backend storage is a component that",
+          "width": 258,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            125,
+            120,
+          ],
+          "text": "stores data.",
+          "width": 74,
+        },
+      ],
       "level": 2,
       "links": null,
       "outEdges": [
@@ -762,26 +917,60 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud.backend",
       "position": [
-        591,
-        660,
+        571,
+        640,
       ],
       "shape": "storage",
       "tags": null,
       "technology": null,
       "title": "Backend Storage",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "The admin panel is a webapp that allows support staff to manage customer data.",
-      "height": 191,
+      "height": 180,
       "id": "cloud.frontend.adminPanel",
       "inEdges": [
         "support:cloud.frontend.adminPanel",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            65,
+            77,
+          ],
+          "text": "Admin Panel Webapp",
+          "width": 194,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            35,
+            100,
+          ],
+          "text": "The admin panel is a webapp that allows",
+          "width": 253,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            40,
+            117,
+          ],
+          "text": "support staff to manage customer data.",
+          "width": 244,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -790,25 +979,59 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         55,
-        322,
+        313,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Admin Panel Webapp",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "The customer dashboard is a webapp that allows customers to view their data.",
-      "height": 191,
+      "height": 180,
       "id": "cloud.frontend.dashboard",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            32,
+            77,
+          ],
+          "text": "Customer Dashboard Webapp",
+          "width": 271,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            37,
+            100,
+          ],
+          "text": "The customer dashboard is a webapp that",
+          "width": 262,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            57,
+            117,
+          ],
+          "text": "allows customers to view their data.",
+          "width": 221,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -816,24 +1039,58 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        485,
-        322,
+        465,
+        313,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Customer Dashboard Webapp",
-      "width": 341,
+      "width": 333,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
-      "height": 191,
+      "height": 180,
       "id": "support",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            84,
+            78,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            44,
+            101,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            95,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -848,17 +1105,29 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "tags": null,
       "technology": null,
       "title": "Support Engineer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            120,
+            97,
+          ],
+          "text": "customer",
+          "width": 83,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -866,45 +1135,68 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       ],
       "parent": null,
       "position": [
-        485,
+        471,
         0,
       ],
       "shape": "person",
       "tags": null,
       "technology": null,
       "title": "customer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 191,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud.backend.storage:amazon",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            125,
+            86,
+          ],
+          "text": "Amazon",
+          "width": 74,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            77,
+            110,
+          ],
+          "text": "Amazon is a cloud provider",
+          "width": 169,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [],
       "parent": null,
       "position": [
-        915,
+        881,
         0,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 341,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1256,
+  "width": 1202,
 }
 `;
 
@@ -916,29 +1208,29 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          1153,
-          414,
+          1102,
+          399,
         ],
         [
-          1163,
-          418,
+          1112,
+          403,
         ],
         [
-          1153,
-          421,
+          1102,
+          406,
         ],
       ],
       "headArrowPoint": [
-        1165,
-        418,
+        1115,
+        403,
       ],
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
         "height": 21,
         "width": 28,
-        "x": 1065,
-        "y": 389,
+        "x": 1015,
+        "y": 374,
       },
       "labels": [
         {
@@ -947,8 +1239,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "fontSize": 13,
           "fontStyle": "bold",
           "pt": [
-            1069,
-            406,
+            1019,
+            391,
           ],
           "text": "[...]",
           "width": 20,
@@ -957,20 +1249,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": "cloud",
       "points": [
         [
-          985,
-          418,
+          935,
+          403,
         ],
         [
-          1039,
-          418,
+          989,
+          403,
         ],
         [
-          1098,
-          418,
+          1048,
+          403,
         ],
         [
-          1153,
-          418,
+          1103,
+          403,
         ],
       ],
       "relations": [
@@ -983,29 +1275,29 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          748,
+          712,
+          300,
+        ],
+        [
+          715,
           310,
         ],
         [
-          751,
-          320,
-        ],
-        [
-          742,
-          314,
+          707,
+          304,
         ],
       ],
       "headArrowPoint": [
-        752,
-        323,
+        717,
+        313,
       ],
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "labelBBox": {
         "height": 21,
         "width": 107,
-        "x": 715,
-        "y": 234,
+        "x": 680,
+        "y": 224,
       },
       "labels": [
         {
@@ -1013,8 +1305,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            719,
-            251,
+            684,
+            241,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1023,20 +1315,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          664,
-          190,
+          629,
+          180,
         ],
         [
-          689,
-          229,
+          654,
+          218,
         ],
         [
-          719,
-          273,
+          684,
+          263,
         ],
         [
-          745,
-          312,
+          710,
+          302,
         ],
       ],
       "relations": [
@@ -1048,29 +1340,29 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          889,
-          314,
+          844,
+          304,
         ],
         [
-          880,
-          320,
-        ],
-        [
-          883,
+          836,
           310,
+        ],
+        [
+          839,
+          300,
         ],
       ],
       "headArrowPoint": [
-        879,
-        323,
+        834,
+        313,
       ],
       "id": "support:cloud.frontend",
       "label": "manages",
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 943,
-        "y": 234,
+        "x": 897,
+        "y": 224,
       },
       "labels": [
         {
@@ -1078,8 +1370,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            947,
-            251,
+            901,
+            241,
           ],
           "text": "manages",
           "width": 54,
@@ -1088,20 +1380,20 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          967,
-          190,
+          922,
+          180,
         ],
         [
-          942,
-          229,
+          897,
+          218,
         ],
         [
-          912,
-          273,
+          867,
+          263,
         ],
         [
-          886,
-          312,
+          841,
+          302,
         ],
       ],
       "relations": [
@@ -1113,29 +1405,29 @@ exports[`dotLayout: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          351,
-          180,
+          331,
+          170,
         ],
         [
-          343,
-          173,
+          323,
+          162,
         ],
         [
-          354,
-          174,
+          334,
+          163,
         ],
       ],
       "headArrowPoint": [
-        340,
-        172,
+        320,
+        161,
       ],
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 573,
-        "y": 234,
+        "x": 539,
+        "y": 224,
       },
       "labels": [
         {
@@ -1143,8 +1435,8 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            577,
-            251,
+            543,
+            241,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1153,56 +1445,56 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          1165,
-          317,
+          1113,
+          307,
         ],
         [
-          1122,
-          296,
+          1072,
+          286,
         ],
         [
-          1076,
-          278,
+          1025,
+          268,
         ],
         [
-          1031,
-          267,
+          981,
+          257,
         ],
         [
-          980,
-          255,
+          932,
+          245,
         ],
         [
-          616,
-          269,
-        ],
-        [
-          566,
+          580,
           259,
         ],
         [
-          482,
-          243,
+          532,
+          249,
         ],
         [
-          465,
-          223,
+          453,
+          233,
         ],
         [
-          386,
-          191,
+          439,
+          212,
         ],
         [
-          375,
-          186,
+          366,
+          180,
         ],
         [
-          363,
-          181,
+          355,
+          176,
         ],
         [
-          352,
-          177,
+          343,
+          171,
+        ],
+        [
+          332,
+          166,
         ],
       ],
       "relations": [
@@ -1212,30 +1504,30 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          1165,
-          317,
+          1114,
+          307,
         ],
         [
-          1168,
-          323,
+          1117,
+          313,
         ],
         [
-          1175,
-          322,
+          1124,
+          312,
         ],
         [
-          1172,
-          316,
+          1121,
+          306,
         ],
       ],
       "tailArrowPoint": [
-        1177,
-        323,
+        1126,
+        313,
       ],
       "target": "amazon",
     },
   ],
-  "height": 553,
+  "height": 533,
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1247,14 +1539,27 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 278,
+      "height": 268,
       "id": "cloud",
       "inEdges": [
         "support:cloud.frontend",
         "customer:cloud.frontend",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
+          "pt": [
+            8,
+            15,
+          ],
+          "text": "CLOUD",
+          "width": 47,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1262,27 +1567,39 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        614,
-        267,
+        584,
+        257,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 923,
+      "width": 883,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "cloud.frontend",
       "inEdges": [
         "support:cloud.frontend",
         "customer:cloud.frontend",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            120,
+            96,
+          ],
+          "text": "Frontend",
+          "width": 81,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -1290,26 +1607,38 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        645,
-        322,
+        615,
+        313,
       ],
       "shape": "browser",
       "tags": null,
       "technology": null,
       "title": "Frontend",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "cloud.backend",
       "inEdges": [
         "cloud.frontend:cloud.backend",
       ],
       "kind": "component",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            123,
+            96,
+          ],
+          "text": "Backend",
+          "width": 78,
+        },
+      ],
       "level": 1,
       "links": null,
       "outEdges": [
@@ -1317,24 +1646,36 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        1164,
-        322,
+        1114,
+        313,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            119,
+            97,
+          ],
+          "text": "customer",
+          "width": 83,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1342,24 +1683,58 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        430,
+        410,
         0,
       ],
       "shape": "person",
       "tags": null,
       "technology": null,
       "title": "customer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
-      "height": 191,
+      "height": 180,
       "id": "support",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            83,
+            78,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            43,
+            101,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            94,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1367,26 +1742,49 @@ exports[`dotLayout: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        859,
+        820,
         0,
       ],
       "shape": "person",
       "tags": null,
       "technology": null,
       "title": "Support Engineer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 191,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            124,
+            86,
+          ],
+          "text": "Amazon",
+          "width": 74,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            76,
+            110,
+          ],
+          "text": "Amazon is a cloud provider",
+          "width": 169,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [],
@@ -1399,13 +1797,13 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 341,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1545,
+  "width": 1475,
 }
 `;
 
@@ -1417,29 +1815,29 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          314,
-          291,
+          298,
+          282,
         ],
         [
-          317,
-          302,
+          301,
+          292,
         ],
         [
-          308,
-          296,
+          293,
+          286,
         ],
       ],
       "headArrowPoint": [
-        319,
-        304,
+        303,
+        294,
       ],
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
         "height": 21,
         "width": 107,
-        "x": 291,
-        "y": 234,
+        "x": 276,
+        "y": 224,
       },
       "labels": [
         {
@@ -1447,8 +1845,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            295,
-            251,
+            280,
+            241,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1457,20 +1855,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          237,
-          190,
-        ],
-        [
-          261,
           223,
+          180,
         ],
         [
-          287,
-          260,
+          246,
+          213,
         ],
         [
-          311,
-          294,
+          272,
+          250,
+        ],
+        [
+          296,
+          284,
         ],
       ],
       "relations": [
@@ -1482,29 +1880,29 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          569,
-          316,
+          539,
+          305,
         ],
         [
-          558,
-          317,
+          528,
+          306,
         ],
         [
-          566,
-          310,
+          536,
+          298,
         ],
       ],
       "headArrowPoint": [
-        555,
-        319,
+        525,
+        307,
       ],
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 733,
-        "y": 234,
+        "x": 697,
+        "y": 224,
       },
       "labels": [
         {
@@ -1512,8 +1910,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            737,
-            251,
+            701,
+            241,
           ],
           "text": "manages",
           "width": 54,
@@ -1522,20 +1920,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          861,
-          176,
+          821,
+          167,
         ],
         [
-          770,
-          218,
+          734,
+          209,
         ],
         [
-          659,
-          270,
+          626,
+          260,
         ],
         [
-          567,
-          313,
+          537,
+          302,
         ],
       ],
       "relations": [
@@ -1547,29 +1945,29 @@ exports[`dotLayout: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          523,
-          199,
+          498,
+          189,
         ],
         [
-          532,
+          506,
+          183,
+        ],
+        [
+          504,
           193,
-        ],
-        [
-          529,
-          203,
         ],
       ],
       "headArrowPoint": [
-        534,
-        190,
+        508,
+        180,
       ],
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 506,
-        "y": 234,
+        "x": 481,
+        "y": 224,
       },
       "labels": [
         {
@@ -1577,8 +1975,8 @@ exports[`dotLayout: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            510,
-            251,
+            485,
+            241,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1587,20 +1985,20 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          461,
-          293,
+          436,
+          283,
         ],
         [
-          482,
-          263,
+          457,
+          253,
         ],
         [
-          505,
-          230,
+          480,
+          220,
         ],
         [
-          526,
-          201,
+          501,
+          190,
         ],
       ],
       "relations": [
@@ -1610,30 +2008,30 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          461,
+          436,
+          283,
+        ],
+        [
+          429,
+          286,
+        ],
+        [
+          429,
           293,
         ],
         [
-          454,
-          295,
-        ],
-        [
-          454,
-          303,
-        ],
-        [
-          460,
-          300,
+          436,
+          290,
         ],
       ],
       "tailArrowPoint": [
-        453,
-        304,
+        428,
+        294,
       ],
       "target": "amazon",
     },
   ],
-  "height": 494,
+  "height": 474,
   "id": "index",
   "links": null,
   "nodes": [
@@ -1641,11 +2039,23 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            119,
+            97,
+          ],
+          "text": "customer",
+          "width": 83,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1660,20 +2070,32 @@ exports[`dotLayout: > computedIndexView 1`] = `
       "tags": null,
       "technology": null,
       "title": "customer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 191,
+      "height": 180,
       "id": "cloud",
       "inEdges": [
         "support:cloud",
         "customer:cloud",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            137,
+            97,
+          ],
+          "text": "cloud",
+          "width": 48,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1681,24 +2103,58 @@ exports[`dotLayout: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        215,
-        303,
+        205,
+        294,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Support engineers are responsible for supporting customers",
-      "height": 191,
+      "height": 180,
       "id": "support",
       "inEdges": [],
       "kind": "actor",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            83,
+            78,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            43,
+            101,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            94,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [
@@ -1706,43 +2162,66 @@ exports[`dotLayout: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        859,
+        820,
         0,
       ],
       "shape": "person",
       "tags": null,
       "technology": null,
       "title": "Support Engineer",
-      "width": 341,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 191,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud:amazon",
       ],
       "kind": "system",
-      "labels": [],
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            124,
+            86,
+          ],
+          "text": "Amazon",
+          "width": 74,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            76,
+            110,
+          ],
+          "text": "Amazon is a cloud provider",
+          "width": 169,
+        },
+      ],
       "level": 0,
       "links": null,
       "outEdges": [],
       "parent": null,
       "position": [
-        430,
+        410,
         0,
       ],
       "shape": "rectangle",
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 341,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
-  "width": 1201,
+  "width": 1140,
 }
 `;

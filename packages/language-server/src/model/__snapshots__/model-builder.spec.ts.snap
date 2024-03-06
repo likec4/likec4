@@ -45,14 +45,14 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
     },
   },
   "relations": {
-    "37cee57b4268d779f4074e0b66ea6fa0b65823c3": {
-      "id": "37cee57b4268d779f4074e0b66ea6fa0b65823c3",
+    "1txa8xq": {
+      "id": "1txa8xq",
       "source": "system.frontend",
       "target": "system.backend",
       "title": "requests",
     },
-    "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6": {
-      "id": "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6",
+    "sx3jc5": {
+      "id": "sx3jc5",
       "source": "client",
       "target": "system.frontend",
       "title": "",
@@ -68,7 +68,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "label": null,
           "parent": null,
           "relations": [
-            "74ab2847f392ebb4f0d1cba5228a4a9c957b97b6",
+            "sx3jc5",
           ],
           "source": "client",
           "target": "system",
@@ -171,14 +171,14 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
     },
   },
   "relations": {
-    "20105a407235e700d090af3a112b7e54ffa4961b": {
-      "id": "20105a407235e700d090af3a112b7e54ffa4961b",
+    "19veiui": {
+      "id": "19veiui",
       "source": "client",
       "target": "system.frontend",
       "title": "opens",
     },
-    "b3da58159b2f91810338032ee6f95f4e9322a459": {
-      "id": "b3da58159b2f91810338032ee6f95f4e9322a459",
+    "pups09": {
+      "id": "pups09",
       "source": "system.frontend",
       "target": "system.backend.api",
       "title": "requests",
@@ -195,7 +195,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "opens",
           "parent": null,
           "relations": [
-            "20105a407235e700d090af3a112b7e54ffa4961b",
+            "19veiui",
           ],
           "source": "client",
           "target": "system.frontend",
@@ -205,7 +205,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "requests",
           "parent": null,
           "relations": [
-            "b3da58159b2f91810338032ee6f95f4e9322a459",
+            "pups09",
           ],
           "source": "system.frontend",
           "target": "system.backend",
@@ -286,7 +286,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "opens",
           "parent": null,
           "relations": [
-            "20105a407235e700d090af3a112b7e54ffa4961b",
+            "19veiui",
           ],
           "source": "client",
           "target": "system",
@@ -346,7 +346,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
           "label": "requests",
           "parent": null,
           "relations": [
-            "b3da58159b2f91810338032ee6f95f4e9322a459",
+            "pups09",
           ],
           "source": "system.frontend",
           "target": "system.backend.api",
@@ -446,8 +446,8 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
     },
   },
   "relations": {
-    "6af4d5e25f365ec73b16b0625641967bfdcf1b90": {
-      "id": "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+    "p2bxx1": {
+      "id": "p2bxx1",
       "kind": "async",
       "source": "user1",
       "tags": [
@@ -467,7 +467,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "label": null,
           "parent": null,
           "relations": [
-            "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+            "p2bxx1",
           ],
           "source": "user1",
           "target": "user2",
@@ -543,10 +543,10 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
     },
   },
   "relations": {
-    "6af4d5e25f365ec73b16b0625641967bfdcf1b90": {
+    "p2bxx1": {
       "color": "red",
       "head": "diamond",
-      "id": "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+      "id": "p2bxx1",
       "line": "dotted",
       "source": "user1",
       "tail": "none",
@@ -567,7 +567,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "line": "dotted",
           "parent": null,
           "relations": [
-            "6af4d5e25f365ec73b16b0625641967bfdcf1b90",
+            "p2bxx1",
           ],
           "source": "user1",
           "tail": "none",

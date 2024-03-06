@@ -220,7 +220,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
       position,
       width,
       height,
-      labels: [] // parseLabelDraws(obj, position)
+      labels: parseLabelDraws(obj, position)
     }
     diagram.nodes.push(node)
   }

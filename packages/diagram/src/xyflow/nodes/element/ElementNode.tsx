@@ -11,6 +11,7 @@ import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import * as css from './element.css'
 import classes from './element.module.css'
+import { ElementIcon } from './ElementIcon'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
 type ElementNodeProps = NodeProps<ElementNodeData>
@@ -117,28 +118,20 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}
       />
-      <div
-        className={classes.element}>
-        {element.icon && (
-          <div className={classes.elementIcon}>
-            <Image
-              fit="contain"
-              src={element.icon}
-              alt={element.title} />
-          </div>
-        )}
-        <Text component="div" className={classes.title}>
+      <div className={css.element}>
+        {element.icon && <ElementIcon node={element} />}
+        <Text component="div" className={css.title}>
           {element.title}
         </Text>
         {element.technology && (
-          <Text component="div" className={classes.technology}>
+          <Text component="div" className={css.technology}>
             {element.technology}
           </Text>
         )}
         {element.description && (
           <Text
             component="div"
-            className={classes.description}
+            className={css.description}
           >
             {element.description}
           </Text>

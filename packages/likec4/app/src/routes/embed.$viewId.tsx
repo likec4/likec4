@@ -27,6 +27,7 @@ function EmbedPage() {
     >
       <LikeC4Diagram
         view={diagram}
+        pannable={false}
         readonly
         disableBackground
       />

@@ -60,6 +60,12 @@ export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
    * @default true
    */
   zoomable?: boolean | undefined
+
+  /**
+   * Fit view to the selected node(s)
+   * @default true
+   */
+  fitOnSelect?: boolean | undefined
   /**
    * Disable any editing (dragging still can be enabled with `nodesDraggable`)
    * @default false

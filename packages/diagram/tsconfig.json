@@ -11,7 +11,6 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "jsx": "react-jsxdev",
     "plugins": [
       {

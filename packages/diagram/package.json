@@ -40,6 +40,7 @@
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@vanilla-extract/css": "^1.14.1",
+    "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/recipes": "^0.5.1",
     "@xyflow/react": "^12.0.0-next.10",
     "clsx": "^2.1.0",

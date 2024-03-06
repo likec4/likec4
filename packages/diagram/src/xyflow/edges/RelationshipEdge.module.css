@@ -2,7 +2,7 @@
   --xy-edge-stroke: var(--likec4-relation-lineColor);
   --xy-edge-stroke-selected: color-mix(in srgb, var(--likec4-relation-lineColor) 50%, white);
   --xy-edge-label-color: var(--likec4-relation-labelColor);
-  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 50%, transparent);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 20%, transparent);
   --xy-edge-stroke-width: 2;
 
   :global(.react-flow__edge-textbg) {
@@ -77,11 +77,13 @@
   transition: all 120ms ease-out;
   isolation: auto;
   text-align: left;
-  mix-blend-mode: luminosity;
+  /* mix-blend-mode: luminosity; */
+  --xy-edge-label-color: color-mix(in srgb, var(--likec4-relation-labelColor) 90%, transparent);
+  --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 30%, transparent);
   --text-color: var(--likec4-relation-labelColor);
 
   &[data-edge-hovered='true'] {
-    transform: scale(1.08);
+    transform: scale(1.05);
     transition-delay: 120ms;
     --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 70%, white);
   }
@@ -90,9 +92,9 @@
 .edgeLabelBody {
   display: inline-block;
   padding: 2px 5px;
-  background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 35%, transparent);
+  background-color: var(--xy-edge-label-background-color);
   border-radius: 3px;
   color: var(--text-color);
   font-size: rem(12);
-  line-height: 1.25;
+  line-height: 1.2;
 }

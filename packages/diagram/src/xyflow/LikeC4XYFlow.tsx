@@ -25,7 +25,6 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
 }) {
   useTilg()
   const editor = useDiagramStateTracked()
-  const update = useUpdateDiagramState()
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
   return (
     <ReactFlow
@@ -65,8 +64,8 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       onInit={editor.onInit}
       onEdgeMouseEnter={editor.onEdgeMouseEnter}
       onEdgeMouseLeave={editor.onEdgeMouseLeave}
-      {...(!editor.pannable && { [`data-likec4-nopan`]: '' })}
-      {...(editor.disableBackground && { [`data-likec4-nobg`]: '' })}
+      {...(!editor.pannable && { [`data-likec4-no-pan`]: '' })}
+      {...(editor.disableBackground && { [`data-likec4-no-bg`]: '' })}
     >
       {!editor.disableBackground && <Background />}
       {editor.controls && <Controls />}
