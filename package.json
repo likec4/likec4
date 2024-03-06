@@ -25,6 +25,7 @@
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
     "git:pre-commit": "lint-staged",
     "test": "vitest run",
+    "ci:test": "vitest --reporter=basic --reporter=github-actions",
     "test:watch": "vitest",
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
     "lint": "",
