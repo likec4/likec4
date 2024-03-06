@@ -40,8 +40,8 @@ export class CliWorkspace {
 
     await DocumentBuilder.build(documents, { validation: true })
 
-    const views = modelBuilder.buildModel()?.views ?? {}
-    const viewsCount = values(views).length
+    const model = await modelBuilder.buildModel()
+    const viewsCount = values(model?.views ?? {}).length
 
     logger.info(`${k.dim('workspace:')} ${k.green(`✓ built ${viewsCount} views`)}`)
   }

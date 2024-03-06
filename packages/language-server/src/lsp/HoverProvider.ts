@@ -1,10 +1,11 @@
-import { type AstNode, AstNodeHoverProvider, type MaybePromise } from 'langium'
-import stripIndent from 'strip-indent'
+import { type AstNode, type MaybePromise } from 'langium'
+import { AstNodeHoverProvider } from 'langium/lsp'
 import { isTruthy } from 'remeda'
+import stripIndent from 'strip-indent'
 import type { Hover } from 'vscode-languageserver-protocol'
-import type { LikeC4Services } from '../module'
-import type { LikeC4ModelLocator } from '../model'
 import { ast } from '../ast'
+import type { LikeC4ModelLocator } from '../model'
+import type { LikeC4Services } from '../module'
 
 export class LikeC4HoverProvider extends AstNodeHoverProvider {
   private locator: LikeC4ModelLocator

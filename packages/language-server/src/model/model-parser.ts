@@ -1,6 +1,6 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { getDocument } from 'langium'
+import { AstUtils } from 'langium'
 import objectHash from 'object-hash'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
@@ -28,6 +28,8 @@ import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import type { FqnIndex } from './fqn-index'
+
+const { getDocument } = AstUtils
 
 export type ModelParsedListener = () => void
 
@@ -136,7 +138,7 @@ export class LikeC4ModelParser {
     const styleProps = toElementStyleExcludeDefaults(stylePropsAst)
     const astPath = this.getAstNodePath(astNode)
 
-    let [title, description, technology] = astNode.props
+    let [title, description, technology] = astNode.props ?? []
 
     const bodyProps = astNode.body?.props.filter(ast.isElementStringProperty) ?? []
 

@@ -1,5 +1,6 @@
-import type { DocumentLinkProvider, LangiumDocument, MaybePromise } from 'langium'
-import { findNodeForProperty, streamAllContents } from 'langium'
+import type { LangiumDocument, MaybePromise } from 'langium'
+import { AstUtils, GrammarUtils } from 'langium'
+import type { DocumentLinkProvider } from 'langium/lsp'
 import { hasProtocol, isRelative, withBase } from 'ufo'
 import type { DocumentLink, DocumentLinkParams } from 'vscode-languageserver-protocol'
 import { ast, isParsedLikeC4LangiumDocument } from '../ast'
@@ -17,11 +18,11 @@ export class LikeC4DocumentLinkProvider implements DocumentLinkProvider {
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return []
     }
-    return streamAllContents(doc.parseResult.value)
+    return AstUtils.streamAllContents(doc.parseResult.value)
       .filter(ast.isLinkProperty)
       .flatMap((n): DocumentLink | Iterable<DocumentLink> => {
         try {
-          const range = findNodeForProperty(n.$cstNode, 'value')?.range
+          const range = GrammarUtils.findNodeForProperty(n.$cstNode, 'value')?.range
           if (!range) {
             return []
           }

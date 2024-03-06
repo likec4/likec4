@@ -8,9 +8,9 @@ import {
 } from '@likec4/core'
 import { computeView, LikeC4ModelGraph } from '@likec4/graph'
 import type { URI, WorkspaceCache } from 'langium'
-import { DocumentState, type LangiumDocument, type LangiumDocuments } from 'langium'
+import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
 import * as R from 'remeda'
-import { Disposable } from 'vscode-languageserver'
+import { type CancellationToken, Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
   ParsedAstElementView,
@@ -50,6 +50,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
             ...parsed
           }
         }
+        logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
       } catch (e) {
         logWarnError(e)
       }
@@ -191,8 +192,13 @@ export class LikeC4ModelBuilder {
     services.shared.workspace.DocumentBuilder.onBuildPhase(
       DocumentState.Validated,
       async (docs, _cancelToken) => {
-        logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-        const parsed = parser.parse(docs).map(d => d.uri)
+        let parsed = [] as URI[]
+        try {
+          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+          parsed.push(...parser.parse(docs).map(d => d.uri))
+        } catch (e) {
+          logger.error(e)
+        }
         if (parsed.length > 0) {
           this.notifyListeners(parsed)
         }
@@ -202,10 +208,13 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
-  public buildRawModel(): c4.LikeC4RawModel | null {
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
-    return cache.get(RAW_MODEL_CACHE, () => {
-      try {
+  public async buildRawModel(cancelToken?: CancellationToken): Promise<c4.LikeC4RawModel | null> {
+    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
+      }
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
+      return cache.get(RAW_MODEL_CACHE, () => {
         const docs = this.documents()
         if (docs.length === 0) {
           logger.debug('[ModelBuilder] No documents to build model from')
@@ -213,23 +222,20 @@ export class LikeC4ModelBuilder {
         }
         logger.debug(`[ModelBuilder] buildModel from ${docs.length} docs:\n${printDocs(docs)}`)
         return buildModel(this.services, docs)
-      } catch (e) {
-        logError(e)
-        return null
-      }
+      })
     })
   }
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
 
-  public buildModel(): c4.LikeC4Model | null {
+  public async buildModel(cancelToken?: CancellationToken): Promise<c4.LikeC4Model | null> {
+    const model = await this.buildRawModel(cancelToken)
+    if (!model) {
+      return null
+    }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(MODEL_CACHE, () => {
-      const model = this.buildRawModel()
-      if (!model) {
-        return null
-      }
       const index = new LikeC4ModelGraph(model)
 
       const allViews = [] as c4.ComputedView[]
@@ -257,15 +263,15 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  public computeView(viewId: ViewID): c4.ComputedView | null {
+  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedView | null> {
+    const model = await this.buildRawModel(cancelToken)
+    const view = model?.views[viewId]
+    if (!view) {
+      logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
+      return null
+    }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedViewKey(viewId), () => {
-      const model = this.buildRawModel()
-      const view = model?.views[viewId]
-      if (!view) {
-        logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
-        return null
-      }
       const index = new LikeC4ModelGraph(model)
       const result = computeView(view, index)
       if (!result.isSuccess) {

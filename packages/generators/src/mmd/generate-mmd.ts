@@ -1,9 +1,8 @@
 import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
-import { CompositeGeneratorNode, NL, NLEmpty, expandToNode, joinToNode, toString } from 'langium'
-import { isNil } from 'rambdax'
+import { CompositeGeneratorNode, expandToNode, joinToNode, NL, NLEmpty, toString } from 'langium/generate'
+import { isNil } from 'remeda'
 
-const capitalizeFirstLetter = (value: string) =>
-  value.charAt(0).toLocaleUpperCase() + value.slice(1)
+const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 
 const fqnName = (nodeId: string): string => nodeId.split('.').map(capitalizeFirstLetter).join('')
 

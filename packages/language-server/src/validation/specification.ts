@@ -1,4 +1,4 @@
-import type { ValidationCheck } from 'langium'
+import { AstUtils, CstUtils, GrammarUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
@@ -40,15 +40,26 @@ export const modelViewsChecks = (_: LikeC4Services): ValidationCheck<ast.ModelVi
 export const elementKindChecks = (services: LikeC4Services): ValidationCheck<ast.ElementKind> => {
   const index = services.shared.workspace.IndexManager
   return (node, accept) => {
-    const sameKinds = index
+    const sameKind = index
       .allElements(ast.ElementKind)
-      .filter(n => n.name === node.name)
-      .limit(2)
-      .count()
-    if (sameKinds > 1) {
+      .filter(n => n.name === node.name && n.node !== node)
+      .head()
+    if (sameKind) {
+      const isAnotherDoc = sameKind.documentUri !== AstUtils.getDocument(node).uri
       accept('error', `Duplicate element kind '${node.name}'`, {
         node: node,
-        property: 'name'
+        property: 'name',
+        ...isAnotherDoc && {
+          relatedInformation: [
+            {
+              location: {
+                range: sameKind.nameSegment!.range,
+                uri: sameKind.documentUri.toString()
+              },
+              message: `conflicting definition`
+            }
+          ]
+        }
       })
     }
   }
@@ -58,16 +69,31 @@ export const tagChecks = (services: LikeC4Services): ValidationCheck<ast.Tag> =>
   const index = services.shared.workspace.IndexManager
   return (node, accept) => {
     const tagname = '#' + node.name
-    const sameKinds = index
+    const sameTag = index
       .allElements(ast.Tag)
-      .filter(n => n.name === tagname)
-      .limit(2)
-      .count()
-    if (sameKinds > 1) {
-      accept('error', `Duplicate tag '${node.name}'`, {
-        node: node,
-        property: 'name'
-      })
+      .filter(n => n.name === tagname && n.node !== node)
+      .head()
+    if (sameTag) {
+      const isAnotherDoc = sameTag.documentUri !== AstUtils.getDocument(node).uri
+      accept(
+        'error',
+        `Duplicate tag '${node.name}'`,
+        {
+          node,
+          property: 'name',
+          ...isAnotherDoc && {
+            relatedInformation: [
+              {
+                location: {
+                  range: sameTag.nameSegment!.range,
+                  uri: sameTag.documentUri.toString()
+                },
+                message: `conflicting definition`
+              }
+            ]
+          }
+        }
+      )
     }
   }
 }

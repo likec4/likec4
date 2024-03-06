@@ -1,13 +1,8 @@
 import { nonexhaustive } from '@likec4/core'
-import {
-  findNodeForProperty,
-  type AstNode,
-  type DocumentSymbolProvider,
-  type MaybePromise,
-  type NodeKindProvider
-} from 'langium'
+import { type AstNode, GrammarUtils, type MaybePromise } from 'langium'
+import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
 import { compact, isEmpty, map, pipe } from 'remeda'
-import { SymbolKind, type DocumentSymbol } from 'vscode-languageserver-protocol'
+import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { getFqnElementRef } from '../elementRef'
 import { logError } from '../logger'
@@ -42,7 +37,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected getSpecSymbol(astSpec: ast.SpecificationRule): DocumentSymbol[] {
     const cstModel = astSpec?.$cstNode
     if (!cstModel) return []
-    const specKeywordNode = findNodeForProperty(cstModel, 'name')
+    const specKeywordNode = GrammarUtils.findNodeForProperty(cstModel, 'name')
     if (!specKeywordNode) return []
 
     const specSymbols = pipe(
@@ -75,7 +70,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected getModelSymbol(astModel: ast.Model): DocumentSymbol[] {
     const cstModel = astModel.$cstNode
     if (!cstModel) return []
-    const nameNode = findNodeForProperty(cstModel, 'name')
+    const nameNode = GrammarUtils.findNodeForProperty(cstModel, 'name')
     if (!nameNode) return []
     return [
       {
@@ -123,7 +118,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
 
   protected getElementSymbol(astElement: ast.Element): DocumentSymbol[] {
     const cst = astElement.$cstNode
-    const nameNode = findNodeForProperty(cst, 'name')
+    const nameNode = GrammarUtils.findNodeForProperty(cst, 'name')
     if (!nameNode || !cst) return []
 
     const name = astElement.name
@@ -143,7 +138,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   }
   protected getModelViewsSymbol(astViews: ast.ModelViews): DocumentSymbol[] {
     const cst = astViews.$cstNode
-    const nameNode = findNodeForProperty(cst, 'name')
+    const nameNode = GrammarUtils.findNodeForProperty(cst, 'name')
     if (!nameNode || !cst) return []
     return [
       {
@@ -182,7 +177,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
   protected getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
     const cst = astView?.$cstNode
     if (!cst) return []
-    const nameNode = astView.name ? findNodeForProperty(cst, 'name') : null
+    const nameNode = astView.name ? GrammarUtils.findNodeForProperty(cst, 'name') : null
     if (!nameNode) return []
     return [
       {

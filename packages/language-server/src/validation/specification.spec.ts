@@ -1,9 +1,14 @@
-import { expect, test, vi } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')
 
-const { validate } = createTestServices()
+const { validate, parse, validateAll, resetState } = createTestServices()
+
+afterEach(async () => {
+  await resetState()
+  // services.shared.workspace.LangiumDocuments.
+})
 
 test('specification rule checks', async () => {
   const { errors } = await validate(`
@@ -42,7 +47,7 @@ test('views rule checks', async () => {
   ])
 })
 
-test('elementKindChecks', async () => {
+test('elementKindChecks in one doc', async () => {
   const { diagnostics } = await validate(`
     specification {
       element component
@@ -53,11 +58,32 @@ test('elementKindChecks', async () => {
   expect(diagnostics).toHaveLength(2)
   for (const diagnostic of diagnostics) {
     expect(diagnostic.severity, 'diagnostic severity').toBe(1)
-    expect(diagnostic.message, 'diagnostic message').toBe("Duplicate element kind 'component'")
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element kind \'component\'')
   }
 })
 
-test('tagChecks', async () => {
+test('elementKindChecks among docs', async () => {
+  await parse(`
+    specification {
+      element component
+      element user
+    }
+  `)
+  await parse(`
+    specification {
+      element user
+    }
+  `)
+
+  const { diagnostics } = await validateAll()
+  expect(diagnostics).toHaveLength(2)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate element kind \'user\'')
+  }
+})
+
+test('tagChecks in one doc', async () => {
   const { diagnostics } = await validate(`
     specification {
       tag tag1
@@ -68,7 +94,28 @@ test('tagChecks', async () => {
   expect(diagnostics).toHaveLength(2)
   for (const diagnostic of diagnostics) {
     expect(diagnostic.severity, 'diagnostic severity').toBe(1)
-    expect(diagnostic.message, 'diagnostic message').toBe("Duplicate tag 'tag1'")
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate tag \'tag1\'')
+  }
+})
+
+test('tagChecks among docs', async () => {
+  await parse(`
+    specification {
+      tag tag1
+      tag tag2
+    }
+  `)
+  await parse(`
+    specification {
+      tag tag1
+    }
+  `)
+
+  const { diagnostics } = await validateAll()
+  expect(diagnostics).toHaveLength(2)
+  for (const diagnostic of diagnostics) {
+    expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate tag \'tag1\'')
   }
 })
 
@@ -83,6 +130,6 @@ test('relationshipChecks', async () => {
   expect(diagnostics).toHaveLength(2)
   for (const diagnostic of diagnostics) {
     expect(diagnostic.severity, 'diagnostic severity').toBe(1)
-    expect(diagnostic.message, 'diagnostic message').toBe("Duplicate RelationshipKind 'async'")
+    expect(diagnostic.message, 'diagnostic message').toBe('Duplicate RelationshipKind \'async\'')
   }
 })
