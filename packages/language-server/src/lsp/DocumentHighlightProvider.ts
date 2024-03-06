@@ -1,4 +1,5 @@
-import { DefaultDocumentHighlightProvider, type ReferenceDescription } from 'langium'
+import type { ReferenceDescription } from 'langium'
+import { DefaultDocumentHighlightProvider } from 'langium/lsp'
 import { DocumentHighlight, DocumentHighlightKind } from 'vscode-languageserver'
 
 export class LikeC4DocumentHighlightProvider extends DefaultDocumentHighlightProvider {

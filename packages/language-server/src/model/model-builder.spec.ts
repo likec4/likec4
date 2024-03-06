@@ -663,8 +663,8 @@ describe('LikeC4ModelBuilder', () => {
     expect(diagnostics).toHaveLength(0)
 
     // Check that computeView method does not change navigateTo
-    const indexView = services.likec4.ModelBuilder.computeView('index' as ViewID)!
-    let system1Node = indexView.nodes.find(n => n.id === 'system1')
+    const indexView = await services.likec4.ModelBuilder.computeView('index' as ViewID)
+    let system1Node = indexView!.nodes.find(n => n.id === 'system1')
     expect(system1Node).toMatchObject({
       title: 'system1',
       description: 'Custom description',

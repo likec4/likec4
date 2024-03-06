@@ -10,8 +10,5 @@
   },
   "devDependencies": {
     "likec4": "workspace:*"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

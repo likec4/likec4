@@ -32,7 +32,7 @@
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.19",
     "@vitest/ui": "^1.3.1",
     "dprint": "^0.45.0",
     "execa": "^8.0.1",
@@ -47,16 +47,12 @@
     "vite": "^5.1.4",
     "vitest": "^1.3.1"
   },
-  "volta": {
-    "node": "20.11.1"
-  },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
-    "vscode-uri": "3.0.8",
-    "chevrotain-allstar": "0.3.1"
+    "vscode-uri": "3.0.8"
   },
   "lint-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [

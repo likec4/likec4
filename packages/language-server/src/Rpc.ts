@@ -43,32 +43,19 @@ export class Rpc {
       )
     )
 
-    connection.onRequest(fetchModel, async _cancelToken => {
-      let model
-      try {
-        model = modelBuilder.buildModel() ?? null
-      } catch (e) {
-        model = null
-        logError(e)
-      }
-      return Promise.resolve({ model })
+    connection.onRequest(fetchModel, async cancelToken => {
+      const model = await modelBuilder.buildModel(cancelToken)
+      return { model }
     })
 
-    connection.onRequest(fetchRawModel, async _cancelToken => {
-      let rawmodel
-      try {
-        rawmodel = modelBuilder.buildRawModel() ?? null
-      } catch (e) {
-        rawmodel = null
-        logError(e)
-      }
-      return Promise.resolve({ rawmodel })
+    connection.onRequest(fetchRawModel, async cancelToken => {
+      const rawmodel = await modelBuilder.buildRawModel(cancelToken)
+      return { rawmodel }
     })
 
-    connection.onRequest(computeView, async ({ viewId }, _cancelToken) => {
-      return Promise.resolve({
-        view: modelBuilder.computeView(viewId)
-      })
+    connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
+      const view = await modelBuilder.computeView(viewId, cancelToken)
+      return { view }
     })
 
     connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {

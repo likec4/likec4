@@ -28,7 +28,7 @@
     "@mantine/hooks": "^7.6.1",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.19",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
@@ -47,8 +47,5 @@
     "vite-plugin-singlefile": "^2.0.0",
     "vite-tsconfig-paths": "^4.3.1",
     "vscode-messenger-webview": "^0.4.5"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

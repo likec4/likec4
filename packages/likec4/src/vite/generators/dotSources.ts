@@ -1,4 +1,4 @@
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 
 export function generateDotSources(
   sources: Record<
@@ -28,7 +28,8 @@ export function generateDotSources(
         indented.append(
           joinToNode(
             Object.keys(sources),
-            key => expandToNode`
+            key =>
+              expandToNode`
               case ${JSON.stringify(key)}: {
                 return ${JSON.stringify(sources[key]!.dot)}
               }
@@ -57,7 +58,8 @@ export function generateDotSources(
         indented.append(
           joinToNode(
             Object.keys(sources),
-            key => expandToNode`
+            key =>
+              expandToNode`
               case ${JSON.stringify(key)}: {
                 return ${JSON.stringify(sources[key]!.svg)}
               }

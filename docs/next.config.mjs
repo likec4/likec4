@@ -44,10 +44,10 @@ export default withNextra({
   // modularizeImports: true,
   experimental: {
     esmExternals: true
-    //serverComponentsExternalPackages: ['langium','konva']
+    // serverComponentsExternalPackages: ['langium','konva']
     // swcPlugins: [['@swc-jotai/debug-label', {}]],
   },
-  webpack: function (config, options) {
+  webpack: function(config, options) {
     // config.experiments.asyncWebAssembly = true
     // console.log('config.experiments', config.experiments)
     config.module.rules.push({
@@ -64,7 +64,8 @@ export default withNextra({
       '@likec4/diagrams': resolve(__dirname, '../packages/diagrams/src/index.ts'),
       '@likec4/generators': resolve(__dirname, '../packages/generators/src/index.ts'),
       '@likec4/layouts': resolve(__dirname, '../packages/layouts/src/index.ts'),
-      '@likec4/language-server': resolve(__dirname, '../packages/language-server/src/index.ts'),
+      '@likec4/language-server/browser': resolve(__dirname, '../packages/language-server/src/browser/index.ts'),
+      '@likec4/language-server': resolve(__dirname, '../packages/language-server/src/index.ts')
     }
     return config
   },
@@ -75,8 +76,7 @@ export default withNextra({
   transpilePackages: [
     'monaco-editor',
     'monaco-languageclient',
-    // 'langium/node',
-    // 'langium',
+    'langium',
     // 'chevrotain',
     // 'chevrotain-allstar',
     // '@likec4/core/compute-view',

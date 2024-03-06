@@ -9,7 +9,7 @@ import {
   RelationRefError
 } from '@likec4/core'
 import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
-import { DocumentState, getContainerOfType } from 'langium'
+import { AstUtils, DocumentState } from 'langium'
 import { isNil } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-protocol'
@@ -209,7 +209,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
   const invalidNodes = new WeakSet(
     doc.diagnostics?.flatMap(d => {
       if (d.severity === DiagnosticSeverity.Error) {
-        return getContainerOfType(d.node, isValidatableAstNode) ?? []
+        return AstUtils.getContainerOfType(d.node, isValidatableAstNode) ?? []
       }
       return []
     }) ?? []

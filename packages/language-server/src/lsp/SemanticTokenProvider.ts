@@ -1,4 +1,5 @@
-import { AbstractSemanticTokenProvider, type AstNode, type SemanticTokenAcceptor } from 'langium'
+import type { AstNode } from 'langium'
+import { AbstractSemanticTokenProvider, type SemanticTokenAcceptor } from 'langium/lsp'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
 
@@ -86,10 +87,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
     if (
-      ast.isColorProperty(node) ||
-      ast.isShapeProperty(node) ||
-      ast.isArrowProperty(node) ||
-      ast.isLineProperty(node)
+      ast.isColorProperty(node)
+      || ast.isShapeProperty(node)
+      || ast.isArrowProperty(node)
+      || ast.isLineProperty(node)
     ) {
       acceptor({
         node,

@@ -1,8 +1,9 @@
-import { type AstNode, type AstNodeDescription, type LangiumSharedServices } from 'langium'
+import { type AstNode, type AstNodeDescription } from 'langium'
+import type { LangiumSharedServices, NodeKindProvider as LspNodeKindProvider } from 'langium/lsp'
 import { CompletionItemKind, SymbolKind } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
 
-export class NodeKindProvider implements NodeKindProvider {
+export class NodeKindProvider implements LspNodeKindProvider {
   constructor(private services: LangiumSharedServices) {}
 
   /**
@@ -12,33 +13,29 @@ export class NodeKindProvider implements NodeKindProvider {
   getSymbolKind(node: AstNode | AstNodeDescription): SymbolKind {
     const hasType = (type: string) => 'type' in node && this.services.AstReflection.isSubtype(node.type, type)
     switch (true) {
-      case
-        (ast.isElement(node) || hasType(ast.Element)) ||
-        (ast.isExtendElement(node) || hasType(ast.ExtendElement)): {
-          return SymbolKind.Constructor
-        }
-      case ast.isModel(node) || ast.isModelViews(node) || ast.isSpecificationRule(node) ||
-        hasType(ast.Model) || hasType(ast.ModelViews) || hasType(ast.SpecificationRule): {
-          return SymbolKind.Namespace
-        }
+      case (ast.isElement(node) || hasType(ast.Element))
+        || (ast.isExtendElement(node) || hasType(ast.ExtendElement)): {
+        return SymbolKind.Constructor
+      }
+      case ast.isModel(node) || ast.isModelViews(node) || ast.isSpecificationRule(node)
+        || hasType(ast.Model) || hasType(ast.ModelViews) || hasType(ast.SpecificationRule): {
+        return SymbolKind.Namespace
+      }
       case (ast.isElementView(node) || hasType(ast.ElementView)): {
         return SymbolKind.Class
       }
-      case
-        (ast.isTag(node) || hasType(ast.Tag)) ||
-        (ast.isSpecificationTag(node) || hasType(ast.SpecificationTag)): {
-          return SymbolKind.EnumMember
-        }
-      case
-        (ast.isRelationshipKind(node) || hasType(ast.RelationshipKind)) ||
-        (ast.isSpecificationRelationshipKind(node) || hasType(ast.SpecificationRelationshipKind)): {
-          return SymbolKind.Event
-        }
-      case
-        (ast.isElementKind(node) || hasType(ast.ElementKind)) ||
-        (ast.isSpecificationElementKind(node) || hasType(ast.SpecificationElementKind)): {
-          return SymbolKind.TypeParameter
-        }
+      case (ast.isTag(node) || hasType(ast.Tag))
+        || (ast.isSpecificationTag(node) || hasType(ast.SpecificationTag)): {
+        return SymbolKind.EnumMember
+      }
+      case (ast.isRelationshipKind(node) || hasType(ast.RelationshipKind))
+        || (ast.isSpecificationRelationshipKind(node) || hasType(ast.SpecificationRelationshipKind)): {
+        return SymbolKind.Event
+      }
+      case (ast.isElementKind(node) || hasType(ast.ElementKind))
+        || (ast.isSpecificationElementKind(node) || hasType(ast.SpecificationElementKind)): {
+        return SymbolKind.TypeParameter
+      }
     }
     return SymbolKind.Constant
   }

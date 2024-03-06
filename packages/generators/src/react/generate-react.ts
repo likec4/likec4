@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 
 const componentName = (value: string): string => {
   if (!value.charAt(0).match(/[a-zA-Z]/)) {
@@ -51,9 +51,11 @@ export function generateReact(views: DiagramView[]) {
           joinToNode(
             views,
             view =>
-              expandToNode`${JSON5.stringify(view.id)}: (${JSON5.stringify(
-                view
-              )} as unknown) as DiagramView`,
+              expandToNode`${JSON5.stringify(view.id)}: (${
+                JSON5.stringify(
+                  view
+                )
+              } as unknown) as DiagramView`,
             {
               separator: ',',
               appendNewLineIfNotEmpty: true

@@ -1,6 +1,8 @@
-import { getDocument, type ValidationCheck } from 'langium'
+import { AstUtils, type ValidationCheck } from 'langium'
 import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
+
+const { getDocument } = AstUtils
 
 export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   const fqnIndex = services.likec4.FqnIndex
@@ -18,21 +20,24 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
       .filter(v => v.el !== el)
       .head()
     if (withSameFqn) {
+      const isAnotherDoc = withSameFqn.doc.uri !== getDocument(el).uri
       accept(
         'error',
         `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,
         {
           node: el,
           property: 'name',
-          relatedInformation: [
-            {
-              location: {
-                range: withSameFqn.el.$cstNode!.range,
-                uri: getDocument(withSameFqn.el).uri.toString()
-              },
-              message: `Already defined here`
-            }
-          ]
+          ...isAnotherDoc && {
+            relatedInformation: [
+              {
+                location: {
+                  range: withSameFqn.el.$cstNode!.range,
+                  uri: withSameFqn.doc.uri.toString()
+                },
+                message: `conflicting element`
+              }
+            ]
+          }
         }
       )
     }

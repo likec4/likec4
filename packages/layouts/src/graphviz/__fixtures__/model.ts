@@ -1,12 +1,4 @@
-import type {
-  Element,
-  ElementKind,
-  ElementView,
-  Fqn,
-  Opaque,
-  Relation,
-  RelationID
-} from '@likec4/core'
+import type { Element, ElementKind, ElementView, Fqn, IconUrl, Opaque, Relation, RelationID } from '@likec4/core'
 import { LikeC4ModelGraph } from '@likec4/graph'
 
 /**
@@ -291,6 +283,33 @@ export const amazonView = {
     }
   ]
 } satisfies ElementView
+
+// see https://github.com/likec4/likec4/issues/577
+export const issue577View = (icon: string) => ({
+  id: 'issue577' as Opaque<'issue577', 'ViewID'>,
+  title: '',
+  description: null,
+  tags: null,
+  links: null,
+  viewOf: 'amazon' as Fqn,
+  rules: [
+    {
+      include: [
+        // include *
+        { wildcard: true }
+      ]
+    },
+    {
+      targets: [
+        { wildcard: true }
+      ],
+      style: {
+        color: 'red',
+        icon: icon as IconUrl
+      }
+    }
+  ]
+} satisfies ElementView)
 
 export const fakeModel = () =>
   new LikeC4ModelGraph({

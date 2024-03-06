@@ -30,7 +30,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.19",
     "@types/prompts": "^2.4.8",
     "execa": "^8.0.1",
     "prompts": "^2.4.2",
@@ -38,8 +38,5 @@
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0"
   },
-  "packageManager": "yarn@4.1.0",
-  "volta": {
-    "extends": "../../package.json"
-  }
+  "packageManager": "yarn@4.1.0"
 }

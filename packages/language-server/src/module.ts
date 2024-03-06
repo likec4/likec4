@@ -1,17 +1,14 @@
 import { normalizeError } from '@likec4/core'
+import { EmptyFileSystem, inject, type Module, WorkspaceCache } from 'langium'
 import {
   createDefaultModule,
   createDefaultSharedModule,
   type DefaultSharedModuleContext,
-  EmptyFileSystem,
-  inject,
   type LangiumServices,
   type LangiumSharedServices,
-  type Module,
   type PartialLangiumServices,
-  type PartialLangiumSharedServices,
-  WorkspaceCache
-} from 'langium'
+  type PartialLangiumSharedServices
+} from 'langium/lsp'
 import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/module'
 import { logger } from './logger'
 import {

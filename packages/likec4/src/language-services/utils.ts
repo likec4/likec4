@@ -27,14 +27,14 @@ export function languageServicesUtils(services: CliServices) {
     return errorDiagnostics().length > 0
   }
 
-  const mutex = services.shared.workspace.MutexLock
+  const mutex = services.shared.workspace.WorkspaceLock
 
   // Returns true if the update was successful
   async function notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
     logger.info(`notify update ${k.dim(changed ?? removed)}`)
     try {
       let completed = false
-      await mutex.lock(async token => {
+      await mutex.write(async token => {
         await documentBuilder.update(
           changed ? [URI.file(changed)] : [],
           removed ? [URI.file(removed)] : [],

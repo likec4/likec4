@@ -1,6 +1,6 @@
 import type { ComputedView } from '@likec4/core'
 import { generateMermaid } from '@likec4/generators'
-import { CompositeGeneratorNode, NL, expandToNode, joinToNode, toString } from 'langium'
+import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 
 export function generateMmdSources(views: ComputedView[]) {
   const out = new CompositeGeneratorNode()
@@ -21,7 +21,8 @@ export function generateMmdSources(views: ComputedView[]) {
         indented.append(
           joinToNode(
             views,
-            view => expandToNode`
+            view =>
+              expandToNode`
               case ${JSON.stringify(view.id)}: {
                 return ${JSON.stringify(generateMermaid(view))}
               }

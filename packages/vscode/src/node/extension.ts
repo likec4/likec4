@@ -73,8 +73,8 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     outputChannel.warn(`No workspace folder found`)
   }
 
-  const watcher = vscode.workspace.createFileSystemWatcher(globPattern)
-  context.subscriptions.push(watcher)
+  // const watcher = vscode.workspace.createFileSystemWatcher(globPattern)
+  // context.subscriptions.push(watcher)
 
   // The glob pattern used to find likec4 source files inside the workspace
   const scheme = isVirtual() ? 'vscode-vfs' : 'file'
@@ -92,11 +92,11 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     revealOutputChannelOn: RevealOutputChannelOn.Warn,
     outputChannel,
     traceOutputChannel: outputChannel,
-    documentSelector,
-    synchronize: {
-      // Notify the server about file changes to files contained in the workspace
-      fileEvents: watcher
-    }
+    documentSelector
+    // synchronize: {
+    //   // Notify the server about file changes to files contained in the workspace
+    //   fileEvents: watcher
+    // }
   }
   outputChannel.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
 

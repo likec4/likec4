@@ -80,8 +80,5 @@
     "typescript": "^5.3.3",
     "typescript-plugin-css-modules": "^5.1.0",
     "unbuild": "^2.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

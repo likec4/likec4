@@ -76,7 +76,7 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@types/mermaid": "^9.2.0",
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.19",
     "@types/prop-types": "^15.7.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

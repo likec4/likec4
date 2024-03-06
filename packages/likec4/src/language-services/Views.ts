@@ -6,7 +6,7 @@ import pLimit from 'p-limit'
 import { isTruthy } from 'remeda'
 import type { CliServices } from './module'
 
-const limit = pLimit(4)
+const limit = pLimit(2)
 
 type GraphvizOut = {
   id: ViewID
@@ -27,65 +27,40 @@ export class Views {
     this.layouter = services.likec4.Layouter
   }
 
-  computedViews(): ComputedView[] {
-    const modelBuilder = this.services.likec4.ModelBuilder
-    const views = modelBuilder.buildModel()?.views ?? {}
-    return Object.values(views)
+  async computedViews(): Promise<ComputedView[]> {
+    const model = await this.services.likec4.ModelBuilder.buildModel()
+    return Object.values(model?.views ?? {})
   }
 
   async layoutViews(): Promise<ReadonlyArray<Readonly<DotLayoutResult>>> {
     const logger = this.services.logger
-    const KEY = 'All-LayoutedViews'
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, DotLayoutResult[]>
-    if (cache.has(KEY)) {
-      // logger.info(`[Views] Using cached layouted views`)
-      return await Promise.resolve(cache.get(KEY)!)
-    }
-
     const action = this.previousAction
       .then(async () => {
-        // Possible we have cached results in previousAction
-        if (cache.has(KEY)) {
-          // logger.info(`[Views] Using cached layouted views`)
-          return Promise.resolve(cache.get(KEY)!)
-        }
+        const views = await this.computedViews()
 
-        const modelBuilder = this.services.likec4.ModelBuilder
-        const views = modelBuilder.buildModel()?.views
-        if (!views) {
-          return []
-        }
-
-        const tasks = Object.values(views).map(view =>
-          limit(async () => {
-            try {
-              let result = this.cache.get(view)
-              if (!result) {
-                // console.debug(`cache miss layout: ${view.id}`)
-                const r = result = await this.layouter.layout(view)
-                this.cache.set(view, r)
-              } else {
-                // console.debug(`cache hit layout: ${view.id}`)
-              }
-              return result
-            } catch (e) {
-              logger.error(e)
-              return null
+        const tasks = views.map(async view => {
+          try {
+            let result = this.cache.get(view)
+            if (!result) {
+              // console.debug(`cache miss layout: ${view.id}`)
+              result = await this.layouter.layout(view)
+              this.cache.set(view, result)
             }
-          })
-        )
+            return result
+          } catch (e) {
+            logger.error(e)
+            return null
+          }
+        })
 
-        const results = (await Promise.all(tasks)).filter(isTruthy)
-        cache.set(KEY, results)
-        return results
+        return (await Promise.all(tasks)).filter(isTruthy)
       })
-      .catch(e => {
-        // Ignore errors from previousPromise
-        logger.error(e)
-        cache.delete(KEY)
-        return Promise.resolve([])
-      })
-    this.previousAction = action
+
+    this.previousAction = action.catch(e => {
+      // Ignore errors from previousPromise
+      logger.error(e)
+      return Promise.resolve([])
+    })
     return await action
   }
 

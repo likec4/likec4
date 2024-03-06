@@ -34,7 +34,7 @@
   },
   "scripts": {
     "vscode:prepublish": "run build:turbo",
-    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --open-devtools --extensionDevelopmentPath=. $PROJECT_CWD/examples/diagrams-dev/likec4",
+    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --open-devtools --extensionDevelopmentPath=. /Users/davydkov/Projects/like-c4/likec4/packages/likec4/dev",
     "typecheck": "tsc --noEmit",
     "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r \"$INIT_CWD/../vscode-preview/dist/*\" dist/preview/",
     "copy": "run-p 'copy:*'",
@@ -199,14 +199,14 @@
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^16.18.66",
+    "@types/node": "^16.18.82",
     "@types/vscode": "~1.77.0",
     "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.1",
-    "@vscode/vsce": "^2.22.0",
+    "@vscode/vsce": "^2.24.0",
     "esbuild": "^0.19.12",
     "esbuild-plugins-node-modules-polyfill": "^1.6.3",
-    "langium": "^2.1.3",
+    "langium": "^3.0.0",
     "npm-run-all2": "^6.1.2",
     "p-timeout": "^6.1.2",
     "path-browserify": "^1.0.1",
@@ -223,8 +223,5 @@
     "which": "^4.0.0",
     "xstream": "^11.14.0"
   },
-  "packageManager": "yarn@4.1.0",
-  "volta": {
-    "extends": "../../package.json"
-  }
+  "packageManager": "yarn@4.1.0"
 }
