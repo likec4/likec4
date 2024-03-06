@@ -97,3 +97,7 @@ console.info(`✔️ copied @likec4/core to dist`)
 await mkdir('dist/@likec4/diagrams')
 await cp('../diagrams/dist/', 'dist/@likec4/diagrams/', { recursive: true })
 console.info(`✔️ copied @likec4/diagrams to dist`)
+
+await mkdir('dist/@likec4/diagram')
+await cp('../diagram/dist/', 'dist/@likec4/diagram/', { recursive: true })
+console.info(`✔️ copied @likec4/diagram to dist`)
