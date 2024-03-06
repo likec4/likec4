@@ -8,9 +8,9 @@ import {
   issue577_fail,
   issue577_valid
 } from './__fixtures__'
-import { DotLayouter } from './DotLayouter'
+import { WasmGraphvizLayouter } from './DotLayouter'
 
-const wasmGraphviz = new DotLayouter()
+const wasmGraphviz = new WasmGraphvizLayouter()
 
 async function dotLayout(computedView: ComputedView) {
   return (await wasmGraphviz.layout(computedView)).diagram

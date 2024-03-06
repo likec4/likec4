@@ -1,14 +1,5 @@
-import { defaultTheme, type ThemeColor } from '@likec4/core'
-import { defaultTheme, type MantineTheme, type MantineThemeOverride } from '@mantine/core'
 import { themeToVars } from '@mantine/vanilla-extract'
-import {
-  assignVars,
-  createGlobalTheme,
-  createGlobalThemeContract,
-  createVar,
-  fallbackVar,
-  globalStyle
-} from '@vanilla-extract/css'
+import { createGlobalThemeContract } from '@vanilla-extract/css'
 
 export const vars = createGlobalThemeContract({
   likec4: {
@@ -31,4 +22,4 @@ export const vars = createGlobalThemeContract({
   }
 }, (value) => `likec4-${value}`)
 
-export const mantine = themeToVars(defaultTheme)
+export const mantine = themeToVars({})

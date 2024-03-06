@@ -33,7 +33,7 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}
       nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
+      edgeTypes={edgeTypes as any}
       zoomOnPinch={editor.zoomable}
       zoomOnScroll={!editor.pannable && editor.zoomable}
       {...(!editor.zoomable && {

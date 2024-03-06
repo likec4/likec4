@@ -1,11 +1,13 @@
 import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonexhaustive } from '@likec4/core'
-import { findNodeForKeyword } from 'langium'
+import { GrammarUtils } from 'langium'
 import { findLast, last, partition } from 'remeda'
-import { CancellationToken, Location, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol'
+import { Location, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol'
 import { ast, type ParsedAstElementView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { FqnIndex, LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
+
+const { findNodeForKeyword } = GrammarUtils
 
 const isViewRuleOfTarget = (fqn: string, index: FqnIndex) => (rule: ast.ViewRule): rule is ast.ViewRuleStyle => {
   if (!ast.isViewRuleStyle(rule)) {

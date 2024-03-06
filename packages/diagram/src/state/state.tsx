@@ -154,12 +154,12 @@ const useDiagramPropsHook = ({
     }
   }
 
-  const onInit = useCallback((instance: ReactFlowInstance) => {
+  const onInit = useCallback((instance: ReactFlowInstance<any, any>) => {
       invariant(instance.viewportInitialized, `viewportInitialized is not true`)
       setState({
         viewportInitialized: true
       })
-      eventHandlersRef.current.onInitialized?.(instance as XYFlowInstance)
+      eventHandlersRef.current.onInitialized?.(instance as unknown as XYFlowInstance)
     }, []),
     onEdgeMouseEnter = useCallback((event: React.MouseEvent, edge: Edge) => {
       setState({

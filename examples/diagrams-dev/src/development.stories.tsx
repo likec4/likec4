@@ -2,7 +2,7 @@ import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
 
 import { action, ActionType, type Story, type StoryDefault, useLadleContext } from '@ladle/react'
-import { LikeC4View as LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4Diagram as LikeC4ViewEditor } from '@likec4/diagram'
 import { Diagram, DiagramStateProvider } from '@likec4/diagrams'
 import { useStoryViewport } from '../.ladle/components'
 import type { LikeC4ViewId } from './likec4'
@@ -115,9 +115,9 @@ DiagramDevelopment.storyName = 'Diagram'
 
 export const LikeC4ViewEditorStory: Story<Props> = ({
   viewId,
-  onNodeClick = true
+  onNodeClick = true,
   // onEdgeClick = true,
-  // ...props
+  ...props
 }) => {
   const {
     dispatch,
@@ -128,28 +128,27 @@ export const LikeC4ViewEditorStory: Story<Props> = ({
   return (
     <LikeC4ViewEditor
       view={diagram}
+      zoomable={props.zoomable}
+      pannable={props.pannable}
       onNavigateTo={onNodeClick
-        ? (node) => {
-          action('onNodeClick')({
-            node
+        ? ({ element, event, xynode }) => {
+          dispatch({
+            type: ActionType.UpdateControl,
+            value: {
+              ...controlState,
+              viewId: {
+                ...controlState['viewId'],
+                value: element.navigateTo
+              }
+            }
           })
-          // dispatch({
-          //   type: ActionType.UpdateControl,
-          //   value: {
-          //     ...controlState,
-          //     viewId: {
-          //       ...controlState['viewId'],
-          //       value: node.navigateTo
-          //     }
-          //   }
-          // })
+          action('onNavigateTo')({
+            element,
+            xynode,
+            event
+          })
         }
         : undefined}
-      //    {...(onNodeClick && ({
-      // onNavigateTo={node => {
-
-      //       }}
-      //   })
     />
   )
 }

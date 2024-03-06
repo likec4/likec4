@@ -8,7 +8,10 @@ export type ElementNodeData = {
   element: DiagramNode
 }
 
-type TypedXYFlowNode<D, T extends string> = SetReadonly<SetRequired<Node<D, T>, 'type'>, 'id' | 'type'>
+type TypedXYFlowNode<D extends Record<string, unknown>, T extends string> = SetReadonly<
+  SetRequired<Node<D, T>, 'type'>,
+  'id' | 'type'
+>
 
 export type ElementXYFlowNode = TypedXYFlowNode<ElementNodeData, 'element'>
 
