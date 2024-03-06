@@ -2,6 +2,7 @@ import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import * as kiwi from '@lume/kiwi'
 import { Expression, Expression as Expr, Operator, Strength, type Variable } from '@lume/kiwi'
 import type { ReactFlowProps, XYPosition } from '@xyflow/react'
+import { deepEqual as eq } from 'fast-equals'
 import { type Ref, type RefObject, useMemo, useRef } from 'react'
 import { isNil } from 'remeda'
 import { type XYFlowInstance, XYFlowNode } from './types'
@@ -52,8 +53,8 @@ class Compound extends Rect {
     super()
     this.id = xynode.id
 
-    solver.createConstraint(this.maxX, Operator.Ge, this.minX.plus(50))
-    solver.createConstraint(this.maxY, Operator.Ge, this.minY.plus(50))
+    solver.createConstraint(this.maxX, Operator.Ge, this.minX)
+    solver.createConstraint(this.maxY, Operator.Ge, this.minY)
 
     if (parent) {
       parent.addChild(this)
@@ -197,33 +198,28 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
   solver.updateVariables()
   solver.maxIterations = 1000
 
-  function calcNodePositions() {
-    solver.updateVariables()
-    return new Map([...rects.values()].map(rect => {
-      return [rect.id, {
-        position: rect.position,
-        width: rect.maxX.value() - rect.minX.value(),
-        height: rect.maxY.value() - rect.minY.value()
-      }]
-    }))
-  }
-
   function updateXYFlowNodes() {
     solver.updateVariables()
     xyflow.setNodes(nodes =>
       nodes.map((n) => {
-        if (n.id === draggingNodeId) {
+        if (n.id === draggingNodeId || n.dragging === true) {
           return n
         }
         const rect = rects.get(n.id)
-        if (!rect || n.dragging === true) {
+        if (!rect) {
+          return n
+        }
+        const updates = {
+          position: rect.position,
+          width: rect.maxX.value() - rect.minX.value(),
+          height: rect.maxY.value() - rect.minY.value()
+        }
+        if (eq(n.position, updates.position) && eq(n.width, updates.width) && eq(n.height, updates.height)) {
           return n
         }
         return {
           ...n,
-          position: rect.position,
-          width: rect.maxX.value() - rect.minX.value(),
-          height: rect.maxY.value() - rect.minY.value()
+          ...updates
         }
       })
     )
@@ -239,10 +235,11 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
     const rect = nonNullable(rects.get(xynode.id))
     solver.suggestValue(rect.minX, pos.x)
     solver.suggestValue(rect.minY, pos.y)
-    if (animationFrameId) {
-      window.cancelAnimationFrame(animationFrameId)
-    }
-    animationFrameId = window.requestAnimationFrame(updateXYFlowNodes)
+
+    animationFrameId ??= window.requestAnimationFrame(() => {
+      updateXYFlowNodes()
+      animationFrameId = null
+    })
   }
 
   return {
@@ -266,7 +263,7 @@ export function useNodeDragConstraints(
       solverRef.current?.onNodeDrag(xynode)
     },
     onNodeDragStop: (event, xynode) => {
-      solverRef.current?.onNodeDrag(xynode)
+      // solverRef.current?.onNodeDrag(xynode)
       solverRef.current = undefined
     }
   }), [xyflow])

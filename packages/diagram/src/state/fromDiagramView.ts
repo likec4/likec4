@@ -89,6 +89,9 @@ export function fromDiagramView(
     }
     const zIndex = nodeZIndex(node)
 
+    const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
+    const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
+
     editor.nodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
@@ -102,6 +105,26 @@ export function fromDiagramView(
       zIndex,
       width: node.width,
       height: node.height,
+      // handles: [
+      //   ...outEdges.map(out => ({
+      //     id: `${out.id}`,
+      //     type: 'source' as const,
+      //     position: Position.Bottom,
+      //     x: out.points[0][0],
+      //     y: out.points[0][1],
+      //     width: 10,
+      //     height: 10
+      //   })),
+      //   ...inEdges.map(out => ({
+      //     id: out.id,
+      //     type: 'target' as const,
+      //     position: Position.Top,
+      //     x: out.points[0][0],
+      //     y: out.points[0][1],
+      //     width: 10,
+      //     height: 10
+      //   }))
+      // ],
       ...(parent
         ? {
           parentNode: ns + parent.id
@@ -119,9 +142,6 @@ export function fromDiagramView(
   for (const node of view.nodes.filter(n => isNil(n.parent))) {
     createNode(node)
   }
-  // console.group()
-  // createSolver(Object.values(view.nodes))
-  // console.groupEnd()
 
   const createEdge = (edge: DiagramEdge) => {
     const source = edge.source

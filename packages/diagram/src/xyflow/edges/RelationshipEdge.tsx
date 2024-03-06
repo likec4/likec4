@@ -1,16 +1,21 @@
 import { invariant, type NonEmptyArray, type Point } from '@likec4/core'
 import { Box, rem, Text } from '@mantine/core'
+import { isEqualReactSimple } from '@react-hookz/deep-equal'
 import type { EdgeProps } from '@xyflow/react'
-import { EdgeLabelRenderer } from '@xyflow/react'
+import { EdgeLabelRenderer, getBezierPath, useStore } from '@xyflow/react'
 import clsx from 'clsx'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import { motion } from 'framer-motion'
+import { useCallback } from 'react'
 import { memo } from 'react-tracked'
 import { hasAtLeast } from 'remeda'
 import useTilg from 'tilg'
 import { ZIndexes } from '../../const'
 import { useSelectDiagramState } from '../../state'
-import type { RelationshipData } from '../types'
-import styles from './RelationshipEdge.module.css'
+import { type RelationshipData, XYFlowNode } from '../types'
+import * as css from './edges.css'
+import { getEdgeParams } from './utils'
+// import { getEdgeParams } from './utils'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
 //   const bendSize = Math.min(distance(a, b) / 2, distance(b, c) / 2, size)
@@ -63,14 +68,43 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   selected,
   markerEnd,
   style,
-  interactionWidth
+  source,
+  target,
+  interactionWidth,
+  ...xyedge
 }) {
-  invariant(data, 'data is required')
+  const {
+    sourceNode,
+    targetNode
+  } = useStore(
+    useCallback(s => {
+      const sourceNode = s.nodeLookup.get(source)!
+      const targetNode = s.nodeLookup.get(target)!
+      return {
+        sourceNode,
+        targetNode
+      }
+    }, [source, target]),
+    deepEqual
+  )
+
+  useTilg()
+  // const [sourceNode, targetNode] = useXYNodesData([xyedge.source, xyedge.target])
+  invariant(XYFlowNode.is(sourceNode))
+  invariant(XYFlowNode.is(targetNode))
+
+  const isModified = sourceNode.computed?.positionAbsolute?.x !== sourceNode.data.element.position[0]
+    || sourceNode.computed?.positionAbsolute?.y !== sourceNode.data.element.position[1]
+    || targetNode.computed?.positionAbsolute?.x !== targetNode.data.element.position[0]
+    || targetNode.computed?.positionAbsolute?.y !== targetNode.data.element.position[1]
+
+  invariant(data, 'data isd required')
   const {
     edge,
     controlPoints
   } = data
-  const edgePath = bezierPath(edge.points)
+  // const edgePath = bezierPath(edge.points)
+
   const color = edge.color ?? 'gray'
   const isHovered = useSelectDiagramState(state => state.hoveredEdgeId === id)
 
@@ -87,9 +121,31 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
 
   const marker = `url(#arrow-${id})`
 
+  let edgePath: string, labelX: number, labelY: number
+
+  if (isModified) {
+    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
+
+    const [_edgePath, _labelX, _labelY] = getBezierPath({
+      sourceX: sx,
+      sourceY: sy,
+      sourcePosition: sourcePos,
+      targetPosition: targetPos,
+      targetX: tx,
+      targetY: ty
+    })
+    edgePath = _edgePath
+    labelX = _labelX
+    labelY = _labelY
+  } else {
+    edgePath = bezierPath(edge.points)
+    labelX = data.label?.bbox.x ?? 0
+    labelY = data.label?.bbox.y ?? 0
+  }
+
   return (
-    <g className={styles.container} data-likec4-color={color} data-edge-hovered={isHovered}>
-      <g className={clsx(styles.fillStrokeCtx)}>
+    <g className={clsx(css.container)} data-likec4-color={color} data-edge-hovered={isHovered}>
+      <g className={clsx(css.fillStrokeCtx)}>
         <defs>
           <marker
             id={`arrow-${id}`}
@@ -106,7 +162,13 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
         </defs>
       </g>
       <path
-        className={clsx('react-flow__edge-path', styles.edgePath)}
+        className={clsx('react-flow__edge-path', css.edgePathBg)}
+        d={edgePath}
+        style={style}
+        strokeLinecap={'round'}
+      />
+      <path
+        className={clsx('react-flow__edge-path', css.edgePath)}
         d={edgePath}
         style={style}
         strokeLinecap={'round'}
@@ -152,19 +214,19 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
           }
           <EdgeLabelRenderer>
             <Box
-              className={styles.edgeLabel}
+              className={clsx(css.container, css.edgeLabel)}
               data-likec4-color={color}
               data-edge-hovered={isHovered}
               style={{
-                top: data.label.bbox.y,
-                left: data.label.bbox.x,
+                top: labelY,
+                left: labelX,
                 width: data.label.bbox.width + 5,
                 // maxWidth: data.label.bbox.width + 25,
                 zIndex: ZIndexes.Edge
               }}
             >
               <Box
-                className={styles.edgeLabelBody}>
+                className={css.edgeLabelBody}>
                 <span>{data.label.text}</span>
               </Box>
               {/* <Text component="span" fz={rem(12)}></Text> */}
@@ -174,4 +236,4 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
       )}
     </g>
   )
-})
+}, isEqualReactSimple)

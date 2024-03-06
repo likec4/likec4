@@ -1,6 +1,6 @@
-import { Image, Text } from '@mantine/core'
+import { Button, Image, Stack, Text } from '@mantine/core'
 import { isEqualSimple } from '@react-hookz/deep-equal'
-import { Handle, type NodeProps, Position } from '@xyflow/react'
+import { Handle, type NodeProps, NodeToolbar, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
@@ -84,10 +84,19 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
           <Button>edit</Button>
 
         </Stack>
-      </NodeToolbar>
-      </NodeToolbar> */
+      </NodeToolbar>*/
       }
-
+      {
+        /* {element.inEdges.map((edge) => (
+        <Handle
+          key={edge}
+          id={edge}
+          type="target"
+          position={Position.Top}
+          style={{ visibility: 'hidden' }}
+        />
+      ))} */
+      }
       <Handle
         type="target"
         position={Position.Top}
@@ -112,12 +121,6 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
           h={h}
         />
       </svg>
-      <Handle
-        type="source"
-        id={element.id}
-        position={Position.Bottom}
-        style={{ visibility: 'hidden' }}
-      />
       <div className={css.element}>
         {element.icon && <ElementIcon node={element} />}
         <Text component="div" className={css.title}>
@@ -137,6 +140,22 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
           </Text>
         )}
       </div>
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ visibility: 'hidden' }}
+      />
+      {
+        /* {element.outEdges.map((edge) => (
+        <Handle
+        key={edge}
+          id={edge}
+          type="source"
+          position={Position.Bottom}
+          style={{ visibility: 'hidden' }}
+        />
+      ))} */
+      }
       {isNavigable && (
         <NavigateToBtn
           onClick={(e) => {

@@ -23,3 +23,13 @@ export const vars = createGlobalThemeContract({
 }, (value) => `likec4-${value}`)
 
 export const mantine = themeToVars({})
+
+export const xyvars = createGlobalThemeContract({
+  edge: {
+    stroke: 'edge-stroke',
+    strokeSelected: 'edge-stroke-selected',
+    labelColor: 'edge-label-color',
+    labelBgColor: 'edge-label-background-color',
+    strokeWidth: 'edge-stroke-width'
+  }
+}, (value) => `xy-${value}`)
