@@ -58,7 +58,9 @@ jobs:
         run: yarn typecheck
 
       - name: Test
-        run: yarn test
+        env:
+          NODE_ENV: test
+        run: yarn ci:test
 
       - if: ${{ matrix.build-docs }}
         name: Build Docs

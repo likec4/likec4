@@ -44,7 +44,9 @@ jobs:
         run: yarn typecheck
 
       - name: Test
-        run: yarn test
+        env:
+          NODE_ENV: test
+        run: yarn ci:test
 
       # - name: Run СLI test
       #   run: yarn test:integration

@@ -1,17 +1,7 @@
-import { mergeConfig, defineConfig, defineProject } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default mergeConfig(
-  defineConfig({
-    test: {
-      snapshotFormat: {
-        escapeString: false
-      }
-    }
-  }),
-  // @ts-ignore
-  defineProject({
-    test: {
-      name: 'generators'
-    }
-  })
-)
+export default defineProject({
+  test: {
+    name: 'generators'
+  }
+})
