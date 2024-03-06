@@ -4,8 +4,7 @@ import { useMemo } from 'react'
 import useTilg from 'tilg'
 import * as css from './index.css'
 import { type LikeC4DiagramProps } from './props'
-import { DiagramStateProvider, DiagramStateSync } from './state'
-import { fromDiagramView } from './state/fromDiagramView'
+import { DiagramStateProvider, DiagramStateSync, fromDiagramView } from './state'
 import { LikeC4XYFlow } from './xyflow'
 
 export function LikeC4Diagram({

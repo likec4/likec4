@@ -10,7 +10,7 @@ import {
 } from '@vanilla-extract/css'
 import { vars } from '../../../theme'
 
-const stokeFillMix = createVar('stroke-fill-mix')
+export const stokeFillMix = createVar('stroke-fill-mix')
 const elPadding = createVar('el-padding')
 // assignVars
 

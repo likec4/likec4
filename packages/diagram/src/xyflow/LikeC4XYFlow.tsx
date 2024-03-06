@@ -2,10 +2,11 @@ import { isEqualReact } from '@react-hookz/deep-equal'
 import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
 import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
-import { useDiagramStateTracked, useSelectDiagramState, useUpdateDiagramState } from '../state'
+import { useDiagramStateTracked } from '../state/state'
 import { Camera, OptionsPanel } from '../ui'
-import { edgeTypes } from './edges'
-import { nodeTypes } from './nodes'
+import { RelationshipEdge } from './edges/RelationshipEdge'
+import { CompoundNode } from './nodes/compound'
+import { ElementNode } from './nodes/element'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
 import { useNodeDragConstraints } from './useNodeDragConstraints'
 
@@ -19,6 +20,14 @@ type DefaultData = {
   defaultEdges?: XYFlowEdge[] | undefined
 }
 
+const nodeTypes = {
+  element: ElementNode,
+  compound: CompoundNode
+}
+const edgeTypes = {
+  relationship: RelationshipEdge
+}
+
 export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlow({
   defaultNodes = [],
   defaultEdges = [],
@@ -29,7 +38,7 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
   const editor = useDiagramStateTracked()
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
 
-  const dragHandglers = useNodeDragConstraints(xyflowRef)
+  const nodeDragHandlers = useNodeDragConstraints(xyflowRef)
 
   return (
     <ReactFlow
@@ -70,9 +79,11 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
         xyflowRef.current = instance
         editor.onInit(instance)
       }, [])}
+      onNodeMouseEnter={editor.onNodeMouseEnter}
+      onNodeMouseLeave={editor.onNodeMouseLeave}
       onEdgeMouseEnter={editor.onEdgeMouseEnter}
       onEdgeMouseLeave={editor.onEdgeMouseLeave}
-      {...(editor.nodesDraggable && dragHandglers)}
+      {...(editor.nodesDraggable && nodeDragHandlers)}
       {...(!editor.pannable && { [`data-likec4-no-pan`]: '' })}
       {...(editor.disableBackground && { [`data-likec4-no-bg`]: '' })}
     >

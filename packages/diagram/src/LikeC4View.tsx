@@ -21,11 +21,12 @@ export function LikeC4View({
     <ReactFlowProvider>
       <DiagramStateProvider
         view={view}
-        readonly={true}
+        readonly
         pannable={false}
         zoomable={false}
         controls={false}
-        disableBackground={true}
+        disableBackground
+        disableHovercards
         nodesSelectable={false}
         {...apiProps}
       >

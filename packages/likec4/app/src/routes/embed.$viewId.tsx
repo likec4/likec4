@@ -29,6 +29,7 @@ function EmbedPage() {
         view={diagram}
         pannable={false}
         readonly
+        disableHovercards
         disableBackground
       />
     </Box>

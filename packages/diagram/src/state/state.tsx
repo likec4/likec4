@@ -15,7 +15,7 @@ import type {
   LikeC4ViewColorMode
 } from '../props'
 import { useXYFlow } from '../xyflow/hooks'
-import { type XYFlowInstance } from '../xyflow/types'
+import { type XYFlowInstance, type XYFlowNode } from '../xyflow/types'
 
 // Guard, Ensure that object contains only event handlers
 function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
@@ -44,6 +44,7 @@ const useDiagramPropsHook = ({
   nodesDraggable = !readonly,
   fitOnSelect = zoomable && nodesSelectable,
   disableBackground = false,
+  disableHovercards = false,
   fitViewPadding = 0.05,
   ...eventHandlers
 }: LikeC4DiagramProps) => {
@@ -63,8 +64,10 @@ const useDiagramPropsHook = ({
     view,
     viewNodes: view.nodes,
     viewEdges: view.edges,
+    hoveredNodeId: null as null | string,
     hoveredEdgeId: null as null | string,
     disableBackground,
+    disableHovercards,
     fitViewPadding,
     colorMode,
     controls,
@@ -79,7 +82,11 @@ const useDiagramPropsHook = ({
 
   const viewId = view.id
   useLayoutEffect(() => {
-    setState({ viewId })
+    setState({
+      viewId,
+      hoveredNodeId: null,
+      hoveredEdgeId: null
+    })
   }, [viewId])
 
   useLayoutEffect(() => {
@@ -101,6 +108,7 @@ const useDiagramPropsHook = ({
       fitOnSelect,
       readonly,
       disableBackground,
+      disableHovercards,
       nodesSelectable,
       nodesDraggable
     })
@@ -113,6 +121,7 @@ const useDiagramPropsHook = ({
     fitOnSelect,
     readonly,
     disableBackground,
+    disableHovercards,
     nodesSelectable,
     nodesDraggable
   ])
@@ -165,6 +174,16 @@ const useDiagramPropsHook = ({
       })
       eventHandlersRef.current.onInitialized?.(instance as unknown as XYFlowInstance)
     }, []),
+    onNodeMouseEnter = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
+      setState({
+        hoveredNodeId: xynode.id
+      })
+    }, []),
+    onNodeMouseLeave = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
+      setState({
+        hoveredNodeId: null
+      })
+    }, []),
     onEdgeMouseEnter = useCallback((event: React.MouseEvent, edge: Edge) => {
       setState({
         hoveredEdgeId: edge.id
@@ -181,6 +200,8 @@ const useDiagramPropsHook = ({
       onInit,
       onEdgeMouseEnter,
       onEdgeMouseLeave,
+      onNodeMouseEnter,
+      onNodeMouseLeave,
       ...handlersRef.current!,
       ...hasEventHandlers,
       ...state

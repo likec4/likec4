@@ -5,13 +5,14 @@ import clsx from 'clsx'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
 import useTilg from 'tilg'
-import { useDiagramStateTracked } from '../../../state'
+import { useDiagramStateTracked, useSelectDiagramState } from '../../../state'
 import { toDomPrecision } from '../../../utils'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import * as css from './element.css'
 import classes from './element.module.css'
 import { ElementIcon } from './ElementIcon'
+import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
 type ElementNodeProps = NodeProps<ElementNodeData>
@@ -50,13 +51,16 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
   data: {
     element
   },
+  selected,
   dragging,
   width,
   height
 }) {
   // useTilg()
   const editor = useDiagramStateTracked()
+  const isHovercards = editor.disableHovercards !== true
   const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo
+  const isHovered = useSelectDiagramState(state => state.hoveredNodeId === id)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -70,8 +74,17 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
       variants={variants}
       initial={'idle'}
       whileTap={'tap'}
-      whileHover={'hover'}
+      animate={isHovered ? 'hover' : 'idle'}
     >
+      {
+        /* <NodeToolbar
+        position={Position.Bottom}
+        align={'start'}
+        offset={-10}
+        isVisible={selected || isHovered}>
+<Button>editggg</Button>
+      </NodeToolbar> */
+      }
       {
         /* <NodeResizer minWidth={100} minHeight={30} />
       <NodeToolbar
@@ -156,6 +169,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
         />
       ))} */
       }
+      {isHovercards && <ElementLink element={element} />}
       {isNavigable && (
         <NavigateToBtn
           onClick={(e) => {

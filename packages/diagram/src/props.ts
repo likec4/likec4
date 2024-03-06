@@ -79,6 +79,12 @@ export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
   nodesSelectable?: boolean | undefined
   nodesDraggable?: boolean | undefined
   disableBackground?: boolean | undefined
+
+  /**
+   * Disable element hovercards, such as links and properties
+   * @default false
+   */
+  disableHovercards?: boolean | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

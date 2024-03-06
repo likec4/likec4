@@ -1,4 +1,5 @@
 import {
+  compareByFqnHierarchically,
   type DiagramEdge,
   type DiagramNode,
   type DiagramView,
@@ -62,15 +63,11 @@ export function fromDiagramView(
     edges: []
   }
 
+  // namespace to force unique ids
   // const ns = view.id + ':'
   const ns = ''
-
   const nodeById = (id: Fqn) => nonNullable(view.nodes.find(n => n.id === id))
-
-  // const positioned = new Map(createLayoutConstraints(view.nodes).solve().map(n => [n.id, n]))
-
   const createNode = (node: DiagramNode) => {
-    // const children = [...node.children]
     const isCompound = hasAtLeast(node.children, 1)
     const id = ns + node.id
     // const {
@@ -89,8 +86,8 @@ export function fromDiagramView(
     }
     const zIndex = nodeZIndex(node)
 
-    const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
-    const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
+    // const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
+    // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
 
     editor.nodes.push({
       id,
@@ -131,15 +128,9 @@ export function fromDiagramView(
         }
         : {})
     })
-
-    if (node.children.length > 0) {
-      for (const child of view.nodes.filter(n => n.parent === node.id)) {
-        createNode(child)
-      }
-    }
   }
 
-  for (const node of view.nodes.filter(n => isNil(n.parent))) {
+  for (const node of view.nodes.toSorted(compareByFqnHierarchically)) {
     createNode(node)
   }
 
