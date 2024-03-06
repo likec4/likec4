@@ -131,6 +131,23 @@ class Leaf extends Rect {
       const halfMedium = Strength.create(0.0, 1.0, 0.0, 0.5)
       solver.createConstraint(this.minX, Operator.Eq, pos.x, halfMedium)
       solver.createConstraint(this.minY, Operator.Eq, pos.y, halfMedium)
+      // const weaker = Strength.create(0.0, 0.0, 1.0, 0.5)
+      // const weak = Strength.create(0.0, 0.0, 1.0)
+      // const x = new Expr(
+      //   this.minX,
+      //   [-1, pos.x]
+      // )
+      // solver.createConstraint(x, Operator.Eq, 0, weaker)
+      // solver.createConstraint(x, Operator.Ge, -30, weak)
+      // solver.createConstraint(x, Operator.Le, 30, weak)
+
+      // const y = new Expr(
+      //   this.minY,
+      //   [-1, pos.y]
+      // )
+      // solver.createConstraint(y, Operator.Eq, 0, weaker)
+      // solver.createConstraint(y, Operator.Ge, -30, weak)
+      // solver.createConstraint(y, Operator.Le, 30, weak)
     }
 
     if (parent) {
@@ -191,17 +208,13 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
     }))
   }
 
-  /**
-   * Move the editing node to the given position.
-   */
-  function onNodeDrag(xynode: XYFlowNode) {
-    const pos = nonNullable(xynode.computed?.positionAbsolute, 'No positionAbsolute')
-    const rect = nonNullable(rects.get(xynode.id))
-    solver.suggestValue(rect.minX, pos.x)
-    solver.suggestValue(rect.minY, pos.y)
+  function updateXYFlowNodes() {
     solver.updateVariables()
     xyflow.setNodes(nodes =>
       nodes.map((n) => {
+        if (n.id === draggingNodeId) {
+          return n
+        }
         const rect = rects.get(n.id)
         if (!rect || n.dragging === true) {
           return n
@@ -216,26 +229,44 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
     )
   }
 
+  let animationFrameId: number | null = null
+
+  /**
+   * Move the editing node to the given position.
+   */
+  function onNodeDrag(xynode: XYFlowNode) {
+    const pos = nonNullable(xynode.computed?.positionAbsolute, 'No positionAbsolute')
+    const rect = nonNullable(rects.get(xynode.id))
+    solver.suggestValue(rect.minX, pos.x)
+    solver.suggestValue(rect.minY, pos.y)
+    if (animationFrameId) {
+      window.cancelAnimationFrame(animationFrameId)
+    }
+    animationFrameId = window.requestAnimationFrame(updateXYFlowNodes)
+  }
+
   return {
     onNodeDrag,
-    calcNodePositions
+    updateXYFlowNodes
   }
 }
 
 export function useNodeDragConstraints(
   xyflow: RefObject<XYFlowInstance | undefined>
-): Required<Pick<ReactFlowProps, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>> {
+): Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>> {
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
   return useMemo(() => ({
     onNodeDragStart: (event, xynode) => {
       invariant(xyflow.current, 'xyflow.current should be defined')
+      invariant(!solverRef.current, 'solverRef.current should be undefined')
       solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
     },
     onNodeDrag: (event, xynode) => {
-      invariant(XYFlowNode.is(xynode), `node is not a EditorNode`)
+      invariant(solverRef.current, 'solverRef.current should be defined')
       solverRef.current?.onNodeDrag(xynode)
     },
     onNodeDragStop: (event, xynode) => {
+      solverRef.current?.onNodeDrag(xynode)
       solverRef.current = undefined
     }
   }), [xyflow])

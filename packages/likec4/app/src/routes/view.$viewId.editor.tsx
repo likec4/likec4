@@ -36,7 +36,7 @@ function ViewEditor() {
         view={view}
         onNavigateTo={navigateTo}
         controls={false}
-        nodesDraggable={false}
+        // nodesDraggable={false}
       />
     </Box>
   )

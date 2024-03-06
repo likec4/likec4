@@ -1,12 +1,13 @@
 import { isEqualReact } from '@react-hookz/deep-equal'
 import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import { useDiagramStateTracked, useSelectDiagramState, useUpdateDiagramState } from '../state'
 import { Camera, OptionsPanel } from '../ui'
 import { edgeTypes } from './edges'
 import { nodeTypes } from './nodes'
-import { XYFlowEdge, XYFlowNode } from './types'
+import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
+import { useNodeDragConstraints } from './useNodeDragConstraints'
 
 export type LikeC4XYFlowProps = Pick<
   ReactFlowProps,
@@ -24,8 +25,12 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
   ...props
 }) {
   useTilg()
+  const xyflowRef = useRef<XYFlowInstance>()
   const editor = useDiagramStateTracked()
   const colorMode = editor.colorMode === 'auto' ? 'system' : editor.colorMode
+
+  const dragHandglers = useNodeDragConstraints(xyflowRef)
+
   return (
     <ReactFlow
       colorMode={colorMode}
@@ -59,11 +64,15 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
       // edgesUpdatable={false}
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
-      selectNodesOnDrag={false} // or camera does not work
+      selectNodesOnDrag={false} // or weird camera movements
       {...props}
-      onInit={editor.onInit}
+      onInit={useCallback((instance: XYFlowInstance) => {
+        xyflowRef.current = instance
+        editor.onInit(instance)
+      }, [])}
       onEdgeMouseEnter={editor.onEdgeMouseEnter}
       onEdgeMouseLeave={editor.onEdgeMouseLeave}
+      {...(editor.nodesDraggable && dragHandglers)}
       {...(!editor.pannable && { [`data-likec4-no-pan`]: '' })}
       {...(editor.disableBackground && { [`data-likec4-no-bg`]: '' })}
     >
