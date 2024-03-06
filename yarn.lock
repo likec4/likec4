@@ -1143,7 +1143,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     ufo: "npm:^1.3.2"
     unbuild: "npm:^2.0.0"
@@ -1170,7 +1170,7 @@ __metadata:
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
@@ -9113,7 +9113,7 @@ __metadata:
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.1"
-    type-fest: "npm:^4.10.2"
+    type-fest: "npm:^4.10.3"
     typescript: "npm:^5.3.3"
     typescript-plugin-css-modules: "npm:^5.1.0"
     vite: "npm:^5.1.4"
@@ -14968,10 +14968,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.10.2":
-  version: 4.10.2
-  resolution: "type-fest@npm:4.10.2"
-  checksum: 10/2b1ad1270d9fabeeb506ba831d513caeb05bfc852e5e012511d785ce9dc68d773fe0a42bddf857a362c7f3406244809c5b8a698b743bb7617d4a8c470672087f
+"type-fest@npm:^4.10.3":
+  version: 4.11.1
+  resolution: "type-fest@npm:4.11.1"
+  checksum: 10/1c16e8199f3124ff7bc23de64babda24c9970ae98723d9d2eb7d2646b9dd9107fece2f50261d5a1b28f3af2fa7be8e56c0369ec6d5ae0f25f84de72e241278a9
   languageName: node
   linkType: hard
 
