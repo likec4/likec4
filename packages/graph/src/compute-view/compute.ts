@@ -8,10 +8,10 @@ import type {
   ViewRuleExpression
 } from '@likec4/core'
 import {
-  Expr,
   ancestorsFqn,
   commonAncestor,
   compareRelations,
+  Expr,
   invariant,
   isAncestor,
   isStrictElementView,
@@ -25,16 +25,16 @@ import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
   excludeElementRef,
-  excludeInOutExpr,
   excludeIncomingExpr,
+  excludeInOutExpr,
   excludeOutgoingExpr,
   excludeRelationExpr,
   excludeWildcardRef,
   includeCustomElement,
   includeElementKindOrTag,
   includeElementRef,
-  includeInOutExpr,
   includeIncomingExpr,
+  includeInOutExpr,
   includeOutgoingExpr,
   includeRelationExpr,
   includeWildcardRef
@@ -148,13 +148,11 @@ export class ComputeCtx {
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
 
     const sortedEdges = new Set([
-      ...nodes.flatMap(n =>
-        n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []
-      ),
+      ...nodes.flatMap(n => n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []),
       ...edges
     ])
 
-    const autoLayoutRule = this.view.rules.find(isViewRuleAutoLayout)
+    const autoLayoutRule = this.view.rules.findLast(isViewRuleAutoLayout)
     return {
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
@@ -298,9 +296,9 @@ export class ComputeCtx {
         const isSourceNested = isAncestor(source.id, edge.source.id)
         const isTargetNested = isAncestor(target.id, edge.target.id)
         return (
-          (isSourceNested && isTargetNested) ||
-          (isSameSource && isTargetNested) ||
-          (isSameTarget && isSourceNested)
+          (isSourceNested && isTargetNested)
+          || (isSameSource && isTargetNested)
+          || (isSameTarget && isSourceNested)
         )
       }
     }

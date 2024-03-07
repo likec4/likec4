@@ -401,5 +401,26 @@ export function toAutoLayout(
     case 'RightLeft': {
       return 'RL'
     }
+    default:
+      nonexhaustive(direction)
+  }
+}
+
+export function toAstViewLayoutDirection(c4: c4.ViewRuleAutoLayout['autoLayout']): ast.ViewLayoutDirection {
+  switch (c4) {
+    case 'TB': {
+      return 'TopBottom'
+    }
+    case 'BT': {
+      return 'BottomTop'
+    }
+    case 'LR': {
+      return 'LeftRight'
+    }
+    case 'RL': {
+      return 'RightLeft'
+    }
+    default:
+      nonexhaustive(c4)
   }
 }

@@ -23,6 +23,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./browser": "./src/browser/index.ts",
+    "./protocol": "./src/protocol.ts",
     "./node": "./src/node/index.ts"
   },
   "publishConfig": {
@@ -36,6 +37,10 @@
       "./browser": {
         "types": "./dist/browser/index.d.ts",
         "default": "./dist/browser/index.js"
+      },
+      "./protocol": {
+        "types": "./dist/protocol.d.ts",
+        "default": "./dist/protocol.js"
       },
       "./node": {
         "types": "./dist/node/index.d.ts",

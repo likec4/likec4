@@ -1,4 +1,5 @@
 import type {
+  AutoLayoutDirection,
   ComputedView,
   ElementShape,
   Fqn,
@@ -26,7 +27,7 @@ export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedV
   'likec4/computeView'
 )
 
-interface BuildDocumentsParams {
+export interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
 export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
@@ -45,7 +46,7 @@ export type LocateParams =
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
 // #endregion
 
-export namespace ChangeView {
+export namespace Changes {
   export interface ChangeColor {
     viewId: ViewID
     op: 'change-color'
@@ -60,9 +61,19 @@ export namespace ChangeView {
     targets: NonEmptyArray<Fqn>
   }
 
-  export type Operation = ChangeColor | ChangeShape
+  export interface ChangeAutoLayout {
+    viewId: ViewID
+    op: 'change-autolayout'
+    layout: AutoLayoutDirection
+  }
 }
-export interface ChangeViewParams {
-  change: ChangeView.Operation
+
+export type ChangeCommand =
+  | Changes.ChangeColor
+  | Changes.ChangeShape
+  | Changes.ChangeAutoLayout
+
+export interface ChangeOpParams {
+  change: ChangeCommand
 }
-export const changeView = new RequestType<ChangeViewParams, Location | null, void>('likec4/change-view')
+export const changeOp = new RequestType<ChangeOpParams, Location | null, void>('likec4/change')

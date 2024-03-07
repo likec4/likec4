@@ -8,6 +8,12 @@ import type {
   ThemeColor,
   ViewID
 } from '@likec4/core'
+import type {
+  BuildDocumentsParams,
+  ChangeCommand,
+  ChangeOpParams,
+  LocateParams
+} from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -25,51 +31,10 @@ const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | n
   'likec4/computeView'
 )
 
-interface BuildDocumentsParams {
-  docs: DocumentUri[]
-}
 const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
 
-export type LocateParams =
-  | {
-    element: Fqn
-    property?: string
-    relation?: never
-    view?: never
-  }
-  | {
-    relation: RelationID
-    element?: never
-    view?: never
-  }
-  | {
-    view: ViewID
-    relation?: never
-    element?: never
-  }
 const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-
-namespace ChangeView {
-  export interface ChangeColor {
-    viewId: ViewID
-    op: 'change-color'
-    color: ThemeColor
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export interface ChangeShape {
-    viewId: ViewID
-    op: 'change-shape'
-    shape: ElementShape
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export type Operation = ChangeColor | ChangeShape
-}
-interface ChangeViewParams {
-  change: ChangeView.Operation
-}
-const changeViewReq = new RequestType<ChangeViewParams, Location | null, void>('likec4/change-view')
+const changeOp = new RequestType<ChangeOpParams, Location | null, void>('likec4/change')
 
 // // //#endregion
 
@@ -107,7 +72,7 @@ export class Rpc extends AbstractDisposable {
     return await this.client.sendRequest(locate, params)
   }
 
-  async changeView(change: ChangeView.Operation) {
-    return await this.client.sendRequest(changeViewReq, { change })
+  async changeView(change: ChangeCommand) {
+    return await this.client.sendRequest(changeOp, { change })
   }
 }

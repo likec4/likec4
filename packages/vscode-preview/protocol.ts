@@ -1,4 +1,14 @@
-import type { DiagramView, ElementShape, Fqn, NonEmptyArray, RelationID, ThemeColor, ViewID } from '@likec4/core'
+import type {
+  AutoLayoutDirection,
+  DiagramView,
+  ElementShape,
+  Fqn,
+  NonEmptyArray,
+  RelationID,
+  ThemeColor,
+  ViewID,
+  ViewRuleAutoLayout
+} from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 export namespace ExtensionToPanel {
@@ -28,9 +38,18 @@ export namespace WebviewToExtension {
       shape: ElementShape
       targets: NonEmptyArray<Fqn>
     }
+
+    export interface ChangeAutoLayout {
+      viewId: ViewID
+      op: 'change-autolayout'
+      layout: AutoLayoutDirection
+    }
   }
 
-  export type ChangeCommand = Changes.ChangeColor | Changes.ChangeShape
+  export type ChangeCommand =
+    | Changes.ChangeColor
+    | Changes.ChangeShape
+    | Changes.ChangeAutoLayout
 
   export const onChange: NotificationType<{ change: ChangeCommand }> = { method: 'onChange' }
 

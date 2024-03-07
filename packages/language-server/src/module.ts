@@ -20,7 +20,7 @@ import {
   LikeC4SemanticTokenProvider
 } from './lsp'
 import { FqnIndex, LikeC4ModelBuilder, LikeC4ModelLocator, LikeC4ModelParser } from './model'
-import { LikeC4ViewsEditor } from './model-editor'
+import { LikeC4ModelChanges } from './model-change/ModelChanges'
 import { LikeC4ScopeComputation, LikeC4ScopeProvider } from './references'
 import { Rpc } from './Rpc'
 import { LikeC4WorkspaceManager, NodeKindProvider, WorkspaceSymbolProvider } from './shared'
@@ -62,11 +62,11 @@ export interface LikeC4AddedServices {
   WorkspaceCache: WorkspaceCache<string, any>
   Rpc: Rpc
   likec4: {
-    ViewsEditor: LikeC4ViewsEditor
     FqnIndex: FqnIndex
     ModelParser: LikeC4ModelParser
     ModelBuilder: LikeC4ModelBuilder
     ModelLocator: LikeC4ModelLocator
+    ModelChanges: LikeC4ModelChanges
   }
   lsp: {
     DocumentHighlightProvider: LikeC4DocumentHighlightProvider
@@ -93,7 +93,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
   WorkspaceCache: (services: LikeC4Services) => new WorkspaceCache(services.shared),
   Rpc: bind(Rpc),
   likec4: {
-    ViewsEditor: bind(LikeC4ViewsEditor),
+    ModelChanges: bind(LikeC4ModelChanges),
     FqnIndex: bind(FqnIndex),
     ModelParser: bind(LikeC4ModelParser),
     ModelBuilder: bind(LikeC4ModelBuilder),

@@ -5,15 +5,7 @@ import type { LikeC4Services } from './module'
 import { nonexhaustive } from '@likec4/core'
 import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
-import {
-  buildDocuments,
-  changeView,
-  computeView,
-  fetchModel,
-  fetchRawModel,
-  locate,
-  onDidChangeModel
-} from './protocol'
+import { buildDocuments, changeOp, computeView, fetchModel, fetchRawModel, locate, onDidChangeModel } from './protocol'
 
 export class Rpc {
   constructor(private services: LikeC4Services) {}
@@ -21,7 +13,7 @@ export class Rpc {
   init() {
     const modelBuilder = this.services.likec4.ModelBuilder
     const modelLocator = this.services.likec4.ModelLocator
-    const viewEditor = this.services.likec4.ViewsEditor
+    const modelEditor = this.services.likec4.ModelChanges
     const connection = this.services.shared.lsp.Connection
     if (!connection) {
       logger.info(`[ServerRpc] no connection, not initializing`)
@@ -86,8 +78,8 @@ export class Rpc {
       nonexhaustive(params)
     })
 
-    connection.onRequest(changeView, async ({ change }, _cancelToken) => {
-      return await viewEditor.applyChange(change)
+    connection.onRequest(changeOp, async ({ change }, _cancelToken) => {
+      return await modelEditor.applyChange(change)
     })
   }
 }

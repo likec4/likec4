@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { vars, xyvars } from '../../theme'
+import { mantine, vars, xyvars } from '../../theme'
 
 export const container = style({
   vars: {
@@ -9,7 +9,6 @@ export const container = style({
     [xyvars.edge.labelColor]: vars.relation.labelColor,
     '--text-color': vars.relation.labelColor,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor} 75%, transparent)`,
-    // [xyvars.edge.labelBgColor]: `#6f6c6cde`,
     [xyvars.edge.strokeWidth]: '2'
   }
 })
@@ -33,9 +32,6 @@ globalStyle(`.react-flow__edges > svg`, {
 export const edgePathBg = style({
   strokeWidth: `calc(${xyvars.edge.strokeWidth} + 5)`,
   strokeOpacity: 0.12
-  // vars: {
-  //   [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor} 70%, transparent)`,
-  // }
 })
 
 export const fillStrokeCtx = style({
@@ -50,32 +46,7 @@ globalStyle(`.react-flow__edge.selected ${fillStrokeCtx}`, {
 
 export const edgePath = style({
   transition: 'stroke 120ms ease-out'
-  // strokeWidth: `calc(${xyvars.edge.strokeWidth} + 4)`,
-  // strokeOpacity: 0.12
-  // vars: {
-  //   [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor} 70%, transparent)`,
-  // }
 })
-
-// .edgeLabel {
-//   position: absolute;
-//   pointer-events: all;
-//   cursor: pointer;
-//   transform-origin: 50% 50%;
-//   /* transition: transform 120ms ease-out; */
-//   /* isolation: auto; */
-//   text-align: left;
-//   /* mix-blend-mode: luminosity; */
-//   /* --xy-edge-label-color: color-mix(in srgb, var(--likec4-relation-labelColor) 90%, transparent); */
-//   /* --xy-edge-label-background-color: color-mix(in srgb, var(--likec4-relation-labelBg) 30%, transparent); */
-//   /* --text-color: var(--likec4-relation-labelColor); */
-
-//   &[data-edge-hovered='true'] {
-//     /* transform: scale(1.05); */
-//     /* transition-delay: 120ms; */
-//     --text-color: color-mix(in srgb, var(--likec4-relation-labelColor) 70%, white);
-//   }
-// }
 
 export const edgeLabel = style({
   position: 'absolute',
@@ -87,11 +58,20 @@ export const edgeLabel = style({
   padding: '3px 6px',
   width: 'max-content',
   selectors: {
+    [mantine.lightSelector]: {
+      mixBlendMode: 'screen'
+    },
+    [mantine.darkSelector]: {
+      mixBlendMode: 'luminosity',
+      vars: {
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor} 50%, transparent)`
+      }
+    },
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: 'scale(1.1)',
       vars: {
-        '--text-color': `color-mix(in srgb, ${vars.relation.labelColor} 50%, white)`
+        '--text-color': `color-mix(in srgb, ${vars.relation.labelColor} 20%, white)`
       }
     },
     '&::before': {
@@ -107,11 +87,6 @@ export const edgeLabel = style({
     }
   }
 })
-// globalStyle(`${fillStrokeCtx}`, {
-//   vars: {
-//     [xyvars.edge.stroke]: xyvars.edge.strokeSelected
-//   }
-// })
 
 export const edgeLabelBody = style({
   color: 'var(--text-color)',

@@ -49,7 +49,7 @@ const OptionsPanelMemo = memo(function OptionsPanel() {
             transformOrigin: 'center right'
           }}
         >
-          <Card shadow="xl">
+          <Card shadow="sm">
             <NodeOptions selectedNodeIds={selectedNodes} />
             {
               /* <Divider mb={'xs'} label="shape" labelPosition="left" />

@@ -3,6 +3,7 @@ import { LikeC4Diagram as LikeC4ViewEditor } from '@likec4/diagram'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Toolbar } from './Toolbar'
 import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
@@ -142,6 +143,11 @@ const App = () => {
           //   extensionApi.triggerChange({ ...change, viewId: view.id })
           // }}
           onCanvasDblClick={() => {
+            extensionApi.change({
+              op: 'change-autolayout',
+              viewId: view.id,
+              layout: 'LR'
+            })
             extensionApi.goToViewSource(view.id)
           }}
         />
@@ -174,6 +180,7 @@ const App = () => {
           </div>
         </div>
       )}
+      <Toolbar view={view} />
     </>
   )
 }

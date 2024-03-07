@@ -33,6 +33,7 @@
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
     "@types/vscode-webview": "^1.57.5",
+    "@vanilla-extract/css": "^1.14.1",
     "@vanilla-extract/vite-plugin": "^4.0.4",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",

@@ -85,32 +85,6 @@ div.likec4-diagram-loading {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  --diagram-bg-size: 24px;
-  --diagram-bg-position-x: 0;
-  --diagram-bg-position-y: 0;
-
-  .konvajs-content {
-
-    &::before {
-      content: '';
-      position: absolute;
-      padding: 0;
-      margin: 0;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      touch-action: none;
-      user-select: none;
-      background-origin: border-box;
-      background-attachment: fixed;
-      background-image: radial-gradient(var(--button-icon-hover-background) 12%, var(--vscode-editor-background) 12%);
-      background-position: var(--diagram-bg-position-x) var(--diagram-bg-position-y);
-      background-size: var(--diagram-bg-size) var(--diagram-bg-size);
-      z-index: -1;
-    }
-  }
 }
 
 
