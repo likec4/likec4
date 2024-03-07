@@ -162,6 +162,23 @@ describe('model relation', () => {
   )
 
   test(
+    'relation with property and links',
+    valid`
+    specification {
+      element person
+    }
+    model {
+      person user1
+      person user2 {
+        -> user1 {
+          title 'calls'
+          link https://path
+        }
+      }
+    }`
+  )
+
+  test(
     'relationship with kind',
     valid`
     specification {

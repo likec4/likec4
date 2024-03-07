@@ -125,7 +125,7 @@ RelationBody:
 ;
 
 RelationProperty:
-  RelationStringProperty | RelationStyleProperty;
+  RelationStringProperty | RelationStyleProperty |  LinkProperty;
 
 RelationStringProperty:
   key='title' Colon? value=String SemiColon?;

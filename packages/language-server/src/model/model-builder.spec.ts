@@ -688,4 +688,35 @@ describe('LikeC4ModelBuilder', () => {
       navigateTo: 'system1'
     })
   })
+
+  it.concurrent('builds relations with links', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+    specification {
+      element component
+    }
+    model {
+      component system1
+      component system2 {
+        -> system1 {
+          link ./samefolder.html
+          link https://example1.com
+        }
+      }
+    }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    expect(model).toBeDefined()
+    const relations = values(model.relations)
+    expect(relations).toHaveLength(1)
+    expect(relations[0]).toMatchObject({
+      source: 'system2',
+      target: 'system1',
+      links: [
+        'file:///test/workspace/src/samefolder.html',
+        'https://example1.com'
+      ]
+    })
+  })
 })

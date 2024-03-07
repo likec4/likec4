@@ -76,6 +76,7 @@ export interface ParsedAstRelation {
   line?: c4.RelationshipLineType
   head?: c4.RelationshipArrowType
   tail?: c4.RelationshipArrowType
+  links?: c4.NonEmptyArray<string>
 }
 
 export interface ParsedAstElementView {
