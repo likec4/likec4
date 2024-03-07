@@ -192,26 +192,24 @@ export class PreviewPanel extends AbstractDisposable {
 
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
     const scriptUri = getUri(webview, ['dist', 'preview', 'index.js'])
-
+    const theme = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light'
     const cspSource = webview.cspSource
     webview.html = /*html*/ `
 <!DOCTYPE html>
-<html>
+<html data-mantine-color-scheme="${theme}">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'none';
-      font-src https://fonts.googleapis.com https://fonts.gstatic.com ${cspSource};
-      style-src 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com ${cspSource};
+      font-src ${cspSource};
+      style-src 'unsafe-inline' ${cspSource};
       img-src ${cspSource} https:;
       script-src 'nonce-${nonce}' ${cspSource};
     ">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap"
-      rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
   </head>
-  <body>
+  <body class="${theme}">
     <div id="root"></div>
     <script src="${scriptUri}"></script>
   </body>

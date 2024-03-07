@@ -81,14 +81,14 @@ export function nodeLabel(node: ComputedNode) {
   if (lines.length === 1 && !node.icon) {
     return `<${lines[0]}>`
   }
-  let rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
+  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
   if (node.icon) {
     rows.unshift(
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  rows = rows.join('')
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows}</TABLE>>`
+  const joinedRows = rows.join('')
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${joinedRows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

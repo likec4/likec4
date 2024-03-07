@@ -98,6 +98,7 @@ const App = () => {
         <LikeC4ViewEditor
           view={view}
           nodesDraggable={false}
+          fitOnSelect={false}
           onNavigateTo={({ element }) => {
             lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = null
@@ -120,8 +121,14 @@ const App = () => {
           onNodeContextMenu={({ element, xynode, event }) => {
             lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = element
-            // e.stopPropagation()
-            // e.preventDefaulzt()
+          }}
+          onCanvasContextMenu={event => {
+            event.stopPropagation()
+            event.preventDefault()
+          }}
+          onEdgeContextMenu={({ event }) => {
+            event.stopPropagation()
+            event.preventDefault()
           }}
           onEdgeClick={({ relation, event }) => {
             lastClickedNodeRef.current = undefined

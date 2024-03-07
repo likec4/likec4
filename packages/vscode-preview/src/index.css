@@ -115,12 +115,16 @@ div.likec4-diagram-loading {
 
 
 :root {
-  --likec4-font-family: "Rubik", sans-serif;
-  --mantine-font-family: "Rubik", sans-serif;
+  --likec4-font-family: var(--vscode-font-family);
+  --mantine-font-family: var(--vscode-font-family);
   --mantine-color-body: var(--vscode-editor-background);
   --xy-background-color: var(--vscode-editor-background);
 }
 body {
   background-color: var(--vscode-editor-background);
-  font-family: var(--likec4-font-family);
+  font-family: var(--vscode-font-family);
+}
+
+.react-flow .react-flow__attribution {
+  display: none;
 }

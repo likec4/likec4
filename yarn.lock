@@ -1427,6 +1427,7 @@ __metadata:
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
     "@types/vscode-webview": "npm:^1.57.5"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.4"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     lucide-react: "npm:^0.294.0"

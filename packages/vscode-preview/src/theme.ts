@@ -1,8 +1,8 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
 
 export const theme = createTheme({
-  primaryColor: 'indigo',
-  fontFamily: 'var(--likec4-font-family)',
+  // primaryColor: 'indigo',
+  fontFamily: 'var(--vscode-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {

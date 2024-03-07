@@ -1,3 +1,4 @@
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
@@ -7,7 +8,10 @@ export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      vanillaExtractPlugin()
+    ],
     resolve: {
       dedupe: ['react', 'react-dom']
     },
