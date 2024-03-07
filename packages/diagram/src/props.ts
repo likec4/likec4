@@ -92,7 +92,9 @@ export interface LikeC4DiagramEventHandlers {
   onNavigateTo?: OnNavigateTo | undefined
   onNodeClick?: OnNodeClick | undefined
   onNodeContextMenu?: OnNodeClick | undefined
+  onCanvasContextMenu?: OnCanvasClick | undefined
   onEdgeClick?: OnEdgeClick | undefined
+  onEdgeContextMenu?: OnEdgeClick | undefined
   onCanvasClick?: OnCanvasClick | undefined
   onCanvasDblClick?: OnCanvasClick | undefined
   onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined

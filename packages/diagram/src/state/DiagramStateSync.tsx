@@ -1,13 +1,15 @@
+import { useComputedColorScheme, useMantineContext } from '@mantine/core'
 import { deepEqual as eq } from 'fast-equals'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { getUntrackedObject } from 'react-tracked'
 import { find, omit } from 'remeda'
 import useTilg from 'tilg'
 import { useUpdateEffect } from '../hooks/use-update-effect'
+import type { LikeC4DiagramProps } from '../props'
 import { useXYFlow } from '../xyflow'
 import type { XYFlowNode } from '../xyflow/types'
 import { fromDiagramView } from './fromDiagramView'
-import { useDiagramStateTracked } from './state'
+import { useDiagramStateTracked, useUpdateDiagramState } from './state'
 
 function isNodesEqual(a: XYFlowNode, b: XYFlowNode) {
   return a.id === b.id
@@ -79,3 +81,18 @@ export const DiagramStateSync = memo(function DiagramStateSyncInner() {
 
   return null
 })
+
+export const ColorSchemeSync = ({ colorMode }: Pick<LikeC4DiagramProps, 'colorMode'>) => {
+  const update = useUpdateDiagramState()
+  const _computed = useComputedColorScheme('light')
+  const { colorScheme } = useMantineContext()
+
+  const computed = colorScheme !== 'auto' ? colorScheme : _computed
+  const scheme = colorMode && colorMode !== 'auto' ? colorMode : computed
+
+  useEffect(() => {
+    update({ colorMode: scheme })
+  }, [scheme])
+
+  return null
+}

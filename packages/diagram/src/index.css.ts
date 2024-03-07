@@ -56,5 +56,3 @@ globalStyle('.react-flow[data-likec4-no-bg]', {
 globalStyle('.react-flow[data-likec4-no-bg] .react-flow__attribution', {
   display: 'none'
 })
-
-export {}

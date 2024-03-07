@@ -26,7 +26,7 @@ export const elementLink = style({
   // }
 })
 
-export const button = style({
+export const trigger = style({
   display: 'flex',
   lineHeight: 0.75,
   fontSize: 11,
@@ -50,13 +50,19 @@ export const button = style({
   }
 })
 
-globalStyle(`${button} .icon`, {
+globalStyle(`${trigger} .icon`, {
   display: 'inline-block',
+  lineHeight: 1,
   width: 11,
   height: 11,
   opacity: 0.6
 })
-globalStyle(`${button} span`, {
+globalStyle(`${trigger} span`, {
   display: 'inline-block',
+  lineHeight: 1,
   marginLeft: 3
+})
+
+export const linkButton = style({
+  textAlign: 'left'
 })

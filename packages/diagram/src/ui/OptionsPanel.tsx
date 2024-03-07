@@ -3,10 +3,13 @@ import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
+import { useUpdateEffect } from '../hooks'
+import { useDiagramStateTracked } from '../state'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
 const OptionsPanelMemo = memo(function OptionsPanel() {
+  const viewId = useDiagramStateTracked().viewId
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
   // const [selectedEdges, setSelectedEdges] = useState([] as string[])
 
@@ -28,6 +31,10 @@ const OptionsPanelMemo = memo(function OptionsPanel() {
       // setSelectedEdges(edges.map(e => e.id))
     }
   })
+
+  useUpdateEffect(() => {
+    setSelectedNodes([])
+  }, [viewId])
 
   return (
     <AnimatePresence>

@@ -216,18 +216,18 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
             <Box
               className={clsx(css.container, css.edgeLabel)}
               data-likec4-color={color}
-              data-edge-hovered={isHovered}
               style={{
                 top: labelY,
                 left: labelX,
-                width: data.label.bbox.width + 5,
-                // maxWidth: data.label.bbox.width + 25,
+                maxWidth: data.label.bbox.width + 10,
                 zIndex: ZIndexes.Edge
               }}
+              mod={{
+                'data-edge-hovered': isHovered
+              }}
             >
-              <Box
-                className={css.edgeLabelBody}>
-                <span>{data.label.text}</span>
+              <Box className={css.edgeLabelBody}>
+                {data.label.text}
               </Box>
               {/* <Text component="span" fz={rem(12)}></Text> */}
             </Box>

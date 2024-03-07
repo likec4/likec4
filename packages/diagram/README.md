@@ -1,4 +1,4 @@
-# `@likec4/diagrams`
+# `@likec4/diagram`
 
 [docs](https://likec4.dev/docs/tools/react/) | [demo](https://template.likec4.dev/view/cloud)
 
@@ -8,7 +8,7 @@ Alhough you can use them directly, it is recommended to use [likec4](../likec4/)
 Install:
 
 ```bash
-npm add @likec4/diagrams
+npm add @likec4/diagram
 ```
 
 ### Local Development

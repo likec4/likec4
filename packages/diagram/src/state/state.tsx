@@ -15,7 +15,7 @@ import type {
   LikeC4ViewColorMode
 } from '../props'
 import { useXYFlow } from '../xyflow/hooks'
-import { type XYFlowInstance, type XYFlowNode } from '../xyflow/types'
+import { type XYFlowEdge, type XYFlowInstance, type XYFlowNode } from '../xyflow/types'
 
 // Guard, Ensure that object contains only event handlers
 function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
@@ -27,7 +27,14 @@ type Handlers =
     {
       [K in keyof LikeC4DiagramEventHandlers]-?: NonNullable<LikeC4DiagramEventHandlers[K]>
     },
-    'onNavigateTo' | 'onInitialized'
+    | 'onNavigateTo'
+    | 'onNodeClick'
+    | 'onEdgeClick'
+    | 'onCanvasDblClick'
+    | 'onInitialized'
+    | 'onNodeContextMenu'
+    | 'onEdgeContextMenu'
+    | 'onCanvasContextMenu'
   >
   & {
     onNavigateTo: (xynodeId: string, event: React.MouseEvent) => void
@@ -52,6 +59,10 @@ const useDiagramPropsHook = ({
     hasOnNavigateTo: !!eventHandlers.onNavigateTo,
     hasOnNodeClick: !!eventHandlers.onNodeClick,
     hasOnNodeContextMenu: !!eventHandlers.onNodeContextMenu,
+    hasOnCanvasContextMenu: !!eventHandlers.onCanvasContextMenu,
+    hasOnEdgeContextMenu: !!eventHandlers.onEdgeContextMenu,
+    hasOnContextMenu: !!eventHandlers.onNodeContextMenu || !!eventHandlers.onCanvasContextMenu
+      || !!eventHandlers.onEdgeContextMenu,
     hasOnEdgeClick: !!eventHandlers.onEdgeClick,
     hasOnCanvasClick: !!eventHandlers.onCanvasClick || !!eventHandlers.onCanvasDblClick
   }
@@ -133,23 +144,36 @@ const useDiagramPropsHook = ({
   const xyflow = useXYFlow()
   const xyflowRef = useSyncedRef(xyflow)
   const handlersRef = useRef<Handlers>()
+  const dblclickTimeout = useRef<number>()
   if (!handlersRef.current) {
     handlersRef.current = {
       onCanvasClick: (args) => {
-        eventHandlersRef.current.onCanvasClick?.(args)
+        if (!eventHandlersRef.current.onCanvasDblClick) {
+          eventHandlersRef.current.onCanvasClick?.(args)
+          return
+        }
+
+        if (dblclickTimeout.current) {
+          window.clearTimeout(dblclickTimeout.current)
+          dblclickTimeout.current = undefined
+          eventHandlersRef.current.onCanvasDblClick(args)
+          return
+        }
+
+        dblclickTimeout.current = window.setTimeout(() => {
+          dblclickTimeout.current = undefined
+          eventHandlersRef.current.onCanvasClick?.(args)
+        }, 300)
       },
-      onCanvasDblClick: (args) => {
-        eventHandlersRef.current.onCanvasDblClick?.(args)
-      },
-      onEdgeClick: (args) => {
-        eventHandlersRef.current.onEdgeClick?.(args)
-      },
-      onNodeClick: (args) => {
-        eventHandlersRef.current.onNodeClick?.(args)
-      },
-      onNodeContextMenu: (args) => {
-        eventHandlersRef.current.onNodeContextMenu?.(args)
-      },
+      // onNodeContextMenu: (args) => {
+      //   eventHandlersRef.current.onNodeContextMenu?.(args)
+      // },
+      // onCanvasContextMenu: (args) => {
+      //   eventHandlersRef.current.onCanvasContextMenu?.(args)
+      // },
+      // onEdgeContextMenu: (args) => {
+      //   eventHandlersRef.current.onEdgeContextMenu?.(args)
+      // },
       onNavigateTo: (xynodeId, event) => {
         if (!eventHandlersRef.current.onNavigateTo) {
           return
@@ -174,6 +198,30 @@ const useDiagramPropsHook = ({
       })
       eventHandlersRef.current.onInitialized?.(instance as unknown as XYFlowInstance)
     }, []),
+    onNodeClick = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
+      eventHandlersRef.current.onNodeClick?.({
+        element: xynode.data.element,
+        xynode,
+        event
+      })
+    }, []),
+    onNodeContextMenu = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
+      eventHandlersRef.current.onNodeContextMenu?.({
+        element: xynode.data.element,
+        xynode,
+        event
+      })
+    }, []),
+    onEdgeContextMenu = useCallback((event: React.MouseEvent, xyedge: XYFlowEdge) => {
+      eventHandlersRef.current.onEdgeContextMenu?.({
+        relation: xyedge.data.edge,
+        xyedge,
+        event
+      })
+    }, []),
+    onCanvasContextMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
+      eventHandlersRef.current.onCanvasContextMenu?.(event as any)
+    }, []),
     onNodeMouseEnter = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
       setState({
         hoveredNodeId: xynode.id
@@ -193,6 +241,13 @@ const useDiagramPropsHook = ({
       setState({
         hoveredEdgeId: null
       })
+    }, []),
+    onEdgeClick = useCallback((event: React.MouseEvent, xyedge: XYFlowEdge) => {
+      eventHandlersRef.current.onEdgeClick?.({
+        relation: xyedge.data.edge,
+        xyedge,
+        event
+      })
     }, [])
 
   const _state = useCustomCompareMemo(
@@ -202,6 +257,11 @@ const useDiagramPropsHook = ({
       onEdgeMouseLeave,
       onNodeMouseEnter,
       onNodeMouseLeave,
+      onNodeContextMenu,
+      onEdgeContextMenu,
+      onCanvasContextMenu,
+      onNodeClick,
+      onEdgeClick,
       ...handlersRef.current!,
       ...hasEventHandlers,
       ...state

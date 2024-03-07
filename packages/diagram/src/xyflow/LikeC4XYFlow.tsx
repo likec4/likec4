@@ -79,6 +79,20 @@ export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlo
         xyflowRef.current = instance
         editor.onInit(instance)
       }, [])}
+      {...(editor.hasOnContextMenu && {
+        onNodeContextMenu: editor.onNodeContextMenu,
+        onPaneContextMenu: editor.onCanvasContextMenu,
+        onEdgeContextMenu: editor.onEdgeContextMenu
+      })}
+      {...(editor.hasOnCanvasClick && {
+        onPaneClick: editor.onCanvasClick
+      })}
+      {...(editor.hasOnNodeClick && {
+        onNodeClick: editor.onNodeClick
+      })}
+      {...(editor.hasOnEdgeClick && {
+        onEdgeClick: editor.onEdgeClick
+      })}
       onNodeMouseEnter={editor.onNodeMouseEnter}
       onNodeMouseLeave={editor.onNodeMouseLeave}
       onEdgeMouseEnter={editor.onEdgeMouseEnter}
