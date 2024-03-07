@@ -1,10 +1,10 @@
-import type { DiagramNode, NodeId } from '@likec4/core'
-import { nonNullable, defaultTheme as theme } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, NodeId } from '@likec4/core'
+import { defaultTheme as theme, nonNullable } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, Layer } from '../konva'
 import { Edges } from './Edges'
 import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
@@ -53,8 +53,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       zoomable = true,
       animate = true,
       initialPosition,
-      onEdgeClick,
-      onNodeClick,
+      onEdgeClick: _onEdgeClick,
+      onNodeClick: _onNodeClick,
       onNodeContextMenu,
       onStageClick,
       onStageContextMenu,
@@ -69,6 +69,10 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const immediate = !animate
     const id = diagram.id
 
+    const handlersRef = useSyncedRef({
+      onEdgeClick: _onEdgeClick,
+      onNodeClick: _onNodeClick
+    })
     const containerRef = useRef<HTMLDivElement | null>(null)
     const stageRef = useHookableRef<Konva.Stage | null>(null, value => {
       containerRef.current = value?.container() ?? null
@@ -84,6 +88,20 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const width = _width ?? diagram.width + paddingLeft + paddingRight
     const height = _height ?? diagram.height + paddingTop + paddingBottom
 
+    const onNodeClick = useCallback(
+      (node: DiagramNode, e: Konva.KonvaEventObject<PointerEvent>) => {
+        handlersRef.current.onNodeClick?.(node, e)
+      },
+      [handlersRef]
+    )
+
+    const onEdgeClick = useCallback(
+      (edge: DiagramEdge, e: Konva.KonvaEventObject<PointerEvent>) => {
+        handlersRef.current.onEdgeClick?.(edge, e)
+      },
+      [handlersRef]
+    )
+
     /**
      * @param centerTo rectangle to center on
      * @param zoomIn if true, zoom can be greater than current
@@ -91,16 +109,15 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const toCenterOnRect = (centerTo: IRect, opts?: CenteringOpts) => {
       const keepZoom = opts?.keepZoom ?? false
       const container = containerRef.current
-      const _maxZoom =
-        keepZoom === true && !isNil(stageRef.current) ? stageRef.current.scaleX() : maxZoom
+      const _maxZoom = keepZoom === true && !isNil(stageRef.current) ? stageRef.current.scaleX() : maxZoom
 
       const // Get the space we can see in the web page = size of div containing stage
-        // or stage size, whichever is the smaller
-        // and Exclude padding
-        viewRect = {
-          width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
-          height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
-        },
+      // or stage size, whichever is the smaller
+      // and Exclude padding
+      viewRect = {
+        width: Math.min(container?.clientWidth ?? width, width) - paddingLeft - paddingRight,
+        height: Math.min(container?.clientHeight ?? height, height) - paddingTop - paddingBottom
+      },
         // Get the ratios of target shape v's view space widths and heights
         // decide on best scale to fit longest side of shape into view
         viewScale = Math.min(viewRect.width / centerTo.width, viewRect.height / centerTo.height),
@@ -122,21 +139,20 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       }
     }
 
-    const toFitDiagram = () =>
-      toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
+    const toFitDiagram = () => toCenterOnRect({ x: 0, y: 0, width: diagram.width, height: diagram.height })
 
     const [stageProps, stageSpringApi] = useSpring(
       () =>
         initialPosition
           ? {
-              from: initialPosition,
-              to: toFitDiagram(),
-              immediate
-            }
+            from: initialPosition,
+            to: toFitDiagram(),
+            immediate
+          }
           : {
-              to: toFitDiagram(),
-              immediate
-            },
+            to: toFitDiagram(),
+            immediate
+          },
       []
     )
 
@@ -207,8 +223,7 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               },
               opts
             ),
-          centerOnRect: (rect: IRect, opts?: CenteringOpts) =>
-            refs.current.centerOnRect(rect, opts),
+          centerOnRect: (rect: IRect, opts?: CenteringOpts) => refs.current.centerOnRect(rect, opts),
           centerAndFit: (opts?: CenteringOpts) => refs.current.centerAndFit(opts)
         }) satisfies DiagramApi,
       [refs, stageRef]
@@ -309,8 +324,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
             },
             !onNodeContextMenu && !onStageContextMenu
               ? {
-                  buttons: -1
-                }
+                buttons: -1
+              }
               : undefined
           )
         },
@@ -407,10 +422,10 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           scaleX={1}
           scaleY={1}
         >
-          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
-          <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
+          <Nodes {...sharedProps} onNodeClick={_onNodeClick ? onNodeClick : undefined} />
+          <Edges {...sharedProps} onEdgeClick={_onEdgeClick ? onEdgeClick : undefined} />
         </Layer>
-        <Layer name='top'></Layer>
+        <Layer name="top"></Layer>
       </AnimatedStage>
     )
   }
