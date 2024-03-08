@@ -1,25 +1,25 @@
 import { Box, Code, ScrollArea } from '@mantine/core'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
+import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
 
-export const Route = createFileRoute('/view/$viewId/dot')({
-  component: ViewAsDot
+export const Route = createLazyFileRoute('/view/$viewId/d2')({
+  component: ViewAsD2
 })
 
-function ViewAsDot() {
+function ViewAsD2() {
   const { viewId } = Route.useRouteContext()
-  const dot = dotSource(viewId)
+  const source = d2Source(viewId)
   return (
-    <PanelGroup direction="horizontal" autoSaveId="viewAsDot">
+    <PanelGroup direction="horizontal" autoSaveId="viewAsD2">
       <Panel>
         <ScrollArea>
           <Code block>
-            {dot}
+            {source}
           </Code>
-          <CopyToClipboard text={dot} />
+          <CopyToClipboard text={source} />
         </ScrollArea>
       </Panel>
       <PanelResizeHandle
@@ -29,7 +29,6 @@ function ViewAsDot() {
       />
       <Panel>
         <ScrollArea>
-          <div dangerouslySetInnerHTML={{ __html: svgSource(viewId) }}></div>
         </ScrollArea>
       </Panel>
     </PanelGroup>

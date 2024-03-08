@@ -1,10 +1,10 @@
-import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { useCallback } from 'react'
-import { DiagramNotFound } from '../components'
+import { DiagramNotFound } from '../components/DiagramNotFound'
 import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
-export const Route = createFileRoute('/view/$viewId/react')({
+export const Route = createLazyFileRoute('/view/$viewId/react')({
   component: ViewReact
 })
 

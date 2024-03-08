@@ -27,7 +27,7 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
           hmr: {
             overlay: true,
             // needed for hmr to work over network aka WSL2
-            host: 'localhost',
+            // host: 'localhost',
             port: hmrPort
           },
           fs: {

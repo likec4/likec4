@@ -1,12 +1,12 @@
 import { Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../components'
 
-export const Route = createFileRoute('/view/$viewId/mmd')({
+export const Route = createLazyFileRoute('/view/$viewId/mmd')({
   component: ViewAsMmd
 })
 

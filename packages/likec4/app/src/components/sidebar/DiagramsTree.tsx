@@ -1,6 +1,6 @@
 import { invariant } from '@likec4/core'
+import { Box, Flex, Text } from '@mantine/core'
 import { DashboardIcon, TriangleRightIcon } from '@radix-ui/react-icons'
-import { Box, Flex, Text } from '@radix-ui/themes'
 import { useParams, useRouter, useRouterState } from '@tanstack/react-router'
 import clsx from 'clsx'
 import TreeView, { type INode } from 'react-accessible-treeview'
@@ -24,7 +24,7 @@ export function DiagramsTree() {
   const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
-    <Box className={clsx(css.treeview)}>
+    <Box className={clsx(styles.treeview, css.treeview)}>
       <TreeView
         data={data}
         propagateSelect
@@ -56,7 +56,7 @@ export function DiagramsTree() {
             <Flex
               {...getNodeProps({ onClick: isBranch ? handleExpand : handleSelect })}
               align={'center'}
-              gap={isBranch ? '1' : '2'}
+              gap={isBranch ? 2 : 4}
             >
               {isBranch && (
                 <Box style={{ lineHeight: '15px' }}>
@@ -68,16 +68,15 @@ export function DiagramsTree() {
                 </Box>
               )}
               {!isBranch && (
-                <Box style={{ lineHeight: '14px' }} width={'min-content'} mr={'4'}>
+                <Box style={{ lineHeight: '14px' }} w={'min-content'} mr={'4'} flex={'0'}>
                   <DashboardIcon width={14} height={14} />
                 </Box>
               )}
-              <Box asChild grow={'1'}>
+              <Box flex={'1'}>
                 <Text
-                  as="div"
-                  size={'2'}
-                  weight={isBranch ? 'bold' : undefined}
-                  className="truncate"
+                  truncate
+                  size="sm"
+                  fw={isBranch ? '600' : '500'}
                 >
                   {(isBranch ? '🗂️ ' : '') + element.name}
                 </Text>
