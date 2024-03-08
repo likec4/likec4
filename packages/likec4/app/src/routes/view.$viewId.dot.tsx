@@ -3,6 +3,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
+import { CopyToClipboard } from '../components'
 
 export const Route = createFileRoute('/view/$viewId/dot')({
   component: ViewAsDot
@@ -18,6 +19,7 @@ function ViewAsDot() {
           <Code block>
             {dot}
           </Code>
+          <CopyToClipboard text={dot} />
         </ScrollArea>
       </Panel>
       <PanelResizeHandle

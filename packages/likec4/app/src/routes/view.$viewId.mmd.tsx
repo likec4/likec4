@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
+import { CopyToClipboard } from '../components'
 
 export const Route = createFileRoute('/view/$viewId/mmd')({
   component: ViewAsMmd
@@ -37,6 +38,7 @@ function ViewAsMmd() {
           <Code block>
             {source}
           </Code>
+          <CopyToClipboard text={source} />
         </ScrollArea>
       </Panel>
       <PanelResizeHandle
