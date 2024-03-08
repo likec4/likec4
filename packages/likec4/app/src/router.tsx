@@ -8,6 +8,7 @@
 // import { startTransition } from 'react'
 import { createRouter } from '@tanstack/react-router'
 
+import { DiagramNotFound } from './components'
 import { BaseUrl } from './const'
 import { routeTree } from './routeTree.gen'
 

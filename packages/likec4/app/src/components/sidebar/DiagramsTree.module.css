@@ -1,6 +1,6 @@
 .treeview {
   min-width: 200px;
-  max-width: 300px;
+  /* max-width: 300px; */
 
   ul {
     list-style: none;
@@ -11,11 +11,11 @@
     gap: var(--space-1);
   }
 
-  :global(.tree-node-group--expanded) {
+  .tree-node-group--expanded {
     margin-top: var(--space-1);
     padding-left: var(--space-5);
 
-    &:has(> :global(.tree-branch-wrapper)) {
+    &:has(> .tree-branch-wrapper) {
       padding-left: var(--space-3);
     }
   }

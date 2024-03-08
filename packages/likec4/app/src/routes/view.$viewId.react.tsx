@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { useCallback } from 'react'
 import { DiagramNotFound } from '../components'
-import { ViewAsReact } from '../pages/view-page'
+import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
 export const Route = createFileRoute('/view/$viewId/react')({
   component: ViewReact

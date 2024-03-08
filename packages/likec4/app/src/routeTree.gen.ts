@@ -11,61 +11,61 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
+import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as IndexImport } from './routes/index'
 import { Route as ViewViewIdImport } from './routes/view.$viewId'
-import { Route as ExportViewIdImport } from './routes/export.$viewId'
-import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
-import { Route as ViewViewIdReactImport } from './routes/view.$viewId.react'
+import { Route as ViewViewIdD2Import } from './routes/view.$viewId.d2'
+import { Route as ViewViewIdDotImport } from './routes/view.$viewId.dot'
 import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor'
-import { Route as ViewViewIdAsImport } from './routes/view.$viewId._as'
-import { Route as ViewViewIdAsMmdImport } from './routes/view.$viewId._as.mmd'
-import { Route as ViewViewIdAsDotImport } from './routes/view.$viewId._as.dot'
+import { Route as ViewViewIdMmdImport } from './routes/view.$viewId.mmd'
+import { Route as ViewViewIdReactImport } from './routes/view.$viewId.react'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRoute
 } as any)
 
 const ViewViewIdRoute = ViewViewIdImport.update({
   path: '/view/$viewId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRoute
 } as any)
 
 const ExportViewIdRoute = ExportViewIdImport.update({
   path: '/export/$viewId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRoute
 } as any)
 
 const EmbedViewIdRoute = EmbedViewIdImport.update({
   path: '/embed/$viewId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRoute
 } as any)
 
 const ViewViewIdReactRoute = ViewViewIdReactImport.update({
   path: '/react',
-  getParentRoute: () => ViewViewIdRoute,
+  getParentRoute: () => ViewViewIdRoute
+} as any)
+
+const ViewViewIdMmdRoute = ViewViewIdMmdImport.update({
+  path: '/mmd',
+  getParentRoute: () => ViewViewIdRoute
 } as any)
 
 const ViewViewIdEditorRoute = ViewViewIdEditorImport.update({
   path: '/editor',
-  getParentRoute: () => ViewViewIdRoute,
+  getParentRoute: () => ViewViewIdRoute
 } as any)
 
-const ViewViewIdAsRoute = ViewViewIdAsImport.update({
-  id: '/_as',
-  getParentRoute: () => ViewViewIdRoute,
-} as any)
-
-const ViewViewIdAsMmdRoute = ViewViewIdAsMmdImport.update({
-  path: '/mmd',
-  getParentRoute: () => ViewViewIdAsRoute,
-} as any)
-
-const ViewViewIdAsDotRoute = ViewViewIdAsDotImport.update({
+const ViewViewIdDotRoute = ViewViewIdDotImport.update({
   path: '/dot',
-  getParentRoute: () => ViewViewIdAsRoute,
+  getParentRoute: () => ViewViewIdRoute
+} as any)
+
+const ViewViewIdD2Route = ViewViewIdD2Import.update({
+  path: '/d2',
+  getParentRoute: () => ViewViewIdRoute
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -88,25 +88,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewViewIdImport
       parentRoute: typeof rootRoute
     }
-    '/view/$viewId/_as': {
-      preLoaderRoute: typeof ViewViewIdAsImport
+    '/view/$viewId/d2': {
+      preLoaderRoute: typeof ViewViewIdD2Import
+      parentRoute: typeof ViewViewIdImport
+    }
+    '/view/$viewId/dot': {
+      preLoaderRoute: typeof ViewViewIdDotImport
       parentRoute: typeof ViewViewIdImport
     }
     '/view/$viewId/editor': {
       preLoaderRoute: typeof ViewViewIdEditorImport
       parentRoute: typeof ViewViewIdImport
     }
+    '/view/$viewId/mmd': {
+      preLoaderRoute: typeof ViewViewIdMmdImport
+      parentRoute: typeof ViewViewIdImport
+    }
     '/view/$viewId/react': {
       preLoaderRoute: typeof ViewViewIdReactImport
       parentRoute: typeof ViewViewIdImport
-    }
-    '/view/$viewId/_as/dot': {
-      preLoaderRoute: typeof ViewViewIdAsDotImport
-      parentRoute: typeof ViewViewIdAsImport
-    }
-    '/view/$viewId/_as/mmd': {
-      preLoaderRoute: typeof ViewViewIdAsMmdImport
-      parentRoute: typeof ViewViewIdAsImport
     }
   }
 }
@@ -118,10 +118,12 @@ export const routeTree = rootRoute.addChildren([
   EmbedViewIdRoute,
   ExportViewIdRoute,
   ViewViewIdRoute.addChildren([
-    ViewViewIdAsRoute.addChildren([ViewViewIdAsDotRoute, ViewViewIdAsMmdRoute]),
+    ViewViewIdD2Route,
+    ViewViewIdDotRoute,
     ViewViewIdEditorRoute,
-    ViewViewIdReactRoute,
-  ]),
+    ViewViewIdMmdRoute,
+    ViewViewIdReactRoute
+  ])
 ])
 
 /* prettier-ignore-end */

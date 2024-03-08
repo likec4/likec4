@@ -28,16 +28,11 @@ function ViewEditor() {
   }
 
   return (
-    <Box
-      position={'absolute'}
-      style={{ top: 50, left: 0, width: '100vw', height: 'calc(100vh - 50px)' }}
-    >
-      <LikeC4Diagram
-        view={view}
-        onNavigateTo={navigateTo}
-        controls={false}
-        // nodesDraggable={false}
-      />
-    </Box>
+    <LikeC4Diagram
+      view={view}
+      onNavigateTo={navigateTo}
+      controls={false}
+      // nodesDraggable={false}
+    />
   )
 }

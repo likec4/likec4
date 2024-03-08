@@ -1,9 +1,8 @@
 import { LikeC4View } from '@likec4/diagram'
-import { useWindowSize } from '@react-hookz/web'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
-import { useTransparentBackground } from '../pages/useTransparentBackground'
+import { useTransparentBackground } from '../useTransparentBackground'
 
 const asPadding = (v: unknown) => {
   const parsed = typeof v === 'string' ? parseFloat(v) : undefined

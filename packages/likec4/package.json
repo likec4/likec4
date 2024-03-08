@@ -64,7 +64,7 @@
     "react": "^18.2.0",
     "react-accessible-treeview": "^2.8.3",
     "react-dom": "^18.2.0",
-    "react-resizable-panels": "^0.0.63",
+    "react-resizable-panels": "^2.0.12",
     "remeda": "^1.44.0",
     "vite": "^5.1.4"
   },
@@ -75,6 +75,8 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@tabler/icons": "^2.47.0",
+    "@tabler/icons-react": "^2.47.0",
     "@types/mermaid": "^9.2.0",
     "@types/node": "^20.11.19",
     "@types/prop-types": "^15.7.11",

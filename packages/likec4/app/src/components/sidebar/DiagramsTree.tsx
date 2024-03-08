@@ -7,6 +7,7 @@ import TreeView, { type INode } from 'react-accessible-treeview'
 import { last } from 'remeda'
 import { useDiagramsTree } from '../../data'
 import styles from './DiagramsTree.module.css'
+import * as css from './DiagramTree.css'
 
 function inTree(id: string, data: INode[]): boolean {
   return data.some(d => d.id === id)
@@ -23,7 +24,7 @@ export function DiagramsTree() {
   const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
-    <Box className={styles.treeview}>
+    <Box className={clsx(css.treeview)}>
       <TreeView
         data={data}
         propagateSelect
@@ -67,7 +68,7 @@ export function DiagramsTree() {
                 </Box>
               )}
               {!isBranch && (
-                <Box style={{ lineHeight: '14px' }} width={'min-content'}>
+                <Box style={{ lineHeight: '14px' }} width={'min-content'} mr={'4'}>
                   <DashboardIcon width={14} height={14} />
                 </Box>
               )}

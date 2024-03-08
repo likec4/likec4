@@ -1,10 +1,9 @@
-import { LikeC4Diagram, LikeC4View } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@radix-ui/themes'
-import { useWindowSize } from '@react-hookz/web'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
-import { useTransparentBackground } from '../pages/useTransparentBackground'
+import { useTransparentBackground } from '../useTransparentBackground'
 
 export const Route = createFileRoute('/embed/$viewId')({
   component: EmbedPage
