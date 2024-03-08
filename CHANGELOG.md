@@ -1,16 +1,9 @@
 # [0.58.0](https://github.com/likec4/likec4/compare/v0.57.1...v0.58.0) (2024-03-08)
 
-### Bug Fixes
+### 🚀 Features
 
-- better memo node ([9c1f874](https://github.com/likec4/likec4/commit/9c1f874e3240750595d7fb8b62027132da989c16))
-- **deps:** update dependency konva to ^9.3.4 ([6c80c9f](https://github.com/likec4/likec4/commit/6c80c9f9c6d88cc9c649a8c07064a0585d5c26b3))
-- **deps:** update dependency swr to ^2.2.5 ([#590](https://github.com/likec4/likec4/issues/590)) ([53a1fdd](https://github.com/likec4/likec4/commit/53a1fdde762480c11d4287a5ca8df1353684227e))
-- **deps:** update dependency vite to ^5.1.3 ([#587](https://github.com/likec4/likec4/issues/587)) ([cd2701e](https://github.com/likec4/likec4/commit/cd2701e20371e1a3722cd8033056c1755c2ef85c))
-
-### Features
-
-- add links to relationships ([#616](https://github.com/likec4/likec4/issues/616)) ([5f94ac3](https://github.com/likec4/likec4/commit/5f94ac3057c426e5d255bcc76cf10763702b669f)), closes [#612](https://github.com/likec4/likec4/issues/612)
-- **lsp:** upgrade langium 3 ([#606](https://github.com/likec4/likec4/issues/606)) ([b12605d](https://github.com/likec4/likec4/commit/b12605dbd2c4037b939f0aba86ff5c57ca4d4777))
+- **lsp:** add links to relationships ([#616](https://github.com/likec4/likec4/issues/616)) ([5f94ac3](https://github.com/likec4/likec4/commit/5f94ac3057c426e5d255bcc76cf10763702b669f)), closes [#612](https://github.com/likec4/likec4/issues/612)
+- **lsp:** langium 3 ([#606](https://github.com/likec4/likec4/issues/606)) ([b12605d](https://github.com/likec4/likec4/commit/b12605dbd2c4037b939f0aba86ff5c57ca4d4777))
 
 ## [0.57.1](https://github.com/likec4/likec4/compare/v0.57.0...v0.57.1) (2024-02-23)
 
