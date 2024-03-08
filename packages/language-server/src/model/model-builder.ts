@@ -81,35 +81,39 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     )
   )
 
-  const toModelRelation = ({
-    astPath,
-    source,
-    target,
-    kind,
-    ...model
-  }: ParsedAstRelation): c4.Relation | null => {
-    if (source in elements && target in elements) {
-      if (!!kind && kind in c4Specification.relationships) {
+  const toModelRelation = (doc: LangiumDocument) => {
+    return ({
+      astPath,
+      source,
+      target,
+      kind,
+      links,
+      ...model
+    }: ParsedAstRelation): c4.Relation | null => {
+      if (source in elements && target in elements) {
+        if (!!kind && kind in c4Specification.relationships) {
+          return {
+            source,
+            target,
+            kind,
+            ...(links && {links: resolveLinks(doc, links)}),
+            ...c4Specification.relationships[kind],
+            ...model
+          }
+        }
         return {
           source,
           target,
-          kind,
-          ...c4Specification.relationships[kind],
+          ...(links && {links: resolveLinks(doc, links)}),
           ...model
         }
       }
-      return {
-        source,
-        target,
-        ...model
-      }
+      return null
     }
-    return null
   }
 
   const relations = R.pipe(
-    R.flatMap(docs, d => d.c4Relations),
-    R.map(toModelRelation),
+    R.flatMap(docs, d => R.map(d.c4Relations, toModelRelation(d))),
     R.compact,
     R.mapToObj(r => [r.id, r])
   )
