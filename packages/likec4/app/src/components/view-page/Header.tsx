@@ -1,23 +1,8 @@
 import type { DiagramView } from '@likec4/core'
-import { Button, Divider, Group, Menu, rem, Text } from '@mantine/core'
-import { ExternalLinkIcon, Link2Icon } from '@radix-ui/react-icons'
-import { Box, Dialog, Flex, HoverCard, IconButton, Tooltip } from '@radix-ui/themes'
-import {
-  IconArrowDown,
-  IconArrowsLeftRight,
-  IconBrandReact,
-  IconCaretDownFilled,
-  IconChevronDown,
-  IconFileVector,
-  IconMessageCircle,
-  IconPhoto,
-  IconSearch,
-  IconSettings,
-  IconShare,
-  IconTrash
-} from '@tabler/icons-react'
-import { IconFile } from '@tabler/icons-react'
-import { Link, notFound, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
+import { Button, Divider, Group, Menu, Text } from '@mantine/core'
+import { Box, Dialog } from '@radix-ui/themes'
+import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
+import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
 import * as css from './Header.css'
 import { ShareDialog } from './ShareDialog'
@@ -246,60 +231,60 @@ function ExportButton() {
 //     </HoverCard.Root>
 //   )
 // }
-function HoverCardItem({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <Box>
-      <Text as="p" size="1" color="gray">
-        {title}
-      </Text>
-      {children}
-    </Box>
-  )
-}
+// function HoverCardItem({ title, children }: { title: string; children: React.ReactNode }) {
+//   return (
+//     <Box>
+//       <Text size="xs" c="dimmed">
+//         {title}
+//       </Text>
+//       {children}
+//     </Box>
+//   )
+// }
 
-function DiagramLinks({ diagram: { links } }: HeaderProps) {
-  if (!links) {
-    return null
-  }
-  if (links.length > 1) {
-    return (
-      <Flex align={'center'}>
-        <Box grow={'0'} height={'4'}>
-          <HoverCard.Root closeDelay={500}>
-            <HoverCard.Trigger>
-              <IconButton color="gray" variant="ghost" size={'2'}>
-                <Link2Icon width={16} height={16} />
-              </IconButton>
-            </HoverCard.Trigger>
-            <HoverCard.Content size={'2'} align="center">
-              <Flex direction="column" gap="2">
-                {links.map(link => (
-                  <Flex asChild align={'center'} gap={'2'} key={link}>
-                    <Link href={link} target="_blank">
-                      <ExternalLinkIcon width={13} height={13} />
-                      <Text size="2">{link}</Text>
-                    </Link>
-                  </Flex>
-                ))}
-              </Flex>
-            </HoverCard.Content>
-          </HoverCard.Root>
-        </Box>
-      </Flex>
-    )
-  }
-  const link = links[0]
-  return (
-    <Flex align={'center'}>
-      <Tooltip content={link}>
-        <Box grow={'0'}>
-          <IconButton asChild color="gray" variant="ghost" size={'2'}>
-            <Link href={link} target="_blank">
-              <Link2Icon width={16} height={16} />
-            </Link>
-          </IconButton>
-        </Box>
-      </Tooltip>
-    </Flex>
-  )
-}
+// function DiagramLinks({ diagram: { links } }: HeaderProps) {
+//   if (!links) {
+//     return null
+//   }
+//   if (links.length > 1) {
+//     return (
+//       <Flex align={'center'}>
+//         <Box grow={'0'} height={'4'}>
+//           <HoverCard.Root closeDelay={500}>
+//             <HoverCard.Trigger>
+//               <IconButton color="gray" variant="ghost" size={'2'}>
+//                 <Link2Icon width={16} height={16} />
+//               </IconButton>
+//             </HoverCard.Trigger>
+//             <HoverCard.Content size={'2'} align="center">
+//               <Flex direction="column" gap="2">
+//                 {links.map(link => (
+//                   <Flex asChild align={'center'} gap={'2'} key={link}>
+//                     <Link href={link} target="_blank">
+//                       <ExternalLinkIcon width={13} height={13} />
+//                       <Text size="2">{link}</Text>
+//                     </Link>
+//                   </Flex>
+//                 ))}
+//               </Flex>
+//             </HoverCard.Content>
+//           </HoverCard.Root>
+//         </Box>
+//       </Flex>
+//     )
+//   }
+//   const link = links[0]
+//   return (
+//     <Flex align={'center'}>
+//       <Tooltip content={link}>
+//         <Box grow={'0'}>
+//           <IconButton asChild color="gray" variant="ghost" size={'2'}>
+//             <Link href={link} target="_blank">
+//               <Link2Icon width={16} height={16} />
+//             </Link>
+//           </IconButton>
+//         </Box>
+//       </Tooltip>
+//     </Flex>
+//   )
+// }

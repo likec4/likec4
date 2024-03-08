@@ -28,7 +28,7 @@ async function buildCli() {
     target: 'esnext',
     platform: 'node',
     banner: {
-      js: 'import { createRequire } from \'module\'; const require = createRequire(import.meta.url);'
+      js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
     },
     tsconfig: 'tsconfig.src.json',
     plugins: [
@@ -64,6 +64,9 @@ async function buildCli() {
     )
     console.error('\n ⛔️ Build failed')
     process.exit(1)
+  }
+  if (bundle.metafile) {
+    await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
   }
 }
 
