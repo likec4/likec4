@@ -209,18 +209,12 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
         if (!rect) {
           return n
         }
-        const updates = {
-          position: rect.position,
-          width: rect.maxX.value() - rect.minX.value(),
-          height: rect.maxY.value() - rect.minY.value()
-        }
-        if (eq(n.position, updates.position) && eq(n.width, updates.width) && eq(n.height, updates.height)) {
-          return n
-        }
-        return {
-          ...n,
-          ...updates
-        }
+        const newPosition = rect.position
+        n.position.x = newPosition.x
+        n.position.y = newPosition.y
+        n.width = rect.maxX.value() - rect.minX.value()
+        n.height = rect.maxY.value() - rect.minY.value()
+        return n
       })
     )
   }
@@ -248,23 +242,28 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
   }
 }
 
-export function useNodeDragConstraints(
+type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>>
+export function useLayoutConstraints(
   xyflow: RefObject<XYFlowInstance | undefined>
-): Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>> {
+): LayoutConstraints {
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
-  return useMemo(() => ({
-    onNodeDragStart: (event, xynode) => {
-      invariant(xyflow.current, 'xyflow.current should be defined')
-      invariant(!solverRef.current, 'solverRef.current should be undefined')
-      solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
-    },
-    onNodeDrag: (event, xynode) => {
-      invariant(solverRef.current, 'solverRef.current should be defined')
-      solverRef.current?.onNodeDrag(xynode)
-    },
-    onNodeDragStop: (event, xynode) => {
-      // solverRef.current?.onNodeDrag(xynode)
-      solverRef.current = undefined
+  const constraintsRef = useRef<LayoutConstraints>()
+  if (!constraintsRef.current) {
+    constraintsRef.current = {
+      onNodeDragStart: (event, xynode) => {
+        invariant(xyflow.current, 'xyflow.current should be defined')
+        invariant(!solverRef.current, 'solverRef.current should be undefined')
+        solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
+      },
+      onNodeDrag: (event, xynode) => {
+        invariant(solverRef.current, 'solverRef.current should be defined')
+        solverRef.current?.onNodeDrag(xynode)
+      },
+      onNodeDragStop: (event, xynode) => {
+        // solverRef.current?.onNodeDrag(xynode)
+        solverRef.current = undefined
+      }
     }
-  }), [xyflow])
+  }
+  return constraintsRef.current
 }

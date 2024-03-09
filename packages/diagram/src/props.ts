@@ -16,7 +16,7 @@ export type OnEdgeClick = (args: { relation: DiagramEdge; xyedge: XYFlowEdge; ev
  */
 export type OnCanvasClick = (event: React.MouseEvent) => void
 
-export type LikeC4ViewColorMode = 'auto' | 'light' | 'dark'
+export type LikeC4ViewColorMode = 'system' | 'light' | 'dark'
 
 export interface LikeC4ViewProps {
   view: DiagramView
@@ -97,7 +97,7 @@ export interface LikeC4DiagramEventHandlers {
   onEdgeContextMenu?: OnEdgeClick | undefined
   onCanvasClick?: OnCanvasClick | undefined
   onCanvasDblClick?: OnCanvasClick | undefined
-  onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined
+  // onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined
   // onMoveStart?: OnMoveStart | undefined
   // onMoveEnd?: OnMoveEnd | undefined
 }

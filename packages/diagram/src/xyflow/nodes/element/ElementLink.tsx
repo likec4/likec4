@@ -42,21 +42,17 @@ export function ElementLink({
         <HoverCard.Dropdown p={'xs'}>
           <Stack onClick={e => e.stopPropagation()} gap={'xs'}>
             {element.links.map((link, i) => (
-              <Group key={link} wrap="nowrap" gap={'xs'}>
+              <Group key={link} wrap="nowrap" gap={'sm'}>
                 <Box flex={'1'} style={{ overflow: 'clip', maxWidth: 300 }}>
-                  <Anchor href={link} target="_blank" fz="xs" truncate="end">
+                  <Anchor href={link} target="_blank" fz="13" truncate="end">
                     {link}
                   </Anchor>
                 </Box>
                 <CopyButton value={link}>
                   {({ copied, copy }) => (
-                    <ActionIcon
-                      onClick={copy}
-                      size={'sm'}
-                      variant={copied ? 'light' : 'subtle'}
-                      {...(copied && ({ color: 'teal' }))}>
-                      <ClipboardCopy />
-                    </ActionIcon>
+                    <Button size="xs" onClick={copy} color={copied ? 'teal' : 'gray'}>
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
                   )}
                 </CopyButton>
               </Group>

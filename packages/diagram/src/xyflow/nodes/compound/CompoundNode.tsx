@@ -2,12 +2,12 @@ import { defaultTheme } from '@likec4/core'
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
+import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
 import { useMemo } from 'react'
 import { memo } from 'react-tracked'
-import { equals } from 'remeda'
 import useTilg from 'tilg'
-import { useDiagramStateTracked } from '../../../state'
+import { useDiagramState } from '../../../state2'
 import { toDomPrecision } from '../../../utils'
 import type { CompoundNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -22,7 +22,7 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   && prev.selected === next.selected
   && prev.width === next.width
   && prev.height === next.height
-  && equals(prev.data, next.data)
+  && eq(prev.data, next.data)
 )
 
 const compoundColor = (color: string, depth: number) =>
@@ -33,7 +33,7 @@ const compoundColor = (color: string, depth: number) =>
     })
   )
 
-export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
+export const CompoundNodeMemo = memo<CompoundNodeProps>(function CompoundNode({
   id,
   data: {
     element
@@ -55,8 +55,8 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
   const w = toDomPrecision(width ?? compound.width)
   const h = toDomPrecision(height ?? compound.height)
 
-  const editor = useDiagramStateTracked()
-  const isNavigatable = editor.hasOnNavigateTo && !!compound.navigateTo
+  const diagramState = useDiagramState()
+  const isNavigatable = diagramState.hasOnNavigateTo && !!compound.navigateTo
 
   return (
     <div
@@ -89,13 +89,7 @@ export const CompoundNode = memo<CompoundNodeProps>(function CompoundNodeInner({
       >
         <Text component="div" className={classes.title}>{compound.title}</Text>
       </div>
-      {isNavigatable && (
-        <NavigateToBtn
-          onClick={(e) => {
-            editor.onNavigateTo(id, e)
-          }}
-          className={classes.navigateBtn} />
-      )}
+      {isNavigatable && <NavigateToBtn xynodeId={id} className={classes.navigateBtn} />}
       <Handle
         type="source"
         position={Position.Bottom}

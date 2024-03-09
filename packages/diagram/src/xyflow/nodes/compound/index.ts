@@ -1,1 +1,1 @@
-export { CompoundNode } from './CompoundNode'
+export { CompoundNodeMemo as CompoundNode } from './CompoundNode'

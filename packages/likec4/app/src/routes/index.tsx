@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import type { DiagramView } from '@likec4/core'
-import { LikeC4View } from '@likec4/diagram'
+// import { LikeC4View } from '@likec4/diagram'
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separator, Text } from '@radix-ui/themes'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -143,14 +143,16 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
 
   return (
     <Box className={styles.previewBg} style={{ width: 350, height: 175 }}>
-      {diagram && (
+      {
+        /* {diagram && (
         <LikeC4View
           view={diagram}
           reactflowProps={{
             width: 350,
             height: 175
           }} />
-      )}
+      )} */
+      }
     </Box>
   )
 })

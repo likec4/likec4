@@ -6,7 +6,7 @@ import {
   type NonEmptyArray,
   type ThemeColor
 } from '@likec4/core'
-import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Tooltip } from '@mantine/core'
+import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Text, Tooltip } from '@mantine/core'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
@@ -44,8 +44,14 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
   if (!hasAtLeast(nodes, 1)) {
     return null
   }
+  const [firstNode, ...rest] = nodes
   return (
     <Stack>
+      <Box maw={200}>
+        <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
+          {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
+        </Text>
+      </Box>
       <ShapeOption
         nodes={nodes}
         onShapeChange={(shape: ElementShape) => {

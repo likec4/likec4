@@ -26,7 +26,7 @@ globalStyle(`.react-flow__edge.selected ${container}`, {
 })
 
 globalStyle(`.react-flow__edges > svg`, {
-  mixBlendMode: 'luminosity'
+  mixBlendMode: 'lighten'
 })
 
 export const edgePathBg = style({

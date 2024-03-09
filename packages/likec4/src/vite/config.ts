@@ -144,6 +144,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     customLogger,
     optimizeDeps: {
+      force: isDev,
       include: [
         'react-dom',
         'react-dom/client',

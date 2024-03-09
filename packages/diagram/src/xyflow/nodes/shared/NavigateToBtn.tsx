@@ -1,10 +1,13 @@
+import { invariant } from '@likec4/core'
 import { ActionIcon } from '@mantine/core'
 import clsx from 'clsx'
-import { motion, type Variants } from 'framer-motion'
 import { ZoomIn } from '../../../icons'
+import type { DiagramNodeWithNavigate } from '../../../props'
+import { useDiagramState } from '../../../state2'
+import { useXYFlow } from '../../hooks'
 
 export type NavigateToBtnProps = {
-  onClick: (event: React.MouseEvent) => void
+  xynodeId: string
   className?: string
 }
 
@@ -37,31 +40,24 @@ export type NavigateToBtnProps = {
 //   }
 // } satisfies Variants
 
-export function NavigateToBtn({ onClick, className }: NavigateToBtnProps) {
-  // const api = useLikeC4ViewEditor()
-  // const navigateToView = api.navigateTo
-  // return (
-  //   <motion.button
-  //     className={clsx(
-  //       'mantine-focus-auto mantine-ActionIcon-root  mantine-UnstyledButton-root',
-  //       'nodrag',
-  //       className
-  //     )}
-  //     type="button">
-  //     <span className="mantine-ActionIcon-icon">
-  //       <ZoomIn />
-  //     </span>
-  //   </motion.button>
-  // )
+export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
+  const xyflow = useXYFlow()
+  const onNavigateTo = useDiagramState().onNavigateTo
   return (
     <ActionIcon
       className={clsx('nodrag nopan', className)}
       radius="xl"
       autoFocus={false}
-      onClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        onClick(e)
+      onClick={(event) => {
+        event.stopPropagation()
+        event.preventDefault()
+        const xynode = xyflow.getNode(xynodeId)
+        invariant(xynode, 'xynode should be defined')
+        onNavigateTo({
+          xynode,
+          element: xynode.data.element as DiagramNodeWithNavigate,
+          event
+        })
       }}
     >
       <ZoomIn />

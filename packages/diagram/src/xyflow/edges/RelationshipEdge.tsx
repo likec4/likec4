@@ -11,7 +11,8 @@ import { memo } from 'react-tracked'
 import { hasAtLeast } from 'remeda'
 import useTilg from 'tilg'
 import { ZIndexes } from '../../const'
-import { useSelectDiagramState } from '../../state'
+import { useDiagramStateSelector } from '../../state2'
+import { useXYFlow } from '../hooks'
 import { type RelationshipData, XYFlowNode } from '../types'
 import * as css from './edges.css'
 import { getEdgeParams } from './utils'
@@ -73,30 +74,37 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   interactionWidth,
   ...xyedge
 }) {
-  const {
-    sourceNode,
-    targetNode
-  } = useStore(
+  const xyflow = useXYFlow()
+  const isModified = useStore(
     useCallback(s => {
       const sourceNode = s.nodeLookup.get(source)!
       const targetNode = s.nodeLookup.get(target)!
-      return {
-        sourceNode,
-        targetNode
+      invariant(XYFlowNode.is(sourceNode))
+      invariant(XYFlowNode.is(targetNode))
+      const isSourceModified = !!sourceNode.computed?.positionAbsolute
+        && !deepEqual(sourceNode.computed.positionAbsolute, {
+          x: sourceNode.data.element.position[0],
+          y: sourceNode.data.element.position[1]
+        })
+      if (isSourceModified) {
+        return true
       }
+      return !!targetNode.computed?.positionAbsolute
+        && !deepEqual(targetNode.computed.positionAbsolute, {
+          x: targetNode.data.element.position[0],
+          y: targetNode.data.element.position[1]
+        })
     }, [source, target]),
     deepEqual
   )
 
-  useTilg()
   // const [sourceNode, targetNode] = useXYNodesData([xyedge.source, xyedge.target])
-  invariant(XYFlowNode.is(sourceNode))
-  invariant(XYFlowNode.is(targetNode))
 
-  const isModified = sourceNode.computed?.positionAbsolute?.x !== sourceNode.data.element.position[0]
-    || sourceNode.computed?.positionAbsolute?.y !== sourceNode.data.element.position[1]
-    || targetNode.computed?.positionAbsolute?.x !== targetNode.data.element.position[0]
-    || targetNode.computed?.positionAbsolute?.y !== targetNode.data.element.position[1]
+  // const isModified = !deepEqual(sourcePos.positionAbsolute, sourcePos.position) || !deepEqual(targetPos.positionAbsolute, targetPos.position)
+  // const isModified `= sourceNode.computed?.positionAbsolute?.x !== sourceNode.data.element.position[0]
+  //   || sourceNode.computed?.positionAbsolute?.y !== sourceNode.data.element.position[1]
+  //   || targetNode.computed?.positionAbsolute?.x !== targetNode.data.element.position[0]
+  //   || targetNode.computed?.positionAbsolute?.y !== targetNode.data.element.position[1]
 
   invariant(data, 'data isd required')
   const {
@@ -106,7 +114,7 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   // const edgePath = bezierPath(edge.points)
 
   const color = edge.color ?? 'gray'
-  const isHovered = useSelectDiagramState(state => state.hoveredEdgeId === id)
+  const isHovered = useDiagramStateSelector(state => state.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -124,6 +132,8 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   let edgePath: string, labelX: number, labelY: number
 
   if (isModified) {
+    const sourceNode = xyflow.getNode(source)!
+    const targetNode = xyflow.getNode(target)!
     const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
 
     const [_edgePath, _labelX, _labelY] = getBezierPath({
@@ -142,6 +152,12 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
     labelX = data.label?.bbox.x ?? 0
     labelY = data.label?.bbox.y ?? 0
   }
+
+  useTilg()`
+  ${id}
+  path=${edgePath}
+  isModified=${isModified}
+`
 
   return (
     <g className={clsx(css.container)} data-likec4-color={color} data-edge-hovered={isHovered}>

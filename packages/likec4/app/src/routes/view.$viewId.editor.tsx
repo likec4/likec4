@@ -1,4 +1,4 @@
-import { LikeC4Diagram, LikeC4View, type OnNavigateTo } from '@likec4/diagram'
+import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
 import { Box } from '@radix-ui/themes'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'

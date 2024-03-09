@@ -38,21 +38,23 @@ for (const color of Object.keys(defaultTheme.elements)) {
   })
 }
 
-globalStyle('.mantine-ActionIcon-icon svg', {
-  width: '75%',
-  height: '75%'
-})
+// globalStyle('.mantine-ActionIcon-icon svg', {
+//   width: '75%',
+//   height: '75%'
+// })
 
-globalStyle('.react-flow[data-likec4-no-pan] .react-flow__pane', {
+export const cssDisablePan = style({})
+
+globalStyle(`${cssDisablePan} .react-flow__pane`, {
   cursor: 'default'
 })
 
-globalStyle('.react-flow[data-likec4-no-bg]', {
+export const cssDisableBg = style({
   backgroundColor: 'transparent !important',
   vars: {
     '--xy-background-color': 'transparent !important'
   }
 })
-globalStyle('.react-flow[data-likec4-no-bg] .react-flow__attribution', {
+globalStyle(`${cssDisableBg} .react-flow__attribution`, {
   display: 'none'
 })

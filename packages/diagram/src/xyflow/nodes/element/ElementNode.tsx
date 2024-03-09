@@ -2,10 +2,12 @@ import { Button, Image, Stack, Text } from '@mantine/core'
 import { isEqualSimple } from '@react-hookz/deep-equal'
 import { Handle, type NodeProps, NodeToolbar, Position } from '@xyflow/react'
 import clsx from 'clsx'
+import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
 import useTilg from 'tilg'
 import { useDiagramStateTracked, useSelectDiagramState } from '../../../state'
+import { useDiagramState, useDiagramStateSelector } from '../../../state2'
 import { toDomPrecision } from '../../../utils'
 import type { ElementNodeData } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -18,12 +20,10 @@ import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 type ElementNodeProps = NodeProps<ElementNodeData>
 
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
-  isEqualSimple(prev, next)
-  // prev.id === next.id
-  // && prev.selected === next.selected
-  // && prev.dragging === next.dragging
-  // && prev.width === next.width
-  // && prev.height === next.height
+  prev.id === next.id
+  && prev.width === next.width
+  && prev.height === next.height
+  && deepEqual(prev.data, next.data)
   // && isEqualSimple(prev.data, next.data)
 )
 
@@ -46,21 +46,19 @@ const variants = {
   }
 } satisfies Variants
 
-export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
+export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   id,
   data: {
     element
   },
-  selected,
-  dragging,
   width,
   height
 }) {
-  // useTilg()
-  const editor = useDiagramStateTracked()
-  const isHovercards = editor.disableHovercards !== true
-  const isNavigable = editor.hasOnNavigateTo && !!element.navigateTo
-  const isHovered = useSelectDiagramState(state => state.hoveredNodeId === id)
+  useTilg()
+  const diagramState = useDiagramState()
+  const isHovercards = diagramState.disableHovercards !== true
+  const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo
+  const isHovered = useDiagramStateSelector(state => state.hoveredNodeId === id)
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -170,13 +168,7 @@ export const ElementNode = memo<ElementNodeProps>(function ElementNodeInner({
       ))} */
       }
       {isHovercards && <ElementLink element={element} />}
-      {isNavigable && (
-        <NavigateToBtn
-          onClick={(e) => {
-            editor.onNavigateTo(id, e)
-          }}
-          className={classes.navigateBtn} />
-      )}
+      {isNavigable && <NavigateToBtn xynodeId={id} className={classes.navigateBtn} />}
     </motion.div>
   )
 }, isEqualProps)

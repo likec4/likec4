@@ -9,32 +9,33 @@ import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
 const OptionsPanelMemo = memo(function OptionsPanel() {
-  const viewId = useDiagramStateTracked().viewId
+  // const viewId = useDiagramStateTracked().viewId
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
   // const [selectedEdges, setSelectedEdges] = useState([] as string[])
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      if (nodes.length === 0 && edges.length === 0) {
-        setSelectedNodes([])
-        // setSelectedEdges([])
-        return
-      }
-      const selected = new Set([
-        ...nodes.map((n) => n.id),
-        ...edges.flatMap((edge) => [
-          edge.source,
-          edge.target
-        ])
-      ])
-      setSelectedNodes([...selected])
+      setSelectedNodes(nodes.map(n => n.id))
+      // if (nodes.length === 0 && edges.length === 0) {
+      //   setSelectedNodes([])
+      //   // setSelectedEdges([])
+      //   return
+      // }
+      // const selected = new Set([
+      //   ...nodes.map((n) => n.id),
+      //   ...edges.flatMap((edge) => [
+      //     edge.source,
+      //     edge.target
+      //   ])
+      // ])
+      // setSelectedNodes([...selected])
       // setSelectedEdges(edges.map(e => e.id))
     }
   })
 
-  useUpdateEffect(() => {
-    setSelectedNodes([])
-  }, [viewId])
+  // useUpdateEffect(() => {
+  //   setSelectedNodes([])
+  // }, [viewId])
 
   return (
     <AnimatePresence>

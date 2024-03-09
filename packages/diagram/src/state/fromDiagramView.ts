@@ -94,9 +94,9 @@ export function fromDiagramView(
       type: isCompound ? 'compound' : 'element',
       data: {
         id,
-        element: node
+        element: structuredClone(node)
       },
-      draggable: dragEnabled,
+      draggable: dragEnabled && (!parent || parent.children.length > 1),
       deletable: false,
       position,
       zIndex,
@@ -159,7 +159,7 @@ export function fromDiagramView(
       zIndex: level + 1,
       deletable: false,
       data: {
-        edge,
+        edge: structuredClone(edge),
         type: 'bezier',
         controlPoints,
         headPoint: edge.headArrowPoint ?? null,

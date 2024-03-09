@@ -1,4 +1,4 @@
-import { LikeC4View } from '@likec4/diagram'
+import { LikeC4Diagram as LikeC4View } from '@likec4/diagram'
 import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
