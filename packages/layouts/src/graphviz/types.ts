@@ -58,50 +58,52 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
-  export type DrawOps =
-    // style
-    | {
-        op: 'S'
-        style: string
-      }
-    // color
-    | {
-        op: 'c'
-        grad: string
-        color: string
-      }
-    // polygon
-    | {
-        op: 'p' | 'P'
-        points: Point[]
-      }
-    // bspline
-    | {
-        op: 'b' | 'B'
-        points: Point[]
-      }
+  export namespace DrawOps {
+    export type Style = {
+      op: 'S'
+      style: string
+    }
+
+    export type BSpline = {
+      op: 'b' | 'B'
+      points: Point[]
+    }
+
+    export type Color = {
+      op: 'c'
+      grad: string
+      color: string
+    }
+
+    export type Polygon = {
+      op: 'p' | 'P'
+      points: Point[]
+    }
+  }
+
+  export type DrawOp = DrawOps.Style | DrawOps.BSpline | DrawOps.Color | DrawOps.Polygon
 
   export type LabelDrawOps =
     | {
-        op: 'F'
-        size: number
-        face: string
-      }
+      op: 'F'
+      size: number
+      face: string
+    }
     | {
-        op: 'c'
-        color: string
-      }
+      op: 'c'
+      color: string
+    }
     | {
-        op: 't'
-        fontchar: number
-      }
+      op: 't'
+      fontchar: number
+    }
     | {
-        op: 'T'
-        pt: Point
-        align: 'l' | 'r' | 'c'
-        width: number
-        text: string
-      }
+      op: 'T'
+      pt: Point
+      align: 'l' | 'r' | 'c'
+      width: number
+      text: string
+    }
 
   export type GvObject = GvNodeObject | GvSubgraph
   export interface GvSubgraph {
@@ -148,11 +150,11 @@ export namespace GraphvizJson {
     tail: GvId
     head: GvId
     dir?: 'forward' | 'back' | 'both' | 'none'
-    _draw_: DrawOps[]
+    _draw_: DrawOp[]
     // head arrow
-    _hdraw_?: DrawOps[]
+    _hdraw_?: DrawOp[]
     // tail arrow
-    _tdraw_?: DrawOps[]
+    _tdraw_?: DrawOp[]
     _ldraw_?: LabelDrawOps[]
     fontname: string
     fontsize: string

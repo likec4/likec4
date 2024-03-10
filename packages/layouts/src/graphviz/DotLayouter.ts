@@ -28,6 +28,7 @@ export class DotLayouter implements GraphvizLayouter {
       if (result) {
         return result
       }
+      console.warn('Failed to layout with graphviz, retrying...')
       await delay(50)
       // Attempt 2
       result = await this.attempt(view)
