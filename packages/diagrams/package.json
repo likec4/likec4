@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.57.1",
+  "version": "0.58.0",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -30,7 +30,7 @@
       }
     }
   },
-  "packageManager": "yarn@4.1.0",
+  "packageManager": "yarn@4.1.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo build --filter='diagrams'",
@@ -48,7 +48,7 @@
     "body-scroll-lock-upgrade": "^1.1.0",
     "jotai": "^2.6.4",
     "khroma": "^2.1.0",
-    "konva": "^9.3.3",
+    "konva": "^9.3.4",
     "rambdax": "^9.1.1",
     "react-konva": "^18.2.10"
   },

@@ -1,3 +1,10 @@
+# [0.58.0](https://github.com/likec4/likec4/compare/v0.57.1...v0.58.0) (2024-03-08)
+
+### 🚀 Features
+
+- **lsp:** add links to relationships ([#616](https://github.com/likec4/likec4/issues/616)) ([5f94ac3](https://github.com/likec4/likec4/commit/5f94ac3057c426e5d255bcc76cf10763702b669f)), closes [#612](https://github.com/likec4/likec4/issues/612)
+- **lsp:** langium 3 ([#606](https://github.com/likec4/likec4/issues/606)) ([b12605d](https://github.com/likec4/likec4/commit/b12605dbd2c4037b939f0aba86ff5c57ca4d4777))
+
 ## [0.57.1](https://github.com/likec4/likec4/compare/v0.57.0...v0.57.1) (2024-02-23)
 
 ### Bug Fixes

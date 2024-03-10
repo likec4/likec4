@@ -38,17 +38,23 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
         stdin: 'pipe',
         encoding: 'utf8'
       })
-      if (unflatten.exitCode !== 0) {
-        console.warn(`[BinaryGraphvizLayouter.layout] command(exit:${unflatten.exitCode}): '${unflatten.command}'`)
-      }
-      // if (unflatten instanceof Error) {
-      //   console.warn(`Graphviz unflatten: ${unflatten.message}`)
-      // }
-      if (unflatten.stdout) {
-        dot = unflatten.stdout as DotSource
+      if (unflatten instanceof Error) {
+        if (unflatten.stdout) {
+          console.warn(
+            `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nbut returned\n${unflatten.stdout}`
+          )
+        } else {
+          console.error(
+            `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nnothing returned, ignoring...`
+          )
+        }
       }
 
-      const result = await execa(this.path, ['-Tjson', '-y'], {
+      if (unflatten.stdout) {
+        dot = unflatten.stdout.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
+      }
+
+      const dotcmd = await execa(this.path, ['-Tjson', '-y'], {
         env,
         extendEnv: false,
         reject: false,
@@ -57,16 +63,18 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
         stdin: 'pipe',
         encoding: 'utf8'
       })
-      if (result.exitCode !== 0) {
-        console.warn(`[BinaryGraphvizLayouter.layout] command(exit:${result.exitCode}): '${result.command}'`)
-      }
-      if (result instanceof Error) {
-        if (!result.stdout) {
-          throw result
+      if (dotcmd instanceof Error) {
+        if (!dotcmd.stdout) {
+          console.error(
+            `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' nothing returned and failed: ${dotcmd.stderr}`
+          )
+          throw dotcmd
         }
-        // console.warn(`Graphviz failed but returned json: ${result.message}`)
+        console.warn(
+          `[BinaryGraphvizLayouter.layout] '${dotcmd.command}' returned result but also failed ${dotcmd.stderr}`
+        )
       }
-      const diagram = parseGraphvizJson(result.stdout, view)
+      const diagram = parseGraphvizJson(dotcmd.stdout, view)
       return {
         dot,
         diagram
@@ -77,23 +85,30 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
   async svg(dot: string, _view: ComputedView): Promise<string> {
     return await limit(async () => {
       const env = omit(['SERVER_NAME'], processenv)
+      let svgFix = dot
+        .split('\n')
+        .filter(l => !l.includes('margin=33.21'))
+        .join('\n')
       const result = await execa(this.path, ['-Tsvg', '-y'], {
         env,
         extendEnv: false,
         reject: false,
         timeout: 5_000,
-        input: dot,
+        input: svgFix,
         stdin: 'pipe',
         encoding: 'utf8'
       })
-      if (result.exitCode !== 0) {
-        console.warn(`[BinaryGraphvizLayouter.layout] command(exit:${result.exitCode}): '${result.command}'`)
-      }
+
       if (result instanceof Error) {
         if (!result.stdout) {
+          console.error(
+            `[BinaryGraphvizLayouter.layout] '${result.command}' nothing returned and failed: ${result.stderr}`
+          )
           throw result
         }
-        // console.warn(`Graphviz failed (but returned svg): ${result.message}`)
+        console.warn(
+          `[BinaryGraphvizLayouter.layout] '${result.command}' returned result but also failed ${result.stderr}`
+        )
       }
       return result.stdout
     })

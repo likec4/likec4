@@ -34,4 +34,5 @@ export interface Relation {
   readonly line?: RelationshipLineType
   readonly head?: RelationshipArrowType
   readonly tail?: RelationshipArrowType
+  readonly links?: NonEmptyArray<string>
 }

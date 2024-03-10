@@ -11,7 +11,7 @@ import type {
   RelationshipLineType
 } from '@likec4/core'
 import {
-  compareFqnHierarchically,
+  compareByFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme,
   DefaultThemeColor,
@@ -20,7 +20,25 @@ import {
   nonNullable,
   parentFqn
 } from '@likec4/core'
-import { filter, first, groupBy, isNil, isNumber, isTruthy, keys, last, map, omitBy, pipe, reverse, sort } from 'remeda'
+import {
+  filter,
+  first,
+  groupBy,
+  isNil,
+  isNumber,
+  isTruthy,
+  keys,
+  last,
+  map,
+  mapValues,
+  omitBy,
+  pipe,
+  reverse,
+  sort,
+  toPairs,
+  uniq,
+  zip
+} from 'remeda'
 import {
   type $keywords,
   type ArrowType,
@@ -138,11 +156,11 @@ export function toGraphvisModel({
     [_.TBbalance]: 'min',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(90),
-    [_.ranksep]: pxToInch(90),
-    [_.pack]: pxToPoints(90),
+    [_.nodesep]: pxToInch(100),
+    [_.ranksep]: pxToInch(110),
+    [_.pack]: pxToPoints(200),
     [_.packmode]: 'array_3',
-    [_.searchsize]: Math.max(viewEdges.length, 50)
+    [_.pad]: pxToInch(10)
   })
 
   G.attributes.graph.apply({
@@ -184,7 +202,7 @@ export function toGraphvisModel({
   function checkNodeId(name: string, isCompound = false) {
     if (isCompound) {
       name = 'cluster_' + name
-    } else if (name.startsWith('cluster')) {
+    } else if (name.toLowerCase().startsWith('cluster')) {
       name = 'nd_' + name
     }
     if (!ids.has(name)) {
@@ -290,7 +308,7 @@ export function toGraphvisModel({
       [_.fillcolor]: compoundColor(Theme.elements[elementNode.color].fill, elementNode.depth),
       [_.color]: compoundColor(Theme.elements[elementNode.color].stroke, elementNode.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(32)
+      [_.margin]: pxToPoints(40)
     })
     const label = sanitize(elementNode.title.toUpperCase())
     if (isTruthy(label)) {
@@ -350,57 +368,28 @@ export function toGraphvisModel({
     return [targetNode, target, lhead] as const
   }
 
-  function addHiddenEdge({
-    source,
-    target,
-    lhead,
-    ltail,
-    parent
-  }: {
-    source: NodeModel
-    target: NodeModel
-    lhead: string | undefined
-    ltail: string | undefined
-    edge: ComputedEdge
-    parent: GraphBaseModel
-  }) {
-    const sourceId = source.attributes.get(_.likec4_id) as Fqn
-    const targetId = target.attributes.get(_.likec4_id) as Fqn
-    const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
-    const e = parent.edge([source, target], {
-      [_.style]: 'invis',
-      // [_.likec4_id]: edge.id, //hidden edge should not have id
-      [_.minlen]: 1
-    })
-    if (existingVisibleEdge) {
-      e.attributes.set(_.weight, 0)
-    }
-    lhead && e.attributes.set(_.lhead, lhead)
-    ltail && e.attributes.set(_.ltail, ltail)
-  }
-
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
     const [sourceNode, source, ltail] = resolveEdgeSource(edge)
     const [targetNode, target, lhead] = resolveEdgeTarget(edge)
 
-    // Hide edges between clusters
-    if (lhead || ltail) {
-      addHiddenEdge({
-        source,
-        target,
-        lhead,
-        ltail,
-        edge,
-        parent
-      })
-      return
-    }
     const edgeParentId = edge.parent
 
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
       [_.style]: edge.line ?? DefaultEdgeStyle
     })
+
+    lhead && e.attributes.set(_.lhead, lhead)
+    ltail && e.attributes.set(_.ltail, ltail)
+
+    if (lhead || ltail) {
+      const sourceId = source.attributes.get(_.likec4_id) as Fqn
+      const targetId = target.attributes.get(_.likec4_id) as Fqn
+      const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
+      if (existingVisibleEdge) {
+        e.attributes.set(_.weight, 0)
+      }
+    }
 
     const label = edge.label?.trim() ?? ''
     if (isTruthy(label)) {
@@ -521,25 +510,26 @@ export function toGraphvisModel({
     addEdge(edge, parent)
   }
 
-  const groupIds = pipe(
+  const groups = pipe(
     viewEdges,
     filter(e => !!e.parent && isEdgeVisible(e)),
     groupBy(e => e.parent!),
-    omitBy((v, _k) => v.length <= 1 || v.length > 8),
-    keys,
-    map(k => k as Fqn),
-    sort(compareFqnHierarchically),
+    omitBy((v, _k) => v.length < 2 || v.length > 6),
+    mapValues(edges => uniq(edges.flatMap(e => [e.source, e.target]))),
+    toPairs,
+    map(([groupId, nodes]) => ({ id: groupId as Fqn, nodes })),
+    sort(compareByFqnHierarchically),
     reverse()
   )
 
   const processed = new Set<Fqn>()
-  for (const groupId of groupIds) {
-    for (const element of leafElements(groupId)) {
-      if (processed.has(element.id)) {
+  for (const group of groups) {
+    for (const elementId of group.nodes) {
+      if (processed.has(elementId)) {
         continue
       }
-      processed.add(element.id)
-      graphvizNodes.get(element.id)?.attributes.set(_.group, groupId)
+      processed.add(elementId)
+      graphvizNodes.get(elementId)?.attributes.set(_.group, group.id)
     }
   }
 

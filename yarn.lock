@@ -486,7 +486,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chevrotain/regexp-to-ast@npm:*, @chevrotain/regexp-to-ast@npm:11.0.3":
+"@chevrotain/regexp-to-ast@npm:11.0.3":
   version: 11.0.3
   resolution: "@chevrotain/regexp-to-ast@npm:11.0.3"
   checksum: 10/7387a1c61c5a052de41e1172b33eaaedea166fcdb1ffe4c381b86d00051a8014855a031d28fb658768a62c833ef5f5b0689d0c40de3d7bed556f8fea24396e69
@@ -1251,7 +1251,7 @@ __metadata:
     execa: "npm:^8.0.1"
     jotai: "npm:^2.6.4"
     khroma: "npm:^2.1.0"
-    konva: "npm:^9.3.3"
+    konva: "npm:^9.3.4"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -1461,7 +1461,7 @@ __metadata:
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
     tsx: "npm:^4.7.1"
-    turbo: "npm:^1.12.4"
+    turbo: "npm:^1.12.5"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.1.4"
     vitest: "npm:^1.3.1"
@@ -1909,14 +1909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nevware21/ts-utils@npm:>= 0.10.0 < 2.x, @nevware21/ts-utils@npm:>= 0.9.4 < 2.x":
-  version: 0.10.1
-  resolution: "@nevware21/ts-utils@npm:0.10.1"
-  checksum: 10/da4d3aa50009914daa505f00173f5fa6a518d80a5a114eaf851d69f15eb2711988f1db958d8e35b99ec73661a1a624b2f32750189385bdbdd6cb96cc6960dcff
-  languageName: node
-  linkType: hard
-
-"@nevware21/ts-utils@npm:>= 0.10.4 < 2.x, @nevware21/ts-utils@npm:>= 0.10.5 < 2.x":
+"@nevware21/ts-utils@npm:>= 0.10.0 < 2.x, @nevware21/ts-utils@npm:>= 0.10.4 < 2.x, @nevware21/ts-utils@npm:>= 0.10.5 < 2.x, @nevware21/ts-utils@npm:>= 0.9.4 < 2.x":
   version: 0.10.5
   resolution: "@nevware21/ts-utils@npm:0.10.5"
   checksum: 10/fa89b826137be68dbc3e419cf074eff2f26d819d0f050d2c7fa2fee9b47678d785222a7cf5c6e611f4f265d384aaba2f4364364529c94ed9cc2920c859daa170
@@ -9714,10 +9707,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.3.3":
-  version: 9.3.3
-  resolution: "konva@npm:9.3.3"
-  checksum: 10/de3879b2bcdd9993797e023b59ec3a3ad940d8afdf6668dd1fa310110b02ca4047dbb6562aebdfc790da158128421d812846300e68df6709c9bad6160d02a084
+"konva@npm:^9.3.4":
+  version: 9.3.5
+  resolution: "konva@npm:9.3.5"
+  checksum: 10/ee9c9ac14844e679d65aaddb14be32d1088149a4209edc6b9ab728defbaefebb9d48a9a7d1858c2a00e302bbb8c27ad513b8433bea067e1a0e088362154a3bf3
   languageName: node
   linkType: hard
 
@@ -15816,58 +15809,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-darwin-64@npm:1.12.4"
+"turbo-darwin-64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-darwin-64@npm:1.12.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-darwin-arm64@npm:1.12.4"
+"turbo-darwin-arm64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-darwin-arm64@npm:1.12.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-linux-64@npm:1.12.4"
+"turbo-linux-64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-linux-64@npm:1.12.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-linux-arm64@npm:1.12.4"
+"turbo-linux-arm64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-linux-arm64@npm:1.12.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-windows-64@npm:1.12.4"
+"turbo-windows-64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-windows-64@npm:1.12.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.12.4":
-  version: 1.12.4
-  resolution: "turbo-windows-arm64@npm:1.12.4"
+"turbo-windows-arm64@npm:1.12.5":
+  version: 1.12.5
+  resolution: "turbo-windows-arm64@npm:1.12.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.12.4":
-  version: 1.12.4
-  resolution: "turbo@npm:1.12.4"
+"turbo@npm:^1.12.5":
+  version: 1.12.5
+  resolution: "turbo@npm:1.12.5"
   dependencies:
-    turbo-darwin-64: "npm:1.12.4"
-    turbo-darwin-arm64: "npm:1.12.4"
-    turbo-linux-64: "npm:1.12.4"
-    turbo-linux-arm64: "npm:1.12.4"
-    turbo-windows-64: "npm:1.12.4"
-    turbo-windows-arm64: "npm:1.12.4"
+    turbo-darwin-64: "npm:1.12.5"
+    turbo-darwin-arm64: "npm:1.12.5"
+    turbo-linux-64: "npm:1.12.5"
+    turbo-linux-arm64: "npm:1.12.5"
+    turbo-windows-64: "npm:1.12.5"
+    turbo-windows-arm64: "npm:1.12.5"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -15883,7 +15876,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/c58920f24aed084c59813543bcbd7617977798611a59e791595e965097f86bfad1014a2442ae04de59e363e45e48b2e0cc881f90dab5f97c40cc2f7b7db8bdee
+  checksum: 10/16eee9455f69d66c783050f67f5519d365297f89ff5f5fe6380a401ff9ac508a58cdc1a42f84603c4b820cfe8c2117d78fa8d9b0d5d68e306b7b89921467e52c
   languageName: node
   linkType: hard
 
@@ -16848,7 +16841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-types@npm:*, vscode-languageserver-types@npm:3.17.5":
+"vscode-languageserver-types@npm:3.17.5":
   version: 3.17.5
   resolution: "vscode-languageserver-types@npm:3.17.5"
   checksum: 10/900d0b81df5bef8d90933e75be089142f6989cc70fdb2d5a3a5f11fa20feb396aaea23ccffc8fbcc83a2f0e1b13c6ee48ff8151f236cbd6e61a4f856efac1a58

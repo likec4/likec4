@@ -166,6 +166,7 @@ export class LikeC4ModelParser {
     const target = this.resolveFqn(coupling.target)
     const source = this.resolveFqn(coupling.source)
     const tags = this.convertTags(astNode) ?? this.convertTags(astNode.body)
+    const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
     const title = toSingleLine(
@@ -185,6 +186,7 @@ export class LikeC4ModelParser {
       title,
       ...(kind && { kind }),
       ...(tags && { tags }),
+      ...(isNonEmptyArray(links) && { links }),
       ...toRelationshipStyleExcludeDefaults(styleProp?.props)
     }
   }
@@ -424,6 +426,6 @@ export class LikeC4ModelParser {
       return null
     }
     const tags = withTags.tags?.value.flatMap(({ ref }) => (ref ? (ref.name as c4.Tag) : []))
-    return tags && isNonEmptyArray(tags) ? tags : null
+    return isNonEmptyArray(tags) ? tags : null
   }
 }

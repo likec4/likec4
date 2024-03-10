@@ -267,6 +267,6 @@ const NodeShape = memo<NodeShapeProps>(
       </Portal>
     )
   },
-  isEqualSimple
+  (a, b) => isEqualSimple(a.node, b.node) && a.isHovered === b.isHovered && a.expired === b.expired
 )
 NodeShape.displayName = 'NodeShape'

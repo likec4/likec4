@@ -5,6 +5,6 @@ export function isString(value: unknown): value is string {
   return value != null && typeof value === 'string'
 }
 
-export function isNonEmptyArray<A>(arr: ArrayLike<A>): arr is NonEmptyArray<A> {
-  return arr.length > 0
+export function isNonEmptyArray<A>(arr: ArrayLike<A> | undefined): arr is NonEmptyArray<A> {
+  return !!arr && Array.isArray(arr) && arr.length > 0
 }

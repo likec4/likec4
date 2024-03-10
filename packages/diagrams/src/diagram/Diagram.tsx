@@ -4,7 +4,7 @@ import { useHookableRef, useUpdateEffect } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'
 import type Konva from 'konva'
 import { clamp, isNil } from 'rambdax'
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
 import { AnimatedStage, Layer } from '../konva'
 import { Edges } from './Edges'
 import type { DiagramApi, DiagramPaddings, DiagramProps } from './types'
@@ -53,8 +53,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
       zoomable = true,
       animate = true,
       initialPosition,
-      onEdgeClick,
-      onNodeClick,
+      onEdgeClick: _onEdgeClick,
+      onNodeClick: _onNodeClick,
       onNodeContextMenu,
       onStageClick,
       onStageContextMenu,
@@ -69,6 +69,10 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
     const immediate = !animate
     const id = diagram.id
 
+    const handlersRef = useSyncedRef({
+      onEdgeClick: _onEdgeClick,
+      onNodeClick: _onNodeClick
+    })
     const containerRef = useRef<HTMLDivElement | null>(null)
     const stageRef = useHookableRef<Konva.Stage | null>(null, value => {
       containerRef.current = value?.container() ?? null
@@ -83,6 +87,20 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
 
     const width = _width ?? diagram.width + paddingLeft + paddingRight
     const height = _height ?? diagram.height + paddingTop + paddingBottom
+
+    const onNodeClick = useCallback(
+      (node: DiagramNode, e: Konva.KonvaEventObject<PointerEvent>) => {
+        handlersRef.current.onNodeClick?.(node, e)
+      },
+      [handlersRef]
+    )
+
+    const onEdgeClick = useCallback(
+      (edge: DiagramEdge, e: Konva.KonvaEventObject<PointerEvent>) => {
+        handlersRef.current.onEdgeClick?.(edge, e)
+      },
+      [handlersRef]
+    )
 
     /**
      * @param centerTo rectangle to center on
@@ -404,8 +422,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
           scaleX={1}
           scaleY={1}
         >
-          <Nodes {...sharedProps} onNodeClick={onNodeClick} />
-          <Edges {...sharedProps} onEdgeClick={onEdgeClick} />
+          <Nodes {...sharedProps} onNodeClick={_onNodeClick ? onNodeClick : undefined} />
+          <Edges {...sharedProps} onEdgeClick={_onEdgeClick ? onEdgeClick : undefined} />
         </Layer>
         <Layer name="top"></Layer>
       </AnimatedStage>
