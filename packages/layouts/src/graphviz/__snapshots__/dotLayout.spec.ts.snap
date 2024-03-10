@@ -105,7 +105,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 268,
+      "height": 284,
       "id": "cloud",
       "inEdges": [],
       "kind": "system",
@@ -134,14 +134,10 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         8,
       ],
       "shape": "rectangle",
-      "size": {
-        "height": 284,
-        "width": 400,
-      },
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 384,
+      "width": 400,
     },
     {
       "children": [
@@ -150,7 +146,7 @@ exports[`dotLayout: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": "Amazon is a cloud provider",
-      "height": 268,
+      "height": 284,
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon.s3",
@@ -179,14 +175,10 @@ exports[`dotLayout: > computedAmazonView 1`] = `
         8,
       ],
       "shape": "rectangle",
-      "size": {
-        "height": 284,
-        "width": 400,
-      },
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 384,
+      "width": 400,
     },
     {
       "children": [],
@@ -729,7 +721,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 2,
       "description": null,
-      "height": 631,
+      "height": 673,
       "id": "cloud",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
@@ -761,14 +753,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         267,
       ],
       "shape": "rectangle",
-      "size": {
-        "height": 673,
-        "width": 1000,
-      },
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 948,
+      "width": 1000,
     },
     {
       "children": [
@@ -778,7 +766,7 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 271,
+      "height": 287,
       "id": "cloud.backend",
       "inEdges": [
         "cloud.frontend.dashboard:cloud.backend.graphql",
@@ -810,14 +798,10 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
         613,
       ],
       "shape": "rectangle",
-      "size": {
-        "height": 287,
-        "width": 920,
-      },
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 884,
+      "width": 920,
     },
     {
       "children": [],
@@ -1543,7 +1527,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 268,
+      "height": 284,
       "id": "cloud",
       "inEdges": [
         "support:cloud.frontend",
@@ -1575,14 +1559,10 @@ exports[`dotLayout: > computedCloudView 1`] = `
         267,
       ],
       "shape": "rectangle",
-      "size": {
-        "height": 284,
-        "width": 919,
-      },
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 883,
+      "width": 919,
     },
     {
       "children": [],
