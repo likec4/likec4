@@ -1,4 +1,4 @@
-import type { DiagramNode, NodeId } from '@likec4/core'
+import type { DiagramEdge, DiagramNode, NodeId } from '@likec4/core'
 import { defaultTheme as theme, nonNullable } from '@likec4/core'
 import { useHookableRef, useUpdateEffect } from '@react-hookz/web'
 import { useSpring } from '@react-spring/konva'

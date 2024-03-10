@@ -1,10 +1,11 @@
 import type { EdgeId, Fqn, Opaque } from '@likec4/core'
-import type { Point } from './types'
 
 export type GvNodeName = Opaque<string, 'GvNodeName'>
 
 export type GvId = Opaque<number, 'GvId'>
 export type Inches = Opaque<string, 'Inches'>
+
+export type Point = [x: number, y: number]
 
 export interface GVPos {
   x: number
@@ -55,28 +56,30 @@ export namespace GraphvizJson {
     points: Point[]
   }
 
-  export type DrawOps =
-    // style
-    | {
+  export namespace DrawOps {
+    export type Style = {
       op: 'S'
       style: string
     }
-    // color
-    | {
+
+    export type BSpline = {
+      op: 'b' | 'B'
+      points: Point[]
+    }
+
+    export type Color = {
       op: 'c'
       grad: string
       color: string
     }
-    // polygon
-    | {
+
+    export type Polygon = {
       op: 'p' | 'P'
       points: Point[]
     }
-    // bspline
-    | {
-      op: 'b' | 'B'
-      points: Point[]
-    }
+  }
+
+  export type DrawOp = DrawOps.Style | DrawOps.BSpline | DrawOps.Color | DrawOps.Polygon
 
   export type LabelDrawOps =
     | {
@@ -145,11 +148,11 @@ export namespace GraphvizJson {
     tail: GvId
     head: GvId
     dir?: 'forward' | 'back' | 'both' | 'none'
-    _draw_: DrawOps[]
+    _draw_: DrawOp[]
     // head arrow
-    _hdraw_?: DrawOps[]
+    _hdraw_?: DrawOp[]
     // tail arrow
-    _tdraw_?: DrawOps[]
+    _tdraw_?: DrawOp[]
     _ldraw_?: LabelDrawOps[]
     fontname: string
     fontsize: string

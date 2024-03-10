@@ -22,8 +22,8 @@ export interface LikeC4ViewProps {
   view: DiagramView
 
   /** Controls color scheme used for styling the flow
-   * @default 'auto'
-   * @example 'auto' | 'light' | 'dark'
+   * @default 'system'
+   * @example 'system' | 'light' | 'dark'
    */
   colorMode?: LikeC4ViewColorMode | undefined
 
@@ -40,8 +40,8 @@ export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
   view: DiagramView
 
   /** Controls color scheme used for styling the flow
-   * @default 'auto'
-   * @example 'auto' | 'light' | 'dark'
+   * @default 'system'
+   * @example 'system' | 'light' | 'dark'
    */
   colorMode?: LikeC4ViewColorMode | undefined
 

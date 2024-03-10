@@ -82,17 +82,17 @@ export const DiagramStateSync = memo(function DiagramStateSyncInner() {
   return null
 })
 
-export const ColorSchemeSync = ({ colorMode }: Pick<LikeC4DiagramProps, 'colorMode'>) => {
-  const update = useUpdateDiagramState()
-  const _computed = useComputedColorScheme('light')
-  const { colorScheme } = useMantineContext()
+// export const ColorSchemeSync = ({ colorMode }: Pick<LikeC4DiagramProps, 'colorMode'>) => {
+//   const update = useUpdateDiagramState()
+//   const _computed = useComputedColorScheme('light')
+//   const { colorScheme } = useMantineContext()
 
-  const computed = colorScheme !== 'auto' ? colorScheme : _computed
-  const scheme = colorMode && colorMode !== 'auto' ? colorMode : computed
+//   const computed = colorScheme !== 'auto' ? colorScheme : _computed
+//   const scheme = colorMode && colorMode !== 's' ? colorMode : computed
 
-  useEffect(() => {
-    update({ colorMode: scheme })
-  }, [scheme])
+//   useEffect(() => {
+//     update({ colorMode: scheme })
+//   }, [scheme])
 
-  return null
-}
+//   return null
+// }

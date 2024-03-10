@@ -42,7 +42,7 @@ type Handlers =
 
 const useDiagramPropsHook = ({
   view,
-  colorMode: _colorMode = 'auto',
+  colorMode = 'system',
   readonly = false,
   pannable = true,
   zoomable = true,
@@ -67,8 +67,7 @@ const useDiagramPropsHook = ({
     hasOnCanvasClick: !!eventHandlers.onCanvasClick || !!eventHandlers.onCanvasDblClick
   }
 
-  const { colorScheme } = useMantineColorScheme()
-  const colorMode: LikeC4ViewColorMode = _colorMode !== 'auto' ? _colorMode : colorScheme
+  // const { colorScheme } = useMantineColorScheme()
 
   const [state, setState] = useSetState({
     viewId: view.id,
@@ -196,7 +195,7 @@ const useDiagramPropsHook = ({
       setState({
         viewportInitialized: true
       })
-      eventHandlersRef.current.onInitialized?.(instance as unknown as XYFlowInstance)
+      // eventHandlersRef.current.onInitialized?.(instance as unknown as XYFlowInstance)
     }, []),
     onNodeClick = useCallback((event: React.MouseEvent, xynode: XYFlowNode) => {
       eventHandlersRef.current.onNodeClick?.({
@@ -278,8 +277,17 @@ const useDiagramPropsHook = ({
 }
 
 export const {
+  /**
+   * @deprecated
+   */
   Provider: DiagramStateProvider,
+  /**
+   * @deprecated
+   */
   useTracked: useDiagramStateContext,
+  /**
+   * @deprecated
+   */
   useTrackedState: useDiagramStateTracked,
   useUpdate: useUpdateDiagramState,
   useSelector: useSelectDiagramState

@@ -72,18 +72,26 @@ export function LikeC4Diagram({
   ...props
 }: LikeC4DiagramProps) {
   useTilg()
-  // console.log({view: structuredClone(view)})
-  const iniitialRef = useRef<ReturnType<typeof fromDiagramView>>()
+  const iniitialRef = useRef<
+    ReturnType<typeof fromDiagramView> & {
+      width: number
+      height: number
+    }
+  >()
   if (!iniitialRef.current) {
-    console.log({ edges1: structuredClone(view.edges) })
-    iniitialRef.current = fromDiagramView(view, nodesDraggable)
-    console.log({ edges2: structuredClone(iniitialRef.current.edges) })
+    iniitialRef.current = {
+      ...fromDiagramView(view, nodesDraggable),
+      width: view.width,
+      height: view.height
+    }
   }
   return (
     <ReactFlowProvider
       fitView
       defaultEdges={iniitialRef.current.edges}
       defaultNodes={iniitialRef.current.nodes}
+      initialWidth={iniitialRef.current.width}
+      initialHeight={iniitialRef.current.height}
     >
       <DiagramStateProvider
         disableHovercards={disableHovercards}

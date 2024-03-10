@@ -70,11 +70,6 @@ export function fromDiagramView(
   const createNode = (node: DiagramNode) => {
     const isCompound = hasAtLeast(node.children, 1)
     const id = ns + node.id
-    // const {
-    //   position,
-    //   width,
-    //   height
-    // } = nonNullable(positioned.get(node.id))
     const position = {
       x: node.position[0],
       y: node.position[1]
@@ -94,7 +89,7 @@ export function fromDiagramView(
       type: isCompound ? 'compound' : 'element',
       data: {
         id,
-        element: structuredClone(node)
+        element: node
       },
       draggable: dragEnabled && (!parent || parent.children.length > 1),
       deletable: false,
@@ -159,7 +154,7 @@ export function fromDiagramView(
       zIndex: level + 1,
       deletable: false,
       data: {
-        edge: structuredClone(edge),
+        edge,
         type: 'bezier',
         controlPoints,
         headPoint: edge.headArrowPoint ?? null,
