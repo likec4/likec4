@@ -30,7 +30,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.11.25",
     "@types/prompts": "^2.4.8",
     "execa": "^8.0.1",
     "prompts": "^2.4.2",
