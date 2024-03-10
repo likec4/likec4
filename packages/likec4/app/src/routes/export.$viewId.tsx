@@ -47,11 +47,7 @@ function ExportPage() {
       <LikeC4View
         view={diagram}
         fitViewPadding={0}
-        reactflowProps={{
-          fitView: false,
-          width: diagram.width,
-          height: diagram.height
-        }}
+        fitView={false}
       />
     </div>
   )

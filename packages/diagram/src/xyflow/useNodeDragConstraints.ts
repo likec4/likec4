@@ -69,29 +69,29 @@ class Compound extends Rect {
       [-1, this.minX]
     )
     const { weak } = Strength
-    this.solver.createConstraint(leftPadding, Operator.Ge, 32)
-    this.solver.createConstraint(leftPadding, Operator.Eq, 32, weak)
+    this.solver.createConstraint(leftPadding, Operator.Ge, 40)
+    this.solver.createConstraint(leftPadding, Operator.Eq, 40, weak)
 
     const topPadding = new Expr(
       rect.minY,
       [-1, this.minY]
     )
-    this.solver.createConstraint(topPadding, Operator.Ge, 52)
-    this.solver.createConstraint(topPadding, Operator.Eq, 52, weak)
+    this.solver.createConstraint(topPadding, Operator.Ge, 60)
+    this.solver.createConstraint(topPadding, Operator.Eq, 60, weak)
 
     const rightPadding = new Expr(
       this.maxX,
       [-1, rect.maxX]
     )
-    this.solver.createConstraint(rightPadding, Operator.Ge, 32)
-    this.solver.createConstraint(rightPadding, Operator.Eq, 32, weak)
+    this.solver.createConstraint(rightPadding, Operator.Ge, 40)
+    this.solver.createConstraint(rightPadding, Operator.Eq, 40, weak)
 
     const bottomPadding = new Expr(
       this.maxY,
       [-1, rect.maxY]
     )
-    this.solver.createConstraint(bottomPadding, Operator.Ge, 32)
-    this.solver.createConstraint(bottomPadding, Operator.Eq, 32, weak)
+    this.solver.createConstraint(bottomPadding, Operator.Ge, 40)
+    this.solver.createConstraint(bottomPadding, Operator.Eq, 40, weak)
   }
 }
 

@@ -62,6 +62,7 @@ const edgeTypes = {
 
 export function LikeC4Diagram({
   view,
+  fitView = true,
   readonly = false,
   controls = !readonly,
   nodesDraggable = !readonly,
@@ -87,7 +88,7 @@ export function LikeC4Diagram({
   }
   return (
     <ReactFlowProvider
-      fitView
+      fitView={fitView}
       defaultEdges={iniitialRef.current.edges}
       defaultNodes={iniitialRef.current.nodes}
       initialWidth={iniitialRef.current.width}
@@ -131,6 +132,7 @@ function LikeC4DiagramWithState({
   children,
   defaultNodes,
   defaultEdges,
+  fitView = true,
   colorMode = 'system',
   readonly = false,
   pannable = true,
@@ -169,9 +171,9 @@ function LikeC4DiagramWithState({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
-      maxZoom={zoomable ? 1.9 : 1}
-      minZoom={zoomable ? 0.1 : 1}
-      fitView
+      maxZoom={zoomable || fitView ? 1.9 : 1}
+      minZoom={zoomable || fitView ? 0.1 : 1}
+      fitView={fitView}
       fitViewOptions={{
         minZoom: 0.1,
         maxZoom: 1,
@@ -182,7 +184,6 @@ function LikeC4DiagramWithState({
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
-      {...(!pannable && { [`data-likec4-no-pan`]: '' })}
       elementsSelectable={nodesSelectable}
       {...(!nodesSelectable && {
         selectionKeyCode: null

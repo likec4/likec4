@@ -3,8 +3,6 @@ import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useState } from 'react'
-import { useUpdateEffect } from '../hooks'
-import { useDiagramStateTracked } from '../state'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 

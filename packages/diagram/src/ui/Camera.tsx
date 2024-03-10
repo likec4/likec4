@@ -13,7 +13,7 @@ import {
 import { memo, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import useTilg from 'tilg'
-import { useDiagramStateTracked } from '../state'
+import { useDiagramState } from '../state2'
 import { distance } from '../utils'
 import { useXYFlow } from '../xyflow/hooks'
 import type { XYFlowNode } from '../xyflow/types'
@@ -36,10 +36,10 @@ const CameraMemo = memo(function Camera() {
   const reactflow = useXYFlow()
   const updateNd = useUpdateNodeInternals()
 
-  const editor = useDiagramStateTracked()
-  const padding = editor.fitViewPadding
-  const viewId = editor.viewId
-  const fitOnSelect = editor.fitOnSelect
+  const editor = useDiagramState()
+  const padding = 0 // editor.fitViewPadding
+  const viewId = '' // editor.viewId
+  const fitOnSelect: boolean = false // editor.fitOnSelect
 
   const previousViewport = useRef<Viewport | null>(null)
   const isZoomPendingRef = useRef(false)

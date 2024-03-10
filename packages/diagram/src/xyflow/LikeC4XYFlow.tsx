@@ -1,19 +1,9 @@
 import { isEqualReact } from '@react-hookz/deep-equal'
-import { Background, Controls, ReactFlow, type ReactFlowProps } from '@xyflow/react'
-import { memo, useCallback, useRef } from 'react'
-import useTilg from 'tilg'
-import { useDiagramStateTracked } from '../state/state'
-import { Camera, OptionsPanel } from '../ui'
+import { memo } from 'react'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
-import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
-import { useLayoutConstraints as useNodeDragConstraints } from './useNodeDragConstraints'
-
-export type LikeC4XYFlowProps = Pick<
-  ReactFlowProps,
-  'fitView' | 'fitViewOptions' | 'colorMode' | 'maxZoom' | 'minZoom' | 'className' | 'width' | 'height'
->
+import { XYFlowEdge, XYFlowNode } from './types'
 
 type DefaultData = {
   defaultNodes?: XYFlowNode[] | undefined
@@ -28,10 +18,10 @@ const edgeTypes = {
   relationship: RelationshipEdge
 }
 
-export const LikeC4XYFlow = memo<DefaultData & LikeC4XYFlowProps>(function XYFlow({
+export const LikeC4XYFlow = memo<DefaultData>(function XYFlow({
   defaultNodes = [],
   defaultEdges = [],
-  ...props
+  ...propsxx
 }) {
   return null
   // useTilg()

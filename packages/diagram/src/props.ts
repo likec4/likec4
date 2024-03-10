@@ -1,6 +1,5 @@
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { LikeC4XYFlowProps } from './xyflow/LikeC4XYFlow'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
@@ -26,14 +25,17 @@ export interface LikeC4ViewProps {
    * @example 'system' | 'light' | 'dark'
    */
   colorMode?: LikeC4ViewColorMode | undefined
-
+  /**
+   * If set, initial viewport will show all nodes & edges
+   * @default true
+   */
+  fitView?: boolean | undefined
+  /**
   /**
    * Seems like this is percentage of the view size
-   * @default 0.05
+   * @default 0
    */
   fitViewPadding?: number | undefined
-
-  reactflowProps?: LikeC4XYFlowProps | undefined
 }
 
 export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
@@ -71,6 +73,11 @@ export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
    * @default false
    */
   readonly?: boolean | undefined
+  /**
+   * If set, initial viewport will show all nodes & edges
+   * @default true
+   */
+  fitView?: boolean | undefined
   /**
    * Seems like this is percentage of the view size
    * @default 0.05
