@@ -978,7 +978,7 @@ __metadata:
     remeda: "npm:^1.40.1"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
   languageName: unknown
@@ -1026,7 +1026,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-konva: "npm:^18.2.10"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
   peerDependencies:
     react: ^18.2.0
@@ -1074,7 +1074,7 @@ __metadata:
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.4.1"
     tailwindcss-animate: "npm:^1.0.7"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     typescript-plugin-css-modules: "npm:^5.1.0"
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: "npm:8.2.0"
@@ -1104,7 +1104,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
     remeda: "npm:^1.40.1"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
   languageName: unknown
@@ -1119,7 +1119,7 @@ __metadata:
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.40.1"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
   languageName: unknown
@@ -1144,7 +1144,7 @@ __metadata:
     remeda: "npm:^1.40.1"
     strip-indent: "npm:^4.0.0"
     type-fest: "npm:^4.10.3"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     ufo: "npm:^1.3.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
@@ -1171,7 +1171,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.10.3"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.3.1"
     word-wrap: "npm:^1.2.5"
@@ -1198,7 +1198,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.12"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     vite: "npm:^5.1.4"
     vite-tsconfig-paths: "npm:^4.3.1"
     vscode-messenger-webview: "npm:^0.4.5"
@@ -1220,7 +1220,7 @@ __metadata:
     shipjs: "npm:^0.26.3"
     tsx: "npm:^4.7.1"
     turbo: "npm:^1.12.5"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     vite: "npm:^5.1.4"
     vitest: "npm:^1.3.1"
   languageName: unknown
@@ -5443,7 +5443,7 @@ __metadata:
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
     tsx: "npm:^4.7.1"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     unbuild: "npm:^2.0.0"
   bin:
     create-likec4: index.js
@@ -9046,7 +9046,7 @@ __metadata:
     rambdax: "npm:^9.1.1"
     shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
@@ -9107,7 +9107,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.1"
     type-fest: "npm:^4.10.3"
-    typescript: "npm:^5.3.3"
+    typescript: "npm:^5.4.2"
     typescript-plugin-css-modules: "npm:^5.1.0"
     vite: "npm:^5.1.4"
     vitest: "npm:^1.3.1"
@@ -15025,6 +15025,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^5.4.2":
+  version: 5.4.2
+  resolution: "typescript@npm:5.4.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/f8cfdc630ab1672f004e9561eb2916935b2d267792d07ce93e97fc601c7a65191af32033d5e9c0169b7dc37da7db9bf320f7432bc84527cb7697effaa4e4559d
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
   resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
@@ -15032,6 +15042,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.4.2#optional!builtin<compat/typescript>":
+  version: 5.4.2
+  resolution: "typescript@patch:typescript@npm%3A5.4.2#optional!builtin<compat/typescript>::version=5.4.2&hash=5adc0c"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/f5f9a4133c2670761f0166eae5b3bafbc4a3fc24f0f42a93c9c893d9e9d6e66ea066969c5e7483fa66b4ae0e99125592553f3b92fd3599484de8be13b0615176
   languageName: node
   linkType: hard
 
