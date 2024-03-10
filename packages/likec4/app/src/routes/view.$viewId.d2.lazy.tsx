@@ -15,7 +15,17 @@ function ViewAsD2() {
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsD2">
       <Panel>
-        <ScrollArea>
+        <ScrollArea
+          h={'100%'}
+          p={4}
+          styles={{
+            root: {
+              borderRadius: 6
+            },
+            viewport: {
+              borderRadius: 6
+            }
+          }}>
           <Code block>
             {source}
           </Code>
@@ -28,7 +38,7 @@ function ViewAsD2() {
         }}
       />
       <Panel>
-        <ScrollArea>
+        <ScrollArea h={'100%'}>
         </ScrollArea>
       </Panel>
     </PanelGroup>

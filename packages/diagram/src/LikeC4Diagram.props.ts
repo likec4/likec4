@@ -1,6 +1,6 @@
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
-import type { SetRequired, Simplify } from 'type-fest'
-import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from './xyflow/types'
+import type { Exact, SetRequired, Simplify } from 'type-fest'
+import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
@@ -15,14 +15,14 @@ export type OnEdgeClick = (args: { relation: DiagramEdge; xyedge: XYFlowEdge; ev
  */
 export type OnCanvasClick = (event: React.MouseEvent) => void
 
-export type LikeC4ViewColorMode = 'system' | 'light' | 'dark'
+export type LikeC4ViewColorMode = 'light' | 'dark'
 
 export interface LikeC4ViewProps {
   view: DiagramView
 
-  /** Controls color scheme used for styling the flow
-   * @default 'system'
-   * @example 'system' | 'light' | 'dark'
+  /**
+   * Controls color scheme used for styling the мшуц
+   * by default inherits from MantineProvider
    */
   colorMode?: LikeC4ViewColorMode | undefined
   /**
@@ -38,7 +38,7 @@ export interface LikeC4ViewProps {
   fitViewPadding?: number | undefined
 }
 
-export interface LikeC4DiagramProps extends LikeC4DiagramEventHandlers {
+export interface LikeC4DiagramProps {
   view: DiagramView
 
   /** Controls color scheme used for styling the flow
@@ -107,4 +107,8 @@ export interface LikeC4DiagramEventHandlers {
   // onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined
   // onMoveStart?: OnMoveStart | undefined
   // onMoveEnd?: OnMoveEnd | undefined
+}
+// Guard, Ensure that object contains only event handlers
+export function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
+  return handlers
 }

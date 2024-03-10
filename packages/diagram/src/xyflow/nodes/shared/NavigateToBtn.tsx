@@ -2,9 +2,10 @@ import { invariant } from '@likec4/core'
 import { ActionIcon } from '@mantine/core'
 import clsx from 'clsx'
 import { ZoomIn } from '../../../icons'
-import type { DiagramNodeWithNavigate } from '../../../props'
-import { useDiagramState } from '../../../state2'
+import type { DiagramNodeWithNavigate } from '../../../LikeC4Diagram.props'
+import { useDiagramState } from '../../../state'
 import { useXYFlow } from '../../hooks'
+import { useXYFLowEventHandlers } from '../../XYFLowEventHandlers'
 
 export type NavigateToBtnProps = {
   xynodeId: string
@@ -41,8 +42,7 @@ export type NavigateToBtnProps = {
 // } satisfies Variants
 
 export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
-  const xyflow = useXYFlow()
-  const onNavigateTo = useDiagramState().onNavigateTo
+  const { onNavigateTo } = useXYFLowEventHandlers()
   return (
     <ActionIcon
       className={clsx('nodrag nopan', className)}
@@ -51,13 +51,7 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
       onClick={(event) => {
         event.stopPropagation()
         event.preventDefault()
-        const xynode = xyflow.getNode(xynodeId)
-        invariant(xynode, 'xynode should be defined')
-        onNavigateTo({
-          xynode,
-          element: xynode.data.element as DiagramNodeWithNavigate,
-          event
-        })
+        onNavigateTo(xynodeId, event)
       }}
     >
       <ZoomIn />

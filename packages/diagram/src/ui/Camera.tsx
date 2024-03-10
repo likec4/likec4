@@ -13,10 +13,10 @@ import {
 import { memo, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import useTilg from 'tilg'
-import { useDiagramState } from '../state2'
-import { distance } from '../utils'
+import { useDiagramState } from '../state'
 import { useXYFlow } from '../xyflow/hooks'
 import type { XYFlowNode } from '../xyflow/types'
+import { distance } from '../xyflow/utils'
 
 const selector = (state: ReactFlowState) => {
   return {

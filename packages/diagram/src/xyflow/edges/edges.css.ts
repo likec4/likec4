@@ -5,17 +5,17 @@ import { mantine, vars, xyvars } from '../../theme'
 export const container = style({
   vars: {
     [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor} 50%, white)`,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
     '--text-color': vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor} 75%, transparent)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 75%)`,
     [xyvars.edge.strokeWidth]: '2'
   }
 })
 
 globalStyle(`${container}[data-edge-hovered='true']`, {
   vars: {
-    [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor} 70%, white)`
+    [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`
   }
 })
 
@@ -64,14 +64,14 @@ export const edgeLabel = style({
     [mantine.darkSelector]: {
       mixBlendMode: 'luminosity',
       vars: {
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor} 50%, transparent)`
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
       }
     },
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: 'scale(1.1)',
       vars: {
-        '--text-color': `color-mix(in srgb, ${vars.relation.labelColor} 20%, white)`
+        '--text-color': `color-mix(in srgb, ${vars.relation.labelColor}, white 50%)`
       }
     },
     '&::before': {

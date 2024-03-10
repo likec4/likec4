@@ -58,3 +58,10 @@ export const cssDisableBg = style({
 globalStyle(`${cssDisableBg} .react-flow__attribution`, {
   display: 'none'
 })
+
+export const cssReactFlow = style({
+  backgroundColor: 'var(--color-page-background)',
+  vars: {
+    '--xy-background-color': 'var(--color-page-background)'
+  }
+})

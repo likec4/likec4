@@ -11,7 +11,7 @@ import {
 } from '@likec4/core'
 import { getBezierEdgeCenter } from '@xyflow/react'
 import { hasAtLeast, isNil } from 'remeda'
-import type { XYFlowEdge, XYFlowNode } from '../xyflow/types'
+import type { XYFlowData, XYFlowEdge, XYFlowNode } from '../xyflow/types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
@@ -52,9 +52,7 @@ function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) 
   return node.children.length > 0 ? 0 : node.level + 1
 }
 
-type XYFlowData = { nodes: XYFlowNode[]; edges: XYFlowEdge[] }
-
-export function fromDiagramView(
+export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'nodes' | 'edges'>,
   dragEnabled = true
 ): XYFlowData {

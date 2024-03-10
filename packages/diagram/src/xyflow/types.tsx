@@ -67,3 +67,5 @@ export namespace XYFlowEdge {
 }
 
 export type XYFlowInstance = ReactFlowInstance<XYFlowNode, XYFlowEdge>
+
+export type XYFlowData = { nodes: XYFlowNode[]; edges: XYFlowEdge[] }

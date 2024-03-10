@@ -1,5 +1,5 @@
 import { LikeC4Diagram } from './LikeC4Diagram'
-import { type LikeC4ViewProps } from './props'
+import { type LikeC4ViewProps } from './LikeC4Diagram.props'
 
 export function LikeC4View({
   view,

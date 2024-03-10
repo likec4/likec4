@@ -5,7 +5,7 @@ import type { ReactFlowProps, XYPosition } from '@xyflow/react'
 import { deepEqual as eq } from 'fast-equals'
 import { type Ref, type RefObject, useMemo, useRef } from 'react'
 import { isNil } from 'remeda'
-import { type XYFlowInstance, XYFlowNode } from './types'
+import { type XYFlowInstance, XYFlowNode } from '../types'
 
 abstract class Rect {
   id!: string

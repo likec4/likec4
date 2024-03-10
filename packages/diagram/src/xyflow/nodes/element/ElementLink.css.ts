@@ -38,7 +38,7 @@ export const trigger = style({
   paddingLeft: 5,
   paddingRight: 5,
   borderRadius: 4,
-  backgroundColor: `color-mix(in srgb, ${vars.element.stroke} 80%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${vars.element.stroke}, transparent 20%)`,
   transition: 'all 180ms ease-out',
   opacity: 0.85,
   selectors: {

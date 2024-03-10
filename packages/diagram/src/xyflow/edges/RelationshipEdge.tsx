@@ -10,8 +10,8 @@ import { useCallback } from 'react'
 import { memo } from 'react-tracked'
 import { hasAtLeast } from 'remeda'
 import useTilg from 'tilg'
-import { ZIndexes } from '../../const'
-import { useDiagramStateSelector } from '../../state2'
+import { useDiagramStateSelector } from '../../state'
+import { ZIndexes } from '../const'
 import { useXYFlow } from '../hooks'
 import { type RelationshipData, XYFlowNode } from '../types'
 import * as css from './edges.css'
@@ -71,8 +71,7 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   style,
   source,
   target,
-  interactionWidth,
-  ...xyedge
+  interactionWidth
 }) {
   const xyflow = useXYFlow()
   const isModified = useStore(
