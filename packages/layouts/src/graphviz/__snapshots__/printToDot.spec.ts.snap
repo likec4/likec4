@@ -9,11 +9,11 @@ exports[`printToDot > computedAmazonView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.25;
-  ranksep = 1.25;
-  pack = 90;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 200;
   packmode = "array_3";
-  searchsize = 50;
+  pad = 0.139;
   graph [
     fontname = "Helvetica";
     fontsize = 13;
@@ -50,7 +50,7 @@ exports[`printToDot > computedAmazonView 1`] = `
     fillcolor = "#194b9e";
     color = "#1b3d88";
     style = "filled";
-    margin = 32;
+    margin = 40;
     fontcolor = "#bfdbfeb3";
     label = <<B>CLOUD</B>>;
     "backend" [
@@ -67,7 +67,7 @@ exports[`printToDot > computedAmazonView 1`] = `
     fillcolor = "#194b9e";
     color = "#1b3d88";
     style = "filled";
-    margin = 32;
+    margin = 40;
     fontcolor = "#bfdbfeb3";
     label = <<B>AMAZON</B>>;
     "s3" [
@@ -97,11 +97,11 @@ exports[`printToDot > computedCloud3levels 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.25;
-  ranksep = 1.25;
-  pack = 90;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 200;
   packmode = "array_3";
-  searchsize = 50;
+  pad = 0.139;
   graph [
     fontname = "Helvetica";
     fontsize = 13;
@@ -156,7 +156,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
     fillcolor = "#1a468d";
     color = "#1c3979";
     style = "filled";
-    margin = 32;
+    margin = 40;
     fontcolor = "#bfdbfeb3";
     label = <<B>CLOUD</B>>;
     "adminpanel" [
@@ -180,7 +180,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
       fillcolor = "#194b9e";
       color = "#1b3d88";
       style = "filled";
-      margin = 32;
+      margin = 40;
       fontcolor = "#bfdbfeb3";
       label = <<B>BACKEND</B>>;
       "graphql" [
@@ -198,7 +198,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
         penwidth = 2;
         shape = "cylinder";
         label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="25"><FONT POINT-SIZE="20" COLOR="#eff6ff">Backend Storage</FONT></TD></TR></TABLE></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The backend storage is a component that</FONT></TD></TR>,<TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">stores data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-        group = "cloud";
       ];
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
@@ -247,11 +246,11 @@ exports[`printToDot > computedCloudView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.25;
-  ranksep = 1.25;
-  pack = 90;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 200;
   packmode = "array_3";
-  searchsize = 50;
+  pad = 0.139;
   graph [
     fontname = "Helvetica";
     fontsize = 13;
@@ -306,7 +305,7 @@ exports[`printToDot > computedCloudView 1`] = `
     fillcolor = "#194b9e";
     color = "#1b3d88";
     style = "filled";
-    margin = 32;
+    margin = 40;
     fontcolor = "#bfdbfeb3";
     label = <<B>CLOUD</B>>;
     "frontend" [
@@ -358,11 +357,11 @@ exports[`printToDot > computedIndexView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.25;
-  ranksep = 1.25;
-  pack = 90;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 200;
   packmode = "array_3";
-  searchsize = 50;
+  pad = 0.139;
   graph [
     fontname = "Helvetica";
     fontsize = 13;
