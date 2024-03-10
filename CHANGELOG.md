@@ -1,3 +1,19 @@
+# [0.60.0](https://github.com/likec4/likec4/compare/v0.58.0...v0.60.0) (2024-03-10)
+
+### 🚀 Features
+- **Relations with container elements** [#530](https://github.com/likec4/likec4/issues/530)  
+   Relations with container elements were always used to layout diagrams but were not shown as they sometimes looked quite weird.
+   While solving [#614](https://github.com/likec4/likec4/issues/614) it was figured out:
+  - Sometimes, Graphviz fails to ["group"](https://graphviz.org/docs/attrs/group/) more than 5 nodes (or some extra heuristics required)
+  - Relations with containers look much better without hard [minlen](https://graphviz.org/docs/attrs/minlen/)
+  - Results from Graphviz WASM and its binary version can be significantly different
+    
+> Compare results by starting two CLIs (with and without `--use-dot-bin`)
+
+### Bug Fixes
+
+- decrease the number of nodes to group 7 -> 5, closes [#614](https://github.com/likec4/likec4/issues/614)
+
 # [0.58.0](https://github.com/likec4/likec4/compare/v0.57.1...v0.58.0) (2024-03-08)
 
 ### 🚀 Features
