@@ -1047,7 +1047,7 @@ __metadata:
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1100,7 +1100,7 @@ __metadata:
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
     remeda: "npm:^1.40.1"
@@ -1131,7 +1131,7 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@types/object-hash": "npm:^3.0.6"
     debounce-fn: "npm:^6.0.0"
     execa: "npm:^8.0.1"
@@ -1161,7 +1161,7 @@ __metadata:
     "@hpcc-js/wasm": "npm:^2.16.0"
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
@@ -1186,7 +1186,7 @@ __metadata:
     "@likec4/diagrams": "workspace:*"
     "@react-hookz/deep-equal": "npm:^1.0.4"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.77.0"
@@ -1209,7 +1209,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/workspaces@workspace:."
   dependencies:
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@vitest/ui": "npm:^1.3.1"
     dprint: "npm:^0.45.0"
     execa: "npm:^8.0.1"
@@ -3726,7 +3726,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.11.19":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
   version: 20.11.20
   resolution: "@types/node@npm:20.11.20"
   dependencies:
@@ -3739,6 +3739,15 @@ __metadata:
   version: 16.18.82
   resolution: "@types/node@npm:16.18.82"
   checksum: 10/baf1f8bb6f743c7d7bf3da24ccb9cd21676a74a7a03726344fd212db4cff376077cd31df8eeab3d4d4d741d2d3ee0bf2a8cb3f9cf89cca4e4b9e27e53ef1283e
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.25":
+  version: 20.11.25
+  resolution: "@types/node@npm:20.11.25"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10/861265f1bbb151404bd8842b595f027a4ff067c61ecff9a37b9f7f53922c18dd532c8e795e8e7675dd8dba056645623fd2b9848d5ef72863ec3609096cd2923e
   languageName: node
   linkType: hard
 
@@ -5438,7 +5447,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
@@ -9073,7 +9082,7 @@ __metadata:
     "@radix-ui/themes": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/mermaid": "npm:^9.2.0"
-    "@types/node": "npm:^20.11.19"
+    "@types/node": "npm:^20.11.25"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
