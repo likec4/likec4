@@ -1,3 +1,9 @@
+# [0.60.0](https://github.com/likec4/likec4/compare/v0.58.0...v0.60.0) (2024-03-10)
+
+### Features
+
+- relations with container elements ([199f5ee](https://github.com/likec4/likec4/commit/199f5ee79edf62cfcf6f4d966d5e3f8850b10d8f)), closes [#614](https://github.com/likec4/likec4/issues/614) [#530](https://github.com/likec4/likec4/issues/530)
+
 # [0.58.0](https://github.com/likec4/likec4/compare/v0.57.1...v0.58.0) (2024-03-08)
 
 ### 🚀 Features
