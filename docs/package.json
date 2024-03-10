@@ -1,6 +1,6 @@
 {
   "name": "@likec4/docs-website",
-  "version": "0.58.0",
+  "version": "0.60.0",
   "private": true,
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
@@ -62,7 +62,7 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.11.25",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/vscode": "~1.77.0",
@@ -71,7 +71,7 @@
     "postcss": "^8.4.35",
     "remark-code-import": "^1.2.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.2",
     "typescript-plugin-css-modules": "^5.1.0"
   }
 }

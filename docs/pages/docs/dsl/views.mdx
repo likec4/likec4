@@ -28,8 +28,8 @@ views {
 View's name is used as a filename during the export, and a URL part for the sharing, so better to define it.
 
 <Info>
-`index` is a special view, and is rendered by default if no view name is specified.  
-If not defined, it will be generated for top-level elements
+  `index` is a special view, and is rendered by default if no view name is specified. If not defined, it will be
+  generated for top-level elements
 </Info>
 
 Views may have a title, description, tags and links (same as [model element](./model#element)):
@@ -83,7 +83,7 @@ views {
 
   view {
     // on click navigates to 'view1', because it is the default view for 'cloud.backend'
-    include cloud.backend 
+    include cloud.backend
   }
 
 }
@@ -168,16 +168,6 @@ include element.tag = #next
 include element.tag != #V2
 ```
 
-<Info>
-**Limitation**  
-Relations with container elements are not rendered yet. Working on it...
-</Info>
-
-<Warning>
-**TODO:**  
-Document why relationships predicates are awesome
-</Warning>
-
 Wildcard may be used to reference "everything", but it depends on the context.
 
 ```likec4
@@ -195,6 +185,11 @@ view of cloud.backend {
 
 Predicates are applied in same the order as defined in view.  
 `exclude` applies only to elements/relationships included before.
+
+<Info>
+  Rules order of the rules is significant (especially for "implicit" relationships) Play with the order to get the
+  desired result.
+</Info>
 
 ```likec4
 view of bigbank {
@@ -244,9 +239,7 @@ view apiApp of internetBankingSystem.apiApplication {
 }
 ```
 
-<Info>
-[Custom properties](#custom-properties) have higher priority than style rules.
-</Info>
+<Info>[Custom properties](#custom-properties) have higher priority than style rules.</Info>
 
 ## Extend views
 
@@ -258,8 +251,8 @@ views {
   view view1 {
     include *
   }
-  
-  view view2 extends view1 {  
+
+  view view2 extends view1 {
     title 'Same as View1, but with more details'
 
     style * {
@@ -268,11 +261,11 @@ views {
 
     include some.backend
   }
-  
+
   // cascade inheritance
   view view3 extends view2 {
     title 'Same as View2, but with more details'
-    
+
     include * -> some.backend
   }
 
@@ -290,8 +283,8 @@ views {
     title 'Backend components'
   }
 
-  view view2 extends view1 {  
-    include api // ✅ This is OK, references 'cloud.backend.api'  
+  view view2 extends view1 {
+    include api // ✅ This is OK, references 'cloud.backend.api'
   }
 
 }

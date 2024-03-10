@@ -4,10 +4,11 @@ import k from 'picocolors'
 import { clamp } from 'rambdax'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import pkg from '../../package.json' assert { type: 'json' }
 import buildCmd from './build'
+import codegenCmd from './codegen'
 import exportCmd from './export'
 import previewCmd from './preview'
-import codegenCmd from './codegen'
 import serveCmd from './serve'
 
 const cli = yargs(hideBin(process.argv))
@@ -19,7 +20,7 @@ const cli = yargs(hideBin(process.argv))
   .command(exportCmd)
   .command(codegenCmd)
   .help('help')
-  .version()
+  .version(pkg.version)
   .alias('v', 'version')
   .alias('h', 'help')
   .demandCommand(1, 'Please run with valid command')
