@@ -1,7 +1,7 @@
 import { type ElementShape, nonexhaustive } from '@likec4/core'
+import { deepEqual as equals } from 'fast-equals'
 import { memo } from 'react'
-import { equals } from 'remeda'
-import * as css from './element.css'
+import { fillElementFill, fillMixStroke } from './element.css'
 
 function cylinderSVGPath(diameter: number, height: number, tilt = 0.0725) {
   const radius = Math.round(diameter / 2)
@@ -74,10 +74,10 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
             width={w}
             height={h}
             rx={6}
-            className={css.fillMixStroke}
+            className={fillMixStroke}
             strokeWidth={0}
           />
-          <g className={css.fillElementFill} strokeWidth={0}>
+          <g className={fillElementFill} strokeWidth={0}>
             <circle cx={17} cy={h / 2} r={12} />
             <rect x={33} y={12} width={w - 44} height={h - 24} rx={5} />
           </g>
@@ -91,10 +91,10 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
             width={w}
             height={h}
             rx={6}
-            className={css.fillMixStroke}
+            className={fillMixStroke}
             strokeWidth={0}
           />
-          <g className={css.fillElementFill} strokeWidth={0}>
+          <g className={fillElementFill} strokeWidth={0}>
             <circle cx={16} cy={17} r={7} />
             <circle cx={36} cy={17} r={7} />
             <circle cx={56} cy={17} r={7} />
@@ -119,7 +119,7 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
             width={PersonIcon.width}
             height={PersonIcon.height}
             viewBox={`0 0 ${PersonIcon.width} ${PersonIcon.height}`}
-            className={css.fillMixStroke}
+            className={fillMixStroke}
           >
             <path
               strokeWidth={0}
@@ -134,7 +134,7 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} className={css.fillMixStroke} strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry - 0.75} rx={rx} className={fillMixStroke} strokeWidth={2} />
         </>
       )
     }
@@ -144,7 +144,7 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
       return (
         <>
           <path d={path} strokeWidth={2} />
-          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} className={css.fillMixStroke} strokeWidth={2} />
+          <ellipse cx={rx} cy={ry} ry={ry} rx={rx - 0.75} className={fillMixStroke} strokeWidth={2} />
         </>
       )
     }
@@ -173,13 +173,10 @@ export const SelectedIndicator = memo<ElementShapeSvgProps>(({
   h
 }) => {
   switch (shape) {
-    case 'queue': {
-      const { path } = queueSVGPath(w, h)
-      return <path d={path} />
-    }
+    case 'queue':
     case 'storage':
     case 'cylinder': {
-      const { path } = cylinderSVGPath(w, h)
+      const { path } = shape === 'queue' ? queueSVGPath(w, h) : cylinderSVGPath(w, h)
       return <path d={path} />
     }
     default: {

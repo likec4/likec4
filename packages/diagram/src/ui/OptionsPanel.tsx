@@ -48,7 +48,7 @@ const OptionsPanelMemo = memo(function OptionsPanel() {
             transformOrigin: 'center right'
           }}
         >
-          <Card shadow="sm">
+          <Card shadow="sm" autoFocus={false}>
             <NodeOptions selectedNodeIds={selectedNodes} />
             {
               /* <Divider mb={'xs'} label="shape" labelPosition="left" />

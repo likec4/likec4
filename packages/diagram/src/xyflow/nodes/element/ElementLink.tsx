@@ -36,21 +36,21 @@ export function ElementLink({
         <HoverCard.Target>
           <UnstyledButton className={clsx('nodrag nopan', css.trigger)}>
             <Link />
-            <span>link</span>
+            <span>links</span>
           </UnstyledButton>
         </HoverCard.Target>
         <HoverCard.Dropdown p={'xs'}>
           <Stack onClick={e => e.stopPropagation()} gap={'xs'}>
             {element.links.map((link, i) => (
               <Group key={link} wrap="nowrap" gap={'sm'}>
-                <Box flex={'1'} style={{ overflow: 'clip', maxWidth: 300 }}>
+                <Box flex={'1'} style={{ overflow: 'clip', maxWidth: 240 }}>
                   <Anchor href={link} target="_blank" fz="13" truncate="end">
                     {link}
                   </Anchor>
                 </Box>
                 <CopyButton value={link}>
                   {({ copied, copy }) => (
-                    <Button size="xs" onClick={copy} color={copied ? 'teal' : 'gray'}>
+                    <Button size="compact-xs" fz={'12'} onClick={copy} color={copied ? 'teal' : 'gray'}>
                       {copied ? 'Copied' : 'Copy'}
                     </Button>
                   )}

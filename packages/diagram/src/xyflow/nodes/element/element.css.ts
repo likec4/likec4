@@ -74,7 +74,7 @@ export const title = style({
   textAlign: 'center',
   fontWeight: 500,
   fontSize: rem(19),
-  lineHeight: 1.2,
+  lineHeight: 1.22,
   textWrap: 'balance',
   color: fallbackVar(vars.element.hiContrast)
 })
@@ -86,7 +86,7 @@ export const description = style({
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: rem(14),
-  lineHeight: 1.15,
+  lineHeight: 1.2,
   textAlign: 'center',
   textWrap: 'pretty',
   color: fallbackVar(vars.element.loContrast),
@@ -105,7 +105,13 @@ export const technology = style({
   lineHeight: 1.25,
   textAlign: 'center',
   textWrap: 'balance',
-  color: fallbackVar(vars.element.loContrast)
+  opacity: 0.9,
+  color: fallbackVar(vars.element.loContrast),
+  selectors: {
+    [`${container}:hover &`]: {
+      opacity: 1
+    }
+  }
 })
 
 export const element = style({
@@ -127,7 +133,8 @@ export const element = style({
       gap: rem(6)
     },
     ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
-      paddingLeft: rem(36)
+      paddingLeft: rem(40),
+      paddingRight: rem(20)
     },
     ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       paddingTop: rem(34)
