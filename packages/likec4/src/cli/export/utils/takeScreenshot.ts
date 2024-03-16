@@ -18,13 +18,23 @@ export function mkTakeScreenshotFn({ page, pageUrl, outputDir, logger }: TakeScr
     const url = pageUrl(view)
     logger.info(`${k.cyan('export')} ${view.id} ${k.underline(k.dim(url))}`)
 
-    await page.setViewportSize({
-      width: view.width + padding * 2,
-      height: view.height + padding * 2
-    })
+    try {
+      await page.setViewportSize({
+        width: view.width + padding * 2 + 4,
+        height: view.height + padding * 2 + 4
+      })
+    } catch (error: unknown) {
+      logger.error(`Failed setViewportSize: ${url}\n${error}`, {
+        error: error as any
+      })
+      return
+    }
 
     try {
-      await page.goto(url)
+      await page.goto(url, {
+        timeout: 8000
+      })
+      await page.waitForSelector('.transparent-bg', { timeout: 2000 })
     } catch (error) {
       if (error instanceof Error && error.name === 'TimeoutError') {
         logger.error(`Timeout while loading page: ${url}`)
@@ -35,10 +45,8 @@ export function mkTakeScreenshotFn({ page, pageUrl, outputDir, logger }: TakeScr
     }
 
     try {
-      // Wait for page to be fully loaded
-      await page.waitForLoadState()
       // Wait for network to be idle (if there images to be loaded)
-      await page.waitForLoadState('networkidle', { timeout: 10000 })
+      await page.waitForLoadState('networkidle', { timeout: 15000 })
     } catch (error: unknown) {
       logger.error(`Timeout while waiting for page load state: ${url}\n${error}`, {
         error: error as any
@@ -52,7 +60,7 @@ export function mkTakeScreenshotFn({ page, pageUrl, outputDir, logger }: TakeScr
       await page.screenshot({
         path,
         animations: 'disabled',
-        timeout: 10000,
+        timeout: 15000,
         omitBackground: true
       })
     } catch (error: unknown) {

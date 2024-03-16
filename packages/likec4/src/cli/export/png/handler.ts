@@ -87,8 +87,8 @@ export async function handler({ path, useDotBin, output }: HandlerParams) {
   logger.info(k.cyan(`close chromium`))
   await browser.close()
   logger.info(k.cyan(`stop preview server`))
-  await new Promise<void>((resolve, reject) => {
-    previewServer.httpServer.close(err => (err ? reject(err) : resolve()))
-  })
+  await previewServer.close()
   timer.stopAndLog(`✓ export in `)
+
+  process.exit(0)
 }
