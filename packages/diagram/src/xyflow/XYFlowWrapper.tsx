@@ -1,13 +1,12 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { isEqualReact } from '@react-hookz/deep-equal'
 import { ReactFlow } from '@xyflow/react'
 import clsx from 'clsx'
-import { forwardRef, memo, type PropsWithChildren, type RefObject, useRef } from 'react'
+import { type PropsWithChildren, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
 import { cssDisableBg, cssDisablePan, cssReactFlow } from '../index.css'
-import type { LikeC4DiagramEventHandlers, LikeC4DiagramProps } from '../LikeC4Diagram.props'
-import { useDiagramStateTracked, useUpdateDiagramState } from '../state/DiagramState'
+import type { LikeC4DiagramProps } from '../LikeC4Diagram.props'
+import { useDiagramStateTracked } from '../state/DiagramState'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/use-layout-сonstraints'
 import { CompoundNode } from './nodes/compound'
@@ -175,22 +174,22 @@ export function XYFlowWrapper({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      onInit={(instance: XYFlowInstance) => {
+      onInit={useCallback((instance: XYFlowInstance) => {
         xyflowRef.current = instance
         updateState({ viewportInitialized: true })
-      }}
-      onEdgeMouseEnter={(event, edge) => {
+      }, [])}
+      onEdgeMouseEnter={useCallback((event: React.MouseEvent, edge: XYFlowEdge) => {
         updateState({ hoveredEdgeId: edge.id })
-      }}
-      onEdgeMouseLeave={() => {
+      }, [])}
+      onEdgeMouseLeave={useCallback(() => {
         updateState({ hoveredEdgeId: null })
-      }}
-      onNodeMouseEnter={(event, node) => {
+      }, [updateState])}
+      onNodeMouseEnter={useCallback((event: React.MouseEvent, node: XYFlowNode) => {
         updateState({ hoveredNodeId: node.id })
-      }}
-      onNodeMouseLeave={() => {
+      }, [updateState])}
+      onNodeMouseLeave={useCallback(() => {
         updateState({ hoveredNodeId: null })
-      }}
+      }, [])}
       {...(editor.hasOnContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu,
         onPaneContextMenu: handlers.onPaneContextMenu,
@@ -204,8 +203,7 @@ export function XYFlowWrapper({
       })}
       {...(editor.hasOnEdgeClick && {
         onEdgeClick: handlers.onEdgeClick
-      })}
-    >
+      })}>
       {children}
     </ReactFlow>
   )
