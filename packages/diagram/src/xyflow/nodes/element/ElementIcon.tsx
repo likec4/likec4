@@ -1,6 +1,6 @@
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { XYFlowNode } from '../../types'
-import * as css from './element.css'
+import { elementIcon, iconMaxH } from './element.css'
 
 type ElementIconProps = {
   node: XYFlowNode['data']['element']
@@ -8,8 +8,6 @@ type ElementIconProps = {
   paddingX?: number | undefined
   paddingY?: number | undefined
 }
-
-const { iconMaxH } = css
 
 export function ElementIcon({
   node,
@@ -34,7 +32,7 @@ export function ElementIcon({
 
   return (
     <div
-      className={css.elementIcon}
+      className={elementIcon}
       style={assignInlineVars({ iconMaxH }, {
         iconMaxH: maxIconHeight + 'px'
       })}>

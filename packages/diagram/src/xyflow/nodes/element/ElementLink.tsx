@@ -1,9 +1,9 @@
-import { ActionIcon, Anchor, Box, Button, CopyButton, Group, HoverCard, Stack, UnstyledButton } from '@mantine/core'
+import { Anchor, Box, Button, CopyButton, Group, HoverCard, Stack, UnstyledButton } from '@mantine/core'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { ClipboardCopy, Link } from '../../../icons'
+import { Link } from '../../../icons'
 import type { XYFlowNode } from '../../types'
-import * as css from './ElementLink.css'
+import { elementLink, trigger } from './ElementLink.css'
 
 type ElementLinkProps = {
   element: XYFlowNode['data']['element']
@@ -17,7 +17,7 @@ export function ElementLink({
   }
   return (
     <motion.div
-      className={css.elementLink}
+      className={elementLink}
       whileHover={{
         scale: 1.1
       }}>
@@ -34,7 +34,7 @@ export function ElementLink({
           crossAxis: -10
         }}>
         <HoverCard.Target>
-          <UnstyledButton className={clsx('nodrag nopan', css.trigger)}>
+          <UnstyledButton className={clsx('nodrag nopan', trigger)}>
             <Link />
             <span>links</span>
           </UnstyledButton>
