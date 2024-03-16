@@ -152,8 +152,8 @@ export function XYFlowWrapper({
       {...(!zoomable && {
         zoomActivationKeyCode: null
       })}
-      maxZoom={zoomable || fitView ? 1.9 : 1}
-      minZoom={zoomable || fitView ? 0.1 : 1}
+      maxZoom={zoomable ? 1.9 : 1}
+      minZoom={zoomable ? 0.1 : 1}
       fitView={fitView}
       fitViewOptions={{
         minZoom: 0.1,

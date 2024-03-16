@@ -1,20 +1,67 @@
-import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
+import type {
+  AutoLayoutDirection,
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  ElementShape,
+  Fqn,
+  NonEmptyArray,
+  ThemeColor
+} from '@likec4/core'
 import type { Exact, SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
 export type OnNavigateTo = (
-  args: { element: DiagramNodeWithNavigate; xynode: XYFlowNode; event: React.MouseEvent }
+  event: {
+    element: DiagramNodeWithNavigate
+    xynode: XYFlowNode
+    event: React.MouseEvent
+  }
 ) => void
-export type OnNodeClick = (args: { element: DiagramNode; xynode: XYFlowNode; event: React.MouseEvent }) => void
-export type OnEdgeClick = (args: { relation: DiagramEdge; xyedge: XYFlowEdge; event: React.MouseEvent }) => void
+export type OnNodeClick = (
+  event: {
+    element: DiagramNode
+    xynode: XYFlowNode
+    event: React.MouseEvent
+  }
+) => void
+export type OnEdgeClick = (
+  event: {
+    relation: DiagramEdge
+    xyedge: XYFlowEdge
+    event: React.MouseEvent
+  }
+) => void
 
 /**
  * On pane/canvas click (not on any node or edge)
  */
 export type OnCanvasClick = (event: React.MouseEvent) => void
 
+export namespace Changes {
+  export interface ChangeColor {
+    op: 'change-color'
+    color: ThemeColor
+    targets: NonEmptyArray<Fqn>
+  }
+
+  export interface ChangeShape {
+    op: 'change-shape'
+    shape: ElementShape
+    targets: NonEmptyArray<Fqn>
+  }
+}
+
+export type Change =
+  | Changes.ChangeColor
+  | Changes.ChangeShape
+
+export type ChangeEvent = {
+  changes: NonEmptyArray<Change>
+}
+export type OnChange = (event: ChangeEvent) => void
 export type LikeC4ViewColorMode = 'light' | 'dark'
 
 export interface LikeC4ViewProps {
@@ -95,7 +142,7 @@ export interface LikeC4DiagramProps {
 }
 
 export interface LikeC4DiagramEventHandlers {
-  // onChange?: OnChange | undefined
+  onChange?: OnChange | undefined
   onNavigateTo?: OnNavigateTo | undefined
   onNodeClick?: OnNodeClick | undefined
   onNodeContextMenu?: OnNodeClick | undefined
@@ -104,10 +151,8 @@ export interface LikeC4DiagramEventHandlers {
   onEdgeContextMenu?: OnEdgeClick | undefined
   onCanvasClick?: OnCanvasClick | undefined
   onCanvasDblClick?: OnCanvasClick | undefined
-  // onInitialized?: ((xyflow: XYFlowInstance) => void) | undefined
-  // onMoveStart?: OnMoveStart | undefined
-  // onMoveEnd?: OnMoveEnd | undefined
 }
+
 // Guard, Ensure that object contains only event handlers
 export function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
   return handlers

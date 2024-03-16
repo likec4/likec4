@@ -5,7 +5,15 @@ import type { LikeC4Services } from './module'
 import { nonexhaustive } from '@likec4/core'
 import { URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
-import { buildDocuments, changeOp, computeView, fetchModel, fetchRawModel, locate, onDidChangeModel } from './protocol'
+import {
+  buildDocuments,
+  changeView,
+  computeView,
+  fetchModel,
+  fetchRawModel,
+  locate,
+  onDidChangeModel
+} from './protocol'
 
 export class Rpc {
   constructor(private services: LikeC4Services) {}
@@ -78,8 +86,8 @@ export class Rpc {
       nonexhaustive(params)
     })
 
-    connection.onRequest(changeOp, async ({ change }, _cancelToken) => {
-      return await modelEditor.applyChange(change)
+    connection.onRequest(changeView, async (request, _cancelToken) => {
+      return await modelEditor.applyChange(request)
     })
   }
 }

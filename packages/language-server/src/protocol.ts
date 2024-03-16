@@ -46,34 +46,32 @@ export type LocateParams =
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
 // #endregion
 
-export namespace Changes {
+export namespace ChangeView {
   export interface ChangeColor {
-    viewId: ViewID
     op: 'change-color'
     color: ThemeColor
     targets: NonEmptyArray<Fqn>
   }
 
   export interface ChangeShape {
-    viewId: ViewID
     op: 'change-shape'
     shape: ElementShape
     targets: NonEmptyArray<Fqn>
   }
 
   export interface ChangeAutoLayout {
-    viewId: ViewID
     op: 'change-autolayout'
     layout: AutoLayoutDirection
   }
 }
 
-export type ChangeCommand =
-  | Changes.ChangeColor
-  | Changes.ChangeShape
-  | Changes.ChangeAutoLayout
+export type ChangeView =
+  | ChangeView.ChangeColor
+  | ChangeView.ChangeShape
+  | ChangeView.ChangeAutoLayout
 
-export interface ChangeOpParams {
-  change: ChangeCommand
+export interface ChangeViewRequest {
+  viewId: ViewID
+  changes: NonEmptyArray<ChangeView>
 }
-export const changeOp = new RequestType<ChangeOpParams, Location | null, void>('likec4/change')
+export const changeView = new RequestType<ChangeViewRequest, Location | null, void>('likec4/change-view')

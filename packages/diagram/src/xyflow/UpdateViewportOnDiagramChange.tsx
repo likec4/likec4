@@ -1,3 +1,4 @@
+import type { AutoLayoutDirection } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useNodesInitialized } from '@xyflow/react'
 import { useRef } from 'react'
@@ -6,16 +7,17 @@ import { useXYFlow } from './hooks'
 /**
  * Fits the view when the view changes and nodes are initialized
  */
-export function UpdateViewportOnDiagramChange({ viewId }: { viewId: string }) {
+export function UpdateViewportOnDiagramChange({ viewId, layout }: { viewId: string; layout: AutoLayoutDirection }) {
   const xyflow = useXYFlow()
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
-  const prevViewIdRef = useRef(viewId)
+  const viewLayout = viewId + '_' + layout
+  const prevViewLayoutRef = useRef(viewLayout)
 
   useDebouncedEffect(
     () => {
-      if (!nodeInitialized || prevViewIdRef.current === viewId) {
+      if (!nodeInitialized || prevViewLayoutRef.current === viewLayout) {
         return
       }
       const zoom = xyflow.getZoom()
@@ -23,10 +25,11 @@ export function UpdateViewportOnDiagramChange({ viewId }: { viewId: string }) {
         duration: 400,
         maxZoom: Math.max(1, zoom)
       })
-      prevViewIdRef.current = viewId
+      prevViewLayoutRef.current = viewLayout
     },
-    [nodeInitialized, viewId],
-    30
+    [nodeInitialized, viewLayout],
+    30,
+    500
   )
   return null
 }

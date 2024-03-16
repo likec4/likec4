@@ -12,28 +12,28 @@ import {
   Stack
 } from '@mantine/core'
 import { MoveHorizontalIcon, MoveVerticalIcon, ScanEyeIcon } from 'lucide-react'
-import * as css from './Toolbar.css'
+import { toolbar } from './Toolbar.css'
 import { extensionApi } from './vscode'
 
 export function Toolbar({ view }: { view: DiagramView }) {
   const changeLayout = (layout: AutoLayoutDirection) => () => {
     if (layout === view.autoLayout) return
-    extensionApi.change({
+    extensionApi.change(view.id, {
       op: 'change-autolayout',
-      viewId: view.id,
       layout
     })
   }
 
   const buttonProps = (layout: AutoLayoutDirection) => ({
     size: 'compact-sm',
+    fz: 'xs',
     variant: layout === view.autoLayout ? 'filled' : 'light',
     color: layout === view.autoLayout ? 'blue' : 'gray',
     onClick: changeLayout(layout)
   })
 
   return (
-    <ActionIconGroup className={css.toolbar}>
+    <ActionIconGroup className={toolbar}>
       <HoverCard
         position="bottom-end"
         transitionProps={{
@@ -42,7 +42,7 @@ export function Toolbar({ view }: { view: DiagramView }) {
       >
         <HoverCardTarget>
           <ActionIcon color="gray" variant="light">
-            <ScanEyeIcon />
+            <ScanEyeIcon style={{ width: '70%', height: '70%' }} />
           </ActionIcon>
         </HoverCardTarget>
         <HoverCardDropdown>

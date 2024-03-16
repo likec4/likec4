@@ -34,7 +34,16 @@ function ViewLayout() {
       >
         <Outlet />
       </Box>
-
+      {/* Handle back gesture */}
+      <Box
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: 50,
+          height: '100vh'
+        }}>
+      </Box>
       <ViewHeader />
       <SidebarDrawer opened={opened} onClose={close} />
       <Box

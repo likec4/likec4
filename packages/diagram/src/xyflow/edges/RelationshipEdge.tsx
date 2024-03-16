@@ -1,15 +1,13 @@
 import { invariant, type NonEmptyArray, type Point } from '@likec4/core'
-import { Box, rem, Text } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { isEqualReactSimple } from '@react-hookz/deep-equal'
 import type { EdgeProps } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath, useStore } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual, shallowEqual } from 'fast-equals'
-import { motion } from 'framer-motion'
 import { useCallback } from 'react'
 import { memo } from 'react-tracked'
 import { hasAtLeast } from 'remeda'
-import useTilg from 'tilg'
 import { useDiagramStateSelector } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYFlow } from '../hooks'
@@ -81,7 +79,7 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
       invariant(XYFlowNode.is(sourceNode))
       invariant(XYFlowNode.is(targetNode))
       const isSourceModified = !!sourceNode.computed?.positionAbsolute
-        && !deepEqual(sourceNode.computed.positionAbsolute, {
+        && !shallowEqual(sourceNode.computed.positionAbsolute, {
           x: sourceNode.data.element.position[0],
           y: sourceNode.data.element.position[1]
         })
@@ -89,21 +87,13 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
         return true
       }
       return !!targetNode.computed?.positionAbsolute
-        && !deepEqual(targetNode.computed.positionAbsolute, {
+        && !shallowEqual(targetNode.computed.positionAbsolute, {
           x: targetNode.data.element.position[0],
           y: targetNode.data.element.position[1]
         })
     }, [source, target]),
     deepEqual
   )
-
-  // const [sourceNode, targetNode] = useXYNodesData([xyedge.source, xyedge.target])
-
-  // const isModified = !deepEqual(sourcePos.positionAbsolute, sourcePos.position) || !deepEqual(targetPos.positionAbsolute, targetPos.position)
-  // const isModified `= sourceNode.computed?.positionAbsolute?.x !== sourceNode.data.element.position[0]
-  //   || sourceNode.computed?.positionAbsolute?.y !== sourceNode.data.element.position[1]
-  //   || targetNode.computed?.positionAbsolute?.x !== targetNode.data.element.position[0]
-  //   || targetNode.computed?.positionAbsolute?.y !== targetNode.data.element.position[1]
 
   invariant(data, 'data isd required')
   const {
@@ -152,11 +142,11 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
     labelY = data.label?.bbox.y ?? 0
   }
 
-  useTilg()`
-  ${id}
-  path=${edgePath}
-  isModified=${isModified}
-`
+  //   useTilg()`
+  //   ${id}
+  //   path=${edgePath}
+  //   isModified=${isModified}
+  // `
 
   return (
     <g className={clsx(css.container)} data-likec4-color={color} data-edge-hovered={isHovered}>

@@ -3,7 +3,7 @@ import { Location, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserv
 import { type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
-import type { ChangeCommand } from '../protocol'
+import type { ChangeViewRequest } from '../protocol'
 import { changeViewLayout } from './changeViewLayout'
 import { changeViewStyle } from './changeViewStyle'
 
@@ -24,12 +24,12 @@ export class LikeC4ModelChanges {
     this.locator = services.likec4.ModelLocator
   }
 
-  public async applyChange(change: ChangeCommand): Promise<Location | null> {
+  public async applyChange(changeView: ChangeViewRequest): Promise<Location | null> {
     const lspConnection = this.services.shared.lsp.Connection
     invariant(lspConnection, 'LSP Connection not available')
     let result: Location | null = null
     await this.services.shared.workspace.WorkspaceLock.write(async () => {
-      const { doc, edits } = this.convertToTextEdit(change)
+      const { doc, edits } = this.convertToTextEdit(changeView)
       const textDocument = {
         uri: doc.textDocument.uri,
         version: doc.textDocument.version
@@ -38,7 +38,7 @@ export class LikeC4ModelChanges {
         return
       }
       const applyResult = await lspConnection.workspace.applyEdit({
-        label: `LikeC4: ${change.op}`,
+        label: `LikeC4 - change view ${changeView.viewId}`,
         edit: {
           documentChanges: [
             TextDocumentEdit.create(textDocument, edits)
@@ -57,46 +57,49 @@ export class LikeC4ModelChanges {
     return result
   }
 
-  protected convertToTextEdit(change: ChangeCommand): {
+  protected convertToTextEdit({ viewId, changes }: ChangeViewRequest): {
     doc: ParsedLikeC4LangiumDocument
     edits: TextEdit[]
   } {
-    const lookup = this.locator.locateViewAst(change.viewId)
+    const lookup = this.locator.locateViewAst(viewId)
     if (!lookup) {
-      throw new Error(`View not found: ${change.viewId}`)
+      throw new Error(`View not found: ${viewId}`)
     }
-    switch (change.op) {
-      case 'change-color': {
-        return {
-          doc: lookup.doc,
-          edits: changeViewStyle(this.services, {
+    const edits = [] as TextEdit[]
+    for (const change of changes) {
+      switch (change.op) {
+        case 'change-color': {
+          edits.push(...changeViewStyle(this.services, {
             ...lookup,
             targets: change.targets,
             key: 'color',
             value: change.color
-          })
+          }))
+          break
         }
-      }
-      case 'change-shape':
-        return {
-          doc: lookup.doc,
-          edits: changeViewStyle(this.services, {
+        case 'change-shape': {
+          edits.push(...changeViewStyle(this.services, {
             ...lookup,
             targets: change.targets,
             key: 'shape',
             value: change.shape
-          })
+          }))
+          break
         }
-      case 'change-autolayout':
-        return {
-          doc: lookup.doc,
-          edits: changeViewLayout(this.services, {
+        case 'change-autolayout': {
+          edits.push(...changeViewLayout(this.services, {
             ...lookup,
             layout: change.layout
-          })
+          }))
+          break
         }
-      default:
-        nonexhaustive(change)
+        default:
+          nonexhaustive(change)
+      }
+    }
+    return {
+      doc: lookup.doc,
+      edits
     }
   }
 }

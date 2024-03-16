@@ -4,7 +4,8 @@ import { Box, Dialog } from '@radix-ui/themes'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
-import * as css from './Header.css'
+import { ColorSchemeToggle } from '../ColorSchemeToggle'
+import { cssHeader } from './Header.css'
 import { ShareDialog } from './ShareDialog'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -15,23 +16,23 @@ type HeaderProps = {
 
 export function Header({ diagram }: HeaderProps) {
   return (
-    <header className={css.header}>
+    <header className={cssHeader}>
       <Box>
         {/* <DiagramTitle diagram={diagram} /> */}
       </Box>
 
-      <Group>
+      <Group gap={'sm'}>
         <ViewPageButton />
+        <ColorSchemeToggle />
         <Divider orientation="vertical" />
         <Dialog.Root>
           <Dialog.Trigger>
-            <Button size="sm" leftSection={<IconShare size={14} />}>
+            <Button ml={'xs'} size="sm" leftSection={<IconShare size={14} />}>
               Share
             </Button>
           </Dialog.Trigger>
           <ShareDialog diagram={diagram} />
         </Dialog.Root>
-
         <ExportButton />
       </Group>
     </header>
@@ -54,34 +55,6 @@ export function Header({ diagram }: HeaderProps) {
     // </Flex>
   )
 }
-
-// const viewPages = {
-//   editor: {
-//     route: '/view/$viewId/editor',
-//     icon: (<IconBrandReact opacity={0.7} size={16} />),
-//     title: (<>React</>)
-//   },
-//   react: {
-//     route: '/view/$viewId/react',
-//     icon: (<IconBrandReact opacity={0.7} size={16} />),
-//     title: (<>React <Text component="span" size="xs" c={'dimmed'}>(pre 1.0)</Text></>)
-//   },
-//   dot: {
-//     route: '/view/$viewId/dot',
-//     icon: (<IconFile opacity={0.7} size={16} />),
-//     title: (<>Graphviz <Text component="span" size="xs" c={'dimmed'}>.dot</Text></>)
-//   },
-//   d2: {
-//     route: '/view/$viewId/d2',
-//     icon: (<IconFile opacity={0.7} size={16} />),
-//     title: (<>D2</>)
-//   },
-//   mmd: {
-//     route: '/view/$viewId/mmd',
-//     icon: (<IconFile opacity={0.7} size={16} />),
-//     title: (<>Mermaid</>)
-//   }
-// } as const satisfies Record<string, { route: RegisteredRoute, icon: React.ReactNode, title: React.ReactNode }>
 
 const viewPages = [
   {

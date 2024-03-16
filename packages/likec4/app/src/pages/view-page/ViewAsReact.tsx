@@ -1,10 +1,8 @@
 import type { DiagramView, OnNodeClick } from '@likec4/diagrams'
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
-import { Box } from '@radix-ui/themes'
+import { Box } from '@mantine/core'
 import { useWindowSize } from '@react-hookz/web'
-import { useRouter } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef } from 'react'
-import { $pages } from '../../router'
 import { cn } from '../../utils'
 import styles from './view-page.module.css'
 
@@ -58,7 +56,7 @@ export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
 
   return (
     <Box
-      position={'fixed'}
+      pos={'fixed'}
       inset="0"
       className={cn(
         styles.reactDiagram
@@ -77,13 +75,10 @@ export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
           if (onNodeClick) {
             return onNodeClick(node, event)
           }
-          if (node.navigateTo) {
-            $pages.view.open(node.navigateTo)
-          } else {
-            api.centerOnNode(node, {
-              keepZoom: true
-            })
-          }
+
+          api.centerOnNode(node, {
+            keepZoom: true
+          })
         }}
         onStageClick={_ => ({})}
         onEdgeClick={_ => ({})}

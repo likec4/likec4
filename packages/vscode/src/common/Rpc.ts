@@ -1,19 +1,5 @@
-import type {
-  ComputedView,
-  ElementShape,
-  Fqn,
-  LikeC4RawModel,
-  NonEmptyArray,
-  RelationID,
-  ThemeColor,
-  ViewID
-} from '@likec4/core'
-import type {
-  BuildDocumentsParams,
-  ChangeCommand,
-  ChangeOpParams,
-  LocateParams
-} from '@likec4/language-server/protocol'
+import type { ComputedView, LikeC4RawModel, ViewID } from '@likec4/core'
+import type { BuildDocumentsParams, ChangeViewRequest, LocateParams } from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -34,7 +20,7 @@ const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | n
 const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
 
 const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-const changeOp = new RequestType<ChangeOpParams, Location | null, void>('likec4/change')
+const changeView = new RequestType<ChangeViewRequest, Location | null, void>('likec4/change-view')
 
 // // //#endregion
 
@@ -72,7 +58,7 @@ export class Rpc extends AbstractDisposable {
     return await this.client.sendRequest(locate, params)
   }
 
-  async changeView(change: ChangeCommand) {
-    return await this.client.sendRequest(changeOp, { change })
+  async changeView(req: ChangeViewRequest) {
+    return await this.client.sendRequest(changeView, req)
   }
 }

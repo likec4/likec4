@@ -7,9 +7,24 @@ export const container = style({
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
-    '--text-color': vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 75%)`,
+    '--text-color': xyvars.edge.labelColor,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 30%)`,
+
     [xyvars.edge.strokeWidth]: '2'
+  },
+  selectors: {
+    [mantine.darkSelector]: {
+      // mixBlendMode: 'luminosity',
+      vars: {
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 65%)`
+      }
+    },
+    [mantine.lightSelector]: {
+      // mixBlendMode: 'luminosity',
+      vars: {
+        [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, #000 25%)`
+      }
+    }
   }
 })
 
@@ -18,6 +33,11 @@ globalStyle(`${container}[data-edge-hovered='true']`, {
     [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`
   }
 })
+// globalStyle(`${container}[data-edge-hovered='true']`, {
+//   vars: {
+//     [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 35%)`
+//   },
+// })
 
 globalStyle(`.react-flow__edge.selected ${container}`, {
   vars: {
@@ -55,42 +75,40 @@ export const edgeLabel = style({
   transformOrigin: '50% 50%',
   textAlign: 'left',
   mixBlendMode: 'screen',
-  padding: '3px 6px',
+  padding: '3px 6px 4px 6px',
   width: 'max-content',
+  backgroundColor: xyvars.edge.labelBgColor,
+  borderRadius: '3px',
   selectors: {
-    [mantine.lightSelector]: {
-      mixBlendMode: 'screen'
-    },
-    [mantine.darkSelector]: {
-      mixBlendMode: 'luminosity',
-      vars: {
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
-      }
-    },
+    // [mantine.lightSelector]: {
+    //   mixBlendMode: 'luminosity'
+    // },
+
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
-      transform: 'scale(1.1)',
-      vars: {
-        '--text-color': `color-mix(in srgb, ${vars.relation.labelColor}, white 50%)`
-      }
-    },
-    '&::before': {
-      content: '" "',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: xyvars.edge.labelBgColor,
-      borderRadius: '3px',
-      zIndex: -1
+      transform: 'scale(1.1)'
+      // vars: {
+      //   '--text-color': `color-mix(in srgb, ${vars.relation.labelColor}, white 50%)`
+      // }
     }
+    // '&::before': {
+    //   content: '" "',
+    //   position: 'absolute',
+    //   top: 0,
+    //   left: 0,
+    //   right: 0,
+    //   bottom: 0,
+    //   backgroundColor: xyvars.edge.labelBgColor,
+    //   borderRadius: '3px',
+    //   zIndex: -1
+    // }
   }
 })
 
 export const edgeLabelBody = style({
+  // display: 'inline',
   color: 'var(--text-color)',
   fontSize: rem(12),
-  lineHeight: 1.1,
+  // lineHeight: 1.1,
   transition: 'color 120ms ease-out'
 })

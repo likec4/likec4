@@ -8,7 +8,7 @@ globalStyle(':root', {
   }
 })
 
-export const header = style({
+export const cssHeader = style({
   position: 'fixed',
   top: 0,
   left: 0,

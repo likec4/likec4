@@ -52,7 +52,9 @@ export function LikeC4Diagram({
       initialHeight={iniitialRef.current.height}
     >
       <DiagramStateProvider
+        readonly={readonly}
         disableHovercards={disableHovercards}
+        eventHandlers={eventHandlers}
       >
         <XYFLowEventHandlers eventHandlers={eventHandlers}>
           <XYFlowWrapper
@@ -69,14 +71,14 @@ export function LikeC4Diagram({
             disableBackground={disableBackground}
             fitViewPadding={fitViewPadding}
           >
-            {disableBackground !== true && <Background />}
-            {controls && <Controls />}
-            {!readonly && <OptionsPanel />}
             <UpdateXYFlowOnDiagramChange
               view={view}
               nodesDraggable={nodesDraggable}
             />
-            <UpdateViewportOnDiagramChange viewId={view.id} />
+            {disableBackground !== true && <Background />}
+            {controls && <Controls />}
+            {readonly !== true && <OptionsPanel />}
+            {fitView && <UpdateViewportOnDiagramChange viewId={view.id} layout={view.autoLayout} />}
           </XYFlowWrapper>
         </XYFLowEventHandlers>
       </DiagramStateProvider>

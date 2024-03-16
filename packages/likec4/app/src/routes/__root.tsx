@@ -1,7 +1,6 @@
 import { MantineProvider, useMantineColorScheme } from '@mantine/core'
 import { Theme } from '@radix-ui/themes'
 import { createRootRouteWithContext, Link, Outlet, ScrollRestoration } from '@tanstack/react-router'
-import { DiagramNotFound } from '../components'
 import { theme as mantineTheme } from '../theme'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {

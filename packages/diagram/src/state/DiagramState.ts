@@ -9,17 +9,19 @@ import { createContainer } from 'react-tracked'
 import { useSetState } from '../hooks/use-set-state'
 import { isOnlyEventHandlers, type LikeC4DiagramEventHandlers, type OnNavigateTo } from '../LikeC4Diagram.props'
 
-type DiagramStateProps = LikeC4DiagramEventHandlers & {
+type DiagramStateProps = {
+  readonly: boolean
   disableHovercards: boolean
+  eventHandlers: LikeC4DiagramEventHandlers
 }
 
 const useDiagramStateValue = ({
+  readonly,
   disableHovercards,
-  ...eventHandlers
+  eventHandlers
 }: DiagramStateProps) => {
-  isOnlyEventHandlers(eventHandlers)
-
   const hasEventHandlers = {
+    hasOnChange: !!eventHandlers.onChange,
     hasOnNavigateTo: !!eventHandlers.onNavigateTo,
     hasOnNodeClick: !!eventHandlers.onNodeClick,
     hasOnNodeContextMenu: !!eventHandlers.onNodeContextMenu,
@@ -39,11 +41,12 @@ const useDiagramStateValue = ({
 
   const _state = useCustomCompareMemo(
     () => ({
+      readonly,
       disableHovercards,
       ...hasEventHandlers,
       ...state
     }),
-    [state, hasEventHandlers, disableHovercards],
+    [state, readonly, hasEventHandlers, disableHovercards],
     shallowEqual
   )
 

@@ -52,3 +52,8 @@ body {
   --likec4-font-family: 'Rubik Variable', sans-serif;
   font-family:  'Rubik Variable', sans-serif; */
 }
+
+.mantine-ActionIcon-icon .tabler-icon {
+  width: 75%;
+  height: 75%;
+}

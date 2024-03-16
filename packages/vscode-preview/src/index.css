@@ -62,25 +62,6 @@ div.likec4-diagram-loading {
 }
 
 
-.likec4-toolbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  justify-content: start;
-  /* background-color: var(--vscode-editor-background); */
-  opacity: 0.5;
-  display: grid;
-  padding: 0.25rem 0.5rem;
-  justify-content: start;
-  transition: all 0.15s ease-in-out;
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
 .likec4-container {
   position: fixed;
   inset: 0;

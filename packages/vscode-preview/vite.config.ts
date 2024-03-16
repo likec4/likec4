@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
-/** @type {import('vite').UserConfig} */
 export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
@@ -13,13 +12,18 @@ export default defineConfig(({ mode }) => {
       vanillaExtractPlugin()
     ],
     resolve: {
-      dedupe: ['react', 'react-dom']
+      dedupe: ['react', 'react-dom'],
+      alias: {
+        '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
+        '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')
+      }
     },
     build: {
       outDir: isWatchDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
       cssCodeSplit: false,
       sourcemap: isDev,
+      minify: !isDev,
       chunkSizeWarningLimit: 1000,
       assetsDir: '',
       rollupOptions: {

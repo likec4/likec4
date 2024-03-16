@@ -1,5 +1,5 @@
 import { LikeC4Diagram } from '@likec4/diagram'
-import { Box } from '@radix-ui/themes'
+import { Box } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
@@ -21,7 +21,7 @@ function EmbedPage() {
 
   return (
     <Box
-      position={'absolute'}
+      pos={'absolute'}
       style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
     >
       <LikeC4Diagram

@@ -135,8 +135,12 @@ export class ExtensionController extends AbstractDisposable {
         const loc = await rpc.locate(params)
         if (!loc) return
         const location = this.client.protocol2CodeConverter.asLocation(loc)
+        let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
+        if (PreviewPanel.current?.panel.viewColumn === vscode.ViewColumn.One) {
+          viewColumn = vscode.ViewColumn.Beside
+        }
         const editor = await vscode.window.showTextDocument(location.uri, {
-          viewColumn: vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+          viewColumn,
           selection: location.range
         })
         editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)

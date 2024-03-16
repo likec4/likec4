@@ -55,8 +55,10 @@ export class PreviewPanel extends AbstractDisposable {
       return
     }
 
-    let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? ViewColumn.One
-    viewColumn = viewColumn === ViewColumn.One ? ViewColumn.Beside : viewColumn
+    let viewColumn = ViewColumn.Beside
+    if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn !== ViewColumn.One) {
+      viewColumn = ViewColumn.One
+    }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {

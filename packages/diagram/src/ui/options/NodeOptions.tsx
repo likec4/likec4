@@ -3,6 +3,7 @@ import {
   type ElementShape,
   ElementShapes,
   type Fqn,
+  invariant,
   type NonEmptyArray,
   type ThemeColor
 } from '@likec4/core'
@@ -10,6 +11,7 @@ import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Text, T
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
+import { useXYFLowEventHandlers } from '../../xyflow/XYFLowEventHandlers'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -39,6 +41,7 @@ export type ColorKey = typeof colors[0]['key']
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
 export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
+  const { onChange } = useXYFLowEventHandlers()
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
   if (!hasAtLeast(nodes, 1)) {
@@ -57,20 +60,28 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onShapeChange={(shape: ElementShape) => {
           const targets = [] as Fqn[]
           for (const nd of nodes) {
-            api.updateNodeData(nd.id, (n: XYFlowNode) => ({
-              ...n.data,
-              element: {
-                ...n.data.element,
-                shape
+            api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
+              if (data.element.shape === shape) {
+                return data
               }
-            }))
+
+              return ({
+                ...data,
+                element: {
+                  ...data.element,
+                  shape
+                }
+              })
+            })
+            targets.push(nd.data.element.id)
           }
-          // invariant(hasAtLeast(targets, 1), 'targets.length < 1')
-          // trigger.onChange({
-          //   op: 'change-shape',
-          //   shape,
-          //   targets
-          // })
+          if (hasAtLeast(targets, 1)) {
+            onChange({
+              op: 'change-shape',
+              shape,
+              targets
+            })
+          }
         }}
       />
       <Colors
@@ -78,25 +89,27 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onColorChange={(color: ColorKey | ThemeColorKey) => {
           const targets = [] as Fqn[]
           for (const nd of nodes) {
-            api.updateNodeData(nd.id, (n: XYFlowNode) => ({
-              ...n.data,
-              element: {
-                ...n.data.element,
-                color
+            api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
+              if (data.element.color === color) {
+                return data
               }
-            }))
-            // targets.push(nd.data.id)
+              return ({
+                ...data,
+                element: {
+                  ...data.element,
+                  color
+                }
+              })
+            })
+            targets.push(nd.data.element.id)
           }
-          // for (const nd of nodes) {
-          //   api.updateNodeData(nd.id, { color })
-          //   targets.push(nd.data.id)
-          // }
-          // invariant(hasAtLeast(targets, 1), 'targets.length < 1')
-          // trigger.onChange({
-          //   op: 'change-color',
-          //   color,
-          //   targets
-          // })
+          if (hasAtLeast(targets, 1)) {
+            onChange({
+              op: 'change-color',
+              color,
+              targets
+            })
+          }
         }}
       />
     </Stack>

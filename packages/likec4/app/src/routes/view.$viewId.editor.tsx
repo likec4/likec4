@@ -14,15 +14,6 @@ function ViewEditor() {
   const { viewAtom, viewId } = Route.useRouteContext()
   const view = useAtomValue(viewAtom)
 
-  const navigateTo: OnNavigateTo = useCallback(({ element }) => {
-    router.navigate({
-      to: '/view/$viewId/editor',
-      params: { viewId: element.navigateTo },
-      startTransition: true,
-      search: true
-    })
-  }, [router])
-
   if (!view) {
     return <DiagramNotFound viewId={viewId} />
   }
@@ -30,7 +21,17 @@ function ViewEditor() {
   return (
     <LikeC4Diagram
       view={view}
-      onNavigateTo={navigateTo}
+      onNavigateTo={({ element }) => {
+        router.navigate({
+          to: '/view/$viewId/editor',
+          params: { viewId: element.navigateTo },
+          startTransition: true,
+          search: true
+        })
+      }}
+      onChange={event => {
+        console.log('onChange', event)
+      }}
       controls={false}
       // nodesDraggable={false}
     />

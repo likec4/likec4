@@ -1,17 +1,16 @@
-import { invariant } from '@likec4/core'
+import { hasAtLeast, invariant, type NonEmptyArray } from '@likec4/core'
 import { useSyncedRef } from '@react-hookz/web'
 import { createContext, type PropsWithChildren, useContext, useRef } from 'react'
 import type React from 'react'
 import type { Exact } from 'type-fest'
 import {
+  type Change,
   type DiagramNodeWithNavigate,
   isOnlyEventHandlers,
   type LikeC4DiagramEventHandlers
 } from '../LikeC4Diagram.props'
 import { useXYFlow } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
-
-type XYFLowEventHandlersProps = PropsWithChildren<{ eventHandlers: LikeC4DiagramEventHandlers }>
 
 type XYFLowEventHandlers = {
   onNavigateTo: (xynodeId: string, event: React.MouseEvent) => void
@@ -21,21 +20,24 @@ type XYFLowEventHandlers = {
   onPaneContextMenu: (event: React.MouseEvent | MouseEvent) => void
   onNodeClick: (event: React.MouseEvent, xynode: XYFlowNode) => void
   onEdgeClick: (event: React.MouseEvent, xyedge: XYFlowEdge) => void
+  onChange: (change: Change) => void
 }
 
 const EventHandlersContext = createContext({} as XYFLowEventHandlers)
 
 export const useXYFLowEventHandlers = () => useContext(EventHandlersContext)
 
+type Props = PropsWithChildren<{ eventHandlers: LikeC4DiagramEventHandlers }>
 /**
  * Bridge between ReactFlow and LikeC4Diagram event handlers
  */
 export function XYFLowEventHandlers({
   children,
   eventHandlers
-}: XYFLowEventHandlersProps) {
-  const eventHandlersRef = useRef(eventHandlers)
-  eventHandlersRef.current = eventHandlers
+}: Props) {
+  // store the original event handlers in a ref
+  const originalsRef = useRef(eventHandlers)
+  originalsRef.current = eventHandlers
 
   const xyflowRef = useSyncedRef(useXYFlow())
 
@@ -44,67 +46,72 @@ export function XYFLowEventHandlers({
   if (!xyFlowEventHandlersRef.current) {
     xyFlowEventHandlersRef.current = {
       onPanelClick: (event) => {
-        if (!eventHandlersRef.current.onCanvasDblClick) {
-          eventHandlersRef.current.onCanvasClick?.(event)
+        if (!originalsRef.current.onCanvasDblClick) {
+          originalsRef.current.onCanvasClick?.(event)
           return
         }
 
         if (dblclickTimeout.current) {
           window.clearTimeout(dblclickTimeout.current)
           dblclickTimeout.current = undefined
-          eventHandlersRef.current.onCanvasDblClick(event)
+          originalsRef.current.onCanvasDblClick(event)
           return
         }
 
         dblclickTimeout.current = window.setTimeout(() => {
           dblclickTimeout.current = undefined
-          eventHandlersRef.current.onCanvasClick?.(event)
+          originalsRef.current.onCanvasClick?.(event)
         }, 300)
       },
       onNodeContextMenu: (event, xynode) => {
-        eventHandlersRef.current.onNodeContextMenu?.({
+        originalsRef.current.onNodeContextMenu?.({
           element: xynode.data.element,
           xynode,
           event
         })
       },
       onPaneContextMenu: (event) => {
-        eventHandlersRef.current.onCanvasContextMenu?.(event as any)
+        originalsRef.current.onCanvasContextMenu?.(event as any)
       },
       onEdgeContextMenu: (event, xyedge) => {
-        eventHandlersRef.current.onEdgeContextMenu?.({
+        originalsRef.current.onEdgeContextMenu?.({
           relation: xyedge.data.edge,
           xyedge,
           event
         })
       },
       onNodeClick(event, xynode) {
-        eventHandlersRef.current.onNodeClick?.({
+        originalsRef.current.onNodeClick?.({
           element: xynode.data.element,
           xynode,
           event
         })
       },
       onEdgeClick(event, xyedge) {
-        eventHandlersRef.current.onEdgeClick?.({
+        originalsRef.current.onEdgeClick?.({
           relation: xyedge.data.edge,
           xyedge,
           event
         })
       },
       onNavigateTo(xynodeId, event) {
-        if (!eventHandlersRef.current.onNavigateTo) {
+        if (!originalsRef.current.onNavigateTo) {
           return
         }
         const xynode = xyflowRef.current.getNode(xynodeId)
         invariant(xynode, `node not found: ${xynodeId}`)
         const navigateTo = xynode.data.element.navigateTo
         invariant(navigateTo, `node is not navigable: ${xynodeId}`)
-        eventHandlersRef.current.onNavigateTo({
+        originalsRef.current.onNavigateTo({
           element: xynode.data.element as DiagramNodeWithNavigate,
           xynode,
           event
         })
+      },
+      onChange(change: Change | Change[]) {
+        const changes = Array.isArray(change) ? change : [change]
+        invariant(hasAtLeast(changes, 1), 'no changes')
+        originalsRef.current.onChange?.({ changes })
       }
     }
   }

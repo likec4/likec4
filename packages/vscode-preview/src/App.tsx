@@ -1,9 +1,11 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
 import { LikeC4Diagram as LikeC4ViewEditor } from '@likec4/diagram'
+import { ActionIcon } from '@mantine/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Toolbar } from './Toolbar'
+import { cssToolbarLeft } from './Toolbar.css'
 import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
@@ -98,6 +100,7 @@ const App = () => {
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LikeC4ViewEditor
           view={view}
+          controls={false}
           nodesDraggable={false}
           fitOnSelect={false}
           onNavigateTo={({ element }) => {
@@ -107,10 +110,6 @@ const App = () => {
             extensionApi.openView(element.navigateTo)
           }}
           onNodeClick={({ element, xynode, event }) => {
-            console.log(`onNodeClick: ${element.id}`, {
-              selected: xynode.selected,
-              xynode
-            })
             if (lastClickedNodeRef.current === element.id) {
               lastNodeContextMenuRef.current = null
               extensionApi.goToElement(element.id)
@@ -139,15 +138,10 @@ const App = () => {
               event.stopPropagation()
             }
           }}
-          // onChange={(change) => {
-          //   extensionApi.triggerChange({ ...change, viewId: view.id })
-          // }}
+          onChange={({ changes }) => {
+            extensionApi.change(view.id, changes)
+          }}
           onCanvasDblClick={() => {
-            extensionApi.change({
-              op: 'change-autolayout',
-              viewId: view.id,
-              layout: 'LR'
-            })
             extensionApi.goToViewSource(view.id)
           }}
         />
@@ -163,21 +157,19 @@ const App = () => {
         </>
       )}
       {prevView && (
-        <div className="likec4-toolbar">
-          <div className="likec4-toolbar-left">
-            <VSCodeButton
-              appearance="icon"
-              onClick={e => {
-                e.stopPropagation()
-                extensionApi.goToViewSource(prevView.id)
-                extensionApi.openView(prevView.id)
-                // optimistic update
-                updateView(prevView)
-              }}
-            >
-              <ArrowLeftIcon />
-            </VSCodeButton>
-          </div>
+        <div className={cssToolbarLeft}>
+          <ActionIcon
+            color="gray"
+            variant="light"
+            onClick={e => {
+              e.stopPropagation()
+              extensionApi.goToViewSource(prevView.id)
+              extensionApi.openView(prevView.id)
+              // optimistic update
+              updateView(prevView)
+            }}>
+            <ArrowLeftIcon style={{ width: '70%', height: '70%' }} />
+          </ActionIcon>
         </div>
       )}
       <Toolbar view={view} />

@@ -1,10 +1,10 @@
-import { type DiagramView } from '@likec4/diagrams'
+import { type DiagramView } from '@likec4/core'
 import { CaretDownIcon, Share1Icon as ShareIcon } from '@radix-ui/react-icons'
 import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
 import React, { type PropsWithChildren, useState } from 'react'
 // import { ThemePanelToggle } from '../ThemePanelToggle'
 import { DisplayModeSelector } from './DisplayModeSelector'
-import ExportDiagram from './ExportDiagram'
+// import ExportDiagram from './ExportDiagram'
 import { ShareDialog } from './ShareDialog'
 
 const ExportMenu = ({
@@ -81,13 +81,15 @@ export const ViewActions = ({ diagram }: { diagram: DiagramView }) => {
           <CaretDownIcon />
         </Button>
       </ExportMenu>
-      {exportTo === 'png' && (
+      {
+        /* {exportTo === 'png' && (
         <ExportDiagram
           key={'export-diagram-png'}
           diagram={diagram}
           onCompleted={() => setExportTo(null)}
         />
-      )}
+      )} */
+      }
       {/* <ThemePanelToggle /> */}
     </Flex>
   )

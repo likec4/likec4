@@ -4,6 +4,7 @@ import { useXYFlow } from './hooks'
 import type { XYFlowNode } from './types'
 
 import type { DiagramView } from '@likec4/core'
+import { isNil } from 'remeda'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 /**
@@ -28,12 +29,15 @@ export function UpdateXYFlowOnDiagramChange({
     xyflow.setNodes(prev =>
       updates.nodes.map(<N extends XYFlowNode>(update: N): N => {
         const existing = prev.find(p => p.id === update.id)
-        if (existing && existing.parentNode == update.parentNode) {
-          const { position, data, parentNode, ...rest } = update
-          existing.position.x = position.x
-          existing.position.y = position.y
+        if (existing && existing.type == update.type) {
+          const { data, parentNode, ...rest } = update
           if (!eq(existing.data, data)) {
             existing.data = data
+          }
+          if (!isNil(parentNode)) {
+            existing.parentNode = parentNode
+          } else {
+            delete existing.parentNode
           }
           return Object.assign(existing, rest as N)
         }

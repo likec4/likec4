@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 
 import type { DiagramView } from '@likec4/core'
 // import { LikeC4View } from '@likec4/diagram'
+import { LikeC4View } from '@likec4/diagram'
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separator, Text } from '@radix-ui/themes'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -9,6 +10,7 @@ import type { Atom } from 'jotai'
 import { useAtomValue } from 'jotai'
 import { memo, useState } from 'react'
 import { useViewGroupsAtoms, type ViewsGroup as IViewsGroup } from '../data'
+import { cssPreviewCardLink } from './-view.css'
 import styles from './index.module.css'
 
 export const Route = createFileRoute('/')({
@@ -103,27 +105,26 @@ const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
   const { id, title, description } = diagram
   return (
     <Box asChild shrink="0" grow="1">
-      <Card asChild style={{ width: 350, maxWidth: 350 }} variant="surface" size="1">
-        <Link to="/view/$viewId/editor" params={{ viewId: id }} search>
-          <Inset clip="padding-box" side="top" pb="current">
-            <DiagramPreview diagram={diagram} />
-          </Inset>
-          <Text as="div" size="2" weight="bold" trim="start">
-            {title || id}
-          </Text>
-          <Text
-            as="div"
-            color="gray"
-            size="2"
-            my="1"
-            // className={cn(isEmpty(description?.trim()) && styles.dimmed)}
-            style={{
-              whiteSpace: 'pre-line'
-            }}
-          >
-            {description?.trim() || 'no description'}
-          </Text>
-        </Link>
+      <Card style={{ width: 350, maxWidth: 350 }} variant="surface" size="1">
+        <Inset clip="padding-box" side="top" pb="current">
+          <DiagramPreview diagram={diagram} />
+        </Inset>
+        <Text as="div" size="2" weight="bold" trim="start">
+          {title || id}
+        </Text>
+        <Text
+          as="div"
+          color="gray"
+          size="2"
+          my="1"
+          // className={cn(isEmpty(description?.trim()) && styles.dimmed)}
+          style={{
+            whiteSpace: 'pre-line'
+          }}
+        >
+          {description?.trim() || 'no description'}
+        </Text>
+        <Link to="/view/$viewId/editor" params={{ viewId: id }} search className={cssPreviewCardLink}>{' '}</Link>
       </Card>
     </Box>
   )
@@ -143,16 +144,15 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
 
   return (
     <Box className={styles.previewBg} style={{ width: 350, height: 175 }}>
-      {
-        /* {diagram && (
+      {diagram && (
         <LikeC4View
           view={diagram}
-          reactflowProps={{
-            width: 350,
-            height: 175
-          }} />
-      )} */
-      }
+        />
+        // reactflowProps={{
+        //   width: 350,
+        //   height: 175
+        // }} />
+      )}
     </Box>
   )
 })

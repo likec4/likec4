@@ -26,21 +26,18 @@ export namespace WebviewToExtension {
 
   export namespace Changes {
     export interface ChangeColor {
-      viewId: ViewID
       op: 'change-color'
       color: ThemeColor
       targets: NonEmptyArray<Fqn>
     }
 
     export interface ChangeShape {
-      viewId: ViewID
       op: 'change-shape'
       shape: ElementShape
       targets: NonEmptyArray<Fqn>
     }
 
     export interface ChangeAutoLayout {
-      viewId: ViewID
       op: 'change-autolayout'
       layout: AutoLayoutDirection
     }
@@ -51,7 +48,9 @@ export namespace WebviewToExtension {
     | Changes.ChangeShape
     | Changes.ChangeAutoLayout
 
-  export const onChange: NotificationType<{ change: ChangeCommand }> = { method: 'onChange' }
+  export const onChange: NotificationType<{ viewId: ViewID; changes: NonEmptyArray<ChangeCommand> }> = {
+    method: 'onChange'
+  }
 
   export type LocateParams =
     | {

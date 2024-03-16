@@ -1,5 +1,15 @@
 import { globalStyle, style } from '@vanilla-extract/css'
 
+// Index page
+
+export const cssPreviewCardLink = style({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 1
+})
+
+//
+
 export const svgContainer = style({
   minWidth: 300
 })
