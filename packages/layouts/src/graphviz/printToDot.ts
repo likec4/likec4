@@ -179,7 +179,7 @@ export function toGraphvisModel({
     [_.shape]: 'rect',
     [_.width]: pxToInch(320),
     [_.height]: pxToInch(180),
-    [_.style]: 'filled',
+    [_.style]: 'filled,rounded',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
     [_.penwidth]: 0,
