@@ -12,7 +12,7 @@ import { useDiagramStateSelector } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYFlow } from '../hooks'
 import { type RelationshipData, XYFlowNode } from '../types'
-import * as css from './edges.css'
+import { container, cssEdgePath, edgeLabel, edgeLabelBody, edgePathBg, fillStrokeCtx } from './edges.css'
 import { getEdgeParams } from './utils'
 // import { getEdgeParams } from './utils'
 
@@ -111,9 +111,9 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
 
   let strokeDasharray: string | undefined
   if (isDotted) {
-    strokeDasharray = '1,4'
+    strokeDasharray = '1,8'
   } else if (isDashed) {
-    strokeDasharray = '8,8'
+    strokeDasharray = '8,10'
   }
 
   const marker = `url(#arrow-${id})`
@@ -149,8 +149,8 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
   // `
 
   return (
-    <g className={clsx(css.container)} data-likec4-color={color} data-edge-hovered={isHovered}>
-      <g className={clsx(css.fillStrokeCtx)}>
+    <g className={clsx(container)} data-likec4-color={color} data-edge-hovered={isHovered}>
+      <g className={clsx(fillStrokeCtx)}>
         <defs>
           <marker
             id={`arrow-${id}`}
@@ -166,14 +166,16 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
           </marker>
         </defs>
       </g>
+      {!isDotted && (
+        <path
+          className={clsx('react-flow__edge-path', edgePathBg)}
+          d={edgePath}
+          style={style}
+          strokeLinecap={'round'}
+        />
+      )}
       <path
-        className={clsx('react-flow__edge-path', css.edgePathBg)}
-        d={edgePath}
-        style={style}
-        strokeLinecap={'round'}
-      />
-      <path
-        className={clsx('react-flow__edge-path', css.edgePath)}
+        className={clsx('react-flow__edge-path', cssEdgePath)}
         d={edgePath}
         style={style}
         strokeLinecap={'round'}
@@ -208,18 +210,22 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
       {data.label && (
         <>
           {
-            /* <rect
-            x={data.label.bbox.x}
-            y={data.label.bbox.y}
-            width={data.label.bbox.width + 2}
-            height={data.label.bbox.height + 2}
-            className={styles.edgeLabelBbox}
-            rx={3}
+            /* <EdgeText
+            x={labelX}
+            y={labelY}
+            label={data.label.text}
+            labelStyle={{
+              maxWidth: 50,
+              whiteSpace: 'pre-wrap',
+            }}
+            labelBgBorderRadius={3}
+            labelBgPadding={[4, 3]}
           /> */
           }
+
           <EdgeLabelRenderer>
             <Box
-              className={clsx(css.container, css.edgeLabel)}
+              className={clsx(container, edgeLabel)}
               data-likec4-color={color}
               style={{
                 top: labelY,
@@ -231,10 +237,9 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
                 'data-edge-hovered': isHovered
               }}
             >
-              <Box className={css.edgeLabelBody}>
+              <Box className={edgeLabelBody}>
                 {data.label.text}
               </Box>
-              {/* <Text component="span" fz={rem(12)}></Text> */}
             </Box>
           </EdgeLabelRenderer>
         </>
