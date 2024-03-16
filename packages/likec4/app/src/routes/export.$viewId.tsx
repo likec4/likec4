@@ -23,7 +23,7 @@ export const Route = createFileRoute('/export/$viewId')({
 })
 
 function ExportPage() {
-  const { padding = 20 } = Route.useSearch()
+  const { padding = 22 } = Route.useSearch()
   const { viewId } = Route.useParams()
   const diagram = useLikeC4View(viewId)
 
