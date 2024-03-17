@@ -1,5 +1,6 @@
 import { defaultTheme } from '@likec4/core'
 import { Text } from '@mantine/core'
+import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
@@ -7,10 +8,11 @@ import { scale, toHex } from 'khroma'
 import { useMemo } from 'react'
 import { memo } from 'react-tracked'
 import { useDiagramState } from '../../../state'
+import { vars } from '../../../theme'
 import type { CompoundXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import classes from './compound.module.css'
+import { cssCompound, cssContainer, cssIndicator, cssNavigateBtn, cssTitle } from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -55,19 +57,18 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   const h = toDomPrecision(height ?? compound.height)
 
   const diagramState = useDiagramState()
-  const isNavigatable = diagramState.hasOnNavigateTo && !!compound.navigateTo
+  const isnavigable = diagramState.hasOnNavigateTo && !!compound.navigateTo
 
   return (
     <div
-      className={classes.container}
+      className={cssContainer}
       data-likec4-color={color}
       data-likec4-shape={compound.shape}
-      data-likec4-navigatable={isNavigatable}
-      style={{
-        // @ts-expect-error
-        '--likec4-element-fill': colors.fill,
-        '--likec4-element-stroke': colors.stroke
-      }}
+      data-likec4-navigable={isnavigable}
+      style={assignInlineVars({ fill: vars.element.fill, stroke: vars.element.stroke }, {
+        fill: colors.fill,
+        stroke: colors.stroke
+      })}
     >
       <Handle
         // @ts-expect-error
@@ -75,7 +76,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         position={Position.Top}
         style={{ visibility: 'hidden' }}
       />
-      <svg className={classes.indicator} viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
+      <svg className={cssIndicator} viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
         <rect
           x={-1}
           y={-1}
@@ -85,11 +86,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         />
       </svg>
       <div
-        className={clsx(classes.compound)}
+        className={clsx(cssCompound)}
       >
-        <Text component="div" className={classes.title}>{compound.title}</Text>
+        <Text component="div" className={cssTitle}>{compound.title}</Text>
       </div>
-      {isNavigatable && <NavigateToBtn xynodeId={id} className={classes.navigateBtn} />}
+      {isnavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
       <Handle
         // @ts-expect-error
         type="source"

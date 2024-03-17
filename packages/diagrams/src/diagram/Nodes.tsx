@@ -168,7 +168,7 @@ const NodeShape = memo<NodeShapeProps>(
     const setHoveredNode = useSetHoveredNode()
 
     const _isCompound = isCompound(node)
-    const isNavigatable = animate && !!node.navigateTo && !!onNodeClick
+    const isnavigable = animate && !!node.navigateTo && !!onNodeClick
 
     const Shape = nodeShape(node)
 
@@ -195,7 +195,7 @@ const NodeShape = memo<NodeShapeProps>(
               }
               e.cancelBubble = true
               // Navigation handled by NodeZoomBtn
-              if (!isNavigatable) {
+              if (!isnavigable) {
                 onNodeClick(node, e)
               }
             }
@@ -216,9 +216,9 @@ const NodeShape = memo<NodeShapeProps>(
                 node={node}
                 theme={theme}
                 springs={springs}
-                labelOffsetX={isNavigatable ? -22 : 0}
+                labelOffsetX={isnavigable ? -22 : 0}
               />
-              {isNavigatable && (
+              {isnavigable && (
                 <>
                   <Rect
                     x={0}
@@ -242,7 +242,7 @@ const NodeShape = memo<NodeShapeProps>(
           {!_isCompound && (
             <>
               <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
-              {isNavigatable && (
+              {isnavigable && (
                 <NodeZoomBtn
                   animate={animate}
                   node={node}

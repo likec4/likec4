@@ -1,6 +1,5 @@
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
-import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
@@ -11,13 +10,14 @@ import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import {
   container,
+  cssElement,
+  cssNavigateBtn,
+  cssShapeSvg,
   description as cssdescription,
-  element as cssElement,
   indicator,
   technology as csstechnology,
   title as cssTitle
 } from './element.css'
-import classes from './element.module.css'
 import { ElementIcon } from './ElementIcon'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
@@ -28,6 +28,7 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && prev.width === next.width
   && prev.height === next.height
+  && prev.selected === next.selected
   && deepEqual(prev.data, next.data)
   // && isEqualSimple(prev.data, next.data)
 )
@@ -56,6 +57,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   data: {
     element
   },
+  selected = false,
   width,
   height
 }) {
@@ -71,13 +73,13 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   return (
     <motion.div
       id={id}
-      className={clsx(classes.container, container)}
+      className={container}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
       initial={'idle'}
       whileTap={'tap'}
-      animate={isHovered ? 'hover' : 'idle'}
+      animate={isHovered || selected ? 'hover' : 'idle'}
     >
       {
         /* <NodeToolbar
@@ -120,7 +122,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
         style={{ visibility: 'hidden' }}
       />
       <svg
-        className={classes.shapeSvg}
+        className={cssShapeSvg}
         viewBox={`0 0 ${w} ${h}`}
         width={w}
         height={h}
@@ -175,7 +177,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
       ))} */
       }
       {isHovercards && <ElementLink element={element} />}
-      {isNavigable && <NavigateToBtn xynodeId={id} className={classes.navigateBtn} />}
+      {isNavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
     </motion.div>
   )
 }, isEqualProps)

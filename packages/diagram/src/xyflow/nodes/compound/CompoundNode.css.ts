@@ -1,0 +1,132 @@
+import { rem } from '@mantine/core'
+import { fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { mantine, vars } from '../../../theme'
+
+export const cssContainer = style({
+  width: ['100%', '-webkit-fill-available'],
+  height: ['100%', '-webkit-fill-available'],
+  position: 'relative',
+  padding: 0,
+  margin: 0
+})
+
+export const cssCompound = style({
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  borderRadius: rem(6),
+  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
+  padding: rem(8),
+  background: vars.element.fill,
+  transition: 'all 300ms ease-out',
+  selectors: {
+    [`:where(.react-flow__node.selected) &`]: {
+      boxShadow: 'none'
+    }
+  }
+})
+
+export const cssTitle = style({
+  fontFamily: fallbackVar(vars.compound.font, vars.likec4.font),
+  fontOpticalSizing: 'auto',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  display: 'inline-block',
+  fontWeight: 600,
+  fontSize: '14px',
+  textTransform: 'uppercase',
+  letterSpacing: '0.2px',
+  lineHeight: 1,
+  opacity: 0.75,
+  color: vars.element.loContrast,
+  paddingLeft: rem(12),
+  selectors: {
+    [`:where([data-likec4-navigable='true']) &`]: {
+      paddingLeft: rem(26)
+    }
+  }
+})
+
+const indicatorKeyframes = generateIdentifier('indicator')
+globalKeyframes(indicatorKeyframes, {
+  'from': {
+    opacity: 0.6
+  },
+  'to': {
+    opacity: 0.4
+  }
+})
+
+export const cssIndicator = style({
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  width: '100%',
+  height: '100%',
+  pointerEvents: 'none',
+  overflow: 'visible',
+  stroke: vars.element.loContrast,
+  transformOrigin: 'center center',
+  strokeWidth: '6px',
+  animationDuration: '800ms',
+  animationName: indicatorKeyframes,
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+  visibility: 'hidden',
+  selectors: {
+    '.react-flow__node.selected &': {
+      visibility: 'visible'
+    }
+  }
+})
+
+export const cssNavigateBtn = style({
+  position: 'absolute',
+  pointerEvents: 'all',
+  left: 3,
+  top: 6,
+  color: vars.element.loContrast,
+  transformOrigin: '90% 70%',
+  opacity: 0.75,
+  transition: 'all 165ms ease-out',
+  transitionDelay: '0ms',
+  backgroundColor: 'var(--ai-bg)',
+  'vars': {
+    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
+    '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
+    '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
+  },
+  selectors: {
+    [`:where(.react-flow__node:not(.dragging) ${cssContainer}:hover) &:not(:hover)`]: {
+      boxShadow: mantine.shadows.lg,
+      transform: 'scale(1.2)',
+      opacity: 1,
+      transitionDelay: '250ms',
+      vars: {
+        '--ai-bg': 'var(--ai-bg-hover)'
+      }
+    }
+  },
+  ':hover': {
+    boxShadow: mantine.shadows.lg,
+    transform: 'scale(1.45)',
+    opacity: 1,
+    transitionDelay: '0'
+  },
+  ':active': {
+    transform: 'scale(1.1)',
+    opacity: 1,
+    transitionDelay: '0'
+  }
+})
+globalStyle(`${cssNavigateBtn} svg.icon`, {
+  width: '70%',
+  height: '70%',
+  strokeWidth: '1.5'
+})
+
+// globalStyle(`:where(.react-flow__node:not(.dragging)) ${cssIndicator}`, {
+//   visibility: 'visible',
+//   ":hover": {
+//   }
+// })
