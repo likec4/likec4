@@ -9,7 +9,14 @@ import { useDiagramState, useDiagramStateSelector } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import * as css from './element.css'
+import {
+  container,
+  description as cssdescription,
+  element as cssElement,
+  indicator,
+  technology as csstechnology,
+  title as cssTitle
+} from './element.css'
 import classes from './element.module.css'
 import { ElementIcon } from './ElementIcon'
 import { ElementLink } from './ElementLink'
@@ -64,7 +71,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   return (
     <motion.div
       id={id}
-      className={clsx(classes.container, css.container)}
+      className={clsx(classes.container, container)}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
@@ -118,7 +125,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
         width={w}
         height={h}
       >
-        <g className={css.indicator}>
+        <g className={indicator}>
           <SelectedIndicator
             shape={element.shape}
             w={w}
@@ -131,20 +138,20 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
           h={h}
         />
       </svg>
-      <div className={css.element}>
+      <div className={cssElement}>
         {element.icon && <ElementIcon node={element} />}
-        <Text component="div" className={css.title}>
+        <Text component="div" className={cssTitle}>
           {element.title}
         </Text>
         {element.technology && (
-          <Text component="div" className={css.technology}>
+          <Text component="div" className={csstechnology}>
             {element.technology}
           </Text>
         )}
         {element.description && (
           <Text
             component="div"
-            className={css.description}
+            className={cssdescription}
           >
             {element.description}
           </Text>
