@@ -61,7 +61,7 @@ type ElementShapeSvgProps = {
   h: number
 }
 
-export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
+export const ElementShapeSvg = /* @__PURE__ */ memo<ElementShapeSvgProps>(({
   shape,
   w,
   h
@@ -167,7 +167,7 @@ export const ElementShapeSvg = memo<ElementShapeSvgProps>(({
 /**
  * When element is selected, this component is used to render the indicator
  */
-export const SelectedIndicator = memo<ElementShapeSvgProps>(({
+export const SelectedIndicator = /* @__PURE__ */ memo<ElementShapeSvgProps>(({
   shape,
   w,
   h

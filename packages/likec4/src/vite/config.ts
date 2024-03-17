@@ -85,6 +85,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const aliases = resolveAliases(
     {
       ['@likec4/core']: sources.core,
+      ['@likec4/diagram/bundle']: resolve(_dirname, '../../../diagram/bundle/index.js'),
       ['@likec4/diagram']: sources.diagram,
       ['@likec4/diagrams']: sources.diagrams
     },

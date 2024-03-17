@@ -7,7 +7,7 @@ import { useXYFlow } from './hooks'
 /**
  * Fits the view when the view changes and nodes are initialized
  */
-export function UpdateViewportOnDiagramChange({ viewId, layout }: { viewId: string; layout: AutoLayoutDirection }) {
+export function FitviewOnDiagramChange({ viewId, layout }: { viewId: string; layout: AutoLayoutDirection }) {
   const xyflow = useXYFlow()
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true

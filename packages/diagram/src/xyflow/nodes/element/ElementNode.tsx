@@ -6,7 +6,7 @@ import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
 import useTilg from 'tilg'
 import { useDiagramState, useDiagramStateSelector } from '../../../state'
-import type { ElementNodeData } from '../../types'
+import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import * as css from './element.css'
@@ -15,7 +15,7 @@ import { ElementIcon } from './ElementIcon'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
-type ElementNodeProps = NodeProps<ElementNodeData>
+type ElementNodeProps = NodeProps<ElementXYFlowNode>
 
 const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
@@ -44,7 +44,7 @@ const variants = {
   }
 } satisfies Variants
 
-export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
+export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function ElementNode({
   id,
   data: {
     element
@@ -107,6 +107,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       ))} */
       }
       <Handle
+        // @ts-expect-error
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
@@ -150,6 +151,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         )}
       </div>
       <Handle
+        // @ts-expect-error
         type="source"
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}

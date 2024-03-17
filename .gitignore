@@ -13,6 +13,7 @@
 examples/*/.vscode
 packages/*/contrib
 packages/*/dist
+packages/diagram/bundle
 packages/language-server/src/generated/
 
 # Logs

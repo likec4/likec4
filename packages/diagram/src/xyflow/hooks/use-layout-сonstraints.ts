@@ -2,8 +2,7 @@ import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import * as kiwi from '@lume/kiwi'
 import { Expression, Expression as Expr, Operator, Strength, type Variable } from '@lume/kiwi'
 import type { ReactFlowProps, XYPosition } from '@xyflow/react'
-import { deepEqual as eq } from 'fast-equals'
-import { type Ref, type RefObject, useMemo, useRef } from 'react'
+import { type RefObject, useRef } from 'react'
 import { isNil } from 'remeda'
 import { type XYFlowInstance, XYFlowNode } from '../types'
 
@@ -243,6 +242,9 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
 }
 
 type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragStart' | 'onNodeDrag' | 'onNodeDragStop'>>
+/**
+ * Keeps the layout constraints (parent nodes and children) when dragging a node
+ */
 export function useLayoutConstraints(
   xyflow: RefObject<XYFlowInstance | undefined>
 ): LayoutConstraints {

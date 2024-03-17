@@ -13,6 +13,7 @@
   },
   "files": [
     "dist",
+    "bundle",
     "src",
     "!**/*.spec.*",
     "!**/*.map"
@@ -20,7 +21,11 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./bundle": {
+      "types": "./dist/bundle.d.ts",
+      "default": "./bundle/index.js"
+    }
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
@@ -29,29 +34,7 @@
     "build": "unbuild",
     "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist"
-  },
-  "dependencies": {
-    "@likec4/core": "workspace:*",
-    "@lume/kiwi": "^0.4.3",
-    "@mantine/core": "^7.6.1",
-    "@mantine/hooks": "^7.6.1",
-    "@mantine/vanilla-extract": "^7.6.1",
-    "@react-hookz/deep-equal": "^2.0.2",
-    "@react-hookz/web": "^24.0.4",
-    "@vanilla-extract/css": "^1.14.1",
-    "@vanilla-extract/dynamic": "^2.1.0",
-    "@vanilla-extract/recipes": "^0.5.1",
-    "@xyflow/react": "^12.0.0-next.10",
-    "clsx": "^2.1.0",
-    "d3-shape": "^3.2.0",
-    "fast-equals": "^5.0.1",
-    "framer-motion": "^11.0.8",
-    "khroma": "^2.1.0",
-    "react-icons": "^4.12.0",
-    "react-tracked": "^1.7.11",
-    "remeda": "^1.44.0",
-    "tilg": "^0.1.1"
+    "clean": "run -T rimraf dist bundle"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -64,20 +47,40 @@
     }
   },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
+    "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.6.2",
+    "@mantine/hooks": "^7.6.2",
+    "@mantine/vanilla-extract": "^7.6.2",
+    "@react-hookz/deep-equal": "^2.0.2",
+    "@react-hookz/web": "^24.0.4",
     "@total-typescript/ts-reset": "^0.5.1",
-    "@types/d3-shape": "^3",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@vanilla-extract/css": "^1.14.1",
+    "@vanilla-extract/dynamic": "^2.1.0",
+    "@vanilla-extract/esbuild-plugin": "^2.3.5",
+    "@vanilla-extract/recipes": "^0.5.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@xyflow/react": "^12.0.0-next.12",
+    "clsx": "^2.1.0",
     "execa": "^8.0.1",
+    "fast-equals": "^5.0.1",
+    "framer-motion": "^11.0.14",
+    "khroma": "^2.1.0",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",
     "postcss-simple-vars": "^7.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-tracked": "^1.7.11",
+    "remeda": "^1.44.0",
     "scheduler": "^0.23.0",
+    "tilg": "^0.1.1",
     "type-fest": "^4.10.3",
     "typescript": "^5.3.3",
-    "typescript-plugin-css-modules": "^5.1.0",
-    "unbuild": "^2.0.0"
+    "unbuild": "^2.0.0",
+    "vite": "^5.1.4",
+    "vite-plugin-shadow-style": "^1.1.0"
   }
 }

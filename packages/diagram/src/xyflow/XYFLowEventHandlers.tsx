@@ -23,7 +23,7 @@ type XYFLowEventHandlers = {
   onChange: (change: Change) => void
 }
 
-const EventHandlersContext = createContext({} as XYFLowEventHandlers)
+const EventHandlersContext = /* @__PURE__ */ createContext({} as XYFLowEventHandlers)
 
 export const useXYFLowEventHandlers = () => useContext(EventHandlersContext)
 

@@ -6,15 +6,14 @@ import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
 import { useMemo } from 'react'
 import { memo } from 'react-tracked'
-import useTilg from 'tilg'
 import { useDiagramState } from '../../../state'
-import type { CompoundNodeData } from '../../types'
+import type { CompoundXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import classes from './compound.module.css'
 
 type CompoundNodeProps = Pick<
-  NodeProps<CompoundNodeData>,
+  NodeProps<CompoundXYFlowNode>,
   'id' | 'data' | 'width' | 'height' | 'selected'
 >
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
@@ -33,7 +32,7 @@ const compoundColor = (color: string, depth: number) =>
     })
   )
 
-export const CompoundNodeMemo = memo<CompoundNodeProps>(function CompoundNode({
+export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
   id,
   data: {
     element
@@ -71,6 +70,7 @@ export const CompoundNodeMemo = memo<CompoundNodeProps>(function CompoundNode({
       }}
     >
       <Handle
+        // @ts-expect-error
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
@@ -91,6 +91,7 @@ export const CompoundNodeMemo = memo<CompoundNodeProps>(function CompoundNode({
       </div>
       {isNavigatable && <NavigateToBtn xynodeId={id} className={classes.navigateBtn} />}
       <Handle
+        // @ts-expect-error
         type="source"
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}

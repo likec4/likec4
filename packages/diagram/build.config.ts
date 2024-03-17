@@ -27,6 +27,7 @@ export default defineBuildConfig({
   clean: false,
   hooks: {
     'build:before': async (ctx) => {
+      await $`vite build`
       await $`tsc --emitDeclarationOnly --declaration --declarationMap`
     }
   }

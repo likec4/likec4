@@ -11,7 +11,7 @@ import { hasAtLeast } from 'remeda'
 import { useDiagramStateSelector } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYFlow } from '../hooks'
-import { type RelationshipData, XYFlowNode } from '../types'
+import { type XYFlowEdge, XYFlowNode } from '../types'
 import { container, cssEdgePath, edgeLabel, edgeLabelBody, edgePathBg, fillStrokeCtx } from './edges.css'
 import { getEdgeParams } from './utils'
 // import { getEdgeParams } from './utils'
@@ -61,7 +61,7 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function RelationshipEdgeR({
+export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
   selected,
@@ -166,17 +166,26 @@ export const RelationshipEdge = memo<EdgeProps<RelationshipData>>(function Relat
           </marker>
         </defs>
       </g>
-      {!isDotted && (
-        <path
-          className={clsx('react-flow__edge-path', edgePathBg)}
-          d={edgePath}
-          style={style}
-          strokeLinecap={'round'}
-        />
-      )}
+      {/* {!isDotted && ( */}
+      <path
+        className={clsx('react-flow__edge-path', edgePathBg)}
+        d={edgePath}
+        style={style}
+        strokeLinecap={'round'}
+      />
+      {/* )} */}
       <path
         className={clsx('react-flow__edge-path', cssEdgePath)}
         d={edgePath}
+        // animate={isHovered && {
+        //   strokeDashoffset: [36, 0],
+        //   transition: {
+        //     repeat: Infinity,
+        //     type: 'tween',
+        //     ease: 'linear',
+        //     duration: 0.9
+        //   }
+        // }}
         style={style}
         strokeLinecap={'round'}
         {

@@ -25,7 +25,7 @@ const selector = (state: ReactFlowState) => {
   }
 }
 
-const CameraMemo = memo(function Camera() {
+const CameraMemo = /* @__PURE__ */ memo(function Camera() {
   useTilg()
   const isMounted = useIsMounted()
   // const isUserSelectionActive = useStore(selectUserSelectionActive)

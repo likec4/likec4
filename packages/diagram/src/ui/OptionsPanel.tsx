@@ -6,10 +6,8 @@ import { memo, useState } from 'react'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
-const OptionsPanelMemo = memo(function OptionsPanel() {
-  // const viewId = useDiagramStateTracked().viewId
+const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
-  // const [selectedEdges, setSelectedEdges] = useState([] as string[])
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {

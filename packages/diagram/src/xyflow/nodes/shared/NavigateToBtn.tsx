@@ -1,10 +1,6 @@
-import { invariant } from '@likec4/core'
 import { ActionIcon } from '@mantine/core'
 import clsx from 'clsx'
 import { ZoomIn } from '../../../icons'
-import type { DiagramNodeWithNavigate } from '../../../LikeC4Diagram.props'
-import { useDiagramState } from '../../../state'
-import { useXYFlow } from '../../hooks'
 import { useXYFLowEventHandlers } from '../../XYFLowEventHandlers'
 
 export type NavigateToBtnProps = {

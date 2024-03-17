@@ -5,8 +5,8 @@ import { isOnlyEventHandlers, type LikeC4DiagramEventHandlers, type LikeC4Diagra
 import { DiagramStateProvider } from './state'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
+import { FitviewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import type { XYFlowData } from './xyflow/types'
-import { UpdateViewportOnDiagramChange } from './xyflow/UpdateViewportOnDiagramChange'
 import { UpdateXYFlowOnDiagramChange } from './xyflow/UpdateXYFlowOnDiagramChange'
 import { XYFLowEventHandlers } from './xyflow/XYFLowEventHandlers'
 import { XYFlowWrapper } from './xyflow/XYFlowWrapper'
@@ -78,7 +78,7 @@ export function LikeC4Diagram({
             {disableBackground !== true && <Background />}
             {controls && <Controls />}
             {readonly !== true && <OptionsPanel />}
-            {fitView && <UpdateViewportOnDiagramChange viewId={view.id} layout={view.autoLayout} />}
+            {fitView && <FitviewOnDiagramChange viewId={view.id} layout={view.autoLayout} />}
           </XYFlowWrapper>
         </XYFLowEventHandlers>
       </DiagramStateProvider>

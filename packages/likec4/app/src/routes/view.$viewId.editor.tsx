@@ -1,8 +1,7 @@
-import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
-import { Box } from '@radix-ui/themes'
-import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+// import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
-import { useCallback } from 'react'
 import { DiagramNotFound } from '../components'
 
 export const Route = createFileRoute('/view/$viewId/editor')({

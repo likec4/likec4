@@ -1,7 +1,7 @@
 import { themeToVars } from '@mantine/vanilla-extract'
 import { createGlobalThemeContract } from '@vanilla-extract/css'
 
-export const vars = createGlobalThemeContract({
+export const vars = /* @__PURE__ */ createGlobalThemeContract({
   likec4: {
     font: 'font-family'
   },
@@ -22,9 +22,9 @@ export const vars = createGlobalThemeContract({
   }
 }, (value) => `likec4-${value}`)
 
-export const mantine = themeToVars({})
+export const mantine = /* @__PURE__ */ themeToVars({})
 
-export const xyvars = createGlobalThemeContract({
+export const xyvars = /* @__PURE__ */ createGlobalThemeContract({
   edge: {
     stroke: 'edge-stroke',
     strokeSelected: 'edge-stroke-selected',

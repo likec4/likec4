@@ -12,14 +12,6 @@
     "declarationDir": "./dist",
     "rootDir": "./src",
     "jsx": "react-jsxdev",
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "classnameTransform": "camelCase"
-        }
-      }
-    ],
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },

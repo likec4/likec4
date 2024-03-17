@@ -50,7 +50,7 @@ globalStyle(`.react-flow__edges > svg`, {
 })
 
 export const edgePathBg = style({
-  strokeWidth: `calc(${xyvars.edge.strokeWidth} + 5)`,
+  strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
   strokeOpacity: 0.12
 })
 
@@ -67,7 +67,7 @@ globalStyle(`.react-flow__edge.selected ${fillStrokeCtx}`, {
 export const cssEdgePath = style({
   selectors: {
     [`${container}[data-edge-hovered='true'] &`]: {
-      transition: 'all 120ms ease-out'
+      // transition: 'all 120ms ease-out'
     }
   }
 })

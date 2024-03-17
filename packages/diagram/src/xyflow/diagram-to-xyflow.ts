@@ -10,8 +10,8 @@ import {
   type Point
 } from '@likec4/core'
 import { getBezierEdgeCenter } from '@xyflow/react'
-import { hasAtLeast, isNil } from 'remeda'
-import type { XYFlowData, XYFlowEdge, XYFlowNode } from '../xyflow/types'
+import { hasAtLeast } from 'remeda'
+import type { XYFlowData } from '../xyflow/types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline

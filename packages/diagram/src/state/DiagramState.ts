@@ -59,7 +59,7 @@ export const {
   useTrackedState: useDiagramState,
   useUpdate: useUpdateDiagramState,
   useSelector: useDiagramStateSelector
-} = createContainer(useDiagramStateValue, {
+} = /* @__PURE__ */ createContainer(useDiagramStateValue, {
   concurrentMode: false,
   stateContextName: 'DiagramStateContext'
 })

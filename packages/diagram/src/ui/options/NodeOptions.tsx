@@ -40,7 +40,7 @@ export type ColorKey = typeof colors[0]['key']
 
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
-export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) => {
+export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
   const { onChange } = useXYFLowEventHandlers()
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
@@ -82,8 +82,7 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
               targets
             })
           }
-        }}
-      />
+        }} />
       <Colors
         nodes={nodes}
         onColorChange={(color: ColorKey | ThemeColorKey) => {
@@ -110,19 +109,18 @@ export const NodeOptions = ({ selectedNodeIds }: { selectedNodeIds: string[] }) 
               targets
             })
           }
-        }}
-      />
+        }} />
     </Stack>
   )
 }
 
-const Colors = ({
+function Colors({
   nodes: [firstNode, ...nodes],
   onColorChange
 }: {
   nodes: NonEmptyArray<XYNodesData>
   onColorChange: (color: ColorKey | ThemeColorKey) => void
-}) => {
+}) {
   let selectedColor = firstNode.data.element.color as ThemeColor | null
   takeWhile(nodes, node => {
     if (node.data.element.color !== selectedColor) {
@@ -188,13 +186,13 @@ const Colors = ({
   )
 }
 
-const ShapeOption = ({
+function ShapeOption({
   nodes: [firstNode, ...nodes],
   onShapeChange
 }: {
   nodes: NonEmptyArray<XYNodesData>
   onShapeChange: (shape: ElementShape) => void
-}) => {
+}) {
   let selectedShape = firstNode.data.element.shape as ElementShape | null
   takeWhile(nodes, node => {
     if (node.data.element.shape !== selectedShape) {
@@ -222,8 +220,7 @@ const ShapeOption = ({
             return
           }
           onShapeChange(value as ElementShape)
-        }}
-      />
+        }} />
     </Box>
   )
 }
