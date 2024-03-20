@@ -1175,7 +1175,6 @@ __metadata:
     khroma: "npm:^2.1.0"
     postcss: "npm:^8.4.35"
     postcss-preset-mantine: "npm:^1.13.0"
-    postcss-simple-vars: "npm:^7.0.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-tracked: "npm:^1.7.11"
@@ -1188,10 +1187,16 @@ __metadata:
     vite: "npm:^5.1.4"
     vite-plugin-shadow-style: "npm:^1.1.0"
   peerDependencies:
+    "@mantine/core": ^7.6.2
+    "@mantine/hooks": ^7.6.2
     react: ^18.2.0
     react-dom: ^18.2.0
     scheduler: ^0.23.0
   peerDependenciesMeta:
+    "@mantine/core":
+      optional: true
+    "@mantine/hooks":
+      optional: true
     scheduler:
       optional: true
   languageName: unknown
@@ -7800,6 +7805,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-up@npm:^6.2.0":
+  version: 6.3.0
+  resolution: "find-up@npm:6.3.0"
+  dependencies:
+    locate-path: "npm:^7.1.0"
+    path-exists: "npm:^5.0.0"
+  checksum: 10/4f3bdc30d41778c647e53f4923e72de5e5fb055157031f34501c5b36c2eb59f77b997edf9cb00165c6060cda7eaa2e3da82cb6be2e61d68ad3e07c4bc4cce67e
+  languageName: node
+  linkType: hard
+
 "flatted@npm:^3.2.9":
   version: 3.2.9
   resolution: "flatted@npm:3.2.9"
@@ -9867,6 +9882,9 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/yargs": "npm:^17.0.32"
+    "@vanilla-extract/css": "npm:^1.14.1"
+    "@vanilla-extract/dynamic": "npm:^2.1.0"
+    "@vanilla-extract/recipes": "npm:^0.5.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.6"
     "@vitejs/plugin-react": "npm:^4.2.1"
     boxen: "npm:^7.1.1"
@@ -9882,6 +9900,7 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     p-queue: "npm:^7.4.1"
     picocolors: "npm:^1.0.0"
+    pkg-up: "npm:^5.0.0"
     playwright-core: "npm:1.41.2"
     postcss: "npm:^8.4.35"
     postcss-preset-mantine: "npm:^1.13.0"
@@ -10016,6 +10035,15 @@ __metadata:
   dependencies:
     p-locate: "npm:^5.0.0"
   checksum: 10/72eb661788a0368c099a184c59d2fee760b3831c9c1c33955e8a19ae4a21b4116e53fa736dc086cdeb9fce9f7cc508f2f92d2d3aae516f133e16a2bb59a39f5a
+  languageName: node
+  linkType: hard
+
+"locate-path@npm:^7.1.0":
+  version: 7.2.0
+  resolution: "locate-path@npm:7.2.0"
+  dependencies:
+    p-locate: "npm:^6.0.0"
+  checksum: 10/1c6d269d4efec555937081be964e8a9b4a136319c79ca1d45ac6382212a8466113c75bd89e44521ca8ecd1c47fb08523b56eee5c0712bc7d14fec5f729deeb42
   languageName: node
   linkType: hard
 
@@ -12768,6 +12796,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-locate@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "p-locate@npm:6.0.0"
+  dependencies:
+    p-limit: "npm:^4.0.0"
+  checksum: 10/2bfe5234efa5e7a4e74b30a5479a193fdd9236f8f6b4d2f3f69e3d286d9a7d7ab0c118a2a50142efcf4e41625def635bd9332d6cbf9cc65d85eb0718c579ab38
+  languageName: node
+  linkType: hard
+
 "p-map@npm:^4.0.0":
   version: 4.0.0
   resolution: "p-map@npm:4.0.0"
@@ -12987,6 +13024,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-exists@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "path-exists@npm:5.0.0"
+  checksum: 10/8ca842868cab09423994596eb2c5ec2a971c17d1a3cb36dbf060592c730c725cd524b9067d7d2a1e031fef9ba7bd2ac6dc5ec9fb92aa693265f7be3987045254
+  languageName: node
+  linkType: hard
+
 "path-is-absolute@npm:^1.0.0":
   version: 1.0.1
   resolution: "path-is-absolute@npm:1.0.1"
@@ -13156,6 +13200,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pkg-up@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "pkg-up@npm:5.0.0"
+  dependencies:
+    find-up: "npm:^6.2.0"
+  checksum: 10/12753de6249876cbc877462549a6fd6ee3c113a2cbcb64ed9acd9e48ef5a2bdc7a08479901834ec0bb91a20120a0f4b38cb895593aef8643307867885bdc2f07
+  languageName: node
+  linkType: hard
+
 "playwright-core@npm:1.41.2":
   version: 1.41.2
   resolution: "playwright-core@npm:1.41.2"
@@ -13305,7 +13358,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-simple-vars@npm:^7.0.0, postcss-simple-vars@npm:^7.0.1":
+"postcss-simple-vars@npm:^7.0.0":
   version: 7.0.1
   resolution: "postcss-simple-vars@npm:7.0.1"
   peerDependencies:

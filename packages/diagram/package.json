@@ -37,20 +37,20 @@
     "clean": "run -T rimraf dist bundle"
   },
   "peerDependencies": {
+    "@mantine/core": "^7.6.2",
+    "@mantine/hooks": "^7.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "scheduler": "^0.23.0",
-    "@mantine/core": "^7.6.2",
-    "@mantine/hooks": "^7.6.2"
+    "scheduler": "^0.23.0"
   },
   "peerDependenciesMeta": {
-    "scheduler": {
-      "optional": true
-    },
     "@mantine/core": {
       "optional": true
     },
     "@mantine/hooks": {
+      "optional": true
+    },
+    "scheduler": {
       "optional": true
     }
   },

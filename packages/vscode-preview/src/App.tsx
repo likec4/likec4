@@ -102,7 +102,6 @@ const App = () => {
           view={view}
           controls={false}
           nodesDraggable={false}
-          fitOnSelect={false}
           onNavigateTo={({ element }) => {
             lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = null
