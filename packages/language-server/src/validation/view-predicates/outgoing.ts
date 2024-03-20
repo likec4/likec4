@@ -1,7 +1,7 @@
 import type { ValidationCheck } from 'langium'
+import { isNil } from 'remeda'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
-import { isNil } from 'remeda'
 
 export const outgoingExpressionChecks = (
   _services: LikeC4Services

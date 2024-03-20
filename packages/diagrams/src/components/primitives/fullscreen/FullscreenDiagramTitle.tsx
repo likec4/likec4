@@ -12,8 +12,7 @@ const ContainerStyles = {
   padding: '10px 20px 0 20px',
   boxSizing: 'border-box',
   color: 'rgb(241 245 249 / 95%)',
-  fontFamily:
-    'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif',
+  fontFamily: 'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif',
   fontSize: '16px',
   lineHeight: '1.1',
   fontWeight: '500',

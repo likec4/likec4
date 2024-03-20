@@ -19,7 +19,7 @@ export default function LikeC4ViewStory({
   return (
     <DiagramStateProvider>
       <Diagram
-        className='dev-app'
+        className="dev-app"
         diagram={LikeC4Views[viewId]}
         width={measures.width}
         height={measures.height}

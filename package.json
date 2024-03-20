@@ -13,6 +13,7 @@
     "node": "^18.0.0 || >=20.0.0"
   },
   "scripts": {
+    "fmt": "dprint fmt",
     "prepare": "husky install",
     "build": "turbo run build --filter='./packages/*'",
     "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",

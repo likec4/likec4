@@ -1,9 +1,6 @@
 import { hasAtLeast } from '@likec4/core'
 import * as vscode from 'vscode'
-import {
-  LanguageClient as BrowserLanguageClient,
-  type LanguageClientOptions
-} from 'vscode-languageclient/browser'
+import { LanguageClient as BrowserLanguageClient, type LanguageClientOptions } from 'vscode-languageclient/browser'
 import { ExtensionController } from '../common/ExtensionController'
 import { extensionName, extensionTitle, languageId } from '../const'
 import { Logger } from '../logger'

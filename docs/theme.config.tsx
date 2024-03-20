@@ -1,8 +1,8 @@
-import React from 'react'
-import type { DocsThemeConfig } from 'nextra-theme-docs'
-import { useConfig } from 'nextra-theme-docs'
 import { HeaderLogo } from '$/components/logo'
 import { useRouter } from 'next/router'
+import type { DocsThemeConfig } from 'nextra-theme-docs'
+import { useConfig } from 'nextra-theme-docs'
+import React from 'react'
 
 export default {
   logo: HeaderLogo,
@@ -30,21 +30,20 @@ export default {
     const { route } = useRouter()
     const url = 'https://likec4.dev' + route + (route.endsWith('/') ? '' : '/')
 
-    const description =
-      frontMatter.description ||
-      'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code'
+    const description = frontMatter.description
+      || 'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code'
 
     return {
       ...(frontMatter.title
         ? {
-            title: frontMatter.title,
-            titleTemplate: '%s'
-          }
+          title: frontMatter.title,
+          titleTemplate: '%s'
+        }
         : {
-            titleTemplate: route.startsWith('/examples/bigbank')
-              ? 'Example Big Bank: %s'
-              : '%s – LikeC4'
-          }),
+          titleTemplate: route.startsWith('/examples/bigbank')
+            ? 'Example Big Bank: %s'
+            : '%s – LikeC4'
+        }),
       description,
       themeColor: '#111',
       noindex: route.startsWith('/playground'),
@@ -72,7 +71,7 @@ export default {
 
     return (
       <>
-        <meta name='viewport' content={viewport} />
+        <meta name="viewport" content={viewport} />
       </>
     )
   }

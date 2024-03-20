@@ -2,19 +2,8 @@
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Rect,
-  Stage,
-  Text,
-  Group,
-  Path,
-  Circle,
-  Line,
-  Layer,
-  Image,
-  Ellipse
-} from 'react-konva/es/ReactKonvaCore'
 import KonvaCore from 'konva/lib/Core'
+import { Circle, Ellipse, Group, Image, Layer, Line, Path, Rect, Stage, Text } from 'react-konva/es/ReactKonvaCore'
 
 import 'konva/lib/shapes/Rect'
 import 'konva/lib/shapes/Text'
@@ -39,7 +28,7 @@ KonvaCore.hitOnDragEnabled = true
 KonvaCore.capturePointerEventsEnabled = true
 KonvaCore.dragButtons = [0, 2]
 
-export { KonvaCore, Stage, Group, Layer, Path, Text, Line, Circle, Rect, Image, Ellipse }
+export { Circle, Ellipse, Group, Image, KonvaCore, Layer, Line, Path, Rect, Stage, Text }
 
 /**
  * Partially copied from @react-spring/konva
@@ -49,21 +38,15 @@ export { KonvaCore, Stage, Group, Layer, Path, Text, Line, Circle, Rect, Image, 
 // prettier-ignore
 type AnimatedLeaf<T> =
   | Exclude<T, object | void>
-  | Extract<T, ReadonlyArray<number | string>> extends infer U
-    ? [U] extends [never]
-      ? never
-      : FluidValue<U | Exclude<T, object | void>>
-    : never
+  | Extract<T, ReadonlyArray<number | string>> extends infer U ? [U] extends [never] ? never
+  : FluidValue<U | Exclude<T, object | void>>
+  : never
 
 // prettier-ignore
-type AnimatedProp<T> = [T, T] extends [infer _T, infer DT]
-  ? DT extends void
-    ? undefined
-    : [DT] extends [never]
-      ? never
-      : DT extends object
-        ? DT
-        : DT | AnimatedLeaf<T>
+type AnimatedProp<T> = [T, T] extends [infer _T, infer DT] ? DT extends void ? undefined
+  : [DT] extends [never] ? never
+  : DT extends object ? DT
+  : DT | AnimatedLeaf<T>
   : never
 
 type AnimatedProps<Props extends object> = {

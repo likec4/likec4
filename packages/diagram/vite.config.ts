@@ -48,7 +48,15 @@ export default defineConfig(({ mode }) => {
       // minify: false,
       rollupOptions: {
         treeshake: 'smallest',
-        external: ['react', 'react-dom', 'react/jsx-runtime', 'scheduler', '@vanilla-extract/css'],
+        external: [
+          'react',
+          'react-dom',
+          'react/jsx-runtime',
+          'scheduler',
+          '@vanilla-extract/css',
+          '@mantine/core',
+          '@mantine/hooks'
+        ],
         plugins: [shadowStyle()]
       },
       cssTarget: 'esnext'

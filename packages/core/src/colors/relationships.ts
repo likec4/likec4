@@ -1,4 +1,4 @@
-import type { RelationshipThemeColorValues, RelationshipThemeColors } from '../types/theme'
+import type { RelationshipThemeColors, RelationshipThemeColorValues } from '../types/theme'
 
 const gray = {
   lineColor: '#6E6E6E',
@@ -33,7 +33,7 @@ export const RelationshipColors = {
   gray,
   green: {
     lineColor: '#15803d', // 700
-    labelBgColor: '#052e16', //950
+    labelBgColor: '#052e16', // 950
     labelColor: '#22c55e' // 500
   },
   indigo: {

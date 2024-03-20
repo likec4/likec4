@@ -10,11 +10,13 @@ const inter = Inter({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <style jsx global>{`
+      <style jsx global>
+        {`
         :root {
           --font-inter: ${inter.style.fontFamily};
         }
-      `}</style>
+      `}
+      </style>
       <Component {...pageProps} />
     </>
   )

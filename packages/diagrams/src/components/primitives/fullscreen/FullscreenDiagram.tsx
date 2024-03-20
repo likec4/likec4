@@ -2,7 +2,7 @@ import { invariant } from '@likec4/core'
 import { useKeyboardEvent, useMeasure } from '@react-hookz/web'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
 import type { HTMLAttributes } from 'react'
-import { useEffect, useRef, type CSSProperties } from 'react'
+import { type CSSProperties, useEffect, useRef } from 'react'
 import { Diagram } from '../../../diagram/Diagram'
 import type {
   DiagramInitialPosition,
@@ -16,7 +16,6 @@ import { CloseButton } from './CloseButton'
 
 // prettier-ignore
 export interface FullscreenDiagramProps extends HTMLAttributes<HTMLDivElement> {
-
   diagram: DiagramView
 
   /**
@@ -52,7 +51,6 @@ export interface FullscreenDiagramProps extends HTMLAttributes<HTMLDivElement> {
   onNodeClick?: OnNodeClick | undefined
   onStageClick?: OnStageClick | undefined
   onEdgeClick?: OnEdgeClick | undefined
-
 }
 
 const DefaultPadding = [30, 30, 30, 30] satisfies DiagramPaddings

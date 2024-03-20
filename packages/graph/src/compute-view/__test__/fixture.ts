@@ -1,10 +1,10 @@
 import type {
-  Expression as C4Expression,
-  ElementExpression as C4ElementExpression,
   ComputedView,
   Element,
+  ElementExpression as C4ElementExpression,
   ElementKind,
   ElementShape,
+  Expression as C4Expression,
   Fqn,
   Relation,
   RelationID,

@@ -11,6 +11,4 @@ import MonacoEditor from './monaco'
 // )
 // export default CodeEditor
 
-export {
-  MonacoEditor
-}
+export { MonacoEditor }

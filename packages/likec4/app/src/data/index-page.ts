@@ -1,8 +1,8 @@
 import type { ExtractAtomValue } from 'jotai'
 import { atom } from 'jotai'
-import { viewsAtom } from './atoms'
-import { groupBy, values } from 'remeda'
 import { splitAtom } from 'jotai/utils'
+import { groupBy, values } from 'remeda'
+import { viewsAtom } from './atoms'
 
 /**
  * Views grouped by folder

@@ -1,3 +1,4 @@
+import { Button } from '$/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,19 +7,14 @@ import {
   DropdownMenuTrigger
 } from '$/components/ui/dropdown-menu'
 import { cn } from '$/lib'
-import type { DiagramView, DiagramPaddings } from '@likec4/diagrams'
+import type { DiagramPaddings, DiagramView } from '@likec4/diagrams'
 import { Diagram } from '@likec4/diagrams'
-import { useMeasure, type Measures } from '@react-hookz/web'
+import { type Measures, useMeasure } from '@react-hookz/web'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock-upgrade'
-import MonacoEditor from './editor/monaco'
 import { useAtom, useAtomValue } from 'jotai'
 import { ChevronDown } from 'lucide-react'
+import { keys } from 'rambdax'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Button } from '$/components/ui/button'
-import {
-  PlaygroundDataProvider,
-  type PlaygroundDataProviderProps
-} from './data/PlaygroundDataProvider'
 import type { DiagramState } from './data'
 import {
   useCurrentDiagramState,
@@ -28,11 +24,12 @@ import {
   useUpdateCurrentFile
 } from './data'
 import { diagramIdAtom, viewsReadyAtom } from './data'
+import { PlaygroundDataProvider, type PlaygroundDataProviderProps } from './data/PlaygroundDataProvider'
+import MonacoEditor from './editor/monaco'
 import styles from './playground.module.css'
 import PlaygroundViewD2 from './view-d2'
 import PlaygroundViewDot from './view-dot'
 import PlaygroundViewMermaid from './view-mmd'
-import { keys } from 'rambdax'
 import PlaygroundViewNotReady from './view-not-ready'
 
 const ViewModes = {
@@ -83,7 +80,7 @@ const PlaygroundPreview = ({
   const previousState = previousStateRef.current
 
   if (loadState !== 'hasData' && !previousState) {
-    //console.log('PlaygroundPreview: diagramState.state !== "hasData" && !previousDiagram')
+    // console.log('PlaygroundPreview: diagramState.state !== "hasData" && !previousDiagram')
     return (
       <div
         className={styles.diagram}
@@ -104,7 +101,7 @@ const PlaygroundPreview = ({
   const state = currentState || previousState
 
   if (!state) {
-    //console.log('PlaygroundPreview: !diagram')
+    // console.log('PlaygroundPreview: !diagram')
     return (
       <div
         className={styles.diagram}
@@ -168,7 +165,7 @@ const PlaygroundPreview = ({
           paddingLeft: sidebarWidth + 20
         }}
       >
-        <div className='flex-initial flex-shrink-0'>
+        <div className="flex-initial flex-shrink-0">
           <h3
             className={cn(
               'mt-2 mb-0',
@@ -194,15 +191,15 @@ const PlaygroundPreview = ({
             {diagram.title}
           </h2>
         </div>
-        <div className='flex-initial flex-shrink-0'>
+        <div className="flex-initial flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='sm' className='rounded-sm'>
+              <Button variant="ghost" size="sm" className="rounded-sm">
                 {ViewModes[viewMode]}
-                <ChevronDown className='ml-2 w-4' />
+                <ChevronDown className="ml-2 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent align="end">
               <DropdownMenuRadioGroup
                 value={viewMode}
                 onValueChange={v => setViewMode(v as ViewMode)}

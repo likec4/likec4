@@ -1,5 +1,5 @@
-import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 import { cn } from '$/lib'
+import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 import styles from './CodePanel.module.css'
 
 type CodePanelProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>

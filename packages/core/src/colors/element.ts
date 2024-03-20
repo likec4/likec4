@@ -1,4 +1,4 @@
-import type { ElementThemeColorValues, ElementThemeColors } from '../types/theme'
+import type { ElementThemeColors, ElementThemeColorValues } from '../types/theme'
 
 const blue = {
   fill: '#3b82f6',

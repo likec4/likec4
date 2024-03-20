@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/prefer-ts-expect-error */
-import { useSpring, type SpringValues } from '@react-spring/konva'
+import { type SpringValues, useSpring } from '@react-spring/konva'
 import { AnimatedLine, AnimatedRect, AnimatedText } from '../../konva'
 
 import {
-  DefaultArrowType,
   type BBox,
+  DefaultArrowType,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
   type NonEmptyArray,
   type Point,
-  type RelationshipArrowType,
-  DefaultLineStyle,
-  DefaultRelationshipColor
+  type RelationshipArrowType
 } from '@likec4/core'
 import type { KonvaNodeEvents } from 'react-konva/es/ReactKonvaCore'
 import type { DiagramEdge, LikeC4Theme } from '../types'
@@ -104,7 +104,7 @@ function EdgeLabelBg({
       perfectDrawEnabled={false}
       fill={springs.labelBgColor}
       cornerRadius={2}
-      globalCompositeOperation='lighten'
+      globalCompositeOperation="lighten"
       hitStrokeWidth={20}
     />
   )
@@ -136,8 +136,9 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
     labels
   } = edge
 
-  const globalCompositeOperation: GlobalCompositeOperationType =
-    !color || color === DefaultRelationshipColor ? 'luminosity' : 'lighten'
+  const globalCompositeOperation: GlobalCompositeOperationType = !color || color === DefaultRelationshipColor
+    ? 'luminosity'
+    : 'lighten'
 
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
@@ -167,7 +168,7 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
       />
       {head !== 'none' && headArrow && (
         <EdgeArrow
-          key='head'
+          key="head"
           arrowType={head ?? DefaultArrowType}
           points={headArrow}
           springs={springs}
@@ -176,7 +177,7 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
       )}
       {tail !== 'none' && tailArrow && (
         <EdgeArrow
-          key='tail'
+          key="tail"
           arrowType={tail ?? DefaultArrowType}
           points={tailArrow}
           springs={springs}
@@ -191,8 +192,8 @@ export function Edge({ animate = true, edge, theme, isHovered, springs }: EdgePr
           springs={springs}
         />
       )}
-      {labels &&
-        labels.map((label, i) => (
+      {labels
+        && labels.map((label, i) => (
           <AnimatedText
             key={i}
             x={label.pt[0]}

@@ -1,7 +1,7 @@
-import { uniq, zip } from 'rambdax'
-import { hasAtLeast } from 'remeda'
 import { invariant } from '@likec4/core'
 import type { ElementView } from '@likec4/core'
+import { uniq, zip } from 'rambdax'
+import { hasAtLeast } from 'remeda'
 
 function commonAncestorPath(views: ElementView[], sep = '/') {
   if (views.length <= 1) return ''

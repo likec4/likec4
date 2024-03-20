@@ -8,7 +8,8 @@ import { useViewIdFromHash } from '../hooks/useViewIdFromHash'
 import { FullscreenDiagram, FullscreenDiagramTitle } from './primitives'
 
 export interface FullscreenDiagramBrowserProps<ViewId extends string>
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'chilren'> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'chilren'>
+{
   /**
    * Defined views
    */

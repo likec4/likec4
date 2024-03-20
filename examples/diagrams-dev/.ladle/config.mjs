@@ -1,35 +1,35 @@
 export default {
-  stories: "src/**/*.stories.tsx",
-  defaultStory: "development--diagram",
+  stories: 'src/**/*.stories.tsx',
+  defaultStory: 'development--diagram',
   addons: {
     a11y: {
-      enabled: false,
+      enabled: false
     },
     action: {
       enabled: true,
-      defaultState: [],
+      defaultState: []
     },
     control: {
       enabled: true,
-      defaultState: {},
+      defaultState: {}
     },
     ladle: {
-      enabled: false,
+      enabled: false
     },
     mode: {
       enabled: true,
-      defaultState: "full"
+      defaultState: 'full'
     },
     rtl: {
-      enabled: false,
+      enabled: false
     },
     source: {
       enabled: false,
-      defaultState: false,
+      defaultState: false
     },
     theme: {
       enabled: true,
-      defaultState: "dark"
+      defaultState: 'dark'
     },
     width: {
       enabled: true,
@@ -37,9 +37,9 @@ export default {
         xsmall: 414,
         small: 640,
         medium: 768,
-        large: 1024,
+        large: 1024
       },
-      defaultState: 0,
-    },
-  },
-};
+      defaultState: 0
+    }
+  }
+}

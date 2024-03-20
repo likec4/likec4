@@ -1,6 +1,6 @@
+import type { DiagramView } from '@likec4/core'
 import { groupBy } from 'rambdax'
 import { flattenTree } from 'react-accessible-treeview'
-import type { DiagramView } from '@likec4/core'
 
 interface ITreeNode {
   id: string

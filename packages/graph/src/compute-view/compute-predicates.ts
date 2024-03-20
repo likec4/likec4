@@ -9,10 +9,9 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
   // Because we need to add edges between them and the new elements
   const currentElements = [...this.elements]
 
-  const elements =
-    expr.isDescedants === true
-      ? this.graph.childrenOrElement(expr.element)
-      : [this.graph.element(expr.element)]
+  const elements = expr.isDescedants === true
+    ? this.graph.childrenOrElement(expr.element)
+    : [this.graph.element(expr.element)]
 
   this.addElement(...elements)
 
@@ -28,10 +27,9 @@ export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
 }
 
 export function excludeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
-  const elements =
-    expr.isDescedants === true
-      ? this.graph.children(expr.element)
-      : [this.graph.element(expr.element)]
+  const elements = expr.isDescedants === true
+    ? this.graph.children(expr.element)
+    : [this.graph.element(expr.element)]
 
   for (const el of elements) {
     this.excludeElement(el)
@@ -304,7 +302,6 @@ export function excludeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
  *   view of api {
  *     include  some -> api.*, some -> api
  *   }
- *
  */
 function resolveRelationExprElements(this: ComputeCtx, expr: Expr.ElementExpression) {
   if (Expr.isElementRef(expr) && this.root === expr.element && expr.isDescedants !== true) {

@@ -1,9 +1,9 @@
-import type { Opaque } from './opaque'
-import type { ElementKind, ElementShape, Fqn, Tag } from './element'
-import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
-import type { BasicElementView, ViewID, ViewRuleAutoLayout } from './view'
 import type { IconUrl, NonEmptyArray } from './_common'
+import type { ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { Opaque } from './opaque'
+import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
+import type { BasicElementView, ViewID, ViewRuleAutoLayout } from './view'
 
 export type NodeId = Fqn
 

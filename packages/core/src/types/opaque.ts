@@ -104,6 +104,5 @@ type WontWork = UnwrapOpaque<string>;
 export type UnwrapOpaque<OpaqueType extends Tagged<unknown>> = OpaqueType extends Opaque<
   infer Type,
   OpaqueType[typeof tag]
->
-  ? Type
+> ? Type
   : OpaqueType

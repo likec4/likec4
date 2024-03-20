@@ -1,7 +1,7 @@
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
-import pngCmd from './png'
 import jsonCmd from './json'
+import pngCmd from './png'
 
 export const exportCmd = {
   command: 'export <format> [path]',

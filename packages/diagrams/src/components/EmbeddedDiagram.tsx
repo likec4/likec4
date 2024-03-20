@@ -3,14 +3,9 @@ import { invariant } from '@likec4/core'
 import type Konva from 'konva'
 import type { HTMLAttributes, PropsWithoutRef, ReactNode, RefAttributes } from 'react'
 import { forwardRef, useCallback, useState } from 'react'
-import type {
-  DiagramApi,
-  DiagramInitialPosition,
-  DiagramPaddings,
-  KonvaPointerEvent
-} from '../diagram/types'
-import { ResponsiveDiagram } from './primitives'
+import type { DiagramApi, DiagramInitialPosition, DiagramPaddings, KonvaPointerEvent } from '../diagram/types'
 import { FullscreenDiagramBrowser } from './FullscreenDiagramBrowser'
+import { ResponsiveDiagram } from './primitives'
 import type { DiagramDiscloseProps, DiagramViewsProps } from './types'
 
 interface DiagramDiscloseRenderProps<ViewId extends string> extends DiagramDiscloseProps<ViewId> {
@@ -22,9 +17,8 @@ interface DiagramDiscloseRender<ViewId extends string> {
 }
 
 export interface EmbeddedDiagramProps<ViewId extends string>
-  extends DiagramViewsProps<ViewId>,
-    Omit<HTMLAttributes<HTMLDivElement>, 'children'>,
-    RefAttributes<DiagramApi> {
+  extends DiagramViewsProps<ViewId>, Omit<HTMLAttributes<HTMLDivElement>, 'children'>, RefAttributes<DiagramApi>
+{
   /**
    * If true, the diagram will be animated when nodes are added or removed
    * @default false

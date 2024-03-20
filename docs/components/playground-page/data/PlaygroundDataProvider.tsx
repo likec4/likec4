@@ -1,8 +1,8 @@
-import { Provider, createStore } from 'jotai'
+import { createStore, Provider } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils'
 import { useMemo } from 'react'
 import { currentFileAtom, filesAtom, viewsReadyAtom } from './atoms'
-import { BigBankPlayground, GettingStartedPlayground, BlankPlayground } from './initial'
+import { BigBankPlayground, BlankPlayground, GettingStartedPlayground } from './initial'
 
 export type PlaygroundDataProviderProps = {
   variant: 'bigbank' | 'getting-started' | 'blank'

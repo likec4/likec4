@@ -1,8 +1,8 @@
 import { writeFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
-import { LikeC4Views } from '../src/likec4/generated'
 import { fileURLToPath } from 'node:url'
+import { LikeC4Views } from '../src/likec4/generated'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -29,10 +29,12 @@ writeFileSync(
 
 import LikeC4ViewStory from '../likec4/LikeC4ViewStory'
 
-${views
-  .filter(v => v !== 'themecolors' && v.startsWith('themecolor'))
-  .map(v => viewOf(v, v.substring(11)))
-  .join('\n')}
+${
+    views
+      .filter(v => v !== 'themecolors' && v.startsWith('themecolor'))
+      .map(v => viewOf(v, v.substring(11)))
+      .join('\n')
+  }
 `
 )
 

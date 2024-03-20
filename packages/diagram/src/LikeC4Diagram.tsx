@@ -19,7 +19,6 @@ export function LikeC4Diagram({
   readonly = false,
   pannable = true,
   zoomable = true,
-  fitOnSelect = fitView,
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   disableBackground = false,
@@ -67,7 +66,6 @@ export function LikeC4Diagram({
             zoomable={zoomable}
             fitView={fitView}
             colorMode={colorMode}
-            fitOnSelect={fitOnSelect}
             disableBackground={disableBackground}
             fitViewPadding={fitViewPadding}
           >

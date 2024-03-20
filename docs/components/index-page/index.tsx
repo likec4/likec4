@@ -1,9 +1,9 @@
 import { cn } from '$/lib'
+import dynamic from 'next/dynamic'
 import { Noto_Sans } from 'next/font/google'
+import Link from 'next/link'
 import type { PropsWithChildren } from 'react'
 import type { LikeC4ViewId } from './generated'
-import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import styles from './index.module.css'
 
 const LikeC4EmbeddedView = dynamic({
@@ -44,18 +44,17 @@ export const Hero = () => (
         heroFont.className
       )}
     >
-      Visualize, collaborate, and evolve the software architecture with always actual and live
-      diagrams from your code
+      Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
     </div>
   </section>
 )
 
 export const HeroVideo = () => (
   <section className={cn('w-full', 'mt-12 md:mt-16')}>
-    <div className='w-full max-w-[1000px] mx-auto'>
-      <div className='relative overflow-hidden flex rounded-xl'>
-        <video autoPlay loop playsInline muted poster='/index-page-video.png'>
-          <source src='/index-page.mp4' type='video/mp4' />
+    <div className="w-full max-w-[1000px] mx-auto">
+      <div className="relative overflow-hidden flex rounded-xl">
+        <video autoPlay loop playsInline muted poster="/index-page-video.png">
+          <source src="/index-page.mp4" type="video/mp4" />
         </video>
       </div>
     </div>
@@ -87,7 +86,7 @@ type IndexPageSectionProps = PropsWithChildren<{
 export const IndexPageSection = ({ title, children }: IndexPageSectionProps) => (
   <section className={cn('w-full max-w-5xl mx-auto', 'mt-16 md:mt-28')}>
     {title && (
-      <div className='mx-auto max-w-[42rem] my-8 md:my-12'>
+      <div className="mx-auto max-w-[42rem] my-8 md:my-12">
         <h2
           className={cn(
             'text-center text-[min(2.25rem,max(3vw,1.5rem))]',
@@ -108,14 +107,14 @@ export const IndexPageWhy = () => (
   <div>
     <div>
       <div>Code</div>
-      <img src='/index-page-likec4-file.png' />
+      <img src="/index-page-likec4-file.png" />
     </div>
   </div>
 )
 
 export const IndexPageDiagram = () => (
   <div className={cn('mt-6', styles.embedded)}>
-    <LikeC4EmbeddedView viewId='index' />
+    <LikeC4EmbeddedView viewId="index" />
   </div>
 )
 

@@ -52,7 +52,8 @@ export function KonvaHtml({ children, groupProps, divProps, transform, transform
       div.style.zIndex = '10'
       div.style.top = '0px'
       div.style.left = '0px'
-      div.style.transform = `translate(${attrs.x}px, ${attrs.y}px) rotate(${attrs.rotation}deg) scaleX(${attrs.scaleX}) scaleY(${attrs.scaleY})`
+      div.style.transform =
+        `translate(${attrs.x}px, ${attrs.y}px) rotate(${attrs.rotation}deg) scaleX(${attrs.scaleX}) scaleY(${attrs.scaleY})`
       div.style.transformOrigin = 'top left'
     } else {
       div.style.position = ''

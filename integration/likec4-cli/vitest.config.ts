@@ -1,4 +1,4 @@
-import { defineProject, defineConfig } from 'vitest/config'
+import { defineConfig, defineProject } from 'vitest/config'
 
 export default defineProject({
   test: {

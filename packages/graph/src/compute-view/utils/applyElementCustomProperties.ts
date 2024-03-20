@@ -10,9 +10,11 @@ export function applyElementCustomProperties(_rules: ViewRule[], _nodes: Compute
     return _nodes
   }
   const nodes = [..._nodes]
-  for (const {
-    custom: { element, ...props }
-  } of rules) {
+  for (
+    const {
+      custom: { element, ...props }
+    } of rules
+  ) {
     const nodeIdx = nodes.findIndex(n => n.id === element)
     if (nodeIdx === -1) {
       continue

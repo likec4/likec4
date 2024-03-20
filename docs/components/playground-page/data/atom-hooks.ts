@@ -1,3 +1,4 @@
+import type { DotLayoutResult } from '@likec4/layouts'
 import { ExtractAtomValue, useAtomValue, useSetAtom, useStore } from 'jotai'
 import { useRef } from 'react'
 import {
@@ -9,7 +10,6 @@ import {
   updateCurrentFileAtom,
   viewsAtom
 } from './atoms'
-import type { DotLayoutResult } from '@likec4/layouts'
 
 export const useCurrentFile = () => useAtomValue(currentFileAtom)
 

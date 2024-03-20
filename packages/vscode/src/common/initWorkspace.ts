@@ -2,7 +2,7 @@ import { delay } from 'rambdax'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'
-import { Logger, logError } from '../logger'
+import { logError, Logger } from '../logger'
 import type { Rpc } from './Rpc'
 
 // LSP web extensions does not have access to the file system (even virtual)
@@ -15,8 +15,8 @@ export async function initWorkspace(rpc: Rpc) {
       return
     }
     Logger.info(
-      `[InitWorkspace] with pattern "${globPattern}" found:\n` +
-        docs.map(s => '  - ' + s).join('\n')
+      `[InitWorkspace] with pattern "${globPattern}" found:\n`
+        + docs.map(s => '  - ' + s).join('\n')
     )
     const isweb = isWebUi() || isVirtual()
     await delay(isweb ? 2000 : 500)

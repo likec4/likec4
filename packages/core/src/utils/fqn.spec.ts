@@ -1,5 +1,5 @@
-import { expect, describe, it } from 'vitest'
-import type { Fqn, Element } from '../types'
+import { describe, expect, it } from 'vitest'
+import type { Element, Fqn } from '../types'
 import {
   ancestorsFqn,
   commonAncestor,

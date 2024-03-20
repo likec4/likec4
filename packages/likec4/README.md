@@ -11,7 +11,7 @@ Features:
 
 ## Install
 
-> **Compatibility Note:**  
+> **Compatibility Note:**\
 > LikeC4 requires [Node.js](https://nodejs.org/en/) version 18+, 20+
 
 ### Local installation
@@ -76,10 +76,10 @@ likec4 start
 likec4 dev
 ```
 
-This recursively searches for `*.c4`, `*.likec4` files in the current folder, parses and serves diagrams in a local web server.  
+This recursively searches for `*.c4`, `*.likec4` files in the current folder, parses and serves diagrams in a local web server.\
 Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
 
-> **Tip:**  
+> **Tip:**\
 > You can use `likec4 start [path]` in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
 
 ### Build static website
@@ -94,7 +94,7 @@ Example [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 
 When you deploy the website, you can use the "Share" button to get links.
 
-> **Tip:**  
+> **Tip:**\
 > [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
 
 There is also a supplementary command to preview the build:
@@ -111,7 +111,7 @@ For example, this command can be used on CI, to compare diagrams with ones from 
 likec4 export png -o ./assets
 ```
 
-This command starts the local web server and uses Playwright to take screenshots.  
+This command starts the local web server and uses Playwright to take screenshots.\
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details.
 
 ### Export to JSON
@@ -139,7 +139,7 @@ likec4 codegen react --outfile ./src/likec4.generated.tsx
 
 Check [documentation](https://likec4.dev/docs/tools/react/)
 
-> Output file should have `.tsx` extension  
+> Output file should have `.tsx` extension\
 > By default, it generates `likec4.generated.tsx` in current directory
 
 ### Generate structured data
@@ -154,7 +154,7 @@ likec4 codegen views ...
 likec4 codegen ts ...
 ```
 
-> Output file should have `.ts` extension  
+> Output file should have `.ts` extension\
 > By default, it generates `likec4.generated.ts` in current directory
 
 ## Development

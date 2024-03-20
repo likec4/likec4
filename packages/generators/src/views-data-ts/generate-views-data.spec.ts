@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
-import { generateViewsDataTs, generateViewsDataJs } from './generate-views-data'
+import { generateViewsDataJs, generateViewsDataTs } from './generate-views-data'
 
 test('generate generateViewsDataJs', () => {
   expect(generateViewsDataJs([fakeDiagram, fakeDiagram2])).toMatchSnapshot()

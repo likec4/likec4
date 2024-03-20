@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  computedAmazonView,
-  computedCloudView,
-  computedCloud3levels,
-  computedIndexView
-} from './__fixtures__'
+import { computedAmazonView, computedCloud3levels, computedCloudView, computedIndexView } from './__fixtures__'
 import { printToDot } from './printToDot'
 
 describe('printToDot', () => {

@@ -1,5 +1,5 @@
-import { Provider, createStore } from 'jotai'
-import { useState, type PropsWithChildren } from 'react'
+import { createStore, Provider } from 'jotai'
+import { type PropsWithChildren, useState } from 'react'
 
 export function DiagramStateProvider({ children }: PropsWithChildren) {
   const [store] = useState(() => createStore())

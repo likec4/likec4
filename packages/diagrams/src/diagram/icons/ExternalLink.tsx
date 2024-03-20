@@ -1,6 +1,6 @@
+import { defaultTheme as theme } from '@likec4/core'
 import type { FrameValue, SpringValue } from '@react-spring/konva'
 import { AnimatedGroup, Circle, Path } from '../../konva'
-import { defaultTheme as theme } from '@likec4/core'
 
 export type ExternalLinkProps = {
   visible?: boolean | FrameValue<boolean>
@@ -62,7 +62,7 @@ export const ExternalLink = ({
         shadowForStrokeEnabled={false}
       />
       <Path
-        data='M11 3a1 1 0 1 0 0 2h2.586l-6.293 6.293a1 1 0 1 0 1.414 1.414L15 6.414V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5z'
+        data="M11 3a1 1 0 1 0 0 2h2.586l-6.293 6.293a1 1 0 1 0 1.414 1.414L15 6.414V9a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1h-5z"
         fill={fillIcon}
         strokeEnabled={false}
         perfectDrawEnabled={false}
@@ -77,7 +77,7 @@ export const ExternalLink = ({
         // scaleY={width / (iconSize + 6)}
       />
       <Path
-        data='M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5z'
+        data="M5 5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-3a1 1 0 1 0-2 0v3H5V7h3a1 1 0 0 0 0-2H5z"
         fill={fillIcon}
         strokeEnabled={false}
         perfectDrawEnabled={false}
