@@ -3,9 +3,9 @@
   "useTabs": false,
   "typescript": {
     "semiColons": "asi",
-    "trailingCommas": "never",
     "importDeclaration.preferSingleLine": true,
     "quoteStyle": "alwaysSingle",
+    "nextControlFlowPosition": "maintain",
     "jsxOpeningElement.bracketPosition": "maintain",
     "jsx.quoteStyle": "preferDouble",
     "jsxSelfClosingElement.bracketPosition": "maintain",
@@ -13,7 +13,10 @@
   },
   "json": {
   },
-  "prettier": {
+  "biome": {
+    "associations": [
+      "!**/*.(c|m)?(ts|js)x?"
+    ],
     "proseWrap": "preserve",
     "singleQuote": true,
     "semi": false,
@@ -36,12 +39,13 @@
     "examples/*/dist",
     "packages/*/dist",
     "packages/*/contrib",
+    "packages/likec4/app/src/routeTree.gen.ts",
     "packages/*/src/generated"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.89.1.wasm",
-    "https://plugins.dprint.dev/json-0.19.1.wasm",
-    "https://plugins.dprint.dev/markdown-0.16.3.wasm",
-    "https://plugins.dprint.dev/prettier-0.38.1.json@ae9b60b1ca7e22223cb47325b3d42c681444b46863d28ed92edc426f8a177e58"
+    "https://plugins.dprint.dev/typescript-0.89.3.wasm",
+    "https://plugins.dprint.dev/json-0.19.2.wasm",
+    "https://plugins.dprint.dev/markdown-0.16.4.wasm",
+    "https://plugins.dprint.dev/biome-0.4.1.wasm"
   ]
 }
