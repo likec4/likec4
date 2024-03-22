@@ -10,6 +10,7 @@ export function generateViewsDataJs(views: DiagramView[]) {
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
+    /* prettier-ignore-start */
     /* eslint-disable */
 
     `.append(NL, NL)
@@ -46,7 +47,9 @@ export function generateViewsDataJs(views: DiagramView[]) {
         Object.prototype.hasOwnProperty.call(LikeC4Views, value)
       )
     }
-  `.append(NL, NL)
+
+    /* prettier-ignore-end */
+  `.append(NL)
   return toString(out)
 }
 
@@ -57,7 +60,10 @@ export function generateViewsDataTs(views: DiagramView[]) {
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
+    /* prettier-ignore-start */
     /* eslint-disable */
+
+    // @ts-nocheck
 
     import type { DiagramView } from '@likec4/core'
     `.append(NL, NL)
@@ -102,22 +108,37 @@ export function generateViewsDataTs(views: DiagramView[]) {
       )
     }
 
-    // Re-export types
-    export type {
-      Fqn,
-      Element,
-      RelationID,
-      Relation,
-      NodeId,
-      EdgeId,
-      ComputedNode,
-      ComputedEdge,
-      ComputedView,
-      DiagramView,
-      DiagramNode,
-      DiagramEdge,
-      DiagramLabel
-    } from '@likec4/core'
-  `.append(NL, NL)
+    /* prettier-ignore-end */
+  `.append(NL)
+  return toString(out)
+}
+
+export function generateViewsDataDTs(views: DiagramView[]) {
+  const out = new CompositeGeneratorNode()
+  out.appendTemplate`
+    /******************************************************************************
+     * This file was generated
+     * DO NOT EDIT MANUALLY!
+     ******************************************************************************/
+    /* prettier-ignore-start */
+    /* eslint-disable */
+
+    import type { DiagramView } from '@likec4/core'
+    `.append(NL, NL)
+
+  if (views.length == 0) {
+    out.append('export {}', NL)
+    return toString(out)
+  }
+
+  out.appendTemplate`
+    export type LikeC4ViewId = ${generateViewId(views)};
+    export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
+
+    export declare const LikeC4Views: LikeC4Views
+    export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+
+    /* prettier-ignore-end */
+  `.append(NL)
   return toString(out)
 }

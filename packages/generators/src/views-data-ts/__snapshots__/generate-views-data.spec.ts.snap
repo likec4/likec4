@@ -1,10 +1,32 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generate generateViewsDataDTs 1`] = `
+"/******************************************************************************
+ * This file was generated
+ * DO NOT EDIT MANUALLY!
+ ******************************************************************************/
+/* prettier-ignore-start */
+/* eslint-disable */
+
+import type { DiagramView } from '@likec4/core'
+
+
+export type LikeC4ViewId = 'fakeView' | '74f5364fa4b';
+export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
+
+export declare const LikeC4Views: LikeC4Views
+export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+
+/* prettier-ignore-end */
+"
+`;
+
 exports[`generate generateViewsDataJs 1`] = `
 "/******************************************************************************
  * This file was generated
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
+/* prettier-ignore-start */
 /* eslint-disable */
 
 
@@ -23,6 +45,7 @@ export function isLikeC4ViewId(value) {
   )
 }
 
+/* prettier-ignore-end */
 "
 `;
 
@@ -31,7 +54,10 @@ exports[`generate generateViewsDataTs 1`] = `
  * This file was generated
  * DO NOT EDIT MANUALLY!
  ******************************************************************************/
+/* prettier-ignore-start */
 /* eslint-disable */
+
+// @ts-nocheck
 
 import type { DiagramView } from '@likec4/core'
 
@@ -52,22 +78,6 @@ export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
   )
 }
 
-// Re-export types
-export type {
-  Fqn,
-  Element,
-  RelationID,
-  Relation,
-  NodeId,
-  EdgeId,
-  ComputedNode,
-  ComputedEdge,
-  ComputedView,
-  DiagramView,
-  DiagramNode,
-  DiagramEdge,
-  DiagramLabel
-} from '@likec4/core'
-
+/* prettier-ignore-end */
 "
 `;

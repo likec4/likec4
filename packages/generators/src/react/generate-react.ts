@@ -29,7 +29,11 @@ export function generateReact(views: DiagramView[]) {
        * This file was generated
        * DO NOT EDIT MANUALLY!
        ******************************************************************************/
+      /* prettier-ignore-start */
+
       /* eslint-disable */
+
+      // @ts-nocheck
 
       import type { DiagramView } from '@likec4/diagrams'
       import { LikeC4 } from '@likec4/diagrams'
@@ -107,6 +111,8 @@ export function generateReact(views: DiagramView[]) {
         DiagramLabel,
         DiagramView
       } from '@likec4/diagrams'
+
+      /* prettier-ignore-end */
     `.append(NL)
 
   return toString(out)
