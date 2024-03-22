@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type DiagramView, hasAtLeast } from '@likec4/core'
+import { hasAtLeast } from '@likec4/core'
 import { rm } from 'fs/promises'
 import { resolve } from 'node:path'
+import { hrtime } from 'node:process'
 import k from 'picocolors'
 import { chromium } from 'playwright-core'
 import { LanguageServices } from '../../../language-services'
-import { createLikeC4Logger, startTimer } from '../../../logger'
+import { createLikeC4Logger, inMillis, startTimer } from '../../../logger'
 import { viteBuild } from '../../../vite/vite-build'
 import { vitePreview } from '../../../vite/vite-preview'
-import { mkTakeScreenshotFn } from '../utils/takeScreenshot'
+import { takeScreenshot } from '../utils/takeScreenshot'
 
 type HandlerParams = {
   /**
@@ -30,7 +31,7 @@ export async function handler({ path, useDotBin, output }: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   const views = await languageServices.views.diagrams()
-  if (views.length === 0) {
+  if (!hasAtLeast(views, 1)) {
     logger.warn('no views found')
     throw new Error('no views found')
   }
@@ -52,40 +53,48 @@ export async function handler({ path, useDotBin, output }: HandlerParams) {
     logger.error(`no preview server url`)
     throw new Error(`no preview server url`)
   }
-
-  const pageUrl = (view: DiagramView) => `${hosts[0]}export/${encodeURIComponent(view.id)}`
+  logger.info(`${k.dim('output')} ${output}`)
 
   logger.info(k.cyan(`start chromium`))
-
+  const baseURL = hosts[0]
   const browser = await chromium.launch()
-  const page = await browser.newPage({
-    deviceScaleFactor: 2
+  const browserContext = await browser.newContext({
+    deviceScaleFactor: 2,
+    colorScheme: 'dark',
+    baseURL,
+    bypassCSP: true,
+    isMobile: false
   })
+  browserContext.setDefaultNavigationTimeout(10000)
+  browserContext.setDefaultTimeout(5000)
 
-  const takeScreenshot = mkTakeScreenshotFn({ page, pageUrl, outputDir: output, logger })
-  for (const view of views) {
-    await takeScreenshot(view)
+  logger.info(`${k.cyan('baseURL')} ${k.dim(baseURL)}`)
+
+  const startTakeScreenshot = hrtime()
+
+  const succeed = await takeScreenshot({ browserContext, views, output, logger })
+
+  const { pretty } = inMillis(startTakeScreenshot)
+
+  if (succeed.length === views.length) {
+    logger.info(k.green(`✓ all ${succeed.length} views in ${pretty}`))
+  } else if (succeed.length > 1) {
+    logger.info(
+      k.green(`exported ${succeed.length}`) + ' '
+        + k.magenta(`failed ${views.length - succeed.length}` + ` in ${pretty}`)
+    )
+  } else {
+    logger.error(k.red(`failed to export any view out of ${views.length} (${pretty})`))
   }
-  await page.close()
-  // const concurrency = Math.max(availableParallelism() - 1, 1)
-  // logger.info(`${k.dim('concurrency')} ${concurrency}`)
-  // logger.info(`${k.dim('output')} ${output}`)
-  // const queue = new PQueue({ concurrency })
-
-  // await queue.addAll(
-  //   views.map(v => () => takeScreenshot(v)),
-  //   {
-  //     throwOnTimeout: true,
-  //     timeout: 60000
-  //   }
-  // )
-
-  // delete vite cache
-  logger.info(k.dim('clean build outDir'))
-  await rm(buildOutputDir, { recursive: true, force: true })
 
   logger.info(k.cyan(`close chromium`))
+  await browserContext.close()
   await browser.close()
+
+  // delete vite cache
+  logger.info(k.cyan('clean build outDir'))
+  await rm(buildOutputDir, { recursive: true, force: true })
+
   logger.info(k.cyan(`stop preview server`))
   await previewServer.close()
   timer.stopAndLog(`✓ export in `)

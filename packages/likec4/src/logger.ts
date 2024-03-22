@@ -1,4 +1,5 @@
 import { isCI } from 'ci-info'
+import { hrtime } from 'node:process'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
 import type { LogErrorOptions, LogOptions } from 'vite'
@@ -51,13 +52,20 @@ export type Logger = ReturnType<typeof createLikeC4Logger>
 
 const NS_PER_MS = 1e6
 
+export function inMillis(start: [number, number]) {
+  const [seconds, nanoseconds] = hrtime(start)
+  const ms = seconds * 1000 + nanoseconds / NS_PER_MS
+  return {
+    ms,
+    pretty: prettyMilliseconds(ms)
+  }
+}
+
 export function startTimer(logger: Logger) {
-  const start = process.hrtime()
+  const start = hrtime()
   return {
     stopAndLog(msg = '✓ done in ') {
-      const [seconds, nanoseconds] = process.hrtime(start)
-      const ms = seconds * 1000 + nanoseconds / NS_PER_MS
-      logger.info(k.green(`${msg}${prettyMilliseconds(ms)}`))
+      logger.info(k.green(`${msg}${inMillis(start).pretty}`))
     }
   }
 }
