@@ -9093,7 +9093,7 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:^0.9.5"
     picocolors: "npm:^1.0.0"
-    playwright-core: "npm:1.41.2"
+    playwright-core: "npm:1.42.1"
     postcss: "npm:^8.4.35"
     postcss-nested: "npm:^6.0.1"
     pretty-ms: "npm:^8.0.0"
@@ -12335,12 +12335,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.41.2":
-  version: 1.41.2
-  resolution: "playwright-core@npm:1.41.2"
+"playwright-core@npm:1.42.1":
+  version: 1.42.1
+  resolution: "playwright-core@npm:1.42.1"
   bin:
     playwright-core: cli.js
-  checksum: 10/77ff881ebb9cc0654edd00c5ff202f5f61aee7a5318e1f12a82e30a3636de21e8b5982fae6138e5bb90115ae509c15a640cf85b10b3e2daebb2bb286da54fd4c
+  checksum: 10/6a71d2e2aa5b054d6e83836f09e139a0ff4de3aa9b6aebe0e03de3ab828c735d23a20a60fafcee91c1658da490cc390f05af463325ac842beaff58a173f7ad9e
   languageName: node
   linkType: hard
 
