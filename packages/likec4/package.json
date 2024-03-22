@@ -57,7 +57,7 @@
     "clsx": "^1.2.1",
     "jotai": "^2.6.4",
     "nanostores": "^0.9.5",
-    "playwright-core": "1.41.2",
+    "playwright-core": "1.42.1",
     "postcss": "^8.4.35",
     "postcss-nested": "^6.0.1",
     "prop-types": "^15.8.1",
