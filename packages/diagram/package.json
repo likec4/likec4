@@ -21,11 +21,12 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts",
     "./bundle": {
       "types": "./dist/bundle.d.ts",
       "default": "./bundle/index.js"
-    }
+    },
+    "./bundle/style.css": "./bundle/style.css",
+    ".": "./src/index.ts"
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
@@ -35,6 +36,9 @@
     "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist bundle"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*"
   },
   "peerDependencies": {
     "@mantine/core": "^7.6.2",
@@ -55,7 +59,6 @@
     }
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@lume/kiwi": "^0.4.3",
     "@mantine/core": "^7.6.2",
     "@mantine/hooks": "^7.6.2",

@@ -1,15 +1,20 @@
-import type { ThemeColor } from '@likec4/core'
-import { defaultTheme } from '@likec4/core/colors'
-import { createGlobalTheme, fallbackVar, style } from '@vanilla-extract/css'
-import { mantine } from './mantine'
-import { vars, xyvars } from './theme.css'
+import { defaultTheme, type ThemeColor } from '@likec4/core'
+import { createGlobalTheme, createTheme, fallbackVar, style } from '@vanilla-extract/css'
+import { vars, xyvars } from '../theme.css'
+import { mantine } from './index'
 
-export const scope = style({})
+// export const scope = style({})
 
-createGlobalTheme(':root', {
+export const scope = createTheme({
   ...vars,
   xyflowbg: xyvars.background
 }, {
+  // the[1].compound.font
+
+  // createGlobalTheme(':root', {
+  //   ...vars,
+  //   xyflowbg: xyvars.background,
+  // }, {
   compound: {
     font: fallbackVar(vars.likec4.font, mantine.fontFamily),
     titleColor: vars.element.loContrast

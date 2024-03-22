@@ -1,23 +1,30 @@
 import type { AutoLayoutDirection } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { useNodesInitialized } from '@xyflow/react'
-import { useRef } from 'react'
+import { useNodesInitialized, ViewportPortal } from '@xyflow/react'
+import clsx from 'clsx'
+import { shallowEqual } from 'fast-equals'
+import { memo, useEffect, useRef } from 'react'
+import useTilg from 'tilg'
+import { useDiagramState, useDiagramStateTracked } from '../state'
 import { useXYFlow } from './hooks'
 
 /**
  * Fits the view when the view changes and nodes are initialized
  */
-export function FitviewOnDiagramChange({ viewId, layout }: { viewId: string; layout: AutoLayoutDirection }) {
+export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
+  const [state, updateState] = useDiagramStateTracked()
   const xyflow = useXYFlow()
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
-  const viewLayout = viewId + '_' + layout
+  const viewLayout = state.viewId + '_' + state.viewLayout
   const prevViewLayoutRef = useRef(viewLayout)
+
+  const isReady = nodeInitialized && xyflow.viewportInitialized
 
   useDebouncedEffect(
     () => {
-      if (!nodeInitialized || prevViewLayoutRef.current === viewLayout) {
+      if (!isReady || prevViewLayoutRef.current === viewLayout) {
         return
       }
       const zoom = xyflow.getZoom()
@@ -25,11 +32,16 @@ export function FitviewOnDiagramChange({ viewId, layout }: { viewId: string; lay
         duration: 400,
         maxZoom: Math.max(1, zoom)
       })
+      updateState({ viewportMoved: false })
       prevViewLayoutRef.current = viewLayout
     },
-    [nodeInitialized, viewLayout],
-    30,
-    500
+    [isReady, viewLayout],
+    50,
+    600
   )
+
   return null
-}
+
+  // TODO: listen to resize event
+  // return <div className={clsx('react-flow__panel')}></div>
+}, shallowEqual)

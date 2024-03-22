@@ -1,17 +1,14 @@
-import '@mantine/core/styles.css'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import '@xyflow/react/dist/style.css'
-
-import { MantineProvider } from '@mantine/core'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-import { LikeC4Diagram } from './LikeC4Diagram'
-import type { LikeC4DiagramEventHandlers, LikeC4DiagramProps } from './LikeC4Diagram.props'
+import './index.css'
 
 export * from './LikeC4Diagram'
-export * from './LikeC4View'
+export * from './StaticLikeC4Diagram'
 
+export type * from './LikeC4Diagram'
 export type * from './LikeC4Diagram.props'
 export type * from './xyflow/types'
+;``
 
 export const Styles: string =
   // @ts-expect-error invalid typings ReactFlow
@@ -56,3 +53,25 @@ export const Styles: string =
 //     </template>
 //   )
 // }
+
+function hasStyleSheet() {
+  for (const sheet of document.styleSheets) {
+    const node = sheet.ownerNode
+    if (node && 'hasAttribute' in node && node.hasAttribute('data-likec4-styles')) {
+      return true
+    }
+  }
+  return false
+}
+
+export function useInjectStyles() {
+  useIsomorphicLayoutEffect(() => {
+    if (!hasStyleSheet()) {
+      const style = document.createElement('style')
+      style.innerHTML = Styles
+      style.setAttribute('data-likec4-styles', '')
+      style.type = 'text/css'
+      document.head.appendChild(style)
+    }
+  }, [])
+}

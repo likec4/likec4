@@ -13,10 +13,10 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
-import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as IndexImport } from './routes/index'
 import { Route as ViewViewIdImport } from './routes/view.$viewId'
+import { Route as ExportViewIdImport } from './routes/export.$viewId'
+import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
 import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor'
 
 // Create Virtual Routes
@@ -30,47 +30,55 @@ const ViewViewIdD2LazyImport = createFileRoute('/view/$viewId/d2')()
 
 const IndexRoute = IndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ViewViewIdRoute = ViewViewIdImport.update({
   path: '/view/$viewId',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ExportViewIdRoute = ExportViewIdImport.update({
   path: '/export/$viewId',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const EmbedViewIdRoute = EmbedViewIdImport.update({
   path: '/embed/$viewId',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const ViewViewIdReactLazyRoute = ViewViewIdReactLazyImport.update({
   path: '/react',
-  getParentRoute: () => ViewViewIdRoute
-} as any).lazy(() => import('./routes/view.$viewId.react.lazy').then((d) => d.Route))
+  getParentRoute: () => ViewViewIdRoute,
+} as any).lazy(() =>
+  import('./routes/view.$viewId.react.lazy').then((d) => d.Route),
+)
 
 const ViewViewIdMmdLazyRoute = ViewViewIdMmdLazyImport.update({
   path: '/mmd',
-  getParentRoute: () => ViewViewIdRoute
-} as any).lazy(() => import('./routes/view.$viewId.mmd.lazy').then((d) => d.Route))
+  getParentRoute: () => ViewViewIdRoute,
+} as any).lazy(() =>
+  import('./routes/view.$viewId.mmd.lazy').then((d) => d.Route),
+)
 
 const ViewViewIdDotLazyRoute = ViewViewIdDotLazyImport.update({
   path: '/dot',
-  getParentRoute: () => ViewViewIdRoute
-} as any).lazy(() => import('./routes/view.$viewId.dot.lazy').then((d) => d.Route))
+  getParentRoute: () => ViewViewIdRoute,
+} as any).lazy(() =>
+  import('./routes/view.$viewId.dot.lazy').then((d) => d.Route),
+)
 
 const ViewViewIdD2LazyRoute = ViewViewIdD2LazyImport.update({
   path: '/d2',
-  getParentRoute: () => ViewViewIdRoute
-} as any).lazy(() => import('./routes/view.$viewId.d2.lazy').then((d) => d.Route))
+  getParentRoute: () => ViewViewIdRoute,
+} as any).lazy(() =>
+  import('./routes/view.$viewId.d2.lazy').then((d) => d.Route),
+)
 
 const ViewViewIdEditorRoute = ViewViewIdEditorImport.update({
   path: '/editor',
-  getParentRoute: () => ViewViewIdRoute
+  getParentRoute: () => ViewViewIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -127,8 +135,8 @@ export const routeTree = rootRoute.addChildren([
     ViewViewIdD2LazyRoute,
     ViewViewIdDotLazyRoute,
     ViewViewIdMmdLazyRoute,
-    ViewViewIdReactLazyRoute
-  ])
+    ViewViewIdReactLazyRoute,
+  ]),
 ])
 
 /* prettier-ignore-end */

@@ -10,7 +10,7 @@ import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 /**
  * Syncs the diagram state with the XYFlow instance
  */
-export function UpdateXYFlowOnDiagramChange({
+export function UpdateOnDiagramChange({
   nodesDraggable,
   view: {
     nodes,
@@ -21,6 +21,9 @@ export function UpdateXYFlowOnDiagramChange({
   const initialized = xyflow.viewportInitialized
 
   useUpdateEffect(() => {
+    if (!initialized) {
+      return
+    }
     const updates = diagramViewToXYFlowData({
       nodes,
       edges

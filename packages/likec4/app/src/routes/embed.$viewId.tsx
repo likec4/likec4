@@ -1,4 +1,4 @@
-import { LikeC4Diagram } from '@likec4/diagram'
+import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
@@ -24,12 +24,8 @@ function EmbedPage() {
       pos={'absolute'}
       style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
     >
-      <LikeC4Diagram
+      <StaticLikeC4Diagram
         view={diagram}
-        pannable={false}
-        readonly
-        disableHovercards
-        disableBackground
       />
     </Box>
   )

@@ -61,7 +61,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   width,
   height
 }) {
-  useTilg()
+  // useTilg()
   const diagramState = useDiagramState()
   const isHovercards = diagramState.disableHovercards !== true
   const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo

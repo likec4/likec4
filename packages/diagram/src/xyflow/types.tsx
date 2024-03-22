@@ -1,5 +1,6 @@
 import type { BBox, DiagramEdge, DiagramNode, Point } from '@likec4/core'
-import { type Edge, isNode, type Node, type ReactFlowInstance } from '@xyflow/react'
+import { isNode } from '@xyflow/react'
+import type { Edge, Node, ReactFlowInstance } from '@xyflow/react'
 import { isTruthy } from 'remeda'
 import type { SetReadonly, SetRequired, Simplify } from 'type-fest'
 
@@ -68,4 +69,7 @@ export namespace XYFlowEdge {
 
 export type XYFlowInstance = ReactFlowInstance<XYFlowNode, XYFlowEdge>
 
-export type XYFlowData = { nodes: XYFlowNode[]; edges: XYFlowEdge[] }
+export type XYFlowData = {
+  nodes: XYFlowNode[]
+  edges: XYFlowEdge[]
+}

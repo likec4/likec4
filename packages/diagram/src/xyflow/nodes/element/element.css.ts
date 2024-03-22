@@ -1,14 +1,7 @@
 import { rem } from '@mantine/core'
-import {
-  assignVars,
-  createVar,
-  fallbackVar,
-  generateIdentifier,
-  globalKeyframes,
-  globalStyle,
-  style
-} from '@vanilla-extract/css'
-import { mantine, vars } from '../../../theme'
+import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { mantine } from '../../../mantine'
+import { vars } from '../../../theme.css'
 
 export const stokeFillMix = createVar('stroke-fill-mix')
 const elPadding = createVar('el-padding')

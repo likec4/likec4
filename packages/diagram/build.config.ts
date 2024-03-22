@@ -25,10 +25,11 @@ export default defineBuildConfig({
   ],
   // if clean enabled, TS Language server in VSCode has to be restarted
   clean: false,
+  declaration: true,
   hooks: {
     'build:before': async (ctx) => {
       await $`vite build`
-      await $`tsc --emitDeclarationOnly --declaration --declarationMap`
+      // await $`tsc --emitDeclarationOnly --declaration --declarationMap`
     }
   }
 })

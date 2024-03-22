@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 
 import type { DiagramView } from '@likec4/core'
 // import { LikeC4View } from '@likec4/diagram'
-import { LikeC4View } from '@likec4/diagram'
+import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separator, Text } from '@radix-ui/themes'
 import { useDebouncedEffect } from '@react-hookz/web'
@@ -10,8 +10,8 @@ import type { Atom } from 'jotai'
 import { useAtomValue } from 'jotai'
 import { memo, useState } from 'react'
 import { useViewGroupsAtoms, type ViewsGroup as IViewsGroup } from '../data'
+import * as styles from './-index.css'
 import { cssPreviewCardLink } from './-view.css'
-import styles from './index.module.css'
 
 export const Route = createFileRoute('/')({
   component: IndexPage
@@ -145,8 +145,10 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
   return (
     <Box className={styles.previewBg} style={{ width: 350, height: 175 }}>
       {diagram && (
-        <LikeC4View
+        <StaticLikeC4Diagram
           view={diagram}
+          fitView
+          background={'dots'}
         />
         // reactflowProps={{
         //   width: 350,

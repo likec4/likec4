@@ -1,8 +1,8 @@
-import { Card } from '@mantine/core'
+import { Card, FocusTrap } from '@mantine/core'
 import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { memo, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
@@ -37,6 +37,7 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
     <AnimatePresence>
       {selectedNodes.length > 0 && (
         <motion.div
+          key={'nodes'}
           initial={{ opacity: 0.3, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
@@ -46,7 +47,7 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
             transformOrigin: 'center right'
           }}
         >
-          <Card shadow="sm" autoFocus={false}>
+          <Card shadow="sm">
             <NodeOptions selectedNodeIds={selectedNodes} />
             {
               /* <Divider mb={'xs'} label="shape" labelPosition="left" />

@@ -1,21 +1,19 @@
-import {
-  useCustomCompareEffect,
-  useCustomCompareMemo,
-  useIsomorphicLayoutEffect as useLayoutEffect,
-  useSyncedRef
-} from '@react-hookz/web'
+import type { DiagramView } from '@likec4/core'
+import { useCustomCompareMemo } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { createContainer } from 'react-tracked'
 import { useSetState } from '../hooks/use-set-state'
-import { isOnlyEventHandlers, type LikeC4DiagramEventHandlers, type OnNavigateTo } from '../LikeC4Diagram.props'
+import { type LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type DiagramStateProps = {
+  view: DiagramView
   readonly: boolean
   disableHovercards: boolean
   eventHandlers: LikeC4DiagramEventHandlers
 }
 
 const useDiagramStateValue = ({
+  view,
   readonly,
   disableHovercards,
   eventHandlers
@@ -35,18 +33,26 @@ const useDiagramStateValue = ({
 
   const [state, setState] = useSetState({
     viewportInitialized: false,
+    // User moved the viewport
+    viewportMoved: false,
     hoveredNodeId: null as null | string,
     hoveredEdgeId: null as null | string
   })
 
+  const readonlyProps = {
+    readonly,
+    disableHovercards,
+    viewId: view.id,
+    viewLayout: view.autoLayout
+  }
+
   const _state = useCustomCompareMemo(
     () => ({
-      readonly,
-      disableHovercards,
+      ...readonlyProps,
       ...hasEventHandlers,
       ...state
     }),
-    [state, readonly, hasEventHandlers, disableHovercards],
+    [state, readonlyProps, hasEventHandlers],
     shallowEqual
   )
 

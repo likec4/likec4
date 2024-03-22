@@ -41,6 +41,7 @@
     "packages/*/.vscode-test-web": true
   },
   "vitest.commandLine": "yarn run vitest",
+  "vitest.enable": true,
   "exportall.config.semis": false,
   "json.schemas": [
     {

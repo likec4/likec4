@@ -1,19 +1,30 @@
-import { Background, Controls, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import { Controls, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import clsx from 'clsx'
 import { useRef } from 'react'
 import useTilg from 'tilg'
-import { isOnlyEventHandlers, type LikeC4DiagramEventHandlers, type LikeC4DiagramProps } from './LikeC4Diagram.props'
+import type { Exact } from 'type-fest'
+import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
+import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramStateProvider } from './state'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitviewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import type { XYFlowData } from './xyflow/types'
-import { UpdateXYFlowOnDiagramChange } from './xyflow/UpdateXYFlowOnDiagramChange'
-import { XYFLowEventHandlers } from './xyflow/XYFLowEventHandlers'
-import { XYFlowWrapper } from './xyflow/XYFlowWrapper'
+import { UpdateOnDiagramChange } from './xyflow/UpdateOnDiagramChange'
+import { XYFlowBackground } from './xyflow/XYFlowBackground'
+import { XYFlowEventHandlers } from './xyflow/XYFlowEvents'
+import { XYFlow } from './xyflow/XYFlowWrapper'
 
-type Props = LikeC4DiagramProps & LikeC4DiagramEventHandlers
+// Guard, Ensure that object contains only event handlers
+const isOnlyEventHandlers = <T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T => {
+  return handlers
+}
+
+export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
   view,
+  className,
   fitView = true,
   colorMode,
   readonly = false,
@@ -21,65 +32,75 @@ export function LikeC4Diagram({
   zoomable = true,
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
-  disableBackground = false,
+  background = 'dots',
   fitViewPadding = 0.05,
   controls = !readonly,
   disableHovercards = false,
   ...eventHandlers
-}: Props) {
+}: LikeC4DiagramProps) {
   useTilg()
   isOnlyEventHandlers(eventHandlers)
-  const iniitialRef = useRef<
+  const initialRef = useRef<
     XYFlowData & {
       width: number
       height: number
     }
   >()
-  if (!iniitialRef.current) {
-    iniitialRef.current = {
+  if (!initialRef.current) {
+    initialRef.current = {
       ...diagramViewToXYFlowData(view, nodesDraggable),
       width: view.width,
       height: view.height
     }
   }
+  const isBgWithPattern = background !== 'transparent' && background !== 'solid'
   return (
-    <XYFlowProvider
-      fitView={fitView}
-      defaultEdges={iniitialRef.current.edges}
-      defaultNodes={iniitialRef.current.nodes}
-      initialWidth={iniitialRef.current.width}
-      initialHeight={iniitialRef.current.height}
-    >
-      <DiagramStateProvider
-        readonly={readonly}
-        disableHovercards={disableHovercards}
-        eventHandlers={eventHandlers}
+    <EnsureMantine colorMode={colorMode}>
+      <XYFlowProvider
+        fitView={fitView}
+        defaultEdges={initialRef.current.edges}
+        defaultNodes={initialRef.current.nodes}
+        initialWidth={initialRef.current.width}
+        initialHeight={initialRef.current.height}
       >
-        <XYFLowEventHandlers eventHandlers={eventHandlers}>
-          <XYFlowWrapper
-            defaultNodes={iniitialRef.current.nodes}
-            defaultEdges={iniitialRef.current.edges}
-            readonly={readonly}
-            nodesDraggable={nodesDraggable}
-            nodesSelectable={nodesSelectable}
-            pannable={pannable}
-            zoomable={zoomable}
-            fitView={fitView}
-            colorMode={colorMode}
-            disableBackground={disableBackground}
-            fitViewPadding={fitViewPadding}
-          >
-            <UpdateXYFlowOnDiagramChange
+        <DiagramStateProvider
+          view={view}
+          readonly={readonly}
+          disableHovercards={disableHovercards}
+          eventHandlers={eventHandlers}
+        >
+          <XYFlowEventHandlers eventHandlers={eventHandlers}>
+            <XYFlow
+              className={clsx(
+                cssReactFlow,
+                controls === false && cssNoControls,
+                pannable !== true && cssDisablePan,
+                className,
+                background === 'transparent' && cssTransparentBg
+              )}
+              defaultNodes={initialRef.current.nodes}
+              defaultEdges={initialRef.current.edges}
+              readonly={readonly}
+              nodesDraggable={nodesDraggable}
+              nodesSelectable={nodesSelectable}
+              pannable={pannable}
+              zoomable={zoomable}
+              fitView={fitView}
+              colorMode={colorMode}
+              fitViewPadding={fitViewPadding}
+            >
+              {isBgWithPattern && <XYFlowBackground background={background} />}
+              {controls && <Controls />}
+              {readonly !== true && <OptionsPanel />}
+              {fitView && <FitviewOnDiagramChange />}
+            </XYFlow>
+            <UpdateOnDiagramChange
               view={view}
               nodesDraggable={nodesDraggable}
             />
-            {disableBackground !== true && <Background />}
-            {controls && <Controls />}
-            {readonly !== true && <OptionsPanel />}
-            {fitView && <FitviewOnDiagramChange viewId={view.id} layout={view.autoLayout} />}
-          </XYFlowWrapper>
-        </XYFLowEventHandlers>
-      </DiagramStateProvider>
-    </XYFlowProvider>
+          </XYFlowEventHandlers>
+        </DiagramStateProvider>
+      </XYFlowProvider>
+    </EnsureMantine>
   )
 }

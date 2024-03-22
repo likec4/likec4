@@ -21,7 +21,15 @@ export default defineConfig(({ mode }) => {
       }
     },
     esbuild: {
-      exclude: ['react', 'react-dom', 'react/jsx-runtime', 'scheduler', '@vanilla-extract/css']
+      exclude: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'scheduler',
+        '@likec4/core',
+        '@mantine/core',
+        '@mantine/hooks'
+      ]
     },
     // optimizeDeps: {
     //   esbuildOptions: {
@@ -35,7 +43,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'bundle',
 
       lib: {
-        entry: resolve(__dirname, 'src/bundle.tsx'),
+        entry: resolve(__dirname, 'src/bundle.ts'),
         fileName: 'index',
         formats: ['es']
       },
@@ -53,7 +61,7 @@ export default defineConfig(({ mode }) => {
           'react-dom',
           'react/jsx-runtime',
           'scheduler',
-          '@vanilla-extract/css',
+          '@likec4/core',
           '@mantine/core',
           '@mantine/hooks'
         ],

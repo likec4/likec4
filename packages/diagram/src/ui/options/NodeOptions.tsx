@@ -11,7 +11,7 @@ import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Text, T
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
-import { useXYFLowEventHandlers } from '../../xyflow/XYFLowEventHandlers'
+import { useXYFlowEvents } from '../../xyflow/XYFlowEvents'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -41,7 +41,7 @@ export type ColorKey = typeof colors[0]['key']
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
 export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
-  const { onChange } = useXYFLowEventHandlers()
+  const { onChange } = useXYFlowEvents()
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
   if (!hasAtLeast(nodes, 1)) {
@@ -206,7 +206,7 @@ function ShapeOption({
     <Box>
       <Divider label="shape" labelPosition="left" />
       <Select
-        autoFocus={false}
+        autoFocus
         mt={'xs'}
         size="xs"
         variant="filled"

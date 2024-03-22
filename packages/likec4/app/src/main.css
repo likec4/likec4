@@ -33,7 +33,22 @@ html, body {
   } */
 }
 
+body {
+  /* --mantine-font-family: 'Rubik Variable', sans-serif;
+  --default-font-family: 'Rubik Variable', sans-serif;
+  --likec4-font-family: 'Rubik Variable', sans-serif;
+  font-family:  'Rubik Variable', sans-serif; */
+  --likec4-background-color: var(--color-page-background);
+}
+
+.mantine-ActionIcon-icon .tabler-icon {
+  width: 75%;
+  height: 75%;
+}
+
+
 .transparent-bg {
+  --likec4-background-color: transparent !important;
   --color-page-background: transparent !important;
   --xy-background-color: transparent !important;
 
@@ -44,16 +59,4 @@ html, body {
   .react-flow__attribution {
     display: none;
   }
-}
-
-body {
-  /* --mantine-font-family: 'Rubik Variable', sans-serif;
-  --default-font-family: 'Rubik Variable', sans-serif;
-  --likec4-font-family: 'Rubik Variable', sans-serif;
-  font-family:  'Rubik Variable', sans-serif; */
-}
-
-.mantine-ActionIcon-icon .tabler-icon {
-  width: 75%;
-  height: 75%;
 }

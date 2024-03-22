@@ -5,6 +5,7 @@ import { outdir, useDotBin } from '../options'
 
 export const codegenCmd = {
   command: 'codegen <command> [path]',
+  aliases: ['generate', 'gen'],
   describe: 'Generate various artifacts from LikeC4 sources',
   builder: yargs =>
     // .example(
@@ -20,6 +21,33 @@ export const codegenCmd = {
       })
       .coerce(['path'], resolve)
       .default('path', resolve('.'), '.')
+      // ----------------------
+      // npm package command
+      .command(
+        ['package [path]', 'pkg', 'npm'],
+        'generate npm package',
+        yargs =>
+          yargs
+            // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
+            .options({
+              useDotBin,
+              outdir,
+              pkgName: {
+                type: 'string',
+                desc: 'package name',
+                normalize: true
+              }
+            }),
+        async args => {
+          const { handler } = await import('./gen-npm-package/handler')
+          await handler({
+            useDotBin: args.useDotBin,
+            path: args.path,
+            pkgName: args.pkgName,
+            pkgOutDir: args.outdir
+          })
+        }
+      )
       // ----------------------
       // react command
       .command(
@@ -143,11 +171,12 @@ export const codegenCmd = {
           })
         }
       }).epilog(`${k.bold('Examples:')}
-  likec4 codegen react -o dist/likec4.generated.tsx ./src/likec4
-  likec4 codegen views-data -o ./src/likec4-data.ts
-  likec4 codegen ts --outfile ../likec4.ts
-  likec4 codegen mmd --outdir assets/
-  likec4 codegen dot -o out .
+  likec4 gen react -o dist/likec4.generated.tsx ./src/likec4
+  likec4 gen react -o dist/likec4.generated.tsx ./src/likec4
+  likec4 gen views-data -o ./src/likec4-data.ts
+  likec4 gen ts --outfile ../likec4.ts
+  likec4 gen mmd --outdir assets/
+  likec4 gen dot -o out .
 `),
   handler: () => void 0
 } satisfies CommandModule

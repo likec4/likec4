@@ -1,12 +1,13 @@
-import { themeToVars } from '@mantine/vanilla-extract'
 import { createGlobalThemeContract } from '@vanilla-extract/css'
 
 export const vars = /* @__PURE__ */ createGlobalThemeContract({
   likec4: {
-    font: 'font-family'
+    font: 'font-family',
+    backgroundColor: 'background-color'
   },
   compound: {
-    font: 'compound-font-family'
+    font: 'compound-font-family',
+    titleColor: 'compound-title-color'
   },
   element: {
     font: 'element-font-family',
@@ -22,14 +23,29 @@ export const vars = /* @__PURE__ */ createGlobalThemeContract({
   }
 }, (value) => `likec4-${value}`)
 
-export const mantine = /* @__PURE__ */ themeToVars({})
-
 export const xyvars = /* @__PURE__ */ createGlobalThemeContract({
+  background: {
+    color: 'background-color'
+    // pattern: {
+    //   dots: 'background-pattern-dots-color',
+    //   lines: 'background-pattern-lines-color',
+    //   cross: 'background-pattern-cross-color'
+    // }
+  },
   edge: {
     stroke: 'edge-stroke',
     strokeSelected: 'edge-stroke-selected',
     labelColor: 'edge-label-color',
     labelBgColor: 'edge-label-background-color',
     strokeWidth: 'edge-stroke-width'
+  },
+  node: {
+    color: 'node-color',
+    border: 'node-border',
+    backgroundColor: 'node-background-color',
+    groupBackgroundColor: 'node-group-background-color',
+    boxshadowHover: 'node-boxshadow-hover',
+    boxshadowSelected: 'node-boxshadow-selected',
+    borderRadius: 'node-border-radius'
   }
 }, (value) => `xy-${value}`)

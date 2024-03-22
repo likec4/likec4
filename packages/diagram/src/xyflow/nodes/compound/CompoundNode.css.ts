@@ -1,6 +1,7 @@
 import { rem } from '@mantine/core'
-import { fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars } from '../../../theme'
+import { generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { mantine } from '../../../mantine'
+import { vars } from '../../../theme.css'
 
 export const cssContainer = style({
   width: ['100%', '-webkit-fill-available'],
@@ -27,7 +28,7 @@ export const cssCompound = style({
 })
 
 export const cssTitle = style({
-  fontFamily: fallbackVar(vars.compound.font, vars.likec4.font),
+  fontFamily: vars.compound.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   textAlign: 'left',
@@ -38,7 +39,7 @@ export const cssTitle = style({
   letterSpacing: '0.2px',
   lineHeight: 1,
   opacity: 0.75,
-  color: vars.element.loContrast,
+  color: vars.compound.titleColor,
   paddingLeft: rem(12),
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {

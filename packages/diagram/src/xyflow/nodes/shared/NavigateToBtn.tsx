@@ -1,7 +1,7 @@
 import { ActionIcon } from '@mantine/core'
 import clsx from 'clsx'
 import { ZoomIn } from '../../../icons'
-import { useXYFLowEventHandlers } from '../../XYFLowEventHandlers'
+import { useXYFlowEvents } from '../../XYFlowEvents'
 
 export type NavigateToBtnProps = {
   xynodeId: string
@@ -38,7 +38,7 @@ export type NavigateToBtnProps = {
 // } satisfies Variants
 
 export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
-  const { onNavigateTo } = useXYFLowEventHandlers()
+  const { onNavigateTo } = useXYFlowEvents()
   return (
     <ActionIcon
       className={clsx('nodrag nopan', className)}

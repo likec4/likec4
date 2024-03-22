@@ -250,21 +250,19 @@ export function useLayoutConstraints(
 ): LayoutConstraints {
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
   const constraintsRef = useRef<LayoutConstraints>()
-  if (!constraintsRef.current) {
-    constraintsRef.current = {
-      onNodeDragStart: (event, xynode) => {
-        invariant(xyflow.current, 'xyflow.current should be defined')
-        invariant(!solverRef.current, 'solverRef.current should be undefined')
-        solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
-      },
-      onNodeDrag: (event, xynode) => {
-        invariant(solverRef.current, 'solverRef.current should be defined')
-        solverRef.current?.onNodeDrag(xynode)
-      },
-      onNodeDragStop: (event, xynode) => {
-        // solverRef.current?.onNodeDrag(xynode)
-        solverRef.current = undefined
-      }
+  constraintsRef.current ??= {
+    onNodeDragStart: (event, xynode) => {
+      invariant(xyflow.current, 'xyflow.current should be defined')
+      invariant(!solverRef.current, 'solverRef.current should be undefined')
+      solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
+    },
+    onNodeDrag: (event, xynode) => {
+      invariant(solverRef.current, 'solverRef.current should be defined')
+      solverRef.current?.onNodeDrag(xynode)
+    },
+    onNodeDragStop: (event, xynode) => {
+      // solverRef.current?.onNodeDrag(xynode)
+      solverRef.current = undefined
     }
   }
   return constraintsRef.current

@@ -1,18 +1,18 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { ReactFlow } from '@xyflow/react'
-import clsx from 'clsx'
-import { type PropsWithChildren, useCallback, useRef } from 'react'
+import { ReactFlow, type Viewport } from '@xyflow/react'
+import { deepEqual } from 'fast-equals'
+import { memo, type PropsWithChildren, useCallback, useRef } from 'react'
+import { omit } from 'remeda'
 import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
-import { cssDisableBg, cssDisablePan, cssReactFlow } from '../index.css'
-import type { LikeC4DiagramProps } from '../LikeC4Diagram.props'
+import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramStateTracked } from '../state/DiagramState'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/use-layout-сonstraints'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
-import { useXYFLowEventHandlers } from './XYFLowEventHandlers'
+import { useXYFlowEvents } from './XYFlowEvents'
 
 const nodeTypes = {
   element: ElementNode,
@@ -22,16 +22,30 @@ const edgeTypes = {
   relationship: RelationshipEdge
 }
 
+type OnlyExpectedProps = Required<
+  Omit<
+    LikeC4DiagramProperties,
+    | 'view'
+    | 'disableHovercards'
+    | 'controls'
+    | 'background'
+  >
+>
+
 type XYFlowWrapperProps = Simplify<
   PropsWithChildren<
-    Required<Omit<LikeC4DiagramProps, 'view' | 'disableHovercards' | 'controls'>> & {
+    OnlyExpectedProps & {
       defaultNodes: XYFlowNode[]
       defaultEdges: XYFlowEdge[]
     }
   >
 >
 
-export function XYFlowWrapper({
+const omitChildren: (props: XYFlowWrapperProps) => Omit<XYFlowWrapperProps, 'children'> = omit(['children'])
+const isEquals = (a: XYFlowWrapperProps, b: XYFlowWrapperProps) => deepEqual(omitChildren(a), omitChildren(b))
+
+function XYFlowWrapper({
+  className,
   children,
   defaultNodes,
   defaultEdges,
@@ -42,7 +56,6 @@ export function XYFlowWrapper({
   zoomable = true,
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
-  disableBackground = false,
   fitViewPadding = 0.05
 }: XYFlowWrapperProps) {
   useTilg()
@@ -51,7 +64,7 @@ export function XYFlowWrapper({
   const [editor, updateState] = useDiagramStateTracked()
   const layoutConstraints = useLayoutConstraints(xyflowRef)
 
-  const handlers = useXYFLowEventHandlers()
+  const handlers = useXYFlowEvents()
 
   const { colorScheme } = useMantineColorScheme()
   let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
@@ -59,7 +72,7 @@ export function XYFlowWrapper({
   return (
     // @ts-expect-error invalid typings ReactFlow
     <ReactFlow
-      className={clsx(disableBackground ? cssDisableBg : cssReactFlow, !pannable && cssDisablePan)}
+      className={className}
       {...colorMode && { colorMode }}
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}
@@ -102,18 +115,23 @@ export function XYFlowWrapper({
       }, [])}
       onEdgeMouseLeave={useCallback(() => {
         updateState({ hoveredEdgeId: null })
-      }, [updateState])}
+      }, [])}
       onNodeMouseEnter={useCallback((event: React.MouseEvent, node: XYFlowNode) => {
         updateState({ hoveredNodeId: node.id })
-      }, [updateState])}
+      }, [])}
       onNodeMouseLeave={useCallback(() => {
         updateState({ hoveredNodeId: null })
       }, [])}
-      {...(editor.hasOnContextMenu && {
-        onNodeContextMenu: handlers.onNodeContextMenu,
-        onPaneContextMenu: handlers.onPaneContextMenu,
-        onEdgeContextMenu: handlers.onEdgeContextMenu
-      })}
+      {
+        // onMoveEnd={useCallback((event: MouseEvent | TouchEvent | null, viewport: Viewport) => {
+        //   updateState({ viewportMoved: true })
+        // }, [])}
+        ...(editor.hasOnContextMenu && {
+          onNodeContextMenu: handlers.onNodeContextMenu,
+          onPaneContextMenu: handlers.onPaneContextMenu,
+          onEdgeContextMenu: handlers.onEdgeContextMenu
+        })
+      }
       {...(editor.hasOnCanvasClick && {
         onPaneClick: handlers.onPanelClick
       })}
@@ -127,3 +145,13 @@ export function XYFlowWrapper({
     </ReactFlow>
   )
 }
+
+// export const XYFlow = XYFlowWrapper¯
+export const XYFlow = memo(XYFlowWrapper, isEquals)
+// export const XYFlow = memo<XYFlowWrapperProps>(({ children, ...props }) => {
+//   return (
+//     <XYFlowWrapper {...props}>
+//       {children}
+//     </XYFlowWrapper>
+//   )
+// }, isEquals)

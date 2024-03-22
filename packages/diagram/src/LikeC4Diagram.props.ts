@@ -1,15 +1,7 @@
-import type {
-  AutoLayoutDirection,
-  DiagramEdge,
-  DiagramNode,
-  DiagramView,
-  ElementShape,
-  Fqn,
-  NonEmptyArray,
-  ThemeColor
-} from '@likec4/core'
-import type { Exact, SetRequired, Simplify } from 'type-fest'
+import type { DiagramEdge, DiagramNode, DiagramView, ElementShape, Fqn, NonEmptyArray, ThemeColor } from '@likec4/core'
+import type { SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
+import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
@@ -62,37 +54,20 @@ export type ChangeEvent = {
   changes: NonEmptyArray<Change>
 }
 export type OnChange = (event: ChangeEvent) => void
-export type LikeC4ViewColorMode = 'light' | 'dark'
+export type LikeC4ColorMode = 'light' | 'dark'
 
-export interface LikeC4ViewProps {
+export interface LikeC4DiagramProperties {
   view: DiagramView
 
-  /**
-   * Controls color scheme used for styling the мшуц
-   * by default inherits from MantineProvider
-   */
-  colorMode?: LikeC4ViewColorMode | undefined
-  /**
-   * If set, initial viewport will show all nodes & edges
-   * @default true
-   */
-  fitView?: boolean | undefined
-  /**
-  /**
-   * Seems like this is percentage of the view size
-   * @default 0
-   */
-  fitViewPadding?: number | undefined
-}
+  className?: string | undefined
 
-export interface LikeC4DiagramProps {
-  view: DiagramView
-
-  /** Controls color scheme used for styling the flow
-   * @default 'system'
-   * @example 'system' | 'light' | 'dark'
+  /**
+   * Controls color scheme used for styling the flow
+   * By default inherits from system or surrounding MantineProvider
+   *
+   * @example 'light' | 'dark'
    */
-  colorMode?: LikeC4ViewColorMode | undefined
+  colorMode?: LikeC4ColorMode | undefined
 
   /**
    * Show/hide controls menu
@@ -126,7 +101,12 @@ export interface LikeC4DiagramProps {
   fitViewPadding?: number | undefined
   nodesSelectable?: boolean | undefined
   nodesDraggable?: boolean | undefined
-  disableBackground?: boolean | undefined
+
+  /**
+   * Background pattern
+   * @default 'dots'
+   */
+  background?: 'transparent' | 'solid' | XYBackgroundProps | undefined
 
   /**
    * Disable element hovercards, such as links and properties
@@ -145,9 +125,4 @@ export interface LikeC4DiagramEventHandlers {
   onEdgeContextMenu?: OnEdgeClick | undefined
   onCanvasClick?: OnCanvasClick | undefined
   onCanvasDblClick?: OnCanvasClick | undefined
-}
-
-// Guard, Ensure that object contains only event handlers
-export function isOnlyEventHandlers<T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T {
-  return handlers
 }

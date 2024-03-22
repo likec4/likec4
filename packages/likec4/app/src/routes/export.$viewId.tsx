@@ -1,4 +1,4 @@
-import { LikeC4View } from '@likec4/diagram'
+import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
@@ -38,16 +38,17 @@ function ExportPage() {
       style={{
         position: 'fixed',
         inset: 0,
-        width: diagram.width + padding * 2,
-        height: diagram.height + padding * 2,
+        minWidth: diagram.width + padding * 2,
+        minHeight: diagram.height + padding * 2,
         padding,
-        minWidth: '100vw',
-        minHeight: '100vh'
+        width: '100vw',
+        height: '100vh'
       }}>
-      <LikeC4View
+      <StaticLikeC4Diagram
         view={diagram}
-        fitViewPadding={0}
         fitView={false}
+        fitViewPadding={0}
+        background={'transparent'}
       />
     </div>
   )

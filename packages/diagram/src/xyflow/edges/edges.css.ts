@@ -1,13 +1,13 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { mantine, vars, xyvars } from '../../theme'
+import { mantine } from '../../mantine'
+import { vars, xyvars } from '../../theme.css'
 
 export const container = style({
   vars: {
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
-    '--text-color': xyvars.edge.labelColor,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 15%)`,
     [xyvars.edge.strokeWidth]: '2.5px'
   },
@@ -17,13 +17,13 @@ export const container = style({
       vars: {
         [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 75%)`
       }
-    },
-    [mantine.lightSelector]: {
-      // mixBlendMode: 'luminosity',
-      vars: {
-        // [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, #000 85%)`
-      }
     }
+    // [mantine.lightSelector]: {
+    //   // mixBlendMode: 'luminosity',
+    //   vars: {
+    //     // [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, #000 85%)`
+    //   }
+    // }
   }
 })
 
@@ -87,16 +87,13 @@ export const edgeLabel = style({
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: 'scale(1.1)'
-      // vars: {
-      //   '--text-color': `color-mix(in srgb, ${vars.relation.labelColor}, white 50%)`
-      // }
     }
   }
 })
 
 export const edgeLabelBody = style({
   // display: 'inline',
-  color: 'var(--text-color)',
+  color: xyvars.edge.labelColor,
   fontSize: rem(12),
   // lineHeight: 1.1,
   transition: 'color 120ms ease-out'

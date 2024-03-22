@@ -1,15 +1,5 @@
-import { rem } from '@mantine/core'
-import {
-  assignVars,
-  createVar,
-  fallbackVar,
-  generateIdentifier,
-  globalKeyframes,
-  globalStyle,
-  style
-} from '@vanilla-extract/css'
-import { mantine, vars } from '../../../theme'
-import { stokeFillMix } from './element.css'
+import { globalStyle, style } from '@vanilla-extract/css'
+import { vars } from '../../../theme.css'
 
 export const elementLink = style({
   position: 'absolute',
@@ -41,12 +31,10 @@ export const trigger = style({
   backgroundColor: `color-mix(in srgb, ${vars.element.stroke}, transparent 20%)`,
   transition: 'all 180ms ease-out',
   opacity: 0.85,
-  selectors: {
-    '&:hover': {
-      color: vars.element.hiContrast,
-      backgroundColor: vars.element.stroke,
-      opacity: 1
-    }
+  ':hover': {
+    color: vars.element.hiContrast,
+    backgroundColor: vars.element.stroke,
+    opacity: 1
   }
 })
 
