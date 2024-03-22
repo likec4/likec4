@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 import './index.css'
 
 import { MantineProvider } from '@mantine/core'

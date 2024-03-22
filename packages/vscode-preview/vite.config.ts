@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: false,
       sourcemap: isDev,
       minify: !isDev,
+      cssMinify: !isDev,
       chunkSizeWarningLimit: 1000,
       assetsDir: '',
       rollupOptions: {

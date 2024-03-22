@@ -20,13 +20,14 @@
   ],
   "type": "module",
   "sideEffects": false,
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
+    ".": "./src/index.ts",
     "./bundle": {
       "types": "./dist/bundle.d.ts",
       "default": "./bundle/index.js"
-    },
-    "./bundle/style.css": "./bundle/style.css",
-    ".": "./src/index.ts"
+    }
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {

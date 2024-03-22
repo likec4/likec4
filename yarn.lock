@@ -1429,7 +1429,6 @@ __metadata:
     react-error-boundary: "npm:^4.0.12"
     typescript: "npm:^5.4.2"
     vite: "npm:^5.1.4"
-    vite-plugin-singlefile: "npm:^2.0.0"
     vite-tsconfig-paths: "npm:^4.3.1"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
@@ -15988,14 +15987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.10.3":
-  version: 4.11.1
-  resolution: "type-fest@npm:4.11.1"
-  checksum: 10/1c16e8199f3124ff7bc23de64babda24c9970ae98723d9d2eb7d2646b9dd9107fece2f50261d5a1b28f3af2fa7be8e56c0369ec6d5ae0f25f84de72e241278a9
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^4.12.0":
+"type-fest@npm:^4.10.3, type-fest@npm:^4.12.0":
   version: 4.12.0
   resolution: "type-fest@npm:4.12.0"
   checksum: 10/5869216e840c962942672623e0447ed342f1eb6dbed1874a09ba1944b268c793bd8b5607c9f96ee01363e859a93f32ad06ab71a7aab29ff896bf18d66602a37b
@@ -16741,18 +16733,6 @@ __metadata:
   version: 1.1.0
   resolution: "vite-plugin-shadow-style@npm:1.1.0"
   checksum: 10/8ff23a69b23d4a4036ace574551c7e205d513d5159ca0ef334833a044e7acad335063a29201cd221ee6d2a9a8d2eea71d81936b3016c822a23e3fc285335fa77
-  languageName: node
-  linkType: hard
-
-"vite-plugin-singlefile@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "vite-plugin-singlefile@npm:2.0.0"
-  dependencies:
-    micromatch: "npm:^4.0.5"
-  peerDependencies:
-    rollup: ^4.10.0
-    vite: ^5.1.1
-  checksum: 10/0c4dd3de5e279b164126813ceb9af0ac01bccebfc9e0e206d9b2f70276b2d2bbabd2c6ea42f116e1b9cd3d3cc33918e796583c276dcf81acc4923242ea438adb
   languageName: node
   linkType: hard
 

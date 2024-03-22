@@ -1,5 +1,5 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
-import { LikeC4Diagram as LikeC4ViewEditor } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { ActionIcon } from '@mantine/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
@@ -98,7 +98,7 @@ const App = () => {
   return (
     <>
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
-        <LikeC4ViewEditor
+        <LikeC4Diagram
           view={view}
           controls={false}
           nodesDraggable={false}

@@ -1,5 +1,5 @@
 import type { ThemeColor } from '@likec4/core'
-import { defaultTheme } from '@likec4/core/colors'
+import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme, fallbackVar, style } from '@vanilla-extract/css'
 import { mantine } from './mantine'
 import { vars, xyvars } from './theme.css'

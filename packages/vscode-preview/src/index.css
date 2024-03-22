@@ -21,6 +21,7 @@ body,
 .likec4-parsing-screen {
   padding: 1rem;
 }
+
 .likec4-parsing-screen section {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -35,6 +36,7 @@ body,
   background-color: var(--vscode-editor-background);
   opacity: 0.7;
 }
+
 div.likec4-diagram-loading {
   position: absolute;
   top: 0;
@@ -68,14 +70,11 @@ div.likec4-diagram-loading {
   overflow: hidden;
 }
 
-
-:root {
+body {
   --likec4-font-family: var(--vscode-font-family);
   --mantine-font-family: var(--vscode-font-family);
   --mantine-color-body: var(--vscode-editor-background);
-  --xy-background-color: var(--vscode-editor-background);
-}
-body {
+  --likec4-background-color: var(--vscode-editor-background);
   background-color: var(--vscode-editor-background);
   font-family: var(--vscode-font-family);
 }

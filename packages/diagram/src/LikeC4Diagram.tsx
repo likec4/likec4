@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { useRef } from 'react'
 import useTilg from 'tilg'
 import type { Exact } from 'type-fest'
+import { scope } from './index.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
@@ -72,6 +73,7 @@ export function LikeC4Diagram({
           <XYFlowEventHandlers eventHandlers={eventHandlers}>
             <XYFlow
               className={clsx(
+                scope,
                 cssReactFlow,
                 controls === false && cssNoControls,
                 pannable !== true && cssDisablePan,
