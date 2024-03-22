@@ -2,8 +2,7 @@
 
 ### Bug Fixes
 
-- CLI version ([9df827c](https://github.com/likec4/likec4/commit/9df827cf2a26c40a7196d3c1fe69e3e1ec163662)), closes [#615](https://github.com/likec4/likec4/issues/615)
-- **cli:** reuse playwright page for screenshots ([#635](https://github.com/likec4/likec4/issues/635)) ([f07c61b](https://github.com/likec4/likec4/commit/f07c61bf7fa693f931f4ff88725f73e17aa553f4)), closes [#634](https://github.com/likec4/likec4/issues/634)
+- **cli:** reuse playwright page for screenshots ([#635](https://github.com/likec4/likec4/issues/635)) ([f07c61b](https://github.com/likec4/likec4/commit/f07c61bf7fa693f931f4ff88725f73e17aa553f4)), closes [#634](https://github.com/likec4/likec4/issues/634), closes [#615](https://github.com/likec4/likec4/issues/615)
 - **deps:** update dependency playwright-core to v1.42.1 ([#636](https://github.com/likec4/likec4/issues/636)) ([48d7ef4](https://github.com/likec4/likec4/commit/48d7ef4874254cfb7929517f73bf4d2d256677df))
 
 # [0.60.0](https://github.com/likec4/likec4/compare/v0.58.0...v0.60.0) (2024-03-10)
