@@ -1,13 +1,22 @@
+## [0.60.1](https://github.com/likec4/likec4/compare/v0.60.0...v0.60.1) (2024-03-22)
+
+### Bug Fixes
+
+- CLI version ([9df827c](https://github.com/likec4/likec4/commit/9df827cf2a26c40a7196d3c1fe69e3e1ec163662)), closes [#615](https://github.com/likec4/likec4/issues/615)
+- **cli:** reuse playwright page for screenshots ([#635](https://github.com/likec4/likec4/issues/635)) ([f07c61b](https://github.com/likec4/likec4/commit/f07c61bf7fa693f931f4ff88725f73e17aa553f4)), closes [#634](https://github.com/likec4/likec4/issues/634)
+- **deps:** update dependency playwright-core to v1.42.1 ([#636](https://github.com/likec4/likec4/issues/636)) ([48d7ef4](https://github.com/likec4/likec4/commit/48d7ef4874254cfb7929517f73bf4d2d256677df))
+
 # [0.60.0](https://github.com/likec4/likec4/compare/v0.58.0...v0.60.0) (2024-03-10)
 
 ### 🚀 Features
-- **Relations with container elements** [#530](https://github.com/likec4/likec4/issues/530)  
-   Relations with container elements were always used to layout diagrams but were not shown as they sometimes looked quite weird.
-   While solving [#614](https://github.com/likec4/likec4/issues/614) it was figured out:
+
+- **Relations with container elements** [#530](https://github.com/likec4/likec4/issues/530)\
+  Relations with container elements were always used to layout diagrams but were not shown as they sometimes looked quite weird.
+  While solving [#614](https://github.com/likec4/likec4/issues/614) it was figured out:
   - Sometimes, Graphviz fails to ["group"](https://graphviz.org/docs/attrs/group/) more than 5 nodes (or some extra heuristics required)
   - Relations with containers look much better without hard [minlen](https://graphviz.org/docs/attrs/minlen/)
   - Results from Graphviz WASM and its binary version can be significantly different
-    
+
 > Compare results by starting two CLIs (with and without `--use-dot-bin`)
 
 ### Bug Fixes
