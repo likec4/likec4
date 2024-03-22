@@ -102,8 +102,8 @@
     "pretty-ms": "^8.0.0",
     "strip-indent": "^4.0.0",
     "tsx": "^4.7.1",
-    "type-fest": "^4.10.3",
-    "typescript": "^5.4.2",
+    "type-fest": "^4.13.1",
+    "typescript": "^5.4.3",
     "typescript-plugin-css-modules": "^5.1.0",
     "vitest": "^1.4.0",
     "yargs": "^17.7.2"

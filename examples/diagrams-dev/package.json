@@ -31,7 +31,7 @@
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.3",
     "vite": "^5.1.4",
     "vite-plugin-watch-and-run": "^1.5.0"
   }

@@ -53,8 +53,8 @@ export function languageServicesUtils(services: CliServices) {
   function onModelUpdate(listener: () => void) {
     const notify = debounce(listener, {
       timing: 'both',
-      waitMs: 250,
-      maxWaitMs: 1000
+      waitMs: 300,
+      maxWaitMs: 1500
     })
     const sib = modelBuilder.onModelParsed(() => notify.call())
     return () => {

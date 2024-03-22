@@ -57,12 +57,12 @@
     "remeda": "^1.44.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
-    "type-fest": "^4.10.3",
+    "type-fest": "^4.13.1",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.25",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.3",
     "unbuild": "^2.0.0",
     "vitest": "^1.4.0"
   },
