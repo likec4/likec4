@@ -95,6 +95,11 @@ const App = () => {
     )
   }
 
+  function resetLastClickedNd() {
+    lastClickedNodeRef.current = undefined
+    lastNodeContextMenuRef.current = null
+  }
+
   return (
     <>
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
@@ -103,8 +108,7 @@ const App = () => {
           controls={false}
           nodesDraggable={false}
           onNavigateTo={({ element }) => {
-            lastClickedNodeRef.current = undefined
-            lastNodeContextMenuRef.current = null
+            resetLastClickedNd()
             extensionApi.goToViewSource(element.navigateTo)
             extensionApi.openView(element.navigateTo)
           }}
@@ -122,16 +126,17 @@ const App = () => {
             lastNodeContextMenuRef.current = element
           }}
           onCanvasContextMenu={event => {
+            resetLastClickedNd()
             event.stopPropagation()
             event.preventDefault()
           }}
           onEdgeContextMenu={({ event }) => {
+            resetLastClickedNd()
             event.stopPropagation()
             event.preventDefault()
           }}
           onEdgeClick={({ relation, event }) => {
-            lastClickedNodeRef.current = undefined
-            lastNodeContextMenuRef.current = null
+            resetLastClickedNd()
             if (hasAtLeast(relation.relations, 1)) {
               extensionApi.goToRelation(relation.relations[0])
               event.stopPropagation()
@@ -140,7 +145,11 @@ const App = () => {
           onChange={({ changes }) => {
             extensionApi.change(view.id, changes)
           }}
+          onCanvasClick={() => {
+            resetLastClickedNd()
+          }}
           onCanvasDblClick={() => {
+            resetLastClickedNd()
             extensionApi.goToViewSource(view.id)
           }}
         />
