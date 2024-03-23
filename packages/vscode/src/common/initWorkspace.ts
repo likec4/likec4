@@ -74,18 +74,16 @@ async function recursiveSearchSources() {
   Logger.debug(`recursiveSearchSources`)
   const uris = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
-  while (folders.length > 0) {
-    const folder = folders.pop()
-    if (!folder) break
+  let folder
+  while (folder = folders.pop()) {
     try {
       for (const [name, type] of await vscode.workspace.fs.readDirectory(folder)) {
         const path = vscode.Uri.joinPath(folder, name)
-        if (type === vscode.FileType.Directory) {
-          folders.push(path)
-          continue
-        }
         if (type === vscode.FileType.File && isSource(name)) {
           uris.push(path)
+        }
+        if (type === vscode.FileType.Directory) {
+          folders.push(path)
         }
       }
     } catch (e) {

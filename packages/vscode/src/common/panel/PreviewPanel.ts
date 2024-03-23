@@ -141,7 +141,6 @@ export class PreviewPanel extends AbstractDisposable {
   }
 
   public open(viewId?: ViewID) {
-    this._deactivate()
     if (viewId && viewId !== this._viewId) {
       this._viewId = viewId
     }
