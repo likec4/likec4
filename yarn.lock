@@ -1138,7 +1138,6 @@ __metadata:
   dependencies:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^8.0.1"
-    rambdax: "npm:^9.1.1"
     remeda: "npm:^1.44.0"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"

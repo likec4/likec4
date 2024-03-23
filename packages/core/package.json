@@ -61,13 +61,12 @@
     }
   },
   "dependencies": {
-    "@total-typescript/ts-reset": "^0.5.1",
-    "rambdax": "^9.1.1",
     "remeda": "^1.44.0",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1",
     "execa": "^8.0.1",
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0",

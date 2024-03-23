@@ -1,4 +1,3 @@
-import { anyPass } from 'remeda'
 import type { Element, Fqn } from '../types'
 import { isString } from './guards'
 
@@ -27,7 +26,7 @@ export function isSameHierarchy<E extends { id: Fqn }>(one: E | Fqn, another: E 
 
 export function isDescendantOf<E extends { id: Fqn }>(ancestors: E[]): (e: E) => boolean {
   const predicates = ancestors.flatMap(a => [(e: E) => e.id === a.id, (e: E) => isAncestor(a, e)])
-  return anyPass(predicates)
+  return (e: E) => predicates.some(p => p(e))
 }
 
 export function notDescendantOf(ancestors: Element[]): (e: Element) => boolean {

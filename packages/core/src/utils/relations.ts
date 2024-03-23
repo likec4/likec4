@@ -1,4 +1,3 @@
-import { either } from 'rambdax'
 import type { Fqn } from '../types'
 import { commonAncestor, compareFqnHierarchically, isAncestor } from './fqn'
 
@@ -52,7 +51,8 @@ const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
 }
 
 const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
-  return either(isBetween(source, target), isBetween(target, source))
+  const predicates = [isBetween(source, target), isBetween(target, source)]
+  return (rel) => predicates.some(p => p(rel))
 }
 
 const isIncoming = (target: Fqn): RelationPredicate => {
@@ -76,7 +76,10 @@ const isOutgoing = (source: Fqn): RelationPredicate => {
 }
 
 const isAnyInOut = (source: Fqn): RelationPredicate => {
-  return either(isIncoming(source), isOutgoing(source))
+  const predicates = [isIncoming(source), isOutgoing(source)]
+  return (rel: Relation) => {
+    return predicates.some(p => p(rel))
+  }
 }
 
 const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
