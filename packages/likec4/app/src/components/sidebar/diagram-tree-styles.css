@@ -1,6 +1,5 @@
-.treeview {
+.diagrams-treeview {
   min-width: 200px;
-  /* max-width: 300px; */
 
   ul {
     list-style: none;
@@ -11,30 +10,29 @@
     gap: var(--space-1);
   }
 
-  :global(.tree-node-group--expanded) {
+  .tree-node-group--expanded {
     margin-top: var(--space-1);
     padding-left: var(--space-5);
   }
 
-  :global(.tree-branch-wrapper):where([aria-expanded='true']) > :global(.tree-branch-wrapper) {
+  .tree-branch-wrapper:where([aria-expanded='true']) > .tree-branch-wrapper {
     margin-top: var(--space-1);
     margin-left: var(--space-2);
   }
 
-  :global(.tree-leaf-list-item) {
-    /* margin-left: var(--space-2); */
+  .tree-leaf-list-item {
 
     & > [role='treeitem'] {
       user-select: none;
       cursor: pointer;
-      /* color: var(--gray-12); */
+
       padding: calc(var(--space-1) * 0.75);
       padding-left: var(--space-2);
       padding-right: var(--space-2);
       margin-top: calc(var(--space-1) * -0.15);
       margin-bottom: calc(var(--space-1) * -0.15);
       margin-left: calc(var(--space-1) * -2);
-      /* margin-right: 0; */
+
       transition-property: background-color;
       transition-timing-function: cubic-bezier(0, 0.31, 0, 1.03);
       transition-duration: 140ms;
@@ -54,8 +52,8 @@
       }
     }
   }
-  :global(.tree-branch-wrapper) {
-    & > :global(.tree-node__branch) {
+  .tree-branch-wrapper {
+    & > .tree-node__branch {
       cursor: pointer;
       padding-top: calc(var(--space-1) * 0.75);
       padding-bottom: calc(var(--space-1) * 0.75);
@@ -72,7 +70,7 @@
     }
   }
 
-  :global(.tree-branch-wrapper) ~ :global(.tree-leaf-list-item) {
+  .tree-branch-wrapper ~ .tree-leaf-list-item {
     margin-left: var(--space-3);
   }
 

@@ -149,6 +149,8 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
           view={diagram}
           fitView
           background={'dots'}
+          initialWidth={350}
+          initialHeight={175}
         />
         // reactflowProps={{
         //   width: 350,

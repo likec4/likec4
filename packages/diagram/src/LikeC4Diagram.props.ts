@@ -102,6 +102,9 @@ export interface LikeC4DiagramProperties {
   nodesSelectable?: boolean | undefined
   nodesDraggable?: boolean | undefined
 
+  initialWidth?: number | undefined
+  initialHeight?: number | undefined
+
   /**
    * Background pattern
    * @default 'dots'

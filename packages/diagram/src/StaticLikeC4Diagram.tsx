@@ -1,34 +1,17 @@
-import type { DiagramView } from '@likec4/core'
 import { LikeC4Diagram } from './LikeC4Diagram'
-import type { LikeC4ColorMode, LikeC4DiagramProperties } from './LikeC4Diagram.props'
+import type { LikeC4DiagramProperties } from './LikeC4Diagram.props'
 
-export interface StaticLikeC4DiagramProps {
-  view: DiagramView
-
-  /**
-   * Controls color scheme used for styling the flow
-   * By default inherits from system or surrounding MantineProvider
-   *
-   * @example 'light' | 'dark'
-   */
-  colorMode?: LikeC4ColorMode | undefined
-  /**
-   * If set, initial viewport will show all nodes & edges
-   * @default true
-   */
-  fitView?: boolean | undefined
-
-  /**
-   * Seems like this is percentage of the view size
-   * @default 0
-   */
-  fitViewPadding?: number | undefined
-
-  /**
-   * @default 'transparent'
-   */
-  background?: LikeC4DiagramProperties['background']
-}
+export type StaticLikeC4DiagramProps = Pick<
+  LikeC4DiagramProperties,
+  | 'view'
+  | 'className'
+  | 'colorMode'
+  | 'fitView'
+  | 'fitViewPadding'
+  | 'background'
+  | 'initialWidth'
+  | 'initialHeight'
+>
 
 export function StaticLikeC4Diagram({
   view,
@@ -49,6 +32,7 @@ export function StaticLikeC4Diagram({
       background={background}
       disableHovercards
       nodesSelectable={false}
+      nodesDraggable={false}
       {...rest}
     />
   )

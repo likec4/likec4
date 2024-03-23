@@ -48,6 +48,8 @@ function ExportPage() {
         view={diagram}
         fitView={false}
         fitViewPadding={0}
+        initialWidth={diagram.width}
+        initialHeight={diagram.height}
         background={'transparent'}
       />
     </div>

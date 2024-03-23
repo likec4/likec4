@@ -1,35 +1,53 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
-export const treeview = style({
-  // minWidth: '200px'
+export const navsidebar = style({
+  backdropFilter: 'blur(6px)',
+  transition: 'transform 0.21s cubic-bezier(0.4,0,0.2,1)',
+  transform: 'translateX(-100%)',
+  '::before': {
+    transition: 'all 0.26s ease-in-out',
+    position: 'absolute',
+    content: '',
+    inset: '0',
+    background: 'var(--gray-7)',
+    opacity: '0.7',
+    zIndex: '1'
+  },
+  'selectors': {
+    '& > div': {
+      position: 'relative',
+      zIndex: '2'
+    },
+    '&[data-opened=\'true\']': {
+      transform: 'translateX(0)'
+    }
+  }
 })
 
-// globalStyle(`${treeview} ul`, {
-//   listStyle: 'none',
-//   padding: '0',
-//   margin: '0',
-//   display: 'flex',
-//   flexDirection: 'column',
-//   gap: 0
-// })
-
-// globalStyle(`${treeview} .tree-leaf-list-item`, {
-//   paddingLeft: 14
-// })
-// export const treeBranchWrapper = style({
-//   paddingLeft: 10,
-//   marginTop: 4,
-//   selectors: {
-//     '&:has(> .tree-branch-wrapper)': {
-//       paddingLeft: 0
-//     }
-//   }
-// })
-// // .tree-node-group--expanded {
-//     margin-top: var(--space-1);
-//     padding-left: var(--space-5);
-
-//     &:has(> .tree-branch-wrapper) {
-//       padding-left: var(--space-3);
-//     }
-//   }
+export const trigger = style({
+  cursor: 'pointer',
+  '::before': {
+    transitionProperty: 'all',
+    transitionTimingFunction: 'cubic-bezier(0,0.31,0,1.03)',
+    transitionDuration: '140ms',
+    position: 'absolute',
+    content: '',
+    inset: '0',
+    background: 'var(--gray-7)',
+    opacity: '0',
+    zIndex: '1'
+  },
+  'selectors': {
+    '& > *': {
+      position: 'relative',
+      zIndex: '2'
+    },
+    '&:hover::before': {
+      visibility: 'visible',
+      opacity: '0.7'
+    },
+    '&[data-opened=\'true\']': {
+      visibility: 'hidden'
+    }
+  }
+})

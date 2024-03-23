@@ -37,6 +37,8 @@ export function LikeC4Diagram({
   fitViewPadding = 0.05,
   controls = !readonly,
   disableHovercards = false,
+  initialWidth,
+  initialHeight,
   ...eventHandlers
 }: LikeC4DiagramProps) {
   useTilg()
@@ -50,8 +52,8 @@ export function LikeC4Diagram({
   if (!initialRef.current) {
     initialRef.current = {
       ...diagramViewToXYFlowData(view, nodesDraggable),
-      width: view.width,
-      height: view.height
+      width: initialWidth ?? view.width,
+      height: initialHeight ?? view.height
     }
   }
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'

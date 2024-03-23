@@ -1,11 +1,9 @@
-import type { AutoLayoutDirection } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
-import { useNodesInitialized, ViewportPortal } from '@xyflow/react'
-import clsx from 'clsx'
+import { useNodesInitialized } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
-import { memo, useEffect, useRef } from 'react'
-import useTilg from 'tilg'
-import { useDiagramState, useDiagramStateTracked } from '../state'
+import { memo, useRef } from 'react'
+import { set } from 'remeda'
+import { useDiagramStateTracked } from '../state'
 import { useXYFlow } from './hooks'
 
 /**
@@ -28,6 +26,10 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
         return
       }
       const zoom = xyflow.getZoom()
+      xyflow.setCenter(state.viewWidth / 2, state.viewHeight / 2, {
+        duration: 150,
+        zoom
+      })
       xyflow.fitView({
         duration: 400,
         maxZoom: Math.max(1, zoom)
@@ -36,8 +38,8 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
       prevViewLayoutRef.current = viewLayout
     },
     [isReady, viewLayout],
-    50,
-    600
+    75,
+    400
   )
 
   return null

@@ -14,7 +14,7 @@ type TakeScreenshotParams = {
 }
 
 export async function takeScreenshot({ browserContext, views, output, logger }: TakeScreenshotParams) {
-  const padding = 20
+  const padding = 22
 
   let page: Page | undefined
 
@@ -22,7 +22,7 @@ export async function takeScreenshot({ browserContext, views, output, logger }: 
 
   for (const view of views) {
     try {
-      const url = `/export/${encodeURIComponent(view.id)}`
+      const url = `/export/${encodeURIComponent(view.id)}?padding=${padding}`
       logger.info(k.cyan(url))
 
       page ??= await browserContext.newPage()

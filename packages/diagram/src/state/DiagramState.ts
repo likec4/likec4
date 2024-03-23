@@ -43,7 +43,9 @@ const useDiagramStateValue = ({
     readonly,
     disableHovercards,
     viewId: view.id,
-    viewLayout: view.autoLayout
+    viewLayout: view.autoLayout,
+    viewWidth: view.width,
+    viewHeight: view.height
   }
 
   const _state = useCustomCompareMemo(

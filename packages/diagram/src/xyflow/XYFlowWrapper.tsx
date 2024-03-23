@@ -29,6 +29,8 @@ type OnlyExpectedProps = Required<
     | 'disableHovercards'
     | 'controls'
     | 'background'
+    | 'initialWidth'
+    | 'initialHeight'
   >
 >
 
@@ -146,12 +148,4 @@ function XYFlowWrapper({
   )
 }
 
-// export const XYFlow = XYFlowWrapper¯
 export const XYFlow = memo(XYFlowWrapper, isEquals)
-// export const XYFlow = memo<XYFlowWrapperProps>(({ children, ...props }) => {
-//   return (
-//     <XYFlowWrapper {...props}>
-//       {children}
-//     </XYFlowWrapper>
-//   )
-// }, isEquals)

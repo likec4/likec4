@@ -53,16 +53,14 @@ function RadixTheme({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { theme } = Route.useSearch()
   return (
-    <>
-      <ScrollRestoration />
-      <MantineProvider
-        {...(theme && { forceColorScheme: theme })}
-        defaultColorScheme="dark"
-        theme={mantineTheme}>
-        <RadixTheme>
-          <Outlet />
-        </RadixTheme>
-      </MantineProvider>
-    </>
+    <MantineProvider
+      {...(theme && { forceColorScheme: theme })}
+      defaultColorScheme="dark"
+      theme={mantineTheme}>
+      <RadixTheme>
+        <ScrollRestoration />
+        <Outlet />
+      </RadixTheme>
+    </MantineProvider>
   )
 }

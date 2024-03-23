@@ -1,10 +1,11 @@
 import { Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
-import { createFileRoute, createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../components'
+import { svgContainer } from './-view.css'
 
 export const Route = createLazyFileRoute('/view/$viewId/mmd')({
   component: ViewAsMmd
@@ -34,7 +35,14 @@ function ViewAsMmd() {
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsMmd">
       <Panel>
-        <ScrollArea>
+        <ScrollArea
+          h={'100%'}
+          p={5}
+          styles={{
+            viewport: {
+              borderRadius: 6
+            }
+          }}>
           <Code block>
             {source}
           </Code>
@@ -47,8 +55,8 @@ function ViewAsMmd() {
         }}
       />
       <Panel>
-        <ScrollArea>
-          {mmdSvg.result && <div dangerouslySetInnerHTML={{ __html: mmdSvg.result }}></div>}
+        <ScrollArea h={'100%'}>
+          {mmdSvg.result && <div className={svgContainer} dangerouslySetInnerHTML={{ __html: mmdSvg.result }}></div>}
         </ScrollArea>
       </Panel>
     </PanelGroup>

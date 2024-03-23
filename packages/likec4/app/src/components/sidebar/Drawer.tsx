@@ -1,5 +1,4 @@
-import { Button, ButtonGroup, Drawer as MantineDrawer, ScrollArea } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { Button, Drawer as MantineDrawer, ScrollArea } from '@mantine/core'
 import { ArrowLeftIcon } from '@radix-ui/react-icons'
 import { Theme as RadixTheme } from '@radix-ui/themes'
 import { Link } from '@tanstack/react-router'

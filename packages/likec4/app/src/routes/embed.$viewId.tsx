@@ -21,11 +21,12 @@ function EmbedPage() {
 
   return (
     <Box
-      pos={'absolute'}
-      style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
+      pos={'fixed'}
+      style={{ top: 0, left: 0, minWidth: '100vw', minHeight: '100vh' }}
     >
       <StaticLikeC4Diagram
         view={diagram}
+        background={'transparent'}
       />
     </Box>
   )

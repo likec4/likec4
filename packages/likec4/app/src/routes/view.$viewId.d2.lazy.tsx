@@ -1,6 +1,5 @@
-import { Box, Code, ScrollArea } from '@mantine/core'
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
-import { useAtomValue } from 'jotai'
+import { Code, ScrollArea } from '@mantine/core'
+import { createLazyFileRoute } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
@@ -39,6 +38,7 @@ function ViewAsD2() {
       />
       <Panel>
         <ScrollArea h={'100%'}>
+          {/* {mmdSvg.result && <div className={svgContainer}  dangerouslySetInnerHTML={{ __html: mmdSvg.result }}></div>} */}
         </ScrollArea>
       </Panel>
     </PanelGroup>

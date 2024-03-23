@@ -6,8 +6,7 @@ import clsx from 'clsx'
 import TreeView, { type INode } from 'react-accessible-treeview'
 import { last } from 'remeda'
 import { useDiagramsTree } from '../../data'
-import styles from './DiagramsTree.module.css'
-import * as css from './DiagramTree.css'
+import './diagram-tree-styles.css'
 
 function inTree(id: string, data: INode[]): boolean {
   return data.some(d => d.id === id)
@@ -24,7 +23,7 @@ export function DiagramsTree() {
   const selectedId = viewId && inTree(viewId, data) ? [viewId] : []
 
   return (
-    <Box className={clsx(styles.treeview, css.treeview)}>
+    <Box className={clsx('diagrams-treeview ')}>
       <TreeView
         data={data}
         propagateSelect
