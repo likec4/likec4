@@ -1,4 +1,4 @@
-import type { ComputedView, LikeC4RawModel, ViewID } from '@likec4/core'
+import type { ComputedView, LikeC4Model, ViewID } from '@likec4/core'
 import type { BuildDocumentsParams, ChangeViewRequest, LocateParams } from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
@@ -12,7 +12,9 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 // #endregion
 
 // #region To server
-const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>('likec4/fetchRaw')
+const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>(
+  'likec4/fetchModel'
+)
 const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
   'likec4/computeView'
 )
@@ -41,8 +43,8 @@ export class Rpc extends AbstractDisposable {
   }
 
   async fetchModel() {
-    const { rawmodel } = await this.client.sendRequest(fetchRawModel)
-    return rawmodel
+    const { model } = await this.client.sendRequest(fetchModel)
+    return model
   }
 
   async computeView(viewId: ViewID) {

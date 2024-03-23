@@ -114,6 +114,14 @@ describe('compute-element-view', () => {
     expect(edgeIds).toEqual(['cloud:amazon.s3'])
   })
 
+  it('view of amazon including cloud.* ->', () => {
+    const { edgeIds, nodeIds } = computeView('amazon', [$include('*'), $include('cloud.* ->')])
+
+    expect(nodeIds).toEqual(['cloud.backend', 'amazon', 'amazon.s3'])
+
+    expect(edgeIds).to.have.same.members(['cloud.backend:amazon.s3'])
+  })
+
   it('view of cloud.frontend (and include parent cloud)', () => {
     const { edgeIds, nodeIds } = computeView('cloud.frontend', [$include('*'), $include('cloud')])
 
@@ -261,14 +269,6 @@ describe('compute-element-view', () => {
       'cloud.frontend.adminPanel:cloud.backend.graphql',
       'cloud.backend:amazon'
     ])
-  })
-
-  it('view of amazon', () => {
-    const { edgeIds, nodeIds } = computeView('amazon', [$include('*'), $include('cloud.* ->')])
-
-    expect(nodeIds).toEqual(['cloud.backend', 'amazon', 'amazon.s3'])
-
-    expect(edgeIds).to.have.same.members(['cloud.backend:amazon.s3'])
   })
 
   it('index view with applied styles', () => {

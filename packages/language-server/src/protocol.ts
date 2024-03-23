@@ -3,8 +3,8 @@ import type {
   ComputedView,
   ElementShape,
   Fqn,
+  LikeC4ComputedModel,
   LikeC4Model,
-  LikeC4RawModel,
   NonEmptyArray,
   RelationID,
   ThemeColor,
@@ -18,10 +18,12 @@ export const onDidChangeModel = new NotificationType<string>('likec4/onDidChange
 // #endregion
 
 // #region To server
-export const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>(
-  'likec4/fetchRaw'
+export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>(
+  'likec4/fetchModel'
 )
-export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>('likec4/fetchModel')
+export const fetchComputedModel = new RequestType0<{ model: LikeC4ComputedModel | null }, void>(
+  'likec4/fetchComputedModel'
+)
 
 export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
   'likec4/computeView'

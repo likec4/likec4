@@ -28,7 +28,7 @@ export class Views {
   }
 
   async computedViews(): Promise<ComputedView[]> {
-    const model = await this.services.likec4.ModelBuilder.buildModel()
+    const model = await this.services.likec4.ModelBuilder.buildComputedModel()
     return Object.values(model?.views ?? {})
   }
 

@@ -213,12 +213,13 @@ export class LikeC4ModelBuilder {
     logger.debug(`[ModelBuilder] Created`)
   }
 
-  public async buildRawModel(cancelToken?: CancellationToken): Promise<c4.LikeC4RawModel | null> {
+  public async buildModel(cancelToken?: CancellationToken): Promise<c4.LikeC4Model | null> {
+    await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4RawModel | null>
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
       return cache.get(RAW_MODEL_CACHE, () => {
         const docs = this.documents()
         if (docs.length === 0) {
@@ -233,12 +234,15 @@ export class LikeC4ModelBuilder {
 
   private previousViews: Record<ViewID, c4.ComputedView> = {}
 
-  public async buildModel(cancelToken?: CancellationToken): Promise<c4.LikeC4Model | null> {
-    const model = await this.buildRawModel(cancelToken)
+  public async buildComputedModel(cancelToken?: CancellationToken): Promise<c4.LikeC4ComputedModel | null> {
+    const model = await this.buildModel(cancelToken)
     if (!model) {
       return null
     }
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4Model | null>
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
+    }
+    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
     const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(MODEL_CACHE, () => {
       const index = new LikeC4ModelGraph(model)
@@ -269,11 +273,14 @@ export class LikeC4ModelBuilder {
   }
 
   public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedView | null> {
-    const model = await this.buildRawModel(cancelToken)
+    const model = await this.buildModel(cancelToken)
     const view = model?.views[viewId]
     if (!view) {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
+    }
+    if (cancelToken) {
+      await interruptAndCheck(cancelToken)
     }
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
     return cache.get(computedViewKey(viewId), () => {

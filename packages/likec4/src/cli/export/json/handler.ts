@@ -23,7 +23,7 @@ export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   const timer = startTimer(logger)
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const model = await languageServices.model.buildModel()
+  const model = await languageServices.model.buildComputedModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')

@@ -3,19 +3,21 @@ import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
 
 import { nonexhaustive } from '@likec4/core'
-import { URI, UriUtils } from 'langium'
+import { Disposable, URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
 import {
   buildDocuments,
   changeView,
   computeView,
+  fetchComputedModel,
   fetchModel,
-  fetchRawModel,
   locate,
   onDidChangeModel
 } from './protocol'
 
-export class Rpc {
+export class Rpc implements Disposable {
+  private disposables = [] as Array<Disposable>
+
   constructor(private services: LikeC4Services) {}
 
   init() {
@@ -31,63 +33,70 @@ export class Rpc {
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
-    modelBuilder.onModelParsed(
-      debounceFunction(
-        () => void connection.sendNotification(onDidChangeModel, '').catch(logError),
-        {
-          before: true,
-          after: true,
-          wait: 250,
-          maxWait: 1000
-        }
-      )
-    )
-
-    connection.onRequest(fetchModel, async cancelToken => {
-      const model = await modelBuilder.buildModel(cancelToken)
-      return { model }
-    })
-
-    connection.onRequest(fetchRawModel, async cancelToken => {
-      const rawmodel = await modelBuilder.buildRawModel(cancelToken)
-      return { rawmodel }
-    })
-
-    connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
-      const view = await modelBuilder.computeView(viewId, cancelToken)
-      return { view }
-    })
-
-    connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
-      const changed = docs.map(d => URI.parse(d))
-      const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
-      const deleted = LangiumDocuments.all
-        .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri))
-        .map(d => d.uri)
-        .toArray()
-      logger.debug(
-        `[ServerRpc] received request to build:
+    this.disposables.push(
+      modelBuilder.onModelParsed(
+        debounceFunction(
+          () => void connection.sendNotification(onDidChangeModel, '').catch(logError),
+          {
+            before: true,
+            after: true,
+            wait: 250,
+            maxWait: 1000
+          }
+        )
+      ),
+      connection.onRequest(fetchComputedModel, async cancelToken => {
+        const model = await modelBuilder.buildComputedModel(cancelToken)
+        return { model }
+      }),
+      connection.onRequest(fetchModel, async cancelToken => {
+        const model = await modelBuilder.buildModel(cancelToken)
+        return { model }
+      }),
+      connection.onRequest(computeView, async ({ viewId }, cancelToken) => {
+        const view = await modelBuilder.computeView(viewId, cancelToken)
+        return { view }
+      }),
+      connection.onRequest(buildDocuments, async ({ docs }, cancelToken) => {
+        const changed = docs.map(d => URI.parse(d))
+        const notChanged = (uri: URI) => changed.every(c => !UriUtils.equals(c, uri))
+        const deleted = LangiumDocuments.all
+          .filter(d => isLikeC4LangiumDocument(d) && notChanged(d.uri))
+          .map(d => d.uri)
+          .toArray()
+        logger.debug(
+          `[ServerRpc] received request to build:
   changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
   deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`
-      )
-      await DocumentBuilder.update(changed, deleted, cancelToken)
-    })
+        )
+        await DocumentBuilder.update(changed, deleted, cancelToken)
+      }),
+      connection.onRequest(locate, params => {
+        if ('element' in params) {
+          return modelLocator.locateElement(params.element, params.property ?? 'name')
+        }
+        if ('relation' in params) {
+          return modelLocator.locateRelation(params.relation)
+        }
+        if ('view' in params) {
+          return modelLocator.locateView(params.view)
+        }
+        nonexhaustive(params)
+      }),
+      connection.onRequest(changeView, async (request, _cancelToken) => {
+        return await modelEditor.applyChange(request)
+      })
+    )
+  }
 
-    connection.onRequest(locate, params => {
-      if ('element' in params) {
-        return modelLocator.locateElement(params.element, params.property ?? 'name')
+  dispose() {
+    let item
+    while (item = this.disposables.pop()) {
+      try {
+        item.dispose()
+      } catch (e) {
+        logError(e)
       }
-      if ('relation' in params) {
-        return modelLocator.locateRelation(params.relation)
-      }
-      if ('view' in params) {
-        return modelLocator.locateView(params.view)
-      }
-      nonexhaustive(params)
-    })
-
-    connection.onRequest(changeView, async (request, _cancelToken) => {
-      return await modelEditor.applyChange(request)
-    })
+    }
   }
 }
