@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "declarationDir": "dist/esm",
+    "declarationDir": "dist/types",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
   "include": ["src"],
