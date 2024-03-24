@@ -3768,9 +3768,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.17.4":
-  version: 1.17.4
-  resolution: "@tanstack/react-router@npm:1.17.4"
+"@tanstack/react-router@npm:^1.22.3":
+  version: 1.22.3
+  resolution: "@tanstack/react-router@npm:1.22.3"
   dependencies:
     "@tanstack/history": "npm:1.15.13"
     "@tanstack/react-store": "npm:^0.2.1"
@@ -3779,7 +3779,7 @@ __metadata:
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: 10/09e56c1df49d7e34c82394f2b20a75e379b11fc818daf7f9ed05c3a6f63149ac99bf8a1b504e5a0a2ea24cb22d2ab4734731968252e149986a82aacae57cfe43
+  checksum: 10/83f2af20b4b8e3e7328837ff1bd1a82eb72a31a4a4d81b4bbcffd958bca7443534bc141941a96e483931452104f61d3deee35f611cfd22cd8df8d67578e15961
   languageName: node
   linkType: hard
 
@@ -3796,22 +3796,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-generator@npm:1.16.5":
-  version: 1.16.5
-  resolution: "@tanstack/router-generator@npm:1.16.5"
+"@tanstack/router-generator@npm:1.20.5":
+  version: 1.20.5
+  resolution: "@tanstack/router-generator@npm:1.20.5"
   dependencies:
     prettier: "npm:^3.1.1"
     zod: "npm:^3.22.4"
-  checksum: 10/c9dd6e0a236d518440e7750365dc3a9eec0342a04fa0261b40f55d0c002d64998a2ca112a711b94d7ec9c98080350c247e730bbdf2279151a1a1420d3d2af00e
+  checksum: 10/97ed3607d66fd49d5955c865fa1143f834200866acf425dd042f824c884ea3b0f7a70e9849a6ae0b1079daac91d500c52c09c8166ddd91685d0a50bf448ffeba
   languageName: node
   linkType: hard
 
-"@tanstack/router-vite-plugin@npm:^1.16.5":
-  version: 1.16.5
-  resolution: "@tanstack/router-vite-plugin@npm:1.16.5"
+"@tanstack/router-vite-plugin@npm:^1.20.5":
+  version: 1.20.5
+  resolution: "@tanstack/router-vite-plugin@npm:1.20.5"
   dependencies:
-    "@tanstack/router-generator": "npm:1.16.5"
-  checksum: 10/359003c68463a974c92ec18c30c6daf2881d0cbf204ad62085ca2d42d60b262958787e12e8fe3a06251e5aafaa5a835fc2d6a6c94c78e0f9b8b735234d263680
+    "@tanstack/router-generator": "npm:1.20.5"
+  checksum: 10/42fe249a4079ab6211feb94fb195ce945fb6991eabbc713648ba68ef664d86b194e8e9588bdd10151af944c0b397e4d8635f79893d1e911bc6d83cf8a454e57e
   languageName: node
   linkType: hard
 
@@ -9883,8 +9883,8 @@ __metadata:
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons": "npm:^2.47.0"
     "@tabler/icons-react": "npm:^2.47.0"
-    "@tanstack/react-router": "npm:^1.17.4"
-    "@tanstack/router-vite-plugin": "npm:^1.16.5"
+    "@tanstack/react-router": "npm:^1.22.3"
+    "@tanstack/router-vite-plugin": "npm:^1.20.5"
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.11.25"
     "@types/prompts": "npm:^2.4.8"

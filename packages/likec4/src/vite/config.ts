@@ -173,6 +173,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         // ]
       }),
       TanStackRouterVite({
+        routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'

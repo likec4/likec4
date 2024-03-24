@@ -9,8 +9,8 @@ import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
 import { useLikeC4View } from 'virtual:likec4'
 import { useViewGroups, type ViewGroups } from '../data/index-page'
-import * as styles from './-index.css'
-import { cssPreviewCardLink } from './-view.css'
+import * as styles from './index.css'
+import { cssPreviewCardLink } from './view.css'
 
 export const Route = createFileRoute('/')({
   component: IndexPage
