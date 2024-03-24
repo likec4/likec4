@@ -66,21 +66,6 @@ const generatedViews = {
   }
 } satisfies Module
 
-const dimensionsModule = {
-  id: 'virtual:likec4/dimensions',
-  virtualId: '\0likec4/dimensions',
-  async load({ likec4, logger }) {
-    logger.info(k.dim('generating virtual:likec4/dimensions'))
-    const views = await likec4.views.diagrams()
-    let code = `export const LikeC4Views = {\n`
-    for (const view of views) {
-      code += `  ${JSON.stringify(view.id)}: {width: ${view.width},height: ${view.height}},\n`
-    }
-    code += `}`
-    return code
-  }
-} satisfies Module
-
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
   virtualId: '\0likec4/dot-sources',
@@ -115,7 +100,6 @@ const mmdSourcesModule = {
 
 const modules = [
   generatedViews,
-  dimensionsModule,
   dotSourcesModule,
   d2SourcesModule,
   mmdSourcesModule

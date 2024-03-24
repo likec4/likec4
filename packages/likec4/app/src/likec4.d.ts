@@ -12,15 +12,6 @@ declare module 'virtual:likec4/views' {
   export const LikeC4Views: Record<string, DiagramView>
 }
 
-declare module 'virtual:likec4/dimensions' {
-  interface DiagramViewDimensions {
-    width: number
-    height: number
-  }
-
-  export const LikeC4Views: Record<string, DiagramViewDimensions>
-}
-
 declare module 'virtual:likec4/dot-sources' {
   export function dotSource(viewId: string): string
 
