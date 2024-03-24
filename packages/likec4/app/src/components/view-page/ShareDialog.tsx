@@ -1,42 +1,66 @@
 import type { DiagramView } from '@likec4/diagrams'
-import { useMantineColorScheme } from '@mantine/core'
+import { type MantineColorScheme, useMantineColorScheme } from '@mantine/core'
 import { ExclamationTriangleIcon, InfoCircledIcon, OpenInNewWindowIcon } from '@radix-ui/react-icons'
 import { Box, Button, Callout, Code, Dialog, Flex, Link, ScrollArea, Select, Tabs, Text } from '@radix-ui/themes'
+import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import { $pages } from '../../router'
 import { CopyToClipboard } from '../CopyToClipboard'
 
-const embedCode = (diagram: DiagramView, theme: string) => {
-  const url = $pages.embed.url(diagram.id)
+// const embedCode = (diagram: DiagramView, theme: string) => {
+//   // const url = $pages.embed.url(diagram.id)
+//   // const padding = 20
+
+//   // url.searchParams.set('padding', `${padding}`)
+//   // if (theme !== 'system') {
+//   //   url.searchParams.set('theme', theme)
+//   // } else {
+//   //   url.searchParams.delete('theme')
+//   // }
+
+//   const width = diagram.width + padding * 2
+//   const height = diagram.height + padding * 2
+
+//   const code = `
+// <div style="aspect-ratio:${width}/${height};width:100%;height:auto;max-width:${width}px;margin:0 auto">
+//   <iframe src="${url.href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>
+// </div>
+// `.trim()
+
+//   return {
+//     code,
+//     href: url.href
+//   }
+// }
+
+export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
+  const router = useRouter()
+
+  const { colorScheme } = useMantineColorScheme()
+  const [theme, setTheme] = useState<MantineColorScheme>(colorScheme)
+
   const padding = 20
-
-  url.searchParams.set('padding', `${padding}`)
-  if (theme !== 'system') {
-    url.searchParams.set('theme', theme)
-  } else {
-    url.searchParams.delete('theme')
-  }
-
+  const url = new URL(
+    router.buildLocation({
+      to: '/embed/$viewId',
+      params: { viewId: diagram.id },
+      search: {
+        padding,
+        theme: theme !== 'auto' ? theme : undefined
+      }
+    }).href,
+    window.location.href
+  )
   const width = diagram.width + padding * 2
   const height = diagram.height + padding * 2
+  const href = url.href
 
   const code = `
 <div style="aspect-ratio:${width}/${height};width:100%;height:auto;max-width:${width}px;margin:0 auto">
-  <iframe src="${url.href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>
+  <iframe src="${href}" width="100%" height="100%" style="border:0;background:transparent;"></iframe>
 </div>
 `.trim()
 
-  return {
-    code,
-    href: url.href
-  }
-}
-
-export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
-  const { colorScheme } = useMantineColorScheme()
-  const [theme, setTheme] = useState(colorScheme === 'auto' ? 'system' : colorScheme)
-
-  const { code, href } = embedCode(diagram, theme)
+  // const { code, href } = embedCode(diagram, theme)
 
   return (
     <Dialog.Content size="2" style={{ maxWidth: 800, minWidth: 280 }}>
@@ -103,10 +127,10 @@ export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
                 <Text as="div" size="2" weight="medium" mb="1">
                   Theme
                 </Text>
-                <Select.Root size="2" defaultValue={theme} onValueChange={v => setTheme(v)}>
+                <Select.Root size="2" defaultValue={theme} onValueChange={v => setTheme(v as MantineColorScheme)}>
                   <Select.Trigger variant="soft" />
                   <Select.Content>
-                    <Select.Item value="system">Same as system</Select.Item>
+                    <Select.Item value="auto">Same as system</Select.Item>
                     <Select.Item value="light">Light</Select.Item>
                     <Select.Item value="dark">Dark</Select.Item>
                   </Select.Content>

@@ -1768,6 +1768,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nanostores/react@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@nanostores/react@npm:0.7.2"
+  peerDependencies:
+    nanostores: ^0.9.0 || ^0.10.0
+    react: ">=18.0.0"
+  checksum: 10/6183ccbd31810fb48208d0cab940ec6532184f9503ce3879f17ad3f13e024cdd2c88ce08e09200f22d7ed6fdb5c7320cf8411c12e20ed197c0ac586f2995ae4a
+  languageName: node
+  linkType: hard
+
 "@napi-rs/simple-git-android-arm-eabi@npm:0.1.9":
   version: 0.1.9
   resolution: "@napi-rs/simple-git-android-arm-eabi@npm:0.1.9"
@@ -9867,6 +9877,7 @@ __metadata:
     "@likec4/layouts": "workspace:*"
     "@mantine/core": "npm:^7.6.2"
     "@mantine/hooks": "npm:^7.6.2"
+    "@nanostores/react": "npm:^0.7.2"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.4"
@@ -9894,9 +9905,9 @@ __metadata:
     esbuild-node-externals: "npm:^1.13.0"
     execa: "npm:^8.0.1"
     get-port: "npm:^7.0.0"
-    jotai: "npm:^2.6.4"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
+    nanostores: "npm:^0.10.0"
     picocolors: "npm:^1.0.0"
     pkg-up: "npm:^5.0.0"
     playwright-core: "npm:1.42.1"
@@ -12153,6 +12164,13 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 10/ac1eb60f615b272bccb0e2b9cd933720dad30bf9708424f691b8113826bb91aca7e9d14ef5d9415a6ba15c266b37817256f58d8ce980c82b0ba3185352565679
+  languageName: node
+  linkType: hard
+
+"nanostores@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "nanostores@npm:0.10.0"
+  checksum: 10/892c3deb62dc6a7cb87f2229f2876669369e9daa6b125e02956369b6f606f4251a5878387e7785cc30e01de69f4a4776da347df465dd641671cc3f13baf6c718
   languageName: node
   linkType: hard
 

@@ -6,10 +6,9 @@ import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separator, Text } from '@radix-ui/themes'
 import { useDebouncedEffect } from '@react-hookz/web'
-import type { Atom } from 'jotai'
-import { useAtomValue } from 'jotai'
 import { memo, useState } from 'react'
-import { useViewGroupsAtoms, type ViewsGroup as IViewsGroup } from '../data'
+import { useLikeC4View } from 'virtual:likec4'
+import { useViewGroups, type ViewGroups } from '../data/index-page'
 import * as styles from './-index.css'
 import { cssPreviewCardLink } from './-view.css'
 
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/')({
 })
 
 export function IndexPage() {
-  const viewGroupsAtoms = useViewGroupsAtoms()
+  const viewGroups = useViewGroups()
   return (
     <Container
       size={'4'}
@@ -27,8 +26,8 @@ export function IndexPage() {
         lg: '1'
       }}
     >
-      {viewGroupsAtoms.map(g => <ViewsGroup key={g.toString()} atom={g} />)}
-      {viewGroupsAtoms.length === 0 && (
+      {viewGroups.map(g => <ViewsGroup key={g.path} {...g} />)}
+      {viewGroups.length === 0 && (
         <Flex position="fixed" inset="0" align="center" justify="center">
           <Card color="red" size="4">
             <Flex gap="4" direction="row" align="center">
@@ -50,8 +49,7 @@ export function IndexPage() {
   )
 }
 
-function ViewsGroup({ atom }: { atom: Atom<IViewsGroup> }) {
-  const { path, views, isRoot } = useAtomValue(atom)
+function ViewsGroup({ isRoot, path, views }: ViewGroups[number]) {
   return (
     <Flex asChild gap={'4'} direction={'column'}>
       <Section size="2">
@@ -91,17 +89,18 @@ function ViewsGroup({ atom }: { atom: Atom<IViewsGroup> }) {
           }}
           align="stretch"
         >
-          {views.map(v => <ViewCard key={v.toString()} atom={v} />)}
+          {views.map(v => <ViewCard key={v} viewId={v} />)}
         </Flex>
       </Section>
     </Flex>
   )
 }
 
-type ViewCardAtom = IViewsGroup['views'][number]
-const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
-  // const diagram =
-  const diagram = useAtomValue(atom)
+const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
+  const diagram = useLikeC4View(viewId)
+  if (!diagram) {
+    return null
+  }
   const { id, title, description } = diagram
   return (
     <Box asChild shrink="0" grow="1">
@@ -128,9 +127,9 @@ const ViewCard = ({ atom }: { atom: ViewCardAtom }) => {
       </Card>
     </Box>
   )
-}
+}, (prev, next) => prev.viewId === next.viewId)
 
-const DiagramPreview = memo((props: { diagram: DiagramView }) => {
+function DiagramPreview(props: { diagram: DiagramView }) {
   const [diagram, setDiagram] = useState<DiagramView | null>(null)
 
   // defer rendering to update to avoid flickering
@@ -150,8 +149,7 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
           fitView
           background={'dots'}
           initialWidth={350}
-          initialHeight={175}
-        />
+          initialHeight={175} />
         // reactflowProps={{
         //   width: 350,
         //   height: 175
@@ -159,4 +157,4 @@ const DiagramPreview = memo((props: { diagram: DiagramView }) => {
       )}
     </Box>
   )
-})
+}

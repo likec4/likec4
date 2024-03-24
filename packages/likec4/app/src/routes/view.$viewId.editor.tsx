@@ -1,7 +1,7 @@
 // import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useAtomValue } from 'jotai'
+import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
@@ -10,8 +10,8 @@ export const Route = createFileRoute('/view/$viewId/editor')({
 
 function ViewEditor() {
   const router = useRouter()
-  const { viewAtom, viewId } = Route.useRouteContext()
-  const view = useAtomValue(viewAtom)
+  const { viewId } = Route.useRouteContext()
+  const view = useLikeC4View(viewId)
 
   if (!view) {
     return <DiagramNotFound viewId={viewId} />

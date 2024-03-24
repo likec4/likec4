@@ -5,7 +5,7 @@ import { useParams, useRouter, useRouterState } from '@tanstack/react-router'
 import clsx from 'clsx'
 import TreeView, { type INode } from 'react-accessible-treeview'
 import { last } from 'remeda'
-import { useDiagramsTree } from '../../data'
+import { useDiagramsTree } from './data'
 import './diagram-tree-styles.css'
 
 function inTree(id: string, data: INode[]): boolean {
@@ -35,7 +35,6 @@ export function DiagramsTree() {
           }
           const m = last(routerState.matches)
           invariant(m, 'routerState.matches is empty')
-          console.log({ m, element })
           router.navigate({
             to: m.routeId as string,
             params: { viewId: element.id },

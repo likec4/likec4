@@ -18,6 +18,44 @@ interface Module {
   load(opts: { logger: Logger; likec4: LanguageServices }): Promise<string>
 }
 
+const generatedStore = {
+  id: 'virtual:likec4',
+  virtualId: '\0likec4',
+  async load({ logger }) {
+    logger.info(k.dim('generating virtual:likec4'))
+    return `
+import { useStore } from '@nanostores/react'
+import { deepEqual as equals } from 'fast-equals'
+import { map } from 'nanostores'
+import { LikeC4Views } from 'virtual:likec4/views'
+
+export const $views = map(LikeC4Views)
+
+export function useLikeC4View(id) {
+  const views = useStore($views, {
+    keys: [id],
+  })
+  return views[id] ?? null
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept('/@vite-plugin-likec4/likec4-views', md => {
+    const update = md?.LikeC4Views
+    if (update) {
+      const currents = $views.get()
+      for (const [id, view] of Object.entries(update)) {
+        const current = currents[id] ?? null
+        if (!equals(current, view)) {
+          $views.setKey(id, view)
+        }
+      }
+    }
+  })
+}
+`
+  }
+} satisfies Module
+
 const generatedViews = {
   id: 'virtual:likec4/views',
   virtualId: '/@vite-plugin-likec4/likec4-views',
@@ -101,6 +139,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     resolveId: {
       order: 'pre',
       handler(id) {
+        if (id === generatedStore.id) {
+          return generatedStore.virtualId
+        }
         const module = modules.find(m => m.id === id)
         if (module) {
           return module.virtualId
@@ -110,6 +151,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
     },
 
     async load(id) {
+      if (id === generatedStore.virtualId) {
+        return await generatedStore.load({ logger, likec4 })
+      }
       const module = modules.find(m => m.virtualId === id)
       if (module) {
         return await module.load({ logger, likec4 })

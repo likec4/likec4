@@ -1,25 +1,19 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { createFileRoute } from '@tanstack/react-router'
+import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components'
-import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 
-const asPadding = (v: unknown) => {
-  const parsed = typeof v === 'string' ? parseFloat(v) : undefined
-  if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
-    return Math.round(parsed)
-  }
-  return undefined
-}
+// const asPadding = (v: unknown) => {
+//   const parsed = typeof v === 'string' ? parseFloat(v) : undefined
+//   if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
+//     return Math.round(parsed)
+//   }
+//   return undefined
+// }
 
 export const Route = createFileRoute('/export/$viewId')({
-  component: ExportPage,
-  validateSearch: (search: Record<string, unknown>) => {
-    // validate and parse the search params into a typed state
-    return {
-      padding: asPadding(search.padding)
-    }
-  }
+  component: ExportPage
 })
 
 function ExportPage() {

@@ -8,7 +8,6 @@
 // import { startTransition } from 'react'
 import { createRouter } from '@tanstack/react-router'
 
-import { DiagramNotFound } from './components'
 import { BaseUrl } from './const'
 import { routeTree } from './routeTree.gen'
 
@@ -46,26 +45,6 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
-
-export const $pages = {
-  index: {
-    url: () => router.buildLocation({ to: '/' }).href,
-    open: () => router.navigate({ to: '/', startTransition: true, search: true })
-  },
-  view: {
-    url: (viewId: string) =>
-      new URL(router.buildLocation({ to: '/view/$viewId/editor', params: { viewId } }).href, window.location.href),
-    open: (viewId: string) =>
-      router.navigate({ to: '/view/$viewId/editor', params: { viewId }, search: true, startTransition: true })
-  },
-  embed: {
-    url: (viewId: string) =>
-      new URL(
-        router.buildLocation({ to: '/embed/$viewId', params: { viewId }, search: true }).href,
-        window.location.href
-      )
-  }
-} as const
 
 // export const $router = createRouter(
 //   {

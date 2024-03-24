@@ -1,20 +1,15 @@
 import { Box, Burger } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { useAtomValue } from 'jotai'
-import { DiagramNotFound, SidebarDrawer } from '../components'
+import { useLikeC4View } from 'virtual:likec4'
+import { SidebarDrawer } from '../components'
 import { Header } from '../components/view-page/Header'
-import { selectLikeC4ViewAtom } from '../data/atoms'
 
 export const Route = createFileRoute('/view/$viewId')({
   beforeLoad: ({ params: { viewId } }) => ({
-    viewId,
-    viewAtom: selectLikeC4ViewAtom(viewId)
+    viewId
   }),
-  component: ViewLayout,
-  notFoundComponent: (props) => {
-    return <DiagramNotFound viewId={'asd'} />
-  }
+  component: ViewLayout
 })
 
 function ViewLayout() {
@@ -72,7 +67,7 @@ function ViewLayout() {
 }
 
 function ViewHeader() {
-  const view = useAtomValue(Route.useRouteContext().viewAtom)
+  const view = useLikeC4View(Route.useRouteContext().viewId)
   if (!view) {
     return null
   }

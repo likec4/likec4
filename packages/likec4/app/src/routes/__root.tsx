@@ -14,8 +14,17 @@ const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
   return undefined
 }
 
-type SearchParams = {
+const asPadding = (v: unknown) => {
+  const parsed = typeof v === 'string' ? parseFloat(v) : undefined
+  if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
+    return Math.round(parsed)
+  }
+  return undefined
+}
+
+export type SearchParams = {
   theme: 'light' | 'dark' | undefined
+  padding: number | undefined
 }
 
 export const Route = createRootRouteWithContext<{}>()({
@@ -23,6 +32,7 @@ export const Route = createRootRouteWithContext<{}>()({
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     // validate and parse the search params into a typed state
     return {
+      padding: asPadding(search.padding),
       theme: asTheme(search.theme)
     }
   },

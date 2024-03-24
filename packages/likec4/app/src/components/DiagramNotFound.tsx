@@ -1,7 +1,6 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Button, Card, Code, Flex, Heading, IconButton, Text } from '@radix-ui/themes'
 import { Link } from '@tanstack/react-router'
-import { $pages } from '../router'
 
 export const DiagramNotFound = ({ viewId }: { viewId: string }) => {
   return (
