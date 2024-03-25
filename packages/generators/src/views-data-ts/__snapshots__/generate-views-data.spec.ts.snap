@@ -41,7 +41,8 @@ export function isLikeC4ViewId(value) {
   return (
     value != null &&
     typeof value === 'string' &&
-    Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+    Object.hasOwn(LikeC4Views, value) &&
+    LikeC4Views[value] != null
   )
 }
 
@@ -74,7 +75,8 @@ export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId {
   return (
     value != null &&
     typeof value === 'string' &&
-    Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+    Object.hasOwn(LikeC4Views, value) &&
+    LikeC4Views[value] != null
   )
 }
 

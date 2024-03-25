@@ -44,7 +44,8 @@ export function generateViewsDataJs(views: DiagramView[]) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+        Object.hasOwn(LikeC4Views, value) &&
+        LikeC4Views[value] != null
       )
     }
 
@@ -104,7 +105,8 @@ export function generateViewsDataTs(views: DiagramView[]) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+        Object.hasOwn(LikeC4Views, value) &&
+        LikeC4Views[value] != null
       )
     }
 
