@@ -14,6 +14,7 @@ export function EnsureMantine({ colorMode, children }: EnsureMantineProps) {
       {...(colorMode && {
         forceColorScheme: colorMode
       })}
+      defaultColorScheme="auto"
     >
       {children}
     </MantineProvider>

@@ -1,4 +1,4 @@
-import type { LikeC4DiagramProps } from "@likec4/diagram"
+import type { LikeC4DiagramProps } from "@likec4/diagram/bundle"
 import type { LikeC4ViewId } from "./views"
 import { LikeC4Diagram, useInjectStyles } from "@likec4/diagram/bundle"
 import { LikeC4Views } from "./views"
@@ -11,11 +11,10 @@ export type LikeC4ViewProps = {
   injectStyles?: boolean | undefined
 } & Omit<LikeC4DiagramProps, "view">
 
-function InjectStyles() {
+export function InjectStyles() {
   useInjectStyles()
   return null
 }
-
 
 export function LikeC4View({
    viewId,
@@ -33,3 +32,4 @@ export function LikeC4View({
 }
 
 export type * from "./views"
+export { useInjectStyles, LikeC4Views, isLikeC4ViewId }

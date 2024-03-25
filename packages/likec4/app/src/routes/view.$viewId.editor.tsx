@@ -20,6 +20,10 @@ function ViewEditor() {
   return (
     <LikeC4Diagram
       view={view}
+      readonly={false}
+      controls={false}
+      nodesDraggable
+      fitViewPadding={0.05}
       onNavigateTo={({ element }) => {
         router.navigate({
           to: '/view/$viewId/editor',
@@ -31,8 +35,6 @@ function ViewEditor() {
       onChange={event => {
         console.log('onChange', event)
       }}
-      controls={false}
-      // nodesDraggable={false}
     />
   )
 }

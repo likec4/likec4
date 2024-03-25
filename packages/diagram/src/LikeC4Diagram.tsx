@@ -27,15 +27,15 @@ export function LikeC4Diagram({
   view,
   className,
   fitView = true,
+  fitViewPadding = 0,
   colorMode,
-  readonly = false,
+  readonly = true,
   pannable = true,
   zoomable = true,
-  nodesSelectable = !readonly,
+  nodesSelectable = true,
   nodesDraggable = !readonly,
   background = 'dots',
-  fitViewPadding = 0.05,
-  controls = !readonly,
+  controls = false,
   disableHovercards = false,
   initialWidth,
   initialHeight,
@@ -43,17 +43,19 @@ export function LikeC4Diagram({
 }: LikeC4DiagramProps) {
   useTilg()
   isOnlyEventHandlers(eventHandlers)
-  const initialRef = useRef<
-    XYFlowData & {
-      width: number
-      height: number
-    }
-  >()
+  const initialRef = useRef<{
+    defaultNodes: XYFlowData['nodes']
+    defaultEdges: XYFlowData['edges']
+    initialWidth: number
+    initialHeight: number
+  }>()
   if (!initialRef.current) {
+    const initial = diagramViewToXYFlowData(view)
     initialRef.current = {
-      ...diagramViewToXYFlowData(view, nodesDraggable),
-      width: initialWidth ?? view.width,
-      height: initialHeight ?? view.height
+      defaultNodes: initial.nodes,
+      defaultEdges: initial.edges,
+      initialWidth: initialWidth ?? view.width,
+      initialHeight: initialHeight ?? view.height
     }
   }
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
@@ -61,10 +63,7 @@ export function LikeC4Diagram({
     <EnsureMantine colorMode={colorMode}>
       <XYFlowProvider
         fitView={fitView}
-        defaultEdges={initialRef.current.edges}
-        defaultNodes={initialRef.current.nodes}
-        initialWidth={initialRef.current.width}
-        initialHeight={initialRef.current.height}
+        {...initialRef.current}
       >
         <DiagramStateProvider
           view={view}
@@ -82,8 +81,8 @@ export function LikeC4Diagram({
                 className,
                 background === 'transparent' && cssTransparentBg
               )}
-              defaultNodes={initialRef.current.nodes}
-              defaultEdges={initialRef.current.edges}
+              defaultNodes={initialRef.current.defaultNodes}
+              defaultEdges={initialRef.current.defaultEdges}
               readonly={readonly}
               nodesDraggable={nodesDraggable}
               nodesSelectable={nodesSelectable}

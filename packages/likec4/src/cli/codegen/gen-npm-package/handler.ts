@@ -219,8 +219,8 @@ function generateIndex() {
     /* prettier-ignore-start */
     /* eslint-disable */
     import { jsx, Fragment, jsxs } from "react/jsx-runtime";
-    import { LikeC4Diagram, useInjectStyles, Styles } from "@likec4/diagram/bundle";
-    import { LikeC4Views, isLikeC4ViewId } from "./views";
+    import { LikeC4Diagram, useInjectStyles } from "@likec4/diagram/bundle";
+    import { LikeC4Views } from "./views";
     function InjectStyles() {
         useInjectStyles();
         return null;
@@ -232,7 +232,8 @@ function generateIndex() {
         }
         return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(LikeC4Diagram, { view: view, ...props })] });
     }
-    export { isLikeC4ViewId, LikeC4Views, LikeC4View, useInjectStyles, Styles };
+    export { isLikeC4ViewId, LikeC4Views } from "./views";
+    export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
     /* prettier-ignore-end */
   `
 

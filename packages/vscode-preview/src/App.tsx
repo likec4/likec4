@@ -105,6 +105,8 @@ const App = () => {
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LikeC4Diagram
           view={view}
+          fitViewPadding={0.05}
+          readonly={false}
           controls={false}
           nodesDraggable={false}
           onNavigateTo={({ element }) => {

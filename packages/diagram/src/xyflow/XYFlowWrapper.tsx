@@ -1,8 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { ReactFlow, type Viewport } from '@xyflow/react'
+import { ReactFlow } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { memo, type PropsWithChildren, useCallback, useRef } from 'react'
-import { omit } from 'remeda'
 import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
@@ -42,9 +41,6 @@ type XYFlowWrapperProps = Simplify<
     }
   >
 >
-
-const omitChildren: (props: XYFlowWrapperProps) => Omit<XYFlowWrapperProps, 'children'> = omit(['children'])
-const isEquals = (a: XYFlowWrapperProps, b: XYFlowWrapperProps) => deepEqual(omitChildren(a), omitChildren(b))
 
 function XYFlowWrapper({
   className,
@@ -148,4 +144,8 @@ function XYFlowWrapper({
   )
 }
 
-export const XYFlow = memo(XYFlowWrapper, isEquals)
+const isEquals = (
+  { children: _childrenA, ...a }: XYFlowWrapperProps,
+  { children: _childrenB, ...b }: XYFlowWrapperProps
+) => deepEqual(a, b)
+export const XYFlow = memo(XYFlowWrapper, isEquals) as typeof XYFlowWrapper

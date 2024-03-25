@@ -71,7 +71,7 @@ export interface LikeC4DiagramProperties {
 
   /**
    * Show/hide controls menu
-   * @default true
+   * @default false
    */
   controls?: boolean | undefined
   /**
@@ -86,7 +86,7 @@ export interface LikeC4DiagramProperties {
   zoomable?: boolean | undefined
   /**
    * Disable any editing (dragging still can be enabled with `nodesDraggable`)
-   * @default false
+   * @default true
    */
   readonly?: boolean | undefined
   /**
@@ -96,10 +96,14 @@ export interface LikeC4DiagramProperties {
   fitView?: boolean | undefined
   /**
    * Seems like this is percentage of the view size
-   * @default 0.05
+   * @default 0
    */
   fitViewPadding?: number | undefined
   nodesSelectable?: boolean | undefined
+
+  /**
+   * @default false
+   */
   nodesDraggable?: boolean | undefined
 
   initialWidth?: number | undefined
