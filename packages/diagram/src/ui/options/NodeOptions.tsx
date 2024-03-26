@@ -47,6 +47,9 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
   if (!hasAtLeast(nodes, 1)) {
     return null
   }
+  // Makes sense to show shape option only if there is at least one element node
+  const showShapeOption = nodes.some(node => node.type === 'element')
+
   const [firstNode, ...rest] = nodes
   return (
     <Stack>
@@ -55,7 +58,7 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
           {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
         </Text>
       </Box>
-      {(rest.length > 0 || firstNode.type === 'element') && (
+      {showShapeOption && (
         <ShapeOption
           nodes={nodes}
           onShapeChange={(shape: ElementShape) => {
