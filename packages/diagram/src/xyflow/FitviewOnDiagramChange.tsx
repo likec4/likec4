@@ -16,7 +16,6 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
   })
   const viewLayout = state.viewId + '_' + state.viewLayout
   const prevViewLayoutRef = useRef(viewLayout)
-
   const isReady = nodeInitialized && xyflow.viewportInitialized
 
   useDebouncedEffect(
@@ -30,7 +29,9 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
         zoom
       })
       xyflow.fitView({
-        duration: 400,
+        duration: 350,
+        padding: state.fitViewPadding,
+        minZoom: 0.1,
         maxZoom: Math.max(1, zoom)
       })
       updateState({ viewportMoved: false })

@@ -55,34 +55,36 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
           {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
         </Text>
       </Box>
-      <ShapeOption
-        nodes={nodes}
-        onShapeChange={(shape: ElementShape) => {
-          const targets = [] as Fqn[]
-          for (const nd of nodes) {
-            api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
-              if (data.element.shape === shape) {
-                return data
-              }
-
-              return ({
-                ...data,
-                element: {
-                  ...data.element,
-                  shape
+      {(rest.length > 0 || firstNode.type === 'element') && (
+        <ShapeOption
+          nodes={nodes}
+          onShapeChange={(shape: ElementShape) => {
+            const targets = [] as Fqn[]
+            for (const nd of nodes) {
+              api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
+                if (data.element.shape === shape) {
+                  return data
                 }
+
+                return ({
+                  ...data,
+                  element: {
+                    ...data.element,
+                    shape
+                  }
+                })
               })
-            })
-            targets.push(nd.data.element.id)
-          }
-          if (hasAtLeast(targets, 1)) {
-            onChange({
-              op: 'change-shape',
-              shape,
-              targets
-            })
-          }
-        }} />
+              targets.push(nd.data.element.id)
+            }
+            if (hasAtLeast(targets, 1)) {
+              onChange({
+                op: 'change-shape',
+                shape,
+                targets
+              })
+            }
+          }} />
+      )}
       <Colors
         nodes={nodes}
         onColorChange={(color: ColorKey | ThemeColorKey) => {
