@@ -26,14 +26,19 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 const App = () => {
   const lastClickedNodeRef = useRef<string>()
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
+
+  function resetLastClickedNd() {
+    lastClickedNodeRef.current = undefined
+    lastNodeContextMenuRef.current = null
+  }
+
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [view, setView] = useState(getPreviewWindowState)
   const [error, setError] = useState<string | null>(null)
 
   const updateView = useCallback((view: DiagramView | null) => {
+    resetLastClickedNd()
     if (view) {
-      lastClickedNodeRef.current = undefined
-      lastNodeContextMenuRef.current = null
       savePreviewWindowState(view)
       setState('ready')
       setView(view)
@@ -94,18 +99,12 @@ const App = () => {
       </div>
     )
   }
-
-  function resetLastClickedNd() {
-    lastClickedNodeRef.current = undefined
-    lastNodeContextMenuRef.current = null
-  }
-
   return (
     <>
       <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LikeC4Diagram
           view={view}
-          fitViewPadding={0.05}
+          fitViewPadding={0.1}
           readonly={false}
           controls={false}
           nodesDraggable={false}
