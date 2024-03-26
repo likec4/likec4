@@ -4,12 +4,12 @@ import { rm } from 'fs/promises'
 import { resolve } from 'node:path'
 import { hrtime } from 'node:process'
 import k from 'picocolors'
-import { chromium } from 'playwright-core'
+import { chromium } from 'playwright'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, inMillis, startTimer } from '../../../logger'
 import { viteBuild } from '../../../vite/vite-build'
 import { vitePreview } from '../../../vite/vite-preview'
-import { takeScreenshot } from '../utils/takeScreenshot'
+import { takeScreenshot } from './takeScreenshot'
 
 type HandlerParams = {
   /**
@@ -22,9 +22,12 @@ type HandlerParams = {
   output: string
 
   useDotBin: boolean
+  timeout: number
+  maxAttempts: number
+  ignore: boolean
 }
 
-export async function handler({ path, useDotBin, output }: HandlerParams) {
+export async function handler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer(logger)
 
@@ -62,42 +65,54 @@ export async function handler({ path, useDotBin, output }: HandlerParams) {
     deviceScaleFactor: 2,
     colorScheme: 'dark',
     baseURL,
-    bypassCSP: true,
     isMobile: false
   })
-  browserContext.setDefaultNavigationTimeout(10000)
-  browserContext.setDefaultTimeout(5000)
+  browserContext.setDefaultNavigationTimeout(timeout)
+  browserContext.setDefaultTimeout(timeout)
 
   logger.info(`${k.cyan('baseURL')} ${k.dim(baseURL)}`)
 
   const startTakeScreenshot = hrtime()
 
-  const succeed = await takeScreenshot({ browserContext, views, output, logger })
+  const succeed = await takeScreenshot({
+    browserContext,
+    views,
+    output,
+    logger,
+    maxAttempts,
+    timeout
+  })
 
   const { pretty } = inMillis(startTakeScreenshot)
 
-  if (succeed.length === views.length) {
-    logger.info(k.green(`✓ all ${succeed.length} views in ${pretty}`))
-  } else if (succeed.length > 1) {
-    logger.info(
-      k.green(`exported ${succeed.length}`) + ' '
-        + k.magenta(`failed ${views.length - succeed.length}` + ` in ${pretty}`)
-    )
-  } else {
-    logger.error(k.red(`failed to export any view out of ${views.length} (${pretty})`))
+  try {
+    logger.info(k.cyan(`close chromium`))
+    await browserContext.close()
+    await browser.close()
+
+    // delete vite cache
+    logger.info(k.cyan('clean build outDir'))
+    await rm(buildOutputDir, { recursive: true, force: true })
+
+    logger.info(k.cyan(`stop preview server`))
+    await previewServer.close()
+  } finally {
   }
 
-  logger.info(k.cyan(`close chromium`))
-  await browserContext.close()
-  await browser.close()
+  if (succeed.length > 0) {
+    logger.info(k.green(`exported ${succeed.length} views in ${pretty}`))
+  }
+  if (succeed.length !== views.length) {
+    if (ignore === true && succeed.length > 0) {
+      logger.info(k.dim('ignore') + ' ' + k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))
+    } else {
+      logger.error(k.red(`failed ${views.length - succeed.length} out of ${views.length} views`))
+    }
+  }
 
-  // delete vite cache
-  logger.info(k.cyan('clean build outDir'))
-  await rm(buildOutputDir, { recursive: true, force: true })
+  if (succeed.length !== views.length && (succeed.length === 0 || ignore !== true)) {
+    throw new Error(`Failed ${views.length - succeed.length} out of ${views.length} views`)
+  }
 
-  logger.info(k.cyan(`stop preview server`))
-  await previewServer.close()
   timer.stopAndLog(`✓ export in `)
-
-  process.exit(0)
 }

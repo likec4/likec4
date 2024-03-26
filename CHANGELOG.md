@@ -1,9 +1,31 @@
+## [0.60.2](https://github.com/likec4/likec4/compare/v0.60.1...v0.60.2) (2024-03-26)
+
+[@mcpride](https://github.com/mcpride) reported that `likec4 export png ...` timed out _sometimes_ (see [#634](https://github.com/likec4/likec4/issues/634))
+
+As a temporary workaround, now cli has the option to configure max attempts (retries) and set timeout. Or even ignore failures,
+
+```
+Options:
+  -i, --ignore        continue if some views failed to export                            [boolean] [default: false]
+  -t, --timeout       (ms) timeout for playwright operations                              [number] [default: 15000]
+      --max-attempts  (number) if export failed, retry N times                                [number] [default: 4]
+```
+
+Example:
+
+```sh
+$ likec4 export png -o ./assets -i --max-attempts 3 -t 5000 
+```
+
+LikeC4 sets default playwright timeout to 5sec, retries exporting failed views 3 times, and ignores these failures anyway (if there are any successful exports).
+
+
 ## [0.60.1](https://github.com/likec4/likec4/compare/v0.60.0...v0.60.1) (2024-03-22)
 
 ### Bug Fixes
 
 - **cli:** `-v` returns undefined [#615](https://github.com/likec4/likec4/issues/615)
-- **cli:** reuse playwright page for screenshots ([#635](https://github.com/likec4/likec4/issues/635)) ([f07c61b](https://github.com/likec4/likec4/commit/f07c61bf7fa693f931f4ff88725f73e17aa553f4)), closes [#634](https://github.com/likec4/likec4/issues/634), 
+- **cli:** reuse playwright page for screenshots ([#635](https://github.com/likec4/likec4/issues/635)) ([f07c61b](https://github.com/likec4/likec4/commit/f07c61bf7fa693f931f4ff88725f73e17aa553f4)), closes [#634](https://github.com/likec4/likec4/issues/634),
 - **deps:** update dependency playwright-core to v1.42.1 ([#636](https://github.com/likec4/likec4/issues/636)) ([48d7ef4](https://github.com/likec4/likec4/commit/48d7ef4874254cfb7929517f73bf4d2d256677df))
 
 # [0.60.0](https://github.com/likec4/likec4/compare/v0.58.0...v0.60.0) (2024-03-10)
