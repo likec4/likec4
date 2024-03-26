@@ -78,7 +78,7 @@
     "clsx": "^2.1.0",
     "execa": "^8.0.1",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.0.14",
+    "framer-motion": "^11.0.22",
     "khroma": "^2.1.0",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",

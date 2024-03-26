@@ -1,8 +1,9 @@
-import { Card, FocusTrap } from '@mantine/core'
+import { Card } from '@mantine/core'
 import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
+import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, motion } from 'framer-motion'
-import { memo, useRef, useState } from 'react'
+import { memo, useState } from 'react'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
@@ -11,7 +12,10 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
 
   useOnSelectionChange({
     onChange: ({ nodes, edges }) => {
-      setSelectedNodes(nodes.map(n => n.id))
+      const next = nodes.map(n => n.id).sort()
+      setSelectedNodes(prev => {
+        return shallowEqual(prev, next) ? prev : next
+      })
       // if (nodes.length === 0 && edges.length === 0) {
       //   setSelectedNodes([])
       //   // setSelectedEdges([])
@@ -34,14 +38,16 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
   // }, [viewId])
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {selectedNodes.length > 0 && (
         <motion.div
-          key={'nodes'}
-          initial={{ opacity: 0.3, scale: 0.85 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.85 }}
-          transition={{ duration: 0.15 }}
+          exit={{
+            opacity: 0,
+            scale: 0.85
+          }}
+          transition={{ duration: 0.14 }}
           className={clsx('react-flow__panel', styles.panel)}
           style={{
             transformOrigin: 'center right'
