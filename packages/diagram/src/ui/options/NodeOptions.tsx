@@ -206,7 +206,6 @@ function ShapeOption({
     <Box>
       <Divider label="shape" labelPosition="left" />
       <Select
-        autoFocus
         mt={'xs'}
         size="xs"
         variant="filled"
