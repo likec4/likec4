@@ -217,41 +217,50 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       ))} */
       }
       {data.label && (
-        <>
-          {
-            /* <EdgeText
-            x={labelX}
-            y={labelY}
-            label={data.label.text}
-            labelStyle={{
-              maxWidth: 50,
-              whiteSpace: 'pre-wrap',
+        <EdgeLabelRenderer>
+          <Box
+            className={clsx(container, edgeLabel)}
+            data-likec4-color={color}
+            style={{
+              top: labelY,
+              left: labelX,
+              maxWidth: data.label.bbox.width + 10,
+              zIndex: ZIndexes.Edge
             }}
-            labelBgBorderRadius={3}
-            labelBgPadding={[4, 3]}
-          /> */
-          }
-
-          <EdgeLabelRenderer>
-            <Box
-              className={clsx(container, edgeLabel)}
-              data-likec4-color={color}
-              style={{
-                top: labelY,
-                left: labelX,
-                maxWidth: data.label.bbox.width + 10,
-                zIndex: ZIndexes.Edge
-              }}
-              mod={{
-                'data-edge-hovered': isHovered
-              }}
-            >
-              <Box className={edgeLabelBody}>
-                {data.label.text}
-              </Box>
+            mod={{
+              'data-edge-hovered': isHovered
+            }}
+          >
+            <Box className={edgeLabelBody}>
+              {data.label.text}
             </Box>
-          </EdgeLabelRenderer>
-        </>
+            {
+              /* <Popover
+                position="bottom"
+                floatingStrategy="fixed"
+                shadow="lg"
+                disabled={!selected}
+                transitionProps={{
+                  transition: 'pop'
+                }}>
+                <Popover.Target>
+                  <Box className={clsx('nodrag nopan', edgeLabelBody)}>
+                    {data.label.text}
+                  </Box>
+                </Popover.Target>
+                <Popover.Dropdown>
+                  {edge.relations.map((relation) => (
+                    <Box key={relation}>
+                      <Text size='xs'>{relation}</Text>
+                    </Box>
+                  ))}
+                  <TextInput label="Name" placeholder="Name" size="xs" />
+                  <TextInput label="Email" placeholder="john@doe.com" size="xs" mt="xs" />
+                </Popover.Dropdown>
+              </Popover> */
+            }
+          </Box>
+        </EdgeLabelRenderer>
       )}
     </g>
   )

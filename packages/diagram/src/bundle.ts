@@ -2,17 +2,18 @@ import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import '@xyflow/react/dist/style.css'
 import './index.css'
 
+export type * from './LikeC4Diagram'
+export type * from './LikeC4Diagram.props'
+export type * from './StaticLikeC4Diagram'
+export type * from './xyflow/types'
+
 export * from './LikeC4Diagram'
 export * from './StaticLikeC4Diagram'
 
-export type * from './LikeC4Diagram'
-export type * from './LikeC4Diagram.props'
-export type * from './xyflow/types'
-;``
-
 export const Styles: string =
-  // @ts-expect-error invalid typings ReactFlow
+  // @ts-expect-error replaced by vite-plugin
   SHADOW_STYLE
+
 // //
 // type Props = LikeC4DiagramProps & LikeC4DiagramEventHandlers
 // export function LikeC4DiagramShadow(props: Props) {
@@ -54,7 +55,7 @@ export const Styles: string =
 //   )
 // }
 
-function hasStyleSheet() {
+let hasStyleSheet = () => {
   for (const sheet of document.styleSheets) {
     const node = sheet.ownerNode
     if (node && 'hasAttribute' in node && node.hasAttribute('data-likec4-styles')) {
@@ -72,6 +73,7 @@ export function useInjectStyles() {
       style.setAttribute('data-likec4-styles', '')
       style.type = 'text/css'
       document.head.appendChild(style)
+      hasStyleSheet = () => true
     }
   }, [])
 }

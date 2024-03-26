@@ -49,18 +49,6 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
         >
           <Card shadow="sm">
             <NodeOptions selectedNodeIds={selectedNodes} />
-            {
-              /* <Divider mb={'xs'} label="shape" labelPosition="left" />
-            <Select
-              variant="filled"
-              size="xs"
-              w={150}
-              checkIconPosition="right"
-              allowDeselect={false}
-              defaultValue={ElementShapes[0]}
-              data={ElementShapes}
-            /> */
-            }
           </Card>
         </motion.div>
       )}

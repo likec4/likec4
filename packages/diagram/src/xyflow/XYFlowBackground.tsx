@@ -2,7 +2,7 @@ import { nonexhaustive } from '@likec4/core'
 import { Background, type BackgroundProps, BackgroundVariant } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { memo } from 'react'
-import type { OverrideProperties, SetRequired } from 'type-fest'
+import type { OverrideProperties } from 'type-fest'
 
 export type XYBackgroundVariant = 'dots' | 'lines' | 'cross'
 export type XYBackgroundProps =

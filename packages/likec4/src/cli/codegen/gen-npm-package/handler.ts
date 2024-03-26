@@ -239,7 +239,7 @@ function generateIndex() {
 
   const dts = new CompositeGeneratorNode().appendTemplate`
     /// <reference types="react" />
-    import type { LikeC4DiagramProps } from "@likec4/diagram/bundle";
+    import type { LikeC4DiagramProps } from "@likec4/diagram";
     import type { LikeC4ViewId } from "./views";
 
     export type LikeC4ViewProps = {
@@ -253,7 +253,7 @@ function generateIndex() {
 
     export * from "./views";
     export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
-    export type { LikeC4DiagramProps } from "@likec4/diagram/bundle";
+    export type { LikeC4DiagramProps } from "@likec4/diagram";
   `
   return {
     js: toString(js),

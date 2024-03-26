@@ -49,21 +49,21 @@ export function UpdateOnDiagramChange({
     )
 
     xyflow.setEdges(prev =>
-      updates.edges.map(edge => {
-        const existing = prev.find(e => e.id === edge.id)
+      updates.edges.map(update => {
+        const existing = prev.find(e => e.id === update.id)
         if (existing) {
-          if (eq(existing.data.edge, edge.data.edge)) {
+          if (eq(existing.data.edge, update.data.edge)) {
             return existing
           }
           return {
             ...existing,
-            ...edge
+            ...update
           }
         }
-        return edge
+        return update
       })
     )
-  }, [initialized, nodes, edges])
+  }, [initialized, nodesDraggable, nodes, edges])
 
   return null
 }

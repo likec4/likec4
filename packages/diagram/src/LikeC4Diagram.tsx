@@ -74,12 +74,12 @@ export function LikeC4Diagram({
           <XYFlowEventHandlers eventHandlers={eventHandlers}>
             <XYFlow
               className={clsx(
-                scope,
                 cssReactFlow,
+                scope,
                 controls === false && cssNoControls,
                 pannable !== true && cssDisablePan,
-                className,
-                background === 'transparent' && cssTransparentBg
+                background === 'transparent' && cssTransparentBg,
+                className
               )}
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
