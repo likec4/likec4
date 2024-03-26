@@ -2,7 +2,6 @@ import { useDebouncedEffect } from '@react-hookz/web'
 import { useNodesInitialized } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { memo, useRef } from 'react'
-import { set } from 'remeda'
 import { useDiagramStateTracked } from '../state'
 import { useXYFlow } from './hooks'
 
@@ -38,8 +37,7 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
       prevViewLayoutRef.current = viewLayout
     },
     [isReady, viewLayout],
-    75,
-    400
+    50
   )
 
   return null

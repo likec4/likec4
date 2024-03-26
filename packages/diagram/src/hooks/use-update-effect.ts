@@ -1,10 +1,14 @@
 import { useEffect, useRef } from 'react'
 
-export function useUpdateEffect(callback: React.EffectCallback, deps: React.DependencyList) {
+export function useUpdateEffect(
+  callback: React.EffectCallback,
+  deps: React.DependencyList,
+  effectFn = useEffect
+) {
   const render = useRef(false)
   const effect = useRef(false)
 
-  useEffect(() => {
+  effectFn(() => {
     const mounted = render.current
     const run = mounted && effect.current
     if (run) {
@@ -13,7 +17,7 @@ export function useUpdateEffect(callback: React.EffectCallback, deps: React.Depe
     effect.current = true
   }, deps)
 
-  useEffect(() => {
+  effectFn(() => {
     render.current = true
     return () => {
       render.current = false
