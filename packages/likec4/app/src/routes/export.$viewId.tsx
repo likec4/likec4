@@ -1,4 +1,5 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { Box } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components'
@@ -17,7 +18,7 @@ export const Route = createFileRoute('/export/$viewId')({
 })
 
 function ExportPage() {
-  const { padding = 22 } = Route.useSearch()
+  const { padding = 20 } = Route.useSearch()
   const { viewId } = Route.useParams()
   const diagram = useLikeC4View(viewId)
 
@@ -28,9 +29,10 @@ function ExportPage() {
   }
 
   return (
-    <div
+    <Box
+      pos={'fixed'}
       style={{
-        position: 'fixed',
+        boxSizing: 'border-box',
         inset: 0,
         minWidth: diagram.width + padding * 2,
         minHeight: diagram.height + padding * 2,
@@ -46,6 +48,6 @@ function ExportPage() {
         initialHeight={diagram.height}
         background={'transparent'}
       />
-    </div>
+    </Box>
   )
 }

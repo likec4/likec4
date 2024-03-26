@@ -15,9 +15,11 @@ const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
 }
 
 const asPadding = (v: unknown) => {
-  const parsed = typeof v === 'string' ? parseFloat(v) : undefined
-  if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
-    return Math.round(parsed)
+  switch (true) {
+    case typeof v === 'number':
+      return Math.round(v)
+    case typeof v === 'string':
+      return Math.round(parseFloat(v))
   }
   return undefined
 }

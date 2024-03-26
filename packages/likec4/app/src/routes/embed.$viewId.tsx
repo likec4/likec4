@@ -10,6 +10,7 @@ export const Route = createFileRoute('/embed/$viewId')({
 })
 
 function EmbedPage() {
+  const { padding = 20 } = Route.useSearch()
   const { viewId } = Route.useParams()
   const diagram = useLikeC4View(viewId)
 
@@ -21,11 +22,19 @@ function EmbedPage() {
 
   return (
     <Box
-      pos={'fixed'}
-      style={{ top: 0, left: 0, width: '100vw', height: '100vh' }}
+      pos={'absolute'}
+      style={{
+        top: 0,
+        left: 0,
+        boxSizing: 'border-box',
+        padding,
+        width: '100vw',
+        height: '100vh'
+      }}
     >
       <StaticLikeC4Diagram
         view={diagram}
+        fitViewPadding={0}
         background={'transparent'}
       />
     </Box>
