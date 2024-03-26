@@ -269,11 +269,13 @@ views {
   view relationship_${key} of ${key}_source {
     include relationship_colors,
       ${key}_source with {
+        technology 'source'
         description: '
           Example of ${key} relationship color
           above muted color'
       },
       ${key}_target with {
+        technology 'target'
         description: '
           Example of ${key} relationship color
           above ${key} color'
@@ -282,11 +284,13 @@ views {
   view relationship_${key}_target of ${key}_target {
     include relationship_colors,
       ${key}_source with {
+        technology 'source'
         description: '
           Example of ${key} relationship color
           above muted color'
       },
       ${key}_target with {
+        technology 'target'
         description: '
           Example of ${key} relationship color
           above ${key} color'
