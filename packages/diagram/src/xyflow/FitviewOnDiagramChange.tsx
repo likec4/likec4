@@ -3,6 +3,7 @@ import { useNodesInitialized } from '@xyflow/react'
 import { shallowEqual } from 'fast-equals'
 import { memo, useRef } from 'react'
 import { useDiagramStateTracked } from '../state'
+import { MinZoom } from './const'
 import { useXYFlow } from './hooks'
 
 /**
@@ -14,7 +15,7 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
-  const viewLayout = state.viewId + '_' + state.viewLayout
+  const viewLayout = state.viewId + '_' + state.viewLayout + '_' + state.fitViewPadding
   const prevViewLayoutRef = useRef(viewLayout)
   const isReady = nodeInitialized && xyflow.viewportInitialized
 
@@ -31,7 +32,7 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
       xyflow.fitView({
         duration: 350,
         padding: state.fitViewPadding,
-        minZoom: 0.1,
+        minZoom: MinZoom,
         maxZoom: Math.max(1, zoom)
       })
       updateState({ viewportMoved: false })

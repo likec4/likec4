@@ -3,7 +3,6 @@ import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
-import useTilg from 'tilg'
 import { useDiagramState, useDiagramStateSelector } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
@@ -63,6 +62,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
 }) {
   // useTilg()
   const diagramState = useDiagramState()
+  const isNodeInteractive = diagramState.isNodeInteractive
   const isHovercards = diagramState.disableHovercards !== true
   const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo
   const isHovered = useDiagramStateSelector(state => state.hoveredNodeId === id)
@@ -78,8 +78,11 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
       data-likec4-shape={element.shape}
       variants={variants}
       initial={'idle'}
-      whileTap={'tap'}
-      animate={isHovered || selected ? 'hover' : 'idle'}
+      {...(isNodeInteractive && {
+        whileTap: 'tap',
+        animate: isHovered || selected ? 'hover' : 'idle',
+        ['data-likec4-interactive']: true
+      })}
     >
       {
         /* <NodeToolbar

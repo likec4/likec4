@@ -61,6 +61,8 @@ export function LikeC4Diagram({
     }
   }
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
+  const isNodeInteractive = nodesDraggable || nodesSelectable || !!eventHandlers.onNavigateTo
+    || !!eventHandlers.onNavigateTo
   return (
     <EnsureMantine colorMode={colorMode}>
       <XYFlowProvider
@@ -68,6 +70,7 @@ export function LikeC4Diagram({
         {...initialRef.current}
       >
         <DiagramStateProvider
+          isNodeInteractive={isNodeInteractive}
           view={view}
           fitViewPadding={fitViewPadding}
           readonly={readonly}

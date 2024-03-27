@@ -6,6 +6,10 @@ import { useSetState } from '../hooks/use-set-state'
 import { type LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type DiagramStateProps = {
+  /**
+   * If nodes are interactive, they can be selected, dragged, etc.
+   */
+  isNodeInteractive: boolean
   view: DiagramView
   fitViewPadding: number
   readonly: boolean
@@ -14,6 +18,7 @@ type DiagramStateProps = {
 }
 
 const useDiagramStateValue = ({
+  isNodeInteractive,
   view,
   fitViewPadding,
   readonly,
@@ -44,6 +49,7 @@ const useDiagramStateValue = ({
   const readonlyProps = {
     readonly,
     disableHovercards,
+    isNodeInteractive,
     viewId: view.id,
     viewLayout: view.autoLayout,
     viewWidth: view.width,

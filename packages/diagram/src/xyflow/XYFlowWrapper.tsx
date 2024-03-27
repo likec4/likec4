@@ -6,6 +6,7 @@ import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramStateTracked } from '../state/DiagramState'
+import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/use-layout-сonstraints'
 import { CompoundNode } from './nodes/compound'
@@ -86,10 +87,10 @@ function XYFlowWrapper({
         zoomActivationKeyCode: null
       })}
       maxZoom={zoomable ? 1.9 : 1}
-      minZoom={zoomable ? 0.1 : 1}
+      minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
       fitViewOptions={{
-        minZoom: 0.1,
+        minZoom: MinZoom,
         maxZoom: 1,
         padding: fitViewPadding
       }}
@@ -104,12 +105,12 @@ function XYFlowWrapper({
       })}
       nodesDraggable={nodesDraggable}
       {...(nodesDraggable && layoutConstraints)}
-      // edgesUpdatable={false}
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      onInit={useCallback((instance: XYFlowInstance) => {
-        xyflowRef.current = instance
+      // @ts-expect-error invalid typings
+      onInit={useCallback((instance) => {
+        xyflowRef.current = (instance as unknown) as XYFlowInstance
         updateState({ viewportInitialized: true })
       }, [])}
       onEdgeMouseEnter={useCallback((event: React.MouseEvent, edge: XYFlowEdge) => {
@@ -118,12 +119,14 @@ function XYFlowWrapper({
       onEdgeMouseLeave={useCallback(() => {
         updateState({ hoveredEdgeId: null })
       }, [])}
-      onNodeMouseEnter={useCallback((event: React.MouseEvent, node: XYFlowNode) => {
-        updateState({ hoveredNodeId: node.id })
-      }, [])}
-      onNodeMouseLeave={useCallback(() => {
-        updateState({ hoveredNodeId: null })
-      }, [])}
+      {...(editor.isNodeInteractive && {
+        onNodeMouseEnter: (event, node) => {
+          updateState({ hoveredNodeId: node.id })
+        },
+        onNodeMouseLeave: () => {
+          updateState({ hoveredNodeId: null })
+        }
+      })}
       {
         // onMoveEnd={useCallback((event: MouseEvent | TouchEvent | null, viewport: Viewport) => {
         //   updateState({ viewportMoved: true })
