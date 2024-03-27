@@ -32,7 +32,7 @@
     "tilg": "^0.1.1",
     "tsx": "^4.7.1",
     "typescript": "^5.4.3",
-    "vite": "^5.1.4",
+    "vite": "^5.2.6",
     "vite-plugin-watch-and-run": "^1.5.0"
   }
 }

@@ -14,7 +14,8 @@ export const container = style({
   padding: 0,
   margin: 0,
   vars: {
-    [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
+    [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`,
+    [vars.element.font]: vars.likec4.font
   }
 })
 
@@ -74,7 +75,7 @@ export const title = style({
 
 export const description = style({
   flex: '0 1 auto',
-  fontFamily: vars.element.font,
+  fontFamily: fallbackVar(vars.element.font, vars.likec4.font),
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
@@ -90,7 +91,7 @@ export const description = style({
 
 export const technology = style({
   flex: '0 0 auto',
-  fontFamily: vars.element.font,
+  fontFamily: fallbackVar(vars.element.font, vars.likec4.font),
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
@@ -98,7 +99,7 @@ export const technology = style({
   lineHeight: 1.25,
   textAlign: 'center',
   textWrap: 'balance',
-  opacity: 0.9,
+  opacity: 0.92,
   color: vars.element.loContrast,
   selectors: {
     [`${container}:hover &`]: {

@@ -73,6 +73,7 @@ export const cssEdgePath = style({
 })
 
 export const edgeLabel = style({
+  fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',

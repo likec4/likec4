@@ -110,6 +110,12 @@ export interface LikeC4DiagramProperties {
   initialHeight?: number | undefined
 
   /**
+   * Keep aspect ratio of the diagram
+   * @default false
+   */
+  keepAspectRatio?: boolean | undefined
+
+  /**
    * Background pattern
    * @default 'dots'
    */

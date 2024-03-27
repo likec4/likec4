@@ -19,7 +19,7 @@ export const cssHeader = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'stretch',
-  paddingLeft: 40,
+  paddingLeft: 60,
   paddingRight: 20,
   backgroundColor: mantine.colors.body
   // border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));

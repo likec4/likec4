@@ -34,13 +34,14 @@ export const cssTitle = style({
   textAlign: 'left',
   display: 'inline-block',
   fontWeight: 600,
-  fontSize: '14px',
+  fontSize: '13px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   lineHeight: 1,
   opacity: 0.75,
   color: vars.compound.titleColor,
   paddingLeft: rem(12),
+  mixBlendMode: 'lighten',
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {
       paddingLeft: rem(26)
@@ -85,7 +86,7 @@ export const cssNavigateBtn = style({
   position: 'absolute',
   pointerEvents: 'all',
   left: 3,
-  top: 6,
+  top: 7,
   color: vars.element.loContrast,
   transformOrigin: '90% 70%',
   opacity: 0.75,

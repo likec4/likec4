@@ -8,6 +8,7 @@ import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramStateProvider } from './state'
+import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitviewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
@@ -39,6 +40,7 @@ export function LikeC4Diagram({
   disableHovercards = false,
   initialWidth,
   initialHeight,
+  keepAspectRatio = false,
   ...eventHandlers
 }: LikeC4DiagramProps) {
   useTilg()
@@ -73,31 +75,37 @@ export function LikeC4Diagram({
           eventHandlers={eventHandlers}
         >
           <XYFlowEventHandlers eventHandlers={eventHandlers}>
-            <XYFlow
-              className={clsx(
-                cssReactFlow,
-                scope,
-                controls === false && cssNoControls,
-                pannable !== true && cssDisablePan,
-                background === 'transparent' && cssTransparentBg,
-                className
-              )}
-              defaultNodes={initialRef.current.defaultNodes}
-              defaultEdges={initialRef.current.defaultEdges}
-              readonly={readonly}
-              nodesDraggable={nodesDraggable}
-              nodesSelectable={nodesSelectable}
-              pannable={pannable}
-              zoomable={zoomable}
-              fitView={fitView}
-              colorMode={colorMode}
-              fitViewPadding={fitViewPadding}
+            <KeepAspectRatio
+              enabled={keepAspectRatio}
+              width={view.width}
+              height={view.height}
             >
-              {isBgWithPattern && <XYFlowBackground background={background} />}
-              {controls && <Controls />}
-              {readonly !== true && <OptionsPanel />}
-              {fitView && <FitviewOnDiagramChange />}
-            </XYFlow>
+              <XYFlow
+                className={clsx(
+                  cssReactFlow,
+                  scope,
+                  controls === false && cssNoControls,
+                  pannable !== true && cssDisablePan,
+                  background === 'transparent' && cssTransparentBg,
+                  className
+                )}
+                defaultNodes={initialRef.current.defaultNodes}
+                defaultEdges={initialRef.current.defaultEdges}
+                readonly={readonly}
+                nodesDraggable={nodesDraggable}
+                nodesSelectable={nodesSelectable}
+                pannable={pannable}
+                zoomable={zoomable}
+                fitView={fitView}
+                colorMode={colorMode}
+                fitViewPadding={fitViewPadding}
+              >
+                {isBgWithPattern && <XYFlowBackground background={background} />}
+                {controls && <Controls />}
+                {readonly !== true && <OptionsPanel />}
+                {fitView && <FitviewOnDiagramChange />}
+              </XYFlow>
+            </KeepAspectRatio>
             <UpdateOnDiagramChange
               view={view}
               nodesDraggable={nodesDraggable}

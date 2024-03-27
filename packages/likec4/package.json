@@ -46,8 +46,8 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@mantine/core": "^7.6.2",
-    "@mantine/hooks": "^7.6.2",
+    "@mantine/core": "^7.7.0",
+    "@mantine/hooks": "^7.7.0",
     "@nanostores/react": "^0.7.2",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/themes": "^2.0.3",
@@ -73,7 +73,7 @@
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.0.12",
     "remeda": "^1.44.0",
-    "vite": "^5.1.4"
+    "vite": "^5.2.6"
   },
   "devDependencies": {
     "@likec4/core": "workspace:*",

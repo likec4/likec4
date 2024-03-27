@@ -1,9 +1,10 @@
 import type { DiagramView } from '@likec4/core'
-import { Button, Divider, Group, Menu, Text } from '@mantine/core'
-import { Box, Dialog } from '@radix-ui/themes'
+import { Box, Button, Code, Divider, Flex, Group, HoverCard, Menu, Text, Title } from '@mantine/core'
+import { Dialog } from '@radix-ui/themes'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
+import { isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssHeader } from './Header.css'
 import { ShareDialog } from './ShareDialog'
@@ -17,9 +18,7 @@ type HeaderProps = {
 export function Header({ diagram }: HeaderProps) {
   return (
     <header className={cssHeader}>
-      <Box>
-        {/* <DiagramTitle diagram={diagram} /> */}
-      </Box>
+      <DiagramTitle diagram={diagram} />
 
       <Group gap={'sm'}>
         <ViewPageButton />
@@ -157,63 +156,57 @@ function ExportButton() {
   )
 }
 
-// function DiagramTitle({ diagram }: HeaderProps) {
-//   const hasDescription = !isEmpty(diagram.description?.trim())
-//   return (
-//     <HoverCard.Root closeDelay={500}>
-//       <HoverCard.Trigger>
-//         <Flex px={'3'} className={styles.title} align={'center'}>
-//           <Heading
-//             size={{
-//               initial: '2',
-//               sm: '3',
-//               md: '4'
-//             }}
-//             trim={'both'}
-//             weight={'medium'}
-//           >
-//             {diagram.title || 'Untitled'}
-//           </Heading>
-//         </Flex>
-//       </HoverCard.Trigger>
-//       <HoverCard.Content size={'2'} className={styles.titleHoverCardContent}>
-//         <Flex direction='column' gap='3'>
-//           <HoverCardItem title='view id'>
-//             <Code color='gray' size='2'>
-//               {diagram.id}
-//             </Code>
-//           </HoverCardItem>
-//           {diagram.viewOf && (
-//             <HoverCardItem title='view of'>
-//               <Code size='2'>{diagram.viewOf}</Code>
-//             </HoverCardItem>
-//           )}
-//           <HoverCardItem title='description'>
-//             {hasDescription ? (
-//               <Text component='p' size='2' style={{ whiteSpace: 'pre-line' }}>
-//                 {diagram.description?.trim()}
-//               </Text>
-//             ) : (
-//               <Text as='p' size='2' className={styles.dimmed}>
-//                 no description
-//               </Text>
-//             )}
-//           </HoverCardItem>
-//         </Flex>
-//       </HoverCard.Content>
-//     </HoverCard.Root>
-//   )
-// }
-// function HoverCardItem({ title, children }: { title: string; children: React.ReactNode }) {
-//   return (
-//     <Box>
-//       <Text size="xs" c="dimmed">
-//         {title}
-//       </Text>
-//       {children}
-//     </Box>
-//   )
-// }
+function DiagramTitle({ diagram }: HeaderProps) {
+  const hasDescription = !isEmpty(diagram.description?.trim())
+  return (
+    <HoverCard closeDelay={500} position="bottom-start">
+      <HoverCard.Target>
+        <Flex px={'3'} align={'center'}>
+          <Title order={4}>
+            {diagram.title || 'Untitled'}
+          </Title>
+        </Flex>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Flex direction="column" gap={'xs'}>
+          <HoverCardItem title="view id">
+            <Code color="gray">
+              {diagram.id}
+            </Code>
+          </HoverCardItem>
+          {diagram.viewOf && (
+            <HoverCardItem title="view of">
+              <Code>{diagram.viewOf}</Code>
+            </HoverCardItem>
+          )}
+          <HoverCardItem title="description">
+            {hasDescription
+              ? (
+                <Text component="p" style={{ whiteSpace: 'pre-line' }}>
+                  {diagram.description?.trim()}
+                </Text>
+              )
+              : (
+                <Text c={'dimmed'} fz={'xs'}>
+                  no description
+                </Text>
+              )}
+          </HoverCardItem>
+        </Flex>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  )
+}
+function HoverCardItem({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Box>
+      <Text size="xs" c="dimmed">
+        {title}
+      </Text>
+      {children}
+    </Box>
+  )
+}
 
 // function DiagramLinks({ diagram: { links } }: HeaderProps) {
 //   if (!links) {

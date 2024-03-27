@@ -1,3 +1,123 @@
+/* ibm-plex-sans-latin-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-400-normal.woff) format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ibm-plex-sans-latin-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-500-normal.woff) format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ibm-plex-sans-latin-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-600-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-600-normal.woff) format('woff');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ibm-plex-sans-cyrillic-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-400-normal.woff) format('woff');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* ibm-plex-sans-cyrillic-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-500-normal.woff) format('woff');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* ibm-plex-sans-cyrillic-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-600-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-600-normal.woff) format('woff');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* ibm-plex-sans-cyrillic-ext-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-400-normal.woff) format('woff');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* ibm-plex-sans-cyrillic-ext-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-500-normal.woff) format('woff');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* ibm-plex-sans-cyrillic-ext-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-600-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/cyrillic-ext-600-normal.woff) format('woff');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* ibm-plex-sans-latin-ext-400-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-400-normal.woff) format('woff');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ibm-plex-sans-latin-ext-500-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-500-normal.woff) format('woff');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ibm-plex-sans-latin-ext-600-normal */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-600-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-ext-600-normal.woff) format('woff');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 .radix-themes {
   --font-weight-bold: 600;
   --color-text-dimmed: var(--gray-a8);
@@ -13,11 +133,26 @@
   border-color: transparent;
 }
 
+:root {
+  --default-font-family: 'IBM Plex Sans', sans-serif;
+  --likec4-default-font-family: 'IBM Plex Sans', sans-serif;
+  --mantine-default-font-family: 'IBM Plex Sans', sans-serif;
+  --likec4-background-color: var(--mantine-color-body);
+  --xy-background-pattern-color: var(--mantine-color-dark-8);
+}
+
+:root[data-mantine-color-scheme='dark'] {
+  --mantine-color-body: var(--mantine-color-dark-9);
+  --xy-background-pattern-color: var(--mantine-color-dark-2);
+}
+
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+  font-family: var(--likec4-default-font-family);
+  /* --likec4-background-color: var(--mantine-color-body); */
 }
 
 #like4-root {
@@ -33,13 +168,6 @@ html, body {
   } */
 }
 
-body {
-  /* --mantine-font-family: 'Rubik Variable', sans-serif;
-  --default-font-family: 'Rubik Variable', sans-serif;
-  --likec4-font-family: 'Rubik Variable', sans-serif;
-  font-family:  'Rubik Variable', sans-serif; */
-  --likec4-background-color: var(--color-page-background);
-}
 
 .mantine-ActionIcon-icon .tabler-icon {
   width: 75%;
@@ -49,7 +177,6 @@ body {
 
 .transparent-bg {
   --likec4-background-color: transparent !important;
-  --color-page-background: transparent !important;
   --xy-background-color: transparent !important;
 
   body {

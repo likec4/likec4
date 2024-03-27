@@ -3,7 +3,6 @@ import { themeToVars } from '@mantine/vanilla-extract'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
-  // fontFamily: 'var(--default-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {

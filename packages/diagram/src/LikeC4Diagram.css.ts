@@ -2,6 +2,7 @@ import { globalStyle, style } from '@vanilla-extract/css'
 import { vars, xyvars } from './theme.css'
 
 export const cssReactFlow = style({
+  minHeight: 100,
   vars: {
     [xyvars.background.color]: vars.likec4.backgroundColor
   }

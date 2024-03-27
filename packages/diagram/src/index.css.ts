@@ -10,6 +10,10 @@ createGlobalTheme(':root', {
   ...vars,
   xyflowbg: xyvars.background
 }, {
+  likec4: {
+    font: fallbackVar('var(--likec4-default-font-family)', mantine.fontFamily),
+    backgroundColor: mantine.colors.body
+  },
   compound: {
     font: fallbackVar(vars.likec4.font, mantine.fontFamily),
     titleColor: vars.element.loContrast
@@ -21,10 +25,6 @@ createGlobalTheme(':root', {
   relation: {
     ...defaultTheme.relationships.slate
   },
-  likec4: {
-    font: mantine.fontFamily,
-    backgroundColor: mantine.colors.body
-  },
   xyflowbg: {
     color: vars.likec4.backgroundColor
     // pattern: {
@@ -34,7 +34,6 @@ createGlobalTheme(':root', {
     // }
   }
 })
-
 for (const color of Object.keys(defaultTheme.elements)) {
   if (!(color in defaultTheme.elements) || !(color in defaultTheme.relationships)) {
     continue
@@ -46,9 +45,15 @@ for (const color of Object.keys(defaultTheme.elements)) {
       hiContrast: vars.element.hiContrast,
       loContrast: vars.element.loContrast
     },
+    compound: {
+      titleColor: vars.compound.titleColor
+    },
     relation: vars.relation
   }, {
     element: defaultTheme.elements[color as ThemeColor],
+    compound: {
+      titleColor: defaultTheme.elements[color as ThemeColor].loContrast
+    },
     relation: defaultTheme.relationships[color as ThemeColor]
   })
 }

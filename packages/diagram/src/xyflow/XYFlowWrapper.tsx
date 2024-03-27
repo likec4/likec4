@@ -1,7 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core'
 import { ReactFlow } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import { memo, type PropsWithChildren, useCallback, useRef } from 'react'
+import { type CSSProperties, memo, type PropsWithChildren, useCallback, useRef } from 'react'
 import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
@@ -30,6 +30,7 @@ type OnlyExpectedProps = Required<
     | 'background'
     | 'initialWidth'
     | 'initialHeight'
+    | 'keepAspectRatio'
   >
 >
 
@@ -38,6 +39,7 @@ type XYFlowWrapperProps = Simplify<
     OnlyExpectedProps & {
       defaultNodes: XYFlowNode[]
       defaultEdges: XYFlowEdge[]
+      style?: CSSProperties | undefined
     }
   >
 >
@@ -54,7 +56,8 @@ function XYFlowWrapper({
   zoomable = true,
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
-  fitViewPadding = 0.05
+  fitViewPadding = 0,
+  style
 }: XYFlowWrapperProps) {
   useTilg()
 
@@ -71,6 +74,7 @@ function XYFlowWrapper({
     // @ts-expect-error invalid typings ReactFlow
     <ReactFlow
       className={className}
+      style={style}
       {...colorMode && { colorMode }}
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}

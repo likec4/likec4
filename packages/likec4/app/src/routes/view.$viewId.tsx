@@ -36,7 +36,7 @@ function ViewLayout() {
           position: 'absolute',
           top: 50,
           left: 0,
-          width: 60,
+          width: 50,
           height: 'calc(100vh - 50px)',
           zIndex: 1
         }}>
@@ -47,7 +47,7 @@ function ViewLayout() {
           position: 'absolute',
           top: 50,
           right: 0,
-          width: 60,
+          width: 50,
           height: 'calc(100vh - 50px)',
           zIndex: 1
         }}>
@@ -60,7 +60,11 @@ function ViewLayout() {
           top: 10,
           left: 10
         }}>
-        <Burger size={'sm'} opened={opened} onClick={toggle} aria-label="Toggle navigation" />
+        <Burger
+          size={'sm'}
+          opened={opened}
+          onClick={toggle}
+          aria-label="Toggle navigation" />
       </Box>
     </>
   )
