@@ -5,8 +5,17 @@ export const elementLink = style({
   position: 'absolute',
   left: 0,
   bottom: 0,
-  paddingLeft: 8,
-  paddingBottom: 6
+  paddingLeft: 6,
+  paddingBottom: 6,
+  selectors: {
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      bottom: 6
+    },
+    ':where([data-likec4-shape="queue"]) &': {
+      left: 12,
+      bottom: -3
+    }
+  }
   // fontSize: rem(10),
   // height: 12,
   // width: ['100%', '-webkit-fill-available'],
