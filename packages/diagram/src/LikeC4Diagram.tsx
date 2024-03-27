@@ -43,7 +43,7 @@ export function LikeC4Diagram({
   keepAspectRatio = false,
   ...eventHandlers
 }: LikeC4DiagramProps) {
-  useTilg()
+  // useTilg()
   isOnlyEventHandlers(eventHandlers)
   const initialRef = useRef<{
     defaultNodes: XYFlowData['nodes']

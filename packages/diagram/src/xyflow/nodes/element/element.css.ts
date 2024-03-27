@@ -185,9 +185,9 @@ export const cssShapeSvg = style({
   transitionDelay: '0ms',
   vars: {
     [filterShadow]: `
-        drop-shadow(0 2px 1px rgba(0, 0, 0, 0.22))
-        drop-shadow(0 1px 1px color-mix(in srgb, ${vars.element.stroke} 50%, transparent))
-        drop-shadow(0 5px 3px rgba(0, 0, 0, 0.12))
+      drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))
+      drop-shadow(0 1px 1px color-mix(in srgb, ${vars.element.stroke} 40%, transparent))
+      drop-shadow(0 5px 3px rgba(0, 0, 0, 0.1))
     `
   },
   selectors: {
@@ -206,7 +206,7 @@ export const cssNavigateBtn = style({
   color: vars.element.loContrast,
   transformOrigin: '50% 65%',
   opacity: 0.75,
-  transition: 'all 175ms ease-out',
+  transition: 'all 150ms ease-out',
   transform: 'translate(-50%, 0)',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
@@ -223,7 +223,7 @@ export const cssNavigateBtn = style({
       boxShadow: mantine.shadows.lg,
       transform: 'translate(-50%, 0) scale(1.25)',
       opacity: 1,
-      transitionDelay: '300ms',
+      transitionDelay: '250ms',
       vars: {
         '--ai-bg': 'var(--ai-bg-hover)'
       }
@@ -231,7 +231,7 @@ export const cssNavigateBtn = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.45)',
+    transform: 'translate(-50%, 0) scale(1.465)',
     opacity: 1,
     transitionDelay: '0'
   },

@@ -152,6 +152,12 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: var(--likec4-default-font-family);
+  --color-page-background: var(--mantine-color-body);
+  background-color: var(--mantine-color-body);
+}
+
+.dark {
+  --color-page-background: var(--mantine-color-body);
 }
 
 #like4-root {

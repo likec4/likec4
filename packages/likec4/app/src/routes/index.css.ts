@@ -11,10 +11,10 @@ export const header = style({
 export const previewBg = style({
   position: 'relative',
   overflow: 'hidden',
-  padding: '0',
-  margin: '0',
+  padding: 0,
+  margin: 0,
   backgroundOrigin: 'padding-box',
-  backgroundImage: 'radial-gradient(var(--gray-a5)15%, var(--color-panel-translucent)15%)',
+  backgroundImage: 'radial-gradient(var(--gray-a5) 15%, var(--color-panel-translucent) 15%)',
   backgroundPosition: '0 0',
   backgroundSize: '12px 12px',
   ':after': {

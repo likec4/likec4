@@ -90,7 +90,7 @@ export const cssNavigateBtn = style({
   color: vars.element.loContrast,
   transformOrigin: '90% 70%',
   opacity: 0.75,
-  transition: 'all 165ms ease-out',
+  transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
   'vars': {
@@ -101,7 +101,7 @@ export const cssNavigateBtn = style({
   selectors: {
     [`:where(.react-flow__node:not(.dragging) ${cssContainer}:hover) &:not(:hover)`]: {
       boxShadow: mantine.shadows.lg,
-      transform: 'scale(1.2)',
+      transform: 'scale(1.223)',
       opacity: 1,
       transitionDelay: '250ms',
       vars: {
@@ -111,7 +111,7 @@ export const cssNavigateBtn = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'scale(1.45)',
+    transform: 'scale(1.466)',
     opacity: 1,
     transitionDelay: '0'
   },

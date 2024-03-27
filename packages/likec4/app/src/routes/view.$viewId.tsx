@@ -36,18 +36,7 @@ function ViewLayout() {
           position: 'absolute',
           top: 50,
           left: 0,
-          width: 50,
-          height: 'calc(100vh - 50px)',
-          zIndex: 1
-        }}>
-      </Box>
-      <Box
-        visibleFrom="lg"
-        style={{
-          position: 'absolute',
-          top: 50,
-          right: 0,
-          width: 50,
+          width: 40,
           height: 'calc(100vh - 50px)',
           zIndex: 1
         }}>
