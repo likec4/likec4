@@ -67,6 +67,7 @@ export function LikeC4Diagram({
       >
         <DiagramStateProvider
           view={view}
+          fitViewPadding={fitViewPadding}
           readonly={readonly}
           disableHovercards={disableHovercards}
           eventHandlers={eventHandlers}

@@ -7,7 +7,6 @@ import { type LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 
 type DiagramStateProps = {
   view: DiagramView
-  fitView: boolean
   fitViewPadding: number
   readonly: boolean
   disableHovercards: boolean
@@ -16,7 +15,6 @@ type DiagramStateProps = {
 
 const useDiagramStateValue = ({
   view,
-  fitView,
   fitViewPadding,
   readonly,
   disableHovercards,
@@ -50,7 +48,6 @@ const useDiagramStateValue = ({
     viewLayout: view.autoLayout,
     viewWidth: view.width,
     viewHeight: view.height,
-    fitView,
     fitViewPadding
   }
 
