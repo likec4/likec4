@@ -1,3 +1,9 @@
+## [0.60.3](https://github.com/likec4/likec4/compare/v0.60.2...v0.60.3) (2024-03-28)
+
+### Bug Fixes
+
+- **layout:** "fake" a node icon with a blue square to preserve space for real icons, see [#577](https://github.com/likec4/likec4/issues/577) ([23b0881](https://github.com/likec4/likec4/commit/23b088140d374ab4eec9eb38edbf76c392897e7e))
+
 ## [0.60.2](https://github.com/likec4/likec4/compare/v0.60.1...v0.60.2) (2024-03-26)
 
 [@mcpride](https://github.com/mcpride) reported that `likec4 export png ...` timed out _sometimes_ (see [#634](https://github.com/likec4/likec4/issues/634))
@@ -14,11 +20,10 @@ Options:
 Example:
 
 ```sh
-$ likec4 export png -o ./assets -i --max-attempts 3 -t 5000 
+$ likec4 export png -o ./assets -i --max-attempts 3 -t 5000
 ```
 
 LikeC4 sets default playwright timeout to 5sec, retries exporting failed views 3 times, and ignores these failures anyway (if there are any successful exports).
-
 
 ## [0.60.1](https://github.com/likec4/likec4/compare/v0.60.0...v0.60.1) (2024-03-22)
 
