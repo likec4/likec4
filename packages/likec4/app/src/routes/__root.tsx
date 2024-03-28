@@ -37,14 +37,6 @@ export const Route = createRootRouteWithContext<{}>()({
       padding: asPadding(search.padding),
       theme: asTheme(search.theme)
     }
-  },
-  notFoundComponent: (props) => {
-    return (
-      <div>
-        <p>Not found!</p>
-        <Link to="/">Go home</Link>
-      </div>
-    )
   }
 })
 

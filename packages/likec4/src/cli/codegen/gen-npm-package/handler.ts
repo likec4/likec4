@@ -219,7 +219,7 @@ function generateIndex() {
     /* prettier-ignore-start */
     /* eslint-disable */
     import { jsx, Fragment, jsxs } from "react/jsx-runtime";
-    import { LikeC4Diagram, useInjectStyles } from "@likec4/diagram/bundle";
+    import { LikeC4Diagram, useInjectStyles, EmbeddedLikeC4Diagram } from "@likec4/diagram/bundle";
     import { LikeC4Views } from "./views";
     function InjectStyles() {
         useInjectStyles();
@@ -232,6 +232,9 @@ function generateIndex() {
         }
         return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(LikeC4Diagram, { view: view, ...props })] });
     }
+    export function EmbeddedLikeC4View({ viewId, injectStyles = true, ...props }) {
+        return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(EmbeddedLikeC4Diagram, { viewId: viewId, views: LikeC4Views, ...props })] });
+    }
     export { isLikeC4ViewId, LikeC4Views } from "./views";
     export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
     /* prettier-ignore-end */
@@ -239,7 +242,7 @@ function generateIndex() {
 
   const dts = new CompositeGeneratorNode().appendTemplate`
     /// <reference types="react" />
-    import type { LikeC4DiagramProps } from "@likec4/diagram";
+    import type { LikeC4DiagramProps, EmbeddedLikeC4DiagramProps } from "@likec4/diagram";
     import type { LikeC4ViewId } from "./views";
 
     export type LikeC4ViewProps = {
@@ -251,9 +254,18 @@ function generateIndex() {
     } & Omit<LikeC4DiagramProps, "view">;
     export declare function LikeC4View({ viewId, injectStyles, ...props }: LikeC4ViewProps): JSX.Element;
 
+    export type EmbeddedLikeC4ViewProps = {
+        viewId: LikeC4ViewId;
+        /**
+         * @default true
+         */
+        injectStyles?: boolean | undefined;
+    } & Omit<EmbeddedLikeC4DiagramProps, "viewId" | "views">;
+    export declare function EmbeddedLikeC4View({ viewId, injectStyles, ...props }: EmbeddedLikeC4ViewProps): JSX.Element;
+
     export * from "./views";
     export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
-    export type { LikeC4DiagramProps } from "@likec4/diagram";
+    export type { LikeC4DiagramProps, EmbeddedLikeC4DiagramProps } from "@likec4/diagram";
   `
   return {
     js: toString(js),

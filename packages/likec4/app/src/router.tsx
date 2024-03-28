@@ -8,6 +8,7 @@
 // import { startTransition } from 'react'
 import { createRouter } from '@tanstack/react-router'
 
+import { NotFound } from './components/NotFound'
 import { BaseUrl } from './const'
 import { routeTree } from './routeTree.gen'
 
@@ -24,7 +25,10 @@ export const router = createRouter({
   // defaultErrorComponent
   // defaultPendingMinMs: 600,
   // defaultPendingMs: 300,
-  defaultPreload: false
+  defaultPreload: false,
+  defaultNotFoundComponent: () => {
+    return <NotFound />
+  }
   // defaultPreloadDelay: 200,
 
   // defaultPendingComponent: () => (

@@ -31,6 +31,10 @@ import { LikeC4Views } from 'virtual:likec4/views'
 
 export const $views = map(LikeC4Views)
 
+export function useLikeC4Views() {
+  return useStore($views)
+}
+
 export function useLikeC4View(id) {
   const views = useStore($views, {
     keys: [id],

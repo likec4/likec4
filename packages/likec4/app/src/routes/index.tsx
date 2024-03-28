@@ -147,14 +147,9 @@ function DiagramPreview(props: { diagram: DiagramView }) {
         <StaticLikeC4Diagram
           view={diagram}
           fitView
-          fitViewPadding={0.}
-          background={'dots'}
+          fitViewPadding={0.1}
           initialWidth={350}
           initialHeight={175} />
-        // reactflowProps={{
-        //   width: 350,
-        //   height: 175
-        // }} />
       )}
     </Box>
   )

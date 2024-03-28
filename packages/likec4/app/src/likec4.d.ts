@@ -3,6 +3,7 @@ declare module 'virtual:likec4' {
   import type { DiagramView } from '@likec4/core'
 
   export const $views: MapStore<Record<string, DiagramView>>
+  export function useLikeC4Views(): Record<string, DiagramView>
   export function useLikeC4View(id: string): DiagramView | null
 }
 
