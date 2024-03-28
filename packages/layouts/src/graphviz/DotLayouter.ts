@@ -2,9 +2,7 @@ import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import { type ComputedView } from '@likec4/core'
 import pLimit from 'p-limit'
 import { delay } from 'rambdax'
-import { uniq } from 'remeda'
 import { dotLayoutFn, type DotLayoutResult } from './dotLayout'
-import { IconSize } from './utils'
 
 const limit = pLimit(1)
 
@@ -51,17 +49,11 @@ export class DotLayouter implements GraphvizLayouter {
     }
   }
 
-  async svg(dot: string, { nodes }: ComputedView): Promise<string> {
+  async svg(dot: string, _view: ComputedView): Promise<string> {
     return await limit(async () => {
       try {
-        const images = uniq(nodes.flatMap(node => (node.icon ? [node.icon] : []))).map(path => ({
-          path,
-          width: IconSize,
-          height: IconSize
-        }))
         const graphviz = await Graphviz.load()
         return graphviz.layout(dot, 'svg', 'dot', {
-          images,
           yInvert: true
         })
       } finally {

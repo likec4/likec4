@@ -1,4 +1,4 @@
-import { ElementColors as Colors, type ComputedNode } from '@likec4/core'
+import { type ComputedNode, ElementColors as Colors } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
@@ -34,8 +34,7 @@ function wrapToHTML({
 }) {
   // Change row height if line height is not 1
   const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
-  const TDheight =
-    lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
+  const TDheight = lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
   const fontOpts = ` POINT-SIZE="${pxToPoints(fontsize)}"${color ? ` COLOR="${color}"` : ``}`
   const rows = wrap(text, maxchars)
     .map(text => (isEmpty(text) ? ' ' : text))
@@ -44,8 +43,14 @@ function wrapToHTML({
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
   return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
-export function nodeIcon(src: string) {
-  return `<IMG SRC="${src}" SCALE="TRUE"/>`
+
+/**
+ * "Faking" a node icon with a blue square
+ * to preserve space for real icons.
+ * #577
+ */
+export function nodeIcon(_src: string) {
+  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="blue" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 export function nodeLabel(node: ComputedNode) {
@@ -88,9 +93,11 @@ export function nodeLabel(node: ComputedNode) {
       `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
     )
   }
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${rows.join(
-    ''
-  )}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${
+    rows.join(
+      ''
+    )
+  }</TABLE>>`
 }
 
 export function edgeLabel(text: string) {
