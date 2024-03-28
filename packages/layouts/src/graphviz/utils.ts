@@ -23,8 +23,7 @@ export const inchToPx = (inch: number) => {
 export const pxToInch = (px: number) => Math.ceil((px / 72) * 1000) / 1000
 export const pxToPoints = (px: number) => Math.ceil(px)
 
-export const IconSize = '32px'
-export const IconSizePoints = pxToPoints(32).toString()
+export const IconSizePoints = pxToPoints(40).toString()
 
 export const toKonvaAlign = (align: 'l' | 'r' | 'c') => {
   switch (align) {

@@ -254,11 +254,6 @@ export function toGraphvisModel({
         [_.fillcolor]: Theme.elements[elementNode.color].fill
       })
     }
-    if (elementNode.icon) {
-      node.attributes.apply({
-        [_.imagescale]: true
-      })
-    }
     switch (elementNode.shape) {
       case 'browser': {
         node.attributes.apply({

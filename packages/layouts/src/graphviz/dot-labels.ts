@@ -43,8 +43,14 @@ function wrapToHTML({
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
   return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
-export function nodeIcon(src: string) {
-  return `<IMG SRC="${src}" SCALE="TRUE"/>`
+
+/**
+ * "Faking" a node icon with a blue square
+ * to preserve space for real icons.
+ * #577
+ */
+export function nodeIcon(_src: string) {
+  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="blue" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 export function nodeLabel(node: ComputedNode) {
