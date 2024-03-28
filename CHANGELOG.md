@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-- **layout:** "fake" icon in graphviz ([23b0881](https://github.com/likec4/likec4/commit/23b088140d374ab4eec9eb38edbf76c392897e7e))
+- **layout:** "fake" a node icon with a blue square to preserve space for real icons, see [#577](https://github.com/likec4/likec4/issues/577) ([23b0881](https://github.com/likec4/likec4/commit/23b088140d374ab4eec9eb38edbf76c392897e7e))
 
 ## [0.60.2](https://github.com/likec4/likec4/compare/v0.60.1...v0.60.2) (2024-03-26)
 
