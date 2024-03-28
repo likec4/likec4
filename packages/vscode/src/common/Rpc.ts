@@ -1,5 +1,13 @@
-import type { ComputedView, LikeC4Model, ViewID } from '@likec4/core'
-import type { BuildDocumentsParams, ChangeViewRequest, LocateParams } from '@likec4/language-server/protocol'
+import type { ViewID } from '@likec4/core'
+import type {
+  BuildDocumentsRequest,
+  ChangeViewRequest,
+  ChangeViewRequestParams,
+  ComputeViewRequest,
+  FetchModelRequest,
+  LocateParams,
+  LocateRequest
+} from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -12,19 +20,13 @@ const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
 // #endregion
 
 // #region To server
-const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>(
-  'likec4/fetchModel'
-)
-const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
-  'likec4/computeView'
-)
+const fetchModel: FetchModelRequest = new RequestType0('likec4/fetchModel')
+const computeView: ComputeViewRequest = new RequestType('likec4/computeView')
+const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
+const locate: LocateRequest = new RequestType('likec4/locate')
+const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
 
-const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
-
-const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-const changeView = new RequestType<ChangeViewRequest, Location | null, void>('likec4/change-view')
-
-// // //#endregion
+// #endregion
 
 export class Rpc extends AbstractDisposable {
   constructor(public readonly client: LanguageClient) {
@@ -60,7 +62,7 @@ export class Rpc extends AbstractDisposable {
     return await this.client.sendRequest(locate, params)
   }
 
-  async changeView(req: ChangeViewRequest) {
+  async changeView(req: ChangeViewRequestParams) {
     return await this.client.sendRequest(changeView, req)
   }
 }

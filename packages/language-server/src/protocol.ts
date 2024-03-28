@@ -15,24 +15,30 @@ import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserv
 
 // #region From server
 export const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
+export type OnDidChangeModelNotification = typeof onDidChangeModel
 // #endregion
 
 // #region To server
 export const fetchModel = new RequestType0<{ model: LikeC4Model | null }, void>(
   'likec4/fetchModel'
 )
+export type FetchModelRequest = typeof fetchModel
+
 export const fetchComputedModel = new RequestType0<{ model: LikeC4ComputedModel | null }, void>(
   'likec4/fetchComputedModel'
 )
+export type FetchComputedModelRequest = typeof fetchComputedModel
 
 export const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
   'likec4/computeView'
 )
+export type ComputeViewRequest = typeof computeView
 
 export interface BuildDocumentsParams {
   docs: DocumentUri[]
 }
 export const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
+export type BuildDocumentsRequest = typeof buildDocuments
 
 export type LocateParams =
   | {
@@ -46,6 +52,7 @@ export type LocateParams =
     view: ViewID
   }
 export const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
+export type LocateRequest = typeof locate
 // #endregion
 
 export namespace ChangeView {
@@ -72,8 +79,9 @@ export type ChangeView =
   | ChangeView.ChangeShape
   | ChangeView.ChangeAutoLayout
 
-export interface ChangeViewRequest {
+export interface ChangeViewRequestParams {
   viewId: ViewID
   changes: NonEmptyArray<ChangeView>
 }
-export const changeView = new RequestType<ChangeViewRequest, Location | null, void>('likec4/change-view')
+export const changeView = new RequestType<ChangeViewRequestParams, Location | null, void>('likec4/change-view')
+export type ChangeViewRequest = typeof changeView
