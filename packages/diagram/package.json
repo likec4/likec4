@@ -12,23 +12,37 @@
     "directory": "packages/diagram"
   },
   "files": [
+    "package.json",
+    "LICENSE",
+    "README.md",
     "dist",
     "bundle",
-    "src",
     "!**/*.spec.*",
     "!**/*.map"
   ],
   "type": "module",
-  "sideEffects": false,
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./bundle/style.css": "./bundle/style.css",
     "./bundle": {
       "types": "./dist/bundle.d.ts",
       "default": "./bundle/index.js"
-    },
-    "./bundle/style.css": "./bundle/style.css"
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./bundle/style.css": "./bundle/style.css",
+      "./bundle": {
+        "types": "./dist/bundle.d.ts",
+        "default": "./bundle/index.js"
+      }
+    }
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {

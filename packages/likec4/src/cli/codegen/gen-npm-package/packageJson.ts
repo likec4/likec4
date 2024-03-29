@@ -6,28 +6,34 @@ import { readFile, writeFile } from 'node:fs/promises'
 
 const packageJson = {
   name: '@likec4/views',
+  private: true,
   version: '0.0.1',
   type: 'module',
-  module: './index.js',
   types: './index.d.ts',
+  module: './index.js',
   exports: {
     '.': {
       types: './index.d.ts',
       default: './index.js'
     }
   },
+  files: [
+    'package.json',
+    '*.js',
+    '*.d.ts'
+  ],
   dependencies: {
     '@likec4/core': clipkg.devDependencies['@likec4/core'],
     '@likec4/diagram': clipkg.devDependencies['@likec4/diagram'],
     ...pick(clipkg.devDependencies, ['@mantine/core', '@mantine/hooks'])
   },
   peerDependencies: {
-    'react': '^18.2.0',
-    'react-dom': '^18.2.0'
+    'react': clipkg.dependencies['react'],
+    'react-dom': clipkg.dependencies['react-dom']
   },
   devDependencies: {
-    'react': '^18.2.0',
-    'react-dom': '^18.2.0'
+    'react': clipkg.dependencies['react'],
+    'react-dom': clipkg.dependencies['react-dom']
   }
 }
 

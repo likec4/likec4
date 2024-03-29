@@ -5,6 +5,7 @@ module.exports = {
     packagesToBump: ['packages/*', 'docs', 'examples/*'],
     packagesToPublish: [
       'packages/core',
+      'packages/diagram',
       'packages/diagrams',
       'packages/graph',
       'packages/generators',

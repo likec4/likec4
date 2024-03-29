@@ -14,10 +14,14 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "files": [
+    "package.json",
+    "LICENSE",
+    "README.md",
     "bin",
     "dist",
-    "!dist/@likec4/**/*.d.ts",
-    "!**/*.map"
+    "!**/*.d.ts",
+    "!**/*.map",
+    "!**/metafile.json"
   ],
   "type": "module",
   "bin": "./bin/likec4.mjs",
@@ -27,8 +31,7 @@
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.src.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "build": "tsx scripts/build.ts",
-    "prepack": "tsx scripts/prepack.ts",
-    "postpack": "tsx scripts/postpack.ts",
+    "prepack": "run -T turbo run build --filter='likec4' --log-prefix=none --log-order=grouped",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
