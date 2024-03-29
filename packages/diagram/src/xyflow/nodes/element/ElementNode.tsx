@@ -119,7 +119,6 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
       ))} */
       }
       <Handle
-        // @ts-expect-error
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
@@ -163,7 +162,6 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
         )}
       </div>
       <Handle
-        // @ts-expect-error
         type="source"
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}

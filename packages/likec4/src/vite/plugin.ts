@@ -102,7 +102,7 @@ const mmdSourcesModule = {
   }
 } satisfies Module
 
-const modules = [
+export const modules = [
   generatedViews,
   dotSourcesModule,
   d2SourcesModule,

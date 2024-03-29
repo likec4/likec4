@@ -5,7 +5,7 @@ import type { XYFlowNode } from './types'
 
 import type { DiagramView } from '@likec4/core'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { isNil } from 'remeda'
+import { isNullish as isNil } from 'remeda'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 /**

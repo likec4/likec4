@@ -17,9 +17,6 @@
     "./src/**/*.ts",
     "package.json"
   ],
-  "exclude": [
-    "dist"
-  ],
   "references": [
     {
       "path": "../core"
@@ -27,10 +24,6 @@
     {
       "path": "../graph"
     },
-    {
-      "path": "../diagram"
-    },
-
     {
       "path": "../generators"
     },

@@ -1,9 +1,8 @@
+import { viteConfig } from '@/vite/config'
 import getPort, { portNumbers } from 'get-port'
-import k from 'picocolors'
 import type { InlineConfig, ViteDevServer } from 'vite'
-import { createServer, mergeConfig, searchForWorkspaceRoot } from 'vite'
+import { createServer, mergeConfig } from 'vite'
 import type { LikeC4ViteConfig } from './config'
-import { viteConfig } from './config'
 
 export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> => {
   const { isDev, ...config } = await viteConfig(cfg)

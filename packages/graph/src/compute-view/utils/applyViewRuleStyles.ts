@@ -1,7 +1,7 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, isViewRuleStyle, nonexhaustive } from '@likec4/core'
-import { anyPass, filter, isNil, type Predicate } from 'rambdax'
-import { isDefined } from 'remeda'
+import { anyPass, filter, type Predicate } from 'rambdax'
+import { isDefined, isNullish } from 'remeda'
 
 export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
   const rules = _rules.filter(isViewRuleStyle)
@@ -29,7 +29,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
         predicates.push(
           target.isEqual
             ? ({ tags }) => !!tags && tags.includes(target.elementTag)
-            : ({ tags }) => isNil(tags) || !tags.includes(target.elementTag)
+            : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
         )
         continue
       }

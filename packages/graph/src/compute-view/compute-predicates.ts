@@ -1,7 +1,7 @@
 import type { Element } from '@likec4/core'
-import { Expr, isAncestor, isSameHierarchy, parentFqn } from '@likec4/core'
+import { Expr, parentFqn } from '@likec4/core'
 import type { Predicate } from 'rambdax'
-import { isNil } from 'remeda'
+import { isNullish as isNil } from 'remeda'
 import type { ComputeCtx } from './compute'
 
 export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {

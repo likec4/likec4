@@ -9,5 +9,10 @@
   },
   "include": [
     "./*.ts"
+  ],
+  "references": [
+    {
+      "path": "../tsconfig.src.json",
+    }
   ]
 }

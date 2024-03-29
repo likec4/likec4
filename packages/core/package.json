@@ -61,7 +61,7 @@
     }
   },
   "dependencies": {
-    "remeda": "^1.44.0",
+    "remeda": "^1.56.0",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },

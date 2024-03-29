@@ -24,7 +24,7 @@ import {
   filter,
   first,
   groupBy,
-  isNil,
+  isNullish as isNil,
   isNumber,
   isTruthy,
   keys,

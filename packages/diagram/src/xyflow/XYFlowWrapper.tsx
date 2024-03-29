@@ -72,7 +72,6 @@ function XYFlowWrapper({
   let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
 
   return (
-    // @ts-expect-error invalid typings ReactFlow
     <ReactFlow
       className={className}
       style={style}

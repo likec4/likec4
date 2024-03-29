@@ -146,6 +146,7 @@ function DiagramPreview(props: { diagram: DiagramView }) {
       {diagram && (
         <StaticLikeC4Diagram
           view={diagram}
+          keepAspectRatio={false}
           fitView
           fitViewPadding={0.1}
           initialWidth={350}

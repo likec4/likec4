@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, nonNullable } from '@likec4/core'
-import { isNil, omitBy } from 'remeda'
+import { isNullish as isNil, omitBy } from 'remeda'
 
 const omitNil = omitBy(isNil)
 

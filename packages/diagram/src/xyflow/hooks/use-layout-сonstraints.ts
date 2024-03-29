@@ -3,7 +3,7 @@ import * as kiwi from '@lume/kiwi'
 import { Expression, Expression as Expr, Operator, Strength, type Variable } from '@lume/kiwi'
 import type { ReactFlowProps, XYPosition } from '@xyflow/react'
 import { type RefObject, useRef } from 'react'
-import { isNil } from 'remeda'
+import { isNullish as isNil } from 'remeda'
 import { type XYFlowInstance, XYFlowNode } from '../types'
 
 abstract class Rect {

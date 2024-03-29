@@ -1293,7 +1293,7 @@ __metadata:
   dependencies:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^8.0.1"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
     typescript: "npm:^5.4.3"
@@ -1330,7 +1330,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-tracked: "npm:^1.7.11"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     scheduler: "npm:^0.23.0"
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.13.1"
@@ -1476,7 +1476,7 @@ __metadata:
     "@types/node": "npm:^20.11.25"
     json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
-    remeda: "npm:^1.40.1"
+    remeda: "npm:^1.56.0"
     typescript: "npm:^5.4.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
@@ -1491,7 +1491,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     typescript: "npm:^5.4.3"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
@@ -1517,7 +1517,7 @@ __metadata:
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     type-fest: "npm:^4.13.1"
@@ -1544,7 +1544,7 @@ __metadata:
     khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
     rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.13.1"
@@ -10112,6 +10112,7 @@ __metadata:
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"
     rambdax: "npm:^9.1.1"
+    remeda: "npm:^1.56.0"
     shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.4.3"
@@ -10181,7 +10182,7 @@ __metadata:
     react-accessible-treeview: "npm:^2.8.3"
     react-dom: "npm:^18.2.0"
     react-resizable-panels: "npm:^2.0.12"
-    remeda: "npm:^1.44.0"
+    remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:^4.7.1"
     type-fest: "npm:^4.13.1"
@@ -14504,10 +14505,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remeda@npm:^1.40.1, remeda@npm:^1.44.0":
-  version: 1.46.2
-  resolution: "remeda@npm:1.46.2"
-  checksum: 10/602362c7e8c5172b08704af124c21965b95a38a321e134fd340fc3845d7d95d618dddc865870274f186b90af79b7f6f22fba7b2efac9fcb22383033699c0a4e2
+"remeda@npm:^1.56.0":
+  version: 1.56.0
+  resolution: "remeda@npm:1.56.0"
+  checksum: 10/f5f4925ab615d1c1c80cfcb2b8c9c182a20fe0524a88cf20550d37501c879b89dce3a52369e61dbccbe083fe4091cf1362aa3533a1e0b7b86f2a6e308893c754
   languageName: node
   linkType: hard
 

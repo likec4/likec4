@@ -145,40 +145,17 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     customLogger,
     optimizeDeps: {
-      force: isDev,
-      include: [
-        'react-dom',
-        'react-dom/client',
-        'react',
-        'react-reconciler',
-        'scheduler',
-        'rambdax',
-        'remeda',
-        'jotai',
-        'jotai/utils',
-        '@radix-ui/react-icons',
-        '@radix-ui/themes',
-        'react/jsx-dev-runtime',
-        'react/jsx-runtime',
-        'react-accessible-treeview',
-        '@react-hookz/web',
-        ...(isDev ? [] : ['@likec4/core', '@likec4/diagram', '@likec4/diagrams'])
-      ]
+      force: true
     },
     plugins: [
-      react({
-        // plugins: [
-        //   ['@swc-jotai/debug-label', {}],
-        //   ['@swc-jotai/react-refresh', {}]
-        // ]
-      }),
+      react(),
+      likec4Plugin({ languageServices }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'
       }),
-      likec4Plugin({ languageServices }),
       vanillaExtractPlugin({})
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }

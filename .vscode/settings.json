@@ -33,6 +33,8 @@
     "docs/node_modules/**": true,
     "examples/*/dist/**": true,
     "packages/*/dist/**": true,
+    "packages/*/.tsbuildinfo/**": true,
+    "packages/*/turbo/**": true,
     "packages/*/node_modules/**": true
   },
   "files.exclude": {

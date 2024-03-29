@@ -1,7 +1,7 @@
+import { viteConfig } from '@/vite/config'
 import getPort, { portNumbers } from 'get-port'
 import { preview } from 'vite'
 import type { LikeC4ViteConfig } from './config'
-import { viteConfig } from './config'
 
 type VitePreviewParams = LikeC4ViteConfig & {
   open?: boolean
