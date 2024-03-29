@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.1.1",
+  "type": "module",
   "workspaces": [
     "docs",
     "packages/*",
@@ -38,6 +39,7 @@
     "@types/node": "^20.11.25",
     "@vitest/ui": "^1.4.0",
     "dprint": "^0.45.0",
+    "esbuild": "^0.20.2",
     "execa": "^8.0.1",
     "global": "^4.4.0",
     "husky": "^8.0.3",

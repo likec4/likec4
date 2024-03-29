@@ -37,6 +37,8 @@ export async function buildAppBundle(outDir = 'dist/__app__') {
           'react/jsx-dev-runtime',
           'react/jsx-runtime',
           'scheduler',
+          'nanostores',
+          '@nanostores/react',
           'virtual:likec4',
           ...modules.map(m => m.id)
         ]

@@ -46,14 +46,14 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
+    "@nanostores/react": "^0.7.2",
     "@vitejs/plugin-react": "^4.2.1",
+    "fast-equals": "^5.0.1",
+    "nanostores": "^0.10.0",
     "playwright": "1.42.1",
+    "prompts": "^2.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "nanostores": "^0.10.0",
-    "fast-equals": "^5.0.1",
-    "prompts": "^2.4.2",
-    "@nanostores/react": "^0.7.2",
     "vite": "^5.2.6"
   },
   "devDependencies": {
@@ -87,7 +87,7 @@
     "ci-info": "^3.9.0",
     "classnames": "^2.3.2",
     "clsx": "^2.1.0",
-    "esbuild": "^0.19.12",
+    "esbuild": "^0.20.2",
     "esbuild-node-externals": "^1.13.0",
     "execa": "^8.0.1",
     "get-port": "^7.0.0",

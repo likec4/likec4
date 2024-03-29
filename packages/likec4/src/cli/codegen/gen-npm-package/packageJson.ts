@@ -19,7 +19,7 @@ const packageJson = {
   dependencies: {
     '@likec4/core': clipkg.devDependencies['@likec4/core'],
     '@likec4/diagram': clipkg.devDependencies['@likec4/diagram'],
-    ...pick(clipkg.dependencies, ['@mantine/core', '@mantine/hooks'])
+    ...pick(clipkg.devDependencies, ['@mantine/core', '@mantine/hooks'])
   },
   peerDependencies: {
     'react': '^18.2.0',

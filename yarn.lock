@@ -1596,6 +1596,7 @@ __metadata:
     "@types/node": "npm:^20.11.25"
     "@vitest/ui": "npm:^1.4.0"
     dprint: "npm:^0.45.0"
+    esbuild: "npm:^0.20.2"
     execa: "npm:^8.0.1"
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
@@ -7481,7 +7482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.19.12, esbuild@npm:^0.19.2, esbuild@npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0, esbuild@npm:~0.19.10":
+"esbuild@npm:^0.19.2, esbuild@npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0, esbuild@npm:~0.19.10":
   version: 0.19.12
   resolution: "esbuild@npm:0.19.12"
   dependencies:
@@ -7561,7 +7562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.20.1":
+"esbuild@npm:^0.20.1, esbuild@npm:^0.20.2":
   version: 0.20.2
   resolution: "esbuild@npm:0.20.2"
   dependencies:
@@ -10105,7 +10106,7 @@ __metadata:
     "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.3"
     "@vscode/vsce": "npm:^2.24.0"
-    esbuild: "npm:^0.19.12"
+    esbuild: "npm:^0.20.2"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
     langium: "npm:^3.0.0"
     npm-run-all2: "npm:^6.1.2"
@@ -10163,9 +10164,10 @@ __metadata:
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
     clsx: "npm:^2.1.0"
-    esbuild: "npm:^0.19.12"
+    esbuild: "npm:^0.20.2"
     esbuild-node-externals: "npm:^1.13.0"
     execa: "npm:^8.0.1"
+    fast-equals: "npm:^5.0.1"
     get-port: "npm:^7.0.0"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"

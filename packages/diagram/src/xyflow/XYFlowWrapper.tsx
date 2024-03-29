@@ -72,6 +72,7 @@ function XYFlowWrapper({
   let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
 
   return (
+    // @ts-expect-error
     <ReactFlow
       className={className}
       style={style}
@@ -126,16 +127,11 @@ function XYFlowWrapper({
           updateState({ hoveredNodeId: null })
         }
       })}
-      {
-        // onMoveEnd={useCallback((event: MouseEvent | TouchEvent | null, viewport: Viewport) => {
-        //   updateState({ viewportMoved: true })
-        // }, [])}
-        ...(editor.hasOnContextMenu && {
-          onNodeContextMenu: handlers.onNodeContextMenu,
-          onPaneContextMenu: handlers.onPaneContextMenu,
-          onEdgeContextMenu: handlers.onEdgeContextMenu
-        })
-      }
+      {...(editor.hasOnContextMenu && {
+        onNodeContextMenu: handlers.onNodeContextMenu,
+        onPaneContextMenu: handlers.onPaneContextMenu,
+        onEdgeContextMenu: handlers.onEdgeContextMenu
+      })}
       {...(editor.hasOnCanvasClick && {
         onPaneClick: handlers.onPanelClick
       })}
