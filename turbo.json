@@ -9,7 +9,7 @@
     },
     "build": {
       "dependsOn": ["generate", "^build"],
-      "outputs": ["dist/**", "bundle/**", ".tsbuildinfo/**"]
+      "outputs": ["dist/**", ".tsbuildinfo/**"]
     },
     "lint": {
       "cache": false,

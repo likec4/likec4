@@ -8,8 +8,8 @@
       "esnext",
       "webworker"
     ],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
+    "outDir": ".tsbuildinfo/out",
+    "declarationDir": ".tsbuildinfo/out",
     "rootDir": "./src",
     "jsx": "react-jsxdev",
     "noUnusedLocals": false,

@@ -1,9 +1,10 @@
 import { createLikeC4Logger } from '@/logger'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
+import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
@@ -46,12 +47,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   let base = '/'
   if (cfg?.base) {
-    base = cfg.base
-    if (!base.startsWith('/')) {
-      base = '/' + base
-    }
-    if (!base.endsWith('/')) {
-      base = base + '/'
+    base = withTrailingSlash(cfg.base)
+    if (!hasProtocol(base)) {
+      base = withLeadingSlash(base)
     }
   }
   if (base !== '/') {

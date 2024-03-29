@@ -1,16 +1,18 @@
 import { createLikeC4Logger } from '@/logger'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import { isCI } from 'ci-info'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
+import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { Alias, InlineConfig, Logger } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
+
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -94,12 +96,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   let base = '/'
   if (cfg?.base) {
-    base = cfg.base
-    if (!base.startsWith('/')) {
-      base = '/' + base
-    }
-    if (!base.endsWith('/')) {
-      base = base + '/'
+    base = withTrailingSlash(cfg.base)
+    if (!hasProtocol(base)) {
+      base = withLeadingSlash(base)
     }
   }
   if (base !== '/') {
@@ -129,9 +128,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         esmExternals: true,
         sourceMap: false
       }
-    },
-    experimental: {
-      hmrPartialAccept: true
     },
     css: {
       postcss: {

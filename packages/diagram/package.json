@@ -16,18 +16,14 @@
     "LICENSE",
     "README.md",
     "dist",
-    "bundle",
     "!**/*.spec.*",
     "!**/*.map"
   ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./bundle/style.css": "./bundle/style.css",
-    "./bundle": {
-      "types": "./dist/bundle.d.ts",
-      "default": "./bundle/index.js"
-    }
+    "./style.css": "./dist/style.css",
+    "./bundle": "./dist/bundle.js"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -37,24 +33,20 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "./bundle/style.css": "./bundle/style.css",
+      "./style.css": "./dist/style.css",
       "./bundle": {
         "types": "./dist/bundle.d.ts",
-        "default": "./bundle/index.js"
+        "default": "./dist/bundle.js"
       }
     }
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --emitDeclarationOnly --declaration --declarationMap",
     "build:turbo": "run -T turbo build --filter='diagram'",
-    "build": "unbuild",
-    "prepack": "unbuild",
+    "build": "vite build && run typecheck",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist bundle"
-  },
-  "dependencies": {
-    "@likec4/core": "workspace:*"
   },
   "peerDependencies": {
     "@mantine/core": "^7.7.0",
@@ -75,6 +67,7 @@
     }
   },
   "devDependencies": {
+    "@likec4/core": "workspace:*",
     "@lume/kiwi": "^0.4.3",
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
@@ -105,6 +98,7 @@
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0",
     "vite": "^5.2.6",
+    "vite-plugin-dts": "^3.8.1",
     "vite-plugin-shadow-style": "^1.1.0"
   }
 }
