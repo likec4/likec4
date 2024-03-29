@@ -39,12 +39,33 @@ export const codegenCmd = {
               }
             }),
         async args => {
-          const { handler } = await import('./gen-npm-package/handler')
+          const { handler } = await import('./npm-package/handler')
           await handler({
             useDotBin: args.useDotBin,
             path: args.path,
             pkgName: args.pkgName,
             pkgOutDir: args.outdir
+          })
+        }
+      )
+      // ----------------------
+      // react command
+      .command(
+        'react-next [path]',
+        'generate react (.tsx)',
+        yargs =>
+          yargs
+            .options({
+              outdir,
+              useDotBin
+            })
+            .coerce(['outdir'], resolve),
+        async args => {
+          const { handler } = await import('./react-next')
+          await handler({
+            useDotBin: args.useDotBin,
+            path: args.path,
+            outdir: args.outdir
           })
         }
       )

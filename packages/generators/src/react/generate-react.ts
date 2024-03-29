@@ -10,7 +10,7 @@ const componentName = (value: string): string => {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
 
-export const generateViewId = (views: DiagramView[]) =>
+export const generateViewId = (views: Iterable<DiagramView>) =>
   joinToNode(views, view => expandToNode`'${view.id}'`, {
     separator: ' | '
   })

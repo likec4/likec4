@@ -11,6 +11,7 @@ import prompts from 'prompts'
 import { isString } from 'remeda'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, startTimer } from '../../../logger'
+import { writeSources } from '../react-next/write-sources'
 import { writePackageJson } from './packageJson'
 
 type HandlerParams = {
@@ -110,6 +111,7 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   }
 
   if (!pkgName) {
+    isNewPackage = true
     const { name } = await prompts({
       type: 'text',
       name: 'name',
@@ -120,26 +122,16 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
     pkgName = name
   }
 
-  await writePackageJson({ pkgName, pkgJsonPath })
-  logger.info(`${k.dim('wrote package.json')} ${relative(cwd, pkgJsonPath)}`)
+  if (isNewPackage) {
+    await writePackageJson({ pkgName, pkgJsonPath })
+    logger.info(`${k.dim('wrote package.json')} ${relative(cwd, pkgJsonPath)}`)
+  }
 
-  const viewsJs = resolve(pkgOutDir, 'views.js')
-  await writeViewsJs(diagrams, viewsJs)
-  logger.info(`${k.dim('write')} ${relative(cwd, viewsJs)}`)
-
-  const viewsDts = resolve(pkgOutDir, 'views.d.ts')
-  await writeViewsDTs(diagrams, viewsDts)
-  logger.info(`${k.dim('write')} ${relative(cwd, viewsDts)}`)
-
-  const index = generateIndex()
-
-  const indexJs = resolve(pkgOutDir, 'index.js')
-  await writeFile(indexJs, index.js)
-  logger.info(`${k.dim('write')} ${relative(cwd, indexJs)}`)
-
-  const indexDts = resolve(pkgOutDir, 'index.d.ts')
-  await writeFile(indexDts, index.dts)
-  logger.info(`${k.dim('write')} ${relative(cwd, indexDts)}`)
+  logger.info(`${k.dim('generate sources to:')} ${relative(cwd, pkgOutDir)}`)
+  await writeSources({
+    outputDir: pkgOutDir,
+    diagrams
+  })
 
   let pkgUp = pkgUpSync()
   if (pkgUp && existsSync(pkgUp)) {
@@ -199,76 +191,4 @@ export async function handler({ path, useDotBin, ...outparams }: HandlerParams) 
   }
 
   timer.stopAndLog()
-}
-
-async function writeViewsJs(diagrams: DiagramView[], outfile: string) {
-  const generatedSource = generateViewsDataJs([...diagrams])
-  await writeFile(outfile, generatedSource)
-}
-async function writeViewsDTs(diagrams: DiagramView[], outfile: string) {
-  const generatedSource = generateViewsDataDTs([...diagrams])
-  await writeFile(outfile, generatedSource)
-}
-
-function generateIndex() {
-  const js = new CompositeGeneratorNode().appendTemplate`
-    /******************************************************************************
-     * This file was generated
-     * DO NOT EDIT MANUALLY!
-     ******************************************************************************/
-    /* prettier-ignore-start */
-    /* eslint-disable */
-    import { jsx, Fragment, jsxs } from "react/jsx-runtime";
-    import { LikeC4Diagram, useInjectStyles, EmbeddedLikeC4Diagram } from "@likec4/diagram/bundle";
-    import { LikeC4Views } from "./views";
-    function InjectStyles() {
-        useInjectStyles();
-        return null;
-    }
-    export function LikeC4View({ viewId, injectStyles = true, ...props }) {
-        const view = LikeC4Views[viewId];
-        if (!view) {
-            throw new Error("Not found view: " + viewId);
-        }
-        return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(LikeC4Diagram, { view: view, ...props })] });
-    }
-    export function EmbeddedLikeC4View({ viewId, injectStyles = true, ...props }) {
-        return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(EmbeddedLikeC4Diagram, { viewId: viewId, views: LikeC4Views, ...props })] });
-    }
-    export { isLikeC4ViewId, LikeC4Views } from "./views";
-    export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
-    /* prettier-ignore-end */
-  `
-
-  const dts = new CompositeGeneratorNode().appendTemplate`
-    /// <reference types="react" />
-    import type { LikeC4DiagramProps, EmbeddedLikeC4DiagramProps } from "@likec4/diagram";
-    import type { LikeC4ViewId } from "./views";
-
-    export type LikeC4ViewProps = {
-        viewId: LikeC4ViewId;
-        /**
-         * @default true
-         */
-        injectStyles?: boolean | undefined;
-    } & Omit<LikeC4DiagramProps, "view">;
-    export declare function LikeC4View({ viewId, injectStyles, ...props }: LikeC4ViewProps): JSX.Element;
-
-    export type EmbeddedLikeC4ViewProps = {
-        viewId: LikeC4ViewId;
-        /**
-         * @default true
-         */
-        injectStyles?: boolean | undefined;
-    } & Omit<EmbeddedLikeC4DiagramProps, "viewId" | "views">;
-    export declare function EmbeddedLikeC4View({ viewId, injectStyles, ...props }: EmbeddedLikeC4ViewProps): JSX.Element;
-
-    export * from "./views";
-    export { useInjectStyles, Styles } from "@likec4/diagram/bundle";
-    export type { LikeC4DiagramProps, EmbeddedLikeC4DiagramProps } from "@likec4/diagram";
-  `
-  return {
-    js: toString(js),
-    dts: toString(dts)
-  }
 }

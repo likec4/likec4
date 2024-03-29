@@ -43,7 +43,11 @@ export default defineConfig(({ mode }) => {
         // },
         formats: ['es']
       },
-      minify: false,
+      minify: 'terser',
+      terserOptions: {
+        ecma: 2020,
+        keep_fnames: true
+      },
       emptyOutDir: true,
       cssCodeSplit: false,
       cssMinify: true,

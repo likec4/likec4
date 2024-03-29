@@ -3,7 +3,8 @@ import JSON5 from 'json5'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
 import { generateViewId } from '../react/generate-react'
 
-export function generateViewsDataJs(views: DiagramView[]) {
+export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
@@ -54,7 +55,8 @@ export function generateViewsDataJs(views: DiagramView[]) {
   return toString(out)
 }
 
-export function generateViewsDataTs(views: DiagramView[]) {
+export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
@@ -69,7 +71,7 @@ export function generateViewsDataTs(views: DiagramView[]) {
     import type { DiagramView } from '@likec4/core'
     `.append(NL, NL)
 
-  if (views.length == 0) {
+  if (views.length === 0) {
     out.append('export {}', NL)
     return toString(out)
   }
@@ -115,7 +117,8 @@ export function generateViewsDataTs(views: DiagramView[]) {
   return toString(out)
 }
 
-export function generateViewsDataDTs(views: DiagramView[]) {
+export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************

@@ -73,7 +73,6 @@ export function useInjectStyles() {
       const style = document.createElement('style')
       style.innerHTML = Styles
       style.setAttribute('data-likec4-styles', '')
-      style.type = 'text/css'
       document.head.appendChild(style)
       hasStyleSheet = () => true
     }

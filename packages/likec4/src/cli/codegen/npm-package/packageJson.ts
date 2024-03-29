@@ -23,7 +23,6 @@ const packageJson = {
     '*.d.ts'
   ],
   dependencies: {
-    '@likec4/core': clipkg.devDependencies['@likec4/core'],
     '@likec4/diagram': clipkg.devDependencies['@likec4/diagram'],
     ...pick(clipkg.devDependencies, ['@mantine/core', '@mantine/hooks'])
   },
