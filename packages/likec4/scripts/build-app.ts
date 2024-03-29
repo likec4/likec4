@@ -1,6 +1,6 @@
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { modules } from '../src/vite/plugin'
@@ -11,6 +11,13 @@ export async function buildAppBundle(outDir = 'dist/__app__') {
     configFile: false,
     mode: 'production',
     define: { 'process.env.NODE_ENV': '"production"' },
+    resolve: {
+      alias: {
+        '@likec4/core': '../core/src/index.ts',
+        '@likec4/diagram': '../diagram/src/index.ts',
+        '@likec4/diagrams': '../diagrams/src/index.ts'
+      }
+    },
     build: {
       emptyOutDir: false,
       outDir: outDir + '/src',
@@ -55,12 +62,7 @@ export async function buildAppBundle(outDir = 'dist/__app__') {
       }
     },
     plugins: [
-      react({
-        // plugins: [
-        //   ['@swc-jotai/debug-label', {}],
-        //   ['@swc-jotai/react-refresh', {}]
-        // ]
-      }),
+      react({}),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: 'app/src/routeTree.gen.ts',
