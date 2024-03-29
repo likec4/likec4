@@ -15,5 +15,5 @@ module.exports = {
       'packages/likec4'
     ]
   },
-  publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public`
+  publishCommand: ({ tag }) => `yarn npm publish --tag ${tag} --access public --tolerate-republish`
 }
