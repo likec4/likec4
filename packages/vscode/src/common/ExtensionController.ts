@@ -83,8 +83,10 @@ export class ExtensionController extends AbstractDisposable {
         }`
       )
       Logger.info(`[Extension] Starting LanguageClient...`)
-      this.client.outputChannel.show(true)
-      await this.client.start()
+      await this.client.start().catch(e => {
+        Logger.error(e)
+        return Promise.reject(e)
+      })
       Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)

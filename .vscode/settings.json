@@ -53,9 +53,6 @@
       ]
     }
   ],
-  "exportall.config.folderListener": [
-    "/packages/diagram/src/icons"
-  ],
   "cSpell.words": [
     "clsx",
     "codegen",

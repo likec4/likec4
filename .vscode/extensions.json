@@ -2,7 +2,6 @@
   "recommendations": [
     "langium.langium-vscode",
     "dbaeumer.vscode-eslint",
-    "unifiedjs.vscode-mdx",
     "dprint.dprint",
     "vitest.explorer"
   ]

@@ -214,7 +214,6 @@ export class LikeC4ModelBuilder {
   }
 
   public async buildModel(cancelToken?: CancellationToken): Promise<c4.LikeC4Model | null> {
-    await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, cancelToken)
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
@@ -239,36 +238,38 @@ export class LikeC4ModelBuilder {
     if (!model) {
       return null
     }
-    if (cancelToken) {
-      await interruptAndCheck(cancelToken)
-    }
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
-    const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
-    return cache.get(MODEL_CACHE, () => {
-      const index = new LikeC4ModelGraph(model)
+    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
+      }
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
+      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+      return cache.get(MODEL_CACHE, () => {
+        const index = new LikeC4ModelGraph(model)
 
-      const allViews = [] as c4.ComputedView[]
-      for (const view of R.values(model.views)) {
-        const result = computeView(view, index)
-        if (!result.isSuccess) {
-          logWarnError(result.error)
-          continue
+        const allViews = [] as c4.ComputedView[]
+        for (const view of R.values(model.views)) {
+          const result = computeView(view, index)
+          if (!result.isSuccess) {
+            logWarnError(result.error)
+            continue
+          }
+          allViews.push(result.view)
         }
-        allViews.push(result.view)
-      }
-      assignNavigateTo(allViews)
-      const views = R.mapToObj(allViews, v => {
-        const previous = this.previousViews[v.id]
-        const view = previous && eq(v, previous) ? previous : v
-        viewsCache.set(computedViewKey(v.id), view)
-        return [v.id, view] as const
+        assignNavigateTo(allViews)
+        const views = R.mapToObj(allViews, v => {
+          const previous = this.previousViews[v.id]
+          const view = previous && eq(v, previous) ? previous : v
+          viewsCache.set(computedViewKey(v.id), view)
+          return [v.id, view] as const
+        })
+        this.previousViews = { ...views }
+        return {
+          elements: model.elements,
+          relations: model.relations,
+          views
+        }
       })
-      this.previousViews = { ...views }
-      return {
-        elements: model.elements,
-        relations: model.relations,
-        views
-      }
     })
   }
 
@@ -279,38 +280,40 @@ export class LikeC4ModelBuilder {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
     }
-    if (cancelToken) {
-      await interruptAndCheck(cancelToken)
-    }
-    const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
-    return cache.get(computedViewKey(viewId), () => {
-      const index = new LikeC4ModelGraph(model)
-      const result = computeView(view, index)
-      if (!result.isSuccess) {
-        logError(result.error)
-        return null
+    return await this.services.shared.workspace.WorkspaceLock.read(async () => {
+      if (cancelToken) {
+        await interruptAndCheck(cancelToken)
       }
-
-      const allElementViews = R.values(model.views).filter(
-        (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
-      )
-
-      let computedView = result.view
-      computedView.nodes.forEach(node => {
-        if (!node.navigateTo) {
-          // find first element view that is not the current one
-          const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
-          if (navigateTo) {
-            node.navigateTo = navigateTo.id
-          }
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+      return cache.get(computedViewKey(viewId), () => {
+        const index = new LikeC4ModelGraph(model)
+        const result = computeView(view, index)
+        if (!result.isSuccess) {
+          logError(result.error)
+          return null
         }
+
+        const allElementViews = R.values(model.views).filter(
+          (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
+        )
+
+        let computedView = result.view
+        computedView.nodes.forEach(node => {
+          if (!node.navigateTo) {
+            // find first element view that is not the current one
+            const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+            if (navigateTo) {
+              node.navigateTo = navigateTo.id
+            }
+          }
+        })
+
+        const previous = this.previousViews[viewId]
+        computedView = previous && eq(computedView, previous) ? previous : computedView
+        this.previousViews[viewId] = computedView
+
+        return computedView
       })
-
-      const previous = this.previousViews[viewId]
-      computedView = previous && eq(computedView, previous) ? previous : computedView
-      this.previousViews[viewId] = computedView
-
-      return computedView
     })
   }
 
