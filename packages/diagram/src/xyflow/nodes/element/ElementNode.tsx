@@ -38,14 +38,18 @@ const variants = {
   idle: {
     transformOrigin: '50% 50%'
   },
+  selected: {
+    scale: 1.015
+  },
   hover: {
-    scale: 1.07,
+    scale: 1.08,
     transition: {
-      delay: 0.15
+      delay: 0.175
+      // duration: 0.3
     }
   },
   tap: {
-    scale: 0.98,
+    scale: 0.97,
     transition: {
       type: 'spring'
     }
@@ -71,6 +75,14 @@ function ElementNode({
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
 
+  let animate: keyof typeof variants = 'idle'
+  if (selected) {
+    animate = 'selected'
+  }
+  if (isHovered) {
+    animate = 'hover'
+  }
+
   return (
     <motion.div
       id={id}
@@ -81,7 +93,7 @@ function ElementNode({
       initial={'idle'}
       {...(isNodeInteractive && {
         whileTap: 'tap',
-        animate: isHovered || selected ? 'hover' : 'idle',
+        animate,
         ['data-likec4-interactive']: true
       })}
     >
