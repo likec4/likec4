@@ -115,6 +115,7 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
             })
           }
         }} />
+      <NavigateToOption nodes={nodes} />
     </Stack>
   )
 }
@@ -225,6 +226,39 @@ function ShapeOption({
           }
           onShapeChange(value as ElementShape)
         }} />
+    </Box>
+  )
+}
+
+function NavigateToOption({
+  nodes: [node, ...nodes]
+}: {
+  nodes: NonEmptyArray<XYNodesData>
+}) {
+  const isMultiple = nodes.length >= 1
+  return (
+    <Box>
+      <Divider label="navigate to" labelPosition="left" />
+      <Select
+        mt={'xs'}
+        size="xs"
+        variant="filled"
+        value={!isMultiple ? (node.data.element.navigateTo ?? null) : null}
+        disabled={isMultiple}
+        placeholder={isMultiple ? '[ multiple ]' : 'select'}
+        data={node.data.element.navigateTo
+          ? [{ value: node.data.element.navigateTo, label: node.data.element.navigateTo }]
+          : []}
+        // data={ElementShapes}
+        allowDeselect={true}
+        checkIconPosition="right"
+        // onChange={(value) => {
+        //   if (!value || value === selectedShape) {
+        //     return
+        //   }
+        //   onShapeChange(value as ElementShape)
+        // }} />
+      />
     </Box>
   )
 }

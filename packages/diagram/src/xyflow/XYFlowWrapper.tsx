@@ -2,7 +2,6 @@ import { useMantineColorScheme } from '@mantine/core'
 import { ReactFlow } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
 import { type CSSProperties, memo, type PropsWithChildren, useCallback, useRef } from 'react'
-import useTilg from 'tilg'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramStateTracked } from '../state/DiagramState'
@@ -60,8 +59,6 @@ function XYFlowWrapper({
   fitViewPadding = 0,
   style
 }: XYFlowWrapperProps) {
-  useTilg()
-
   const xyflowRef = useRef<XYFlowInstance>()
   const [editor, updateState] = useDiagramStateTracked()
   const layoutConstraints = useLayoutConstraints(xyflowRef)

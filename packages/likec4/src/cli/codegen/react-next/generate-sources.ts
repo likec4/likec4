@@ -20,23 +20,20 @@ function generateIndex() {
      ******************************************************************************/
     /* prettier-ignore-start */
     /* eslint-disable */
-    import { jsx, Fragment, jsxs } from "react/jsx-runtime";
+    import "@likec4/diagram/style.css";
+
+    import { createElement } from "react";
     import { LikeC4Diagram, EmbeddedLikeC4Diagram } from "@likec4/diagram";
-    import { useInjectStyles } from "@likec4/diagram/bundle";
     import { LikeC4Views } from "./views";
-    function InjectStyles() {
-        useInjectStyles();
-        return null;
-    }
-    export function LikeC4View({ viewId, injectStyles = true, ...props }) {
+    export function LikeC4View({ viewId, ...props }) {
         const view = LikeC4Views[viewId];
         if (!view) {
             throw new Error("Not found view: " + viewId);
         }
-        return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(LikeC4Diagram, { view: view, ...props })] });
+        return createElement(LikeC4Diagram, { view: view, ...props });
     }
-    export function EmbeddedLikeC4View({ viewId, injectStyles = true, ...props }) {
-        return jsxs(Fragment, { children: [injectStyles === true && jsx(InjectStyles, {}), jsx(EmbeddedLikeC4Diagram, { viewId: viewId, views: LikeC4Views, ...props })] });
+    export function EmbeddedLikeC4View({ viewId, ...props }) {
+        return createElement(EmbeddedLikeC4Diagram, { viewId: viewId, views: LikeC4Views, ...props });
     }
     export { isLikeC4ViewId, LikeC4Views } from "./views";
     /* prettier-ignore-end */
@@ -49,24 +46,17 @@ function generateIndex() {
 
     export type LikeC4ViewProps = {
         viewId: LikeC4ViewId;
-        /**
-         * @default true
-         */
-        injectStyles?: boolean | undefined;
     } & Omit<LikeC4DiagramProps, "view">;
-    export declare function LikeC4View({ viewId, injectStyles, ...props }: LikeC4ViewProps): JSX.Element;
+
+    export declare function LikeC4View({ viewId, ...props }: LikeC4ViewProps): JSX.Element;
 
     export type EmbeddedLikeC4ViewProps = {
         viewId: LikeC4ViewId;
-        /**
-         * @default true
-         */
-        injectStyles?: boolean | undefined;
     } & Omit<EmbeddedLikeC4DiagramProps, "viewId" | "views">;
-    export declare function EmbeddedLikeC4View({ viewId, injectStyles, ...props }: EmbeddedLikeC4ViewProps): JSX.Element;
+
+    export declare function EmbeddedLikeC4View({ viewId, ...props }: EmbeddedLikeC4ViewProps): JSX.Element;
 
     export * from "./views";
-    export type { LikeC4DiagramProps, EmbeddedLikeC4DiagramProps } from "@likec4/diagram";
   `
   return {
     js: toString(js),

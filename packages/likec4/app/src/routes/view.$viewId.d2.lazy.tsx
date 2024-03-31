@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute('/view/$viewId/d2')({
 })
 
 function ViewAsD2() {
-  const { viewId } = Route.useRouteContext()
+  const { viewId } = Route.useParams()
   const source = d2Source(viewId)
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsD2">

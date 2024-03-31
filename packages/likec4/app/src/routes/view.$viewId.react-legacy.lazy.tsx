@@ -5,18 +5,18 @@ import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components/DiagramNotFound'
 import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
-export const Route = createLazyFileRoute('/view/$viewId/react')({
-  component: ViewReact
+export const Route = createLazyFileRoute('/view/$viewId/react-legacy')({
+  component: ViewReactLegacy
 })
 
-function ViewReact() {
+function ViewReactLegacy() {
   const router = useRouter()
-  const { viewId } = Route.useRouteContext()
+  const { viewId } = Route.useParams()
   const view = useLikeC4View(viewId)
 
   const navigateTo = useCallback((node: { navigateTo: string }) => {
     router.navigate({
-      to: '/view/$viewId/react',
+      to: '/view/$viewId/react-legacy',
       params: { viewId: node.navigateTo },
       startTransition: true,
       search: true

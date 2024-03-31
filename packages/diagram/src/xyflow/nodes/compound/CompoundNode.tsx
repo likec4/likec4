@@ -61,7 +61,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   return (
     <div
-      className={cssContainer}
+      className={clsx(cssContainer, 'likec4-compound-node')}
       data-likec4-color={color}
       data-likec4-shape={compound.shape}
       data-likec4-navigable={isnavigable}
@@ -85,10 +85,12 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           rx={6}
         />
       </svg>
-      <div
-        className={clsx(cssCompound)}
-      >
-        <Text component="div" className={cssTitle}>{compound.title}</Text>
+      <div className={clsx(cssCompound, 'likec4-compound')}>
+        <Text
+          component="div"
+          className={clsx(cssTitle, 'likec4-compound-title')}>
+          {compound.title}
+        </Text>
       </div>
       {isnavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
       <Handle

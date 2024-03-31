@@ -1,5 +1,6 @@
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
+import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react-tracked'
@@ -51,7 +52,7 @@ const variants = {
   }
 } satisfies Variants
 
-export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function ElementNode({
+function ElementNode({
   id,
   data: {
     element
@@ -59,7 +60,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   selected = false,
   width,
   height
-}) {
+}: ElementNodeProps) {
   // useTilg()
   const diagramState = useDiagramState()
   const isNodeInteractive = diagramState.isNodeInteractive
@@ -73,7 +74,7 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
   return (
     <motion.div
       id={id}
-      className={container}
+      className={clsx(container, 'likec4-element-node')}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
@@ -143,21 +144,24 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
           h={h}
         />
       </svg>
-      <div className={cssElement}>
+      <div className={clsx(cssElement, 'likec4-element')}>
         {element.icon && <ElementIcon node={element} />}
-        <Text component="div" className={cssTitle}>
+        <Text
+          component="div"
+          className={clsx(cssTitle, 'likec4-element-title')}>
           {element.title}
         </Text>
         {element.technology && (
-          <Text component="div" className={csstechnology}>
+          <Text
+            component="div"
+            className={clsx(csstechnology, 'likec4-element-technology')}>
             {element.technology}
           </Text>
         )}
         {element.description && (
           <Text
             component="div"
-            className={cssdescription}
-          >
+            className={clsx(cssdescription, 'likec4-element-description')}>
             {element.description}
           </Text>
         )}
@@ -183,4 +187,6 @@ export const ElementNodeMemo = /* @__PURE__ */ memo<ElementNodeProps>(function E
       {isNavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
     </motion.div>
   )
-}, isEqualProps)
+}
+
+export const ElementNodeMemo = memo(ElementNode, isEqualProps) as typeof ElementNode

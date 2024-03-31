@@ -1,18 +1,18 @@
+import { consola } from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import { cp, mkdir, rm, writeFile } from 'node:fs/promises'
-import k from 'picocolors'
+import json5 from 'json5'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { buildAppBundle } from './build-app'
 
 // const watch = process.argv.includes('--watch')
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 if (isDev) {
-  console.info(k.yellow(`⚠️ likec4 build isDev=${isDev}`))
-} else {
-  console.info(k.green(`⚠️ likec4 build isDev=${isDev}`))
+  consola.warn('likec4 build isDev=true')
 }
 
 async function buildCli() {
+  consola.start('Building CLI...')
   const cfg: BuildOptions = {
     metafile: isDev,
     logLevel: 'info',
@@ -74,14 +74,13 @@ async function buildCli() {
   if (bundle.metafile) {
     await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
   }
+  consola.success('Built CLI')
 }
-
-console.info(k.gray(`\n clean dist`))
+consola.log('clean dist')
 await rm('dist/', { recursive: true, force: true })
-
 await buildCli()
 
-console.info(k.gray(`\n copy app files to dist/__app__`))
+consola.log(`copy app files to dist/__app__`)
 await mkdir('dist/__app__', { recursive: true })
 await cp('app/', 'dist/__app__/', {
   recursive: true,
@@ -92,5 +91,4 @@ await cp('app/', 'dist/__app__/', {
     && !src.endsWith('.tsx')
 })
 
-console.info(k.gray(`\n built app bundle`))
 await buildAppBundle()

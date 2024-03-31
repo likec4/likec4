@@ -10,7 +10,7 @@ export const Route = createLazyFileRoute('/view/$viewId/dot')({
 })
 
 function ViewAsDot() {
-  const { viewId } = Route.useRouteContext()
+  const { viewId } = Route.useParams()
   const dot = dotSource(viewId)
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsDot">

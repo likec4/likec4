@@ -1,4 +1,4 @@
-import { hasAtLeast, invariant } from '@likec4/core'
+import { hasAtLeast, invariant, nonNullable } from '@likec4/core'
 import { useSyncedRef } from '@react-hookz/web'
 import type { EdgeMouseHandler, NodeMouseHandler, OnNodeDrag } from '@xyflow/react'
 import type React from 'react'
@@ -18,9 +18,12 @@ type XYFlowEventHandlers = {
   onChange: (change: Change) => void
 }
 
-const EventHandlersContext = /* @__PURE__ */ createContext({} as XYFlowEventHandlers)
+const EventHandlersContext = createContext<XYFlowEventHandlers | null>(null)
 
-export const useXYFlowEvents = () => useContext(EventHandlersContext)
+export function useXYFlowEvents() {
+  const ctx = useContext(EventHandlersContext)
+  return nonNullable(ctx, 'useXYFlowEvents could be used only inside XYFlowEventHandlers')
+}
 
 type Props = PropsWithChildren<{ eventHandlers: LikeC4DiagramEventHandlers }>
 /**

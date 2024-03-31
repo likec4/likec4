@@ -17,11 +17,14 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ViewViewIdImport } from './routes/view.$viewId'
 import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
+import { Route as ViewViewIdIndexImport } from './routes/view.$viewId.index'
 import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor'
 
 // Create Virtual Routes
 
-const ViewViewIdReactLazyImport = createFileRoute('/view/$viewId/react')()
+const ViewViewIdReactLegacyLazyImport = createFileRoute(
+  '/view/$viewId/react-legacy',
+)()
 const ViewViewIdMmdLazyImport = createFileRoute('/view/$viewId/mmd')()
 const ViewViewIdDotLazyImport = createFileRoute('/view/$viewId/dot')()
 const ViewViewIdD2LazyImport = createFileRoute('/view/$viewId/d2')()
@@ -48,11 +51,16 @@ const EmbedViewIdRoute = EmbedViewIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ViewViewIdReactLazyRoute = ViewViewIdReactLazyImport.update({
-  path: '/react',
+const ViewViewIdIndexRoute = ViewViewIdIndexImport.update({
+  path: '/',
+  getParentRoute: () => ViewViewIdRoute,
+} as any)
+
+const ViewViewIdReactLegacyLazyRoute = ViewViewIdReactLegacyLazyImport.update({
+  path: '/react-legacy',
   getParentRoute: () => ViewViewIdRoute,
 } as any).lazy(() =>
-  import('./routes/view.$viewId.react.lazy').then((d) => d.Route),
+  import('./routes/view.$viewId.react-legacy.lazy').then((d) => d.Route),
 )
 
 const ViewViewIdMmdLazyRoute = ViewViewIdMmdLazyImport.update({
@@ -117,8 +125,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewViewIdMmdLazyImport
       parentRoute: typeof ViewViewIdImport
     }
-    '/view/$viewId/react': {
-      preLoaderRoute: typeof ViewViewIdReactLazyImport
+    '/view/$viewId/react-legacy': {
+      preLoaderRoute: typeof ViewViewIdReactLegacyLazyImport
+      parentRoute: typeof ViewViewIdImport
+    }
+    '/view/$viewId/': {
+      preLoaderRoute: typeof ViewViewIdIndexImport
       parentRoute: typeof ViewViewIdImport
     }
   }
@@ -135,7 +147,8 @@ export const routeTree = rootRoute.addChildren([
     ViewViewIdD2LazyRoute,
     ViewViewIdDotLazyRoute,
     ViewViewIdMmdLazyRoute,
-    ViewViewIdReactLazyRoute,
+    ViewViewIdReactLegacyLazyRoute,
+    ViewViewIdIndexRoute,
   ]),
 ])
 

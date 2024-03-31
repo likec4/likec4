@@ -1,4 +1,5 @@
 import { assignInlineVars } from '@vanilla-extract/dynamic'
+import clsx from 'clsx'
 import type { XYFlowNode } from '../../types'
 import { elementIcon, iconMaxH } from './element.css'
 
@@ -32,7 +33,7 @@ export function ElementIcon({
 
   return (
     <div
-      className={elementIcon}
+      className={clsx(elementIcon, 'likec4-element-icon')}
       style={assignInlineVars({ iconMaxH }, {
         iconMaxH: maxIconHeight + 'px'
       })}>

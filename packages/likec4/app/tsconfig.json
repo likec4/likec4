@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "rootDir": ".",
     "types": ["vite/client"],
     "plugins": [

@@ -17,8 +17,18 @@ export const viteDev = async (cfg?: LikeC4ViteConfig): Promise<ViteDevServer> =>
     mergeConfig(
       config,
       {
-        configFile: false,
-        mode: 'development',
+        mode: 'production',
+        optimizeDeps: {
+          include: [
+            '@nanostores/react',
+            'fast-equals',
+            'nanostores',
+            'react',
+            'react/jsx-runtime',
+            'scheduler',
+            'react-dom'
+          ]
+        },
         // cacheDir: resolve(config.languageServices.workspace, '.cache'),
         server: {
           host: '0.0.0.0',

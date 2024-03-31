@@ -4,11 +4,11 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components'
 
-export const Route = createFileRoute('/view/$viewId/editor')({
-  component: ViewEditor
+export const Route = createFileRoute('/view/$viewId/')({
+  component: ViewReact
 })
 
-function ViewEditor() {
+function ViewReact() {
   const router = useRouter()
   const { viewId } = Route.useParams()
   const view = useLikeC4View(viewId)
@@ -20,20 +20,16 @@ function ViewEditor() {
   return (
     <LikeC4Diagram
       view={view}
-      readonly={false}
+      readonly
       controls={false}
-      nodesDraggable
       fitViewPadding={0.04}
       onNavigateTo={({ element }) => {
         router.navigate({
-          to: '/view/$viewId/editor',
+          to: '/view/$viewId',
           params: { viewId: element.navigateTo },
           startTransition: true,
           search: true
         })
-      }}
-      onChange={event => {
-        console.log('onChange', event)
       }}
     />
   )

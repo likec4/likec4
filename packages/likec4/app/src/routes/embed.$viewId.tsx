@@ -25,11 +25,15 @@ function EmbedPage() {
       pos={'absolute'}
       style={{
         top: 0,
-        left: 0,
+        left: '50%',
         boxSizing: 'border-box',
         padding,
+        transform: 'translateX(-50%)',
+        aspectRatio: `${diagram.width + padding * 2} / ${diagram.height + padding * 2}`,
         width: '100vw',
-        height: '100vh'
+        maxWidth: diagram.width + padding * 2,
+        height: 'auto',
+        maxHeight: '100vh'
       }}
     >
       <StaticLikeC4Diagram

@@ -1,4 +1,4 @@
-import { MantineProvider, useMantineColorScheme } from '@mantine/core'
+import { MantineProvider, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
 import { Theme } from '@radix-ui/themes'
 import { createRootRouteWithContext, Link, Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { theme as mantineTheme } from '../theme'
@@ -42,9 +42,11 @@ export const Route = createRootRouteWithContext<{}>()({
 
 function RadixTheme({ children }: { children: React.ReactNode }) {
   const { colorScheme } = useMantineColorScheme()
-  const appearance = colorScheme === 'auto' ? 'inherit' : colorScheme
+  const computedScheme = useComputedColorScheme()
+  const appearance = colorScheme === 'auto' ? computedScheme : colorScheme
   return (
     <Theme
+      isRoot
       appearance={appearance}
       accentColor="indigo"
       radius="small"

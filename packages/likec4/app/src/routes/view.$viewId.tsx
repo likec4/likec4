@@ -6,9 +6,6 @@ import { SidebarDrawer } from '../components'
 import { Header } from '../components/view-page/Header'
 
 export const Route = createFileRoute('/view/$viewId')({
-  beforeLoad: ({ params: { viewId } }) => ({
-    viewId
-  }),
   component: ViewLayout
 })
 
@@ -60,7 +57,7 @@ function ViewLayout() {
 }
 
 function ViewHeader() {
-  const view = useLikeC4View(Route.useRouteContext().viewId)
+  const view = useLikeC4View(Route.useParams().viewId)
   if (!view) {
     return null
   }

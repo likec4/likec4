@@ -49,6 +49,8 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.0.19",
+    "@hpcc-js/wasm": "^2.16.0",
     "@nanostores/react": "^0.7.2",
     "@vitejs/plugin-react-swc": "^3.6.0",
     "fast-equals": "^5.0.1",
@@ -86,10 +88,10 @@
     "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/recipes": "^0.5.2",
     "@vanilla-extract/vite-plugin": "^4.0.6",
-    "boxen": "^7.1.1",
     "ci-info": "^3.9.0",
     "classnames": "^2.3.2",
     "clsx": "^2.1.0",
+    "consola": "^3.2.3",
     "esbuild": "^0.20.2",
     "esbuild-node-externals": "^1.13.0",
     "execa": "^8.0.1",
@@ -106,6 +108,7 @@
     "react-resizable-panels": "^2.0.12",
     "remeda": "^1.56.0",
     "strip-indent": "^4.0.0",
+    "terser": "^5.30.0",
     "tsx": "^4.7.1",
     "type-fest": "^4.13.1",
     "typescript": "^5.4.3",

@@ -1,5 +1,5 @@
 import type { DiagramView } from '@likec4/core'
-import { Box, Button, Code, Divider, Flex, Group, HoverCard, Menu, Text, Title } from '@mantine/core'
+import { Badge, Box, Button, Center, Code, Divider, Flex, Group, HoverCard, Menu, Text, Title } from '@mantine/core'
 import { Dialog } from '@radix-ui/themes'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
@@ -57,12 +57,21 @@ export function Header({ diagram }: HeaderProps) {
 
 const viewPages = [
   {
-    route: '/view/$viewId/editor',
+    route: '/view/$viewId',
     icon: <IconBrandReact opacity={0.7} size={16} />,
     title: <>React</>
   },
   {
-    route: '/view/$viewId/react',
+    route: '/view/$viewId/editor',
+    icon: <IconBrandReact opacity={0.7} size={16} />,
+    title: (
+      <Text size="sm" fw={'500'} variant="gradient" gradient={{ from: 'pink', to: 'violet', deg: 90 }}>
+        Editor
+      </Text>
+    )
+  },
+  {
+    route: '/view/$viewId/react-legacy',
     icon: <IconBrandReact opacity={0.7} size={16} />,
     title: (
       <>
@@ -98,32 +107,58 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
   const matchRoute = useMatchRoute()
   const matched = viewPages.find(({ route }) => matchRoute({ to: route }) !== false) ?? viewPages[0]
   return (
-    <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
-      <Menu.Target>
-        <Button
-          leftSection={matched.icon}
-          variant="subtle"
-          size="sm"
-          color="gray"
-          rightSection={<IconChevronDown opacity={0.5} size={14} />}>
-          {matched.title}
-        </Button>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        {viewPages.map(({ route, icon, title }) => (
-          <Menu.Item
-            key={route}
-            component={Link}
-            to={route}
-            startTransition
+    <>
+      {matched.route === '/view/$viewId' && (
+        <Center h="100%">
+          <Link
+            to={`/view/$viewId/editor`}
             params={{ viewId }}
-            leftSection={icon}>
-            {title}
-          </Menu.Item>
-        ))}
-      </Menu.Dropdown>
-    </Menu>
+            style={{
+              display: 'inline-block',
+              lineHeight: '16px'
+            }}>
+            <Badge
+              size="xs"
+              radius="xs"
+              variant="gradient"
+              gradient={{ from: 'pink', to: 'violet', deg: 90 }}
+            >
+              editor preview
+            </Badge>
+          </Link>
+        </Center>
+      )}
+      <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
+        <Menu.Target>
+          <Button
+            leftSection={matched.icon}
+            variant="subtle"
+            size="sm"
+            color="gray"
+            rightSection={<IconChevronDown opacity={0.5} size={14} />}>
+            {matched.title}
+          </Button>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          {viewPages.map(({ route, icon, title }) => (
+            <Menu.Item
+              key={route}
+              component={Link}
+              to={route}
+              startTransition
+              params={{ viewId }}
+              leftSection={icon}
+              style={{
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {title}
+            </Menu.Item>
+          ))}
+        </Menu.Dropdown>
+      </Menu>
+    </>
   )
 })
 

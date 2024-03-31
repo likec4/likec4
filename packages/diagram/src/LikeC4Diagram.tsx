@@ -1,7 +1,6 @@
 import { Controls, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
-import useTilg from 'tilg'
 import type { Exact } from 'type-fest'
 import { scope } from './index.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'

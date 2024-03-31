@@ -1,54 +1,68 @@
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
+import { consola } from 'consola'
+import { resolve as nodeResolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
+import { cwd as cwdFn } from 'process'
 import { build } from 'vite'
+import pkg from '../package.json' assert { type: 'json' }
 import { modules } from '../src/vite/plugin'
 
-export async function buildAppBundle(outDir = 'dist/__app__') {
+const cwd = cwdFn()
+const resolve = (path: string) => nodeResolve(cwd, path)
+
+export async function buildAppBundle() {
+  const root = resolve('app')
+  const outDir = resolve('dist/__app__/src')
+  consola.start(`Building app bundle...\nroot: ${root}`)
   // Static website
   await build({
-    configFile: false,
-    mode: 'production',
-    define: { 'process.env.NODE_ENV': '"production"' },
+    root,
     resolve: {
       alias: {
-        '@likec4/core': '../core/src/index.ts',
-        '@likec4/diagram': '../diagram/src/index.ts',
-        '@likec4/diagrams': '../diagrams/src/index.ts'
+        '@likec4/core': resolve('../core/src/index.ts'),
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        '@likec4/diagrams': resolve('../diagrams/src/index.ts')
       }
     },
     build: {
       emptyOutDir: false,
-      outDir: outDir + '/src',
+      outDir,
       cssCodeSplit: false,
       cssMinify: false,
       sourcemap: false,
-      chunkSizeWarningLimit: 2_000_000,
-      commonjsOptions: {
-        esmExternals: true,
-        sourceMap: false
+      minify: 'terser',
+      terserOptions: {
+        ecma: 2020,
+        keep_classnames: true,
+        keep_fnames: true
       },
-      target: 'esnext',
-      minify: true,
+      assetsDir: '../assets',
+      // chunkSizeWarningLimit: 2_000_000,
+      // commonjsOptions: {
+      //   // esmExternals: true,
+      //   // sourceMap: false
+      // },
+      // minify: true,
       copyPublicDir: false,
       lib: {
-        entry: 'app/src/app.tsx',
-        fileName: 'app',
+        entry: {
+          app: 'src/app.tsx'
+        },
         formats: ['es']
       },
       rollupOptions: {
         external: [
-          'react',
-          'react-dom',
-          'react/jsx-dev-runtime',
+          ...Object.keys(pkg.dependencies),
           'react/jsx-runtime',
-          'scheduler',
-          'nanostores',
-          '@nanostores/react',
           'virtual:likec4',
           ...modules.map(m => m.id)
         ]
+        // output: {
+        //   entryFileNames: '[name].js',
+        //   assetFileNames: '[name].[ext]',
+        // }
       }
     },
     css: {
@@ -62,14 +76,17 @@ export async function buildAppBundle(outDir = 'dist/__app__') {
       }
     },
     plugins: [
-      react({}),
+      react({
+        devTarget: 'es2022'
+      }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
-        generatedRouteTree: 'app/src/routeTree.gen.ts',
-        routesDirectory: 'app/src/routes',
+        generatedRouteTree: resolve('app/src/routeTree.gen.ts'),
+        routesDirectory: resolve('app/src/routes'),
         quoteStyle: 'single'
       }),
       vanillaExtractPlugin({})
     ]
   })
+  consola.success('App bundle built!')
 }

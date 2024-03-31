@@ -9,7 +9,6 @@ export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
   // Static website
   await build({
     ...config,
-    configFile: false,
     mode: 'production'
   })
 

@@ -2,7 +2,6 @@ import { createLikeC4Logger } from '@/logger'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
-import { isCI } from 'ci-info'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -87,7 +86,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const aliases = resolveAliases(
     {
       ['@likec4/core']: sources.core,
-      ['@likec4/diagram/bundle']: resolve(_dirname, '../../../diagram/bundle/index.js'),
       ['@likec4/diagram']: sources.diagram,
       ['@likec4/diagrams']: sources.diagrams
     },
@@ -109,25 +107,24 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     isDev,
     root,
     languageServices,
+    configFile: false,
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime'],
       alias: [...aliases]
+    },
+    define: {
+      'process.env.NODE_ENV': '"production"'
     },
     clearScreen: false,
     base,
     build: {
       outDir,
-      reportCompressedSize: isDev || !isCI,
+      cssCodeSplit: false,
+      sourcemap: false,
+      minify: true,
       // 200Kb
       assetsInlineLimit: 200 * 1024,
-      cssCodeSplit: false,
-      // cssMinify: true,
-      sourcemap: false,
-      chunkSizeWarningLimit: 2_000_000,
-      commonjsOptions: {
-        esmExternals: true,
-        sourceMap: false
-      }
+      chunkSizeWarningLimit: 3_000_000
     },
     css: {
       postcss: {
@@ -140,11 +137,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       }
     },
     customLogger,
-    optimizeDeps: {
-      force: true
-    },
     plugins: [
-      react(),
+      react({
+        devTarget: 'es2022',
+        jsxImportSource: 'react'
+      }),
       likec4Plugin({ languageServices }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',

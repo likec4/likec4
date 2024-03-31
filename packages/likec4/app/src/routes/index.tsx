@@ -123,7 +123,7 @@ const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
         >
           {description?.trim() || 'no description'}
         </Text>
-        <Link to="/view/$viewId/editor" params={{ viewId: id }} search className={cssPreviewCardLink}>{' '}</Link>
+        <Link to="/view/$viewId" params={{ viewId: id }} search className={cssPreviewCardLink}>{' '}</Link>
       </Card>
     </Box>
   )
@@ -148,9 +148,7 @@ function DiagramPreview(props: { diagram: DiagramView }) {
           view={diagram}
           keepAspectRatio={false}
           fitView
-          fitViewPadding={0.1}
-          initialWidth={350}
-          initialHeight={175} />
+          fitViewPadding={0.1} />
       )}
     </Box>
   )

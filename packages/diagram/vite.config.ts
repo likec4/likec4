@@ -4,6 +4,13 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { shadowStyle } from 'vite-plugin-shadow-style'
+import pkg from './package.json' assert { type: 'json' }
+
+const external = [
+  ...Object.keys(pkg.dependencies),
+  ...Object.keys(pkg.peerDependencies),
+  'react/jsx-runtime'
+]
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig(({ mode }) => {
@@ -14,33 +21,36 @@ export default defineConfig(({ mode }) => {
       dts()
     ],
     esbuild: {
-      exclude: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        'scheduler',
-        '@mantine/core',
-        '@mantine/hooks'
-      ]
+      exclude: external
     },
+    // esbuild: {
+    //   jsxDev: false
+    // }
+    // esbuild: {
+    //   exclude: [
+    //     'react',
+    //     'react-dom',
+    //     'react/jsx-runtime',
+    //     'scheduler',
+    //     '@mantine/core',
+    //     '@mantine/hooks'
+    //   ]
+    // },
     // optimizeDeps: {
     //   esbuildOptions: {
     //     plugins: [veEsbuild({runtime: false})]
     //   }
     // },
-    define: {
-      'process.env.NODE_ENV': JSON.stringify('production')
-    },
+    // define: {
+    //   'process.env.NODE_ENV': JSON.stringify('production')
+    // },
     build: {
       outDir: 'dist',
       lib: {
-        entry: [
-          resolve(__dirname, 'src/index.ts'),
-          resolve(__dirname, 'src/bundle.ts')
-        ],
-        // fileName: (format, entryName) => {
-        //   return 'index.mjs'
-        // },
+        entry: {
+          // 'bundle': resolve(__dirname, 'src/bundle.ts'),
+          'index': resolve(__dirname, 'src/index.ts')
+        },
         formats: ['es']
       },
       minify: 'terser',
@@ -51,23 +61,14 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       cssCodeSplit: false,
       cssMinify: true,
-      sourcemap: false,
-      target: 'esnext',
-      commonjsOptions: {
-        esmExternals: true,
-        requireReturnsDefault: true
-      },
+      sourcemap: true,
+      // commonjsOptions: {
+      //   esmExternals: true,
+      //   requireReturnsDefault: true
+      // },
       rollupOptions: {
-        treeshake: 'smallest',
-        external: [
-          'react',
-          'react-dom',
-          'react/jsx-runtime',
-          'scheduler',
-          '@mantine/core',
-          '@mantine/hooks'
-        ],
-        plugins: [shadowStyle()]
+        external
+        // plugins: [shadowStyle()]
       }
     }
   }

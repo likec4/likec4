@@ -18,28 +18,22 @@
     "!**/*.spec.*",
     "!**/*.map"
   ],
+  "sideEffects": "**/*.css",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
     "./style.css": "./dist/style.css",
-    "./bundle": "./dist/bundle.js"
+    "./dist/style.css": "./dist/style.css"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "./style.css": "./dist/style.css",
-      "./bundle": {
-        "types": "./dist/bundle.d.ts",
-        "default": "./dist/bundle.js"
-      }
-    }
+    "access": "public"
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.1",
   "scripts": {
     "typecheck": "tsc --emitDeclarationOnly --declaration --declarationMap",
     "build:turbo": "run -T turbo build --filter='diagram'",
@@ -47,29 +41,22 @@
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist bundle"
   },
-  "peerDependencies": {
+  "dependencies": {
+    "@likec4/core": "workspace:*",
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "scheduler": "^0.23.0"
+    "framer-motion": "^11.0.22",
+    "react-tracked": "^1.7.11",
+    "remeda": "^1.56.0",
+    "scheduler": "^0.23.0",
+    "type-fest": "^4.13.1"
   },
-  "peerDependenciesMeta": {
-    "@mantine/core": {
-      "optional": true
-    },
-    "@mantine/hooks": {
-      "optional": true
-    },
-    "scheduler": {
-      "optional": true
-    }
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@likec4/core": "workspace:*",
     "@lume/kiwi": "^0.4.3",
-    "@mantine/core": "^7.7.0",
-    "@mantine/hooks": "^7.7.0",
     "@mantine/vanilla-extract": "^7.7.0",
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
@@ -85,16 +72,11 @@
     "clsx": "^2.1.0",
     "execa": "^8.0.1",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.0.22",
     "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-tracked": "^1.7.11",
-    "remeda": "^1.56.0",
-    "scheduler": "^0.23.0",
     "terser": "^5.30.0",
     "tilg": "^0.1.1",
-    "type-fest": "^4.13.1",
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0",
     "vite": "^5.2.6",

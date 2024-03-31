@@ -1,6 +1,6 @@
 import { createGlobalThemeContract } from '@vanilla-extract/css'
 
-export const vars = /* @__PURE__ */ createGlobalThemeContract({
+export const vars = createGlobalThemeContract({
   likec4: {
     font: 'font-family',
     backgroundColor: 'background-color'
@@ -23,7 +23,7 @@ export const vars = /* @__PURE__ */ createGlobalThemeContract({
   }
 }, (value) => `likec4-${value}`)
 
-export const xyvars = /* @__PURE__ */ createGlobalThemeContract({
+export const xyvars = createGlobalThemeContract({
   background: {
     color: 'background-color'
     // pattern: {

@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
       vanillaExtractPlugin()
     ],
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime'],
       alias: {
         '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')

@@ -23,7 +23,7 @@ const renderSvg = async (viewId: string, diagram: string) => {
 }
 
 function ViewAsMmd() {
-  const { viewId } = Route.useRouteContext()
+  const { viewId } = Route.useParams()
   const source = mmdSource(viewId)
 
   const [mmdSvg, { execute }] = useAsync(renderSvg, null)

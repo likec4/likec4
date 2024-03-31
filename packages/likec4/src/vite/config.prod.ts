@@ -62,28 +62,29 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     languageServices,
     clearScreen: false,
     base,
+    configFile: false,
+    resolve: {
+      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime']
+    },
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
     build: {
       outDir,
+      cssCodeSplit: false,
+      cssMinify: true,
+      sourcemap: false,
+      minify: true,
       // 200Kb
       assetsInlineLimit: 200 * 1024,
-      cssCodeSplit: false,
-      // cssMinify: true,
-      sourcemap: false,
-      chunkSizeWarningLimit: 2_000_000,
-      commonjsOptions: {
-        esmExternals: true,
-        sourceMap: false
-      }
-    },
-    experimental: {
-      hmrPartialAccept: true
+      chunkSizeWarningLimit: 3_000_000
     },
     customLogger,
-    optimizeDeps: {
-      force: true
-    },
     plugins: [
-      react(),
+      react({
+        devTarget: 'es2022',
+        jsxImportSource: 'react'
+      }),
       likec4Plugin({ languageServices })
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }

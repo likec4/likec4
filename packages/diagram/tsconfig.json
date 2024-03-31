@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
     "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
     "lib": [
       "dom",
@@ -11,7 +12,8 @@
     "outDir": ".tsbuildinfo/out",
     "declarationDir": ".tsbuildinfo/out",
     "rootDir": "./src",
-    "jsx": "react-jsxdev",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },

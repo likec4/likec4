@@ -1099,6 +1099,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource/ibm-plex-sans@npm:^5.0.19":
+  version: 5.0.19
+  resolution: "@fontsource/ibm-plex-sans@npm:5.0.19"
+  checksum: 10/a68330388287a73dbf9382f7be1f21f3a69f29949f13768bf37b51dafe494ba91c912aaf6bde0b30b6db7fb2ef2713f761e7154d19df4ef2f27e6ea25b553a38
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -1351,18 +1358,8 @@ __metadata:
     vite-plugin-dts: "npm:^3.8.1"
     vite-plugin-shadow-style: "npm:^1.1.0"
   peerDependencies:
-    "@mantine/core": ^7.7.0
-    "@mantine/hooks": ^7.7.0
     react: ^18.2.0
     react-dom: ^18.2.0
-    scheduler: ^0.23.0
-  peerDependenciesMeta:
-    "@mantine/core":
-      optional: true
-    "@mantine/hooks":
-      optional: true
-    scheduler:
-      optional: true
   languageName: unknown
   linkType: soft
 
@@ -10645,6 +10642,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4@workspace:packages/likec4"
   dependencies:
+    "@fontsource/ibm-plex-sans": "npm:^5.0.19"
+    "@hpcc-js/wasm": "npm:^2.16.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/diagrams": "workspace:*"
@@ -10673,10 +10672,10 @@ __metadata:
     "@vanilla-extract/recipes": "npm:^0.5.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.6"
     "@vitejs/plugin-react-swc": "npm:^3.6.0"
-    boxen: "npm:^7.1.1"
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
     clsx: "npm:^2.1.0"
+    consola: "npm:^3.2.3"
     esbuild: "npm:^0.20.2"
     esbuild-node-externals: "npm:^1.13.0"
     execa: "npm:^8.0.1"
@@ -10699,6 +10698,7 @@ __metadata:
     react-resizable-panels: "npm:^2.0.12"
     remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
+    terser: "npm:^5.30.0"
     tsx: "npm:^4.7.1"
     type-fest: "npm:^4.13.1"
     typescript: "npm:^5.4.3"

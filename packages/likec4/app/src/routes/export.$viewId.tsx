@@ -22,7 +22,7 @@ function ExportPage() {
   const { viewId } = Route.useParams()
   const diagram = useLikeC4View(viewId)
 
-  useTransparentBackground(!!diagram)
+  useTransparentBackground()
 
   if (!diagram) {
     return <DiagramNotFound viewId={viewId} />
