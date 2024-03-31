@@ -18,7 +18,7 @@
     "!**/*.spec.*",
     "!**/*.map"
   ],
-  "sideEffects": [”**/*.css"],
+  "sideEffects": ["**/*.css"],
   "type": "module",
   "exports": {
     ".": {
