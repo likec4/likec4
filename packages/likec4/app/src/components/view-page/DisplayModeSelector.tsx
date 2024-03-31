@@ -9,7 +9,7 @@ const Mode = {
   },
   react: {
     label: 'React',
-    to: '/view/$viewId/react'
+    to: '/view/$viewId'
   },
   dot: {
     label: 'Dot',
@@ -76,7 +76,7 @@ export const DisplayModeSelector = () => {
         Editor
       </Link>
       <Link
-        to="/view/$viewId/react"
+        to="/view/$viewId"
         search
         startTransition
         activeOptions={{
