@@ -29,7 +29,7 @@ type HandlerParams = {
 
 export async function handler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
-  const timer = startTimer(logger)
+  const timer = startTimer()
 
   const languageServices = await LanguageServices.get({ path, useDotBin })
 

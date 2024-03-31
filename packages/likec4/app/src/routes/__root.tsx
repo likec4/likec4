@@ -46,7 +46,7 @@ function RadixTheme({ children }: { children: React.ReactNode }) {
   const appearance = colorScheme === 'auto' ? computedScheme : colorScheme
   return (
     <Theme
-      isRoot
+      hasBackground={false}
       appearance={appearance}
       accentColor="indigo"
       radius="small"

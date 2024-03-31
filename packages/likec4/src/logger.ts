@@ -1,4 +1,5 @@
 import { isCI } from 'ci-info'
+import consola from 'consola'
 import { hrtime } from 'node:process'
 import k from 'picocolors'
 import prettyMilliseconds from 'pretty-ms'
@@ -61,11 +62,11 @@ export function inMillis(start: [number, number]) {
   }
 }
 
-export function startTimer(logger: Logger) {
+export function startTimer() {
   const start = hrtime()
   return {
     stopAndLog(msg = '✓ done in ') {
-      logger.info(k.green(`${msg}${inMillis(start).pretty}`))
+      consola.success(k.green(`${msg}${inMillis(start).pretty}`))
     }
   }
 }

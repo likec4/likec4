@@ -4,11 +4,11 @@
     "tsBuildInfoFile": "../.tsbuildinfo/scripts.tsbuildinfo",
     "noEmit": true,
     "types": [
-      "node"
+      "node",
     ]
   },
   "include": [
-    "./*.ts"
+    "*"
   ],
   "references": [
     {

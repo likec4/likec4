@@ -1,9 +1,3 @@
-.radix-themes {
-  --font-weight-bold: 600;
-  --color-text-dimmed: var(--gray-a8);
-  --default-font-family: 'IBM Plex Sans', sans-serif;
-  --color-page-background: var(--mantine-color-body);
-}
 
 *,
 :before,
@@ -22,30 +16,27 @@
   --xy-background-pattern-color: var(--mantine-color-dark-8);
 }
 
+:root[data-mantine-color-scheme='light'] {
+  --color-page-background: var(--mantine-color-body);
+}
 :root[data-mantine-color-scheme='dark'] {
   --mantine-color-body: var(--mantine-color-dark-8);
   --xy-background-pattern-color: var(--mantine-color-dark-2);
+  --color-page-background: var(--mantine-color-body);
 }
 
-html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: var(--likec4-default-font-family);
-
-
 }
 
-body {
-  background-color: var(--mantine-color-body);
-}
-
-.dark, .light {
-  body {
-    background-color: var(--mantine-color-body);
-  }
+.radix-themes {
+  --font-weight-bold: 600;
+  --color-text-dimmed: var(--gray-a8);
+  --default-font-family: var(--mantine-default-font-family);
+  --color-page-background: var(--mantine-color-body);
 }
 
 #like4-root {
@@ -55,12 +46,10 @@ body {
   height: 100vh;
 }
 
-
 .mantine-ActionIcon-icon .tabler-icon {
   width: 75%;
   height: 75%;
 }
-
 
 .transparent-bg {
   --likec4-background-color: transparent !important;

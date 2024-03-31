@@ -2,15 +2,11 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react-swc'
 import { consola } from 'consola'
-import { resolve as nodeResolve } from 'path'
+import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
-import { cwd as cwdFn } from 'process'
 import { build } from 'vite'
 import pkg from '../package.json' assert { type: 'json' }
 import { modules } from '../src/vite/plugin'
-
-const cwd = cwdFn()
-const resolve = (path: string) => nodeResolve(cwd, path)
 
 export async function buildAppBundle() {
   const root = resolve('app')
@@ -39,7 +35,9 @@ export async function buildAppBundle() {
         keep_fnames: true
       },
       assetsDir: '../assets',
-      // chunkSizeWarningLimit: 2_000_000,
+      // 100Kb
+      assetsInlineLimit: 100 * 1024,
+      chunkSizeWarningLimit: 2_500_000,
       // commonjsOptions: {
       //   // esmExternals: true,
       //   // sourceMap: false
@@ -51,6 +49,9 @@ export async function buildAppBundle() {
           app: 'src/app.tsx'
         },
         formats: ['es']
+      },
+      commonjsOptions: {
+        ignoreTryCatch: 'remove'
       },
       rollupOptions: {
         external: [
@@ -70,13 +71,11 @@ export async function buildAppBundle() {
         plugins: [
           postcssPresetMantine()
         ]
-      },
-      modules: {
-        localsConvention: 'camelCase'
       }
     },
     plugins: [
       react({
+        jsxImportSource: 'react',
         devTarget: 'es2022'
       }),
       TanStackRouterVite({

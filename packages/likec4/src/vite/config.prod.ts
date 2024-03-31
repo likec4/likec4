@@ -64,7 +64,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     base,
     configFile: false,
     resolve: {
-      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime']
+      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime'],
+      alias: [{
+        find: '@emotion/is-prop-valid',
+        replacement: 'react' // TODO: find a better solution
+      }]
     },
     define: {
       'process.env.NODE_ENV': '"production"'
@@ -75,9 +79,12 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       cssMinify: true,
       sourcemap: false,
       minify: true,
-      // 200Kb
-      assetsInlineLimit: 200 * 1024,
-      chunkSizeWarningLimit: 3_000_000
+      // 100Kb
+      assetsInlineLimit: 100 * 1024,
+      chunkSizeWarningLimit: 3_000_000,
+      commonjsOptions: {
+        ignoreTryCatch: 'remove'
+      }
     },
     customLogger,
     plugins: [

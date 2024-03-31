@@ -8,9 +8,14 @@ declare module 'virtual:likec4' {
 }
 
 declare module 'virtual:likec4/views' {
-  import type { DiagramView } from '@likec4/core'
+  import type { DiagramView, ViewID } from '@likec4/core'
 
-  export const LikeC4Views: Record<string, DiagramView>
+  export type LikeC4ViewId = ViewID
+
+  export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
+
+  export const LikeC4Views: LikeC4Views
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 }
 
 declare module 'virtual:likec4/dot-sources' {

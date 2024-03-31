@@ -1,39 +1,39 @@
 import type { ThemeColor } from '@likec4/core'
 import { defaultTheme } from '@likec4/core'
-import { createGlobalTheme, fallbackVar, style } from '@vanilla-extract/css'
+import { createGlobalTheme, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from './mantine'
 import { vars, xyvars } from './theme.css'
 
 export const scope = style({})
 
-createGlobalTheme(':root', {
-  ...vars,
-  xyflowbg: xyvars.background
+globalStyle(`${scope} *, ${scope} *::before, ${scope} *::after`, {
+  boxSizing: 'border-box',
+  outline: 'none',
+  borderWidth: 0,
+  borderStyle: 'solid',
+  borderColor: 'transparent'
+})
+
+createGlobalTheme(':root, :host', {
+  ...vars
 }, {
   likec4: {
-    font: fallbackVar('var(--likec4-default-font-family)', mantine.fontFamily),
+    font: fallbackVar('var(--likec4-default-font-family)', 'Helvetica, Arial, sans-serif'),
     backgroundColor: mantine.colors.body
   },
   compound: {
-    font: fallbackVar(vars.likec4.font, mantine.fontFamily),
+    font: vars.likec4.font,
     titleColor: vars.element.loContrast
   },
   element: {
-    font: fallbackVar(vars.likec4.font, mantine.fontFamily),
+    font: vars.likec4.font,
     ...defaultTheme.elements.primary
   },
   relation: {
     ...defaultTheme.relationships.slate
-  },
-  xyflowbg: {
-    color: vars.likec4.backgroundColor
-    // pattern: {
-    //   dots: mantine.colors.defaultBorder,
-    //   lines: mantine.colors.body,
-    //   cross: mantine.colors.body
-    // }
   }
 })
+
 for (const color of Object.keys(defaultTheme.elements)) {
   if (!(color in defaultTheme.elements) || !(color in defaultTheme.relationships)) {
     continue

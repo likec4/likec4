@@ -17,7 +17,7 @@ type HandlerParams = {
 
 export async function handler({ path, useDotBin, outdir }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
-  const timer = startTimer(logger)
+  const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   const diagrams = await languageServices.views.diagrams()

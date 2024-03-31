@@ -3,8 +3,7 @@ import { Diagram, useDiagramApi } from '@likec4/diagrams'
 import { Box } from '@mantine/core'
 import { useWindowSize } from '@react-hookz/web'
 import { useCallback, useEffect, useRef } from 'react'
-import { cn } from '../../utils'
-import styles from './view-page.module.css'
+import { reactDiagram } from './ViewAsReact.css'
 
 const Paddings = [70, 20, 20, 40] as const
 
@@ -57,11 +56,8 @@ export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
   return (
     <Box
       pos={'fixed'}
-      inset="0"
-      className={cn(
-        styles.reactDiagram
-        // isActive && styles.active
-      )}
+      inset={0}
+      className={reactDiagram}
       ref={pageDivRef}
     >
       <Diagram
