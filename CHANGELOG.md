@@ -1,3 +1,12 @@
+# [1.0.0-next.2](https://github.com/likec4/likec4/compare/v1.0.0-next.1...v1.0.0-next.2) (2024-03-31)
+
+
+### Bug Fixes
+
+* hanging LikeC4ModelBuilder ([c5874eb](https://github.com/likec4/likec4/commit/c5874eb25ace9199d1ff0cd8b3f604eecc018faf))
+
+
+
 # [1.0.0-next.1](https://github.com/likec4/likec4/compare/v1.0.0-next.0...v1.0.0-next.1) (2024-03-29)
 
 
