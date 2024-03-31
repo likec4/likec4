@@ -1,10 +1,14 @@
+# [1.0.0-next.2](https://github.com/likec4/likec4/compare/v1.0.0-next.1...v1.0.0-next.2) (2024-03-31)
+
+Working on pre-release
+
 # [1.0.0-next.1](https://github.com/likec4/likec4/compare/v1.0.0-next.0...v1.0.0-next.1) (2024-03-29)
 
-
+Working on pre-release
 
 # [1.0.0-next.0](https://github.com/likec4/likec4/compare/v0.60.3...v1.0.0-next.0) (2024-03-29)
 
-
+Working on pre-release
 
 ## [0.60.3](https://github.com/likec4/likec4/compare/v0.60.2...v0.60.3) (2024-03-28)
 
