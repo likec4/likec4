@@ -1,14 +1,15 @@
 import { createLikeC4Logger } from '@/logger'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
+import consola from 'consola'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { Alias, InlineConfig, Logger } from 'vite'
+import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 
@@ -26,19 +27,6 @@ const getAppRoot = (): [path: string, isDev: boolean] => {
   return [resolve(_dirname, '../../app'), true]
 }
 
-function resolveAliases(aliases: Record<string, string>, logger: Logger): Array<Alias> {
-  const resolved = [] as Array<Alias>
-  Array.from(Object.entries(aliases)).forEach(([key, src]) => {
-    if (!fs.existsSync(src)) {
-      logger.error(`${k.bgRed(k.white(key))} does not exist ${src}`)
-      return
-    }
-    logger.info(`${key} ${k.dim('resolve to')} ${src}`)
-    resolved.push({ find: key, replacement: src })
-  })
-  return resolved
-}
-
 export type LikeC4ViteConfig =
   | {
     languageServices: LanguageServices
@@ -54,18 +42,18 @@ export type LikeC4ViteConfig =
   }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
+  consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:vite')
 
   const [root, isDev] = getAppRoot()
   if (!fs.existsSync(root)) {
-    customLogger.error(`app root does not exist: ${root}`)
+    consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
   }
 
-  if (isDev) {
-    customLogger.info(`${k.cyan('dev app root')} ${k.dim(root)}`)
-  } else {
-    customLogger.info(`${k.cyan('app root')} ${k.dim(root)}`)
+  if (!isDev) {
+    consola.error(`app root not dev ${root}`)
+    throw new Error(`app root not dev ${root}`)
   }
 
   const languageServices = cfg?.languageServices
@@ -76,21 +64,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
-
-  const sources = {
-    core: resolve(_dirname, isDev ? '../../../core/src/index.ts' : '../@likec4/core/index.js'),
-    diagram: resolve(_dirname, isDev ? '../../../diagram/src/index.ts' : '../@likec4/diagram/index.js'),
-    diagrams: resolve(_dirname, isDev ? '../../../diagrams/src/index.ts' : '../@likec4/diagrams/index.js')
-  }
-
-  const aliases = resolveAliases(
-    {
-      ['@likec4/core']: sources.core,
-      ['@likec4/diagram']: sources.diagram,
-      ['@likec4/diagrams']: sources.diagrams
-    },
-    customLogger
-  )
 
   let base = '/'
   if (cfg?.base) {
@@ -109,14 +82,12 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     languageServices,
     configFile: false,
     resolve: {
-      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime'],
-      alias: [...aliases, {
-        find: '@emotion/is-prop-valid',
-        replacement: 'react'
-      }]
-    },
-    define: {
-      'process.env.NODE_ENV': '"production"'
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+      alias: {
+        '@likec4/core': resolve('../core/src/index.ts'),
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        '@likec4/diagrams': resolve('../diagrams/src/index.ts')
+      }
     },
     clearScreen: false,
     base,
@@ -137,17 +108,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         plugins: [
           postcssPresetMantine()
         ]
-      },
-      modules: {
-        localsConvention: 'camelCase'
       }
     },
     customLogger,
     plugins: [
-      react({
-        devTarget: 'es2022',
-        jsxImportSource: 'react'
-      }),
+      react(),
       likec4Plugin({ languageServices }),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',

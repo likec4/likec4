@@ -1,6 +1,6 @@
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
@@ -15,55 +15,77 @@ export async function buildAppBundle() {
   // Static website
   await build({
     root,
+    configFile: false,
     resolve: {
+      dedupe: [
+        'react',
+        'react-dom'
+      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
         '@likec4/diagrams': resolve('../diagrams/src/index.ts')
       }
     },
+    mode: 'production',
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
     build: {
       emptyOutDir: false,
       outDir,
       cssCodeSplit: false,
-      cssMinify: false,
+      cssMinify: true,
       sourcemap: false,
       minify: 'terser',
       terserOptions: {
         ecma: 2020,
-        keep_classnames: true,
-        keep_fnames: true
+        module: true,
+        compress: true
+        // keep_classnames: true,
+        // keep_fnames: true,
+        // sourceMap: false
       },
-      assetsDir: '../assets',
       // 100Kb
       assetsInlineLimit: 100 * 1024,
       chunkSizeWarningLimit: 2_500_000,
-      // commonjsOptions: {
-      //   // esmExternals: true,
-      //   // sourceMap: false
-      // },
-      // minify: true,
       copyPublicDir: false,
       lib: {
         entry: {
           app: 'src/app.tsx'
+          //   router: 'src/router.tsx',
+          //   'routes/view.$viewId.index' : 'src/routes/view.$viewId.index.tsx',
+          //   'routes/view.$viewId.react-legacy.lazy' : 'src/routes/view.$viewId.react-legacy.lazy.tsx'
         },
+        // fileName(format, entryName) {
+        //   return `${entryName}.${format}.mjs`
+        // },
         formats: ['es']
+        // name: 'LikeC4',
       },
       commonjsOptions: {
+        transformMixedEsModules: true,
+        // esmExternals: true,
+        requireReturnsDefault: 'namespace',
         ignoreTryCatch: 'remove'
+        // defaultIsModuleExports: ''
+        // include: ['react', 'react-dom']
       },
       rollupOptions: {
+        // output: {
+        //   format: 'esm',
+        //   esModule: true,
+        //   sourcemap: false,
+        // },
         external: [
-          ...Object.keys(pkg.dependencies),
-          'react/jsx-runtime',
+          //   'react/jsx-runtime',
+          //   'react-dom/client',
+          //   'use-sync-external-store/shim/with-selector.js',
+          //   'scheduler',
+          //   ...Object.keys(pkg.dependencies),
           'virtual:likec4',
           ...modules.map(m => m.id)
         ]
-        // output: {
-        //   entryFileNames: '[name].js',
-        //   assetFileNames: '[name].[ext]',
-        // }
       }
     },
     css: {
@@ -74,10 +96,7 @@ export async function buildAppBundle() {
       }
     },
     plugins: [
-      react({
-        jsxImportSource: 'react',
-        devTarget: 'es2022'
-      }),
+      react({}),
       TanStackRouterVite({
         routeFileIgnorePattern: '.css.ts',
         generatedRouteTree: resolve('app/src/routeTree.gen.ts'),

@@ -24,23 +24,11 @@ const generatedStore = {
   async load({ logger }) {
     logger.info(k.dim('generating virtual:likec4'))
     return `
-import { useStore } from '@nanostores/react'
 import { deepEqual as equals } from 'fast-equals'
 import { map } from 'nanostores'
 import { LikeC4Views } from 'virtual:likec4/views'
 
 export const $views = map(LikeC4Views)
-
-export function useLikeC4Views() {
-  return useStore($views)
-}
-
-export function useLikeC4View(id) {
-  const views = useStore($views, {
-    keys: [id],
-  })
-  return views[id] ?? null
-}
 
 if (import.meta.hot) {
   import.meta.hot.accept('/@vite-plugin-likec4/likec4-views', md => {

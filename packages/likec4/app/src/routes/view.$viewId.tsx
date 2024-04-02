@@ -1,9 +1,9 @@
 import { Box, Burger } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { useLikeC4View } from 'virtual:likec4'
 import { SidebarDrawer } from '../components'
 import { Header } from '../components/view-page/Header'
+import { useLikeC4View } from '../data'
 
 export const Route = createFileRoute('/view/$viewId')({
   component: ViewLayout

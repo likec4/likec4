@@ -1,8 +1,8 @@
 import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
 
 import { useCallback } from 'react'
-import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components/DiagramNotFound'
+import { useLikeC4View } from '../data'
 import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
 export const Route = createLazyFileRoute('/view/$viewId/react-legacy')({

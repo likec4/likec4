@@ -1,7 +1,7 @@
 import { type DiagramView } from '@likec4/core'
 import { CaretDownIcon, Share1Icon as ShareIcon } from '@radix-ui/react-icons'
 import { Button, Dialog, DropdownMenu, Flex, Text } from '@radix-ui/themes'
-import React, { type PropsWithChildren, useState } from 'react'
+import { type MouseEvent, type PropsWithChildren, useState } from 'react'
 // import { ThemePanelToggle } from '../ThemePanelToggle'
 import { DisplayModeSelector } from './DisplayModeSelector'
 // import ExportDiagram from './ExportDiagram'
@@ -11,7 +11,7 @@ const ExportMenu = ({
   onExport,
   children
 }: PropsWithChildren<{ onExport: (format: 'png') => void }>) => {
-  const changeMode = (mode: string) => (_: React.MouseEvent) => {
+  const changeMode = (mode: string) => (_: MouseEvent) => {
     // updateSearchParams({ mode })
   }
   return (

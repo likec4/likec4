@@ -92,3 +92,36 @@ await cp('app/', 'dist/__app__/', {
 })
 
 await buildAppBundle()
+
+await writeFile(
+  'dist/__app__/tsconfig.json',
+  JSON.stringify(
+    {
+      '$schema': 'https://json.schemastore.org/tsconfig',
+      'compilerOptions': {
+        'target': 'ES2020',
+        'lib': [
+          'DOM',
+          'DOM.Iterable',
+          'ESNext'
+        ],
+        'allowJs': true,
+        'module': 'ESNext',
+        'outDir': './dist',
+        'strict': false,
+        'esModuleInterop': true,
+        'isolatedModules': true,
+        'jsx': 'react-jsx',
+        'rootDir': '.',
+        'types': [
+          'vite/client'
+        ]
+      },
+      'include': [
+        './src'
+      ]
+    },
+    null,
+    2
+  )
+)

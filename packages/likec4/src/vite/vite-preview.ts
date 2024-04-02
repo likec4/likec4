@@ -16,7 +16,6 @@ export async function vitePreview(cfg?: VitePreviewParams) {
 
   const previewServer = await preview({
     ...config,
-    configFile: false,
     mode: 'production',
     preview: {
       host: '0.0.0.0',

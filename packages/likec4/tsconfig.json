@@ -3,6 +3,7 @@
   "include": [],
   "compilerOptions": {
     "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
+    "jsx": "react-jsx",
     "paths": { // just for the tsx
       "@/*": [
         "./src/*"
@@ -17,7 +18,7 @@
       "path": "./app/tsconfig.json"
     },
     {
-      "path": "./scripts/tsconfig.json"
+      "path": "./scripts"
     },
     {
       "path": "../core"

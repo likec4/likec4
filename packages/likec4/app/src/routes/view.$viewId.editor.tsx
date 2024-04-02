@@ -1,8 +1,8 @@
 // import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useLikeC4View } from 'virtual:likec4'
 import { DiagramNotFound } from '../components'
+import { useLikeC4View } from '../data'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
   component: ViewEditor

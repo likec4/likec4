@@ -1,6 +1,6 @@
 {
   "name": "likec4",
-  "version": "1.0.0-next.2",
+  "version": "1.0.0-next.9",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -25,6 +25,7 @@
   ],
   "type": "module",
   "bin": "./bin/likec4.mjs",
+  "main": "",
   "scripts": {
     "build:turbo": "run -T turbo run build --filter='likec4'",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
@@ -49,18 +50,15 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@fontsource/ibm-plex-sans": "^5.0.19",
     "@hpcc-js/wasm": "^2.16.0",
-    "@nanostores/react": "^0.7.2",
-    "@vitejs/plugin-react-swc": "^3.6.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "fast-equals": "^5.0.1",
     "nanostores": "^0.10.0",
     "playwright": "1.42.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "vite": "^5.2.6"
   },
   "devDependencies": {
+    "@fontsource/ibm-plex-sans": "^5.0.19",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
@@ -69,6 +67,7 @@
     "@likec4/layouts": "workspace:*",
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
+    "@nanostores/react": "^0.7.2",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/themes": "^2.0.3",
     "@react-hookz/web": "^24.0.4",
@@ -102,7 +101,9 @@
     "postcss-preset-mantine": "^1.13.0",
     "pretty-ms": "^8.0.0",
     "prop-types": "^15.8.1",
+    "react": "^18.2.0",
     "react-accessible-treeview": "^2.8.3",
+    "react-dom": "^18.2.0",
     "react-resizable-panels": "^2.0.12",
     "remeda": "^1.56.0",
     "strip-indent": "^4.0.0",
