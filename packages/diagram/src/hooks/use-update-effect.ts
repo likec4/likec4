@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { type DependencyList, type EffectCallback, useEffect, useRef } from 'react'
 
 export function useUpdateEffect(
-  callback: React.EffectCallback,
-  deps: React.DependencyList,
+  callback: EffectCallback,
+  deps: DependencyList,
   effectFn = useEffect
 ) {
   const render = useRef(false)

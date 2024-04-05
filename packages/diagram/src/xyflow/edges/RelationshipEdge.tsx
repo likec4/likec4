@@ -1,12 +1,10 @@
 import { invariant, type NonEmptyArray, type Point } from '@likec4/core'
 import { Box } from '@mantine/core'
-import { isEqualReactSimple } from '@react-hookz/deep-equal'
 import type { EdgeProps } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath, useStore } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual, shallowEqual } from 'fast-equals'
-import { useCallback } from 'react'
-import { memo } from 'react-tracked'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
+import { memo, useCallback } from 'react'
 import { hasAtLeast } from 'remeda'
 import { useDiagramStateSelector } from '../../state'
 import { ZIndexes } from '../const'
@@ -61,6 +59,13 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
+const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
+  prev.id === next.id
+  && prev.source === next.source
+  && prev.target === next.target
+  && eq(prev.data, next.data)
+)
+
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
@@ -92,7 +97,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           y: targetNode.data.element.position[1]
         })
     }, [source, target]),
-    deepEqual
+    eq
   )
 
   invariant(data, 'data isd required')
@@ -264,4 +269,4 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       )}
     </g>
   )
-}, isEqualReactSimple)
+}, isEqualProps)

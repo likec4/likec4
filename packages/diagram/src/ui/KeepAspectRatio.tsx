@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import type { HTMLAttributes, PropsWithChildren } from 'react'
+import type { HTMLAttributes } from 'react'
 import { wrapper } from './KeepAspectRatio.css'
 
 type KeepAspectRatioProps = HTMLAttributes<HTMLDivElement> & {

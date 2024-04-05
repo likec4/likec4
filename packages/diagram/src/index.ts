@@ -11,4 +11,4 @@ export type * from './LikeC4Diagram.props'
 export type * from './StaticLikeC4Diagram'
 export type * from './xyflow/types'
 
-export * from './bundle'
+// export * from './bundle'

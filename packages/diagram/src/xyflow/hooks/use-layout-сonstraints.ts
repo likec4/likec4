@@ -1,6 +1,5 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
-import * as kiwi from '@lume/kiwi'
-import { Expression, Expression as Expr, Operator, Strength, type Variable } from '@lume/kiwi'
+import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
 import type { ReactFlowProps, XYPosition } from '@xyflow/react'
 import { type RefObject, useRef } from 'react'
 import { isNullish as isNil } from 'remeda'
@@ -8,10 +7,10 @@ import { type XYFlowInstance, XYFlowNode } from '../types'
 
 abstract class Rect {
   id!: string
-  minX = new kiwi.Variable()
-  minY = new kiwi.Variable()
-  maxX: Expression | Variable = new kiwi.Variable()
-  maxY: Expression | Variable = new kiwi.Variable()
+  minX = new Variable()
+  minY = new Variable()
+  maxX: Expression | Variable = new Variable()
+  maxY: Expression | Variable = new Variable()
 
   get x() {
     return this.minX
@@ -45,7 +44,7 @@ class Compound extends Rect {
   protected readonly children = [] as Rect[]
 
   constructor(
-    protected solver: kiwi.Solver,
+    protected solver: Solver,
     xynode: XYFlowNode,
     protected readonly parent: Compound | null = null
   ) {
@@ -98,7 +97,7 @@ class Leaf extends Rect {
   override readonly id: string
 
   constructor(
-    solver: kiwi.Solver,
+    solver: Solver,
     xynode: XYFlowNode,
     public readonly parent: Compound | null = null,
     public readonly isEditing: boolean = false
@@ -115,8 +114,8 @@ class Leaf extends Rect {
     const width = xynode.computed?.width ?? xynode.data.element.width
     const height = xynode.computed?.height ?? xynode.data.element.height
 
-    this.maxX = new kiwi.Expression(this.minX, width)
-    this.maxY = new kiwi.Expression(this.minY, height)
+    this.maxX = new Expression(this.minX, width)
+    this.maxY = new Expression(this.minY, height)
 
     // solver.createConstraint(this.width, Operator.Eq, width, Strength.required)
     // solver.createConstraint(this.height, Operator.Eq, height, Strength.required)
@@ -157,7 +156,7 @@ class Leaf extends Rect {
 }
 
 function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string) {
-  const solver = new kiwi.Solver()
+  const solver = new Solver()
   const rects = new Map<string, Leaf | Compound>()
 
   const xynodes = xyflow.getNodes()

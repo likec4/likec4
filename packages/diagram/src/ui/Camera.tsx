@@ -1,18 +1,15 @@
 import { shallowEqual } from '@mantine/hooks'
-import { useDebouncedEffect, useIsMounted, useSyncedRef } from '@react-hookz/web'
+import { useDebouncedEffect, useIsMounted } from '@react-hookz/web'
 import {
-  type Node as ReactFlowNode,
   type ReactFlowState,
   useOnSelectionChange,
   useOnViewportChange,
-  useReactFlow,
   useStore,
   useUpdateNodeInternals,
   type Viewport
 } from '@xyflow/react'
 import { memo, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
-import useTilg from 'tilg'
 import { useDiagramState } from '../state'
 import { useXYFlow } from '../xyflow/hooks'
 import type { XYFlowNode } from '../xyflow/types'
@@ -26,7 +23,6 @@ const selector = (state: ReactFlowState) => {
 }
 
 const CameraMemo = /* @__PURE__ */ memo(function Camera() {
-  useTilg()
   const isMounted = useIsMounted()
   // const isUserSelectionActive = useStore(selectUserSelectionActive)
   const {

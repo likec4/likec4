@@ -1,13 +1,12 @@
 import { defaultTheme } from '@likec4/core'
-import { Text } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
-import { useMemo } from 'react'
-import { memo } from 'react-tracked'
-import { useDiagramState } from '../../../state'
+import { memo, useMemo } from 'react'
+import { useDiagramState, useDiagramStateSelector } from '../../../state'
 import { vars } from '../../../theme.css'
 import type { CompoundXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
@@ -58,17 +57,21 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   const diagramState = useDiagramState()
   const isnavigable = diagramState.hasOnNavigateTo && !!compound.navigateTo
+  const isHovered = useDiagramStateSelector(state => state.hoveredNodeId === id)
 
   return (
-    <div
+    <Box
       className={clsx(cssContainer, 'likec4-compound-node')}
-      data-likec4-color={color}
-      data-likec4-shape={compound.shape}
-      data-likec4-navigable={isnavigable}
       style={assignInlineVars({ fill: vars.element.fill, stroke: vars.element.stroke }, {
         fill: colors.fill,
         stroke: colors.stroke
       })}
+      mod={{
+        'likec4-color': color,
+        'likec4-shape': compound.shape,
+        'likec4-navigable': isnavigable,
+        hovered: isHovered
+      }}
     >
       <Handle
         // @ts-expect-error
@@ -99,6 +102,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}
       />
-    </div>
+    </Box>
   )
 }, isEqualProps)

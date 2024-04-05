@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../mantine'
 import { vars } from '../../../theme.css'
 
@@ -10,6 +10,8 @@ export const cssContainer = style({
   padding: 0,
   margin: 0
 })
+
+const bgTransparency = createVar('bgTransparency')
 
 export const cssCompound = style({
   width: '100%',
@@ -23,6 +25,39 @@ export const cssCompound = style({
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
+    }
+  }
+})
+
+const cssTransparentCompound = style({
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  borderRadius: rem(8),
+  borderStyle: 'dashed',
+  borderWidth: rem(3.5),
+  borderColor: vars.element.fill,
+  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.05) , 0 2px 2px -1px rgba(0,0,0,0.04)',
+  padding: rem(8),
+  background: `color-mix(in srgb , ${vars.element.fill},  transparent ${bgTransparency})`,
+  transition: 'all 200ms ease-out',
+  vars: {
+    [bgTransparency]: '90%'
+  },
+  selectors: {
+    [`:where(${cssContainer}[data-hovered]) &`]: {
+      transitionDelay: '300ms',
+      vars: {
+        [bgTransparency]: '65%'
+      }
+    },
+    [`:where(.react-flow__node.selected) &`]: {
+      transitionDelay: '50ms',
+      boxShadow: 'none',
+      borderColor: 'transparent',
+      vars: {
+        [bgTransparency]: '15%'
+      }
     }
   }
 })
@@ -75,6 +110,7 @@ export const cssIndicator = style({
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
   visibility: 'hidden',
+  fillOpacity: 0,
   selectors: {
     '.react-flow__node.selected &': {
       visibility: 'visible'

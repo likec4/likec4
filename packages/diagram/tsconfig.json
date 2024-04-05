@@ -13,7 +13,6 @@
     "declarationDir": ".tsbuildinfo/out",
     "rootDir": "./src",
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },

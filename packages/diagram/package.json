@@ -26,10 +26,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
-    "./style.css": "./dist/style.css",
-    "./dist/style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -47,25 +47,27 @@
     "@likec4/core": "workspace:*",
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
-    "framer-motion": "^11.0.22",
-    "react-tracked": "^1.7.11",
-    "remeda": "^1.56.0",
-    "scheduler": "^0.23.0",
+    "framer-motion": "^11.0.25",
     "type-fest": "^4.13.1"
   },
   "peerDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "scheduler": "^0.23.0"
+  },
+  "peerDependenciesMeta": {
+    "scheduler": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@lume/kiwi": "^0.4.3",
     "@mantine/vanilla-extract": "^7.7.0",
-    "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@vanilla-extract/css": "^1.14.1",
+    "@vanilla-extract/css": "^1.14.2",
     "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/esbuild-plugin": "^2.3.5",
     "@vanilla-extract/recipes": "^0.5.2",
@@ -77,12 +79,13 @@
     "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-tracked": "^1.7.14",
+    "remeda": "^1.56.0",
     "terser": "^5.30.0",
     "tilg": "^0.1.1",
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0",
     "vite": "^5.2.6",
-    "vite-plugin-dts": "^3.8.1",
-    "vite-plugin-shadow-style": "^1.1.0"
+    "vite-plugin-dts": "^3.8.1"
   }
 }
