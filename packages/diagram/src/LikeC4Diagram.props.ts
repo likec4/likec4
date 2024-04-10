@@ -1,4 +1,5 @@
 import type { DiagramEdge, DiagramNode, DiagramView, ElementShape, Fqn, NonEmptyArray, ThemeColor } from '@likec4/core'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
@@ -9,28 +10,28 @@ export type OnNavigateTo = (
   event: {
     element: DiagramNodeWithNavigate
     xynode: XYFlowNode
-    event: React.MouseEvent
+    event: ReactMouseEvent
   }
 ) => void
 export type OnNodeClick = (
   event: {
     element: DiagramNode
     xynode: XYFlowNode
-    event: React.MouseEvent
+    event: ReactMouseEvent
   }
 ) => void
 export type OnEdgeClick = (
   event: {
     relation: DiagramEdge
     xyedge: XYFlowEdge
-    event: React.MouseEvent
+    event: ReactMouseEvent
   }
 ) => void
 
 /**
  * On pane/canvas click (not on any node or edge)
  */
-export type OnCanvasClick = (event: React.MouseEvent) => void
+export type OnCanvasClick = (event: ReactMouseEvent) => void
 
 export namespace Changes {
   export interface ChangeColor {

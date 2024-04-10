@@ -10,7 +10,7 @@ import { DiagramStateProvider } from './state/DiagramState'
 import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
-import { FitviewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
+import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import type { XYFlowData } from './xyflow/types'
 import { UpdateOnDiagramChange } from './xyflow/UpdateOnDiagramChange'
 import { XYFlowBackground } from './xyflow/XYFlowBackground'
@@ -84,12 +84,12 @@ export function LikeC4Diagram({
             >
               <XYFlow
                 className={clsx(
-                  cssReactFlow,
+                  className,
                   scope,
+                  cssReactFlow,
                   controls === false && cssNoControls,
                   pannable !== true && cssDisablePan,
-                  background === 'transparent' && cssTransparentBg,
-                  className
+                  background === 'transparent' && cssTransparentBg
                 )}
                 defaultNodes={initialRef.current.defaultNodes}
                 defaultEdges={initialRef.current.defaultEdges}
@@ -105,7 +105,7 @@ export function LikeC4Diagram({
                 {isBgWithPattern && <XYFlowBackground background={background} />}
                 {controls && <Controls />}
                 {readonly !== true && <OptionsPanel />}
-                {fitView && <FitviewOnDiagramChange />}
+                {fitView && <FitViewOnDiagramChange />}
               </XYFlow>
             </KeepAspectRatio>
             <UpdateOnDiagramChange

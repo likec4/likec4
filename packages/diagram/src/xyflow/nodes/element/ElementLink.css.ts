@@ -7,6 +7,7 @@ export const elementLink = style({
   bottom: 0,
   paddingLeft: 6,
   paddingBottom: 6,
+  pointerEvents: 'all',
   selectors: {
     ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       bottom: 6
@@ -34,9 +35,9 @@ export const trigger = style({
   color: vars.element.loContrast,
   paddingTop: 2,
   paddingBottom: 2,
-  paddingLeft: 5,
+  paddingLeft: 4,
   paddingRight: 5,
-  borderRadius: 4,
+  borderRadius: 3,
   backgroundColor: `color-mix(in srgb, ${vars.element.stroke}, transparent 20%)`,
   transition: 'all 180ms ease-out',
   opacity: 0.85,
@@ -50,8 +51,8 @@ export const trigger = style({
 globalStyle(`${trigger} .icon`, {
   display: 'inline-block',
   lineHeight: 1,
-  width: 11,
-  height: 11,
+  width: 10,
+  height: 10,
   opacity: 0.6
 })
 globalStyle(`${trigger} span`, {

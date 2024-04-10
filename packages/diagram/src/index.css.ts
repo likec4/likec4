@@ -14,7 +14,7 @@ globalStyle(`${scope} *, ${scope} *::before, ${scope} *::after`, {
   borderColor: 'transparent'
 })
 
-createGlobalTheme(':root, :host', {
+createGlobalTheme(':root', {
   ...vars
 }, {
   likec4: {

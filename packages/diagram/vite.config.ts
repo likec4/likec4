@@ -18,7 +18,12 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vanillaExtractPlugin(),
       react(),
-      dts()
+      dts({
+        compilerOptions: {
+          declarationMap: false
+        },
+        outDir: 'dist/types'
+      })
     ],
     esbuild: {
       exclude: external
@@ -43,31 +48,31 @@ export default defineConfig(({ mode }) => {
     // },
     build: {
       outDir: 'dist',
+      emptyOutDir: true,
       lib: {
         entry: {
           // 'bundle': resolve(__dirname, 'src/bundle.ts'),
           'index': resolve(__dirname, 'src/index.ts')
         },
+        fileName(format, entryName) {
+          if (format === 'cjs') {
+            return `cjs/${entryName}.cjs`
+          }
+          return `esm/${entryName}.mjs`
+        },
         formats: ['es', 'cjs']
       },
-      minify: 'terser',
-      terserOptions: {
-        ecma: 2020,
-        compress: true,
-        keep_classnames: true,
-        keep_fnames: true
-      },
-      emptyOutDir: true,
+
       cssCodeSplit: false,
       cssMinify: true,
-      sourcemap: true,
-      // commonjsOptions: {
-      //   esmExternals: true,
-      //   requireReturnsDefault: true
-      // },
+      minify: false,
+      commonjsOptions: {
+        // extensions: ['.js', '.cjs'],
+        esmExternals: true
+        //   requireReturnsDefault: true
+      },
       rollupOptions: {
         external
-        // plugins: [shadowStyle()]
       }
     }
   }

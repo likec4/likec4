@@ -123,6 +123,7 @@ export const cssNavigateBtn = style({
   pointerEvents: 'all',
   left: 3,
   top: 7,
+  cursor: 'pointer',
   color: vars.element.loContrast,
   transformOrigin: '90% 70%',
   opacity: 0.75,

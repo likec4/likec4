@@ -1,7 +1,6 @@
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useNodesInitialized } from '@xyflow/react'
-import { shallowEqual } from 'fast-equals'
-import { memo, useRef } from 'react'
+import { useRef } from 'react'
 import { useDiagramStateTracked } from '../state'
 import { MinZoom } from './const'
 import { useXYFlow } from './hooks'
@@ -9,15 +8,16 @@ import { useXYFlow } from './hooks'
 /**
  * Fits the view when the view changes and nodes are initialized
  */
-export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
+export function FitViewOnDiagramChange() {
   const [state, updateState] = useDiagramStateTracked()
   const xyflow = useXYFlow()
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
+  const isReady = nodeInitialized && xyflow.viewportInitialized
+
   const viewLayout = state.viewId + '_' + state.viewLayout + '_' + state.fitViewPadding
   const prevViewLayoutRef = useRef(viewLayout)
-  const isReady = nodeInitialized && xyflow.viewportInitialized
 
   useDebouncedEffect(
     () => {
@@ -46,4 +46,4 @@ export const FitviewOnDiagramChange = memo(function FitViewOnDiagramChange() {
 
   // TODO: listen to resize event
   // return <div className={clsx('react-flow__panel')}></div>
-}, shallowEqual)
+}

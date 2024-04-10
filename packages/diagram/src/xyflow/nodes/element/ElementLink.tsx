@@ -19,16 +19,19 @@ export function ElementLink({
     <motion.div
       className={elementLink}
       whileHover={{
-        scale: 1.1
+        scale: 1.07
       }}>
       <HoverCard
         position="bottom-start"
         shadow="lg"
+        radius="sm"
         transitionProps={{
           transition: 'pop'
         }}
-        openDelay={300}
-        closeDelay={500}
+        withinPortal={false}
+        floatingStrategy={'fixed'}
+        openDelay={350}
+        closeDelay={600}
         offset={{
           mainAxis: 5,
           crossAxis: -10

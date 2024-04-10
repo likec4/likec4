@@ -1,7 +1,14 @@
 import { useMantineColorScheme } from '@mantine/core'
 import { ReactFlow } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import { type CSSProperties, memo, type PropsWithChildren, useCallback, useRef } from 'react'
+import {
+  type CSSProperties,
+  memo,
+  type MouseEvent as ReactMouseEvent,
+  type PropsWithChildren,
+  useCallback,
+  useRef
+} from 'react'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramStateTracked } from '../state/DiagramState'
@@ -110,9 +117,15 @@ function XYFlowWrapper({
         xyflowRef.current = (instance as unknown) as XYFlowInstance
         updateState({ viewportInitialized: true })
       }, [])}
-      onEdgeMouseEnter={useCallback((event: React.MouseEvent, edge: XYFlowEdge) => {
+      onEdgeMouseEnter={useCallback((event: ReactMouseEvent, edge: XYFlowEdge) => {
         updateState({ hoveredEdgeId: edge.id })
       }, [])}
+      // onMoveEnd={(event, viewport) => {
+      //   console.debug('onMoveEnd', { event, viewport })
+      // }}
+      // onViewportChange={(viewport) => {
+      //   console.debug('onViewportChange', { event, viewport })
+      // }}
       onEdgeMouseLeave={useCallback(() => {
         updateState({ hoveredEdgeId: null })
       }, [])}

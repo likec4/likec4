@@ -204,6 +204,7 @@ export const cssNavigateBtn = style({
   left: '50%',
   bottom: 0,
   color: vars.element.loContrast,
+  cursor: 'pointer',
   transformOrigin: '50% 65%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
@@ -221,7 +222,7 @@ export const cssNavigateBtn = style({
     },
     [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
       boxShadow: mantine.shadows.lg,
-      transform: 'translate(-50%, 0) scale(1.25)',
+      transform: 'translate(-50%, 0) scale(1.185)',
       opacity: 1,
       transitionDelay: '250ms',
       vars: {
@@ -231,18 +232,18 @@ export const cssNavigateBtn = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'translate(-50%, 0) scale(1.465)',
+    transform: 'translate(-50%, 0) scale(1.35)',
     opacity: 1,
     transitionDelay: '0'
   },
   ':active': {
-    transform: 'translate(-50%, 0) scale(1.1)',
+    transform: 'translate(-50%, 0) scale(1.02)',
     opacity: 1,
     transitionDelay: '0'
   }
 })
 globalStyle(`${cssNavigateBtn} svg.icon`, {
-  width: '70%',
-  height: '70%',
+  width: '65%',
+  height: '65%',
   strokeWidth: '1.5'
 })

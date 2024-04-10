@@ -4,7 +4,6 @@ import { useXYFlow } from './hooks'
 import type { XYFlowNode } from './types'
 
 import type { DiagramView } from '@likec4/core'
-import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { isNullish as isNil } from 'remeda'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
@@ -66,8 +65,7 @@ export function UpdateOnDiagramChange({
         })
       )
     },
-    [initialized, nodesDraggable, nodes, edges],
-    useIsomorphicLayoutEffect
+    [initialized, nodesDraggable, nodes, edges]
   )
 
   return null

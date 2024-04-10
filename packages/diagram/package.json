@@ -16,18 +16,25 @@
     "README.md",
     "dist",
     "!**/*.spec.*",
-    "!**/*.map"
+    "!**/*.d.ts.map"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "module": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "main": "./dist/cjs/index.js"
+      }
     },
     "./style.css": "./dist/style.css"
   },
@@ -45,23 +52,21 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@mantine/core": "^7.7.0",
-    "@mantine/hooks": "^7.7.0",
+    "@xyflow/react": "^12.0.0-next.12",
+    "clsx": "^2.1.0",
     "framer-motion": "^11.0.25",
-    "type-fest": "^4.13.1"
+    "react-tracked": "^1.7.14"
   },
   "peerDependencies": {
+    "@mantine/core": "^7.7.0",
+    "@mantine/hooks": "^7.7.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "scheduler": "^0.23.0"
-  },
-  "peerDependenciesMeta": {
-    "scheduler": {
-      "optional": true
-    }
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.7.0",
+    "@mantine/hooks": "^7.7.0",
     "@mantine/vanilla-extract": "^7.7.0",
     "@react-hookz/web": "^24.0.4",
     "@total-typescript/ts-reset": "^0.5.1",
@@ -72,17 +77,15 @@
     "@vanilla-extract/esbuild-plugin": "^2.3.5",
     "@vanilla-extract/recipes": "^0.5.2",
     "@vitejs/plugin-react": "^4.2.1",
-    "@xyflow/react": "^12.0.0-next.12",
-    "clsx": "^2.1.0",
     "execa": "^8.0.1",
     "fast-equals": "^5.0.1",
     "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-tracked": "^1.7.14",
     "remeda": "^1.56.0",
     "terser": "^5.30.0",
     "tilg": "^0.1.1",
+    "type-fest": "^4.13.1",
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0",
     "vite": "^5.2.6",

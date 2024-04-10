@@ -1,18 +1,18 @@
 import { hasAtLeast, invariant, nonNullable } from '@likec4/core'
 import { useSyncedRef } from '@react-hookz/web'
 import type { EdgeMouseHandler, NodeMouseHandler, OnNodeDrag } from '@xyflow/react'
-import type React from 'react'
-import { createContext, type PropsWithChildren, useContext, useRef } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import { createContext, type PropsWithChildren, useContext, useRef, useState } from 'react'
 import { type Change, type DiagramNodeWithNavigate, type LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { useXYFlow } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
 type XYFlowEventHandlers = {
-  onNavigateTo: (xynodeId: string, event: React.MouseEvent) => void
-  onPanelClick: (event: React.MouseEvent) => void
+  onNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
+  onPanelClick: (event: ReactMouseEvent) => void
   onNodeContextMenu: NodeMouseHandler<XYFlowNode>
   onEdgeContextMenu: EdgeMouseHandler<XYFlowEdge>
-  onPaneContextMenu: (event: React.MouseEvent | MouseEvent) => void
+  onPaneContextMenu: (event: ReactMouseEvent | MouseEvent) => void
   onNodeClick: NodeMouseHandler<XYFlowNode>
   onEdgeClick: EdgeMouseHandler<XYFlowEdge>
   onChange: (change: Change) => void
@@ -40,8 +40,7 @@ export function XYFlowEventHandlers({
   const xyflowRef = useSyncedRef(useXYFlow())
 
   const dblclickTimeout = useRef<number>()
-  const xyFlowEventsRef = useRef<XYFlowEventHandlers>()
-  xyFlowEventsRef.current ??= {
+  const [xyFlowEvents] = useState<XYFlowEventHandlers>(() => ({
     onPanelClick: (event) => {
       if (!originalsRef.current.onCanvasDblClick) {
         originalsRef.current.onCanvasClick?.(event)
@@ -110,9 +109,9 @@ export function XYFlowEventHandlers({
       invariant(hasAtLeast(changes, 1), 'no changes')
       originalsRef.current.onChange?.({ changes })
     }
-  }
+  }))
   return (
-    <EventHandlersContext.Provider value={xyFlowEventsRef.current}>
+    <EventHandlersContext.Provider value={xyFlowEvents}>
       {children}
     </EventHandlersContext.Provider>
   )

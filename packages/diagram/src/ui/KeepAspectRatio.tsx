@@ -28,7 +28,7 @@ export function KeepAspectRatio({
       style={{
         ...style,
         aspectRatio: `${width}/${height}`,
-        maxWidth: width
+        maxHeight: height
       }}>
       {children}
     </Box>

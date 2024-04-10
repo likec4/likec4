@@ -4,4 +4,4 @@ export const ZIndexes = {
   Element: 3
 } as const
 
-export const MinZoom = 0.2
+export const MinZoom = 0.01

@@ -1,11 +1,9 @@
 import { style } from '@vanilla-extract/css'
 
 export const wrapper = style({
-  position: 'relative',
+  display: 'block',
   width: '100%',
-  height: 'auto',
-  marginLeft: 'auto',
-  marginRight: 'auto',
+  height: '100%',
   padding: 0,
   boxSizing: 'border-box'
 })
