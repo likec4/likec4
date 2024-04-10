@@ -63,6 +63,10 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   prev.id === next.id
   && prev.source === next.source
   && prev.target === next.target
+  && prev.sourceX === next.sourceX
+  && prev.sourceY === next.sourceY
+  && prev.targetX === next.targetX
+  && prev.targetY === next.targetY
   && eq(prev.data, next.data)
 )
 
