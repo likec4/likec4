@@ -143,9 +143,10 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
         limit(async () => {
           const [error] = likec4.getErrors()
           if (error) {
-            server.ws.send({
+            server.hot.send({
               type: 'error',
               err: {
+                name: 'LikeC4ValidationError',
                 message: 'Validation error:\n\n' + error.message,
                 stack: '',
                 plugin: 'vite-plugin-likec4',
@@ -166,7 +167,7 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
             .map(async md => {
               logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)
               return server.reloadModule(md).catch(err => {
-                server.ws.send({ type: 'error', err })
+                server.hot.send({ type: 'error', err })
                 logger.error(err)
               })
             })

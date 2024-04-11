@@ -7,6 +7,7 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
+import { chunkSizeWarningLimit } from './utils'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -74,7 +75,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       sourcemap: false,
       minify: true,
       copyPublicDir: true,
-      chunkSizeWarningLimit: 3_000_000,
+      chunkSizeWarningLimit,
       commonjsOptions: {
         ignoreTryCatch: 'remove'
       }

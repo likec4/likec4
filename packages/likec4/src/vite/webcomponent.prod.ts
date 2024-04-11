@@ -6,6 +6,7 @@ import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
+import { chunkSizeWarningLimit } from './utils'
 //
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -47,7 +48,7 @@ export async function viteWebcomponentConfig({
       minify: true,
       // 100Kb
       assetsInlineLimit: 100 * 1024,
-      chunkSizeWarningLimit: 3_000_000,
+      chunkSizeWarningLimit,
       commonjsOptions: {
         ignoreTryCatch: 'remove'
       },

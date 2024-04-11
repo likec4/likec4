@@ -1,5 +1,25 @@
 import type { DiagramView } from '@likec4/core'
-import { Badge, Box, Button, Center, Code, Divider, Flex, Group, HoverCard, Menu, Text, Title } from '@mantine/core'
+import {
+  Badge,
+  Box,
+  Button,
+  Center,
+  Code,
+  Divider,
+  Flex,
+  Group,
+  HoverCard,
+  HoverCardDropdown,
+  HoverCardTarget,
+  Menu,
+  MenuDivider,
+  MenuDropdown,
+  MenuItem,
+  MenuLabel,
+  MenuTarget,
+  Text,
+  Title
+} from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
@@ -7,7 +27,6 @@ import { memo } from 'react'
 import { isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssHeader } from './Header.css'
-import { ShareDialog } from './ShareDialog'
 import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -130,7 +149,7 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
         </Center>
       )}
       <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
-        <Menu.Target>
+        <MenuTarget>
           <Button
             leftSection={matched.icon}
             variant="subtle"
@@ -139,11 +158,11 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
             rightSection={<IconChevronDown opacity={0.5} size={14} />}>
             {matched.title}
           </Button>
-        </Menu.Target>
+        </MenuTarget>
 
-        <Menu.Dropdown>
+        <MenuDropdown>
           {viewPages.map(({ route, icon, title }) => (
-            <Menu.Item
+            <MenuItem
               key={route}
               component={Link}
               to={route}
@@ -155,9 +174,9 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
               }}
             >
               {title}
-            </Menu.Item>
+            </MenuItem>
           ))}
-        </Menu.Dropdown>
+        </MenuDropdown>
       </Menu>
     </>
   )
@@ -166,28 +185,28 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
 function ExportButton() {
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
-      <Menu.Target>
+      <MenuTarget>
         <Button variant="subtle" size="sm" color="gray" rightSection={<IconChevronDown opacity={0.5} size={14} />}>
           Export
         </Button>
-      </Menu.Target>
+      </MenuTarget>
 
-      <Menu.Dropdown>
-        <Menu.Label>Current view</Menu.Label>
-        <Menu.Item>Export as .png</Menu.Item>
-        <Menu.Item>Export as .dot</Menu.Item>
-        <Menu.Item>Export as .d2</Menu.Item>
-        <Menu.Item>Export as .mmd</Menu.Item>
-        <Menu.Item disabled>Export to Draw.io</Menu.Item>
-        <Menu.Item disabled>Export to Miro</Menu.Item>
-        <Menu.Item disabled>Export to Notion</Menu.Item>
+      <MenuDropdown>
+        <MenuLabel>Current view</MenuLabel>
+        <MenuItem>Export as .png</MenuItem>
+        <MenuItem>Export as .dot</MenuItem>
+        <MenuItem>Export as .d2</MenuItem>
+        <MenuItem>Export as .mmd</MenuItem>
+        <MenuItem disabled>Export to Draw.io</MenuItem>
+        <MenuItem disabled>Export to Miro</MenuItem>
+        <MenuItem disabled>Export to Notion</MenuItem>
 
-        <Menu.Divider />
-        <Menu.Label>All views</Menu.Label>
-        <Menu.Item disabled>
+        <MenuDivider />
+        <MenuLabel>All views</MenuLabel>
+        <MenuItem disabled>
           Download as ZIP
-        </Menu.Item>
-      </Menu.Dropdown>
+        </MenuItem>
+      </MenuDropdown>
     </Menu>
   )
 }
@@ -196,14 +215,14 @@ function DiagramTitle({ diagram }: HeaderProps) {
   const hasDescription = !isEmpty(diagram.description?.trim())
   return (
     <HoverCard closeDelay={500} position="bottom-start">
-      <HoverCard.Target>
+      <HoverCardTarget>
         <Flex px={'3'} align={'center'}>
           <Title order={4}>
             {diagram.title || 'Untitled'}
           </Title>
         </Flex>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
+      </HoverCardTarget>
+      <HoverCardDropdown>
         <Flex direction="column" gap={'xs'}>
           <HoverCardItem title="view id">
             <Code color="gray">
@@ -229,7 +248,7 @@ function DiagramTitle({ diagram }: HeaderProps) {
               )}
           </HoverCardItem>
         </Flex>
-      </HoverCard.Dropdown>
+      </HoverCardDropdown>
     </HoverCard>
   )
 }

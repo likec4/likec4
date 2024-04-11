@@ -9,10 +9,17 @@ import {
   Group,
   type MantineColorScheme,
   Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay,
+  ModalRoot,
   rem,
   Select,
   Stack,
   Tabs,
+  TabsList,
+  TabsPanel,
+  TabsTab,
   Text,
   Textarea,
   Tooltip,
@@ -60,32 +67,32 @@ export function ShareModal({
 }: ShareModalOpts) {
   const [activeTab, setActiveTab] = useState('webcomponent')
   return (
-    <Modal.Root
+    <ModalRoot
       size={'xl'}
       opened={opened}
       onClose={onClose}>
-      <Modal.Overlay backgroundOpacity={0.5} blur={3} />
-      <Modal.Content>
-        <Modal.Body>
+      <ModalOverlay backgroundOpacity={0.5} blur={3} />
+      <ModalContent>
+        <ModalBody>
           <Tabs value={activeTab} onChange={tab => setActiveTab(tab ?? 'webcomponent')}>
-            <Tabs.List>
-              <Tabs.Tab value="webcomponent">Webcomponent</Tabs.Tab>
-              <Tabs.Tab value="embed">Embed</Tabs.Tab>
-            </Tabs.List>
+            <TabsList>
+              <TabsTab value="webcomponent">Webcomponent</TabsTab>
+              <TabsTab value="embed">Embed</TabsTab>
+            </TabsList>
 
-            <Tabs.Panel value="embed" pt={'md'}>
+            <TabsPanel value="embed" pt={'md'}>
               <EmbedPanel diagram={diagram} />
-            </Tabs.Panel>
-            <Tabs.Panel value="webcomponent" pt={'md'}>
+            </TabsPanel>
+            <TabsPanel value="webcomponent" pt={'md'}>
               <WebcomponentsPanel diagram={diagram} />
-            </Tabs.Panel>
+            </TabsPanel>
           </Tabs>
           <Group justify="flex-end" mt={'lg'}>
             <Button size="sm" onClick={onClose}>Close</Button>
           </Group>
-        </Modal.Body>
-      </Modal.Content>
-    </Modal.Root>
+        </ModalBody>
+      </ModalContent>
+    </ModalRoot>
   )
 }
 

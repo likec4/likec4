@@ -10,6 +10,7 @@ import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
+import { chunkSizeWarningLimit } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
   languageServices: LanguageServices
@@ -43,10 +44,6 @@ export async function viteWebcomponentConfig({
         '@likec4/diagram': resolve('../diagram/src/index.ts')
       }
     },
-    mode: 'production',
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    },
     clearScreen: false,
     base,
     publicDir: false,
@@ -57,6 +54,7 @@ export async function viteWebcomponentConfig({
       cssMinify: true,
       sourcemap: false,
       minify: true,
+      chunkSizeWarningLimit,
       lib: {
         entry: 'src/lib/webcomponent.tsx',
         fileName(_format, _entryName) {

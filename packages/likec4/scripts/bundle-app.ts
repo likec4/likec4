@@ -43,7 +43,6 @@ export async function bundleApp() {
       sourcemap: false,
       target: 'esnext',
       assetsInlineLimit: 500 * 1024,
-      chunkSizeWarningLimit: 3_000_000,
       copyPublicDir: false,
       lib: {
         entry: {

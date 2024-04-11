@@ -37,6 +37,7 @@
     "@vanilla-extract/vite-plugin": "^4.0.7",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
+    "framer-motion": "^11.0.25",
     "lucide-react": "^0.294.0",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",

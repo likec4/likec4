@@ -113,10 +113,17 @@ class LikeC4View extends HTMLElement {
       this.lastHostCss = hostCss
     }
 
+    let prefersDark = false
+    try {
+      prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    } catch (e) {
+      // ignore
+    }
+
     this.root.render(
       <MantineProvider
         theme={theme}
-        defaultColorScheme="auto"
+        {...(prefersDark && { forceColorScheme: 'dark' })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector=".likec4-shadow-root">
         <LikeC4Diagram
@@ -129,6 +136,7 @@ class LikeC4View extends HTMLElement {
           controls={false}
           nodesSelectable={false}
           nodesDraggable={false}
+          keepAspectRatio={false}
           onNavigateTo={({ element, event }) => {
             event.stopPropagation()
             this.setAttribute('view-id', element.navigateTo)

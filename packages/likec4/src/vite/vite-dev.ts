@@ -1,11 +1,12 @@
 import type { LikeC4ViteConfig } from '@/vite/config'
 import { viteConfig } from '@/vite/config'
 import { viteWebcomponentConfig } from '@/vite/webcomponent'
+import consola from 'consola'
 import getPort, { portNumbers } from 'get-port'
 import type { ViteDevServer } from 'vite'
 import { build, createServer } from 'vite'
 import { printServerUrls } from './printServerUrls'
-import { mkTempPublicDir } from './vite-build'
+import { mkTempPublicDir } from './utils'
 
 export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
   const { isDev, languageServices, ...config } = await viteConfig(cfg)
@@ -27,6 +28,10 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
   const webcomponentPromise = build({
     ...webcomponentConfig,
     logLevel: 'warn'
+  }).catch((err) => {
+    consola.warn('webcomponent build failed', err)
+    consola.warn('Ignoring error and continuing')
+    return Promise.resolve()
   })
 
   // languageServices.onModelUpdate(() => {
