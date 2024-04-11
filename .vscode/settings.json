@@ -33,13 +33,11 @@
     "docs/node_modules/**": true,
     "examples/*/dist/**": true,
     "packages/*/dist/**": true,
-    "packages/*/.tsbuildinfo/**": true,
-    "packages/*/turbo/**": true,
     "packages/*/node_modules/**": true
   },
   "files.exclude": {
     "**/.turbo": true,
-    "packages/*/.tsbuildinfo": true,
+    "**/.tsbuildinfo": true,
     "packages/*/.vscode-test-web": true
   },
   "vitest.commandLine": "yarn vitest",

@@ -28,6 +28,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "framer-motion": "^11.0.25",
     "likec4": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
