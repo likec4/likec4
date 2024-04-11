@@ -1,10 +1,6 @@
 # [1.0.0-next.11](https://github.com/likec4/likec4/compare/v1.0.0-next.10...v1.0.0-next.11) (2024-04-11)
 
-
-### Bug Fixes
-
-* edge not updated when nodes is moved ([fee71e4](https://github.com/likec4/likec4/commit/fee71e43a3cb843679e9d836ce0d0698cb2b4b3c))
-
+PRE-RELEASE
 
 ### Features
 
