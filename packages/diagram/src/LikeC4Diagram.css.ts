@@ -9,17 +9,12 @@ export const cssReactFlow = style({
       }
     }
   },
-  minHeight: 100,
   vars: {
     [xyvars.background.color]: vars.likec4.backgroundColor
   }
 })
 
 export const cssDisablePan = style({})
-
-// globalStyle(`${cssDisablePan} .react-flow__pane`, {
-//   cursor: 'default'
-// })
 
 export const cssTransparentBg = style({
   backgroundColor: 'transparent !important',

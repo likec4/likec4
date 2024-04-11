@@ -1,4 +1,15 @@
-import { Anchor, Box, Button, CopyButton, Group, HoverCard, Stack, UnstyledButton } from '@mantine/core'
+import {
+  Anchor,
+  Box,
+  Button,
+  CopyButton,
+  Group,
+  HoverCard,
+  HoverCardDropdown,
+  HoverCardTarget,
+  Stack,
+  UnstyledButton
+} from '@mantine/core'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { Link } from '../../../icons'
@@ -36,13 +47,13 @@ export function ElementLink({
           mainAxis: 5,
           crossAxis: -10
         }}>
-        <HoverCard.Target>
+        <HoverCardTarget>
           <UnstyledButton className={clsx('nodrag nopan', trigger)}>
             <Link />
             <span>links</span>
           </UnstyledButton>
-        </HoverCard.Target>
-        <HoverCard.Dropdown p={'xs'}>
+        </HoverCardTarget>
+        <HoverCardDropdown p={'xs'}>
           <Stack onClick={e => e.stopPropagation()} gap={'xs'}>
             {element.links.map((link, i) => (
               <Group key={link} wrap="nowrap" gap={'sm'}>
@@ -61,7 +72,7 @@ export function ElementLink({
               </Group>
             ))}
           </Stack>
-        </HoverCard.Dropdown>
+        </HoverCardDropdown>
       </HoverCard>
     </motion.div>
   )

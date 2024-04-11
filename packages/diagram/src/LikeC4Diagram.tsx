@@ -28,7 +28,7 @@ export function LikeC4Diagram({
   className,
   fitView = true,
   fitViewPadding = 0,
-  colorMode,
+  colorScheme,
   readonly = true,
   pannable = true,
   zoomable = true,
@@ -63,7 +63,7 @@ export function LikeC4Diagram({
   const isNodeInteractive = nodesDraggable || nodesSelectable || !!eventHandlers.onNavigateTo
     || !!eventHandlers.onNavigateTo
   return (
-    <EnsureMantine colorMode={colorMode}>
+    <EnsureMantine colorScheme={colorScheme}>
       <XYFlowProvider
         fitView={fitView}
         {...initialRef.current}
@@ -99,7 +99,7 @@ export function LikeC4Diagram({
                 pannable={pannable}
                 zoomable={zoomable}
                 fitView={fitView}
-                colorMode={colorMode}
+                colorScheme={colorScheme}
                 fitViewPadding={fitViewPadding}
               >
                 {isBgWithPattern && <XYFlowBackground background={background} />}

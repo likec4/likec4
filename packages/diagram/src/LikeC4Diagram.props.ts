@@ -55,7 +55,7 @@ export type ChangeEvent = {
   changes: NonEmptyArray<Change>
 }
 export type OnChange = (event: ChangeEvent) => void
-export type LikeC4ColorMode = 'light' | 'dark'
+export type LikeC4ColorScheme = 'light' | 'dark'
 
 export interface LikeC4DiagramProperties {
   view: DiagramView
@@ -68,7 +68,7 @@ export interface LikeC4DiagramProperties {
    *
    * @example 'light' | 'dark'
    */
-  colorMode?: LikeC4ColorMode | undefined
+  colorScheme?: LikeC4ColorScheme | undefined
 
   /**
    * Show/hide controls menu

@@ -3,11 +3,22 @@ import {
   type ElementShape,
   ElementShapes,
   type Fqn,
-  invariant,
   type NonEmptyArray,
   type ThemeColor
 } from '@likec4/core'
-import { Box, CheckIcon, ColorSwatch, Divider, Flex, rem, Select, Stack, Text, Tooltip } from '@mantine/core'
+import {
+  Box,
+  CheckIcon,
+  ColorSwatch,
+  Divider,
+  Flex,
+  rem,
+  Select,
+  Stack,
+  Text,
+  Tooltip,
+  TooltipGroup
+} from '@mantine/core'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
@@ -143,7 +154,7 @@ function Colors({
   }
   return (
     <Box>
-      <Tooltip.Group openDelay={400} closeDelay={300}>
+      <TooltipGroup openDelay={400} closeDelay={300}>
         <Divider label="color" labelPosition="left" />
         <Flex mt={'xs'} maw={150} gap="xs" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
           {themedColors.map(({ key, value }) => (
@@ -187,7 +198,7 @@ function Colors({
             </Tooltip>
           ))}
         </Flex>
-      </Tooltip.Group>
+      </TooltipGroup>
     </Box>
   )
 }

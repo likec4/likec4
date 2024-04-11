@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
           }
           return `esm/${entryName}.mjs`
         },
-        formats: ['es', 'cjs']
+        formats: ['es']
       },
 
       cssCodeSplit: false,

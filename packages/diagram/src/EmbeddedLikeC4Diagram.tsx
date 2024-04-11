@@ -1,5 +1,5 @@
 import { type DiagramView, invariant } from '@likec4/core'
-import { Box, CloseButton, Modal, Title } from '@mantine/core'
+import { Box, CloseButton, ModalBody, ModalContent, ModalOverlay, ModalRoot, Title } from '@mantine/core'
 import { useToggle } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { memo, useState } from 'react'
@@ -12,7 +12,7 @@ import {
 } from './EmbeddedLikeC4Diagram.css'
 import { useUpdateEffect } from './hooks'
 import { LikeC4Diagram } from './LikeC4Diagram'
-import { type LikeC4ColorMode } from './LikeC4Diagram.props'
+import { type LikeC4ColorScheme } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { StaticLikeC4Diagram } from './StaticLikeC4Diagram'
 import { KeepAspectRatio } from './ui/KeepAspectRatio'
@@ -26,13 +26,13 @@ export type EmbeddedLikeC4DiagramProps = {
    *
    * @example 'light' | 'dark'
    */
-  colorMode?: LikeC4ColorMode | undefined
+  colorScheme?: LikeC4ColorScheme | undefined
 }
 
 function EmbeddedLikeC4DiagramCmp({
   viewId,
   views,
-  colorMode
+  colorScheme
 }: EmbeddedLikeC4DiagramProps) {
   const [isOpened, toggleOpened] = useToggle(false)
   const [browserViewId, setBrowserViewId] = useState(viewId)
@@ -49,7 +49,7 @@ function EmbeddedLikeC4DiagramCmp({
 
   useUpdateEffect(closeBrowser, [viewId])
   return (
-    <EnsureMantine colorMode={colorMode}>
+    <EnsureMantine colorScheme={colorScheme}>
       <KeepAspectRatio
         enabled
         height={view.height}
@@ -60,7 +60,7 @@ function EmbeddedLikeC4DiagramCmp({
         }}
       >
         <StaticLikeC4Diagram
-          colorMode={colorMode}
+          colorScheme={colorScheme}
           view={view}
           fitView
           fitViewPadding={0.01}
@@ -68,10 +68,10 @@ function EmbeddedLikeC4DiagramCmp({
           keepAspectRatio={false}
         />
       </KeepAspectRatio>
-      <Modal.Root opened={isOpened} onClose={closeBrowser} fullScreen>
-        <Modal.Overlay blur={16} />
-        <Modal.Content className={modalContent}>
-          <Modal.Body className={modalBody}>
+      <ModalRoot opened={isOpened} onClose={closeBrowser} fullScreen>
+        <ModalOverlay blur={16} />
+        <ModalContent className={modalContent}>
+          <ModalBody className={modalBody}>
             <Box className={modalHeader}>
               <Title order={4}>{browserView.title || browserView.id}</Title>
             </Box>
@@ -79,7 +79,7 @@ function EmbeddedLikeC4DiagramCmp({
               <LikeC4Diagram
                 readonly
                 view={browserView}
-                colorMode={colorMode}
+                colorScheme={colorScheme}
                 background={'transparent'}
                 fitViewPadding={0.09}
                 onCanvasDblClick={closeBrowser}
@@ -92,9 +92,9 @@ function EmbeddedLikeC4DiagramCmp({
             <Box className={modalCloseButtonBox}>
               <CloseButton className={modalCloseButton} onClick={closeBrowser} />
             </Box>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal.Root>
+          </ModalBody>
+        </ModalContent>
+      </ModalRoot>
     </EnsureMantine>
   )
 }

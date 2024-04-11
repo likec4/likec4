@@ -57,7 +57,7 @@ function XYFlowWrapper({
   defaultNodes,
   defaultEdges,
   fitView = true,
-  colorMode: colorModeProp,
+  colorScheme: colorModeProp,
   readonly = false,
   pannable = true,
   zoomable = true,
@@ -112,31 +112,32 @@ function XYFlowWrapper({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      // @ts-expect-error invalid typings
-      onInit={useCallback((instance) => {
+      onInit={(instance) => {
         xyflowRef.current = (instance as unknown) as XYFlowInstance
         updateState({ viewportInitialized: true })
-      }, [])}
-      onEdgeMouseEnter={useCallback((event: ReactMouseEvent, edge: XYFlowEdge) => {
-        updateState({ hoveredEdgeId: edge.id })
-      }, [])}
-      // onMoveEnd={(event, viewport) => {
-      //   console.debug('onMoveEnd', { event, viewport })
-      // }}
-      // onViewportChange={(viewport) => {
-      //   console.debug('onViewportChange', { event, viewport })
-      // }}
-      onEdgeMouseLeave={useCallback(() => {
-        updateState({ hoveredEdgeId: null })
-      }, [])}
-      {...(editor.isNodeInteractive && {
-        onNodeMouseEnter: (event, node) => {
-          updateState({ hoveredNodeId: node.id })
-        },
-        onNodeMouseLeave: () => {
-          updateState({ hoveredNodeId: null })
-        }
-      })}
+      }}
+      {
+        // onMoveEnd={(event, viewport) => {
+        //   console.debug('onMoveEnd', { event, viewport })
+        // }}
+        // onViewportChange={(viewport) => {
+        //   console.debug('onViewportChange', { event, viewport })
+        // }}
+        ...(editor.isNodeInteractive && {
+          onEdgeMouseEnter: (_event, edge) => {
+            updateState({ hoveredEdgeId: edge.id })
+          },
+          onEdgeMouseLeave: () => {
+            updateState({ hoveredEdgeId: null })
+          },
+          onNodeMouseEnter: (_event, node) => {
+            updateState({ hoveredNodeId: node.id })
+          },
+          onNodeMouseLeave: () => {
+            updateState({ hoveredNodeId: null })
+          }
+        })
+      }
       {...(editor.hasOnContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu,
         onPaneContextMenu: handlers.onPaneContextMenu,

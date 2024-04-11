@@ -27,8 +27,8 @@ export function KeepAspectRatio({
       className={clsx(wrapper, className)}
       style={{
         ...style,
-        aspectRatio: `${width}/${height}`,
-        maxHeight: height
+        aspectRatio: `${Math.ceil(width)}/${Math.ceil(height)}`,
+        maxHeight: Math.ceil(height)
       }}>
       {children}
     </Box>

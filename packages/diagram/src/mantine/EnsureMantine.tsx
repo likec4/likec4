@@ -2,7 +2,7 @@ import { createTheme, MantineContext, MantineProvider } from '@mantine/core'
 import { type PropsWithChildren, useContext } from 'react'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 
-type EnsureMantineProps = PropsWithChildren<Pick<LikeC4DiagramProperties, 'colorMode'>>
+type EnsureMantineProps = PropsWithChildren<Pick<LikeC4DiagramProperties, 'colorScheme'>>
 
 const theme = createTheme({
   primaryColor: 'indigo',
@@ -21,7 +21,7 @@ const theme = createTheme({
   }
 })
 
-export function EnsureMantine({ colorMode, children }: EnsureMantineProps) {
+export function EnsureMantine({ colorScheme, children }: EnsureMantineProps) {
   const mantineCtx = useContext(MantineContext)
   if (mantineCtx) {
     mantineCtx.getRootElement
@@ -29,8 +29,8 @@ export function EnsureMantine({ colorMode, children }: EnsureMantineProps) {
   }
   return (
     <MantineProvider
-      {...(colorMode && {
-        forceColorScheme: colorMode
+      {...(colorScheme && {
+        forceColorScheme: colorScheme
       })}
       theme={theme}
       defaultColorScheme="auto"

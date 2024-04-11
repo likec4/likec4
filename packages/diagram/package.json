@@ -18,23 +18,15 @@
     "!**/*.spec.*",
     "!**/*.d.ts.map"
   ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "sideEffects": false,
   "type": "module",
-  "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.mjs",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "module": "./dist/esm/index.mjs"
-      },
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "main": "./dist/cjs/index.js"
-      }
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "default": "./dist/esm/index.mjs"
     },
     "./style.css": "./dist/style.css"
   },
@@ -54,14 +46,20 @@
     "@likec4/core": "workspace:*",
     "@xyflow/react": "^12.0.0-next.12",
     "clsx": "^2.1.0",
-    "framer-motion": "^11.0.25",
     "react-tracked": "^1.7.14"
   },
   "peerDependencies": {
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
+    "framer-motion": "^11.0.25",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "scheduler": "^0.23.0"
+  },
+  "peerDependenciesMeta": {
+    "scheduler": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@lume/kiwi": "^0.4.3",
