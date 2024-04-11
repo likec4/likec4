@@ -8,10 +8,10 @@ import { build } from 'vite'
 import pkg from '../package.json' assert { type: 'json' }
 import { modules } from '../src/vite/plugin'
 
-export async function buildAppBundle() {
+export async function bundleApp() {
   const root = resolve('app')
   const outDir = resolve('dist/__app__/src')
-  consola.start(`Building app bundle...\nroot: ${root}`)
+  consola.start(`Bundle app...\nroot: ${root}`)
   // Static website
   await build({
     root,
@@ -31,24 +31,19 @@ export async function buildAppBundle() {
     define: {
       'process.env.NODE_ENV': '"production"'
     },
+    esbuild: {
+      treeShaking: true
+    },
     build: {
       emptyOutDir: false,
       outDir,
       cssCodeSplit: false,
       cssMinify: true,
+      minify: true,
       sourcemap: false,
-      minify: 'terser',
-      terserOptions: {
-        ecma: 2020,
-        module: true,
-        compress: true
-        // keep_classnames: true,
-        // keep_fnames: true,
-        // sourceMap: false
-      },
-      // 100Kb
-      assetsInlineLimit: 100 * 1024,
-      chunkSizeWarningLimit: 2_500_000,
+      target: 'esnext',
+      assetsInlineLimit: 500 * 1024,
+      chunkSizeWarningLimit: 3_000_000,
       copyPublicDir: false,
       lib: {
         entry: {
@@ -64,25 +59,22 @@ export async function buildAppBundle() {
         // name: 'LikeC4',
       },
       commonjsOptions: {
-        transformMixedEsModules: true,
-        // esmExternals: true,
-        requireReturnsDefault: 'namespace',
+        // include: [
+        //   'framer-motion'
+        // ],
+        // transformMixedEsModules: true,
+        esmExternals: true,
+        // requireReturnsDefault: 'namespace',
         ignoreTryCatch: 'remove'
         // defaultIsModuleExports: ''
         // include: ['react', 'react-dom']
       },
       rollupOptions: {
-        // output: {
-        //   format: 'esm',
-        //   esModule: true,
-        //   sourcemap: false,
-        // },
+        treeshake: true,
+        output: {
+          exports: 'named'
+        },
         external: [
-          //   'react/jsx-runtime',
-          //   'react-dom/client',
-          //   'use-sync-external-store/shim/with-selector.js',
-          //   'scheduler',
-          //   ...Object.keys(pkg.dependencies),
           'virtual:likec4',
           ...modules.map(m => m.id)
         ]
@@ -106,5 +98,5 @@ export async function buildAppBundle() {
       vanillaExtractPlugin({})
     ]
   })
-  consola.success('App bundle built!')
+  consola.success('App bundled\n\n')
 }

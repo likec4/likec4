@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { consola } from 'consola'
 import k from 'picocolors'
 import { clamp } from 'rambdax'
 import yargs from 'yargs'
@@ -10,6 +11,8 @@ import codegenCmd from './codegen'
 import exportCmd from './export'
 import previewCmd from './preview'
 import serveCmd from './serve'
+
+consola.wrapConsole()
 
 const cli = yargs(hideBin(process.argv))
   .scriptName('likec4')

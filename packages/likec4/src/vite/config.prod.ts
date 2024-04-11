@@ -1,5 +1,4 @@
 import { createLikeC4Logger } from '@/logger'
-import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -64,19 +63,17 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     base,
     configFile: false,
     resolve: {
-      dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
-      alias: [{
-        find: '@emotion/is-prop-valid',
-        replacement: 'none'
-      }]
+      alias: {
+        '@emotion/is-prop-valid': 'fast-equals'
+      }
     },
     build: {
       outDir,
+      emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
       minify: true,
-      // 100Kb
-      assetsInlineLimit: 100 * 1024,
+      copyPublicDir: true,
       chunkSizeWarningLimit: 3_000_000,
       commonjsOptions: {
         ignoreTryCatch: 'remove'
@@ -84,7 +81,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     customLogger,
     plugins: [
-      react(),
       likec4Plugin({ languageServices })
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }

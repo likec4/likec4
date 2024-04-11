@@ -1,9 +1,10 @@
 import { consola } from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import json5 from 'json5'
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { buildAppBundle } from './build-app'
+import assert from 'node:assert'
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { bundleApp } from './bundle-app'
+import { buildWebcomponentBundle } from './bundle-webcomponent'
 
 // const watch = process.argv.includes('--watch')
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
@@ -32,10 +33,11 @@ async function buildCli() {
       'process.env.NODE_ENV': '"production"'
     },
     format: 'esm',
-    target: 'esnext',
+    target: 'node18',
     platform: 'node',
     alias: {
-      '@/vite/config': '@/vite/config.prod'
+      '@/vite/config': '@/vite/config.prod',
+      '@/vite/webcomponent': '@/vite/webcomponent.prod'
     },
     banner: {
       js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
@@ -43,8 +45,9 @@ async function buildCli() {
     tsconfig: 'tsconfig.src.json',
     plugins: [
       nodeExternalsPlugin({
+        dependencies: true,
+        optionalDependencies: true,
         devDependencies: false,
-        allowWorkspaces: false,
         allowList: [
           'fast-equals'
         ]
@@ -81,47 +84,48 @@ await rm('dist/', { recursive: true, force: true })
 await buildCli()
 
 consola.log(`copy app files to dist/__app__`)
-await mkdir('dist/__app__', { recursive: true })
-await cp('app/', 'dist/__app__/', {
-  recursive: true,
-  filter: src =>
-    !src.includes('tsconfig.')
-    && !src.endsWith('.css')
-    && !src.endsWith('.ts')
-    && !src.endsWith('.tsx')
-})
+await mkdir('dist/__app__/src', { recursive: true })
 
-await buildAppBundle()
+await bundleApp()
+await buildWebcomponentBundle()
+const verifyStyles = await readFile('dist/__app__/src/lib/style.css', 'utf-8')
+assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
 
-await writeFile(
-  'dist/__app__/tsconfig.json',
-  JSON.stringify(
-    {
-      '$schema': 'https://json.schemastore.org/tsconfig',
-      'compilerOptions': {
-        'target': 'ES2020',
-        'lib': [
-          'DOM',
-          'DOM.Iterable',
-          'ESNext'
-        ],
-        'allowJs': true,
-        'module': 'ESNext',
-        'outDir': './dist',
-        'strict': false,
-        'esModuleInterop': true,
-        'isolatedModules': true,
-        'jsx': 'react-jsx',
-        'rootDir': '.',
-        'types': [
-          'vite/client'
-        ]
-      },
-      'include': [
-        './src'
-      ]
-    },
-    null,
-    2
-  )
-)
+await rm('dist/__app__/src/lib/style.css')
+
+await copyFile('app/index.html', 'dist/__app__/index.html')
+await copyFile('app/favicon.svg', 'dist/__app__/favicon.svg')
+await copyFile('app/src/main.js', 'dist/__app__/src/main.js')
+
+// await writeFile(
+//   'dist/__app__/tsconfig.json',
+//   JSON.stringify(
+//     {
+//       '$schema': 'https://json.schemastore.org/tsconfig',
+//       'compilerOptions': {
+//         'target': 'ES2020',
+//         'lib': [
+//           'DOM',
+//           'DOM.Iterable',
+//           'ESNext'
+//         ],
+//         'allowJs': true,
+//         'module': 'ESNext',
+//         'outDir': './dist',
+//         'strict': false,
+//         'esModuleInterop': true,
+//         'isolatedModules': true,
+//         'jsx': 'react-jsx',
+//         'rootDir': '.',
+//         'types': [
+//           'vite/client'
+//         ]
+//       },
+//       'include': [
+//         './src'
+//       ]
+//     },
+//     null,
+//     2
+//   )
+// )

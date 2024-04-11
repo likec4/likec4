@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import type { DiagramView } from '@likec4/core'
-// import { LikeC4View } from '@likec4/diagram'
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons'
 import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separator, Text } from '@radix-ui/themes'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
+import { sample } from 'remeda'
 import { useLikeC4View } from '../data'
 import { useViewGroups, type ViewGroups } from '../data/index-page'
 import * as styles from './index.css'
@@ -132,13 +132,13 @@ const ViewCard = memo<{ viewId: string }>(({ viewId }) => {
 function DiagramPreview(props: { diagram: DiagramView }) {
   const [diagram, setDiagram] = useState<DiagramView | null>(null)
 
-  // defer rendering to update to avoid flickering
+  // defer rendering to avoid flickering
   useDebouncedEffect(
     () => {
       setDiagram(props.diagram)
     },
     [props.diagram],
-    50
+    Math.ceil(Math.random() * 200) + 50
   )
 
   return (

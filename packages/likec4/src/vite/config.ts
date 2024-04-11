@@ -4,28 +4,13 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import consola from 'consola'
 import fs from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-
-//
-const _dirname = dirname(fileURLToPath(import.meta.url))
-
-const getAppRoot = (): [path: string, isDev: boolean] => {
-  /* @see packages/likec4/app/tsconfig.json */
-  const root = resolve(_dirname, '../__app__')
-  if (fs.existsSync(root)) {
-    // we are bundled
-    return [root, false]
-  }
-  // we are in dev
-  return [resolve(_dirname, '../../app'), true]
-}
 
 export type LikeC4ViteConfig =
   | {
@@ -45,15 +30,10 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:vite')
 
-  const [root, isDev] = getAppRoot()
+  const root = resolve('app')
   if (!fs.existsSync(root)) {
     consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
-  }
-
-  if (!isDev) {
-    consola.error(`app root not dev ${root}`)
-    throw new Error(`app root not dev ${root}`)
   }
 
   const languageServices = cfg?.languageServices
@@ -77,7 +57,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   }
 
   return {
-    isDev,
+    isDev: true,
     root,
     languageServices,
     configFile: false,
@@ -93,11 +73,13 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     base,
     build: {
       outDir,
+      emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
       minify: true,
-      // 100Kb
-      assetsInlineLimit: 100 * 1024,
+      copyPublicDir: true,
+      // 500Kb
+      assetsInlineLimit: 500 * 1024,
       chunkSizeWarningLimit: 3_000_000,
       commonjsOptions: {
         ignoreTryCatch: 'remove'

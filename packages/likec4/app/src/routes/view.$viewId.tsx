@@ -4,6 +4,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { SidebarDrawer } from '../components'
 import { Header } from '../components/view-page/Header'
 import { useLikeC4View } from '../data'
+import { cssCaptureGesturesLayer, cssViewOutlet } from './view.css'
 
 export const Route = createFileRoute('/view/$viewId')({
   component: ViewLayout
@@ -15,37 +16,20 @@ function ViewLayout() {
 
   return (
     <>
-      <Box
-        style={{
-          position: 'absolute',
-          top: 50,
-          left: 0,
-          width: '100%',
-          height: 'calc(100vh - 50px)'
-        }}
-      >
+      <Box className={cssViewOutlet}>
         <Outlet />
       </Box>
       {/* Handle back gesture */}
       <Box
         visibleFrom="lg"
-        style={{
-          position: 'absolute',
-          top: 50,
-          left: 0,
-          width: 40,
-          height: 'calc(100vh - 50px)',
-          zIndex: 1
-        }}>
+        className={cssCaptureGesturesLayer}>
       </Box>
       <ViewHeader />
       <SidebarDrawer opened={opened} onClose={close} />
       <Box
-        style={{
-          position: 'fixed',
-          top: 10,
-          left: 10
-        }}>
+        pos={'fixed'}
+        top={10}
+        left={10}>
         <Burger
           size={'sm'}
           opened={opened}

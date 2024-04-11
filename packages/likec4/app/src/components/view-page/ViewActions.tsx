@@ -5,6 +5,7 @@ import { type MouseEvent, type PropsWithChildren, useState } from 'react'
 // import { ThemePanelToggle } from '../ThemePanelToggle'
 import { DisplayModeSelector } from './DisplayModeSelector'
 // import ExportDiagram from './ExportDiagram'
+import { useDisclosure } from '@mantine/hooks'
 import { ShareDialog } from './ShareDialog'
 
 const ExportMenu = ({

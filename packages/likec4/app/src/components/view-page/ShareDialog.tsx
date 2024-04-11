@@ -66,8 +66,8 @@ export const ShareDialog = ({ diagram }: { diagram: DiagramView }) => {
     <Dialog.Content size="2" style={{ maxWidth: 800, minWidth: 280 }}>
       <Tabs.Root defaultValue="embed">
         <Tabs.List>
-          <Tabs.Trigger value="embed">Embed</Tabs.Trigger>
-          <Tabs.Trigger value="script">Script</Tabs.Trigger>
+          <Tabs.Trigger value="embed">v</Tabs.Trigger>
+          <Tabs.Trigger value="script">Webcomponents</Tabs.Trigger>
           <Tabs.Trigger value="public">Public URL</Tabs.Trigger>
         </Tabs.List>
 

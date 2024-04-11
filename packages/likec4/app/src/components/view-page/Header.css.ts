@@ -1,7 +1,7 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../theme'
 
-export const headerHeight = createVar('stroke-fill-mix')
+export const headerHeight = createVar('header-height')
 globalStyle(':root', {
   vars: {
     [headerHeight]: '50px'

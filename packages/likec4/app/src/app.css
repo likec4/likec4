@@ -12,6 +12,7 @@
 :root {
   --likec4-default-font-family: 'IBM Plex Sans', sans-serif;
   --mantine-default-font-family: 'IBM Plex Sans', sans-serif;
+  --mantine-font-family: 'IBM Plex Sans', sans-serif;
   --likec4-background-color: var(--mantine-color-body);
   --xy-background-pattern-color: var(--mantine-color-dark-8);
 }
@@ -44,6 +45,13 @@ body {
   padding: 0;
   width: 100vw;
   height: 100vh;
+
+  & > .radix-themes {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+  }
 }
 
 .mantine-ActionIcon-icon .tabler-icon {

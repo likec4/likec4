@@ -1,6 +1,6 @@
 import type { DiagramView } from '@likec4/core'
 import { Badge, Box, Button, Center, Code, Divider, Flex, Group, HoverCard, Menu, Text, Title } from '@mantine/core'
-import { Dialog } from '@radix-ui/themes'
+import { useDisclosure } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
 import { memo } from 'react'
@@ -8,6 +8,7 @@ import { isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssHeader } from './Header.css'
 import { ShareDialog } from './ShareDialog'
+import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
 
@@ -16,6 +17,7 @@ type HeaderProps = {
 }
 
 export function Header({ diagram }: HeaderProps) {
+  const [opened, { open, close }] = useDisclosure(false)
   return (
     <header className={cssHeader}>
       <DiagramTitle diagram={diagram} />
@@ -24,16 +26,15 @@ export function Header({ diagram }: HeaderProps) {
         <ViewPageButton />
         <ColorSchemeToggle />
         <Divider orientation="vertical" />
-        <Dialog.Root>
-          <Dialog.Trigger>
-            <Button ml={'xs'} size="sm" leftSection={<IconShare size={14} />}>
-              Share
-            </Button>
-          </Dialog.Trigger>
-          <ShareDialog diagram={diagram} />
-        </Dialog.Root>
+        <Button ml={'xs'} size="sm" leftSection={<IconShare size={14} />} onClick={open}>
+          Share
+        </Button>
         <ExportButton />
       </Group>
+      <ShareModal
+        opened={opened}
+        onClose={close}
+        diagram={diagram} />
     </header>
     // <Flex
     //   position={'fixed'}

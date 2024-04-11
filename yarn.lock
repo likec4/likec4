@@ -1355,6 +1355,8 @@ __metadata:
     vite: "npm:^5.2.6"
     vite-plugin-dts: "npm:^3.8.1"
   peerDependencies:
+    "@mantine/core": ^7.7.0
+    "@mantine/hooks": ^7.7.0
     react: ^18.2.0
     react-dom: ^18.2.0
   languageName: unknown
@@ -10524,8 +10526,12 @@ __metadata:
     typescript: "npm:^5.4.3"
     ufo: "npm:^1.3.2"
     vite: "npm:^5.2.6"
+    vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:^1.4.0"
     yargs: "npm:^17.7.2"
+  dependenciesMeta:
+    "@vitejs/plugin-react":
+      optional: true
   bin:
     likec4: ./bin/likec4.mjs
   languageName: unknown
@@ -17506,6 +17512,13 @@ __metadata:
     vite:
       optional: true
   checksum: 10/47957d256e3866d7fb6c9e6f72bbdb1dd645e3598281fbf040692f88ff881d00ce5ae5848bd475c65fdc25c80c22687fdd6d6d0ea79506e9b073316794b6f5cd
+  languageName: node
+  linkType: hard
+
+"vite-plugin-shadow-style@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "vite-plugin-shadow-style@npm:1.1.0"
+  checksum: 10/8ff23a69b23d4a4036ace574551c7e205d513d5159ca0ef334833a044e7acad335063a29201cd221ee6d2a9a8d2eea71d81936b3016c822a23e3fc285335fa77
   languageName: node
   linkType: hard
 

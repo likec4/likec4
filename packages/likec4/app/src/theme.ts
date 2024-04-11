@@ -3,6 +3,7 @@ import { themeToVars } from '@mantine/vanilla-extract'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
+  cursorType: 'pointer',
   headings: {
     fontWeight: '500',
     sizes: {
