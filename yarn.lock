@@ -1473,14 +1473,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/example-cloud-system@workspace:examples/cloud-system":
-  version: 0.0.0-use.local
-  resolution: "@likec4/example-cloud-system@workspace:examples/cloud-system"
-  dependencies:
-    likec4: "workspace:*"
-  languageName: unknown
-  linkType: soft
-
 "@likec4/generators@workspace:*, @likec4/generators@workspace:packages/generators":
   version: 0.0.0-use.local
   resolution: "@likec4/generators@workspace:packages/generators"
@@ -10536,9 +10528,6 @@ __metadata:
     vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:^1.4.0"
     yargs: "npm:^17.7.2"
-  dependenciesMeta:
-    "@vitejs/plugin-react":
-      optional: true
   bin:
     likec4: ./bin/likec4.mjs
   languageName: unknown

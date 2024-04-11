@@ -55,9 +55,6 @@
     "playwright": "1.42.1",
     "vite": "^5.2.6"
   },
-  "optionalDependencies": {
-    "@vitejs/plugin-react": "^4.2.1"
-  },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.19",
     "@likec4/core": "workspace:*",
@@ -86,6 +83,7 @@
     "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/recipes": "^0.5.2",
     "@vanilla-extract/vite-plugin": "^4.0.7",
+    "@vitejs/plugin-react": "^4.2.1",
     "ci-info": "^3.9.0",
     "classnames": "^2.3.2",
     "clsx": "^2.1.0",
