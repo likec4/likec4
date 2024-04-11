@@ -68,7 +68,7 @@
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
     "execa": "^8.0.1",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
     "vitest": "^1.4.0"
   },

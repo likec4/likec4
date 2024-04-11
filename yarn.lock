@@ -515,51 +515,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dprint/darwin-arm64@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/darwin-arm64@npm:0.45.0"
+"@dprint/darwin-arm64@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/darwin-arm64@npm:0.45.1"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@dprint/darwin-x64@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/darwin-x64@npm:0.45.0"
+"@dprint/darwin-x64@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/darwin-x64@npm:0.45.1"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-glibc@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/linux-arm64-glibc@npm:0.45.0"
+"@dprint/linux-arm64-glibc@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/linux-arm64-glibc@npm:0.45.1"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-arm64-musl@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/linux-arm64-musl@npm:0.45.0"
+"@dprint/linux-arm64-musl@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/linux-arm64-musl@npm:0.45.1"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-glibc@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/linux-x64-glibc@npm:0.45.0"
+"@dprint/linux-x64-glibc@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/linux-x64-glibc@npm:0.45.1"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@dprint/linux-x64-musl@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/linux-x64-musl@npm:0.45.0"
+"@dprint/linux-x64-musl@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/linux-x64-musl@npm:0.45.1"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@dprint/win32-x64@npm:0.45.0":
-  version: 0.45.0
-  resolution: "@dprint/win32-x64@npm:0.45.0"
+"@dprint/win32-x64@npm:0.45.1":
+  version: 0.45.1
+  resolution: "@dprint/win32-x64@npm:0.45.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1313,7 +1313,7 @@ __metadata:
     remeda: "npm:^1.56.0"
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
   languageName: unknown
@@ -1349,7 +1349,7 @@ __metadata:
     terser: "npm:^5.30.0"
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.13.1"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vite: "npm:^5.2.6"
     vite-plugin-dts: "npm:^3.8.1"
@@ -1385,8 +1385,8 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     tilg: "npm:^0.1.1"
-    tsx: "npm:^4.7.1"
-    typescript: "npm:^5.4.3"
+    tsx: "npm:^4.7.2"
+    typescript: "npm:^5.4.5"
     vite: "npm:^5.2.6"
     vite-plugin-watch-and-run: "npm:^1.5.0"
   languageName: unknown
@@ -1412,7 +1412,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-konva: "npm:^18.2.10"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
   peerDependencies:
     react: ^18.2.0
@@ -1460,7 +1460,7 @@ __metadata:
     tailwind-merge: "npm:^1.14.0"
     tailwindcss: "npm:^3.4.1"
     tailwindcss-animate: "npm:^1.0.7"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     typescript-plugin-css-modules: "npm:^5.1.0"
     vscode: "npm:@codingame/monaco-vscode-api@1.76.6"
     vscode-jsonrpc: "npm:8.2.0"
@@ -1482,7 +1482,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
     remeda: "npm:^1.56.0"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
   languageName: unknown
@@ -1497,7 +1497,7 @@ __metadata:
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.56.0"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
   languageName: unknown
@@ -1526,7 +1526,7 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     type-fest: "npm:^4.13.1"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     ufo: "npm:^1.3.2"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
@@ -1553,7 +1553,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
     type-fest: "npm:^4.13.1"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vitest: "npm:^1.4.0"
     word-wrap: "npm:^1.2.5"
@@ -1587,7 +1587,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.12"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     vite: "npm:^5.2.6"
     vite-tsconfig-paths: "npm:^4.3.2"
     vscode-messenger-webview: "npm:^0.4.5"
@@ -1601,7 +1601,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.23.3"
     "@types/node": "npm:^20.11.25"
     "@vitest/ui": "npm:^1.4.0"
-    dprint: "npm:^0.45.0"
+    dprint: "npm:^0.45.1"
     esbuild: "npm:^0.20.2"
     execa: "npm:^8.0.1"
     global: "npm:^4.4.0"
@@ -1609,9 +1609,9 @@ __metadata:
     lint-staged: "npm:^15.2.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^4.7.1"
-    turbo: "npm:^1.13.0"
-    typescript: "npm:^5.4.3"
+    tsx: "npm:^4.7.2"
+    turbo: "npm:^1.13.2"
+    typescript: "npm:^5.4.5"
     vite: "npm:^5.2.6"
     vitest: "npm:^1.4.0"
   languageName: unknown
@@ -6586,8 +6586,8 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^4.7.1"
-    typescript: "npm:^5.4.3"
+    tsx: "npm:^4.7.2"
+    typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
   bin:
     create-likec4: index.js
@@ -7464,17 +7464,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dprint@npm:^0.45.0":
-  version: 0.45.0
-  resolution: "dprint@npm:0.45.0"
+"dprint@npm:^0.45.1":
+  version: 0.45.1
+  resolution: "dprint@npm:0.45.1"
   dependencies:
-    "@dprint/darwin-arm64": "npm:0.45.0"
-    "@dprint/darwin-x64": "npm:0.45.0"
-    "@dprint/linux-arm64-glibc": "npm:0.45.0"
-    "@dprint/linux-arm64-musl": "npm:0.45.0"
-    "@dprint/linux-x64-glibc": "npm:0.45.0"
-    "@dprint/linux-x64-musl": "npm:0.45.0"
-    "@dprint/win32-x64": "npm:0.45.0"
+    "@dprint/darwin-arm64": "npm:0.45.1"
+    "@dprint/darwin-x64": "npm:0.45.1"
+    "@dprint/linux-arm64-glibc": "npm:0.45.1"
+    "@dprint/linux-arm64-musl": "npm:0.45.1"
+    "@dprint/linux-x64-glibc": "npm:0.45.1"
+    "@dprint/linux-x64-musl": "npm:0.45.1"
+    "@dprint/win32-x64": "npm:0.45.1"
   dependenciesMeta:
     "@dprint/darwin-arm64":
       optional: true
@@ -7492,7 +7492,7 @@ __metadata:
       optional: true
   bin:
     dprint: bin.js
-  checksum: 10/67d37b587c4a079c3a6e1e46cc368df6b6e45e7b7c71abca370576c8762ee05482a742a18477d15de2a56c72959d6b5a03bb89d7f77d45d18e6353bd9131e4a5
+  checksum: 10/0d6b93dcd98a5eec86a80f8a03ef04c8d0608de343405f83f3ee7dd85bb4bf7958170e47abe724a46587485eb4f400722b515fca8fad677b038758770bac8e90
   languageName: node
   linkType: hard
 
@@ -10448,7 +10448,7 @@ __metadata:
     remeda: "npm:^1.56.0"
     shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
     vscode-languageserver: "npm:9.0.1"
@@ -10520,9 +10520,9 @@ __metadata:
     remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.30.0"
-    tsx: "npm:^4.7.1"
+    tsx: "npm:^4.7.2"
     type-fest: "npm:^4.13.1"
-    typescript: "npm:^5.4.3"
+    typescript: "npm:^5.4.5"
     ufo: "npm:^1.3.2"
     vite: "npm:^5.2.6"
     vite-plugin-shadow-style: "npm:^1.1.0"
@@ -16546,9 +16546,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.7.1":
-  version: 4.7.1
-  resolution: "tsx@npm:4.7.1"
+"tsx@npm:^4.7.2":
+  version: 4.7.2
+  resolution: "tsx@npm:4.7.2"
   dependencies:
     esbuild: "npm:~0.19.10"
     fsevents: "npm:~2.3.3"
@@ -16558,7 +16558,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10/3a462b595f31ae58b31f9c6e8c450577dc87660b1225012bd972b6b58d7d2f6c4034728763ebc53bb731acff68de8b0fa50586e4c1ec4c086226f1788ccf9b7d
+  checksum: 10/3a06564f6926cc26bcdbf2752c361408d8e594a30abf15dc4639d4b964e98eedd3358c34ccd56ea15021519ebafe27a003d6cf26de0f530ea2cc34cb63fd0bfb
   languageName: node
   linkType: hard
 
@@ -16578,58 +16578,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-darwin-64@npm:1.13.0"
+"turbo-darwin-64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-darwin-64@npm:1.13.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-darwin-arm64@npm:1.13.0"
+"turbo-darwin-arm64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-darwin-arm64@npm:1.13.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-linux-64@npm:1.13.0"
+"turbo-linux-64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-linux-64@npm:1.13.2"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-linux-arm64@npm:1.13.0"
+"turbo-linux-arm64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-linux-arm64@npm:1.13.2"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-windows-64@npm:1.13.0"
+"turbo-windows-64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-windows-64@npm:1.13.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:1.13.0":
-  version: 1.13.0
-  resolution: "turbo-windows-arm64@npm:1.13.0"
+"turbo-windows-arm64@npm:1.13.2":
+  version: 1.13.2
+  resolution: "turbo-windows-arm64@npm:1.13.2"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "turbo@npm:1.13.0"
+"turbo@npm:^1.13.2":
+  version: 1.13.2
+  resolution: "turbo@npm:1.13.2"
   dependencies:
-    turbo-darwin-64: "npm:1.13.0"
-    turbo-darwin-arm64: "npm:1.13.0"
-    turbo-linux-64: "npm:1.13.0"
-    turbo-linux-arm64: "npm:1.13.0"
-    turbo-windows-64: "npm:1.13.0"
-    turbo-windows-arm64: "npm:1.13.0"
+    turbo-darwin-64: "npm:1.13.2"
+    turbo-darwin-arm64: "npm:1.13.2"
+    turbo-linux-64: "npm:1.13.2"
+    turbo-linux-arm64: "npm:1.13.2"
+    turbo-windows-64: "npm:1.13.2"
+    turbo-windows-arm64: "npm:1.13.2"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -16645,7 +16645,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/56a7d69d800ef8874a84dc8a684e6a3106d7a72650719b538f7194136360660963a93da3d05b9bd8d6e01698bb28756834a5b94c9f3eefc9334eba9d0d01d4a6
+  checksum: 10/945c78e7c6517898d3e773292bbb1dcf76587703f4cd75409f7b85777873648e0917b50261add6bd51d7e7552de4358f990a9ff693bc1bdefa1d7899c5521a7a
   languageName: node
   linkType: hard
 
@@ -16769,13 +16769,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.4.3":
-  version: 5.4.3
-  resolution: "typescript@npm:5.4.3"
+"typescript@npm:^5.4.5":
+  version: 5.4.5
+  resolution: "typescript@npm:5.4.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/de4c69f49a7ad4b1ea66a6dcc8b055ac34eb56af059a069d8988dd811c5e649be07e042e5bf573e8d0ac3ec2f30e6c999aa651cd09f6e9cbc6113749e8b6be20
+  checksum: 10/d04a9e27e6d83861f2126665aa8d84847e8ebabcea9125b9ebc30370b98cb38b5dff2508d74e2326a744938191a83a69aa9fddab41f193ffa43eabfdf3f190a5
   languageName: node
   linkType: hard
 
@@ -16789,13 +16789,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.4.3#optional!builtin<compat/typescript>":
-  version: 5.4.3
-  resolution: "typescript@patch:typescript@npm%3A5.4.3#optional!builtin<compat/typescript>::version=5.4.3&hash=5adc0c"
+"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
+  version: 5.4.5
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/5aedd97595582b08aadb8a70e8e3ddebaf5a9c1e5ad4d6503c2fcfc15329b5cf8d01145b09913e9555683ac16c5123a96be32b6d72614098ebd42df520eed9b1
+  checksum: 10/760f7d92fb383dbf7dee2443bf902f4365db2117f96f875cf809167f6103d55064de973db9f78fe8f31ec08fff52b2c969aee0d310939c0a3798ec75d0bca2e1
   languageName: node
   linkType: hard
 
