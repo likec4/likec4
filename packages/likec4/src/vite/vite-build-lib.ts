@@ -1,4 +1,3 @@
-import react from '@vitejs/plugin-react'
 import consola from 'consola'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
@@ -37,7 +36,7 @@ export async function viteBuildLib(cfg?: LikeC4ViteConfig) {
       minify: true,
       lib: {
         entry: 'src/lib/webcomponent.mjs',
-        fileName(format, entryName) {
+        fileName(_format, _entryName) {
           return 'likec4-views.js'
         },
         formats: ['iife'],
@@ -46,7 +45,6 @@ export async function viteBuildLib(cfg?: LikeC4ViteConfig) {
       // 100Kb
     },
     plugins: [
-      react(),
       likec4Plugin({ languageServices })
     ]
   })
