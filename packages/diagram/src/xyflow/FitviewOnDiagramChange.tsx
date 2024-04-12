@@ -1,9 +1,42 @@
-import { useDebouncedEffect } from '@react-hookz/web'
-import { useNodesInitialized } from '@xyflow/react'
+import { useDebouncedCallback, useDebouncedEffect } from '@react-hookz/web'
+import { type ReactFlowState, useNodesInitialized, useStore } from '@xyflow/react'
+import { shallowEqual } from 'fast-equals'
 import { useRef } from 'react'
-import { useDiagramStateTracked } from '../state'
+import { useUpdateEffect } from '../hooks/use-update-effect'
+import { useDiagramState, useDiagramStateTracked } from '../state'
 import { MinZoom } from './const'
 import { useXYFlow } from './hooks'
+
+function selectDimensions(state: ReactFlowState) {
+  return `${state.width}:${state.height}`
+}
+
+function FitViewOnViewportResize() {
+  const fitViewPadding = useDiagramState().fitViewPadding
+  const dimensions = useStore(selectDimensions)
+  const prevDimensionsRef = useRef(dimensions)
+  const xyflow = useXYFlow()
+
+  useDebouncedEffect(
+    () => {
+      if (prevDimensionsRef.current === dimensions) {
+        return
+      }
+      const zoom = xyflow.getZoom()
+      xyflow.fitView({
+        duration: 350,
+        padding: fitViewPadding,
+        minZoom: MinZoom,
+        maxZoom: Math.max(1, zoom)
+      })
+      prevDimensionsRef.current = dimensions
+    },
+    [dimensions, fitViewPadding],
+    150
+  )
+
+  return null
+}
 
 /**
  * Fits the view when the view changes and nodes are initialized
@@ -41,6 +74,10 @@ export function FitViewOnDiagramChange() {
     [isReady, viewLayout],
     50
   )
+
+  if (!state.viewportMoved) {
+    return <FitViewOnViewportResize />
+  }
 
   return null
 

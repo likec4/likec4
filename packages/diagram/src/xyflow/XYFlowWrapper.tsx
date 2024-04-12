@@ -116,28 +116,22 @@ function XYFlowWrapper({
         xyflowRef.current = (instance as unknown) as XYFlowInstance
         updateState({ viewportInitialized: true })
       }}
-      {
-        // onMoveEnd={(event, viewport) => {
-        //   console.debug('onMoveEnd', { event, viewport })
-        // }}
-        // onViewportChange={(viewport) => {
-        //   console.debug('onViewportChange', { event, viewport })
-        // }}
-        ...(editor.isNodeInteractive && {
-          onEdgeMouseEnter: (_event, edge) => {
-            updateState({ hoveredEdgeId: edge.id })
-          },
-          onEdgeMouseLeave: () => {
-            updateState({ hoveredEdgeId: null })
-          },
-          onNodeMouseEnter: (_event, node) => {
-            updateState({ hoveredNodeId: node.id })
-          },
-          onNodeMouseLeave: () => {
-            updateState({ hoveredNodeId: null })
-          }
-        })
-      }
+      onMoveStart={handlers.onMoveStart}
+      onMoveEnd={handlers.onMoveEnd}
+      {...(editor.isNodeInteractive && {
+        onEdgeMouseEnter: (_event, edge) => {
+          updateState({ hoveredEdgeId: edge.id })
+        },
+        onEdgeMouseLeave: () => {
+          updateState({ hoveredEdgeId: null })
+        },
+        onNodeMouseEnter: (_event, node) => {
+          updateState({ hoveredNodeId: node.id })
+        },
+        onNodeMouseLeave: () => {
+          updateState({ hoveredNodeId: null })
+        }
+      })}
       {...(editor.hasOnContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu,
         onPaneContextMenu: handlers.onPaneContextMenu,

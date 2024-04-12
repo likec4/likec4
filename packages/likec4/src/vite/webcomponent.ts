@@ -47,6 +47,10 @@ export async function viteWebcomponentConfig({
     clearScreen: false,
     base,
     publicDir: false,
+    mode: 'production',
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
     build: {
       outDir,
       emptyOutDir: false,

@@ -40,3 +40,14 @@ export const cssCaptureGesturesLayer = style({
   height: 'calc(100vh - 170px)',
   zIndex: 1
 })
+
+export const cssExportVeew = style({
+  position: 'fixed',
+  boxSizing: 'border-box',
+  border: '0 solid transparent',
+  inset: 0,
+  width: '100vw',
+  height: '100vh',
+  padding: 0,
+  background: 'transparent'
+})

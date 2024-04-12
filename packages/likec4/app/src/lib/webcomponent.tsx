@@ -98,11 +98,12 @@ class LikeC4View extends HTMLElement {
     return view
   }
 
-  protected get isKeepAspectRatio(): boolean {
-    const attr = this.getAttributeNode('keep-aspect-ratio')
-    if (!attr) return false
-    return (attr.value.trim() || 'true').toLowerCase() === 'true'
-  }
+  // protected get isKeepAspectRatio(): boolean {
+  //   const attr = this.getAttributeNode('keep-aspect-ratio')
+  //   if (!attr) return false
+  //   return (attr.value.trim() || 'true').toLowerCase() === 'true'
+  // }
+  protected isKeepAspectRatio = true
 
   protected render() {
     let view = this.view

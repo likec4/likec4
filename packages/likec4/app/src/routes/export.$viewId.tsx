@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { DiagramNotFound } from '../components'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
+import { cssExportVeew } from './view.css'
 
 // const asPadding = (v: unknown) => {
 //   const parsed = typeof v === 'string' ? parseFloat(v) : undefined
@@ -30,15 +31,11 @@ function ExportPage() {
 
   return (
     <Box
-      pos={'fixed'}
+      className={cssExportVeew}
       style={{
-        boxSizing: 'border-box',
-        inset: 0,
         minWidth: diagram.width + padding * 2,
         minHeight: diagram.height + padding * 2,
-        padding,
-        width: '100vw',
-        height: '100vh'
+        padding
       }}>
       <StaticLikeC4Diagram
         view={diagram}

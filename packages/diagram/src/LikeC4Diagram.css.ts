@@ -14,6 +14,10 @@ export const cssReactFlow = style({
   }
 })
 
+globalStyle(`${cssReactFlow} .react-flow__viewport`, {
+  willChange: 'transform'
+})
+
 export const cssDisablePan = style({})
 
 export const cssTransparentBg = style({

@@ -222,7 +222,7 @@ const WebcomponentsPanel = ({ diagram }: { diagram: DiagramView }) => {
 `.trim()
 
   const htmlCode = `
-  <likec4-view view-id="${encodeURIComponent(diagram.id)}" keep-aspect-ratio></likec4-view>
+  <likec4-view view-id="${encodeURIComponent(diagram.id)}"></likec4-view>
 `.trim()
 
   return (
