@@ -1,14 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { ReactFlow } from '@xyflow/react'
+import { ReactFlow, type ReactFlowInstance } from '@xyflow/react'
 import { deepEqual } from 'fast-equals'
-import {
-  type CSSProperties,
-  memo,
-  type MouseEvent as ReactMouseEvent,
-  type PropsWithChildren,
-  useCallback,
-  useRef
-} from 'react'
+import { type CSSProperties, memo, type PropsWithChildren, useRef } from 'react'
 import type { Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramStateTracked } from '../state/DiagramState'
@@ -112,7 +105,7 @@ function XYFlowWrapper({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      onInit={(instance) => {
+      onInit={(instance: ReactFlowInstance) => {
         xyflowRef.current = (instance as unknown) as XYFlowInstance
         updateState({ viewportInitialized: true })
       }}
