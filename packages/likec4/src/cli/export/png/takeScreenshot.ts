@@ -57,7 +57,7 @@ export async function takeScreenshot({
         height: view.height + padding * 2 + 4
       })
 
-      await page.goto(url+`?padding=${padding}`)
+      await page.goto(url + `?padding=${padding}&theme=light`)
 
       await page.waitForSelector('.transparent-bg')
 

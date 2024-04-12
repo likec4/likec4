@@ -63,7 +63,7 @@ export async function handler({ path, useDotBin, output, ignore, timeout, maxAtt
   const browser = await chromium.launch()
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
-    colorScheme: 'dark',
+    colorScheme: 'light',
     baseURL,
     isMobile: false
   })
