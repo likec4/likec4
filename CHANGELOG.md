@@ -1,3 +1,10 @@
+## [0.60.4](https://github.com/likec4/likec4/compare/v0.60.3...v0.60.4) (2024-04-13)
+
+### Bug Fixes
+
+- **diagrams:** Icons do not render when expected in React app, see [#649](https://github.com/likec4/likec4/issues/649)
+- **deps**: update dependencies
+
 ## [0.60.3](https://github.com/likec4/likec4/compare/v0.60.2...v0.60.3) (2024-03-28)
 
 ### Bug Fixes
