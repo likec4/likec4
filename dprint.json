@@ -45,7 +45,7 @@
     "packages/*/src/generated"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.89.3.wasm",
+    "https://plugins.dprint.dev/typescript-0.90.1.wasm",
     "https://plugins.dprint.dev/json-0.19.2.wasm",
     "https://plugins.dprint.dev/markdown-0.16.4.wasm",
     "https://plugins.dprint.dev/biome-0.4.1.wasm"
