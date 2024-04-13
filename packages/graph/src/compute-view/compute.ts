@@ -20,7 +20,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, isTruthy, uniq } from 'remeda'
+import { hasAtLeast, isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
@@ -192,7 +192,7 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const labels = uniq(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
+        const labels = unique(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
         if (hasAtLeast(labels, 1)) {
           if (labels.length === 1) {
             edge.label = labels[0]
@@ -230,7 +230,7 @@ export class ComputeCtx {
         _e => _e.source.id === e.source.id && _e.target.id === e.target.id
       )
       if (existing) {
-        existing.relations = uniq([...existing.relations, ...e.relations])
+        existing.relations = unique([...existing.relations, ...e.relations])
         continue
       }
       this.ctxEdges.push(e)

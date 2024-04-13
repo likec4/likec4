@@ -37,6 +37,7 @@ describe('incoming-expr', () => {
         'cloud.frontend',
         'cloud.frontend.dashboard',
         'cloud.backend',
+        'email',
         'amazon',
         'cloud.frontend.adminPanel'
       ])
@@ -44,13 +45,44 @@ describe('incoming-expr', () => {
         'customer:cloud.frontend.dashboard',
         'support:cloud.frontend.adminPanel',
         'cloud.backend:amazon',
+        'cloud.backend:email',
         'cloud.frontend:cloud.backend'
       ])
     })
 
     it('exclude -> amazon', () => {
-      const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('-> amazon')])
-      expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'cloud.frontend', 'cloud.backend'])
+      const { nodeIds, edgeIds } = computeView('cloud', [
+        $include('*'),
+        $exclude('-> email'),
+        $exclude('-> amazon')
+      ])
+      expect(nodeIds).toEqual([
+        'customer',
+        'support',
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend'
+      ])
+      expect(edgeIds).toEqual([
+        'customer:cloud.frontend',
+        'support:cloud.frontend',
+        'cloud.frontend:cloud.backend'
+      ])
+    })
+
+    // exclude outgoing from cloud
+    it.todo('exclude cloud ->', () => {
+      const { nodeIds, edgeIds } = computeView('cloud', [
+        $include('*'),
+        $exclude('cloud ->')
+      ])
+      expect(nodeIds).toEqual([
+        'customer',
+        'support',
+        'cloud',
+        'cloud.backend',
+        'cloud.frontend'
+      ])
       expect(edgeIds).toEqual([
         'customer:cloud.frontend',
         'support:cloud.frontend',
@@ -59,17 +91,37 @@ describe('incoming-expr', () => {
     })
 
     it('exclude -> *', () => {
-      const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('-> *')])
-      expect(nodeIds).toEqual(['cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
-      expect(edgeIds).to.have.same.members(['cloud.frontend:cloud.backend', 'cloud.backend:amazon'])
+      const { nodeIds, edgeIds } = computeView('cloud', [
+        $include('*'),
+        $exclude('-> *')
+      ])
+      expect(nodeIds).toEqual([
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend',
+        'email',
+        'amazon'
+      ])
+      expect(edgeIds).toEqual([
+        'cloud.frontend:cloud.backend',
+        'cloud.backend:amazon',
+        'cloud.backend:email'
+      ])
     })
 
     it('exclude -> cloud.frontend.dashboard', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
+        $exclude('email'),
         $exclude('-> cloud.frontend.dashboard')
       ])
-      expect(nodeIds).toEqual(['support', 'cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
+      expect(nodeIds).toEqual([
+        'support',
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend',
+        'amazon'
+      ])
       expect(edgeIds).to.have.same.members([
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',

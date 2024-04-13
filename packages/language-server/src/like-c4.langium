@@ -194,7 +194,7 @@ ViewRulePredicateExpr:
   InOutExpr |
   ElementExpr (
     {infer CustomElementExpr.target=current} 'with' '{' body=CustomElementExprBody '}' |
-    {infer RelationExpr.source=current} '->' target=ElementExpr |
+    {infer RelationExpr.source=current} (isBidirectional?='<->' | '->') target=ElementExpr |
     {infer OutgoingExpr.from=current} '->'
   )?
 ;

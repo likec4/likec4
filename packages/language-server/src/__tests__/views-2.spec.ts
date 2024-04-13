@@ -386,11 +386,52 @@ describe.concurrent('views2', () => {
       `)
     })
 
+    it('element <-> element', async ctx => {
+      const { valid, invalid } = await mkTestServices(ctx)
+
+      await valid(`
+        include * <-> *
+      `)
+      await valid(`
+        include system <-> infra
+      `)
+      await invalid(`
+        include system { } <-> infra
+      `)
+      await valid(`
+        include system.backend.* <-> infra.*
+      `)
+      await invalid(`
+        include system.backend.* <-> random
+      `)
+      await valid(`
+        include
+          * <-> *,
+          * <-> infra,
+          * <-> infra.*,
+          system <-> infra,
+          system.backend.* <-> infra.*,
+          system.backend.* <-> *
+      `)
+      await valid(`
+        exclude
+          * <-> *,
+          * <-> infra,
+          * <-> infra.*,
+          system <-> infra,
+          system.backend.* <-> infra.*,
+          system.backend.* <-> *
+      `)
+    })
+
     it('element ->', async ctx => {
-      const { valid } = await mkTestServices(ctx)
+      const { valid, invalid } = await mkTestServices(ctx)
 
       await valid(`
         include * ->
+      `)
+      await invalid(`
+        include * <->
       `)
       await valid(`
         include system ->

@@ -157,7 +157,7 @@
       }
     },
     {
-      "match": "(\\b[_\\.\\w]+|\\*)\\s+(->|-\\[\\w+\\]->)\\s+([_\\.\\w]+)\\b",
+      "match": "(\\b[_\\.\\w]+|\\*)\\s+(<?->|-\\[\\w+\\]->)\\s+([_\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.constant.likec4"
@@ -198,7 +198,7 @@
     },
     {
       "name": "storage.type.function.likec4",
-      "match": "->"
+      "match": "<?->"
     },
     {
       "name": "keyword.control.likec4",

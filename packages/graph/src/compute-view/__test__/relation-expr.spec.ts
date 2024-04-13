@@ -10,8 +10,20 @@ describe('relation-expr', () => {
 
   it('* -> *', () => {
     const { nodeIds, edgeIds } = computeView([$include('* -> *')])
-    expect(nodeIds).toEqual(['customer', 'support', 'cloud', 'amazon'])
-    expect(edgeIds).toEqual(['customer:cloud', 'support:cloud', 'cloud:amazon'])
+    expect(nodeIds).toEqual([
+      'customer',
+      'support',
+      'cloud',
+      'email',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'customer:cloud',
+      'support:cloud',
+      'cloud:amazon',
+      'cloud:email',
+      'email:cloud'
+    ])
   })
 
   it('* -> cloud.*', () => {
@@ -80,6 +92,33 @@ describe('relation-expr', () => {
     ])
     expect(nodeIds).toEqual(['customer', 'cloud.frontend.dashboard'])
     expect(edgeIds).toEqual(['customer:cloud.frontend.dashboard'])
+  })
+
+  it('cloud -> email', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include('cloud -> email')
+    ])
+    expect(nodeIds).toEqual([
+      'cloud',
+      'email'
+    ])
+    expect(edgeIds).toEqual([
+      'cloud:email'
+    ])
+  })
+
+  it('cloud <-> email', () => {
+    const { nodeIds, edgeIds } = computeView([
+      $include('cloud <-> email')
+    ])
+    expect(nodeIds).toEqual([
+      'email',
+      'cloud'
+    ])
+    expect(edgeIds).toEqual([
+      'email:cloud',
+      'cloud:email'
+    ])
   })
 
   it.todo('verify label [...]')
