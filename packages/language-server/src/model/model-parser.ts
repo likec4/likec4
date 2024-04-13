@@ -290,7 +290,8 @@ export class LikeC4ModelParser {
     if (ast.isRelationExpr(astNode)) {
       return {
         source: this.parseElementExpr(astNode.source),
-        target: this.parseElementExpr(astNode.target)
+        target: this.parseElementExpr(astNode.target),
+        isBidirectional: astNode.isBidirectional
       }
     }
     if (ast.isInOutExpr(astNode)) {

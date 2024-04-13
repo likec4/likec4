@@ -322,13 +322,22 @@ export function includeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
     sources = resolveRelationExprElements.call(this, expr.source)
     targets = resolveRelationExprElements.call(this, expr.target)
   }
-  this.addEdges(this.graph.edgesBetween(sources, targets))
+  const edges = this.graph.edgesBetween(sources, targets)
+  if (expr.isBidirectional === true) {
+    edges.push(...this.graph.edgesBetween(targets, sources))
+  }
+  this.addEdges(edges)
 }
 
 export function excludeRelationExpr(this: ComputeCtx, expr: Expr.RelationExpr) {
   const sources = resolveRelationExprElements.call(this, expr.source)
   const targets = resolveRelationExprElements.call(this, expr.target)
-  const relations = this.graph.edgesBetween(sources, targets).flatMap(e => e.relations)
+  const edges = this.graph.edgesBetween(sources, targets)
+  if (expr.isBidirectional === true) {
+    edges.push(...this.graph.edgesBetween(targets, sources))
+  }
+
+  const relations = new Set(edges.flatMap(e => e.relations))
   this.excludeRelation(...relations)
 }
 

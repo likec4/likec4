@@ -155,9 +155,16 @@ include * -> cloud.backend
 // if any found - includes cloud children and target elements
 include cloud.* ->
 
-// all relationships from customer to cloud children
+// all relationships from customer to cloud children (direction is important)
 // if any found - includes customer and targeted children
 include customer -> cloud.*
+
+// any relationships between cloud.backend and cloud.frontend (both directions)
+include cloud.backend <-> cloud.frontend
+// same as:
+include
+  cloud.backend -> cloud.frontend,
+  cloud.frontend -> cloud.backend
 
 // elements by kind
 include element.kind = container

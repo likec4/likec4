@@ -70,6 +70,7 @@ export function isElement(expr: Expression): expr is ElementExpression {
 export interface RelationExpr extends Omit<BaseExpr, 'source' | 'target'> {
   source: ElementExpression
   target: ElementExpression
+  isBidirectional?: boolean
 }
 export function isRelation(expr: Expression): expr is RelationExpr {
   return 'source' in expr && 'target' in expr
