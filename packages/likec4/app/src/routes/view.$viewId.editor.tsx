@@ -23,7 +23,7 @@ function ViewEditor() {
       readonly={false}
       controls
       nodesDraggable
-      fitViewPadding={0.04}
+      fitViewPadding={0.08}
       onNavigateTo={({ element }) => {
         router.navigate({
           to: '/view/$viewId/editor',
