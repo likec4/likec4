@@ -7,13 +7,11 @@ import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
 import './app.css'
 
-import { RouterProvider } from '@tanstack/react-router'
 import ReactDOM from 'react-dom/client'
-import { createRouter } from './router'
+import { Routes } from './router'
 
 export function renderApp(basepath: string) {
-  const router = createRouter(basepath)
   ReactDOM.createRoot(document.getElementById('like4-root')!).render(
-    <RouterProvider router={router} />
+    <Routes basepath={basepath} />
   )
 }

@@ -6,17 +6,18 @@
 // import type { ViewID } from '@likec4/core'
 // import { BaseUrl } from './const'
 // import { startTransition } from 'react'
-import { createRouter as createTanstackRouter } from '@tanstack/react-router'
+import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/react-router'
 
 import { NotFound } from './components/NotFound'
 
+import { useMemo } from 'react'
 import { routeTree } from './routeTree.gen'
 
 // const notFoundRoute = new NotFoundRoute({
 //   getParentRoute: () => rootRoute,
 //   component: () => <div className="p-2">Not Found</div>,
 // })
-export function createRouter(basepath: string) {
+function createRouter(basepath: string) {
   return createTanstackRouter({
     routeTree,
     context: {},
@@ -48,4 +49,12 @@ declare module '@tanstack/react-router' {
   export interface Register {
     router: ReturnType<typeof createRouter>
   }
+}
+
+export function Routes({ basepath }: { basepath: string }) {
+  const router = useMemo(() => createRouter(basepath), [basepath])
+  return <RouterProvider router={router} />
+  // ReactDOM.createRoot(document.getElementById('like4-root')!).render(
+  //   <RouterProvider router={router} />
+  // )
 }
