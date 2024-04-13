@@ -39,9 +39,9 @@
     "packages/*/src/generated"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.89.1.wasm",
-    "https://plugins.dprint.dev/json-0.19.1.wasm",
-    "https://plugins.dprint.dev/markdown-0.16.3.wasm",
-    "https://plugins.dprint.dev/prettier-0.38.1.json@ae9b60b1ca7e22223cb47325b3d42c681444b46863d28ed92edc426f8a177e58"
+    "https://plugins.dprint.dev/typescript-0.90.1.wasm",
+    "https://plugins.dprint.dev/json-0.19.2.wasm",
+    "https://plugins.dprint.dev/markdown-0.16.4.wasm",
+    "https://plugins.dprint.dev/prettier-0.39.0.json@896b70f29ef8213c1b0ba81a93cee9c2d4f39ac2194040313cd433906db7bc7c"
   ]
 }
