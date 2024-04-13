@@ -39,7 +39,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "typescript": "^5.4.2",
-    "vite": "^5.1.4",
+    "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2",
     "vscode-messenger-webview": "^0.4.5"
   },
