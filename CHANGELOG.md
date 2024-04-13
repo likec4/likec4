@@ -2,7 +2,8 @@
 
 ### Bug Fixes
 
-- **deps:** update dependency konva to ^9.3.6 ([44a5a31](https://github.com/likec4/likec4/commit/44a5a31769f5a019b71910451e630db3637a5670))
+- **diagrams:** Icons do not render when expected in React app, see [#649](https://github.com/likec4/likec4/issues/649)
+- **deps**: update dependencies
 
 ## [0.60.3](https://github.com/likec4/likec4/compare/v0.60.2...v0.60.3) (2024-03-28)
 
