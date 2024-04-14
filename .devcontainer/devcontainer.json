@@ -27,7 +27,6 @@
       // Add the IDs of extensions you want installed when the container is created.
       "extensions": [
         "langium.langium-vscode",
-        "dbaeumer.vscode-eslint",
         "editorconfig.editorconfig",
         "folke.vscode-monorepo-workspace",
         "meganrogge.template-string-converter",

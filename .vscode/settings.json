@@ -40,8 +40,6 @@
     "**/.tsbuildinfo": true,
     "packages/*/.vscode-test-web": true
   },
-  "vitest.commandLine": "yarn vitest",
-  "vitest.enable": true,
   "exportall.config.semis": false,
   "json.schemas": [
     {
