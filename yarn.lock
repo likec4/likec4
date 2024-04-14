@@ -375,10 +375,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dagrejs/graphlib@npm:^2.1.13":
-  version: 2.1.13
-  resolution: "@dagrejs/graphlib@npm:2.1.13"
-  checksum: 10/92b49b6f57007593174d53f8f90228d7f3e9f2e7869348424057fd2bcca2b0ca393c74181ec9e1c7f02b30a925de2a59ec4cdfcd0fe75f873c2f85fa3cfd4da0
+"@dagrejs/graphlib@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@dagrejs/graphlib@npm:2.2.2"
+  checksum: 10/26329827d35115104566388200025f3e92611bd27a00b2a788fb308736dd67ecd1062af280c01e1860168d30c5057ea7b73b265643499f898cec1d4d99b1a789
   languageName: node
   linkType: hard
 
@@ -1275,7 +1275,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/graph@workspace:packages/graph"
   dependencies:
-    "@dagrejs/graphlib": "npm:^2.1.13"
+    "@dagrejs/graphlib": "npm:^2.2.2"
     "@likec4/core": "workspace:*"
     execa: "npm:^8.0.1"
     rambdax: "npm:^9.1.1"
