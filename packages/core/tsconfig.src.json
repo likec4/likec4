@@ -6,8 +6,12 @@
     "declarationDir": "dist/types",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "exclude": [
+    "**/node_modules",
+    "**/.*/",
     "**/*.spec.ts"
   ]
 }

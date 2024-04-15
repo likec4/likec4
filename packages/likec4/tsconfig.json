@@ -18,9 +18,6 @@
       "path": "./app/tsconfig.json"
     },
     {
-      "path": "./scripts"
-    },
-    {
       "path": "../core"
     },
     {

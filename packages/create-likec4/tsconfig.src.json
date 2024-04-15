@@ -9,6 +9,5 @@
   "include": [
     "src"
   ],
-  "exclude": [],
   "references": []
 }

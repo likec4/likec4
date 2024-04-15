@@ -2,12 +2,16 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Base Strictest",
   "include": [],
+  "exclude": [
+    "**/node_modules",
+    "**/.*/"
+  ],
   "compilerOptions": {
     "lib": [
-      "esnext"
+      "es2023"
     ],
     "module": "esnext",
-    "target": "ESNext",
+    "target": "es2022",
     "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
@@ -15,12 +19,12 @@
     "experimentalDecorators": true,
     "strict": true,
     "composite": true,
-    "resolvePackageJsonExports": true,
-    "esModuleInterop": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "allowArbitraryExtensions": true,
-    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,

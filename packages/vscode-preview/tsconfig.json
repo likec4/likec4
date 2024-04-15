@@ -23,9 +23,6 @@
     "protocol.ts",
     "./src"
   ],
-  "exclude": [
-    "dist"
-  ],
   "references": [
     {
       "path": "../core"

@@ -15,6 +15,7 @@
   },
   "include": [
     "./src/**/*.ts",
+    "./scripts/*.ts",
     "package.json"
   ],
   "references": [
