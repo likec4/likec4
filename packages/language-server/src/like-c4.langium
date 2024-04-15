@@ -207,7 +207,10 @@ IncomingExpr:
 
 
 ElementExpr:
-  WildcardExpr | ElementSelectorExpr | DescedantsExpr;
+  WildcardExpr |
+  ElementSelectorExpr |
+  DescedantsExpr
+;
 
 WildcardExpr:
   isWildcard?='*'
@@ -221,7 +224,10 @@ ElementSelectorExpr infers ElementExpr:
 ;
 
 DescedantsExpr infers ElementExpr:
-  ElementRef ({infer DescedantsExpr.parent=current} DotWildcard)?
+  ElementRef (
+    {infer ExpandElementExpr.parent=current} DotUnderscore |
+    {infer DescedantsExpr.parent=current} DotWildcard
+  )?
 ;
 
 CustomElementExprBody:
@@ -322,6 +328,7 @@ hidden terminal WS: (NEWLINE | SPACE)+;
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
+terminal DotUnderscore: /\b\._/;
 terminal DotWildcard: /\b\.\*/;
 terminal TagHash: /\#\b/;
 terminal Dot: /\b\./;

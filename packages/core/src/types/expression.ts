@@ -5,6 +5,7 @@ import type { ViewID } from './view'
 interface BaseExpr {
   element?: never
   custom?: never
+  expanded?: never
   elementKind?: never
   elementTag?: never
   isEqual?: never
@@ -23,6 +24,13 @@ export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants
 }
 export function isElementRef(expr: Expression): expr is ElementRefExpr {
   return 'element' in expr
+}
+
+export interface ExpandedElementExpr extends Omit<BaseExpr, 'expanded'> {
+  expanded: Fqn
+}
+export function isExpandedElementExpr(expr: Expression): expr is ExpandedElementExpr {
+  return 'expanded' in expr
 }
 
 export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
@@ -62,9 +70,18 @@ export function isElementTagExpr(expr: Expression): expr is ElementTagExpr {
   return 'elementTag' in expr && 'isEqual' in expr
 }
 
-export type ElementExpression = ElementRefExpr | WildcardExpr | ElementKindExpr | ElementTagExpr
+export type ElementExpression =
+  | ElementRefExpr
+  | WildcardExpr
+  | ElementKindExpr
+  | ElementTagExpr
+  | ExpandedElementExpr
 export function isElement(expr: Expression): expr is ElementExpression {
-  return isElementRef(expr) || isWildcard(expr) || isElementKindExpr(expr) || isElementTagExpr(expr)
+  return isElementRef(expr)
+    || isWildcard(expr)
+    || isElementKindExpr(expr)
+    || isElementTagExpr(expr)
+    || isExpandedElementExpr(expr)
 }
 
 export interface RelationExpr extends Omit<BaseExpr, 'source' | 'target'> {

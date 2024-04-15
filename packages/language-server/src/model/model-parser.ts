@@ -228,6 +228,14 @@ export class LikeC4ModelParser {
         isEqual: astNode.isEqual
       }
     }
+    if (ast.isExpandElementExpr(astNode)) {
+      const elementNode = elementRef(astNode.parent)
+      invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
+      const expanded = this.resolveFqn(elementNode)
+      return {
+        expanded
+      }
+    }
     if (ast.isDescedantsExpr(astNode)) {
       const elementNode = elementRef(astNode.parent)
       invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
@@ -249,8 +257,16 @@ export class LikeC4ModelParser {
   }
 
   private parseCustomElementExpr(astNode: ast.CustomElementExpr): c4.CustomElementExpr {
-    invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
-    const elementNode = elementRef(astNode.target)
+    let targetRef
+    if (ast.isElementRef(astNode.target)) {
+      targetRef = astNode.target
+    } else if (ast.isExpandElementExpr(astNode.target)) {
+      targetRef = astNode.target.parent
+    } else {
+      invariant(false, 'ElementRef expected as target of custom element')
+    }
+    // invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
+    const elementNode = elementRef(targetRef)
     invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
     const element = this.resolveFqn(elementNode)
     const props = astNode.body?.props ?? []

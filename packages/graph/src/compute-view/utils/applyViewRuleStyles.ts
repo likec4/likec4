@@ -1,5 +1,5 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
-import { Expr, isViewRuleStyle, nonexhaustive } from '@likec4/core'
+import { Expr, isViewRuleStyle, nonexhaustive, parentFqn } from '@likec4/core'
 import { anyPass, filter, type Predicate } from 'rambdax'
 import { isDefined, isNullish } from 'remeda'
 
@@ -27,6 +27,10 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
             ? ({ tags }) => !!tags && tags.includes(target.elementTag)
             : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
         )
+        continue
+      }
+      if (Expr.isExpandedElementExpr(target)) {
+        predicates.push(n => n.id === target.expanded || parentFqn(n.id) === target.expanded)
         continue
       }
       if (Expr.isElementRef(target)) {

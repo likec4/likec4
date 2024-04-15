@@ -299,7 +299,7 @@ export const includeWildcard = {
   ]
 } satisfies ViewRule
 
-export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*`
+export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*` | `${FakeElementIds}._`
 
 type InOutExpr = `-> ${ElementRefExpr} ->`
 type IncomingExpr = `-> ${ElementRefExpr}`
@@ -362,6 +362,11 @@ function toExpression(expr: Expression): C4Expression {
     return {
       source: toExpression(source as ElementRefExpr) as any,
       target: toExpression(target as ElementRefExpr) as any
+    }
+  }
+  if (expr.endsWith('._')) {
+    return {
+      expanded: expr.replace('._', '') as Fqn
     }
   }
   if (expr.endsWith('.*')) {

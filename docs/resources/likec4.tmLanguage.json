@@ -209,7 +209,7 @@
       "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem)\\b"
     },
     {
-      "match": "(\\b\\.)?(\\*),?",
+      "match": "(\\b\\.)?(\\*|_),?",
       "captures": {
         "2": {
           "name": "variable.other.constant.likec4"

@@ -117,9 +117,8 @@ views {
   view customer of customer {
     title "Overview Customer"
     include
-      *,
-      ui,
-      -> ui.*
+      *,  
+      ui._
 
     style * {
       color secondary

@@ -58,8 +58,8 @@ async function mkTestServices({ expect }: TestContext) {
   return {
     view: {
       valid: async (view: string) => {
-        const { errors } = await validateView(view)
-        expect(errors.join('\n')).toEqual('')
+        const { errors, warnings } = await validateView(view)
+        expect(errors.concat(warnings).join('\n')).toEqual('')
       },
       invalid: async (view: string) => {
         const { errors } = await validateView(view)
@@ -67,12 +67,19 @@ async function mkTestServices({ expect }: TestContext) {
       }
     },
     valid: async (rules: string) => {
-      const { errors } = await validateRules(rules)
-      expect(errors.join('\n')).toEqual('')
+      const { errors, warnings } = await validateRules(rules)
+      expect(errors.join('\n'), 'errors').to.be.empty
+      expect(warnings.join('\n'), 'warnings').to.be.empty
+    },
+    onlyWarnings: async (rules: string) => {
+      const { errors, warnings } = await validateRules(rules)
+      expect(errors.join('\n'), 'errors').to.be.empty
+      expect(warnings.join('\n'), 'warnings').not.to.be.empty
     },
     invalid: async (rules: string) => {
-      const { errors } = await validateRules(rules)
-      expect(errors).not.toEqual([])
+      const { errors, warnings } = await validateRules(rules)
+      expect(errors.join('\n'), 'errors').not.to.be.empty
+      expect(warnings.join('\n'), 'warnings').to.be.empty
     }
   }
 }
@@ -208,6 +215,30 @@ describe.concurrent('views2', () => {
       `)
     })
 
+    it('element._', async ctx => {
+      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
+      await valid(`
+        include system._
+      `)
+      await valid(`
+        include *
+        style system._ {
+        }
+      `)
+      await invalid(`
+        include system.__
+      `)
+      await invalid(`
+        include system ._
+      `)
+      await onlyWarnings(`
+        include -> system._
+      `)
+      await onlyWarnings(`
+        exclude system._
+      `)
+    })
+
     it('element { }', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
       await invalid(`
@@ -293,8 +324,8 @@ describe.concurrent('views2', () => {
     })
 
     it('-> element', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
-      await valid(`
+      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
+      await onlyWarnings(`
         include -> *
       `)
       await valid(`
@@ -306,17 +337,15 @@ describe.concurrent('views2', () => {
       await valid(`
         include -> system.backend.*
       `)
-      await valid(`
+      await onlyWarnings(`
         include
           -> *,
           -> system.backend.api,
           -> system.backend.*
       `)
-      await valid(`
+      await onlyWarnings(`
         exclude
-          -> *,
-          -> system.backend.api,
-          -> system.backend.*
+          -> *
       `)
     })
 
@@ -425,9 +454,9 @@ describe.concurrent('views2', () => {
     })
 
     it('element ->', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
 
-      await valid(`
+      await onlyWarnings(`
         include * ->
       `)
       await invalid(`
@@ -439,13 +468,13 @@ describe.concurrent('views2', () => {
       await valid(`
         include system.backend.* ->
       `)
-      await valid(`
+      await onlyWarnings(`
         include
           * ->,
           system ->,
           system.backend.* ->,
       `)
-      await valid(`
+      await onlyWarnings(`
         exclude
           * ->,
           system ->,

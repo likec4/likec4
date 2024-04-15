@@ -25,7 +25,7 @@
     },
     {
       "name": "entity.name.variable.likec4",
-      "match": "\\b\\.\\*"
+      "match": "\\b\\.(\\*|_)"
     },
     {
       "name": "keyword.control.likec4",
