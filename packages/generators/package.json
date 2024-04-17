@@ -6,10 +6,8 @@
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
-    "src",
-    "!**/__mocks__/**",
-    "!**/*.spec.*",
-    "!**/*.map"
+    "dist",
+    "!dist/src"
   ],
   "repository": {
     "type": "git",
@@ -23,12 +21,18 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "unbuild",
-    "prepack": "unbuild",
+    "build": "tsc -b",
+    "prepack": "tsc -p tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
     "test": "run -T vitest run"
@@ -42,7 +46,6 @@
   "devDependencies": {
     "@types/node": "^20.11.25",
     "typescript": "^5.4.5",
-    "unbuild": "^2.0.0",
     "vitest": "^1.4.0"
   },
   "packageManager": "yarn@4.1.1"

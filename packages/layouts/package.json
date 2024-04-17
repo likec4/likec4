@@ -7,6 +7,7 @@
   "author": "Denis Davydkov <denis@davydkov.com>",
   "files": [
     "dist",
+    "!dist/src",
     "!**/__fixtures__/",
     "!**/*.spec.*",
     "!**/*.snap",
@@ -39,16 +40,14 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "prepack": "unbuild",
-    "build": "unbuild",
+    "prepack": "tsc -p tsconfig.build.json",
+    "build": "tsc -b",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
-    "clean": "run -T rimraf dist"
+    "clean": "run -T rimraf -g 'dist/**' '.tsbuildinfo/**'"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "^2.16.0",
-    "@likec4/core": "workspace:*",
-    "@likec4/graph": "workspace:*",
+    "esm-env": "^1.0.0",
     "execa": "^8.0.1",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
@@ -60,10 +59,17 @@
     "type-fest": "^4.15.0",
     "word-wrap": "^1.2.5"
   },
+  "peerDependencies": {
+    "@hpcc-js/wasm": "^2.16.1",
+    "@likec4/core": "workspace:*",
+    "@likec4/graph": "workspace:*"
+  },
   "devDependencies": {
+    "@hpcc-js/wasm": "^2.16.1",
+    "@likec4/core": "workspace:*",
+    "@likec4/graph": "workspace:*",
     "@types/node": "^20.11.25",
     "typescript": "^5.4.5",
-    "unbuild": "^2.0.0",
     "vitest": "^1.4.0"
   },
   "packageManager": "yarn@4.1.1"

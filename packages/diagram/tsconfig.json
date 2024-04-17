@@ -9,15 +9,14 @@
       "esnext",
       "webworker"
     ],
-    "outDir": ".tsbuildinfo/out",
-    "declarationDir": ".tsbuildinfo/out",
-    "rootDir": "./src",
+    "rootDir": ".",
+    "outDir": "./dist",
     "jsx": "react-jsx",
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
   "include": [
-    "src"
+    "./src"
   ],
   "references": [
     {

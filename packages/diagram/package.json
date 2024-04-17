@@ -20,25 +20,27 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "module": "./dist/esm/index.mjs",
-  "types": "./dist/types/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.mjs",
-      "default": "./dist/esm/index.mjs"
-    },
+    ".": "./src/index.ts",
     "./style.css": "./dist/style.css"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "./style.css": "./dist/style.css"
+    }
   },
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "typecheck": "tsc --emitDeclarationOnly --declaration --declarationMap",
+    "typecheck": "tsc --noEmit",
+    "prepack": "vite build --mode production",
     "build:turbo": "run -T turbo build --filter='diagram'",
-    "build": "vite build && run typecheck",
+    "build": "vite build --mode development && tsc",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist bundle"
   },

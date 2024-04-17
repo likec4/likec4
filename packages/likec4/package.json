@@ -49,7 +49,7 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "^2.16.0",
+    "@hpcc-js/wasm": "^2.16.1",
     "fast-equals": "^5.0.1",
     "nanostores": "^0.10.0",
     "playwright": "1.42.1",

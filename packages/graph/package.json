@@ -34,8 +34,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "unbuild",
-    "prepack": "unbuild",
+    "build": "tsc -b",
+    "prepack": "tsc -p tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "clean": "run -T rimraf dist"

@@ -14,15 +14,16 @@ const external = [
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production'
   return {
     plugins: [
       vanillaExtractPlugin(),
       react(),
-      dts({
+      isProd && dts({
         compilerOptions: {
+          rootDir: './src',
           declarationMap: false
-        },
-        outDir: 'dist/types'
+        }
       })
     ],
     esbuild: {
@@ -48,17 +49,14 @@ export default defineConfig(({ mode }) => {
     // },
     build: {
       outDir: 'dist',
-      emptyOutDir: true,
+      emptyOutDir: isProd,
       lib: {
         entry: {
           // 'bundle': resolve(__dirname, 'src/bundle.ts'),
           'index': resolve(__dirname, 'src/index.ts')
         },
         fileName(format, entryName) {
-          if (format === 'cjs') {
-            return `cjs/${entryName}.cjs`
-          }
-          return `esm/${entryName}.mjs`
+          return `${entryName}.mjs`
         },
         formats: ['es']
       },

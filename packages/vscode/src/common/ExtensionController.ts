@@ -6,6 +6,7 @@ import type { GraphvizLayouter } from '@likec4/layouts'
 import { WasmGraphvizLayouter } from '@likec4/layouts'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
+import pTimeout from 'p-timeout'
 import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
@@ -82,12 +83,15 @@ export class ExtensionController extends AbstractDisposable {
             .join('')
         }`
       )
-      Logger.info(`[Extension] Starting LanguageClient...`)
-      await this.client.start().catch(e => {
-        Logger.error(e)
-        return Promise.reject(e)
-      })
       Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
+
+      if (this.client.needsStart()) {
+        Logger.info(`[Extension] Starting LanguageClient...`)
+        await pTimeout(this.client.start(), {
+          milliseconds: 5000,
+          message: 'Failed to start language client'
+        })
+      }
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
@@ -170,9 +174,11 @@ export class ExtensionController extends AbstractDisposable {
       Logger.info(`[Extension] activated`)
       //
     } catch (e) {
-      const error = normalizeError(e)
-      Logger.error(error)
-      throw error
+      if (e instanceof Error) {
+        void vscode.window.showErrorMessage(e.message)
+        Logger.error(e)
+      }
+      return Promise.reject(e)
     }
   }
 

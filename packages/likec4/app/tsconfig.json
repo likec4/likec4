@@ -1,11 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "incremental": true,
     "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
+    "module": "esnext",
     "outDir": "../dist/__app__",
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": false,

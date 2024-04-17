@@ -27,11 +27,12 @@ export class WasmGraphvizLayouter implements GraphvizLayouter {
       if (result) {
         return result
       }
-      console.warn('Failed to layout with graphviz, retrying...')
+      console.warn('Retrying...')
       await delay(50)
       // Attempt 2
       result = await this.attempt(view)
       if (result) {
+        console.info('Retry succeeded')
         return result
       }
       throw new Error('Failed to layout with graphviz')
@@ -43,7 +44,8 @@ export class WasmGraphvizLayouter implements GraphvizLayouter {
       const graphviz = await Graphviz.load()
       return dotLayoutFn(graphviz, view)
     } catch (err) {
-      console.error('Failed attempt to layout with graphviz:', err)
+      console.error(`Failed attempt to layout with graphviz: ${view.id}`)
+      console.error(err)
       return null
     } finally {
       Graphviz.unload()

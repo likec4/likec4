@@ -4,7 +4,8 @@
   "include": [],
   "exclude": [
     "**/node_modules",
-    "**/.*/"
+    "**/.*/",
+    "packages/*/dist"
   ],
   "compilerOptions": {
     "lib": [
@@ -24,7 +25,6 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "allowArbitraryExtensions": true,
-    "importHelpers": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -40,8 +40,6 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "useDefineForClassFields": true,
-    "incremental": true,
-    "noEmitOnError": false
+    "useDefineForClassFields": true
   }
 }

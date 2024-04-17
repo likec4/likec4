@@ -1,11 +1,18 @@
 {
-  "extends": "./tsconfig.src.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/build.tsbuildinfo",
-    "outDir": "dist/esm",
-    "declarationDir": "dist/dts",
-    "stripInternal": true
+    "rootDir": "./src",
+    "target": "es2022",
+    "declarationMap": false,
+    "tsBuildInfoFile": null,
+    "composite": false,
+    "incremental": false
   },
+  "exclude": [
+    "**/node_modules",
+    "**/__fixtures__",
+    "**/*.spec.ts"
+  ],
   "references": [
     {
       "path": "../core"

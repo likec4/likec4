@@ -536,6 +536,15 @@ export function printToDot(view: ComputedView): DotSource {
 }
 
 export function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  const unflattened = graphviz.unflatten(printToDot(computedView), 1, true, 2)
+  const initial = printToDot(computedView)
+
+  // const acyclicResult = graphviz.acyclic(initial, true)
+  // const acyclicDot = acyclicResult.outFile ?? initial
+
+  // console.log('acyclicDot ---------------')
+  // console.log(acyclicDot)
+  // console.log('acyclicDot ---------------')
+
+  const unflattened = graphviz.unflatten(initial, 1, true, 2)
   return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ')
 }
