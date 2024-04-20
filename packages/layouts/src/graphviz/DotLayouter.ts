@@ -1,7 +1,7 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import { type ComputedView } from '@likec4/core'
+import { delay } from '@likec4/core'
 import pLimit from 'p-limit'
-import { delay } from 'rambdax'
 import { dotLayoutFn } from './dotLayout'
 import type { DotLayoutResult } from './types'
 

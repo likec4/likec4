@@ -52,7 +52,6 @@
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
     "p-limit": "^4.0.0",
-    "rambdax": "^9.1.1",
     "remeda": "^1.56.0",
     "strip-indent": "^4.0.0",
     "ts-graphviz": "^1.8.2",
@@ -63,6 +62,11 @@
     "@hpcc-js/wasm": "^2.16.1",
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@likec4/graph": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@hpcc-js/wasm": "^2.16.1",

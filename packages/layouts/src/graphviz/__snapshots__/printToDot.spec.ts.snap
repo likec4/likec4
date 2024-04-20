@@ -11,7 +11,7 @@ exports[`printToDot > computedAmazonView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
-  pack = 200;
+  pack = 180;
   packmode = "array_3";
   pad = 0.139;
   graph [
@@ -99,7 +99,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
-  pack = 200;
+  pack = 180;
   packmode = "array_3";
   pad = 0.139;
   graph [
@@ -164,14 +164,12 @@ exports[`printToDot > computedCloud3levels 1`] = `
       likec4_level = 1;
       margin = 0.362;
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="25"><FONT POINT-SIZE="20" COLOR="#eff6ff">Admin Panel Webapp</FONT></TD></TR></TABLE></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The admin panel is a webapp that allows</FONT></TD></TR>,<TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">support staff to manage customer data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-      group = "cloud";
     ];
     "dashboard" [
       likec4_id = "cloud.frontend.dashboard";
       likec4_level = 1;
       margin = 0.362;
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="25"><FONT POINT-SIZE="20" COLOR="#eff6ff">Customer Dashboard Webapp</FONT></TD></TR></TABLE></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The customer dashboard is a webapp that</FONT></TD></TR>,<TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">allows customers to view their data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-      group = "cloud";
     ];
     subgraph "cluster_backend" {
       likec4_id = "cloud.backend";
@@ -188,7 +186,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
         likec4_level = 2;
         margin = 0.362;
         label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5"><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="25"><FONT POINT-SIZE="20" COLOR="#eff6ff">Graphql API</FONT></TD></TR></TABLE></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Component that allows to query data via</FONT></TD></TR>,<TR><TD VALIGN="BOTTOM" HEIGHT="16"><FONT POINT-SIZE="14" COLOR="#bfdbfe">GraphQL.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
-        group = "cloud";
       ];
       "storage" [
         likec4_id = "cloud.backend.storage";
@@ -232,7 +229,6 @@ exports[`printToDot > computedCloud3levels 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
     arrowtail = "odiamond";
     dir = "both";
-    constraint = false;
   ];
 }"
 `;
@@ -248,7 +244,7 @@ exports[`printToDot > computedCloudView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
-  pack = 200;
+  pack = 180;
   packmode = "array_3";
   pad = 0.139;
   graph [
@@ -343,7 +339,6 @@ exports[`printToDot > computedCloudView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
     arrowtail = "odiamond";
     dir = "both";
-    constraint = false;
   ];
 }"
 `;
@@ -359,7 +354,7 @@ exports[`printToDot > computedIndexView 1`] = `
   outputorder = "nodesfirst";
   nodesep = 1.389;
   ranksep = 1.528;
-  pack = 200;
+  pack = 180;
   packmode = "array_3";
   pad = 0.139;
   graph [
@@ -431,7 +426,6 @@ exports[`printToDot > computedIndexView 1`] = `
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD><TABLE ALIGN="LEFT" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" VALIGN="BOTTOM" HEIGHT="15"><FONT POINT-SIZE="13">persists artifacts</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
     arrowtail = "odiamond";
     dir = "both";
-    constraint = false;
   ];
 }"
 `;

@@ -11,7 +11,6 @@ import type {
   RelationshipLineType
 } from '@likec4/core'
 import {
-  compareByFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme,
   DefaultThemeColor,
@@ -20,25 +19,7 @@ import {
   nonNullable,
   parentFqn
 } from '@likec4/core'
-import {
-  filter,
-  first,
-  groupBy,
-  isNullish as isNil,
-  isNumber,
-  isTruthy,
-  keys,
-  last,
-  map,
-  mapValues,
-  omitBy,
-  pipe,
-  reverse,
-  sort,
-  toPairs,
-  uniq,
-  zip
-} from 'remeda'
+import { first, isNullish as isNil, isNumber, isTruthy, last } from 'remeda'
 import {
   type $keywords,
   type ArrowType,
@@ -116,25 +97,22 @@ export function toGraphvisModel({
     )
   }
 
-  function getEdge(_edge: ComputedEdge | EdgeId) {
-    return typeof _edge === 'string' ? nonNullable(viewEdges.find(e => e.id === _edge)) : _edge
-  }
-
   /**
    * At the moment, we don't show edges between clusters.
    * But they are still used to calculate the rank of nodes.
+   * UPDATE: we show edges between clusters now.
    */
-  const cacheIsEdgeVisible = new WeakMap<ComputedEdge, boolean>()
   function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
-    const edge = getEdge(_edge)
-    if (cacheIsEdgeVisible.has(edge)) {
-      return cacheIsEdgeVisible.get(edge)!
-    }
-    const hasCompoundEndpoint = viewNodes.some(
-      n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
-    )
-    cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
-    return !hasCompoundEndpoint
+    // const edge = getEdge(_edge)
+    // if (cacheIsEdgeVisible.has(edge)) {
+    //   return cacheIsEdgeVisible.get(edge)!
+    // }
+    // const hasCompoundEndpoint = viewNodes.some(
+    //   n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
+    // )
+    // cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
+    // return !hasCompoundEndpoint
+    return true
   }
 
   function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
@@ -158,7 +136,7 @@ export function toGraphvisModel({
     [_.outputorder]: 'nodesfirst',
     [_.nodesep]: pxToInch(100),
     [_.ranksep]: pxToInch(110),
-    [_.pack]: pxToPoints(200),
+    [_.pack]: pxToPoints(180),
     [_.packmode]: 'array_3',
     [_.pad]: pxToInch(10)
   })
@@ -412,8 +390,8 @@ export function toGraphvisModel({
       } else {
         e.attributes.apply({
           [_.arrowtail]: toArrowType(edge.tail),
-          [_.dir]: 'both',
-          [_.constraint]: false
+          [_.dir]: 'both'
+          // [_.constraint]: false
         })
       }
     }
@@ -505,28 +483,28 @@ export function toGraphvisModel({
     addEdge(edge, parent)
   }
 
-  const groups = pipe(
-    viewEdges,
-    filter(e => !!e.parent && isEdgeVisible(e)),
-    groupBy(e => e.parent!),
-    omitBy((v, _k) => v.length < 2 || v.length > 6),
-    mapValues(edges => uniq(edges.flatMap(e => [e.source, e.target]))),
-    toPairs,
-    map(([groupId, nodes]) => ({ id: groupId as Fqn, nodes })),
-    sort(compareByFqnHierarchically),
-    reverse()
-  )
+  // const groups = pipe(
+  //   viewEdges,
+  //   filter(e => !!e.parent && isEdgeVisible(e)),
+  //   groupBy(e => e.parent!),
+  //   omitBy((v, _k) => v.length < 2 || v.length > 6),
+  //   mapValues(edges => uniq(edges.flatMap(e => [e.source, e.target]))),
+  //   toPairs,
+  //   map(([groupId, nodes]) => ({ id: groupId as Fqn, nodes })),
+  //   sort(compareByFqnHierarchically),
+  //   reverse()
+  // )
 
-  const processed = new Set<Fqn>()
-  for (const group of groups) {
-    for (const elementId of group.nodes) {
-      if (processed.has(elementId)) {
-        continue
-      }
-      processed.add(elementId)
-      graphvizNodes.get(elementId)?.attributes.set(_.group, group.id)
-    }
-  }
+  // const processed = new Set<Fqn>()
+  // for (const group of groups) {
+  //   for (const elementId of group.nodes) {
+  //     if (processed.has(elementId)) {
+  //       continue
+  //     }
+  //     processed.add(elementId)
+  //     graphvizNodes.get(elementId)?.attributes.set(_.group, group.id)
+  //   }
+  // }
 
   return G
 }
