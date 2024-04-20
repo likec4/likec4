@@ -93,7 +93,7 @@
     "strip-indent": "^4.0.0",
     "tsx": "^4.7.1",
     "type-fest": "^4.15.0",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.5",
     "typescript-plugin-css-modules": "^5.1.0",
     "vitest": "^1.4.0",
     "yargs": "^17.7.2"
