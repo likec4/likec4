@@ -6,7 +6,7 @@ import { useDotBin } from '../options'
 
 export const exportCmd = {
   command: 'export <format> [path]',
-  describe: 'Export model to various formats',
+  describe: 'Export to images or JSON',
   builder: yargs =>
     yargs
       .usage(`${k.bold('Usage:')} $0 export <format> [path]`)

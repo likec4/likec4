@@ -42,7 +42,6 @@ async function buildCli() {
     banner: {
       js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
     },
-    tsconfig: 'tsconfig.src.json',
     plugins: [
       nodeExternalsPlugin({
         dependencies: true,

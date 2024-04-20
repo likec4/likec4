@@ -1547,7 +1547,6 @@ __metadata:
     indent-string: "npm:^5.0.0"
     khroma: "npm:^2.1.0"
     p-limit: "npm:^4.0.0"
-    rambdax: "npm:^9.1.1"
     remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
@@ -1559,6 +1558,9 @@ __metadata:
     "@hpcc-js/wasm": ^2.16.1
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
+  peerDependenciesMeta:
+    "@likec4/graph":
+      optional: true
   languageName: unknown
   linkType: soft
 
