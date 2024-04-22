@@ -1,7 +1,7 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
-import { generateViewId } from '../react/generate-react'
+import { generateViewId } from './generateViewId'
 
 export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
   const views = Array.from(diagrams)
