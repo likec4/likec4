@@ -3,7 +3,7 @@ import { viteWebcomponentConfig } from '@/vite/webcomponent'
 import { copyFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { build } from 'vite'
-import type { LikeC4ViteConfig } from './config'
+import type { LikeC4ViteConfig } from './config.prod'
 import { mkTempPublicDir } from './utils'
 
 export const viteBuild = async (cfg?: LikeC4ViteConfig) => {

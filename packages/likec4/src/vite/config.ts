@@ -10,22 +10,9 @@ import postcssPresetMantine from 'postcss-preset-mantine'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
+import type { LikeC4ViteConfig } from './config.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
-
-export type LikeC4ViteConfig =
-  | {
-    languageServices: LanguageServices
-    workspaceDir?: never
-    outputDir?: string | undefined
-    base?: string | undefined
-  }
-  | {
-    languageServices?: never
-    workspaceDir: string
-    outputDir?: string | undefined
-    base?: string | undefined
-  }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   consola.warn('DEVELOPMENT MODE')
@@ -62,13 +49,28 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     root,
     languageServices,
     configFile: false,
+    mode: 'development',
+    define: {
+      'process.env.NODE_ENV': '"development"'
+    },
     resolve: {
-      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
         '@likec4/diagrams': resolve('../diagrams/src/index.ts')
       }
+    },
+    optimizeDeps: {
+      include: [
+        'react-dom',
+        'react',
+        'framer-motion',
+        '@radix-ui/themes',
+        'react/jsx-dev-runtime',
+        '@mantine/core',
+        '@mantine/hooks'
+      ],
+      force: true
     },
     clearScreen: false,
     base,

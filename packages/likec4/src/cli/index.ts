@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import { consola } from 'consola'
+import { argv, exit, stdout } from 'node:process'
 import k from 'picocolors'
-import { clamp } from 'rambdax'
+import { clamp } from 'remeda'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import pkg from '../../package.json' assert { type: 'json' }
@@ -13,15 +14,22 @@ import previewCmd from './preview'
 import serveCmd from './serve'
 
 consola.wrapConsole()
+// @ts-expect-error
+if (process.env.NODE_ENV !== 'production') {
+  consola.level = 5 // trace
+  consola.debug('running in dev mode')
+} else {
+  consola.debug('running in prod mode')
+}
 
-const cli = yargs(hideBin(process.argv))
+const cli = yargs(hideBin(argv))
   .scriptName('likec4')
   .usage(`Usage: $0 <command>`)
   .command(serveCmd)
   .command(buildCmd)
-  .command(previewCmd)
-  .command(exportCmd)
   .command(codegenCmd)
+  .command(exportCmd)
+  .command(previewCmd)
   .help('help')
   .version(pkg.version)
   .alias('v', 'version')
@@ -36,7 +44,7 @@ const cli = yargs(hideBin(process.argv))
     'Commands:': k.bold('Commands:'),
     'Examples:': k.bold('Examples:')
   })
-  .wrap(clamp(80, 120, process.stdout.columns - 20))
+  .wrap(clamp(stdout.columns - 20, { min: 80, max: 120 }))
   .parseAsync()
 
-cli.catch(() => process.exit(1))
+cli.catch(() => exit(1))

@@ -1,5 +1,5 @@
+import consola from 'consola'
 import k from 'picocolors'
-import { debounce } from 'remeda'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 import type { CliServices } from './module'
@@ -31,7 +31,7 @@ export function languageServicesUtils(services: CliServices) {
 
   // Returns true if the update was successful
   async function notifyUpdate({ changed, removed }: { changed?: string; removed?: string }) {
-    logger.info(`notify update ${k.dim(changed ?? removed)}`)
+    consola.debug(`notify update ${k.dim(changed ?? removed)}`)
     try {
       let completed = false
       await mutex.write(async token => {
@@ -51,14 +51,8 @@ export function languageServicesUtils(services: CliServices) {
   }
 
   function onModelUpdate(listener: () => void) {
-    const notify = debounce(listener, {
-      timing: 'both',
-      waitMs: 300,
-      maxWaitMs: 1500
-    })
-    const sib = modelBuilder.onModelParsed(() => notify.call())
+    const sib = modelBuilder.onModelParsed(() => listener())
     return () => {
-      notify.cancel()
       sib.dispose()
     }
   }

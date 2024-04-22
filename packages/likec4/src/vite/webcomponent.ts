@@ -8,20 +8,15 @@ import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
-import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
-
-export type LikeC4ViteWebcomponentConfig = {
-  languageServices: LanguageServices
-  outDir: string
-  base: string
-}
+import type { LikeC4ViteWebcomponentConfig } from './webcomponent.prod'
 
 export async function viteWebcomponentConfig({
   languageServices,
   outDir,
-  base
+  base,
+  filename = 'likec4-views.js'
 }: LikeC4ViteWebcomponentConfig) {
   const customLogger = createLikeC4Logger('c4:lib')
 
@@ -38,7 +33,6 @@ export async function viteWebcomponentConfig({
     root,
     configFile: false,
     resolve: {
-      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts')
@@ -51,6 +45,10 @@ export async function viteWebcomponentConfig({
     define: {
       'process.env.NODE_ENV': '"production"'
     },
+    optimizeDeps: {
+      noDiscovery: true,
+      include: []
+    },
     build: {
       outDir,
       emptyOutDir: false,
@@ -62,7 +60,7 @@ export async function viteWebcomponentConfig({
       lib: {
         entry: 'src/lib/webcomponent.tsx',
         fileName(_format, _entryName) {
-          return 'likec4-views.js'
+          return filename
         },
         formats: ['iife'],
         name: 'LikeC4Views'

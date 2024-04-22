@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import k from 'picocolors'
 import { build } from 'vite'
 import { LanguageServices } from '../language-services'
-import type { LikeC4ViteConfig } from './config'
+import type { LikeC4ViteConfig } from './config.prod'
 import { likec4Plugin } from './plugin'
 //
 

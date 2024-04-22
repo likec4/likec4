@@ -68,6 +68,14 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         '@emotion/is-prop-valid': 'fast-equals'
       }
     },
+    mode: 'production',
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
+    optimizeDeps: {
+      noDiscovery: true,
+      include: []
+    },
     build: {
       outDir,
       emptyOutDir: false,

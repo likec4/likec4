@@ -1,4 +1,5 @@
 import { generateViewsDataJs } from '@likec4/generators'
+import consola from 'consola'
 import pLimit from 'p-limit'
 import k from 'picocolors'
 import { mapToObj } from 'remeda'
@@ -139,8 +140,9 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
 
     configureServer(server) {
       const limit = pLimit(1)
-      const triggerHMR = () =>
-        limit(async () => {
+      const triggerHMR = () => {
+        limit.clearQueue()
+        void limit(async () => {
           const [error] = likec4.getErrors()
           if (error) {
             server.hot.send({
@@ -159,21 +161,20 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
             })
             return
           }
-          const reload = modules
-            .flatMap(m => {
-              const md = server.moduleGraph.getModuleById(m.virtualId)
-              return md && md.importers.size > 0 ? [md] : []
-            })
-            .map(async md => {
+          for (const module of modules) {
+            const md = server.moduleGraph.getModuleById(module.virtualId)
+            if (md && md.importers.size > 0) {
               logger.info(`${k.green('trigger hmr')} ${k.dim(md.url)}`)
-              return server.reloadModule(md).catch(err => {
-                server.hot.send({ type: 'error', err })
+              try {
+                await server.reloadModule(md)
+              } catch (err) {
                 logger.error(err)
-              })
-            })
-          await Promise.allSettled(reload)
+              }
+            }
+          }
           return
         })
+      }
 
       const pattern = likec4.workspace
       logger.info(`${k.dim('watch')} ${pattern}`)
@@ -197,7 +198,8 @@ export function likec4Plugin({ languageServices: likec4 }: LikeC4PluginOptions):
         })
 
       likec4.onModelUpdate(() => {
-        triggerHMR().catch(err => logger.error(err))
+        consola.debug('likec4 model update')
+        triggerHMR()
       })
     }
   }

@@ -3,8 +3,8 @@ import type { CommandModule } from 'yargs'
 import { useDotBin } from '../options'
 
 export const serveCmd = {
-  command: 'serve [path]',
-  aliases: ['start', 'dev'],
+  command: 'start [path]',
+  aliases: ['serve', 'dev'],
   describe: 'Start local dev server to preview LikeC4 diagrams',
   builder: yargs =>
     yargs

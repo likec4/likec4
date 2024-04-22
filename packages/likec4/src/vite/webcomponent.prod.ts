@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
-import { LanguageServices } from '../language-services'
+import type { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
 //
@@ -14,12 +14,14 @@ export type LikeC4ViteWebcomponentConfig = {
   languageServices: LanguageServices
   outDir: string
   base: string
+  filename?: string
 }
 
 export async function viteWebcomponentConfig({
   languageServices,
   outDir,
-  base
+  base,
+  filename = 'likec4-views.js'
 }: LikeC4ViteWebcomponentConfig) {
   const customLogger = createLikeC4Logger('c4:lib')
 
@@ -41,6 +43,10 @@ export async function viteWebcomponentConfig({
     define: {
       'process.env.NODE_ENV': '"production"'
     },
+    optimizeDeps: {
+      noDiscovery: true,
+      include: []
+    },
     build: {
       outDir,
       emptyOutDir: false,
@@ -55,7 +61,7 @@ export async function viteWebcomponentConfig({
       lib: {
         entry: 'src/lib/webcomponent.mjs',
         fileName(_format, _entryName) {
-          return 'likec4-views.js'
+          return filename
         },
         formats: ['iife'],
         name: 'LikeC4Views'

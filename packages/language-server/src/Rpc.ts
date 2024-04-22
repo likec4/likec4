@@ -1,4 +1,4 @@
-import debounceFunction from 'debounce-fn'
+import { debounce } from 'remeda'
 import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
 
@@ -33,18 +33,20 @@ export class Rpc implements Disposable {
     const LangiumDocuments = this.services.shared.workspace.LangiumDocuments
     const DocumentBuilder = this.services.shared.workspace.DocumentBuilder
 
+    const notifyModelParsed = debounce(
+      () => void connection.sendNotification(onDidChangeModel, '').catch(logError),
+      {
+        timing: 'both',
+        waitMs: 100,
+        maxWaitMs: 500
+      }
+    )
+
     this.disposables.push(
-      modelBuilder.onModelParsed(
-        debounceFunction(
-          () => void connection.sendNotification(onDidChangeModel, '').catch(logError),
-          {
-            before: true,
-            after: true,
-            wait: 250,
-            maxWait: 1000
-          }
-        )
-      ),
+      Disposable.create(() => {
+        notifyModelParsed.cancel()
+      }),
+      modelBuilder.onModelParsed(() => notifyModelParsed.call()),
       connection.onRequest(fetchComputedModel, async cancelToken => {
         const model = await modelBuilder.buildComputedModel(cancelToken)
         return { model }

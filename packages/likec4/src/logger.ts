@@ -11,7 +11,7 @@ const WARN = k.bold(k.yellow('WARN'))
 const INFO = k.bold(k.green('INFO'))
 
 export function createLikeC4Logger(prefix: string) {
-  const logger = createLogger('info', {
+  const logger = createLogger(undefined, {
     prefix,
     allowClearScreen: !isCI
   })

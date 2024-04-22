@@ -25,7 +25,7 @@ export const codegenCmd = {
       // npm package command
       .command(
         ['package [path]', 'pkg', 'npm'],
-        'generate npm package',
+        '!!experimental!! generate npm package',
         yargs =>
           yargs
             // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
@@ -49,10 +49,10 @@ export const codegenCmd = {
         }
       )
       // ----------------------
-      // react command
+      // react-next command
       .command(
         'react-next [path]',
-        'generate react (.tsx)',
+        'generate next react diagrams',
         yargs =>
           yargs
             .options({
@@ -69,6 +69,33 @@ export const codegenCmd = {
           })
         }
       )
+      // ----------------------
+      // webcomponent command
+      .command({
+        command: 'webcomponent [path]',
+        aliases: ['wc', 'webcomp'],
+        describe: 'generate js with webcomponent',
+        builder: yargs =>
+          yargs
+            .options({
+              useDotBin,
+              outfile: {
+                alias: 'o',
+                type: 'string',
+                desc: '<file> output .js file',
+                normalize: true
+              }
+            })
+            .coerce(['outfile'], resolve),
+        handler: async args => {
+          const { handler } = await import('./webcomponent/handler')
+          await handler({
+            useDotBin: args.useDotBin,
+            path: args.path,
+            outfile: args.outfile
+          })
+        }
+      })
       // ----------------------
       // react command
       .command(

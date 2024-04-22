@@ -65,7 +65,6 @@
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
-    "debounce-fn": "^6.0.0",
     "fast-equals": "^5.0.1",
     "langium": "^3.0.0",
     "object-hash": "^3.0.0",

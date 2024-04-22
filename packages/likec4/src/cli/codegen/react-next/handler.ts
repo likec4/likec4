@@ -20,6 +20,8 @@ export async function handler({ path, useDotBin, outdir }: HandlerParams) {
   const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
+  logger.info(`${k.dim('format')} ${k.green('react-next')}`)
+
   const diagrams = await languageServices.views.diagrams()
   if (diagrams.length === 0) {
     logger.warn('no views found')
@@ -30,7 +32,7 @@ export async function handler({ path, useDotBin, outdir }: HandlerParams) {
   const outputDir = outdir ?? resolve(languageServices.workspace, 'likec4-views')
   await mkdir(outputDir, { recursive: true })
 
-  logger.info(`${k.dim('generate sources to:')} ${relative(cwd(), outputDir)}`)
+  logger.info(`${k.dim('output to:')} ${relative(cwd(), outputDir)}`)
 
   await writeSources({ outputDir, diagrams })
 
