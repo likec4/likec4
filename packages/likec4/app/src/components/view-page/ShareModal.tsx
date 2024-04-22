@@ -8,7 +8,6 @@ import {
   CopyButton,
   Group,
   type MantineColorScheme,
-  Modal,
   ModalBody,
   ModalContent,
   ModalOverlay,
@@ -21,11 +20,9 @@ import {
   TabsPanel,
   TabsTab,
   Text,
-  Textarea,
-  Tooltip,
   useMantineColorScheme
 } from '@mantine/core'
-import { IconAlertTriangle, IconCheck, IconCopy } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCheck, IconCopy, IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 
@@ -162,7 +159,10 @@ const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
           <Box>
             <Text fw={'500'} size="sm">Code</Text>
           </Box>
-          <Box>
+          <Group gap={'xs'}>
+            <ActionIcon component="a" href={href} target="_blank" variant="light" color="gray">
+              <IconExternalLink />
+            </ActionIcon>
             <CopyButton value={code} timeout={1500} children={CopyButtonChild} />
             {
               /* <CopyButton value={code} timeout={1500}>
@@ -181,7 +181,7 @@ const EmbedPanel = ({ diagram }: { diagram: DiagramView }) => {
             </CopyButton> */
             }
             {/* <Text>Open</Text> */}
-          </Box>
+          </Group>
         </Group>
         <Code block>
           {code}
@@ -240,12 +240,15 @@ const WebcomponentsPanel = ({ diagram }: { diagram: DiagramView }) => {
           <Box>
             <Text fw={'500'} size="sm">JavaScript</Text>
           </Box>
-          <Box>
+          <Group gap={'xs'}>
+            <ActionIcon component="a" href={href} target="_blank" variant="light" color="gray">
+              <IconExternalLink />
+            </ActionIcon>
             <CopyButton
               value={jscode}
               timeout={1500}
               children={CopyButtonChild} />
-          </Box>
+          </Group>
         </Group>
         <Code block>
           {jscode}
