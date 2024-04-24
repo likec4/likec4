@@ -81,7 +81,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
-      minify: true,
+      minify: 'esbuild',
       copyPublicDir: true,
       chunkSizeWarningLimit,
       commonjsOptions: {

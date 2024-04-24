@@ -47,11 +47,16 @@ export async function viteWebcomponentConfig({
       noDiscovery: true,
       include: []
     },
+    resolve: {
+      alias: {
+        '@emotion/is-prop-valid': 'fast-equals'
+      }
+    },
     build: {
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      minify: true,
+      minify: 'esbuild',
       // 100Kb
       assetsInlineLimit: 100 * 1024,
       chunkSizeWarningLimit,
@@ -65,6 +70,11 @@ export async function viteWebcomponentConfig({
         },
         formats: ['iife'],
         name: 'LikeC4Views'
+      },
+      rollupOptions: {
+        output: {
+          compact: true
+        }
       }
     },
     customLogger,

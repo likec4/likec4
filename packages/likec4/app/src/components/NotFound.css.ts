@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { style } from '@vanilla-extract/css'
-import { mantine } from '../theme'
+import mantine from '../mantine-vars'
 
 export const content = style({
   paddingTop: 120,

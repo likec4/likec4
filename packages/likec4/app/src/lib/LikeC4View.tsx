@@ -3,7 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { LikeC4Views } from 'virtual:likec4/views'
-import { bundledCSSStyleSheet, IbmPlexSans, prefersDark, theme } from './styles'
+import { bundledCSSStyleSheet, IbmPlexSans, matchesColorScheme, prefersDark, theme } from './styles'
 
 const defaultHostCss = `:host {
   min-height: 2rem;
@@ -43,13 +43,6 @@ export class LikeC4View extends HTMLElement {
     ]
     this.rootEl = this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
     this.root = ReactDOM.createRoot(this.shadow.querySelector('.likec4-react-root')!)
-
-    this.rootEl.addEventListener('click', (e) => {
-      e.stopPropagation()
-      const fs = document.createElement('likec4-browser')
-      fs.setAttribute('view-id', this.view.id)
-      document.body.appendChild(fs)
-    })
   }
 
   connectedCallback() {
@@ -85,10 +78,13 @@ export class LikeC4View extends HTMLElement {
       this.lastHostCss = hostCss
     }
 
+    const colorScheme = matchesColorScheme()
+
     this.root.render(
       <MantineProvider
         theme={theme}
-        {...(prefersDark() && { forceColorScheme: 'dark' })}
+        defaultColorScheme={prefersDark() ? 'dark' : 'light'}
+        {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector=".likec4-shadow-root">
         <LikeC4Diagram
@@ -99,9 +95,16 @@ export class LikeC4View extends HTMLElement {
           background={'transparent'}
           fitView
           fitViewPadding={0.05}
+          disableHovercards
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}
+          onCanvasClick={(e) => {
+            e.stopPropagation()
+            const fs = document.createElement('likec4-browser')
+            fs.setAttribute('view-id', view.id)
+            document.body.appendChild(fs)
+          }}
         />
       </MantineProvider>
     )

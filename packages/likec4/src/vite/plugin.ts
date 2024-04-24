@@ -21,7 +21,7 @@ interface Module {
 
 const generatedStore = {
   id: 'virtual:likec4',
-  virtualId: '\0likec4',
+  virtualId: '/@vite-plugin-likec4/store',
   async load({ logger }) {
     logger.info(k.dim('generating virtual:likec4'))
     return `
@@ -32,7 +32,7 @@ import { LikeC4Views } from 'virtual:likec4/views'
 export const $views = map(LikeC4Views)
 
 if (import.meta.hot) {
-  import.meta.hot.accept('/@vite-plugin-likec4/likec4-views', md => {
+  import.meta.hot.accept('/@vite-plugin-likec4/views', md => {
     const update = md?.LikeC4Views
     if (update) {
       const currents = $views.get()
@@ -51,7 +51,7 @@ if (import.meta.hot) {
 
 const generatedViews = {
   id: 'virtual:likec4/views',
-  virtualId: '/@vite-plugin-likec4/likec4-views',
+  virtualId: '/@vite-plugin-likec4/views',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/views'))
     const diagrams = await likec4.views.diagrams()
@@ -61,7 +61,7 @@ const generatedViews = {
 
 const dotSourcesModule = {
   id: 'virtual:likec4/dot-sources',
-  virtualId: '\0likec4/dot-sources',
+  virtualId: '/@vite-plugin-likec4/dot-sources',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/dot-sources'))
     const views = await likec4.views.viewsAsGraphvizOut()
@@ -72,7 +72,7 @@ const dotSourcesModule = {
 
 const d2SourcesModule = {
   id: 'virtual:likec4/d2-sources',
-  virtualId: '\0likec4/d2-sources',
+  virtualId: '/@vite-plugin-likec4/d2-sources',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/d2-sources'))
     const views = await likec4.views.computedViews()
@@ -82,8 +82,7 @@ const d2SourcesModule = {
 
 const mmdSourcesModule = {
   id: 'virtual:likec4/mmd-sources',
-  virtualId: '\0likec4/mmd-sources',
-  // virtualId: '/@vite-plugin-likec4/likec4-mmd-sources.ts',
+  virtualId: '/@vite-plugin-likec4/mmd-sources',
   async load({ likec4, logger }) {
     logger.info(k.dim('generating virtual:likec4/mmd-sources'))
     const views = await likec4.views.computedViews()

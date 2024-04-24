@@ -41,13 +41,40 @@ export const cssCaptureGesturesLayer = style({
   zIndex: 1
 })
 
-export const cssExportVeew = style({
+export const cssExportView = style({
   position: 'fixed',
   boxSizing: 'border-box',
-  border: '0 solid transparent',
   inset: 0,
   width: '100vw',
   height: '100vh',
   padding: 0,
   background: 'transparent'
 })
+
+export const cssWebcomponentView = style({
+  position: 'fixed',
+  inset: 0,
+  width: '100%',
+  height: '100%'
+})
+
+export const cssWebcomponentIframeContainer = style({
+  flex: 1,
+  width: '100%',
+  height: '100%',
+  overflow: 'hidden'
+})
+
+globalStyle(`${cssWebcomponentIframeContainer} iframe`, {
+  width: '100%',
+  height: '100%',
+  borderStyle: 'none',
+  backgroundColor: 'transparent',
+  overflow: 'hidden'
+})
+// globalStyle(`${cssWebcomponentView} iframe html`, {
+//   // width: '100%',
+//   // height: '100%',
+//   // border: '0',
+//     backgroundColor: 'var(--mantine-color-body)'
+// })

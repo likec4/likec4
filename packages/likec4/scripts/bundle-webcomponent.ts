@@ -2,6 +2,7 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
 import { resolve } from 'path'
+import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import { modules } from '../src/vite/plugin'
@@ -22,6 +23,7 @@ export async function buildWebcomponentBundle() {
         '@likec4/diagram': resolve('../diagram/src/index.ts')
       }
     },
+    clearScreen: false,
     mode: 'production',
     define: {
       'process.env.NODE_ENV': '"production"'
@@ -35,7 +37,7 @@ export async function buildWebcomponentBundle() {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: true,
+      minify: 'esbuild',
       copyPublicDir: false,
       target: 'esnext',
       lib: {
@@ -46,15 +48,15 @@ export async function buildWebcomponentBundle() {
         formats: ['es']
       },
       commonjsOptions: {
-        esmExternals: true
+        esmExternals: true,
         // extensions: ['.js', '.cjs'],
-        // transformMixedEsModules: true,
+        transformMixedEsModules: true
         // requireReturnsDefault: 'auto'
       },
       rollupOptions: {
         treeshake: true,
         output: {
-          exports: 'none'
+          compact: true
         },
         external: [
           'virtual:likec4',
@@ -65,10 +67,16 @@ export async function buildWebcomponentBundle() {
         ]
       }
     },
+    css: {
+      postcss: {
+        plugins: [
+          postcssPresetMantine()
+        ]
+      }
+    },
     plugins: [
       react({}),
       vanillaExtractPlugin({})
     ]
   })
-  consola.success('webcomponent bundle')
 }

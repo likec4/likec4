@@ -19,13 +19,16 @@ async function buildCli() {
     logLevel: 'info',
     outdir: 'dist',
     outbase: 'src',
+    outExtension: {
+      '.js': '.mjs'
+    },
     color: true,
     bundle: true,
-    sourcemap: true,
+    sourcemap: isDev,
     sourcesContent: isDev,
-    keepNames: true,
+    keepNames: isDev,
     minify: !isDev,
-    treeShaking: true,
+    treeShaking: !isDev,
     legalComments: 'none',
     mainFields: ['module', 'main'],
     entryPoints: ['src/cli/index.ts'],
@@ -76,25 +79,31 @@ async function buildCli() {
   if (bundle.metafile) {
     await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
   }
-  consola.success('Built CLI')
 }
-consola.log('clean dist')
+consola.info('clean dist')
 await rm('dist/', { recursive: true, force: true })
-await buildCli()
 
-consola.log(`copy app files to dist/__app__`)
+consola.info(`create dist/__app__/src`)
 await mkdir('dist/__app__/src', { recursive: true })
 
+await buildCli()
+consola.log('\n-------\n')
+
 await bundleApp()
+consola.info(`copy app files to dist/__app__`)
+await copyFile('app/index.html', 'dist/__app__/index.html')
+await copyFile('app/robots.txt', 'dist/__app__/robots.txt')
+await copyFile('app/favicon.ico', 'dist/__app__/favicon.ico')
+await copyFile('app/favicon.svg', 'dist/__app__/favicon.svg')
+await copyFile('app/src/main.js', 'dist/__app__/src/main.js')
+consola.log('\n-------\n')
+
 await buildWebcomponentBundle()
+
 const verifyStyles = await readFile('dist/__app__/src/lib/style.css', 'utf-8')
 assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
 
 await rm('dist/__app__/src/lib/style.css')
-
-await copyFile('app/index.html', 'dist/__app__/index.html')
-await copyFile('app/favicon.svg', 'dist/__app__/favicon.svg')
-await copyFile('app/src/main.js', 'dist/__app__/src/main.js')
 
 // await writeFile(
 //   'dist/__app__/tsconfig.json',

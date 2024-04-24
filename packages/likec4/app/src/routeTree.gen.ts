@@ -14,6 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as WebcomponentViewIdImport } from './routes/webcomponent.$viewId'
 import { Route as ViewViewIdImport } from './routes/view.$viewId'
 import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
@@ -33,6 +34,11 @@ const ViewViewIdD2LazyImport = createFileRoute('/view/$viewId/d2')()
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WebcomponentViewIdRoute = WebcomponentViewIdImport.update({
+  path: '/webcomponent/$viewId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -109,6 +115,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewViewIdImport
       parentRoute: typeof rootRoute
     }
+    '/webcomponent/$viewId': {
+      preLoaderRoute: typeof WebcomponentViewIdImport
+      parentRoute: typeof rootRoute
+    }
     '/view/$viewId/editor': {
       preLoaderRoute: typeof ViewViewIdEditorImport
       parentRoute: typeof ViewViewIdImport
@@ -150,6 +160,7 @@ export const routeTree = rootRoute.addChildren([
     ViewViewIdReactLegacyLazyRoute,
     ViewViewIdIndexRoute,
   ]),
+  WebcomponentViewIdRoute,
 ])
 
 /* prettier-ignore-end */

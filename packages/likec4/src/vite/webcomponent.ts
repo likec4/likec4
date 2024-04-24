@@ -17,7 +17,7 @@ export async function viteWebcomponentConfig({
   outDir,
   base,
   filename = 'likec4-views.js'
-}: LikeC4ViteWebcomponentConfig) {
+}: LikeC4ViteWebcomponentConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger('c4:lib')
 
   const root = resolve('app')
@@ -41,13 +41,8 @@ export async function viteWebcomponentConfig({
     clearScreen: false,
     base,
     publicDir: false,
-    mode: 'production',
     define: {
-      'process.env.NODE_ENV': '"production"'
-    },
-    optimizeDeps: {
-      noDiscovery: true,
-      include: []
+      'process.env.NODE_ENV': '"development"'
     },
     build: {
       outDir,
@@ -55,7 +50,7 @@ export async function viteWebcomponentConfig({
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: true,
+      minify: 'esbuild',
       chunkSizeWarningLimit,
       lib: {
         entry: 'src/lib/webcomponent.tsx',
@@ -65,11 +60,11 @@ export async function viteWebcomponentConfig({
         formats: ['iife'],
         name: 'LikeC4Views'
       },
-      commonjsOptions: {
-        esmExternals: true
-      },
+      // commonjsOptions: {
+      //   esmExternals: true,
+      //   transformMixedEsModules: true
+      // },
       rollupOptions: {
-        treeshake: true,
         plugins: [
           shadowStyle()
         ]
@@ -87,5 +82,5 @@ export async function viteWebcomponentConfig({
         ]
       }
     }
-  } satisfies InlineConfig
+  }
 }

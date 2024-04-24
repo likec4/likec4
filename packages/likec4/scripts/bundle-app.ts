@@ -11,15 +11,19 @@ import { modules } from '../src/vite/plugin'
 export async function bundleApp() {
   const root = resolve('app')
   const outDir = resolve('dist/__app__/src')
-  consola.start(`Bundle app...\nroot: ${root}`)
+  consola.start(`Bundle app...`)
+  consola.info(`root: ${root}`)
   // Static website
   await build({
     root,
     configFile: false,
+    clearScreen: false,
     resolve: {
       dedupe: [
         'react',
-        'react-dom'
+        'react/jsx-runtime',
+        'react-dom',
+        'react-dom/client'
       ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
@@ -32,14 +36,18 @@ export async function bundleApp() {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      treeShaking: true
+      treeShaking: true,
+      legalComments: 'none',
+      minifyWhitespace: true,
+      minifyIdentifiers: true,
+      minifySyntax: true
     },
     build: {
       emptyOutDir: false,
       outDir,
       cssCodeSplit: false,
       cssMinify: true,
-      minify: true,
+      minify: 'esbuild',
       sourcemap: false,
       target: 'esnext',
       assetsInlineLimit: 500 * 1024,
@@ -61,7 +69,7 @@ export async function bundleApp() {
         // include: [
         //   'framer-motion'
         // ],
-        // transformMixedEsModules: true,
+        transformMixedEsModules: true,
         esmExternals: true,
         // requireReturnsDefault: 'namespace',
         ignoreTryCatch: 'remove'
@@ -71,6 +79,7 @@ export async function bundleApp() {
       rollupOptions: {
         treeshake: true,
         output: {
+          compact: true,
           exports: 'named'
         },
         external: [
@@ -97,5 +106,4 @@ export async function bundleApp() {
       vanillaExtractPlugin({})
     ]
   })
-  consola.success('App bundled\n\n')
 }

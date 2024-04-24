@@ -40,7 +40,11 @@ export async function handler({ path, useDotBin, output, ignore, timeout, maxAtt
   }
 
   const buildOutputDir = resolve(output, '.build-cache')
-  await viteBuild({ languageServices, outputDir: buildOutputDir })
+  await viteBuild({
+    languageServices,
+    outputDir: buildOutputDir,
+    buildWebcomponent: false
+  })
 
   logger.info(k.cyan(`start preview server`))
   const previewServer = await vitePreview({

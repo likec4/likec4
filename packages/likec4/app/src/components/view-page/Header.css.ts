@@ -1,5 +1,5 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../theme'
+import mantine from '../../mantine-vars'
 
 export const headerHeight = createVar('header-height')
 globalStyle(':root', {

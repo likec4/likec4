@@ -1,5 +1,4 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
-import { themeToVars } from '@mantine/vanilla-extract'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
@@ -17,5 +16,3 @@ export const theme = createTheme({
     }
   }
 }) as MantineTheme
-
-export const mantine = themeToVars(theme)

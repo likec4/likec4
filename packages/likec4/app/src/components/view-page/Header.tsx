@@ -167,8 +167,10 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
               component={Link}
               to={route}
               startTransition
+              search
               params={{ viewId }}
               leftSection={icon}
+              {...(route === matched.route ? { bg: 'gray' } : {})}
               style={{
                 whiteSpace: 'nowrap'
               }}
@@ -183,6 +185,9 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
 })
 
 function ExportButton() {
+  const params = useParams({
+    from: '/view/$viewId'
+  })
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
       <MenuTarget>
@@ -194,9 +199,9 @@ function ExportButton() {
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
         <MenuItem>Export as .png</MenuItem>
-        <MenuItem>Export as .dot</MenuItem>
-        <MenuItem>Export as .d2</MenuItem>
-        <MenuItem>Export as .mmd</MenuItem>
+        <MenuItem component={Link} to={'/view/$viewId/dot'} search params={params}>Export as .dot</MenuItem>
+        <MenuItem component={Link} to={'/view/$viewId/d2'} search params={params}>Export as .d2</MenuItem>
+        <MenuItem component={Link} to={'/view/$viewId/mmd'} search params={params}>Export as .mmd</MenuItem>
         <MenuItem disabled>Export to Draw.io</MenuItem>
         <MenuItem disabled>Export to Miro</MenuItem>
         <MenuItem disabled>Export to Notion</MenuItem>

@@ -6,17 +6,36 @@ import { build } from 'vite'
 import type { LikeC4ViteConfig } from './config.prod'
 import { mkTempPublicDir } from './utils'
 
-export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
+type Config = LikeC4ViteConfig & {
+  buildWebcomponent?: boolean
+}
+
+export const Assets = ['favicon.ico', 'robots.txt']
+
+export const viteBuild = async ({
+  buildWebcomponent = true,
+  ...cfg
+}: Config) => {
   const { isDev, ...config } = await viteConfig(cfg)
 
   const publicDir = await mkTempPublicDir()
 
-  const webcomponentConfig = await viteWebcomponentConfig({
-    languageServices: config.languageServices,
-    outDir: publicDir,
-    base: config.base
-  })
-  await build(webcomponentConfig)
+  for (const asset of Assets) {
+    const origin = resolve(config.root, asset)
+    if (existsSync(origin)) {
+      copyFileSync(origin, resolve(publicDir, asset))
+    }
+  }
+
+  let webcomponentPromise
+  if (buildWebcomponent) {
+    const webcomponentConfig = await viteWebcomponentConfig({
+      languageServices: config.languageServices,
+      outDir: publicDir,
+      base: config.base
+    })
+    webcomponentPromise = build(webcomponentConfig)
+  }
 
   // Static website
   await build({
@@ -24,6 +43,10 @@ export const viteBuild = async (cfg?: LikeC4ViteConfig) => {
     publicDir,
     mode: 'production'
   })
+
+  if (webcomponentPromise) {
+    await webcomponentPromise
+  }
 
   // Copy index.html to 404.html
   const indexHtml = resolve(config.build.outDir, 'index.html')

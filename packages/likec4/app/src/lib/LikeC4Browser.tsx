@@ -3,7 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { Box, CloseButton, MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { LikeC4Views } from 'virtual:likec4/views'
-import { bundledCSSStyleSheet, IbmPlexSans, prefersDark, theme } from './styles'
+import { bundledCSSStyleSheet, IbmPlexSans, matchesColorScheme, prefersDark, theme } from './styles'
 
 export class LikeC4Browser extends HTMLElement {
   static observedAttributes = ['view-id']
@@ -62,10 +62,13 @@ export class LikeC4Browser extends HTMLElement {
   protected render() {
     let view = this.view
 
+    const colorScheme = matchesColorScheme()
+
     this.root.render(
       <MantineProvider
         theme={theme}
-        {...(prefersDark() && { forceColorScheme: 'dark' })}
+        defaultColorScheme={prefersDark() ? 'dark' : 'light'}
+        {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector=".likec4-shadow-root">
         <LikeC4Diagram

@@ -28,6 +28,20 @@ export const theme = createTheme({
   }
 })
 
+export const matchesColorScheme = () => {
+  try {
+    if (window.matchMedia('(color-scheme: light)').matches) {
+      return 'light'
+    }
+    if (window.matchMedia('(color-scheme: dark)').matches) {
+      return 'dark'
+    }
+  } catch (_e) {
+    // noop
+  }
+  return undefined
+}
+
 export const prefersDark = () => {
   try {
     return window.matchMedia('(prefers-color-scheme: dark)').matches

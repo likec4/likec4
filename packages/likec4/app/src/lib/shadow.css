@@ -25,6 +25,7 @@ select {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 /* ----- Global styles ----- */
@@ -40,6 +41,7 @@ select {
   display: block;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 
   -webkit-font-smoothing: var(--mantine-webkit-font-smoothing);
   -moz-osx-font-smoothing: var(--mantine-moz-font-smoothing);
@@ -62,11 +64,16 @@ select {
 
 
 .likec4-shadow-root.likec4-browser {
-  --mantine-color-body: rgb(255 255 255 / 10%);
-  backdrop-filter: blur(16px);
+  --mantine-color-body: rgb(0 0 0 / 0%);
 
+  &[data-mantine-color-scheme] {
+    backdrop-filter: blur(16px);
+  }
+  &[data-mantine-color-scheme=light] {
+    --mantine-color-body: rgb(255 255 255 / 10%);
+  }
   &[data-mantine-color-scheme=dark] {
-    --mantine-color-body: rgb(0 0 0 / 55%);
+    --mantine-color-body: rgb(12 12 12 / 25%);
   }
 }
 

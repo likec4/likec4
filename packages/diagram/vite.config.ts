@@ -18,7 +18,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vanillaExtractPlugin(),
-      react(),
+      react({
+        jsxRuntime: 'classic'
+      }),
       isProd && dts({
         compilerOptions: {
           rootDir: './src',
@@ -27,26 +29,12 @@ export default defineConfig(({ mode }) => {
       })
     ],
     esbuild: {
-      exclude: external
+      exclude: external,
+      jsxInject: `import React from 'react'`
     },
-    // esbuild: {
-    //   jsxDev: false
-    // }
-    // esbuild: {
-    //   exclude: [
-    //     'react',
-    //     'react-dom',
-    //     'react/jsx-runtime',
-    //     'scheduler',
-    //     '@mantine/core',
-    //     '@mantine/hooks'
-    //   ]
-    // },
-    // optimizeDeps: {
-    //   esbuildOptions: {
-    //     plugins: [veEsbuild({runtime: false})]
-    //   }
-    // },
+    resolve: {
+      dedupe: ['react', 'react-dom']
+    },
     build: {
       outDir: 'dist',
       emptyOutDir: isProd,
@@ -54,13 +42,15 @@ export default defineConfig(({ mode }) => {
         entry: {
           // 'bundle': resolve(__dirname, 'src/bundle.ts'),
           'index': resolve(__dirname, 'src/index.ts')
+          // 'LikeC4Diagram': resolve(__dirname, 'src/LikeC4Diagram.tsx'),
+          // 'StaticLikeC4Diagram': resolve(__dirname, 'src/StaticLikeC4Diagram.tsx'),
+          // 'EmbeddedLikeC4Diagram': resolve(__dirname, 'src/EmbeddedLikeC4Diagram.tsx'),
         },
         fileName(format, entryName) {
           return `${entryName}.mjs`
         },
         formats: ['es']
       },
-
       cssCodeSplit: false,
       cssMinify: true,
       minify: false,
@@ -70,6 +60,15 @@ export default defineConfig(({ mode }) => {
         //   requireReturnsDefault: true
       },
       rollupOptions: {
+        output: {
+          strict: true,
+          minifyInternalExports: true,
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+          esModule: true
+        },
+
+        treeshake: 'recommended',
         external
       }
     }
