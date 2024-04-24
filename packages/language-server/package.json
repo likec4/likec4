@@ -80,7 +80,7 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.12.7",
     "@types/object-hash": "^3.0.6",
     "@types/string-hash": "^1",
     "execa": "^8.0.1",
@@ -88,7 +88,7 @@
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
-    "vitest": "^1.4.0"
+    "vitest": "^1.5.1"
   },
   "packageManager": "yarn@4.1.1"
 }

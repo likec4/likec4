@@ -62,10 +62,10 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.12.7",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/vscode": "~1.77.0",
+    "@types/vscode": "~1.88.0",
     "autoprefixer": "^10.4.17",
     "likec4": "workspace:*",
     "postcss": "^8.4.35",

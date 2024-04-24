@@ -72,9 +72,9 @@
     "@hpcc-js/wasm": "^2.16.1",
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.12.7",
     "typescript": "^5.4.5",
-    "vitest": "^1.4.0"
+    "vitest": "^1.5.1"
   },
   "packageManager": "yarn@4.1.1"
 }

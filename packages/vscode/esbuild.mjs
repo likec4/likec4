@@ -37,7 +37,7 @@ const extensionNodeCfg = {
   ...base,
   entryPoints: ['src/node/extension.ts'],
   format: 'cjs',
-  target: 'node16',
+  target: 'node18',
   platform: 'node'
 }
 const serverNodeCfg = {

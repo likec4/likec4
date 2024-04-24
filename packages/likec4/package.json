@@ -55,7 +55,7 @@
     "fast-equals": "^5.0.1",
     "nanostores": "^0.10.0",
     "playwright": "1.42.1",
-    "vite": "^5.2.9"
+    "vite": "^5.2.10"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.19",
@@ -76,7 +76,7 @@
     "@tanstack/react-router": "^1.22.3",
     "@tanstack/router-vite-plugin": "^1.20.5",
     "@types/mermaid": "^9.2.0",
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.12.7",
     "@types/prop-types": "^15.7.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -114,7 +114,7 @@
     "typescript": "^5.4.5",
     "ufo": "^1.3.2",
     "vite-plugin-shadow-style": "^1.1.0",
-    "vitest": "^1.4.0",
+    "vitest": "^1.5.1",
     "yargs": "^17.7.2"
   },
   "publishConfig": {
