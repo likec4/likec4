@@ -1334,7 +1334,6 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.14.2"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
-    "@vanilla-extract/recipes": "npm:^0.5.2"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@xyflow/react": "npm:^12.0.0-next.12"
     clsx: "npm:^2.1.0"
@@ -4892,15 +4891,6 @@ __metadata:
   version: 1.0.4
   resolution: "@vanilla-extract/private@npm:1.0.4"
   checksum: 10/173eee950ae84cc7a4f1a525f75ca2847f7e0daaeef3e0815c8d8373599b36af696e87f8f8577a0ebee96529af084af817f2479fdcb26f906aed2e32faf35f42
-  languageName: node
-  linkType: hard
-
-"@vanilla-extract/recipes@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "@vanilla-extract/recipes@npm:0.5.2"
-  peerDependencies:
-    "@vanilla-extract/css": ^1.0.0
-  checksum: 10/6e0c2f9d43a2677327f84394c4ff9d676d56286f62991a0f8b147c6d2d79c1948ce6395f31032d3d3dfaea03b48c2a5bbd947a05e09e771911e6ffb5cb20ca00
   languageName: node
   linkType: hard
 
@@ -10491,7 +10481,6 @@ __metadata:
     "@types/yargs": "npm:^17.0.32"
     "@vanilla-extract/css": "npm:^1.14.2"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
-    "@vanilla-extract/recipes": "npm:^0.5.2"
     "@vanilla-extract/vite-plugin": "npm:^4.0.7"
     "@vitejs/plugin-react": "npm:^4.2.1"
     ci-info: "npm:^3.9.0"
