@@ -10,7 +10,21 @@ import { computeView, LikeC4ModelGraph } from '@likec4/graph'
 import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
-import * as R from 'remeda'
+import {
+  filter,
+  find,
+  flatMap,
+  forEach,
+  isNullish,
+  isTruthy,
+  map,
+  mapToObj,
+  pipe,
+  prop,
+  reduce,
+  sort,
+  values
+} from 'remeda'
 import { type CancellationToken, Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
@@ -30,7 +44,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     kinds: {},
     relationships: {}
   }
-  R.forEach(R.map(docs, R.prop('c4Specification')), spec => {
+  forEach(map(docs, prop('c4Specification')), spec => {
     Object.assign(c4Specification.kinds, spec.kinds), Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
@@ -59,14 +73,14 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
-  const elements = R.pipe(
-    R.flatMap(docs, d => d.c4Elements.map(toModelElement(d))),
-    R.compact,
-    R.sort(compareByFqnHierarchically),
-    R.reduce(
+  const elements = pipe(
+    flatMap(docs, d => d.c4Elements.map(toModelElement(d))),
+    filter(isTruthy),
+    sort(compareByFqnHierarchically),
+    reduce(
       (acc, el) => {
         const parent = parentFqn(el.id)
-        if (parent && R.isNil(acc[parent])) {
+        if (parent && isNullish(acc[parent])) {
           logWarnError(`No parent found for ${el.id}`)
           return acc
         }
@@ -113,10 +127,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
-  const relations = R.pipe(
-    R.flatMap(docs, d => R.map(d.c4Relations, toModelRelation(d))),
-    R.compact,
-    R.mapToObj(r => [r.id, r])
+  const relations = pipe(
+    flatMap(docs, d => map(d.c4Relations, toModelRelation(d))),
+    filter(isTruthy),
+    mapToObj(r => [r.id, r])
   )
 
   const toElementView = (doc: LangiumDocument) => {
@@ -142,10 +156,10 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
-  const views = R.pipe(
-    R.flatMap(docs, d => R.map(d.c4Views, toElementView(d))),
+  const views = pipe(
+    flatMap(docs, d => map(d.c4Views, toElementView(d))),
     resolveRelativePaths,
-    R.mapToObj(v => [v.id, v]),
+    mapToObj(v => [v.id, v]),
     resolveRulesExtendedViews
   )
   // add index view if not present
@@ -198,11 +212,9 @@ export class LikeC4ModelBuilder {
       DocumentState.Validated,
       async (docs, _cancelToken) => {
         let parsed = [] as URI[]
-        try {
-          logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
-          parsed.push(...parser.parse(docs).map(d => d.uri))
-        } catch (e) {
-          logger.error(e)
+        logger.debug(`[ModelBuilder] onValidated (${docs.length} docs)\n${printDocs(docs)}`)
+        for (const doc of parser.parse(docs)) {
+          parsed.push(doc.uri)
         }
         if (parsed.length > 0) {
           this.notifyListeners(parsed)
@@ -248,7 +260,7 @@ export class LikeC4ModelBuilder {
         const index = new LikeC4ModelGraph(model)
 
         const allViews = [] as c4.ComputedView[]
-        for (const view of R.values(model.views)) {
+        for (const view of values(model.views)) {
           const result = computeView(view, index)
           if (!result.isSuccess) {
             logWarnError(result.error)
@@ -257,7 +269,7 @@ export class LikeC4ModelBuilder {
           allViews.push(result.view)
         }
         assignNavigateTo(allViews)
-        const views = R.mapToObj(allViews, v => {
+        const views = mapToObj(allViews, v => {
           const previous = this.previousViews[v.id]
           const view = previous && eq(v, previous) ? previous : v
           viewsCache.set(computedViewKey(v.id), view)
@@ -293,7 +305,7 @@ export class LikeC4ModelBuilder {
           return null
         }
 
-        const allElementViews = R.values(model.views).filter(
+        const allElementViews = values(model.views).filter(
           (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
         )
 
@@ -301,7 +313,7 @@ export class LikeC4ModelBuilder {
         computedView.nodes.forEach(node => {
           if (!node.navigateTo) {
             // find first element view that is not the current one
-            const navigateTo = R.find(allElementViews, v => v.viewOf === node.id)
+            const navigateTo = find(allElementViews, v => v.viewOf === node.id)
             if (navigateTo) {
               node.navigateTo = navigateTo.id
             }
