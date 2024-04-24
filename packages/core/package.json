@@ -62,7 +62,7 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "execa": "^8.0.1",
     "typescript": "^5.4.5",
-    "vitest": "^1.5.1"
+    "vitest": "~1.4.0"
   },
   "packageManager": "yarn@4.1.1"
 }
