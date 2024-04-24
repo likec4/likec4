@@ -4,13 +4,20 @@ import { ActionIcon } from '@mantine/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  likec4Container,
+  likec4DiagramLoading,
+  likec4DiagramLoadingOverlay,
+  likec4error,
+  likec4ParsingScreen
+} from './App.css'
 import { Toolbar } from './Toolbar'
 import { cssToolbarLeft } from './Toolbar.css'
 import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <div className="likec4-error-message">
+  <div className={likec4error}>
     <p>
       Oops, something went wrong
       {error && (
@@ -68,7 +75,7 @@ const App = () => {
 
   if (!view) {
     return (
-      <div className="likec4-parsing-screen">
+      <div className={likec4ParsingScreen}>
         {state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
@@ -101,7 +108,7 @@ const App = () => {
   }
   return (
     <>
-      <div className="likec4-container" data-vscode-context='{"preventDefaultContextMenuItems": true}'>
+      <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
         <LikeC4Diagram
           view={view}
           fitViewPadding={0.08}
@@ -158,8 +165,8 @@ const App = () => {
       {state === 'error' && <ErrorMessage error={error} />},
       {state === 'loading' && (
         <>
-          <div className="likec4-diagram-loading-overlay"></div>
-          <div className="likec4-diagram-loading">
+          <div className={likec4DiagramLoadingOverlay}></div>
+          <div className={likec4DiagramLoading}>
             <p>Updating...</p>
             <VSCodeProgressRing />
           </div>

@@ -1,8 +1,8 @@
-import { createTheme, type MantineTheme } from '@mantine/core'
+import { createTheme } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
-  // fontFamily: `'IBM Plex Sans', sans-serif`,
+  cursorType: 'pointer',
   headings: {
     fontWeight: '500',
     sizes: {
@@ -15,4 +15,4 @@ export const theme = createTheme({
       }
     }
   }
-}) as MantineTheme
+})

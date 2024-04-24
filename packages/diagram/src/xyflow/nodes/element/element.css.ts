@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../../mantine'
+import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
 export const stokeFillMix = createVar('stroke-fill-mix')

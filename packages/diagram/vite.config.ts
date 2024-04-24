@@ -40,19 +40,15 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: isProd,
       lib: {
         entry: {
-          // 'bundle': resolve(__dirname, 'src/bundle.ts'),
           'index': resolve(__dirname, 'src/index.ts')
-          // 'LikeC4Diagram': resolve(__dirname, 'src/LikeC4Diagram.tsx'),
-          // 'StaticLikeC4Diagram': resolve(__dirname, 'src/StaticLikeC4Diagram.tsx'),
-          // 'EmbeddedLikeC4Diagram': resolve(__dirname, 'src/EmbeddedLikeC4Diagram.tsx'),
         },
-        fileName(format, entryName) {
+        fileName(_format, entryName) {
           return `${entryName}.mjs`
         },
         formats: ['es']
       },
       cssCodeSplit: false,
-      cssMinify: true,
+      cssMinify: false,
       minify: false,
       commonjsOptions: {
         // extensions: ['.js', '.cjs'],
@@ -63,12 +59,8 @@ export default defineConfig(({ mode }) => {
         output: {
           strict: true,
           minifyInternalExports: true,
-          preserveModules: true,
-          preserveModulesRoot: 'src',
           esModule: true
         },
-
-        treeshake: 'recommended',
         external
       }
     }

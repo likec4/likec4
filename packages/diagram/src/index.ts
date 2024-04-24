@@ -1,5 +1,4 @@
 import '@xyflow/react/dist/style.css'
-import './index.css'
 
 export { EmbeddedLikeC4Diagram } from './EmbeddedLikeC4Diagram'
 export { LikeC4Diagram } from './LikeC4Diagram'

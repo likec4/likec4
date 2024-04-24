@@ -197,15 +197,15 @@ export class PreviewPanel extends AbstractDisposable {
     const cspSource = webview.cspSource
     webview.html = /*html*/ `
 <!DOCTYPE html>
-<html data-mantine-color-scheme="${theme}">
+<html data-mantine-color-scheme="${theme}" style="color-scheme:${theme}">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'none';
-      font-src ${cspSource};
+      font-src data: https: ${cspSource};
       style-src 'unsafe-inline' ${cspSource};
-      img-src ${cspSource} https:;
+      img-src data: https: ${cspSource};
       script-src 'nonce-${nonce}' ${cspSource};
     ">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">

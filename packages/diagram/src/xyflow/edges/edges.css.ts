@@ -1,6 +1,6 @@
 import { rem } from '@mantine/core'
 import { globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine'
+import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
 export const container = style({

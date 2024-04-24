@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css'
-import { mantine } from './mantine'
+import { mantine } from './mantine.css'
 
 export const modalContent = style({
   backgroundColor: 'transparent'

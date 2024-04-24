@@ -1,8 +1,9 @@
 import type { ThemeColor } from '@likec4/core'
 import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme, fallbackVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from './mantine'
-import { vars, xyvars } from './theme.css'
+import { omit } from 'remeda'
+import { mantine } from './mantine.css'
+import { vars } from './theme.css'
 
 export const scope = style({})
 
@@ -15,7 +16,7 @@ globalStyle(`${scope} *, ${scope} *::before, ${scope} *::after`, {
 })
 
 createGlobalTheme(':root', {
-  ...vars
+  ...omit(vars, ['optionsPanel'])
 }, {
   likec4: {
     font: fallbackVar('var(--likec4-default-font-family)', 'Helvetica, Arial, sans-serif'),

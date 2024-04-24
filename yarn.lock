@@ -1099,10 +1099,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/ibm-plex-sans@npm:^5.0.19":
-  version: 5.0.19
-  resolution: "@fontsource/ibm-plex-sans@npm:5.0.19"
-  checksum: 10/a68330388287a73dbf9382f7be1f21f3a69f29949f13768bf37b51dafe494ba91c912aaf6bde0b30b6db7fb2ef2713f761e7154d19df4ef2f27e6ea25b553a38
+"@fontsource/ibm-plex-sans@npm:^5.0.19, @fontsource/ibm-plex-sans@npm:^5.0.20":
+  version: 5.0.20
+  resolution: "@fontsource/ibm-plex-sans@npm:5.0.20"
+  checksum: 10/3cc5b2a1237322de3ae2d083857cbe521c43b0e31f9aa0c606996317259a801e2e4556a5b0d2424b6d80408ea8a9f7901a580a3fe9c516d39dabbafd302d31b9
   languageName: node
   linkType: hard
 
@@ -1339,12 +1339,12 @@ __metadata:
     clsx: "npm:^2.1.0"
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
+    framer-motion: "npm:^11.0.25"
     khroma: "npm:^2.1.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-tracked: "npm:^1.7.14"
     remeda: "npm:^1.56.0"
-    terser: "npm:^5.30.0"
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.13.1"
     typescript: "npm:^5.4.5"
@@ -1352,9 +1352,6 @@ __metadata:
     vite: "npm:^5.2.9"
     vite-plugin-dts: "npm:^3.8.1"
   peerDependencies:
-    "@mantine/core": ^7.7.0
-    "@mantine/hooks": ^7.7.0
-    framer-motion: ^11.0.25
     react: ^18.2.0
     react-dom: ^18.2.0
     scheduler: ^0.23.0
@@ -1566,6 +1563,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/vscode-preview@workspace:packages/vscode-preview"
   dependencies:
+    "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@mantine/core": "npm:^7.7.0"
@@ -1581,7 +1579,6 @@ __metadata:
     "@vanilla-extract/vite-plugin": "npm:^4.0.7"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
-    framer-motion: "npm:^11.0.25"
     lucide-react: "npm:^0.294.0"
     postcss: "npm:^8.4.35"
     postcss-preset-mantine: "npm:^1.13.0"
@@ -1591,7 +1588,6 @@ __metadata:
     react-error-boundary: "npm:^4.0.13"
     typescript: "npm:^5.4.5"
     vite: "npm:^5.2.9"
-    vite-tsconfig-paths: "npm:^4.3.2"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
@@ -17513,7 +17509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-tsconfig-paths@npm:^4.2.1, vite-tsconfig-paths@npm:^4.3.2":
+"vite-tsconfig-paths@npm:^4.2.1":
   version: 4.3.2
   resolution: "vite-tsconfig-paths@npm:4.3.2"
   dependencies:

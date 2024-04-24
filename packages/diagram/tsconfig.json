@@ -13,7 +13,10 @@
     "outDir": "./dist",
     "jsx": "react-jsx",
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "types": [
+      "vite/client",
+    ]
   },
   "include": [
     "./src"

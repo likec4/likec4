@@ -20,6 +20,10 @@ export const vars = createGlobalThemeContract({
     lineColor: 'relation-lineColor',
     labelColor: 'relation-labelColor',
     labelBgColor: 'relation-labelBg'
+  },
+  optionsPanel: {
+    top: 'options-panel-top',
+    right: 'options-panel-right'
   }
 }, (value) => `likec4-${value}`)
 

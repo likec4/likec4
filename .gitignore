@@ -16,6 +16,9 @@ packages/*/dist
 packages/diagram/bundle
 packages/language-server/src/generated/
 
+vite.config.ts.timestamp*
+vitest.config.ts.timestamp*
+
 # Logs
 logs
 *.log

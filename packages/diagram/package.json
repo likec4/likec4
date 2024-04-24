@@ -15,6 +15,7 @@
     "LICENSE",
     "README.md",
     "dist",
+    "!dist/src",
     "!**/*.spec.*",
     "!**/*.d.ts.map"
   ],
@@ -46,21 +47,15 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.7.0",
+    "@mantine/hooks": "^7.7.0",
     "@react-hookz/web": "^24.0.4",
-    "@vanilla-extract/css": "^1.14.2",
-    "@vanilla-extract/dynamic": "^2.1.0",
     "@xyflow/react": "^12.0.0-next.12",
-    "clsx": "^2.1.0",
-    "fast-equals": "^5.0.1",
-    "khroma": "^2.1.0",
+    "framer-motion": "^11.0.25",
     "react-tracked": "^1.7.14",
     "remeda": "^1.56.0"
   },
   "peerDependencies": {
-    "@mantine/core": "^7.7.0",
-    "@mantine/hooks": "^7.7.0",
-    "framer-motion": "^11.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "scheduler": "^0.23.0"
@@ -71,8 +66,7 @@
     }
   },
   "devDependencies": {
-    "@mantine/core": "^7.7.0",
-    "@mantine/hooks": "^7.7.0",
+    "@lume/kiwi": "^0.4.3",
     "@mantine/vanilla-extract": "^7.7.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react": "^18.2.0",
@@ -81,10 +75,12 @@
     "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/esbuild-plugin": "^2.3.5",
     "@vitejs/plugin-react": "^4.2.1",
+    "clsx": "^2.1.0",
     "execa": "^8.0.1",
+    "fast-equals": "^5.0.1",
+    "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "terser": "^5.30.0",
     "tilg": "^0.1.1",
     "type-fest": "^4.13.1",
     "typescript": "^5.4.5",

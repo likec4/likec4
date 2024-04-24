@@ -14,7 +14,6 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build:watch": "vite build --watch --mode watch-dev",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
@@ -22,6 +21,7 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
+    "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@mantine/core": "^7.7.0",
@@ -37,7 +37,6 @@
     "@vanilla-extract/vite-plugin": "^4.0.7",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
-    "framer-motion": "^11.0.25",
     "lucide-react": "^0.294.0",
     "postcss": "^8.4.35",
     "postcss-preset-mantine": "^1.13.0",
@@ -47,7 +46,6 @@
     "react-error-boundary": "^4.0.13",
     "typescript": "^5.4.5",
     "vite": "^5.2.9",
-    "vite-tsconfig-paths": "^4.3.2",
     "vscode-messenger-webview": "^0.4.5"
   }
 }

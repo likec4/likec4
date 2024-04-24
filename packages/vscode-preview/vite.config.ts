@@ -1,39 +1,78 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
+import postcssPresetMantine from 'postcss-preset-mantine'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => {
   const isWatchDev = mode === 'watch-dev'
   const isDev = isWatchDev || mode === 'development'
   return {
-    plugins: [
-      react(),
-      vanillaExtractPlugin()
-    ],
     resolve: {
-      dedupe: ['react', 'react-dom', 'scheduler', 'react/jsx-runtime'],
+      dedupe: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        '@mantine/hooks',
+        '@mantine/core'
+      ],
       alias: {
         '@likec4/core': resolve(__dirname, '../core/src/index.ts'),
         '@likec4/diagram': resolve(__dirname, '../diagram/src/index.ts')
       }
     },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production')
+    },
+    esbuild: {
+      // treeShaking: true,
+      jsxInject: `import React from 'react'`
+    },
+    css: {
+      postcss: {
+        plugins: [
+          postcssPresetMantine()
+        ]
+      }
+    },
     build: {
-      outDir: isWatchDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
+      outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: true,
       cssCodeSplit: false,
-      sourcemap: isDev,
-      minify: !isDev,
-      cssMinify: !isDev,
-      chunkSizeWarningLimit: 1000,
+      // minify: !isDev ? 'esbuild' : false,
+      // cssMinify: !isDev,
+      // Static asset files smaller than this number (in bytes) will be inlined as base64 strings
+      assetsInlineLimit: 500 * 1024,
+      /**
+       * Adjust chunk size warning limit (in kB).
+       */
+      chunkSizeWarningLimit: 10_000,
       assetsDir: '',
       rollupOptions: {
+        // treeshake: 'recommended',
         external: ['vscode'],
         output: {
+          strict: true,
+          minifyInternalExports: true,
           entryFileNames: `[name].js`,
           assetFileNames: `[name].[ext]`
         }
+      },
+      commonjsOptions: {
+        // extensions: ['.js', '.cjs'],
+        esmExternals: true
+        //   requireReturnsDefault: true
       }
-    }
+    },
+    plugins: [
+      react(),
+      vanillaExtractPlugin(
+        isDev
+          ? {
+            unstable_mode: 'transform'
+          }
+          : {}
+      )
+    ]
   }
 })
