@@ -1,22 +1,8 @@
-// import { useStore } from '@nanostores/react'
-// import type { ConfigFromRouter, ParamsArg } from '@nanostores/router'
-// import { createRouter, createSearchParams, getPagePath } from '@nanostores/router'
-// import { computed } from 'nanostores'
-// import { equals, isEmpty, isString, mapValues, omitBy } from 'remeda'
-// import type { ViewID } from '@likec4/core'
-// import { BaseUrl } from './const'
-// import { startTransition } from 'react'
 import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/react-router'
-
-import { NotFound } from './components/NotFound'
-
 import { useMemo } from 'react'
+import { NotFound } from './components/NotFound'
 import { routeTree } from './routeTree.gen'
 
-// const notFoundRoute = new NotFoundRoute({
-//   getParentRoute: () => rootRoute,
-//   component: () => <div className="p-2">Not Found</div>,
-// })
 function createRouter(basepath: string) {
   return createTanstackRouter({
     routeTree,
@@ -54,7 +40,4 @@ declare module '@tanstack/react-router' {
 export function Routes({ basepath }: { basepath: string }) {
   const router = useMemo(() => createRouter(basepath), [basepath])
   return <RouterProvider router={router} />
-  // ReactDOM.createRoot(document.getElementById('like4-root')!).render(
-  //   <RouterProvider router={router} />
-  // )
 }
