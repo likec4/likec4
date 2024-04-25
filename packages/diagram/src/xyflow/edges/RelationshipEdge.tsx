@@ -171,7 +171,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             markerUnits="strokeWidth"
             preserveAspectRatio="xMaxYMid meet"
             orient="auto-start-reverse">
-            <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-fill" />
+            <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-stroke" />
           </marker>
         </defs>
       </g>

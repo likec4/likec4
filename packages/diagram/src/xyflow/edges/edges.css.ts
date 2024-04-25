@@ -56,11 +56,13 @@ export const edgePathBg = style({
 
 export const fillStrokeCtx = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke
-})
-globalStyle(`.react-flow__edge.selected ${fillStrokeCtx}`, {
-  vars: {
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected
+  stroke: xyvars.edge.stroke,
+  selectors: {
+    '.react-flow__edge.selected &': {
+      vars: {
+        [xyvars.edge.stroke]: xyvars.edge.strokeSelected
+      }
+    }
   }
 })
 
