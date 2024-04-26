@@ -18,15 +18,17 @@ import {
   MenuLabel,
   MenuTarget,
   Text,
-  Title
+  Title,
+  type TitleOrder,
+  useMantineTheme
 } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
-import { cssHeader } from './Header.css'
+import { cssDiagramTitle, cssDiagramTitleBox, cssHeader } from './Header.css'
 import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -36,16 +38,18 @@ type HeaderProps = {
 }
 
 export function Header({ diagram }: HeaderProps) {
+  const { breakpoints } = useMantineTheme()
+  const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
   return (
     <header className={cssHeader}>
       <DiagramTitle diagram={diagram} />
 
-      <Group gap={'sm'}>
-        <ViewPageButton />
+      <Group gap={isTablet ? 'xs' : 4} visibleFrom="xs" flex={'0 0 auto'}>
+        <ViewPageButton isTablet={isTablet} />
         <ColorSchemeToggle />
         <Divider orientation="vertical" />
-        <Button ml={'xs'} size="sm" leftSection={<IconShare size={14} />} onClick={open}>
+        <Button ml={'xs'} size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
           Share
         </Button>
         <ExportButton />
@@ -55,23 +59,6 @@ export function Header({ diagram }: HeaderProps) {
         onClose={close}
         diagram={diagram} />
     </header>
-    // <Flex
-    //   position={'fixed'}
-    //   top='0'
-    //   left='0'
-    //   width={'100%'}
-    //   className={styles.header}
-    //   justify='between'
-    //   align={'stretch'}
-    //   gap={'4'}
-    //   p={'2'}
-    // >
-    //   <Flex pl='7' grow='1' gap={'2'} shrink='1' align={'stretch'} wrap={'nowrap'}>
-    //     <DiagramTitle diagram={diagram} />
-    //     <DiagramLinks diagram={diagram} />
-    //   </Flex>
-    //   <ViewActions diagram={diagram} />
-    // </Flex>
   )
 }
 
@@ -120,7 +107,11 @@ const viewPages = [
   }
 ] as const satisfies Array<{ route: RegisteredRoute; icon: React.ReactNode; title: React.ReactNode }>
 
-const ViewPageButton = memo(function ViewPageButtonFn() {
+const ViewPageButton = memo(function ViewPageButtonFn({
+  isTablet
+}: {
+  isTablet: boolean
+}) {
   const { viewId } = useParams({
     from: '/view/$viewId'
   })
@@ -129,7 +120,7 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
   return (
     <>
       {matched.route === '/view/$viewId' && (
-        <Center h="100%">
+        <Center h="100%" visibleFrom="md">
           <Link
             to={`/view/$viewId/editor`}
             params={{ viewId }}
@@ -153,7 +144,7 @@ const ViewPageButton = memo(function ViewPageButtonFn() {
           <Button
             leftSection={matched.icon}
             variant="subtle"
-            size="sm"
+            size={isTablet ? 'sm' : 'xs'}
             color="gray"
             rightSection={<IconChevronDown opacity={0.5} size={14} />}>
             {matched.title}
@@ -191,7 +182,12 @@ function ExportButton() {
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
       <MenuTarget>
-        <Button variant="subtle" size="sm" color="gray" rightSection={<IconChevronDown opacity={0.5} size={14} />}>
+        <Button
+          variant="subtle"
+          size="sm"
+          color="gray"
+          rightSection={<IconChevronDown opacity={0.5} size={14} />}
+          visibleFrom="md">
           Export
         </Button>
       </MenuTarget>
@@ -216,15 +212,17 @@ function ExportButton() {
   )
 }
 
-function DiagramTitle({ diagram }: HeaderProps) {
+function DiagramTitle({ diagram }: {
+  diagram: DiagramView
+}) {
   const hasDescription = !isEmpty(diagram.description?.trim())
   return (
     <HoverCard closeDelay={500} position="bottom-start">
       <HoverCardTarget>
-        <Flex px={'3'} align={'center'}>
-          <Title order={4}>
+        <Flex px={'3'} align={'center'} className={cssDiagramTitleBox}>
+          <Text className={cssDiagramTitle}>
             {diagram.title || 'Untitled'}
-          </Title>
+          </Text>
         </Flex>
       </HoverCardTarget>
       <HoverCardDropdown>

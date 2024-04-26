@@ -20,6 +20,7 @@ import {
   TooltipGroup
 } from '@mantine/core'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
+import { useDiagramStoreApi } from '../../store'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
 import { useXYFlowEvents } from '../../xyflow/XYFlowEvents'
@@ -52,7 +53,7 @@ export type ColorKey = typeof colors[0]['key']
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
 export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
-  const { onChange } = useXYFlowEvents()
+  const diagramApi = useDiagramStoreApi()
   const nodes = useXYNodesData(selectedNodeIds)
   const api = useXYFlow()
   if (!hasAtLeast(nodes, 1)) {
@@ -91,11 +92,12 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
               targets.push(nd.data.element.id)
             }
             if (hasAtLeast(targets, 1)) {
-              onChange({
-                op: 'change-shape',
-                shape,
-                targets
-              })
+              // diagramApi.getState().triggerOnChange()
+              // onChange({
+              //   op: 'change-shape',
+              //   shape,
+              //   targets
+              // })
             }
           }} />
       )}
@@ -119,11 +121,11 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
             targets.push(nd.data.element.id)
           }
           if (hasAtLeast(targets, 1)) {
-            onChange({
-              op: 'change-color',
-              color,
-              targets
-            })
+            // onChange({
+            //   op: 'change-color',
+            //   color,
+            //   targets
+            // })
           }
         }} />
       <NavigateToOption nodes={nodes} />

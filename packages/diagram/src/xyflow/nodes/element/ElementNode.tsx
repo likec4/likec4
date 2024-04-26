@@ -4,7 +4,8 @@ import clsx from 'clsx'
 import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
 import { memo } from 'react'
-import { useDiagramState, useDiagramStateSelector } from '../../../state'
+import useTilg from 'tilg'
+import { useDiagramStore } from '../../../store'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -65,12 +66,18 @@ function ElementNode({
   width,
   height
 }: ElementNodeProps) {
-  // useTilg()
-  const diagramState = useDiagramState()
-  const isNodeInteractive = diagramState.isNodeInteractive
-  const isHovercards = diagramState.disableHovercards !== true
-  const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo
-  const isHovered = useDiagramStateSelector(state => state.hoveredNodeId === id)
+  useTilg()
+  const { isHovered, hasOnNavigateTo, isHovercards, isNodeInteractive } = useDiagramStore(s => ({
+    isHovered: s.hoveredNodeId === id,
+    isNodeInteractive: s.isNodeInteractive,
+    isHovercards: s.showElementLinks,
+    hasOnNavigateTo: !!s.onNavigateTo
+  }))
+  // const diagramState = useDiagramState()
+  // const isNodeInteractive = diagramState.isNodeInteractive
+  // const isHovercards = diagramState.disableHovercards !== true
+  // const isNavigable = diagramState.hasOnNavigateTo && !!element.navigateTo
+  const isNavigable = hasOnNavigateTo && !!element.navigateTo
 
   const w = toDomPrecision(width ?? element.width)
   const h = toDomPrecision(height ?? element.height)
@@ -201,4 +208,4 @@ function ElementNode({
   )
 }
 
-export const ElementNodeMemo = memo(ElementNode, isEqualProps) as typeof ElementNode
+export const ElementNodeMemo = memo(ElementNode) as typeof ElementNode

@@ -5,11 +5,11 @@ import type { XYFlowNode } from '../types'
 // of the line between the center of the intersectionNode and the target node
 function getNodeIntersection(intersectionNode: XYFlowNode, targetNode: XYFlowNode): XYPosition {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  const intersectionNodeWidth = intersectionNode.computed?.width ?? intersectionNode.data.element.width
-  const intersectionNodeHeight = intersectionNode.computed?.height ?? intersectionNode.data.element.height
-  const intersectionNodePosition = intersectionNode.computed?.positionAbsolute
+  const intersectionNodeWidth = intersectionNode.measured?.width ?? intersectionNode.data.element.width
+  const intersectionNodeHeight = intersectionNode.measured?.height ?? intersectionNode.data.element.height
+  const intersectionNodePosition = intersectionNode.position
     ?? { x: intersectionNode.data.element.position[0], y: intersectionNode.data.element.position[1] }
-  const targetPosition = targetNode.computed?.positionAbsolute
+  const targetPosition = targetNode.position
     ?? { x: targetNode.data.element.position[0], y: targetNode.data.element.position[1] }
 
   const w = intersectionNodeWidth / 2
@@ -17,8 +17,8 @@ function getNodeIntersection(intersectionNode: XYFlowNode, targetNode: XYFlowNod
 
   const x2 = intersectionNodePosition.x + w
   const y2 = intersectionNodePosition.y + h
-  const x1 = targetPosition.x + (targetNode.computed?.width ?? targetNode.data.element.width) / 2
-  const y1 = targetPosition.y + (targetNode.computed?.height ?? targetNode.data.element.height) / 2
+  const x1 = targetPosition.x + (targetNode.measured?.width ?? targetNode.data.element.width) / 2
+  const y1 = targetPosition.y + (targetNode.measured?.height ?? targetNode.data.element.height) / 2
 
   const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
   const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
@@ -34,11 +34,11 @@ function getNodeIntersection(intersectionNode: XYFlowNode, targetNode: XYFlowNod
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
 export function getPointPosition(node: XYFlowNode, intersectionPoint: XYPosition) {
   const n = {
-    x: node.data.element.position[0],
-    y: node.data.element.position[1],
-    ...node.computed?.positionAbsolute,
-    width: node.computed?.width ?? node.data.element.width,
-    height: node.computed?.height ?? node.data.element.height
+    // x: node.data.element.position[0],
+    // y: node.data.element.position[1],
+    ...node.position,
+    width: node.measured?.width ?? node.data.element.width,
+    height: node.measured?.height ?? node.data.element.height
   }
   const nx = Math.round(n.x)
   const ny = Math.round(n.y)

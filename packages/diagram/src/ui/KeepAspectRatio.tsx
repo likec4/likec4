@@ -18,18 +18,17 @@ export function KeepAspectRatio({
   style,
   ...rest
 }: KeepAspectRatioProps) {
-  if (!enabled) {
-    return <>{children}</>
-  }
   return (
     <Box
       {...rest}
       className={clsx(wrapper, className)}
-      style={{
-        ...style,
-        aspectRatio: `${Math.ceil(width)}/${Math.ceil(height)}`,
-        maxHeight: Math.ceil(height)
-      }}>
+      style={enabled
+        ? {
+          ...style,
+          aspectRatio: `${Math.ceil(width)}/${Math.ceil(height)}`,
+          maxHeight: Math.ceil(height)
+        }
+        : style}>
       {children}
     </Box>
   )

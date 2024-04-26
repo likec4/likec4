@@ -7,6 +7,7 @@ import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
 import { useDiagramState, useDiagramStateSelector } from '../../../state'
+import { useDiagramStore } from '../../../store'
 import { vars } from '../../../theme.css'
 import type { CompoundXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
@@ -55,9 +56,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   const w = toDomPrecision(width ?? compound.width)
   const h = toDomPrecision(height ?? compound.height)
 
-  const diagramState = useDiagramState()
-  const isnavigable = diagramState.hasOnNavigateTo && !!compound.navigateTo
-  const isHovered = useDiagramStateSelector(state => state.hoveredNodeId === id)
+  const { isHovered, hasOnNavigateTo } = useDiagramStore(s => ({
+    isHovered: s.hoveredNodeId === id,
+    hasOnNavigateTo: !!s.onNavigateTo
+  }))
+  const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
   return (
     <Box
@@ -104,4 +107,4 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       />
     </Box>
   )
-}, isEqualProps)
+})

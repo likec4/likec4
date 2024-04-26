@@ -123,10 +123,10 @@ export interface LikeC4DiagramProperties {
   background?: 'transparent' | 'solid' | XYBackgroundProps | undefined
 
   /**
-   * Disable element hovercards, such as links and properties
-   * @default false
+   * Display hovercards with element links
+   * @default true
    */
-  disableHovercards?: boolean | undefined
+  showElementLinks?: boolean | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

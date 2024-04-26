@@ -1,6 +1,6 @@
-import { invariant, type NonEmptyArray, type Point } from '@likec4/core'
+import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
 import { Box } from '@mantine/core'
-import type { EdgeProps } from '@xyflow/react'
+import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath, useStore } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq, shallowEqual } from 'fast-equals'
@@ -8,7 +8,7 @@ import { memo, useCallback } from 'react'
 import { hasAtLeast } from 'remeda'
 import { useDiagramStateSelector } from '../../state'
 import { ZIndexes } from '../const'
-import { useXYFlow } from '../hooks'
+import { useXYFlow, useXYStore } from '../hooks'
 import { type XYFlowEdge, XYFlowNode } from '../types'
 import { container, cssEdgePath, edgeLabel, edgeLabelBody, edgePathBg, fillStrokeCtx } from './edges.css'
 import { getEdgeParams } from './utils'
@@ -70,6 +70,10 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && eq(prev.data, next.data)
 )
 
+function isSamePoint(a: XYPosition, b: Point) {
+  return a.x === b[0] && a.y === b[1]
+}
+
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
@@ -81,30 +85,16 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   interactionWidth
 }) {
   const xyflow = useXYFlow()
-  const isModified = useStore(
+  const isNotModified = useXYStore(
     useCallback(s => {
-      const sourceNode = s.nodeLookup.get(source)!
-      const targetNode = s.nodeLookup.get(target)!
-      invariant(XYFlowNode.is(sourceNode))
-      invariant(XYFlowNode.is(targetNode))
-      const isSourceModified = !!sourceNode.computed?.positionAbsolute
-        && !shallowEqual(sourceNode.computed.positionAbsolute, {
-          x: sourceNode.data.element.position[0],
-          y: sourceNode.data.element.position[1]
-        })
-      if (isSourceModified) {
-        return true
-      }
-      return !!targetNode.computed?.positionAbsolute
-        && !shallowEqual(targetNode.computed.positionAbsolute, {
-          x: targetNode.data.element.position[0],
-          y: targetNode.data.element.position[1]
-        })
-    }, [source, target]),
-    eq
+      const sourceNode = nonNullable(s.nodeLookup.get(source)!, `source node ${source} not found`)
+      const targetNode = nonNullable(s.nodeLookup.get(target)!, `target node ${target} not found`)
+      return isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+        && isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position)
+    }, [source, target])
   )
 
-  invariant(data, 'data isd required')
+  invariant(data, 'data is required')
   const {
     edge,
     controlPoints
@@ -129,27 +119,27 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   let edgePath: string, labelX: number, labelY: number
 
-  if (isModified) {
-    const sourceNode = xyflow.getNode(source)!
-    const targetNode = xyflow.getNode(target)!
-    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
+  // if (isNotModified) {
+  edgePath = bezierPath(edge.points)
+  labelX = data.label?.bbox.x ?? 0
+  labelY = data.label?.bbox.y ?? 0
+  // } else {
+  //   const sourceNode = xyflow.getNode(source)!
+  //   const targetNode = xyflow.getNode(target)!
+  //   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
 
-    const [_edgePath, _labelX, _labelY] = getBezierPath({
-      sourceX: sx,
-      sourceY: sy,
-      sourcePosition: sourcePos,
-      targetPosition: targetPos,
-      targetX: tx,
-      targetY: ty
-    })
-    edgePath = _edgePath
-    labelX = _labelX
-    labelY = _labelY
-  } else {
-    edgePath = bezierPath(edge.points)
-    labelX = data.label?.bbox.x ?? 0
-    labelY = data.label?.bbox.y ?? 0
-  }
+  //   const [_edgePath, _labelX, _labelY] = getBezierPath({
+  //     sourceX: sx,
+  //     sourceY: sy,
+  //     sourcePosition: sourcePos,
+  //     targetPosition: targetPos,
+  //     targetX: tx,
+  //     targetY: ty
+  //   })
+  //   edgePath = _edgePath
+  //   labelX = _labelX
+  //   labelY = _labelY
+  // }
 
   //   useTilg()`
   //   ${id}

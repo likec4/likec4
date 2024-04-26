@@ -1,9 +1,11 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
-import type { ReactFlowProps, XYPosition } from '@xyflow/react'
-import { type RefObject, useRef } from 'react'
-import { isNullish as isNil } from 'remeda'
-import { type XYFlowInstance, XYFlowNode } from '../types'
+import type { NodeDimensionChange, NodePositionChange, ReactFlowProps, XYPosition } from '@xyflow/react'
+import { getNodeDimensions } from '@xyflow/system'
+import { useMemo, useRef } from 'react'
+import { isNullish as isNil, type } from 'remeda'
+import { XYFlowNode } from '../types'
+import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
 abstract class Rect {
   id!: string
@@ -24,6 +26,13 @@ abstract class Rect {
     return {
       x: this.x.value(),
       y: this.y.value()
+    }
+  }
+
+  get dimensions() {
+    return {
+      width: this.maxX.value() - this.minX.value(),
+      height: this.maxY.value() - this.minY.value()
     }
   }
 
@@ -106,13 +115,12 @@ class Leaf extends Rect {
     this.id = xynode.id
 
     // const isEditing: boolean = xynode.dragging ?? false
-    const pos = xynode.computed?.positionAbsolute ?? {
+    const pos = {
       x: xynode.data.element.position[0],
       y: xynode.data.element.position[1]
     }
 
-    const width = xynode.computed?.width ?? xynode.data.element.width
-    const height = xynode.computed?.height ?? xynode.data.element.height
+    const { width, height } = getNodeDimensions(xynode)
 
     this.maxX = new Expression(this.minX, width)
     this.maxY = new Expression(this.minY, height)
@@ -155,12 +163,13 @@ class Leaf extends Rect {
   }
 }
 
-function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string) {
+function createLayoutConstraints(xyflowApi: XYStoreApi, draggingNodeId: string) {
+  const xyflow = xyflowApi.getState()
   const solver = new Solver()
   const rects = new Map<string, Leaf | Compound>()
 
-  const xynodes = xyflow.getNodes()
-  const rootNodes = xynodes.filter(n => isNil(n.parentNode))
+  const xynodes = xyflow.nodes
+  const rootNodes = xynodes.filter(n => isNil(n.parentId))
 
   const traverse = rootNodes.map(xynode => ({
     xynode,
@@ -180,7 +189,7 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
     }
     if (isCompound) {
       const children = xynodes.flatMap(child =>
-        child.parentNode === xynode.id
+        child.parentId === xynode.id
           ? ({
             xynode: child,
             parent: rect as Compound
@@ -198,23 +207,38 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
 
   function updateXYFlowNodes() {
     solver.updateVariables()
-    xyflow.setNodes(nodes =>
-      nodes.map((n) => {
-        if (n.id === draggingNodeId || n.dragging === true) {
-          return n
-        }
-        const rect = rects.get(n.id)
-        if (!rect) {
-          return n
-        }
-        const newPosition = rect.position
-        n.position.x = newPosition.x
-        n.position.y = newPosition.y
-        n.width = rect.maxX.value() - rect.minX.value()
-        n.height = rect.maxY.value() - rect.minY.value()
-        return n
+    const { triggerNodeChanges, nodeLookup } = xyflowApi.getState()
+
+    const changes = new Array<NodeDimensionChange | NodePositionChange>()
+
+    for (const [, node] of nodeLookup) {
+      if (node.dragging === true || node.id === draggingNodeId) {
+        continue
+      }
+      const rect = rects.get(node.id)
+      if (!rect) {
+        continue
+      }
+      // const currentPosition = node.internals.positionAbsolute
+      // const nextPosition = rect.positionAbsolute
+      changes.push({
+        id: node.id,
+        type: 'position',
+        position: rect.position,
+        dragging: false
       })
-    )
+
+      changes.push({
+        id: node.id,
+        type: 'dimensions',
+        setAttributes: true,
+        dimensions: rect.dimensions,
+        resizing: false
+      })
+    }
+    if (changes.length > 0) {
+      triggerNodeChanges(changes)
+    }
   }
 
   let animationFrameId: number | null = null
@@ -223,7 +247,7 @@ function createLayoutConstraints(xyflow: XYFlowInstance, draggingNodeId: string)
    * Move the editing node to the given position.
    */
   function onNodeDrag(xynode: XYFlowNode) {
-    const pos = nonNullable(xynode.computed?.positionAbsolute, 'No positionAbsolute')
+    const pos = nonNullable(xynode.position, 'No positionAbsolute')
     const rect = nonNullable(rects.get(xynode.id))
     solver.suggestValue(rect.minX, pos.x)
     solver.suggestValue(rect.minY, pos.y)
@@ -244,16 +268,13 @@ type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragSt
 /**
  * Keeps the layout constraints (parent nodes and children) when dragging a node
  */
-export function useLayoutConstraints(
-  xyflow: RefObject<XYFlowInstance | undefined>
-): LayoutConstraints {
+export function useLayoutConstraints(): LayoutConstraints {
+  const xyflowApi = useXYStoreApi()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
-  const constraintsRef = useRef<LayoutConstraints>()
-  constraintsRef.current ??= {
+
+  return useMemo((): LayoutConstraints => ({
     onNodeDragStart: (event, xynode) => {
-      invariant(xyflow.current, 'xyflow.current should be defined')
-      invariant(!solverRef.current, 'solverRef.current should be undefined')
-      solverRef.current = createLayoutConstraints(xyflow.current, xynode.id)
+      solverRef.current = createLayoutConstraints(xyflowApi, xynode.id)
     },
     onNodeDrag: (event, xynode) => {
       invariant(solverRef.current, 'solverRef.current should be defined')
@@ -263,6 +284,5 @@ export function useLayoutConstraints(
       // solverRef.current?.onNodeDrag(xynode)
       solverRef.current = undefined
     }
-  }
-  return constraintsRef.current
+  }), [xyflowApi])
 }

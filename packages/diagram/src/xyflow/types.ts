@@ -1,6 +1,8 @@
 import type { BBox, DiagramEdge, DiagramNode, Point } from '@likec4/core'
 import { isNode } from '@xyflow/react'
-import type { Edge, Node, ReactFlowInstance } from '@xyflow/react'
+import type { Edge, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
+import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, OnNodeDrag, Viewport } from '@xyflow/react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
 import type { SetReadonly, SetRequired, Simplify } from 'type-fest'
 
@@ -68,8 +70,20 @@ export namespace XYFlowEdge {
 }
 
 export type XYFlowInstance = ReactFlowInstance<XYFlowNode, XYFlowEdge>
+export type XYFlowState = ReactFlowState<XYFlowNode, XYFlowEdge>
 
 export type XYFlowData = {
   nodes: XYFlowNode[]
   edges: XYFlowEdge[]
+}
+
+export type XYFlowEventHandlers = {
+  onPanelClick: (event: ReactMouseEvent) => void
+  onNodeContextMenu: NodeMouseHandler<XYFlowNode>
+  onEdgeContextMenu: EdgeMouseHandler<XYFlowEdge>
+  onPaneContextMenu: (event: ReactMouseEvent | MouseEvent) => void
+  onNodeClick: NodeMouseHandler<XYFlowNode>
+  onEdgeClick: EdgeMouseHandler<XYFlowEdge>
+  onMoveStart: OnMoveStart
+  onMoveEnd: OnMoveEnd
 }

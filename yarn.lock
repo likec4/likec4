@@ -1472,7 +1472,7 @@ __metadata:
     "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
-    "@xyflow/react": "npm:^12.0.0-next.12"
+    "@xyflow/react": "npm:^12.0.0-next.16"
     clsx: "npm:^2.1.0"
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
@@ -1488,6 +1488,7 @@ __metadata:
     unbuild: "npm:^2.0.0"
     vite: "npm:^5.2.10"
     vite-plugin-dts: "npm:^3.8.1"
+    zustand: "npm:^4.5.2"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5279,23 +5280,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:^12.0.0-next.12":
-  version: 12.0.0-next.12
-  resolution: "@xyflow/react@npm:12.0.0-next.12"
+"@xyflow/react@npm:^12.0.0-next.16":
+  version: 12.0.0-next.16
+  resolution: "@xyflow/react@npm:12.0.0-next.16"
   dependencies:
-    "@xyflow/system": "npm:0.0.20"
+    "@xyflow/system": "npm:0.0.24"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10/8209b34051078531bd13ec2dc43e69996211d9e5c72ccf3083515394325da93bf53c22c8822376e5c8b60896c5f61433cf16febeaa1eb7f947cd061cb22192e7
+  checksum: 10/afc74489372faff13adbe60ce4fd45d07cffc6f3da9f3cc807d64a6655065d4bfc1595c4e9f7481bd81dc14de91c85b80db080230fda6ebd52eb68da3d83715a
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.20":
-  version: 0.0.20
-  resolution: "@xyflow/system@npm:0.0.20"
+"@xyflow/system@npm:0.0.24":
+  version: 0.0.24
+  resolution: "@xyflow/system@npm:0.0.24"
   dependencies:
     "@types/d3": "npm:^7.4.0"
     "@types/d3-drag": "npm:^3.0.1"
@@ -5304,7 +5305,7 @@ __metadata:
     d3-drag: "npm:^3.0.0"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10/f8f701ab990a2079802973be5590203e4ff55b9579b6bccbd943e765071e6108d8ebe055fc585988dc55c602cb039ec4a192abd88fe043132dbc7718e17e5a6e
+  checksum: 10/b6defdc7c4574fd77e6183a6f58d42f279ea40c381a717f5d0975665f73ac7484e65c9d3c5239f0854545afb85e17711186037108186184fd944168e2212463f
   languageName: node
   linkType: hard
 
@@ -18528,7 +18529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.0":
+"zustand@npm:^4.4.0, zustand@npm:^4.5.2":
   version: 4.5.2
   resolution: "zustand@npm:4.5.2"
   dependencies:

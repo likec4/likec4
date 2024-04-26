@@ -1,17 +1,21 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { ReactFlow, type ReactFlowInstance } from '@xyflow/react'
-import { deepEqual } from 'fast-equals'
-import { type CSSProperties, memo, type PropsWithChildren, useRef } from 'react'
-import type { Simplify } from 'type-fest'
+import { Controls, ReactFlow as GenericReactFlow, type ReactFlowProps } from '@xyflow/react'
+import { type CSSProperties, memo, type PropsWithChildren, type RefAttributes } from 'react'
+import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
-import { useDiagramStateTracked } from '../state/DiagramState'
+import { useDiagramStoreApi, useHasEventHandlers } from '../store'
 import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
-import { useLayoutConstraints } from './hooks/use-layout-сonstraints'
+import { useLayoutConstraints } from './hooks/useLayoutConstraints'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
-import { XYFlowEdge, type XYFlowInstance, XYFlowNode } from './types'
+import { XYFlowEdge, XYFlowNode } from './types'
+import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
+
+// @ts-expect-error - typing in @xyflow/react
+const ReactFlow: (props: ReactFlowProps<XYFlowNode, XYFlowEdge> & RefAttributes<HTMLDivElement>) => JSX.Element =
+  GenericReactFlow
 
 const nodeTypes = {
   element: ElementNode,
@@ -22,21 +26,24 @@ const edgeTypes = {
 }
 
 type OnlyExpectedProps = Required<
-  Omit<
+  Pick<
     LikeC4DiagramProperties,
-    | 'view'
-    | 'disableHovercards'
+    | 'className'
+    | 'fitView'
     | 'controls'
+    | 'pannable'
+    | 'zoomable'
+    | 'nodesSelectable'
+    | 'nodesDraggable'
+    | 'fitViewPadding'
     | 'background'
-    | 'initialWidth'
-    | 'initialHeight'
-    | 'keepAspectRatio'
   >
 >
 
 type XYFlowWrapperProps = Simplify<
   PropsWithChildren<
-    OnlyExpectedProps & {
+    SetNonNullable<OnlyExpectedProps> & {
+      colorScheme: LikeC4DiagramProperties['colorScheme']
       defaultNodes: XYFlowNode[]
       defaultEdges: XYFlowEdge[]
       style?: CSSProperties | undefined
@@ -49,27 +56,30 @@ function XYFlowWrapper({
   children,
   defaultNodes,
   defaultEdges,
-  fitView = true,
-  colorScheme: colorModeProp,
-  readonly = false,
-  pannable = true,
-  zoomable = true,
-  nodesSelectable = !readonly,
-  nodesDraggable = !readonly,
-  fitViewPadding = 0,
+  fitView,
+  colorScheme: colorMode,
+  pannable,
+  zoomable,
+  nodesSelectable,
+  nodesDraggable,
+  fitViewPadding,
+  controls,
+  background,
   style
 }: XYFlowWrapperProps) {
-  const xyflowRef = useRef<XYFlowInstance>()
-  const [editor, updateState] = useDiagramStateTracked()
-  const layoutConstraints = useLayoutConstraints(xyflowRef)
+  const diagramApi = useDiagramStoreApi()
+  const { isNodeInteractive } = diagramApi.getState()
+
+  const editor = useHasEventHandlers()
+  console.log('XYFlowWrapper')
+  const layoutConstraints = useLayoutConstraints()
 
   const handlers = useXYFlowEvents()
-
-  const { colorScheme } = useMantineColorScheme()
-  let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
+  const isBgWithPattern = background !== 'transparent' && background !== 'solid'
+  // const { colorScheme } = useMantineColorScheme()
+  // let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
 
   return (
-    // @ts-expect-error
     <ReactFlow
       className={className}
       style={style}
@@ -89,7 +99,8 @@ function XYFlowWrapper({
       fitViewOptions={{
         minZoom: MinZoom,
         maxZoom: 1,
-        padding: fitViewPadding
+        padding: fitViewPadding,
+        includeHiddenNodes: true
       }}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
@@ -105,24 +116,27 @@ function XYFlowWrapper({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      onInit={(instance: ReactFlowInstance) => {
-        xyflowRef.current = (instance as unknown) as XYFlowInstance
-        updateState({ viewportInitialized: true })
+      onInit={(xyflow) => {
+        diagramApi.setState({
+          xyflow,
+          xyflowInitialized: true
+        })
       }}
+      onPaneClick={handlers.onPaneClick}
       onMoveStart={handlers.onMoveStart}
       onMoveEnd={handlers.onMoveEnd}
-      {...(editor.isNodeInteractive && {
+      {...(isNodeInteractive && {
         onEdgeMouseEnter: (_event, edge) => {
-          updateState({ hoveredEdgeId: edge.id })
+          diagramApi.setState({ hoveredEdgeId: edge.id })
         },
         onEdgeMouseLeave: () => {
-          updateState({ hoveredEdgeId: null })
+          diagramApi.setState({ hoveredEdgeId: null })
         },
         onNodeMouseEnter: (_event, node) => {
-          updateState({ hoveredNodeId: node.id })
+          diagramApi.setState({ hoveredNodeId: node.id })
         },
         onNodeMouseLeave: () => {
-          updateState({ hoveredNodeId: null })
+          diagramApi.setState({ hoveredNodeId: null })
         }
       })}
       {...(editor.hasOnContextMenu && {
@@ -130,22 +144,17 @@ function XYFlowWrapper({
         onPaneContextMenu: handlers.onPaneContextMenu,
         onEdgeContextMenu: handlers.onEdgeContextMenu
       })}
-      {...(editor.hasOnCanvasClick && {
-        onPaneClick: handlers.onPanelClick
-      })}
       {...(editor.hasOnNodeClick && {
         onNodeClick: handlers.onNodeClick
       })}
       {...(editor.hasOnEdgeClick && {
         onEdgeClick: handlers.onEdgeClick
       })}>
+      {isBgWithPattern && <XYFlowBackground background={background} />}
+      {controls && <Controls />}
       {children}
     </ReactFlow>
   )
 }
 
-const isEquals = (
-  { children: _childrenA, ...a }: XYFlowWrapperProps,
-  { children: _childrenB, ...b }: XYFlowWrapperProps
-) => deepEqual(a, b)
-export const XYFlow = memo(XYFlowWrapper, isEquals) as typeof XYFlowWrapper
+export const XYFlow = memo(XYFlowWrapper) as typeof XYFlowWrapper

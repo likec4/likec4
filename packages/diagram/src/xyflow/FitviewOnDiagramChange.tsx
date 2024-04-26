@@ -1,27 +1,34 @@
 import { useDebouncedEffect } from '@react-hookz/web'
 import { type ReactFlowState, useNodesInitialized, useStore } from '@xyflow/react'
-import { useRef } from 'react'
-import { useDiagramState, useDiagramStateTracked } from '../state'
+import { memo, useRef } from 'react'
+import { type DiagramState, useDiagramStore, useDiagramStoreApi } from '../store'
 import { MinZoom } from './const'
-import { useXYFlow } from './hooks'
+import { useXYFlow, useXYStore, useXYStoreApi } from './hooks'
+import type { XYFlowState } from './types'
 
-function selectDimensions(state: ReactFlowState) {
-  return `${state.width}:${state.height}`
+function selector(state: XYFlowState) {
+  return {
+    dimensions: `${Math.round(state.width)}:${Math.round(state.height)}`,
+    zoom: state.transform[2],
+    fitView: state.fitView
+  }
 }
 
 function FitViewOnViewportResize() {
-  const fitViewPadding = useDiagramState().fitViewPadding
-  const dimensions = useStore(selectDimensions)
+  const fitViewPadding = useDiagramStore(s => s.fitViewPadding)
+  const {
+    dimensions,
+    zoom,
+    fitView
+  } = useXYStore(selector)
   const prevDimensionsRef = useRef(dimensions)
-  const xyflow = useXYFlow()
 
   useDebouncedEffect(
     () => {
       if (prevDimensionsRef.current === dimensions) {
         return
       }
-      const zoom = xyflow.getZoom()
-      xyflow.fitView({
+      fitView({
         duration: 350,
         padding: fitViewPadding,
         minZoom: MinZoom,
@@ -36,41 +43,85 @@ function FitViewOnViewportResize() {
   return null
 }
 
+// Compare this snippet from
+// https://github.com/xyflow/xyflow/blob/a6c0bdc86309e023f29461d0c0a857aff3bc2c0e/packages/react/src/hooks/useNodesInitialized.ts
+const areNodesInitialized = (s: XYFlowState) => {
+  if (s.nodeLookup.size === 0) {
+    return false
+  }
+  for (const [, node] of s.nodeLookup) {
+    if (node.internals.handleBounds === undefined) {
+      return false
+    }
+  }
+  return true
+}
+
+const select = (s: DiagramState) => ({
+  initialized: s.xyflowInitialized,
+  fitViewPadding: s.fitViewPadding,
+  viewLayout: s.view.id + '_' + s.view.autoLayout + '_' + s.fitViewPadding,
+  viewWidth: s.view.width,
+  viewHeight: s.view.height,
+  viewportMoved: s.viewportMoved
+})
 /**
  * Fits the view when the view changes and nodes are initialized
  */
-export function FitViewOnDiagramChange() {
-  const [state, updateState] = useDiagramStateTracked()
+function FitViewOnDiagramChanges() {
+  // const
+
+  const state = useDiagramStore(select)
+
   const xyflow = useXYFlow()
+
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
-  const isReady = nodeInitialized && xyflow.viewportInitialized
+  const isReady = nodeInitialized && state.viewLayout
 
-  const viewLayout = state.viewId + '_' + state.viewLayout + '_' + state.fitViewPadding
-  const prevViewLayoutRef = useRef(viewLayout)
+  const prevViewLayoutRef = useRef(state.viewLayout)
+
+  console.debug(`FitViewOnDiagramChange:
+  initialized: ${state.initialized}
+  nodeInitialized: ${nodeInitialized}
+  isReady: ${isReady}
+  viewportMoved: ${state.viewportMoved}
+  `)
+  // const xyflow = xyflowStoreApi.getState()
 
   useDebouncedEffect(
     () => {
-      if (!isReady || prevViewLayoutRef.current === viewLayout) {
+      if (!isReady) {
+        console.debug(`FitViewOnDiagramChange not ready`)
         return
       }
+      if (!isReady || prevViewLayoutRef.current === state.viewLayout) {
+        console.debug(`FitViewOnDiagramChange skipped`)
+        return
+      }
+      console.debug(`FitViewOnDiagramChange fitView`)
+      // const xyflow = xyflowStoreApi.getState()
       const zoom = xyflow.getZoom()
       xyflow.setCenter(state.viewWidth / 2, state.viewHeight / 2, {
         duration: 150,
         zoom
       })
-      xyflow.fitView({
+      xyflow.fitBounds({
+        x: 0,
+        y: 0,
+        width: state.viewWidth,
+        height: state.viewHeight
+      }, {
         duration: 350,
-        padding: state.fitViewPadding,
-        minZoom: MinZoom,
-        maxZoom: Math.max(1, zoom)
+        padding: state.fitViewPadding
       })
-      updateState({ viewportMoved: false })
-      prevViewLayoutRef.current = viewLayout
+      // diagramApi.
+      // updateState({ viewportMoved: false })
+      prevViewLayoutRef.current = state.viewLayout
     },
-    [isReady, viewLayout],
-    50
+    [isReady, state.viewLayout],
+    100
   )
 
   if (!state.viewportMoved) {
@@ -82,3 +133,5 @@ export function FitViewOnDiagramChange() {
   // TODO: listen to resize event
   // return <div className={clsx('react-flow__panel')}></div>
 }
+
+export const FitViewOnDiagramChange = memo(FitViewOnDiagramChanges) as unknown as typeof FitViewOnDiagramChanges

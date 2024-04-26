@@ -1,2 +1,2 @@
-export * from './use-set-state'
-export * from './use-update-effect'
+export * from './useSetState'
+export * from './useUpdateEffect'

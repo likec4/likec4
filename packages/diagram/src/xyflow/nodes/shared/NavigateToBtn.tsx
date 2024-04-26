@@ -1,7 +1,9 @@
 import { ActionIcon } from '@mantine/core'
+import { useInternalNode, useNodesData } from '@xyflow/react'
 import clsx from 'clsx'
 import { ZoomIn } from '../../../icons'
-import { useXYFlowEvents } from '../../XYFlowEvents'
+import { useDiagramStoreApi } from '../../../store'
+import type { XYFlowNode } from '../../types'
 
 export type NavigateToBtnProps = {
   xynodeId: string
@@ -38,7 +40,7 @@ export type NavigateToBtnProps = {
 // } satisfies Variants
 
 export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
-  const { onNavigateTo } = useXYFlowEvents()
+  const diagramApi = useDiagramStoreApi()
   return (
     <ActionIcon
       className={clsx('nodrag nopan', className)}
@@ -47,7 +49,7 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
       onClick={(event) => {
         event.stopPropagation()
         event.preventDefault()
-        onNavigateTo(xynodeId, event)
+        diagramApi.getState().triggerOnNavigateTo(xynodeId, event)
       }}
     >
       <ZoomIn />

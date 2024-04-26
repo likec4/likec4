@@ -7,6 +7,7 @@ import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramStateProvider } from './state/DiagramState'
+import { DiagramContextProvider } from './store'
 import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
@@ -14,13 +15,7 @@ import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import type { XYFlowData } from './xyflow/types'
 import { UpdateOnDiagramChange } from './xyflow/UpdateOnDiagramChange'
 import { XYFlowBackground } from './xyflow/XYFlowBackground'
-import { XYFlowEventHandlers } from './xyflow/XYFlowEvents'
 import { XYFlow } from './xyflow/XYFlowWrapper'
-
-// Guard, Ensure that object contains only event handlers
-const isOnlyEventHandlers = <T extends Exact<LikeC4DiagramEventHandlers, T>>(handlers: T): T => {
-  return handlers
-}
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
@@ -36,14 +31,20 @@ export function LikeC4Diagram({
   nodesDraggable = !readonly,
   background = 'dots',
   controls = false,
-  disableHovercards = false,
+  showElementLinks = true,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
-  ...eventHandlers
+  onCanvasClick,
+  onCanvasContextMenu,
+  onCanvasDblClick,
+  onEdgeClick,
+  onChange,
+  onEdgeContextMenu,
+  onNavigateTo,
+  onNodeClick,
+  onNodeContextMenu
 }: LikeC4DiagramProps) {
-  // useTilg()
-  isOnlyEventHandlers(eventHandlers)
   const initialRef = useRef<{
     defaultNodes: XYFlowData['nodes']
     defaultEdges: XYFlowData['edges']
@@ -51,7 +52,7 @@ export function LikeC4Diagram({
     initialHeight: number
   }>()
   if (!initialRef.current) {
-    const initial = diagramViewToXYFlowData(view)
+    const initial = diagramViewToXYFlowData(view, nodesDraggable)
     initialRef.current = {
       defaultNodes: initial.nodes,
       defaultEdges: initial.edges,
@@ -59,24 +60,38 @@ export function LikeC4Diagram({
       initialHeight: initialHeight ?? view.height
     }
   }
-  const isBgWithPattern = background !== 'transparent' && background !== 'solid'
-  const isNodeInteractive = nodesDraggable || nodesSelectable || !!eventHandlers.onNavigateTo
-    || !!eventHandlers.onNavigateTo
+  const isNodeInteractive = nodesDraggable || nodesSelectable || !!onNavigateTo
   return (
     <EnsureMantine colorScheme={colorScheme}>
-      <XYFlowProvider
+      <DiagramContextProvider
+        view={view}
+        readonly={readonly}
         fitView={fitView}
-        {...initialRef.current}
+        fitViewPadding={fitViewPadding}
+        isNodeInteractive={isNodeInteractive}
+        showElementLinks={showElementLinks}
+        nodesDraggable={nodesDraggable}
+        onCanvasClick={onCanvasClick}
+        onCanvasContextMenu={onCanvasContextMenu}
+        onEdgeClick={onEdgeClick}
+        onEdgeContextMenu={onEdgeContextMenu}
+        onNodeClick={onNodeClick}
+        onNodeContextMenu={onNodeContextMenu}
+        onChange={onChange}
+        onNavigateTo={onNavigateTo}
+        onCanvasDblClick={onCanvasDblClick}
       >
-        <DiagramStateProvider
-          isNodeInteractive={isNodeInteractive}
-          view={view}
-          fitViewPadding={fitViewPadding}
-          readonly={readonly}
-          disableHovercards={disableHovercards}
-          eventHandlers={eventHandlers}
+        <XYFlowProvider
+          fitView={fitView}
+          {...initialRef.current}
         >
-          <XYFlowEventHandlers eventHandlers={eventHandlers}>
+          <DiagramStateProvider
+            isNodeInteractive={isNodeInteractive}
+            view={view}
+            fitViewPadding={fitViewPadding}
+            readonly={readonly}
+            disableHovercards={showElementLinks}
+          >
             <KeepAspectRatio
               enabled={keepAspectRatio}
               width={view.width}
@@ -91,9 +106,10 @@ export function LikeC4Diagram({
                   pannable !== true && cssDisablePan,
                   background === 'transparent' && cssTransparentBg
                 )}
+                background={background}
+                controls={controls}
                 defaultNodes={initialRef.current.defaultNodes}
                 defaultEdges={initialRef.current.defaultEdges}
-                readonly={readonly}
                 nodesDraggable={nodesDraggable}
                 nodesSelectable={nodesSelectable}
                 pannable={pannable}
@@ -102,19 +118,14 @@ export function LikeC4Diagram({
                 colorScheme={colorScheme}
                 fitViewPadding={fitViewPadding}
               >
-                {isBgWithPattern && <XYFlowBackground background={background} />}
-                {controls && <Controls />}
                 {readonly !== true && <OptionsPanel />}
-                {fitView && <FitViewOnDiagramChange />}
               </XYFlow>
             </KeepAspectRatio>
-            <UpdateOnDiagramChange
-              view={view}
-              nodesDraggable={nodesDraggable}
-            />
-          </XYFlowEventHandlers>
-        </DiagramStateProvider>
-      </XYFlowProvider>
+            <UpdateOnDiagramChange />
+            {fitView && <FitViewOnDiagramChange />}
+          </DiagramStateProvider>
+        </XYFlowProvider>
+      </DiagramContextProvider>
     </EnsureMantine>
   )
 }
