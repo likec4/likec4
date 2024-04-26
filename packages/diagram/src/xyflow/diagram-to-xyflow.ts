@@ -93,10 +93,15 @@ export function diagramViewToXYFlowData(
       deletable: false,
       position,
       zIndex,
+      hidden: false,
       /*       initialWidth: node.width,
       initialHeight: node.height, */
       width: node.width,
       height: node.height,
+      measured: {
+        width: node.width,
+        height: node.height
+      },
       // handles: [
       //   ...outEdges.map(out => ({
       //     id: `${out.id}`,

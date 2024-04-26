@@ -6,7 +6,6 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
-import { useDiagramState, useDiagramStateSelector } from '../../../state'
 import { useDiagramStore } from '../../../store'
 import { vars } from '../../../theme.css'
 import type { CompoundXYFlowNode } from '../../types'
@@ -82,12 +81,10 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         position={Position.Top}
         style={{ visibility: 'hidden' }}
       />
-      <svg className={cssIndicator} viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
+      <svg className={cssIndicator}>
         <rect
-          x={-1}
-          y={-1}
-          width={w + 2}
-          height={h + 2}
+          x={0}
+          y={0}
           rx={6}
         />
       </svg>

@@ -1,12 +1,10 @@
-import { Controls, ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
-import type { Exact } from 'type-fest'
 import { scope } from './index.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
-import { DiagramStateProvider } from './state/DiagramState'
 import { DiagramContextProvider } from './store'
 import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
@@ -14,7 +12,6 @@ import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import type { XYFlowData } from './xyflow/types'
 import { UpdateOnDiagramChange } from './xyflow/UpdateOnDiagramChange'
-import { XYFlowBackground } from './xyflow/XYFlowBackground'
 import { XYFlow } from './xyflow/XYFlowWrapper'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
@@ -85,45 +82,37 @@ export function LikeC4Diagram({
           fitView={fitView}
           {...initialRef.current}
         >
-          <DiagramStateProvider
-            isNodeInteractive={isNodeInteractive}
-            view={view}
-            fitViewPadding={fitViewPadding}
-            readonly={readonly}
-            disableHovercards={showElementLinks}
+          <KeepAspectRatio
+            enabled={keepAspectRatio}
+            width={view.width}
+            height={view.height}
           >
-            <KeepAspectRatio
-              enabled={keepAspectRatio}
-              width={view.width}
-              height={view.height}
+            <XYFlow
+              className={clsx(
+                className,
+                scope,
+                cssReactFlow,
+                controls === false && cssNoControls,
+                pannable !== true && cssDisablePan,
+                background === 'transparent' && cssTransparentBg
+              )}
+              background={background}
+              controls={controls}
+              defaultNodes={initialRef.current.defaultNodes}
+              defaultEdges={initialRef.current.defaultEdges}
+              nodesDraggable={nodesDraggable}
+              nodesSelectable={nodesSelectable}
+              pannable={pannable}
+              zoomable={zoomable}
+              fitView={fitView}
+              colorScheme={colorScheme}
+              fitViewPadding={fitViewPadding}
             >
-              <XYFlow
-                className={clsx(
-                  className,
-                  scope,
-                  cssReactFlow,
-                  controls === false && cssNoControls,
-                  pannable !== true && cssDisablePan,
-                  background === 'transparent' && cssTransparentBg
-                )}
-                background={background}
-                controls={controls}
-                defaultNodes={initialRef.current.defaultNodes}
-                defaultEdges={initialRef.current.defaultEdges}
-                nodesDraggable={nodesDraggable}
-                nodesSelectable={nodesSelectable}
-                pannable={pannable}
-                zoomable={zoomable}
-                fitView={fitView}
-                colorScheme={colorScheme}
-                fitViewPadding={fitViewPadding}
-              >
-                {readonly !== true && <OptionsPanel />}
-              </XYFlow>
-            </KeepAspectRatio>
-            <UpdateOnDiagramChange />
-            {fitView && <FitViewOnDiagramChange />}
-          </DiagramStateProvider>
+              {readonly !== true && <OptionsPanel />}
+            </XYFlow>
+          </KeepAspectRatio>
+          <UpdateOnDiagramChange />
+          {fitView && <FitViewOnDiagramChange />}
         </XYFlowProvider>
       </DiagramContextProvider>
     </EnsureMantine>

@@ -1,24 +1,30 @@
-import { type MarkerType, Position, type XYPosition } from '@xyflow/react'
-import type { XYFlowNode } from '../types'
+import { Position, type XYPosition } from '@xyflow/react'
+import { getNodeDimensions } from '@xyflow/system'
+import type { InternalXYFlowNode } from '../types'
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-function getNodeIntersection(intersectionNode: XYFlowNode, targetNode: XYFlowNode): XYPosition {
+function getNodeIntersection(intersectionNode: InternalXYFlowNode, targetNode: InternalXYFlowNode): XYPosition {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
-  const intersectionNodeWidth = intersectionNode.measured?.width ?? intersectionNode.data.element.width
-  const intersectionNodeHeight = intersectionNode.measured?.height ?? intersectionNode.data.element.height
-  const intersectionNodePosition = intersectionNode.position
-    ?? { x: intersectionNode.data.element.position[0], y: intersectionNode.data.element.position[1] }
-  const targetPosition = targetNode.position
-    ?? { x: targetNode.data.element.position[0], y: targetNode.data.element.position[1] }
+  const {
+    width: intersectionNodeWidth,
+    height: intersectionNodeHeight
+  } = getNodeDimensions(intersectionNode)
+  const {
+    width: targetNodeWidth,
+    height: targetNodeHeight
+  } = getNodeDimensions(targetNode)
+
+  const intersectionNodePosition = intersectionNode.internals.positionAbsolute
+  const targetPosition = targetNode.internals.positionAbsolute
 
   const w = intersectionNodeWidth / 2
   const h = intersectionNodeHeight / 2
 
   const x2 = intersectionNodePosition.x + w
   const y2 = intersectionNodePosition.y + h
-  const x1 = targetPosition.x + (targetNode.measured?.width ?? targetNode.data.element.width) / 2
-  const y1 = targetPosition.y + (targetNode.measured?.height ?? targetNode.data.element.height) / 2
+  const x1 = targetPosition.x + targetNodeWidth / 2
+  const y1 = targetPosition.y + targetNodeHeight / 2
 
   const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h)
   const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h)
@@ -32,13 +38,12 @@ function getNodeIntersection(intersectionNode: XYFlowNode, targetNode: XYFlowNod
 }
 
 // returns the position (top,right,bottom or right) passed node compared to the intersection point
-export function getPointPosition(node: XYFlowNode, intersectionPoint: XYPosition) {
+export function getPointPosition(node: InternalXYFlowNode, intersectionPoint: XYPosition) {
   const n = {
     // x: node.data.element.position[0],
     // y: node.data.element.position[1],
-    ...node.position,
-    width: node.measured?.width ?? node.data.element.width,
-    height: node.measured?.height ?? node.data.element.height
+    ...node.internals.positionAbsolute,
+    ...getNodeDimensions(node)
   }
   const nx = Math.round(n.x)
   const ny = Math.round(n.y)
@@ -87,7 +92,7 @@ export function getPointPosition(node: XYFlowNode, intersectionPoint: XYPosition
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export function getEdgeParams(source: XYFlowNode, target: XYFlowNode) {
+export function getEdgeParams(source: InternalXYFlowNode, target: InternalXYFlowNode) {
   const sourceIntersectionPoint = getNodeIntersection(source, target)
   const targetIntersectionPoint = getNodeIntersection(target, source)
 

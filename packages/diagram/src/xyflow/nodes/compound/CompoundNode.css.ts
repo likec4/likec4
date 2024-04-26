@@ -90,7 +90,7 @@ globalKeyframes(indicatorKeyframes, {
     opacity: 0.6
   },
   'to': {
-    opacity: 0.4
+    opacity: 0.3
   }
 })
 
@@ -102,20 +102,26 @@ export const cssIndicator = style({
   height: '100%',
   pointerEvents: 'none',
   overflow: 'visible',
-  stroke: vars.element.loContrast,
-  transformOrigin: 'center center',
-  strokeWidth: '6px',
-  animationDuration: '800ms',
-  animationName: indicatorKeyframes,
-  animationIterationCount: 'infinite',
-  animationDirection: 'alternate',
   visibility: 'hidden',
-  fillOpacity: 0,
+
   selectors: {
     '.react-flow__node.selected &': {
       visibility: 'visible'
     }
   }
+})
+
+globalStyle(`${cssIndicator} rect`, {
+  stroke: vars.element.loContrast,
+  transformOrigin: 'center center',
+  strokeWidth: 6,
+  animationDuration: '800ms',
+  animationName: indicatorKeyframes,
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+  fill: 'none',
+  width: '100%',
+  height: '100%'
 })
 
 export const cssNavigateBtn = style({

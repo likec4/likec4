@@ -10,7 +10,6 @@ import {
 } from '@xyflow/react'
 import { memo, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
-import { useDiagramState } from '../state'
 import { useXYFlow } from '../xyflow/hooks'
 import type { XYFlowNode } from '../xyflow/types'
 import { distance } from '../xyflow/utils'
@@ -32,7 +31,6 @@ const CameraMemo = /* @__PURE__ */ memo(function Camera() {
   const reactflow = useXYFlow()
   const updateNd = useUpdateNodeInternals()
 
-  const editor = useDiagramState()
   const padding = 0 // editor.fitViewPadding
   const viewId = '' // editor.viewId
   const fitOnSelect: boolean = false // editor.fitOnSelect

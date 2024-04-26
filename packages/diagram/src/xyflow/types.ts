@@ -1,6 +1,6 @@
 import type { BBox, DiagramEdge, DiagramNode, Point } from '@likec4/core'
 import { isNode } from '@xyflow/react'
-import type { Edge, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
+import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
 import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, OnNodeDrag, Viewport } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
@@ -26,6 +26,8 @@ export type CompoundNodeData = {
 export type CompoundXYFlowNode = TypedXYFlowNode<CompoundNodeData, 'compound'>
 
 export type XYFlowNode = ElementXYFlowNode | CompoundXYFlowNode
+
+export type InternalXYFlowNode = InternalNode<XYFlowNode>
 
 export namespace XYFlowNode {
   export type Data = ElementNodeData | CompoundNodeData

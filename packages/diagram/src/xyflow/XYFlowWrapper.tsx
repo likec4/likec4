@@ -87,7 +87,7 @@ function XYFlowWrapper({
       defaultNodes={defaultNodes}
       defaultEdges={defaultEdges}
       nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes as any}
+      edgeTypes={edgeTypes}
       zoomOnPinch={zoomable}
       zoomOnScroll={!pannable && zoomable}
       {...(!zoomable && {

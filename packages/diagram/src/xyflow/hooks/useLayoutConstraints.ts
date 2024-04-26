@@ -1,11 +1,11 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
-import type { NodeDimensionChange, NodePositionChange, ReactFlowProps, XYPosition } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
+import type { InternalNode, NodeDimensionChange, NodePositionChange, ReactFlowProps, XYPosition } from '@xyflow/react'
+import { getNodeDimensions, isInternalNodeBase } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
-import { isNullish as isNil, type } from 'remeda'
-import { XYFlowNode } from '../types'
-import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
+import { isNullish, isNullish as isNil, type } from 'remeda'
+import { type XYFlowInstance, XYFlowNode } from '../types'
+import { useXYFlow, useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
 abstract class Rect {
   id!: string
@@ -39,12 +39,14 @@ abstract class Rect {
   // Position relative to parent
   get position(): XYPosition {
     const positionAbsolute = this.positionAbsolute
-    return this.parent
-      ? {
-        x: positionAbsolute.x - this.parent.x.value(),
-        y: positionAbsolute.y - this.parent.y.value()
-      }
-      : positionAbsolute
+    if (!this.parent) {
+      return positionAbsolute
+    }
+    const parentPosition = this.parent.positionAbsolute
+    return {
+      x: positionAbsolute.x - parentPosition.x,
+      y: positionAbsolute.y - parentPosition.y
+    }
   }
   protected abstract parent: Compound | null
 }
@@ -54,7 +56,7 @@ class Compound extends Rect {
 
   constructor(
     protected solver: Solver,
-    xynode: XYFlowNode,
+    xynode: InternalNode<XYFlowNode>,
     protected readonly parent: Compound | null = null
   ) {
     super()
@@ -103,11 +105,9 @@ class Compound extends Rect {
 }
 
 class Leaf extends Rect {
-  override readonly id: string
-
   constructor(
     solver: Solver,
-    xynode: XYFlowNode,
+    xynode: InternalNode<XYFlowNode>,
     public readonly parent: Compound | null = null,
     public readonly isEditing: boolean = false
   ) {
@@ -115,10 +115,7 @@ class Leaf extends Rect {
     this.id = xynode.id
 
     // const isEditing: boolean = xynode.dragging ?? false
-    const pos = {
-      x: xynode.data.element.position[0],
-      y: xynode.data.element.position[1]
-    }
+    const pos = xynode.internals.positionAbsolute
 
     const { width, height } = getNodeDimensions(xynode)
 
@@ -163,42 +160,43 @@ class Leaf extends Rect {
   }
 }
 
-function createLayoutConstraints(xyflowApi: XYStoreApi, draggingNodeId: string) {
-  const xyflow = xyflowApi.getState()
+function createLayoutConstraints(
+  xyflow: XYFlowInstance,
+  xyflowApi: XYStoreApi,
+  draggingNodeId: string
+) {
+  const { parentLookup, nodeLookup } = xyflowApi.getState()
   const solver = new Solver()
   const rects = new Map<string, Leaf | Compound>()
 
-  const xynodes = xyflow.nodes
-  const rootNodes = xynodes.filter(n => isNil(n.parentId))
+  const traverse = new Array<{ xynode: InternalNode<XYFlowNode>; parent: Compound | null }>()
 
-  const traverse = rootNodes.map(xynode => ({
-    xynode,
-    parent: null as Compound | null
-  }))
-
-  const rootRects = [] as Array<Leaf | Compound>
+  for (const [, xynode] of nodeLookup) {
+    if (isNullish(xynode.parentId)) {
+      traverse.push({
+        xynode,
+        parent: null
+      })
+    }
+  }
 
   while (traverse.length > 0) {
-    const { xynode, parent } = traverse.pop()!
+    const { xynode, parent } = traverse.shift()!
     const isDragging = xynode.dragging === true || xynode.id === draggingNodeId
-    const isCompound = !isDragging && xynode.type === 'compound' && isAncestor(xynode.id, draggingNodeId)
-    const rect = isCompound ? new Compound(solver, xynode, parent) : new Leaf(solver, xynode, parent, isDragging)
+
+    // Traverse children if the node is a compound, not dragging, and is an ancestor of the dragging node
+    const shouldTraverse = !isDragging && xynode.type === 'compound' && isAncestor(xynode.id, draggingNodeId)
+
+    const rect = shouldTraverse ? new Compound(solver, xynode, parent) : new Leaf(solver, xynode, parent, isDragging)
     rects.set(xynode.id, rect)
-    if (!parent) {
-      rootRects.push(rect)
-    }
-    if (isCompound) {
-      const children = xynodes.flatMap(child =>
-        child.parentId === xynode.id
-          ? ({
-            xynode: child,
-            parent: rect as Compound
-          })
-          : []
-      )
-      traverse.push(
-        ...children
-      )
+
+    if (shouldTraverse) {
+      parentLookup.get(xynode.id)?.forEach(child => {
+        traverse.push({
+          xynode: child,
+          parent: rect as Compound
+        })
+      })
     }
   }
 
@@ -207,38 +205,26 @@ function createLayoutConstraints(xyflowApi: XYStoreApi, draggingNodeId: string) 
 
   function updateXYFlowNodes() {
     solver.updateVariables()
-    const { triggerNodeChanges, nodeLookup } = xyflowApi.getState()
 
-    const changes = new Array<NodeDimensionChange | NodePositionChange>()
-
-    for (const [, node] of nodeLookup) {
-      if (node.dragging === true || node.id === draggingNodeId) {
-        continue
-      }
-      const rect = rects.get(node.id)
-      if (!rect) {
-        continue
-      }
-      // const currentPosition = node.internals.positionAbsolute
-      // const nextPosition = rect.positionAbsolute
-      changes.push({
-        id: node.id,
-        type: 'position',
-        position: rect.position,
-        dragging: false
+    xyflow.setNodes(nodes =>
+      nodes.map((n) => {
+        if (n.id === draggingNodeId || n.dragging === true) {
+          return n
+        }
+        const rect = rects.get(n.id)
+        if (!rect) {
+          return n
+        }
+        const dimensions = rect.dimensions
+        return {
+          ...n,
+          position: rect.position,
+          width: dimensions.width,
+          height: dimensions.height,
+          measured: dimensions
+        }
       })
-
-      changes.push({
-        id: node.id,
-        type: 'dimensions',
-        setAttributes: true,
-        dimensions: rect.dimensions,
-        resizing: false
-      })
-    }
-    if (changes.length > 0) {
-      triggerNodeChanges(changes)
-    }
+    )
   }
 
   let animationFrameId: number | null = null
@@ -247,7 +233,7 @@ function createLayoutConstraints(xyflowApi: XYStoreApi, draggingNodeId: string) 
    * Move the editing node to the given position.
    */
   function onNodeDrag(xynode: XYFlowNode) {
-    const pos = nonNullable(xynode.position, 'No positionAbsolute')
+    const pos = isInternalNodeBase(xynode) ? xynode.internals.positionAbsolute : xynode.position
     const rect = nonNullable(rects.get(xynode.id))
     solver.suggestValue(rect.minX, pos.x)
     solver.suggestValue(rect.minY, pos.y)
@@ -269,18 +255,20 @@ type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragSt
  * Keeps the layout constraints (parent nodes and children) when dragging a node
  */
 export function useLayoutConstraints(): LayoutConstraints {
+  const xyflow = useXYFlow()
   const xyflowApi = useXYStoreApi()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
 
   return useMemo((): LayoutConstraints => ({
     onNodeDragStart: (event, xynode) => {
-      solverRef.current = createLayoutConstraints(xyflowApi, xynode.id)
+      solverRef.current = createLayoutConstraints(xyflow, xyflowApi, xynode.id)
     },
     onNodeDrag: (event, xynode) => {
       invariant(solverRef.current, 'solverRef.current should be defined')
       solverRef.current?.onNodeDrag(xynode)
     },
     onNodeDragStop: (event, xynode) => {
+      console.log('onNodeDragStop', { event, xynode })
       // solverRef.current?.onNodeDrag(xynode)
       solverRef.current = undefined
     }

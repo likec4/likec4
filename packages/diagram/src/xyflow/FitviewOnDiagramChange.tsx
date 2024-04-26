@@ -1,15 +1,15 @@
-import { useDebouncedEffect } from '@react-hookz/web'
-import { type ReactFlowState, useNodesInitialized, useStore } from '@xyflow/react'
-import { memo, useRef } from 'react'
+import { useDebouncedEffect, useDebouncedState } from '@react-hookz/web'
+import { useNodesInitialized } from '@xyflow/react'
+import { shallowEqual } from 'fast-equals'
+import { memo, useEffect, useRef, useState } from 'react'
 import { type DiagramState, useDiagramStore, useDiagramStoreApi } from '../store'
 import { MinZoom } from './const'
-import { useXYFlow, useXYStore, useXYStoreApi } from './hooks'
+import { useXYFlow, useXYStore } from './hooks'
 import type { XYFlowState } from './types'
 
 function selector(state: XYFlowState) {
   return {
     dimensions: `${Math.round(state.width)}:${Math.round(state.height)}`,
-    zoom: state.transform[2],
     fitView: state.fitView
   }
 }
@@ -18,7 +18,6 @@ function FitViewOnViewportResize() {
   const fitViewPadding = useDiagramStore(s => s.fitViewPadding)
   const {
     dimensions,
-    zoom,
     fitView
   } = useXYStore(selector)
   const prevDimensionsRef = useRef(dimensions)
@@ -29,10 +28,11 @@ function FitViewOnViewportResize() {
         return
       }
       fitView({
+        includeHiddenNodes: true,
         duration: 350,
         padding: fitViewPadding,
         minZoom: MinZoom,
-        maxZoom: Math.max(1, zoom)
+        maxZoom: 1
       })
       prevDimensionsRef.current = dimensions
     },
@@ -57,74 +57,96 @@ const areNodesInitialized = (s: XYFlowState) => {
   return true
 }
 
-const select = (s: DiagramState) => ({
-  initialized: s.xyflowInitialized,
-  fitViewPadding: s.fitViewPadding,
-  viewLayout: s.view.id + '_' + s.view.autoLayout + '_' + s.fitViewPadding,
-  viewWidth: s.view.width,
-  viewHeight: s.view.height,
-  viewportMoved: s.viewportMoved
-})
+const detectDiagramChange = (s: DiagramState) => s.view.id + '_' + s.view.autoLayout + '_' + s.fitViewPadding
+
 /**
  * Fits the view when the view changes and nodes are initialized
  */
 function FitViewOnDiagramChanges() {
-  // const
-
-  const state = useDiagramStore(select)
-
+  const diagramApi = useDiagramStoreApi()
   const xyflow = useXYFlow()
+
+  const [viewportMoved, setViewportMoved] = useState(false)
+  const [processedChangeId, setProcessed] = useState(() => detectDiagramChange(diagramApi.getState()))
+  const [pendingChangeId, setPending] = useDebouncedState(processedChangeId, 100)
 
   const nodeInitialized = useNodesInitialized({
     includeHiddenNodes: true
   })
-  const isReady = nodeInitialized && state.viewLayout
+  const isReady = nodeInitialized && xyflow.viewportInitialized
 
-  const prevViewLayoutRef = useRef(state.viewLayout)
+  useEffect(() => {
+    return diagramApi.subscribe(
+      s => ({
+        viewportMoved: s.viewportMoved,
+        changeid: detectDiagramChange(s)
+      }),
+      ({ viewportMoved, changeid }) => {
+        setPending(changeid)
+        setViewportMoved(viewportMoved)
+      },
+      {
+        equalityFn: shallowEqual
+      }
+    )
+  }, [diagramApi])
 
-  console.debug(`FitViewOnDiagramChange:
-  initialized: ${state.initialized}
-  nodeInitialized: ${nodeInitialized}
-  isReady: ${isReady}
-  viewportMoved: ${state.viewportMoved}
-  `)
-  // const xyflow = xyflowStoreApi.getState()
+  // const
 
-  useDebouncedEffect(
+  // const state = useDiagramStore(select)
+
+  // const xyflow = useXYFlow()
+
+  // const nodeInitialized = useNodesInitialized({
+  //   includeHiddenNodes: true
+  // })
+  // const isReady = nodeInitialized && xyflow.viewportInitialized
+
+  // const prevViewLayoutRef = useRef(state.viewLayout)
+
+  useEffect(
     () => {
       if (!isReady) {
         console.debug(`FitViewOnDiagramChange not ready`)
         return
       }
-      if (!isReady || prevViewLayoutRef.current === state.viewLayout) {
-        console.debug(`FitViewOnDiagramChange skipped`)
+      if (processedChangeId === pendingChangeId) {
+        console.debug(`FitViewOnDiagramChange already processed`)
         return
       }
-      console.debug(`FitViewOnDiagramChange fitView`)
+      const { view, fitViewPadding } = diagramApi.getState()
+      console.debug(`FitViewOnDiagramChange fitView  ${processedChangeId} -> ${pendingChangeId}`)
       // const xyflow = xyflowStoreApi.getState()
-      const zoom = xyflow.getZoom()
-      xyflow.setCenter(state.viewWidth / 2, state.viewHeight / 2, {
-        duration: 150,
+      const zoom = Math.min(xyflow.getZoom(), 0.9)
+      xyflow.setCenter(view.width / 2, view.height / 2, {
+        duration: 120,
         zoom
       })
-      xyflow.fitBounds({
-        x: 0,
-        y: 0,
-        width: state.viewWidth,
-        height: state.viewHeight
-      }, {
+      xyflow.fitView({
+        includeHiddenNodes: true,
         duration: 350,
-        padding: state.fitViewPadding
+        padding: fitViewPadding,
+        minZoom: MinZoom,
+        maxZoom: 1
       })
+      // xyflow.fitBounds({
+      //   x: 0,
+      //   y: 0,
+      //   width: view.width,
+      //   height: view.height
+      // }, {
+      //   duration: 350,
+      //   padding: fitViewPadding
+      // })
+      setProcessed(pendingChangeId)
       // diagramApi.
       // updateState({ viewportMoved: false })
-      prevViewLayoutRef.current = state.viewLayout
+      // prevViewLayoutRef.current = state.viewLayout
     },
-    [isReady, state.viewLayout],
-    100
+    [isReady, processedChangeId, pendingChangeId]
   )
 
-  if (!state.viewportMoved) {
+  if (!viewportMoved && isReady) {
     return <FitViewOnViewportResize />
   }
 

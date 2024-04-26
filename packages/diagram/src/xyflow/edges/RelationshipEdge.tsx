@@ -1,15 +1,15 @@
 import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
 import { Box } from '@mantine/core'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
-import { EdgeLabelRenderer, getBezierPath, useStore } from '@xyflow/react'
+import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { memo, useCallback } from 'react'
+import { deepEqual as eq } from 'fast-equals'
+import { type CSSProperties, memo } from 'react'
 import { hasAtLeast } from 'remeda'
-import { useDiagramStateSelector } from '../../state'
+import { useDiagramStore } from '../../store'
 import { ZIndexes } from '../const'
-import { useXYFlow, useXYStore } from '../hooks'
-import { type XYFlowEdge, XYFlowNode } from '../types'
+import { useXYStoreApi } from '../hooks'
+import { type XYFlowEdge } from '../types'
 import { container, cssEdgePath, edgeLabel, edgeLabelBody, edgePathBg, fillStrokeCtx } from './edges.css'
 import { getEdgeParams } from './utils'
 // import { getEdgeParams } from './utils'
@@ -84,15 +84,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
-  const xyflow = useXYFlow()
-  const isNotModified = useXYStore(
-    useCallback(s => {
-      const sourceNode = nonNullable(s.nodeLookup.get(source)!, `source node ${source} not found`)
-      const targetNode = nonNullable(s.nodeLookup.get(target)!, `target node ${target} not found`)
-      return isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-        && isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position)
-    }, [source, target])
-  )
+  const { nodeLookup } = useXYStoreApi().getState()
+  const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
+  const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
+
+  const isNotModified = isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+    && isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
   invariant(data, 'data is required')
   const {
@@ -102,7 +99,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   // const edgePath = bezierPath(edge.points)
 
   const color = edge.color ?? 'gray'
-  const isHovered = useDiagramStateSelector(state => state.hoveredEdgeId === id)
+  const isHovered = useDiagramStore(s => s.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -119,28 +116,26 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   let edgePath: string, labelX: number, labelY: number
 
-  // if (isNotModified) {
-  edgePath = bezierPath(edge.points)
-  labelX = data.label?.bbox.x ?? 0
-  labelY = data.label?.bbox.y ?? 0
-  // } else {
-  //   const sourceNode = xyflow.getNode(source)!
-  //   const targetNode = xyflow.getNode(target)!
-  //   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
+  if (isNotModified) {
+    edgePath = bezierPath(edge.points)
+    labelX = data.label?.bbox.x ?? 0
+    labelY = data.label?.bbox.y ?? 0
+  } else {
+    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
 
-  //   const [_edgePath, _labelX, _labelY] = getBezierPath({
-  //     sourceX: sx,
-  //     sourceY: sy,
-  //     sourcePosition: sourcePos,
-  //     targetPosition: targetPos,
-  //     targetX: tx,
-  //     targetY: ty
-  //   })
-  //   edgePath = _edgePath
-  //   labelX = _labelX
-  //   labelY = _labelY
-  // }
-
+    const [_edgePath, _labelX, _labelY] = getBezierPath({
+      sourceX: sx,
+      sourceY: sy,
+      sourcePosition: sourcePos,
+      targetPosition: targetPos,
+      targetX: tx,
+      targetY: ty
+    })
+    edgePath = _edgePath
+    labelX = _labelX
+    labelY = _labelY
+  }
+  // const deferredEdgePath = edgePath
   //   useTilg()`
   //   ${id}
   //   path=${edgePath}
@@ -165,44 +160,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           </marker>
         </defs>
       </g>
-      {/* {!isDotted && ( */}
-      <path
-        className={clsx('react-flow__edge-path', edgePathBg)}
-        d={edgePath}
-        style={style}
-        strokeLinecap={'round'}
-      />
-      {/* )} */}
-      <path
-        className={clsx('react-flow__edge-path', cssEdgePath)}
-        d={edgePath}
-        // animate={isHovered && {
-        //   strokeDashoffset: [36, 0],
-        //   transition: {
-        //     repeat: Infinity,
-        //     type: 'tween',
-        //     ease: 'linear',
-        //     duration: 0.9
-        //   }
-        // }}
-        style={style}
-        strokeLinecap={'round'}
-        {
-          // strokeLinecap={isDotted ? 'butt' : 'round'}
-          // strokeMiterlimit={10}
-          // strokeLinejoin="bevel"
-          ...(strokeDasharray ? { strokeDasharray } : {})
-        }
-        {...(edge.headArrow ? { markerEnd: marker } : {})}
-        {...(edge.tailArrow ? { markerStart: marker } : {})}
-      />
-      <path
-        className={clsx('react-flow__edge-interaction')}
-        d={edgePath}
-        fill="none"
-        strokeOpacity={0}
-        strokeWidth={interactionWidth ?? 10}
-      />
+      <RelationshipPath
+        edgePath={edgePath}
+        interactionWidth={interactionWidth ?? 10}
+        strokeDasharray={strokeDasharray}
+        markerStart={edge.tailArrow ? marker : undefined}
+        markerEnd={edge.headArrow ? marker : undefined}
+        style={style} />
       {
         /*
       {controlPoints.map((p, i) => (
@@ -264,3 +228,44 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     </g>
   )
 }, isEqualProps)
+
+const RelationshipPath = memo<{
+  edgePath: string
+  interactionWidth: number
+  strokeDasharray: string | undefined
+  markerStart: string | undefined
+  markerEnd: string | undefined
+  style: CSSProperties | undefined
+}>(({
+  edgePath,
+  interactionWidth,
+  strokeDasharray,
+  markerStart,
+  markerEnd,
+  style
+}) => (
+  <>
+    <path
+      className={clsx('react-flow__edge-path', edgePathBg)}
+      d={edgePath}
+      style={style}
+      strokeLinecap={'round'}
+    />
+    <path
+      className={clsx('react-flow__edge-path', cssEdgePath)}
+      d={edgePath}
+      style={style}
+      strokeLinecap={'round'}
+      strokeDasharray={strokeDasharray}
+      markerStart={markerStart}
+      markerEnd={markerEnd}
+    />
+    <path
+      className={clsx('react-flow__edge-interaction')}
+      d={edgePath}
+      fill="none"
+      strokeOpacity={0}
+      strokeWidth={interactionWidth}
+    />
+  </>
+))
