@@ -73,7 +73,7 @@
     "remeda": "^1.56.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
-    "type-fest": "^4.15.0",
+    "type-fest": "^4.18.0",
     "ufo": "^1.3.2",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
@@ -88,7 +88,7 @@
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
-    "vitest": "~1.4.0"
+    "vitest": "~1.5.2"
   },
   "packageManager": "yarn@4.1.1"
 }

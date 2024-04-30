@@ -1451,7 +1451,7 @@ __metadata:
     safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
     typescript: "npm:^5.4.5"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
   languageName: unknown
   linkType: soft
 
@@ -1461,14 +1461,14 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
-    "@mantine/core": "npm:^7.7.0"
-    "@mantine/hooks": "npm:^7.7.0"
-    "@mantine/vanilla-extract": "npm:^7.7.0"
+    "@mantine/core": "npm:^7.8.1"
+    "@mantine/hooks": "npm:^7.8.1"
+    "@mantine/vanilla-extract": "npm:^7.8.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
-    "@vanilla-extract/css": "npm:^1.14.2"
+    "@vanilla-extract/css": "npm:^1.15.1"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
@@ -1477,13 +1477,13 @@ __metadata:
     esm-env: "npm:^1.0.0"
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.0.25"
+    framer-motion: "npm:^11.1.7"
     khroma: "npm:^2.1.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     remeda: "npm:^1.56.0"
     tilg: "npm:^0.1.1"
-    type-fest: "npm:^4.13.1"
+    type-fest: "npm:^4.18.0"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vite: "npm:^5.2.10"
@@ -1503,13 +1503,13 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/diagrams": "workspace:*"
-    "@mantine/core": "npm:^7.7.0"
-    "@mantine/hooks": "npm:^7.7.0"
+    "@mantine/core": "npm:^7.8.1"
+    "@mantine/hooks": "npm:^7.8.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@vitejs/plugin-react": "npm:^4.2.1"
-    framer-motion: "npm:^11.0.25"
+    framer-motion: "npm:^11.1.7"
     likec4: "workspace:*"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -1612,7 +1612,7 @@ __metadata:
     langium: "npm:^3.0.0"
     remeda: "npm:^1.56.0"
     typescript: "npm:^5.4.5"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
   languageName: unknown
   linkType: soft
 
@@ -1627,7 +1627,7 @@ __metadata:
     remeda: "npm:^1.56.0"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
   languageName: unknown
   linkType: soft
 
@@ -1652,11 +1652,11 @@ __metadata:
     remeda: "npm:^1.56.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.15.0"
+    type-fest: "npm:^4.18.0"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.3.2"
     unbuild: "npm:^2.0.0"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
     vscode-languageserver: "npm:9.0.1"
     vscode-languageserver-protocol: "npm:3.17.5"
     vscode-uri: "npm:3.0.8"
@@ -1679,9 +1679,9 @@ __metadata:
     remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    type-fest: "npm:^4.15.0"
+    type-fest: "npm:^4.18.0"
     typescript: "npm:^5.4.5"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
     word-wrap: "npm:^1.2.5"
   peerDependencies:
     "@hpcc-js/wasm": ^2.16.1
@@ -1700,8 +1700,8 @@ __metadata:
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
-    "@mantine/core": "npm:^7.7.0"
-    "@mantine/hooks": "npm:^7.7.0"
+    "@mantine/core": "npm:^7.8.1"
+    "@mantine/hooks": "npm:^7.8.1"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.12.7"
@@ -1709,8 +1709,8 @@ __metadata:
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.88.0"
     "@types/vscode-webview": "npm:^1.57.5"
-    "@vanilla-extract/css": "npm:^1.14.2"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.7"
+    "@vanilla-extract/css": "npm:^1.15.1"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.9"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     lucide-react: "npm:^0.294.0"
@@ -1732,7 +1732,7 @@ __metadata:
   dependencies:
     "@babel/preset-typescript": "npm:^7.23.3"
     "@types/node": "npm:^20.12.7"
-    "@vitest/ui": "npm:~1.4.0"
+    "@vitest/ui": "npm:~1.5.2"
     dprint: "npm:^0.45.1"
     esbuild: "npm:^0.20.2"
     execa: "npm:^8.0.1"
@@ -1745,7 +1745,7 @@ __metadata:
     turbo: "npm:^1.13.3"
     typescript: "npm:^5.4.5"
     vite: "npm:^5.2.10"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
   languageName: unknown
   linkType: soft
 
@@ -1756,9 +1756,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:^7.7.0":
-  version: 7.7.0
-  resolution: "@mantine/core@npm:7.7.0"
+"@mantine/core@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "@mantine/core@npm:7.8.1"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:2.1.0"
@@ -1767,28 +1767,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.7.0
+    "@mantine/hooks": 7.8.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10/9d27ca020a2d6c1b6744e1418ba88f23817b3e6f947b347c16811dd0defb154fea958ac92a6011938f25aad076c4e5940045610b6099be9436dd1a120713dd98
+  checksum: 10/17d533f10dac6d4cdce47825ca1abda0fe54883e255dfd06e588d13aa524692f09ac24bed79dea604f94afbe58d5c59591bdfbc71f591a9cb50ca49d43e6d6eb
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:^7.7.0":
-  version: 7.7.0
-  resolution: "@mantine/hooks@npm:7.7.0"
+"@mantine/hooks@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "@mantine/hooks@npm:7.8.1"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10/35a407d35f92a1ac39c1239300b819c5547ee10a36fa2cd6af49842817f4d7011cda20964f87145915f30efed50c5b6f1c4c1fc179b284b0de29603568eb5a8b
+  checksum: 10/92a3aa551f36d998fbd5000876a3198ff43b39b4b52f05a0dbf7fbc20fa6403662406b6e54cfb004a49506f4738714c2b418e496d70c4d7ebd3157d41919183c
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:^7.7.0":
-  version: 7.7.0
-  resolution: "@mantine/vanilla-extract@npm:7.7.0"
+"@mantine/vanilla-extract@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "@mantine/vanilla-extract@npm:7.8.1"
   peerDependencies:
-    "@mantine/core": 7.7.0
-  checksum: 10/d81241fb4e9472189c8ede1e482ff6498d6af2c89378a108a2bffbcb4fc07a2e5dc0d01d997e95c7f80e102e508e6e50fb57adf6149447e1040fcf80d4d29e73
+    "@mantine/core": 7.8.1
+  checksum: 10/ed1a296fb870776d5be17bb7e5fe43cf7ed27e23bc8d98f8f91a622cf5bef3c797d406589cdf57f1943659cd9fa4496e02791a15916b9900b649f5f7325aa01c
   languageName: node
   linkType: hard
 
@@ -4956,22 +4956,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.14.2":
-  version: 1.14.2
-  resolution: "@vanilla-extract/css@npm:1.14.2"
+"@vanilla-extract/css@npm:^1.15.1":
+  version: 1.15.1
+  resolution: "@vanilla-extract/css@npm:1.15.1"
   dependencies:
     "@emotion/hash": "npm:^0.9.0"
     "@vanilla-extract/private": "npm:^1.0.4"
-    chalk: "npm:^4.1.1"
     css-what: "npm:^6.1.0"
     cssesc: "npm:^3.0.0"
     csstype: "npm:^3.0.7"
+    dedent: "npm:^1.5.1"
     deep-object-diff: "npm:^1.1.9"
     deepmerge: "npm:^4.2.2"
     media-query-parser: "npm:^2.0.2"
     modern-ahocorasick: "npm:^1.0.0"
-    outdent: "npm:^0.8.0"
-  checksum: 10/db88ce6d92c0ca9bbddd34b6ec38b7ad3290006fe782459cd0bfc2c67c353f343d38914cdc5de0fec0dbefe17d2307711012ef9a872ba4b1b1f8ff9e66e6afe5
+    picocolors: "npm:^1.0.0"
+  checksum: 10/4d7e86b36296b132e43307705c4b5a080fce33b048b2b9cbad8ea4f595e9c252d78223574dcad9b71268bf0a8d5dd8b90782e56fca8b1de1d4b102404ba71e8e
   languageName: node
   linkType: hard
 
@@ -4998,24 +4998,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/integration@npm:^7.0.0, @vanilla-extract/integration@npm:^7.1.2":
-  version: 7.1.2
-  resolution: "@vanilla-extract/integration@npm:7.1.2"
+"@vanilla-extract/integration@npm:^7.0.0, @vanilla-extract/integration@npm:^7.1.3":
+  version: 7.1.3
+  resolution: "@vanilla-extract/integration@npm:7.1.3"
   dependencies:
     "@babel/core": "npm:^7.23.9"
     "@babel/plugin-syntax-typescript": "npm:^7.23.3"
     "@vanilla-extract/babel-plugin-debug-ids": "npm:^1.0.5"
-    "@vanilla-extract/css": "npm:^1.14.2"
+    "@vanilla-extract/css": "npm:^1.15.1"
+    dedent: "npm:^1.5.1"
     esbuild: "npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0"
     eval: "npm:0.1.8"
     find-up: "npm:^5.0.0"
     javascript-stringify: "npm:^2.0.1"
-    lodash: "npm:^4.17.21"
     mlly: "npm:^1.4.2"
-    outdent: "npm:^0.8.0"
     vite: "npm:^5.0.11"
     vite-node: "npm:^1.2.0"
-  checksum: 10/cf681f9491195aaafa1b36514e7d9ea24a4098b9c8eb891df058666181067b8682cd8c5a81abaa50587074da07aaeaf72488e598d815fbeeb6f0e0a67c614cf6
+  checksum: 10/0c8ee832e4ede0a91ac948647aa5ffa71cdac060883f054b743ca5dc84fd70b66c4d07447ffe17377da90a2bdc6c79dd40c54a6fab301f6afe3dd7c060300010
   languageName: node
   linkType: hard
 
@@ -5026,14 +5025,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.7"
+"@vanilla-extract/vite-plugin@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@vanilla-extract/vite-plugin@npm:4.0.9"
   dependencies:
-    "@vanilla-extract/integration": "npm:^7.1.2"
+    "@vanilla-extract/integration": "npm:^7.1.3"
   peerDependencies:
     vite: ^4.0.3 || ^5.0.0
-  checksum: 10/e07379f79fd66d81c69175c99841df909d20884f36223f15b7c04ccb49ff0cd11e5dee955064f5ae6f6d51a380e8db1e117ff40c261f38053d47cc7e589d1da2
+  checksum: 10/0cea02e5292f53cf3b8ff1cc435d35fc33bc53ebc25153307d138485ccb985505aab536a2696c95f96d83655c90ccac936162a1f5bf68b709025cbb33bfeca5d
   languageName: node
   linkType: hard
 
@@ -5063,53 +5062,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/expect@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/expect@npm:1.4.0"
+"@vitest/expect@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/expect@npm:1.5.2"
   dependencies:
-    "@vitest/spy": "npm:1.4.0"
-    "@vitest/utils": "npm:1.4.0"
+    "@vitest/spy": "npm:1.5.2"
+    "@vitest/utils": "npm:1.5.2"
     chai: "npm:^4.3.10"
-  checksum: 10/00d794a807b7e496d8450133430c8528d4b6cfaba9520bf49640c941b14acaa7b28f151c249b44d935740cae887f0648980db63f38e37bdeb6c2906387e15188
+  checksum: 10/47ea9f1e7482de32100b243e599587979664bae569def43371d5c2a19514709cc3019c7f3ac6f4179d2183a0221642277a44029ac44cef04e54fbbbb52785e17
   languageName: node
   linkType: hard
 
-"@vitest/runner@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/runner@npm:1.4.0"
+"@vitest/runner@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/runner@npm:1.5.2"
   dependencies:
-    "@vitest/utils": "npm:1.4.0"
+    "@vitest/utils": "npm:1.5.2"
     p-limit: "npm:^5.0.0"
     pathe: "npm:^1.1.1"
-  checksum: 10/7b8a692de5cef72ef698e83eb5bbb89076924e7a557ed087e80c5080e000a575f34c481f3b880aa2588da5a095504dc55216c319f6924eddfcfc3412f10a27b2
+  checksum: 10/9bb002c6de3da6011642bd09c5d1cf3ea0a6595e4cb88b9cd3314e99e5583ec398d35c57bebc91b197631ac9dea61d4adb53f9e3217b4d55c3b52fa930e8edab
   languageName: node
   linkType: hard
 
-"@vitest/snapshot@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/snapshot@npm:1.4.0"
+"@vitest/snapshot@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/snapshot@npm:1.5.2"
   dependencies:
     magic-string: "npm:^0.30.5"
     pathe: "npm:^1.1.1"
     pretty-format: "npm:^29.7.0"
-  checksum: 10/43e22f8aeef4b87bcce79b37775415d4b558e32d906992d4a0acbe81c8e84cbfe3e488dd32c504c4f4d8f2c3f96842acb524b4b210036fda6796e64d0140d5f6
+  checksum: 10/80d6ca478aee3caf6ce5afecd4f37d2677a619bdc63c4209281b047d39657045f4db1bac5ba9a1c38480df0d3f141da86013579c14b8104c7e8c43ed5134ca96
   languageName: node
   linkType: hard
 
-"@vitest/spy@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/spy@npm:1.4.0"
+"@vitest/spy@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/spy@npm:1.5.2"
   dependencies:
     tinyspy: "npm:^2.2.0"
-  checksum: 10/0e48f9a64f62801c2abf10df1013ec5e5b75c47bdca6a5d4c8246b3dd7bdf01ade3df6c99fd0751a870a16bd63c127b3e58e0f5cbc320c48d0727ab5da89d028
+  checksum: 10/e4424f9e0d1e4f11ec242aeb5f98fa6420ecf7d8bb456a8b31795e02f933d7b529946a6442c886b27cf324925ac105536f4a8fcbf672d775c1b6d0897a36b061
   languageName: node
   linkType: hard
 
-"@vitest/ui@npm:~1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/ui@npm:1.4.0"
+"@vitest/ui@npm:~1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/ui@npm:1.5.2"
   dependencies:
-    "@vitest/utils": "npm:1.4.0"
+    "@vitest/utils": "npm:1.5.2"
     fast-glob: "npm:^3.3.2"
     fflate: "npm:^0.8.1"
     flatted: "npm:^3.2.9"
@@ -5117,20 +5116,20 @@ __metadata:
     picocolors: "npm:^1.0.0"
     sirv: "npm:^2.0.4"
   peerDependencies:
-    vitest: 1.4.0
-  checksum: 10/eb7f8f3b24ca8e47787863e0ef652bfb7963a65470534aa021cc183e85b8562981cedcae6a1245ab775da89385ba18f3a2461be936d6b3deae98c10332d5f810
+    vitest: 1.5.2
+  checksum: 10/7a805e83a4096d71c718a65e7081f170432ffbc517dce5103d1d95cac8c0b34564255db30bcb915e27ccfb5ad068cbaa87335b5871b503b5f654ec7a596ac4d4
   languageName: node
   linkType: hard
 
-"@vitest/utils@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@vitest/utils@npm:1.4.0"
+"@vitest/utils@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@vitest/utils@npm:1.5.2"
   dependencies:
     diff-sequences: "npm:^29.6.3"
     estree-walker: "npm:^3.0.3"
     loupe: "npm:^2.3.7"
     pretty-format: "npm:^29.7.0"
-  checksum: 10/2261705e2edc10376f2524a4bf6616688680094d94fff683681a1ef8d3d59271dee2d80893efad8e6437bbdb00390e2edd754d94cf42100db86f2cfd9c44826f
+  checksum: 10/74fb0a32973038b00b6ca427cf387c07ff879342e6ea980420b3a9b6d74b0332cdcc9db184ad842584099ac956987bddcdc49001ed648deb49b8f54416570ff0
   languageName: node
   linkType: hard
 
@@ -7325,6 +7324,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dedent@npm:^1.5.1":
+  version: 1.5.3
+  resolution: "dedent@npm:1.5.3"
+  peerDependencies:
+    babel-plugin-macros: ^3.1.0
+  peerDependenciesMeta:
+    babel-plugin-macros:
+      optional: true
+  checksum: 10/e5277f6268f288649503125b781a7b7a2c9b22d011139688c0b3619fe40121e600eb1f077c891938d4b2428bdb6326cc3c77a763e4b1cc681bd9666ab1bad2a1
+  languageName: node
+  linkType: hard
+
 "deep-eql@npm:^4.1.3":
   version: 4.1.3
   resolution: "deep-eql@npm:4.1.3"
@@ -8583,9 +8594,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.25":
-  version: 11.0.25
-  resolution: "framer-motion@npm:11.0.25"
+"framer-motion@npm:^11.1.7":
+  version: 11.1.7
+  resolution: "framer-motion@npm:11.1.7"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -8599,7 +8610,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/9e045267fee20fb970221256fa7b76ed62e89ab712aeaeafa23993a1121394974c2d97a52931901eb03d9f864d58bbe03afe9337654c10058481f1bd9af642cc
+  checksum: 10/b3bc5ac1c41fa3646b86f1855317cd7c9ebbc576667e1b29c283ab95dca7bcda6c3b0ad392645d12779b5bc340e816cef405574fbb757ba44a0517b2527fe30f
   languageName: node
   linkType: hard
 
@@ -10758,8 +10769,8 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@mantine/core": "npm:^7.7.0"
-    "@mantine/hooks": "npm:^7.7.0"
+    "@mantine/core": "npm:^7.8.1"
+    "@mantine/hooks": "npm:^7.8.1"
     "@nanostores/react": "npm:^0.7.2"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
@@ -10774,9 +10785,9 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/yargs": "npm:^17.0.32"
-    "@vanilla-extract/css": "npm:^1.14.2"
+    "@vanilla-extract/css": "npm:^1.15.1"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.7"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.9"
     "@vitejs/plugin-react": "npm:^4.2.1"
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
@@ -10787,7 +10798,7 @@ __metadata:
     esm-env: "npm:^1.0.0"
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
-    framer-motion: "npm:^11.0.25"
+    framer-motion: "npm:^11.1.7"
     get-port: "npm:^7.0.0"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
@@ -10800,20 +10811,20 @@ __metadata:
     pretty-ms: "npm:^8.0.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.2.0"
-    react-accessible-treeview: "npm:^2.8.3"
+    react-accessible-treeview: "npm:^2.9.0"
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.13"
-    react-resizable-panels: "npm:^2.0.12"
+    react-resizable-panels: "npm:^2.0.19"
     remeda: "npm:^1.56.0"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.30.0"
     tsx: "npm:^4.7.3"
-    type-fest: "npm:^4.15.0"
+    type-fest: "npm:^4.18.0"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.3.2"
     vite: "npm:^5.2.10"
     vite-plugin-shadow-style: "npm:^1.1.0"
-    vitest: "npm:~1.4.0"
+    vitest: "npm:~1.5.2"
     yargs: "npm:^17.7.2"
   bin:
     likec4: ./bin/likec4.mjs
@@ -13675,13 +13686,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"outdent@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "outdent@npm:0.8.0"
-  checksum: 10/a556c5c308705ad4e3441be435f2b2cf014cb5f9753a24cbd080eadc473b988c77d0d529a6a9a57c3931fb4178e5a81d668cc4bc49892b668191a5d0ba3df76e
-  languageName: node
-  linkType: hard
-
 "outvariant@npm:^1.2.1, outvariant@npm:^1.4.0":
   version: 1.4.0
   resolution: "outvariant@npm:1.4.0"
@@ -14627,15 +14631,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-accessible-treeview@npm:^2.8.3":
-  version: 2.8.3
-  resolution: "react-accessible-treeview@npm:2.8.3"
+"react-accessible-treeview@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "react-accessible-treeview@npm:2.9.0"
   peerDependencies:
     classnames: ^2.2.6
     prop-types: ^15.7.2
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/97de182a2ea21d3d9abeca1e81080802e5df0ec1fcad06b891e15da1535a810bcb5d7a8c32bd18e05a97725ccfed068ddb1c5ea062aeba6bf6e82b3238b8ba89
+  checksum: 10/3e575ec5b95f86dd70f505ef2dfc6f67a960785b97c2b91bffb7bf53de8891e8230b3ee5e579b5f719cd905baa8d5df675d2f18bef8e9e1753a475bb486b7bfb
   languageName: node
   linkType: hard
 
@@ -14805,13 +14809,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:^2.0.12":
-  version: 2.0.12
-  resolution: "react-resizable-panels@npm:2.0.12"
+"react-resizable-panels@npm:^2.0.19":
+  version: 2.0.19
+  resolution: "react-resizable-panels@npm:2.0.19"
   peerDependencies:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/221efebd14db7d9abb3545dcb63235c9137a3d3cfb2d0dccd93f66b5c28f8a794fba9505bf04ff47f2f98ffa9cc6767b6685f789729a93e03a15469c0592a389
+  checksum: 10/ac283f1667d2d41da32274b10875c430acff90bef977760e9f3944452be1ebbf4d7ed8909187d5b6a921b493a0a5e6a8e6215fa3d19370a11b2ffbc1a04b7811
   languageName: node
   linkType: hard
 
@@ -16655,7 +16659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinypool@npm:^0.8.2":
+"tinypool@npm:^0.8.3":
   version: 0.8.4
   resolution: "tinypool@npm:0.8.4"
   checksum: 10/7365944c2532f240111443e7012be31a634faf1a02db08a91db3aa07361c26a374d0be00a0f2ea052c4bee39c107ba67f1f814c108d9d51dfc725c559c1a9c03
@@ -17025,10 +17029,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.12.0, type-fest@npm:^4.13.1, type-fest@npm:^4.15.0":
-  version: 4.15.0
-  resolution: "type-fest@npm:4.15.0"
-  checksum: 10/8f897551877daa0df7bb17a21b6acd8a21ac5a0bdb14dbfd353b16013fed99f23c6d9c12a2c7685c8dededb4739ec8bfb120a914330f8b11a478a89758a11acc
+"type-fest@npm:^4.12.0, type-fest@npm:^4.18.0":
+  version: 4.18.0
+  resolution: "type-fest@npm:4.18.0"
+  checksum: 10/038fab7f07e4b2646d0c6a52be278bcf8171e733b6af29b605416e138914eb9d29d6ad6e3fb786ebe56eada3f127f690d3cf8fd0fb59e7c2efda9b31cde23082
   languageName: node
   linkType: hard
 
@@ -17787,9 +17791,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-node@npm:1.4.0":
-  version: 1.4.0
-  resolution: "vite-node@npm:1.4.0"
+"vite-node@npm:1.5.2, vite-node@npm:^1.2.0":
+  version: 1.5.2
+  resolution: "vite-node@npm:1.5.2"
   dependencies:
     cac: "npm:^6.7.14"
     debug: "npm:^4.3.4"
@@ -17798,22 +17802,7 @@ __metadata:
     vite: "npm:^5.0.0"
   bin:
     vite-node: vite-node.mjs
-  checksum: 10/691e828c2abe6b62d44183c4e04bdfd119fed405439126fbdc5bfb791644baee3961c1ce429a67b360cc3d8b7c472160c7e82c59491f044a232b4ff480d8a2a2
-  languageName: node
-  linkType: hard
-
-"vite-node@npm:^1.2.0":
-  version: 1.5.1
-  resolution: "vite-node@npm:1.5.1"
-  dependencies:
-    cac: "npm:^6.7.14"
-    debug: "npm:^4.3.4"
-    pathe: "npm:^1.1.1"
-    picocolors: "npm:^1.0.0"
-    vite: "npm:^5.0.0"
-  bin:
-    vite-node: vite-node.mjs
-  checksum: 10/b1dcfbdd33cff9dda4eaec857003e784d058e25c053a5955d2d081d30baff28120be292e7e16e5b8ff1973ee688c8626061905749d86a51482506333aab075d2
+  checksum: 10/7182d44fc65c63ccbc49e2a87a0bb3193c2aa75d6dcc5c3e5cea259445d958825260a26337fba1116836611b77ef2353fe5acf176965f1492c42790b9c2d964f
   languageName: node
   linkType: hard
 
@@ -17911,15 +17900,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:~1.4.0":
-  version: 1.4.0
-  resolution: "vitest@npm:1.4.0"
+"vitest@npm:~1.5.2":
+  version: 1.5.2
+  resolution: "vitest@npm:1.5.2"
   dependencies:
-    "@vitest/expect": "npm:1.4.0"
-    "@vitest/runner": "npm:1.4.0"
-    "@vitest/snapshot": "npm:1.4.0"
-    "@vitest/spy": "npm:1.4.0"
-    "@vitest/utils": "npm:1.4.0"
+    "@vitest/expect": "npm:1.5.2"
+    "@vitest/runner": "npm:1.5.2"
+    "@vitest/snapshot": "npm:1.5.2"
+    "@vitest/spy": "npm:1.5.2"
+    "@vitest/utils": "npm:1.5.2"
     acorn-walk: "npm:^8.3.2"
     chai: "npm:^4.3.10"
     debug: "npm:^4.3.4"
@@ -17931,15 +17920,15 @@ __metadata:
     std-env: "npm:^3.5.0"
     strip-literal: "npm:^2.0.0"
     tinybench: "npm:^2.5.1"
-    tinypool: "npm:^0.8.2"
+    tinypool: "npm:^0.8.3"
     vite: "npm:^5.0.0"
-    vite-node: "npm:1.4.0"
+    vite-node: "npm:1.5.2"
     why-is-node-running: "npm:^2.2.2"
   peerDependencies:
     "@edge-runtime/vm": "*"
     "@types/node": ^18.0.0 || >=20.0.0
-    "@vitest/browser": 1.4.0
-    "@vitest/ui": 1.4.0
+    "@vitest/browser": 1.5.2
+    "@vitest/ui": 1.5.2
     happy-dom: "*"
     jsdom: "*"
   peerDependenciesMeta:
@@ -17957,7 +17946,7 @@ __metadata:
       optional: true
   bin:
     vitest: vitest.mjs
-  checksum: 10/cf4675657f4a9ea755d0af70d62827fca9daee64e81d0392067c70a0d1f5f8fd4a47523e28ecf42d667e4d4d7c68b09d5e08389d4b58dc36065364f6c76cda7d
+  checksum: 10/49d5715315f205640978afeb8597b9bc389ba889c6cb285e49a5bde7f5eb59b0748f2386879e87821f99478643fecc0c98fe83503a0fcd60cb14bba9b4398b9c
   languageName: node
   linkType: hard
 

@@ -2,7 +2,6 @@ import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import { useXYFlow, useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
-import { DEV } from 'esm-env'
 import { memo, useEffect } from 'react'
 import { useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
@@ -35,7 +34,6 @@ export const SyncWithDiagram = memo(() => {
   const diagramStoreApi = useDiagramStoreApi()
 
   useEffect(() => {
-    DEV && console.debug('SyncWithDiagram effect')
     return diagramStoreApi.subscribe(
       // selector
       state => ({
@@ -47,8 +45,6 @@ export const SyncWithDiagram = memo(() => {
       // listener
       ({ viewId, nodes, edges, nodesDraggable }) => {
         const { lastOnNavigate } = diagramStoreApi.getState()
-
-        DEV && console.debug('SyncWithDiagram update nodes')
         const updates = diagramViewToXYFlowData({ nodes, edges }, nodesDraggable)
 
         xyflow.setNodes(prev =>

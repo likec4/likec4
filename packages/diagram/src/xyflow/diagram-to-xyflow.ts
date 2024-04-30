@@ -1,6 +1,4 @@
 import {
-  compareByFqnHierarchically,
-  type DiagramEdge,
   type DiagramNode,
   type DiagramView,
   type Fqn,
@@ -10,7 +8,7 @@ import {
   type Point
 } from '@likec4/core'
 import { getBezierEdgeCenter } from '@xyflow/react'
-import { hasAtLeast, isNullish } from 'remeda'
+import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
