@@ -32,7 +32,7 @@ export class Views {
     return Object.values(model?.views ?? {})
   }
 
-  async layoutViews(): Promise<ReadonlyArray<Readonly<DotLayoutResult>>> {
+  async layoutViews(): Promise<Array<Readonly<DotLayoutResult>>> {
     const logger = this.services.logger
     const action = this.previousAction
       .then(async () => {
@@ -64,12 +64,12 @@ export class Views {
     return await action
   }
 
-  async diagrams(): Promise<ReadonlyArray<DiagramView>> {
+  async diagrams(): Promise<Array<DiagramView>> {
     const layouted = await this.layoutViews()
     return layouted.map(l => l.diagram)
   }
 
-  async viewsAsGraphvizOut(): Promise<ReadonlyArray<GraphvizOut>> {
+  async viewsAsGraphvizOut(): Promise<Array<GraphvizOut>> {
     const KEY = 'All-LayoutedViews-DotWithSvg'
     const cache = this.services.WorkspaceCache as WorkspaceCache<string, GraphvizOut[]>
     if (cache.has(KEY)) {
