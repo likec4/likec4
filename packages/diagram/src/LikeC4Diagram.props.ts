@@ -130,13 +130,13 @@ export interface LikeC4DiagramProperties {
 }
 
 export interface LikeC4DiagramEventHandlers {
-  onChange?: OnChange | undefined
-  onNavigateTo?: OnNavigateTo | undefined
-  onNodeClick?: OnNodeClick | undefined
-  onNodeContextMenu?: OnNodeClick | undefined
-  onCanvasContextMenu?: OnCanvasClick | undefined
-  onEdgeClick?: OnEdgeClick | undefined
-  onEdgeContextMenu?: OnEdgeClick | undefined
-  onCanvasClick?: OnCanvasClick | undefined
-  onCanvasDblClick?: OnCanvasClick | undefined
+  onChange?: OnChange | null | undefined
+  onNavigateTo?: OnNavigateTo | null | undefined
+  onNodeClick?: OnNodeClick | null | undefined
+  onNodeContextMenu?: OnNodeClick | null | undefined
+  onCanvasContextMenu?: OnCanvasClick | null | undefined
+  onEdgeClick?: OnEdgeClick | null | undefined
+  onEdgeContextMenu?: OnEdgeClick | null | undefined
+  onCanvasClick?: OnCanvasClick | null | undefined
+  onCanvasDblClick?: OnCanvasClick | null | undefined
 }

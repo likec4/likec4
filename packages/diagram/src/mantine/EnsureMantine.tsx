@@ -8,7 +8,6 @@ type EnsureMantineProps = PropsWithChildren<Pick<LikeC4DiagramProperties, 'color
 export function EnsureMantine({ colorScheme, children }: EnsureMantineProps) {
   const mantineCtx = useContext(MantineContext)
   if (mantineCtx) {
-    mantineCtx.getRootElement
     return <>{children}</>
   }
   return (

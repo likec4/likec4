@@ -3,7 +3,7 @@ import { Controls, ReactFlow as GenericReactFlow, type ReactFlowProps } from '@x
 import { type CSSProperties, memo, type PropsWithChildren, type RefAttributes } from 'react'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
-import { useDiagramStoreApi, useHasEventHandlers } from '../store'
+import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state'
 import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/useLayoutConstraints'
@@ -29,13 +29,9 @@ type OnlyExpectedProps = Required<
   Pick<
     LikeC4DiagramProperties,
     | 'className'
-    | 'fitView'
     | 'controls'
     | 'pannable'
     | 'zoomable'
-    | 'nodesSelectable'
-    | 'nodesDraggable'
-    | 'fitViewPadding'
     | 'background'
   >
 >
@@ -43,7 +39,6 @@ type OnlyExpectedProps = Required<
 type XYFlowWrapperProps = Simplify<
   PropsWithChildren<
     SetNonNullable<OnlyExpectedProps> & {
-      colorScheme: LikeC4DiagramProperties['colorScheme']
       defaultNodes: XYFlowNode[]
       defaultEdges: XYFlowEdge[]
       style?: CSSProperties | undefined
@@ -51,33 +46,46 @@ type XYFlowWrapperProps = Simplify<
   >
 >
 
+const selector = (s: DiagramState) => ({
+  nodesSelectable: s.nodesSelectable,
+  nodesDraggable: s.nodesDraggable,
+  fitView: s.fitViewEnabled,
+  fitViewPadding: s.fitViewPadding,
+  hasOnNodeClick: !!s.onNodeClick,
+  hasOnNodeContextMenu: !!s.onNodeContextMenu,
+  hasOnCanvasContextMenu: !!s.onCanvasContextMenu,
+  hasOnEdgeContextMenu: !!s.onEdgeContextMenu,
+  hasOnEdgeClick: !!s.onEdgeClick,
+  hasOnCanvasClick: !!s.onCanvasClick || !!s.onCanvasDblClick
+})
+
 function XYFlowWrapper({
   className,
   children,
   defaultNodes,
   defaultEdges,
-  fitView,
-  colorScheme: colorMode,
   pannable,
   zoomable,
-  nodesSelectable,
-  nodesDraggable,
-  fitViewPadding,
   controls,
   background,
   style
 }: XYFlowWrapperProps) {
   const diagramApi = useDiagramStoreApi()
-  const { isNodeInteractive } = diagramApi.getState()
+  const {
+    nodesSelectable,
+    nodesDraggable,
+    fitView,
+    fitViewPadding,
+    ...editor
+  } = useDiagramState(selector)
 
-  const editor = useHasEventHandlers()
-  console.log('XYFlowWrapper')
   const layoutConstraints = useLayoutConstraints()
 
   const handlers = useXYFlowEvents()
   const isBgWithPattern = background !== 'transparent' && background !== 'solid'
-  // const { colorScheme } = useMantineColorScheme()
-  // let colorMode = colorModeProp ?? (colorScheme !== 'auto' ? colorScheme : undefined)
+
+  const { colorScheme } = useMantineColorScheme()
+  const colorMode = colorScheme !== 'auto' ? colorScheme : undefined
 
   return (
     <ReactFlow
@@ -116,39 +124,33 @@ function XYFlowWrapper({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
-      onInit={(xyflow) => {
-        diagramApi.setState({
-          xyflow,
-          xyflowInitialized: true
-        })
-      }}
       onPaneClick={handlers.onPaneClick}
-      onMoveStart={handlers.onMoveStart}
+      onNodeClick={handlers.onNodeClick}
+      onEdgeClick={handlers.onEdgeClick}
       onMoveEnd={handlers.onMoveEnd}
-      {...(isNodeInteractive && {
-        onEdgeMouseEnter: (_event, edge) => {
-          diagramApi.setState({ hoveredEdgeId: edge.id })
-        },
-        onEdgeMouseLeave: () => {
-          diagramApi.setState({ hoveredEdgeId: null })
-        },
-        onNodeMouseEnter: (_event, node) => {
-          diagramApi.setState({ hoveredNodeId: node.id })
-        },
-        onNodeMouseLeave: () => {
-          diagramApi.setState({ hoveredNodeId: null })
-        }
+      onInit={() => {
+        diagramApi.setState({ initialized: true }, false, 'initialized')
+      }}
+      onNodeMouseEnter={(_event, node) => {
+        diagramApi.getState().setHoveredNode(node.id)
+      }}
+      onNodeMouseLeave={() => {
+        diagramApi.getState().setHoveredNode(null)
+      }}
+      onEdgeMouseEnter={(_event, edge) => {
+        diagramApi.getState().setHoveredEdge(edge.id)
+      }}
+      onEdgeMouseLeave={() => {
+        diagramApi.getState().setHoveredEdge(null)
+      }}
+      {...(editor.hasOnNodeContextMenu && {
+        onNodeContextMenu: handlers.onNodeContextMenu
       })}
-      {...(editor.hasOnContextMenu && {
-        onNodeContextMenu: handlers.onNodeContextMenu,
-        onPaneContextMenu: handlers.onPaneContextMenu,
+      {...(editor.hasOnEdgeContextMenu && {
         onEdgeContextMenu: handlers.onEdgeContextMenu
       })}
-      {...(editor.hasOnNodeClick && {
-        onNodeClick: handlers.onNodeClick
-      })}
-      {...(editor.hasOnEdgeClick && {
-        onEdgeClick: handlers.onEdgeClick
+      {...(editor.hasOnCanvasContextMenu && {
+        onPaneContextMenu: handlers.onPaneContextMenu
       })}>
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls />}

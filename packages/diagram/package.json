@@ -47,11 +47,15 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
+    "@lume/kiwi": "^0.4.3",
     "@mantine/core": "^7.7.0",
     "@mantine/hooks": "^7.7.0",
     "@react-hookz/web": "^24.0.4",
     "@xyflow/react": "^12.0.0-next.16",
+    "esm-env": "^1.0.0",
+    "fast-equals": "^5.0.1",
     "framer-motion": "^11.0.25",
+    "khroma": "^2.1.0",
     "remeda": "^1.56.0",
     "zustand": "^4.5.2"
   },
@@ -60,7 +64,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@lume/kiwi": "^0.4.3",
     "@mantine/vanilla-extract": "^7.7.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react": "^18.2.0",
@@ -71,8 +74,6 @@
     "@vitejs/plugin-react": "^4.2.1",
     "clsx": "^2.1.0",
     "execa": "^8.0.1",
-    "fast-equals": "^5.0.1",
-    "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",

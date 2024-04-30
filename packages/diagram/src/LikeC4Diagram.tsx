@@ -5,13 +5,13 @@ import { scope } from './index.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
-import { DiagramContextProvider } from './store'
+import { DiagramContextProvider, WhenInitialized } from './state'
 import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
+import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
 import type { XYFlowData } from './xyflow/types'
-import { UpdateOnDiagramChange } from './xyflow/UpdateOnDiagramChange'
 import { XYFlow } from './xyflow/XYFlowWrapper'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
@@ -24,7 +24,7 @@ export function LikeC4Diagram({
   readonly = true,
   pannable = true,
   zoomable = true,
-  nodesSelectable = true,
+  nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
   controls = false,
@@ -57,30 +57,29 @@ export function LikeC4Diagram({
       initialHeight: initialHeight ?? view.height
     }
   }
-  const isNodeInteractive = nodesDraggable || nodesSelectable || !!onNavigateTo
   return (
     <EnsureMantine colorScheme={colorScheme}>
-      <DiagramContextProvider
-        view={view}
-        readonly={readonly}
+      <XYFlowProvider
         fitView={fitView}
-        fitViewPadding={fitViewPadding}
-        isNodeInteractive={isNodeInteractive}
-        showElementLinks={showElementLinks}
-        nodesDraggable={nodesDraggable}
-        onCanvasClick={onCanvasClick}
-        onCanvasContextMenu={onCanvasContextMenu}
-        onEdgeClick={onEdgeClick}
-        onEdgeContextMenu={onEdgeContextMenu}
-        onNodeClick={onNodeClick}
-        onNodeContextMenu={onNodeContextMenu}
-        onChange={onChange}
-        onNavigateTo={onNavigateTo}
-        onCanvasDblClick={onCanvasDblClick}
+        {...initialRef.current}
       >
-        <XYFlowProvider
-          fitView={fitView}
-          {...initialRef.current}
+        <DiagramContextProvider
+          view={view}
+          readonly={readonly}
+          fitViewEnabled={fitView}
+          fitViewPadding={fitViewPadding}
+          showElementLinks={showElementLinks}
+          nodesDraggable={nodesDraggable}
+          nodesSelectable={nodesSelectable}
+          onCanvasClick={onCanvasClick}
+          onCanvasContextMenu={onCanvasContextMenu}
+          onEdgeClick={onEdgeClick}
+          onEdgeContextMenu={onEdgeContextMenu}
+          onNodeClick={onNodeClick}
+          onNodeContextMenu={onNodeContextMenu}
+          onChange={onChange}
+          onNavigateTo={onNavigateTo}
+          onCanvasDblClick={onCanvasDblClick}
         >
           <KeepAspectRatio
             enabled={keepAspectRatio}
@@ -100,21 +99,18 @@ export function LikeC4Diagram({
               controls={controls}
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
-              nodesDraggable={nodesDraggable}
-              nodesSelectable={nodesSelectable}
               pannable={pannable}
               zoomable={zoomable}
-              fitView={fitView}
-              colorScheme={colorScheme}
-              fitViewPadding={fitViewPadding}
             >
               {readonly !== true && <OptionsPanel />}
             </XYFlow>
           </KeepAspectRatio>
-          <UpdateOnDiagramChange />
-          {fitView && <FitViewOnDiagramChange />}
-        </XYFlowProvider>
-      </DiagramContextProvider>
+          <WhenInitialized>
+            <SyncWithDiagram />
+            <FitViewOnDiagramChange />
+          </WhenInitialized>
+        </DiagramContextProvider>
+      </XYFlowProvider>
     </EnsureMantine>
   )
 }

@@ -1,11 +1,11 @@
+import { shallowEqual } from 'fast-equals'
 import { useContext, useMemo } from 'react'
-import { shallow } from 'zustand/shallow'
 import { useStoreWithEqualityFn as useZustandStore } from 'zustand/traditional'
 
 import { DiagramContext } from './DiagramContext'
-import type { DiagramState } from './types'
+import type { DiagramState } from './diagramStore'
 
-function useDiagramStore<StateSlice = unknown>(
+function useDiagramState<StateSlice = unknown>(
   selector: (state: DiagramState) => StateSlice,
   equalityFn?: (a: StateSlice, b: StateSlice) => boolean
 ) {
@@ -15,7 +15,7 @@ function useDiagramStore<StateSlice = unknown>(
     throw new Error('useDiagramStore could be used only inside DiagramContext')
   }
 
-  return useZustandStore(store, selector, equalityFn ?? shallow)
+  return useZustandStore(store, selector, equalityFn ?? shallowEqual)
 }
 
 function useDiagramStoreApi() {
@@ -34,5 +34,6 @@ function useDiagramStoreApi() {
     [store]
   )
 }
+export type DiagramStoreApi = ReturnType<typeof useDiagramStoreApi>
 
-export { useDiagramStore, useDiagramStoreApi }
+export { useDiagramState, useDiagramStoreApi }

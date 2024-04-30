@@ -20,10 +20,9 @@ import {
   TooltipGroup
 } from '@mantine/core'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
-import { useDiagramStoreApi } from '../../store'
+import { useDiagramStoreApi } from '../../state'
 import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
-import { useXYFlowEvents } from '../../xyflow/XYFlowEvents'
 
 // const ColorPanel = () => {
 //   const selectedNodes = useStore(state => state.nodeInternals
@@ -76,28 +75,16 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
           onShapeChange={(shape: ElementShape) => {
             const targets = [] as Fqn[]
             for (const nd of nodes) {
-              api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
-                if (data.element.shape === shape) {
-                  return data
-                }
-
-                return ({
-                  ...data,
-                  element: {
-                    ...data.element,
-                    shape
-                  }
-                })
-              })
-              targets.push(nd.data.element.id)
+              if (nd.data.element.shape !== shape) {
+                targets.push(nd.data.element.id)
+              }
             }
             if (hasAtLeast(targets, 1)) {
-              // diagramApi.getState().triggerOnChange()
-              // onChange({
-              //   op: 'change-shape',
-              //   shape,
-              //   targets
-              // })
+              diagramApi.getState().triggerOnChange([{
+                op: 'change-shape',
+                shape,
+                targets
+              }])
             }
           }} />
       )}
@@ -106,26 +93,16 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onColorChange={(color: ColorKey | ThemeColorKey) => {
           const targets = [] as Fqn[]
           for (const nd of nodes) {
-            api.updateNodeData(nd.id, ({ data }: XYFlowNode) => {
-              if (data.element.color === color) {
-                return data
-              }
-              return ({
-                ...data,
-                element: {
-                  ...data.element,
-                  color
-                }
-              })
-            })
-            targets.push(nd.data.element.id)
+            if (nd.data.element.color !== color) {
+              targets.push(nd.data.element.id)
+            }
           }
           if (hasAtLeast(targets, 1)) {
-            // onChange({
-            //   op: 'change-color',
-            //   color,
-            //   targets
-            // })
+            diagramApi.getState().triggerOnChange([{
+              op: 'change-color',
+              color,
+              targets
+            }])
           }
         }} />
       <NavigateToOption nodes={nodes} />

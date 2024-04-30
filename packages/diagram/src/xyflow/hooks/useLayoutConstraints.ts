@@ -1,11 +1,12 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
-import type { InternalNode, NodeDimensionChange, NodePositionChange, ReactFlowProps, XYPosition } from '@xyflow/react'
+import type { InternalNode, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions, isInternalNodeBase } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
-import { isNullish, isNullish as isNil, type } from 'remeda'
+import { isNullish } from 'remeda'
+import { useDiagramStoreApi } from '../../state'
 import { type XYFlowInstance, XYFlowNode } from '../types'
-import { useXYFlow, useXYStoreApi, type XYStoreApi } from './useXYFlow'
+import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
 abstract class Rect {
   id!: string
@@ -237,8 +238,10 @@ function createLayoutConstraints(
     const rect = nonNullable(rects.get(xynode.id))
     solver.suggestValue(rect.minX, pos.x)
     solver.suggestValue(rect.minY, pos.y)
-
-    animationFrameId ??= window.requestAnimationFrame(() => {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId)
+    }
+    animationFrameId = requestAnimationFrame(() => {
       updateXYFlowNodes()
       animationFrameId = null
     })
@@ -255,21 +258,20 @@ type LayoutConstraints = Required<Pick<ReactFlowProps<XYFlowNode>, 'onNodeDragSt
  * Keeps the layout constraints (parent nodes and children) when dragging a node
  */
 export function useLayoutConstraints(): LayoutConstraints {
-  const xyflow = useXYFlow()
+  const diagramApi = useDiagramStoreApi()
   const xyflowApi = useXYStoreApi()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
 
   return useMemo((): LayoutConstraints => ({
-    onNodeDragStart: (event, xynode) => {
+    onNodeDragStart: (_event, xynode) => {
+      const { xyflow } = diagramApi.getState()
       solverRef.current = createLayoutConstraints(xyflow, xyflowApi, xynode.id)
     },
-    onNodeDrag: (event, xynode) => {
+    onNodeDrag: (_event, xynode) => {
       invariant(solverRef.current, 'solverRef.current should be defined')
       solverRef.current?.onNodeDrag(xynode)
     },
-    onNodeDragStop: (event, xynode) => {
-      console.log('onNodeDragStop', { event, xynode })
-      // solverRef.current?.onNodeDrag(xynode)
+    onNodeDragStop: (_event, _xynode) => {
       solverRef.current = undefined
     }
   }), [xyflowApi])

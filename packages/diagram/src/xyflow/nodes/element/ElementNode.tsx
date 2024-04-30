@@ -1,11 +1,9 @@
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual } from 'fast-equals'
 import { motion, type Variants } from 'framer-motion'
-import { memo } from 'react'
-import useTilg from 'tilg'
-import { useDiagramStore } from '../../../store'
+import { isNumber } from 'remeda'
+import { useDiagramState } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
@@ -25,51 +23,62 @@ import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
 
 type ElementNodeProps = NodeProps<ElementXYFlowNode>
 
-const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
-  prev.id === next.id
-  && prev.width === next.width
-  && prev.height === next.height
-  && prev.selected === next.selected
-  && deepEqual(prev.data, next.data)
-  // && isEqualSimple(prev.data, next.data)
-)
-
+const selectedScale = 1.015
 // Frame-motion variants
 const variants = {
-  idle: {
-    transformOrigin: '50% 50%'
-  },
-  selected: {
-    scale: 1.015
-  },
-  hover: {
-    scale: 1.08,
+  idle: (_, { scale }) => ({
+    scale: 1,
     transition: {
-      delay: 0.175
-      // duration: 0.3
+      delay: isNumber(scale) && scale > selectedScale ? 0.075 : 0
     }
-  },
+  }),
+  selected: (_, { scale }) => ({
+    scale: selectedScale,
+    transition: {
+      delay: isNumber(scale) && scale > selectedScale ? 0.075 : 0
+    }
+  }),
+  // dragging: {
+  //   scale: selectedScale
+  // },
+  // hovered: {
+  //   scale: 1.08
+  // },
+  // hover: (_, {scale}) => isNumber(scale) && scale < 1.02 ? ({
+  //   scale: 1.08,
+  // }) : ({
+  //   scale: 1.08,
+  //   transition: {
+  //     delay: 1
+  //   }
+  // }),
+  hovered: (_, { scale }) => ({
+    scale: 1.06,
+    transition: {
+      delay: isNumber(scale) && scale !== 1 && scale !== selectedScale ? 0 : 0.15
+    }
+  }),
   tap: {
-    scale: 0.97,
-    transition: {
-      type: 'spring'
-    }
+    scale: 0.975
   }
+  // tap: {
+  //   scale: 0.9
+  // }
 } satisfies Variants
 
-function ElementNode({
+export function ElementNode({
   id,
   data: {
     element
   },
+  dragging,
   selected = false,
   width,
   height
 }: ElementNodeProps) {
-  useTilg()
-  const { isHovered, hasOnNavigateTo, isHovercards, isNodeInteractive } = useDiagramStore(s => ({
+  const { isHovered, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
-    isNodeInteractive: s.isNodeInteractive,
+    isInteractive: s.nodesDraggable || s.nodesSelectable,
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
@@ -83,12 +92,22 @@ function ElementNode({
   const h = toDomPrecision(height ?? element.height)
 
   let animate: keyof typeof variants = 'idle'
-  if (selected) {
-    animate = 'selected'
+  switch (true) {
+    case dragging && selected:
+      animate = 'selected'
+      break
+    case dragging:
+      animate = 'idle'
+      break
+    case (isInteractive || hasOnNavigateTo) && isHovered:
+      animate = 'hovered'
+      break
+    case selected:
+      animate = 'selected'
+      break
   }
-  if (isHovered) {
-    animate = 'hover'
-  }
+
+  // useTilg(animate, isHovered, isInteractive)
 
   return (
     <motion.div
@@ -97,11 +116,10 @@ function ElementNode({
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
-      initial={'idle'}
-      {...(isNodeInteractive && {
-        whileTap: 'tap',
-        animate,
-        ['data-likec4-interactive']: true
+      initial={false}
+      animate={animate}
+      {...(isInteractive && {
+        whileTap: dragging ? animate : 'tap'
       })}
     >
       {
@@ -202,10 +220,8 @@ function ElementNode({
         />
       ))} */
       }
-      {isHovercards && <ElementLink element={element} />}
+      {isHovercards && element.links && <ElementLink element={element} />}
       {isNavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
     </motion.div>
   )
 }
-
-export const ElementNodeMemo = memo(ElementNode) as typeof ElementNode

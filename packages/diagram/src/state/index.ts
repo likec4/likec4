@@ -1,4 +1,4 @@
 export { DiagramContextProvider } from './DiagramContext'
-export type * from './types'
+export type * from './diagramStore'
 export * from './useDiagramStore'
-export * from './useHasEventHandlers'
+export { WhenInitialized } from './WhenInitialized'

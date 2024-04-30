@@ -1,3 +1,4 @@
+import { invariant } from '@likec4/core'
 import {
   Anchor,
   Box,
@@ -8,7 +9,8 @@ import {
   HoverCardDropdown,
   HoverCardTarget,
   Stack,
-  UnstyledButton
+  UnstyledButton,
+  useMantineContext
 } from '@mantine/core'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
@@ -23,15 +25,11 @@ type ElementLinkProps = {
 export function ElementLink({
   element
 }: ElementLinkProps) {
-  if (!element.links) {
-    return null
-  }
+  invariant(element.links, 'ElementLink: links are required')
+  const mantineCtx = useMantineContext()
+  const root = mantineCtx.getRootElement()
   return (
-    <motion.div
-      className={elementLink}
-      whileHover={{
-        scale: 1.07
-      }}>
+    <div className={elementLink}>
       <HoverCard
         position="bottom-start"
         shadow="lg"
@@ -39,10 +37,16 @@ export function ElementLink({
         transitionProps={{
           transition: 'pop'
         }}
-        withinPortal={false}
+        {...(root && root !== document.documentElement
+          ? {
+            portalProps: { target: root }
+          }
+          : {
+            // withinPortal: false
+          })}
         floatingStrategy={'fixed'}
         openDelay={350}
-        closeDelay={600}
+        closeDelay={800}
         offset={{
           mainAxis: 5,
           crossAxis: -10
@@ -74,6 +78,6 @@ export function ElementLink({
           </Stack>
         </HoverCardDropdown>
       </HoverCard>
-    </motion.div>
+    </div>
   )
 }

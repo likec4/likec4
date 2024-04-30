@@ -6,7 +6,7 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { type CSSProperties, memo } from 'react'
 import { hasAtLeast } from 'remeda'
-import { useDiagramStore } from '../../store'
+import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
@@ -99,7 +99,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   // const edgePath = bezierPath(edge.points)
 
   const color = edge.color ?? 'gray'
-  const isHovered = useDiagramStore(s => s.hoveredEdgeId === id)
+  const isHovered = useDiagramState(s => s.hoveredEdgeId === id)
 
   const line = edge.line ?? 'dashed'
   const isDotted = line === 'dotted'

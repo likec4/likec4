@@ -10,7 +10,7 @@ import {
   type Point
 } from '@likec4/core'
 import { getBezierEdgeCenter } from '@xyflow/react'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, isNullish } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
@@ -61,18 +61,37 @@ export function diagramViewToXYFlowData(
     edges: []
   }
 
+  const nodeLookup = new Map<Fqn, DiagramNode>()
+
+  const traverse = view.nodes.reduce(
+    (acc, node) => {
+      nodeLookup.set(node.id, node)
+      if (!node.parent) {
+        acc.push({ node, parent: null })
+      }
+      return acc
+    },
+    new Array<{
+      node: DiagramNode
+      parent: DiagramNode | null
+    }>()
+  )
+
   // namespace to force unique ids
-  // const ns = view.id + ':'
   const ns = ''
-  const nodeById = (id: Fqn) => nonNullable(view.nodes.find(n => n.id === id))
-  const createNode = (node: DiagramNode) => {
+  const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
+
+  let next: typeof traverse[0] | undefined
+  while ((next = traverse.pop())) {
+    const { node, parent } = next
+    if (node.children.length > 0) {
+      traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
+    }
     const isCompound = hasAtLeast(node.children, 1)
-    const id = ns + node.id
     const position = {
       x: node.position[0],
       y: node.position[1]
     }
-    const parent = node.parent ? nodeById(node.parent) : null
     if (parent) {
       position.x -= parent.position[0]
       position.y -= parent.position[1]
@@ -82,11 +101,12 @@ export function diagramViewToXYFlowData(
     // const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
     // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
 
+    const id = ns + node.id
     editor.nodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
       data: {
-        id,
+        fqn: node.id,
         element: node
       },
       draggable: dragEnabled && (!parent || parent.children.length > 1),
@@ -102,6 +122,9 @@ export function diagramViewToXYFlowData(
         width: node.width,
         height: node.height
       },
+      ...(parent && {
+        parentId: ns + parent.id
+      })
       // handles: [
       //   ...outEdges.map(out => ({
       //     id: `${out.id}`,
@@ -122,17 +145,10 @@ export function diagramViewToXYFlowData(
       //     height: 10
       //   }))
       // ],
-      ...(parent && {
-        parentId: ns + parent.id
-      })
     })
   }
 
-  for (const node of view.nodes.toSorted(compareByFqnHierarchically)) {
-    createNode(node)
-  }
-
-  const createEdge = (edge: DiagramEdge) => {
+  for (const edge of view.edges) {
     const source = edge.source
     const target = edge.target
     const id = ns + edge.id
@@ -175,10 +191,6 @@ export function diagramViewToXYFlowData(
       // },
       interactionWidth: 20
     })
-  }
-
-  for (const edge of view.edges) {
-    createEdge(edge)
   }
 
   return editor

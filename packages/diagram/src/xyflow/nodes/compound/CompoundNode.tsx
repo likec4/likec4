@@ -6,10 +6,9 @@ import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { scale, toHex } from 'khroma'
 import { memo, useMemo } from 'react'
-import { useDiagramStore } from '../../../store'
+import { useDiagramState } from '../../../state'
 import { vars } from '../../../theme.css'
 import type { CompoundXYFlowNode } from '../../types'
-import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import { cssCompound, cssContainer, cssIndicator, cssNavigateBtn, cssTitle } from './CompoundNode.css'
 
@@ -37,25 +36,22 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   id,
   data: {
     element
-  },
-  width,
-  height
+  }
 }) {
   // useTilg()
   const { color, depth = 0, ...compound } = element
   const colors = useMemo(() => {
     const colors = defaultTheme.elements[color]
     return {
-      ...colors,
       fill: compoundColor(colors.fill, depth),
       stroke: compoundColor(colors.stroke, depth)
     }
   }, [color, depth])
 
-  const w = toDomPrecision(width ?? compound.width)
-  const h = toDomPrecision(height ?? compound.height)
+  // const w = toDomPrecision(width ?? compound.width)
+  // const h = toDomPrecision(height ?? compound.height)
 
-  const { isHovered, hasOnNavigateTo } = useDiagramStore(s => ({
+  const { isHovered, hasOnNavigateTo } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
@@ -85,6 +81,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         <rect
           x={0}
           y={0}
+          width={'100%'}
+          height={'100%'}
           rx={6}
         />
       </svg>

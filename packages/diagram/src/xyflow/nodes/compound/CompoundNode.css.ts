@@ -119,9 +119,7 @@ globalStyle(`${cssIndicator} rect`, {
   animationName: indicatorKeyframes,
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
-  fill: 'none',
-  width: '100%',
-  height: '100%'
+  fill: 'none'
 })
 
 export const cssNavigateBtn = style({
@@ -136,21 +134,10 @@ export const cssNavigateBtn = style({
   transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
-  'vars': {
+  vars: {
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
-  },
-  selectors: {
-    [`:where(.react-flow__node:not(.dragging) ${cssContainer}:hover) &:not(:hover)`]: {
-      boxShadow: mantine.shadows.lg,
-      transform: 'scale(1.223)',
-      opacity: 1,
-      transitionDelay: '250ms',
-      vars: {
-        '--ai-bg': 'var(--ai-bg-hover)'
-      }
-    }
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
@@ -162,12 +149,23 @@ export const cssNavigateBtn = style({
     transform: 'scale(1.1)',
     opacity: 1,
     transitionDelay: '0'
+  },
+  selectors: {
+    [`:where(.react-flow__node:not(.dragging) ${cssContainer}:hover) &:not(:hover)`]: {
+      boxShadow: mantine.shadows.lg,
+      transform: 'scale(1.223)',
+      opacity: 1,
+      transitionDelay: '250ms',
+      vars: {
+        '--ai-bg': 'var(--ai-bg-hover)'
+      }
+    }
   }
 })
 globalStyle(`${cssNavigateBtn} svg.icon`, {
   width: '70%',
   height: '70%',
-  strokeWidth: '1.5'
+  strokeWidth: 1.5
 })
 
 // globalStyle(`:where(.react-flow__node:not(.dragging)) ${cssIndicator}`, {

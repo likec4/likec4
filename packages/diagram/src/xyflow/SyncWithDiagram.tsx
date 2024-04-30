@@ -1,10 +1,12 @@
-import { deepEqual as eq } from 'fast-equals'
-import { useXYFlow } from './hooks'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
+import { useXYFlow, useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
+import { DEV } from 'esm-env'
 import { memo, useEffect } from 'react'
-import { useDiagramStoreApi } from '../store'
+import { useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
+import { toDomPrecision } from './utils'
 
 const isSameNode = (a: XYFlowNode) => (b: XYFlowNode) =>
   a.id === b.id && a.type === b.type && Object.is(a.parentId, b.parentId)
@@ -27,39 +29,29 @@ function edgeHasNoChanges(existing: XYFlowEdge, update: XYFlowEdge) {
 /**
  * Syncs the diagram state with the XYFlow instance
  */
-export const UpdateOnDiagramChange = memo(() => {
-  const {
-    setEdges,
-    setNodes,
-    viewportInitialized
-  } = useXYFlow()
+export const SyncWithDiagram = memo(() => {
+  const xyflow = useXYFlow()
+  const xyflowApi = useXYStoreApi()
   const diagramStoreApi = useDiagramStoreApi()
 
-  console.log(`UpdateOnDiagramChange ${viewportInitialized}`)
-
-  // const initialized = xyflow.viewportInitialized
-  // const initialized = useDiagramStore(s => s.xyflowInitialized)
-
   useEffect(() => {
-    console.log('UpdateOnDiagramChange effect')
+    DEV && console.debug('SyncWithDiagram effect')
     return diagramStoreApi.subscribe(
       // selector
       state => ({
-        id: state.view.id,
+        viewId: state.view.id,
         nodes: state.view.nodes,
         edges: state.view.edges,
         nodesDraggable: state.nodesDraggable
       }),
       // listener
-      ({ nodes, edges, nodesDraggable }) => {
-        if (!viewportInitialized) {
-          console.log('UpdateOnDiagramChange listener ignored, not initialized')
-          return
-        }
-        console.log('UpdateOnDiagramChange listener')
+      ({ viewId, nodes, edges, nodesDraggable }) => {
+        const { lastOnNavigate } = diagramStoreApi.getState()
+
+        DEV && console.debug('SyncWithDiagram update nodes')
         const updates = diagramViewToXYFlowData({ nodes, edges }, nodesDraggable)
 
-        setNodes(prev =>
+        xyflow.setNodes(prev =>
           updates.nodes.map(update => {
             const existing = prev.find(isSameNode(update))
             if (existing) {
@@ -75,7 +67,7 @@ export const UpdateOnDiagramChange = memo(() => {
           })
         )
 
-        setEdges(prev =>
+        xyflow.setEdges(prev =>
           updates.edges.map(update => {
             const existing = prev.find(e => e.id === update.id)
             if (existing) {
@@ -87,49 +79,46 @@ export const UpdateOnDiagramChange = memo(() => {
             return update
           })
         )
+
+        if (lastOnNavigate?.toView === viewId && !lastOnNavigate.positionCorrected) {
+          const elFrom = lastOnNavigate.element
+          const elTo = nodes.find(n => n.id === elFrom.id)
+          if (elTo) {
+            const centerFrom = xyflow.flowToScreenPosition({
+                x: elFrom.position[0] + elFrom.width / 2,
+                y: elFrom.position[1] + elFrom.height / 2
+              }),
+              centerTo = xyflow.flowToScreenPosition({
+                x: elTo.position[0] + elTo.width / 2,
+                y: elTo.position[1] + elTo.height / 2
+              }),
+              diff = {
+                x: toDomPrecision(centerFrom.x - centerTo.x),
+                y: toDomPrecision(centerFrom.y - centerTo.y)
+              }
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                xyflowApi.getState().panBy(diff)
+              })
+            })
+          }
+          diagramStoreApi.setState(
+            {
+              lastOnNavigate: {
+                ...lastOnNavigate,
+                positionCorrected: true
+              }
+            },
+            false,
+            'positionCorrected'
+          )
+        }
       },
       {
-        equalityFn: (a, b) =>
-          a.id === b.id && a.nodesDraggable === b.nodesDraggable && eq(a.nodes, b.nodes) && eq(a.edges, b.edges)
+        equalityFn: shallowEqual
       }
     )
-  }, [viewportInitialized, setEdges, setNodes])
-
-  // useUpdateEffect(
-  //   () => {
-  //     if (!initialized) {
-  //       return
-  //     }
-  //     const updates = diagramViewToXYFlowData(view, nodesDraggable)
-
-  //     xyflow.setNodes(prev =>
-  //       updates.nodes.map((update) => {
-  // const existing = prev.find(isSameNode(update))
-  // if (existing) {
-  //   if (eq(existing.data.element, update.data.element)) {
-  //     return existing
-  //   }
-  //   return {
-  //     ...existing,
-  //     ...update
-  //   }
-  // }
-  // return update
-  //       })
-  //     )
-
-  //     xyflow.setEdges(prev =>
-  //       updates.edges.map(update => {
-  //         const existing = prev.find(e => e.id === update.id)
-  //         if (edgeHasNoChanges(existing, update)) {
-  //           return existing
-  //         }
-  //         return update
-  //       })
-  //     )
-  //   },
-  //   [initialized, nodesDraggable, view.nodes, view.edges]
-  // )
+  }, [xyflow, xyflowApi, diagramStoreApi])
 
   return null
 })

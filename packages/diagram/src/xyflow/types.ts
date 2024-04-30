@@ -1,4 +1,4 @@
-import type { BBox, DiagramEdge, DiagramNode, Point } from '@likec4/core'
+import type { BBox, DiagramEdge, DiagramNode, Fqn, Point } from '@likec4/core'
 import { isNode } from '@xyflow/react'
 import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
 import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, OnNodeDrag, Viewport } from '@xyflow/react'
@@ -7,7 +7,7 @@ import { isTruthy } from 'remeda'
 import type { SetReadonly, SetRequired, Simplify } from 'type-fest'
 
 export type ElementNodeData = {
-  id: string // xyflow id
+  fqn: Fqn
   element: DiagramNode
 }
 
@@ -19,7 +19,7 @@ type TypedXYFlowNode<D extends Record<string, unknown>, T extends string> = SetR
 export type ElementXYFlowNode = TypedXYFlowNode<ElementNodeData, 'element'>
 
 export type CompoundNodeData = {
-  id: string // xyflow id
+  fqn: Fqn
   element: DiagramNode
 }
 
