@@ -48,15 +48,7 @@ select {
 }
 
 .likec4-shadow-root {
-  --font-family: 'IBM Plex Sans', -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif,
-    Apple Color Emoji,
-    Segoe UI Emoji;
+  --font-family: 'IBM Plex Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji';
   --likec4-default-font-family: var(--font-family);
   --mantine-default-font-family: var(--font-family);
   --mantine-font-family: var(--font-family);
@@ -78,16 +70,23 @@ select {
 }
 
 .likec4-shadow-root:not(.likec4-browser) {
-  cursor: pointer;
   overflow: hidden;
 
   .likec4-react-root {
+    cursor: pointer;
     transition: all 550ms ease-out;
 
     &:hover {
       transform: scale(1.02);
       transition-delay: 250ms;
       transition-duration: 170ms;
+    }
+
+    .likec4-compound-node {
+      cursor: pointer;
+    }
+    .likec4-element-node {
+      cursor: pointer;
     }
   }
 

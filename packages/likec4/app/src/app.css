@@ -10,9 +10,10 @@
 }
 
 :root {
-  --likec4-default-font-family: 'IBM Plex Sans', sans-serif;
-  --mantine-default-font-family: 'IBM Plex Sans', sans-serif;
-  --mantine-font-family: 'IBM Plex Sans', sans-serif;
+  --font-family: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --likec4-default-font-family: var(--font-family);
+  --mantine-default-font-family: var(--font-family);
+  --mantine-font-family: var(--font-family);
   --likec4-background-color: var(--mantine-color-body);
   --xy-background-pattern-color: var(--mantine-color-dark-8);
 }
