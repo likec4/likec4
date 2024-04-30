@@ -19,7 +19,7 @@ type HandlerParams = {
   useDotBin: boolean
 }
 
-export async function handler({ path, useDotBin, output: outputDir, ...params }: HandlerParams) {
+export async function buildHandler({ path, useDotBin, output: outputDir, ...params }: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
   await viteBuild({ ...params, languageServices, outputDir })
 }

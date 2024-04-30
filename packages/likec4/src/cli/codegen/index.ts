@@ -2,6 +2,10 @@ import { resolve } from 'path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
 import { outdir, useDotBin } from '../options'
+import { reactHandler } from './handler'
+import { handler as npmHandler } from './npm-package/handler'
+import { reactNexthandler } from './react-next'
+import { webcomponentHandler } from './webcomponent/handler'
 
 export const codegenCmd = {
   command: 'codegen <command> [path]',
@@ -39,8 +43,7 @@ export const codegenCmd = {
               }
             }),
         async args => {
-          const { handler } = await import('./npm-package/handler')
-          await handler({
+          await npmHandler({
             useDotBin: args.useDotBin,
             path: args.path,
             pkgName: args.pkgName,
@@ -61,8 +64,7 @@ export const codegenCmd = {
             })
             .coerce(['outdir'], resolve),
         async args => {
-          const { handler } = await import('./react-next')
-          await handler({
+          await reactNexthandler({
             useDotBin: args.useDotBin,
             path: args.path,
             outdir: args.outdir
@@ -88,8 +90,7 @@ export const codegenCmd = {
             })
             .coerce(['outfile'], resolve),
         handler: async args => {
-          const { handler } = await import('./webcomponent/handler')
-          await handler({
+          await webcomponentHandler({
             useDotBin: args.useDotBin,
             path: args.path,
             outfile: args.outfile
@@ -115,8 +116,7 @@ export const codegenCmd = {
             })
             .coerce(['outfile'], resolve),
         async args => {
-          const { handler } = await import('./handler')
-          await handler({
+          await reactHandler({
             format: 'react',
             useDotBin: args.useDotBin,
             path: args.path,
@@ -143,8 +143,7 @@ export const codegenCmd = {
             })
             .coerce(['outfile'], resolve),
         handler: async args => {
-          const { handler } = await import('./handler')
-          await handler({
+          await reactHandler({
             format: 'views',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -165,8 +164,7 @@ export const codegenCmd = {
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
-          const { handler } = await import('./handler')
-          await handler({
+          await reactHandler({
             format: 'dot',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -187,8 +185,7 @@ export const codegenCmd = {
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
-          const { handler } = await import('./handler')
-          await handler({
+          await reactHandler({
             format: 'd2',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -210,8 +207,7 @@ export const codegenCmd = {
             })
             .coerce(['outdir'], resolve),
         handler: async args => {
-          const { handler } = await import('./handler')
-          await handler({
+          await reactHandler({
             format: 'mermaid',
             useDotBin: args.useDotBin,
             path: args.path,

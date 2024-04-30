@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import type { CommandModule } from 'yargs'
 import { useDotBin } from '../options'
+import { handler } from './serve'
 
 export const serveCmd = {
   command: 'start [path]',
@@ -23,7 +24,6 @@ export const serveCmd = {
       .coerce('path', resolve)
       .default('path', resolve('.'), '.'),
   handler: async args => {
-    const { handler } = await import('./serve')
     await handler(args)
   }
 } satisfies CommandModule<object, { path: string; useDotBin: boolean; base: string | undefined }>

@@ -15,7 +15,7 @@ type HandlerParams = {
   outdir: string | undefined
 }
 
-export async function handler({ path, useDotBin, outdir }: HandlerParams) {
+export async function reactNexthandler({ path, useDotBin, outdir }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })

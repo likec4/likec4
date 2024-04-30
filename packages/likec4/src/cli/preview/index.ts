@@ -1,5 +1,6 @@
 import { resolve } from 'path'
 import type { CommandModule } from 'yargs'
+import { handler } from './preview'
 
 export const previewCmd = {
   command: 'preview [path]',
@@ -27,7 +28,6 @@ export const previewCmd = {
       .default('path', resolve('.'), '.'),
 
   async handler(args) {
-    const { handler } = await import('./preview')
     await handler(args)
   }
 } satisfies CommandModule<

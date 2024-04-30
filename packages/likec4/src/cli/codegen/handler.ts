@@ -135,7 +135,7 @@ async function multipleFilesCodegenAction(
   }
 }
 
-export async function handler({ path, useDotBin, ...outparams }: HandlerParams) {
+export async function reactHandler({ path, useDotBin, ...outparams }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })

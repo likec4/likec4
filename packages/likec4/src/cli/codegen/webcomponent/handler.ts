@@ -21,7 +21,7 @@ type HandlerParams = {
   outfile: string | undefined
 }
 
-export async function handler({ path, useDotBin, outfile }: HandlerParams) {
+export async function webcomponentHandler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })

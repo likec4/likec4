@@ -1,1 +1,1 @@
-export { handler } from './handler'
+export { reactNexthandler } from './handler'

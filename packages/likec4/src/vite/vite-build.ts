@@ -34,7 +34,7 @@ export const viteBuild = async ({
       outDir: publicDir,
       base: config.base
     })
-    webcomponentPromise = build(webcomponentConfig)
+    await build(webcomponentConfig)
   }
 
   // Static website
@@ -43,10 +43,6 @@ export const viteBuild = async ({
     publicDir,
     mode: 'production'
   })
-
-  if (webcomponentPromise) {
-    await webcomponentPromise
-  }
 
   // Copy index.html to 404.html
   const indexHtml = resolve(config.build.outDir, 'index.html')

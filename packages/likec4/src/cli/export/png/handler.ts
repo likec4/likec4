@@ -27,7 +27,7 @@ type HandlerParams = {
   ignore: boolean
 }
 
-export async function handler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
+export async function pngHandler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer()
 

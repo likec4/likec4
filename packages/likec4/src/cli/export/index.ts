@@ -3,6 +3,8 @@ import { resolve } from 'node:path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
 import { useDotBin } from '../options'
+import { handler as jsonHandler } from './json/handler'
+import { pngHandler } from './png/handler'
 
 export const exportCmd = {
   command: 'export <format> [path]',
@@ -62,10 +64,9 @@ export const exportCmd = {
 `),
         handler: async args => {
           // args.
-          const { handler } = await import('./png/handler')
           invariant(args.timeout >= 1000, 'timeout must be >= 1000')
           invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
-          await handler({
+          await pngHandler({
             path: args.path,
             useDotBin: args.useDotBin,
             output: args.output,
@@ -101,8 +102,7 @@ export const exportCmd = {
     ${k.gray('Search for likec4 files in src/likec4 and output JSON to generated/likec4.json')}
 `),
         handler: async args => {
-          const { handler } = await import('./json/handler')
-          await handler({
+          await jsonHandler({
             path: args.path,
             useDotBin: args.useDotBin,
             outfile: args.outfile

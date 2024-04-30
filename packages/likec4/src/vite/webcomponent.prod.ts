@@ -56,7 +56,7 @@ export async function viteWebcomponentConfig({
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: true,
       // 100Kb
       assetsInlineLimit: 100 * 1024,
       chunkSizeWarningLimit,
