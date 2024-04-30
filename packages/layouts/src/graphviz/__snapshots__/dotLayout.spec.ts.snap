@@ -306,11 +306,11 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
           768,
         ],
         [
-          471,
+          467,
           768,
         ],
         [
-          533,
+          535,
           768,
         ],
         [
@@ -1349,7 +1349,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 495,
+        "x": 494,
         "y": 234,
       },
       "labels": [
@@ -1358,7 +1358,7 @@ exports[`dotLayout: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            499,
+            498,
             251,
           ],
           "text": "manages",
