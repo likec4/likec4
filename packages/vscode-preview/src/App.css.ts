@@ -9,10 +9,12 @@ globalStyle('*, :before, :after', {
 })
 
 globalStyle(':root', {
-  'vars': {
-    '--likec4-default-font-family': 'IBM Plex Sans, sans-serif',
-    '--mantine-default-font-family': 'IBM Plex Sans, sans-serif',
-    '--mantine-font-family': 'IBM Plex Sans ,   sans-serif',
+  vars: {
+    '--font-family':
+      '\'IBM Plex Sans\', system-ui, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\'',
+    '--likec4-default-font-family': 'var(--font-family)',
+    '--mantine-default-font-family': 'var(--font-family)',
+    '--mantine-font-family': 'var(--font-family)',
     '--xy-background-pattern-color': 'var(--mantine-color-dark-8 )',
     '--mantine-color-body': 'var(--vscode-editor-background )',
     '--likec4-background-color': 'var(--mantine-color-body )'
@@ -20,7 +22,7 @@ globalStyle(':root', {
 })
 
 globalStyle(':root[data-mantine-color-scheme=\'dark\']', {
-  'vars': {
+  vars: {
     '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
   }
 })
@@ -37,7 +39,7 @@ export const likec4Container = style({
   position: 'fixed',
   inset: '0',
   overflow: 'hidden',
-  'vars': {
+  vars: {
     '--likec4-options-panel-top': '2.5rem'
   }
 })

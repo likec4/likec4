@@ -31,11 +31,9 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 )
 
 const App = () => {
-  const lastClickedNodeRef = useRef<string>()
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
 
   function resetLastClickedNd() {
-    lastClickedNodeRef.current = undefined
     lastNodeContextMenuRef.current = null
   }
 
@@ -121,16 +119,10 @@ const App = () => {
             extensionApi.openView(element.navigateTo)
           }}
           onNodeClick={({ element, xynode, event }) => {
-            if (lastClickedNodeRef.current === element.id) {
-              lastNodeContextMenuRef.current = null
-              extensionApi.goToElement(element.id)
-              event.stopPropagation()
-              return
-            }
-            lastClickedNodeRef.current = element.id
+            extensionApi.goToElement(element.id)
+            event.stopPropagation()
           }}
           onNodeContextMenu={({ element, xynode, event }) => {
-            lastClickedNodeRef.current = undefined
             lastNodeContextMenuRef.current = element
           }}
           onCanvasContextMenu={event => {
