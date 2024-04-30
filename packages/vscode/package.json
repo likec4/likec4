@@ -211,7 +211,7 @@
     "p-timeout": "^6.1.2",
     "path-browserify": "^1.0.1",
     "rambdax": "^9.1.1",
-    "remeda": "^1.56.0",
+    "remeda": "^1.61.0",
     "shx": "^0.3.4",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5",

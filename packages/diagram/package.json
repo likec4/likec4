@@ -56,7 +56,7 @@
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.1.7",
     "khroma": "^2.1.0",
-    "remeda": "^1.56.0",
+    "remeda": "^1.61.0",
     "zustand": "^4.5.2"
   },
   "peerDependencies": {
@@ -72,7 +72,7 @@
     "@vanilla-extract/dynamic": "^2.1.0",
     "@vanilla-extract/esbuild-plugin": "^2.3.5",
     "@vitejs/plugin-react": "^4.2.1",
-    "clsx": "^2.1.0",
+    "clsx": "^2.1.1",
     "execa": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
