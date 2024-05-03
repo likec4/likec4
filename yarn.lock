@@ -1833,7 +1833,7 @@ __metadata:
     p-limit: "npm:^4.0.0"
     remeda: "npm:^1.61.0"
     strip-indent: "npm:^4.0.0"
-    ts-graphviz: "npm:^1.8.2"
+    ts-graphviz: "npm:^2.1.2"
     type-fest: "npm:^4.18.0"
     typescript: "npm:^5.4.5"
     vitest: "npm:~1.5.2"
@@ -4435,6 +4435,41 @@ __metadata:
   version: 0.5.1
   resolution: "@total-typescript/ts-reset@npm:0.5.1"
   checksum: 10/f773a2b91707fab677c361837ef7855522d470e8a3abc0b9209a04832715feb0aa1ef0d10db880c1232acbd2c84222ec7c1bbf3f92d1d34d18c18ce08d304e45
+  languageName: node
+  linkType: hard
+
+"@ts-graphviz/adapter@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@ts-graphviz/adapter@npm:2.0.3"
+  dependencies:
+    "@ts-graphviz/common": "npm:^2.1.2"
+  checksum: 10/9226b17b94e801bd260485a626ce75af6848ec099fb2b8d7fa9277ca5a8ed7a56223bbed25cdc096dac4507a43a267e13218904279b3c6ead2f5dc79d5bf3eff
+  languageName: node
+  linkType: hard
+
+"@ts-graphviz/ast@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@ts-graphviz/ast@npm:2.0.3"
+  dependencies:
+    "@ts-graphviz/common": "npm:^2.1.2"
+  checksum: 10/94891b5666b249369c52c22bfbbb9571c13f009a457a17d310a1b43de29349dc434894041d73d9b0f6acdf05327f4b25deccf222f2f31f26117de56d868adcaa
+  languageName: node
+  linkType: hard
+
+"@ts-graphviz/common@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@ts-graphviz/common@npm:2.1.2"
+  checksum: 10/1f4fb06ce451b0367878028fba36fa4ad51c303785a33d42757065940ace6e32a97df885ae37a96e997aa6db1b2ff324ea9aab53d4863fc367d26e6212e21163
+  languageName: node
+  linkType: hard
+
+"@ts-graphviz/core@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@ts-graphviz/core@npm:2.0.3"
+  dependencies:
+    "@ts-graphviz/ast": "npm:^2.0.3"
+    "@ts-graphviz/common": "npm:^2.1.2"
+  checksum: 10/a6088d68230941e80b98603859dda237dfddf5c485aa01eca2871044110e416143e14feafe5786ba6269d58591e14871968a4843fa7156bb0bac29bf646518ca
   languageName: node
   linkType: hard
 
@@ -17015,10 +17050,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-graphviz@npm:^1.8.2":
-  version: 1.8.2
-  resolution: "ts-graphviz@npm:1.8.2"
-  checksum: 10/969b06332ca622c148f7b404569af1b972bbe7ee9ba1226350dd0d99bc92c1c95eb6bf9e69aafce51a6c2493a1342b25a8edd6883f27bd516778d401b2a3623f
+"ts-graphviz@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "ts-graphviz@npm:2.1.2"
+  dependencies:
+    "@ts-graphviz/adapter": "npm:^2.0.3"
+    "@ts-graphviz/ast": "npm:^2.0.3"
+    "@ts-graphviz/common": "npm:^2.1.2"
+    "@ts-graphviz/core": "npm:^2.0.3"
+  checksum: 10/41a3678762a62295a89d60c35a2465f0185fa5a08d2e70ea6e07ed6e0da84f7ae60c0f5bf36f80ae049161ac637a092e5d7e5c3ec5f5d3e085baee0d18eacb16
   languageName: node
   linkType: hard
 
