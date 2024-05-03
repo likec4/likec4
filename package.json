@@ -35,7 +35,7 @@
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.23.3",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/node": "^20.12.7",
     "@vitest/ui": "~1.5.2",
     "dprint": "^0.45.1",
