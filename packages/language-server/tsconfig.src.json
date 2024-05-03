@@ -12,6 +12,7 @@
     "./src/browser",
     "./src/node",
     "./dist",
+    "**/node_modules",
     "**/__fixtures__/**/*",
     "**/__mocks__/**/*",
     "**/__tests__/**/*",

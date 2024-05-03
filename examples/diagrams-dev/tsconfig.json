@@ -21,12 +21,18 @@
     "./.ladle/*",
     "./.scripts/*.ts"
   ],
+  "exclude": [
+    "**/node_modules",
+  ],
   "references": [
     {
       "path": "../../packages/likec4"
     },
     {
       "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/diagram"
     },
     {
       "path": "../../packages/diagrams"

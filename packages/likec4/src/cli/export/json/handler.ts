@@ -20,10 +20,10 @@ type HandlerParams = {
 export async function handler({ path, useDotBin, outfile }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
 
-  const timer = startTimer(logger)
+  const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const model = await languageServices.model.buildModel()
+  const model = await languageServices.model.buildComputedModel()
   if (!model) {
     logger.warn('no model parsed')
     throw new Error('no model parsed')

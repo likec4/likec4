@@ -1,17 +1,21 @@
 import {
-  InvalidModelError,
   ancestorsFqn,
   commonAncestor,
-  ensureModel,
-  parentFqn,
   type Element,
+  ensureModel,
   type Fqn,
-  type Relation,
-  type RelationID,
+  InvalidModelError,
   isSameHierarchy,
-  isString
+  isString,
+  parentFqn,
+  type Relation,
+  type RelationID
 } from '@likec4/core'
-import { intersection } from 'remeda'
+import { filter, isIncludedIn } from 'remeda'
+
+function intersection<T>(source: ReadonlyArray<T>, other: ReadonlyArray<T>): Array<T> {
+  return filter(source, isIncludedIn(other))
+}
 
 type Params = {
   elements: Record<Fqn, Element>

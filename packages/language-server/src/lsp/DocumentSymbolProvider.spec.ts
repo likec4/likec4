@@ -1,5 +1,5 @@
 import { textDocumentParams } from 'langium/test'
-import { vi, describe, it } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { SymbolKind } from 'vscode-languageserver-protocol'
 import { createTestServices } from '../test'
 

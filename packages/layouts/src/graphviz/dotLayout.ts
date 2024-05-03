@@ -14,7 +14,8 @@ import type {
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy } from 'remeda'
 import { toDot } from './printToDot'
-import type { BoundingBox, DotSource, GraphvizJson, GVPos } from './types'
+import type { DotLayoutResult, DotSource } from './types'
+import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx, toKonvaAlign } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
@@ -220,10 +221,6 @@ function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdges: Compu
   return edge
 }
 
-export type DotLayoutResult = {
-  dot: DotSource
-  diagram: DiagramView
-}
 export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
   const initialDot = toDot(graphviz, computedView)
   const dot = initialDot
@@ -271,14 +268,15 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
       continue
     }
 
-    const { x, y, ...size } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
+    const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
     const position = [x, y] as Point
 
     const node: DiagramNode = {
       ...computed,
       position,
-      size,
+      width,
+      height,
       labels: parseLabelDraws(obj, position)
     }
     diagram.nodes.push(node)

@@ -24,7 +24,7 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "${workspaceFolder}/examples/diagrams-dev/likec4",
+        "${workspaceFolder}/examples/cloud-system",
       ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [

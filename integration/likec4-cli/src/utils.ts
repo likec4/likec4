@@ -1,7 +1,7 @@
-import path, { resolve } from 'node:path'
 import { $ } from 'execa'
-import { fileURLToPath } from 'node:url'
 import { existsSync, readFileSync } from 'node:fs'
+import path, { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 export const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const __root = resolve(__dirname, '..')

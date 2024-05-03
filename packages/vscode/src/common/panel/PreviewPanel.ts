@@ -2,12 +2,12 @@
 import { invariant, type ViewID } from '@likec4/core'
 import { random } from 'rambdax'
 import * as vscode from 'vscode'
-import { ViewColumn, type Disposable, type Webview, type WebviewPanel } from 'vscode'
+import { type Disposable, ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { Logger } from '../../logger'
 import { AbstractDisposable, disposable, getNonce } from '../../util'
 import type { C4Model } from '../C4Model'
-import type Messenger from '../Messenger'
 import { ExtensionController } from '../ExtensionController'
+import type Messenger from '../Messenger'
 
 function getUri(webview: Webview, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(ExtensionController.extensionUri, ...pathList))
@@ -29,13 +29,13 @@ export class PreviewPanel extends AbstractDisposable {
     deserializeWebviewPanel(panel: WebviewPanel, state: unknown): Thenable<void> {
       let viewId: ViewID
       if (
-        state != null &&
-        typeof state === 'object' &&
-        'view' in state &&
-        state.view != null &&
-        typeof state.view === 'object' &&
-        'id' in state.view &&
-        typeof state.view.id === 'string'
+        state != null
+        && typeof state === 'object'
+        && 'view' in state
+        && state.view != null
+        && typeof state.view === 'object'
+        && 'id' in state.view
+        && typeof state.view.id === 'string'
       ) {
         viewId = state.view.id as ViewID
       } else {
@@ -55,8 +55,10 @@ export class PreviewPanel extends AbstractDisposable {
       return
     }
 
-    let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? ViewColumn.One
-    viewColumn = viewColumn === ViewColumn.One ? ViewColumn.Beside : viewColumn
+    let viewColumn = ViewColumn.Beside
+    if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn !== ViewColumn.One) {
+      viewColumn = ViewColumn.One
+    }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
@@ -139,7 +141,6 @@ export class PreviewPanel extends AbstractDisposable {
   }
 
   public open(viewId?: ViewID) {
-    this._deactivate()
     if (viewId && viewId !== this._viewId) {
       this._viewId = viewId
     }
@@ -151,6 +152,8 @@ export class PreviewPanel extends AbstractDisposable {
       Logger.warn(`[Extension.PreviewPanel] _activate: already activated`)
       this._deactivate()
     }
+    const id = '' + random(1000, 9999) + '_' + this._viewId
+    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activating...`)
     const subscribeToView = this.c4model.subscribeToView(this._viewId, result => {
       if (result.success) {
         this._panel.title = result.diagram.title || 'Untitled'
@@ -159,13 +162,12 @@ export class PreviewPanel extends AbstractDisposable {
         this.messenger.sendError(result.error)
       }
     })
-    const id = '' + random(1000, 9999) + '_' + this._viewId
     this._listener = disposable(() => {
       subscribeToView.dispose()
       this._listener = null
       Logger.debug(`[Extension.PreviewPanel.listener.${id}] disposed`)
     })
-    Logger.debug(`[Extension.PreviewPanel] _activated`)
+    Logger.debug(`[Extension.PreviewPanel.listener.${id}] activated`)
   }
 
   private _deactivate() {
@@ -191,23 +193,24 @@ export class PreviewPanel extends AbstractDisposable {
 
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
     const scriptUri = getUri(webview, ['dist', 'preview', 'index.js'])
-
+    const theme = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ? 'dark' : 'light'
     const cspSource = webview.cspSource
     webview.html = /*html*/ `
 <!DOCTYPE html>
-<html>
+<html data-mantine-color-scheme="${theme}" style="color-scheme:${theme}">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'none';
+      font-src data: https: ${cspSource};
       style-src 'unsafe-inline' ${cspSource};
-      img-src ${cspSource} https:;
+      img-src data: https: ${cspSource};
       script-src 'nonce-${nonce}' ${cspSource};
     ">
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
   </head>
-  <body>
+  <body class="${theme}">
     <div id="root"></div>
     <script src="${scriptUri}"></script>
   </body>

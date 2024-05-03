@@ -1,4 +1,13 @@
-import type { ComputedView, Fqn, LikeC4RawModel, RelationID, ViewID } from '@likec4/core'
+import type { ViewID } from '@likec4/core'
+import type {
+  BuildDocumentsRequest,
+  ChangeViewRequest,
+  ChangeViewRequestParams,
+  ComputeViewRequest,
+  FetchModelRequest,
+  LocateParams,
+  LocateRequest
+} from '@likec4/language-server/protocol'
 import type * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -6,41 +15,18 @@ import { NotificationType, RequestType, RequestType0 } from 'vscode-languageserv
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 
-//#region From server
+// #region From server
 const onDidChangeModel = new NotificationType<string>('likec4/onDidChangeModel')
-//#endregion
+// #endregion
 
-//#region To server
-const fetchRawModel = new RequestType0<{ rawmodel: LikeC4RawModel | null }, void>('likec4/fetchRaw')
-const computeView = new RequestType<{ viewId: ViewID }, { view: ComputedView | null }, void>(
-  'likec4/computeView'
-)
+// #region To server
+const fetchModel: FetchModelRequest = new RequestType0('likec4/fetchModel')
+const computeView: ComputeViewRequest = new RequestType('likec4/computeView')
+const buildDocuments: BuildDocumentsRequest = new RequestType('likec4/build')
+const locate: LocateRequest = new RequestType('likec4/locate')
+const changeView: ChangeViewRequest = new RequestType('likec4/change-view')
 
-interface BuildDocumentsParams {
-  docs: DocumentUri[]
-}
-const buildDocuments = new RequestType<BuildDocumentsParams, void, void>('likec4/build')
-
-export type LocateParams =
-  | {
-      element: Fqn
-      property?: string
-      relation?: never
-      view?: never
-    }
-  | {
-      relation: RelationID
-      element?: never
-      view?: never
-    }
-  | {
-      view: ViewID
-      relation?: never
-      element?: never
-    }
-const locate = new RequestType<LocateParams, Location | null, void>('likec4/locate')
-
-// // //#endregion
+// #endregion
 
 export class Rpc extends AbstractDisposable {
   constructor(public readonly client: LanguageClient) {
@@ -59,8 +45,8 @@ export class Rpc extends AbstractDisposable {
   }
 
   async fetchModel() {
-    const { rawmodel } = await this.client.sendRequest(fetchRawModel)
-    return rawmodel
+    const { model } = await this.client.sendRequest(fetchModel)
+    return model
   }
 
   async computeView(viewId: ViewID) {
@@ -74,5 +60,9 @@ export class Rpc extends AbstractDisposable {
 
   async locate(params: LocateParams): Promise<Location | null> {
     return await this.client.sendRequest(locate, params)
+  }
+
+  async changeView(req: ChangeViewRequestParams) {
+    return await this.client.sendRequest(changeView, req)
   }
 }

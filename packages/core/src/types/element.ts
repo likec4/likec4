@@ -10,15 +10,17 @@ export function AsFqn(name: string, parent?: Fqn | null) {
 }
 
 export type ElementKind = Opaque<string, 'ElementKind'>
-export type ElementShape =
-  | 'rectangle'
-  | 'person'
-  | 'browser'
-  | 'mobile'
-  | 'cylinder'
-  | 'storage'
-  | 'queue'
+export const ElementShapes = [
+  'rectangle',
+  'person',
+  'browser',
+  'mobile',
+  'cylinder',
+  'storage',
+  'queue'
+] as const
 
+export type ElementShape = typeof ElementShapes[number]
 export const DefaultThemeColor = 'primary' satisfies ThemeColor
 export const DefaultElementShape = 'rectangle' satisfies ElementShape
 

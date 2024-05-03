@@ -14,7 +14,9 @@
   "include": [
     "src"
   ],
-  "exclude": [],
+  "exclude": [
+    "**/node_modules",
+  ],
   "references": [
     {
       "path": "../core"

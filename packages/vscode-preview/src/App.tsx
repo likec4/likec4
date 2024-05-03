@@ -1,13 +1,23 @@
-import { type DiagramEdge, type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
+import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
+import { LikeC4Diagram } from '@likec4/diagram'
+import { ActionIcon } from '@mantine/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
 import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LikeC4Diagram } from './LikeC4Diagram'
+import {
+  likec4Container,
+  likec4DiagramLoading,
+  likec4DiagramLoadingOverlay,
+  likec4error,
+  likec4ParsingScreen
+} from './App.css'
+import { Toolbar } from './Toolbar'
+import { cssToolbarLeft } from './Toolbar.css'
 import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
-  <div className="likec4-error-message">
+  <div className={likec4error}>
     <p>
       Oops, something went wrong
       {error && (
@@ -22,13 +32,18 @@ const ErrorMessage = ({ error }: { error: string | null }) => (
 
 const App = () => {
   const lastNodeContextMenuRef = useRef<DiagramNode | null>(null)
+
+  function resetLastClickedNd() {
+    lastNodeContextMenuRef.current = null
+  }
+
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [view, setView] = useState(getPreviewWindowState)
   const [error, setError] = useState<string | null>(null)
 
   const updateView = useCallback((view: DiagramView | null) => {
+    resetLastClickedNd()
     if (view) {
-      lastNodeContextMenuRef.current = null
       savePreviewWindowState(view)
       setState('ready')
       setView(view)
@@ -56,26 +71,9 @@ const App = () => {
 
   const prevView = useViewHistory(view)
 
-  const onNodeClick = useCallback((node: DiagramNode) => {
-    lastNodeContextMenuRef.current = null
-    if (node.navigateTo) {
-      extensionApi.goToViewSource(node.navigateTo)
-      extensionApi.openView(node.navigateTo)
-      return
-    }
-    extensionApi.goToElement(node.id)
-  }, [])
-
-  const onEdgeClick = useCallback((edge: DiagramEdge) => {
-    lastNodeContextMenuRef.current = null
-    if (hasAtLeast(edge.relations, 1)) {
-      extensionApi.goToRelation(edge.relations[0])
-    }
-  }, [])
-
   if (!view) {
     return (
-      <div className="likec4-parsing-screen">
+      <div className={likec4ParsingScreen}>
         {state === 'error' && (
           <section>
             <h3>Oops, invalid view</h3>
@@ -106,49 +104,83 @@ const App = () => {
       </div>
     )
   }
-
   return (
     <>
-      <LikeC4Diagram
-        diagram={view}
-        onNodeClick={onNodeClick}
-        onNodeContextMenu={(nd, e) => {
-          lastNodeContextMenuRef.current = nd
-          e.cancelBubble = true
-        }}
-        onEdgeClick={onEdgeClick}
-        onStageClick={() => {
-          extensionApi.goToViewSource(view.id)
-        }}
-      />
+      <div className={likec4Container} data-vscode-context='{"preventDefaultContextMenuItems": true}'>
+        <LikeC4Diagram
+          view={view}
+          fitViewPadding={0.08}
+          readonly={false}
+          controls={false}
+          nodesDraggable={false}
+          onNavigateTo={({ element }) => {
+            resetLastClickedNd()
+            extensionApi.goToViewSource(element.navigateTo)
+            extensionApi.openView(element.navigateTo)
+          }}
+          onNodeClick={({ element, xynode, event }) => {
+            extensionApi.goToElement(element.id)
+            event.stopPropagation()
+          }}
+          onNodeContextMenu={({ element, xynode, event }) => {
+            lastNodeContextMenuRef.current = element
+          }}
+          onCanvasContextMenu={event => {
+            resetLastClickedNd()
+            event.stopPropagation()
+            event.preventDefault()
+          }}
+          onEdgeContextMenu={({ event }) => {
+            resetLastClickedNd()
+            event.stopPropagation()
+            event.preventDefault()
+          }}
+          onEdgeClick={({ relation, event }) => {
+            resetLastClickedNd()
+            if (hasAtLeast(relation.relations, 1)) {
+              extensionApi.goToRelation(relation.relations[0])
+              event.stopPropagation()
+            }
+          }}
+          onChange={({ changes }) => {
+            extensionApi.change(view.id, changes)
+          }}
+          onCanvasClick={() => {
+            resetLastClickedNd()
+          }}
+          onCanvasDblClick={() => {
+            resetLastClickedNd()
+            extensionApi.goToViewSource(view.id)
+          }}
+        />
+      </div>
       {state === 'error' && <ErrorMessage error={error} />},
       {state === 'loading' && (
         <>
-          <div className="likec4-diagram-loading-overlay"></div>
-          <div className="likec4-diagram-loading">
+          <div className={likec4DiagramLoadingOverlay}></div>
+          <div className={likec4DiagramLoading}>
             <p>Updating...</p>
             <VSCodeProgressRing />
           </div>
         </>
       )}
       {prevView && (
-        <div className="likec4-toolbar">
-          <div className="likec4-toolbar-left">
-            <VSCodeButton
-              appearance="icon"
-              onClick={e => {
-                e.stopPropagation()
-                // optimistic update
-                updateView(prevView)
-                extensionApi.goToViewSource(prevView.id)
-                extensionApi.openView(prevView.id)
-              }}
-            >
-              <ArrowLeftIcon />
-            </VSCodeButton>
-          </div>
+        <div className={cssToolbarLeft}>
+          <ActionIcon
+            color="gray"
+            variant="light"
+            onClick={e => {
+              e.stopPropagation()
+              extensionApi.goToViewSource(prevView.id)
+              extensionApi.openView(prevView.id)
+              // optimistic update
+              updateView(prevView)
+            }}>
+            <ArrowLeftIcon style={{ width: '70%', height: '70%' }} />
+          </ActionIcon>
         </div>
       )}
+      <Toolbar view={view} />
     </>
   )
 }

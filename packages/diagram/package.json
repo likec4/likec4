@@ -1,0 +1,86 @@
+{
+  "name": "@likec4/diagram",
+  "version": "1.0.0-next.14",
+  "license": "MIT",
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/diagram"
+  },
+  "files": [
+    "package.json",
+    "LICENSE",
+    "README.md",
+    "dist",
+    "!dist/src",
+    "!**/*.spec.*",
+    "!**/*.d.ts.map"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./style.css": "./dist/style.css"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "./style.css": "./dist/style.css"
+    }
+  },
+  "packageManager": "yarn@4.1.1",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "prepack": "vite build --mode production",
+    "build:turbo": "run -T turbo build --filter='diagram'",
+    "build": "vite build --mode development && tsc -b",
+    "lint": "run -T eslint src/ --fix",
+    "clean": "run -T rimraf dist bundle"
+  },
+  "dependencies": {
+    "@likec4/core": "workspace:*",
+    "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.8.1",
+    "@mantine/hooks": "^7.8.1",
+    "@react-hookz/web": "^24.0.4",
+    "@xyflow/react": "^12.0.0-next.16",
+    "esm-env": "^1.0.0",
+    "fast-equals": "^5.0.1",
+    "framer-motion": "^11.1.7",
+    "khroma": "^2.1.0",
+    "remeda": "^1.61.0",
+    "zustand": "^4.5.2"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@mantine/vanilla-extract": "^7.8.1",
+    "@total-typescript/ts-reset": "^0.5.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vanilla-extract/css": "^1.15.1",
+    "@vanilla-extract/dynamic": "^2.1.0",
+    "@vanilla-extract/esbuild-plugin": "^2.3.5",
+    "@vitejs/plugin-react": "^4.2.1",
+    "clsx": "^2.1.1",
+    "execa": "^8.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tilg": "^0.1.1",
+    "type-fest": "^4.18.0",
+    "typescript": "^5.4.5",
+    "unbuild": "^2.0.0",
+    "vite": "^5.2.10",
+    "vite-plugin-dts": "^3.8.1"
+  }
+}

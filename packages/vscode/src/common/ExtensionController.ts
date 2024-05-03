@@ -2,9 +2,11 @@ import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
 import { normalizeError, type ViewID } from '@likec4/core'
-import { type GraphvizLayouter, WasmGraphvizLayouter } from '@likec4/layouts'
+import type { GraphvizLayouter } from '@likec4/layouts'
+import { WasmGraphvizLayouter } from '@likec4/layouts'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
+import pTimeout from 'p-timeout'
 import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
@@ -81,18 +83,23 @@ export class ExtensionController extends AbstractDisposable {
             .join('')
         }`
       )
-      Logger.info(`[Extension] Starting LanguageClient...`)
-      this.client.outputChannel.show(true)
-      await this.client.start()
       Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
+
+      if (this.client.needsStart()) {
+        Logger.info(`[Extension] Starting LanguageClient...`)
+        await pTimeout(this.client.start(), {
+          milliseconds: 5000,
+          message: 'Failed to start language client'
+        })
+      }
 
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
-      const messenger = new Messenger()
-      this.onDispose(messenger)
-
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
+
+      const messenger = new Messenger(rpc)
+      this.onDispose(messenger)
 
       const c4model = new C4Model(this, rpc, this._telemetry)
       c4model.turnOnTelemetry()
@@ -134,8 +141,12 @@ export class ExtensionController extends AbstractDisposable {
         const loc = await rpc.locate(params)
         if (!loc) return
         const location = this.client.protocol2CodeConverter.asLocation(loc)
+        let viewColumn = vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One
+        if (PreviewPanel.current?.panel.viewColumn === vscode.ViewColumn.One) {
+          viewColumn = vscode.ViewColumn.Beside
+        }
         const editor = await vscode.window.showTextDocument(location.uri, {
-          viewColumn: vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+          viewColumn,
           selection: location.range
         })
         editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
@@ -163,9 +174,11 @@ export class ExtensionController extends AbstractDisposable {
       Logger.info(`[Extension] activated`)
       //
     } catch (e) {
-      const error = normalizeError(e)
-      Logger.error(error)
-      throw error
+      if (e instanceof Error) {
+        void vscode.window.showErrorMessage(e.message)
+        Logger.error(e)
+      }
+      return Promise.reject(e)
     }
   }
 

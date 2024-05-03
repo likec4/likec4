@@ -1,33 +1,25 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "incremental": true,
     "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
+    "module": "esnext",
     "outDir": "../dist/__app__",
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "rootDir": ".",
-    "types": ["vite/client"],
-    "plugins": [
-      {
-        "name": "typescript-plugin-css-modules",
-        "options": {
-          "classnameTransform": "camelCase",
-          "postcssOptions": {},
-          "rendererOptions": {}
-        }
-      }
-    ]
+    "types": ["vite/client"]
   },
   "include": ["./src"],
   "references": [
     {
       "path": "../../core"
+    },
+    {
+      "path": "../../diagram"
     },
     {
       "path": "../../diagrams"

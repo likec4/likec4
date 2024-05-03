@@ -218,8 +218,8 @@ const DiagramKonva = /* @__PURE__ */ forwardRef<DiagramApi, DiagramProps>(
               {
                 x: node.position[0],
                 y: node.position[1],
-                width: node.size.width,
-                height: node.size.height
+                width: node.width,
+                height: node.height
               },
               opts
             ),

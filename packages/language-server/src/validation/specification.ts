@@ -1,4 +1,4 @@
-import { AstUtils, CstUtils, GrammarUtils, type ValidationCheck } from 'langium'
+import { AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 

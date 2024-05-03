@@ -1,6 +1,6 @@
 # @likec4/diagrams development workspace
 
-This is a project for fast development of `@likec4/diagrams`.  
+This is a project for fast development of `@likec4/diagrams`.\
 It uses aliases to link the sources of `@likec4/core` and `@likec4/diagrams`, so you can edit the sources and see the changes in this workspace (HMR).
 
 If you change other packages (like `@likec4/language-server` or `@likec4/layouts`), you need to run `yarn build:turbo` to rebuild them and see the changes.

@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react'
-import { useIsMounted } from '@react-hookz/web'
 import { invariant } from '@likec4/core'
+import { useIsMounted } from '@react-hookz/web'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 type UseImageResult = [undefined, 'loading' | 'failed'] | [HTMLImageElement, 'loaded']
 
@@ -39,10 +39,10 @@ export default function useImageLoader(
   const crossOriginRef = useRef(crossOrigin)
   const referrerPolicyRef = useRef(referrerpolicy)
   if (
-    !url ||
-    urlRef.current !== url ||
-    crossOriginRef.current !== crossOrigin ||
-    referrerPolicyRef.current !== referrerpolicy
+    !url
+    || urlRef.current !== url
+    || crossOriginRef.current !== crossOrigin
+    || referrerPolicyRef.current !== referrerpolicy
   ) {
     statusRef.current = 'loading'
     imageRef.current = undefined

@@ -1,8 +1,8 @@
 import type { SetStateAction, Setter } from 'jotai'
 import { atom } from 'jotai'
+import { selectAtom } from 'jotai/utils'
 import { equals } from 'rambdax'
 import type { DiagramEdge, DiagramNode } from '../types'
-import { selectAtom } from 'jotai/utils'
 
 type HoveredNode = DiagramNode | null
 type HoveredEdge = DiagramEdge | null

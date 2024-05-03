@@ -1,0 +1,94 @@
+import { globalStyle, style } from '@vanilla-extract/css'
+
+globalStyle('*, :before, :after', {
+  boxSizing: 'border-box',
+  outline: 'none',
+  borderWidth: '0',
+  borderStyle: 'solid',
+  borderColor: 'transparent'
+})
+
+globalStyle(':root', {
+  vars: {
+    '--font-family':
+      '\'IBM Plex Sans\', system-ui, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\'',
+    '--likec4-default-font-family': 'var(--font-family)',
+    '--mantine-default-font-family': 'var(--font-family)',
+    '--mantine-font-family': 'var(--font-family)',
+    '--xy-background-pattern-color': 'var(--mantine-color-dark-8 )',
+    '--mantine-color-body': 'var(--vscode-editor-background )',
+    '--likec4-background-color': 'var(--mantine-color-body )'
+  }
+})
+
+globalStyle(':root[data-mantine-color-scheme=\'dark\']', {
+  vars: {
+    '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
+  }
+})
+
+globalStyle('html, body, #root', {
+  width: '100%',
+  height: '100%',
+  minHeight: '100vh',
+  padding: '0',
+  margin: '0'
+})
+
+export const likec4Container = style({
+  position: 'fixed',
+  inset: '0',
+  overflow: 'hidden',
+  vars: {
+    '--likec4-options-panel-top': '2.5rem'
+  }
+})
+
+export const likec4DiagramLoading = style({
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  right: '0',
+  bottom: '0',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column'
+})
+
+export const likec4DiagramLoadingOverlay = style({
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  right: '0',
+  bottom: '0',
+  backgroundColor: 'var(--vscode-editor-background)',
+  opacity: '0.7'
+})
+
+export const likec4error = style({
+  position: 'absolute',
+  left: '2rem',
+  bottom: '2rem',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+  padding: '0 2rem',
+  backgroundColor: 'var(--vscode-inputValidation-errorBackground)',
+  border: '1px solid var(--vscode-inputValidation-errorBorder)',
+  color: 'var(--vscode-errorForeground)'
+})
+
+export const likec4ParsingScreen = style({
+  padding: '1rem'
+})
+
+globalStyle(`${likec4ParsingScreen} section`, {
+  marginTop: '1rem',
+  marginBottom: '1rem'
+})
+
+globalStyle('.react-flow .react-flow__attribution', {
+  display: 'none'
+})

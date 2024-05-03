@@ -13,12 +13,17 @@ type TakeScreenshotParams = {
   output: string
   logger: Logger
   timeout: number
-  maxAttempts?: number
+  maxAttempts: number
 }
 
-export async function takeScreenshot(
-  { browserContext, views, output, logger, timeout, maxAttempts = 4 }: TakeScreenshotParams
-) {
+export async function takeScreenshot({
+  browserContext,
+  views,
+  output,
+  logger,
+  timeout,
+  maxAttempts
+}: TakeScreenshotParams) {
   const padding = 20
 
   let page: Page | undefined
@@ -52,7 +57,7 @@ export async function takeScreenshot(
         height: view.height + padding * 2 + 4
       })
 
-      await page.goto(url)
+      await page.goto(url + `?padding=${padding}&theme=light`)
 
       await page.waitForSelector('.transparent-bg')
 

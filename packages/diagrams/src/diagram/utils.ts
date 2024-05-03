@@ -24,11 +24,11 @@ export const getBoundingRect = (elements: (DiagramNode | DiagramEdge)[]): IRect 
   let maxY = -Infinity
 
   for (const element of elements) {
-    if ('size' in element && 'position' in element) {
+    if ('position' in element) {
       minX = Math.min(minX, element.position[0])
       minY = Math.min(minY, element.position[1])
-      maxX = Math.max(maxX, element.position[0] + element.size.width)
-      maxY = Math.max(maxY, element.position[1] + element.size.height)
+      maxX = Math.max(maxX, element.position[0] + element.width)
+      maxY = Math.max(maxY, element.position[1] + element.height)
       continue
     }
     element.points.forEach(([x, y]) => {

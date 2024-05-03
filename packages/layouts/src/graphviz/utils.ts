@@ -7,11 +7,11 @@ import type { Color } from 'ts-graphviz'
 // export const pxToInch = (px: number) => Math.ceil((px / 96) * 1000) / 1000
 // export const pxToPoints = (px: number) => Math.ceil(px * 0.75 * 100) / 100
 
-export function pointToPx(point: Point): Point
+export function pointToPx(point: [number, number]): Point
 export function pointToPx(pt: number): number
 export function pointToPx(pt: number | [number, number]) {
   if (Array.isArray(pt)) {
-    return [pointToPx(pt[0]), pointToPx(pt[1])]
+    return [pointToPx(pt[0]), pointToPx(pt[1])] as const
   }
   invariant(isFinite(pt), `Invalid not finite point value ${pt}`)
   return Math.ceil(pt)

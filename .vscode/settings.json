@@ -37,11 +37,9 @@
   },
   "files.exclude": {
     "**/.turbo": true,
-    "packages/*/.tsbuildinfo": true,
+    "**/.tsbuildinfo": true,
     "packages/*/.vscode-test-web": true
   },
-  "mdx.server.enable": true,
-  "vitest.commandLine": "yarn vitest",
   "exportall.config.semis": false,
   "json.schemas": [
     {
@@ -50,5 +48,31 @@
         "langium-config.json"
       ]
     }
+  ],
+  "cSpell.words": [
+    "clsx",
+    "codegen",
+    "execa",
+    "gridify",
+    "hookz",
+    "khroma",
+    "langium",
+    "likec4",
+    "mantine",
+    "nodrag",
+    "nonexhaustive",
+    "nopan",
+    "outfile",
+    "pannable",
+    "rawmodel",
+    "reactflow",
+    "remeda",
+    "styleprops",
+    "tanstack",
+    "tilg",
+    "typecheck",
+    "webcola",
+    "xyflow",
+    "zoomable"
   ]
 }

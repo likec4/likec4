@@ -1,23 +1,43 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [],
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
-    "paths": { // just for the tsx
+    "module": "esnext",
+    "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "types": [
+      "node"
+    ],
+    "paths": {
       "@/*": [
         "./src/*"
       ]
     }
   },
+  "include": [
+    "./src",
+    "./scripts",
+    "package.json"
+  ],
   "references": [
-    {
-      "path": "./tsconfig.src.json"
-    },
     {
       "path": "./app/tsconfig.json"
     },
     {
-      "path": "scripts/tsconfig.json"
+      "path": "../core"
+    },
+    {
+      "path": "../graph"
+    },
+    {
+      "path": "../generators"
+    },
+    {
+      "path": "../layouts"
+    },
+    {
+      "path": "../language-server"
     }
   ]
 }

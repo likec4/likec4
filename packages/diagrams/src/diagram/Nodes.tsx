@@ -1,6 +1,6 @@
 import type { Fqn } from '@likec4/core'
 import { nonexhaustive } from '@likec4/core'
-import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
+import { isEqualSimple } from '@react-hookz/deep-equal'
 import type { ControllerUpdate, UseTransitionProps } from '@react-spring/konva'
 import { useTransition } from '@react-spring/konva'
 import { memo, useRef } from 'react'
@@ -168,7 +168,7 @@ const NodeShape = memo<NodeShapeProps>(
     const setHoveredNode = useSetHoveredNode()
 
     const _isCompound = isCompound(node)
-    const isNavigatable = animate && !!node.navigateTo && !!onNodeClick
+    const isnavigable = animate && !!node.navigateTo && !!onNodeClick
 
     const Shape = nodeShape(node)
 
@@ -195,7 +195,7 @@ const NodeShape = memo<NodeShapeProps>(
               }
               e.cancelBubble = true
               // Navigation handled by NodeZoomBtn
-              if (!isNavigatable) {
+              if (!isnavigable) {
                 onNodeClick(node, e)
               }
             }
@@ -216,15 +216,15 @@ const NodeShape = memo<NodeShapeProps>(
                 node={node}
                 theme={theme}
                 springs={springs}
-                labelOffsetX={isNavigatable ? -22 : 0}
+                labelOffsetX={isnavigable ? -22 : 0}
               />
-              {isNavigatable && (
+              {isnavigable && (
                 <>
                   <Rect
                     x={0}
                     y={0}
-                    width={node.size.width}
-                    height={Math.min(node.size.height, 150)}
+                    width={node.width}
+                    height={Math.min(node.height, 150)}
                     perfectDrawEnabled={false}
                   />
                   <CompoundZoomBtn
@@ -242,7 +242,7 @@ const NodeShape = memo<NodeShapeProps>(
           {!_isCompound && (
             <>
               <Shape node={node} theme={theme} springs={springs} isHovered={isHovered} />
-              {isNavigatable && (
+              {isnavigable && (
                 <NodeZoomBtn
                   animate={animate}
                   node={node}

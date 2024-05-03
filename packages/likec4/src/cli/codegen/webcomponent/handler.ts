@@ -1,0 +1,93 @@
+import { mkTempPublicDir } from '@/vite/utils'
+import { viteWebcomponentConfig } from '@/vite/webcomponent'
+import consola from 'consola'
+import { existsSync } from 'node:fs'
+import { copyFile, mkdir, rm, stat } from 'node:fs/promises'
+import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
+import { cwd } from 'node:process'
+import k from 'picocolors'
+import { hasAtLeast } from 'remeda'
+import stripIndent from 'strip-indent'
+import { build } from 'vite'
+import { LanguageServices } from '../../../language-services'
+import { createLikeC4Logger, startTimer } from '../../../logger'
+
+type HandlerParams = {
+  /**
+   * The directory where c4 files are located.
+   */
+  path: string
+  useDotBin: boolean
+  outfile: string | undefined
+}
+
+export async function webcomponentHandler({ path, useDotBin, outfile }: HandlerParams) {
+  const logger = createLikeC4Logger('c4:codegen')
+  const timer = startTimer()
+  const languageServices = await LanguageServices.get({ path, useDotBin })
+
+  logger.info(`${k.dim('format')} ${k.green('webcomponent')}`)
+
+  const diagrams = await languageServices.views.diagrams()
+  if (!hasAtLeast(diagrams, 1)) {
+    logger.warn('no views found')
+    process.exitCode = 1
+    throw new Error('no views found')
+  }
+
+  let outfilepath = resolve(languageServices.workspace, 'likec4-views.js')
+  if (outfile) {
+    outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
+    if (existsSync(outfile)) {
+      const stats = await stat(outfile)
+      if (stats.isDirectory()) {
+        throw new Error(`output file is a directory: ${outfile}`)
+      }
+    }
+  }
+  consola.debug(`${k.dim('outfilepath')} ${outfilepath}`)
+
+  const filename = basename(outfilepath)
+  consola.debug(`${k.dim('filename')} ${filename}`)
+  if (extname(filename).toLowerCase() !== '.js') {
+    throw new Error(`output file must be a js file: ${outfile}`)
+  }
+
+  const publicDir = await mkTempPublicDir()
+  consola.debug(`${k.dim('created temp public')} ${publicDir}`)
+
+  const webcomponentConfig = await viteWebcomponentConfig({
+    languageServices,
+    outDir: publicDir,
+    filename: filename,
+    base: '/'
+  })
+  consola.debug(`${k.dim('vite build webcomponent')}`)
+  await build({
+    ...webcomponentConfig,
+    logLevel: 'warn'
+  })
+
+  const viteOutputFile = resolve(publicDir, filename)
+  if (!existsSync(viteOutputFile)) {
+    throw new Error(`output file not found: ${viteOutputFile}`)
+  }
+  await mkdir(dirname(outfilepath), { recursive: true })
+
+  await copyFile(viteOutputFile, outfilepath)
+  logger.info(`${k.dim('generated')} ${outfilepath}`)
+
+  consola.debug(`${k.dim('remove temp public')}`)
+  await rm(publicDir, { recursive: true, force: true })
+
+  consola.box(
+    stripIndent(`
+    ${k.dim('Webcomponents generated to')} ${relative(cwd(), outfilepath)}
+
+    ${k.dim('Setup and usage instructions:')}
+    ${k.blue('https://likec4.dev/docs/tooling/webcomponents')}
+  `).trim()
+  )
+
+  timer.stopAndLog()
+}

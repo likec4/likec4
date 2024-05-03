@@ -52,8 +52,8 @@ export default function PlaygroundViewMermaid({ diagram }: PlaygroundViewMermaid
           padding: 0
         }}
       >
-        <div className='pl-24 py-2'>
-          <div className='inline-flex space-x-1 px-1 py-1 bg-neutral-700 bg-opacity-50 rounded-xl'>
+        <div className="pl-24 py-2">
+          <div className="inline-flex space-x-1 px-1 py-1 bg-neutral-700 bg-opacity-50 rounded-xl">
             <div className={tabClassName(tab === 'source')} onClick={() => setTab('source')}>
               source
             </div>
@@ -63,13 +63,11 @@ export default function PlaygroundViewMermaid({ diagram }: PlaygroundViewMermaid
           </div>
         </div>
         <div className={'overflow-auto'}>
-          {tab === 'source' && <code className='whitespace-pre px-5 pb-2'>{svg}</code>}
+          {tab === 'source' && <code className="whitespace-pre px-5 pb-2">{svg}</code>}
           {tab === 'render' && (
             <>
               {!data && <>loading...</>}
-              {data && (
-                <div className='min-w-min min-h-min' dangerouslySetInnerHTML={{ __html: data }} />
-              )}
+              {data && <div className="min-w-min min-h-min" dangerouslySetInnerHTML={{ __html: data }} />}
             </>
           )}
         </div>

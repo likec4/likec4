@@ -59,6 +59,7 @@ export async function mkLanguageServices({
   const services = createServices({ useDotBin }).likec4
   const logger = services.logger
   logger.info(`${k.dim('version')} ${pkg.version}`)
+  logger.info(`${k.dim('layout')} ${services.likec4.Layouter.constructor.name}`)
 
   const workspace = resolve(path)
 

@@ -1,3 +1,31 @@
+# [1.0.0-next.14](https://github.com/likec4/likec4/compare/v0.60.4...v1.0.0-next.14) (2024-04-30)
+
+PRE-RELEASE
+
+# [1.0.0-next.11](https://github.com/likec4/likec4/compare/v1.0.0-next.10...v1.0.0-next.11) (2024-04-11)
+
+PRE-RELEASE
+
+### Features
+
+* webcomponents ([df430f0](https://github.com/likec4/likec4/commit/df430f0971b4d3c59e00cd560275d1b8601e0bb9))
+
+# [1.0.0-next.10](https://github.com/likec4/likec4/compare/v1.0.0-next.2...v1.0.0-next.10) (2024-04-02)
+
+Working on pre-release
+
+# [1.0.0-next.2](https://github.com/likec4/likec4/compare/v1.0.0-next.1...v1.0.0-next.2) (2024-03-31)
+
+Working on pre-release
+
+# [1.0.0-next.1](https://github.com/likec4/likec4/compare/v1.0.0-next.0...v1.0.0-next.1) (2024-03-29)
+
+Working on pre-release
+
+# [1.0.0-next.0](https://github.com/likec4/likec4/compare/v0.60.3...v1.0.0-next.0) (2024-03-29)
+
+Working on pre-release
+
 ## [0.60.4](https://github.com/likec4/likec4/compare/v0.60.3...v0.60.4) (2024-04-13)
 
 ### Bug Fixes

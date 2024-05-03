@@ -19,7 +19,7 @@ function syncLikeC4Data(
     const tag = `syncLikeC4Data.fetchModel.${id}`
     console.time(tag)
     try {
-      const { model } = await languageClient.sendRequest(Rpc.fetchModel, token)
+      const { model } = await languageClient.sendRequest(Rpc.fetchComputedModel, token)
       if (token.isCancellationRequested) {
         console.warn(`${tag}: cancel`)
         return

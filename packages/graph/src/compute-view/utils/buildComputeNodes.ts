@@ -1,10 +1,5 @@
 import type { ComputedNode, Element, Fqn } from '@likec4/core'
-import {
-  DefaultElementShape,
-  DefaultThemeColor,
-  compareByFqnHierarchically,
-  parentFqn
-} from '@likec4/core'
+import { compareByFqnHierarchically, DefaultElementShape, DefaultThemeColor, parentFqn } from '@likec4/core'
 
 function updateDepthOfAncestors(node: ComputedNode, nodes: ReadonlyMap<Fqn, ComputedNode>) {
   let parentNd

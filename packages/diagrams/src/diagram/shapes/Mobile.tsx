@@ -1,14 +1,14 @@
 import { AnimatedCircle, AnimatedRect, Circle } from '../../konva'
-import { NodeLabels } from './NodeLabel'
 import { useShadowSprings } from '../springs'
-import type { NodeShapeProps } from './types'
 import { NodeIcon } from './NodeIcon'
+import { NodeLabels } from './NodeLabel'
+import type { NodeShapeProps } from './types'
 
 export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps) {
   const colors = theme.elements[node.color]
   // 40 - padding left and right
   // 30 - padding of the icon
-  const maxWidth = node.size.width - 40 - 30
+  const maxWidth = node.width - 40 - 30
   return (
     <>
       <AnimatedRect
@@ -21,7 +21,7 @@ export function MobileShape({ node, theme, springs, isHovered }: NodeShapeProps)
       />
       <AnimatedCircle
         x={16}
-        y={node.size.height / 2}
+        y={node.height / 2}
         radius={10}
         fill={springs.fill}
         listening={false}

@@ -1,4 +1,4 @@
-import type { DiagramView, Fqn, RelationID, ViewID } from '@likec4/core'
+import { type DiagramView, type Fqn, hasAtLeast, invariant, type RelationID, type ViewID } from '@likec4/core'
 import { useEffect, useRef } from 'react'
 import { HOST_EXTENSION, isMessage } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
@@ -44,6 +44,12 @@ export const extensionApi = {
   locate: (params: WebviewToExtension.LocateParams) => {
     messenger.sendNotification(WebviewToExtension.locate, HOST_EXTENSION, params)
   },
+  change: (viewId: ViewID, change: WebviewToExtension.ChangeCommand | WebviewToExtension.ChangeCommand[]) => {
+    const changes = Array.isArray(change) ? change : [change]
+    invariant(hasAtLeast(changes, 1), 'no changes')
+    messenger.sendNotification(WebviewToExtension.onChange, HOST_EXTENSION, { viewId, changes })
+  },
+
   goToElement: (element: Fqn) => {
     extensionApi.locate({ element })
   },

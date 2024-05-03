@@ -1,6 +1,7 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
+import { generateViewId } from '../views-data-ts/generateViewId'
 
 const componentName = (value: string): string => {
   if (!value.charAt(0).match(/[a-zA-Z]/)) {
@@ -9,11 +10,6 @@ const componentName = (value: string): string => {
   value = value.replaceAll('_', '')
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
-
-export const generateViewId = (views: DiagramView[]) =>
-  joinToNode(views, view => expandToNode`'${view.id}'`, {
-    separator: ' | '
-  })
 
 export function generateReact(views: DiagramView[]) {
   const components = views.map(({ id }) => {
@@ -29,7 +25,11 @@ export function generateReact(views: DiagramView[]) {
        * This file was generated
        * DO NOT EDIT MANUALLY!
        ******************************************************************************/
+      /* prettier-ignore-start */
+
       /* eslint-disable */
+
+      // @ts-nocheck
 
       import type { DiagramView } from '@likec4/diagrams'
       import { LikeC4 } from '@likec4/diagrams'
@@ -107,6 +107,8 @@ export function generateReact(views: DiagramView[]) {
         DiagramLabel,
         DiagramView
       } from '@likec4/diagrams'
+
+      /* prettier-ignore-end */
     `.append(NL)
 
   return toString(out)

@@ -5,19 +5,34 @@
       "label": "build",
       "type": "npm",
       "script": "vs:tasks:build",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "group": "build",
       "problemMatcher": [
         "$tsc"
       ],
       "promptOnClose": false,
       "presentation": {
-        "panel": "shared",
+        "panel": "dedicated",
         "echo": false,
-        "showReuseMessage": false
+        "showReuseMessage": false,
+        "reveal": "silent",
+        "group": "build",
+        "revealProblems": "onProblem",
+        "clear": true
       }
+    },
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "option": "watch",
+      "isBackground": true,
+      "problemMatcher": [
+        "$tsc-watch"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "tsc: watch"
     }
   ]
 }

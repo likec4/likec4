@@ -1,18 +1,20 @@
 import type { ExoticComponent, FunctionComponent, RefAttributes } from 'react'
 import { forwardRef } from 'react'
+import { EmbeddedDiagram, FullscreenDiagramBrowser } from './components'
+import type { EmbeddedDiagramProps, FullscreenDiagramBrowserProps } from './components'
 import { Diagram } from './diagram'
-import { FullscreenDiagramBrowser, EmbeddedDiagram } from './components'
-import type { FullscreenDiagramBrowserProps, EmbeddedDiagramProps } from './components'
 
-import { ResponsiveDiagram, FullscreenDiagram } from './components/primitives'
-import type { ResponsiveDiagramProps, FullscreenDiagramProps } from './components/primitives'
+import { FullscreenDiagram, ResponsiveDiagram } from './components/primitives'
+import type { FullscreenDiagramProps, ResponsiveDiagramProps } from './components/primitives'
 import type * as Types from './diagram/types'
 import { useViewIdFromHash } from './hooks/useViewIdFromHash'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace LikeC4 {
-  export type DiagramProps<Id extends string> = Omit<Types.DiagramProps, 'diagram'> &
-    RefAttributes<Types.DiagramApi> & {
+  export type DiagramProps<Id extends string> =
+    & Omit<Types.DiagramProps, 'diagram'>
+    & RefAttributes<Types.DiagramApi>
+    & {
       viewId: Id
     }
   /**
@@ -20,8 +22,10 @@ export namespace LikeC4 {
    */
   export type Props<Id extends string> = DiagramProps<Id>
 
-  export type ResponsiveProps<Id extends string> = Omit<ResponsiveDiagramProps, 'diagram'> &
-    RefAttributes<Types.DiagramApi> & {
+  export type ResponsiveProps<Id extends string> =
+    & Omit<ResponsiveDiagramProps, 'diagram'>
+    & RefAttributes<Types.DiagramApi>
+    & {
       viewId: Id
     }
 
@@ -49,9 +53,9 @@ export class LikeC4<ViewId extends string, Views extends Types.DiagramViews<View
 
   readonly isViewId = (value: unknown): value is ViewId => {
     return (
-      value != null &&
-      typeof value === 'string' &&
-      Object.prototype.hasOwnProperty.call(this.views, value)
+      value != null
+      && typeof value === 'string'
+      && Object.prototype.hasOwnProperty.call(this.views, value)
     )
   }
 

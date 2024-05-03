@@ -20,8 +20,7 @@ export function useDiagramApi() {
           nonNullable(ref.current, 'not mounted, use ref').resetStageZoom(_immediate),
         centerOnNode: (node: DiagramNode, opts?: DiagramApi.CenterMethodOptions) =>
           nonNullable(ref.current, 'not mounted, use ref').centerOnNode(node, opts),
-        centerOnRect: (rect, opts) =>
-          nonNullable(ref.current, 'not mounted, use ref').centerOnRect(rect, opts),
+        centerOnRect: (rect, opts) => nonNullable(ref.current, 'not mounted, use ref').centerOnRect(rect, opts),
         centerAndFit: (opts?: DiagramApi.CenterMethodOptions) =>
           nonNullable(ref.current, 'not mounted, use ref').centerAndFit(opts)
       }) satisfies DiagramApi

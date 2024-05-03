@@ -1,72 +1,27 @@
 import { createLikeC4Logger } from '@/logger'
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
-import autoprefixer from 'autoprefixer'
-import { isCI } from 'ci-info'
+import consola from 'consola'
 import fs from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import k from 'picocolors'
-import postcssNested from 'postcss-nested'
-import type { Alias, InlineConfig, Logger } from 'vite'
-import pkg from '../../package.json' assert { type: 'json' }
+import postcssPresetMantine from 'postcss-preset-mantine'
+import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
+import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
+import type { LikeC4ViteConfig } from './config.prod'
 import { likec4Plugin } from './plugin'
-//
-const _dirname = dirname(fileURLToPath(import.meta.url))
-
-const getAppRoot = (): [path: string, isDev: boolean] => {
-  /* @see packages/likec4/app/tsconfig.json */
-  const root = resolve(_dirname, '../__app__')
-  if (fs.existsSync(root)) {
-    // we are bundled
-    return [root, false]
-  }
-  // we are in dev
-  return [resolve(_dirname, '../../app'), true]
-}
-
-function resolveAliases(aliases: Record<string, string>, logger: Logger): Array<Alias> {
-  const resolved = [] as Array<Alias>
-  Array.from(Object.entries(aliases)).forEach(([key, src]) => {
-    if (!fs.existsSync(src)) {
-      logger.error(`${k.bgRed(k.white(key))} does not exist ${src}`)
-      return
-    }
-    logger.info(`${key} ${k.dim('resolve to')} ${src}`)
-    resolved.push({ find: key, replacement: src })
-  })
-  return resolved
-}
-
-export type LikeC4ViteConfig =
-  | {
-    languageServices: LanguageServices
-    workspaceDir?: never
-    outputDir?: string | undefined
-    base?: string | undefined
-  }
-  | {
-    languageServices?: never
-    workspaceDir: string
-    outputDir?: string | undefined
-    base?: string | undefined
-  }
+import { chunkSizeWarningLimit } from './utils'
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
+  consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:vite')
 
-  customLogger.info(`${k.dim('version')} ${pkg.version}`)
-
-  const [root, isDev] = getAppRoot()
+  const root = resolve('app')
   if (!fs.existsSync(root)) {
-    customLogger.error(`app root does not exist: ${root}`)
+    consola.error(`app root does not exist: ${root}`)
     throw new Error(`app root does not exist: ${root}`)
-  }
-
-  if (isDev) {
-    customLogger.warn(`${k.dim('dev app root')} ${root}`)
-  } else {
-    customLogger.info(`${k.dim('app root')} ${root}`)
   }
 
   const languageServices = cfg?.languageServices
@@ -76,106 +31,81 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     }))
 
   const outDir = cfg?.outputDir ?? resolve(languageServices.workspace, 'dist')
-  customLogger.info(k.dim('outDir') + ' ' + outDir)
-
-  let coreSrc, diagramsSrc
-
-  if (isDev) {
-    coreSrc = resolve(_dirname, '../../../core/src/index.ts')
-    diagramsSrc = resolve(_dirname, '../../../diagrams/src/index.ts')
-  } else {
-    coreSrc = resolve(_dirname, '../@likec4/core/index.js')
-    diagramsSrc = resolve(_dirname, '../@likec4/diagrams/index.js')
-  }
-
-  const aliases = resolveAliases(
-    {
-      ['@likec4/core']: coreSrc,
-      ['@likec4/diagrams']: diagramsSrc
-    },
-    customLogger
-  )
+  customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   let base = '/'
   if (cfg?.base) {
-    base = cfg.base
-    if (!base.startsWith('/')) {
-      base = '/' + base
+    base = withTrailingSlash(cfg.base)
+    if (!hasProtocol(base)) {
+      base = withLeadingSlash(base)
     }
-    if (!base.endsWith('/')) {
-      base = base + '/'
-    }
+  }
+  if (base !== '/') {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
   return {
-    isDev,
+    isDev: true,
     root,
     languageServices,
+    configFile: false,
+    mode: 'development',
+    define: {
+      'process.env.NODE_ENV': '"development"'
+    },
     resolve: {
-      dedupe: ['react', 'react-dom'],
-      alias: [...aliases]
+      alias: {
+        '@likec4/core': resolve('../core/src/index.ts'),
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        '@likec4/diagrams': resolve('../diagrams/src/index.ts')
+      }
+    },
+    optimizeDeps: {
+      include: [
+        'react-dom',
+        'react',
+        'framer-motion',
+        '@radix-ui/themes',
+        'react/jsx-dev-runtime',
+        '@mantine/core',
+        '@mantine/hooks'
+      ],
+      force: true
     },
     clearScreen: false,
     base,
     build: {
       outDir,
-      reportCompressedSize: isDev || !isCI,
-      // 200Kb
-      assetsInlineLimit: 200 * 1024,
-      cssMinify: true,
+      emptyOutDir: false,
+      cssCodeSplit: false,
       sourcemap: false,
-      chunkSizeWarningLimit: 2_000_000,
+      minify: true,
+      copyPublicDir: true,
+      // 500Kb
+      assetsInlineLimit: 500 * 1024,
+      chunkSizeWarningLimit,
       commonjsOptions: {
-        esmExternals: true,
-        sourceMap: false
+        ignoreTryCatch: 'remove'
       }
     },
     css: {
       postcss: {
-        plugins: [autoprefixer(), postcssNested()]
-      },
-      modules: {
-        localsConvention: 'camelCase'
+        plugins: [
+          postcssPresetMantine()
+        ]
       }
     },
     customLogger,
-    optimizeDeps: {
-      include: [
-        'react-dom',
-        'react-dom/client',
-        'react',
-        'react-reconciler',
-        'scheduler',
-        'rambdax',
-        'remeda',
-        'jotai',
-        'jotai/utils',
-        '@radix-ui/react-icons',
-        '@radix-ui/themes',
-        'react/jsx-dev-runtime',
-        'react/jsx-runtime',
-        'react-konva',
-        'konva',
-        'react-accessible-treeview',
-        '@react-hookz/web',
-        '@react-spring/core',
-        '@react-spring/animated',
-        '@react-spring/shared',
-        '@react-spring/konva',
-        '@use-gesture/core',
-        '@use-gesture/react',
-        ...(!isDev ? ['@likec4/core', '@likec4/diagrams'] : [])
-      ]
-    },
     plugins: [
-      react({
-        // plugins: [
-        //   ['@swc-jotai/debug-label', {}],
-        //   ['@swc-jotai/react-refresh', {}]
-        // ]
+      react(),
+      likec4Plugin({ languageServices }),
+      TanStackRouterVite({
+        routeFileIgnorePattern: '.css.ts',
+        generatedRouteTree: resolve(root, 'src/routeTree.gen.ts'),
+        routesDirectory: resolve(root, 'src/routes'),
+        quoteStyle: 'single'
       }),
-      likec4Plugin({ languageServices })
+      vanillaExtractPlugin({})
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

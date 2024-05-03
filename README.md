@@ -5,8 +5,8 @@
   <h4>
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </h4>
-  
-  [docs](https://likec4.dev/docs/) | [playground](https://likec4.dev/playground/) | [demo](https://template.likec4.dev/view/cloud)
+
+[docs](https://likec4.dev/docs/) | [playground](https://likec4.dev/playground/) | [demo](https://template.likec4.dev/view/cloud)
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
@@ -17,7 +17,7 @@
 LikeC4 is a modeling language for describing software architecture and tools to generate diagrams from the model.
 
 LikeC4 is inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but provides some flexibility.
-You customize or define your own notation, element types, and any number of nested levels in architecture model.  
+You customize or define your own notation, element types, and any number of nested levels in architecture model.\
 Perfectly tailored to your needs.
 
 ## What does LikeC4 look like?
@@ -40,12 +40,12 @@ And result:
   <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
 </div>
 
-Template repository - [likec4/template](https://github.com/likec4/template)  
+Template repository - [likec4/template](https://github.com/likec4/template)\
 Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
 
-> StackBlitz does not support extensions, so no validation, syntax highlighting and etc.  
+> StackBlitz does not support extensions, so no validation, syntax highlighting and etc.\
 > You can try with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4) and suggested extension.
 
 Check the [Tutorial](https://likec4.dev/docs/tutorial/) - a bit better overview of LikeC4.

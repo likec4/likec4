@@ -6,7 +6,7 @@
  */
 import { defaultTheme } from '@likec4/core'
 import { writeFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
 const colors = Object.keys(defaultTheme.elements)
 
@@ -54,9 +54,10 @@ model {
     style {
       color gray
     }
-${colors
-  .map(
-    key => `
+${
+  colors
+    .map(
+      key => `
     themecolor ${key} {
       title "${key.toUpperCase()}"
       description '
@@ -138,8 +139,9 @@ ${colors
       browser -> mobile
       cylinder -> queue
     }`
-  )
-  .join('')}
+    )
+    .join('')
+}
   }
 
   themecolor compoundtest {
@@ -166,9 +168,10 @@ views {
     exclude compoundtest
   }
 
-${colors
-  .map(
-    key => `
+${
+  colors
+    .map(
+      key => `
   view themecolor_${key} of ${key} {
     title "Theme Color: ${key}"
     include *, colors
@@ -179,8 +182,9 @@ ${colors
     }
   }
 `
-  )
-  .join('')}
+    )
+    .join('')
+}
 
 }
 `
@@ -204,9 +208,10 @@ specification {
     line solid
   }
 
-${colors
-  .map(
-    key => `
+${
+  colors
+    .map(
+      key => `
   relationship ${key} {
     color ${key}
   }
@@ -216,8 +221,9 @@ ${colors
     tail onormal
   }
 `
-  )
-  .join('')}
+    )
+    .join('')
+}
 
 }
 
@@ -229,9 +235,10 @@ model {
       color muted
     }
 
-${colors
-  .map(
-    key => `
+${
+  colors
+    .map(
+      key => `
     ${key}_source = rect '${key.toUpperCase()}' {
       #source
       style { color ${key} }
@@ -242,8 +249,9 @@ ${colors
     ${key}_source -[${key}]-> ${key}_target 'relation with ${key} color'
     ${key}_target -[back_${key}]-> ${key}_source 'back relation with ${key} color'
 `
-  )
-  .join('')}
+    )
+    .join('')
+}
   }
 }
 
@@ -254,17 +262,20 @@ views {
     include element.tag == #source
   }
 
-  ${colors
+  ${
+  colors
     .map(
       key => `
   view relationship_${key} of ${key}_source {
     include relationship_colors,
       ${key}_source with {
+        technology 'source'
         description: '
           Example of ${key} relationship color
           above muted color'
       },
       ${key}_target with {
+        technology 'target'
         description: '
           Example of ${key} relationship color
           above ${key} color'
@@ -273,11 +284,13 @@ views {
   view relationship_${key}_target of ${key}_target {
     include relationship_colors,
       ${key}_source with {
+        technology 'source'
         description: '
           Example of ${key} relationship color
           above muted color'
       },
       ${key}_target with {
+        technology 'target'
         description: '
           Example of ${key} relationship color
           above ${key} color'
@@ -288,7 +301,8 @@ views {
   }
   `
     )
-    .join('')}
+    .join('')
+}
 
 }
 `

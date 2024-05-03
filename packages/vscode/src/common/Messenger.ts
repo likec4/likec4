@@ -2,12 +2,14 @@ import vscode from 'vscode'
 
 import { type DiagramView } from '@likec4/core'
 import { ExtensionToPanel, WebviewToExtension } from '@likec4/vscode-preview/protocol'
+import { type Location } from 'vscode-languageclient'
 import { Messenger as VsCodeMessenger } from 'vscode-messenger'
 import { type WebviewTypeMessageParticipant } from 'vscode-messenger-common'
+import { cmdLocate } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { PreviewPanel } from './panel/PreviewPanel'
-import { cmdLocate } from '../const'
+import type { Rpc } from './Rpc'
 
 const toPreviewPanel = {
   type: 'webview',
@@ -19,7 +21,9 @@ export default class Messenger extends AbstractDisposable {
     debugLog: true
   })
 
-  constructor() {
+  constructor(
+    private rpc: Rpc
+  ) {
     super()
     this.onDispose(
       this.messenger.onNotification(WebviewToExtension.imReady, () => {
@@ -39,6 +43,21 @@ export default class Messenger extends AbstractDisposable {
     this.onDispose(
       this.messenger.onNotification(WebviewToExtension.locate, async params => {
         await vscode.commands.executeCommand(cmdLocate, params)
+      })
+    )
+    this.onDispose(
+      this.messenger.onNotification(WebviewToExtension.onChange, async ({ changes, viewId }) => {
+        // Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.changes, null, 4)}`)
+        let loc = await this.rpc.changeView({ viewId, changes })
+        if (loc) {
+          const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
+          const isPreviewInColumnOne = PreviewPanel.current?.panel.viewColumn === vscode.ViewColumn.One
+          const editor = await vscode.window.showTextDocument(location.uri, {
+            viewColumn: isPreviewInColumnOne ? vscode.ViewColumn.Beside : vscode.ViewColumn.One,
+            selection: location.range
+          })
+          editor.revealRange(location.range, vscode.TextEditorRevealType.InCenter)
+        }
       })
     )
   }

@@ -62,9 +62,12 @@ export function configureGraphviz(ctrl: ExtensionController) {
   ctrl.onDispose(
     vscode.workspace.onDidChangeConfiguration(event => {
       if (event.affectsConfiguration('likec4.graphviz')) {
+        Logger.debug(`[Extension] onDidChangeConfiguration`)
         const nextCfg = graphvizConfig()
         configureGraphviz(nextCfg)
       }
     })
   )
+
+  Logger.info(`[Extension] Graphviz configured`)
 }

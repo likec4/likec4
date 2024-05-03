@@ -1,46 +1,57 @@
+import { consola } from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import { $ } from 'execa'
-import json5 from 'json5'
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import assert from 'node:assert'
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { bundleApp } from './bundle-app'
+import { buildWebcomponentBundle } from './bundle-webcomponent'
 
 // const watch = process.argv.includes('--watch')
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
-console.info(`⚠️ likec4 build isDev=${isDev}`)
+if (isDev) {
+  consola.warn('likec4 build isDev=true')
+}
 
 async function buildCli() {
+  consola.start('Building CLI...')
   const cfg: BuildOptions = {
     metafile: isDev,
     logLevel: 'info',
     outdir: 'dist',
     outbase: 'src',
+    outExtension: {
+      '.js': '.mjs'
+    },
     color: true,
     bundle: true,
-    sourcemap: true,
+    sourcemap: isDev,
     sourcesContent: isDev,
-    keepNames: true,
+    keepNames: isDev,
     minify: !isDev,
-    treeShaking: true,
+    treeShaking: !isDev,
     legalComments: 'none',
+    mainFields: ['module', 'main'],
     entryPoints: ['src/cli/index.ts'],
-    format: 'esm',
-    target: 'esnext',
-    platform: 'node',
-    banner: {
-      js: 'import { createRequire } from \'module\'; const require = createRequire(import.meta.url);'
+    define: {
+      'process.env.NODE_ENV': '"production"'
     },
-    tsconfig: 'tsconfig.src.json',
+    format: 'esm',
+    target: 'node18',
+    platform: 'node',
+    alias: {
+      '@/vite/config': '@/vite/config.prod',
+      '@/vite/webcomponent': '@/vite/webcomponent.prod'
+    },
+    banner: {
+      js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
+    },
     plugins: [
       nodeExternalsPlugin({
+        dependencies: true,
+        optionalDependencies: true,
         devDependencies: false,
-        allowWorkspaces: true,
         allowList: [
-          'remeda',
-          'rambdax',
-          '@dagrejs/graphlib',
-          'safe-stable-stringify',
-          'ts-custom-error'
+          'fast-equals'
         ]
       })
     ]
@@ -65,35 +76,64 @@ async function buildCli() {
     console.error('\n ⛔️ Build failed')
     process.exit(1)
   }
+  if (bundle.metafile) {
+    await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
+  }
 }
+consola.info('clean dist')
+await rm('dist/', { recursive: true, force: true })
 
-await rm('dist', { recursive: true, force: true })
+consola.info(`create dist/__app__/src`)
+await mkdir('dist/__app__/src', { recursive: true })
+
 await buildCli()
-await mkdir('dist/__app__')
-await cp('app/', 'dist/__app__/', {
-  recursive: true,
-  filter: src =>
-    !src.includes('tsconfig.')
-    && !src.endsWith('.ts')
-    && !src.endsWith('.tsx')
-})
-await $({
-  all: true
-})`tsc -p ./app/tsconfig.json --composite false --declarationMap false --declaration false --incremental false --tsBuildInfoFile null`
+consola.log('\n-------\n')
 
-// const tsconfig = json5.parse(await readFile('app/tsconfig.json', 'utf8'))
-// tsconfig.compilerOptions.outDir = 'dist'
-// delete tsconfig.compilerOptions.plugins
-// delete tsconfig.references
-// delete tsconfig.extends
-// await writeFile('dist/__app__/tsconfig.json', JSON.stringify(tsconfig, null, 2))
+await bundleApp()
+consola.info(`copy app files to dist/__app__`)
+await copyFile('app/index.html', 'dist/__app__/index.html')
+await copyFile('app/robots.txt', 'dist/__app__/robots.txt')
+await copyFile('app/favicon.ico', 'dist/__app__/favicon.ico')
+await copyFile('app/favicon.svg', 'dist/__app__/favicon.svg')
+await copyFile('app/src/main.js', 'dist/__app__/src/main.js')
+consola.log('\n-------\n')
 
-console.info(`✔️ copied app files to dist/__app__`)
+await buildWebcomponentBundle()
 
-await mkdir('dist/@likec4/core', { recursive: true })
-await cp('../core/dist/esm/', 'dist/@likec4/core/', { recursive: true })
-console.info(`✔️ copied @likec4/core to dist`)
+const verifyStyles = await readFile('dist/__app__/src/lib/style.css', 'utf-8')
+assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
 
-await mkdir('dist/@likec4/diagrams')
-await cp('../diagrams/dist/', 'dist/@likec4/diagrams/', { recursive: true })
-console.info(`✔️ copied @likec4/diagrams to dist`)
+await rm('dist/__app__/src/lib/style.css')
+
+// await writeFile(
+//   'dist/__app__/tsconfig.json',
+//   JSON.stringify(
+//     {
+//       '$schema': 'https://json.schemastore.org/tsconfig',
+//       'compilerOptions': {
+//         'target': 'ES2020',
+//         'lib': [
+//           'DOM',
+//           'DOM.Iterable',
+//           'ESNext'
+//         ],
+//         'allowJs': true,
+//         'module': 'ESNext',
+//         'outDir': './dist',
+//         'strict': false,
+//         'esModuleInterop': true,
+//         'isolatedModules': true,
+//         'jsx': 'react-jsx',
+//         'rootDir': '.',
+//         'types': [
+//           'vite/client'
+//         ]
+//       },
+//       'include': [
+//         './src'
+//       ]
+//     },
+//     null,
+//     2
+//   )
+// )

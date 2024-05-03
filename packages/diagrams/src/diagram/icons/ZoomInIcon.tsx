@@ -1,4 +1,4 @@
-import { isEqualSimple } from '@react-hookz/deep-equal/esnext'
+import { isEqualSimple } from '@react-hookz/deep-equal'
 import { memo } from 'react'
 import { Circle, Group, Line } from '../../konva'
 

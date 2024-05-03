@@ -27,9 +27,9 @@ type HandlerParams = {
   ignore: boolean
 }
 
-export async function handler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
+export async function pngHandler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
-  const timer = startTimer(logger)
+  const timer = startTimer()
 
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
@@ -40,7 +40,11 @@ export async function handler({ path, useDotBin, output, ignore, timeout, maxAtt
   }
 
   const buildOutputDir = resolve(output, '.build-cache')
-  await viteBuild({ languageServices, outputDir: buildOutputDir })
+  await viteBuild({
+    languageServices,
+    outputDir: buildOutputDir,
+    buildWebcomponent: false
+  })
 
   logger.info(k.cyan(`start preview server`))
   const previewServer = await vitePreview({
@@ -63,7 +67,7 @@ export async function handler({ path, useDotBin, output, ignore, timeout, maxAtt
   const browser = await chromium.launch()
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
-    colorScheme: 'dark',
+    colorScheme: 'light',
     baseURL,
     isMobile: false
   })
@@ -95,9 +99,7 @@ export async function handler({ path, useDotBin, output, ignore, timeout, maxAtt
     await rm(buildOutputDir, { recursive: true, force: true })
 
     logger.info(k.cyan(`stop preview server`))
-    await new Promise<void>((resolve, reject) => {
-      previewServer.httpServer.close(err => (err ? reject(err) : resolve()))
-    })
+    await previewServer.close()
   } finally {
   }
 

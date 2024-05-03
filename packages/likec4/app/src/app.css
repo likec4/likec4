@@ -1,0 +1,77 @@
+
+*,
+:before,
+:after {
+  box-sizing: border-box;
+  outline: none;
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+:root {
+  --font-family: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --likec4-default-font-family: var(--font-family);
+  --mantine-default-font-family: var(--font-family);
+  --mantine-font-family: var(--font-family);
+  --likec4-background-color: var(--mantine-color-body);
+  --xy-background-pattern-color: var(--mantine-color-dark-8);
+}
+
+:root[data-mantine-color-scheme='light'] {
+  --color-page-background: var(--mantine-color-body);
+}
+:root[data-mantine-color-scheme='dark'] {
+  --mantine-color-body: var(--mantine-color-dark-8);
+  --xy-background-pattern-color: var(--mantine-color-dark-2);
+  --color-page-background: var(--mantine-color-body);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.radix-themes {
+  --font-weight-bold: 600;
+  --color-text-dimmed: var(--gray-a8);
+  --default-font-family: var(--mantine-default-font-family);
+  --color-page-background: var(--mantine-color-body);
+}
+
+#like4-root {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+
+  & > .radix-themes {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+.mantine-ActionIcon-icon .tabler-icon {
+  width: 70%;
+  height: 70%;
+}
+
+.transparent-bg {
+  --likec4-background-color: transparent !important;
+  --xy-background-color: transparent !important;
+  background-color: transparent !important;
+
+  body {
+    --likec4-background-color: transparent !important;
+    --xy-background-color: transparent !important;
+    background-color: transparent !important;
+  }
+
+  .react-flow__attribution {
+    display: none;
+  }
+}

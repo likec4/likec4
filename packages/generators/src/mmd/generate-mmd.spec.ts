@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { fakeDiagram, fakeDiagram2, fakeComputedView3Levels } from '../__mocks__/data'
+import { fakeComputedView3Levels, fakeDiagram, fakeDiagram2 } from '../__mocks__/data'
 import { generateMermaid } from './generate-mmd'
 
 test('generate mermaid - fakeDiagram', () => {

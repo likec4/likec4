@@ -1,6 +1,6 @@
 {
   "name": "@likec4/core",
-  "version": "0.60.4",
+  "version": "1.0.0-next.14",
   "license": "MIT",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
@@ -12,15 +12,15 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "unbuild",
-    "prepack": "unbuild",
+    "build": "tsc",
+    "prepack": "tsc -p tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "clean": "run -T rimraf dist"
   },
   "files": [
     "dist",
-    "!**/*.spec.*",
+    "!dist/src/**",
     "!**/*.map"
   ],
   "type": "module",
@@ -34,46 +34,35 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",
-    "main": "./dist/cjs/index.js",
-    "module": "./dist/esm/index.js",
-    "types": "./dist/types/index.d.ts",
     "exports": {
       ".": {
-        "types": "./dist/types/index.d.ts",
-        "import": "./dist/esm/index.js",
-        "require": "./dist/cjs/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "./colors": {
-        "types": "./dist/types/colors/index.d.ts",
-        "import": "./dist/esm/colors/index.js",
-        "require": "./dist/cjs/colors/index.js"
+        "types": "./dist/colors/index.d.ts",
+        "default": "./dist/colors/index.js"
       },
       "./types": {
-        "types": "./dist/types/types/index.d.ts",
-        "import": "./dist/esm/types/index.js",
-        "require": "./dist/cjs/types/index.js"
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/types/index.js"
       },
       "./utils": {
-        "types": "./dist/types/utils/index.d.ts",
-        "import": "./dist/esm/utils/index.js",
-        "require": "./dist/cjs/utils/index.js"
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
       }
     }
   },
   "dependencies": {
-    "rambdax": "^9.1.1",
-    "remeda": "^1.40.1",
+    "remeda": "^1.61.0",
     "safe-stable-stringify": "^2.4.3",
     "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1",
     "execa": "^8.0.1",
-    "typescript": "^5.4.2",
-    "unbuild": "^2.0.0",
-    "vitest": "^1.4.0"
+    "typescript": "^5.4.5",
+    "vitest": "~1.5.2"
   },
-  "packageManager": "yarn@4.1.1",
-  "volta": {
-    "extends": "../../package.json"
-  }
+  "packageManager": "yarn@4.1.1"
 }

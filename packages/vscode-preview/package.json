@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "0.60.4",
+  "version": "1.0.0-next.14",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -14,7 +14,6 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build:watch": "vite build --watch --mode watch-dev",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
@@ -22,28 +21,31 @@
     "clean": "run -T rimraf dist"
   },
   "devDependencies": {
+    "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
-    "@likec4/diagrams": "workspace:*",
-    "@react-hookz/deep-equal": "^1.0.4",
+    "@likec4/diagram": "workspace:*",
+    "@mantine/core": "^7.8.1",
+    "@mantine/hooks": "^7.8.1",
+    "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
-    "@types/node": "^20.11.25",
+    "@types/node": "^20.12.7",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/vscode": "~1.77.0",
+    "@types/vscode": "~1.88.0",
     "@types/vscode-webview": "^1.57.5",
+    "@vanilla-extract/css": "^1.15.1",
+    "@vanilla-extract/vite-plugin": "^4.0.9",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "lucide-react": "^0.294.0",
+    "postcss": "^8.4.35",
+    "postcss-preset-mantine": "^1.13.0",
     "rambdax": "^9.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
-    "typescript": "^5.4.2",
-    "vite": "^5.2.8",
-    "vite-tsconfig-paths": "^4.3.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
     "vscode-messenger-webview": "^0.4.5"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

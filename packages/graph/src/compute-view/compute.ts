@@ -8,10 +8,10 @@ import type {
   ViewRuleExpression
 } from '@likec4/core'
 import {
-  Expr,
   ancestorsFqn,
   commonAncestor,
   compareRelations,
+  Expr,
   invariant,
   isAncestor,
   isStrictElementView,
@@ -20,21 +20,22 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, isTruthy, uniq } from 'remeda'
+import { hasAtLeast, isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import {
   excludeElementKindOrTag,
   excludeElementRef,
-  excludeInOutExpr,
   excludeIncomingExpr,
+  excludeInOutExpr,
   excludeOutgoingExpr,
   excludeRelationExpr,
   excludeWildcardRef,
   includeCustomElement,
   includeElementKindOrTag,
   includeElementRef,
-  includeInOutExpr,
+  includeExpandedElementExpr,
   includeIncomingExpr,
+  includeInOutExpr,
   includeOutgoingExpr,
   includeRelationExpr,
   includeWildcardRef
@@ -71,7 +72,8 @@ function isDirectEdge({ relations: [rel, ...tail], source, target }: ComputeCtx.
 
 export class ComputeCtx {
   // Intermediate state
-  private ctxElements = new Set<Element>()
+  private explicits = new Set<Element>()
+  private implicits = new Set<Element>()
   private ctxEdges = [] as ComputeCtx.Edge[]
 
   public static elementView(view: ElementView, graph: LikeC4ModelGraph) {
@@ -95,23 +97,20 @@ export class ComputeCtx {
     this.processPredicates(viewPredicates)
     this.removeRedundantImplicitEdges()
 
-    const resolvedElements = [...this.elements]
-    const nodesMap = buildComputeNodes(resolvedElements)
+    const elements = [...this.includedElements]
+    const nodesMap = buildComputeNodes(elements)
 
     const edges = this.computedEdges.reduce((acc, edge) => {
       const source = nodesMap.get(edge.source)
       const target = nodesMap.get(edge.target)
       invariant(source, `Source node ${edge.source} not found`)
       invariant(target, `Target node ${edge.target} not found`)
-      // if (isCompound(source) && isCompound(target)) {
-      //   const nestedEdge
-      // }
       while (edge.parent && !nodesMap.has(edge.parent)) {
         edge.parent = parentFqn(edge.parent)
       }
       source.outEdges.push(edge.id)
       target.inEdges.push(edge.id)
-      // Process source hierarchy
+      // Process edge source ancestors
       for (const sourceAncestor of ancestorsFqn(edge.source)) {
         if (sourceAncestor === edge.parent) {
           break
@@ -131,7 +130,7 @@ export class ComputeCtx {
 
     // nodesMap sorted hierarchically,
     // but we need to keep the initial sort
-    const initialSort = resolvedElements.flatMap(e => nodesMap.get(e.id) ?? [])
+    const initialSort = elements.flatMap(e => nodesMap.get(e.id) ?? [])
 
     const nodes = applyElementCustomProperties(
       rules,
@@ -148,13 +147,11 @@ export class ComputeCtx {
     const edgesMap = new Map<EdgeId, ComputedEdge>(edges.map(e => [e.id, e]))
 
     const sortedEdges = new Set([
-      ...nodes.flatMap(n =>
-        n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []
-      ),
+      ...nodes.flatMap(n => n.children.length === 0 ? n.outEdges.flatMap(id => edgesMap.get(id) ?? []) : []),
       ...edges
     ])
 
-    const autoLayoutRule = this.view.rules.find(isViewRuleAutoLayout)
+    const autoLayoutRule = this.view.rules.findLast(isViewRuleAutoLayout)
     return {
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
@@ -194,7 +191,7 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const labels = uniq(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
+        const labels = unique(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
         if (hasAtLeast(labels, 1)) {
           if (labels.length === 1) {
             edge.label = labels[0]
@@ -216,11 +213,22 @@ export class ComputeCtx {
     })
   }
 
-  protected get elements() {
+  protected get includedElements() {
     return new Set([
-      ...this.ctxElements,
+      ...this.explicits,
       ...this.ctxEdges.flatMap(e => [e.source, e.target])
     ]) as ReadonlySet<Element>
+  }
+
+  protected get resolvedElements() {
+    return new Set([
+      ...this.explicits,
+      ...this.implicits
+    ]) as ReadonlySet<Element>
+  }
+
+  protected get edges() {
+    return this.ctxEdges
   }
 
   protected addEdges(edges: ComputeCtx.Edge[]) {
@@ -232,41 +240,67 @@ export class ComputeCtx {
         _e => _e.source.id === e.source.id && _e.target.id === e.target.id
       )
       if (existing) {
-        existing.relations = uniq([...existing.relations, ...e.relations])
+        existing.relations = unique([...existing.relations, ...e.relations])
         continue
       }
       this.ctxEdges.push(e)
+      this.keepImplicits(e.source, e.target)
     }
   }
 
   protected addElement(...el: Element[]) {
     for (const r of el) {
-      this.ctxElements.add(r)
+      this.explicits.add(r)
+      this.implicits.add(r)
+    }
+  }
+
+  protected keepImplicits(...el: Element[]) {
+    for (const r of el) {
+      this.implicits.add(r)
     }
   }
 
   protected excludeElement(...excludes: Element[]) {
     for (const el of excludes) {
       this.ctxEdges = this.ctxEdges.filter(e => e.source.id !== el.id && e.target.id !== el.id)
-      this.ctxElements.delete(el)
+      this.explicits.delete(el)
+      this.implicits.delete(el)
     }
   }
 
   protected excludeRelation(...relations: Relation[]) {
+    const excludedImplicits = new Set<Element>()
     for (const relation of relations) {
       let edge
       while ((edge = this.ctxEdges.find(e => e.relations.includes(relation)))) {
         if (edge.relations.length === 1) {
+          excludedImplicits.add(edge.source)
+          excludedImplicits.add(edge.target)
           this.ctxEdges.splice(this.ctxEdges.indexOf(edge), 1)
           continue
         }
         edge.relations = edge.relations.filter(r => r !== relation)
       }
     }
+    if (excludedImplicits.size === 0) {
+      return
+    }
+    const remaining = this.includedElements
+    if (remaining.size === 0) {
+      this.implicits.clear()
+      return
+    }
+    for (const el of excludedImplicits) {
+      if (!remaining.has(el)) {
+        this.implicits.delete(el)
+      }
+    }
   }
 
   protected reset() {
-    this.ctxElements.clear()
+    this.explicits.clear()
+    this.implicits.clear()
     this.ctxEdges = []
   }
 
@@ -298,9 +332,9 @@ export class ComputeCtx {
         const isSourceNested = isAncestor(source.id, edge.source.id)
         const isTargetNested = isAncestor(target.id, edge.target.id)
         return (
-          (isSourceNested && isTargetNested) ||
-          (isSameSource && isTargetNested) ||
-          (isSameTarget && isSourceNested)
+          (isSourceNested && isTargetNested)
+          || (isSameSource && isTargetNested)
+          || (isSameTarget && isSourceNested)
         )
       }
     }
@@ -333,8 +367,15 @@ export class ComputeCtx {
       const exprs = rule.include ?? rule.exclude
       for (const expr of exprs) {
         if (Expr.isCustomElement(expr)) {
-          invariant(isInclude, 'CustomElementExpr is not allowed in exclude rule')
-          includeCustomElement.call(this, expr)
+          if (isInclude) {
+            includeCustomElement.call(this, expr)
+          }
+          continue
+        }
+        if (Expr.isExpandedElementExpr(expr)) {
+          if (isInclude) {
+            includeExpandedElementExpr.call(this, expr)
+          }
           continue
         }
         if (Expr.isElementKindExpr(expr) || Expr.isElementTagExpr(expr)) {

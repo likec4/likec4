@@ -1,7 +1,7 @@
-import type { Opaque } from './opaque'
+import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, Fqn, Tag } from './element'
 import type { ElementExpression, Expression } from './expression'
-import type { IconUrl, NonEmptyArray } from './_common'
+import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
 
 // Full-qualified-name
@@ -9,17 +9,17 @@ export type ViewID = Opaque<string, 'ViewID'>
 
 export type ViewRuleExpression =
   | {
-      include: Expression[]
-      exclude?: never
-    }
+    include: Expression[]
+    exclude?: never
+  }
   | {
-      include?: never
-      exclude: Expression[]
-    }
+    include?: never
+    exclude: Expression[]
+  }
 export function isViewRuleExpression(rule: ViewRule): rule is ViewRuleExpression {
   return (
-    ('include' in rule && Array.isArray(rule.include)) ||
-    ('exclude' in rule && Array.isArray(rule.exclude))
+    ('include' in rule && Array.isArray(rule.include))
+    || ('exclude' in rule && Array.isArray(rule.exclude))
   )
 }
 
@@ -35,8 +35,9 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
   return 'style' in rule && 'targets' in rule
 }
 
+export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export interface ViewRuleAutoLayout {
-  autoLayout: 'TB' | 'BT' | 'LR' | 'RL'
+  autoLayout: AutoLayoutDirection
 }
 export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout {
   return 'autoLayout' in rule

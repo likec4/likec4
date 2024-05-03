@@ -1,8 +1,8 @@
 import {
-  DefaultScopeComputation,
-  MultiMap,
   type AstNode,
   type AstNodeDescription,
+  DefaultScopeComputation,
+  MultiMap,
   type PrecomputedScopes
 } from 'langium'
 import { isEmpty, isTruthy } from 'remeda'

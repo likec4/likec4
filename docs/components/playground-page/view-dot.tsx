@@ -50,8 +50,8 @@ export default function PlaygroundViewDot({ dot }: PlaygroundViewDotProps) {
           padding: 0
         }}
       >
-        <div className='pl-24 py-2'>
-          <div className='inline-flex space-x-1 px-1 py-1 bg-neutral-700 bg-opacity-50 rounded-xl'>
+        <div className="pl-24 py-2">
+          <div className="inline-flex space-x-1 px-1 py-1 bg-neutral-700 bg-opacity-50 rounded-xl">
             <div
               className={tabClassName(tab === 'source')}
               //  className={cn(
@@ -81,7 +81,7 @@ export default function PlaygroundViewDot({ dot }: PlaygroundViewDotProps) {
           </div>
         </div>
         <div className={'overflow-auto'}>
-          {tab === 'source' && <code className='whitespace-pre px-5'>{dot}</code>}
+          {tab === 'source' && <code className="whitespace-pre px-5">{dot}</code>}
           {tab === 'render' && (
             <>
               {!data && <>loading...</>}

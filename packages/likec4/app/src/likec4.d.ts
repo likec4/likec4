@@ -1,16 +1,19 @@
+declare module 'virtual:likec4' {
+  import type { MapStore } from 'nanostores'
+  import type { DiagramView } from '@likec4/core'
+
+  export const $views: MapStore<Record<string, DiagramView>>
+}
+
 declare module 'virtual:likec4/views' {
   import type { DiagramView, ViewID } from '@likec4/core'
 
-  export const LikeC4Views: Record<LikeC4ViewId, DiagramView>
-}
+  export type LikeC4ViewId = ViewID
 
-declare module 'virtual:likec4/dimensions' {
-  interface DiagramViewDimensions {
-    width: number
-    height: number
-  }
+  export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
 
-  export const LikeC4Views: Record<string, DiagramViewDimensions>
+  export const LikeC4Views: LikeC4Views
+  export function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 }
 
 declare module 'virtual:likec4/dot-sources' {

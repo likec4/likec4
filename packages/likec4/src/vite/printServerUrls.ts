@@ -1,4 +1,4 @@
-import boxen from 'boxen'
+import { consola } from 'consola'
 import k from 'picocolors'
 import type { PreviewServer, ViteDevServer } from 'vite'
 
@@ -6,17 +6,11 @@ export function printServerUrls(server: ViteDevServer | PreviewServer) {
   if (!server.resolvedUrls) {
     throw new Error('Vite server is not ready, no resolvedUrls')
   }
-  let text = k.dim('Local:  ') + server.resolvedUrls.local.join('\n' + ''.padEnd(8, ' '))
-  text += '\n\n'
-  text += k.dim('Remote: ') + server.resolvedUrls.network.join('\n' + ''.padEnd(8, ' '))
 
-  console.log(
-    boxen(text, {
-      padding: 1,
-      margin: 1,
-      title: 'LikeC4 served at:',
-      borderStyle: 'round',
-      borderColor: 'yellow'
-    })
-  )
+  consola.box([
+    k.green('LikeC4 served at:'),
+    '',
+    k.dim('Local:   ') + server.resolvedUrls.local.join('\n' + ''.padEnd(9, ' ')),
+    k.dim('Network: ') + server.resolvedUrls.network.join('\n' + ''.padEnd(9, ' '))
+  ].join('\n'))
 }

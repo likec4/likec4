@@ -1,7 +1,6 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils } from 'langium'
-import objectHash from 'object-hash'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
@@ -27,6 +26,7 @@ import {
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
+import { stringHash } from '../utils'
 import type { FqnIndex } from './fqn-index'
 
 const { getDocument } = AstUtils
@@ -173,11 +173,11 @@ export class LikeC4ModelParser {
       astNode.title ?? astNode.body?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
     ) ?? ''
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)
-    const id = objectHash({
+    const id = stringHash(
       astPath,
       source,
       target
-    }) as c4.RelationID
+    ) as c4.RelationID
     return {
       id,
       astPath,
@@ -228,6 +228,14 @@ export class LikeC4ModelParser {
         isEqual: astNode.isEqual
       }
     }
+    if (ast.isExpandElementExpr(astNode)) {
+      const elementNode = elementRef(astNode.parent)
+      invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
+      const expanded = this.resolveFqn(elementNode)
+      return {
+        expanded
+      }
+    }
     if (ast.isDescedantsExpr(astNode)) {
       const elementNode = elementRef(astNode.parent)
       invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
@@ -249,8 +257,16 @@ export class LikeC4ModelParser {
   }
 
   private parseCustomElementExpr(astNode: ast.CustomElementExpr): c4.CustomElementExpr {
-    invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
-    const elementNode = elementRef(astNode.target)
+    let targetRef
+    if (ast.isElementRef(astNode.target)) {
+      targetRef = astNode.target
+    } else if (ast.isExpandElementExpr(astNode.target)) {
+      targetRef = astNode.target.parent
+    } else {
+      invariant(false, 'ElementRef expected as target of custom element')
+    }
+    // invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
+    const elementNode = elementRef(targetRef)
     invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
     const element = this.resolveFqn(elementNode)
     const props = astNode.body?.props ?? []
@@ -290,7 +306,8 @@ export class LikeC4ModelParser {
     if (ast.isRelationExpr(astNode)) {
       return {
         source: this.parseElementExpr(astNode.source),
-        target: this.parseElementExpr(astNode.target)
+        target: this.parseElementExpr(astNode.target),
+        isBidirectional: astNode.isBidirectional
       }
     }
     if (ast.isInOutExpr(astNode)) {
@@ -350,13 +367,25 @@ export class LikeC4ModelParser {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
+
+    let viewOf = null as c4.Fqn | null
+    if ('viewOf' in astNode) {
+      const viewOfEl = elementRef(astNode.viewOf)
+      const _viewOf = viewOfEl && this.resolveFqn(viewOfEl)
+      if (!_viewOf) {
+        logger.warn('viewOf is not resolved: ' + astNode.$cstNode?.text)
+      } else {
+        viewOf = _viewOf
+      }
+    }
+
     let id = astNode.name
     if (!id) {
-      const doc = getDocument(astNode).uri.toString()
-      id = objectHash({
-        doc,
-        astPath
-      }) as c4.ViewID
+      id = 'view_' + stringHash(
+        getDocument(astNode).uri.toString(),
+        astPath,
+        viewOf ?? ''
+      ) as c4.ViewID
     }
 
     const title = body.props.find(p => p.key === 'title')?.value
@@ -368,6 +397,7 @@ export class LikeC4ModelParser {
     const basic: ParsedAstElementView = {
       id: id as c4.ViewID,
       astPath,
+      ...(viewOf && { viewOf }),
       ...(title && { title }),
       ...(description && { description }),
       ...(tags && { tags }),
@@ -382,16 +412,6 @@ export class LikeC4ModelParser {
       })
     }
     ElementViewOps.writeId(astNode, basic.id)
-
-    if ('viewOf' in astNode) {
-      const viewOfEl = elementRef(astNode.viewOf)
-      const viewOf = viewOfEl && this.resolveFqn(viewOfEl)
-      invariant(viewOf, ' viewOf is not resolved: ' + astNode.$cstNode?.text)
-      return {
-        ...basic,
-        viewOf
-      }
-    }
 
     if ('extends' in astNode) {
       const extendsView = astNode.extends.view.ref

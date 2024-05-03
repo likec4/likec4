@@ -1,51 +1,28 @@
-import { CheckCircledIcon, CopyIcon } from '@radix-ui/react-icons'
-import { Box, IconButton, Tooltip } from '@radix-ui/themes'
-import { useCallback, useEffect, useState } from 'react'
-import styles from './CopyToClipboard.module.css'
+import { ActionIcon, Box, CopyButton as MantineCopyButton, rem, Tooltip } from '@mantine/core'
+import { IconCheck, IconCopy } from '@tabler/icons-react'
 
 type CopyToClipboardProps = {
   text: string
 }
-export function CopyToClipboard({ text }: CopyToClipboardProps) {
-  const [copied, setCopied] = useState(false)
 
-  const copy = useCallback(() => {
-    void navigator.clipboard.writeText(text)
-    setCopied(true)
-  }, [text])
-
-  useEffect(() => {
-    setCopied(false)
-  }, [text])
-
-  useEffect(() => {
-    if (!copied) {
-      return
-    }
-    const timeout = setTimeout(() => {
-      setCopied(false)
-    }, 800)
-    return () => clearTimeout(timeout)
-  }, [copied])
-
+export function CopyButton({ text }: CopyToClipboardProps) {
   return (
-    <Box position="absolute" top={'0'} right={'0'} p={'4'}>
-      <Tooltip
-        content={copied ? 'Copied!' : 'Copy to clipboard'}
-        {...(copied ? { open: true } : {})}
-      >
-        <IconButton
-          variant="soft"
-          color={copied ? 'green' : undefined}
-          size={'2'}
-          radius="large"
-          onClick={copy}
-          data-copied={copied}
-          className={styles.copyButton}
-        >
-          {copied ? <CheckCircledIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
-        </IconButton>
-      </Tooltip>
+    <MantineCopyButton value={text} timeout={2000}>
+      {({ copied, copy }) => (
+        <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+          <ActionIcon color={copied ? 'teal' : 'gray'} variant={copied ? 'light' : 'subtle'} onClick={copy}>
+            {copied ? <IconCheck style={{ width: rem(16) }} /> : <IconCopy style={{ width: rem(16) }} />}
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </MantineCopyButton>
+  )
+}
+
+export function CopyToClipboard({ text }: CopyToClipboardProps) {
+  return (
+    <Box pos={'absolute'} top={'0'} right={'0'} p={'4'}>
+      <CopyButton text={text} />
     </Box>
   )
 }

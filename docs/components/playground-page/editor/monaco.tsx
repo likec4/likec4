@@ -11,12 +11,7 @@ import getNotificationServiceOverride from 'vscode/service-override/notification
 
 import { Editor, loader, type Monaco } from '@monaco-editor/react'
 import { MonacoLanguageClient } from 'monaco-languageclient'
-import {
-  BrowserMessageReader,
-  BrowserMessageWriter,
-  CloseAction,
-  ErrorAction
-} from 'vscode-languageclient/browser'
+import { BrowserMessageReader, BrowserMessageWriter, CloseAction, ErrorAction } from 'vscode-languageclient/browser'
 
 import { Fira_Code } from 'next/font/google'
 import { once, toPairs } from 'rambdax'
@@ -26,9 +21,9 @@ import type { ViewID } from '@likec4/core'
 import { useUnmountEffect } from '@react-hookz/web'
 import { useSetAtom } from 'jotai'
 import { diagramIdAtom } from '../data/atoms'
-import { useRevealRequestsHandler } from './useRevealRequestsHandler'
-import { useLikeC4DataSync } from './useLikeC4DataSync'
 import likec4Monarch from './likec4.monarch'
+import { useLikeC4DataSync } from './useLikeC4DataSync'
+import { useRevealRequestsHandler } from './useRevealRequestsHandler'
 
 self.MonacoEnvironment = {
   getWorker(_, _label) {
@@ -206,8 +201,8 @@ const setup = once((monaco: Monaco) => {
         close: ')'
       },
       {
-        open: "'",
-        close: "'",
+        open: '\'',
+        close: '\'',
         notIn: ['string', 'comment']
       },
       {
@@ -237,8 +232,8 @@ const setup = once((monaco: Monaco) => {
         close: '"'
       },
       {
-        open: "'",
-        close: "'"
+        open: '\'',
+        close: '\''
       }
     ],
     colorizedBracketPairs: [['{', '}']],

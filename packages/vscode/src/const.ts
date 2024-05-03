@@ -16,5 +16,4 @@ export const globPattern = '**/*.{c4,likec4,like-c4}'
 export const telemetryKey = '36d9aa84-b503-45ea-ae34-b236e4f83bea' as const
 
 export const isWebUi = () => vscode.env.uiKind === vscode.UIKind.Web
-export const isVirtual = () =>
-  vscode.workspace.workspaceFolders?.every(f => f.uri.scheme !== 'file') || false
+export const isVirtual = () => vscode.workspace.workspaceFolders?.every(f => f.uri.scheme !== 'file') || false

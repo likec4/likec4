@@ -1,12 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "esModuleInterop": true,
     "noEmit": true,
-    "outDir": "dist",
-    "declarationDir": "dist",
+    "rootDir": ".",
+    "outDir": "./dist",
+    "target": "ES2022",
     "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "lib": [
       "DOM",
       "DOM.Iterable",
@@ -16,21 +19,21 @@
       "vite/client",
       "vscode-webview"
     ],
-    "jsx": "react-jsxdev"
+    "jsx": "react-jsx"
   },
   "include": [
     "protocol.ts",
     "./src"
   ],
   "exclude": [
-    "dist"
+    "**/node_modules",
   ],
   "references": [
     {
-      "path": "../core"
+      "path": "../core/tsconfig.json"
     },
     {
-      "path": "../diagrams"
+      "path": "../diagram/tsconfig.json"
     }
   ]
 }

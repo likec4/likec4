@@ -1,16 +1,15 @@
-import type { DiagramView } from '@likec4/diagrams'
+import type { DiagramView, OnNodeClick } from '@likec4/diagrams'
 import { Diagram, useDiagramApi } from '@likec4/diagrams'
-import { Box } from '@radix-ui/themes'
+import { Box } from '@mantine/core'
 import { useWindowSize } from '@react-hookz/web'
 import { useCallback, useEffect, useRef } from 'react'
-import { $pages } from '../../router'
-import { cn } from '../../utils'
-import styles from './view-page.module.css'
+import { reactDiagram } from './ViewAsReact.css'
 
 const Paddings = [70, 20, 20, 40] as const
 
 type ViewAsReactProps = {
   diagram: DiagramView
+  onNodeClick?: OnNodeClick | undefined
 }
 
 function round(n: number, d = 1) {
@@ -18,7 +17,7 @@ function round(n: number, d = 1) {
   return Math.round(n * m) / m
 }
 
-export function ViewAsReact({ diagram }: ViewAsReactProps) {
+export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
   const { width, height } = useWindowSize()
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()
@@ -56,12 +55,9 @@ export function ViewAsReact({ diagram }: ViewAsReactProps) {
 
   return (
     <Box
-      position={'fixed'}
-      inset='0'
-      className={cn(
-        styles.reactDiagram
-        // isActive && styles.active
-      )}
+      pos={'fixed'}
+      inset={0}
+      className={reactDiagram}
       ref={pageDivRef}
     >
       <Diagram
@@ -71,14 +67,14 @@ export function ViewAsReact({ diagram }: ViewAsReactProps) {
         maxZoom={1.05}
         width={width}
         height={height}
-        onNodeClick={node => {
-          if (node.navigateTo) {
-            $pages.view.open(node.navigateTo)
-          } else {
-            api.centerOnNode(node, {
-              keepZoom: true
-            })
+        onNodeClick={(node, event) => {
+          if (onNodeClick) {
+            return onNodeClick(node, event)
           }
+
+          api.centerOnNode(node, {
+            keepZoom: true
+          })
         }}
         onStageClick={_ => ({})}
         onEdgeClick={_ => ({})}

@@ -1,5 +1,5 @@
-import type Konva from 'konva'
 import type { DiagramEdge, DiagramNode, DiagramView } from '@likec4/core'
+import type Konva from 'konva'
 import type { HTMLAttributes } from 'react'
 
 export type DiagramViews<T extends string = string> = {
@@ -19,12 +19,12 @@ export interface IRect {
 
 // prettier-ignore
 export type {
-  LikeC4Theme,
-  LikeC4Theme as DiagramTheme,
-  DiagramNode,
   DiagramEdge,
   DiagramLabel,
-  DiagramView
+  DiagramNode,
+  DiagramView,
+  LikeC4Theme,
+  LikeC4Theme as DiagramTheme
 } from '@likec4/core'
 
 export type KonvaPointerEvent = Konva.KonvaEventObject<PointerEvent>
@@ -69,7 +69,9 @@ export type DiagramInitialPosition = {
 }
 
 // prettier-ignore
-export interface DiagramProps extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'> {
+export interface DiagramProps
+  extends Pick<HTMLAttributes<HTMLDivElement>, 'className' | 'role' | 'style' | 'tabIndex' | 'title'>
+{
   diagram: DiagramView
   /**
    * If true, the diagram will be animated when nodes are added or removed

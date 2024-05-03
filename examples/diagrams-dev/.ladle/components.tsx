@@ -1,6 +1,9 @@
-import { ModeState, type GlobalProvider } from '@ladle/react'
-import { useMeasure, type Measures } from '@react-hookz/web'
+import { type GlobalProvider, ModeState } from '@ladle/react'
+import { type Measures, useMeasure } from '@react-hookz/web'
 import { createContext, useContext } from 'react'
+
+// import '@mantine/core/styles.css';
+// import '@xyflow/react/dist/style.css'
 
 const MeasuresContext = createContext<Measures>({} as Measures)
 
@@ -13,15 +16,14 @@ export const Provider: GlobalProvider = ({ children, globalState }) => {
   return (
     <div
       ref={measuresRef}
-      style={
-        isFullScreen
-          ? { position: 'fixed', inset: 0 }
-          : {
-              width: '100%',
-              minHeight: '100%',
-              position: 'relative'
-            }
-      }
+      style={isFullScreen
+        ? { position: 'fixed', inset: 0 }
+        : {
+          width: '100%',
+          height: '100%',
+          minHeight: '100%',
+          position: 'relative'
+        }}
     >
       {measures && measures.width > 0 && measures.height > 0 && (
         <MeasuresContext.Provider value={measures}>{children}</MeasuresContext.Provider>

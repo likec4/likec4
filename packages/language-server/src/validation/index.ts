@@ -12,7 +12,12 @@ import {
   tagChecks
 } from './specification'
 import { viewChecks } from './view'
-import { customElementExprChecks, incomingExpressionChecks, outgoingExpressionChecks } from './view-predicates'
+import {
+  customElementExprChecks,
+  expandElementExprChecks,
+  incomingExpressionChecks,
+  outgoingExpressionChecks
+} from './view-predicates'
 
 export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
@@ -27,6 +32,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     Relation: relationChecks(services),
     Tag: tagChecks(services),
     CustomElementExpr: customElementExprChecks(services),
+    ExpandElementExpr: expandElementExprChecks(services),
     RelationshipKind: relationshipChecks(services),
     IncomingExpr: incomingExpressionChecks(services),
     OutgoingExpr: outgoingExpressionChecks(services)

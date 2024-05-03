@@ -1,5 +1,5 @@
 import graphlib from '@dagrejs/graphlib'
-import { isExtendsElementView, type ElementView } from '@likec4/core'
+import { type ElementView, isExtendsElementView } from '@likec4/core'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it

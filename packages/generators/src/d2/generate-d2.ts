@@ -1,6 +1,6 @@
 import type { ComputedEdge, ComputedNode, ComputedView, NodeId } from '@likec4/core'
 import { CompositeGeneratorNode, joinToNode, NL, toString } from 'langium/generate'
-import { isNil } from 'remeda'
+import { isNullish as isNil } from 'remeda'
 
 const capitalizeFirstLetter = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
 

@@ -1,7 +1,7 @@
-import { AsFqn, nonexhaustive, type c4 } from '@likec4/core'
+import { AsFqn, type c4, nonexhaustive } from '@likec4/core'
 import { MultiMap } from 'langium'
-import { isEmpty, isNil } from 'remeda'
-import { ElementOps, ast, type LikeC4LangiumDocument } from '../ast'
+import { isEmpty, isNullish as isNil } from 'remeda'
+import { ast, ElementOps, type LikeC4LangiumDocument } from '../ast'
 import { getFqnElementRef } from '../elementRef'
 import type { LikeC4Services } from '../module'
 

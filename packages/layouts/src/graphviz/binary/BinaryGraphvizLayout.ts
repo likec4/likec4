@@ -1,15 +1,10 @@
-import type { ComputedView, DiagramView as LayoutedView } from '@likec4/core'
+import type { ComputedView } from '@likec4/core'
 import { execa } from 'execa'
-import { env as processenv } from 'node:process'
 import pLimit from 'p-limit'
-import { omit } from 'rambdax'
-import { type DotLayoutResult, parseGraphvizJson } from '../dotLayout'
+import { parseGraphvizJson } from '../dotLayout'
 import type { GraphvizLayouter } from '../DotLayouter'
 import { printToDot } from '../printToDot'
-import type { DotSource } from '../types'
-
-// @ts-ignore
-const isDev = process.env.NODE_ENV === 'development'
+import type { DotLayoutResult, DotSource } from '../types'
 
 const limit = pLimit(2)
 
@@ -28,10 +23,7 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
     return await limit(async () => {
       // console.debug(`[BinaryGraphvizLayouter.layout] view=${view.id}`)
       let dot = printToDot(view)
-      const env = omit(['SERVER_NAME'], processenv)
       const unflatten = await execa('unflatten', ['-f', '-l 1', '-c 2'], {
-        env,
-        extendEnv: false,
         reject: false,
         timeout: 5_000,
         input: dot,
@@ -55,8 +47,6 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
       }
 
       const dotcmd = await execa(this.path, ['-Tjson', '-y'], {
-        env,
-        extendEnv: false,
         reject: false,
         timeout: 5_000,
         input: dot,
@@ -84,14 +74,11 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
 
   async svg(dot: string, _view: ComputedView): Promise<string> {
     return await limit(async () => {
-      const env = omit(['SERVER_NAME'], processenv)
       let svgFix = dot
         .split('\n')
         .filter(l => !l.includes('margin=33.21'))
         .join('\n')
       const result = await execa(this.path, ['-Tsvg', '-y'], {
-        env,
-        extendEnv: false,
         reject: false,
         timeout: 5_000,
         input: svgFix,

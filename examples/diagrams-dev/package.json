@@ -1,7 +1,7 @@
 {
   "name": "@likec4/diagrams-dev",
   "private": true,
-  "version": "0.60.4",
+  "version": "1.0.0-next.14",
   "type": "module",
   "sideEffects": false,
   "packageManager": "yarn@3.6.1",
@@ -20,21 +20,22 @@
   "devDependencies": {
     "@ladle/react": "^4.0.2",
     "@likec4/core": "workspace:*",
+    "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
-    "@react-hookz/web": "^23.1.0",
+    "@mantine/core": "^7.8.1",
+    "@mantine/hooks": "^7.8.1",
+    "@react-hookz/web": "^24.0.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "framer-motion": "^11.1.7",
     "likec4": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
+    "tsx": "^4.7.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
     "vite-plugin-watch-and-run": "^1.5.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

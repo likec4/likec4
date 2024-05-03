@@ -1,10 +1,10 @@
 import type {
-  Expression as C4Expression,
-  ElementExpression as C4ElementExpression,
   ComputedView,
   Element,
+  ElementExpression as C4ElementExpression,
   ElementKind,
   ElementShape,
+  Expression as C4Expression,
   Fqn,
   Relation,
   RelationID,
@@ -150,6 +150,11 @@ export const fakeElements = {
     kind: 'component',
     title: 'graphql'
   }),
+  'email': el({
+    id: 'email',
+    kind: 'system',
+    title: 'email'
+  }),
   'cloud.backend.storage': el({
     id: 'cloud.backend.storage',
     kind: 'component',
@@ -223,6 +228,16 @@ export const fakeRelations = [
     target: 'cloud.backend.storage',
     title: 'stores'
   }),
+  // rel({
+  //   source: 'cloud.backend',
+  //   target: 'cloud.email',
+  //   title: 'schedule emails'
+  // }),
+  // rel({
+  //   source: 'cloud.email',
+  //   target: 'customer',
+  //   title: 'send emails'
+  // }),
   rel({
     source: 'cloud.frontend',
     target: 'cloud.backend',
@@ -242,6 +257,21 @@ export const fakeRelations = [
     source: 'cloud',
     target: 'amazon',
     title: 'uses'
+  }),
+  rel({
+    source: 'cloud.backend',
+    target: 'email',
+    title: 'schedule'
+  }),
+  rel({
+    source: 'cloud',
+    target: 'email',
+    title: 'uses'
+  }),
+  rel({
+    source: 'email',
+    target: 'cloud',
+    title: 'notifies'
   })
 ]
 
@@ -269,12 +299,13 @@ export const includeWildcard = {
   ]
 } satisfies ViewRule
 
-export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*`
+export type ElementRefExpr = '*' | FakeElementIds | `${FakeElementIds}.*` | `${FakeElementIds}._`
 
 type InOutExpr = `-> ${ElementRefExpr} ->`
 type IncomingExpr = `-> ${ElementRefExpr}`
 type OutgoingExpr = `${ElementRefExpr} ->`
-type RelationExpr = `${ElementRefExpr} -> ${ElementRefExpr}`
+type RelationKeyword = '->' | '<->'
+type RelationExpr = `${ElementRefExpr} ${RelationKeyword} ${ElementRefExpr}`
 
 type CustomExpr = {
   custom: {
@@ -318,11 +349,24 @@ function toExpression(expr: Expression): C4Expression {
       outgoing: toExpression(expr.replace(' ->', '') as ElementRefExpr) as any
     }
   }
+  if (expr.includes(' <-> ')) {
+    const [source, target] = expr.split(' <-> ')
+    return {
+      source: toExpression(source as ElementRefExpr) as any,
+      target: toExpression(target as ElementRefExpr) as any,
+      isBidirectional: true
+    }
+  }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return {
       source: toExpression(source as ElementRefExpr) as any,
       target: toExpression(target as ElementRefExpr) as any
+    }
+  }
+  if (expr.endsWith('._')) {
+    return {
+      expanded: expr.replace('._', '') as Fqn
     }
   }
   if (expr.endsWith('.*')) {

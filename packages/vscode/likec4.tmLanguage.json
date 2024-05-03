@@ -10,12 +10,22 @@
       "include": "#string"
     },
     {
-      "name": "entity.name.variable.likec4",
-      "match": "\\b\\.\\*"
+      "match": "(-\\[)([^\\]]*)(\\]->)",
+      "captures": {
+        "1": {
+          "name": "keyword.symbol.langium"
+        },
+        "2": {
+          "name": "entity.name.type.likec4"
+        },
+        "3": {
+          "name": "keyword.symbol.langium"
+        }
+      }
     },
     {
-      "name": "keyword.control.likec4",
-      "match": "(\\]?->|-\\[)"
+      "name": "entity.name.variable.likec4",
+      "match": "\\b\\.(\\*|_)"
     },
     {
       "name": "keyword.control.likec4",
@@ -24,6 +34,10 @@
     {
       "name": "keyword.control.likec4",
       "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|browser|color|crow|cylinder|dashed|description|diamond|dotted|element|exclude|extends?|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
+    },
+    {
+      "name": "keyword.symbol.langium",
+      "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|\\,|\\;|\\!|\\=)"
     }
   ],
   "repository": {

@@ -1,1 +1,1 @@
-export * from './generate-react'
+export { generateReact as default } from './generate-react'

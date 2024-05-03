@@ -1,0 +1,77 @@
+.diagrams-treeview {
+  min-width: 200px;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .tree-node-group--expanded {
+    margin-top: var(--space-1);
+    padding-left: var(--space-5);
+  }
+
+  .tree-branch-wrapper:where([aria-expanded='true']) > .tree-branch-wrapper {
+    margin-top: var(--space-1);
+    margin-left: var(--space-2);
+  }
+
+  .tree-leaf-list-item {
+
+    & > [role='treeitem'] {
+      user-select: none;
+      cursor: pointer;
+
+      padding: calc(var(--space-1) * 0.75);
+      padding-left: var(--space-2);
+      padding-right: var(--space-2);
+      margin-top: calc(var(--space-1) * -0.15);
+      margin-bottom: calc(var(--space-1) * -0.15);
+      margin-left: calc(var(--space-1) * -2);
+
+      transition-property: background-color;
+      transition-timing-function: cubic-bezier(0, 0.31, 0, 1.03);
+      transition-duration: 140ms;
+
+      border-radius: max(var(--radius-3), var(--radius-full));
+
+      svg {
+        color: var(--gray-a10);
+      }
+
+      &:hover:where(:not([aria-selected='true'])) {
+        background-color: var(--gray-a6);
+      }
+
+      &:where([aria-selected='true']) {
+        background-color: var(--accent-a7);
+      }
+    }
+  }
+  .tree-branch-wrapper {
+    & > .tree-node__branch {
+      cursor: pointer;
+      padding-top: calc(var(--space-1) * 0.75);
+      padding-bottom: calc(var(--space-1) * 0.75);
+
+      transition-property: background-color;
+      transition-timing-function: cubic-bezier(0, 0.31, 0, 1.03);
+      transition-duration: 120ms;
+
+      border-radius: max(var(--radius-3), var(--radius-full));
+
+      &:hover {
+        background-color: var(--gray-a5);
+      }
+    }
+  }
+
+  .tree-branch-wrapper ~ .tree-leaf-list-item {
+    margin-left: var(--space-3);
+  }
+
+}

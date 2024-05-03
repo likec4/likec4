@@ -16,7 +16,6 @@
   "include": [
     "src"
   ],
-  "exclude": [],
   "references": [
     {
       "path": "../core"

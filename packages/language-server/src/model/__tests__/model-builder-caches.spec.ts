@@ -1,5 +1,4 @@
-import type { Element, ViewID } from '@likec4/core'
-import { keys, values } from 'rambdax'
+import type { ViewID } from '@likec4/core'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 

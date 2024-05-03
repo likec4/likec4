@@ -1,5 +1,5 @@
 import type Konva from 'konva'
-import { useEffect, useLayoutEffect, useRef, type PropsWithChildren } from 'react'
+import { type PropsWithChildren, useEffect, useLayoutEffect, useRef } from 'react'
 import { Group } from './konva'
 
 type Props = PropsWithChildren<{

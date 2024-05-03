@@ -1,9 +1,10 @@
 {
   "name": "@likec4/workspaces",
-  "version": "0.60.4",
+  "version": "1.0.0-next.14",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.1.1",
+  "type": "module",
   "workspaces": [
     "docs",
     "packages/*",
@@ -13,10 +14,13 @@
     "node": "^18.0.0 || >=20.0.0"
   },
   "scripts": {
+    "fmt": "dprint fmt",
     "prepare": "husky install",
     "build": "turbo run build --filter='./packages/*'",
     "ci:build": "turbo run build --filter='./packages/*' --log-prefix=none --log-order=grouped",
     "typecheck": "turbo run typecheck",
+    "ts": "tsc -b",
+    "ts:watch": "tsc -b -w",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:tsbuildinfo": "rimraf -v -g '**/.tsbuildinfo'",
@@ -31,23 +35,22 @@
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },
   "devDependencies": {
-    "@types/node": "^20.11.25",
-    "@vitest/ui": "^1.4.0",
+    "@babel/preset-typescript": "^7.23.3",
+    "@types/node": "^20.12.7",
+    "@vitest/ui": "~1.5.2",
     "dprint": "^0.45.1",
+    "esbuild": "^0.20.2",
     "execa": "^8.0.1",
     "global": "^4.4.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
-    "tsx": "^4.7.1",
-    "turbo": "^1.12.5",
-    "typescript": "^5.4.2",
-    "vite": "^5.2.8",
-    "vitest": "^1.4.0"
-  },
-  "volta": {
-    "node": "20.11.1"
+    "tsx": "^4.7.3",
+    "turbo": "^1.13.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10",
+    "vitest": "~1.5.2"
   },
   "resolutions": {
     "vscode-jsonrpc": "8.2.0",
@@ -58,9 +61,6 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx,mjs,js,jsx}": [
-      "dprint fmt"
-    ],
-    "**/*.{md,mdx,yml,json}": [
       "dprint fmt"
     ]
   }

@@ -17,10 +17,10 @@
 
 ## What is LikeC4? Why "like"?
 
-LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.  
+LikeC4 is a modeling language for describing software architecture, and tools to generate diagrams from the model.\
 Inspired by [C4 Model](https://c4model.com/) and [Structurizr DSL](https://github.com/structurizr/dsl), but with some flexibility.
 
-You define your own notation, custom element types and any number of nested levels in architecture model.  
+You define your own notation, custom element types and any number of nested levels in architecture model.\
 Perfectly tailored to your needs.
 
 ## What does LikeC4 look like?
@@ -43,7 +43,7 @@ And result:
   <img src="https://github.com/likec4/likec4/assets/824903/27eabe54-7d97-47a8-a7e4-1bb44a8e03e5" width="984px">
 </div>
 
-Template repository - [likec4/template](https://github.com/likec4/template)  
+Template repository - [likec4/template](https://github.com/likec4/template)\
 Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 
 Check the [Tutorial](https://likec4.dev/docs/tutorial/) - a bit better overview of LikeC4.
@@ -60,7 +60,7 @@ The extension provides (via [language server protocol](https://microsoft.github.
 - "Safe" renames
 - Hover information
 
-Extension is universal and can run as web-version.  
+Extension is universal and can run as web-version.\
 Open [likec4/template](https://github.com/likec4/template) in the browser using any of:
 
 - [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4)

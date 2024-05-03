@@ -1,10 +1,11 @@
 import { resolve } from 'path'
 import type { CommandModule } from 'yargs'
 import { useDotBin } from '../options'
+import { handler } from './serve'
 
 export const serveCmd = {
-  command: 'serve [path]',
-  aliases: ['start', 'dev'],
+  command: 'start [path]',
+  aliases: ['serve', 'dev'],
   describe: 'Start local dev server to preview LikeC4 diagrams',
   builder: yargs =>
     yargs
@@ -23,7 +24,6 @@ export const serveCmd = {
       .coerce('path', resolve)
       .default('path', resolve('.'), '.'),
   handler: async args => {
-    const { handler } = await import('./serve')
     await handler(args)
   }
 } satisfies CommandModule<object, { path: string; useDotBin: boolean; base: string | undefined }>

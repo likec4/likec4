@@ -17,7 +17,7 @@ describe('viewChecks', () => {
     expect(diagnostics).toHaveLength(2)
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(1)
-      expect(diagnostic.message, 'diagnostic message').toBe("Duplicate view 'v1'")
+      expect(diagnostic.message, 'diagnostic message').toBe('Duplicate view \'v1\'')
     }
   })
 })

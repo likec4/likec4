@@ -18,7 +18,5 @@ type HandlerParams = {
 export async function handler({ path, useDotBin, ...params }: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  const server = await viteDev({ ...params, languageServices })
-
-  printServerUrls(server)
+  await viteDev({ ...params, languageServices })
 }

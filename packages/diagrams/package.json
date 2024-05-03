@@ -1,6 +1,6 @@
 {
   "name": "@likec4/diagrams",
-  "version": "0.60.4",
+  "version": "1.0.0-next.14",
   "license": "MIT",
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@react-hookz/deep-equal": "^1.0.4",
+    "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@react-spring/konva": "^9.7.3",
     "@use-gesture/react": "^10.3.0",
@@ -62,10 +62,7 @@
     "execa": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.5",
     "unbuild": "^2.0.0"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }

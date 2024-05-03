@@ -1,13 +1,4 @@
-import type {
-  Element,
-  ElementKind,
-  ElementView,
-  Fqn,
-  IconUrl,
-  Opaque,
-  Relation,
-  RelationID
-} from '@likec4/core'
+import type { Element, ElementKind, ElementView, Fqn, IconUrl, Opaque, Relation, RelationID } from '@likec4/core'
 import { LikeC4ModelGraph } from '@likec4/graph'
 
 /**
@@ -165,7 +156,7 @@ export const fakeElements = {
     id: 'amazon.s3',
     kind: 'component',
     title: 'S3',
-    description: 'S3 is a storage service',
+    description: 'S3 is a storage service'
   })
 } satisfies Record<string, Element>
 
@@ -307,7 +298,8 @@ export const issue577View = (icon: string) => ({
         // include *
         { wildcard: true }
       ]
-    }, {
+    },
+    {
       targets: [
         { wildcard: true }
       ],

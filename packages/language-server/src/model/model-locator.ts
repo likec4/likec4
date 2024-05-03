@@ -1,6 +1,5 @@
 import type { likec4 as c4 } from '@likec4/core'
-import { InvalidModelError } from '@likec4/core'
-import type { CstNode, LangiumDocuments } from 'langium'
+import type { LangiumDocuments } from 'langium'
 import { AstUtils, GrammarUtils } from 'langium'
 import type { Location } from 'vscode-languageserver-protocol'
 import type { ParsedAstElement } from '../ast'
@@ -90,36 +89,48 @@ export class LikeC4ModelLocator {
     return null
   }
 
-  public locateView(viewId: c4.ViewID): Location | null {
+  public locateViewAst(viewId: c4.ViewID) {
     for (const doc of this.documents()) {
       const view = doc.c4Views.find(r => r.id === viewId)
       if (!view) {
         continue
       }
-      const node = this.services.workspace.AstNodeLocator.getAstNode(
+      const viewAst = this.services.workspace.AstNodeLocator.getAstNode(
         doc.parseResult.value,
         view.astPath
       )
-      if (!ast.isElementView(node)) {
-        continue
-      }
-      let targetNode = node.$cstNode
-      if (node.name) {
-        targetNode = findNodeForProperty(node.$cstNode, 'name') ?? targetNode
-      } else if ('viewOf' in node) {
-        targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
-      }
-      if (!targetNode) {
-        return null
-      }
-      return {
-        uri: doc.uri.toString(),
-        range: {
-          start: targetNode.range.start,
-          end: targetNode.range.start
+      if (ast.isElementView(viewAst)) {
+        return {
+          doc,
+          view,
+          viewAst
         }
       }
     }
     return null
+  }
+
+  public locateView(viewId: c4.ViewID): Location | null {
+    const res = this.locateViewAst(viewId)
+    if (!res) {
+      return null
+    }
+    const node = res.viewAst
+    let targetNode = node.$cstNode
+    if (node.name) {
+      targetNode = findNodeForProperty(node.$cstNode, 'name') ?? targetNode
+    } else if ('viewOf' in node) {
+      targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
+    }
+    if (!targetNode) {
+      return null
+    }
+    return {
+      uri: res.doc.uri.toString(),
+      range: {
+        start: targetNode.range.start,
+        end: targetNode.range.start
+      }
+    }
   }
 }

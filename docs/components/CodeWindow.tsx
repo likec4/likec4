@@ -1,9 +1,9 @@
-import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 import { cn } from '$/lib'
+import type { DetailedHTMLProps, HTMLAttributes } from 'react'
 
 type CodeBlockProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
-export function CodeWindow({ children, className, ...props}: CodeBlockProps) {
+export function CodeWindow({ children, className, ...props }: CodeBlockProps) {
   const border = true
   return (
     <div
@@ -25,7 +25,7 @@ export function CodeWindow({ children, className, ...props}: CodeBlockProps) {
         <div className="relative flex-auto flex">
           <div className="absolute inset-0 overflow-auto">
             <div className="min-w-min min-h-min">
-            {children}
+              {children}
             </div>
           </div>
         </div>

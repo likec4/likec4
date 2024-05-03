@@ -1,15 +1,17 @@
 import type { DiagramView } from '@likec4/core'
 import JSON5 from 'json5'
 import { CompositeGeneratorNode, expandToNode, joinToNode, NL, toString } from 'langium/generate'
-import { generateViewId } from '../react/generate-react'
+import { generateViewId } from './generateViewId'
 
-export function generateViewsDataJs(views: DiagramView[]) {
+export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
+    /* prettier-ignore-start */
     /* eslint-disable */
 
     `.append(NL, NL)
@@ -43,26 +45,33 @@ export function generateViewsDataJs(views: DiagramView[]) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+        Object.hasOwn(LikeC4Views, value) &&
+        LikeC4Views[value] != null
       )
     }
-  `.append(NL, NL)
+
+    /* prettier-ignore-end */
+  `.append(NL)
   return toString(out)
 }
 
-export function generateViewsDataTs(views: DiagramView[]) {
+export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
   const out = new CompositeGeneratorNode()
   out.appendTemplate`
     /******************************************************************************
      * This file was generated
      * DO NOT EDIT MANUALLY!
      ******************************************************************************/
+    /* prettier-ignore-start */
     /* eslint-disable */
+
+    // @ts-nocheck
 
     import type { DiagramView } from '@likec4/core'
     `.append(NL, NL)
 
-  if (views.length == 0) {
+  if (views.length === 0) {
     out.append('export {}', NL)
     return toString(out)
   }
@@ -98,26 +107,43 @@ export function generateViewsDataTs(views: DiagramView[]) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.prototype.hasOwnProperty.call(LikeC4Views, value)
+        Object.hasOwn(LikeC4Views, value) &&
+        LikeC4Views[value] != null
       )
     }
 
-    // Re-export types
-    export type {
-      Fqn,
-      Element,
-      RelationID,
-      Relation,
-      NodeId,
-      EdgeId,
-      ComputedNode,
-      ComputedEdge,
-      ComputedView,
-      DiagramView,
-      DiagramNode,
-      DiagramEdge,
-      DiagramLabel
-    } from '@likec4/core'
-  `.append(NL, NL)
+    /* prettier-ignore-end */
+  `.append(NL)
+  return toString(out)
+}
+
+export function generateViewsDataDTs(diagrams: Iterable<DiagramView>) {
+  const views = Array.from(diagrams)
+  const out = new CompositeGeneratorNode()
+  out.appendTemplate`
+    /******************************************************************************
+     * This file was generated
+     * DO NOT EDIT MANUALLY!
+     ******************************************************************************/
+    /* prettier-ignore-start */
+    /* eslint-disable */
+
+    import type { DiagramView } from '@likec4/core'
+    `.append(NL, NL)
+
+  if (views.length == 0) {
+    out.append('export {}', NL)
+    return toString(out)
+  }
+
+  out.appendTemplate`
+    export type LikeC4ViewId = ${generateViewId(views)};
+    export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
+
+    export declare const LikeC4Views: LikeC4Views
+    export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
+
+    /* prettier-ignore-end */
+  `.append(NL)
   return toString(out)
 }

@@ -1,7 +1,7 @@
+import { $ } from 'execa'
 import { existsSync } from 'node:fs'
 import { cp, readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { $ } from 'execa'
 
 const $$ = $({
   stderr: 'inherit',
@@ -32,15 +32,16 @@ if (!existsSync('package.json.backup')) {
 }
 
 const corePkg = JSON.parse(await readFile(resolve('../core/package.json'), 'utf-8'))
-const diagramsPkg = JSON.parse(await readFile(resolve('../diagrams/package.json'), 'utf-8'))
+const diagramPkg = JSON.parse(await readFile(resolve('../diagram/package.json'), 'utf-8'))
 
 pkgJson.dependencies = {
   ...corePkg.dependencies,
-  ...diagramsPkg.dependencies,
+  ...diagramPkg.dependencies,
   ...pkgJson.dependencies
 }
 
 delete pkgJson.dependencies['@likec4/core']
+delete pkgJson.dependencies['@likec4/diagram']
 delete pkgJson.dependencies['@likec4/diagrams']
 
 await writeFile('package.json', JSON.stringify(pkgJson, null, 2))

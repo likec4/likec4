@@ -92,7 +92,7 @@ export function createTestServices(workspace = 'file:///test/workspace') {
 
   const buildModel = async () => {
     await validateAll()
-    const model = await modelBuilder.buildModel()
+    const model = await modelBuilder.buildComputedModel()
     if (!model) throw new Error('No model found')
     return model
   }

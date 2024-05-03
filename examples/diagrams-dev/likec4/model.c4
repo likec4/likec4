@@ -117,9 +117,8 @@ views {
   view customer of customer {
     title "Overview Customer"
     include
-      *,
-      ui,
-      -> ui.*
+      *,  
+      ui._
 
     style * {
       color secondary
@@ -215,7 +214,7 @@ views {
     style services, services.* {
       color green
     }
-  }  
+  }
 
   view cloud_graphql of graphql {
     include

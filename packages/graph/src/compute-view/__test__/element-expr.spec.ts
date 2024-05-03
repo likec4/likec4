@@ -58,6 +58,7 @@ describe('element-expr', () => {
         'cloud',
         'cloud.frontend',
         'cloud.backend',
+        'email',
         'amazon'
       ])
       for (const node of nodes) {
@@ -75,20 +76,29 @@ describe('element-expr', () => {
         }
       }
       expect(edgeIds).to.have.same.members([
+        'customer:cloud.frontend',
+        'support:cloud.frontend',
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',
-        'customer:cloud.frontend',
-        'support:cloud.frontend'
+        'cloud.backend:email'
       ])
     })
 
     it('include *, exclude support', () => {
       const { nodeIds, edgeIds } = computeView('cloud', [$include('*'), $exclude('support')])
-      expect(nodeIds).toEqual(['customer', 'cloud', 'cloud.frontend', 'cloud.backend', 'amazon'])
+      expect(nodeIds).toEqual([
+        'customer',
+        'cloud',
+        'cloud.frontend',
+        'cloud.backend',
+        'email',
+        'amazon'
+      ])
       expect(edgeIds).to.have.same.members([
+        'customer:cloud.frontend',
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',
-        'customer:cloud.frontend'
+        'cloud.backend:email'
       ])
     })
 
@@ -98,18 +108,26 @@ describe('element-expr', () => {
         $exclude('support'),
         $exclude('cloud')
       ])
-      expect(nodeIds).toEqual(['customer', 'cloud.frontend', 'cloud.backend', 'amazon'])
+      expect(nodeIds).toEqual([
+        'customer',
+        'cloud.frontend',
+        'cloud.backend',
+        'email',
+        'amazon'
+      ])
       expect(edgeIds).to.have.same.members([
+        'customer:cloud.frontend',
         'cloud.frontend:cloud.backend',
         'cloud.backend:amazon',
-        'customer:cloud.frontend'
+        'cloud.backend:email'
       ])
     })
 
     it('include *, cloud.frontend.*', () => {
       const { nodes, nodeIds, edgeIds } = computeView('cloud', [
         $include('*'),
-        $include('cloud.frontend.*')
+        $include('cloud.frontend.*'),
+        $exclude('email')
       ])
       expect(nodeIds).toEqual([
         'support',

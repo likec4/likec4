@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
 import { useDotBin } from '../options'
+import { buildHandler } from './build'
 
 export const buildCmd = {
   command: 'build [path]',
@@ -35,8 +36,7 @@ export const buildCmd = {
         k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
       ),
   handler: async args => {
-    const { handler } = await import('./build')
-    await handler(args)
+    await buildHandler(args)
   }
 } satisfies CommandModule<
   object,

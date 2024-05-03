@@ -1,13 +1,13 @@
 import pkg from '@dagrejs/graphlib'
 import {
-  invariant,
-  nonNullable,
+  compareByFqnHierarchically,
+  compareRelations,
   type ComputedEdge,
   type ComputedNode,
   type EdgeId,
   type Fqn,
-  compareRelations,
-  compareByFqnHierarchically
+  invariant,
+  nonNullable
 } from '@likec4/core'
 import { difference, filter, map, pipe, sort, take } from 'remeda'
 

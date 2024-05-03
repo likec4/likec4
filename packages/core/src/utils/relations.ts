@@ -1,6 +1,5 @@
 import type { Fqn } from '../types'
 import { commonAncestor, compareFqnHierarchically, isAncestor } from './fqn'
-import { either } from 'rambdax'
 
 type Relation = {
   source: string
@@ -45,22 +44,23 @@ const isBetween = (source: Fqn, target: Fqn): RelationPredicate => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
-      (rel.source === source || (rel.source + '.').startsWith(sourcePrefix)) &&
-      (rel.target === target || (rel.target + '.').startsWith(targetPrefix))
+      (rel.source === source || (rel.source + '.').startsWith(sourcePrefix))
+      && (rel.target === target || (rel.target + '.').startsWith(targetPrefix))
     )
   }
 }
 
 const isAnyBetween = (source: Fqn, target: Fqn): RelationPredicate => {
-  return either(isBetween(source, target), isBetween(target, source))
+  const predicates = [isBetween(source, target), isBetween(target, source)]
+  return (rel) => predicates.some(p => p(rel))
 }
 
 const isIncoming = (target: Fqn): RelationPredicate => {
   const targetPrefix = target + '.'
   return (rel: Relation) => {
     return (
-      !(rel.source + '.').startsWith(targetPrefix) &&
-      (rel.target === target || (rel.target + '.').startsWith(targetPrefix))
+      !(rel.source + '.').startsWith(targetPrefix)
+      && (rel.target === target || (rel.target + '.').startsWith(targetPrefix))
     )
   }
 }
@@ -69,23 +69,26 @@ const isOutgoing = (source: Fqn): RelationPredicate => {
   const sourcePrefix = source + '.'
   return (rel: Relation) => {
     return (
-      (rel.source === source || (rel.source + '.').startsWith(sourcePrefix)) &&
-      !(rel.target + '.').startsWith(sourcePrefix)
+      (rel.source === source || (rel.source + '.').startsWith(sourcePrefix))
+      && !(rel.target + '.').startsWith(sourcePrefix)
     )
   }
 }
 
 const isAnyInOut = (source: Fqn): RelationPredicate => {
-  return either(isIncoming(source), isOutgoing(source))
+  const predicates = [isIncoming(source), isOutgoing(source)]
+  return (rel: Relation) => {
+    return predicates.some(p => p(rel))
+  }
 }
 
 const hasRelation = <R extends { source: Fqn; target: Fqn }>(rel: R) => {
   return <E extends { id: Fqn }>(element: E) => {
     return (
-      rel.source === element.id ||
-      rel.target === element.id ||
-      isAncestor(element.id, rel.source) ||
-      isAncestor(element.id, rel.target)
+      rel.source === element.id
+      || rel.target === element.id
+      || isAncestor(element.id, rel.source)
+      || isAncestor(element.id, rel.target)
     )
   }
 }
