@@ -5,6 +5,8 @@ import { omit } from 'remeda'
 import { mantine } from './mantine.css'
 import { vars } from './theme.css'
 
+export const rootClassName = 'likec4-diagram-root'
+
 createGlobalTheme(':root', {
   ...omit(vars, ['optionsPanel', 'default'])
 }, {

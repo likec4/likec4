@@ -2,7 +2,6 @@ import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import { useXYFlow, useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
-import { useRafCallback } from '@react-hookz/web'
 import { memo, useCallback, useEffect } from 'react'
 import { type DiagramState, useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'

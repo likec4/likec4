@@ -16,7 +16,7 @@ export const cssDisablePan = style({})
 
 export const cssTransparentBg = style({})
 
-globalStyle(`.react-flow${cssTransparentBg}`, {
+globalStyle(`.react-flow${cssReactFlow}${cssTransparentBg}`, {
   backgroundColor: 'transparent !important',
   vars: {
     [vars.likec4.backgroundColor]: 'transparent !important',

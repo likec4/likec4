@@ -10,20 +10,8 @@ globalStyle('*, :before, :after', {
 
 globalStyle(':root', {
   vars: {
-    '--font-family':
-      '\'IBM Plex Sans\', system-ui, -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif, \'Apple Color Emoji\', \'Segoe UI Emoji\'',
-    '--likec4-default-font-family': 'var(--font-family)',
-    '--mantine-default-font-family': 'var(--font-family)',
-    '--mantine-font-family': 'var(--font-family)',
-    '--xy-background-pattern-color': 'var(--mantine-color-dark-8 )',
-    '--mantine-color-body': 'var(--vscode-editor-background )',
-    '--likec4-background-color': 'var(--mantine-color-body )'
-  }
-})
-
-globalStyle(':root[data-mantine-color-scheme=\'dark\']', {
-  vars: {
-    '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
+    '--likec4-default-font-family':
+      `"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`
   }
 })
 
@@ -34,13 +22,40 @@ globalStyle('html, body, #root', {
   padding: '0',
   margin: '0'
 })
+globalStyle('body', {
+  vars: {
+    '--mantine-default-font-family': 'var(--likec4-default-font-family)',
+    '--mantine-font-family': 'var(--likec4-default-font-family)',
+    '--mantine-color-body': 'var(--vscode-editor-background )',
+    '--likec4-background-color': 'var(--vscode-editor-background )'
+  }
+})
 
 export const likec4Container = style({
   position: 'fixed',
   inset: '0',
   overflow: 'hidden',
   vars: {
+    // '--likec4-background-color': 'var(--vscode-editor-background )',
     '--likec4-options-panel-top': '2.5rem'
+  }
+  // selectors: {
+  //   [`:where([data-mantine-color-scheme='dark']) &`]: {
+  //     vars: {
+  //       '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
+  //     }
+  //   }
+  // }
+})
+
+globalStyle(`${likec4Container} .react-flow`, {
+  vars: {
+    '--xy-background-pattern-color': 'var(--mantine-color-dark-8 )'
+  }
+})
+globalStyle(`:where([data-mantine-color-scheme='dark']) ${likec4Container} .react-flow`, {
+  vars: {
+    '--xy-background-pattern-color': 'var(--mantine-color-dark-2)'
   }
 })
 

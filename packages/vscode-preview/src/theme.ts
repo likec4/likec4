@@ -2,7 +2,8 @@ import { createTheme, type MantineTheme } from '@mantine/core'
 
 export const theme = createTheme({
   primaryColor: 'indigo',
-  // fontFamily: `'IBM Plex Sans', sans-serif`,
+  defaultRadius: 'sm',
+  fontFamily: `var(--likec4-default-font-family)`,
   headings: {
     fontWeight: '500',
     sizes: {

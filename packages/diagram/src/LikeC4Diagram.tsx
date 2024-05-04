@@ -1,7 +1,7 @@
-import './globals.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
+import { rootClassName } from './globals.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
@@ -85,7 +85,7 @@ export function LikeC4Diagram({
           onCanvasDblClick={onCanvasDblClick}
         >
           <KeepAspectRatio
-            className={clsx('likec4-diagram-root', className)}
+            className={clsx(rootClassName, className)}
             enabled={keepAspectRatio}
             width={view.width}
             height={view.height}

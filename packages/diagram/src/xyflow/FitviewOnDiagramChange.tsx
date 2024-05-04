@@ -38,7 +38,7 @@ function FitViewOnDiagramChanges() {
   const diagramApi = useDiagramStoreApi()
   const [viewportMoved, setViewportMoved] = useState(diagramApi.getState().viewportChanged)
   const [processedChangeId, setProcessed] = useState(diagramChangeId(diagramApi.getState()))
-  const [pendingChangeId, setPending] = useDebouncedState(processedChangeId, 75)
+  const [pendingChangeId, setPending] = useDebouncedState(processedChangeId, 50)
 
   const isReady = useNodesInitialized({
     includeHiddenNodes: true

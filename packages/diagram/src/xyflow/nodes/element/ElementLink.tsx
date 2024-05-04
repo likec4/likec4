@@ -9,11 +9,9 @@ import {
   HoverCardDropdown,
   HoverCardTarget,
   Stack,
-  UnstyledButton,
-  useMantineContext
+  UnstyledButton
 } from '@mantine/core'
 import clsx from 'clsx'
-import { motion } from 'framer-motion'
 import { clamp } from 'remeda'
 import { Link } from '../../../icons'
 import type { XYFlowNode } from '../../types'

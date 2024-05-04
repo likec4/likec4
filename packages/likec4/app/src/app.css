@@ -10,16 +10,15 @@
 }
 
 :root {
-  --font-family: 'IBM Plex Sans',ui-sans-serif,
+  --likec4-app-font: 'IBM Plex Sans',ui-sans-serif,
     system-ui,
     sans-serif,
     "Apple Color Emoji",
     "Segoe UI Emoji",
     "Segoe UI Symbol",
     "Noto Color Emoji";
-  --likec4-default-font-family: var(--font-family);
-  --mantine-default-font-family: var(--font-family);
-  --mantine-font-family: var(--font-family);
+  --likec4-default-font-family: var(--likec4-app-font);
+  --mantine-default-font-family: var(--likec4-app-font);
   --likec4-background-color: var(--mantine-color-body);
   --xy-background-pattern-color: var(--mantine-color-dark-8);
 }
@@ -38,12 +37,16 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
+  --font-family: var(--likec4-app-font);
+  --likec4-font-family: var(--likec4-app-font);
+  --mantine-font-family: var(--likec4-app-font);
 }
 
 .radix-themes {
   --font-weight-bold: 600;
   --color-text-dimmed: var(--gray-a8);
-  --default-font-family: var(--mantine-default-font-family);
+  --font-family: var(--likec4-app-font);
+  --default-font-family: var(--likec4-app-font);
   --color-page-background: var(--mantine-color-body);
 }
 
