@@ -86,7 +86,7 @@ export function diagramViewToXYFlowData(
   while ((next = traverse.pop())) {
     const { node, parent } = next
     if (node.children.length > 0) {
-      traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
+      traverse.unshift(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
     const isCompound = hasAtLeast(node.children, 1)
     const position = {

@@ -5,7 +5,8 @@ export const cssReactFlow = style({})
 
 globalStyle(`.react-flow${cssReactFlow}`, {
   vars: {
-    [xyvars.background.color]: vars.likec4.backgroundColor
+    [xyvars.background.color]: vars.likec4.background.color,
+    [xyvars.background.pattern.color]: vars.likec4.background.pattern.color
   }
 })
 globalStyle(`.react-flow${cssReactFlow} .react-flow__viewport`, {
@@ -19,7 +20,7 @@ export const cssTransparentBg = style({})
 globalStyle(`.react-flow${cssReactFlow}${cssTransparentBg}`, {
   backgroundColor: 'transparent !important',
   vars: {
-    [vars.likec4.backgroundColor]: 'transparent !important',
+    [vars.likec4.background.color]: 'transparent !important',
     [xyvars.background.color]: 'transparent !important'
   }
 })

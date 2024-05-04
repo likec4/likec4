@@ -8,7 +8,9 @@ import pkg from './package.json' assert { type: 'json' }
 const external = [
   ...Object.keys(pkg.dependencies),
   ...Object.keys(pkg.peerDependencies),
+  /zustand.*/,
   'react/jsx-runtime',
+  'react/jsx-dev-runtime',
   'react-dom/client'
 ]
 
@@ -17,9 +19,11 @@ export default defineConfig(({ mode }) => {
   const isProd = mode === 'production'
   return {
     plugins: [
-      vanillaExtractPlugin(),
+      vanillaExtractPlugin({
+        identifiers: isProd ? 'short' : 'debug'
+      }),
       react({
-        jsxRuntime: 'classic'
+        // jsxRuntime: 'classic'
       }),
       isProd && dts({
         compilerOptions: {
@@ -29,11 +33,19 @@ export default defineConfig(({ mode }) => {
       })
     ],
     esbuild: {
-      exclude: external,
-      jsxInject: `import React from 'react'`
+      jsxDev: false,
+      minifySyntax: true,
+      minifyIdentifiers: false,
+      minifyWhitespace: true
+      // exclude: external,
+      // jsxInject: `import React from 'react'`
     },
     resolve: {
       dedupe: ['react', 'react-dom']
+    },
+    mode,
+    define: {
+      'process.env.NODE_ENV': '"production"'
     },
     build: {
       outDir: 'dist',
@@ -49,7 +61,7 @@ export default defineConfig(({ mode }) => {
       },
       cssCodeSplit: false,
       cssMinify: false,
-      minify: false,
+      minify: 'esbuild',
       commonjsOptions: {
         // extensions: ['.js', '.cjs'],
         esmExternals: true
@@ -59,7 +71,8 @@ export default defineConfig(({ mode }) => {
         output: {
           strict: true,
           minifyInternalExports: true,
-          esModule: true
+          esModule: true,
+          exports: 'named'
         },
         external
       }

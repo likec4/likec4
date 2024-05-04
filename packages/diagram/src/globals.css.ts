@@ -7,13 +7,18 @@ import { vars } from './theme.css'
 
 export const rootClassName = 'likec4-diagram-root'
 
-createGlobalTheme(':root', {
+createGlobalTheme(`.${rootClassName}`, {
   ...omit(vars, ['optionsPanel', 'default'])
 }, {
   likec4: {
     font:
       `var(--likec4-default-font-family,'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"')`,
-    backgroundColor: mantine.colors.body
+    background: {
+      color: mantine.colors.body,
+      pattern: {
+        color: mantine.colors.dimmed
+      }
+    }
   },
   compound: {
     font: vars.likec4.font,
@@ -50,6 +55,24 @@ createGlobalTheme(':root', {
   //   top: globalvars.optionsPanel.top,
   //   right: globalvars.optionsPanel.right
   // }
+})
+
+createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}`, {
+  likec4: {
+    background: {
+      pattern: {
+        color: vars.likec4.background.pattern.color
+      }
+    }
+  }
+}, {
+  likec4: {
+    background: {
+      pattern: {
+        color: mantine.colors.dark[3]
+      }
+    }
+  }
 })
 
 // globalStyle(`${scope} *, ${scope} *::before, ${scope} *::after`, {
