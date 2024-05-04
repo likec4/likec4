@@ -1,6 +1,6 @@
 {
   "name": "@likec4/workspaces",
-  "version": "1.0.0-next.14",
+  "version": "1.0.0-next.15",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.1.1",
@@ -23,7 +23,9 @@
     "ts:watch": "tsc -b -w",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
+    "clean:turbo": "rimraf -v -g '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:tsbuildinfo": "rimraf -v -g '**/.tsbuildinfo'",
+    "clean:vitetmp": "rimraf -v -g '**/vi*.config.ts.timestamp-*'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
     "git:pre-commit": "lint-staged",
     "test": "vitest run",
