@@ -23,20 +23,23 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
 
   const publicDir = await mkTempPublicDir()
 
-  const webcomponentConfig = await viteWebcomponentConfig({
-    languageServices: languageServices,
-    outDir: publicDir,
-    base: config.base
-  })
-  // don't wait, we want to start the server asap
-  const webcomponentPromise = build({
-    ...webcomponentConfig,
-    logLevel: 'warn'
-  }).catch((err) => {
-    consola.warn('webcomponent build failed', err)
-    consola.warn('Ignoring error and continuing')
-    return Promise.resolve()
-  })
+  let webcomponentPromise: Promise<unknown> | undefined
+  if (!isDev) {
+    const webcomponentConfig = await viteWebcomponentConfig({
+      languageServices: languageServices,
+      outDir: publicDir,
+      base: config.base
+    })
+    // don't wait, we want to start the server asap
+    webcomponentPromise = build({
+      ...webcomponentConfig,
+      logLevel: 'warn'
+    }).catch((err) => {
+      consola.warn('webcomponent build failed', err)
+      consola.warn('Ignoring error and continuing')
+      return Promise.resolve()
+    })
+  }
 
   // languageServices.onModelUpdate(() => {
   //   consola.info('watcher onModelUpdate')
@@ -50,6 +53,11 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
     server: {
       host: '0.0.0.0',
       port,
+      warmup: {
+        clientFiles: [
+          './src/**/*.{js,tsx}'
+        ]
+      },
       hmr: {
         overlay: true,
         // needed for hmr to work over network aka WSL2
@@ -57,12 +65,7 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
         port: hmrPort
       },
       fs: {
-        strict: false,
-        allow: [
-          config.root,
-          publicDir,
-          languageServices.workspace
-        ]
+        strict: false
       },
       open: !isDev
     }
@@ -73,7 +76,9 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
   server.config.logger.clearScreen('info')
   printServerUrls(server)
 
-  await webcomponentPromise
+  if (webcomponentPromise) {
+    await webcomponentPromise
+  }
 
   return server
 }

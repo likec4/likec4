@@ -83,9 +83,8 @@ function EmbeddedLikeC4DiagramCmp({
                 background={'transparent'}
                 fitViewPadding={0.09}
                 onCanvasDblClick={closeBrowser}
-                onNavigateTo={({ event, element }) => {
-                  event.stopPropagation()
-                  setBrowserViewId(element.navigateTo)
+                onNavigateTo={(to) => {
+                  setBrowserViewId(to)
                 }}
               />
             )}

@@ -9,6 +9,7 @@ import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import { LanguageServices } from '../language-services'
 import type { LikeC4ViteConfig } from './config.prod'
 import { likec4Plugin } from './plugin'
@@ -51,6 +52,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     configFile: false,
     mode: 'development',
     define: {
+      __USE_SHADOW_STYLE__: 'false',
       'process.env.NODE_ENV': '"development"'
     },
     resolve: {
@@ -105,7 +107,50 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'
       }),
-      vanillaExtractPlugin({})
+      vanillaExtractPlugin({}),
+      cssInjectedByJsPlugin({
+        injectionCodeFormat: 'esm',
+        styleId: () => 'likec4-style-' + Math.random().toString(36).slice(4),
+        injectCodeFunction: function injectCodeCustomRunTimeFunction(cssCode: string, options) {
+          try {
+            if (typeof document != 'undefined') {
+              const id = options.styleId ?? options.attributes?.['data-vite-dev-id']
+              if (!id) {
+                throw new Error('styleId or data-vite-dev-id is required')
+              }
+              // @ts-ignore
+              if (window.__likec4styles) {
+                // @ts-ignore
+                window.__likec4styles.set(id, cssCode)
+                return
+              }
+
+              var elementStyle = document.createElement('style')
+
+              // SET ALL ATTRIBUTES
+              for (const attribute in options.attributes) {
+                elementStyle.setAttribute(attribute, options.attributes[attribute]!)
+              }
+
+              elementStyle.appendChild(document.createTextNode(cssCode))
+              document.head.appendChild(elementStyle)
+            }
+          } catch (e) {
+            console.error('vite-plugin-css-injected-by-js', e)
+          }
+        },
+        dev: {
+          enableDev: true,
+          removeStyleCodeFunction: function removeStyleCode(id) {
+            document.querySelectorAll(`style[data-vite-dev-id="${id}"]`).forEach((el) => el.remove())
+            // @ts-ignore
+            if (window.__likec4styles) {
+              // @ts-ignore
+              window.__likec4styles.set(id, '')
+            }
+          }
+        }
+      })
     ]
   } satisfies InlineConfig & LikeC4ViteConfig & { isDev: boolean }
 }

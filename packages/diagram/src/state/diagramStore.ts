@@ -1,5 +1,7 @@
 import type { DiagramNode, DiagramView, ElementShape, Fqn, NonEmptyArray, ThemeColor, ViewID } from '@likec4/core'
 import { invariant, nonexhaustive } from '@likec4/core'
+import type { XYPosition } from '@xyflow/react'
+import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
@@ -38,6 +40,7 @@ export type DiagramStore = {
     fromView: ViewID
     toView: ViewID
     element: DiagramNode
+    elementCenterScreenPosition: XYPosition
     // If node from the target view is placed on the same position as the node from the source view
     positionCorrected: boolean
   }
@@ -71,6 +74,9 @@ interface DiagramStoreActions {
 
   setHoveredNode: (nodeId: string | null) => void
   setHoveredEdge: (edgeId: string | null) => void
+
+  setLastClickedNode: (nodeId: string | null) => void
+  setLastClickedEdge: (edgeId: string | null) => void
 
   getElement(id: Fqn): DiagramNode | null
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
@@ -106,6 +112,8 @@ const noReplace = false
 
 let storeDevId = 1
 
+const containsWithId = <T extends { id: string }>(arr: T[], id: string) => arr.some((x) => x.id === id)
+
 export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
   return createWithEqualityFn<
     DiagramState,
@@ -128,16 +136,13 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               lastClickedNodeId,
               lastClickedEdgeId,
               hoveredEdgeId,
-              hoveredNodeId,
-              ...state
+              hoveredNodeId
             } = get()
 
             if (shallowEqual(currentView, view)) {
               DEV && console.debug('store: skip updateView')
               return
             }
-
-            DEV && console.debug('store: updateView')
 
             // Reset lastOnNavigate if the view is not the source or target view
             if (lastOnNavigate && lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
@@ -148,24 +153,17 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
             if (isSameView) {
               // Reset clicked/hovered node/edge if the node/edge is not in the new view
-              if (lastClickedNodeId || hoveredNodeId) {
-                const nodeIds = new Set(view.nodes.map(({ id }) => id))
-                if (lastClickedNodeId && !nodeIds.has(lastClickedNodeId)) {
-                  lastClickedNodeId = null
-                }
-                if (hoveredNodeId && !nodeIds.has(hoveredNodeId)) {
-                  hoveredNodeId = null
-                }
+              if (lastClickedNodeId && !containsWithId(view.nodes, lastClickedNodeId)) {
+                lastClickedNodeId = null
               }
-
-              if (lastClickedEdgeId || hoveredEdgeId) {
-                const edgeIds = new Set(view.edges.map(({ id }) => id))
-                if (lastClickedEdgeId && !edgeIds.has(lastClickedEdgeId)) {
-                  lastClickedEdgeId = null
-                }
-                if (hoveredEdgeId && !edgeIds.has(hoveredEdgeId)) {
-                  hoveredEdgeId = null
-                }
+              if (hoveredNodeId && !containsWithId(view.nodes, hoveredNodeId)) {
+                hoveredNodeId = null
+              }
+              if (lastClickedEdgeId && !containsWithId(view.edges, lastClickedEdgeId)) {
+                lastClickedEdgeId = null
+              }
+              if (hoveredEdgeId && !containsWithId(view.edges, hoveredEdgeId)) {
+                hoveredEdgeId = null
               }
             } else {
               // Reset hovered / clicked node/edge if the view is different
@@ -173,13 +171,11 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               lastClickedNodeId = null
               hoveredEdgeId = null
               hoveredNodeId = null
-            }
 
-            // Update history stack
-            if (!isSameView) {
+              // Update history stack
               previousViews = [
                 currentView,
-                ...previousViews.filter((v) => v.id !== view.id)
+                ...previousViews.filter((v) => v.id !== view.id && v.id !== currentView.id)
               ]
             }
 
@@ -191,20 +187,35 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 lastClickedNodeId,
                 lastClickedEdgeId,
                 hoveredEdgeId,
-                hoveredNodeId,
-                ...state
+                hoveredNodeId
               },
-              true,
+              noReplace,
               'update-view'
             )
           },
 
           setHoveredNode: (nodeId) => {
-            set({ hoveredNodeId: nodeId }, noReplace, nodeId ? 'setHoveredNode' : 'unsetHoveredNode')
+            if (nodeId !== get().hoveredNodeId) {
+              set({ hoveredNodeId: nodeId }, noReplace, nodeId ? 'setHoveredNode' : 'unsetHoveredNode')
+            }
           },
 
           setHoveredEdge: (edgeId) => {
-            set({ hoveredEdgeId: edgeId }, noReplace, edgeId ? 'setHoveredEdge' : 'unsetHoveredEdge')
+            if (edgeId !== get().hoveredEdgeId) {
+              set({ hoveredEdgeId: edgeId }, noReplace, edgeId ? 'setHoveredEdge' : 'unsetHoveredEdge')
+            }
+          },
+
+          setLastClickedNode: (nodeId) => {
+            if (nodeId !== get().lastClickedNodeId) {
+              set({ lastClickedNodeId: nodeId }, noReplace, nodeId ? 'setLastClickedNode' : 'unsetLastClickedNode')
+            }
+          },
+
+          setLastClickedEdge: (edgeId) => {
+            if (edgeId !== get().lastClickedEdgeId) {
+              set({ lastClickedEdgeId: edgeId }, noReplace, edgeId ? 'setLastClickedEdge' : 'unsetLastClickedEdge')
+            }
           },
 
           getElement: (fqn) => {
@@ -230,53 +241,65 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               nonexhaustive(change)
             }
-            const { view } = get()
-            set(
-              {
-                view: {
-                  ...view,
-                  nodes: view.nodes.map((node) => {
-                    const shape = newShapes.get(node.id)
-                    const color = newColor.get(node.id)
-                    if (shape || color) {
-                      return {
-                        ...node,
-                        shape: shape ?? node.shape,
-                        color: color ?? node.color
-                      }
-                    }
-                    return node
-                  })
+            const { view, updateView } = get()
+            let hasChanges = false
+            const nextNodes = view.nodes.map((node) => {
+              const shape = newShapes.get(node.id)
+              if (shape && shape !== node.shape) {
+                hasChanges = true
+                node = {
+                  ...node,
+                  shape
                 }
-              },
-              noReplace,
-              'triggerOnChange'
-            )
+              }
+              const color = newColor.get(node.id)
+              if (color && color !== node.color) {
+                hasChanges = true
+                node = {
+                  ...node,
+                  color
+                }
+              }
+              return node
+            })
+            if (hasChanges) {
+              updateView({
+                ...view,
+                nodes: nextNodes
+              })
+            }
             get().onChange?.({ changes })
           },
 
           triggerOnNavigateTo: (xynodeId, event) => {
             const { xyflow, view } = get()
             const xynode = xyflow.getInternalNode(xynodeId)
-            invariant(xynode?.data.element.navigateTo, `node is not navigable: ${xynodeId}`)
+            const element = xynode?.data.element as DiagramNodeWithNavigate
+            invariant(!!xynode && element?.navigateTo, `node is not navigable: ${xynodeId}`)
+            const dimensions = getNodeDimensions(xynode)
             set(
               {
                 lastClickedNodeId: xynodeId,
                 lastOnNavigate: {
                   fromView: view.id,
-                  toView: xynode.data.element.navigateTo,
-                  element: xynode.data.element,
+                  toView: element.navigateTo,
+                  element: element,
+                  elementCenterScreenPosition: xyflow.flowToScreenPosition({
+                    x: xynode.internals.positionAbsolute.x + dimensions.width / 2,
+                    y: xynode.internals.positionAbsolute.y + dimensions.height / 2
+                  }),
                   positionCorrected: false
                 }
               },
-              false,
+              noReplace,
               'triggerOnNavigateTo'
             )
-            get().onNavigateTo?.({
-              element: xynode.data.element as DiagramNodeWithNavigate,
-              xynode,
-              event
-            })
+            get().onNavigateTo?.(
+              element.navigateTo,
+              event,
+              element,
+              xynode.internals.userNode
+            )
           },
 
           fitDiagram: () => {

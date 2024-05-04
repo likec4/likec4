@@ -13,7 +13,10 @@
     "rootDir": ".",
     "types": ["vite/client"]
   },
-  "include": ["./src"],
+  "include": [
+    "./src",
+    "./webcomponent"
+  ],
   "references": [
     {
       "path": "../../core"

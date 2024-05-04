@@ -23,11 +23,20 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
   <likec4-view view-id="${encodeURIComponent(diagram.id)}"></likec4-view>
 `.trim()
 
-  const webcomponentPreview = router.buildLocation({
-    to: '/webcomponent/$viewId',
-    params: { viewId: diagram.id },
-    search: true
-  })
+  const webcomponentPreview = router.buildLocation(
+    import.meta.env.DEV
+      ? {
+        to: '/webcomponent/$',
+        params: { _splat: '/' },
+        hash: diagram.id,
+        search: true
+      }
+      : {
+        to: '/webcomponent/$',
+        params: { _splat: diagram.id },
+        search: true
+      }
+  )
 
   return (
     <Stack>

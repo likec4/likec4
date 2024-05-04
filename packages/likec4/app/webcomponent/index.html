@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-US" style="color-scheme: dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+  <style>
+
+    html,
+    body {
+      margin: 0;
+      background-color: transparent !important;
+      width: 100%;
+      height: 100%;
+      font-size: 16px;
+      border-width: 0px;
+      border-style: solid;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+    }
+
+    body {
+      position: relative;
+      min-height: 100%;
+      padding: clamp(0.5rem, 5vh, 4rem) clamp(0.5rem, 5vw, 5rem);
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    __USE_SHADOW_STYLE__ = false;
+    window.__likec4styles = new Map();
+  </script>
+  <script type="module" src="./webcomponent.tsx"></script>
+<div id="likec4-root">
+</div>
+  <script>
+    const hash = (window.location.hash || '#index').slice(1)
+    const el = document.createElement('likec4-view')
+    el.setAttribute('view-id', hash)
+    document.getElementById('likec4-root').appendChild(el)
+  </script>
+
+</body>
+
+</html>

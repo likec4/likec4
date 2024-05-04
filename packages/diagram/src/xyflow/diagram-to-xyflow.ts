@@ -52,7 +52,10 @@ function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) 
 
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'nodes' | 'edges'>,
-  dragEnabled: boolean
+  opts: {
+    draggable: boolean
+    selectable: boolean
+  }
 ): XYFlowData {
   const editor: XYFlowData = {
     nodes: [],
@@ -107,7 +110,8 @@ export function diagramViewToXYFlowData(
         fqn: node.id,
         element: node
       },
-      draggable: dragEnabled && (!parent || parent.children.length > 1),
+      draggable: opts.draggable && (!parent || parent.children.length > 1),
+      selectable: opts.selectable,
       deletable: false,
       position,
       zIndex,

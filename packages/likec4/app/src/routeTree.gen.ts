@@ -14,7 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as WebcomponentViewIdImport } from './routes/webcomponent.$viewId'
+import { Route as WebcomponentSplatImport } from './routes/webcomponent.$'
 import { Route as ViewViewIdImport } from './routes/view.$viewId'
 import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
@@ -37,8 +37,8 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const WebcomponentViewIdRoute = WebcomponentViewIdImport.update({
-  path: '/webcomponent/$viewId',
+const WebcomponentSplatRoute = WebcomponentSplatImport.update({
+  path: '/webcomponent/$',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -115,8 +115,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewViewIdImport
       parentRoute: typeof rootRoute
     }
-    '/webcomponent/$viewId': {
-      preLoaderRoute: typeof WebcomponentViewIdImport
+    '/webcomponent/$': {
+      preLoaderRoute: typeof WebcomponentSplatImport
       parentRoute: typeof rootRoute
     }
     '/view/$viewId/editor': {
@@ -160,7 +160,7 @@ export const routeTree = rootRoute.addChildren([
     ViewViewIdReactLegacyLazyRoute,
     ViewViewIdIndexRoute,
   ]),
-  WebcomponentViewIdRoute,
+  WebcomponentSplatRoute,
 ])
 
 /* prettier-ignore-end */

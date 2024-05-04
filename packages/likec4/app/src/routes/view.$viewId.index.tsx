@@ -23,10 +23,10 @@ function ViewReact() {
       readonly
       controls={false}
       fitViewPadding={0.08}
-      onNavigateTo={({ element }) => {
+      onNavigateTo={(viewId) => {
         router.navigate({
           to: '/view/$viewId',
-          params: { viewId: element.navigateTo },
+          params: { viewId },
           startTransition: true,
           search: true
         })

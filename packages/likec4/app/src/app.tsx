@@ -1,6 +1,13 @@
-import '@fontsource/ibm-plex-sans/400.css'
-import '@fontsource/ibm-plex-sans/500.css'
-import '@fontsource/ibm-plex-sans/600.css'
+import '@fontsource/ibm-plex-sans/latin-400.css'
+import '@fontsource/ibm-plex-sans/latin-500.css'
+import '@fontsource/ibm-plex-sans/latin-600.css'
+import '@fontsource/ibm-plex-sans/latin-ext-400.css'
+import '@fontsource/ibm-plex-sans/latin-ext-500.css'
+import '@fontsource/ibm-plex-sans/latin-ext-600.css'
+import '@fontsource/ibm-plex-sans/cyrillic-400.css'
+import '@fontsource/ibm-plex-sans/cyrillic-500.css'
+import '@fontsource/ibm-plex-sans/cyrillic-600.css'
+
 // dprint-ignore
 import '@radix-ui/themes/styles.css'
 import '@mantine/core/styles.css'

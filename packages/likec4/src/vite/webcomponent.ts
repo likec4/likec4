@@ -42,6 +42,7 @@ export async function viteWebcomponentConfig({
     base,
     publicDir: false,
     define: {
+      __USE_SHADOW_STYLE__: 'true',
       'process.env.NODE_ENV': '"development"'
     },
     build: {
@@ -53,7 +54,7 @@ export async function viteWebcomponentConfig({
       minify: 'esbuild',
       chunkSizeWarningLimit,
       lib: {
-        entry: 'src/lib/webcomponent.tsx',
+        entry: 'webcomponent/webcomponent.tsx',
         fileName(_format, _entryName) {
           return filename
         },

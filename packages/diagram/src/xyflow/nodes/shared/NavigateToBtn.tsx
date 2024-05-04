@@ -14,11 +14,9 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
     <ActionIcon
       className={clsx('nodrag nopan', className)}
       radius="xl"
-      autoFocus={false}
-      onClick={(event) => {
-        event.stopPropagation()
-        event.preventDefault()
+      onClick={event => {
         diagramApi.getState().triggerOnNavigateTo(xynodeId, event)
+        event.stopPropagation()
       }}
     >
       <ZoomIn />

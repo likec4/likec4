@@ -25,23 +25,28 @@ const generatedStore = {
   async load({ logger }) {
     logger.info(k.dim('generating virtual:likec4'))
     return `
-import { deepEqual as equals } from 'fast-equals'
 import { map } from 'nanostores'
 import { LikeC4Views } from 'virtual:likec4/views'
 
+let keys = new Set(...Object.keys(LikeC4Views))
 export const $views = map(LikeC4Views)
 
-if (import.meta.hot) {
-  import.meta.hot.accept('/@vite-plugin-likec4/views', md => {
+if (import.meta.env.DEV) {
+  import.meta.hot?.accept('/@vite-plugin-likec4/views', md => {
     const update = md?.LikeC4Views
     if (update) {
       const currents = $views.get()
+      let newKeys = new Set()
       for (const [id, view] of Object.entries(update)) {
-        const current = currents[id] ?? null
-        if (!equals(current, view)) {
-          $views.setKey(id, view)
+        newKeys.add(id)
+        $views.setKey(id, view)
+      }
+      for (const key of keys) {
+        if (!newKeys.has(key)) {
+          $views.removeKey(key)
         }
       }
+      keys = newKeys
     }
   })
 }

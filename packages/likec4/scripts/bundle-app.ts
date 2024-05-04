@@ -45,13 +45,13 @@ export async function bundleApp() {
     build: {
       emptyOutDir: false,
       outDir,
+      chunkSizeWarningLimit: 2000,
       cssCodeSplit: false,
       cssMinify: true,
-      minify: 'esbuild',
+      minify: true,
       sourcemap: false,
+      assetsInlineLimit: 0,
       target: 'esnext',
-      assetsInlineLimit: 500 * 1024,
-      copyPublicDir: false,
       lib: {
         entry: {
           app: 'src/app.tsx'
@@ -76,14 +76,16 @@ export async function bundleApp() {
         // defaultIsModuleExports: ''
         // include: ['react', 'react-dom']
       },
+
       rollupOptions: {
         treeshake: true,
         output: {
-          compact: true,
-          exports: 'named'
+          // compact: true,
+          // exports: 'named'
         },
         external: [
           'virtual:likec4',
+          // /@fontsource\/ibm-plex-sans/,
           ...modules.map(m => m.id)
         ]
       }

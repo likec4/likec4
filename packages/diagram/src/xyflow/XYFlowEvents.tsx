@@ -1,3 +1,4 @@
+import { nonNullable } from '@likec4/core'
 import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, Viewport } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { useMemo, useRef } from 'react'
@@ -39,7 +40,10 @@ export function useXYFlowEvents() {
         dblclickTimeout.current = undefined
         if (diagramState.onCanvasDblClick) {
           diagramState.onCanvasDblClick(event)
-        } else {
+          return
+        }
+        diagramState.onCanvasClick?.(event)
+        if (diagramState.fitViewEnabled && diagramState.viewportChanged) {
           diagramState.fitDiagram()
         }
         return
@@ -51,7 +55,7 @@ export function useXYFlowEvents() {
       }, 300)
     },
     onNodeContextMenu: (event, xynode) => {
-      diagramApi.setState({ lastClickedNodeId: xynode.id }, false, 'lastClickedNodeId')
+      diagramApi.getState().setLastClickedNode(xynode.id)
       diagramApi.getState().onNodeContextMenu?.({
         element: xynode.data.element,
         xynode,
@@ -59,18 +63,12 @@ export function useXYFlowEvents() {
       })
     },
     onPaneContextMenu: (event) => {
-      diagramApi.setState(
-        {
-          lastClickedNodeId: null,
-          lastClickedEdgeId: null
-        },
-        false,
-        'onPaneClick'
-      )
+      diagramApi.getState().setLastClickedNode(null)
+      diagramApi.getState().setLastClickedEdge(null)
       diagramApi.getState().onCanvasContextMenu?.(event as any)
     },
     onEdgeContextMenu: (event, xyedge) => {
-      diagramApi.setState({ lastClickedEdgeId: xyedge.id }, false, 'lastClickedEdgeId')
+      diagramApi.getState().setLastClickedEdge(xyedge.id)
       diagramApi.getState().onEdgeContextMenu?.({
         relation: xyedge.data.edge,
         xyedge,
@@ -78,34 +76,20 @@ export function useXYFlowEvents() {
       })
     },
     onNodeClick: (event, xynode) => {
-      if (diagramApi.getState().lastClickedNodeId !== xynode.id) {
-        diagramApi.setState({ lastClickedNodeId: xynode.id }, false, 'lastClickedNodeId')
-      }
-      const { onNodeClick, onCanvasClick } = diagramApi.getState()
-      if (onNodeClick) {
-        onNodeClick({
-          element: xynode.data.element,
-          xynode,
-          event
-        })
-      } else {
-        onCanvasClick?.(event)
-      }
+      diagramApi.getState().setLastClickedNode(xynode.id)
+      diagramApi.getState().onNodeClick?.({
+        element: xynode.data.element,
+        xynode,
+        event
+      })
     },
     onEdgeClick: (event, xyedge) => {
-      if (diagramApi.getState().lastClickedEdgeId !== xyedge.id) {
-        diagramApi.setState({ lastClickedEdgeId: xyedge.id }, false, 'lastClickedEdgeId')
-      }
-      const { onEdgeClick, onCanvasClick } = diagramApi.getState()
-      if (onEdgeClick) {
-        onEdgeClick({
-          relation: xyedge.data.edge,
-          xyedge,
-          event
-        })
-      } else {
-        onCanvasClick?.(event)
-      }
+      diagramApi.getState().setLastClickedEdge(xyedge.id)
+      diagramApi.getState().onEdgeClick?.({
+        relation: xyedge.data.edge,
+        xyedge,
+        event
+      })
     },
     onMoveEnd: (event, _viewport) => {
       const viewportChanged = !!event

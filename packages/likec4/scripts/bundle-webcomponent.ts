@@ -26,6 +26,7 @@ export async function buildWebcomponentBundle() {
     clearScreen: false,
     mode: 'production',
     define: {
+      __USE_SHADOW_STYLE__: 'true',
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
@@ -37,11 +38,11 @@ export async function buildWebcomponentBundle() {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: true,
       copyPublicDir: false,
       target: 'esnext',
       lib: {
-        entry: 'src/lib/webcomponent.tsx',
+        entry: 'webcomponent/webcomponent.tsx',
         fileName(_format, _entryName) {
           return 'webcomponent.mjs'
         },

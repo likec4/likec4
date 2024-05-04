@@ -30,6 +30,7 @@ export const trigger = style({
   display: 'flex',
   lineHeight: 0.75,
   fontSize: 11,
+  fontWeight: 500,
   alignItems: 'center',
   justifyContent: 'center',
   color: vars.element.loContrast,

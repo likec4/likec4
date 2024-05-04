@@ -2,13 +2,13 @@ import { Box, Flex, useMantineColorScheme } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { cssWebcomponentIframeContainer, cssWebcomponentView } from './view.css'
 
-export const Route = createFileRoute('/webcomponent/$viewId')({
+export const Route = createFileRoute('/webcomponent/$')({
   component: WebcomponentPage
 })
 
 function WebcomponentPage() {
   const router = useRouter()
-  const { viewId } = Route.useParams()
+  const viewId = Route.useParams()._splat || 'index'
   const { colorScheme } = useMantineColorScheme()
 
   let base = router.basepath.endsWith('/') ? router.basepath : `${router.basepath}/`

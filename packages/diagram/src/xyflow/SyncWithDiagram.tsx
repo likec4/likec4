@@ -2,8 +2,9 @@ import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import { useXYFlow, useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
-import { memo, useEffect } from 'react'
-import { useDiagramStoreApi } from '../state'
+import { useRafCallback } from '@react-hookz/web'
+import { memo, useCallback, useEffect } from 'react'
+import { type DiagramState, useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 import { toDomPrecision } from './utils'
 
@@ -33,6 +34,51 @@ export const SyncWithDiagram = memo(() => {
   const xyflowApi = useXYStoreApi()
   const diagramStoreApi = useDiagramStoreApi()
 
+  const correctPosition = useCallback((
+    lastOnNavigate: NonNullable<DiagramState['lastOnNavigate']>,
+    nodes: DiagramState['view']['nodes']
+  ) => {
+    // const {
+    //   lastOnNavigate,
+    //   view: {
+    //     nodes,
+    //     id: viewId
+    //   }
+    // } = diagramStoreApi.getState()
+    // if (lastOnNavigate.toView !== viewId || lastOnNavigate.positionCorrected) {
+    // return
+    // }
+
+    const elFrom = lastOnNavigate.element
+    const elTo = nodes.find(n => n.id === elFrom.id)
+    if (elTo) {
+      const centerFrom = lastOnNavigate.elementCenterScreenPosition,
+        centerTo = xyflow.flowToScreenPosition({
+          x: elTo.position[0] + elTo.width / 2,
+          y: elTo.position[1] + elTo.height / 2
+        }),
+        diff = {
+          x: toDomPrecision(centerFrom.x - centerTo.x),
+          y: toDomPrecision(centerFrom.y - centerTo.y)
+        }
+      requestAnimationFrame(() => {
+        xyflowApi.getState().panBy(diff)
+      })
+    }
+    queueMicrotask(() => {
+      diagramStoreApi.setState(
+        {
+          lastOnNavigate: {
+            ...lastOnNavigate,
+            positionCorrected: true
+          }
+        },
+        false,
+        'positionCorrected'
+      )
+    })
+  }, [diagramStoreApi, xyflowApi])
+
   useEffect(() => {
     return diagramStoreApi.subscribe(
       // selector
@@ -40,12 +86,13 @@ export const SyncWithDiagram = memo(() => {
         viewId: state.view.id,
         nodes: state.view.nodes,
         edges: state.view.edges,
-        nodesDraggable: state.nodesDraggable
+        draggable: state.nodesDraggable,
+        selectable: state.nodesSelectable
       }),
       // listener
-      ({ viewId, nodes, edges, nodesDraggable }) => {
+      ({ viewId, nodes, edges, ...opts }) => {
         const { lastOnNavigate } = diagramStoreApi.getState()
-        const updates = diagramViewToXYFlowData({ nodes, edges }, nodesDraggable)
+        const updates = diagramViewToXYFlowData({ nodes, edges }, opts)
 
         xyflow.setNodes(prev =>
           updates.nodes.map(update => {
@@ -77,13 +124,18 @@ export const SyncWithDiagram = memo(() => {
         )
 
         if (lastOnNavigate?.toView === viewId && !lastOnNavigate.positionCorrected) {
+          // correctPosition(
+          //   lastOnNavigate,
+          //   nodes
+          // )
           const elFrom = lastOnNavigate.element
           const elTo = nodes.find(n => n.id === elFrom.id)
           if (elTo) {
-            const centerFrom = xyflow.flowToScreenPosition({
-                x: elFrom.position[0] + elFrom.width / 2,
-                y: elFrom.position[1] + elFrom.height / 2
-              }),
+            const centerFrom = lastOnNavigate.elementCenterScreenPosition,
+              // xyflow.flowToScreenPosition({
+              //     x: elFrom.position[0] + elFrom.width / 2,
+              //     y: elFrom.position[1] + elFrom.height / 2
+              //   }),
               centerTo = xyflow.flowToScreenPosition({
                 x: elTo.position[0] + elTo.width / 2,
                 y: elTo.position[1] + elTo.height / 2
@@ -114,7 +166,7 @@ export const SyncWithDiagram = memo(() => {
         equalityFn: shallowEqual
       }
     )
-  }, [xyflow, xyflowApi, diagramStoreApi])
+  }, [xyflow, xyflowApi, diagramStoreApi, correctPosition])
 
   return null
 })
