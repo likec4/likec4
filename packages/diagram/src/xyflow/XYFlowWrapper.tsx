@@ -51,6 +51,7 @@ const selector = (s: DiagramState) => ({
   nodesDraggable: s.nodesDraggable,
   fitView: s.fitViewEnabled,
   fitViewPadding: s.fitViewPadding,
+  hasOnNavigateTo: !!s.onNavigateTo,
   hasOnNodeClick: !!s.onNodeClick,
   hasOnNodeContextMenu: !!s.onNodeContextMenu,
   hasOnCanvasContextMenu: !!s.onCanvasContextMenu,
@@ -110,12 +111,15 @@ function XYFlowWrapper({
         padding: fitViewPadding,
         includeHiddenNodes: true
       }}
+      preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
       noPanClassName="nopan"
       panOnScroll={pannable}
       panOnDrag={pannable}
       elementsSelectable={nodesSelectable}
+      nodesFocusable={nodesDraggable || nodesSelectable || editor.hasOnNodeClick || editor.hasOnNavigateTo}
+      edgesFocusable={editor.hasOnEdgeClick}
       {...(!nodesSelectable && {
         selectionKeyCode: null
       })}
@@ -125,8 +129,12 @@ function XYFlowWrapper({
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
       onPaneClick={handlers.onPaneClick}
-      onNodeClick={handlers.onNodeClick}
-      onEdgeClick={handlers.onEdgeClick}
+      {...(editor.hasOnNodeClick && {
+        onNodeClick: handlers.onNodeClick
+      })}
+      {...(editor.hasOnEdgeClick && {
+        onEdgeClick: handlers.onEdgeClick
+      })}
       onMoveEnd={handlers.onMoveEnd}
       onInit={() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')

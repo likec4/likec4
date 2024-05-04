@@ -18,15 +18,12 @@ import {
   MenuLabel,
   MenuTarget,
   Text,
-  Title,
-  type TitleOrder,
   useMantineTheme
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
-import { Link, type RegisteredRouter, type RouteIds, useMatchRoute, useParams } from '@tanstack/react-router'
-import { memo, useEffect } from 'react'
-import { isEmpty } from 'remeda'
+import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
+import { findLast, isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssDiagramTitle, cssDiagramTitleBox, cssHeader } from './Header.css'
 import { ShareModal } from './ShareModal'
@@ -107,7 +104,9 @@ const viewPages = [
   }
 ] as const satisfies Array<{ route: RegisteredRoute; icon: React.ReactNode; title: React.ReactNode }>
 
-const ViewPageButton = memo(function ViewPageButtonFn({
+const routeIds = viewPages.map(({ route }) => route as string)
+
+function ViewPageButton({
   isTablet
 }: {
   isTablet: boolean
@@ -115,8 +114,9 @@ const ViewPageButton = memo(function ViewPageButtonFn({
   const { viewId } = useParams({
     from: '/view/$viewId'
   })
-  const matchRoute = useMatchRoute()
-  const matched = viewPages.find(({ route }) => matchRoute({ to: route }) !== false) ?? viewPages[0]
+  const routerState = useRouterState()
+  const matchedRoute = findLast(routerState.matches, ({ routeId }) => routeIds.includes(routeId))
+  const matched = (matchedRoute && viewPages.find(({ route }) => route === matchedRoute.routeId)) ?? viewPages[0]
   return (
     <>
       {matched.route === '/view/$viewId' && (
@@ -157,7 +157,6 @@ const ViewPageButton = memo(function ViewPageButtonFn({
               key={route}
               component={Link}
               to={route}
-              startTransition
               search
               params={{ viewId }}
               leftSection={icon}
@@ -173,7 +172,7 @@ const ViewPageButton = memo(function ViewPageButtonFn({
       </Menu>
     </>
   )
-})
+}
 
 function ExportButton() {
   const params = useParams({

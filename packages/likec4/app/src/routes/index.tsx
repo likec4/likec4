@@ -7,9 +7,32 @@ import { Box, Card, Container, Flex, Heading, IconButton, Inset, Section, Separa
 import { useDebouncedEffect } from '@react-hookz/web'
 import { memo, useState } from 'react'
 import { useLikeC4View } from '../data'
-import { useViewGroups, type ViewGroups } from '../data/index-page'
+
+import { useStore } from '@nanostores/react'
+import { batched } from 'nanostores'
+import { ceil, clamp, groupBy, values } from 'remeda'
+import { $views } from 'virtual:likec4'
 import * as styles from './index.css'
 import { cssPreviewCardLink } from './view.css'
+
+const $viewGroups = batched($views, views => {
+  const byPath = groupBy(values(views), v => v.relativePath ?? '')
+  return Object.entries(byPath)
+    .map(([path, views]) => ({
+      path,
+      isRoot: path === '',
+      views: views.map(v => v.id)
+    }))
+    .sort((a, b) => {
+      return a.path.localeCompare(b.path)
+    })
+})
+
+type ViewGroups = ReturnType<typeof $viewGroups['get']>
+
+function useViewGroups() {
+  return useStore($viewGroups)
+}
 
 export const Route = createFileRoute('/')({
   component: IndexPage
@@ -137,7 +160,9 @@ function DiagramPreview(props: { diagram: DiagramView }) {
       setDiagram(props.diagram)
     },
     [props.diagram],
-    Math.ceil(Math.random() * 200) + 50
+    clamp(ceil(Math.random() * 400, -1), {
+      min: 50
+    })
   )
 
   return (

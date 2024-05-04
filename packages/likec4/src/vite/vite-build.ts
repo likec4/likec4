@@ -27,7 +27,6 @@ export const viteBuild = async ({
     }
   }
 
-  let webcomponentPromise
   if (buildWebcomponent) {
     const webcomponentConfig = await viteWebcomponentConfig({
       languageServices: config.languageServices,

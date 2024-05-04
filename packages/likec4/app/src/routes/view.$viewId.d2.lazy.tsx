@@ -3,6 +3,7 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
+import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
 
 export const Route = createLazyFileRoute('/view/$viewId/d2')({
   component: ViewAsD2
@@ -15,17 +16,14 @@ function ViewAsD2() {
     <PanelGroup direction="horizontal" autoSaveId="viewAsD2">
       <Panel>
         <ScrollArea
-          h={'100%'}
-          p={4}
+          className={cssScrollArea}
+          p={5}
           styles={{
-            root: {
-              borderRadius: 6
-            },
             viewport: {
               borderRadius: 6
             }
           }}>
-          <Code block>
+          <Code block className={cssCodeBlock}>
             {source}
           </Code>
           <CopyToClipboard text={source} />

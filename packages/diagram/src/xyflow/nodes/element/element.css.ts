@@ -14,8 +14,7 @@ export const container = style({
   padding: 0,
   margin: 0,
   vars: {
-    [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`,
-    [vars.element.font]: vars.likec4.font
+    [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   }
 })
 
@@ -29,6 +28,12 @@ globalKeyframes(indicatorKeyframes, {
   }
 })
 
+const outlineColor = fallbackVar(
+  mantine.colors.primaryColors.outline,
+  mantine.colors.primaryColors.filled,
+  vars.element.stroke
+)
+
 export const indicator = style({
   stroke: vars.element.loContrast,
   transformOrigin: 'center center',
@@ -39,11 +44,17 @@ export const indicator = style({
   animationDirection: 'alternate',
   visibility: 'hidden',
   selectors: {
+    ':where(.react-flow__node.selected) &': {
+      visibility: 'visible'
+    },
+    [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
+      animationName: 'none',
+      strokeWidth: 10,
+      stroke: outlineColor,
+      visibility: 'visible'
+    },
     ':where([data-likec4-shape="queue"], [data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       strokeWidth: 10
-    },
-    '.react-flow__node.selected &': {
-      visibility: 'visible'
     }
   }
 })
@@ -75,7 +86,7 @@ export const title = style({
 
 export const description = style({
   flex: '0 1 auto',
-  fontFamily: fallbackVar(vars.element.font, vars.likec4.font),
+  fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
@@ -91,7 +102,7 @@ export const description = style({
 
 export const technology = style({
   flex: '0 0 auto',
-  fontFamily: fallbackVar(vars.element.font, vars.likec4.font),
+  fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
@@ -191,7 +202,7 @@ export const cssShapeSvg = style({
     `
   },
   selectors: {
-    [':where(.react-flow__node.selected) &']: {
+    [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
       filter: 'none'
     }
   }

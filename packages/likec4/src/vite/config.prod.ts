@@ -70,6 +70,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     mode: 'production',
     define: {
+      __USE_SHADOW_STYLE__: 'false',
       'process.env.NODE_ENV': '"production"'
     },
     optimizeDeps: {
@@ -81,7 +82,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       emptyOutDir: false,
       cssCodeSplit: false,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: true,
       copyPublicDir: true,
       chunkSizeWarningLimit,
       commonjsOptions: {

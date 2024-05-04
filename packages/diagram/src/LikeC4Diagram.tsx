@@ -1,7 +1,7 @@
+import './globals.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
-import { scope } from './index.css'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
@@ -49,7 +49,10 @@ export function LikeC4Diagram({
     initialHeight: number
   }>()
   if (!initialRef.current) {
-    const initial = diagramViewToXYFlowData(view, nodesDraggable)
+    const initial = diagramViewToXYFlowData(view, {
+      selectable: nodesSelectable,
+      draggable: nodesDraggable
+    })
     initialRef.current = {
       defaultNodes: initial.nodes,
       defaultEdges: initial.edges,
@@ -82,14 +85,14 @@ export function LikeC4Diagram({
           onCanvasDblClick={onCanvasDblClick}
         >
           <KeepAspectRatio
+            className={clsx('likec4-diagram-root', className)}
             enabled={keepAspectRatio}
             width={view.width}
             height={view.height}
           >
             <XYFlow
               className={clsx(
-                className,
-                scope,
+                'likec4-diagram',
                 cssReactFlow,
                 controls === false && cssNoControls,
                 pannable !== true && cssDisablePan,

@@ -113,10 +113,10 @@ const App = () => {
           readonly={false}
           controls={false}
           nodesDraggable={false}
-          onNavigateTo={({ element }) => {
+          onNavigateTo={(to) => {
             resetLastClickedNd()
-            extensionApi.goToViewSource(element.navigateTo)
-            extensionApi.openView(element.navigateTo)
+            extensionApi.goToViewSource(to)
+            extensionApi.openView(to)
           }}
           onNodeClick={({ element, xynode, event }) => {
             extensionApi.goToElement(element.id)

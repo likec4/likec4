@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
@@ -13,6 +13,12 @@ export const cssContainer = style({
 
 const bgTransparency = createVar('bgTransparency')
 
+const outlineColor = fallbackVar(
+  mantine.colors.primaryColors.outline,
+  mantine.colors.primaryColors.filled,
+  vars.element.stroke
+)
+
 export const cssCompound = style({
   width: '100%',
   height: '100%',
@@ -25,6 +31,11 @@ export const cssCompound = style({
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
+    },
+    ':where(.react-flow__node:focus-visible) &': {
+      transitionDuration: '0ms',
+      outline: `3px solid ${outlineColor}`,
+      outlineOffset: rem(1.5)
     }
   }
 })
@@ -103,9 +114,8 @@ export const cssIndicator = style({
   pointerEvents: 'none',
   overflow: 'visible',
   visibility: 'hidden',
-
   selectors: {
-    '.react-flow__node.selected &': {
+    ':where(.react-flow__node.selected:not(:focus-visible)) &': {
       visibility: 'visible'
     }
   }
@@ -120,6 +130,11 @@ globalStyle(`${cssIndicator} rect`, {
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
   fill: 'none'
+})
+
+globalStyle(`:where(.react-flow__node:focus-within:not(.selected)) ${cssIndicator} rect`, {
+  stroke: `color-mix(in srgb, ${vars.element.stroke} 30%, ${vars.element.loContrast})`,
+  strokeWidth: 8
 })
 
 export const cssNavigateBtn = style({

@@ -4,6 +4,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
+import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
 
 export const Route = createLazyFileRoute('/view/$viewId/dot')({
   component: ViewAsDot
@@ -16,14 +17,14 @@ function ViewAsDot() {
     <PanelGroup direction="horizontal" autoSaveId="viewAsDot">
       <Panel>
         <ScrollArea
-          h={'100%'}
+          className={cssScrollArea}
           p={5}
           styles={{
             viewport: {
               borderRadius: 6
             }
           }}>
-          <Code block>
+          <Code block className={cssCodeBlock}>
             {dot}
           </Code>
           <CopyToClipboard text={dot} />

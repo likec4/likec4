@@ -131,14 +131,14 @@ export const LikeC4ViewEditorStory: Story<Props> = ({
       zoomable={props.zoomable}
       pannable={props.pannable}
       onNavigateTo={onNodeClick
-        ? ({ element, event, xynode }) => {
+        ? (to, event, element, xynode) => {
           dispatch({
             type: ActionType.UpdateControl,
             value: {
               ...controlState,
               viewId: {
                 ...controlState['viewId'],
-                value: element.navigateTo
+                value: to
               }
             }
           })

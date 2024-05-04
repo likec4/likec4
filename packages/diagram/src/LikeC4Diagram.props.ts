@@ -1,4 +1,13 @@
-import type { DiagramEdge, DiagramNode, DiagramView, ElementShape, Fqn, NonEmptyArray, ThemeColor } from '@likec4/core'
+import type {
+  DiagramEdge,
+  DiagramNode,
+  DiagramView,
+  ElementShape,
+  Fqn,
+  NonEmptyArray,
+  ThemeColor,
+  ViewID
+} from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
@@ -7,11 +16,10 @@ import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
 export type OnNavigateTo = (
-  event: {
-    element: DiagramNodeWithNavigate
-    xynode: XYFlowNode
-    event: ReactMouseEvent
-  }
+  to: ViewID,
+  event: ReactMouseEvent,
+  element: DiagramNodeWithNavigate,
+  xynode: XYFlowNode
 ) => void
 export type OnNodeClick = (
   event: {
