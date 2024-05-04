@@ -1699,7 +1699,7 @@ __metadata:
     vitest: "npm:~1.5.2"
     word-wrap: "npm:^1.2.5"
   peerDependencies:
-    "@hpcc-js/wasm": ^2.16.1
+    "@hpcc-js/wasm": ^2.16.2
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
   peerDependenciesMeta:
