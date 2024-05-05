@@ -41,16 +41,17 @@ function wrapToHTML({
     .map(text => `<FONT${fontOpts}>${text}</FONT>`)
     .map(text => (bold ? `<B>${text}</B>` : text))
     .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
+    .join('')
   return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
 }
 
 /**
  * "Faking" a node icon with a blue square
  * to preserve space for real icons.
- * #577
+ * #11223300
  */
 export function nodeIcon(_src: string) {
-  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="blue" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
+  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#11223300" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 export function nodeLabel(node: ComputedNode) {
@@ -67,8 +68,8 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.technology,
         fontsize: 12,
-        lineHeight: 1,
-        maxchars: 50,
+        lineHeight: 1.125,
+        maxchars: 45,
         color: Colors[node.color].loContrast
       })
     )
@@ -78,7 +79,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.description,
         fontsize: 14,
-        lineHeight: 1.1,
+        lineHeight: 1.125,
         maxchars: 45,
         color: Colors[node.color].loContrast
       })
@@ -102,7 +103,7 @@ export function edgeLabel(text: string) {
     text,
     maxchars: 35,
     fontsize: 13,
-    lineHeight: 1.1,
+    lineHeight: 1.125,
     bold: text === '[...]',
     align: 'left'
   })
