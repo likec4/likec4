@@ -45,13 +45,17 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
+  const webcomponentPrefix = cfg?.webcomponentPrefix ?? 'likec4'
+
   return {
     isDev: true,
+    webcomponentPrefix,
     root,
     languageServices,
     configFile: false,
     mode: 'development',
     define: {
+      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
       'process.env.NODE_ENV': '"development"'
     },
@@ -68,6 +72,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'react',
         'framer-motion',
         '@radix-ui/themes',
+        'react/jsx-runtime',
         'react/jsx-dev-runtime',
         '@mantine/core',
         '@mantine/hooks'

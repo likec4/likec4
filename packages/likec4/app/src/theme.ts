@@ -3,6 +3,7 @@ import { createTheme, type MantineTheme } from '@mantine/core'
 export const theme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
+  fontFamily: 'var(--likec4-app-font)',
   headings: {
     fontWeight: '500',
     sizes: {

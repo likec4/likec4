@@ -2,6 +2,7 @@ import type { DiagramView } from '@likec4/diagrams'
 import { ActionIcon, Box, Code, CopyButton, Group, Stack, Text } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
+import { ComponentName } from '../../../const'
 import { AlertLocalhost } from './AlertLocalhost'
 import { CopyButtonChild } from './CopyButtonChild'
 
@@ -20,7 +21,7 @@ export function WebcomponentsPanel({ diagram }: { diagram: DiagramView }) {
 `.trim()
 
   const htmlCode = `
-  <likec4-view view-id="${encodeURIComponent(diagram.id)}"></likec4-view>
+  <${ComponentName.View} view-id="${encodeURIComponent(diagram.id)}"></${ComponentName.View}>
 `.trim()
 
   const webcomponentPreview = router.buildLocation(

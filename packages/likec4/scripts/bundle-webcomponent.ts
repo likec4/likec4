@@ -30,7 +30,10 @@ export async function buildWebcomponentBundle() {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      treeShaking: true
+      treeShaking: true,
+      minifyIdentifiers: false,
+      minifySyntax: true,
+      minifyWhitespace: true
     },
     build: {
       outDir,
@@ -38,7 +41,7 @@ export async function buildWebcomponentBundle() {
       cssCodeSplit: false,
       cssMinify: true,
       sourcemap: false,
-      minify: true,
+      minify: 'esbuild',
       copyPublicDir: false,
       target: 'esnext',
       lib: {
@@ -77,7 +80,9 @@ export async function buildWebcomponentBundle() {
     },
     plugins: [
       react({}),
-      vanillaExtractPlugin({})
+      vanillaExtractPlugin({
+        identifiers: 'short'
+      })
     ]
   })
 }

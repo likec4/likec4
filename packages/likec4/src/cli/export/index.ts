@@ -2,7 +2,7 @@ import { invariant } from '@likec4/core'
 import { resolve } from 'node:path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
-import { useDotBin } from '../options'
+import { path, useDotBin } from '../options'
 import { handler as jsonHandler } from './json/handler'
 import { pngHandler } from './png/handler'
 
@@ -12,13 +12,7 @@ export const exportCmd = {
   builder: yargs =>
     yargs
       .usage(`${k.bold('Usage:')} $0 export <format> [path]`)
-      .positional('path', {
-        type: 'string',
-        desc: 'directory with LikeC4 source files',
-        normalize: true
-      })
-      .coerce(['path'], resolve)
-      .default('path', resolve('.'), '.')
+      .positional('path', path)
       // ----------------------
       // PNG command
       .command({
@@ -26,14 +20,16 @@ export const exportCmd = {
         describe: 'export views to PNG',
         builder: yargs =>
           yargs
+            .option('output', {
+              alias: 'o',
+              type: 'string',
+              desc: 'output directory',
+              normalize: true,
+              default: '.',
+              coerce: resolve
+            })
+            .option('use-dot-bin', useDotBin)
             .options({
-              output: {
-                alias: 'o',
-                type: 'string',
-                desc: 'output directory',
-                normalize: true
-              },
-              useDotBin,
               'ignore': {
                 boolean: true,
                 alias: 'i',
@@ -53,8 +49,6 @@ export const exportCmd = {
                 default: 3
               }
             })
-            .coerce(['output'], resolve)
-            .default('output', resolve('.'), '.')
             .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export png')}
     ${k.gray('Search for likec4 files in current directory and output PNG next to sources')}

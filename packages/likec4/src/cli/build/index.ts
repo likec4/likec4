@@ -2,50 +2,45 @@
 import { resolve } from 'node:path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
-import { useDotBin } from '../options'
-import { buildHandler } from './build'
+import { base, path, useDotBin, webcomponentPrefix } from '../options'
+import { buildHandler as handler } from './build'
 
 export const buildCmd = {
   command: 'build [path]',
   aliases: ['bundle'],
-  describe: 'Build LikeC4 diagrams into a static site',
+  describe: 'Build a static website',
   builder: yargs =>
     yargs
-      .positional('path', {
+      .positional('path', path)
+      .option('output', {
+        alias: 'o',
         type: 'string',
-        desc: 'Directory with LikeC4 source files\nif not specified search in current directory',
-        normalize: true
+        desc: 'output directory for production build',
+        normalize: true,
+        coerce: resolve
       })
-      .options({
-        output: {
-          alias: 'o',
-          type: 'string',
-          desc: 'output directory for production build',
-          normalize: true
-        },
-        useDotBin,
-        base: {
-          type: 'string',
-          desc: 'base url the app is being served from'
-        }
-      })
-      .coerce(['path', 'output'], resolve)
-      .default('path', resolve('.'), '.')
+      .option('base', base)
+      .option('webcomponent-prefix', webcomponentPrefix)
+      .option('use-dot-bin', useDotBin)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
         k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
       ),
-  handler: async args => {
-    await buildHandler(args)
+  handler: async (args) => {
+    await handler({
+      path: args.path,
+      output: args.output,
+      base: args.base,
+      useDotBin: args['use-dot-bin'],
+      webcomponentPrefix: args['webcomponent-prefix']
+    })
   }
-} satisfies CommandModule<
-  object,
-  {
-    path: string
-    useDotBin: boolean
-    output: string | undefined
-    base: string | undefined
-  }
->
+} satisfies CommandModule<object, {
+  output: string | undefined
+  path: string
+  'use-dot-bin': boolean
+  base?: string | undefined
+  'webcomponent-prefix': string
+}>
 
 export default buildCmd

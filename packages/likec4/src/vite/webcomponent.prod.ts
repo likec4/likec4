@@ -11,6 +11,7 @@ import { chunkSizeWarningLimit } from './utils'
 const _dirname = dirname(fileURLToPath(import.meta.url))
 
 export type LikeC4ViteWebcomponentConfig = {
+  webcomponentPrefix: string | undefined
   languageServices: LanguageServices
   outDir: string
   base: string
@@ -21,6 +22,7 @@ export async function viteWebcomponentConfig({
   languageServices,
   outDir,
   base,
+  webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js'
 }: LikeC4ViteWebcomponentConfig) {
   const customLogger = createLikeC4Logger('c4:lib')
@@ -41,6 +43,7 @@ export async function viteWebcomponentConfig({
     publicDir: false,
     mode: 'production',
     define: {
+      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"'
     },
     optimizeDeps: {

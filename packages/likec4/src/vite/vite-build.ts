@@ -14,9 +14,13 @@ export const Assets = ['favicon.ico', 'robots.txt']
 
 export const viteBuild = async ({
   buildWebcomponent = true,
+  webcomponentPrefix = 'likec4',
   ...cfg
 }: Config) => {
-  const { isDev, ...config } = await viteConfig(cfg)
+  const { isDev, ...config } = await viteConfig({
+    ...cfg,
+    webcomponentPrefix
+  })
 
   const publicDir = await mkTempPublicDir()
 
@@ -29,6 +33,7 @@ export const viteBuild = async ({
 
   if (buildWebcomponent) {
     const webcomponentConfig = await viteWebcomponentConfig({
+      webcomponentPrefix,
       languageServices: config.languageServices,
       outDir: publicDir,
       base: config.base

@@ -1,31 +1,36 @@
-import { resolve } from 'path'
 import type { CommandModule } from 'yargs'
-import { useDotBin } from '../options'
+import { base, path, useDotBin, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 
 export const serveCmd = {
   command: 'start [path]',
   aliases: ['serve', 'dev'],
-  describe: 'Start local dev server to preview LikeC4 diagrams',
+  describe: 'Start local dev server to preview LikeC4 views',
   builder: yargs =>
     yargs
-      .positional('path', {
-        type: 'string',
-        desc: 'Directory with LikeC4 source files\nif not specified search in current directory',
-        normalize: true
-      })
-      .options({
-        base: {
-          type: 'string',
-          desc: 'base url the app is being served from'
-        },
-        useDotBin
-      })
-      .coerce('path', resolve)
-      .default('path', resolve('.'), '.'),
+      .positional('path', path)
+      .option('base', base)
+      .option('webcomponent-prefix', webcomponentPrefix)
+      .option('use-dot-bin', useDotBin),
   handler: async args => {
-    await handler(args)
+    await handler({
+      path: args.path,
+      useDotBin: args['use-dot-bin'],
+      base: args.base,
+      webcomponentPrefix: args['webcomponent-prefix']
+    })
   }
-} satisfies CommandModule<object, { path: string; useDotBin: boolean; base: string | undefined }>
+} satisfies CommandModule<object, {
+  path: string
+  'use-dot-bin': boolean
+  base?: string | undefined
+  'webcomponent-prefix': string
+}>
+// } satisfies CommandModule<object, {
+//   path: string
+//   useDotBin: boolean
+//   base: string | undefined
+//   'webcomponent-prefix': string | undefined
+// }>
 
 export default serveCmd

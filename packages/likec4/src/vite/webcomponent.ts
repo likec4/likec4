@@ -16,6 +16,7 @@ export async function viteWebcomponentConfig({
   languageServices,
   outDir,
   base,
+  webcomponentPrefix = 'likec4',
   filename = 'likec4-views.js'
 }: LikeC4ViteWebcomponentConfig): Promise<InlineConfig> {
   const customLogger = createLikeC4Logger('c4:lib')
@@ -42,6 +43,7 @@ export async function viteWebcomponentConfig({
     base,
     publicDir: false,
     define: {
+      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'true',
       'process.env.NODE_ENV': '"development"'
     },

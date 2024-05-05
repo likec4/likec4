@@ -18,10 +18,16 @@ type HandlerParams = {
    */
   path: string
   useDotBin: boolean
+  webcomponentPrefix: string | undefined
   outfile: string | undefined
 }
 
-export async function webcomponentHandler({ path, useDotBin, outfile }: HandlerParams) {
+export async function webcomponentHandler({
+  path,
+  useDotBin,
+  webcomponentPrefix = 'likec4',
+  outfile
+}: HandlerParams) {
   const logger = createLikeC4Logger('c4:codegen')
   const timer = startTimer()
   const languageServices = await LanguageServices.get({ path, useDotBin })
@@ -60,6 +66,7 @@ export async function webcomponentHandler({ path, useDotBin, outfile }: HandlerP
     languageServices,
     outDir: publicDir,
     filename: filename,
+    webcomponentPrefix,
     base: '/'
   })
   consola.debug(`${k.dim('vite build webcomponent')}`)

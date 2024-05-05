@@ -17,12 +17,14 @@ export type LikeC4ViteConfig =
     workspaceDir?: never
     outputDir?: string | undefined
     base?: string | undefined
+    webcomponentPrefix?: string | undefined
   }
   | {
     languageServices?: never
     workspaceDir: string
     outputDir?: string | undefined
     base?: string | undefined
+    webcomponentPrefix?: string | undefined
   }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
@@ -56,8 +58,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     customLogger.info(`${k.green('app base url')} ${k.dim(base)}`)
   }
 
+  const webcomponentPrefix = cfg?.webcomponentPrefix ?? 'likec4'
+
   return {
     isDev: false,
+    webcomponentPrefix,
     root,
     languageServices,
     clearScreen: false,
@@ -70,6 +75,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     mode: 'production',
     define: {
+      WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
       'process.env.NODE_ENV': '"production"'
     },

@@ -1,7 +1,6 @@
 import { consola } from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import assert from 'node:assert'
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { bundleApp } from './bundle-app'
 import { buildWebcomponentBundle } from './bundle-webcomponent'
@@ -9,7 +8,7 @@ import { buildWebcomponentBundle } from './bundle-webcomponent'
 // const watch = process.argv.includes('--watch')
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 if (isDev) {
-  consola.warn('likec4 build isDev=true')
+  consola.warn('likec4 development build')
 }
 
 async function buildCli() {
@@ -49,10 +48,7 @@ async function buildCli() {
       nodeExternalsPlugin({
         dependencies: true,
         optionalDependencies: true,
-        devDependencies: false,
-        allowList: [
-          'fast-equals'
-        ]
+        devDependencies: false
       })
     ]
   }
@@ -91,11 +87,17 @@ consola.log('\n-------\n')
 
 await bundleApp()
 consola.info(`copy app files to dist/__app__`)
-await copyFile('app/index.html', 'dist/__app__/index.html')
-await copyFile('app/robots.txt', 'dist/__app__/robots.txt')
-await copyFile('app/favicon.ico', 'dist/__app__/favicon.ico')
-await copyFile('app/favicon.svg', 'dist/__app__/favicon.svg')
-await copyFile('app/src/main.js', 'dist/__app__/src/main.js')
+let indexHtml = await readFile('app/index.html', 'utf-8')
+indexHtml = indexHtml.replace('%VITE_HTML_DEV_INJECT%', '')
+await writeFile('dist/__app__/index.html', indexHtml)
+
+await Promise.all([
+  copyFile('app/robots.txt', 'dist/__app__/robots.txt'),
+  copyFile('app/favicon.ico', 'dist/__app__/favicon.ico'),
+  copyFile('app/favicon.svg', 'dist/__app__/favicon.svg'),
+  copyFile('app/src/main.js', 'dist/__app__/src/main.js')
+])
+
 consola.log('\n-------\n')
 
 await buildWebcomponentBundle()
@@ -104,36 +106,3 @@ await buildWebcomponentBundle()
 // assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
 
 await rm('dist/__app__/src/lib/style.css')
-
-// await writeFile(
-//   'dist/__app__/tsconfig.json',
-//   JSON.stringify(
-//     {
-//       '$schema': 'https://json.schemastore.org/tsconfig',
-//       'compilerOptions': {
-//         'target': 'ES2020',
-//         'lib': [
-//           'DOM',
-//           'DOM.Iterable',
-//           'ESNext'
-//         ],
-//         'allowJs': true,
-//         'module': 'ESNext',
-//         'outDir': './dist',
-//         'strict': false,
-//         'esModuleInterop': true,
-//         'isolatedModules': true,
-//         'jsx': 'react-jsx',
-//         'rootDir': '.',
-//         'types': [
-//           'vite/client'
-//         ]
-//       },
-//       'include': [
-//         './src'
-//       ]
-//     },
-//     null,
-//     2
-//   )
-// )

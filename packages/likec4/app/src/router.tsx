@@ -3,11 +3,14 @@ import { useMemo } from 'react'
 import { NotFound } from './components/NotFound'
 import { routeTree } from './routeTree.gen'
 
+type RouteTree = typeof routeTree
+
 function createRouter(basepath: string) {
-  return createTanstackRouter({
+  return createTanstackRouter<RouteTree, 'preserve'>({
     routeTree,
     context: {},
     basepath,
+    trailingSlash: 'preserve',
     // defaultErrorComponent
     // defaultPendingMinMs: 600,
     // defaultPendingMs: 300,

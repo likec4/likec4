@@ -1,5 +1,6 @@
 import { Box, Flex, useMantineColorScheme } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { ComponentName } from '../const'
 import { cssWebcomponentIframeContainer, cssWebcomponentView } from './view.css'
 
 export const Route = createFileRoute('/webcomponent/$')({
@@ -46,7 +47,7 @@ function WebcomponentPage() {
     </head>
     <body>
       <script type="module" src="${jsurl.href}"></script>
-      <likec4-view view-id="${encodeURIComponent(viewId)}"></likec4-view>
+      <${ComponentName.View} view-id="${encodeURIComponent(viewId)}"></${ComponentName.View}>
     </body>
     </html>
   `

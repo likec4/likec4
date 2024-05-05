@@ -17,9 +17,22 @@ type HandlerParams = {
   base?: string | undefined
 
   useDotBin: boolean
+
+  webcomponentPrefix: string
 }
 
-export async function buildHandler({ path, useDotBin, output: outputDir, ...params }: HandlerParams) {
+export async function buildHandler({
+  path,
+  useDotBin,
+  webcomponentPrefix,
+  output: outputDir,
+  base
+}: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
-  await viteBuild({ ...params, languageServices, outputDir })
+  await viteBuild({
+    base,
+    webcomponentPrefix,
+    languageServices,
+    outputDir
+  })
 }

@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
-import { outdir, useDotBin } from '../options'
+import { outdir, path, useDotBin, webcomponentPrefix } from '../options'
 import { reactHandler } from './handler'
 import { handler as npmHandler } from './npm-package/handler'
 import { reactNexthandler } from './react-next'
@@ -18,13 +18,7 @@ export const codegenCmd = {
     // )
     yargs
       // .usage(`${k.bold('Usage:')} $0 codegen <output> [path]`)
-      .positional('path', {
-        type: 'string',
-        desc: 'directory with LikeC4 source files',
-        normalize: true
-      })
-      .coerce(['path'], resolve)
-      .default('path', resolve('.'), '.')
+      .positional('path', path)
       // ----------------------
       // npm package command
       .command(
@@ -76,24 +70,23 @@ export const codegenCmd = {
       .command({
         command: 'webcomponent [path]',
         aliases: ['wc', 'webcomp'],
-        describe: 'generate js with webcomponent',
+        describe: 'generate js with webcomponents',
         builder: yargs =>
           yargs
-            .options({
-              useDotBin,
-              outfile: {
-                alias: 'o',
-                type: 'string',
-                desc: '<file> output .js file',
-                normalize: true
-              }
+            .option('outfile', {
+              alias: 'o',
+              type: 'string',
+              desc: '<file> output .js file',
+              normalize: true
             })
-            .coerce(['outfile'], resolve),
+            .option('webcomponent-prefix', webcomponentPrefix)
+            .option('use-dot-bin', useDotBin),
         handler: async args => {
           await webcomponentHandler({
             useDotBin: args.useDotBin,
             path: args.path,
-            outfile: args.outfile
+            outfile: args.outfile,
+            webcomponentPrefix: args.webcomponentPrefix
           })
         }
       })
@@ -111,9 +104,9 @@ export const codegenCmd = {
                 type: 'string',
                 desc: '<file> output .tsx file',
                 normalize: true
-              },
-              useDotBin
+              }
             })
+            .option('use-dot-bin', useDotBin)
             .coerce(['outfile'], resolve),
         async args => {
           await reactHandler({
@@ -158,11 +151,8 @@ export const codegenCmd = {
         describe: 'generate graphviz files (.dot)',
         builder: yargs =>
           yargs
-            .options({
-              outdir,
-              useDotBin
-            })
-            .coerce(['outdir'], resolve),
+            .option('outdir', outdir)
+            .option('use-dot-bin', useDotBin),
         handler: async args => {
           await reactHandler({
             format: 'dot',
@@ -179,11 +169,8 @@ export const codegenCmd = {
         describe: 'generate D2 files (.d2)',
         builder: yargs =>
           yargs
-            .options({
-              outdir,
-              useDotBin
-            })
-            .coerce(['outdir'], resolve),
+            .option('outdir', outdir)
+            .option('use-dot-bin', useDotBin),
         handler: async args => {
           await reactHandler({
             format: 'd2',
@@ -201,11 +188,8 @@ export const codegenCmd = {
         describe: 'generate Mermaid files (.mmd)',
         builder: yargs =>
           yargs
-            .options({
-              outdir,
-              useDotBin
-            })
-            .coerce(['outdir'], resolve),
+            .option('outdir', outdir)
+            .option('use-dot-bin', useDotBin),
         handler: async args => {
           await reactHandler({
             format: 'mermaid',
@@ -215,7 +199,7 @@ export const codegenCmd = {
           })
         }
       }).epilog(`${k.bold('Examples:')}
-  likec4 gen react -o dist/likec4.generated.tsx ./src/likec4
+  likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot-bin ./src
   likec4 gen react -o dist/likec4.generated.tsx ./src/likec4
   likec4 gen views-data -o ./src/likec4-data.ts
   likec4 gen ts --outfile ../likec4.ts

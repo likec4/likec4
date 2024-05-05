@@ -48,7 +48,7 @@ export async function bundleApp() {
       chunkSizeWarningLimit: 2000,
       cssCodeSplit: false,
       cssMinify: true,
-      minify: true,
+      minify: 'esbuild',
       sourcemap: false,
       assetsInlineLimit: 0,
       target: 'esnext',
@@ -80,8 +80,8 @@ export async function bundleApp() {
       rollupOptions: {
         treeshake: true,
         output: {
-          // compact: true,
-          // exports: 'named'
+          compact: true,
+          exports: 'named'
         },
         external: [
           'virtual:likec4',
@@ -105,7 +105,9 @@ export async function bundleApp() {
         routesDirectory: resolve('app/src/routes'),
         quoteStyle: 'single'
       }),
-      vanillaExtractPlugin({})
+      vanillaExtractPlugin({
+        identifiers: 'short'
+      })
     ]
   })
 }

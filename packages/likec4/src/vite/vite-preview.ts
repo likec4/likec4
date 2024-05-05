@@ -1,14 +1,21 @@
+import type { LanguageServices } from '@/language-services'
 import { viteConfig } from '@/vite/config'
 import getPort, { portNumbers } from 'get-port'
 import { preview } from 'vite'
 import type { LikeC4ViteConfig } from './config.prod'
 
-type VitePreviewParams = LikeC4ViteConfig & {
+type VitePreviewParams = {
+  languageServices: LanguageServices
+  outputDir?: string | undefined
+  base?: string | undefined
   open?: boolean
 }
 
-export async function vitePreview(cfg?: VitePreviewParams) {
-  const { isDev, ...config } = await viteConfig(cfg)
+export async function vitePreview(cfg: VitePreviewParams) {
+  const { isDev, ...config } = await viteConfig({
+    ...cfg,
+    webcomponentPrefix: undefined
+  })
   const port = await getPort({
     port: portNumbers(62001, 62010)
   })

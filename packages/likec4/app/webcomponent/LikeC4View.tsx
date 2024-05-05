@@ -3,6 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { LikeC4Views } from 'virtual:likec4/views'
+import { ComponentName } from '../src/const'
 import { bundledStyles, IbmPlexSans, matchesColorScheme, prefersDark, theme } from './styles'
 
 // const genHostCss = (view: DiagramView, isKeepAspectRatio = true) =>
@@ -136,19 +137,24 @@ export class LikeC4View extends HTMLElement {
           nodesSelectable={false}
           keepAspectRatio={false}
           onNavigateTo={to => {
-            const fs = document.createElement('likec4-browser')
-            fs.setAttribute('view-id', to)
-            ;(this.parentElement ?? document.body).appendChild(fs)
+            this.openBrowser(to)
+          }}
+          onNodeClick={() => {
+            this.openBrowser()
           }}
           onCanvasClick={(e) => {
             e.stopPropagation()
-            const fs = document.createElement('likec4-browser')
-            fs.setAttribute('view-id', view.id)
-            ;(this.parentElement ?? document.body).appendChild(fs)
+            this.openBrowser()
           }}
         />
       </MantineProvider>
     )
+  }
+
+  openBrowser(viewId?: ViewID) {
+    const fs = document.createElement(ComponentName.Browser)
+    fs.setAttribute('view-id', viewId ?? this.view.id)
+    ;(this.parentElement ?? document.body).appendChild(fs)
   }
 
   attributeChangedCallback(_name: string) {

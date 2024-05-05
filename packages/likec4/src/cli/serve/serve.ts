@@ -1,5 +1,4 @@
 import { LanguageServices } from '@/language-services'
-import { printServerUrls } from '@/vite/printServerUrls'
 import { viteDev } from '@/vite/vite-dev'
 
 type HandlerParams = {
@@ -13,10 +12,21 @@ type HandlerParams = {
    * @default '/'
    */
   base?: string | undefined
+
+  webcomponentPrefix: string
 }
 
-export async function handler({ path, useDotBin, ...params }: HandlerParams) {
+export async function handler({
+  path,
+  useDotBin,
+  webcomponentPrefix,
+  base
+}: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
-  await viteDev({ ...params, languageServices })
+  await viteDev({
+    base,
+    webcomponentPrefix,
+    languageServices
+  })
 }

@@ -8,8 +8,14 @@ import { build, createServer } from 'vite'
 import { printServerUrls } from './printServerUrls'
 import { mkTempPublicDir } from './utils'
 
-export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
-  const { isDev, languageServices, ...config } = await viteConfig(cfg)
+export async function viteDev({
+  webcomponentPrefix = 'likec4',
+  ...cfg
+}: LikeC4ViteConfig): Promise<ViteDevServer> {
+  const { isDev, languageServices, ...config } = await viteConfig({
+    ...cfg,
+    webcomponentPrefix
+  })
   const port = await getPort({
     port: [
       5173,
@@ -26,6 +32,7 @@ export async function viteDev(cfg: LikeC4ViteConfig): Promise<ViteDevServer> {
   let webcomponentPromise: Promise<unknown> | undefined
   if (!isDev) {
     const webcomponentConfig = await viteWebcomponentConfig({
+      webcomponentPrefix,
       languageServices: languageServices,
       outDir: publicDir,
       base: config.base
