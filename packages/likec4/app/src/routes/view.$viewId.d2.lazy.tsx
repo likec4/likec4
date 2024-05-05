@@ -1,5 +1,5 @@
 import { Code, ScrollArea } from '@mantine/core'
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
@@ -9,9 +9,17 @@ export const Route = createLazyFileRoute('/view/$viewId/d2')({
   component: ViewAsD2
 })
 
-function ViewAsD2() {
+const useData = () => {
   const { viewId } = Route.useParams()
-  const source = d2Source(viewId)
+  try {
+    return d2Source(viewId)
+  } catch (error) {
+    throw notFound()
+  }
+}
+
+function ViewAsD2() {
+  const source = useData()
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsD2">
       <Panel>

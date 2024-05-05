@@ -79,7 +79,7 @@ const viewPages = [
     icon: <IconBrandReact opacity={0.7} size={16} />,
     title: (
       <>
-        React <Text component="span" size="xs" c={'dimmed'}>(pre 1.0)</Text>
+        React <Text component="span" size="xs" c={'dimmed'} ml={4}>(pre 1.0)</Text>
       </>
     )
   },
@@ -88,7 +88,7 @@ const viewPages = [
     icon: <IconFile opacity={0.7} size={16} />,
     title: (
       <>
-        Graphviz <Text component="span" size="xs" c={'dimmed'}>.dot</Text>
+        Graphviz <Text component="span" size="xs" c={'dimmed'} ml={4}>.dot</Text>
       </>
     )
   },

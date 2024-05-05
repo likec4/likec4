@@ -1,6 +1,7 @@
-import { Alert, Box, Burger, Button, Code, Container } from '@mantine/core'
+import { Alert, Box, Burger, Button, Code, Container, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { useUpdateEffect } from '@react-hookz/web'
+import { createFileRoute, isNotFound, Outlet } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { Header } from '../components/view-page/Header'
@@ -12,6 +13,28 @@ export const Route = createFileRoute('/view/$viewId')({
 })
 
 function Fallback({ error, resetErrorBoundary }: FallbackProps) {
+  const { viewId } = Route.useParams()
+
+  useUpdateEffect(() => {
+    resetErrorBoundary()
+  }, [viewId])
+
+  if (isNotFound(error)) {
+    return (
+      <Container my={'md'}>
+        <Alert variant="light" color="orange">
+          <Text c={'orange'} fz={'md'}>
+            The diagram{' '}
+            <Code color="orange">
+              {viewId}
+            </Code>{' '}
+            does not exist or contains errors
+          </Text>
+          <Button onClick={resetErrorBoundary} variant="light" color="orange" mt={'lg'} size="xs">Refresh</Button>
+        </Alert>
+      </Container>
+    )
+  }
   return (
     <Container my={'md'}>
       <Alert variant="filled" color="red" title={'Something went wrong'}>

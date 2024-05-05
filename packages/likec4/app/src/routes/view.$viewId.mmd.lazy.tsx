@@ -1,6 +1,6 @@
 import { Code, ScrollArea } from '@mantine/core'
 import { useAsync } from '@react-hookz/web'
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
@@ -23,9 +23,18 @@ const renderSvg = async (viewId: string, diagram: string) => {
   return svg
 }
 
+const useData = () => {
+  const { viewId } = Route.useParams()
+  try {
+    return mmdSource(viewId)
+  } catch (error) {
+    throw notFound()
+  }
+}
+
 function ViewAsMmd() {
   const { viewId } = Route.useParams()
-  const source = mmdSource(viewId)
+  const source = useData()
 
   const [mmdSvg, { execute }] = useAsync(renderSvg, null)
 
