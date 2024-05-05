@@ -1476,9 +1476,9 @@ __metadata:
   dependencies:
     "@likec4/core": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
-    "@mantine/core": "npm:^7.8.1"
-    "@mantine/hooks": "npm:^7.8.1"
-    "@mantine/vanilla-extract": "npm:^7.8.1"
+    "@mantine/core": "npm:^7.9.0"
+    "@mantine/hooks": "npm:^7.9.0"
+    "@mantine/vanilla-extract": "npm:^7.9.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/react": "npm:^18.2.0"
@@ -1498,10 +1498,10 @@ __metadata:
     react-dom: "npm:^18.2.0"
     remeda: "npm:^1.61.0"
     tilg: "npm:^0.1.1"
-    type-fest: "npm:^4.18.0"
+    type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
-    vite: "npm:^5.2.10"
+    vite: "npm:^5.2.11"
     vite-plugin-dts: "npm:^3.8.1"
     zustand: "npm:^4.5.2"
   peerDependencies:
@@ -1518,8 +1518,8 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/diagrams": "workspace:*"
-    "@mantine/core": "npm:^7.8.1"
-    "@mantine/hooks": "npm:^7.8.1"
+    "@mantine/core": "npm:^7.9.0"
+    "@mantine/hooks": "npm:^7.9.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -1529,9 +1529,9 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     tilg: "npm:^0.1.1"
-    tsx: "npm:^4.7.3"
+    tsx: "npm:~4.7.3"
     typescript: "npm:^5.4.5"
-    vite: "npm:^5.2.10"
+    vite: "npm:^5.2.11"
     vite-plugin-watch-and-run: "npm:^1.5.0"
   languageName: unknown
   linkType: soft
@@ -1594,7 +1594,7 @@ __metadata:
     next: "npm:13.4.19"
     nextra: "npm:^2.13.2"
     nextra-theme-docs: "npm:^2.13.2"
-    postcss: "npm:^8.4.35"
+    postcss: "npm:^8.4.38"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -1667,7 +1667,7 @@ __metadata:
     remeda: "npm:^1.61.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.18.0"
+    type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
     unbuild: "npm:^2.0.0"
@@ -1694,7 +1694,7 @@ __metadata:
     remeda: "npm:^1.61.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    type-fest: "npm:^4.18.0"
+    type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
     vitest: "npm:~1.5.2"
     word-wrap: "npm:^1.2.5"
@@ -1715,8 +1715,8 @@ __metadata:
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
-    "@mantine/core": "npm:^7.8.1"
-    "@mantine/hooks": "npm:^7.8.1"
+    "@mantine/core": "npm:^7.9.0"
+    "@mantine/hooks": "npm:^7.9.0"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.12.7"
@@ -1729,14 +1729,14 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     lucide-react: "npm:^0.294.0"
-    postcss: "npm:^8.4.35"
-    postcss-preset-mantine: "npm:^1.13.0"
+    postcss: "npm:^8.4.38"
+    postcss-preset-mantine: "npm:^1.15.0"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.13"
     typescript: "npm:^5.4.5"
-    vite: "npm:^5.2.10"
+    vite: "npm:^5.2.11"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
@@ -1756,10 +1756,10 @@ __metadata:
     lint-staged: "npm:^15.2.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:^4.7.3"
+    tsx: "npm:~4.7.3"
     turbo: "npm:^1.13.3"
     typescript: "npm:^5.4.5"
-    vite: "npm:^5.2.10"
+    vite: "npm:^5.2.11"
     vitest: "npm:~1.5.2"
   languageName: unknown
   linkType: soft
@@ -1771,9 +1771,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:^7.8.1":
-  version: 7.8.1
-  resolution: "@mantine/core@npm:7.8.1"
+"@mantine/core@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "@mantine/core@npm:7.9.0"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:2.1.0"
@@ -1782,28 +1782,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.8.1
+    "@mantine/hooks": 7.9.0
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10/17d533f10dac6d4cdce47825ca1abda0fe54883e255dfd06e588d13aa524692f09ac24bed79dea604f94afbe58d5c59591bdfbc71f591a9cb50ca49d43e6d6eb
+  checksum: 10/4dc6d7bb39e85d2c5ce7af60bb6ce6144976d8228167ff7d6b00402b3f900b7f64c7ed08c54bea1ca685f1e8b15bbca34fc4a7a3c06cf21153a0b507779d8fd5
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:^7.8.1":
-  version: 7.8.1
-  resolution: "@mantine/hooks@npm:7.8.1"
+"@mantine/hooks@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "@mantine/hooks@npm:7.9.0"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10/92a3aa551f36d998fbd5000876a3198ff43b39b4b52f05a0dbf7fbc20fa6403662406b6e54cfb004a49506f4738714c2b418e496d70c4d7ebd3157d41919183c
+  checksum: 10/2d0fc40278f32b8eebc82f611790555e8bc58b0b9e605c22128c503f8b7b4de4f4170320037536e3db32039913e5429c62a6e3d9254871217fb39ead34718572
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:^7.8.1":
-  version: 7.8.1
-  resolution: "@mantine/vanilla-extract@npm:7.8.1"
+"@mantine/vanilla-extract@npm:^7.9.0":
+  version: 7.9.0
+  resolution: "@mantine/vanilla-extract@npm:7.9.0"
   peerDependencies:
-    "@mantine/core": 7.8.1
-  checksum: 10/ed1a296fb870776d5be17bb7e5fe43cf7ed27e23bc8d98f8f91a622cf5bef3c797d406589cdf57f1943659cd9fa4496e02791a15916b9900b649f5f7325aa01c
+    "@mantine/core": 7.9.0
+  checksum: 10/8d64ba6c97f287854766799be3d075fc64e3afe907b6567db652d48409c592a4ce57c7b647044570fb2e53eb3fe0722f8baa404c4c7fabbf5c0f352e6a53d486
   languageName: node
   linkType: hard
 
@@ -4186,25 +4186,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/history@npm:1.28.9":
-  version: 1.28.9
-  resolution: "@tanstack/history@npm:1.28.9"
-  checksum: 10/af8794fcde0827b8207a871b4399760c9dc5724c54580ca4ea4671a1a631b6d3a586df4a40b3ccf8100d5fe67e8245f67978a788f52650f2586c9995bc7ff5ec
+"@tanstack/history@npm:1.31.16":
+  version: 1.31.16
+  resolution: "@tanstack/history@npm:1.31.16"
+  checksum: 10/5fc803aa806bd25bc67d88cdf52583911bdac5d508bba2d9738e6e60e3500f9f523f2f6efc65532eda22fc694aa285e8a20f22bb76836e8cf815f32826f7938e
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.31.3":
-  version: 1.31.3
-  resolution: "@tanstack/react-router@npm:1.31.3"
+"@tanstack/react-router@npm:^1.31.19":
+  version: 1.31.19
+  resolution: "@tanstack/react-router@npm:1.31.19"
   dependencies:
-    "@tanstack/history": "npm:1.28.9"
+    "@tanstack/history": "npm:1.31.16"
     "@tanstack/react-store": "npm:^0.2.1"
     tiny-invariant: "npm:^1.3.1"
     tiny-warning: "npm:^1.0.3"
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10/963784f3c51e091c859d3e2f7e797720ef0aa669a56dcb16c887cedd83a80c11265011221816cd059b5eb9cab700b19950e93394b76ca7ad4d3fbcdb3d04c332
+  checksum: 10/e5980fa61eda8660b251d74b1a2eef09cf4579ed0a22894cd4afbc5f67e0f221ac93c5a718a0cfeccb7bd8ae424b35f0e6b6494f31358aa42c9b8f1c821ec47b
   languageName: node
   linkType: hard
 
@@ -4231,9 +4231,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-vite-plugin@npm:^1.30.0":
-  version: 1.30.0
-  resolution: "@tanstack/router-vite-plugin@npm:1.30.0"
+"@tanstack/router-vite-plugin@npm:^1.31.18":
+  version: 1.31.18
+  resolution: "@tanstack/router-vite-plugin@npm:1.31.18"
   dependencies:
     "@babel/core": "npm:^7.23.7"
     "@babel/generator": "npm:^7.23.6"
@@ -4251,7 +4251,7 @@ __metadata:
     "@types/babel__traverse": "npm:^7.20.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
     zod: "npm:^3.22.4"
-  checksum: 10/5e86782b03634e2bfe5aaa9368ff2332ebcaa94159fdb3f524e31ca8aec360f3db441a52abc46fdfb2cf2f0a55249cb3df6ca6d3b7e29d5eaa937c36570fdb68
+  checksum: 10/93211a9ab46a9791be7fc7440f2cbd42241620f33ce006ede2cab4188488e502ce0c11cf02e3802ac5dbaed15b1b36d98d302ff4b32557a8e8200a86000b870c
   languageName: node
   linkType: hard
 
@@ -6789,7 +6789,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:^4.7.3"
+    tsx: "npm:~4.7.3"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
   bin:
@@ -8862,11 +8862,11 @@ __metadata:
   linkType: hard
 
 "get-tsconfig@npm:^4.7.2":
-  version: 4.7.2
-  resolution: "get-tsconfig@npm:4.7.2"
+  version: 4.7.3
+  resolution: "get-tsconfig@npm:4.7.3"
   dependencies:
     resolve-pkg-maps: "npm:^1.0.0"
-  checksum: 10/f21135848fb5d16012269b7b34b186af7a41824830f8616aba17a15eb4d9e54fdc876833f1e21768395215a826c8145582f5acd594ae2b4de3284d10b38d20f8
+  checksum: 10/7397bb4f8aef936df4d9016555b662dcf5279f3c46428b7c7c1ff5e94ab2b87d018b3dda0f4bc1a28b154d5affd0eac5d014511172c085fd8a9cdff9ea7fe043
   languageName: node
   linkType: hard
 
@@ -10806,16 +10806,16 @@ __metadata:
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@mantine/core": "npm:^7.8.1"
-    "@mantine/hooks": "npm:^7.8.1"
+    "@mantine/core": "npm:^7.9.0"
+    "@mantine/hooks": "npm:^7.9.0"
     "@nanostores/react": "npm:^0.7.2"
     "@radix-ui/react-icons": "npm:^1.3.0"
     "@radix-ui/themes": "npm:^2.0.3"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons": "npm:^2.47.0"
     "@tabler/icons-react": "npm:^2.47.0"
-    "@tanstack/react-router": "npm:^1.31.3"
-    "@tanstack/router-vite-plugin": "npm:^1.30.0"
+    "@tanstack/react-router": "npm:^1.31.19"
+    "@tanstack/router-vite-plugin": "npm:^1.31.18"
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.12.7"
     "@types/prop-types": "npm:^15.7.11"
@@ -10840,12 +10840,12 @@ __metadata:
     get-port: "npm:^7.1.0"
     json5: "npm:^2.2.3"
     mkdirp: "npm:^3.0.1"
-    nanostores: "npm:^0.10.0"
+    nanostores: "npm:^0.10.3"
     picocolors: "npm:^1.0.0"
     pkg-up: "npm:^5.0.0"
     playwright: "npm:1.42.1"
-    postcss: "npm:^8.4.35"
-    postcss-preset-mantine: "npm:^1.13.0"
+    postcss: "npm:^8.4.38"
+    postcss-preset-mantine: "npm:^1.15.0"
     pretty-ms: "npm:^8.0.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.2.0"
@@ -10857,11 +10857,11 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.30.0"
-    tsx: "npm:^4.7.3"
-    type-fest: "npm:^4.18.0"
+    tsx: "npm:~4.7.3"
+    type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
-    vite: "npm:^5.2.10"
+    vite: "npm:^5.2.11"
     vite-plugin-css-injected-by-js: "npm:^3.5.1"
     vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:~1.5.2"
@@ -13169,10 +13169,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanostores@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "nanostores@npm:0.10.0"
-  checksum: 10/892c3deb62dc6a7cb87f2229f2876669369e9daa6b125e02956369b6f606f4251a5878387e7785cc30e01de69f4a4776da347df465dd641671cc3f13baf6c718
+"nanostores@npm:^0.10.3":
+  version: 0.10.3
+  resolution: "nanostores@npm:0.10.3"
+  checksum: 10/f5084dffebf692986f6bddad23e948696c904dcdbe0bee68ea031b5e6dfd64422ad9c0039f75e6314ae27390feee741a5bbb8053c4ec333f8d9ca0c232307346
   languageName: node
   linkType: hard
 
@@ -14357,15 +14357,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-preset-mantine@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "postcss-preset-mantine@npm:1.13.0"
+"postcss-preset-mantine@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "postcss-preset-mantine@npm:1.15.0"
   dependencies:
     postcss-mixins: "npm:^9.0.4"
     postcss-nested: "npm:^6.0.1"
   peerDependencies:
     postcss: ">=8.0.0"
-  checksum: 10/d1d84c77b9f1fc292d5ab47b54a05631a002dd0bb6e5ef29bbd604b0bec36fc3b8ca5c735d1a3d1b081f31c3343d5498262ffe643a318577e8d1fac8b4f32934
+  checksum: 10/a2539013970cd05965a62ba3a49ea1545914c67005f444e6d620c5abb90939158e47df5012e73d7d588ccf1c49ba71c91be7c1a891555eacb3e23c42ab7448b5
   languageName: node
   linkType: hard
 
@@ -16910,7 +16910,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.7.3":
+"tsx@npm:~4.7.3":
   version: 4.7.3
   resolution: "tsx@npm:4.7.3"
   dependencies:
@@ -17069,10 +17069,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.12.0, type-fest@npm:^4.18.0":
-  version: 4.18.0
-  resolution: "type-fest@npm:4.18.0"
-  checksum: 10/038fab7f07e4b2646d0c6a52be278bcf8171e733b6af29b605416e138914eb9d29d6ad6e3fb786ebe56eada3f127f690d3cf8fd0fb59e7c2efda9b31cde23082
+"type-fest@npm:^4.12.0, type-fest@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "type-fest@npm:4.18.1"
+  checksum: 10/ff76e19cb969854161fea2de854073f346e159f5efff05906ece93cbde8a7161b9374121aca53782b44f754152cbacc70264c90ca1acc81ca917723acce5054f
   languageName: node
   linkType: hard
 
@@ -17909,9 +17909,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.0.0, vite@npm:^5.0.11, vite@npm:^5.0.4, vite@npm:^5.2.10":
-  version: 5.2.10
-  resolution: "vite@npm:5.2.10"
+"vite@npm:^5.0.0, vite@npm:^5.0.11, vite@npm:^5.0.4, vite@npm:^5.2.11":
+  version: 5.2.11
+  resolution: "vite@npm:5.2.11"
   dependencies:
     esbuild: "npm:^0.20.1"
     fsevents: "npm:~2.3.3"
@@ -17945,7 +17945,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/a0c4ac7b95e9a2a59f4e73e5b42a63f33569f5ec505af9dd019f19ff419fd20d66ad9aad6708987d4da173d485358f0024f410af78ac97cf5c92a38f8c96c451
+  checksum: 10/ee0ad038f0831c9514796522deb1e2dcb84bc311abbccb77e4b12216d37fc9559137f4f1b8e75187d51007b954e845c6518e36ee3acac2e2a2789c1181ebb16c
   languageName: node
   linkType: hard
 

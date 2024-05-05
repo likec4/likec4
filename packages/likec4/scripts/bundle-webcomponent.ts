@@ -43,6 +43,7 @@ export async function buildWebcomponentBundle() {
       sourcemap: false,
       minify: 'esbuild',
       copyPublicDir: false,
+      chunkSizeWarningLimit: 2000,
       target: 'esnext',
       lib: {
         entry: 'webcomponent/webcomponent.tsx',
