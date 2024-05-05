@@ -1,7 +1,7 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
 import type { InternalNode, ReactFlowProps, XYPosition } from '@xyflow/react'
-import { getNodeDimensions, isInternalNodeBase } from '@xyflow/system'
+import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { useDiagramStoreApi } from '../../state'
@@ -116,12 +116,13 @@ class Leaf extends Rect {
     this.id = xynode.id
 
     // const isEditing: boolean = xynode.dragging ?? false
-    const pos = xynode.internals.positionAbsolute
+    const x = Math.ceil(xynode.internals.positionAbsolute.x)
+    const y = Math.ceil(xynode.internals.positionAbsolute.y)
 
     const { width, height } = getNodeDimensions(xynode)
 
-    this.maxX = new Expression(this.minX, width)
-    this.maxY = new Expression(this.minY, height)
+    this.maxX = new Expression(this.minX, Math.ceil(width))
+    this.maxY = new Expression(this.minY, Math.ceil(height))
 
     // solver.createConstraint(this.width, Operator.Eq, width, Strength.required)
     // solver.createConstraint(this.height, Operator.Eq, height, Strength.required)
@@ -130,12 +131,12 @@ class Leaf extends Rect {
       const superStrong = Strength.create(100, 0, 0)
       solver.addEditVariable(this.minX, superStrong)
       solver.addEditVariable(this.minY, superStrong)
-      solver.suggestValue(this.minX, pos.x)
-      solver.suggestValue(this.minY, pos.y)
+      solver.suggestValue(this.minX, x)
+      solver.suggestValue(this.minY, y)
     } else {
       const halfMedium = Strength.create(0.0, 1.0, 0.0, 0.5)
-      solver.createConstraint(this.minX, Operator.Eq, pos.x, halfMedium)
-      solver.createConstraint(this.minY, Operator.Eq, pos.y, halfMedium)
+      solver.createConstraint(this.minX, Operator.Eq, x, halfMedium)
+      solver.createConstraint(this.minY, Operator.Eq, y, halfMedium)
       // const weaker = Strength.create(0.0, 0.0, 1.0, 0.5)
       // const weak = Strength.create(0.0, 0.0, 1.0)
       // const x = new Expr(
@@ -217,13 +218,26 @@ function createLayoutConstraints(
           return n
         }
         const dimensions = rect.dimensions
-        return {
-          ...n,
-          position: rect.position,
-          width: dimensions.width,
-          height: dimensions.height,
-          measured: dimensions
+        const newXY = rect.position
+
+        if (newXY.x !== n.position.x || newXY.y !== n.position.y) {
+          return {
+            ...n,
+            position: rect.position,
+            width: dimensions.width,
+            height: dimensions.height,
+            measured: dimensions
+          }
         }
+        if (dimensions.width !== n.width || dimensions.height !== n.height) {
+          return {
+            ...n,
+            width: dimensions.width,
+            height: dimensions.height,
+            measured: dimensions
+          }
+        }
+        return n
       })
     )
   }
@@ -234,14 +248,11 @@ function createLayoutConstraints(
    * Move the editing node to the given position.
    */
   function onNodeDrag(xynode: XYFlowNode) {
-    const pos = isInternalNodeBase(xynode) ? xynode.internals.positionAbsolute : xynode.position
+    const pos = nodeLookup.get(xynode.id)!.internals.positionAbsolute
     const rect = nonNullable(rects.get(xynode.id))
-    solver.suggestValue(rect.minX, pos.x)
-    solver.suggestValue(rect.minY, pos.y)
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId)
-    }
-    animationFrameId = requestAnimationFrame(() => {
+    solver.suggestValue(rect.minX, Math.ceil(pos.x))
+    solver.suggestValue(rect.minY, Math.ceil(pos.y))
+    animationFrameId ??= requestAnimationFrame(() => {
       updateXYFlowNodes()
       animationFrameId = null
     })
