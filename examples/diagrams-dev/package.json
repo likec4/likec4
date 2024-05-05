@@ -22,8 +22,8 @@
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
-    "@mantine/core": "^7.8.1",
-    "@mantine/hooks": "^7.8.1",
+    "@mantine/core": "^7.9.0",
+    "@mantine/hooks": "^7.9.0",
     "@react-hookz/web": "^24.0.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -33,9 +33,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "tsx": "^4.7.3",
+    "tsx": "~4.7.3",
     "typescript": "^5.4.5",
-    "vite": "^5.2.10",
+    "vite": "^5.2.11",
     "vite-plugin-watch-and-run": "^1.5.0"
   }
 }

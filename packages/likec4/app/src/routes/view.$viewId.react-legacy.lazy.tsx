@@ -1,7 +1,6 @@
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
+import { createLazyFileRoute, notFound, useRouter } from '@tanstack/react-router'
 
 import { useCallback } from 'react'
-import { DiagramNotFound } from '../components/DiagramNotFound'
 import { useLikeC4View } from '../data'
 import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
@@ -24,7 +23,7 @@ function ViewReactLegacy() {
   }, [router])
 
   if (!view) {
-    return <DiagramNotFound viewId={viewId} />
+    throw notFound()
   }
 
   return (

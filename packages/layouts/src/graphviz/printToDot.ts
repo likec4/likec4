@@ -155,8 +155,8 @@ export function toGraphvisModel({
     [_.fontsize]: pxToPoints(20),
     [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
     [_.shape]: 'rect',
-    [_.width]: pxToInch(320),
-    [_.height]: pxToInch(180),
+    [_.width]: pxToInch(330),
+    [_.height]: pxToInch(185),
     [_.style]: 'filled,rounded',
     [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
     [_.color]: Theme.elements[DefaultThemeColor].stroke,
@@ -235,14 +235,14 @@ export function toGraphvisModel({
     switch (elementNode.shape) {
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`
+          [_.margin]: `${pxToInch(30)},${pxToInch(32)}`
         })
         break
       }
       case 'queue': {
         node.attributes.apply({
-          [_.width]: pxToInch(320),
-          [_.height]: pxToInch(160),
+          [_.width]: pxToInch(330),
+          [_.height]: pxToInch(170),
           [_.margin]: `${pxToInch(30)},${pxToInch(26)}`
         })
         break

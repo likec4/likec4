@@ -28,7 +28,7 @@ const generatedStore = {
 import { map } from 'nanostores'
 import { LikeC4Views } from 'virtual:likec4/views'
 
-let keys = new Set(...Object.keys(LikeC4Views))
+let keys = new Set(Object.keys(LikeC4Views))
 export const $views = map(LikeC4Views)
 
 if (import.meta.env.DEV) {
@@ -43,7 +43,7 @@ if (import.meta.env.DEV) {
       }
       for (const key of keys) {
         if (!newKeys.has(key)) {
-          $views.removeKey(key)
+          $views.setKey(key, undefined)
         }
       }
       keys = newKeys

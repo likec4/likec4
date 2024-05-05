@@ -172,7 +172,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredEdgeId = null
               hoveredNodeId = null
 
-              // Update history stack
+              // Update history stack (back button not implemented yet)
               previousViews = [
                 currentView,
                 ...previousViews.filter((v) => v.id !== view.id && v.id !== currentView.id)
@@ -241,33 +241,67 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               nonexhaustive(change)
             }
-            const { view, updateView } = get()
-            let hasChanges = false
-            const nextNodes = view.nodes.map((node) => {
-              const shape = newShapes.get(node.id)
-              if (shape && shape !== node.shape) {
-                hasChanges = true
-                node = {
-                  ...node,
-                  shape
+            // TODO: Update positions/sizes
+            // const { view, updateView } = get()
+            // let hasChanges = false
+            // const nextNodes = view.nodes.map((node) => {
+            //   const shape = newShapes.get(node.id)
+            //   if (shape && shape !== node.shape) {
+            //     hasChanges = true
+            //     node = {
+            //       ...node,
+            //       shape
+            //     }
+            //   }
+            //   const color = newColor.get(node.id)
+            //   if (color && color !== node.color) {
+            //     hasChanges = true
+            //     node = {
+            //       ...node,
+            //       color
+            //     }
+            //   }
+            //   return node
+            // })
+            // if (hasChanges) {
+            //   updateView({
+            //     ...view,
+            //     nodes: nextNodes
+            //   })
+            // }
+            get().xyflow.setNodes(nodes =>
+              nodes.map(node => {
+                let { data } = node
+                const shape = newShapes.get(data.fqn)
+                if (shape && shape !== data.element.shape) {
+                  node = {
+                    ...node,
+                    data: {
+                      ...data,
+                      element: {
+                        ...data.element,
+                        shape
+                      }
+                    }
+                  }
+                  data = node.data
                 }
-              }
-              const color = newColor.get(node.id)
-              if (color && color !== node.color) {
-                hasChanges = true
-                node = {
-                  ...node,
-                  color
+                const color = newColor.get(data.fqn)
+                if (color && color !== data.element.color) {
+                  node = {
+                    ...node,
+                    data: {
+                      ...data,
+                      element: {
+                        ...data.element,
+                        color
+                      }
+                    }
+                  }
                 }
-              }
-              return node
-            })
-            if (hasChanges) {
-              updateView({
-                ...view,
-                nodes: nextNodes
+                return node
               })
-            }
+            )
             get().onChange?.({ changes })
           },
 

@@ -1,7 +1,6 @@
 // import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
 import { LikeC4Diagram } from '@likec4/diagram'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { DiagramNotFound } from '../components'
+import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from '../data'
 
 export const Route = createFileRoute('/view/$viewId/')({
@@ -14,7 +13,7 @@ function ViewReact() {
   const view = useLikeC4View(viewId)
 
   if (!view) {
-    return <DiagramNotFound viewId={viewId} />
+    throw notFound()
   }
 
   return (

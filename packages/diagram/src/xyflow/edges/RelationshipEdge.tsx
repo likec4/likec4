@@ -1,5 +1,6 @@
 import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
-import { Box } from '@mantine/core'
+import { Box, Text } from '@mantine/core'
+import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
 import clsx from 'clsx'
@@ -10,7 +11,17 @@ import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
-import { container, cssEdgePath, edgeLabel, edgeLabelBody, edgePathBg, fillStrokeCtx } from './edges.css'
+import { toDomPrecision } from '../utils'
+import {
+  container,
+  cssEdgePath,
+  edgeLabel,
+  edgeLabelBody,
+  edgePathBg,
+  fillStrokeCtx,
+  varLabelX,
+  varLabelY
+} from './edges.css'
 import { getEdgeParams } from './utils'
 // import { getEdgeParams } from './utils'
 
@@ -59,20 +70,25 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
+// If points are within 2px, consider them the same
+const isSamePoint = (a: number, b: number) => {
+  return Math.abs(a - b) < 2.1
+}
+
+const isSamePosition = (a: XYPosition, [bx, by]: Point) => {
+  return isSamePoint(a.x, bx) && isSamePoint(a.y, by)
+}
+
 const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
   prev.id === next.id
   && prev.source === next.source
   && prev.target === next.target
-  && prev.sourceX === next.sourceX
-  && prev.sourceY === next.sourceY
-  && prev.targetX === next.targetX
-  && prev.targetY === next.targetY
+  && isSamePoint(prev.sourceX, next.sourceX)
+  && isSamePoint(prev.sourceY, next.sourceY)
+  && isSamePoint(prev.targetX, next.targetX)
+  && isSamePoint(prev.targetY, next.targetY)
   && eq(prev.data, next.data)
 )
-
-function isSamePoint(a: XYPosition, b: Point) {
-  return a.x === b[0] && a.y === b[1]
-}
 
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
@@ -84,12 +100,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
-  const { nodeLookup } = useXYStoreApi().getState()
+  const { nodeLookup, edgeLookup } = useXYStoreApi().getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
 
-  const isNotModified = isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-    && isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position)
+  const isNotModified = isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+    && isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
   invariant(data, 'data is required')
   const {
@@ -185,10 +201,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             className={clsx(container, edgeLabel)}
             data-likec4-color={color}
             style={{
-              top: labelY,
-              left: labelX,
+              ...assignInlineVars({
+                [varLabelX]: toDomPrecision(labelX) + 'px',
+                [varLabelY]: toDomPrecision(labelY) + 'px'
+              }),
               maxWidth: data.label.bbox.width + 10,
-              zIndex: ZIndexes.Edge
+              zIndex: edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
             }}
             mod={{
               'data-edge-hovered': isHovered
