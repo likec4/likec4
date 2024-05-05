@@ -11,22 +11,8 @@
       "dependsOn": ["generate", "^build"],
       "outputs": ["dist/**", ".tsbuildinfo/**"]
     },
-    "lint": {
-      "cache": false,
-      "outputs": []
-    },
-    "test": {
-      "cache": false,
-      "outputs": [],
-      "dependsOn": ["^build"]
-    },
     "clean": {
       "cache": false
-    },
-    "dev": {
-      "dependsOn": ["build"],
-      "cache": false,
-      "persistent": true
     }
   },
   "globalDependencies": [

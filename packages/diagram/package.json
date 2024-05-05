@@ -38,12 +38,12 @@
   },
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "prepack": "vite build --mode production",
     "build:turbo": "run -T turbo build --filter='diagram'",
     "build": "vite build --mode development && tsc -b",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist bundle"
+    "clean": "run -T rimraf -v dist/* .tsbuildinfo"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

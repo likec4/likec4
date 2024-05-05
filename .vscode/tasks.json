@@ -30,9 +30,20 @@
       ],
       "group": {
         "kind": "build",
-        "isDefault": true
       },
       "label": "tsc: watch"
+    },
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "tsc: build"
     }
   ]
 }
