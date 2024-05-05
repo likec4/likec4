@@ -79,7 +79,7 @@ export const title = style({
   textAlign: 'center',
   fontWeight: 500,
   fontSize: rem(19),
-  lineHeight: 1.22,
+  lineHeight: 1.2,
   textWrap: 'balance',
   color: vars.element.hiContrast
 })
@@ -91,7 +91,7 @@ export const description = style({
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: rem(14),
-  lineHeight: 1.2,
+  lineHeight: 1.125,
   textAlign: 'center',
   textWrap: 'pretty',
   color: vars.element.loContrast,
@@ -107,7 +107,7 @@ export const technology = style({
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: rem(12),
-  lineHeight: 1.25,
+  lineHeight: 1.125,
   textAlign: 'center',
   textWrap: 'balance',
   opacity: 0.92,
@@ -145,7 +145,8 @@ export const cssElement = style({
       paddingTop: rem(34)
     },
     ':where([data-likec4-shape="browser"]) &': {
-      paddingTop: rem(36)
+      paddingTop: rem(32),
+      paddingBottom: rem(28)
     }
   }
 })

@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { globalStyle, style } from '@vanilla-extract/css'
+import { createVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
@@ -74,7 +74,14 @@ export const cssEdgePath = style({
   }
 })
 
+export const varLabelX = createVar('label-x')
+export const varLabelY = createVar('label-y')
+
+const varTranslate = createVar('translate')
+
 export const edgeLabel = style({
+  top: 0,
+  left: 0,
   fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
@@ -86,10 +93,18 @@ export const edgeLabel = style({
   width: 'max-content',
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: '3px',
+  transform: varTranslate,
+  willChange: 'transform',
+  vars: {
+    // [varTranslate]: `translate(calc(${varLabelX} - 50%), calc(${varLabelY} - 50%))`,
+    [varTranslate]: `translate(${varLabelX}, ${varLabelY})`,
+    [varLabelX]: '50%',
+    [varLabelY]: '50%'
+  },
   selectors: {
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
-      transform: 'scale(1.1)'
+      transform: `${varTranslate} scale(1.1)`
     }
   }
 })
@@ -97,7 +112,7 @@ export const edgeLabel = style({
 export const edgeLabelBody = style({
   // display: 'inline',
   color: xyvars.edge.labelColor,
-  fontSize: rem(12),
-  // lineHeight: 1.1,
+  fontSize: rem(12.5),
+  lineHeight: 1.12,
   transition: 'color 120ms ease-out'
 })

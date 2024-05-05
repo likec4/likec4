@@ -46,10 +46,6 @@ function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   return handles
 }
 
-function nodeZIndex<N extends Pick<DiagramNode, 'children' | 'level'>>(node: N) {
-  return node.children.length > 0 ? 0 : node.level + 1
-}
-
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'nodes' | 'edges'>,
   opts: {
@@ -97,7 +93,6 @@ export function diagramViewToXYFlowData(
       position.x -= parent.position[0]
       position.y -= parent.position[1]
     }
-    const zIndex = nodeZIndex(node)
 
     // const outEdges = node.outEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
     // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
@@ -114,7 +109,7 @@ export function diagramViewToXYFlowData(
       selectable: opts.selectable,
       deletable: false,
       position,
-      zIndex,
+      zIndex: node.level + (isCompound ? 1 : 0),
       hidden: false,
       /*       initialWidth: node.width,
       initialHeight: node.height, */
@@ -165,7 +160,7 @@ export function diagramViewToXYFlowData(
     invariant(hasAtLeast(edge.points, 2), 'edge should have at least 2 points')
     // invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
 
-    const level = Math.min(nodeById(source).level, nodeById(target).level)
+    const level = Math.max(nodeById(source).level, nodeById(target).level)
 
     editor.edges.push({
       id,
