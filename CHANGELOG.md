@@ -1,3 +1,7 @@
+# [1.0.0-rc.1](https://github.com/likec4/likec4/compare/v1.0.0-next.14...v1.0.0-rc.1) (2024-05-06)
+
+
+
 # [1.0.0-next.14](https://github.com/likec4/likec4/compare/v0.60.4...v1.0.0-next.14) (2024-04-30)
 
 PRE-RELEASE
