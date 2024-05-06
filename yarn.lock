@@ -1659,7 +1659,7 @@ __metadata:
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
     langium: "npm:^3.0.0"
-    langium-cli: "npm:^3.0.1"
+    langium-cli: "npm:^3.0.3"
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
@@ -10662,9 +10662,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "langium-cli@npm:3.0.1"
+"langium-cli@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "langium-cli@npm:3.0.3"
   dependencies:
     chalk: "npm:~5.3.0"
     commander: "npm:~11.0.0"
@@ -10675,7 +10675,7 @@ __metadata:
     lodash: "npm:~4.17.21"
   bin:
     langium: bin/langium.js
-  checksum: 10/fa12106cf583c37c760127f26958a0af63e661c4fb538242aa43a2e553acce6d97e81f5d3cba30bd2df30c694c9705fb7372f26df03fa5bad2e995413ce2acb8
+  checksum: 10/e42ea5ca449c8c44ed3ca874d69463b9f89ea917a98f54544251879fce8e837f85ba06597cbf514ff02681f55de38d180ad1a179bb1fa5d3d31a7206c2bb011f
   languageName: node
   linkType: hard
 

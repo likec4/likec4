@@ -84,7 +84,7 @@
     "@types/object-hash": "^3.0.6",
     "@types/string-hash": "^1",
     "execa": "^8.0.1",
-    "langium-cli": "^3.0.1",
+    "langium-cli": "^3.0.3",
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
