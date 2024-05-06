@@ -1577,7 +1577,7 @@ __metadata:
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.88.0"
@@ -1622,7 +1622,7 @@ __metadata:
   resolution: "@likec4/generators@workspace:packages/generators"
   dependencies:
     "@likec4/core": "workspace:*"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
     remeda: "npm:^1.61.0"
@@ -1653,7 +1653,7 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
     "@total-typescript/ts-reset": "npm:^0.5.1"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@types/object-hash": "npm:^3.0.6"
     "@types/string-hash": "npm:^1"
     execa: "npm:^8.0.1"
@@ -1685,7 +1685,7 @@ __metadata:
     "@hpcc-js/wasm": "npm:^2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/graph": "workspace:*"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     esm-env: "npm:^1.0.0"
     execa: "npm:^8.0.1"
     indent-string: "npm:^5.0.0"
@@ -1719,7 +1719,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.9.0"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/vscode": "npm:~1.88.0"
@@ -1746,7 +1746,7 @@ __metadata:
   resolution: "@likec4/workspaces@workspace:."
   dependencies:
     "@babel/preset-typescript": "npm:^7.23.3"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@vitest/ui": "npm:~1.5.2"
     dprint: "npm:^0.45.1"
     esbuild: "npm:^0.20.2"
@@ -4770,7 +4770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0, @types/node@npm:^20.12.7":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=8.9.0":
   version: 20.12.7
   resolution: "@types/node@npm:20.12.7"
   dependencies:
@@ -4785,6 +4785,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10/654194d4f3cc5867e5525a39647773a12c0c7175972bc4d288cdc74991fc969be2a9689267a3dc1cc5c5c7617e8f7c4769ac4829525726cd3e2f60eb238c1ff4
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.12.8":
+  version: 20.12.9
+  resolution: "@types/node@npm:20.12.9"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10/289445d9cfe49ad21fe55d25ccad44d786a616a96118916332a7d5d338632329fc8a281d486afd0929934641fa55b82ca23171a120b37d6f540d400df6d2ca68
   languageName: node
   linkType: hard
 
@@ -6785,7 +6794,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-likec4@workspace:packages/create-likec4"
   dependencies:
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
@@ -10817,7 +10826,7 @@ __metadata:
     "@tanstack/react-router": "npm:^1.31.19"
     "@tanstack/router-vite-plugin": "npm:^1.31.18"
     "@types/mermaid": "npm:^9.2.0"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.12.8"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"

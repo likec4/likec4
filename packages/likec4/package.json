@@ -75,7 +75,7 @@
     "@tanstack/react-router": "^1.31.19",
     "@tanstack/router-vite-plugin": "^1.31.18",
     "@types/mermaid": "^9.2.0",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.8",
     "@types/prop-types": "^15.7.11",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

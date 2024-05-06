@@ -72,7 +72,7 @@
     "@hpcc-js/wasm": "^2.16.2",
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.8",
     "typescript": "^5.4.5",
     "vitest": "~1.5.2"
   },
