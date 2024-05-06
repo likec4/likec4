@@ -1,3 +1,43 @@
+# [1.0.0-rc.1](https://github.com/likec4/likec4/compare/v1.0.0-next.14...v1.0.0-rc.1) (2024-05-06)
+
+### 🚀 Features  
+
+- **LikeC4 views as webcomponents**     
+  Generates JS with custom elements:
+
+  ```html
+    <script src="https://published.website/likec4-views.js"></script>
+    <likec4-view view-id="index"></likec4-view>    
+  ```
+
+  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent` 
+  
+- **New predicate `<->`**  
+  Include relationships of both directions between elements:
+  ```zig
+  view {
+     include someA.* <-> someB.*
+  }
+  ```
+
+- **Pre-bundled CLI**  
+  Builds and exports are 6-8x times faster  
+
+- **New renderer**  
+  Fast and responsive views on any device, based on [xyflow](https://www.xyflow.com/)
+
+- **Editor**  
+  VSCode Preview allows to change color, shape and switch auto-layout.  
+  Changes are persistent and update sources.
+  
+  Also available in preview (via CLI), but changes are not saved back.
+
+### In Progress
+
+- Editor: manual layout
+- New docs
+
+
 # [1.0.0-next.14](https://github.com/likec4/likec4/compare/v0.60.4...v1.0.0-next.14) (2024-04-30)
 
 PRE-RELEASE
