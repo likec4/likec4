@@ -47,6 +47,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
 
   const webcomponentPrefix = cfg?.webcomponentPrefix ?? 'likec4'
 
+  // Explicitly set NODE_ENV to development
+  process.env['NODE_ENV'] = 'development'
+
   return {
     isDev: true,
     webcomponentPrefix,

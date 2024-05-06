@@ -34,7 +34,7 @@ export class LikeC4View extends HTMLElement {
       width: 100%;
       height: auto;
       aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-      max-height: ${Math.ceil(1.011 * view.height)}px;
+      max-height: ${Math.ceil(1.01 * view.height)}px;
     }`
       : `:host {
       width: 100%;
@@ -108,7 +108,7 @@ export class LikeC4View extends HTMLElement {
           zoomable={false}
           background={'transparent'}
           fitView
-          fitViewPadding={0.01}
+          fitViewPadding={0.012}
           showElementLinks
           controls={false}
           nodesSelectable={false}

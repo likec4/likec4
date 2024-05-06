@@ -7,14 +7,14 @@ export const container = style({
   vars: {
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
-    [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 15%)`,
+    [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
     [xyvars.edge.strokeWidth]: '2.5px'
   },
   selectors: {
     [mantine.darkSelector]: {
-      // mixBlendMode: 'luminosity',
       vars: {
+        [xyvars.edge.labelColor]: vars.relation.labelColor,
         [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 75%)`
       }
     }
@@ -102,6 +102,9 @@ export const edgeLabel = style({
     [varLabelY]: '50%'
   },
   selectors: {
+    [mantine.darkSelector]: {
+      mixBlendMode: 'luminosity'
+    },
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: `${varTranslate} scale(1.1)`

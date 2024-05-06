@@ -12,6 +12,7 @@ import {
   UnstyledButton
 } from '@mantine/core'
 import clsx from 'clsx'
+import { useId } from 'react'
 import { clamp } from 'remeda'
 import { Link } from '../../../icons'
 import type { XYFlowNode } from '../../types'
@@ -25,10 +26,21 @@ export function ElementLink({
   element
 }: ElementLinkProps) {
   invariant(element.links, 'ElementLink: links are required')
+  const id = useId()
   // const mantineCtx = useMantineContext()
   // const root = mantineCtx.getRootElement()
+
+  // const targetSelector = `.react-flow:has([data-likec4-linkid="${id}"])`
+  // // const target = root?.querySelector<HTMLDivElement>(targetSelector) ?? targetSelector
+
+  // const portalProps = useMemo(() => ({
+  //   get target(): HTMLElement | string {
+  //     const root = mantineCtx.getRootElement()
+  //     return root?.querySelector<HTMLDivElement>(targetSelector) ?? targetSelector
+  //   }
+  // }), [targetSelector])
   return (
-    <div className={elementLink}>
+    <div className={elementLink} data-likec4-linkid={id}>
       <HoverCard
         position="bottom-start"
         shadow="lg"
@@ -39,14 +51,8 @@ export function ElementLink({
         transitionProps={{
           transition: 'pop'
         }}
+        // portalProps={portalProps}
         withinPortal={false}
-        // {...(root && root !== document.documentElement
-        //   ? {
-        //     portalProps: { target: root }
-        //   }
-        //   : {
-        //     // withinPortal: false
-        //   })}
         floatingStrategy={'fixed'}
         openDelay={350}
         closeDelay={800}
@@ -55,7 +61,9 @@ export function ElementLink({
           crossAxis: -10
         }}>
         <HoverCardTarget>
-          <UnstyledButton className={clsx('nodrag nopan', trigger)} autoFocus={false}>
+          <UnstyledButton
+            className={clsx('nodrag nopan', trigger)}
+            autoFocus={false}>
             <Link />
             <span>links</span>
           </UnstyledButton>
