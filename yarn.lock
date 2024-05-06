@@ -1546,7 +1546,7 @@ __metadata:
     "@react-spring/konva": "npm:^9.7.3"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
-    "@use-gesture/react": "npm:^10.3.0"
+    "@use-gesture/react": "npm:^10.3.1"
     body-scroll-lock-upgrade: "npm:^1.1.0"
     execa: "npm:^8.0.1"
     jotai: "npm:^2.6.4"
@@ -4959,21 +4959,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@use-gesture/core@npm:10.3.0":
-  version: 10.3.0
-  resolution: "@use-gesture/core@npm:10.3.0"
-  checksum: 10/6659c5b1c78fd42d8b11023e6c54875ef6a3cacd5b9f7364a7437e04ac1a07ed57e31f05f04ab4b143ab5ffa59cbf0b9f2b464534b7015b9e080dcf66971e5fb
+"@use-gesture/core@npm:10.3.1":
+  version: 10.3.1
+  resolution: "@use-gesture/core@npm:10.3.1"
+  checksum: 10/66c5bda4cf75927e0d1f9cb1b1a0a06d9812f918dfd634b768b6011385ce7b295ca89e0b016f4fe7a6d97d571726653b75c4271fd7f635bb8c159bf7886ce21c
   languageName: node
   linkType: hard
 
-"@use-gesture/react@npm:^10.3.0":
-  version: 10.3.0
-  resolution: "@use-gesture/react@npm:10.3.0"
+"@use-gesture/react@npm:^10.3.1":
+  version: 10.3.1
+  resolution: "@use-gesture/react@npm:10.3.1"
   dependencies:
-    "@use-gesture/core": "npm:10.3.0"
+    "@use-gesture/core": "npm:10.3.1"
   peerDependencies:
     react: ">= 16.8.0"
-  checksum: 10/be14f8681ff71ae989f0055695355a4b677ead732a9d4acb6757b2d4d75514e5084a13634f8ff2e8f68894bcd3e01c3d88967d4dd164c7d94edb8c8e104d4a48
+  checksum: 10/2c01c1b73bbdeecb9d51370f9117418953accad6789818e1b50f505dcba9e38685612b3fcb25a5dfcbf3a10ae561506378f5ab7586c773c4485ef86107d53898
   languageName: node
   linkType: hard
 

@@ -44,7 +44,7 @@
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@react-spring/konva": "^9.7.3",
-    "@use-gesture/react": "^10.3.0",
+    "@use-gesture/react": "^10.3.1",
     "body-scroll-lock-upgrade": "^1.1.0",
     "jotai": "^2.6.4",
     "khroma": "^2.1.0",
