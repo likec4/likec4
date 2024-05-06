@@ -49,7 +49,7 @@ export function includeExpandedElementExpr(this: ComputeCtx, expr: Expr.Expanded
   const expanded = [] as Element[]
 
   for (const el of this.graph.children(expr.expanded)) {
-    this.keepImplicits(el)
+    this.addImplicit(el)
     if (anyEdgesBetween.length > 0) {
       const edges = this.graph.anyEdgesBetween(el, currentElements)
       if (edges.length > 0) {
@@ -114,10 +114,14 @@ export function includeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
 export function excludeWildcardRef(this: ComputeCtx, _expr: Expr.WildcardExpr) {
   const root = this.root
   if (root) {
-    this.excludeElement(this.graph.element(root))
-    this.excludeElement(...this.graph.children(root))
+    this.excludeElement(
+      this.graph.element(root),
+      ...this.graph.children(root)
+    )
     this.excludeRelation(
-      ...[...this.graph.internal(root), ...this.graph.incoming(root), ...this.graph.outgoing(root)]
+      ...this.graph.internal(root),
+      ...this.graph.incoming(root),
+      ...this.graph.outgoing(root)
     )
   } else {
     this.reset()

@@ -244,10 +244,14 @@ export class ComputeCtx {
         continue
       }
       this.ctxEdges.push(e)
-      this.keepImplicits(e.source, e.target)
+      this.addImplicit(e.source, e.target)
     }
   }
 
+  /**
+   * Add element explicitly
+   * Included even without relationships
+   */
   protected addElement(...el: Element[]) {
     for (const r of el) {
       this.explicits.add(r)
@@ -255,7 +259,11 @@ export class ComputeCtx {
     }
   }
 
-  protected keepImplicits(...el: Element[]) {
+  /**
+   * Add element implicitly
+   * Included if only has relationships
+   */
+  protected addImplicit(...el: Element[]) {
     for (const r of el) {
       this.implicits.add(r)
     }
@@ -307,7 +315,7 @@ export class ComputeCtx {
   // Filter out edges if there are edges between descendants
   // i.e. remove implicit edges, derived from childs
   protected removeRedundantImplicitEdges() {
-    const processedRelations = new WeakSet<Relation>()
+    const processedRelations = new Set<Relation>()
 
     // Returns relations, that are not processed/included
     const excludeProcessed = (relations: Relation[]) =>
