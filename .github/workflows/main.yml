@@ -73,17 +73,17 @@ jobs:
       statuses: write
     secrets: inherit
 
-  vscode:
-    name: VSCode
-    uses: ./.github/workflows/vscode.yaml
-    if: "contains(github.event.head_commit.message, 'chore: release')"
-    needs: build
-    concurrency:
-      group: ${{ github.workflow }}-vscode
-    permissions:
-      actions: write
-      contents: read
-    secrets: inherit
+  # vscode:
+  #   name: VSCode
+  #   uses: ./.github/workflows/vscode.yaml
+  #   if: "contains(github.event.head_commit.message, 'chore: release')"
+  #   needs: build
+  #   concurrency:
+  #     group: ${{ github.workflow }}-vscode
+  #   permissions:
+  #     actions: write
+  #     contents: read
+  #   secrets: inherit
 
   docs:
     name: Docs
