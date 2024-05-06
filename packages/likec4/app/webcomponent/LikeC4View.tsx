@@ -4,26 +4,10 @@ import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { LikeC4Views } from 'virtual:likec4/views'
 import { ComponentName } from '../src/const'
-import { bundledStyles, IbmPlexSans, matchesColorScheme, prefersDark, theme } from './styles'
-
-// const genHostCss = (view: DiagramView, isKeepAspectRatio = true) =>
-//   isKeepAspectRatio
-//     ? `:host-context(likec4-view[view-id="${view.id}"]) {
-//   width: 100%;
-//   height: 100%;
-//   aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-//   max-height: min(100vh, ${Math.ceil(1.05 * view.height)}px);
-// }`
-//     : `:host-context(likec4-view[view-id="${view.id}"]) {
-//   width: 100%;
-//   height: 100%;
-//   min-height: 2rem;
-// }`
+import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
 
 export class LikeC4View extends HTMLElement {
   static observedAttributes = ['view-id']
-
-  private uniqueId = 'view' + Math.random().toString(36).slice(4)
 
   private rootEl: HTMLDivElement
   private shadow: ShadowRoot
@@ -37,7 +21,7 @@ export class LikeC4View extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.innerHTML = `${IbmPlexSans}
-    <div class="likec4-shadow-root likec4-view ${this.uniqueId}">
+    <div class="likec4-shadow-root likec4-view">
       <div class="likec4-react-root"></div>
     </div>`
     this.rootEl = this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
@@ -47,17 +31,14 @@ export class LikeC4View extends HTMLElement {
     const view = this.view
     const hostCss = this.isKeepAspectRatio
       ? `:host {
-      display: block;
       width: 100%;
-      height: 100%;
+      height: auto;
       aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-      max-height: min(100vh, ${Math.ceil(1.05 * view.height)}px);
+      max-height: ${Math.ceil(1.011 * view.height)}px;
     }`
       : `:host {
-      display: block;
       width: 100%;
       height: 100%;
-      min-height: 2rem;
     }`
     if (hostCss !== this.lastHostCss) {
       this.hostCss?.replaceSync(hostCss)
@@ -108,19 +89,15 @@ export class LikeC4View extends HTMLElement {
     let view = this.view
 
     this.updateHostCss()
-    // const hostCss = genHostCss(view, this.isKeepAspectRatio)
-    // if (hostCss !== this.lastHostCss) {
-    //   this.hostCss.replaceSync(hostCss)
-    //   this.lastHostCss = hostCss
-    // }
+
     this.root ??= ReactDOM.createRoot(this.shadow.querySelector('.likec4-react-root')!)
 
-    const colorScheme = matchesColorScheme()
+    const colorScheme = matchesColorScheme(this)
 
     this.root.render(
       <MantineProvider
         theme={theme}
-        defaultColorScheme={prefersDark() ? 'dark' : 'light'}
+        defaultColorScheme={'auto'}
         {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.rootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>
@@ -131,7 +108,7 @@ export class LikeC4View extends HTMLElement {
           zoomable={false}
           background={'transparent'}
           fitView
-          fitViewPadding={0.05}
+          fitViewPadding={0.01}
           showElementLinks
           controls={false}
           nodesSelectable={false}
@@ -154,7 +131,7 @@ export class LikeC4View extends HTMLElement {
   openBrowser(viewId?: ViewID) {
     const fs = document.createElement(ComponentName.Browser)
     fs.setAttribute('view-id', viewId ?? this.view.id)
-    ;(this.parentElement ?? document.body).appendChild(fs)
+    document.body.appendChild(fs)
   }
 
   attributeChangedCallback(_name: string) {

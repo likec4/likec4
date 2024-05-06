@@ -38,8 +38,8 @@ export async function bundleApp() {
     esbuild: {
       treeShaking: true,
       legalComments: 'none',
+      minifyIdentifiers: false,
       minifyWhitespace: true,
-      minifyIdentifiers: true,
       minifySyntax: true
     },
     build: {

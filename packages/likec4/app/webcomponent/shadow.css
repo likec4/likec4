@@ -1,89 +1,81 @@
 
 
-/* :host {
-  padding: 0;
-  margin: 0;
-  display: block;
-  box-sizing: border-box;
-  border: 0 solid transparent;
-  background-color: transparent;
-  overflow: hidden;
-} */
 :host {
+  display: block;
   background-color: transparent;
 }
 
-  /* ----- Global styles ----- */
-  .likec4-shadow-root,
+.likec4-shadow-root,
+.likec4-react-root {
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  -webkit-font-smoothing: var(--mantine-webkit-font-smoothing);
+  -moz-osx-font-smoothing: var(--mantine-moz-font-smoothing);
+}
+
+.likec4-shadow-root {
+  --font-family: 'IBM Plex Sans', ui-sans-serif,
+      system-ui,
+      sans-serif,
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      "Noto Color Emoji";
+  --likec4-default-font-family: var(--font-family);
+  --mantine-default-font-family: var(--font-family);
+  --mantine-font-family: var(--font-family);
+}
+
+
+.likec4-shadow-root.likec4-browser {
+  --mantine-color-body: rgb(0 0 0 / 0%);
+
+  &[data-mantine-color-scheme] {
+    backdrop-filter: blur(16px);
+  }
+
+  &[data-mantine-color-scheme=light] {
+    --mantine-color-body: rgb(255 255 255 / 10%) !important;
+  }
+
+  &[data-mantine-color-scheme=dark] {
+    --mantine-color-body: rgb(12 12 12 / 25%) !important;
+  }
+
+  .mantine-CloseButton-root {
+    position: absolute;
+    z-index: 1;
+    top: rem(10px);
+    right: rem(10px);
+  }
+}
+
+.likec4-shadow-root.likec4-view {
+  overflow: hidden;
+
   .likec4-react-root {
-    margin: 0;
-    padding: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    cursor: pointer;
+    transition: all 550ms ease-out;
+    background-color: unset;
 
-    -webkit-font-smoothing: var(--mantine-webkit-font-smoothing);
-    -moz-osx-font-smoothing: var(--mantine-moz-font-smoothing);
-  }
-
-  .likec4-shadow-root {
-    --font-family: 'IBM Plex Sans', ui-sans-serif,
-        system-ui,
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji";
-    --likec4-default-font-family: var(--font-family);
-    --mantine-default-font-family: var(--font-family);
-    --mantine-font-family: var(--font-family);
-  }
-
-
-  .likec4-shadow-root.likec4-browser {
-    --mantine-color-body: rgb(0 0 0 / 0%);
-
-    &[data-mantine-color-scheme] {
-      backdrop-filter: blur(16px);
+    &:hover {
+      transform: scale(1.02);
+      transition-delay: 250ms;
+      transition-duration: 170ms;
     }
 
-    &[data-mantine-color-scheme=light] {
-      --mantine-color-body: rgb(255 255 255 / 10%) !important;
-    }
-
-    &[data-mantine-color-scheme=dark] {
-      --mantine-color-body: rgb(12 12 12 / 25%) !important;
-    }
-
-    .mantine-CloseButton-root {
-      position: absolute;
-      z-index: 1;
-      top: rem(10px);
-      right: rem(10px);
-    }
-  }
-
-  .likec4-shadow-root.likec4-view {
-    overflow: hidden;
-
-    .likec4-react-root {
+    .likec4-compound-node {
       cursor: pointer;
-      transition: all 550ms ease-out;
-
-      &:hover {
-        transform: scale(1.02);
-        transition-delay: 250ms;
-        transition-duration: 170ms;
-      }
-
-      .likec4-compound-node {
-        cursor: pointer;
-      }
-
-      .likec4-element-node {
-        cursor: pointer;
-      }
     }
 
+    .likec4-element-node {
+      cursor: pointer;
+    }
   }
+
+}

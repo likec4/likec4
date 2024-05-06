@@ -7,7 +7,7 @@ import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import { modules } from '../src/vite/plugin'
 
-export async function buildWebcomponentBundle() {
+export async function buildWebcomponentBundle(_isDev = false) {
   const root = resolve('app')
   const outDir = resolve('dist/__app__/src/lib')
   consola.start(`Building webcomponent bundle...`)
@@ -18,6 +18,13 @@ export async function buildWebcomponentBundle() {
     root,
     configFile: false,
     resolve: {
+      dedupe: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        'react-dom/client'
+      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts')
@@ -44,7 +51,6 @@ export async function buildWebcomponentBundle() {
       minify: 'esbuild',
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
-      target: 'esnext',
       lib: {
         entry: 'webcomponent/webcomponent.tsx',
         fileName(_format, _entryName) {
@@ -54,15 +60,11 @@ export async function buildWebcomponentBundle() {
       },
       commonjsOptions: {
         esmExternals: true,
-        // extensions: ['.js', '.cjs'],
+        ignoreTryCatch: 'remove',
         transformMixedEsModules: true
-        // requireReturnsDefault: 'auto'
       },
       rollupOptions: {
         treeshake: true,
-        output: {
-          compact: true
-        },
         external: [
           'virtual:likec4',
           ...modules.map(m => m.id)

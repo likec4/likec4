@@ -3,7 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { LikeC4Views } from 'virtual:likec4/views'
-import { bundledStyles, IbmPlexSans, matchesColorScheme, prefersDark, theme } from './styles'
+import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
 
 // type MiscellaneousProps = {
 //   focusTrap: HTMLElement
@@ -40,8 +40,6 @@ import { bundledStyles, IbmPlexSans, matchesColorScheme, prefersDark, theme } fr
 export class LikeC4Browser extends HTMLElement {
   static observedAttributes = ['view-id']
 
-  private uniqueId = Math.random().toString(36).slice(5)
-
   private shadowRootEl: HTMLDivElement
   private shadow: ShadowRoot
   private root: ReactDOM.Root | undefined
@@ -55,7 +53,7 @@ export class LikeC4Browser extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.shadow.innerHTML = `${IbmPlexSans}
-    <div class="likec4-shadow-root likec4-browser ${this.uniqueId}">
+    <div class="likec4-shadow-root likec4-browser">
       <div class="likec4-react-root"></div>
     </div>`
     this.shadowRootEl = this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
@@ -64,7 +62,6 @@ export class LikeC4Browser extends HTMLElement {
   updateHostCss() {
     const hostCss = `
     :host {
-      display: block;
       position: fixed;
       inset: 0;
       z-index: 9999;
@@ -119,14 +116,14 @@ export class LikeC4Browser extends HTMLElement {
 
     this.updateHostCss()
 
-    const colorScheme = matchesColorScheme()
-
     this.root ??= ReactDOM.createRoot(this.shadow.querySelector('.likec4-react-root')!)
+
+    const colorScheme = matchesColorScheme(this)
 
     this.root.render(
       <MantineProvider
         theme={theme}
-        defaultColorScheme={prefersDark() ? 'dark' : 'light'}
+        defaultColorScheme={'auto'}
         {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.shadowRootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>

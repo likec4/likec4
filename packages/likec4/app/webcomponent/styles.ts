@@ -34,13 +34,11 @@ export const theme = createTheme({
   }
 })
 
-export const matchesColorScheme = () => {
+const getComputedColorScheme = (el: Element) => {
   try {
-    if (window.matchMedia('(color-scheme: light)').matches) {
-      return 'light'
-    }
-    if (window.matchMedia('(color-scheme: dark)').matches) {
-      return 'dark'
+    const colorScheme = window.getComputedStyle(el).colorScheme
+    if (colorScheme === 'light' || colorScheme === 'dark') {
+      return colorScheme
     }
   } catch (_e) {
     // noop
@@ -48,12 +46,28 @@ export const matchesColorScheme = () => {
   return undefined
 }
 
-export const prefersDark = () => {
+export const matchesColorScheme = (el: Element) => {
   try {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    const colorScheme = getComputedColorScheme(el) ?? getComputedColorScheme(document.body)
+    if (colorScheme) {
+      return colorScheme
+    }
+    if (window.matchMedia('(color-scheme: light)').matches) {
+      return 'light'
+    }
+    if (window.matchMedia('(color-scheme: dark)').matches) {
+      return 'dark'
+    }
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light'
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark'
+    }
   } catch (_e) {
-    return false
+    // noop
   }
+  return undefined
 }
 
 // export const IbmPlexSans = ``

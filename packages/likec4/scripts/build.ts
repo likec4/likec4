@@ -83,7 +83,9 @@ consola.info(`create dist/__app__/src`)
 await mkdir('dist/__app__/src', { recursive: true })
 
 await buildCli()
-consola.log('\n-------\n')
+
+console.log('\n\n')
+consola.info('--- BUNDLE APP----\n')
 
 await bundleApp()
 consola.info(`copy app files to dist/__app__`)
@@ -98,9 +100,19 @@ await Promise.all([
   copyFile('app/src/main.js', 'dist/__app__/src/main.js')
 ])
 
-consola.log('\n-------\n')
+console.log('\n\n')
+consola.info('--- BUNDLE WEBCOMPONENT----\n')
 
-await buildWebcomponentBundle()
+await buildWebcomponentBundle(isDev)
+
+let webcomponent = await readFile('dist/__app__/src/lib/webcomponent.mjs', 'utf-8')
+let updated = webcomponent.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
+
+if (updated !== webcomponent) {
+  await writeFile('dist/__app__/src/lib/webcomponent.mjs', updated)
+} else if (webcomponent.includes('@emotion/is-prop-valid')) {
+  throw new Error('webcomponent.mjs should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)')
+}
 
 // const verifyStyles = await readFile('dist/__app__/src/lib/style.css', 'utf-8')
 // assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
