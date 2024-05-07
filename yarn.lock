@@ -10856,7 +10856,7 @@ __metadata:
     remeda: "npm:^1.61.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    terser: "npm:^5.30.0"
+    terser: "npm:^5.31.0"
     tsx: "npm:~4.9.3"
     type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
@@ -16604,9 +16604,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.30.0":
-  version: 5.30.0
-  resolution: "terser@npm:5.30.0"
+"terser@npm:^5.31.0":
+  version: 5.31.0
+  resolution: "terser@npm:5.31.0"
   dependencies:
     "@jridgewell/source-map": "npm:^0.3.3"
     acorn: "npm:^8.8.2"
@@ -16614,7 +16614,7 @@ __metadata:
     source-map-support: "npm:~0.5.20"
   bin:
     terser: bin/terser
-  checksum: 10/78e6ce9e95ec7fc40e694da2e749fa80c3a99c916626349361c22d4cf2e510e8e6e49859c955416088e40688f99115cd595cb033fd5a8a7f0fc03c527ed8efe3
+  checksum: 10/11b28065d6fd9f496acf1f23b22982867e4625e769d0a1821861a15e6bebfdb414142a8444f74f2a93f458d0182b8314ceb889be053b50eb5907cc98e8230467
   languageName: node
   linkType: hard
 
