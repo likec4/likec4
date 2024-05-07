@@ -1529,7 +1529,7 @@ __metadata:
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     tilg: "npm:^0.1.1"
-    tsx: "npm:~4.7.3"
+    tsx: "npm:~4.9.3"
     typescript: "npm:^5.4.5"
     vite: "npm:^5.2.11"
     vite-plugin-watch-and-run: "npm:^1.5.0"
@@ -1756,7 +1756,7 @@ __metadata:
     lint-staged: "npm:^15.2.0"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
-    tsx: "npm:~4.7.3"
+    tsx: "npm:~4.9.3"
     turbo: "npm:^1.13.3"
     typescript: "npm:^5.4.5"
     vite: "npm:^5.2.11"
@@ -5835,21 +5835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.22.2":
-  version: 4.22.3
-  resolution: "browserslist@npm:4.22.3"
-  dependencies:
-    caniuse-lite: "npm:^1.0.30001580"
-    electron-to-chromium: "npm:^1.4.648"
-    node-releases: "npm:^2.0.14"
-    update-browserslist-db: "npm:^1.0.13"
-  bin:
-    browserslist: cli.js
-  checksum: 10/d46a906c79dfe95d9702c020afbe5b7b4dbe2019b85432e7a020326adff27e63e3c0a52dc8d4e73247060bbe2c13f000714741903cf96a16baae9c216dc74c75
-  languageName: node
-  linkType: hard
-
-"browserslist@npm:^4.23.0":
+"browserslist@npm:^4.22.2, browserslist@npm:^4.23.0":
   version: 4.23.0
   resolution: "browserslist@npm:4.23.0"
   dependencies:
@@ -6014,14 +6000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001406, caniuse-lite@npm:^1.0.30001580":
-  version: 1.0.30001584
-  resolution: "caniuse-lite@npm:1.0.30001584"
-  checksum: 10/908e4fcafa1e8d52d6c5d79e8c614c4d0cf62af544935f7a78fb5a434157505571ce4c2eacfb549e5d4a6e6e38525350c7a9bf696068ad86eb74e890df1d688f
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599":
+"caniuse-lite@npm:^1.0.30001406, caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599":
   version: 1.0.30001615
   resolution: "caniuse-lite@npm:1.0.30001615"
   checksum: 10/3dfb48e9b8fbf4d550cf204075b170ef4a5bcbc7faf9e14b03dc7456ac1aec2da1405d4fca808bc72b47a2ca0818d6d138aa62769548472440ff605ad1313719
@@ -6810,7 +6789,7 @@ __metadata:
     "@types/prompts": "npm:^2.4.8"
     execa: "npm:^8.0.1"
     prompts: "npm:^2.4.2"
-    tsx: "npm:~4.7.3"
+    tsx: "npm:~4.9.3"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
   bin:
@@ -7771,13 +7750,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.4.648":
-  version: 1.4.659
-  resolution: "electron-to-chromium@npm:1.4.659"
-  checksum: 10/784ffe2852e2d87b6afc814d62641b4da74264e7c07362675e074e746bd6183b1fa4f40de26b1a9b75afb23561fb48b70904418c4ac45c5b1120b88f4bf0b3cc
-  languageName: node
-  linkType: hard
-
 "electron-to-chromium@npm:^1.4.668":
   version: 1.4.756
   resolution: "electron-to-chromium@npm:1.4.756"
@@ -7988,7 +7960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.19.2, esbuild@npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0, esbuild@npm:~0.19.10":
+"esbuild@npm:^0.19.2, esbuild@npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0":
   version: 0.19.12
   resolution: "esbuild@npm:0.19.12"
   dependencies:
@@ -8068,7 +8040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.20.1, esbuild@npm:^0.20.2":
+"esbuild@npm:^0.20.1, esbuild@npm:^0.20.2, esbuild@npm:~0.20.2":
   version: 0.20.2
   resolution: "esbuild@npm:0.20.2"
   dependencies:
@@ -8889,12 +8861,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-tsconfig@npm:^4.7.2":
-  version: 4.7.3
-  resolution: "get-tsconfig@npm:4.7.3"
+"get-tsconfig@npm:^4.7.3":
+  version: 4.7.4
+  resolution: "get-tsconfig@npm:4.7.4"
   dependencies:
     resolve-pkg-maps: "npm:^1.0.0"
-  checksum: 10/7397bb4f8aef936df4d9016555b662dcf5279f3c46428b7c7c1ff5e94ab2b87d018b3dda0f4bc1a28b154d5affd0eac5d014511172c085fd8a9cdff9ea7fe043
+  checksum: 10/cd403df998476826cf3acddd8add87f16272461bf9f2faa85d295fe5ea2d3430a612c9f3e6387f9dc6df95ffe438d657ec48363a8e36c400aa483ab569bb411d
   languageName: node
   linkType: hard
 
@@ -10885,7 +10857,7 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.30.0"
-    tsx: "npm:~4.7.3"
+    tsx: "npm:~4.9.3"
     type-fest: "npm:^4.18.1"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
@@ -16938,19 +16910,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:~4.7.3":
-  version: 4.7.3
-  resolution: "tsx@npm:4.7.3"
+"tsx@npm:~4.9.3":
+  version: 4.9.3
+  resolution: "tsx@npm:4.9.3"
   dependencies:
-    esbuild: "npm:~0.19.10"
+    esbuild: "npm:~0.20.2"
     fsevents: "npm:~2.3.3"
-    get-tsconfig: "npm:^4.7.2"
+    get-tsconfig: "npm:^4.7.3"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10/f1b10e852b9e57eb0253306a11ed2ba24697791770dbf225b8cf82ecfc550ff5cbedcb39e9c1d39de4533af8ece4b4d573405f0e1a4836f350a71f1d0d4648a4
+  checksum: 10/17ed7b748d9f213e0b3795f99ef14edf26f814eb498d4a7be95a253648f39f376009e97d4202fdb3f8a03f3b0e1b3fe6e64b70be83d58beadf1a6158612a163b
   languageName: node
   linkType: hard
 
