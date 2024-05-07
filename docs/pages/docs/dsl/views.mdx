@@ -143,8 +143,12 @@ include cloud.backend
 exclude cloud.backend
 
 // include children of cloud.backend and all the relationships
-// among them and the elements of the view
+// among them and other included elements
 include cloud.backend.*
+
+// include cloud.backend and expand its children
+// only if they have in/out relationships:
+include cloud.backend._
 
 // all incoming relationships
 // if any found - includes cloud.backend and source elements
@@ -154,6 +158,9 @@ include * -> cloud.backend
 // all outgoing relationships
 // if any found - includes cloud children and target elements
 include cloud.* ->
+
+// all incoming and outgoing relationships
+include  -> cloud.* ->
 
 // all relationships from customer to cloud children (direction is important)
 // if any found - includes customer and targeted children

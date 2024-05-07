@@ -11,6 +11,26 @@
   ```
 
   Always generated on `likec4 build`, but also available as `likec4 gen webcomponent` 
+
+- **New predicate `include some._`**  
+  Expand and include nested elements only if they have in/out relationships (internals are not considered):
+  ```zig
+  view {
+     include some._
+  }
+  ```
+
+  Differs from `include some.*`, which includes all nested elements regardless of relationships.
+
+  _Almost the same as_:
+
+  ```zig
+  view {
+    include some
+    include -> some.* ->
+    exclude some.* -> some.*
+  }
+  ```
   
 - **New predicate `<->`**  
   Include relationships of both directions between elements:
