@@ -30,10 +30,7 @@ export function excludeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
   const elements = expr.isDescedants === true
     ? this.graph.children(expr.element)
     : [this.graph.element(expr.element)]
-
-  for (const el of elements) {
-    this.excludeElement(el)
-  }
+  this.excludeElement(...elements)
 }
 
 export function includeExpandedElementExpr(this: ComputeCtx, expr: Expr.ExpandedElementExpr) {
@@ -151,7 +148,7 @@ export function includeElementKindOrTag(
 ) {
   const elements = this.graph.elements.filter(asElementPredicate(expr))
   if (elements.length > 0) {
-    const currentElements = [...this.includedElements]
+    const currentElements = [...this.resolvedElements]
     this.addElement(...elements)
     this.addEdges(this.graph.edgesWithin(elements))
     for (const el of elements) {
@@ -238,7 +235,7 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   if (targets.length === 0) {
     return []
   }
-  const currentElements = [...this.includedElements]
+  const currentElements = [...this.resolvedElements]
   if (currentElements.length === 0) {
     currentElements.push(...resolveNeighbours.call(this, expr))
   }
@@ -247,15 +244,12 @@ function edgesIncomingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
 
 export function includeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr) {
   const edges = edgesIncomingExpr.call(this, expr.incoming)
-  if (edges.length > 0) {
-    this.addEdges(edges)
-  }
+  this.addEdges(edges)
+  this.addImplicit(...edges.map(e => e.target))
 }
 export function excludeIncomingExpr(this: ComputeCtx, expr: Expr.IncomingExpr) {
   const edges = edgesIncomingExpr.call(this, expr.incoming)
-  if (edges.length > 0) {
-    this.excludeRelation(...edges.flatMap(e => e.relations))
-  }
+  this.excludeRelation(...edges.flatMap(e => e.relations))
 }
 
 // --------------------------------
@@ -274,7 +268,7 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
   if (sources.length === 0) {
     return []
   }
-  const targets = [...this.includedElements]
+  const targets = [...this.resolvedElements]
   if (targets.length === 0) {
     targets.push(...resolveNeighbours.call(this, expr))
   }
@@ -283,50 +277,64 @@ function edgesOutgoingExpr(this: ComputeCtx, expr: Expr.ElementExpression) {
 
 export function includeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
   const edges = edgesOutgoingExpr.call(this, expr.outgoing)
-  if (edges.length > 0) {
-    this.addEdges(edges)
-  }
+  this.addEdges(edges)
+  this.addImplicit(...edges.map(e => e.source))
 }
 export function excludeOutgoingExpr(this: ComputeCtx, expr: Expr.OutgoingExpr) {
   const edges = edgesOutgoingExpr.call(this, expr.outgoing)
-  if (edges.length > 0) {
-    this.excludeRelation(...edges.flatMap(e => e.relations))
-  }
+  this.excludeRelation(...edges.flatMap(e => e.relations))
 }
 
 // --------------------------------
 //  InOut Expr
+type EdgePredicateResult = {
+  implicits: Element[]
+  edges: ComputeCtx.Edge[]
+}
 
-function edgesInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
+namespace EdgePredicateResult {
+  export const Empty: EdgePredicateResult = {
+    implicits: [],
+    edges: []
+  }
+}
+function edgesInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr): EdgePredicateResult {
   if (Expr.isWildcard(expr.inout)) {
     if (!this.root) {
-      return []
+      return EdgePredicateResult.Empty
     }
     const neighbours = this.graph.ascendingSiblings(this.root)
-    return this.graph.anyEdgesBetween(this.graph.element(this.root), neighbours)
+    return {
+      edges: this.graph.anyEdgesBetween(this.graph.element(this.root), neighbours),
+      implicits: []
+    }
   }
   const elements = resolveElements.call(this, expr.inout)
   if (elements.length === 0) {
-    return []
+    return EdgePredicateResult.Empty
   }
-  const currentElements = [...this.includedElements]
+  const currentElements = [...this.resolvedElements]
   if (currentElements.length === 0) {
     currentElements.push(...resolveNeighbours.call(this, expr.inout))
   }
-  return elements.flatMap(el => this.graph.anyEdgesBetween(el, currentElements))
+  return elements.reduce<EdgePredicateResult>((acc, el) => {
+    const edges = this.graph.anyEdgesBetween(el, currentElements)
+    if (edges.length > 0) {
+      acc.implicits.push(el)
+      acc.edges.push(...edges)
+    }
+    return acc
+  }, { implicits: [], edges: [] })
 }
 
 export function includeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
-  const edges = edgesInOutExpr.call(this, expr)
-  if (edges.length > 0) {
-    this.addEdges(edges)
-  }
+  const { implicits, edges } = edgesInOutExpr.call(this, expr)
+  this.addEdges(edges)
+  this.addImplicit(...implicits)
 }
 export function excludeInOutExpr(this: ComputeCtx, expr: Expr.InOutExpr) {
-  const edges = edgesInOutExpr.call(this, expr)
-  if (edges.length > 0) {
-    this.excludeRelation(...edges.flatMap(e => e.relations))
-  }
+  const { edges } = edgesInOutExpr.call(this, expr)
+  this.excludeRelation(...edges.flatMap(e => e.relations))
 }
 
 /**

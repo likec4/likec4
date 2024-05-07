@@ -223,7 +223,8 @@ export class ComputeCtx {
   protected get resolvedElements() {
     return new Set([
       ...this.explicits,
-      ...this.implicits
+      ...this.implicits,
+      ...this.ctxEdges.flatMap(e => [e.source, e.target])
     ]) as ReadonlySet<Element>
   }
 
@@ -244,7 +245,6 @@ export class ComputeCtx {
         continue
       }
       this.ctxEdges.push(e)
-      this.addImplicit(e.source, e.target)
     }
   }
 
@@ -273,6 +273,12 @@ export class ComputeCtx {
     for (const el of excludes) {
       this.ctxEdges = this.ctxEdges.filter(e => e.source.id !== el.id && e.target.id !== el.id)
       this.explicits.delete(el)
+      this.implicits.delete(el)
+    }
+  }
+
+  protected excludeImplicit(...excludes: Element[]) {
+    for (const el of excludes) {
       this.implicits.delete(el)
     }
   }
