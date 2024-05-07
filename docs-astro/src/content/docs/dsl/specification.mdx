@@ -1,0 +1,76 @@
+---
+title: Specification
+sidebar: 
+  label: Specification
+  order: 2
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 6  
+---
+
+In the `specification` you define your notation.
+
+### Element kind
+
+The `element` defines the kind that can be used across the model.
+
+```likec4 copy
+specification {
+
+  // Define whatever you want
+  element user
+  element cloud
+  element system
+  element application
+  element component
+  element controller
+  element microservice
+  element queue
+  element restapi
+  element graphqlMutation
+  element repository
+  element database
+  element pgTable
+
+}
+```
+
+Element kinds are required for the [model](/dsl/model).
+
+### Tag
+
+Tags may be used to mark, group, filter elements/relationships/views, or give some additional semantics, like `#deprecated`, `#epic-123` or `#team2`.
+
+```likec4
+specification {
+
+  tag deprecated
+  tag epic-123
+  tag team2
+
+}
+```
+
+### Relationship
+
+```likec4
+specification {
+  relationship async
+  relationship notify
+}
+```
+
+More in the [relationships](/dsl/relationships/#relationship-kinds)
+
+{/*
+
+#### Color
+Any color defined in [styling](./styling).
+
+#### Line
+Valid options for `line` are: `solid`, `dashed`, `dotted`.
+
+#### Arrowhead / Arrowtail
+Valid options for `head` and `tail` are: `normal`, `onormal`, `diamond`, `odiamond`, `crow`, `vee`, `open`, `none`.
+Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.
+ */}

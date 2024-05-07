@@ -1,0 +1,23 @@
+specification {
+
+  element enterprise
+  element softwaresystem
+  element container
+  element component
+
+  element person {
+    style {
+      color secondary
+      shape person
+    }
+  }
+
+  // Structurizr does not have a database element
+  // Just for the sake of the example
+  element database {
+    style {
+      shape storage
+    }
+  }
+
+}

@@ -1,0 +1,141 @@
+---
+title: Relationships
+sidebar: 
+  label: Relationships
+  order: 4
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Relationships describe the connections and interactions of the elements,  
+and created with the **`->`** operator:
+
+```likec4
+model {
+  customer = actor 'Customer'
+  cloud = service 'Cloud'
+
+  customer -> cloud
+}
+```
+
+### Relationship kinds
+
+Relationships can be "kinded":
+
+```likec4
+specification {
+  // Define a relationship kind in specifications
+  relationship async
+}
+
+model {
+  system1 = system 'System 1'
+  system2 = system 'System 2'
+
+  system1 -[async]-> system2
+}
+```
+
+This allows us to express and add more semantics to the interactions between the elements, for instance, from a technology perspective (REST, GRPC, GraphQL, Sync/Async, etc.) or from a business perspective (delegation, inform, accountability, etc.).  
+It's up to you to define the relationship kinds that make sense for your context.
+
+<Aside type='tip'>
+  The relationship kinds allow to customize the styling of the relationships, see [styling](/dsl/styling#relationship)
+</Aside>
+
+### Examples
+
+Relationships may be nested
+
+```likec4
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend
+    customer -> frontend
+  }
+}
+```
+
+Relationships may have a title (and better to have one)
+
+```likec4
+model {
+  actor customer
+  service cloud {
+    component backend
+    component frontend
+
+    frontend -> backend 'requests data'
+  }
+
+  customer -> frontend {
+    title 'opens in browser' // or nested
+  }
+}
+```
+
+Relationships may be tagged
+
+```likec4
+model {
+  // inlined
+  frontend -> backend 'requests data' #graphql #team1
+
+  // or nested
+  customer -> frontend 'opens in browser' {
+    #graphql #team1 
+  }
+}
+```
+
+Relationships may have multiple links:
+
+```likec4 copy
+model {
+  customer -> frontend 'opens in browser' {
+    // External link
+    link https://any-external-link.com
+
+    // or any URI
+    link ssh://bastion.internal
+
+    // or relative link to navigate to sources
+    link ../src/index.ts#L1-L10
+  }
+}
+```
+
+Nested relationships may be _"sourceless"_, then the source is the parent element
+
+```likec4
+specification {
+  relationship graphql
+}
+model {
+  customer = actor {
+    -> frontend 'opens in browser' // same as customer -> frontend
+  }
+  service cloud {
+    component backend
+    component frontend {
+      -[graphql]-> backend 'requests data'  // same as frontend -[graphql]-> backend
+    }
+  }
+
+  // or use 'it' or 'this'
+  customer = actor {
+    it -> frontend 'opens in browser'
+    this -> frontend 'opens in browser'
+  }
+
+  -> backend 'requests data' // ⛔️ Error: model can't be a source
+}
+```

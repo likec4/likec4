@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "generate": {
+      "dependsOn": ["likec4#build"],
+      "outputs": ["src/components/**/likec4-views.js"],
+      "inputs": ["likec4/**"]
+    },
+    "build": {
+      "dependsOn": ["generate", "^build"],
+      "outputs": ["dist/**", ".astro/**"]
+    }
+  }
+}

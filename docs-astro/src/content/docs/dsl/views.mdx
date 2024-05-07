@@ -1,0 +1,430 @@
+---
+title: Views
+sidebar: 
+  label: Views
+  order: 8
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 6
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Views are the architecture diagrams, projections of the model from different perspectives, with different levels of details, like:
+
+- System / service overviews
+- Components interactions in specific use case
+- Data flows and sequence diagrams
+
+### View definition
+
+Views are defined in `views` section.  
+Views may be named (must be unique) or unnamed (can't be referenced):
+
+```likec4
+views {
+  // with name
+  view index {
+  }
+  // unnamed
+  view {
+  }
+}
+```
+
+View's name is used as a filename during the export, and a URL part for the sharing, so better to define it.
+
+<Aside>
+  `index` is a special view, and is rendered by default if no view name is specified.  
+  If not defined, it will be generated for top-level elements
+</Aside>
+
+Views may have a title, description, tags and links (same as [model element](/dsl/model#element)):
+
+```likec4
+views {
+
+  view epic12 {
+    #next, #epic-12
+    title "Cloud System - Changes in Epic-12"
+    description "
+      This diagram shows the high-level
+      components and interactions.
+    "
+
+    link https://my.jira/epic/12
+
+    include *
+  }
+
+}
+```
+
+Properties should be defined before any predicates.
+
+
+### Scoped views
+
+View may be defined for some element (`view of ..`).  
+View inherits the [scope](/dsl/references#scope) of the element:
+
+```likec4
+views {
+
+  view {
+    include api // ⛔️ Error: 'api' is not found
+  }
+
+  view of cloud.backend {
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```
+
+This view becomes the default view for the element:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    include *
+  }
+
+  view {
+    // on click navigates to 'view1', because it is the default view for 'cloud.backend'
+    include cloud.backend
+  }
+
+}
+```
+
+You may have multiple views for the same element, but which one is default is not determined.
+
+### View predicates
+
+Views are not static, they reflect any changes in the model.  
+Two types of predicates define what elements/relationships are visible.  
+
+
+##### Element predicates
+
+Element predicates explicitly define what elements are visible, regardless of the relationships.
+
+```likec4 wrap title="example.c4"
+view {
+  // Only backend is visible
+  include backend
+
+  // Add frontend to the view 
+  // and its relationships with backend
+  include frontend 
+
+  // Add authService to the view 
+  // and its relationships with visible backend and frontend
+  include authService
+
+  // Add nested elements of messageBroker (but not messageBroker),
+  // and their relationships among themselves and visible backend, frontend and authService
+  include messageBroker.*
+
+  // Exclude emailsQueue and its visible relationships
+  exclude messageBroker.emailsQueue
+}
+```
+
+<Aside>
+  Order is significant, and predicates are applied as defined in view.  
+  Exclude applies only to elements/relationships included before.
+</Aside>
+
+###### Combining
+
+Predicates may be combined. The following is equivalent to the previous example:
+
+```likec4 wrap title="example.c4"
+view {
+  include
+    backend,
+    frontend,
+    authService,
+    messageBroker.*
+
+  exclude messageBroker.emailsQueue
+}
+```
+
+
+###### Wildcard
+
+Wildcard predicates may be used to reference "everything", but it depends on the context.  
+Assume we have the following model:
+
+```likec4 wrap title="example.c4"
+model {
+  actor customer {
+    -> webApp 'uses in browser via HTTPS'
+  }
+  system cloud {
+    container backend {
+      component api    
+    }
+    container ui {
+      component webApp {
+        -> api 'requests data'
+      }
+    }
+  }
+}
+views {
+
+  // Unscoped view
+  view {
+    include *
+    // Visible top-level elements: customer, cloud
+    // and derived relationship customer -> cloud
+  }
+
+  // Scoped view
+  view of cloud.ui {
+    include *
+    // Visible:
+    // - cloud.ui
+    // - cloud.ui.webApp
+    // - customer, and relationship customer -> cloud.ui.webApp
+    // - cloud.backend, and derived relationship cloud.ui.webApp -> cloud.backend
+  }
+}
+```
+
+###### With overrides
+
+It is possible to change element properties just for this view:
+
+```likec4 title="example.c4"
+view {
+  // Include the element and override its properties
+  include cloud.backend with {
+    title 'Backend components'
+    description '...'
+    technology 'Java, Spring'
+    color amber
+    shape browser
+  }
+}
+```
+
+###### With custom navigation
+
+It is possible to define custom navigation  and links between views:
+
+```likec4 title="example.c4"
+
+view view2 {
+  include *
+  include cloud.backend with {
+    // navigate to 'view3' on click
+    navigateTo view3
+  }
+}
+
+view view3 {
+  include *
+  include cloud.backend with {
+    // the same element, but navigate back to 'view2'
+    navigateTo view2
+  }
+}
+```
+
+###### By element kind or tag
+
+```likec4 title="example.c4"
+// elements by kind
+include element.kind != system
+exclude element.kind = container
+
+// elements by tag
+include element.tag != #V2
+exclude element.tag = #next
+```
+
+##### Relationship predicates
+
+These predicates include elements from the satisfied relationships only.  
+Based on the model from [wildcard example](#wildcard):
+
+###### Incoming
+
+Include elements that have incoming relationships from visible elements:
+
+```likec4 wrap title="incoming predicate.c4"
+view {
+  // visible element
+  include customer
+
+  // include nothing, customer has no relation to backend
+  include -> backend
+
+  // add ui,
+  // because customer has a relationship with nested ui.webApp
+  include -> ui
+
+  // add backend, because visible ui has a relationship to backend
+  // derived from ui.webApp -> backend.api
+  include -> backend
+}
+
+// This view includes customer and ui
+view {
+  include
+    customer,
+    -> cloud.*
+}
+```
+
+<Aside type='tip'>
+  Predicates can be used to exclude relationships and hide elements.
+</Aside>
+
+###### Outgoing
+
+Include elements of only they have outgoing relationships to visible elements:
+
+```likec4
+include customer ->
+include cloud.* ->
+```
+
+###### In/Out
+
+For example, include nested elements of `cloud`, that have any relationships with visible elements:
+
+```likec4
+include -> cloud.* ->
+```
+
+###### Directed relationships
+
+Include relationships of specific direction and the elements:
+
+```likec4
+include customer -> cloud.*
+```
+
+###### Any relationship
+
+Include any relationships between elements:
+
+```likec4
+include customer <-> cloud
+```
+
+#### Expand predicate
+
+Expand predicate is a mix of element's and relationship's.  
+Include `cloud` element and its children that have in/out relationships with visible elements:
+
+```likec4
+include cloud._
+
+// Same as
+include cloud,        
+  -> cloud.* ->
+```
+
+### Auto-layout
+
+```likec4
+view {
+  include *
+  autoLayout LeftRight
+}
+```
+
+Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+
+### Style predicates
+
+Style predicates define how elements are rendered.  
+Example from [BigBank](/examples/bigbank/components/):
+
+```likec4
+view apiApp of internetBankingSystem.apiApplication {
+
+  include *
+
+  // apply to all elements
+  style * {
+    color muted
+  }
+
+  // apply only to these elements
+  style singlePageApplication, mobileApp {
+    color secondary
+  }
+
+  // apply only to apiApplication and its descendants
+  style apiApplication, apiApplication.* {
+    color primary
+  }
+
+  // apply only to the tagged elements
+  style element.tag = #deprecated {
+    color muted
+  }
+}
+```
+
+<Aside>
+  [Overrides](#with-overrides) have higher priority than style rules.
+</Aside>
+
+### Extend views
+
+Views can be extended to avoid duplication, create a "baseline" or, for example, "slides" for a presentation:
+
+```likec4
+views {
+
+  view view1 {
+    include *
+  }
+
+  view view2 extends view1 {
+    title 'Same as View1, but with more details'
+
+    style * {
+      color muted
+    }
+
+    include some.backend
+  }
+
+  // cascade inheritance
+  view view3 extends view2 {
+    title 'Same as View2, but with more details'
+
+    include * -> some.backend
+  }
+
+}
+```
+
+The predicates and style rules of extended views are merged with the ones from ancestors.
+
+Extended views also inherit the scope:
+
+```likec4
+views {
+
+  view view1 of cloud.backend {
+    title 'Backend components'
+  }
+
+  view view2 extends view1 {
+    include api // ✅ This is OK, references 'cloud.backend.api'
+  }
+
+}
+```

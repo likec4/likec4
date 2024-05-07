@@ -1,0 +1,55 @@
+specification {
+  // Element kinds used in our architecture
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+  // Relationship kind
+  relationship async
+}
+
+// Describe the architecture
+model {
+  customer = actor 'Customer' {
+    description 'Customer of Cloud System'
+  }
+
+  cloud = system 'Cloud System' {
+
+    backend = component 'Backend' {
+      description 'Backend services and API'
+    }
+
+    ui = component 'Frontend' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      style {
+        shape browser
+      }
+    }
+  }
+
+  customer -> ui 'opens in browser'
+
+  // Relationship of predefined kind
+  ui -[async]-> backend 'requests via GraphQL'
+}
+
+// What diagrams to generate
+views {
+  view index of cloud {
+    include *
+
+    style cloud {
+      color muted
+    }
+    style cloud.* {
+      color green
+    }
+  }
+}

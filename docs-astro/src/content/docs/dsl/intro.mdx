@@ -1,0 +1,71 @@
+---
+title: Introduction
+description: LikeC4 is a DSL for describing software architecture
+prev: false
+sidebar:
+  order: 1
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+LikeC4 is a DSL for describing software architecture (_not only_).  
+It might look like [Structurizr DSL](https://docs.structurizr.com/dsl), though it is not
+fully compatible.
+
+The source files must have extension `.likec4` or `.c4`.  
+All sources merged into _a single model_ (explained later in [Workspace](/dsl/workspace)).
+
+A project may look like this:
+
+<FileTree>
+- backend
+  - service1
+    - model.c4
+    - views.c4
+  - service2
+    - model.c4
+  - ...
+- externals
+  - amazon.c4
+  - ...
+- landscape.c4
+- specs.c4
+</FileTree>
+
+
+
+## Top-level statements
+
+Source file should have at least one of these statements:
+
+- `specification` - defines element kinds to be used in the model, like **app**, **microservice**, **grapqlMutation**...
+- `model` - architecture elements, hierarchies, compositions and relationships
+- `views` - visualizations
+
+```likec4
+// example.c4
+specification {
+  //...
+}
+
+model {
+  //...  
+}
+
+views {
+  //...
+}
+```
+
+It is not allowed to have multiple statements of the same kind: 
+
+```likec4 del="model {}"
+// invalid.c4
+model {
+}
+
+// ⛔️ not allowed to have multiple statements
+model {}
+```
+
+But it is allowed to skip any of them, so only `model`, or only `views`, or only `specification`, or any combination of them.

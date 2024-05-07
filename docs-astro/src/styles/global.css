@@ -1,0 +1,14 @@
+:root {
+  --sl-font: 'IBM Plex Sans',
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+
+.title-wrapper {
+  --sl-nav-height: 3.3rem;
+}
