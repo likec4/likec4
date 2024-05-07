@@ -513,7 +513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.23.3":
+"@babel/preset-typescript@npm:^7.24.1":
   version: 7.24.1
   resolution: "@babel/preset-typescript@npm:7.24.1"
   dependencies:
@@ -1745,7 +1745,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/workspaces@workspace:."
   dependencies:
-    "@babel/preset-typescript": "npm:^7.23.3"
+    "@babel/preset-typescript": "npm:^7.24.1"
     "@types/node": "npm:^20.12.7"
     "@vitest/ui": "npm:~1.5.2"
     dprint: "npm:^0.45.1"
