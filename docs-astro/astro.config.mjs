@@ -1,12 +1,17 @@
 import starlight from '@astrojs/starlight'
+import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
 import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
-  devToolbar: {
-    enabled: true
-  },
+  // devToolbar: {
+  //   enabled: true
+  // },
+  // server: {
+  //   port: 4321,
+  //   host: true
+  // },
   integrations: [
     starlight({
       title: 'LikeC4',
@@ -15,6 +20,7 @@ export default defineConfig({
       },
       logo: {
         src: './src/assets/logo.svg',
+        replacesTitle: true
       },
       customCss: [
         // Fontsource files for to regular and semi-bold font weights.
@@ -25,26 +31,42 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'Guides',
+          label: 'What is LikeC4',
+          link: '/what-is-likec4'
+        },
+        {
+          label: 'Getting Started',
           items: [
-            // Each item here is one entry in the navigation menu.
-            { label: 'Example Guide', link: '/guides/example/' }
+            {
+              label: 'Tutorial',
+              link: '/tutorial'
+            }
           ]
         },
         {
-          label: 'LikeC4 Language',
+          label: 'LikeC4',
           autogenerate: { directory: 'dsl' }
         },
         {
-          label: 'Themes',
-          link: 'https://likec4.dev/docs/themes/'
+          label: 'Tooling',
+          autogenerate: { directory: 'tooling' }
         },
         {
-          label: 'Tooling',
-          autogenerate: { directory: 'tools' }
+          label: 'Guides',
+          autogenerate: {
+            directory: 'guides',
+            collapsed: true
+          }
         }
       ],
       expressiveCode: {
+        plugins: [
+          pluginLineNumbers()
+        ],
+        defaultProps: {
+          // Disable line numbers by default
+          showLineNumbers: false
+        },
         shiki: {
           langs: [
             likec4grammar

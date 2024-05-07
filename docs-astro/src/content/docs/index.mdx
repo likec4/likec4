@@ -5,8 +5,8 @@ template: splash
 hero:
   tagline: Congrats on setting up a new Starlight project!
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Getting Started
+      link: /what-is-likec4/
       icon: right-arrow
       variant: primary
     - text: Read the Starlight docs
@@ -15,7 +15,7 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
-import LikeC4View from '@components/LikeC4View.astro';
+import LikeC4View from '@components/index-page/LikeC4View.astro';
 
 ## Next steps
 
@@ -36,4 +36,4 @@ import LikeC4View from '@components/LikeC4View.astro';
 
 ## Like C4
 
-<LikeC4View viewId='cloud' client:load />
+<LikeC4View viewId='cloud'/>

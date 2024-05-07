@@ -1,8 +1,14 @@
 ---
 title: Specification
+sidebar: 
+  label: Specification
+  order: 2
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 6  
 ---
 
-In the `specification` section you customize your model.
+In the `specification` you define your notation.
 
 ### Element kind
 
@@ -29,7 +35,7 @@ specification {
 }
 ```
 
-Element kinds are required for the [model](./model).
+Element kinds are required for the [model](../model).
 
 ### Tag
 
@@ -44,10 +50,8 @@ specification {
 
 }
 ```
-{/* 
-### Relationship kind
 
-Relationships can be used to define the kind and styling of a relation (`-[<name>]->`).
+### Relationship
 
 ```likec4
 specification {
@@ -56,7 +60,9 @@ specification {
 }
 ```
 
+More in the [relationships](../relationships/#relationship-kinds)
 
+{/*
 
 #### Color
 Any color defined in [styling](./styling).

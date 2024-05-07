@@ -1,5 +1,5 @@
 ---
-title: Example Guide
+title: Deploy to GitHub Pages
 description: A guide in my new Starlight docs site.
 ---
 

@@ -1,0 +1,44 @@
+specification { // define "types" of architecture elements
+  element actor {
+    style {
+      shape person // how to render
+    }
+  }
+  element system
+  element component
+  relationship async // allow "typed" relationship
+}
+
+model { // describe your architecture, single source of truth
+  customer = actor 'Customer' {
+    description 'A user of our product with active subscription'
+    -> ui 'opens in browser' // how relationships are
+  }
+  cloud = system 'Our SaaS' {
+    backend = component 'Backend' {
+      description '
+        Implements business logic
+        and provides GraphQL API
+      '
+    }
+
+    ui = component 'Frontend' {
+      description 'NextJs application'
+      style {
+        shape browser
+      }
+    }
+
+    ui -[async]-> backend 'requests via HTTPS'
+  }
+}
+
+views {
+  view index {
+    include *, cloud.*
+
+    style cloud.* {
+      color green
+    }
+  }
+}

@@ -1,0 +1,88 @@
+---
+title: Styling
+sidebar: 
+  label: Styling
+  order: 6
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+You can change colors, shapes, and icons of elements and relationships.
+
+### Element
+
+There are multiple ways to style elements:
+- Style all elements of a kind in `specification`
+- Specific for an element in `model`
+- Override styles in `view`
+
+#### Elements of a kind
+
+To style all elements of a kind, use the `style` block in `specification`:
+
+```likec4 copy
+specification {
+  element user {
+    style {
+      // every element of 'user' kind
+      shape person // have 'person' shape
+      color amber  // and amber color
+    }
+  }
+
+  element frontend {    
+    style {
+      // every 'frontend' displayed as browser
+      shape: browser // ':' is optional, but if you prefer
+    }
+  }
+}
+```
+
+#### Single element
+
+To style a specific element, use the nested `style` block in `model`.  
+Element styles override the kind ones:
+
+```likec4 copy
+specification {
+  element actor {
+    style {
+      shape person
+      color red
+    }
+  }
+}
+
+model {
+  customer = actor 'Customer' {
+    style {
+      // inherits shape from kind
+      // and overrides color
+      color green                   
+    }
+  }
+}
+```
+
+#### Override for a View
+
+You can override styles inside the view definitions.  
+For example, change the color:
+
+```likec4
+view {
+  include *
+
+  style customer {
+    color muted
+  }
+}
+```
+
+<Aside>
+This is covered later on the [views](../views#style-rules) page
+</Aside>

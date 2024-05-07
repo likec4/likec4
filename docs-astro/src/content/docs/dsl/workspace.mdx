@@ -1,0 +1,135 @@
+---
+title: Workspace
+sidebar: 
+  label: Workspace
+  order: 8
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 4
+next: false
+---
+
+import { Aside, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Workspace is a directory with LikeC4 source files.  
+When parsed, these files are "_merged_" into a single architecture model.  
+You are free to organize the workspace as you want.
+
+
+### Example
+
+Assume we have the following workspace:
+
+<FileTree>
+- cloud
+  - service1.c4
+  - service2.c4
+- externals
+  - amazon.c4
+- landscape.c4
+- specs.c4
+</FileTree>
+
+
+<Tabs>
+  <TabItem label="specs.c4">
+    This file defines the specification:
+
+    ```likec4
+    // specs.c4
+    specification {
+      element actor {
+        style {
+          shape person
+        }
+      }
+      element system
+      element service
+    }
+    ```
+  </TabItem>
+  <TabItem label="landscape.c4">
+    This file defines the top-level elements and landscape view:
+
+    ```likec4
+    // landscape.c4
+    model {
+      customer = actor 'Customer'
+      cloud = system 'Cloud System'
+    }
+    views {
+      view index of cloud {
+        title "Cloud System - Landscape"
+        include *
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="externals/amazon.c4">
+    We keep definitions of external systems separate, inside the `externals/` folder:
+    
+    ```likec4
+    // externals/amazon.c4
+    model {
+      amazon = system 'Amazon Web Services' {
+        rds = service 'Database'
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+### Extend element
+
+`extend` is a way to enrich the model and define nested elements in a separate file.
+
+For instance, we don't want to mess up the _landscape.c4_ file with the internals of the `cloud`.  
+In a separate _cloud/service1.c4_ file we define `cloud.service1`:
+
+```likec4
+// cloud/service1.c4
+model {
+  // cloud is defined in landscape.c4
+  extend cloud {
+    // here we define cloud.service1
+    service1 = service 'Service 1'
+  }
+}
+```
+
+The element extension inherits the scope of the target (or better say _**parent**_).  
+For example, _cloud/service2.c4_ file:
+
+```likec4
+// cloud/service2.c4
+model {
+  // cloud is defined in landscape.c4
+  extend cloud {
+    // define cloud.service2
+    service2 = service 'Some Service 2' {
+
+      -> service1 'delegates some work' // ✅ service1 is known inside 'cloud', 
+                                        //    and resolved even defined in another file 
+    }
+  }
+
+  // service2 unique inside the file
+  service2 -> service1       // ⛔️ Error: service1 not found
+                             //    as can't be resolved from this file
+
+  service2 -> cloud.service1 // ✅ OK: Resolved by fully qualified name
+}
+```
+
+<Aside type='caution'>
+Extended element must be referenced by a fully qualified name.  
+</Aside>
+
+Example:
+
+```likec4
+model {
+  extend rds        // ⛔️ Error: rds not found in the global scope
+  extend amazon.rds // ✅ Resolved by fully qualified name
+}
+```
