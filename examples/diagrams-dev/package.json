@@ -33,7 +33,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "tsx": "~4.7.3",
+    "tsx": "~4.9.3",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-watch-and-run": "^1.5.0"
