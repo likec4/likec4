@@ -1,6 +1,7 @@
 import starlight from '@astrojs/starlight'
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
+import starlightLinksValidator from 'starlight-links-validator'
 import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
@@ -18,8 +19,10 @@ export default defineConfig({
       social: {
         github: 'https://github.com/likec4/likec4'
       },
+      tagline: 'A language for expressing and visualizing software architecture',
       logo: {
-        src: './src/assets/logo.svg',
+        dark: './src/assets/logo-dark.svg',
+        light: './src/assets/logo-light.svg',
         replacesTitle: true
       },
       customCss: [
@@ -32,7 +35,7 @@ export default defineConfig({
       sidebar: [
         {
           label: 'What is LikeC4',
-          link: '/what-is-likec4'
+          link: '/'
         },
         {
           label: 'Getting Started',
@@ -75,7 +78,10 @@ export default defineConfig({
             likec4grammar
           ]
         }
-      }
+      },
+      plugins: [
+        starlightLinksValidator()
+      ]
     })
   ]
 })

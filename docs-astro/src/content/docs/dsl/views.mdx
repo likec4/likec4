@@ -2,13 +2,13 @@
 title: Views
 sidebar: 
   label: Views
-  order: 7
+  order: 8
 tableOfContents:
   minHeadingLevel: 3
-  maxHeadingLevel: 4
+  maxHeadingLevel: 6
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 Views are the architecture diagrams, projections of the model from different perspectives, with different levels of details, like:
 
@@ -39,7 +39,7 @@ View's name is used as a filename during the export, and a URL part for the shar
   If not defined, it will be generated for top-level elements
 </Aside>
 
-Views may have a title, description, tags and links (same as [model element](../model#element)):
+Views may have a title, description, tags and links (same as [model element](/dsl/model#element)):
 
 ```likec4
 views {
@@ -60,11 +60,13 @@ views {
 }
 ```
 
+Properties should be defined before any predicates.
+
 
 ### Scoped views
 
 View may be defined for some element (`view of ..`).  
-View inherits the [scope](../references#scope) of the element:
+View inherits the [scope](/dsl/references#scope) of the element:
 
 ```likec4
 views {
@@ -101,95 +103,122 @@ You may have multiple views for the same element, but which one is default is no
 
 ### View predicates
 
-View predicates define what elements/relationships to include/exclude:
+Views are not static, they reflect any changes in the model.  
+Two types of predicates define what elements/relationships are visible.  
 
-```likec4
-// include element
-include cloud.backend
 
-// or exclude
-exclude cloud.backend
+##### Element predicates
 
-// include children of cloud.backend and all the relationships
-// among them and the elements of the view
-include cloud.backend.*
+Element predicates explicitly define what elements are visible, regardless of the relationships.
 
-// all incoming relationships
-// if any found - includes cloud.backend and source elements
-include -> cloud.backend
-include * -> cloud.backend
-
-// all outgoing relationships
-// if any found - includes cloud children and target elements
-include cloud.* ->
-
-// all relationships from customer to cloud children (direction is important)
-// if any found - includes customer and targeted children
-include customer -> cloud.*
-
-// any relationships between cloud.backend and cloud.frontend (both directions)
-include cloud.backend <-> cloud.frontend
-// same as:
-include
-  cloud.backend -> cloud.frontend,
-  cloud.frontend -> cloud.backend
-
-// elements by kind
-include element.kind = container
-include element.kind != system
-
-// elements by tag
-include element.tag = #next
-include element.tag != #V2
-```
-
-Wildcard may be used to reference "everything", but it depends on the context.
-
-```likec4
+```likec4 wrap title="example.c4"
 view {
-  // include all top level elements and their relationships
-  include *
-}
+  // Only backend is visible
+  include backend
 
-view of cloud.backend {
-  // include 'cloud.backend', its children and all the incomings/outgoings
-  include *
+  // Add frontend to the view 
+  // and its relationships with backend
+  include frontend 
+
+  // Add authService to the view 
+  // and its relationships with visible backend and frontend
+  include authService
+
+  // Add nested elements of messageBroker (but not messageBroker),
+  // and their relationships among themselves and visible backend, frontend and authService
+  include messageBroker.*
+
+  // Exclude emailsQueue and its visible relationships
+  exclude messageBroker.emailsQueue
 }
 ```
 
 <Aside>
   Order is significant, and predicates are applied as defined in view.  
-  `exclude` applies only to elements/relationships included before.
+  Exclude applies only to elements/relationships included before.
 </Aside>
 
-Example:
+###### Combining
 
-```likec4
-view of bigbank {
-  // rules are merged
+Predicates may be combined. The following is equivalent to the previous example:
+
+```likec4 wrap title="example.c4"
+view {
   include
-    customer,
-    bigbank,
-    customer -> bigbank.*
+    backend,
+    frontend,
+    authService,
+    messageBroker.*
 
-  // exclude all children of bigbank
-  exclude bigbank.*
-
-  // but include webApplication
-  include bigbank.webApplication
+  exclude messageBroker.emailsQueue
 }
 ```
 
-<Aside type='tip'>
-  Try to move predicates to see how it affects the view.
-</Aside>
 
+###### Wildcard
 
-### Custom navigation
+Wildcard predicates may be used to reference "everything", but it depends on the context.  
+Assume we have the following model:
 
-It is possible to define custom navigation and links between views:
+```likec4 wrap title="example.c4"
+model {
+  actor customer {
+    -> webApp 'uses in browser via HTTPS'
+  }
+  system cloud {
+    container backend {
+      component api    
+    }
+    container ui {
+      component webApp {
+        -> api 'requests data'
+      }
+    }
+  }
+}
+views {
 
-```likec4
+  // Unscoped view
+  view {
+    include *
+    // Visible top-level elements: customer, cloud
+    // and derived relationship customer -> cloud
+  }
+
+  // Scoped view
+  view of cloud.ui {
+    include *
+    // Visible:
+    // - cloud.ui
+    // - cloud.ui.webApp
+    // - customer, and relationship customer -> cloud.ui.webApp
+    // - cloud.backend, and derived relationship cloud.ui.webApp -> cloud.backend
+  }
+}
+```
+
+###### With overrides
+
+It is possible to change element properties just for this view:
+
+```likec4 title="example.c4"
+view {
+  // Include the element and override its properties
+  include cloud.backend with {
+    title 'Backend components'
+    description '...'
+    technology 'Java, Spring'
+    color amber
+    shape browser
+  }
+}
+```
+
+###### With custom navigation
+
+It is possible to define custom navigation  and links between views:
+
+```likec4 title="example.c4"
 
 view view2 {
   include *
@@ -208,24 +237,114 @@ view view3 {
 }
 ```
 
-### Override elements
+###### By element kind or tag
 
-It is possible to override element properties just for the view:
+```likec4 title="example.c4"
+// elements by kind
+include element.kind != system
+exclude element.kind = container
 
-```likec4
+// elements by tag
+include element.tag != #V2
+exclude element.tag = #next
+```
+
+##### Relationship predicates
+
+These predicates include elements from the satisfied relationships only.  
+Based on the model from [wildcard example](#wildcard):
+
+###### Incoming
+
+Include elements that have incoming relationships from visible elements:
+
+```likec4 wrap title="incoming predicate.c4"
 view {
-  // Include the element and override its properties
-  include cloud.backend with {
-    title 'Backend components'
-    description '...'
-    technology 'Java, Spring'
-    color amber
-    shape browser
-  }
+  // visible element
+  include customer
+
+  // include nothing, customer has no relation to backend
+  include -> backend
+
+  // add ui,
+  // because customer has a relationship with nested ui.webApp
+  include -> ui
+
+  // add backend, because visible ui has a relationship to backend
+  // derived from ui.webApp -> backend.api
+  include -> backend
+}
+
+// This view includes customer and ui
+view {
+  include
+    customer,
+    -> cloud.*
 }
 ```
 
-### Style rules
+<Aside type='tip'>
+  Predicates can be used to exclude relationships and hide elements.
+</Aside>
+
+###### Outgoing
+
+Include elements of only they have outgoing relationships to visible elements:
+
+```likec4
+include customer ->
+include cloud.* ->
+```
+
+###### In/Out
+
+For example, include nested elements of `cloud`, that have any relationships with visible elements:
+
+```likec4
+include -> cloud.* ->
+```
+
+###### Directed relationships
+
+Include relationships of specific direction and the elements:
+
+```likec4
+include customer -> cloud.*
+```
+
+###### Any relationship
+
+Include any relationships between elements:
+
+```likec4
+include customer <-> cloud
+```
+
+#### Expand predicate
+
+Expand predicate is a mix of element's and relationship's.  
+Include `cloud` element and its children that have in/out relationships with visible elements:
+
+```likec4
+include cloud._
+
+// Same as
+include cloud,        
+  -> cloud.* ->
+```
+
+### Auto-layout
+
+```likec4
+view {
+  include *
+  autoLayout LeftRight
+}
+```
+
+Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`.
+
+### Style predicates
 
 Style predicates define how elements are rendered.  
 Example from [BigBank](/examples/bigbank/components/):
@@ -258,7 +377,7 @@ view apiApp of internetBankingSystem.apiApplication {
 ```
 
 <Aside>
-  [Overrides](#override-elements) have higher priority than style rules.
+  [Overrides](#with-overrides) have higher priority than style rules.
 </Aside>
 
 ### Extend views

@@ -2,11 +2,10 @@
 title: Workspace
 sidebar: 
   label: Workspace
-  order: 8
+  order: 6
 tableOfContents:
   minHeadingLevel: 3
   maxHeadingLevel: 4
-next: false
 ---
 
 import { Aside, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
@@ -24,6 +23,7 @@ Assume we have the following workspace:
 - cloud
   - service1.c4
   - service2.c4
+  - ...
 - externals
   - amazon.c4
 - landscape.c4
@@ -83,53 +83,48 @@ Assume we have the following workspace:
 
 `extend` is a way to enrich the model and define nested elements in a separate file.
 
-For instance, we don't want to mess up the _landscape.c4_ file with the internals of the `cloud`.  
-In a separate _cloud/service1.c4_ file we define `cloud.service1`:
+
+We don't want to mess up the _landscape.c4_ file with the internals of the `cloud`.  
+In a separate file we extend `cloud` and define `cloud.service1`:
 
 ```likec4
 // cloud/service1.c4
 model {
   // cloud is defined in landscape.c4
   extend cloud {
-    // here we define cloud.service1
+    // extend and define cloud.service1
     service1 = service 'Service 1'
   }
 }
 ```
 
 The element extension inherits the scope of the target (or better say _**parent**_).  
-For example, _cloud/service2.c4_ file:
+For example:
 
 ```likec4
 // cloud/service2.c4
 model {
   // cloud is defined in landscape.c4
   extend cloud {
-    // define cloud.service2
-    service2 = service 'Some Service 2' {
+    // extend and define cloud.service2
+    service2 = service 'Some Service 2'
 
-      -> service1 'delegates some work' // ✅ service1 is known inside 'cloud', 
-                                        //    and resolved even defined in another file 
-    }
+    service2 -> service1 // ✅ service1 is known inside 'cloud'
   }
-
-  // service2 unique inside the file
-  service2 -> service1       // ⛔️ Error: service1 not found
-                             //    as can't be resolved from this file
-
-  service2 -> cloud.service1 // ✅ OK: Resolved by fully qualified name
 }
 ```
 
+
 <Aside type='caution'>
 Extended element must be referenced by a fully qualified name.  
-</Aside>
 
 Example:
 
 ```likec4
+// cloud/service3.c4
 model {
-  extend rds        // ⛔️ Error: rds not found in the global scope
-  extend amazon.rds // ✅ Resolved by fully qualified name
+  extend service2       // ⛔️ Error: service2 not found in the global scope
+  extend cloud.service2 // ✅ Resolved by fully qualified name
 }
 ```
+</Aside>

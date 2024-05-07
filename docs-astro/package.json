@@ -10,8 +10,7 @@
     "generate": "yarn generate:bigbank && yarn generate:index",
     "dev": "astro dev",
     "start": "astro dev",
-    "build_": "astro check && astro build",
-    "build": "astro check",
+    "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -21,6 +20,7 @@
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.19",
     "astro": "^4.7.1",
+    "starlight-links-validator": "^0.8.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {

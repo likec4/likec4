@@ -50,7 +50,7 @@
       }
     },
     {
-      "match": "\\b(actor|component|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
+      "match": "\\b(actor|component|system|container|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -206,7 +206,7 @@
     },
     {
       "name": "variable.other.constant.likec4",
-      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem)\\b"
+      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|frontend|api|webApp|authService|messageBroker)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

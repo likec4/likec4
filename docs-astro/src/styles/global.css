@@ -8,3 +8,7 @@
     "Segoe UI Symbol",
     "Noto Color Emoji";
 }
+
+.title-wrapper {
+  --sl-nav-height: 3.3rem;
+}

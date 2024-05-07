@@ -1,102 +1,50 @@
-specification { // define "types", allowed in model
+specification {
+  // Element kinds used in our architecture
   element actor {
     style {
-      shape person // how to render
+      shape person
     }
   }
   element system
   element component
-  relationship async // allow "typed" relationship
+  // Relationship kind
+  relationship async
 }
 
-// describe architecture
+// Describe the architecture
 model {
   customer = actor 'Customer' {
-    description 'A user of our product with active subscription'
+    description 'Customer of Cloud System'
   }
 
-  cloud = system 'Our SaaS' {
-    description 'Our product allows customers to manage their data'
-    style {
-      color muted
-    }
+  cloud = system 'Cloud System' {
 
     backend = component 'Backend' {
-      description '
-        Implements business logic
-        and provides GraphQL API
-      '
-
-      api = component 'GraphQL' {
-        description 'Configured Hasura, provides access to data from database or calls services'
-      }
-
-      services = component 'Services' {
-        technology 'serverless functions'
-        description '
-          Implement business logic and
-          comminucate with external services
-        '
-      }
-
-      api -> services 'calls'
-      api -> infra.db 'reads'
-      services -> infra.db 'writes'
+      description 'Backend services and API'
     }
 
     ui = component 'Frontend' {
-      description 'NextJs application'
+      description '
+        All the frontend applications
+        of Cloud System
+      '
       style {
         shape browser
       }
     }
-
-    ui -[async]-> api 'requests via HTTPS'
-
   }
 
-  infra = system 'Infrastructure' {
-    description '
-      Cloud Infrastructure, Hosting
-      and Managed Services
-    '
-
-    db = component 'Database' {
-      description 'Managed PostgreSQL'
-      style {
-        shape storage
-      }
-    }
-  }
-
-  cloud -> infra 'uses'
-  backend -> infra 'uses'
-
-  customer -> cloud 'uses to manage data'
   customer -> ui 'opens in browser'
+
+  // Relationship of predefined kind
+  ui -[async]-> backend 'requests via GraphQL'
 }
 
-// generate diagrams
+// What diagrams to generate
 views {
-
-  view index of customer {
-    title 'Landscape view'
-    include customer, cloud, cloud.*
-    style cloud {
-      color muted
-    }
-    style cloud.* {
-      color green
-    }
-  }
-
-  view cloud of cloud {
-    title 'Our Saas - Overview'
+  view index of cloud {
     include *
 
-    style * {
-      color secondary
-    }
     style cloud {
       color muted
     }
@@ -104,37 +52,4 @@ views {
       color green
     }
   }
-
-  view backend of backend {
-    include *, cloud
-
-    style * {
-      color secondary
-    }
-    style cloud {
-      color muted
-    }
-    style backend, backend.* {
-      color green
-    }
-  }
-
-  view infra of infra {
-    include
-      *,
-      cloud,
-      backend,
-      backend.* -> infra
-
-    style * {
-      color secondary
-    }
-    style cloud, infra {
-      color muted
-    }
-    style infra.* {
-      color green
-    }
-  }
-
 }

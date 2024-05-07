@@ -2,7 +2,7 @@
 title: Styling
 sidebar: 
   label: Styling
-  order: 6
+  order: 7
 tableOfContents:
   minHeadingLevel: 3
   maxHeadingLevel: 4
@@ -17,7 +17,7 @@ You can change colors, shapes, and icons of elements and relationships.
 There are multiple ways to style elements:
 - Style all elements of a kind in `specification`
 - Specific for an element in `model`
-- Override styles in `view`
+- Override styles in `view` (more on this in [next section](/dsl/views/#style-predicates))
 
 #### Elements of a kind
 
@@ -68,21 +68,105 @@ model {
 }
 ```
 
-#### Override for a View
+## Style properties
 
-You can override styles inside the view definitions.  
-For example, change the color:
+Every `style` block may contain the following properties:  
+{'-'} shape  
+{'-'} color  
+{'-'} icon
 
-```likec4
-view {
-  include *
+### Shape
 
-  style customer {
-    color muted
+Available element shapes:
+
+| shape     | example |
+| :-------- | :-----: |
+| rectangle |   ..    |
+| storage   |   ..    |
+| cylinder  |   ..    |
+| browser   |   ..    |
+| mobile    |   ..    |
+| person    |   ..    |
+| queue     |   ..    |
+
+If not set, the default shape is `rectangle`.
+
+### Color
+
+| color          |                                                           |
+| :------------- | :-------------------------------------------------------: |
+| primary, blue  |  <div className="bg-blue-500 rounded-sm w-8 h-6"></div>   |
+| secondary, sky |   <div className="bg-sky-600 rounded-sm w-8 h-6"></div>   |
+| muted, slate   |  <div className="bg-slate-600 rounded-sm w-8 h-6"></div>  |
+| amber          |  <div className="bg-amber-600 rounded-sm w-8 h-6"></div>  |
+| gray           | <div className="bg-neutral-500 rounded-sm w-8 h-6"></div> |
+| green          |  <div className="bg-green-600 rounded-sm w-8 h-6"></div>  |
+| indigo         | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>  |
+| red            |   <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
+
+If not set, the default color is `primary`.
+
+### Icon
+
+Element may have an icon - any browser-supported image and publicly available with `https://`:
+
+```likec4 copy
+model {
+  k8s = service 'K8s Service' {
+    style {
+      icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+    }
   }
 }
 ```
 
-<Aside>
-This is covered later on the [views](../views#style-rules) page
-</Aside>
+
+## Relationship
+
+Relationships can be styled using the [kinds](/dsl/relationship#kind):
+
+```likec4
+specification {
+  relationship async {
+    color amber
+    line dotted
+    head diamond
+    tail vee
+  }
+}
+```
+
+At the moment, the styling applies globally and cannot be overridden per view.  
+Let us know and [open an issue](https://github.com/likec4/likec4/issues) if you need it.
+
+### Line
+
+| line   | example |
+| :----- | :-----: |
+| dashed |   ..    |
+| solid  |   ..    |
+| dotted |   ..    |
+
+By default, the line is `dashed`.
+
+### Arrow type
+
+The arrow type can be set for the head and the tail of the relationship:
+
+| type      | example |
+| :-------- | :-----: |
+| normal    |   ..    |
+| onormal   |   ..    |
+| diamond   |   ..    |
+| odiamond  |   ..    |
+| crow      |   ..    |
+| vee       |   ..    |
+| open      |   ..    |
+| none      |   ..    |
+
+By default, the head is `normal` and the tail is `none`.
+
+> `onormal` means "outlined normal", i.e. no fill  
+> `odiamond` - "outlined diamond"
+
+Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.
