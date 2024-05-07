@@ -63,6 +63,9 @@ export default defineConfig({
         plugins: [
           pluginLineNumbers()
         ],
+        styleOverrides: {
+          borderRadius: '4px'
+        },
         defaultProps: {
           // Disable line numbers by default
           showLineNumbers: false
