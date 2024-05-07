@@ -1,0 +1,8 @@
+---
+interface Props {
+  viewId: string;
+}
+const { viewId } = Astro.props
+---
+<script src="./likec4-views.js"></script>
+<likec4-view view-id={viewId} keep-aspect-ratio></likec4-view>

@@ -1,0 +1,21 @@
+{
+  "name": "@likec4/docs-astro",
+  "type": "module",
+  "version": "1.0.0-next.13",
+  "packageManager": "yarn@4.1.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.5.10",
+    "@astrojs/starlight": "^0.21.5",
+    "@fontsource/ibm-plex-sans": "^5.0.19",
+    "astro": "^4.3.5",
+    "typescript": "^5.4.5"
+  }
+}
