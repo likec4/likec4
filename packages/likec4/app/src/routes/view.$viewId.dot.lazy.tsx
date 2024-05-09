@@ -2,7 +2,7 @@ import { Code, ScrollArea } from '@mantine/core'
 import { createLazyFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
-import { CopyToClipboard, DiagramNotFound } from '../components'
+import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
 import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
 

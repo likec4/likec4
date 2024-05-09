@@ -6,9 +6,9 @@ declare module 'virtual:likec4' {
 }
 
 declare module 'virtual:likec4/views' {
-  import type { DiagramView, ViewID } from '@likec4/core'
+  import type { DiagramView, Opaque } from '@likec4/core'
 
-  export type LikeC4ViewId = ViewID
+  export type LikeC4ViewId = Opaque<string, 'LikeC4ViewId'>
 
   export type LikeC4Views = Record<LikeC4ViewId, DiagramView>
 
