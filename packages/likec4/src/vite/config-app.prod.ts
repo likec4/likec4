@@ -15,6 +15,7 @@ export type LikeC4ViteConfig =
     outputDir?: string | undefined
     base?: string | undefined
     webcomponentPrefix?: string | undefined
+    useHashHistory?: boolean | undefined
   }
   | {
     languageServices?: never
@@ -22,6 +23,7 @@ export type LikeC4ViteConfig =
     outputDir?: string | undefined
     base?: string | undefined
     webcomponentPrefix?: string | undefined
+    useHashHistory?: boolean | undefined
   }
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
@@ -68,6 +70,7 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'false',
+      __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"'
     },
     optimizeDeps: {

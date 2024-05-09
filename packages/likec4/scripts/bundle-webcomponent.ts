@@ -38,6 +38,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     mode: 'production',
     define: {
       __USE_SHADOW_STYLE__: 'true',
+      __USE_HASH_HISTORY__: 'false',
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {

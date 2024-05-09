@@ -15,13 +15,11 @@ import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
 import '@radix-ui/themes/styles.css'
 import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
-import './app.css'
+import './main.css'
 
 import ReactDOM from 'react-dom/client'
 import { Routes } from './router'
 
-export function renderApp(basepath: string) {
-  ReactDOM.createRoot(document.getElementById('like4-root')!).render(
-    <Routes basepath={basepath} />
-  )
-}
+ReactDOM.createRoot(document.getElementById('like4-root')!).render(
+  <Routes />
+)

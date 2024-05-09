@@ -32,7 +32,7 @@ export const exportCmd = {
               choices: ['light', 'dark'] as const,
               desc: 'color-scheme to use, default is light'
             })
-            .option('use-dot-bin', useDotBin)
+            .option('use-dot', useDotBin)
             .options({
               'ignore': {
                 boolean: true,
@@ -90,7 +90,7 @@ export const exportCmd = {
               normalize: true,
               coerce: resolve
             })
-            .option('use-dot-bin', useDotBin)
+            .option('use-dot', useDotBin)
             .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export json')}
     ${k.gray('Search for likec4 files in current directory and output JSON to likec4.json')}

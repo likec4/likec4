@@ -13,6 +13,8 @@ type HandlerParams = {
    */
   base?: string | undefined
 
+  useHashHistory: boolean | undefined
+
   webcomponentPrefix: string
 }
 
@@ -20,6 +22,7 @@ export async function handler({
   path,
   useDotBin,
   webcomponentPrefix,
+  useHashHistory,
   base
 }: HandlerParams) {
   const languageServices = await LanguageServices.get({ path, useDotBin })
@@ -27,6 +30,7 @@ export async function handler({
   await viteDev({
     base,
     webcomponentPrefix,
-    languageServices
+    languageServices,
+    useHashHistory
   })
 }

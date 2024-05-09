@@ -4,7 +4,7 @@ import { MantineProvider } from '@mantine/core'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import clsx from 'clsx'
 import root from 'react-shadow'
-import { theme, useCreateCssStyleSheet } from './styles'
+import { theme, useCreateStyleSheet } from './styles'
 import { cssRoot } from './styles.css'
 
 const Root: DetailedHTMLFactory<
@@ -30,7 +30,7 @@ export function ShadowRoot({
   const mantineRootRef = useRef<HTMLDivElement>(null)
   const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
 
-  const createCssStyleSheet = useCreateCssStyleSheet()
+  const createCssStyleSheet = useCreateStyleSheet()
 
   useIsomorphicLayoutEffect(() => {
     const css = createCssStyleSheet()

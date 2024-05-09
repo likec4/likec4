@@ -45,6 +45,7 @@ export async function viteWebcomponentConfig({
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'true',
+      __USE_HASH_HISTORY__: 'false',
       'process.env.NODE_ENV': '"development"'
     },
     build: {

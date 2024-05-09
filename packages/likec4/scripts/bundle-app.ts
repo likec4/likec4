@@ -2,10 +2,10 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
+import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
-import pkg from '../package.json' assert { type: 'json' }
 import { modules } from '../src/vite/plugin'
 
 export async function bundleApp() {
@@ -54,7 +54,7 @@ export async function bundleApp() {
       target: 'esnext',
       lib: {
         entry: {
-          app: 'src/app.tsx'
+          main: 'src/main.tsx'
           //   router: 'src/router.tsx',
           //   'routes/view.$viewId.index' : 'src/routes/view.$viewId.index.tsx',
           //   'routes/view.$viewId.react-legacy.lazy' : 'src/routes/view.$viewId.react-legacy.lazy.tsx'
@@ -85,7 +85,7 @@ export async function bundleApp() {
         },
         external: [
           'virtual:likec4',
-          // /@fontsource\/ibm-plex-sans/,
+          resolve('app/src/const.js'),
           ...modules.map(m => m.id)
         ]
       }
@@ -110,4 +110,16 @@ export async function bundleApp() {
       })
     ]
   })
+
+  consola.info(`copy app files to dist/__app__`)
+  let indexHtml = await readFile('app/index.html', 'utf-8')
+  indexHtml = indexHtml.replace('%VITE_HTML_DEV_INJECT%', '')
+  await writeFile('dist/__app__/index.html', indexHtml)
+
+  await Promise.all([
+    copyFile('app/robots.txt', 'dist/__app__/robots.txt'),
+    copyFile('app/favicon.ico', 'dist/__app__/favicon.ico'),
+    copyFile('app/favicon.svg', 'dist/__app__/favicon.svg'),
+    copyFile('app/src/const.js', 'dist/__app__/src/const.js')
+  ])
 }

@@ -59,7 +59,7 @@ export const codegenCmd = {
               desc: '<file> output .js/.mjs file',
               normalize: true
             })
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         async args => {
           await reactHandler({
             useDotBin: args.useDotBin,
@@ -83,7 +83,7 @@ export const codegenCmd = {
               normalize: true
             })
             .option('webcomponent-prefix', webcomponentPrefix)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await webcomponentHandler({
             useDotBin: args.useDotBin,
@@ -109,7 +109,7 @@ export const codegenCmd = {
                 normalize: true
               }
             })
-            .option('use-dot-bin', useDotBin)
+            .option('use-dot', useDotBin)
             .coerce(['outfile'], resolve),
         handler: async args => {
           await reactLegacyHandler({
@@ -155,7 +155,7 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await reactLegacyHandler({
             format: 'dot',
@@ -173,7 +173,7 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await reactLegacyHandler({
             format: 'd2',
@@ -192,7 +192,7 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await reactLegacyHandler({
             format: 'mermaid',
