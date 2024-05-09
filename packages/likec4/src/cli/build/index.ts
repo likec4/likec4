@@ -2,7 +2,7 @@
 import { resolve } from 'node:path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
-import { base, path, useDotBin, webcomponentPrefix } from '../options'
+import { base, path, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
 import { buildHandler as handler } from './build'
 
 export const buildCmd = {
@@ -20,8 +20,9 @@ export const buildCmd = {
         coerce: resolve
       })
       .option('base', base)
+      .option('use-hash-history', useHashHistory)
+      .option('use-dot', useDotBin)
       .option('webcomponent-prefix', webcomponentPrefix)
-      .option('use-dot-bin', useDotBin)
       .example(
         `${k.green('$0 build -o ./build ./src')}`,
         k.gray('Search for likec4 files in \'src\' and output static site to \'build\'')
@@ -31,15 +32,17 @@ export const buildCmd = {
       path: args.path,
       output: args.output,
       base: args.base,
-      useDotBin: args['use-dot-bin'],
+      useHashHistory: args['use-hash-history'],
+      useDotBin: args['use-dot'],
       webcomponentPrefix: args['webcomponent-prefix']
     })
   }
 } satisfies CommandModule<object, {
   output: string | undefined
   path: string
-  'use-dot-bin': boolean
+  'use-dot': boolean
   base?: string | undefined
+  'use-hash-history': boolean | undefined
   'webcomponent-prefix': string
 }>
 

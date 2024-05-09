@@ -46,6 +46,9 @@ globalStyle(`.react-flow__edge.selected ${container}`, {
 })
 
 globalStyle(`.react-flow__edges > svg`, {
+  mixBlendMode: 'screen'
+})
+globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
   mixBlendMode: 'lighten'
 })
 

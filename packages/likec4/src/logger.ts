@@ -65,7 +65,7 @@ export function inMillis(start: [number, number]) {
 export function startTimer() {
   const start = hrtime()
   return {
-    stopAndLog(msg = '✓ done in ') {
+    stopAndLog(msg = 'done in ') {
       consola.success(k.green(`${msg}${inMillis(start).pretty}`))
     }
   }

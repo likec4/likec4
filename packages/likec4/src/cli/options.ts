@@ -10,10 +10,17 @@ export const path = {
 } as const satisfies PositionalOptions
 
 export const useDotBin = {
+  alias: 'use-dot-bin',
   boolean: true,
   type: 'boolean',
-  desc: 'use local binaries of graphviz ("dot") instead of wasm',
+  desc: 'use local binaries of graphviz ("dot")',
   default: false
+} as const satisfies Options
+
+export const useHashHistory = {
+  boolean: true,
+  type: 'boolean',
+  desc: 'hash history, e.g. "/#/view" instead of "/view"'
 } as const satisfies Options
 
 export const outdir = {
@@ -32,6 +39,7 @@ export const webcomponentPrefix = {
 } as const satisfies Options
 
 export const base = {
+  alias: ['base-url'],
   type: 'string',
   desc: 'base url the app is being served from, e.g. "/" or "/pages/"'
 } as const satisfies Options

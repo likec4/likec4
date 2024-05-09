@@ -2,7 +2,7 @@ import { type DiagramView, invariant, type ViewID } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
-import { LikeC4Views } from 'virtual:likec4/views'
+import { type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
 
 // type MiscellaneousProps = {
@@ -99,10 +99,10 @@ export class LikeC4Browser extends HTMLElement {
 
   protected get view(): DiagramView {
     const id = this.getAttribute('view-id') || 'index'
-    let view = LikeC4Views[id as ViewID]
+    let view = LikeC4Views[id as LikeC4ViewId]
     if (!view) {
       console.error(`Invalid view id: ${id},\nAvailable: ${Object.keys(LikeC4Views).join(', ')}`)
-      view = LikeC4Views['index' as ViewID] ?? Object.values(LikeC4Views)[0]
+      view = LikeC4Views['index' as LikeC4ViewId] ?? Object.values(LikeC4Views)[0]
       invariant(view, `Empty LikeC4Views`)
       console.warn(`LikeC4: Falling back to view: ${view.id}`)
       const fallbackViewId = view.id

@@ -1,7 +1,6 @@
-import { StaticLikeC4Diagram } from '@likec4/diagram'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
-import { createFileRoute } from '@tanstack/react-router'
-import { DiagramNotFound } from '../components'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 import { cssExportView } from './view.css'
@@ -26,7 +25,7 @@ function ExportPage() {
   useTransparentBackground()
 
   if (!diagram) {
-    return <DiagramNotFound viewId={viewId} />
+    throw notFound()
   }
 
   return (
@@ -37,14 +36,20 @@ function ExportPage() {
         minHeight: diagram.height + padding * 2,
         padding
       }}>
-      <StaticLikeC4Diagram
+      <LikeC4Diagram
         view={diagram}
+        readonly
         fitView={false}
         fitViewPadding={0}
-        initialWidth={diagram.width}
-        initialHeight={diagram.height}
+        pannable={false}
+        zoomable={false}
+        controls={false}
         background={'transparent'}
-      />
+        showElementLinks={false}
+        nodesSelectable={false}
+        nodesDraggable={false}
+        initialWidth={diagram.width}
+        initialHeight={diagram.height} />
     </Box>
   )
 }

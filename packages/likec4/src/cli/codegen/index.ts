@@ -2,9 +2,10 @@ import { resolve } from 'path'
 import k from 'picocolors'
 import type { CommandModule } from 'yargs'
 import { outdir, path, useDotBin, webcomponentPrefix } from '../options'
-import { reactHandler } from './handler'
-import { handler as npmHandler } from './npm-package/handler'
-import { reactNexthandler } from './react-next'
+import { reactLegacyHandler } from './handler'
+// import { handler as npmHandler } from './npm-package/handler'
+// import { reactNexthandler } from './react-next'
+import { reactHandler } from './react'
 import { webcomponentHandler } from './webcomponent/handler'
 
 export const codegenCmd = {
@@ -21,47 +22,49 @@ export const codegenCmd = {
       .positional('path', path)
       // ----------------------
       // npm package command
-      .command(
-        ['package [path]', 'pkg', 'npm'],
-        '!!experimental!! generate npm package',
-        yargs =>
-          yargs
-            // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
-            .options({
-              useDotBin,
-              outdir,
-              pkgName: {
-                type: 'string',
-                desc: 'package name',
-                normalize: true
-              }
-            }),
-        async args => {
-          await npmHandler({
-            useDotBin: args.useDotBin,
-            path: args.path,
-            pkgName: args.pkgName,
-            pkgOutDir: args.outdir
-          })
-        }
-      )
+      // .command(
+      //   ['package [path]', 'pkg', 'npm'],
+      //   '!!experimental!! generate npm package',
+      //   yargs =>
+      //     yargs
+      //       // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
+      //       .options({
+      //         useDotBin,
+      //         outdir,
+      //         pkgName: {
+      //           type: 'string',
+      //           desc: 'package name',
+      //           normalize: true
+      //         }
+      //       }),
+      //   async args => {
+      //     await npmHandler({
+      //       useDotBin: args.useDotBin,
+      //       path: args.path,
+      //       pkgName: args.pkgName,
+      //       pkgOutDir: args.outdir
+      //     })
+      //   }
+      // )
       // ----------------------
       // react-next command
       .command(
-        'react-next [path]',
-        'generate next react diagrams',
+        'react [path]',
+        'generate react component to render likec4 views',
         yargs =>
           yargs
-            .options({
-              outdir,
-              useDotBin
+            .option('outfile', {
+              alias: 'o',
+              type: 'string',
+              desc: '<file> output .js/.mjs file',
+              normalize: true
             })
-            .coerce(['outdir'], resolve),
+            .option('use-dot', useDotBin),
         async args => {
-          await reactNexthandler({
+          await reactHandler({
             useDotBin: args.useDotBin,
             path: args.path,
-            outdir: args.outdir
+            outfile: args.outfile
           })
         }
       )
@@ -80,7 +83,7 @@ export const codegenCmd = {
               normalize: true
             })
             .option('webcomponent-prefix', webcomponentPrefix)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await webcomponentHandler({
             useDotBin: args.useDotBin,
@@ -92,10 +95,10 @@ export const codegenCmd = {
       })
       // ----------------------
       // react command
-      .command(
-        'react [path]',
-        'generate react (.tsx)',
-        yargs =>
+      .command({
+        command: 'react-legacy [path]',
+        describe: 'generate legacy react components (.tsx)',
+        builder: yargs =>
           yargs
             // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
             .options({
@@ -106,17 +109,17 @@ export const codegenCmd = {
                 normalize: true
               }
             })
-            .option('use-dot-bin', useDotBin)
+            .option('use-dot', useDotBin)
             .coerce(['outfile'], resolve),
-        async args => {
-          await reactHandler({
+        handler: async args => {
+          await reactLegacyHandler({
             format: 'react',
             useDotBin: args.useDotBin,
             path: args.path,
             outfile: args.outfile
           })
         }
-      )
+      })
       // ----------------------
       // views-data command
       .command({
@@ -136,7 +139,7 @@ export const codegenCmd = {
             })
             .coerce(['outfile'], resolve),
         handler: async args => {
-          await reactHandler({
+          await reactLegacyHandler({
             format: 'views',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -152,9 +155,9 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
-          await reactHandler({
+          await reactLegacyHandler({
             format: 'dot',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -170,9 +173,9 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
-          await reactHandler({
+          await reactLegacyHandler({
             format: 'd2',
             path: args.path,
             useDotBin: args.useDotBin,
@@ -189,9 +192,9 @@ export const codegenCmd = {
         builder: yargs =>
           yargs
             .option('outdir', outdir)
-            .option('use-dot-bin', useDotBin),
+            .option('use-dot', useDotBin),
         handler: async args => {
-          await reactHandler({
+          await reactLegacyHandler({
             format: 'mermaid',
             useDotBin: args.useDotBin,
             path: args.path,

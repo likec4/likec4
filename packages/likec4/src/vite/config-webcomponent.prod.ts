@@ -1,14 +1,11 @@
 import { createLikeC4Logger } from '@/logger'
-import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import type { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit } from './utils'
-//
-const _dirname = dirname(fileURLToPath(import.meta.url))
+import { chunkSizeWarningLimit, JsBanners, viteAppRoot } from './utils'
 
 export type LikeC4ViteWebcomponentConfig = {
   webcomponentPrefix: string | undefined
@@ -26,13 +23,7 @@ export async function viteWebcomponentConfig({
   filename = 'likec4-views.js'
 }: LikeC4ViteWebcomponentConfig) {
   const customLogger = createLikeC4Logger('c4:lib')
-
-  const root = resolve(_dirname, '../__app__')
-  if (!fs.existsSync(root)) {
-    customLogger.error(`likec4 app root does not exist: ${root}`)
-    throw new Error(`likec4 app root does not exist: ${root}`)
-  }
-
+  const root = viteAppRoot()
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
   return {
@@ -50,10 +41,8 @@ export async function viteWebcomponentConfig({
       noDiscovery: true,
       include: []
     },
-    resolve: {
-      alias: {
-        '@emotion/is-prop-valid': 'fast-equals'
-      }
+    esbuild: {
+      ...JsBanners
     },
     build: {
       outDir,

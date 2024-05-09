@@ -1,7 +1,6 @@
 import { StaticLikeC4Diagram } from '@likec4/diagram'
 import { Box } from '@mantine/core'
-import { createFileRoute } from '@tanstack/react-router'
-import { DiagramNotFound } from '../components'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 
@@ -17,7 +16,7 @@ function EmbedPage() {
   useTransparentBackground(!!diagram)
 
   if (!diagram) {
-    return <DiagramNotFound viewId={viewId} />
+    throw notFound()
   }
 
   return (

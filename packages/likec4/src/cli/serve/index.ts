@@ -1,5 +1,5 @@
 import type { CommandModule } from 'yargs'
-import { base, path, useDotBin, webcomponentPrefix } from '../options'
+import { base, path, useDotBin, useHashHistory, webcomponentPrefix } from '../options'
 import { handler } from './serve'
 
 export const serveCmd = {
@@ -11,18 +11,21 @@ export const serveCmd = {
       .positional('path', path)
       .option('base', base)
       .option('webcomponent-prefix', webcomponentPrefix)
-      .option('use-dot-bin', useDotBin),
+      .option('use-hash-history', useHashHistory)
+      .option('use-dot', useDotBin),
   handler: async args => {
     await handler({
       path: args.path,
-      useDotBin: args['use-dot-bin'],
+      useDotBin: args['use-dot'],
       base: args.base,
-      webcomponentPrefix: args['webcomponent-prefix']
+      webcomponentPrefix: args['webcomponent-prefix'],
+      useHashHistory: args['use-hash-history']
     })
   }
 } satisfies CommandModule<object, {
   path: string
-  'use-dot-bin': boolean
+  'use-dot': boolean
+  'use-hash-history': boolean | undefined
   base?: string | undefined
   'webcomponent-prefix': string
 }>

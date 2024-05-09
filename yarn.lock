@@ -9694,6 +9694,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"humps@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "humps@npm:2.0.1"
+  checksum: 10/16e63cba9659c54cdc5d55bc5f50033939e959cfb6a65d2e9aa36a7ac882e70c66fdb5b0cb28fb81a204681a28cc1051eecbed7b70d4ede2435ab13ebaa8ac2d
+  languageName: node
+  linkType: hard
+
 "husky@npm:^8.0.3":
   version: 8.0.3
   resolution: "husky@npm:8.0.3"
@@ -10853,6 +10860,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.13"
     react-resizable-panels: "npm:^2.0.19"
+    react-shadow: "npm:^20.4.0"
     remeda: "npm:^1.61.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
@@ -10866,6 +10874,14 @@ __metadata:
     vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:~1.5.2"
     yargs: "npm:^17.7.2"
+  peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
   bin:
     likec4: ./bin/likec4.mjs
   languageName: unknown
@@ -14856,6 +14872,19 @@ __metadata:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
   checksum: 10/ac283f1667d2d41da32274b10875c430acff90bef977760e9f3944452be1ebbf4d7ed8909187d5b6a921b493a0a5e6a8e6215fa3d19370a11b2ffbc1a04b7811
+  languageName: node
+  linkType: hard
+
+"react-shadow@npm:^20.4.0":
+  version: 20.4.0
+  resolution: "react-shadow@npm:20.4.0"
+  dependencies:
+    humps: "npm:^2.0.1"
+  peerDependencies:
+    prop-types: ^15.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/68079afbc9731b739c9f0dc378253f2c8369ce5a9d9b7d03a608272bca3d058a856af9cf89da93e1cc11e43d9b5cd0c8a53654be4cf1a4b3a3f3e09cd60bd5cf
   languageName: node
   linkType: hard
 

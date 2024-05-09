@@ -8,9 +8,9 @@ import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
+import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
-import type { LikeC4ViteWebcomponentConfig } from './webcomponent.prod'
 
 export async function viteWebcomponentConfig({
   languageServices,
@@ -45,6 +45,7 @@ export async function viteWebcomponentConfig({
     define: {
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       __USE_SHADOW_STYLE__: 'true',
+      __USE_HASH_HISTORY__: 'false',
       'process.env.NODE_ENV': '"development"'
     },
     build: {

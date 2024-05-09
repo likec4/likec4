@@ -28,7 +28,11 @@ export const exportCmd = {
               default: '.',
               coerce: resolve
             })
-            .option('use-dot-bin', useDotBin)
+            .option('theme', {
+              choices: ['light', 'dark'] as const,
+              desc: 'color-scheme to use, default is light'
+            })
+            .option('use-dot', useDotBin)
             .options({
               'ignore': {
                 boolean: true,
@@ -39,8 +43,8 @@ export const exportCmd = {
               timeout: {
                 type: 'number',
                 alias: 't',
-                desc: '(ms) timeout for playwright operations',
-                default: 10000
+                desc: '(sec) timeout for playwright ',
+                default: 10
               },
               'max-attempts': {
                 type: 'number',
@@ -53,20 +57,21 @@ export const exportCmd = {
   ${k.green('$0 export png')}
     ${k.gray('Search for likec4 files in current directory and output PNG next to sources')}
 
-  ${k.green('$0 export png -o ./generated src/likec4 ')}
-    ${k.gray('Search for likec4 files in src/likec4 and output PNG next to generated')}
+  ${k.green('$0 export png --theme dark -o ./png src/likec4 ')}
+    ${k.gray('Search for likec4 files in src/likec4 and output PNG with dark theme to png folder')}
 `),
         handler: async args => {
           // args.
-          invariant(args.timeout >= 1000, 'timeout must be >= 1000')
+          invariant(args.timeout >= 1, 'timeout must be >= 1')
           invariant(args['max-attempts'] >= 1, 'max-attempts must be >= 1')
           await pngHandler({
             path: args.path,
             useDotBin: args.useDotBin,
             output: args.output,
-            timeout: args.timeout,
+            timeoutMs: args.timeout * 1000,
             maxAttempts: args.maxAttempts,
-            ignore: args.ignore
+            ignore: args.ignore,
+            theme: args.theme ?? 'light'
           })
         }
       })
@@ -77,17 +82,15 @@ export const exportCmd = {
         describe: 'export model to JSON',
         builder: yargs =>
           yargs
-            .options({
-              outfile: {
-                alias: 'o',
-                type: 'string',
-                desc: '<file> output .json file',
-                normalize: true
-              },
-              useDotBin
+            .option('outfile', {
+              alias: 'o',
+              type: 'string',
+              desc: '<file> output .json file',
+              default: 'likec4.json',
+              normalize: true,
+              coerce: resolve
             })
-            .coerce(['outfile'], resolve)
-            .default('outfile', resolve('./likec4.json'), 'likec4.json')
+            .option('use-dot', useDotBin)
             .epilog(`${k.bold('Examples:')}
   ${k.green('$0 export json')}
     ${k.gray('Search for likec4 files in current directory and output JSON to likec4.json')}

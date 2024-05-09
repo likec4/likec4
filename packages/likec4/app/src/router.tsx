@@ -1,16 +1,23 @@
-import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/react-router'
+import {
+  createBrowserHistory,
+  createHashHistory,
+  createRouter as createTanstackRouter,
+  RouterProvider
+} from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { NotFound } from './components/NotFound'
+import { basepath, useHasHistory } from './const'
 import { routeTree } from './routeTree.gen'
 
 type RouteTree = typeof routeTree
 
-function createRouter(basepath: string) {
+function createRouter() {
   return createTanstackRouter<RouteTree, 'preserve'>({
     routeTree,
     context: {},
     basepath,
     trailingSlash: 'preserve',
+    history: useHasHistory ? createHashHistory() : createBrowserHistory(),
     // defaultErrorComponent
     // defaultPendingMinMs: 600,
     // defaultPendingMs: 300,
@@ -40,7 +47,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export function Routes({ basepath }: { basepath: string }) {
-  const router = useMemo(() => createRouter(basepath), [basepath])
+export function Routes() {
+  const router = useMemo(() => createRouter(), [])
   return <RouterProvider router={router} />
 }

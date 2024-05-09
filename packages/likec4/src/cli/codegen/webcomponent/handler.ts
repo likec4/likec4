@@ -1,5 +1,5 @@
+import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { mkTempPublicDir } from '@/vite/utils'
-import { viteWebcomponentConfig } from '@/vite/webcomponent'
 import consola from 'consola'
 import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises'

@@ -68,8 +68,8 @@ export function ElementLink({
             <span>links</span>
           </UnstyledButton>
         </HoverCardTarget>
-        <HoverCardDropdown p={'xs'}>
-          <Stack onClick={e => e.stopPropagation()} gap={'xs'}>
+        <HoverCardDropdown onClick={e => e.stopPropagation()} p={'xs'}>
+          <Stack gap={'xs'}>
             {element.links.map((link, i) => (
               <Group key={link} wrap="nowrap" gap={'sm'}>
                 <Box flex={'1'} style={{ overflow: 'clip', maxWidth: clamp(element.width, { min: 200, max: 400 }) }}>

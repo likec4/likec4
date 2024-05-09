@@ -18,12 +18,15 @@ type HandlerParams = {
 
   useDotBin: boolean
 
+  useHashHistory: boolean | undefined
+
   webcomponentPrefix: string
 }
 
 export async function buildHandler({
   path,
   useDotBin,
+  useHashHistory,
   webcomponentPrefix,
   output: outputDir,
   base
@@ -31,6 +34,7 @@ export async function buildHandler({
   const languageServices = await LanguageServices.get({ path, useDotBin })
   await viteBuild({
     base,
+    useHashHistory,
     webcomponentPrefix,
     languageServices,
     outputDir
