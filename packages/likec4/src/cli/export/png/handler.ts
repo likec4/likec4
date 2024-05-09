@@ -20,14 +20,14 @@ type HandlerParams = {
    * output directory
    */
   output: string
-
+  theme: 'light' | 'dark'
   useDotBin: boolean
-  timeout: number
+  timeoutMs: number
   maxAttempts: number
   ignore: boolean
 }
 
-export async function pngHandler({ path, useDotBin, output, ignore, timeout, maxAttempts }: HandlerParams) {
+export async function pngHandler({ path, useDotBin, theme, output, ignore, timeoutMs, maxAttempts }: HandlerParams) {
   const logger = createLikeC4Logger('c4:export')
   const timer = startTimer()
 
@@ -62,17 +62,17 @@ export async function pngHandler({ path, useDotBin, output, ignore, timeout, max
   }
   logger.info(`${k.dim('output')} ${output}`)
 
-  logger.info(k.cyan(`start chromium`))
+  logger.info(k.cyan(`start chromium, colorScheme: ${theme}`))
   const baseURL = hosts[0]
   const browser = await chromium.launch()
   const browserContext = await browser.newContext({
     deviceScaleFactor: 2,
-    colorScheme: 'light',
+    colorScheme: theme,
     baseURL,
     isMobile: false
   })
-  browserContext.setDefaultNavigationTimeout(timeout)
-  browserContext.setDefaultTimeout(timeout)
+  browserContext.setDefaultNavigationTimeout(timeoutMs)
+  browserContext.setDefaultTimeout(timeoutMs)
 
   logger.info(`${k.cyan('baseURL')} ${k.dim(baseURL)}`)
 
@@ -84,7 +84,8 @@ export async function pngHandler({ path, useDotBin, output, ignore, timeout, max
     output,
     logger,
     maxAttempts,
-    timeout
+    timeout: timeoutMs,
+    theme
   })
 
   const { pretty } = inMillis(startTakeScreenshot)
