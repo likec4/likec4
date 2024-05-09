@@ -8,9 +8,9 @@ import k from 'picocolors'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import type { InlineConfig } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
+import type { LikeC4ViteWebcomponentConfig } from './config-webcomponent.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
-import type { LikeC4ViteWebcomponentConfig } from './webcomponent.prod'
 
 export async function viteWebcomponentConfig({
   languageServices,

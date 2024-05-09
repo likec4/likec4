@@ -2,36 +2,27 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
 import { readFile, rm, writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
-import { modules } from '../src/vite/plugin'
 
-export async function buildWebcomponentBundle(_isDev = false) {
+export async function buildReact(_isDev = false) {
   const root = resolve('app')
-  const outDir = resolve('dist/__app__/src/lib')
-  consola.start(`Bundling Webcomponent...`)
+  const outDir = resolve('dist/__app__/react')
+  consola.start(`Bundling React components...`)
   consola.info(`root: ${root}`)
   consola.info(`outDir: ${outDir}`)
-
-  const outputFilename = 'webcomponent.mjs'
 
   // Static website
   await build({
     root,
     configFile: false,
     resolve: {
-      dedupe: [
-        'react',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        'react-dom',
-        'react-dom/client'
-      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts')
+        '@likec4/diagram': resolve('../diagram/src/index.ts'),
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
     },
     clearScreen: false,
@@ -42,6 +33,11 @@ export async function buildWebcomponentBundle(_isDev = false) {
     },
     esbuild: {
       treeShaking: true,
+      // jsx: 'transform',
+      jsxDev: false,
+      // jsxImportSource: 'react',
+      // jsxFactory: 'React.createElement',
+      // banner: '/* eslint-disable */',
       minifyIdentifiers: false,
       minifySyntax: true,
       minifyWhitespace: true
@@ -53,12 +49,16 @@ export async function buildWebcomponentBundle(_isDev = false) {
       cssMinify: true,
       sourcemap: false,
       minify: 'esbuild',
+      target: 'esnext',
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
       lib: {
-        entry: 'webcomponent/webcomponent.tsx',
+        entry: {
+          ['components']: 'react/components/index.ts',
+          ['likec4']: 'react/likec4.tsx'
+        },
         fileName(_format, _entryName) {
-          return outputFilename
+          return _entryName + '.mjs'
         },
         formats: ['es']
       },
@@ -69,9 +69,18 @@ export async function buildWebcomponentBundle(_isDev = false) {
       },
       rollupOptions: {
         treeshake: true,
+        output: {
+          esModule: true,
+          exports: 'named'
+        },
         external: [
-          'virtual:likec4',
-          ...modules.map(m => m.id)
+          'likec4/react',
+          'virtual:likec4/views',
+          'react',
+          'react-dom',
+          'react/jsx-runtime',
+          'react/jsx-dev-runtime',
+          'react-dom/client'
         ],
         plugins: [
           shadowStyle()
@@ -93,18 +102,21 @@ export async function buildWebcomponentBundle(_isDev = false) {
     ]
   })
 
+  const outputFilename = 'components.mjs'
   const outputFilepath = resolve(outDir, outputFilename)
 
-  let webcomponent = await readFile(outputFilepath, 'utf-8')
-  let updated = webcomponent.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
+  let bundledJs = await readFile(outputFilepath, 'utf-8')
+  let updated = bundledJs.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
 
-  if (updated !== webcomponent) {
+  if (updated !== bundledJs) {
     await writeFile(outputFilepath, updated)
-  } else if (webcomponent.includes('@emotion/is-prop-valid')) {
+  } else if (bundledJs.includes('@emotion/is-prop-valid')) {
     throw new Error(
-      'webcomponent.mjs should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)'
+      `${outputFilename} should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)`
     )
   }
 
   await rm(resolve(outDir, 'style.css'))
 }
+
+// await buildReact()

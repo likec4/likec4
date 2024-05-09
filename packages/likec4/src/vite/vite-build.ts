@@ -1,9 +1,9 @@
-import { viteConfig } from '@/vite/config'
-import { viteWebcomponentConfig } from '@/vite/webcomponent'
+import { viteConfig } from '@/vite/config-app'
+import { viteWebcomponentConfig } from '@/vite/config-webcomponent'
 import { copyFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { build } from 'vite'
-import type { LikeC4ViteConfig } from './config.prod'
+import type { LikeC4ViteConfig } from './config-app.prod'
 import { mkTempPublicDir } from './utils'
 
 type Config = LikeC4ViteConfig & {

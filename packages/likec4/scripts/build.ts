@@ -1,93 +1,32 @@
+import { startTimer } from '@/logger'
 import { consola } from 'consola'
-import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
-import { nodeExternalsPlugin } from 'esbuild-node-externals'
-import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { buildCli } from './build-cli'
 import { bundleApp } from './bundle-app'
+import { buildReact } from './bundle-react'
 import { buildWebcomponentBundle } from './bundle-webcomponent'
 
 // const watch = process.argv.includes('--watch')
 const isDev = process.env['NODE_ENV'] !== 'production' && process.env['NODE_ENV'] !== 'prod'
 if (isDev) {
-  consola.warn('likec4 development build')
+  consola.warn('DEVELOPMENT BUILD')
 }
 
-async function buildCli() {
-  consola.start('Building CLI...')
-  const cfg: BuildOptions = {
-    metafile: isDev,
-    logLevel: 'info',
-    outdir: 'dist',
-    outbase: 'src',
-    outExtension: {
-      '.js': '.mjs'
-    },
-    color: true,
-    bundle: true,
-    sourcemap: isDev,
-    sourcesContent: isDev,
-    keepNames: isDev,
-    minify: !isDev,
-    treeShaking: !isDev,
-    legalComments: 'none',
-    mainFields: ['module', 'main'],
-    entryPoints: ['src/cli/index.ts'],
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    },
-    format: 'esm',
-    target: 'node18',
-    platform: 'node',
-    alias: {
-      '@/vite/config': '@/vite/config.prod',
-      '@/vite/webcomponent': '@/vite/webcomponent.prod'
-    },
-    banner: {
-      js: 'import { createRequire as crReq } from \'module\'; const require = crReq(import.meta.url);'
-    },
-    plugins: [
-      nodeExternalsPlugin({
-        dependencies: true,
-        optionalDependencies: true,
-        devDependencies: false
-      })
-    ]
-  }
+const timer = startTimer()
 
-  const bundle = await build(cfg)
-  if (bundle.errors.length || bundle.warnings.length) {
-    console.error(
-      [
-        ...formatMessagesSync(bundle.warnings, {
-          kind: 'warning',
-          color: true,
-          terminalWidth: process.stdout.columns
-        }),
-        ...formatMessagesSync(bundle.errors, {
-          kind: 'error',
-          color: true,
-          terminalWidth: process.stdout.columns
-        })
-      ].join('\n')
-    )
-    console.error('\n ⛔️ Build failed')
-    process.exit(1)
-  }
-  if (bundle.metafile) {
-    await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
-  }
-}
-consola.info('clean dist')
-await rm('dist/', { recursive: true, force: true })
-
-consola.info(`create dist/__app__/src`)
+const emptyLine = () => console.log('\n------------\n')
 await mkdir('dist/__app__/src', { recursive: true })
+
+emptyLine()
+// consola.start('--- BUILD CLI ----')
 
 await buildCli()
 
-console.log('\n\n')
-consola.info('--- BUNDLE APP----\n')
+emptyLine()
+// consola.start('--- BUNDLE APP----')
 
 await bundleApp()
+
 consola.info(`copy app files to dist/__app__`)
 let indexHtml = await readFile('app/index.html', 'utf-8')
 indexHtml = indexHtml.replace('%VITE_HTML_DEV_INJECT%', '')
@@ -100,21 +39,16 @@ await Promise.all([
   copyFile('app/src/main.js', 'dist/__app__/src/main.js')
 ])
 
-console.log('\n\n')
-consola.info('--- BUNDLE WEBCOMPONENT----\n')
+emptyLine()
+// consola.info('--- BUNDLE WEBCOMPONENT----')
 
 await buildWebcomponentBundle(isDev)
 
-let webcomponent = await readFile('dist/__app__/src/lib/webcomponent.mjs', 'utf-8')
-let updated = webcomponent.replace('loadExternalIsValidProp(require("@emotion/is-prop-valid").default);', '')
+emptyLine()
+// consola.info('--- BUNDLE REACT ----')
 
-if (updated !== webcomponent) {
-  await writeFile('dist/__app__/src/lib/webcomponent.mjs', updated)
-} else if (webcomponent.includes('@emotion/is-prop-valid')) {
-  throw new Error('webcomponent.mjs should contain loadExternalIsValidProp(require("@emotion/is-prop-valid").default)')
-}
+await buildReact(isDev)
 
-// const verifyStyles = await readFile('dist/__app__/src/lib/style.css', 'utf-8')
-// assert(verifyStyles.startsWith('body{'), 'webcomponent style.css should start with "body{"')
+emptyLine()
 
-await rm('dist/__app__/src/lib/style.css')
+timer.stopAndLog()

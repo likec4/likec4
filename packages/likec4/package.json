@@ -19,19 +19,39 @@
     "README.md",
     "bin",
     "dist",
-    "!**/*.d.ts",
-    "!**/*.map",
-    "!**/metafile.json"
+    "react",
+    "!dist/**/*.d.ts",
+    "!dist/**/*.map",
+    "!dist/**/metafile.json"
   ],
   "type": "module",
   "bin": "./bin/likec4.mjs",
+  "exports": {
+    ".": "./dist/__app__/react/components.mjs",
+    "./react": "./dist/__app__/react/components.mjs"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./react/index.d.ts",
+        "default": "./react/index.mjs"
+      },
+      "./react": {
+        "types": "./react/index.d.ts",
+        "default": "./react/index.mjs"
+      }
+    }
+  },
   "scripts": {
-    "build:turbo": "run -T turbo run build --filter='likec4'",
+    "build:turbo": "run -T turbo run build --filter='likec4' --log-prefix=none --log-order=grouped",
     "typecheck:app": "tsc --noEmit -p ./app/tsconfig.json",
     "typecheck:cli": "tsc --noEmit -p ./tsconfig.json",
     "typecheck": "run 'typecheck:cli' && run 'typecheck:app'",
     "build": "tsx scripts/build.ts",
-    "prepack": "run -T turbo run build --filter='likec4' --log-prefix=none --log-order=grouped",
+    "prepack": "tsx scripts/prepack.ts",
+    "postpack": "tsx scripts/postpack.ts",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "test:watch": "run -T vitest",
@@ -55,6 +75,18 @@
     "nanostores": "^0.10.3",
     "playwright": "1.42.1",
     "vite": "^5.2.11"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans": "^5.0.19",
@@ -107,6 +139,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-resizable-panels": "^2.0.19",
+    "react-shadow": "^20.4.0",
     "remeda": "^1.61.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
@@ -119,10 +152,6 @@
     "vite-plugin-shadow-style": "^1.1.0",
     "vitest": "~1.5.2",
     "yargs": "^17.7.2"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
   },
   "packageManager": "yarn@4.1.1"
 }

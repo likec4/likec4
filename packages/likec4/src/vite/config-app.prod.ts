@@ -1,5 +1,4 @@
 import { createLikeC4Logger } from '@/logger'
-import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import k from 'picocolors'
@@ -7,9 +6,7 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import { LanguageServices } from '../language-services'
 import { likec4Plugin } from './plugin'
-import { chunkSizeWarningLimit } from './utils'
-//
-const _dirname = dirname(fileURLToPath(import.meta.url))
+import { chunkSizeWarningLimit, viteAppRoot } from './utils'
 
 export type LikeC4ViteConfig =
   | {
@@ -29,13 +26,7 @@ export type LikeC4ViteConfig =
 
 export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
   const customLogger = createLikeC4Logger('c4:vite')
-
-  const root = resolve(_dirname, '../__app__')
-  if (!fs.existsSync(root)) {
-    customLogger.error(`likec4 app root does not exist: ${root}`)
-    throw new Error(`likec4 app root does not exist: ${root}`)
-  }
-
+  const root = viteAppRoot()
   customLogger.info(`${k.cyan('likec4 app root')} ${k.dim(root)}`)
 
   const languageServices = cfg?.languageServices

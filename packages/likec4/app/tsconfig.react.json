@@ -1,22 +1,27 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
+    "composite": false,
+    "incremental": false,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "esnext",
-    "outDir": "../dist/__app__",
+    "declarationDir": "../react",
     "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": false,
     "jsx": "react-jsx",
-    "rootDir": ".",
+    "rootDir": "./react/components",
     "types": ["vite/client"]
   },
-  "include": [
-    "./src",
-    "./webcomponent",
-    "./react"
+  "files": [
+    "./react/components/global.d.ts",
+    "./react/components/index.ts"
   ],
   "references": [
     {
@@ -24,9 +29,6 @@
     },
     {
       "path": "../../diagram"
-    },
-    {
-      "path": "../../diagrams"
     }
   ]
 }

@@ -11,7 +11,7 @@ import { modules } from '../src/vite/plugin'
 export async function bundleApp() {
   const root = resolve('app')
   const outDir = resolve('dist/__app__/src')
-  consola.start(`Bundle app...`)
+  consola.start(`Bundling App...`)
   consola.info(`root: ${root}`)
   // Static website
   await build({

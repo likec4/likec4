@@ -1,10 +1,13 @@
+import consola from 'consola'
 import { existsSync } from 'node:fs'
 import { cp, rm } from 'node:fs/promises'
 
-if (existsSync('package.json.backup')) {
-  await cp('package.json.backup', 'package.json', { force: true })
-  await rm('package.json.backup')
-  console.log('Restored package.json from backup')
+const components = 'dist/__app__/react/components.mjs'
+
+if (existsSync('react/index.mjs')) {
+  await cp('react/index.mjs', components)
+  await rm('react', { force: true, recursive: true })
+  consola.success('React bundle moved back to components.mjs')
 } else {
-  console.log('No backup found, skipping restore')
+  consola.warn('React bundle not found')
 }

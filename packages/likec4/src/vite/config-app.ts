@@ -11,7 +11,7 @@ import { hasProtocol, withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { InlineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import { LanguageServices } from '../language-services'
-import type { LikeC4ViteConfig } from './config.prod'
+import type { LikeC4ViteConfig } from './config-app.prod'
 import { likec4Plugin } from './plugin'
 import { chunkSizeWarningLimit } from './utils'
 
@@ -64,9 +64,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     resolve: {
       alias: {
+        'likec4/react': resolve('app/react/components/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        '@likec4/diagrams': resolve('../diagrams/src/index.ts')
+        '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
+        'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
     },
     optimizeDeps: {
@@ -74,7 +76,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'react-dom',
         'react',
         'framer-motion',
-        '@radix-ui/themes',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         '@mantine/core',
