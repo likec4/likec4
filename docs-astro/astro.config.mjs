@@ -1,3 +1,4 @@
+import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
@@ -14,11 +15,13 @@ export default defineConfig({
   //   host: true
   // },
   integrations: [
+    react(),
     starlight({
       title: 'LikeC4',
       social: {
         github: 'https://github.com/likec4/likec4'
       },
+      head: [],
       tagline: 'A language for expressing and visualizing software architecture',
       logo: {
         dark: './src/assets/logo-dark.svg',
@@ -79,6 +82,7 @@ export default defineConfig({
           ]
         }
       },
+      pagination: false,
       plugins: [
         starlightLinksValidator()
       ]

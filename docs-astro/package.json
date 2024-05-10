@@ -5,25 +5,30 @@
   "packageManager": "yarn@4.1.1",
   "private": true,
   "scripts": {
-    "generate:bigbank": "likec4 gen webcomponent -w likec4-bigbank -o src/components/bigbank/likec4-views.js ./likec4/bigbank",
-    "generate:index": "likec4 gen webcomponent -w likec4-index -o src/components/index-page/likec4-views.js ./likec4/index-page",
+    "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",
+    "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./likec4/index-page",
     "generate": "yarn generate:bigbank && yarn generate:index",
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "run generate && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.5.10",
+    "@astrojs/react": "^3.3.4",
     "@astrojs/starlight": "^0.22.1",
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.19",
     "astro": "^4.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "starlight-links-validator": "^0.8.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "likec4": "workspace:*"
   }
 }

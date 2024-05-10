@@ -1,16 +1,16 @@
 ---
+import { LikeC4View as C4View, LikeC4ViewId } from './likec4-views.jsx'
 interface Props {
-  viewId: string;
+  viewId: LikeC4ViewId;
 }
 const { viewId } = Astro.props
 ---
-<script src="./likec4-views.js"></script>
-<likec4-index-view view-id={viewId} class="likec4-index-view"/>
 
+<C4View viewId={viewId} className="likec4-index-view" client:only="react" />
 
 <style>
   .likec4-index-view {
-    max-width: 800px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
   }

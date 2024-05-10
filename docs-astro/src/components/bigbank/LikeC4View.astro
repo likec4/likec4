@@ -1,8 +1,17 @@
 ---
+import { LikeC4View as View, LikeC4ViewId } from './likec4-views.jsx'
 interface Props {
-  viewId: string;
+  viewId: LikeC4ViewId;
 }
 const { viewId } = Astro.props
 ---
-<script src="./likec4-views.js"></script>
-<likec4-bigbank-view view-id={viewId}/>
+
+<View viewId={viewId} className="likec4-bigbank-view" client:only="react" />
+
+<style>
+  .likec4-bigbank-view {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

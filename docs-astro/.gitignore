@@ -19,4 +19,4 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
-likec4-views.js
+src/components/**/likec4-views.*
