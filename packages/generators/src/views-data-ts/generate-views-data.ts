@@ -45,8 +45,7 @@ export function generateViewsDataJs(diagrams: Iterable<DiagramView>) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.hasOwn(LikeC4Views, value) &&
-        LikeC4Views[value] != null
+        !!LikeC4Views[value]
       )
     }
 
@@ -107,8 +106,7 @@ export function generateViewsDataTs(diagrams: Iterable<DiagramView>) {
       return (
         value != null &&
         typeof value === 'string' &&
-        Object.hasOwn(LikeC4Views, value) &&
-        LikeC4Views[value] != null
+        !!LikeC4Views[value]
       )
     }
 

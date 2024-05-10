@@ -117,8 +117,7 @@ export function isLikeC4ViewId(value) {
   return (
     value != null &&
     typeof value === 'string' &&
-    Object.hasOwn(LikeC4Views, value) &&
-    LikeC4Views[value] != null
+    !!LikeC4Views[value]
   )
 }
 

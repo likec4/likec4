@@ -1,9 +1,11 @@
 import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement as LikeC4ViewComponent } from 'likec4/react'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
 type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
+
+export { isLikeC4ViewId }
 
 export function LikeC4View({
   viewId,

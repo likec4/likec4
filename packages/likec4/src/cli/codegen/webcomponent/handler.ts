@@ -89,10 +89,11 @@ export async function webcomponentHandler({
 
   consola.box(
     stripIndent(`
-    ${k.dim('Webcomponents generated to')} ${relative(cwd(), outfilepath)}
+    ${k.dim('Webcomponents generated to:')}
+     ${relative(cwd(), outfilepath)}
 
     ${k.dim('Setup and usage instructions:')}
-    ${k.blue('https://likec4.dev/docs/tooling/webcomponents')}
+     ${k.blue('https://docs.likec4.dev/tooling/codegen/#webcomponents')}
   `).trim()
   )
 

@@ -57,7 +57,8 @@ export const codegenCmd = {
               alias: 'o',
               type: 'string',
               desc: '<file> path to output file (.js or .mjs)',
-              normalize: true
+              normalize: true,
+              coerce: resolve
             })
             .option('use-dot', useDotBin),
         async args => {
@@ -80,7 +81,8 @@ export const codegenCmd = {
               alias: 'o',
               type: 'string',
               desc: '<file> output .js file',
-              normalize: true
+              normalize: true,
+              coerce: resolve
             })
             .option('webcomponent-prefix', webcomponentPrefix)
             .option('use-dot', useDotBin),
@@ -100,17 +102,14 @@ export const codegenCmd = {
         describe: 'generate legacy react components (.tsx)',
         builder: yargs =>
           yargs
-            // .usage(`${k.bold('Usage:')} $0 codegen react --output <file> [path]`)
-            .options({
-              outfile: {
-                alias: 'o',
-                type: 'string',
-                desc: '<file> output .tsx file',
-                normalize: true
-              }
+            .option('outfile', {
+              alias: 'o',
+              type: 'string',
+              desc: '<file> output .tsx file',
+              normalize: true,
+              coerce: resolve
             })
-            .option('use-dot', useDotBin)
-            .coerce(['outfile'], resolve),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await reactLegacyHandler({
             format: 'react',
@@ -128,16 +127,14 @@ export const codegenCmd = {
         describe: 'generate likec4 views data (.ts)',
         builder: yargs =>
           yargs
-            .options({
-              outfile: {
-                alias: 'o',
-                type: 'string',
-                desc: '<file> output .ts file',
-                normalize: true
-              },
-              useDotBin
+            .option('outfile', {
+              alias: 'o',
+              type: 'string',
+              desc: '<file> output .ts file',
+              normalize: true,
+              coerce: resolve
             })
-            .coerce(['outfile'], resolve),
+            .option('use-dot', useDotBin),
         handler: async args => {
           await reactLegacyHandler({
             format: 'views',
@@ -202,8 +199,8 @@ export const codegenCmd = {
           })
         }
       }).epilog(`${k.bold('Examples:')}
+  likec4 gen react -o dist/likec4-views.mjs ./src/likec4
   likec4 gen webcomponent -o likec4.js --webcomponent-prefix c4 --use-dot-bin ./src
-  likec4 gen react -o dist/likec4.generated.tsx ./src/likec4
   likec4 gen views-data -o ./src/likec4-data.ts
   likec4 gen ts --outfile ../likec4.ts
   likec4 gen mmd --outdir assets/

@@ -76,22 +76,24 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
 
 import type { LikeC4ViewBaseProps } from 'likec4/react'
 
-export type LikeC4ViewID =
+export type LikeC4ViewId =
 ${ids};
 
-export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewID>
+export declare function isLikeC4ViewId(value: unknown): value is LikeC4ViewId
 
-export function LikeC4View({viewId, ...props}: LikeC4ViewProps): React.ReactElement
+export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
+
+export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): React.ReactElement
 `.trimStart()
   )
 
   consola.box(
     stripIndent(`
-    ${k.dim('React component generated:')}
+    ${k.dim('Component generated:')}
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-     ${k.blue('https://likec4.dev/docs/tooling/react')}
+     ${k.blue('https://docs.likec4.dev/tooling/codegen/#react')}
   `).trim()
   )
 
