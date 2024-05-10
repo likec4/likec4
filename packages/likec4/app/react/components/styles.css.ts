@@ -1,4 +1,3 @@
-import { rem } from '@mantine/core'
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
 
 var fontFamily = createVar()
@@ -37,7 +36,6 @@ globalStyle(`${cssInteractive} :where(.likec4-diagram, .likec4-compound-node, .l
 export const cssLikeC4Browser = style({
   selectors: {
     ['&[data-mantine-color-scheme]']: {
-      backdropFilter: 'blur(20px)',
       vars: {
         ['--mantine-color-body']: 'rgb(0 0 0 / 0%);'
       }
@@ -49,18 +47,24 @@ export const cssLikeC4Browser = style({
     },
     ['&[data-mantine-color-scheme=dark]']: {
       vars: {
-        ['--mantine-color-body']: 'rgb(12 12 12 / 35%) !important'
+        ['--mantine-color-body']: 'rgb(1 1 1 / 25%) !important'
       }
     }
   }
 })
 
-globalStyle(`${cssLikeC4Browser} .mantine-CloseButton-root`, {
-  position: 'absolute',
-  zIndex: 1,
-  top: rem(10),
-  right: rem(10)
-})
-globalStyle(`${cssLikeC4Browser} .mantine-Modal-content`, {
-  backgroundColor: 'transparent'
-})
+// globalStyle(`${cssLikeC4Browser} .mantine-Modal-content`, {
+//   backgroundColor: 'transparent'
+// })
+
+// globalStyle(`${cssLikeC4Browser} .mantine-Modal-body`, {
+//   width: '100%',
+//   height: '100%',
+// })
+
+// globalStyle(`${cssLikeC4Browser} .mantine-CloseButton-root`, {
+//   position: 'absolute',
+//   zIndex: 1,
+//   top: '1rem',
+//   right: '1rem',
+// })

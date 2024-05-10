@@ -1,7 +1,7 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { consola } from 'consola'
-import { readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
@@ -13,6 +13,8 @@ export async function buildReact(_isDev = false) {
   consola.start(`Bundling React components...`)
   consola.info(`root: ${root}`)
   consola.info(`outDir: ${outDir}`)
+
+  const outputFilename = 'components.mjs'
 
   // Static website
   await build({
@@ -54,12 +56,9 @@ export async function buildReact(_isDev = false) {
       copyPublicDir: false,
       chunkSizeWarningLimit: 2000,
       lib: {
-        entry: {
-          ['components']: 'react/components/index.ts',
-          ['likec4']: 'react/likec4.tsx'
-        },
+        entry: 'react/components/index.ts',
         fileName(_format, _entryName) {
-          return _entryName + '.mjs'
+          return outputFilename
         },
         formats: ['es']
       },
@@ -75,8 +74,6 @@ export async function buildReact(_isDev = false) {
           exports: 'named'
         },
         external: [
-          'likec4/react',
-          'virtual:likec4/views',
           'react',
           'react-dom',
           'react/jsx-runtime',
@@ -103,7 +100,6 @@ export async function buildReact(_isDev = false) {
     ]
   })
 
-  const outputFilename = 'components.mjs'
   const outputFilepath = resolve(outDir, outputFilename)
 
   let bundledJs = await readFile(outputFilepath, 'utf-8')
@@ -118,6 +114,7 @@ export async function buildReact(_isDev = false) {
   }
 
   await rm(resolve(outDir, 'style.css'))
+  await copyFile('app/react/likec4.tsx', resolve(outDir, 'likec4.tsx'))
 }
 
 // await buildReact()

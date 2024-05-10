@@ -27,8 +27,14 @@
   "type": "module",
   "bin": "./bin/likec4.mjs",
   "exports": {
-    ".": "./dist/__app__/react/components.mjs",
-    "./react": "./dist/__app__/react/components.mjs"
+    ".": {
+      "types": "./app/react/components/index.ts",
+      "default": "./dist/__app__/react/components.mjs"
+    },
+    "./react": {
+      "types": "./app/react/components/index.ts",
+      "default": "./dist/__app__/react/components.mjs"
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

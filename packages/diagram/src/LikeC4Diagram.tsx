@@ -61,7 +61,7 @@ export function LikeC4Diagram({
     }
   }
   return (
-    <EnsureMantine colorScheme={colorScheme}>
+    <EnsureMantine>
       <XYFlowProvider
         fitView={fitView}
         {...initialRef.current}

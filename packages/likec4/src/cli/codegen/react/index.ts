@@ -1,7 +1,7 @@
 import { viteReactConfig } from '@/vite/config-react'
 import consola from 'consola'
 import { existsSync } from 'node:fs'
-import { stat } from 'node:fs/promises'
+import { stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, relative, resolve } from 'node:path'
 import { cwd } from 'node:process'
 import k from 'picocolors'
@@ -33,7 +33,7 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     throw new Error('no views found')
   }
 
-  let outfilepath = resolve(languageServices.workspace, 'likec4-react.mjs')
+  let outfilepath = resolve(languageServices.workspace, 'likec4-views.mjs')
   if (outfile) {
     outfilepath = isAbsolute(outfile) ? outfile : resolve(outfile)
     if (existsSync(outfile)) {
@@ -45,17 +45,20 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   }
   consola.debug(`${k.dim('outfilepath')} ${outfilepath}`)
 
+  const outDir = dirname(outfilepath)
+  consola.debug(`${k.dim('outdir')} ${outDir}`)
   const filename = basename(outfilepath)
   consola.debug(`${k.dim('filename')} ${filename}`)
 
-  const ext = extname(filename).toLowerCase()
-  if (ext !== '.js' && ext !== '.mjs') {
-    throw new Error(`output file must be a .js or .mjs file: ${outfile}`)
+  const ext = extname(filename)
+  if (ext !== '.js' && ext !== '.mjs' && ext !== '.jsx') {
+    console.warn(`output file ${outfile} has extension "${ext}"`)
+    throw new Error(`output file ${outfile} must be a .js or .mjs`)
   }
 
   const cfg = await viteReactConfig({
     languageServices,
-    outDir: dirname(outfilepath),
+    outDir,
     filename
   })
 
@@ -63,6 +66,24 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
     ...cfg,
     logLevel: 'warn'
   })
+
+  const ids = diagrams.map((d) => `  | '${d.id}'`).join('\n')
+
+  await writeFile(
+    resolve(outDir, basename(outfilepath, ext) + '.d.ts'),
+    `
+/// <reference types="react" />
+
+import type { LikeC4ViewBaseProps } from 'likec4/react'
+
+export type LikeC4ViewID =
+${ids};
+
+export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewID>
+
+export function LikeC4View({viewId, ...props}: LikeC4ViewProps): React.ReactElement
+`.trimStart()
+  )
 
   consola.box(
     stripIndent(`

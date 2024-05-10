@@ -1,6 +1,7 @@
 import type { LanguageServices } from '@/language-services'
 import { createLikeC4Logger } from '@/logger'
 import react from '@vitejs/plugin-react'
+import { extname } from 'node:path'
 import k from 'picocolors'
 import type { InlineConfig } from 'vite'
 import { likec4Plugin } from './plugin'
@@ -22,6 +23,8 @@ export async function viteReactConfig({
   const root = viteAppRoot()
   customLogger.info(k.cyan('outDir') + ' ' + k.dim(outDir))
 
+  const isJsx = extname(filename) === '.jsx'
+
   return {
     customLogger,
     root,
@@ -29,39 +32,32 @@ export async function viteReactConfig({
     clearScreen: false,
     publicDir: false,
     esbuild: {
-      ...JsBanners
+      ...JsBanners,
+      jsx: isJsx ? 'preserve' : 'automatic',
+      minifyIdentifiers: false,
+      minifySyntax: true,
+      minifyWhitespace: true
     },
     build: {
       outDir,
       emptyOutDir: false,
       sourcemap: false,
-      minify: true,
-      // 100Kb
-      assetsInlineLimit: 100 * 1024,
-      chunkSizeWarningLimit,
-      commonjsOptions: {
-        ignoreTryCatch: 'remove'
-      },
+      minify: 'esbuild',
+      copyPublicDir: false,
+      chunkSizeWarningLimit: 2000,
       lib: {
-        entry: 'react/likec4.mjs',
+        entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {
           return filename
         },
         formats: ['es']
       },
       rollupOptions: {
-        treeshake: true,
-        output: {
-          compact: true,
-          esModule: true,
-          exports: 'named'
-        },
         external: [
           'likec4/react',
           'react',
           'react-dom',
           'react/jsx-runtime',
-          'react/jsx-dev-runtime',
           'react-dom/client'
         ]
       }

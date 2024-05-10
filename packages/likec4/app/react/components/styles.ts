@@ -21,9 +21,9 @@ const bundledStyles = () => {
     .replaceAll(':root', `${rootSelector}`)
 }
 
-export const useCreateStyleSheet = () => {
+export const useCreateStyleSheet = (injectFontCss = true) => {
   useIsomorphicLayoutEffect(() => {
-    if (!document.querySelector(`style[data-likec4-font]`)) {
+    if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
       const style = document.createElement('style')
       style.setAttribute('type', 'text/css')
       style.setAttribute('data-likec4-font', '')

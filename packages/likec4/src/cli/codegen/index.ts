@@ -56,7 +56,7 @@ export const codegenCmd = {
             .option('outfile', {
               alias: 'o',
               type: 'string',
-              desc: '<file> output .js/.mjs file',
+              desc: '<file> path to output file (.js or .mjs)',
               normalize: true
             })
             .option('use-dot', useDotBin),

@@ -10,12 +10,14 @@ import { cssRoot } from './styles.css'
 const Root: DetailedHTMLFactory<
   HTMLAttributes<HTMLDivElement> & {
     styleSheets?: CSSStyleSheet[]
+    ssr?: boolean
   },
   HTMLDivElement
 > = root.div as any
 
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   rootClassName?: string
+  injectFontCss?: boolean | undefined
   colorScheme: 'light' | 'dark'
 }
 
@@ -25,12 +27,13 @@ export function ShadowRoot({
   children,
   rootClassName,
   colorScheme,
+  injectFontCss,
   ...props
 }: ShadowRootProps) {
   const mantineRootRef = useRef<HTMLDivElement>(null)
   const [styleSheets, setStyleSheets] = useState([] as CSSStyleSheet[])
 
-  const createCssStyleSheet = useCreateStyleSheet()
+  const createCssStyleSheet = useCreateStyleSheet(injectFontCss)
 
   useIsomorphicLayoutEffect(() => {
     const css = createCssStyleSheet()
