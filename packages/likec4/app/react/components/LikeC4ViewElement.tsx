@@ -7,22 +7,22 @@ import { type HTMLAttributes, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 import { cssInteractive, cssLikeC4View } from './styles.css'
-import type { DiagramView, LikeC4ViewBaseProps, ViewID } from './types'
+import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
-export type LikeC4ViewElementProps<ViewID extends string> =
-  & Omit<LikeC4ViewBaseProps<ViewID>, 'viewId' | 'interactive'>
+export type LikeC4ViewElementProps<ViewId extends string> =
+  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive'>
   & {
-    view: DiagramView<ViewID>
-    onNavigateTo?: ((to: ViewID) => void) | undefined
+    view: DiagramView<ViewId>
+    onNavigateTo?: ((to: ViewId) => void) | undefined
   }
 
-export function LikeC4ViewElement<ViewID extends string>({
+export function LikeC4ViewElement<ViewId extends string>({
   onNavigateTo,
   view,
   injectFontCss,
   colorScheme,
   ...props
-}: LikeC4ViewElementProps<ViewID>) {
+}: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
   const scheme = useColorScheme(colorScheme)
 
@@ -72,7 +72,7 @@ export function LikeC4ViewElement<ViewID extends string>({
               event.stopPropagation()
               onNavigateTo(view.id)
             },
-            onNavigateTo: to => onNavigateTo(to as string as ViewID)
+            onNavigateTo: to => onNavigateTo(to as string as ViewId)
           })}
         />
       </ShadowRoot>

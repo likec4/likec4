@@ -13,20 +13,20 @@ import { useColorScheme } from './styles'
 import { cssLikeC4Browser } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
-export type LikeC4BrowserProps<ViewID extends string> = Omit<LikeC4ViewBaseProps<ViewID>, 'viewId' | 'interactive'> & {
-  view: DiagramView<ViewID>
-  onNavigateTo: (to: ViewID) => void
+export type LikeC4BrowserProps<ViewId extends string> = Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive'> & {
+  view: DiagramView<ViewId>
+  onNavigateTo: (to: ViewId) => void
   onClose: () => void
 }
 
-export function LikeC4Browser<ViewID extends string>({
+export function LikeC4Browser<ViewId extends string>({
   colorScheme,
   view,
   injectFontCss,
   onNavigateTo,
   onClose,
   ...props
-}: LikeC4BrowserProps<ViewID>) {
+}: LikeC4BrowserProps<ViewId>) {
   const id = useId()
   const scheme = useColorScheme(colorScheme)
   const [opened, setOpened] = useState(false)
@@ -106,7 +106,7 @@ export function LikeC4Browser<ViewID extends string>({
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}
-                onNavigateTo={to => onNavigateTo(to as string as ViewID)}
+                onNavigateTo={to => onNavigateTo(to as string as ViewId)}
               />
               <Group className={historyButtons} gap={'xs'}>
                 {hasBack && (

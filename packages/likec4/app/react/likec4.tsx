@@ -30,7 +30,7 @@ export function LikeC4View({
 
   return (
     <>
-      <LikeC4ViewComponent
+      <LikeC4ViewComponent<LikeC4ViewId>
         view={view}
         colorScheme={colorScheme}
         injectFontCss={injectFontCss}
@@ -38,7 +38,7 @@ export function LikeC4View({
         {...props}
       />
       {browserView && (createPortal(
-        <LikeC4Browser
+        <LikeC4Browser<LikeC4ViewId>
           view={browserView}
           injectFontCss={false}
           colorScheme={colorScheme}

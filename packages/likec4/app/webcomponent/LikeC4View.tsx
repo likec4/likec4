@@ -1,8 +1,8 @@
-import { type DiagramView, invariant, type ViewID } from '@likec4/core'
+import { invariant, type ViewID } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
-import { type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
+import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { ComponentName } from '../src/const'
 import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
 
@@ -72,14 +72,16 @@ export class LikeC4View extends HTMLElement {
   protected get view(): DiagramView {
     const viewId = this.getAttribute('view-id') ?? 'index'
     let view = LikeC4Views[viewId as LikeC4ViewId]
-    if (!view) {
-      console.error(`Invalid view id: ${viewId},\nAvailable: ${Object.keys(LikeC4Views).join(', ')}`)
-      view = LikeC4Views['index' as LikeC4ViewId] ?? Object.values(LikeC4Views)[0]
-      invariant(view, `Empty LikeC4Views`)
-      console.warn(`LikeC4: Falling back to view: ${view.id}`)
-      const fallbackViewId = view.id
-      setTimeout(() => this.setAttribute('view-id', fallbackViewId), 50)
+    if (view) {
+      return view
     }
+
+    console.error(`Invalid view id: ${viewId},\nAvailable: ${Object.keys(LikeC4Views).join(', ')}`)
+    view = LikeC4Views['index' as LikeC4ViewId] ?? Object.values(LikeC4Views)[0]
+    invariant(view, `Empty LikeC4Views`)
+    console.warn(`LikeC4: Falling back to view: ${view.id}`)
+    const fallbackViewId = view.id
+    setTimeout(() => this.setAttribute('view-id', fallbackViewId), 50)
     return view
   }
 
@@ -102,7 +104,7 @@ export class LikeC4View extends HTMLElement {
         getRootElement={() => this.rootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>
         <LikeC4Diagram
-          view={view}
+          view={view as any}
           readonly
           pannable={false}
           zoomable={false}

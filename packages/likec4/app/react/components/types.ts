@@ -1,14 +1,13 @@
 import type { HTMLAttributes } from 'react'
 
-export type ViewID = string
-export type DiagramView<ID extends string> = {
-  id: ID
+export type DiagramView<ViewId extends string> = {
+  id: ViewId
   width: number
   height: number
 }
 
-export type LikeC4ViewBaseProps<LikeC4ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
-  viewId: LikeC4ViewId
+export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
+  viewId: ViewId
 
   /**
    * Click on the view opens a modal with browser.
