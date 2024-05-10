@@ -10,7 +10,7 @@ import {
 } from '@likec4/core'
 import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
-import { isNil } from 'remeda'
+import { isNullish } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-protocol'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
@@ -25,10 +25,10 @@ const idattr = Symbol.for('idattr')
 
 declare module './generated/ast' {
   export interface Element {
-    [idattr]?: c4.Fqn
+    [idattr]?: c4.Fqn | undefined
   }
   export interface ElementView {
-    [idattr]?: c4.ViewID
+    [idattr]?: c4.ViewID | undefined
   }
 }
 
@@ -103,9 +103,8 @@ export const ElementViewOps = {
 
 export const ElementOps = {
   writeId(node: ast.Element, id: c4.Fqn | null) {
-    if (isNil(id)) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete node[idattr]
+    if (isNullish(id)) {
+      node[idattr] = undefined
     } else {
       node[idattr] = id
     }
@@ -193,26 +192,35 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
-  ast.isModel,
+  ast.isViewRuleStyle,
+  ast.isViewRulePredicateExpr,
+  ast.isViewRulePredicate,
+  ast.isViewRule,
+  ast.isViewProperty,
+  ast.isElementViewBody,
+  ast.isElementView,
+  ast.isRelationProperty,
+  ast.isRelationBody,
   ast.isRelation,
+  ast.isElementProperty,
+  ast.isElementBody,
   ast.isElement,
+  ast.isExtendElementBody,
   ast.isExtendElement,
-  ast.isSpecificationRule,
   ast.isSpecificationElementKind,
   ast.isSpecificationRelationshipKind,
   ast.isSpecificationTag,
-  ast.isElementView,
+  ast.isSpecificationRule,
+  ast.isModel,
   ast.isModelViews
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
 export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
+  const errors = doc.diagnostics?.filter(d => d.severity === DiagnosticSeverity.Error) ?? []
   const invalidNodes = new WeakSet(
-    doc.diagnostics?.flatMap(d => {
-      if (d.severity === DiagnosticSeverity.Error) {
-        return AstUtils.getContainerOfType(d.node, isValidatableAstNode) ?? []
-      }
-      return []
+    errors.flatMap(d => {
+      return AstUtils.getContainerOfType(d.node, isValidatableAstNode) ?? []
     }) ?? []
   )
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -221,20 +229,6 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
     isValid,
     invalidNodes
   }
-}
-
-export const isValidLikeC4LangiumDocument = (
-  doc: LangiumDocument
-): doc is ParsedLikeC4LangiumDocument => {
-  if (!isParsedLikeC4LangiumDocument(doc)) return false
-  const { parseResult, diagnostics } = doc
-  return (
-    parseResult.lexerErrors.length === 0
-    && parseResult.parserErrors.length === 0
-    && (!diagnostics
-      || diagnostics.length === 0
-      || diagnostics.every(d => d.severity !== DiagnosticSeverity.Error))
-  )
 }
 
 export function* streamModel(doc: LikeC4LangiumDocument) {

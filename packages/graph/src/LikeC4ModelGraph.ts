@@ -2,9 +2,9 @@ import {
   ancestorsFqn,
   commonAncestor,
   type Element,
-  ensureModel,
   type Fqn,
   InvalidModelError,
+  invariant,
   isSameHierarchy,
   isString,
   parentFqn,
@@ -64,7 +64,7 @@ export class LikeC4ModelGraph {
 
   public element(id: Fqn) {
     const el = this.#elements.get(id)
-    ensureModel(el, `Element ${id} not found`)
+    invariant(el, `Element ${id} not found`)
     return el
   }
 
