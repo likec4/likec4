@@ -7,6 +7,7 @@ import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://docs.likec4.dev',
   // devToolbar: {
   //   enabled: true
   // },

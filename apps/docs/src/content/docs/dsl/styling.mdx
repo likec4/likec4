@@ -68,14 +68,14 @@ model {
 }
 ```
 
-## Style properties
+### Style properties
 
 Every `style` block may contain the following properties:  
 {'-'} shape  
 {'-'} color  
 {'-'} icon
 
-### Shape
+#### Shape
 
 Available element shapes:
 
@@ -91,7 +91,7 @@ Available element shapes:
 
 If not set, the default shape is `rectangle`.
 
-### Color
+#### Color
 
 | color          |                                                           |
 | :------------- | :-------------------------------------------------------: |
@@ -106,7 +106,7 @@ If not set, the default shape is `rectangle`.
 
 If not set, the default color is `primary`.
 
-### Icon
+#### Icon
 
 Element may have an icon - any browser-supported image and publicly available with `https://`:
 
@@ -121,9 +121,9 @@ model {
 ```
 
 
-## Relationship
+### Relationship
 
-Relationships can be styled using the [kinds](/dsl/relationship#kind):
+Relationships can be styled using the [kinds](/dsl/relationships/#relationship-kinds):
 
 ```likec4
 specification {
@@ -139,7 +139,7 @@ specification {
 At the moment, the styling applies globally and cannot be overridden per view.  
 Let us know and [open an issue](https://github.com/likec4/likec4/issues) if you need it.
 
-### Line
+#### Line
 
 | line   | example |
 | :----- | :-----: |
@@ -149,7 +149,7 @@ Let us know and [open an issue](https://github.com/likec4/likec4/issues) if you 
 
 By default, the line is `dashed`.
 
-### Arrow type
+#### Arrow type
 
 The arrow type can be set for the head and the tail of the relationship:
 
