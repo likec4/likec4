@@ -4,8 +4,8 @@ import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
 export const cssContainer = style({
-  width: ['100%', '-webkit-fill-available'],
-  height: ['100%', '-webkit-fill-available'],
+  width: '100%',
+  height: '100%',
   position: 'relative',
   padding: 0,
   margin: 0
