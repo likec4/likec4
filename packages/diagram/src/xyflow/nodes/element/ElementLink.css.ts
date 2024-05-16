@@ -19,8 +19,8 @@ export const elementLink = style({
   }
   // fontSize: rem(10),
   // height: 12,
-  // width: ['100%', '-webkit-fill-available'],
-  // height: ['100%', '-webkit-fill-available'],
+  // width: '100%',
+  // height: '100%',
   // vars: {
   //   [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   // }

@@ -9,8 +9,8 @@ const elPadding = createVar('el-padding')
 
 export const container = style({
   position: 'relative',
-  width: ['100%', '-webkit-fill-available'],
-  height: ['100%', '-webkit-fill-available'],
+  width: '100%',
+  height: '100%',
   padding: 0,
   margin: 0,
   vars: {
@@ -121,8 +121,8 @@ export const technology = style({
 
 export const cssElement = style({
   position: 'relative',
-  width: ['100%', '-webkit-fill-available'],
-  height: ['100%', '-webkit-fill-available'],
+  width: '100%',
+  height: '100%',
   padding: elPadding,
   display: 'flex',
   flexDirection: 'column',
