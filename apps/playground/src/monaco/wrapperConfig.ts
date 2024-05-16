@@ -1,0 +1,158 @@
+import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override'
+import getEditorServiceOverride, { type OpenEditor } from '@codingame/monaco-vscode-editor-service-override'
+import getFileServiceOverride, { registerFileSystemOverlay } from '@codingame/monaco-vscode-files-service-override'
+// import getLifecycleServiceOverride from '@codingame/monaco-vscode-lifecycle-service-override'
+import { Uri } from 'vscode'
+// import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override'
+import '@codingame/monaco-vscode-theme-defaults-default-extension'
+import * as monaco from 'monaco-editor'
+import type { UserConfig } from 'monaco-editor-wrapper'
+import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services'
+
+import { invariant } from '@likec4/core'
+import { first } from 'remeda'
+import type { ITextEditorOptions } from 'vscode/services'
+import type { StoreApi } from '../state'
+import languageConfig from './lsp/language-configuration.json?raw'
+import textmateGrammar from './lsp/likec4.tmLanguage.json?raw'
+
+export function createMonacoConfig(store: StoreApi) {
+  const state = store.getState()
+  const name = state.name
+  const filename = state.currentFilename
+  const code = state.currentFileContent()
+
+  const extensionFilesOrContents = new Map<string, string | URL>()
+  // test both url and string content
+  extensionFilesOrContents.set('/language-configuration.json', languageConfig)
+  extensionFilesOrContents.set('/language-grammar.json', textmateGrammar)
+  const workspaceUri = Uri.joinPath(Uri.file('/'), name)
+  return {
+    id: name,
+    loggerConfig: {
+      enabled: true,
+      debugEnabled: true
+    },
+    wrapperConfig: {
+      serviceConfig: {
+        userServices: {
+          ...getConfigurationServiceOverride(),
+          ...getFileServiceOverride(),
+          ...getEditorServiceOverride(async (modelRef, options, sideBySide) => {
+            const editor = first(monaco.editor.getEditors())
+            if (!editor) {
+              return undefined
+            }
+            const nextFilename = modelRef.object.textEditorModel.uri.toString().substring(
+              workspaceUri.toString().length + 1
+            )
+
+            editor.setModel(modelRef.object.textEditorModel)
+            const opts = options as (ITextEditorOptions | undefined)
+            if (opts?.selection) {
+              editor.setSelection({
+                startLineNumber: opts.selection.startLineNumber,
+                startColumn: opts.selection.startColumn,
+                endLineNumber: opts.selection.endLineNumber ?? opts.selection.startLineNumber,
+                endColumn: opts.selection.endColumn ?? opts.selection.startColumn
+              }, opts.selectionSource)
+              editor.revealLineNearTop(opts.selection.startLineNumber, 0)
+            }
+
+            store.setState({
+              currentFilename: nextFilename
+            })
+
+            return editor
+          })
+          // ...getLifecycleServiceOverride()
+        },
+        debugLogging: true
+        // workspaceConfig: {
+        //   workspaceProvider: {
+        //     trusted: true,
+        //     workspace: {
+        //       label: name,
+        //       workspaceUri
+        //     },
+        //     async open() {
+        //       return false
+        //     }
+        //   }
+        // }
+      },
+      editorAppConfig: {
+        $type: 'extended',
+        languageId: 'likec4',
+        codeUri: Uri.joinPath(workspaceUri, filename).toString(),
+        code,
+        editorOptions: {
+          'semanticHighlighting.enabled': true,
+          wordBasedSuggestions: 'off',
+          theme: 'Default Dark+',
+          minimap: {
+            enabled: false
+          },
+          'scrollbar': {
+            vertical: 'hidden'
+          },
+          'guides': {
+            indentation: false,
+            bracketPairs: false,
+            bracketPairsHorizontal: 'active'
+            // bracketPairs: 'active',
+            // highlightActiveIndentation: false
+          },
+          'lineNumbersMinChars': 3,
+          'fontFamily': 'Fira Code',
+          'fontWeight': '500',
+          'fontSize': 13,
+          'lineHeight': 20,
+          'renderLineHighlightOnlyWhenFocus': true,
+          'foldingHighlight': false,
+          'overviewRulerBorder': false,
+          'overviewRulerLanes': 0,
+          'hideCursorInOverviewRuler': true
+        },
+        useDiffEditor: false,
+        extensions: [{
+          config: {
+            name: 'likec4',
+            publisher: 'likec4',
+            version: '1.0.0',
+            engines: {
+              vscode: '*'
+            },
+            contributes: {
+              languages: [{
+                id: 'likec4',
+                extensions: ['.c4'],
+                aliases: ['likec4', 'LikeC4'],
+                configuration: './language-configuration.json'
+              }],
+              grammars: [{
+                language: 'likec4',
+                scopeName: 'source.likec4',
+                path: './language-grammar.json'
+              }]
+            }
+          },
+          filesOrContents: extensionFilesOrContents
+        }],
+        userConfiguration: {
+          json: JSON.stringify({
+            'workbench.colorTheme': 'Default Dark+'
+          })
+        }
+      }
+    },
+    languageClientConfig: {
+      options: {
+        $type: 'WorkerConfig',
+        type: 'module',
+        name: 'likec4-lsp-worker',
+        url: new URL('./lsp/likec4.worker.ts', import.meta.url)
+      }
+    }
+  } satisfies UserConfig
+}

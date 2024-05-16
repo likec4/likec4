@@ -49,9 +49,16 @@ export class LikeC4ModelChanges {
         lspConnection.window.showErrorMessage(`Failed to apply changes${applyResult.failureReason}`)
         return
       }
+      const range = unionRangeOfAllEdits(edits)
+      await lspConnection.window.showDocument({
+        uri: textDocument.uri,
+        external: false,
+        takeFocus: true,
+        selection: range
+      })
       result = {
         uri: textDocument.uri,
-        range: unionRangeOfAllEdits(edits)
+        range
       }
     })
     return result

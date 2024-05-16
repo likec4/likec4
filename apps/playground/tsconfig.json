@@ -1,0 +1,59 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+    "module": "esnext",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "allowImportingTsExtensions": true,
+    // "target": "ES2022",
+    // "module": "ES2022",
+    // "moduleResolution": "Bundler",
+    // "lib": [
+    //   "ES2022",
+    //   "DOM",
+    //   "WebWorker"
+    // ],
+    // "esModuleInterop": true,
+    // "resolveJsonModule": true,
+    // // Enable project compilation
+    // "composite": true,
+    // "declaration": true,
+    // "declarationMap": true,
+    // "sourceMap": true,
+    // "inlineSources": false,
+    // "stripInternal": true,
+    // "strict": true,
+    // "strictPropertyInitialization": false,
+    // "downlevelIteration": false,
+    // "noImplicitReturns": true,
+    // "noUnusedParameters": true,
+    // "noUnusedLocals": true,
+    // // Enable type checking of declaration files, skip in packages where needed
+    // "skipLibCheck": false,
+    // // Disallow inconsistently-cased references to the same file
+    // "forceConsistentCasingInFileNames": true,
+    // "noImplicitOverride": true,
+    // "jsx": "react"
+  },
+  "include": [
+    "./src",
+  ],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/diagram"
+    },
+    {
+      "path": "../../packages/layouts"
+    },
+    {
+      "path": "../../packages/language-server"
+    }
+  ]
+}

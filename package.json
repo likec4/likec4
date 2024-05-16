@@ -7,7 +7,7 @@
   "type": "module",
   "workspaces": [
     "docs",
-    "docs-astro",
+    "apps/*",
     "packages/*",
     "examples/*"
   ],

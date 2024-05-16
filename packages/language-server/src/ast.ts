@@ -234,8 +234,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
 export function* streamModel(doc: LikeC4LangiumDocument) {
   const { isValid } = checksFromDiagnostics(doc)
 
-  const elements = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
-  const traverseStack = [...elements]
+  const traverseStack = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
   const relations = [] as ast.Relation[]
   let el
   while ((el = traverseStack.shift())) {

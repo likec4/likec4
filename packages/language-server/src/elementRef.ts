@@ -16,8 +16,11 @@ export function getFqnElementRef(node: ast.FqnElementRef): c4.Fqn {
   const name = [node.el.$refText]
   let parent = node.parent
   while (parent) {
-    name.unshift(parent.el.$refText)
+    name.push(parent.el.$refText)
     parent = parent.parent
   }
-  return name.join('.') as c4.Fqn
+  if (name.length === 1) {
+    return name[0] as c4.Fqn
+  }
+  return name.reverse().join('.') as c4.Fqn
 }
