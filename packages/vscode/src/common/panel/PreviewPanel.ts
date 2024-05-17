@@ -41,6 +41,7 @@ export class PreviewPanel extends AbstractDisposable {
       } else {
         viewId = 'index' as ViewID
       }
+      Logger.info(`[Extension.PreviewPanel.Serializer] deserializeWebviewPanel viewId=${viewId}`)
       PreviewPanel.revive({ ...props, panel, viewId })
       return Promise.resolve()
     }
@@ -55,14 +56,9 @@ export class PreviewPanel extends AbstractDisposable {
       return
     }
 
-    let viewColumn = ViewColumn.Beside
-    if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn !== ViewColumn.One) {
-      viewColumn = ViewColumn.One
-    }
-
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(PreviewPanel.ViewType, 'Diagram preview', {
-      viewColumn,
+      viewColumn: ViewColumn.Beside,
       preserveFocus: true
     })
     messenger.registerWebViewPanel(panel)

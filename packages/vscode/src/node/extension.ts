@@ -29,12 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This function is called when the extension is deactivated.
-export function deactivate(): Thenable<unknown> {
-  return Promise.resolve()
-    .then(() => controller?.deactivate())
-    .finally(() => {
-      controller = undefined
-    })
+export function deactivate() {
+  controller?.dispose()
+  controller = undefined
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {

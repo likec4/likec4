@@ -24,7 +24,7 @@ export class ExtensionController extends AbstractDisposable {
   public graphviz: GraphvizLayouter = new WasmGraphvizLayouter()
 
   constructor(
-    private _context: vscode.ExtensionContext,
+    _context: vscode.ExtensionContext,
     public client: LanguageClient
   ) {
     super()
@@ -32,7 +32,7 @@ export class ExtensionController extends AbstractDisposable {
 
     this.onDispose(() => {
       client.outputChannel.dispose()
-      void client.dispose()
+      client.dispose()
       Logger.info(`[Extension] Language client disposed`)
     })
     this._telemetry = new TelemetryReporter(telemetryKey)
@@ -49,28 +49,6 @@ export class ExtensionController extends AbstractDisposable {
   }
 
   /**
-   * Deactivate the controller
-   */
-  async deactivate() {
-    if (this.client.isRunning()) {
-      Logger.info(`[Extension] Stopping language client`)
-      try {
-        await this.client.stop()
-      } catch (e) {
-        Logger.error(normalizeError(e))
-      }
-    }
-    Logger.info(`[Extension] Language client stopped`)
-    this.dispose()
-    Logger.info('[Extension] extension deactivated')
-  }
-
-  override dispose() {
-    super.dispose()
-    Logger.info('[Extension] disposed')
-  }
-
-  /**
    * Initializes the extension
    */
   public async activate() {
@@ -84,16 +62,16 @@ export class ExtensionController extends AbstractDisposable {
         }`
       )
       Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
+      Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
       if (this.client.needsStart()) {
         Logger.info(`[Extension] Starting LanguageClient...`)
         await pTimeout(this.client.start(), {
-          milliseconds: 5000,
-          message: 'Failed to start language client'
+          milliseconds: 15000,
+          message: 'Failed to start language client (after 15s), restart vscode'
         })
       }
-
-      Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
+      Logger.info(`[Extension] LanguageClient started`)
 
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
@@ -114,6 +92,7 @@ export class ExtensionController extends AbstractDisposable {
           })
         )
       )
+
       this.registerCommand(cmdRebuild, () => {
         void rebuildWorkspace(rpc)
         this._telemetry.sendTelemetryEvent('rebuild')
@@ -151,6 +130,7 @@ export class ExtensionController extends AbstractDisposable {
         })
         editor.revealRange(location.range, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
       })
+
       this.onDispose(() => {
         PreviewPanel.current?.dispose()
       })

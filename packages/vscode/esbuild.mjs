@@ -17,12 +17,19 @@ const base = {
   logLevel: 'info',
   outdir: 'dist',
   outbase: 'src',
+  logLevel: isDev ? 'debug' : 'info',
   color: true,
   bundle: true,
-  external: ['vscode'],
-  define: {
-    'process.env.NODE_ENV': '"production"'
-  },
+  external: [
+    'vscode',
+    '@hpcc-js/wasm'
+  ],
+  treeShaking: true,
+  define: !isDev
+    ? {
+      'process.env.NODE_ENV': '"production"'
+    }
+    : {},
   sourcemap: true,
   sourcesContent: isDev,
   keepNames: true,
@@ -35,14 +42,13 @@ const base = {
  */
 const extensionNodeCfg = {
   ...base,
-  entryPoints: ['src/node/extension.ts'],
+  entryPoints: [
+    'src/node/extension.ts',
+    'src/node/language-server.ts'
+  ],
   format: 'cjs',
   target: 'node18',
   platform: 'node'
-}
-const serverNodeCfg = {
-  ...extensionNodeCfg,
-  entryPoints: ['src/node/language-server.ts']
 }
 
 /**
@@ -68,7 +74,7 @@ const serverWebCfg = {
   plugins: [nodeModulesPolyfillPlugin()]
 }
 
-const builds = [extensionNodeCfg, serverNodeCfg, extensionWebCfg, serverWebCfg]
+const builds = [extensionNodeCfg, extensionWebCfg, serverWebCfg]
 
 let hasErrors = false
 const bundles = await Promise.all(builds.map(cfg => Promise.resolve().then(() => build(cfg))))

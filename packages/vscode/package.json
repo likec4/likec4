@@ -193,6 +193,9 @@
   ],
   "main": "./dist/node/extension.js",
   "browser": "./dist/browser/extension.js",
+  "dependencies": {
+    "@hpcc-js/wasm": "^2.16.2"
+  },
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",

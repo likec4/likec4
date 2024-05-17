@@ -17,12 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This function is called when the extension is deactivated.
 export function deactivate() {
-  return Promise.resolve()
-    .then(() => controller?.deactivate())
-    .finally(() => {
-      worker?.terminate()
-      controller = undefined
-    })
+  controller?.dispose()
+  controller = undefined
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
