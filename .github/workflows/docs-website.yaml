@@ -43,7 +43,7 @@ jobs:
       - name: upload a build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docs-website-new
+          name: docs-astro
           path: apps/docs/dist/
 
   deploy-docs-website:
@@ -66,7 +66,7 @@ jobs:
       - name: download artifact
         uses: actions/download-artifact@v4
         with:
-          name: docs-website-new
+          name: docs-astro
           path: apps/docs/dist/
 
       - id: cloudflare
