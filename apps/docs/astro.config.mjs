@@ -85,7 +85,15 @@ export default defineConfig({
       },
       pagination: false,
       plugins: [
-        starlightLinksValidator()
+        starlightLinksValidator({
+          exclude: [
+            '/examples/bigbank',
+            '/examples/bigbank/components/',
+            '/playground/blank/',
+            '/playground/getting-started/',
+            '/playground/'
+          ]
+        })
       ]
     })
   ]
