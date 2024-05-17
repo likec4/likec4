@@ -12,8 +12,8 @@ env:
   NODE_ENV: production
 
 jobs:
-  publish:
-    name: Publish Extension
+  publish-vscode:
+    name: publish
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # if triggered by workflow_dispatch or

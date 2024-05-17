@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build-docs-website:
-    name: Build
+    name: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -47,7 +47,7 @@ jobs:
           path: apps/docs/dist/
 
   deploy-docs-website:
-    name: Deploy
+    name: deploy
     runs-on: ubuntu-latest
     needs: build-docs-website
     timeout-minutes: 10
@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: download artifact

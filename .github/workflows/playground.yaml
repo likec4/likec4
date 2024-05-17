@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build-playground:
-    name: Build
+    name: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -48,7 +48,7 @@ jobs:
           path: apps/playground/dist/
 
   deploy-playground:
-    name: Deploy
+    name: deploy
     runs-on: ubuntu-latest
     needs: build-playground
     timeout-minutes: 10

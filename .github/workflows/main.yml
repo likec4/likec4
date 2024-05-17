@@ -10,7 +10,7 @@ on:
 permissions:
   actions: write
   checks: write
-  contents: read
+  contents: write
   statuses: write
   deployments: write
 
@@ -19,7 +19,7 @@ env:
 
 jobs:
   update-cache:
-    name: update dependencies cache
+    name: install
     runs-on: ubuntu-latest
     timeout-minutes: 15
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -75,7 +75,6 @@ jobs:
       #     retention-days: 2
 
   release:
-    name: Release
     uses: ./.github/workflows/release.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build
@@ -84,7 +83,6 @@ jobs:
     secrets: inherit
 
   vscode:
-    name: VSCode
     uses: ./.github/workflows/vscode.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
     needs: build
@@ -95,19 +93,19 @@ jobs:
   playground:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     needs: update-cache
-    name: playground
+    name: playground.likec4.dev
     uses: ./.github/workflows/playground.yaml
     secrets: inherit
 
   docs-website:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     needs: update-cache
-    name: Docs Website
+    name: docs.likec4.dev
     uses: ./.github/workflows/docs-website.yaml
     secrets: inherit
 
   docs:
-    name: Docs
+    name: docs nextjs
     uses: ./.github/workflows/docs.yaml
     needs: update-cache
     secrets: inherit
