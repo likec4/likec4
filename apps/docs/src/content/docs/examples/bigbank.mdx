@@ -1,0 +1,234 @@
+---
+title: Big Bank Example
+sidebar:
+  label: Big Bank plc
+  order: 2
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4  
+---
+
+import { Aside, Tabs, TabItem as Tab, LinkCard } from '@astrojs/starlight/components';
+import LikeC4View from '@components/bigbank/LikeC4View.astro';
+
+This example is taken from the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown and converted to LikeC4.
+
+It gives an overview of the LikeC4 syntax and how it compares to Structurizr DSL: what is similar and what is different.
+
+<LinkCard
+  title="Big Bank in playground"
+  description="Explore the model and play with this example in the LikeC4 playground"
+  href="https://playground.likec4.dev/w/bigbank/"
+  target="_blank"
+/>
+
+### System Landscape
+
+The landscape view is a high-level overview of the system, showing the major systems and how they relate to each other.
+Structurizr uses the `systemlandscape` for this view.
+
+There are no special view types in LikeC4.  
+Each view is defined by the [predicates](/dsl/views/#view-predicates) what to include/exclude, like `include *` below.
+
+<Tabs syncKey="label">
+  <Tab label='likec4'>
+    We create `index` view _"of bigbank"_, as this is the top-level system which landscape we want to visualize.
+    
+    ```likec4
+    views {
+      view index of bigbank {
+        title "Big Bank - Landscape"
+        include *
+      }
+    }
+    ```
+
+    The diagram:
+
+    <LikeC4View viewId="index"/>
+
+  </Tab>
+  <Tab label='structurizr'>
+    ```structurizr
+    views {
+      systemlandscape "SystemLandscape" {
+        include *
+        autoLayout
+      }
+    }
+    ```
+
+    Rendered with PlantUML:
+
+    ![](https://www.plantuml.com/plantuml/img/lPTVRzis4C3VzIaEpckQsK6QUe5ir2dIOS223dEsFYHzeAcJJPWYDHvT9olwtNUa9LlnfCpjiiX0uf2ykz_zfVAMl71-LUY4q0DXAPpmre6n1XEll4QOFf370duH9YCfIamIRqlm5cRMUrj0fXnAhwn94beg4pGKy2K14CxPzNjh_5JzXJ3eyrA6kLXfVuFtVgBLt1HeF4Z-WOvtrqwK7rNc5t3Q3wSBSN-DH6AEbOP-yZL95Yf3O2I7rZy4d9tL02BCN6EQJcwkn-E8SIdaSkxiocJlh6RNZdwC3-y4jcejZqyuRLs6hbezduKFhz92P7Qjp1noeGaPOsUqH4VMf6cmyo7FbSIf5td-mjRVhOYJWMwAxlCB8pIYVbK8fJS5y_B6VmvbPD1V2iFRywSn1eFpuImx1AC_EniEpmx7k1RAvBo61t7yJ-NmQ_mjTCLGLqSNHNzuTlfcTb0qNf_Yw_DMYcGR1EXTgZa4sr1gsOCq3TRAGML-X_jRBT6mqJXy9EFJBh95FLHWOsFg7qAMjYAPe0Lc2OjiOWUzqQWE5rJT1B6TxanAF8Sk1ltnxIQ-dz8VmihupjoPhGnLCXHaOAtyGXdm2uGPn-Ca1AEZLmL1syuZif0vs4oPGw0cMQ6C8iz3dGSqy0W7MfMbTVu9l7yECYRRMsIeHhP7estHGrLnrRNHn9lQtA-5gs-K9kUKxnma45g3pIEDv8M857InRkkAoeUPNV6TKGMAZa58oPNi-HkxQKZ4kuZ_GY-ZEvtzo5wrx-qxT_KgZBLly-Y6VL1n80aDrqewItmOhkxbWlKYu4OdHS78-NXsCbnZOP-8RxS3EIPQspNjuXKkxf3qp8arIAxzQ7jpMx9D_h9lgnwhtvVPDlkV5QvRSiffLoxcl97JKBA5M2AKuY6yBL3axHhrx47hLfXEkoQgX-FMexhj_gMPjbxKHHfOZsCugnPbdO_u8sptB6RSZiqawTY0azkZD_tmEUREbKl3BqYZqqydutR7uG9wgGnJyg8I6__1qQUQa76rC18RaQPjg655hAYNj6lk16blgXQIdz3lG9hra3jRF2DGev5QAAR8BxPrFrO6cXATQhiozBI9q06zRyzksytGOcb2Iu8_LqXn2B8fBkd79pOLFXpVtg36Si7l-NMDzv9M8_yzpxyJqdUupBEeHTd7QdXHd5vrmiBPvmBTk-gUJUzRhWB-J-jlZ)
+
+  </Tab>
+</Tabs>
+
+
+### System Context
+
+<Tabs syncKey="label">
+  <Tab label='likec4'>
+    ```likec4
+    views {
+
+      view context of bigbank {
+        title "Internet Banking System - SystemContext"
+
+        include
+          bigbank,
+          mainframe,
+          internetBankingSystem,
+          email,
+          customer
+
+        style * {
+          color secondary
+        }
+        style bigbank, internetBankingSystem {
+          color primary
+        }
+      }
+
+    }
+    ```
+    <LikeC4View viewId="context"/>
+
+  </Tab>
+  <Tab label='structurizr'>
+    ```structurizr
+    views {
+
+      systemcontext internetBankingSystem "SystemContext" {
+          include *
+          animation {
+            internetBankingSystem
+            customer
+            mainframe
+            email
+          }
+          autoLayout
+          description "The system context diagram for the Internet Banking System."
+          properties {
+            structurizr.groups false
+          }
+      }
+
+    }
+    ```
+
+    Rendered with PlantUML:
+
+    ![](https://www.plantuml.com/plantuml/img/hPPDRzim38Rl-XL4Ucsx9EX7LhX1Fz0DEnGObc8xj3tGDfq8aIL3KkPcnVxxACTEtS8kCg3E8GafaWyflKekd4VhLxaIZZmuAj2YDnQqqIIyz8hWc_PaDNklK2-bdiDixJpbSD1yk3QyuiaBuKq1ta1il3SvfD9IugNHGZYE2vbpU1O0QAqflt3GJFuX60tPb5A6A-NlECsbadETa_QGKAZCtj9YyKkcVW7ZOLYTuzCjEOTpgZCCnLyX5Z8bO21BngyBQbSD8AZdYgBe9aUfDk3JQOLpXSboRirAfzT6SUjxdwk7FO6njcNL4rORcvAjhITnUB7LBJ0rPHXEXieHutGMRqPPJ_9zZD7eP1Adks0CuwF9v6XtZ5kKEcCRxSJnmUCeo3gZe-XxzOwgPhXUEJuqPFieXfEZyMcyqpIEntHyqaaXjaE0mPMSLoSQ2fKC88f2jM9Kbt_1_T54j6gq5kybrTCTiaNTDM1JO-RNOPUs8Icw1QM2Grhuv-VRNNmZp0STEPR5sMWulP-Pp9TegNOzHf-2Q_gW7_ICPKuEK2am6VW5GS86YEjSdDlO78D-0MEpOZdME-Js0PE4jyRp9szHEwnapj_89uTXbhq731rq-zusTtCGTFf_7Trn3x9I62gubOarZXV3pLEouBm4jCdfgi2Ay_Lbm70jmrkYdcjmHxPBfKpfNcOOxidVaigEEVDMI5ljGslEg5E-zfO41Qx3vUWg_hxxX3lfT0K9RFGNEceKkEseqM2xfysYLwriksWEJc3TXrBo1LqqEL_nLx3zWcVS7gSGFGuulDyx7ORNlb_8PAdvz-1y_7WuxMuSpc0G9K6APtNOz2TFtpM4ZAjG9zIQjDkE6bQE4mr4T-PUaEw3ta7obVmBIFiyPDRa7mZKEjmT53FIgMiqKXTeH_IcxTkXzqi41Gp41LlupyS_)
+
+  </Tab>
+</Tabs>
+
+
+
+### Containers
+
+<Tabs syncKey="label">
+  <Tab label='likec4'>
+    ```likec4
+    views {
+
+      view ibsContainers of internetBankingSystem {
+        title "Internet Banking System - Containers"
+
+        include
+          *,
+          -> customer
+      }
+
+    }
+    ```
+
+    <LikeC4View viewId="ibsContainers"/>
+
+  </Tab>
+  <Tab label='structurizr'>
+    ```structurizr
+    views {
+
+      container internetBankingSystem "Containers" {
+        include *
+        animation {
+          customer mainframe email
+          webApplication
+          singlePageApplication
+          mobileApp
+          apiApplication
+          database
+        }
+        autoLayout
+        description "The container diagram for the Internet Banking System."
+      }
+
+    }
+    ```
+
+    Rendered with PlantUML:
+
+    ![](https://www.plantuml.com/plantuml/img/rLVVJnj747w_ls947lfYZEC28SXO8OIgYUB6xQ4a4kHXxcvihxZRFUtkOMZL_xspzuipt1aZA6hn0_B-cc--cVbc_CvOr3PBOi-G1KCfQhHAWrIIF2jiJF1HMjAITz-Zl1Ho3lwDiPJ0DfmeQL58qiRph4h1AWYKjIg1I6WAhL3IympVSQycy9S7W5ghvIzypnT_4hmUy594CynYUqRNzZWMSvcGj12IiygxIutfDn7P1Gm7xdI2rnCo1kTKlZ3m_lQyXOW869KcPMzIQbfrG53EOngDAazAHme_-iVJZyTf6eiG7U3nECVv7iFBkLQPZ4vKp7oysltv88hsUCU1BzTc-PyxhNH4kbmTqlxmhJjf5XYffMDiXh4XndcBAaAB0PfEK1_A_HU2qo3fD44H5oYwZB_D_pOnlX-up-R69vnECrwZ5JPU7aTxK2Og435nihnGL5AkB2L7esd-7-CIpKbckCP8Tw4O7EmEtmIRe1Zi3Mbl_wcq-CBjJhaaNxwE7WJtZOB_7geAnaeiWjs3WzrL2FNQVMDUaHomTNHKfKSjq5M2NCYHOP4yV3qOdnU7VenstChuGbx8OmZBSw1cO1S40T_lmLAmsARLcsuDC0oPB6lwMx0k6z50nwPNC-80rrL-fwKqyVfgPfUegTng0lUvGP41ZECAUCWBELBt5h-jT9A76p1GcQtzDBtQanvOZT9WtgJu6zamTwvJWDYtzhrLrqwtdNm-pfypza3aQS9yJqIebU73S7eTBlXT0YhUD4L2EvIh6itG6WjU4r17xzu0c3EpBdTNlEOYWqQLDP-lPuH3-8HN22WZy5Fji4o-dZHf-42nkE8WvH7biSIAa0FB47WSSBVSSkrF5MoJQm-aB3w0jmZwdV3l2mBJjyd9kpxpsF1qdwTQNV7eOkuxDijadfiO2ti3Lu9VWK_-bzzsVZqxc_h0rjVuU6-awVHnzQIRnih1mxbO3I4TldtH638NrIdmmmKbs5AfcM6DqJGNXeikhyj6ZVPWWMP14M364PQsX0AXfiXzPRtBovQ7FeZLl56h3qvEdLvNP-x6jEXaswwLRHXRFzGYBVBpMCwp67LhU1jQzK2aUOQkvIeFEzyH6fPSOG6Fpipa6j-xEd4d4QqNxh9IZ3sEa0uYlcE2dDtjdaCi4c4vlYOBt6-C9z6G550YkX8XhI6YEQbrEbyVSksqeQ3GFt_rPk0-FRiGuQNar3iQ_kYFkxeR7CBMA7Gj-x2yEFP9HgPKRbOqjULrtUqqjeaejLZ-Aeom1W8nTypsGvNiY81Ba9_WyAsUBQ9vC3xFHQMM_kV2sffThP1fQQhMp0aHe-Hox-LLbU0bPr6AD-vdeIdyU3Q0TGOy2wYD0lOlKNZRF5Kn4PMC_6IQqj65iTtA8w6kjf8MZ9ESDTStGzP31xKx8MzRtMrMFXJ3_mVUEsOV2RfkjlVX_a78aZFJAibpTAbPTTU3zd__l7DsCdqknEtpyHE9_Jxv_BoyDeL-lMvNTVsErx8a_WS0)
+
+  </Tab>
+</Tabs>
+
+### Components
+
+<Tabs syncKey="label">
+  <Tab label='likec4'>
+    ```likec4
+    views {
+
+      view apiApp of internetBankingSystem.apiApplication {
+        title "API Application - Components"
+
+        include *
+
+        style * {
+          color muted
+        }
+
+        style singlePageApplication, mobileApp {
+          color secondary
+        }
+
+        style apiApplication, apiApplication.* {
+          color primary
+        }
+      }
+
+    }
+    ```
+
+    <LikeC4View viewId="apiApp"/>
+
+  </Tab>
+  <Tab label='structurizr'>
+    ```structurizr
+    views {
+
+      component apiApplication "Components" {
+        include *
+        animation {
+          singlePageApplication mobileApp database email mainframe
+          signinController securityComponent
+          accountsSummaryController mainframeBankingSystemFacade
+          resetPasswordController emailComponent
+        }
+        autoLayout
+        description "The component diagram for the API Application."
+      }
+
+    }
+    ```
+
+    Rendered with PlantUML:
+
+    ![](https://www.plantuml.com/plantuml/img/rLXHKziu47xthzYXhn1IxcWf0va6ZixH8TSSfdUTWJviR2NHO4iPIIPmD_VVRsKxnZQsun0ADBmGMT9-twVLxkTyr0QLYSB0qSo0PZDKQAG28GLp33S1WrDXc1Bqz0Z5DHSJSE-qOI5iGNzu2ltPBE0U6Yu5ZHpBS4OhXT6EO-GCZ8IHD4Q6u7F5F3lBSJJjOkE4yAy3W4h9-ISfZCl_OV2sIqC-6sCKc0jsQ_e1duYGDWIFMHpqTAvmzZVtpHHskdPsYBS3fZLEMBf3r_dFSQRSPq0u5PFcRiRoKIqG59E07HmikANK4cOTufMZrUbxdeo8aXk58QgxOyAgP10mrUl538xGkvueck8Vou2qUxEtEngDBJHBAnthnXyxMogVgNHqrz_RmJqQrLFqvTogEyP0Cs9mZzT7WoFKjN1_Iv_NmVdrbptVtot26SUVCfmTzcxdm-uIEAlATn8Y3xB4U2RDSY3Z-0cqkk0VuayRXTwDx5_xu0FaOanZh23Hy-DeTLBLO3-XXpvx_dEhXZoG8numGlrAi_sSKI4TejPp2lNifM9Lj2xp8iNDtGjUptOugGkSYjSdfyljqo7rdXpQrvcP2rILSNA86c8xMKZOE3pCgaN965o90qsDUFzjjtVfoh6PesBfe-y7s_PHxqfS2PTi1jE0GG1o36RAmAC16ALxqTvIXOclm96Co014cem4KteJCEt8cs0K2esniQ1lp7YT3MYekgYX-bcHsicMxHchyRaW1Zm-1mnWm3qbDKs6arjlIlioOCcUEZaRYxBOc0XQRi1PD7qBPz7WyqZiNI0cJEt35uKUuLxC0jURiX0hj8uqKvGs4wv9jbZPdCgRC4KzPJvWH8SXpCBKUOhvzYlbG2myMIq8v2Idzb9NGjIQvnJLJoxLbhrLUNjPm_uptg3hAJupWCA7lfX40Qey-w6ID-G62xcMcTf5leqZ4MSH1bGEhM_DqWrkEDerNC6SZM14TfLqR61ULnHgPQXSKBfiSTkpSjJ8y0t9ct9HpHi27d93PwkZaVNvQuaG9b1yTiCzrY13lbFNKiyc5OfBwSMYuUJZCtTdog8V_7Mye5-Fgh8ebj9l8WWjt7UROloqK-xdmW9rVPDRa3-5VX1GmiHtJrj9jTsU2_jluGoAHRJJba5LQwnLUydIiXAB5nz8ttoUIf8iCU_JQyxfVGufFvD0IO9IijdCpCfzUr6QNjdQgbExHrccsFB1mlFzgBnHSPH4bLaQwrwtk8BOoV3r_AozJlLkjQrADJiyk5IfqRp_XQ1Pd2E6rRMiMA8K2z3MjVHU9SPX4-AMQxzaGYthLYrySUjRLLvRrgBEE47ofhMQC7roPtOLaFH9HGcpxHTbNQzOKfQy1xOLeccRiYQfutfaThXCq5r875PyMU9RqvxmWvyesb8iBhGMUOKE3vtBD--xzc_JJBbtBSXQ7Uvyx_GULxrX7pOEF6lYzzDjUmEyfYjZkwb7tiSgGxeMfoGox_KkFxjV_jZ-_U9Yw6PDz1d9r1RRdvfLJN5yDawPk_fPK-sf2BnyUZqLavTEgMMPiMQYbNjd1Q-lckcMwEgFVJsOJPrjFSHrn_kgPFqn88kzT3s43mclY2txCUKXZ7E6P3R6IeRno-USuh3cs-N-URPzSJnSyMer9bajdUfLQvQ7RuEpHrM7qf7MWixzy5M1DE_koDbHj0td8ur5OV0_)
+
+  </Tab>
+</Tabs>

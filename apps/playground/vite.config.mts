@@ -4,7 +4,7 @@ import { vanillaExtractPlugin as vanillaExtractEsbuildPlugin } from '@vanilla-ex
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { dirname, resolve } from 'node:path'
-import { defineConfig, mergeConfig, type AliasOptions, type UserConfig, type UserConfigFnObject } from 'vite'
+import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
 
 const root = dirname(__filename)
 
@@ -27,7 +27,9 @@ const baseConfig: UserConfigFnObject = () => {
         'react',
         // 'vscode',
         'react-dom',
-        'react-dom/client'
+        'react-dom/client',
+        '@mantine/core',
+        '@mantine/hooks'
       ],
       alias
     },
@@ -53,7 +55,9 @@ const baseConfig: UserConfigFnObject = () => {
         'vscode-uri',
         'string-hash',
         '@dagrejs/graphlib',
-        'rambdax'
+        'rambdax',
+        '@mantine/core',
+        '@mantine/hooks'
       ],
       esbuildOptions: {
         plugins: [
@@ -101,6 +105,8 @@ export default defineConfig((env) => {
               'react-dom',
               'react-dom/client',
               '@typefox/monaco-editor-react',
+              '@mantine/core',
+              '@mantine/hooks',
               'monaco-editor',
               'monaco-editor-wrapper',
               'monaco-languageclient',
@@ -109,10 +115,7 @@ export default defineConfig((env) => {
               '#monaco/bootstrap',
               '#monaco/config',
               /hpcc-js/,
-              // /node_modules\/react/,
-              // /node_modules\/react/,
               /node_modules.*vscode/,
-              // /node_modules.*framer-motion/,
               /node_modules.*monaco/
             ]
           },
@@ -127,7 +130,7 @@ export default defineConfig((env) => {
         },
         plugins: [
           vanillaExtractPlugin({
-            identifiers: 'short',
+            identifiers: 'short'
           }),
           TanStackRouterVite({
             routeFileIgnorePattern: '.css.ts',
@@ -154,7 +157,7 @@ export default defineConfig((env) => {
         },
         build: {
           copyPublicDir: true,
-          modulePreload: false,
+          // modulePreload: false,
           commonjsOptions: {
             transformMixedEsModules: true,
             esmExternals: true
@@ -163,7 +166,15 @@ export default defineConfig((env) => {
             output: {
               compact: true,
               manualChunks: (id) => {
-                if (id.includes('node_modules') && id.includes('/vscode/')) {
+                if (id.includes('hpcc-js')) {
+                  return 'graphviz'
+                }
+                if (
+                  id.includes('node_modules') && (
+                    id.includes('/vscode/')
+                    || id.includes('/monaco')
+                  )
+                ) {
                   return 'monaco'
                 }
               }

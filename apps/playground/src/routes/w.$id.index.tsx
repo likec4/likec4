@@ -1,18 +1,15 @@
 import { Box, Stack, Tabs, TabsList, TabsTab } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { deepEqual } from 'fast-equals'
-import { lazy } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { keys } from 'remeda'
 import { useStoreApi, useWorkspaceState } from '../state'
 import { DiagramPanel } from './-workspace/DiagramPanel'
+import { EditorPanel } from './-workspace/EditorPanel'
 import * as css from './w.$id.css'
 
-const EditorPanel = lazy(() => import('./-workspace/EditorPanel'))
-
 export const Route = createFileRoute('/w/$id/')({
-  component: WorkspacePage,
-  wrapInSuspense: true
+  component: WorkspacePage
 })
 
 export function WorkspacePage() {

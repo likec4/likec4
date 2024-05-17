@@ -1,17 +1,15 @@
 ---
 title: Getting Started
 description: Introduction and Tutorial
-# tableOfContents: false
 tableOfContents:
   minHeadingLevel: 3
   maxHeadingLevel: 6
-prev: false
 ---
-import { Steps } from '@astrojs/starlight/components';
+import { Steps, LinkCard } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
 To start with the tutorial there are two options:
-- Web: open blank playground in a new tab
+- Web: open <a href="https://playground.likec4.dev/w/blank/" target='_blank'>blank playground</a> in a new tab
 - Local: [install vscode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
 
 and follow the steps:
@@ -143,16 +141,14 @@ and follow the steps:
     ![landscape view](../../assets/getting-started/01.png)
 
     <Aside title='Wonder why there is a relationship?'>
+    The predicate `include *` includes only "top-level" elements and implies relationships between them from nested elements:
+    > `customer` has a _known relationship_ with nested `saas.ui` element
 
-    **The relationship is implied from nested elements:**  
-    `customer` has a _known relationship_ with nested `saas.ui` element
-
-    **that implies:**  
-    `customer` has _some relationship_ with `saas`.  
+    that implies:  
+    > `customer` has _some relationship_ with `saas`.  
 
     </Aside>
 
-    The predicate `include *` includes only "top-level" elements and implies relationships between them.
 
 4. ##### Add more views
 
@@ -315,8 +311,6 @@ and follow the steps:
     }
     ```
 
-    When we make changes, all views are updated automatically.
-
     View `index`:
 
     ![landscape view after changes](../../assets/getting-started/04.png)
@@ -325,6 +319,10 @@ and follow the steps:
 
     ![saas view after changes](../../assets/getting-started/05.png)
 
+    :::tip[Did you see?]
+    We changed elements in the model, and all views are updated accordingly.
+    :::
+
 4. ##### Try it yourself
 
     Play with [this tutorial in playground](https://playground.likec4.dev/w/tutorial/) and try to add the following:
@@ -332,5 +330,12 @@ and follow the steps:
     - change [shape](/dsl/styling/#single-element) of the `customer` element
     - add a database (with `storage` shape) and tables like `customers` and `orders` (what relationships should be added?)
     - add an external system, like Stripe, and show how the backend might interact with it
+
+    <LinkCard
+      title="Open playground"
+      description="Play with this tutorial in playground"
+      href="https://playground.likec4.dev/w/tutorial/"
+      target="_blank"
+    />
 
 </Steps>

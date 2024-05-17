@@ -12448,6 +12448,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
+    "@hpcc-js/wasm": "npm:^2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"

@@ -1,7 +1,7 @@
 import { MonacoEditor } from './MonacoEditor'
 import { SyncMonacoAndWorkspace } from './SyncMonacoAndWorkspace'
 
-export default function EditorPanel() {
+export function EditorPanel() {
   return (
     <>
       <MonacoEditor />

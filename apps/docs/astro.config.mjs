@@ -7,6 +7,9 @@ import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
+  prefetch: {
+    defaultStrategy: 'viewport'
+  },
   site: 'https://docs.likec4.dev',
   // devToolbar: {
   //   enabled: true
@@ -42,13 +45,8 @@ export default defineConfig({
           link: '/'
         },
         {
-          label: 'Getting Started',
-          items: [
-            {
-              label: 'Tutorial',
-              link: '/tutorial'
-            }
-          ]
+          label: 'Tutorial',
+          link: '/tutorial'
         },
         {
           label: 'LikeC4',
@@ -63,6 +61,13 @@ export default defineConfig({
           autogenerate: {
             directory: 'guides',
             collapsed: true
+          }
+        },
+        {
+          label: 'Examples',
+          collapsed: true,
+          autogenerate: {
+            directory: 'examples'
           }
         }
       ],
@@ -87,8 +92,6 @@ export default defineConfig({
       plugins: [
         starlightLinksValidator({
           exclude: [
-            '/examples/bigbank',
-            '/examples/bigbank/components/',
             '/playground/blank/',
             '/playground/getting-started/',
             '/playground/'
