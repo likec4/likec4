@@ -1,4 +1,3 @@
-
 *,
 :before,
 :after {
@@ -10,7 +9,7 @@
 }
 
 :root {
-  --likec4-app-font: 'IBM Plex Sans',ui-sans-serif,
+  --likec4-app-font: 'IBM Plex Sans', ui-sans-serif,
     system-ui,
     sans-serif,
     "Apple Color Emoji",
@@ -26,6 +25,7 @@
 :root[data-mantine-color-scheme='light'] {
   --color-page-background: var(--mantine-color-body);
 }
+
 :root[data-mantine-color-scheme='dark'] {
   /* --mantine-color-body: var(--mantine-color-dark-8); */
   /* --xy-background-pattern-color: var(--mantine-color-dark-2); */
@@ -35,8 +35,8 @@
 body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  width: 100dvw;
+  height: 100dvh;
   --font-family: var(--likec4-app-font);
 }
 
@@ -51,14 +51,14 @@ body {
 #like4-root {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
 
-  & > .radix-themes {
+  &>.radix-themes {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
   }
 }
 

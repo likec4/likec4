@@ -42,7 +42,9 @@ export const Route = createRootRouteWithContext<{}>()({
 
 function RadixTheme({ children }: { children: React.ReactNode }) {
   const { colorScheme } = useMantineColorScheme()
-  const computedScheme = useComputedColorScheme()
+  const computedScheme = useComputedColorScheme(undefined, {
+    getInitialValueInEffect: false
+  })
   const appearance = colorScheme === 'auto' ? computedScheme : colorScheme
   return (
     <Theme
@@ -61,7 +63,7 @@ function RootComponent() {
   return (
     <MantineProvider
       {...(theme && { forceColorScheme: theme })}
-      defaultColorScheme="dark"
+      defaultColorScheme={theme ?? 'dark'}
       theme={mantineTheme}>
       <RadixTheme>
         <ScrollRestoration />

@@ -57,7 +57,7 @@ const getComputedBodyColorScheme = () => {
 
 export const useColorScheme = (explicit: 'light' | 'dark' | undefined) => {
   const current = getComputedBodyColorScheme()
-  const prefers = useColorSchemeMedia(explicit, { getInitialValueInEffect: false })
+  const prefers = useColorSchemeMedia(undefined, { getInitialValueInEffect: false })
   return explicit ?? current ?? prefers
 }
 
