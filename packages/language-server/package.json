@@ -88,7 +88,7 @@
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
-    "vitest": "~1.5.2"
+    "vitest": "~1.6.0"
   },
   "packageManager": "yarn@4.1.1"
 }
