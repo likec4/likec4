@@ -180,9 +180,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.22.1":
-  version: 0.22.1
-  resolution: "@astrojs/starlight@npm:0.22.1"
+"@astrojs/starlight@npm:^0.22.2":
+  version: 0.22.4
+  resolution: "@astrojs/starlight@npm:0.22.4"
   dependencies:
     "@astrojs/mdx": "npm:^2.1.1"
     "@astrojs/sitemap": "npm:^3.0.5"
@@ -199,13 +199,14 @@ __metadata:
     mdast-util-to-markdown: "npm:^2.1.0"
     pagefind: "npm:^1.0.3"
     rehype: "npm:^13.0.1"
+    rehype-format: "npm:^5.0.0"
     remark-directive: "npm:^3.0.0"
     unified: "npm:^11.0.4"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.1"
   peerDependencies:
     astro: ^4.2.7
-  checksum: 10/135fd89fb123e4913b63d3c66a5024332eb50dffb75ce28a4c2fcd28a3df419a6a7023b721dac3f95af2c228b3a36fa1c24a143865697dc1ac64a886689e22ad
+  checksum: 10/a0d3616384a1bc8ac1935943546d01ea2ffad9bb83d25fb5a64b820b8d223ef663fdb5c56b17ffc00d54baad24987576af0606982a8aa36d6d02cc463b3d153a
   languageName: node
   linkType: hard
 
@@ -2422,8 +2423,8 @@ __metadata:
     "@mantine/vanilla-extract": "npm:^7.9.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@total-typescript/ts-reset": "npm:^0.5.1"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     "@vanilla-extract/css": "npm:^1.15.1"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
@@ -2446,8 +2447,8 @@ __metadata:
     vite-plugin-dts: "npm:^3.8.1"
     zustand: "npm:^4.5.2"
   peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    react: ^18.3.1
+    react-dom: ^18.3.1
   languageName: unknown
   linkType: soft
 
@@ -2485,8 +2486,8 @@ __metadata:
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@react-spring/konva": "npm:^9.7.3"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     "@use-gesture/react": "npm:^10.3.0"
     body-scroll-lock-upgrade: "npm:^1.1.0"
     execa: "npm:^8.0.1"
@@ -2500,8 +2501,8 @@ __metadata:
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
   peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    react: ^18.3.1
+    react-dom: ^18.3.1
   languageName: unknown
   linkType: soft
 
@@ -2519,8 +2520,8 @@ __metadata:
     "@radix-ui/react-scroll-area": "npm:^1.0.5"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.12.7"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     "@types/vscode": "npm:~1.88.0"
     autoprefixer: "npm:^10.4.19"
     body-scroll-lock-upgrade: "npm:^1.1.0"
@@ -2537,8 +2538,8 @@ __metadata:
     nextra-theme-docs: "npm:^2.13.2"
     postcss: "npm:^8.4.38"
     rambdax: "npm:^9.1.1"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
     react-icons: "npm:^4.12.0"
     remark-code-import: "npm:^1.2.0"
     swr: "npm:^2.2.5"
@@ -2600,7 +2601,7 @@ __metadata:
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
     langium: "npm:^3.0.0"
-    langium-cli: "npm:^3.0.3"
+    langium-cli: "npm:3.0.3"
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
@@ -2676,8 +2677,8 @@ __metadata:
     "@tanstack/router-vite-plugin": "npm:^1.31.18"
     "@typefox/monaco-editor-react": "npm:4.1.1"
     "@types/node": "npm:^20.12.7"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:^18.3.2"
+    "@types/react-dom": "npm:^18.3.0"
     "@types/string-hash": "npm:^1"
     "@vanilla-extract/css": "npm:^1.15.1"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
@@ -2692,9 +2693,9 @@ __metadata:
     monaco-editor-wrapper: "npm:5.1.1"
     monaco-languageclient: "npm:8.4.0"
     nanoid: "npm:^5.0.7"
-    react: "npm:^18.2.0"
+    react: "npm:^18.3.1"
     react-accessible-treeview: "npm:^2.9.0"
-    react-dom: "npm:^18.2.0"
+    react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
     react-resizable-panels: "npm:^2.0.19"
     remeda: "npm:^1.61.0"
@@ -2720,15 +2721,15 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.5.10"
     "@astrojs/react": "npm:^3.3.4"
-    "@astrojs/starlight": "npm:^0.22.1"
+    "@astrojs/starlight": "npm:^0.22.2"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
     "@fontsource/ibm-plex-sans": "npm:^5.0.19"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     astro: "npm:^4.7.1"
     likec4: "workspace:*"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
     starlight-links-validator: "npm:^0.8.0"
     typescript: "npm:^5.4.5"
   languageName: unknown
@@ -2746,8 +2747,8 @@ __metadata:
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.12.7"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     "@types/vscode": "npm:~1.88.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.15.1"
@@ -5970,12 +5971,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.0":
+"@types/react-dom@npm:18.2.4, @types/react-dom@npm:^18.2.0":
   version: 18.2.4
   resolution: "@types/react-dom@npm:18.2.4"
   dependencies:
     "@types/react": "npm:*"
   checksum: 10/98ddd7d18dc511f37e6f57ab93839daeee0ad241d95e4e34802a6b0e345a16dcc829eef30a64b1c81f3c48c1336a697c86b53038ca273a20737386dcaf025f83
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:^18.3.0":
+  version: 18.3.0
+  resolution: "@types/react-dom@npm:18.3.0"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/6ff53f5a7b7fba952a68e114d3b542ebdc1e87a794234785ebab0bcd9bde7fb4885f21ebaf93d26dc0a1b5b93287f42cad68b78ae04dddf6b20da7aceff0beaf
   languageName: node
   linkType: hard
 
@@ -5988,7 +5998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16, @types/react@npm:^18.2.0":
+"@types/react@npm:*, @types/react@npm:18.2.0, @types/react@npm:>=16, @types/react@npm:^18.2.0":
   version: 18.2.0
   resolution: "@types/react@npm:18.2.0"
   dependencies:
@@ -5996,6 +6006,16 @@ __metadata:
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10/c5fe6b798ab0d4ba2c40173275fb7f1e85a67586d40c97b0bee25a514f44de032e7aa90a98482cc38e106e66102727cdf1be9a8413d29509b92cb384adf4864d
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.3.2":
+  version: 18.3.2
+  resolution: "@types/react@npm:18.3.2"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10/a85eed82c1009dc9d979281d9ea1f5322255003de3378390f35d897b4bdaf1d34ea748636c03e9e9b4b7cc97c2f4582993d2d60e40846226ad497d97c7d8565a
   languageName: node
   linkType: hard
 
@@ -10823,6 +10843,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-embedded@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "hast-util-embedded@npm:3.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+  checksum: 10/ccb26926144dd72f9eec2307ceb45ff991c382c0cd20c517519a6a30e46b4e8c683bf6e2906cb0288ead880ca8fdfeaa1610de68ef8c0d12340d101352ba8a1a
+  languageName: node
+  linkType: hard
+
 "hast-util-from-dom@npm:^5.0.0":
   version: 5.0.0
   resolution: "hast-util-from-dom@npm:5.0.0"
@@ -10885,6 +10915,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-is-body-ok-link@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "hast-util-is-body-ok-link@npm:3.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+  checksum: 10/06b271a259498c6f44c2a520bf8ef585628aafc3367968fb7ea3a8093d78f6a3d0679e240fe5493e579734b5635a877e823d128d402cdec33de30932468b867c
+  languageName: node
+  linkType: hard
+
 "hast-util-is-element@npm:^3.0.0":
   version: 3.0.0
   resolution: "hast-util-is-element@npm:3.0.0"
@@ -10900,6 +10939,19 @@ __metadata:
   dependencies:
     "@types/hast": "npm:^3.0.0"
   checksum: 10/76087670d3b0b50b23a6cb70bca53a6176d6608307ccdbb3ed18b650b82e7c3513bfc40348f1389dc0c5ae872b9a768851f4335f44654abd7deafd6974c52402
+  languageName: node
+  linkType: hard
+
+"hast-util-phrasing@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "hast-util-phrasing@npm:3.0.1"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-has-property: "npm:^3.0.0"
+    hast-util-is-body-ok-link: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+  checksum: 10/aff54f89b14af298e33379e0b1053bb01fddb089cfe7f40a6c5f9d7477d89e42f5e32cd6617e246c18a0e9da1aa0b62ab441b14bd8ce788fd0fa594e77b05042
   languageName: node
   linkType: hard
 
@@ -11192,6 +11244,13 @@ __metadata:
   version: 3.0.0
   resolution: "html-void-elements@npm:3.0.0"
   checksum: 10/59be397525465a7489028afa064c55763d9cccd1d7d9f630cca47137317f0e897a9ca26cef7e745e7cff1abc44260cfa407742b243a54261dfacd42230e94fce
+  languageName: node
+  linkType: hard
+
+"html-whitespace-sensitive-tag-names@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "html-whitespace-sensitive-tag-names@npm:3.0.0"
+  checksum: 10/f64cf992b8a3d7a7e8d62d2926d504e1a8471ab2743e3f0116fb0f979f42c1ef9fe0639992cca291fa0b5bf037645b3cf610336ea78868f702fd2b6d612e2c97
   languageName: node
   linkType: hard
 
@@ -12348,7 +12407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^3.0.3":
+"langium-cli@npm:3.0.3":
   version: 3.0.3
   resolution: "langium-cli@npm:3.0.3"
   dependencies:
@@ -12375,7 +12434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:^3.0.0, langium@npm:~3.0.0":
+"langium@npm:3.0.0, langium@npm:^3.0.0, langium@npm:~3.0.0":
   version: 3.0.0
   resolution: "langium@npm:3.0.0"
   dependencies:
@@ -12461,7 +12520,7 @@ __metadata:
     "@vscode/vsce": "npm:^2.26.0"
     esbuild: "npm:^0.20.2"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
-    langium: "npm:^3.0.0"
+    langium: "npm:3.0.0"
     npm-run-all2: "npm:^6.1.2"
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"
@@ -12506,8 +12565,8 @@ __metadata:
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.12.7"
     "@types/prop-types": "npm:^15.7.11"
-    "@types/react": "npm:^18.2.0"
-    "@types/react-dom": "npm:^18.2.0"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
     "@types/string-hash": "npm:^1"
     "@types/yargs": "npm:^17.0.32"
     "@vanilla-extract/css": "npm:^1.15.1"
@@ -12555,8 +12614,8 @@ __metadata:
     vitest: "npm:~1.5.2"
     yargs: "npm:^17.7.2"
   peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    react: ^18.3.1
+    react-dom: ^18.3.1
   peerDependenciesMeta:
     react:
       optional: true
@@ -16648,6 +16707,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
+  languageName: node
+  linkType: hard
+
 "react-error-boundary@npm:^4.0.13":
   version: 4.0.13
   resolution: "react-error-boundary@npm:4.0.13"
@@ -16864,7 +16935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:~18.3.1":
+"react@npm:^18.3.1, react@npm:~18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
@@ -17034,6 +17105,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rehype-format@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "rehype-format@npm:5.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+    hast-util-phrasing: "npm:^3.0.0"
+    hast-util-whitespace: "npm:^3.0.0"
+    html-whitespace-sensitive-tag-names: "npm:^3.0.0"
+    rehype-minify-whitespace: "npm:^6.0.0"
+    unist-util-visit-parents: "npm:^6.0.0"
+  checksum: 10/00a116cee89c949220b3be8fa36e3617c454eba79f6c366ed7e0ea83ef97c4713a239f4cc50ddebb0a71a4e5b07205ef35255fcb9560a7ab7b0ecedb9607621f
+  languageName: node
+  linkType: hard
+
 "rehype-katex@npm:^7.0.0":
   version: 7.0.0
   resolution: "rehype-katex@npm:7.0.0"
@@ -17046,6 +17133,19 @@ __metadata:
     unist-util-visit-parents: "npm:^6.0.0"
     vfile: "npm:^6.0.0"
   checksum: 10/7f20fc25cedc0dc085c06ed2e460f7c2471fd8e54b2d00f5a98100d5cf6ebce3fa6d47ab1247a0021f1d152be1da074ada10fdcfbf3e63f6e3b4bc5b0604195c
+  languageName: node
+  linkType: hard
+
+"rehype-minify-whitespace@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "rehype-minify-whitespace@npm:6.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+    hast-util-whitespace: "npm:^3.0.0"
+    unist-util-is: "npm:^6.0.0"
+  checksum: 10/5d7a0e997567c0b48031dfea2c14068af320ce82bd8299b754e26d6eb5948e8f9b0b6f032119fe248a6120ff3574e3c8b39d62753a2cc0dfa3b432b11a70c0e6
   languageName: node
   linkType: hard
 
@@ -17686,6 +17786,15 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/0c4557aa37bafca44ff21dc0ea7c92e2dbcb298bc62eae92b29a39b029134f02fb23917d6ebc8b1fa536b4184934314c20d8864d156a9f6357f3398aaf7bfda8
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
   languageName: node
   linkType: hard
 
