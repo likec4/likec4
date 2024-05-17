@@ -12,6 +12,7 @@ permissions:
   checks: write
   contents: read
   statuses: write
+  deployments: write
 
 env:
   NODE_ENV: production
@@ -93,7 +94,7 @@ jobs:
 
   docs-website:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
-    name: docs-website
+    name: Docs Website
     uses: ./.github/workflows/docs-website.yaml
     secrets: inherit
 
@@ -101,10 +102,4 @@ jobs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
     needs: build
-    permissions:
-      actions: write
-      contents: read
-      checks: write
-      statuses: write
-      deployments: write
     secrets: inherit
