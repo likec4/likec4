@@ -1,11 +1,9 @@
 {
   "$schema": 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
-    'config:base',
-    'npm:unpublishSafe',
-    'group:jsUnitTest',
-    'group:nextraMonorepo',
-    'helpers:disableTypesNodeMajor'
+    "config:best-practices",
+    "npm:unpublishSafe",
+    "helpers:disableTypesNodeMajor"
   ],
   prHourlyLimit: 10,
   prConcurrentLimit: 5,
@@ -17,7 +15,9 @@
       "groupName": "linters",
       "matchPackageNames": [
         "@types/eslint",
-        "prettier"
+        "prettier",
+        "lint-staged",
+        "dprint"
       ],
       "matchPackagePrefixes": [
         "@commitlint",
@@ -38,6 +38,9 @@
         'lucide-react',
         'react-icons',
         'tailwind'
+      ],
+      "matchPackagePrefixes": [
+        "@tabler/"
       ],
     },
     {
