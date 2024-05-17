@@ -6455,9 +6455,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vscode/vsce@npm:^2.26.0":
-  version: 2.26.0
-  resolution: "@vscode/vsce@npm:2.26.0"
+"@vscode/vsce@npm:^2.26.1":
+  version: 2.26.1
+  resolution: "@vscode/vsce@npm:2.26.1"
   dependencies:
     "@azure/identity": "npm:^4.1.0"
     azure-devops-node-api: "npm:^12.5.0"
@@ -6488,7 +6488,7 @@ __metadata:
       optional: true
   bin:
     vsce: vsce
-  checksum: 10/d46a2f8c69df75ad74bb106a89726e1718700e811b39f849675aeeadc31cb85f5fb2d88044737f65e4985fdd2b25ae27c451c471f3f78631debd7ddb1d16744e
+  checksum: 10/56ad90ea09667b0527a1bbc539ad6f611188d90be24f9e31cd38731902ad08ac7f8d67b69f37b4da87c653642f8deae13b93006acbd23407b11e98b67c6855a7
   languageName: node
   linkType: hard
 
@@ -12457,7 +12457,7 @@ __metadata:
     "@types/vscode": "npm:~1.88.0"
     "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.6"
-    "@vscode/vsce": "npm:^2.26.0"
+    "@vscode/vsce": "npm:^2.26.1"
     esbuild: "npm:^0.20.2"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
     langium: "npm:^3.0.0"
