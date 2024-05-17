@@ -1,3 +1,63 @@
+# [1.0.0](https://github.com/likec4/likec4/compare/v1.0.0-rc.1...v1.0.0) (2024-05-17)
+
+### 🚀 Features  
+
+- **View Editor**  
+  VSCode Preview allows to change color, shape and switch auto-layout.  
+  Changes are persistent and update sources.
+  
+  Also available in preview (via CLI), but changes are not saved back.
+
+- **LikeC4 views as webcomponents**
+  Generates JS with custom elements:
+
+  ```html
+    <script src="https://published.website/likec4-views.js"></script>
+    <likec4-view view-id="index"></likec4-view>    
+  ```
+
+  Always generated on `likec4 build`, but also available as `likec4 gen webcomponent` 
+
+- **New predicate `include some._`**  
+  Expand and include nested elements only if they have in/out relationships (internals are not considered):
+  ```zig
+  view {
+     include some._
+  }
+  ```
+
+  Differs from `include some.*`, which includes all nested elements regardless of relationships.
+
+  _Almost the same as_:
+
+  ```zig
+  view {
+    include some
+    include -> some.* ->
+    exclude some.* -> some.*
+  }
+  ```
+  
+- **New predicate `<->`**  
+  Include relationships of both directions between elements:
+  ```zig
+  view {
+     include someA.* <-> someB.*
+  }
+  ```
+
+- **CLI**  
+  Builds and exports with pre-bundled CLI are 6-8x times faster  
+  Allow deep-linking in GitHub Pages, closes [#661](https://github.com/likec4/likec4/issues/661)  
+  Set color-scheme on export to png, closes [#685](https://github.com/likec4/likec4/issues/685)  
+
+- **New renderer**  
+  Fast and responsive views on any device, based on [xyflow](https://www.xyflow.com/)
+  
+- **New sites**  
+  https://docs.likec4.dev/ - (migration in progress...)  
+  https://playground.likec4.dev/ - dedicated for playgrounds
+
 # [1.0.0-rc.1](https://github.com/likec4/likec4/compare/v1.0.0-next.14...v1.0.0-rc.1) (2024-05-06)
 
 ### 🚀 Features  
