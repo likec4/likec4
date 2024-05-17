@@ -10,11 +10,21 @@ import { changeViewStyle } from './changeViewStyle'
 function unionRangeOfAllEdits(edits: TextEdit[]): Range {
   let start = Number.MAX_SAFE_INTEGER
   let end = Number.MIN_SAFE_INTEGER
-  for (const edit of edits) {
-    start = Math.min(start, edit.range.start.line)
-    end = Math.max(end, edit.range.end.line)
+
+  let startCharacter = 0
+  let endCharacter = 0
+
+  for (const { range } of edits) {
+    start = Math.min(start, range.start.line)
+    if (start === range.start.line) {
+      startCharacter = range.start.character
+    }
+    end = Math.max(end, range.end.line)
+    if (end === range.end.line) {
+      endCharacter = range.end.character
+    }
   }
-  return Range.create(start, 0, end, 0)
+  return Range.create(start, startCharacter, end, endCharacter)
 }
 
 export class LikeC4ModelChanges {
@@ -46,19 +56,12 @@ export class LikeC4ModelChanges {
         }
       })
       if (!applyResult.applied) {
-        lspConnection.window.showErrorMessage(`Failed to apply changes${applyResult.failureReason}`)
+        lspConnection.window.showErrorMessage(`Failed to apply changes ${applyResult.failureReason}`)
         return
       }
-      const range = unionRangeOfAllEdits(edits)
-      await lspConnection.window.showDocument({
-        uri: textDocument.uri,
-        external: false,
-        takeFocus: true,
-        selection: range
-      })
       result = {
         uri: textDocument.uri,
-        range
+        range: unionRangeOfAllEdits(edits)
       }
     })
     return result
