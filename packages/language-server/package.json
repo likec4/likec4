@@ -73,7 +73,7 @@
     "remeda": "^1.61.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",
-    "type-fest": "^4.18.1",
+    "type-fest": "^4.18.2",
     "ufo": "^1.5.3",
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",

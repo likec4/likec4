@@ -2439,7 +2439,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     remeda: "npm:^1.61.0"
     tilg: "npm:^0.1.1"
-    type-fest: "npm:^4.18.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
     vite: "npm:^5.2.11"
@@ -2608,7 +2608,7 @@ __metadata:
     remeda: "npm:^1.61.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
-    type-fest: "npm:^4.18.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
     unbuild: "npm:^2.0.0"
@@ -2635,7 +2635,7 @@ __metadata:
     remeda: "npm:^1.61.0"
     strip-indent: "npm:^4.0.0"
     ts-graphviz: "npm:^1.8.2"
-    type-fest: "npm:^4.18.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     vitest: "npm:~1.5.2"
     word-wrap: "npm:^1.2.5"
@@ -2701,7 +2701,7 @@ __metadata:
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
     tsx: "npm:~4.9.3"
-    type-fest: "npm:^4.18.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
     vite: "npm:^5.2.11"
@@ -12545,7 +12545,7 @@ __metadata:
     strip-indent: "npm:^4.0.0"
     terser: "npm:^5.30.0"
     tsx: "npm:~4.9.3"
-    type-fest: "npm:^4.18.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
     vite: "npm:^5.2.11"
@@ -19296,10 +19296,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.12.0, type-fest@npm:^4.18.1":
+"type-fest@npm:^4.12.0":
   version: 4.18.1
   resolution: "type-fest@npm:4.18.1"
   checksum: 10/ff76e19cb969854161fea2de854073f346e159f5efff05906ece93cbde8a7161b9374121aca53782b44f754152cbacc70264c90ca1acc81ca917723acce5054f
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.18.2":
+  version: 4.18.2
+  resolution: "type-fest@npm:4.18.2"
+  checksum: 10/2c176de28384a247fac1503165774e874c15ac39434a775f32ecda3aef5a0cefcfa2f5fb670c3da1f81cf773c355999154078c8d9657db19b65de78334b27933
   languageName: node
   linkType: hard
 
