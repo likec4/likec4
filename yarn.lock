@@ -2679,7 +2679,7 @@ __metadata:
     "@types/node": "npm:^20.12.7"
     "@types/react": "npm:^18.3.2"
     "@types/react-dom": "npm:^18.3.0"
-    "@types/string-hash": "npm:^1"
+    "@types/string-hash": "npm:^1.1.3"
     "@vanilla-extract/css": "npm:^1.15.1"
     "@vanilla-extract/dynamic": "npm:^2.1.0"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
@@ -6049,7 +6049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/string-hash@npm:^1":
+"@types/string-hash@npm:^1, @types/string-hash@npm:^1.1.3":
   version: 1.1.3
   resolution: "@types/string-hash@npm:1.1.3"
   checksum: 10/39a546088123efb1af9beac3854aa1eb54cf24ab75d99c8dac9ccfa7d46d70ac7c99c10983f7cc623dda1e476b6e21e7acffe6c5b3be894751ae4b9cfd103aaf
