@@ -43,7 +43,7 @@ jobs:
       - name: upload a build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docs-website
+          name: docs-website-new
           path: apps/docs/dist/
 
   deploy-docs-website:
@@ -52,7 +52,7 @@ jobs:
     needs: build-docs-website
     timeout-minutes: 10
     environment:
-      name: prod-docs-website
+      name: prod-docs.likec4.dev
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v4
@@ -60,10 +60,13 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
       - name: download artifact
         uses: actions/download-artifact@v4
         with:
-          name: docs-website
+          name: docs-website-new
           path: apps/docs/dist/
 
       - id: cloudflare
@@ -74,3 +77,4 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name=likec4-docs-astro
           workingDirectory: apps/docs
+          packageManager: yarn

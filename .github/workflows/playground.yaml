@@ -61,6 +61,9 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
       - name: download artifact
         uses: actions/download-artifact@v4
         with:
@@ -75,3 +78,4 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name=likec4-playground
           workingDirectory: apps/playground
+          packageManager: yarn
