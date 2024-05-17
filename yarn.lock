@@ -2600,7 +2600,7 @@ __metadata:
     execa: "npm:^8.0.1"
     fast-equals: "npm:^5.0.1"
     langium: "npm:^3.0.0"
-    langium-cli: "npm:^3.0.3"
+    langium-cli: "npm:3.0.3"
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
@@ -12348,7 +12348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium-cli@npm:^3.0.3":
+"langium-cli@npm:3.0.3":
   version: 3.0.3
   resolution: "langium-cli@npm:3.0.3"
   dependencies:
@@ -12375,7 +12375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:^3.0.0, langium@npm:~3.0.0":
+"langium@npm:3.0.0, langium@npm:^3.0.0, langium@npm:~3.0.0":
   version: 3.0.0
   resolution: "langium@npm:3.0.0"
   dependencies:
@@ -12460,7 +12460,7 @@ __metadata:
     "@vscode/vsce": "npm:^2.26.0"
     esbuild: "npm:^0.20.2"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
-    langium: "npm:^3.0.0"
+    langium: "npm:3.0.0"
     npm-run-all2: "npm:^6.1.2"
     p-timeout: "npm:^6.1.2"
     path-browserify: "npm:^1.0.1"
