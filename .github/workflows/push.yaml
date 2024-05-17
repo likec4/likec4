@@ -67,11 +67,6 @@ jobs:
         working-directory: docs
         run: yarn build:turbo
 
-      - if: ${{ matrix.build-docs }}
-        name: Build Docs
-        working-directory: apps/docs
-        run: yarn build:turbo
-
   check-playground:
     # If on pull request, run only if coming from forked repos
     if: |
