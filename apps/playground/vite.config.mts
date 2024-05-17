@@ -159,15 +159,12 @@ export default defineConfig((env) => {
             transformMixedEsModules: true,
             esmExternals: true
           },
-          target: 'modules',
           rollupOptions: {
             output: {
               compact: true,
               manualChunks: (id) => {
-                if (id.includes('node_modules')) {
-                  if (id.includes('/monaco') || id.includes('/vscode/')) {
-                    return 'monaco'
-                  }
+                if (id.includes('node_modules') && id.includes('/vscode/')) {
+                  return 'monaco'
                 }
               }
             }
@@ -194,95 +191,3 @@ export default defineConfig((env) => {
       })
   }
 })
-
-// export default defineConfig(({ mode }) => {
-//   const isWatchDev = mode === 'watch-dev'
-//   const isDev = isWatchDev || mode === 'development'
-//   return {
-//     css: {
-//       modules: {
-//         localsConvention: 'camelCase'
-//       },
-//       postcss: {}
-//     },
-//     root: resolve('.'),
-//     resolve: {
-//       dedupe: [
-//         'react',
-//         // 'vscode',
-//         'react-dom',
-//         'react-dom/client'
-//       ],
-//       alias
-//     },
-//     optimizeDeps: {
-//       include: [
-//         'react',
-//         'react-dom',
-//         'langium/lsp',
-//         'vscode-languageserver/browser',
-//         'langium',
-//         'ufo',
-//         'vscode-languageserver',
-//         'strip-indent',
-//         'vscode-uri',
-//         'string-hash',
-//         '@dagrejs/graphlib',
-//         'rambdax'
-//       ],
-//       esbuildOptions: {
-//         plugins: [
-//           importMetaUrlPlugin,
-//           vanillaExtractEsbuildPlugin({
-//             runtime: true
-//           })
-//         ]
-//       }
-//     },
-//     ssr: {
-//       target: 'webworker'
-//     },
-//     build: {
-//       copyPublicDir: true,
-//       emptyOutDir: true,
-//       commonjsOptions: {
-//         transformMixedEsModules: true,
-//         esmExternals: true
-//       },
-//       rollupOptions: {
-//         // external: [
-//         //   /vscode/
-//         // ],
-//         // plugins: [
-//         //   vanillaExtractRollupPlugin({
-//         //     esbuildOptions: {
-//         //       loader: {
-//         //         '.css': 'empty'
-//         //       }
-//         //     }
-//         //   })
-//         // ],
-//         output: {
-//           manualChunks: (id) => {
-//             if (id.includes('node_modules')) {
-//               return id.includes('vscode') || id.includes('monaco') ? 'vscode' : 'vendor'
-//             }
-//           }
-//         }
-//       }
-//       // cssCodeSplit: false
-//     },
-//     plugins: [
-//       vanillaExtractPlugin({
-//         unstable_mode: 'transform'
-//       }),
-//       react(),
-//       TanStackRouterVite({
-//         routeFileIgnorePattern: '.css.ts',
-//         generatedRouteTree: resolve('src/routeTree.gen.ts'),
-//         routesDirectory: resolve('src/routes'),
-//         quoteStyle: 'single'
-//       })
-//     ]
-//   }
-// })

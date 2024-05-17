@@ -1,7 +1,16 @@
 import type { BBox, DiagramEdge, DiagramNode, Fqn, Point } from '@likec4/core'
+import type {
+  Edge,
+  EdgeMouseHandler,
+  InternalNode,
+  Node,
+  NodeMouseHandler,
+  OnMoveEnd,
+  OnMoveStart,
+  ReactFlowInstance,
+  ReactFlowState
+} from '@xyflow/react'
 import { isNode } from '@xyflow/react'
-import type { Edge, InternalNode, Node, ReactFlowInstance, ReactFlowState } from '@xyflow/react'
-import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, OnNodeDrag, Viewport } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
 import type { SetReadonly, SetRequired, Simplify } from 'type-fest'

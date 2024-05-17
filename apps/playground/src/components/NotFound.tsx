@@ -1,6 +1,6 @@
 import { Button, Container, Group, Text, Title } from '@mantine/core'
 import { Link } from '@tanstack/react-router'
-import * as classes from './NotFound.css.ts'
+import * as classes from './NotFound.css'
 
 export function NotFound() {
   return (

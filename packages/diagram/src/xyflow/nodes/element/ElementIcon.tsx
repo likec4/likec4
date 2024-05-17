@@ -12,8 +12,6 @@ type ElementIconProps = {
 
 export function ElementIcon({
   node,
-  maxWidth,
-  paddingX = 32,
   paddingY = 32
 }: ElementIconProps) {
   if (!node.icon) {
@@ -26,7 +24,7 @@ export function ElementIcon({
 
   const firstLabelY = Math.floor(firstLabel.pt[1] - firstLabel.fontSize * 1.25)
   const maxIconHeight = Math.floor(firstLabelY - paddingY - 16)
-  const maxIconWidth = maxWidth ?? node.width - paddingX * 2
+  // const maxIconWidth = maxWidth ?? node.width - paddingX * 2
 
   // const centerY = paddingY + Math.floor(maxIconHeight / 2)
   // const centerX = Math.floor(node.width / 2)

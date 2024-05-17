@@ -21,7 +21,6 @@ export function LikeC4Diagram({
   className,
   fitView = true,
   fitViewPadding = 0,
-  colorScheme,
   readonly = true,
   pannable = true,
   zoomable = true,

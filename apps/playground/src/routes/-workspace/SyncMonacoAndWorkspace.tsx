@@ -35,16 +35,9 @@ export function SyncMonacoAndWorkspace() {
         try {
           const uri = monaco.Uri.joinPath(workspaceUri, file)
           provider.registerFile(new RegisteredMemoryFile(uri, content))
-          // if () {
-          //   continue
-          // }
-          // if (DEV) console.debug('createModel', uri)
           if (!monaco.editor.getModel(uri)) {
             monaco.editor.createModel(content, 'likec4', uri)
           }
-          // const model = monaco.editor.getModel(uri) ?? monaco.editor.createModel(content, 'likec4', uri)
-          // model.setValue(content)
-          // ref.object.setLanguageId('likec4')
         } catch (e) {
           console.error(e)
         }

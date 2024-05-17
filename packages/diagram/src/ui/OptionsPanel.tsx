@@ -11,7 +11,7 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
 
   useOnSelectionChange({
-    onChange: ({ nodes, edges }) => {
+    onChange: ({ nodes }) => {
       const next = nodes.map(n => n.id).sort()
       setSelectedNodes(prev => {
         return shallowEqual(prev, next) ? prev : next

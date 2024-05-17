@@ -17,10 +17,9 @@ export type WorkspaceStore = {
    * Used as path-prefix.
    */
   name: string
-  // userConfig: UserConfig
-
-  // editor: () => monaco.editor.IStandaloneCodeEditor | null
-  languageClient: () => MonacoLanguageClient | null
+  languageClient: {
+    (): MonacoLanguageClient | null
+  }
 
   initialized: boolean
 
@@ -41,6 +40,7 @@ export type WorkspaceStore = {
   }
 
   likeC4Model: LikeC4Model | null
+  modelFetched: boolean
 
   /**
    * Current diagram.
@@ -84,6 +84,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   files
   // userConfig
 }: T) {
+  let seq = 1
   return createWithEqualityFn<
     WorkspaceState,
     [
@@ -92,7 +93,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
     ]
   >(
     subscribeWithSelector(
-      devtools(
+      devtools<WorkspaceState>(
         (set, get) => ({
           name: name,
           // editor: () => null,
@@ -104,6 +105,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
           originalFiles: structuredClone(files),
 
           likeC4Model: null,
+          modelFetched: false,
           computedView: null,
           diagram: null,
           diagramAsDot: null,
@@ -133,37 +135,46 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
           },
 
           onDidChangeModel: async () => {
-            DEV && console.time('store.onDidChangeModel')
+            const label = `onDidChangeModel (${seq++})`
+            if (DEV) {
+              console.time(label)
+              console.log(`start ${label}`)
+            }
             const { languageClient, diagram, computedView } = get()
             const client = languageClient()
             invariant(client, 'Language client is not initialized')
             try {
               const { model } = await client.sendRequest(fetchModel)
-              if (!model) {
-                return
-              }
-              set({ likeC4Model: model }, noReplace, 'likeC4Model')
+              set(
+                {
+                  modelFetched: true,
+                  likeC4Model: model
+                },
+                noReplace,
+                'likeC4Model'
+              )
 
-              let viewId = computedView?.id ?? diagram?.id
-              if (!viewId) {
-                const indexId = 'index' as ViewID
-                const firstView = indexId in model.views ? indexId : first(keys(model.views))
-                if (!firstView) {
-                  return
-                }
-                viewId = firstView as ViewID
+              const indexId = 'index' as ViewID
+              const viewId = computedView?.id ?? diagram?.id ?? indexId
+              if (!model?.views[viewId]) {
+                DEV && console.warn(`View ${viewId} not found in model.`)
+                set({ computedView: null })
+                return
               }
               void get().fetchDiagram(viewId)
             } catch (e) {
               console.error(e)
             } finally {
-              DEV && console.timeEnd('store.onDidChangeModel')
+              DEV && console.timeEnd(label)
             }
           },
 
           fetchDiagram: async (viewId) => {
-            const label = `fetchDiagram(${viewId})`
-            DEV && console.time(label)
+            const label = `fetchDiagram: ${viewId}`
+            if (DEV) {
+              console.time(label)
+              console.log(`start ${label}`)
+            }
             const { languageClient, computedView } = get()
             const client = languageClient()
             invariant(client, 'Language client is not initialized')

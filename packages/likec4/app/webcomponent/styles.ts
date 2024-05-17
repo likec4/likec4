@@ -52,12 +52,6 @@ export const matchesColorScheme = (el: Element) => {
     if (colorScheme) {
       return colorScheme
     }
-    if (window.matchMedia('(color-scheme: light)').matches) {
-      return 'light'
-    }
-    if (window.matchMedia('(color-scheme: dark)').matches) {
-      return 'dark'
-    }
     if (window.matchMedia('(prefers-color-scheme: light)').matches) {
       return 'light'
     }

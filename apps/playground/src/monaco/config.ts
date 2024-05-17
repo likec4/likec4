@@ -1,11 +1,7 @@
-import * as monaco from 'monaco-editor'
-
-import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory'
-import EditorWorkerService from 'monaco-editor/esm/vs/editor/editor.worker.js?worker'
-
 import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override'
 import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override'
 import getFileServiceOverride from '@codingame/monaco-vscode-files-service-override'
+import * as monaco from 'monaco-editor'
 import '@codingame/monaco-vscode-theme-defaults-default-extension'
 
 import type { UserConfig } from 'monaco-editor-wrapper'
@@ -17,19 +13,6 @@ import languageConfig from './lsp/language-configuration.json?raw'
 import textmateGrammar from './lsp/likec4.tmLanguage.json?raw'
 
 import LikeC4LspWorker from './lsp/likec4.worker?worker'
-
-export const configureMonacoWorkers = () => {
-  useWorkerFactory({
-    ignoreMapping: true,
-    workerLoaders: {
-      // editorWorkerService: () => new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), { type: 'module' }),
-      editorWorkerService: () =>
-        new EditorWorkerService({
-          name: 'likec4-editor-worker'
-        })
-    }
-  })
-}
 
 export function createMonacoConfig(store: StoreApi) {
   const state = store.getState()

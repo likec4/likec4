@@ -1,5 +1,5 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
-import { useColorScheme as useColorSchemeMedia } from '@mantine/hooks'
+import { useColorScheme as useColorSchemeMedia, useMediaQuery } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useCallback } from 'react'
 import { isString } from 'remeda'
@@ -7,6 +7,10 @@ import fontCss from '../../webcomponent/font.css?inline'
 import { cssRoot } from './styles.css'
 
 const rootSelector = `.${cssRoot}`
+
+declare const __likec4styles: Map<string, string>
+declare const __USE_SHADOW_STYLE__: boolean
+declare const SHADOW_STYLE: string
 
 const bundledStyles = () => {
   let BundledStyles
@@ -39,9 +43,22 @@ export const useCreateStyleSheet = (injectFontCss = true) => {
   }, [])
 }
 
+const getComputedBodyColorScheme = () => {
+  try {
+    const colorScheme = window.getComputedStyle(document.body).colorScheme
+    if (colorScheme === 'light' || colorScheme === 'dark') {
+      return colorScheme
+    }
+  } catch (_e) {
+    // noop
+  }
+  return undefined
+}
+
 export const useColorScheme = (explicit: 'light' | 'dark' | undefined) => {
-  const autoColorScheme = useColorSchemeMedia()
-  return explicit ?? autoColorScheme
+  const current = getComputedBodyColorScheme()
+  const prefers = useColorSchemeMedia(explicit, { getInitialValueInEffect: false })
+  return explicit ?? current ?? prefers
 }
 
 export const theme = createTheme({

@@ -1,5 +1,4 @@
-import { nonNullable } from '@likec4/core'
-import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd, OnMoveStart, Viewport } from '@xyflow/react'
+import type { EdgeMouseHandler, NodeMouseHandler, OnMoveEnd } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { useMemo, useRef } from 'react'
 import { useDiagramStoreApi } from '../state'

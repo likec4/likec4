@@ -21,7 +21,7 @@ import {
 } from '@mantine/core'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useDiagramStoreApi } from '../../state'
-import { useXYFlow, useXYNodesData } from '../../xyflow/hooks'
+import { useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
 
 // const ColorPanel = () => {
@@ -54,7 +54,6 @@ type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
   const diagramApi = useDiagramStoreApi()
   const nodes = useXYNodesData(selectedNodeIds)
-  const api = useXYFlow()
   if (!hasAtLeast(nodes, 1)) {
     return null
   }

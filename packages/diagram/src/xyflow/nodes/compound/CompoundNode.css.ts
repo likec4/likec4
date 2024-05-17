@@ -40,6 +40,7 @@ export const cssCompound = style({
   }
 })
 
+// @ts-ignore
 const cssTransparentCompound = style({
   width: '100%',
   height: '100%',

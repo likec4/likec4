@@ -3,7 +3,7 @@ import '@xyflow/react/dist/style.css'
 
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
-import { type HTMLAttributes, useId } from 'react'
+import { useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 import { cssInteractive, cssLikeC4View } from './styles.css'

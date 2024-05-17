@@ -70,7 +70,7 @@ export function ElementLink({
         </HoverCardTarget>
         <HoverCardDropdown onClick={e => e.stopPropagation()} p={'xs'}>
           <Stack gap={'xs'}>
-            {element.links.map((link, i) => (
+            {element.links.map((link) => (
               <Group key={link} wrap="nowrap" gap={'sm'}>
                 <Box flex={'1'} style={{ overflow: 'clip', maxWidth: clamp(element.width, { min: 200, max: 400 }) }}>
                   <Anchor href={link} target="_blank" fz="13" truncate="end">

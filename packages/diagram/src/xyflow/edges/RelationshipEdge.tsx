@@ -1,5 +1,5 @@
 import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
-import { Box, Text } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
@@ -93,8 +93,8 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
-  selected,
-  markerEnd,
+  selected: _selected,
+  markerEnd: _markerEnd,
   style,
   source,
   target,
@@ -109,8 +109,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   invariant(data, 'data is required')
   const {
-    edge,
-    controlPoints
+    edge
   } = data
   // const edgePath = bezierPath(edge.points)
 

@@ -1,13 +1,13 @@
 import { createMonacoConfig } from '#monaco/config'
 import { onDidChangeModel } from '@likec4/language-server/protocol'
-import { useUnmountEffect, useUpdateEffect } from '@react-hookz/web'
+import { useUpdateEffect } from '@react-hookz/web'
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react'
 import { DEV } from 'esm-env'
 import * as monaco from 'monaco-editor'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useStoreApi, useWorkspaceState } from '../../state/index.ts'
-import * as css from './styles.css.ts'
+import { useStoreApi, useWorkspaceState } from '../../state'
+import * as css from './styles.css'
 
 export function MonacoEditor() {
   const store = useStoreApi()

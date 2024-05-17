@@ -16,6 +16,8 @@ type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
   'id' | 'data' | 'width' | 'height' | 'selected'
 >
+
+// @ts-ignore
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
   && prev.selected === next.selected

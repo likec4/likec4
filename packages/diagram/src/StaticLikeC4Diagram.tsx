@@ -6,7 +6,6 @@ export type StaticLikeC4DiagramProps = Pick<
   | 'view'
   | 'keepAspectRatio'
   | 'className'
-  | 'colorScheme'
   | 'fitView'
   | 'fitViewPadding'
   | 'background'

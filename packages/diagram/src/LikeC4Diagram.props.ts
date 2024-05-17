@@ -15,12 +15,14 @@ import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
-export type OnNavigateTo = (
-  to: ViewID,
-  event: ReactMouseEvent,
-  element: DiagramNodeWithNavigate,
-  xynode: XYFlowNode
-) => void
+export type OnNavigateTo = {
+  (
+    to: ViewID,
+    event: ReactMouseEvent,
+    element: DiagramNodeWithNavigate,
+    xynode: XYFlowNode
+  ): void
+}
 export type OnNodeClick = (
   event: {
     element: DiagramNode
@@ -62,7 +64,9 @@ export type Change =
 export type ChangeEvent = {
   changes: NonEmptyArray<Change>
 }
-export type OnChange = (event: ChangeEvent) => void
+export type OnChange = {
+  (event: ChangeEvent): void
+}
 export type LikeC4ColorScheme = 'light' | 'dark'
 
 export interface LikeC4DiagramProperties {
@@ -76,7 +80,7 @@ export interface LikeC4DiagramProperties {
    *
    * @example 'light' | 'dark'
    */
-  colorScheme?: LikeC4ColorScheme | undefined
+  // colorScheme?: LikeC4ColorScheme | undefined
 
   /**
    * Show/hide controls menu
