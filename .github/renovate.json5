@@ -6,14 +6,14 @@
     "helpers:disableTypesNodeMajor"
   ],
   prHourlyLimit: 10,
-  prConcurrentLimit: 5,
+  prConcurrentLimit: 10,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: ['dependencies'],
   packageRules: [
     {
       "groupName": "linters",
-      "matchPackageNames": [
+      "matchDepNames": [
         "@types/eslint",
         "prettier",
         "lint-staged",
@@ -28,12 +28,12 @@
     },
     {
       groupName: "langium",
-      matchPackagePatterns: ['langium']
+      matchDepPatterns: ['langium']
     },
     // Update manually
     {
       enabled: false,
-      matchPackageNames: [
+      matchDepNames: [
         'next',
         'lucide-react',
         'react-icons',
@@ -45,16 +45,12 @@
     },
     {
       enabled: false,
-      matchPackageNames: ['@types/react', '@types/react-dom'],
+      matchDepPatterns: ['^monaco', '^@monaco']
     },
     {
       enabled: false,
-      matchPackagePatterns: ['^monaco', '^@monaco']
-    },
-    {
-      enabled: false,
-      matchPackageNames: ['@types/vscode', 'vscode'],
-      matchPackagePatterns: ['^vscode-']
+      matchDepNames: ['@types/vscode', 'vscode'],
+      matchDepPatterns: ['^vscode-']
     },
   ]
 }
