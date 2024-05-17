@@ -1,3 +1,28 @@
+# [1.0.0](https://github.com/likec4/likec4/compare/v1.0.0-rc.1...v1.0.0) (2024-05-17)
+
+
+### Bug Fixes
+
+* concurrency group in github ([a1aae61](https://github.com/likec4/likec4/commit/a1aae61970524e63083d68efde2f244239fcd29a))
+* **diagram:** css fixes for mobile devices ([156ff3c](https://github.com/likec4/likec4/commit/156ff3c430786cdb1286348baf17ccffc806c418))
+* **diagram:** remove EmbeddedLikeC4Diagram ([edd57f0](https://github.com/likec4/likec4/commit/edd57f0215f91fb3a221abaf25e3ff46246a255d))
+* **diagram:** webcomponents are transparent by default ([60181b6](https://github.com/likec4/likec4/commit/60181b659ecc5e15479805957d4bbdddc8f104d5))
+* **diagram:** zoom out on diagram change ([4d3637c](https://github.com/likec4/likec4/commit/4d3637c1a8c3f0694c78c40d87b700f276028e63))
+* generic ViewId ([29e1215](https://github.com/likec4/likec4/commit/29e1215c2bf4c16abfe4a822cc67e474a62a95d8))
+
+
+### Features
+
+* **cli:** export isLikeC4ViewId in react ([88894d3](https://github.com/likec4/likec4/commit/88894d3495abfaf5d7e91724a798642dbf4e1a55))
+* **cli:** generate react component with new diagrams ([9047c7c](https://github.com/likec4/likec4/commit/9047c7c009620970c089c1a64dd866e488082dc9))
+* **cli:** set color-scheme on export to png ([6555303](https://github.com/likec4/likec4/commit/65553034c5774433af169246adf72b2688148f25)), closes [#685](https://github.com/likec4/likec4/issues/685)
+* **likec4:** allow deep-linking in GitHub Pages ([2f9f737](https://github.com/likec4/likec4/commit/2f9f73770664b0b88f7b6ed44ae642a128c1ec7b)), closes [#661](https://github.com/likec4/likec4/issues/661)
+* playground app ([8b2af5d](https://github.com/likec4/likec4/commit/8b2af5d69d96d9e0d5d840c89283faa83777012a))
+* playground website ([511551f](https://github.com/likec4/likec4/commit/511551f9d31e5190727c8e8a99c5e757ef1f3ce3))
+* **react:** navigation buttons in browser ([36dbacd](https://github.com/likec4/likec4/commit/36dbacde8abe47c1fc10040f7101e73305c2a83c))
+
+
+
 # [1.0.0-rc.1](https://github.com/likec4/likec4/compare/v1.0.0-next.14...v1.0.0-rc.1) (2024-05-06)
 
 ### 🚀 Features  

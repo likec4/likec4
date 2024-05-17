@@ -1,6 +1,6 @@
 {
   "name": "@likec4/workspaces",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.1.1",
