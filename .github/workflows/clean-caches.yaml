@@ -1,6 +1,9 @@
 name: clean caches
 on:
   delete:
+    branches-ignore:
+      - "main"
+      - "next"
     tags-ignore:
       - "**"
 
