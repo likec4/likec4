@@ -1,6 +1,6 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { Controls, ReactFlow as GenericReactFlow, type ReactFlowProps } from '@xyflow/react'
-import { type CSSProperties, memo, type PropsWithChildren, type RefAttributes } from 'react'
+import { Controls, ReactFlow } from '@xyflow/react'
+import { type CSSProperties, memo, type PropsWithChildren } from 'react'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state'
@@ -12,10 +12,6 @@ import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
 import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
-
-// @ts-expect-error - typing in @xyflow/react
-const ReactFlow: (props: ReactFlowProps<XYFlowNode, XYFlowEdge> & RefAttributes<HTMLDivElement>) => JSX.Element =
-  GenericReactFlow
 
 const nodeTypes = {
   element: ElementNode,
@@ -89,7 +85,7 @@ function XYFlowWrapper({
   const colorMode = colorScheme !== 'auto' ? colorScheme : undefined
 
   return (
-    <ReactFlow
+    <ReactFlow<XYFlowNode, XYFlowEdge>
       className={className}
       style={style}
       {...colorMode && { colorMode }}

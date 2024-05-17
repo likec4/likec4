@@ -74,7 +74,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       }}
     >
       <Handle
-        // @ts-expect-error
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
@@ -97,7 +96,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       </div>
       {isnavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
       <Handle
-        // @ts-expect-error
         type="source"
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}
