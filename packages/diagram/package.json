@@ -78,7 +78,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tilg": "^0.1.1",
-    "type-fest": "^4.18.1",
+    "type-fest": "^4.18.2",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
     "vite": "^5.2.11",
