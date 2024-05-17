@@ -83,8 +83,8 @@
     "vite": "^5.2.11"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -115,8 +115,8 @@
     "@types/mermaid": "^9.2.0",
     "@types/node": "^20.12.7",
     "@types/prop-types": "^15.7.11",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.4",
     "@types/string-hash": "^1",
     "@types/yargs": "^17.0.32",
     "@vanilla-extract/css": "^1.15.1",
