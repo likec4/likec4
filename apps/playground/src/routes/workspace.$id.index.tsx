@@ -1,16 +1,18 @@
-import { Box, Stack, Tabs } from '@mantine/core'
+import { Box, Stack, Tabs, TabsList, TabsTab } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { deepEqual } from 'fast-equals'
+import { lazy } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { keys } from 'remeda'
 import { useStoreApi, useWorkspaceState } from '../state'
 import { DiagramPanel } from './-workspace/DiagramPanel'
-import { EditorPanel } from './-workspace/EditorPanel'
-import { SyncMonacoAndWorkspace } from './-workspace/SyncMonacoAndWorkspace'
 import * as css from './workspace.$id.css.ts'
 
+const EditorPanel = lazy(() => import('./-workspace/EditorPanel'))
+
 export const Route = createFileRoute('/workspace/$id/')({
-  component: WorkspacePage
+  component: WorkspacePage,
+  wrapInSuspense: true
 })
 
 export function WorkspacePage() {
@@ -36,13 +38,13 @@ export function WorkspacePage() {
             {hasFiles && (
               <Box flex={0}>
                 <Tabs variant="outline" value={current} onChange={v => v && store.setState({ currentFilename: v })}>
-                  <Tabs.List>
+                  <TabsList>
                     {files.map(filename => (
-                      <Tabs.Tab key={filename} value={filename} fz={'xs'} fw={'500'}>
+                      <TabsTab key={filename} value={filename} fz={'xs'} fw={'500'}>
                         {filename}
-                      </Tabs.Tab>
+                      </TabsTab>
                     ))}
-                  </Tabs.List>
+                  </TabsList>
                 </Tabs>
               </Box>
             )}
@@ -54,7 +56,6 @@ export function WorkspacePage() {
           <DiagramPanel />
         </Panel>
       </PanelGroup>
-      <SyncMonacoAndWorkspace />
     </>
   )
 }

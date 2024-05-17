@@ -1,20 +1,35 @@
-import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override'
-import getEditorServiceOverride, { type OpenEditor } from '@codingame/monaco-vscode-editor-service-override'
-import getFileServiceOverride, { registerFileSystemOverlay } from '@codingame/monaco-vscode-files-service-override'
-// import getLifecycleServiceOverride from '@codingame/monaco-vscode-lifecycle-service-override'
-import { Uri } from 'vscode'
-// import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override'
-import '@codingame/monaco-vscode-theme-defaults-default-extension'
 import * as monaco from 'monaco-editor'
-import type { UserConfig } from 'monaco-editor-wrapper'
-import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services'
 
-import { invariant } from '@likec4/core'
+import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory'
+import EditorWorkerService from 'monaco-editor/esm/vs/editor/editor.worker.js?worker'
+
+import getConfigurationServiceOverride from '@codingame/monaco-vscode-configuration-service-override'
+import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override'
+import getFileServiceOverride from '@codingame/monaco-vscode-files-service-override'
+import '@codingame/monaco-vscode-theme-defaults-default-extension'
+
+import type { UserConfig } from 'monaco-editor-wrapper'
 import { first } from 'remeda'
+import { joinURL, withLeadingSlash, withProtocol } from 'ufo'
 import type { ITextEditorOptions } from 'vscode/services'
 import type { StoreApi } from '../state'
 import languageConfig from './lsp/language-configuration.json?raw'
 import textmateGrammar from './lsp/likec4.tmLanguage.json?raw'
+
+import LikeC4LspWorker from './lsp/likec4.worker?worker'
+
+export const configureMonacoWorkers = () => {
+  useWorkerFactory({
+    ignoreMapping: true,
+    workerLoaders: {
+      // editorWorkerService: () => new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), { type: 'module' }),
+      editorWorkerService: () =>
+        new EditorWorkerService({
+          name: 'likec4-editor-worker'
+        })
+    }
+  })
+}
 
 export function createMonacoConfig(store: StoreApi) {
   const state = store.getState()
@@ -26,7 +41,7 @@ export function createMonacoConfig(store: StoreApi) {
   // test both url and string content
   extensionFilesOrContents.set('/language-configuration.json', languageConfig)
   extensionFilesOrContents.set('/language-grammar.json', textmateGrammar)
-  const workspaceUri = Uri.joinPath(Uri.file('/'), name)
+  const workspaceUri = withProtocol(withLeadingSlash(name), 'file://')
   return {
     id: name,
     loggerConfig: {
@@ -38,7 +53,7 @@ export function createMonacoConfig(store: StoreApi) {
         userServices: {
           ...getConfigurationServiceOverride(),
           ...getFileServiceOverride(),
-          ...getEditorServiceOverride(async (modelRef, options, sideBySide) => {
+          ...getEditorServiceOverride(async (modelRef, options, _sideBySide) => {
             const editor = first(monaco.editor.getEditors())
             if (!editor) {
               return undefined
@@ -65,27 +80,18 @@ export function createMonacoConfig(store: StoreApi) {
 
             return editor
           })
-          // ...getLifecycleServiceOverride()
         },
         debugLogging: true
-        // workspaceConfig: {
-        //   workspaceProvider: {
-        //     trusted: true,
-        //     workspace: {
-        //       label: name,
-        //       workspaceUri
-        //     },
-        //     async open() {
-        //       return false
-        //     }
-        //   }
-        // }
       },
       editorAppConfig: {
         $type: 'extended',
-        languageId: 'likec4',
-        codeUri: Uri.joinPath(workspaceUri, filename).toString(),
-        code,
+        codeResources: {
+          main: {
+            uri: joinURL(workspaceUri, filename),
+            fileExt: 'c4',
+            text: code
+          }
+        },
         editorOptions: {
           'semanticHighlighting.enabled': true,
           wordBasedSuggestions: 'off',
@@ -147,11 +153,20 @@ export function createMonacoConfig(store: StoreApi) {
       }
     },
     languageClientConfig: {
+      languageId: 'likec4',
+      name: 'likec4',
+      // options: {
+      //   $type: 'WorkerConfig',
+      //   type: 'module',
+      //   url: new URL('./lsp/likec4.worker', import.meta.url)
+      // }
       options: {
-        $type: 'WorkerConfig',
-        type: 'module',
-        name: 'likec4-lsp-worker',
-        url: new URL('./lsp/likec4.worker.ts', import.meta.url)
+        $type: 'WorkerDirect',
+        worker: new LikeC4LspWorker({
+          name: 'likec4-lsp-worker'
+        })
+        // type: 'module',
+        // url: new URL('./lsp/likec4.worker.ts', import.meta.url)
       }
     }
   } satisfies UserConfig

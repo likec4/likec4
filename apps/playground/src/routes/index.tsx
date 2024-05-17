@@ -2,7 +2,7 @@ import { createFileRoute, Navigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: () => {
-    return <Navigate to="/workspace/$id/" params={{ id: 'blank' }} />
+    return <Navigate to="/workspace/$id/" params={{ id: 'tutorial' }} />
   }
 })
 

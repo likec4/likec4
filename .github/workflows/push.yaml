@@ -66,3 +66,54 @@ jobs:
         name: Build Docs
         working-directory: docs
         run: yarn build:turbo
+
+      - if: ${{ matrix.build-docs }}
+        name: Build Docs
+        working-directory: apps/docs
+        run: yarn build:turbo
+
+  check-playground:
+    # If on pull request, run only if coming from forked repos
+    if: |
+      !contains(github.event.head_commit.message, 'ci skip') && (
+        github.event_name == 'push' || github.event.pull_request.head.repo.fork
+      )
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Build
+        working-directory: apps/playground
+        run: |
+          yarn build:turbo
+          yarn typecheck
+
+  check-docs:
+    # If on pull request, run only if coming from forked repos
+    if: |
+      !contains(github.event.head_commit.message, 'ci skip') && (
+        github.event_name == 'push' || github.event.pull_request.head.repo.fork
+      )
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Build
+        working-directory: apps/docs
+        run: |
+          yarn build:turbo
+          yarn typecheck

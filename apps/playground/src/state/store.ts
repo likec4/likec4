@@ -1,20 +1,15 @@
 import { type ComputedView, type DiagramView, invariant, type LikeC4Model, type ViewID } from '@likec4/core'
 import { changeView, computeView, fetchModel } from '@likec4/language-server/protocol'
-import { WasmGraphvizLayouter } from '@likec4/layouts'
 import { DEV } from 'esm-env'
 import { deepEqual } from 'fast-equals'
-import type * as monaco from 'monaco-editor'
-import type { UserConfig } from 'monaco-editor-wrapper'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { first, keys } from 'remeda'
-import type { Exact, Simplify } from 'type-fest'
+import type { Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
-import _spec from './examples/bigbank/_spec.c4?raw'
-import bigbank from './examples/bigbank/bigbank.c4?raw'
 
 export type WorkspaceStore = {
   /**
@@ -24,7 +19,7 @@ export type WorkspaceStore = {
   name: string
   // userConfig: UserConfig
 
-  editor: () => monaco.editor.IStandaloneCodeEditor | null
+  // editor: () => monaco.editor.IStandaloneCodeEditor | null
   languageClient: () => MonacoLanguageClient | null
 
   initialized: boolean
@@ -41,6 +36,10 @@ export type WorkspaceStore = {
     [filename: string]: string
   }
 
+  originalFiles: {
+    [filename: string]: string
+  }
+
   likeC4Model: LikeC4Model | null
 
   /**
@@ -52,6 +51,7 @@ export type WorkspaceStore = {
 }
 
 interface WorkspaceStoreActions {
+  isModified: () => boolean
   updateCurrentFile: (content: string) => void
 
   currentFileContent: () => string
@@ -84,8 +84,6 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   files
   // userConfig
 }: T) {
-  const dot = new WasmGraphvizLayouter()
-
   return createWithEqualityFn<
     WorkspaceState,
     [
@@ -97,17 +95,23 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
       devtools(
         (set, get) => ({
           name: name,
-          editor: () => null,
+          // editor: () => null,
           languageClient: () => null,
           initialized: false,
 
           currentFilename,
           files: structuredClone(files),
+          originalFiles: structuredClone(files),
 
           likeC4Model: null,
           computedView: null,
           diagram: null,
           diagramAsDot: null,
+
+          isModified: () => {
+            const { files, originalFiles } = get()
+            return !shallow(files, originalFiles)
+          },
 
           updateCurrentFile: (content) => {
             const { currentFilename, files } = get()
@@ -129,6 +133,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
           },
 
           onDidChangeModel: async () => {
+            DEV && console.time('store.onDidChangeModel')
             const { languageClient, diagram, computedView } = get()
             const client = languageClient()
             invariant(client, 'Language client is not initialized')
@@ -148,13 +153,17 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 }
                 viewId = firstView as ViewID
               }
-              get().fetchDiagram(viewId)
+              void get().fetchDiagram(viewId)
             } catch (e) {
               console.error(e)
+            } finally {
+              DEV && console.timeEnd('store.onDidChangeModel')
             }
           },
 
           fetchDiagram: async (viewId) => {
+            const label = `fetchDiagram(${viewId})`
+            DEV && console.time(label)
             const { languageClient, computedView } = get()
             const client = languageClient()
             invariant(client, 'Language client is not initialized')
@@ -173,6 +182,8 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 )
                 return
               }
+              const { WasmGraphvizLayouter } = await import('@likec4/layouts')
+              const dot = new WasmGraphvizLayouter()
               const layoutRes = await dot.layout(view).catch(e => {
                 console.error(e)
                 return {
@@ -191,20 +202,24 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               )
             } catch (e) {
               console.error(e)
+            } finally {
+              DEV && console.timeEnd(label)
             }
           },
 
           onChanges: ({ changes }) => {
             const { languageClient, diagram } = get()
-            const client = languageClient()
             invariant(diagram, 'Diagram is not initialized')
+            const client = languageClient()
             invariant(client, 'Language client is not initialized')
-            void client.sendRequest(changeView, {
-              viewId: diagram.id,
-              changes
-            }).catch(e => {
-              console.error(e)
-            })
+            void client
+              .sendRequest(changeView, {
+                viewId: diagram.id,
+                changes
+              })
+              .catch(e => {
+                console.error(e)
+              })
           }
         }),
         {

@@ -4,6 +4,7 @@ export const theme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
   fontFamily: 'var(--likec4-app-font)',
+  defaultRadius: 'sm',
   headings: {
     fontWeight: '500',
     sizes: {

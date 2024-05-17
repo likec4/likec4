@@ -4,8 +4,12 @@
   "pipeline": {
     "generate": {
       "dependsOn": ["likec4#build"],
-      "outputs": ["src/components/**/likec4-views.js"],
+      "outputs": ["src/components/*/likec4-views.*"],
       "inputs": ["likec4/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["generate", "^build"],
+      "outputs": []
     },
     "build": {
       "dependsOn": ["generate", "^build"],

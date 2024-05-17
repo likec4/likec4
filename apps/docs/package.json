@@ -11,9 +11,12 @@
     "build:turbo": "run -T turbo run build --filter='@likec4/sites-docs' --log-prefix=none --log-order=grouped",
     "dev": "astro dev",
     "start": "astro dev",
+    "typecheck": "astro check",
     "build": "run generate && astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "npx wrangler pages deploy dist ----project-name likec4-docs-astro",
+    "deploy:prod": "run deploy --branch main"
   },
   "dependencies": {
     "@astrojs/check": "^0.5.10",

@@ -13,6 +13,8 @@
 examples/*/.vscode
 packages/*/contrib
 packages/*/dist
+apps/*/dist
+apps/playground/prebuild
 packages/diagram/bundle
 packages/language-server/src/generated/
 

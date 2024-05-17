@@ -1,0 +1,77 @@
+name: playground
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  checks: write
+  statuses: write
+  deployments: write
+
+env:
+  NODE_ENV: production
+
+concurrency:
+  group: playground-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build-playground:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Bootstrap
+        uses: ./.github/actions/bootstrap
+
+      - name: Turborepo-cache
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build
+        working-directory: apps/playground
+        run: |
+          yarn build:turbo
+          yarn typecheck
+
+      - name: upload a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: playground-website
+          path: apps/playground/dist/
+
+  deploy-playground:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build-playground
+    timeout-minutes: 10
+    environment:
+      name: prod-playground
+      url: ${{ steps.cloudflare.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: playground-website
+          path: apps/playground/dist/
+
+      - id: cloudflare
+        name: publish to cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=likec4-playground
+          workingDirectory: apps/playground

@@ -1,12 +1,12 @@
 // dprint-ignore
-import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 import './font-ibm-plex-sans.css'
 import './font-fira-code.css'
+import '@mantine/core/styles.css'
+import '@xyflow/react/dist/style.css'
 import './main.css'
 
+import { configureMonacoWorkers } from '#monaco/bootstrap'
 import ReactDOM from 'react-dom/client'
-import { configureMonacoWorkers } from './monaco/configureMonacoWorkers'
 import { Routes } from './router'
 // import { configureMonacoWorkers } from './config/wrapperConfig'
 

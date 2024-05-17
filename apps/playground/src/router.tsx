@@ -1,9 +1,4 @@
-import {
-  createBrowserHistory,
-  createHashHistory,
-  createRouter as createTanstackRouter,
-  RouterProvider
-} from '@tanstack/react-router'
+import { createRouter as createTanstackRouter, RouterProvider } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { NotFound } from './components/NotFound'
 import { basepath } from './const'

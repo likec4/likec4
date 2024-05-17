@@ -1,6 +1,5 @@
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory'
 import EditorWorkerService from 'monaco-editor/esm/vs/editor/editor.worker.js?worker'
-
 export const configureMonacoWorkers = () => {
   useWorkerFactory({
     ignoreMapping: true,

@@ -1,13 +1,18 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
-    "module": "esnext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "esnext",
+      "webworker"
+    ],
     "outDir": "dist",
-    "esModuleInterop": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
+    "noEmit": true,
     "allowImportingTsExtensions": true,
     // "target": "ES2022",
     // "module": "ES2022",
@@ -38,6 +43,11 @@
     // "forceConsistentCasingInFileNames": true,
     // "noImplicitOverride": true,
     // "jsx": "react"
+    "paths": {
+      "#monaco/*": [
+        "./src/monaco/*"
+      ],
+    }
   },
   "include": [
     "./src",

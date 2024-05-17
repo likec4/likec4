@@ -4,6 +4,7 @@
   "exclude": [
     "**/node_modules",
     "**/.*/",
+    "apps/*/dist",
     "packages/*/dist"
   ],
   "compilerOptions": {

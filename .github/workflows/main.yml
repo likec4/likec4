@@ -85,6 +85,18 @@ jobs:
   #     contents: read
   #   secrets: inherit
 
+  playground:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    name: playground
+    uses: ./.github/workflows/playground.yaml
+    secrets: inherit
+
+  docs-website:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    name: docs-website
+    uses: ./.github/workflows/docs-website.yaml
+    secrets: inherit
+
   docs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
