@@ -4,7 +4,7 @@ import { BlankExample, Examples } from '../examples'
 import { WorkspaceContextProvider } from '../state'
 import { Header } from './-workspace/Header'
 
-export const Route = createFileRoute('/workspace/$id')({
+export const Route = createFileRoute('/w/$id')({
   component: WorkspaceContextPage,
   loader: ({ params }) => {
     const id = params.id as keyof typeof Examples

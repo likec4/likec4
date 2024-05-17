@@ -23,7 +23,7 @@ import { useWorkspaceState } from '../../state'
 
 export function Header() {
   const { isCustom } = useLoaderData({
-    from: '/workspace/$id'
+    from: '/w/$id'
   })
   const isModified = useWorkspaceState(s => s.isModified())
 
@@ -112,11 +112,11 @@ function PlaygroundsMenu() {
       </MenuTarget>
 
       <MenuDropdown>
-        <MenuItem component={Link} to={'/workspace/$id/'} params={{ id: nanoid(6) }}>New blank...</MenuItem>
+        <MenuItem component={Link} to={'/w/$id/'} params={{ id: nanoid(6) }}>New blank...</MenuItem>
         <MenuDivider />
         <MenuLabel>Examples</MenuLabel>
-        <MenuItem component={Link} to={'/workspace/$id/'} params={{ id: 'tutorial' }}>Tutorial</MenuItem>
-        <MenuItem component={Link} to={'/workspace/$id/'} params={{ id: 'bigbank' }}>BigBank</MenuItem>
+        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'tutorial' }}>Tutorial</MenuItem>
+        <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'bigbank' }}>BigBank</MenuItem>
       </MenuDropdown>
     </Menu>
   )

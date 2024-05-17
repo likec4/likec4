@@ -4,13 +4,13 @@ import { deepEqual } from 'fast-equals'
 import { lazy } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { keys } from 'remeda'
-import { useStoreApi, useWorkspaceState } from '../state'
-import { DiagramPanel } from './-workspace/DiagramPanel'
-import * as css from './workspace.$id.css.ts'
+import { useStoreApi, useWorkspaceState } from '../state/index.ts'
+import { DiagramPanel } from './-workspace/DiagramPanel.tsx'
+import * as css from './w.$id.css.ts'
 
-const EditorPanel = lazy(() => import('./-workspace/EditorPanel'))
+const EditorPanel = lazy(() => import('./-workspace/EditorPanel.tsx'))
 
-export const Route = createFileRoute('/workspace/$id/')({
+export const Route = createFileRoute('/w/$id/')({
   component: WorkspacePage,
   wrapInSuspense: true
 })

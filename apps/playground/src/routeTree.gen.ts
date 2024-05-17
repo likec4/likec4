@@ -12,8 +12,8 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as WorkspaceIdImport } from './routes/workspace.$id'
-import { Route as WorkspaceIdIndexImport } from './routes/workspace.$id.index'
+import { Route as WIdImport } from './routes/w.$id'
+import { Route as WIdIndexImport } from './routes/w.$id.index'
 
 // Create/Update Routes
 
@@ -22,14 +22,14 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute
 } as any)
 
-const WorkspaceIdRoute = WorkspaceIdImport.update({
-  path: '/workspace/$id',
+const WIdRoute = WIdImport.update({
+  path: '/w/$id',
   getParentRoute: () => rootRoute
 } as any)
 
-const WorkspaceIdIndexRoute = WorkspaceIdIndexImport.update({
+const WIdIndexRoute = WIdIndexImport.update({
   path: '/',
-  getParentRoute: () => WorkspaceIdRoute
+  getParentRoute: () => WIdRoute
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -40,13 +40,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/workspace/$id': {
-      preLoaderRoute: typeof WorkspaceIdImport
+    '/w/$id': {
+      preLoaderRoute: typeof WIdImport
       parentRoute: typeof rootRoute
     }
-    '/workspace/$id/': {
-      preLoaderRoute: typeof WorkspaceIdIndexImport
-      parentRoute: typeof WorkspaceIdImport
+    '/w/$id/': {
+      preLoaderRoute: typeof WIdIndexImport
+      parentRoute: typeof WIdImport
     }
   }
 }
@@ -55,7 +55,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  WorkspaceIdRoute.addChildren([WorkspaceIdIndexRoute])
+  WIdRoute.addChildren([WIdIndexRoute])
 ])
 
 /* prettier-ignore-end */
