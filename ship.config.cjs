@@ -2,7 +2,7 @@ module.exports = {
   monorepo: {
     updateDependencies: false,
     mainVersionFile: 'package.json', // or `lerna.json`, or whatever a json file you can read the latest `version` from.
-    packagesToBump: ['packages/*', 'docs', 'examples/*'],
+    packagesToBump: ['packages/*', 'docs', 'examples/*', 'apps/*'],
     packagesToPublish: [
       'packages/core',
       'packages/diagram',

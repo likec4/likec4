@@ -18,8 +18,22 @@ env:
   NODE_ENV: production
 
 jobs:
+  update-cache:
+    name: update dependencies cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    concurrency:
+      group: ${{ github.workflow }}-update-cache
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: install
+        uses: ./.github/actions/bootstrap
+
   build:
-    name: Build
+    name: build packages
+    needs: update-cache
     runs-on: ubuntu-latest
     timeout-minutes: 15
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -67,33 +81,27 @@ jobs:
     needs: build
     concurrency:
       group: ${{ github.workflow }}-release
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      statuses: write
     secrets: inherit
 
-  # vscode:
-  #   name: VSCode
-  #   uses: ./.github/workflows/vscode.yaml
-  #   if: "contains(github.event.head_commit.message, 'chore: release')"
-  #   needs: build
-  #   concurrency:
-  #     group: ${{ github.workflow }}-vscode
-  #   permissions:
-  #     actions: write
-  #     contents: read
-  #   secrets: inherit
+  vscode:
+    name: VSCode
+    uses: ./.github/workflows/vscode.yaml
+    if: "contains(github.event.head_commit.message, 'chore: release')"
+    needs: build
+    concurrency:
+      group: ${{ github.workflow }}-vscode
+    secrets: inherit
 
   playground:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    needs: update-cache
     name: playground
     uses: ./.github/workflows/playground.yaml
     secrets: inherit
 
   docs-website:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    needs: update-cache
     name: Docs Website
     uses: ./.github/workflows/docs-website.yaml
     secrets: inherit
@@ -101,5 +109,5 @@ jobs:
   docs:
     name: Docs
     uses: ./.github/workflows/docs.yaml
-    needs: build
+    needs: update-cache
     secrets: inherit

@@ -41,5 +41,4 @@ jobs:
           yarn vsce publish --skip-duplicate $VERSION
         working-directory: packages/vscode
         env:
-          NODE_ENV: production
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
