@@ -157,7 +157,6 @@ export function ElementNode({
       ))} */
       }
       <Handle
-        // @ts-expect-error
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
@@ -204,7 +203,6 @@ export function ElementNode({
         )}
       </div>
       <Handle
-        // @ts-expect-error
         type="source"
         position={Position.Bottom}
         style={{ visibility: 'hidden' }}
