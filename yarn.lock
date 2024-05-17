@@ -180,9 +180,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.22.1":
-  version: 0.22.1
-  resolution: "@astrojs/starlight@npm:0.22.1"
+"@astrojs/starlight@npm:^0.22.2":
+  version: 0.22.4
+  resolution: "@astrojs/starlight@npm:0.22.4"
   dependencies:
     "@astrojs/mdx": "npm:^2.1.1"
     "@astrojs/sitemap": "npm:^3.0.5"
@@ -199,13 +199,14 @@ __metadata:
     mdast-util-to-markdown: "npm:^2.1.0"
     pagefind: "npm:^1.0.3"
     rehype: "npm:^13.0.1"
+    rehype-format: "npm:^5.0.0"
     remark-directive: "npm:^3.0.0"
     unified: "npm:^11.0.4"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.1"
   peerDependencies:
     astro: ^4.2.7
-  checksum: 10/135fd89fb123e4913b63d3c66a5024332eb50dffb75ce28a4c2fcd28a3df419a6a7023b721dac3f95af2c228b3a36fa1c24a143865697dc1ac64a886689e22ad
+  checksum: 10/a0d3616384a1bc8ac1935943546d01ea2ffad9bb83d25fb5a64b820b8d223ef663fdb5c56b17ffc00d54baad24987576af0606982a8aa36d6d02cc463b3d153a
   languageName: node
   linkType: hard
 
@@ -2720,7 +2721,7 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.5.10"
     "@astrojs/react": "npm:^3.3.4"
-    "@astrojs/starlight": "npm:^0.22.1"
+    "@astrojs/starlight": "npm:^0.22.2"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
     "@fontsource/ibm-plex-sans": "npm:^5.0.19"
     "@types/react": "npm:18.2.0"
@@ -10842,6 +10843,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-embedded@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "hast-util-embedded@npm:3.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+  checksum: 10/ccb26926144dd72f9eec2307ceb45ff991c382c0cd20c517519a6a30e46b4e8c683bf6e2906cb0288ead880ca8fdfeaa1610de68ef8c0d12340d101352ba8a1a
+  languageName: node
+  linkType: hard
+
 "hast-util-from-dom@npm:^5.0.0":
   version: 5.0.0
   resolution: "hast-util-from-dom@npm:5.0.0"
@@ -10904,6 +10915,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-is-body-ok-link@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "hast-util-is-body-ok-link@npm:3.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+  checksum: 10/06b271a259498c6f44c2a520bf8ef585628aafc3367968fb7ea3a8093d78f6a3d0679e240fe5493e579734b5635a877e823d128d402cdec33de30932468b867c
+  languageName: node
+  linkType: hard
+
 "hast-util-is-element@npm:^3.0.0":
   version: 3.0.0
   resolution: "hast-util-is-element@npm:3.0.0"
@@ -10919,6 +10939,19 @@ __metadata:
   dependencies:
     "@types/hast": "npm:^3.0.0"
   checksum: 10/76087670d3b0b50b23a6cb70bca53a6176d6608307ccdbb3ed18b650b82e7c3513bfc40348f1389dc0c5ae872b9a768851f4335f44654abd7deafd6974c52402
+  languageName: node
+  linkType: hard
+
+"hast-util-phrasing@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "hast-util-phrasing@npm:3.0.1"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-has-property: "npm:^3.0.0"
+    hast-util-is-body-ok-link: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+  checksum: 10/aff54f89b14af298e33379e0b1053bb01fddb089cfe7f40a6c5f9d7477d89e42f5e32cd6617e246c18a0e9da1aa0b62ab441b14bd8ce788fd0fa594e77b05042
   languageName: node
   linkType: hard
 
@@ -11211,6 +11244,13 @@ __metadata:
   version: 3.0.0
   resolution: "html-void-elements@npm:3.0.0"
   checksum: 10/59be397525465a7489028afa064c55763d9cccd1d7d9f630cca47137317f0e897a9ca26cef7e745e7cff1abc44260cfa407742b243a54261dfacd42230e94fce
+  languageName: node
+  linkType: hard
+
+"html-whitespace-sensitive-tag-names@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "html-whitespace-sensitive-tag-names@npm:3.0.0"
+  checksum: 10/f64cf992b8a3d7a7e8d62d2926d504e1a8471ab2743e3f0116fb0f979f42c1ef9fe0639992cca291fa0b5bf037645b3cf610336ea78868f702fd2b6d612e2c97
   languageName: node
   linkType: hard
 
@@ -17064,6 +17104,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rehype-format@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "rehype-format@npm:5.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+    hast-util-phrasing: "npm:^3.0.0"
+    hast-util-whitespace: "npm:^3.0.0"
+    html-whitespace-sensitive-tag-names: "npm:^3.0.0"
+    rehype-minify-whitespace: "npm:^6.0.0"
+    unist-util-visit-parents: "npm:^6.0.0"
+  checksum: 10/00a116cee89c949220b3be8fa36e3617c454eba79f6c366ed7e0ea83ef97c4713a239f4cc50ddebb0a71a4e5b07205ef35255fcb9560a7ab7b0ecedb9607621f
+  languageName: node
+  linkType: hard
+
 "rehype-katex@npm:^7.0.0":
   version: 7.0.0
   resolution: "rehype-katex@npm:7.0.0"
@@ -17076,6 +17132,19 @@ __metadata:
     unist-util-visit-parents: "npm:^6.0.0"
     vfile: "npm:^6.0.0"
   checksum: 10/7f20fc25cedc0dc085c06ed2e460f7c2471fd8e54b2d00f5a98100d5cf6ebce3fa6d47ab1247a0021f1d152be1da074ada10fdcfbf3e63f6e3b4bc5b0604195c
+  languageName: node
+  linkType: hard
+
+"rehype-minify-whitespace@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "rehype-minify-whitespace@npm:6.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    hast-util-embedded: "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+    hast-util-whitespace: "npm:^3.0.0"
+    unist-util-is: "npm:^6.0.0"
+  checksum: 10/5d7a0e997567c0b48031dfea2c14068af320ce82bd8299b754e26d6eb5948e8f9b0b6f032119fe248a6120ff3574e3c8b39d62753a2cc0dfa3b432b11a70c0e6
   languageName: node
   linkType: hard
 
