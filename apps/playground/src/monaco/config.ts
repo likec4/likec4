@@ -12,6 +12,7 @@ import type { StoreApi } from '../state'
 import languageConfig from './lsp/language-configuration.json?raw'
 import textmateGrammar from './lsp/likec4.tmLanguage.json?raw'
 
+import { DEV } from 'esm-env'
 import LikeC4LspWorker from './lsp/likec4.worker?worker'
 
 export function createMonacoConfig(store: StoreApi) {
@@ -29,7 +30,7 @@ export function createMonacoConfig(store: StoreApi) {
     id: name,
     loggerConfig: {
       enabled: true,
-      debugEnabled: true
+      debugEnabled: DEV
     },
     wrapperConfig: {
       serviceConfig: {
@@ -64,7 +65,7 @@ export function createMonacoConfig(store: StoreApi) {
             return editor
           })
         },
-        debugLogging: true
+        debugLogging: DEV
       },
       editorAppConfig: {
         $type: 'extended',
