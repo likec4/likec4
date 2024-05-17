@@ -36,6 +36,7 @@
     {
       "type": "typescript",
       "tsconfig": "tsconfig.json",
+      "label": "tsc: build",
       "problemMatcher": [
         "$tsc"
       ],
@@ -43,7 +44,16 @@
         "kind": "build",
         "isDefault": true
       },
-      "label": "tsc: build"
+      "presentation": {
+        "panel": "dedicated",
+        "echo":   true,
+        "showReuseMessage": false,
+        "group": "build",
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "clear": true,
+        "close": true
+      },
     }
   ]
 }

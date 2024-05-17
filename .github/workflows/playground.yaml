@@ -53,7 +53,7 @@ jobs:
     needs: build-playground
     timeout-minutes: 10
     environment:
-      name: prod-playground
+      name: ${{ github.ref == 'refs/heads/main' && 'playground-prod' || 'playground-preview' }}
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v4

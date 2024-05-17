@@ -52,7 +52,7 @@ jobs:
     needs: build-docs-website
     timeout-minutes: 10
     environment:
-      name: prod-docs.likec4.dev
+      name: ${{ github.ref == 'refs/heads/main' && 'docs-prod' || 'docs-preview' }}
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v4
