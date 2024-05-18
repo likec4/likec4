@@ -2975,7 +2975,7 @@ __metadata:
     esbuild: "npm:^0.21.0"
     execa: "npm:^8.0.1"
     global: "npm:^4.4.0"
-    husky: "npm:^8.0.3"
+    husky: "npm:^9.0.0"
     lint-staged: "npm:15.2.2"
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
@@ -11674,12 +11674,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "husky@npm:8.0.3"
+"husky@npm:^9.0.0":
+  version: 9.0.11
+  resolution: "husky@npm:9.0.11"
   bin:
-    husky: lib/bin.js
-  checksum: 10c0/6722591771c657b91a1abb082e07f6547eca79144d678e586828ae806499d90dce2a6aee08b66183fd8b085f19d20e0990a2ad396961746b4c8bd5bdb619d668
+    husky: bin.mjs
+  checksum: 10c0/2c787dcf74a837fc9a4fea7da907509d4bd9a289f4ea10ecc9d86279e4d4542b0f5f6443a619bccae19e265f2677172cc2b86aae5c932a35a330cc227d914605
   languageName: node
   linkType: hard
 
