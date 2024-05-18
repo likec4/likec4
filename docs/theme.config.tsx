@@ -11,6 +11,14 @@ export default {
   nextThemes: {
     defaultTheme: 'dark'
   },
+  banner: {
+    key: '1.0.0',
+    text: (
+      <a href="https://docs.likec4.dev/" target="_blank">
+        🎉 1.0.0 is released. Documentation is moving here →
+      </a>
+    )
+  },
   primaryHue: 195,
   sidebar: {
     autoCollapse: true,
@@ -23,7 +31,7 @@ export default {
   docsRepositoryBase: 'https://github.com/likec4/likec4/blob/main/docs',
   footer: {
     // component: () => null,
-    text: `${new Date().getFullYear()} MIT License © LikeC4`
+    text: `2023-${new Date().getFullYear()} MIT License © LikeC4`
   },
   useNextSeoProps() {
     const { frontMatter } = useConfig()
