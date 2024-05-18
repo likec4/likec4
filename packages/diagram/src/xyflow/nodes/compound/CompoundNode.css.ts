@@ -3,7 +3,7 @@ import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyl
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
-export const cssContainer = style({
+export const container = style({
   width: '100%',
   height: '100%',
   position: 'relative',
@@ -19,7 +19,7 @@ const outlineColor = fallbackVar(
   vars.element.stroke
 )
 
-export const cssCompound = style({
+export const compoundBody = style({
   width: '100%',
   height: '100%',
   position: 'relative',
@@ -40,58 +40,62 @@ export const cssCompound = style({
   }
 })
 
-// @ts-ignore
-const cssTransparentCompound = style({
-  width: '100%',
-  height: '100%',
-  position: 'relative',
+const bgTransparencyDelta = createVar('bgTransparencyDelta')
+export const transparent = style({
   borderRadius: rem(8),
-  borderStyle: 'dashed',
-  borderWidth: rem(3.5),
-  borderColor: vars.element.fill,
-  boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.05) , 0 2px 2px -1px rgba(0,0,0,0.04)',
-  padding: rem(8),
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent ${bgTransparency})`,
+  borderStyle: 'dotted',
+  borderWidth: rem(3),
+  borderColor: `color-mix(in srgb , ${vars.element.stroke},  transparent 70%)`,
+  background:
+    `color-mix(in srgb , ${vars.element.fill},  transparent calc(${bgTransparency} - ${bgTransparencyDelta}))`,
   transition: 'all 200ms ease-out',
   vars: {
-    [bgTransparency]: '90%'
+    [bgTransparency]: '90%',
+    [bgTransparencyDelta]: '0%',
+    '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
   },
   selectors: {
-    [`:where(${cssContainer}[data-hovered]) &`]: {
+    [`:where(${container}[data-hovered]) &`]: {
       transitionDelay: '300ms',
       vars: {
-        [bgTransparency]: '65%'
+        [bgTransparencyDelta]: '20%'
       }
     },
     [`:where(.react-flow__node.selected) &`]: {
       transitionDelay: '50ms',
-      boxShadow: 'none',
       borderColor: 'transparent',
       vars: {
-        [bgTransparency]: '15%'
+        [bgTransparencyDelta]: '40%'
+      }
+    },
+    [`:where([data-mantine-color-scheme='light']) &`]: {
+      vars: {
+        [vars.compound.titleColor]: vars.element.stroke
       }
     }
   }
 })
 
-export const cssTitle = style({
+export const title = style({
   fontFamily: vars.compound.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   textAlign: 'left',
   display: 'inline-block',
   fontWeight: 600,
-  fontSize: '13px',
+  fontSize: '14px',
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   lineHeight: 1,
   opacity: 0.75,
   color: vars.compound.titleColor,
   paddingLeft: rem(12),
-  mixBlendMode: 'lighten',
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {
       paddingLeft: rem(26)
+    },
+    [`:where([data-mantine-color-scheme='light']) &`]: {
+      opacity: 1
     }
   }
 })
@@ -106,7 +110,9 @@ globalKeyframes(indicatorKeyframes, {
   }
 })
 
-export const cssIndicator = style({
+const indicatorStroke = createVar('indicator-stroke')
+const indicatorStrokeWidth = createVar('indicator-stroke-width')
+export const indicator = style({
   position: 'absolute',
   top: '0',
   left: '0',
@@ -115,17 +121,32 @@ export const cssIndicator = style({
   pointerEvents: 'none',
   overflow: 'visible',
   visibility: 'hidden',
+  vars: {
+    [indicatorStroke]: vars.element.loContrast,
+    [indicatorStrokeWidth]: '6'
+  },
   selectors: {
     ':where(.react-flow__node.selected:not(:focus-visible)) &': {
       visibility: 'visible'
+    },
+    ':where(.react-flow__node:focus-within:not(.selected)) &': {
+      vars: {
+        [indicatorStroke]: `color-mix(in srgb, ${vars.element.stroke} 30%, ${vars.element.loContrast})`,
+        [indicatorStrokeWidth]: '8'
+      }
+    },
+    [`:where([data-mantine-color-scheme='light']) &`]: {
+      vars: {
+        [indicatorStroke]: `color-mix(in srgb, ${vars.element.stroke} 80%, #000)`
+      }
     }
   }
 })
 
-globalStyle(`${cssIndicator} rect`, {
-  stroke: vars.element.loContrast,
+globalStyle(`${indicator} rect`, {
+  stroke: indicatorStroke,
   transformOrigin: 'center center',
-  strokeWidth: 6,
+  strokeWidth: indicatorStrokeWidth,
   animationDuration: '800ms',
   animationName: indicatorKeyframes,
   animationIterationCount: 'infinite',
@@ -133,24 +154,32 @@ globalStyle(`${cssIndicator} rect`, {
   fill: 'none'
 })
 
-globalStyle(`:where(.react-flow__node:focus-within:not(.selected)) ${cssIndicator} rect`, {
-  stroke: `color-mix(in srgb, ${vars.element.stroke} 30%, ${vars.element.loContrast})`,
-  strokeWidth: 8
+// globalStyle(`:where(.react-flow__node:focus-within:not(.selected)) ${indicator} rect`, {
+//   stroke: `color-mix(in srgb, ${vars.element.stroke} 30%, ${vars.element.loContrast})`,
+//   strokeWidth: 8
+// })
+const navigateBtnColor = createVar('navigateBtnColor')
+
+globalStyle(`:where([data-mantine-color-scheme='light']) ${container}:has(${transparent})`, {
+  vars: {
+    [navigateBtnColor]: vars.element.stroke
+  }
 })
 
-export const cssNavigateBtn = style({
+export const navigateBtn = style({
   position: 'absolute',
   pointerEvents: 'all',
   left: 3,
   top: 7,
   cursor: 'pointer',
-  color: vars.element.loContrast,
+  color: navigateBtnColor,
   transformOrigin: '90% 70%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
   vars: {
+    [navigateBtnColor]: vars.element.loContrast,
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
@@ -167,7 +196,15 @@ export const cssNavigateBtn = style({
     transitionDelay: '0'
   },
   selectors: {
-    [`:where(.react-flow__node:not(.dragging) ${cssContainer}:hover) &:not(:hover)`]: {
+    [`:where([data-mantine-color-scheme='light'] ${container}:has(${transparent})) &`]: {
+      opacity: 0.85,
+      vars: {
+        [navigateBtnColor]: vars.element.stroke,
+        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 50%)`,
+        '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
+      }
+    },
+    [`:where(.react-flow__node:not(.dragging) ${container}:hover) &:not(:hover)`]: {
       boxShadow: mantine.shadows.lg,
       transform: 'scale(1.223)',
       opacity: 1,
@@ -178,7 +215,7 @@ export const cssNavigateBtn = style({
     }
   }
 })
-globalStyle(`${cssNavigateBtn} svg.icon`, {
+globalStyle(`${navigateBtn} svg.icon`, {
   width: '70%',
   height: '70%',
   strokeWidth: 1.5

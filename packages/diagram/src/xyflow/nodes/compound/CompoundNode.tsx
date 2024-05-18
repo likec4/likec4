@@ -6,7 +6,8 @@ import { memo } from 'react'
 import { useDiagramState } from '../../../state'
 import type { CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import { cssCompound, cssContainer, cssIndicator, cssNavigateBtn, cssTitle } from './CompoundNode.css'
+import { compoundBody, container, indicator, navigateBtn, title } from './CompoundNode.css'
+import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -41,7 +42,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   return (
     <Box
-      className={clsx(cssContainer, 'likec4-compound-node')}
+      className={clsx(css.container, 'likec4-compound-node')}
       mod={{
         'compound-depth': depth,
         'likec4-color': color,
@@ -55,7 +56,7 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         position={Position.Top}
         style={{ visibility: 'hidden' }}
       />
-      <svg className={cssIndicator}>
+      <svg className={css.indicator}>
         <rect
           x={0}
           y={0}
@@ -64,14 +65,14 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           rx={6}
         />
       </svg>
-      <div className={clsx(cssCompound, 'likec4-compound')}>
+      <div className={clsx(css.compoundBody, 'likec4-compound')}>
         <Text
           component="div"
-          className={clsx(cssTitle, 'likec4-compound-title')}>
+          className={clsx(css.title, 'likec4-compound-title')}>
           {compound.title}
         </Text>
       </div>
-      {isnavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
+      {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
       <Handle
         type="source"
         position={Position.Bottom}
