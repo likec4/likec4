@@ -8,8 +8,7 @@
   "workspaces": [
     "docs",
     "apps/*",
-    "packages/*",
-    "examples/*"
+    "packages/*"
   ],
   "engines": {
     "node": "^18.0.0 || >=20.0.0"
