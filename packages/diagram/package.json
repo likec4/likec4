@@ -44,12 +44,10 @@
     "build:turbo": "run -T turbo build --filter='diagram'",
     "build": "vite build --mode development && tsc -b",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf -v dist/* .tsbuildinfo"
+    "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
-    "@mantine/core": "^7.9.0",
-    "@mantine/hooks": "^7.9.0",
     "@react-hookz/web": "^24.0.4",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
@@ -58,11 +56,15 @@
     "zustand": "^4.5.2"
   },
   "peerDependencies": {
+    "@mantine/core": "^7.9.0",
+    "@mantine/hooks": "^7.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@lume/kiwi": "^0.4.3",
+    "@mantine/core": "^7.9.0",
+    "@mantine/hooks": "^7.9.0",
     "@mantine/vanilla-extract": "^7.9.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react": "18.2.0",

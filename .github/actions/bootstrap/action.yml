@@ -13,23 +13,24 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
 
     # - name: yarn cache directory path
     #   id: yarn-cache-dir-path
     #   shell: bash
     #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-    - name: yarn caches
-      uses: actions/cache@v4
-      # if: github.ref == 'refs/heads/main'
-      with:
-        path: '.yarn/cache'
-        key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-        enableCrossOsArchive: true
-        restore-keys: |
-          yarn-${{ inputs.node-version }}-${{ runner.os }}-
-          yarn-${{ inputs.node-version }}-
-          yarn-
+    # - name: yarn caches
+    #   uses: actions/cache@v4
+    #   # if: github.ref == 'refs/heads/main'
+    #   with:
+    #     path: '.yarn/cache'
+    #     key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+    #     enableCrossOsArchive: true
+    #     restore-keys: |
+    #       yarn-${{ inputs.node-version }}-${{ runner.os }}-
+    #       yarn-${{ inputs.node-version }}-
+    #       yarn-
 
     # - name: restore only caches
     #   uses: actions/cache/restore@v4

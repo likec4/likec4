@@ -21,6 +21,10 @@ export async function buildReact(_isDev = false) {
     root,
     configFile: false,
     resolve: {
+      dedupe: [
+        '@mantine/core',
+        '@mantine/hooks'
+      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),

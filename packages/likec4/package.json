@@ -136,6 +136,7 @@
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
     "mkdirp": "^3.0.1",
+    "p-limit": "^4.0.0",
     "picocolors": "^1.0.0",
     "pkg-up": "^5.0.0",
     "postcss": "^8.4.38",

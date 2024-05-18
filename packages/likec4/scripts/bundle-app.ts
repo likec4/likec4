@@ -23,7 +23,9 @@ export async function bundleApp() {
         'react',
         'react/jsx-runtime',
         'react-dom',
-        'react-dom/client'
+        'react-dom/client',
+        '@mantine/core',
+        '@mantine/hooks'
       ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
