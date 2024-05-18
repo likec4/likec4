@@ -49,7 +49,7 @@ export function Header({ diagram }: HeaderProps) {
         <Button ml={'xs'} size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
           Share
         </Button>
-        <ExportButton />
+        <ExportButton diagram={diagram} />
       </Group>
       <ShareModal
         opened={opened}
@@ -174,10 +174,35 @@ function ViewPageButton({
   )
 }
 
-function ExportButton() {
+function downloadImage(name: string, dataUrl: string) {
+  const a = document.createElement('a')
+  a.setAttribute('download', `${name}.png`)
+  a.setAttribute('href', dataUrl)
+  a.click()
+}
+
+function ExportButton({ diagram }: HeaderProps) {
   const params = useParams({
     from: '/view/$viewId'
   })
+
+  const onClick = async () => {
+    const { toPng } = await import('html-to-image')
+    const imageWidth = diagram.width + 32
+    const imageHeight = diagram.height + 32
+    toPng(document.querySelector<HTMLDivElement>('.react-flow__viewport')!, {
+      backgroundColor: 'transparent',
+      width: imageWidth,
+      height: imageHeight,
+      cacheBust: true,
+      style: {
+        width: imageWidth + 'px',
+        height: imageHeight + 'px',
+        transform: `translate(16px, 16px) scale(1)`
+      }
+    }).then(data => downloadImage(diagram.id, data))
+  }
+
   return (
     <Menu shadow="md" width={200} trigger="click-hover" openDelay={200}>
       <MenuTarget>
@@ -193,7 +218,7 @@ function ExportButton() {
 
       <MenuDropdown>
         <MenuLabel>Current view</MenuLabel>
-        <MenuItem>Export as .png</MenuItem>
+        <MenuItem onClick={onClick}>Export as .png</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/dot'} search params={params}>Export as .dot</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/d2'} search params={params}>Export as .d2</MenuItem>
         <MenuItem component={Link} to={'/view/$viewId/mmd'} search params={params}>Export as .mmd</MenuItem>
