@@ -2,7 +2,7 @@
   "name": "@likec4/sites-docs",
   "type": "module",
   "version": "1.0.0",
-  "packageManager": "yarn@4.1.1",
+  "packageManager": "yarn@4.2.2",
   "private": true,
   "scripts": {
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",

@@ -37,7 +37,7 @@
       "./style.css": "./dist/style.css"
     }
   },
-  "packageManager": "yarn@4.1.1",
+  "packageManager": "yarn@4.2.2",
   "scripts": {
     "typecheck": "tsc",
     "prepack": "vite build --mode production",
