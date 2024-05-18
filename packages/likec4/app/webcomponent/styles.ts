@@ -1,4 +1,4 @@
-import { createTheme } from '@mantine/core'
+import { createTheme, type MantineTheme } from '@mantine/core'
 import { isString } from 'remeda'
 import fontCss from './font.css?inline'
 
@@ -32,7 +32,7 @@ export const theme = createTheme({
       }
     }
   }
-})
+}) as MantineTheme
 
 const getComputedColorScheme = (el: Element) => {
   try {
