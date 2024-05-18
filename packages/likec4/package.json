@@ -131,7 +131,7 @@
     "esbuild-node-externals": "^1.13.0",
     "execa": "^8.0.1",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.1.7",
+    "framer-motion": "^11.2.2",
     "get-port": "^7.1.0",
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
