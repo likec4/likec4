@@ -29,11 +29,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/check@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "@astrojs/check@npm:0.6.0"
+"@astrojs/check@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@astrojs/check@npm:0.7.0"
   dependencies:
-    "@astrojs/language-server": "npm:^2.9.0"
+    "@astrojs/language-server": "npm:^2.10.0"
     chokidar: "npm:^3.5.3"
     fast-glob: "npm:^3.3.1"
     kleur: "npm:^4.1.5"
@@ -42,7 +42,7 @@ __metadata:
     typescript: ^5.0.0
   bin:
     astro-check: dist/bin.js
-  checksum: 10c0/37730ec9cb073c763c4f0b47eeb6273756ede34c65bebec18d11f59a91e92128503638b84cb189798daba93e22100b209f6f6e112d1d3f3210f5936c45d41435
+  checksum: 10c0/7e247dacb45fa8a0ac85ee5c95476e53fa8a1d73ef176913be9be10294dc4ccc535d96246e07c7f447d9a8f159b179e1b89c12c5c384228ec5e6a2d1f34590c4
   languageName: node
   linkType: hard
 
@@ -60,7 +60,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/language-server@npm:^2.9.0":
+"@astrojs/language-server@npm:^2.10.0":
   version: 2.10.0
   resolution: "@astrojs/language-server@npm:2.10.0"
   dependencies:
@@ -2915,7 +2915,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/sites-docs@workspace:apps/docs"
   dependencies:
-    "@astrojs/check": "npm:^0.6.0"
+    "@astrojs/check": "npm:^0.7.0"
     "@astrojs/react": "npm:^3.3.4"
     "@astrojs/starlight": "npm:^0.22.3"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
