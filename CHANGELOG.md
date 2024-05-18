@@ -1,3 +1,23 @@
+## [1.0.1](https://github.com/likec4/likec4/compare/v1.0.0...v1.0.1) (2024-05-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @astrojs/check to ^0.6.0 ([#710](https://github.com/likec4/likec4/issues/710)) ([142b009](https://github.com/likec4/likec4/commit/142b0099e9b6c980887bd520f7470ba98a83e5a6))
+* **deps:** update dependency @astrojs/starlight to ^0.22.2 ([#695](https://github.com/likec4/likec4/issues/695)) ([0e8ca03](https://github.com/likec4/likec4/commit/0e8ca033558262551756e40f576c31d4652bc4a0))
+* **deps:** update dependency @astrojs/starlight to ^0.22.3 ([#706](https://github.com/likec4/likec4/issues/706)) ([5ce343f](https://github.com/likec4/likec4/commit/5ce343f28f7c7102964c113c797ba390fac96fb1))
+* **deps:** update dependency @fontsource/ibm-plex-sans to ^5.0.20 ([#697](https://github.com/likec4/likec4/issues/697)) ([448c86a](https://github.com/likec4/likec4/commit/448c86a5d2dacba5c0fb04071a864685695521aa))
+* **deps:** update dependency astro to ^4.8.3 ([#711](https://github.com/likec4/likec4/issues/711)) ([3afcbbd](https://github.com/likec4/likec4/commit/3afcbbd416edd0e49635246f126ceb1cfdda0f55))
+* **lsp:** correct selection range after changes ([42999ef](https://github.com/likec4/likec4/commit/42999efb804e1f70d8352b541c5264bfefc06f5b))
+* **vscode:** correct view column for preview ([6a33a48](https://github.com/likec4/likec4/commit/6a33a4834c47850644a41d304568c8007bc68d34))
+
+
+### Features
+
+* download view as png from app ([b316dfb](https://github.com/likec4/likec4/commit/b316dfb6e3f187f8b0211788b5ab4f08e50a0abf))
+
+
+
 # [1.0.0](https://github.com/likec4/likec4/compare/v1.0.0-rc.1...v1.0.0) (2024-05-17)
 
 ### 🚀 Features  
