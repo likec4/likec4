@@ -1,7 +1,11 @@
 ---
-title: CLI
-description: LikeC4 CLI commands
+title: LikeC4 CLI
+description: LikeC4 CLI is a toolchain that provides various operations and automation
+head:
+  - tag: title
+    content: LikeC4 CLI
 sidebar:
+  label: CLI
   order: 1
 tableOfContents:
   minHeadingLevel: 3
@@ -57,13 +61,10 @@ npx likec4 [command]
 
 If you want to use it in any arbitrary project without [`npx`](https://docs.npmjs.com/cli/v10/commands/npx), install it globally:
 
-```sh npm2yarn
-npm install --global likec4
-```
-
-Then, you can call `likec4` directly:
-
 ```sh
+npm install --global likec4
+
+# Then, you can call `likec4` directly:
 likec4 [command]
 ```                                                     
 
@@ -73,8 +74,10 @@ Almost all commands have a `--help` option and provide usage examples.
 
 ```sh
 likec4 build -h
-likec4 codegen react -h
+likec4 gen react -h
 ```
+
+
 
 #### Preview diagrams
 
@@ -91,7 +94,7 @@ This recursively searches for `*.c4`, `*.likec4` files in current folder, parses
 Any changes in the sources trigger a super-fast hot update and you see changes in the browser immediately.
 
 :::tip
-You can start process in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
+You can start the process in a separate terminal window and keep it running while you're editing diagrams in editor, or even serve multiple projects at once.
 :::
 
 #### Build static website
@@ -102,7 +105,8 @@ When you deployed the website, you can use "Share" button to get a link to a spe
 ```sh
 likec4 build -o ./dist
 ```
-| Name                    | Description                                                                                           |
+
+| Option                  | Description                                                                                           |
 | ----------------------- | ----------------------------------------------------------------------------------------------------- |
 | `--output`              | Output directory                                                                                      |
 | `--base, --base-url`    | Base URL the app is being served from, e.g. "/" or "/pages/"                                          |
@@ -111,8 +115,8 @@ likec4 build -o ./dist
 | `--webcomponent-prefix` | Prefix for web components, e.g. "c4" generates `<c4-view ../>`                                        |
 
 :::note
-Internally, cli uses Vite to build the website, and `likec4 build` calls `vite build`.  
-Vite [deploy documentation](https://vitejs.dev/guide/static-deploy.html) might also help you.
+Internally, CLI uses Vite to build the website, and `likec4 build` calls `vite build`.  
+Vite [deploy documentation](https://vitejs.dev/guide/static-deploy.html) may also help you.
 
 Repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
 :::
@@ -147,10 +151,10 @@ likec4 export json -o dump.json
 Via codegen:
 
 ```sh
-likec4 codegen mmd
-likec4 codegen mermaid
-likec4 codegen dot
-likec4 codegen d2
+likec4 gen mmd
+likec4 gen mermaid
+likec4 gen dot
+likec4 gen d2
 ```
 
 <LinkCard
@@ -158,4 +162,3 @@ likec4 codegen d2
   description="Learn how to generate React and Webcomponents"
   href="/tooling/codegen"
 />
-

@@ -1,5 +1,6 @@
 ---
 title: Big Bank Example
+description: LikeC4 version of the Big Bank plc example by Simon Brown, based around a fictional online banking system.
 sidebar:
   label: Big Bank plc
   order: 2
@@ -8,19 +9,12 @@ tableOfContents:
   maxHeadingLevel: 4  
 ---
 
-import { Aside, Tabs, TabItem as Tab, LinkCard } from '@astrojs/starlight/components';
+import { Aside, Tabs, TabItem as Tab, LinkCard, CardGrid } from '@astrojs/starlight/components';
 import LikeC4View from '@components/bigbank/LikeC4View.astro';
 
-This example is taken from the [Big Bank C4 model](https://structurizr.com/dsl?example=big-bank-plc) by Simon Brown and converted to LikeC4.
+This is LikeC4 version of the <a href="https://structurizr.com/dsl?example=big-bank-plc" target='_blank'> Big Bank plc example</a> by Simon Brown, based around a fictional online banking system.
 
-It gives an overview of the LikeC4 syntax and how it compares to Structurizr DSL: what is similar and what is different.
-
-<LinkCard
-  title="Big Bank in playground"
-  description="Explore the model and play with this example in the LikeC4 playground"
-  href="https://playground.likec4.dev/w/bigbank/"
-  target="_blank"
-/>
+It gives an overview of the LikeC4 syntax and how it compares to Structurizr DSL, what is similar and what is different.
 
 ### System Landscape
 
@@ -43,7 +37,7 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
     }
     ```
 
-    The diagram:
+    Result:
 
     <LikeC4View viewId="index"/>
 
@@ -64,6 +58,28 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
 
   </Tab>
 </Tabs>
+
+<br/>
+
+:::note[Try it online]
+Both LikeC4 and Structurizr have online playgrounds:
+
+<CardGrid>
+<LinkCard
+  title="LikeC4 playground"
+  description="Preview and play with this example in the LikeC4 playground"
+  href="https://playground.likec4.dev/w/bigbank/"
+  target="_blank"
+/>
+
+<LinkCard
+  title="Structurizr playground"
+  description="Preview and play with this example in the Structurizr playground"
+  href="https://structurizr.com/dsl?example=big-bank-plc"
+  target="_blank"
+/>
+</CardGrid>
+:::
 
 
 ### System Context
@@ -93,6 +109,9 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
 
     }
     ```
+
+    Result:
+
     <LikeC4View viewId="context"/>
 
   </Tab>
@@ -144,6 +163,8 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
 
     }
     ```
+
+    Result:
 
     <LikeC4View viewId="ibsContainers"/>
 
@@ -204,6 +225,8 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
     }
     ```
 
+    Result:
+
     <LikeC4View viewId="apiApp"/>
 
   </Tab>
@@ -230,5 +253,117 @@ Each view is defined by the [predicates](/dsl/views/#view-predicates) what to in
 
     ![](https://www.plantuml.com/plantuml/img/rLXHKziu47xthzYXhn1IxcWf0va6ZixH8TSSfdUTWJviR2NHO4iPIIPmD_VVRsKxnZQsun0ADBmGMT9-twVLxkTyr0QLYSB0qSo0PZDKQAG28GLp33S1WrDXc1Bqz0Z5DHSJSE-qOI5iGNzu2ltPBE0U6Yu5ZHpBS4OhXT6EO-GCZ8IHD4Q6u7F5F3lBSJJjOkE4yAy3W4h9-ISfZCl_OV2sIqC-6sCKc0jsQ_e1duYGDWIFMHpqTAvmzZVtpHHskdPsYBS3fZLEMBf3r_dFSQRSPq0u5PFcRiRoKIqG59E07HmikANK4cOTufMZrUbxdeo8aXk58QgxOyAgP10mrUl538xGkvueck8Vou2qUxEtEngDBJHBAnthnXyxMogVgNHqrz_RmJqQrLFqvTogEyP0Cs9mZzT7WoFKjN1_Iv_NmVdrbptVtot26SUVCfmTzcxdm-uIEAlATn8Y3xB4U2RDSY3Z-0cqkk0VuayRXTwDx5_xu0FaOanZh23Hy-DeTLBLO3-XXpvx_dEhXZoG8numGlrAi_sSKI4TejPp2lNifM9Lj2xp8iNDtGjUptOugGkSYjSdfyljqo7rdXpQrvcP2rILSNA86c8xMKZOE3pCgaN965o90qsDUFzjjtVfoh6PesBfe-y7s_PHxqfS2PTi1jE0GG1o36RAmAC16ALxqTvIXOclm96Co014cem4KteJCEt8cs0K2esniQ1lp7YT3MYekgYX-bcHsicMxHchyRaW1Zm-1mnWm3qbDKs6arjlIlioOCcUEZaRYxBOc0XQRi1PD7qBPz7WyqZiNI0cJEt35uKUuLxC0jURiX0hj8uqKvGs4wv9jbZPdCgRC4KzPJvWH8SXpCBKUOhvzYlbG2myMIq8v2Idzb9NGjIQvnJLJoxLbhrLUNjPm_uptg3hAJupWCA7lfX40Qey-w6ID-G62xcMcTf5leqZ4MSH1bGEhM_DqWrkEDerNC6SZM14TfLqR61ULnHgPQXSKBfiSTkpSjJ8y0t9ct9HpHi27d93PwkZaVNvQuaG9b1yTiCzrY13lbFNKiyc5OfBwSMYuUJZCtTdog8V_7Mye5-Fgh8ebj9l8WWjt7UROloqK-xdmW9rVPDRa3-5VX1GmiHtJrj9jTsU2_jluGoAHRJJba5LQwnLUydIiXAB5nz8ttoUIf8iCU_JQyxfVGufFvD0IO9IijdCpCfzUr6QNjdQgbExHrccsFB1mlFzgBnHSPH4bLaQwrwtk8BOoV3r_AozJlLkjQrADJiyk5IfqRp_XQ1Pd2E6rRMiMA8K2z3MjVHU9SPX4-AMQxzaGYthLYrySUjRLLvRrgBEE47ofhMQC7roPtOLaFH9HGcpxHTbNQzOKfQy1xOLeccRiYQfutfaThXCq5r875PyMU9RqvxmWvyesb8iBhGMUOKE3vtBD--xzc_JJBbtBSXQ7Uvyx_GULxrX7pOEF6lYzzDjUmEyfYjZkwb7tiSgGxeMfoGox_KkFxjV_jZ-_U9Yw6PDz1d9r1RRdvfLJN5yDawPk_fPK-sf2BnyUZqLavTEgMMPiMQYbNjd1Q-lckcMwEgFVJsOJPrjFSHrn_kgPFqn88kzT3s43mclY2txCUKXZ7E6P3R6IeRno-USuh3cs-N-URPzSJnSyMer9bajdUfLQvQ7RuEpHrM7qf7MWixzy5M1DE_koDbHj0td8ur5OV0_)
 
+  </Tab>
+</Tabs>
+
+<br/>
+<br/>
+
+:::tip[More examples]
+LikeC4 has no view types and therefore any limits.  
+Check the following examples
+:::
+
+<br/>
+
+<Tabs>
+  <Tab label='Customer View'>    
+
+    
+    We may visualize how customers interact with the system.
+
+    ```likec4
+    views {
+
+      view customer of customer {
+        include
+          *,
+          customer -> internetBankingSystem.*,
+          customer -> bigbank.*
+          
+        exclude webApplication
+
+        style bigbank {
+          color muted
+        }
+        style customer {
+          color green
+        }
+      }
+
+    }
+    ```
+
+    > Structurizr does not have customer view.
+
+    Result:
+
+    <LikeC4View viewId='customer' />
+
+  </Tab>
+  <Tab label="Customer: MobileApp">
+
+    We may visualize interactions with the mobile application:
+
+    ```likec4
+    views {
+
+      view mobileApp of mobileApp {
+        include
+          *,
+          internetBankingSystem,
+          internetBankingSystem.apiApplication,
+          mobileApp -> internetBankingSystem.apiApplication.*
+
+        style * {
+          color secondary
+        }
+
+        style apiApplication, internetBankingSystem {
+          color muted
+        }
+
+        style mobileApp {
+          color green
+        }
+      }
+
+    }
+    ```
+
+    Result:
+
+    <LikeC4View viewId='mobileApp' />  
+  </Tab>
+  <Tab label="Customer: WebApp">
+    We may visualize interactions with the web application:
+
+    ```likec4
+    views {
+
+      view spa of singlePageApplication {
+        include
+          *,
+          apiApplication,
+          internetBankingSystem,
+          -> singlePageApplication ->
+
+        style * {
+          color secondary
+        }
+        style internetBankingSystem {
+          color muted
+        }
+        style singlePageApplication {
+          color green
+        }
+      }
+
+    }
+    ```
+
+    Result:
+
+    <LikeC4View viewId='spa' />
   </Tab>
 </Tabs>

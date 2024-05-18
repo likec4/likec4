@@ -55,12 +55,30 @@ export default defineConfig({
           link: '/'
         },
         {
-          label: 'Tutorial',
-          link: '/tutorial'
+          label: 'Getting started',
+          items: [
+            {
+              label: 'Tutorial',
+              link: '/tutorial'
+            },
+            {
+              label: 'Playground',
+              link: 'https://playground.likec4.dev/w/tutorial/',
+              attrs: {
+                target: '_blank'
+              }
+            }
+          ]
         },
         {
           label: 'LikeC4',
           autogenerate: { directory: 'dsl' }
+        },
+        {
+          label: 'Examples',
+          autogenerate: {
+            directory: 'examples'
+          }
         },
         {
           label: 'Tooling',
@@ -71,22 +89,6 @@ export default defineConfig({
           autogenerate: {
             directory: 'guides',
             collapsed: true
-          }
-        },
-        {
-          label: 'Examples',
-          collapsed: true,
-          autogenerate: {
-            directory: 'examples'
-          }
-        },
-        {
-          label: 'Playground',
-          link: 'https://playground.likec4.dev/w/tutorial/',
-          attrs: {
-            target: '_blank',
-            style: 'font-weight: 500; font-size: var(--sl-text-sm)',
-            rel: 'noopener'
           }
         },
         {

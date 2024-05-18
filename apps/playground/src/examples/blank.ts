@@ -3,11 +3,26 @@ export const BlankExample = {
   files: {
     ['blank.c4']: `
 specification {
+  element actor {
+    style {
+      shape person
+      color secondary
+    }
+  }
   element system
 }
+
 model {
-  sys = system 'System'
+  user = actor 'User' {
+    description 'A user of my software system'
+  }
+  softwareSystem = system 'Software System' {
+    description 'My software system.'
+  }
+
+  user -> softwareSystem "Uses"
 }
+
 views {
   view index {
     title 'Landscape'
