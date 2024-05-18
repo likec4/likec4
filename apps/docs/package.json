@@ -19,7 +19,7 @@
     "deploy:prod": "run deploy --branch main"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.10",
+    "@astrojs/check": "^0.6.0",
     "@astrojs/react": "^3.3.4",
     "@astrojs/starlight": "^0.22.3",
     "@expressive-code/plugin-line-numbers": "^0.35.3",
