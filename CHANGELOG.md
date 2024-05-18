@@ -1,3 +1,17 @@
+## [1.0.1](https://github.com/likec4/likec4/compare/v1.0.0...v1.0.1) (2024-05-18)
+
+
+### Bug Fixes
+
+* **lsp:** correct selection range after changes ([42999ef](https://github.com/likec4/likec4/commit/42999efb804e1f70d8352b541c5264bfefc06f5b))
+* **vscode:** correct view column for preview ([6a33a48](https://github.com/likec4/likec4/commit/6a33a4834c47850644a41d304568c8007bc68d34))
+
+### Minor
+
+* download view as png from app ([b316dfb](https://github.com/likec4/likec4/commit/b316dfb6e3f187f8b0211788b5ab4f08e50a0abf))
+
+
+
 # [1.0.0](https://github.com/likec4/likec4/compare/v1.0.0-rc.1...v1.0.0) (2024-05-17)
 
 ### 🚀 Features  
