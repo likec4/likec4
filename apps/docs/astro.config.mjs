@@ -4,6 +4,7 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
 import starlightLinksValidator from 'starlight-links-validator'
 import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
+import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,9 +35,18 @@ export default defineConfig({
       },
       customCss: [
         // Fontsource files for to regular and semi-bold font weights.
-        '@fontsource/ibm-plex-sans/400.css',
-        '@fontsource/ibm-plex-sans/500.css',
-        '@fontsource/ibm-plex-sans/600.css',
+        '@fontsource/ibm-plex-sans/cyrillic-400.css',
+        '@fontsource/ibm-plex-sans/cyrillic-500.css',
+        '@fontsource/ibm-plex-sans/cyrillic-600.css',
+        '@fontsource/ibm-plex-sans/cyrillic-ext-400.css',
+        '@fontsource/ibm-plex-sans/cyrillic-ext-500.css',
+        '@fontsource/ibm-plex-sans/cyrillic-ext-600.css',
+        '@fontsource/ibm-plex-sans/latin-400.css',
+        '@fontsource/ibm-plex-sans/latin-500.css',
+        '@fontsource/ibm-plex-sans/latin-600.css',
+        '@fontsource/ibm-plex-sans/latin-ext-400.css',
+        '@fontsource/ibm-plex-sans/latin-ext-500.css',
+        '@fontsource/ibm-plex-sans/latin-ext-600.css',
         './src/styles/global.css'
       ],
       sidebar: [
@@ -84,7 +94,8 @@ export default defineConfig({
         },
         shiki: {
           langs: [
-            likec4grammar
+            likec4grammar,
+            structurizr
           ]
         }
       },
