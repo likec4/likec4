@@ -15,7 +15,7 @@ export const container = style({
     [mantine.darkSelector]: {
       vars: {
         [xyvars.edge.labelColor]: vars.relation.labelColor,
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 75%)`
+        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 55%)`
       }
     }
     // [mantine.lightSelector]: {
@@ -105,9 +105,9 @@ export const edgeLabel = style({
     [varLabelY]: '50%'
   },
   selectors: {
-    [mantine.darkSelector]: {
-      mixBlendMode: 'luminosity'
-    },
+    // [mantine.darkSelector]: {
+    //   mixBlendMode: 'luminosity'
+    // },
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: `${varTranslate} scale(1.1)`
