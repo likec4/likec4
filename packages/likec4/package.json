@@ -126,7 +126,7 @@
     "classnames": "^2.3.2",
     "clsx": "^2.1.1",
     "consola": "^3.2.3",
-    "esbuild": "^0.20.2",
+    "esbuild": "^0.21.0",
     "esbuild-node-externals": "^1.13.0",
     "execa": "^8.0.1",
     "fast-equals": "^5.0.1",
