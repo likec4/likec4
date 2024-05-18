@@ -19,12 +19,12 @@
     "deploy:prod": "run deploy --branch main"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.10",
+    "@astrojs/check": "^0.6.0",
     "@astrojs/react": "^3.3.4",
     "@astrojs/starlight": "^0.22.3",
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.20",
-    "astro": "^4.7.1",
+    "astro": "^4.8.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "starlight-links-validator": "^0.8.0",
