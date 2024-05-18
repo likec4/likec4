@@ -2734,8 +2734,8 @@ __metadata:
     nextra-theme-docs: "npm:^2.13.2"
     postcss: "npm:^8.4.38"
     rambdax: "npm:^9.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-icons: "npm:^4.12.0"
     remark-code-import: "npm:^1.2.0"
     swr: "npm:^2.2.5"
@@ -17015,7 +17015,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.2.0":
+"react-dom@npm:18.2.0, react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
   dependencies:
@@ -17246,7 +17246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.2.0":
+"react@npm:18.2.0, react@npm:^18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
   dependencies:

@@ -1,7 +1,11 @@
 ---
 title: Code generation
+description: LikeC4 code generation commands
 sidebar:
   order: 2
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 6    
 ---
 
 import { Card } from '@astrojs/starlight/components';
@@ -9,3 +13,27 @@ import { Card } from '@astrojs/starlight/components';
 <Card title="Soon" icon="warning">
   This page is under construction.  
 </Card>
+
+
+#### React components
+
+```sh
+likec4 codegen react --outfile ./src/likec4.generated.jsx
+```
+
+#### Webcomponent
+
+....
+
+#### Model as TypeScript
+
+Generate a TypeScript file with `LikeC4Views` object, which contains all diagrams and their metadata.
+
+```sh
+likec4 codegen views-data --outfile ./src/likec4.generated.ts
+
+#Aliases
+likec4 codegen views ...
+likec4 codegen ts ...
+```
+

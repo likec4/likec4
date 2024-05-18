@@ -79,6 +79,24 @@ export default defineConfig({
           autogenerate: {
             directory: 'examples'
           }
+        },
+        {
+          label: 'Playground',
+          link: 'https://playground.likec4.dev/w/tutorial/',
+          attrs: {
+            target: '_blank',
+            style: 'font-weight: 500; font-size: var(--sl-text-sm)',
+            rel: 'noopener'
+          }
+        },
+        {
+          label: 'Changelog',
+          link: 'https://github.com/likec4/likec4/releases',
+          attrs: {
+            target: '_blank',
+            style: 'font-weight: 500; font-size: var(--sl-text-sm)',
+            rel: 'noopener'
+          }
         }
       ],
       expressiveCode: {
