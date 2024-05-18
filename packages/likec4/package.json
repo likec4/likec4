@@ -107,7 +107,7 @@
     "@mantine/hooks": "^7.9.0",
     "@nanostores/react": "^0.7.2",
     "@radix-ui/react-icons": "^1.3.0",
-    "@radix-ui/themes": "^2.0.3",
+    "@radix-ui/themes": "^3.0.0",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons": "^2.47.0",
     "@tabler/icons-react": "^2.47.0",
