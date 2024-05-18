@@ -33,6 +33,7 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: Turborepo-cache
+        if: github.ref == 'refs/heads/main'
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Build
