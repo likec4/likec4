@@ -2,7 +2,7 @@ import { type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
-import { opacityPropertyRuleChecks } from './properties'
+import { opacityPropertyRuleChecks } from './property-checks'
 import { relationChecks } from './relation'
 import {
   elementKindChecks,

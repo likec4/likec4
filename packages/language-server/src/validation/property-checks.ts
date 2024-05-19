@@ -1,5 +1,5 @@
-import { type ValidationCheck } from 'langium'
-import { ast } from '../ast'
+import type { ValidationCheck } from 'langium'
+import type { ast } from '../ast'
 import type { LikeC4Services } from '../module'
 
 export const opacityPropertyRuleChecks = (

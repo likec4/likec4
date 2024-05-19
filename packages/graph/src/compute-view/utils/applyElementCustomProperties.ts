@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, nonNullable } from '@likec4/core'
-import { isDefined, isNullish as isNil, omitBy } from 'remeda'
+import { isDefined, isEmpty, isNullish as isNil, omitBy } from 'remeda'
 
 const omitNil = omitBy(isNil)
 
@@ -19,17 +19,33 @@ export function applyElementCustomProperties(_rules: ViewRule[], _nodes: Compute
     if (nodeIdx === -1) {
       continue
     }
-    const node = nonNullable(nodes[nodeIdx])
+    let node = nonNullable(nodes[nodeIdx])
     const { border, opacity, ...rest } = omitBy(props, isNil)
-    nodes[nodeIdx] = {
-      ...node,
-      ...rest,
-      style: {
-        ...node.style,
-        ...(isDefined.strict(border) && { border }),
-        ...(isDefined.strict(opacity) && { opacity })
+    if (!isEmpty(rest)) {
+      node = {
+        ...node,
+        ...rest
       }
     }
+
+    let styleOverride: ComputedNode['style'] | undefined
+    if (border !== undefined) {
+      styleOverride = { border }
+    }
+    if (opacity !== undefined) {
+      styleOverride = { ...styleOverride, opacity }
+    }
+    if (styleOverride) {
+      node = {
+        ...node,
+        style: {
+          ...node.style,
+          ...styleOverride
+        }
+      }
+    }
+
+    nodes[nodeIdx] = node
   }
   return nodes
 }
