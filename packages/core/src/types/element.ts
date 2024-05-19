@@ -9,6 +9,10 @@ export function AsFqn(name: string, parent?: Fqn | null) {
   return (parent ? parent + '.' + name : name) as Fqn
 }
 
+export const BorderStyles = ['solid', 'dashed', 'dotted', 'none'] as const
+
+export type BorderStyle = typeof BorderStyles[number]
+
 export type ElementKind = Opaque<string, 'ElementKind'>
 export const ElementShapes = [
   'rectangle',
@@ -25,7 +29,9 @@ export const DefaultThemeColor = 'primary' satisfies ThemeColor
 export const DefaultElementShape = 'rectangle' satisfies ElementShape
 
 export interface ElementStyle {
-  shape?: ElementShape
+  border?: BorderStyle
+  // 0-100
+  opacity?: number
 }
 
 export type Tag = Opaque<string, 'Tag'>
@@ -46,4 +52,5 @@ export interface Element {
   readonly icon?: IconUrl
   readonly shape?: ElementShape
   readonly color?: ThemeColor
+  readonly style?: ElementStyle
 }

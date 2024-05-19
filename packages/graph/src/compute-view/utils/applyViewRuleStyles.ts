@@ -48,6 +48,19 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
       if (isDefined.strict(rule.style.icon)) {
         n.icon = rule.style.icon
       }
+      let styleOverride: ComputedNode['style'] | undefined
+      if (isDefined.strict(rule.style.border)) {
+        styleOverride = { ...styleOverride, border: rule.style.border }
+      }
+      if (isDefined.strict(rule.style.opacity)) {
+        styleOverride = { ...styleOverride, opacity: rule.style.opacity }
+      }
+      if (styleOverride) {
+        n.style = {
+          ...n.style,
+          ...styleOverride
+        }
+      }
     })
   }
 

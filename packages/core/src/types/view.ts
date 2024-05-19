@@ -1,5 +1,5 @@
 import type { IconUrl, NonEmptyArray } from './_common'
-import type { ElementShape, Fqn, Tag } from './element'
+import type { ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { ElementExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
 import type { ThemeColor } from './theme'
@@ -25,7 +25,7 @@ export function isViewRuleExpression(rule: ViewRule): rule is ViewRuleExpression
 
 export interface ViewRuleStyle {
   targets: ElementExpression[]
-  style: {
+  style: ElementStyle & {
     color?: ThemeColor
     shape?: ElementShape
     icon?: IconUrl

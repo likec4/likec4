@@ -11,7 +11,7 @@ export const container = style({
   margin: 0
 })
 
-const bgTransparency = createVar('bgTransparency')
+export const varTransparency = createVar('transparency')
 
 const outlineColor = fallbackVar(
   mantine.colors.primaryColors.outline,
@@ -25,9 +25,9 @@ export const compoundBody = style({
   position: 'relative',
   borderRadius: rem(6),
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  padding: rem(8),
+  padding: 8,
   background: vars.element.fill,
-  transition: 'all 300ms ease-out',
+  transition: 'all 200ms ease-out',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
@@ -40,32 +40,37 @@ export const compoundBody = style({
   }
 })
 
+const bgTransparency = createVar('bgTransparency')
 const bgTransparencyDelta = createVar('bgTransparencyDelta')
 export const transparent = style({
-  borderRadius: rem(8),
-  borderStyle: 'dotted',
-  borderWidth: rem(3),
-  borderColor: `color-mix(in srgb , ${vars.element.stroke},  transparent 70%)`,
-  background:
-    `color-mix(in srgb , ${vars.element.fill},  transparent calc(${bgTransparency} - ${bgTransparencyDelta}))`,
-  transition: 'all 200ms ease-out',
+  borderRadius: 8,
+  borderStyle: 'dashed',
+  borderWidth: 3,
+  padding: 6,
+  borderColor: `color-mix(in srgb , ${vars.element.stroke},  transparent min(${bgTransparency}, 30%))`,
+  background: `color-mix(in srgb , ${vars.element.fill},  transparent ${bgTransparency})`,
+  backgroundClip: 'padding-box',
+  // transitionTimingFunction: 'ease-in',
+  // transition: 'all 150ms ease-in-out',
   vars: {
-    [bgTransparency]: '90%',
+    [bgTransparency]: `calc(${fallbackVar(varTransparency, '80%')} - ${bgTransparencyDelta})`,
     [bgTransparencyDelta]: '0%',
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
   },
   selectors: {
     [`:where(${container}[data-hovered]) &`]: {
-      transitionDelay: '300ms',
+      transitionDelay: '175ms',
+      // transitionTimingFunction: 'ease-out',
       vars: {
-        [bgTransparencyDelta]: '20%'
+        [bgTransparencyDelta]: '15%'
       }
     },
     [`:where(.react-flow__node.selected) &`]: {
       transitionDelay: '50ms',
       borderColor: 'transparent',
+      // transitionTimingFunction: 'ease-out',
       vars: {
-        [bgTransparencyDelta]: '40%'
+        [bgTransparencyDelta]: '25%'
       }
     },
     [`:where([data-mantine-color-scheme='light']) &`]: {
@@ -89,10 +94,10 @@ export const title = style({
   lineHeight: 1,
   opacity: 0.75,
   color: vars.compound.titleColor,
-  paddingLeft: rem(12),
+  paddingLeft: 12,
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {
-      paddingLeft: rem(26)
+      paddingLeft: 26
     },
     [`:where([data-mantine-color-scheme='light']) &`]: {
       opacity: 1

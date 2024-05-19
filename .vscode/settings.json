@@ -38,6 +38,7 @@
   "files.exclude": {
     "**/.turbo": true,
     "**/.tsbuildinfo": true,
+    "examples/diagrams-dev": true,
     "packages/*/.vscode-test-web": true
   },
   "exportall.config.semis": false,

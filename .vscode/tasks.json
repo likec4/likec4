@@ -45,13 +45,11 @@
         "isDefault": true
       },
       "presentation": {
-        "panel": "dedicated",
         "echo":   true,
         "showReuseMessage": false,
-        "group": "build",
-        "reveal": "silent",
         "revealProblems": "onProblem",
-        "clear": true
+        "clear": true,
+        "close": true
       },
     }
   ]

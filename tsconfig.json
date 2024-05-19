@@ -15,7 +15,6 @@
     { "path": "./packages/likec4/app" },
     { "path": "./packages/vscode" },
     { "path": "./packages/vscode-preview" },
-    { "path": "./apps/playground" },
-    { "path": "./examples/diagrams-dev" }
+    { "path": "./apps/playground" }
   ]
 }

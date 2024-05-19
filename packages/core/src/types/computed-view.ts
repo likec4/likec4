@@ -1,5 +1,6 @@
+import type { SetRequired } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
-import type { ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
@@ -22,8 +23,15 @@ export interface ComputedNode {
   inEdges: EdgeId[]
   outEdges: EdgeId[]
   shape: ElementShape
+  /**
+   * @deprecated Use `style` instead
+   */
   color: ThemeColor
+  /**
+   * @deprecated Use `style` instead
+   */
   icon?: IconUrl
+  style: ElementStyle
   navigateTo?: ViewID
   level: number
   // For compound nodes, the max depth of nested nodes

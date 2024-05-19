@@ -1,4 +1,5 @@
-import type { ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { IconUrl } from './_common'
+import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
 import type { ThemeColor } from './theme'
 import type { ViewID } from './view'
 
@@ -41,9 +42,13 @@ export interface CustomElementExpr extends Omit<BaseExpr, 'custom'> {
     technology?: string
     shape?: ElementShape
     color?: ThemeColor
+    icon?: IconUrl
+    border?: BorderStyle
+    opacity?: number
     navigateTo?: ViewID
   }
 }
+
 export function isCustomElement(expr: Expression): expr is CustomElementExpr {
   return 'custom' in expr
 }

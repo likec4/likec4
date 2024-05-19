@@ -10,7 +10,7 @@ import {
 } from '@likec4/core'
 import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
-import { isNullish } from 'remeda'
+import { clamp, isNullish } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
 import type { Diagnostic } from 'vscode-languageserver-protocol'
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
@@ -32,13 +32,16 @@ declare module './generated/ast' {
   }
 }
 
+type ParsedElementStyle = {
+  shape?: c4.ElementShape
+  icon?: c4.IconUrl
+  color?: c4.ThemeColor
+  border?: c4.BorderStyle
+  opacity?: number
+}
+
 export interface ParsedAstSpecification {
-  // prettier-ignore
-  kinds: Record<c4.ElementKind, {
-    shape?: c4.ElementShape
-    color?: c4.ThemeColor
-    icon?: c4.IconUrl
-  }>
+  kinds: Record<c4.ElementKind, ParsedElementStyle>
   relationships: Record<
     c4.RelationshipKind,
     {
@@ -57,11 +60,9 @@ export interface ParsedAstElement {
   title: string
   description?: string
   technology?: string
-  icon?: c4.IconUrl
   tags?: c4.NonEmptyArray<c4.Tag>
   links?: c4.NonEmptyArray<string>
-  shape?: c4.ElementShape
-  color?: c4.ThemeColor
+  style: ParsedElementStyle
 }
 
 export interface ParsedAstRelation {
@@ -291,40 +292,47 @@ export function resolveRelationPoints(node: ast.Relation): {
   }
 }
 
+export function parseAstOpacityProperty({ value }: ast.OpacityProperty): number {
+  const opacity = parseFloat(value)
+  return isNaN(opacity) ? 100 : clamp(opacity, { min: 0, max: 100 })
+}
+
 export function toElementStyle(props?: Array<ast.StyleProperty>) {
-  const result = {} as {
-    color?: c4.ThemeColor
-    shape?: c4.ElementShape
-    icon?: c4.IconUrl
-  }
+  const result = {} as ParsedElementStyle
   if (!props || props.length === 0) {
     return result
   }
   for (const prop of props) {
-    if (ast.isColorProperty(prop)) {
-      result.color = prop.value
-      continue
+    switch (true) {
+      case ast.isBorderProperty(prop): {
+        result.border = prop.value
+        break
+      }
+      case ast.isColorProperty(prop): {
+        result.color = prop.value
+        break
+      }
+      case ast.isShapeProperty(prop): {
+        result.shape = prop.value
+        break
+      }
+      case ast.isIconProperty(prop): {
+        result.icon = prop.value as c4.IconUrl
+        break
+      }
+      case ast.isOpacityProperty(prop): {
+        const opacity = parseAstOpacityProperty(prop)
+        if (opacity !== undefined) {
+          result.opacity = opacity
+        }
+        break
+      }
+      default:
+        // @ts-expect-error
+        nonexhaustive(prop.$type)
     }
-    if (ast.isShapeProperty(prop)) {
-      result.shape = prop.value
-      continue
-    }
-    if (ast.isIconProperty(prop)) {
-      result.icon = prop.value as c4.IconUrl
-      continue
-    }
-    nonexhaustive(prop)
   }
   return result
-}
-
-export function toElementStyleExcludeDefaults(props?: ast.StyleProperties['props']) {
-  const { color, shape, ...rest } = toElementStyle(props)
-  return {
-    ...rest,
-    ...(color && color !== DefaultThemeColor ? { color } : {}),
-    ...(shape && shape !== DefaultElementShape ? { shape } : {})
-  }
 }
 
 export function toRelationshipStyle(props?: ast.SpecificationRelationshipKind['props']) {

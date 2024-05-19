@@ -10,6 +10,17 @@
           "name": "keyword.control.likec4"
         },
         "2": {
+          "name": "constant.numeric.decimal.structurizr"
+        }
+      }
+    },
+        {
+      "match": "\\b(opacity):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
           "name": "string.quoted.single.likec4"
         }
       }
@@ -76,7 +87,7 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color|head|tail|line):?\\s+(\\w+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -202,7 +213,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|browser|color|crow|cylinder|dashed|description|diamond|dotted|element|exclude|extends?|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
     },
     {
       "name": "variable.other.constant.likec4",

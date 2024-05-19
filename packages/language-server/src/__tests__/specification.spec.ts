@@ -75,6 +75,8 @@ describe('specification', () => {
         element person {
           style {
             shape: person
+            border none
+            opacity 10%
           }
         }
       }
