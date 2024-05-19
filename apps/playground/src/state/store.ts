@@ -1,10 +1,18 @@
 import { type ComputedView, type DiagramView, invariant, type LikeC4Model, type ViewID } from '@likec4/core'
-import { changeView, computeView, fetchModel } from '@likec4/language-server/protocol'
+import {
+  changeView,
+  computeView,
+  fetchModel,
+  locate,
+  type LocateParams,
+  type LocateRequest
+} from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import { deepEqual } from 'fast-equals'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { first, keys } from 'remeda'
 import type { Simplify } from 'type-fest'
+import type { Location } from 'vscode-languageserver-protocol'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -48,6 +56,8 @@ export type WorkspaceStore = {
   computedView: ComputedView | null
   diagram: DiagramView | null
   diagramAsDot: string | null
+
+  requestedLocation: Location | null
 }
 
 interface WorkspaceStoreActions {
@@ -61,6 +71,8 @@ interface WorkspaceStoreActions {
   fetchDiagram: (viewId: string) => Promise<void>
 
   onChanges: NonNullable<LikeC4DiagramProps['onChange']>
+
+  showLocation: (location: LocateParams) => Promise<void>
 }
 
 export type WorkspaceState = Simplify<WorkspaceStore & WorkspaceStoreActions>
@@ -109,6 +121,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
           computedView: null,
           diagram: null,
           diagramAsDot: null,
+          requestedLocation: null,
 
           isModified: () => {
             const { files, originalFiles } = get()
@@ -140,19 +153,12 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
               console.time(label)
               console.log(`start ${label}`)
             }
-            const { languageClient, diagram, computedView } = get()
+            const { languageClient, diagram, computedView, modelFetched } = get()
             const client = languageClient()
             invariant(client, 'Language client is not initialized')
             try {
               const { model } = await client.sendRequest(fetchModel)
-              set(
-                {
-                  modelFetched: true,
-                  likeC4Model: model
-                },
-                noReplace,
-                'likeC4Model'
-              )
+              set({ likeC4Model: model }, noReplace, 'likeC4Model')
 
               const indexId = 'index' as ViewID
               const viewId = computedView?.id ?? diagram?.id ?? indexId
@@ -161,10 +167,14 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 set({ computedView: null })
                 return
               }
-              void get().fetchDiagram(viewId)
+              await get().fetchDiagram(viewId)
             } catch (e) {
               console.error(e)
             } finally {
+              if (!modelFetched) {
+                set({ modelFetched: true }, noReplace, 'modelFetched')
+              }
+
               DEV && console.timeEnd(label)
             }
           },
@@ -211,6 +221,9 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 noReplace,
                 'fetchDiagram'
               )
+              if (view.id !== computedView?.id) {
+                get().showLocation({ view: view.id })
+              }
             } catch (e) {
               console.error(e)
             } finally {
@@ -228,9 +241,23 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 viewId: diagram.id,
                 changes
               })
-              .catch(e => {
+              .then((location) => {
+                if (location) {
+                  set({ requestedLocation: location })
+                }
+              }, e => {
                 console.error(e)
               })
+          },
+
+          showLocation: async (request) => {
+            const { languageClient } = get()
+            const client = languageClient()
+            invariant(client, 'Language client is not initialized')
+            const location = await client.sendRequest(locate, request)
+            if (location) {
+              set({ requestedLocation: location })
+            }
           }
         }),
         {

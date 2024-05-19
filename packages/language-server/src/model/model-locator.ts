@@ -68,7 +68,7 @@ export class LikeC4ModelLocator {
             uri: doc.uri.toString(),
             range: {
               start: targetNode.range.start,
-              end: targetNode.range.start
+              end: targetNode.range.end
             }
           }
         }
