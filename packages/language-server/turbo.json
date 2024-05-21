@@ -3,6 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "generate": {
+      "outputMode": "new-only",
       "outputs": ["contrib/**", "src/generated/**"],
       "inputs": ["src/**/*.langium", "langium-config.json"]
     },
@@ -12,6 +13,7 @@
       "outputs": []
     },
     "build": {
+      "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
       "outputs": ["dist/**", ".tsbuildinfo/**"]
     }

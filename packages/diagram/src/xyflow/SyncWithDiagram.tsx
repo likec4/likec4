@@ -2,7 +2,7 @@ import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import { useXYFlow, useXYStoreApi } from './hooks'
 import type { XYFlowNode } from './types'
 
-import { memo, useEffect } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 import { toDomPrecision } from './utils'
@@ -14,7 +14,10 @@ const isSameNode = (a: XYFlowNode) => (b: XYFlowNode) =>
  * Syncs the diagram state with the XYFlow instance
  */
 export const SyncWithDiagram = memo(() => {
-  const xyflow = useXYFlow()
+  const _xyflow = useXYFlow()
+  const xyflowRef = useRef(_xyflow)
+  xyflowRef.current = _xyflow
+
   const xyflowApi = useXYStoreApi()
   const diagramStoreApi = useDiagramStoreApi()
 
@@ -33,7 +36,7 @@ export const SyncWithDiagram = memo(() => {
         const { lastOnNavigate } = diagramStoreApi.getState()
         const updates = diagramViewToXYFlowData({ nodes, edges }, opts)
 
-        xyflow.setNodes(prev =>
+        xyflowRef.current.setNodes(prev =>
           updates.nodes.map(update => {
             const existing = prev.find(isSameNode(update))
             if (existing) {
@@ -49,7 +52,7 @@ export const SyncWithDiagram = memo(() => {
           })
         )
 
-        xyflow.setEdges(prev =>
+        xyflowRef.current.setEdges(prev =>
           updates.edges.map(update => {
             const existing = prev.find(e => e.id === update.id)
             if (existing) {
@@ -70,25 +73,25 @@ export const SyncWithDiagram = memo(() => {
             const nextZoom = Math.min(elFrom.width / elTo.width, elFrom.height / elTo.height)
 
             requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                const v = xyflow.getViewport()
-                if (nextZoom < v.zoom) {
-                  xyflow.setViewport({
-                    x: v.x,
-                    y: v.y,
-                    zoom: nextZoom
-                  })
+              // requestAnimationFrame(() => {
+              const v = xyflowRef.current.getViewport()
+              if (nextZoom < v.zoom) {
+                xyflowRef.current.setViewport({
+                  x: v.x,
+                  y: v.y,
+                  zoom: nextZoom
+                })
+              }
+              const centerTo = xyflowRef.current.flowToScreenPosition({
+                  x: elTo.position[0] + elTo.width / 2,
+                  y: elTo.position[1] + elTo.height / 2
+                }),
+                diff = {
+                  x: toDomPrecision(centerFrom.x - centerTo.x),
+                  y: toDomPrecision(centerFrom.y - centerTo.y)
                 }
-                const centerTo = xyflow.flowToScreenPosition({
-                    x: elTo.position[0] + elTo.width / 2,
-                    y: elTo.position[1] + elTo.height / 2
-                  }),
-                  diff = {
-                    x: toDomPrecision(centerFrom.x - centerTo.x),
-                    y: toDomPrecision(centerFrom.y - centerTo.y)
-                  }
-                xyflowApi.getState().panBy(diff)
-              })
+              xyflowApi.getState().panBy(diff)
+              // })
             })
           }
           diagramStoreApi.setState(
@@ -107,7 +110,7 @@ export const SyncWithDiagram = memo(() => {
         equalityFn: shallowEqual
       }
     )
-  }, [xyflow, xyflowApi, diagramStoreApi])
+  }, [xyflowApi, diagramStoreApi])
 
   return null
 })
