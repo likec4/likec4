@@ -2,12 +2,14 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "features": {
-    "ghcr.io/devcontainers-contrib/features/asdf-package:1": {},
     "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
     "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
     "ghcr.io/devcontainers-contrib/features/tsx:1": {}
+  },
+  "containerEnv": {
+    "TURBO_CACHE_DIR": "/workspace/.turbo"
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
@@ -21,7 +23,7 @@
     62002 // likec4 cli - preview
   ],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn install && yarn build",
+  "postCreateCommand": "sudo chown -R node /home/node/.yarn node_modules .yarn /workspace/.turbo && yarn install && yarn build",
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -47,7 +49,8 @@
     }
   },
   "mounts": [
-    "source=likec4-yarn-cache,target=${containerWorkspaceFolder}/.yarn/cache,type=volume",
+    "source=likec4-yarn-cache,target=/home/node/.yarn/berry/cache,type=volume",
+    "source=likec4-turbo-cache,target=${containerWorkspaceFolder}/.turbo,type=volume",
     "source=${devcontainerId}-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
   ],
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
