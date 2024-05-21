@@ -1,13 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "generate": {},
+    "generate": {
+      "outputMode": "new-only"
+    },
     "typecheck": {
       "cache": false,
       "dependsOn": ["generate", "^build"],
       "outputs": []
     },
     "build": {
+      "outputMode": "new-only",
       "dependsOn": ["generate", "^build"],
       "outputs": ["dist/**", ".tsbuildinfo/**"]
     },

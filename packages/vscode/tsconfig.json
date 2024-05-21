@@ -1,13 +1,18 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [],
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
+    "target": "ES2022",
+    "outDir": "dist/ts",
+    "lib": [
+      "esnext",
+      "dom",
+      "WebWorker"
+    ]
   },
+  "include": [
+    "src"
+  ],
   "references": [
-    {
-      "path": "./tsconfig.src.json"
-    },
     {
       "path": "../core"
     },

@@ -11997,7 +11997,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
-    "@hpcc-js/wasm": "npm:^2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
@@ -12008,16 +12007,16 @@ __metadata:
     "@types/which": "npm:^3.0.3"
     "@vscode/extension-telemetry": "npm:^0.9.6"
     "@vscode/vsce": "npm:^2.26.0"
+    consola: "npm:^3.2.3"
     esbuild: "npm:^0.21.0"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.3"
+    execa: "npm:^8.0.1"
     langium: "npm:3.0.0"
-    npm-run-all2: "npm:^6.1.2"
     p-timeout: "npm:^6.1.2"
-    path-browserify: "npm:^1.0.1"
     rambdax: "npm:^9.1.1"
     remeda: "npm:^1.61.0"
-    shx: "npm:^0.3.4"
     tslib: "npm:^2.6.2"
+    tsx: "npm:~4.9.3"
     typescript: "npm:^5.4.5"
     vscode-jsonrpc: "npm:8.2.0"
     vscode-languageclient: "npm:9.0.1"
@@ -17313,7 +17312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shelljs@npm:0.8.5, shelljs@npm:^0.8.5":
+"shelljs@npm:0.8.5":
   version: 0.8.5
   resolution: "shelljs@npm:0.8.5"
   dependencies:
@@ -17400,18 +17399,6 @@ __metadata:
   bin:
     shipjs: bin/shipjs
   checksum: 10c0/f1a4d485b71c1ca5a076c03d5e33d45972fb864dfe72ca9658e09a942fe5bb041c65b4f0d6ef2da64eb46b27b4d78202cb468ac08744bc20bf737c353494933c
-  languageName: node
-  linkType: hard
-
-"shx@npm:^0.3.4":
-  version: 0.3.4
-  resolution: "shx@npm:0.3.4"
-  dependencies:
-    minimist: "npm:^1.2.3"
-    shelljs: "npm:^0.8.5"
-  bin:
-    shx: lib/cli.js
-  checksum: 10c0/83251fb09314682f5a192f0249a4be68c755933313a41b5152b11c19fc0a68311954d3ca971a0cbae05815786a893c59b82f356484d8eeb009c84f4066b3fa31
   languageName: node
   linkType: hard
 
