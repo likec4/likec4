@@ -1,3 +1,15 @@
+## [1.0.2](https://github.com/likec4/likec4/compare/v1.0.1...v1.0.2) (2024-05-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @astrojs/check to ^0.7.0 ([#718](https://github.com/likec4/likec4/issues/718)) ([c07df5c](https://github.com/likec4/likec4/commit/c07df5c4cc312f5873af83b83dfcc75ede4ee4c0))
+* **deps:** update dependency astro to ^4.8.4 ([#717](https://github.com/likec4/likec4/issues/717)) ([b8ab8d0](https://github.com/likec4/likec4/commit/b8ab8d030a2c37bb272fbc91ccb77a66d8172ac9))
+* **deps:** update dependency playwright to v1.44.0 ([#713](https://github.com/likec4/likec4/issues/713)) ([dd62f8d](https://github.com/likec4/likec4/commit/dd62f8da8207fe8619ddcdaa4c13fe0dfca72c17))
+* **vscode:** bundling `@hpcc-js/wasm` is necessary for the extension to work properly ([6904afc](https://github.com/likec4/likec4/commit/6904afc4eb950b1255440e92b759d1d05351bd4d))
+
+
+
 ## [1.0.1](https://github.com/likec4/likec4/compare/v1.0.0...v1.0.1) (2024-05-18)
 
 
