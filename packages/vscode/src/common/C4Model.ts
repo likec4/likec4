@@ -4,7 +4,7 @@ import type TelemetryReporter from '@vscode/extension-telemetry'
 import type { TelemetryEventMeasurements } from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
 import { equals } from 'rambdax'
-import type * as vscode from 'vscode'
+import * as vscode from 'vscode'
 import type { MemoryStream } from 'xstream'
 import xs from 'xstream'
 
@@ -80,17 +80,21 @@ export class C4Model extends AbstractDisposable {
   private fetchView(viewId: ViewID) {
     Logger.debug(`[Extension.C4Model] fetchView ${viewId}`)
     const promise = this.rpc.computeView(viewId)
-    return xs.fromPromise(pTimeout(promise, {
-      milliseconds: 5_000,
-      message: `fetchView ${viewId} timeout`
-    }))
+    return xs
+      .fromPromise(pTimeout(promise, {
+        milliseconds: 15_000,
+        fallback: () => {
+          vscode.window.showErrorMessage(`LikeC4: Fetch view ${viewId} timed out`)
+          return null
+        }
+      }))
   }
 
   private layoutView(view: ComputedView) {
     Logger.debug(`[Extension.C4Model] layoutView ${view.id}`)
     const promise = this.ctrl.graphviz.layout(view)
     return xs.fromPromise(pTimeout(promise, {
-      milliseconds: 5_000,
+      milliseconds: 15_000,
       message: `layoutView ${view.id} timeout`
     }))
   }

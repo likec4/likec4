@@ -10,7 +10,6 @@ let worker: Worker | undefined
 
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
-  Logger.info('[Extension] active browser extension')
   const ctrl = (controller = new ExtensionController(context, createLanguageClient(context)))
   void ctrl.activate()
 }
@@ -19,9 +18,23 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   controller?.dispose()
   controller = undefined
+  Logger.channel = null
 }
 
 function createLanguageClient(context: vscode.ExtensionContext) {
+  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
+    log: true
+  })
+  Logger.channel = outputChannel
+  Logger.info('[Extension] active browser extension')
+
+  // @ts-ignore
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  if (!isProduction) {
+    Logger.warn('!!! Running in development mode !!!')
+  }
+
   // Create a worker. The worker main file implements the language server.
   const serverMain = vscode.Uri.joinPath(
     context.extensionUri,
@@ -29,16 +42,14 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     'browser',
     'language-server-worker.js'
   ).toString(true)
+
+  Logger.debug(`[Extension] worker: ${serverMain}`)
+
   worker = new Worker(serverMain, {
     name: 'LikeC4 Language Server'
   })
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
-
-  const outputChannel = vscode.window.createOutputChannel(extensionTitle, {
-    log: true
-  })
-  // context.subscriptions.push(outputChannel)
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {

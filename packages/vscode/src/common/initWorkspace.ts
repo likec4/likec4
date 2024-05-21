@@ -14,7 +14,7 @@ export async function initWorkspace(rpc: Rpc) {
       Logger.info(`[InitWorkspace] with pattern "${globPattern}" no docs found`)
       return
     }
-    Logger.info(
+    Logger.debug(
       `[InitWorkspace] with pattern "${globPattern}" found:\n`
         + docs.map(s => '  - ' + s).join('\n')
     )
@@ -30,7 +30,7 @@ export async function initWorkspace(rpc: Rpc) {
 export async function rebuildWorkspace(rpc: Rpc) {
   try {
     const docs = await findSources(rpc.client)
-    Logger.info(
+    Logger.debug(
       `rebuild workspace, found ${docs.length} docs:\n` + docs.map(s => '  - ' + s).join('\n')
     )
     await delay(500)
@@ -61,7 +61,7 @@ async function findSources(client: LanguageClient) {
 }
 
 async function findFiles() {
-  Logger.debug(`call vscode.workspace.findFiles`)
+  Logger.info(`call vscode.workspace.findFiles`)
   return await vscode.workspace.findFiles(globPattern)
 }
 
@@ -71,7 +71,7 @@ const isSource = (path: string) => {
 }
 
 async function recursiveSearchSources() {
-  Logger.debug(`recursiveSearchSources`)
+  Logger.info(`recursiveSearchSources`)
   const uris = [] as vscode.Uri[]
   const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri)
   let folder

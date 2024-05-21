@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
-import { normalizeError, type ViewID } from '@likec4/core'
+import { type ViewID } from '@likec4/core'
 import type { GraphvizLayouter } from '@likec4/layouts'
 import { WasmGraphvizLayouter } from '@likec4/layouts'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
@@ -31,21 +31,16 @@ export class ExtensionController extends AbstractDisposable {
     ExtensionController.extensionUri = _context.extensionUri
 
     this.onDispose(() => {
-      client.outputChannel.dispose()
       client.dispose()
       Logger.info(`[Extension] Language client disposed`)
     })
     this._telemetry = new TelemetryReporter(telemetryKey)
     this.onDispose(this._telemetry)
 
-    if ('debug' in client.outputChannel) {
-      Logger.channel = client.outputChannel as unknown as vscode.LogOutputChannel
-      Logger.telemetry = this._telemetry
-      this.onDispose(() => {
-        Logger.channel = null
-        Logger.telemetry = null
-      })
-    }
+    Logger.telemetry = this._telemetry
+    this.onDispose(() => {
+      Logger.telemetry = null
+    })
   }
 
   /**
@@ -61,17 +56,23 @@ export class ExtensionController extends AbstractDisposable {
             .join('')
         }`
       )
+      Logger.info(`[Extension] LanguageClient.needsStart: ${this.client.needsStart()}`)
       Logger.info(`[Extension] LanguageClient.state = ${this.client.state}`)
       Logger.info(`[Extension] telemetryLevel=${this._telemetry.telemetryLevel}`)
 
+      let startingPromise = Promise.resolve<boolean | undefined>(true)
       if (this.client.needsStart()) {
-        Logger.info(`[Extension] Starting LanguageClient...`)
-        await pTimeout(this.client.start(), {
-          milliseconds: 15000,
-          message: 'Failed to start language client (after 15s), restart vscode'
+        const startClient = async () => {
+          Logger.info(`[Extension] Starting LanguageClient...`)
+          await this.client.start()
+          Logger.info(`[Extension] LanguageClient started`)
+          return true
+        }
+        startingPromise = pTimeout(startClient(), {
+          milliseconds: 10_000,
+          message: false
         })
       }
-      Logger.info(`[Extension] LanguageClient started`)
 
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
@@ -80,7 +81,6 @@ export class ExtensionController extends AbstractDisposable {
       this.onDispose(messenger)
 
       const c4model = new C4Model(this, rpc, this._telemetry)
-      c4model.turnOnTelemetry()
       this.onDispose(c4model)
 
       this.onDispose(
@@ -135,14 +135,23 @@ export class ExtensionController extends AbstractDisposable {
         PreviewPanel.current?.dispose()
       })
 
-      await initWorkspace(rpc)
-
       this.onDispose(
         vscode.workspace.onDidDeleteFiles(_ => {
           Logger.debug(`[Extension] onDidDeleteFiles`)
           void rebuildWorkspace(rpc)
         })
       )
+
+      if ((await startingPromise) !== true) {
+        this._telemetry.sendTelemetryErrorEvent('lsp-timedout')
+        await vscode.window.showErrorMessage(`Failed to start LikeC4 Language Server.
+VSCode restart may be required, if the problem persists, please, report this issue`)
+        return Promise.reject()
+      }
+
+      await initWorkspace(rpc)
+
+      c4model.turnOnTelemetry()
 
       this._telemetry.sendTelemetryEvent(
         'activation',

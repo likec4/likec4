@@ -32,7 +32,6 @@
     "ci:test": "vitest --reporter=basic --reporter=github-actions",
     "test:watch": "vitest",
     "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
-    "lint": "",
     "vitest:ui": "vitest --ui",
     "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
   },

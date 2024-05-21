@@ -29,19 +29,14 @@
     "access": "public"
   },
   "vsce": {
-    "yarn": true,
     "dependencies": false
   },
   "scripts": {
-    "vscode:prepublish": "run build:turbo",
-    "open-web": "run build:turbo && yarn dlx @vscode/test-web --quality stable --open-devtools --extensionDevelopmentPath=. /Users/davydkov/Projects/like-c4/likec4/packages/likec4/dev",
+    "vscode:prepublish": "tsx scripts/prepublish.mts",
+    "open-web": "run build:turbo && yarn dlx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
     "typecheck": "tsc --noEmit",
-    "copy:preview": "shx echo 'copy preview' && shx mkdir -p dist/preview && shx --silent cp -r \"$INIT_CWD/../vscode-preview/dist/*\" dist/preview/",
-    "copy": "run-p 'copy:*'",
     "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
-    "build:watch": "$npm_node_execpath esbuild.mjs --watch",
-    "build": "$npm_node_execpath esbuild.mjs",
-    "dev": "$npm_node_execpath esbuild.mjs --watch",
+    "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist src/generated",
     "vsce:publish": "vsce publish --skip-duplicate"
@@ -191,11 +186,8 @@
     "workspaceContains:**/*.{c4,likec4,like-c4}",
     "onWebviewPanel:likec4-preview"
   ],
-  "main": "./dist/node/extension.js",
-  "browser": "./dist/browser/extension.js",
-  "dependencies": {
-    "@hpcc-js/wasm": "^2.16.2"
-  },
+  "main": "dist/node/extension.js",
+  "browser": "dist/browser/extension.js",
   "devDependencies": {
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
@@ -207,16 +199,16 @@
     "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.6",
     "@vscode/vsce": "^2.26.0",
+    "consola": "^3.2.3",
     "esbuild": "^0.21.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.3",
+    "execa": "^8.0.1",
     "langium": "3.0.0",
-    "npm-run-all2": "^6.1.2",
     "p-timeout": "^6.1.2",
-    "path-browserify": "^1.0.1",
     "rambdax": "^9.1.1",
     "remeda": "^1.61.0",
-    "shx": "^0.3.4",
     "tslib": "^2.6.2",
+    "tsx": "~4.9.3",
     "typescript": "^5.4.5",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1",

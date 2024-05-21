@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { normalizeError } from '@likec4/core'
 import type TelemetryReporter from '@vscode/extension-telemetry'
 import type { LogOutputChannel } from 'vscode'
 
@@ -19,6 +18,7 @@ export class Logger {
   }
 
   static warn(message: string) {
+    console.warn(message)
     Logger.channel?.warn(message)
   }
 
@@ -39,6 +39,16 @@ export class Logger {
   }
 }
 
-export function logError(error: unknown): void {
-  Logger.error(normalizeError(error))
+export function logError(e: unknown): void {
+  if (e instanceof Error) {
+    Logger.error(e)
+    return
+  }
+  const error = new Error(`Unknown error: ${e}`)
+  try {
+    Error.captureStackTrace(error, logError)
+  } catch {
+    // ignore
+  }
+  Logger.error(error)
 }
