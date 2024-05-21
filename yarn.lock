@@ -2568,7 +2568,7 @@ __metadata:
     jotai: "npm:^2.6.4"
     khroma: "npm:^2.1.0"
     konva: "npm:^9.3.6"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.1.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-konva: "npm:^18.2.10"
@@ -2611,7 +2611,7 @@ __metadata:
     nextra: "npm:^2.13.2"
     nextra-theme-docs: "npm:^2.13.2"
     postcss: "npm:^8.4.38"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.1.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-icons: "npm:^4.12.0"
@@ -2654,7 +2654,7 @@ __metadata:
     "@dagrejs/graphlib": "npm:^2.2.2"
     "@likec4/core": "workspace:*"
     execa: "npm:^9.1.0"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.1.1"
     remeda: "npm:^1.61.0"
     typescript: "npm:^5.4.5"
     unbuild: "npm:^2.0.0"
@@ -2679,7 +2679,7 @@ __metadata:
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.1.1"
     remeda: "npm:^1.61.0"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
@@ -2832,7 +2832,7 @@ __metadata:
     lucide-react: "npm:^0.294.0"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:^1.15.0"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.0.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-error-boundary: "npm:^4.0.13"
@@ -12080,7 +12080,7 @@ __metadata:
     execa: "npm:^9.1.0"
     langium: "npm:3.0.0"
     p-timeout: "npm:^6.1.2"
-    rambdax: "npm:^9.1.1"
+    rambdax: "npm:^11.0.0"
     remeda: "npm:^1.61.0"
     tslib: "npm:^2.6.2"
     tsx: "npm:~4.9.3"
@@ -16089,10 +16089,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rambdax@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "rambdax@npm:9.1.1"
-  checksum: 10c0/0e12406be7d871e3c98ef638ed9e5864dc86a7bc5e4194d7ec329a685adfe13cc307c999fa42edb5c9bed5e009da912b7074d2908602fad03d12b498233a032a
+"rambdax@npm:^11.0.0, rambdax@npm:^11.1.1":
+  version: 11.1.1
+  resolution: "rambdax@npm:11.1.1"
+  checksum: 10c0/80ef1142e6c2c372f59ce427194e350f198dd6d1f045d2eb2b21089f1128e1e129fbc6f1f0681ad613461ca71addfc825c572e10176690a39dbd1d658f652af3
   languageName: node
   linkType: hard
 

@@ -43,7 +43,7 @@
   "dependencies": {
     "@dagrejs/graphlib": "^2.2.2",
     "@likec4/core": "workspace:*",
-    "rambdax": "^9.1.1",
+    "rambdax": "^11.1.1",
     "remeda": "^1.61.0"
   },
   "devDependencies": {

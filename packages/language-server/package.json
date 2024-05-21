@@ -69,7 +69,7 @@
     "langium": "^3.0.0",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
-    "rambdax": "^9.1.1",
+    "rambdax": "^11.1.1",
     "remeda": "^1.61.0",
     "string-hash": "^1.1.3",
     "strip-indent": "^4.0.0",

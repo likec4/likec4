@@ -45,7 +45,7 @@
     "next": "13.4.19",
     "nextra": "^2.13.2",
     "nextra-theme-docs": "^2.13.2",
-    "rambdax": "^9.1.1",
+    "rambdax": "^11.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.12.0",
