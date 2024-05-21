@@ -129,7 +129,7 @@
     "consola": "^3.2.3",
     "esbuild": "^0.21.0",
     "esbuild-node-externals": "^1.13.0",
-    "execa": "^8.0.1",
+    "execa": "^9.0.0",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.2.2",
     "get-port": "^7.1.0",

@@ -9,7 +9,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "execa": "^8.0.1",
+    "execa": "^9.0.0",
     "likec4": "workspace:*",
     "typescript": "workspace:*",
     "vitest": "workspace:*"

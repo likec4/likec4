@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@types/prompts": "^2.4.8",
-    "execa": "^8.0.1",
+    "execa": "^9.0.0",
     "prompts": "^2.4.2",
     "tsx": "~4.9.3",
     "typescript": "^5.4.5",
