@@ -47,7 +47,7 @@
     "remeda": "^1.61.0"
   },
   "devDependencies": {
-    "execa": "^9.0.0",
+    "execa": "^9.1.0",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",
     "vitest": "~1.5.2"

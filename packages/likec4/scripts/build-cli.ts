@@ -8,7 +8,7 @@ export async function buildCli(isDev = false) {
 
   const cfg: BuildOptions = {
     metafile: isDev,
-    logLevel: 'info',
+    logLevel: isDev ? 'debug' : 'info',
     outdir: 'dist',
     outbase: 'src',
     outExtension: {
@@ -20,13 +20,15 @@ export async function buildCli(isDev = false) {
     sourcesContent: isDev,
     keepNames: isDev,
     minify: !isDev,
-    treeShaking: !isDev,
+    treeShaking: true,
     legalComments: 'none',
     mainFields: ['module', 'main'],
     entryPoints: ['src/cli/index.ts'],
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    },
+    ...(!isDev && {
+      define: {
+        'process.env.NODE_ENV': '"production"'
+      }
+    }),
     format: 'esm',
     target: 'node18',
     platform: 'node',
@@ -49,7 +51,7 @@ export async function buildCli(isDev = false) {
 
   const bundle = await build(cfg)
   if (bundle.errors.length || bundle.warnings.length) {
-    console.error(
+    consola.error(
       [
         ...formatMessagesSync(bundle.warnings, {
           kind: 'warning',
@@ -63,7 +65,7 @@ export async function buildCli(isDev = false) {
         })
       ].join('\n')
     )
-    console.error('\n ⛔️ Build failed')
+    consola.error('\n ⛔️ Build failed')
     process.exit(1)
   }
   if (bundle.metafile) {

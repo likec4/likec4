@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
-    "execa": "^9.0.0",
+    "execa": "^9.1.0",
     "typescript": "^5.4.5",
     "vitest": "~1.5.2"
   },

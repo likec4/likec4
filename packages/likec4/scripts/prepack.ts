@@ -1,9 +1,9 @@
 import consola from 'consola'
-import { $ } from 'execa'
+import { $ as $_ } from 'execa'
 import { existsSync } from 'node:fs'
 import { cp, rm } from 'node:fs/promises'
 
-const $$ = $({
+const $ = $_({
   stderr: 'inherit',
   stdout: 'inherit',
   env: {
@@ -17,10 +17,10 @@ await rm('dist/', { recursive: true, force: true })
 consola.start('Building...')
 
 // Run build
-await $$`yarn build:turbo`
+await $`yarn build:turbo`
 
 // Run build
-await $$`yarn tsc -p app/tsconfig.react.json`
+await $`yarn tsc -p app/tsconfig.react.json`
 
 const components = 'dist/__app__/react/components.mjs'
 if (!existsSync(components)) {
