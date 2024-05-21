@@ -12,19 +12,17 @@
 name: codeql js/ts
 
 on:
-  push:
-    branches:
-      - 'main'
-    tags-ignore:
-      - '**'
   pull_request:
+  schedule:
+    # Run every day at 8am
+    - cron: '0 8 * * *'
 
 jobs:
   analyze:
     # If on pull request, run only if coming from forked repos
     if: |
       !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' ||
+        github.event_name == 'schedule' ||
         github.event.pull_request.head.repo.fork
       )
     name: Analyze

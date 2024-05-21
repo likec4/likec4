@@ -12,6 +12,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 jobs:
   publish-release:
@@ -32,18 +33,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: turborepo-cache
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: Configure git user
+      - name: configure git user
         run: |
           git config user.name "${{ env.BOT_NAME }}[bot]"
           git config user.email "${{ env.BOT_NAME }}[bot]@users.noreply.github.com"
 
-      - name: Release
+      - name: release
         run: yarn shipjs trigger
         env:
           GITHUB_TOKEN: ${{ env.BOT_TOKEN }}

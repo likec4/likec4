@@ -13,6 +13,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 concurrency:
   group: docs-nextjs-${{ github.ref_name }}
@@ -41,9 +42,6 @@ jobs:
 
       - name: Bootstrap
         uses: ./.github/actions/bootstrap
-
-      - name: Turborepo-cache
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Prebuild dependencies
         run: yarn turbo run build --filter='docs-website^...'
