@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/likec4/likec4/compare/v1.0.1...v1.0.2) (2024-05-21)
+
+### Bug Fixes
+
+* **vscode:** preview fails with command `likec4:open-preview` not found ([#724](https://github.com/likec4/likec4/issues/724), thanks [@4cio](https://github.com/4cio))
+* **deps:** update dependency playwright to v1.44.0 ([#713](https://github.com/likec4/likec4/issues/713)) ([dd62f8d](https://github.com/likec4/likec4/commit/dd62f8da8207fe8619ddcdaa4c13fe0dfca72c17))
+* **vscode:** bundling `@hpcc-js/wasm` is necessary for the extension to work properly ([6904afc](https://github.com/likec4/likec4/commit/6904afc4eb950b1255440e92b759d1d05351bd4d))
+
 ## [1.0.1](https://github.com/likec4/likec4/compare/v1.0.0...v1.0.1) (2024-05-18)
 
 
