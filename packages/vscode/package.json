@@ -202,7 +202,7 @@
     "consola": "^3.2.3",
     "esbuild": "^0.21.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.3",
-    "execa": "^8.0.1",
+    "execa": "^9.1.0",
     "langium": "3.0.0",
     "p-timeout": "^6.1.2",
     "rambdax": "^9.1.1",

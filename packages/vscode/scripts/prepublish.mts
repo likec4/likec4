@@ -1,8 +1,8 @@
 import consola from 'consola'
-import { $ } from 'execa'
+import { $ as $_ } from 'execa'
 import { rm } from 'node:fs/promises'
 
-const $$ = $({
+const $ = $_({
   stderr: 'inherit',
   stdout: 'inherit',
   env: {
@@ -14,4 +14,4 @@ consola.info('clean dist')
 await rm('dist/', { recursive: true, force: true })
 
 // Run build
-await $$`yarn build:turbo`
+await $`yarn build:turbo`

@@ -75,7 +75,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "@xyflow/react": "^12.0.0-next",
     "clsx": "^2.1.1",
-    "execa": "^8.0.1",
+    "execa": "^9.1.0",
     "khroma": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

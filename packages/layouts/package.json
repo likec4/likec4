@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "esm-env": "^1.0.0",
-    "execa": "^8.0.1",
+    "execa": "^9.1.0",
     "indent-string": "^5.0.0",
     "khroma": "^2.1.0",
     "p-limit": "^4.0.0",
