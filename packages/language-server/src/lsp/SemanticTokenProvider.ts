@@ -91,11 +91,19 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       || ast.isShapeProperty(node)
       || ast.isArrowProperty(node)
       || ast.isLineProperty(node)
+      || ast.isBorderProperty(node)
     ) {
       acceptor({
         node,
         property: 'value',
         type: SemanticTokenTypes.enum
+      })
+    }
+    if (ast.isOpacityProperty(node)) {
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.number
       })
     }
     if (ast.isLinkProperty(node) || ast.isIconProperty(node)) {

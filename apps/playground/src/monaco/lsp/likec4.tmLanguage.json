@@ -15,6 +15,17 @@
       }
     },
     {
+      "match": "\\b(opacity):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "constant.numeric.likec4"
+        }
+      }
+    },
+    {
       "include": "#comments"
     },
     {
@@ -76,13 +87,13 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color|head|tail|line):?\\s+(\\w+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.class.likec4"
+          "name": "variable.other.property.likec4"
         }
       }
     },

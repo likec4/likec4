@@ -113,11 +113,11 @@ fragment RelationFragment:
   ('{' body=RelationBody '}')?
 ;
 
-ImplicitRelation:
-  ('this' | 'it')? RelationFragment;
-
 ExplicitRelation:
   source=ElementRef RelationFragment;
+
+ImplicitRelation:
+  ('this' | 'it')? RelationFragment;
 
 RelationBody:
   tags=Tags?
@@ -234,49 +234,60 @@ CustomElementExprBody:
   props+=(
     NavigateToProperty |
     ElementStringProperty |
-    ColorProperty |
-    ShapeProperty
+    StyleProperty
   )*
 ;
 
 NavigateToProperty:
   'navigateTo' value=ElementViewRef;
 
-// Common -------------------------------------
+// Common properties -------------------------------------
 
 LinkProperty:
   key='link' Colon? value=Uri SemiColon?;
+ColorProperty:
+  key='color' Colon? value=ThemeColor SemiColon?;
+
+OpacityProperty:
+  key='opacity' Colon? value=Percent SemiColon?;
+
+// Element properties -------------------------------------
 IconProperty:
   key='icon' Colon? value=Uri SemiColon?;
 
-ColorProperty:
-  key='color' Colon? value=ThemeColor SemiColon?;
 ShapeProperty:
   key='shape' Colon? value=ElementShape SemiColon?;
 
+
+BorderStyleValue returns string:
+  LineOptions | 'none';
+
+BorderProperty:
+  key='border' Colon? value=BorderStyleValue SemiColon?;
+
+StyleProperty:
+  ColorProperty |
+  ShapeProperty |
+  BorderProperty |
+  OpacityProperty |
+  IconProperty;
+
+StyleProperties:
+  key='style' '{'
+    props+=StyleProperty*
+  '}';
+
+
+// -------------------------
+// Relationship Style Properties
 LineProperty:
   key='line' Colon? value=LineOptions SemiColon?;
 ArrowProperty:
   key=('head' | 'tail') Colon? value=ArrowType SemiColon?;
 
-
-StyleProperties:
-  key='style' '{'
-    StylePropertiesFragment
-  '}';
-
-StyleProperty:
-  ColorProperty | ShapeProperty | IconProperty;
-
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
-fragment StylePropertiesFragment:
-  props+=StyleProperty*
-;
-
-// -------------------------
-// Relationship Style Properties
 LineOptions returns string:
   'solid' | 'dashed' | 'dotted';
 ArrowType returns string:
@@ -297,6 +308,8 @@ ElementShape returns string:
 Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE;
 
+// Percent returns string: PERCENT;
+
 TagId returns string:
   TagHash Id;
 
@@ -309,18 +322,18 @@ fragment IsEqual:
 // -----------------------------------
 // Symbols
 // terminal fragment HASH: '#';
-terminal fragment UNDERSCORE: '_';
-terminal fragment DASH: '-';
-terminal fragment LETTER: /[^\W\d_]/;
-terminal fragment DIGIT: /[0-9]/;
-terminal fragment NEWLINE: /[\r?\n]/;
-terminal fragment SPACE: /[^\S\r\n]/;
+// terminal fragment UNDERSCORE: '_';
+// terminal fragment DASH: '-';
+// terminal fragment LETTER: /[^\W\d_]/;
+// terminal fragment DIGIT: /[0-9]/;
+// terminal fragment NEWLINE: /[\r?\n]/;
+// terminal fragment SPACE: /[^\S\r\n]/;
 
 // -------------------------
 // Comments
 hidden terminal BLOCK_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal LINE_COMMENT: /\/\/[^\n\r]*/;
-hidden terminal WS: (NEWLINE | SPACE)+;
+hidden terminal WS: /\s+/;
 
 // -----------------------------------
 // Terminals
@@ -337,8 +350,11 @@ terminal Eq: /\={1,2}/;
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';
+terminal Percent: /\b\d+%/;
+// terminal Percent: ('0'..'9')+ '%';
 
 terminal String: /"[^"]*"|'[^']*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
+// terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
+terminal IdTerminal:  /\b(_+[a-zA-Z]|[a-zA-Z])[\w_-]*/;

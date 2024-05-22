@@ -10,11 +10,12 @@ on:
       - "releases/*"
 
 concurrency:
-  group:  ${{ github.workflow }}-${{github.event_name}}-${{ github.head_ref || github.ref }}
+  group:  ${{ github.workflow }}-${{github.event_name}}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
   NODE_ENV: production
+  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 jobs:
   check:
@@ -42,7 +43,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ github.ref }}
 
       - name: bootstrap
@@ -56,7 +56,7 @@ jobs:
       - name: typecheck
         run: yarn typecheck
 
-      - name: Test
+      - name: test
         env:
           NODE_ENV: test
         run: yarn ci:test

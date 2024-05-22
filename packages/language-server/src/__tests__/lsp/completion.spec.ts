@@ -54,7 +54,7 @@ describe('Completions', () => {
     await completion({
       text,
       index: 5,
-      expectedItems: ['color', 'shape', 'icon']
+      expectedItems: ['color', 'shape', 'border', 'opacity', 'icon']
     })
     await completion({
       text,
@@ -325,7 +325,17 @@ describe('Completions', () => {
     await completion({
       text,
       index: 1,
-      expectedItems: ['navigateTo', 'title', 'technology', 'description', 'color', 'shape'],
+      expectedItems: [
+        'navigateTo',
+        'title',
+        'technology',
+        'description',
+        'color',
+        'shape',
+        'border',
+        'opacity',
+        'icon'
+      ],
       disposeAfterCheck: true
     })
     await completion({

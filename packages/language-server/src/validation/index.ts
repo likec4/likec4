@@ -2,6 +2,7 @@ import { type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 import { elementChecks } from './element'
+import { opacityPropertyRuleChecks } from './property-checks'
 import { relationChecks } from './relation'
 import {
   elementKindChecks,
@@ -23,6 +24,7 @@ export function registerValidationChecks(services: LikeC4Services) {
   logger.info('registerValidationChecks')
   const registry = services.validation.ValidationRegistry
   registry.register<ast.LikeC4AstType>({
+    OpacityProperty: opacityPropertyRuleChecks(services),
     SpecificationRule: specificationRuleChecks(services),
     Model: modelRuleChecks(services),
     ModelViews: modelViewsChecks(services),

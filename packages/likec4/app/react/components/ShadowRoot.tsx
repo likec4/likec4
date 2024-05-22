@@ -18,7 +18,7 @@ const Root: DetailedHTMLFactory<
 type ShadowRootProps = HTMLAttributes<HTMLDivElement> & {
   rootClassName?: string
   injectFontCss?: boolean | undefined
-  colorScheme: 'light' | 'dark'
+  colorScheme?: 'light' | 'dark' | undefined
 }
 
 const rootSelector = `.${cssRoot}`
@@ -45,9 +45,14 @@ export function ShadowRoot({
 
   return (
     <Root styleSheets={styleSheets} {...props}>
-      <div ref={mantineRootRef} className={clsx(cssRoot, rootClassName)} data-mantine-color-scheme={colorScheme}>
+      <div
+        ref={mantineRootRef}
+        className={clsx(cssRoot, rootClassName)}
+        {...(colorScheme && { 'data-mantine-color-scheme': colorScheme })}
+      >
         <MantineProvider
-          forceColorScheme={colorScheme}
+          {...(colorScheme && { forceColorScheme: colorScheme })}
+          defaultColorScheme="dark"
           getRootElement={() => mantineRootRef.current ?? undefined}
           cssVariablesSelector={rootSelector}
           theme={theme}>

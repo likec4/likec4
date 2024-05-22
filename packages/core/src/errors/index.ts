@@ -1,4 +1,3 @@
-import stringify from 'safe-stable-stringify'
 import { CustomError } from 'ts-custom-error'
 import { isString } from '../utils/guards'
 
@@ -74,7 +73,7 @@ export function normalizeError(e: unknown): Error {
   if (e instanceof BaseError || e instanceof Error) {
     return e
   }
-  const message = isString(e) ? e : stringify(e as object)
+  const message = isString(e) ? e : String(e)
   const error = new UnknownError(message)
   Error.captureStackTrace(error, normalizeError)
   return error
@@ -104,8 +103,7 @@ export class NonExhaustiveError extends BaseError {
 }
 
 export function nonexhaustive(value: never): never {
-  const val = typeof value === 'string' ? value : stringify(value as object)
-  throw new NonExhaustiveError(`NonExhaustive value: ${val}`)
+  throw new NonExhaustiveError(`NonExhaustive value: ${value}`)
 }
 
 export class InvalidModelError extends BaseError {

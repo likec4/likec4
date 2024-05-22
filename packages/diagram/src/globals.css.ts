@@ -1,7 +1,8 @@
 import type { ThemeColor } from '@likec4/core'
 import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme } from '@vanilla-extract/css'
-import { omit } from 'remeda'
+import { scale, toHex } from 'khroma'
+import { keys, omit } from 'remeda'
 import { mantine } from './mantine.css'
 import { vars } from './theme.css'
 
@@ -75,38 +76,7 @@ createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}
   }
 })
 
-// globalStyle(`${scope} *, ${scope} *::before, ${scope} *::after`, {
-//   boxSizing: 'border-box',
-//   outline: 'none',
-//   borderWidth: 0,
-//   borderStyle: 'solid',
-//   borderColor: 'transparent',
-// })
-
-// createGlobalTheme(':where(.likec4-diagram-root)', {
-//   ...omit(vars, ['optionsPanel', 'defaults']),
-// }, {
-//   likec4: {
-//     font: `var(--likec4-default-font-family,'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"')`,
-//     backgroundColor: mantine.colors.body
-//   },
-//   compound: {
-//     font: vars.likec4.font,
-//     titleColor: vars.element.loContrast
-//   },
-//   element: {
-//     font: vars.likec4.font,
-//     ...defaultTheme.elements.primary
-//   },
-//   relation: {
-//     ...defaultTheme.relationships.slate
-//   }
-// })
-
-for (const color of Object.keys(defaultTheme.elements)) {
-  if (!(color in defaultTheme.elements) || !(color in defaultTheme.relationships)) {
-    continue
-  }
+for (const color of keys.strict(defaultTheme.elements)) {
   createGlobalTheme(`:where([data-likec4-color='${color}'])`, {
     element: {
       fill: vars.element.fill,
@@ -119,10 +89,46 @@ for (const color of Object.keys(defaultTheme.elements)) {
     },
     relation: vars.relation
   }, {
-    element: defaultTheme.elements[color as ThemeColor],
+    element: defaultTheme.elements[color],
     compound: {
-      titleColor: defaultTheme.elements[color as ThemeColor].loContrast
+      titleColor: defaultTheme.elements[color].loContrast
     },
-    relation: defaultTheme.relationships[color as ThemeColor]
+    relation: defaultTheme.relationships[color]
   })
+
+  const compoundDarkColor = (color: string, depth: number) =>
+    toHex(
+      scale(color, {
+        l: -22 - 5 * depth,
+        s: -10 - 6 * depth
+      })
+    )
+  const compoundLightColor = (color: string, depth: number) =>
+    toHex(
+      scale(color, {
+        l: -20 - 3 * depth,
+        s: -3 - 6 * depth
+      })
+    )
+
+  const compounds = {
+    fill: vars.element.fill,
+    stroke: vars.element.stroke
+  }
+
+  for (let depth = 1; depth <= 6; depth++) {
+    createGlobalTheme(`:where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`, compounds, {
+      fill: compoundDarkColor(defaultTheme.elements[color].fill, depth),
+      stroke: compoundDarkColor(defaultTheme.elements[color].stroke, depth)
+    })
+
+    createGlobalTheme(
+      `:where([data-mantine-color-scheme='light']) :where([data-likec4-color='${color}'][data-compound-depth='${depth}'])`,
+      compounds,
+      {
+        fill: compoundLightColor(defaultTheme.elements[color].fill, depth),
+        stroke: compoundLightColor(defaultTheme.elements[color].stroke, depth)
+      }
+    )
+  }
 }

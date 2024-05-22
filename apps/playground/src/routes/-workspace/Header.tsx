@@ -1,5 +1,6 @@
 import {
   Anchor,
+  Box,
   Button,
   Divider,
   Group,
@@ -13,31 +14,36 @@ import {
   PopoverDropdown,
   PopoverTarget,
   Text,
-  ThemeIcon
+  ThemeIcon,
+  Title
 } from '@mantine/core'
 import { IconAlertCircle, IconChevronDown, IconShare } from '@tabler/icons-react'
 import { Link, useLoaderData } from '@tanstack/react-router'
 import { nanoid } from 'nanoid'
+import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { Logo } from '../../components/Logo'
 import { useWorkspaceState } from '../../state'
 
 export function Header() {
-  const { isCustom } = useLoaderData({
+  const { isCustom, title } = useLoaderData({
     from: '/w/$id'
   })
   const isModified = useWorkspaceState(s => s.isModified())
 
   const isShareable = isCustom || isModified
   return (
-    <Group h="100%" px="md" justify="space-between" align="center">
-      <Anchor href="https://likec4.dev/">
-        <Logo
-          style={{
-            height: 20
-          }} />
-      </Anchor>
+    <Group h="100%" px="md" justify="space-between" align="stretch">
+      <Group gap={'lg'} align="center">
+        <a href="https://likec4.dev/" target="_blank">
+          <Logo
+            style={{
+              height: 20
+            }} />
+        </a>
+        <Box fz={'sm'} fw={500} visibleFrom="lg">{title}</Box>
+      </Group>
 
-      <Group gap={'xs'}>
+      <Group h="100%" gap={'xs'}>
         {isShareable && (
           <Popover position="bottom" withArrow shadow="md" closeOnClickOutside>
             <PopoverTarget>
@@ -79,6 +85,7 @@ export function Header() {
           color="gray">
           GitHub
         </Button>
+        {/* <ColorSchemeToggle /> */}
         {
           /* <ActionIcon
           component="a"

@@ -13,6 +13,7 @@ permissions:
 
 env:
   NODE_ENV: production
+  TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 concurrency:
   group: docs-website-${{ github.ref_name }}
@@ -29,14 +30,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: Turborepo-cache
-        if: github.ref == 'refs/heads/main'
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: Build
+      - name: build
         working-directory: apps/docs
         run: |
           yarn build:turbo
@@ -58,7 +55,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ github.ref }}
 
       - name: bootstrap

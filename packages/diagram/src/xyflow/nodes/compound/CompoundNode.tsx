@@ -1,16 +1,15 @@
-import { defaultTheme } from '@likec4/core'
 import { Box, Text } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
-import { scale, toHex } from 'khroma'
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
+import { clamp } from 'remeda'
 import { useDiagramState } from '../../../state'
-import { vars } from '../../../theme.css'
 import type { CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import { cssCompound, cssContainer, cssIndicator, cssNavigateBtn, cssTitle } from './CompoundNode.css'
+import { compoundBody, container, indicator, navigateBtn, title } from './CompoundNode.css'
+import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
   NodeProps<CompoundXYFlowNode>,
@@ -26,14 +25,6 @@ const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   && eq(prev.data, next.data)
 )
 
-const compoundColor = (color: string, depth: number) =>
-  toHex(
-    scale(color, {
-      l: -35 - 5 * depth,
-      s: -15 - 5 * depth
-    })
-  )
-
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
   id,
   data: {
@@ -41,17 +32,10 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   }
 }) {
   // useTilg()
-  const { color, depth = 0, ...compound } = element
-  const colors = useMemo(() => {
-    const colors = defaultTheme.elements[color]
-    return {
-      fill: compoundColor(colors.fill, depth),
-      stroke: compoundColor(colors.stroke, depth)
-    }
-  }, [color, depth])
-
+  const { color, style, depth = 1, ...compound } = element
   // const w = toDomPrecision(width ?? compound.width)
   // const h = toDomPrecision(height ?? compound.height)
+  const opacity = style.opacity ?? 100
 
   const { isHovered, hasOnNavigateTo } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
@@ -59,26 +43,31 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   }))
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
+  const transparency = clamp(100 - opacity, {
+    min: 0,
+    max: 98
+  })
+
   return (
     <Box
-      className={clsx(cssContainer, 'likec4-compound-node')}
-      style={assignInlineVars({ fill: vars.element.fill, stroke: vars.element.stroke }, {
-        fill: colors.fill,
-        stroke: colors.stroke
-      })}
+      className={clsx(css.container, 'likec4-compound-node')}
       mod={{
+        'compound-depth': depth,
         'likec4-color': color,
         'likec4-shape': compound.shape,
         'likec4-navigable': isnavigable,
         hovered: isHovered
       }}
+      style={assignInlineVars({
+        [css.varTransparency]: transparency + '%'
+      })}
     >
       <Handle
         type="target"
         position={Position.Top}
         style={{ visibility: 'hidden' }}
       />
-      <svg className={cssIndicator}>
+      <svg className={css.indicator}>
         <rect
           x={0}
           y={0}
@@ -87,14 +76,19 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
           rx={6}
         />
       </svg>
-      <div className={clsx(cssCompound, 'likec4-compound')}>
+      <div
+        className={clsx(css.compoundBody, opacity < 100 && css.transparent, 'likec4-compound')}
+        style={{
+          borderStyle: opacity < 100 ? style.border : undefined
+        }}
+      >
         <Text
           component="div"
-          className={clsx(cssTitle, 'likec4-compound-title')}>
+          className={clsx(css.title, 'likec4-compound-title')}>
           {compound.title}
         </Text>
       </div>
-      {isnavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
+      {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
       <Handle
         type="source"
         position={Position.Bottom}

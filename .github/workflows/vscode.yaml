@@ -28,11 +28,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
-
-      - name: turborepo-cache
-        uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: vsce publish
         run: |

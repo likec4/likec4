@@ -81,34 +81,48 @@ export function DiagramPanel() {
 
   if (diagram) {
     return (
-      <Box pos={'relative'} w={'100%'} h={'100%'}>
-        <LikeC4Diagram
-          view={diagram}
-          readonly={false}
-          fitView
-          fitViewPadding={0.04}
-          nodesDraggable={false}
-          onNavigateTo={id => store.getState().fetchDiagram(id)}
-          onChange={ev => store.getState().onChanges(ev)}
-        />
-        <Box className={css.diagramTitle}>
-          <Text fz={10} fw={500} c={'dimmed'}>id: {diagram.id}</Text>
-          <Title order={5}>
-            {diagram.title || diagram.id}
-          </Title>
-        </Box>
-        {message && (
-          <Box className={css.stateAlert}>
-            <Notification
-              icon={<IconX style={{ width: 20, height: 20 }} />}
-              color="red"
-              title="Error"
-              withCloseButton={false}>
-              {message}
-            </Notification>
+      (
+        <Box
+          pos={'relative'}
+          w={'100%'}
+          h={'100%'}
+          onDoubleClick={() => store.getState().showLocation({ view: diagram.id })}>
+          <LikeC4Diagram
+            view={diagram}
+            readonly={false}
+            fitView
+            fitViewPadding={0.06}
+            nodesDraggable={false}
+            onNavigateTo={id => store.getState().fetchDiagram(id)}
+            onChange={ev => store.getState().onChanges(ev)}
+            onNodeClick={({ element, event }) => {
+              event.stopPropagation()
+              store.getState().showLocation({ element: element.id })
+            }}
+            onEdgeClick={({ relation, event }) => {
+              event.stopPropagation()
+              store.getState().showLocation({ relation: relation.relations[0]! })
+            }}
+          />
+          <Box className={css.diagramTitle}>
+            <Text fz={10} fw={500} c={'dimmed'}>id: {diagram.id}</Text>
+            <Title order={5}>
+              {diagram.title || diagram.id}
+            </Title>
           </Box>
-        )}
-      </Box>
+          {message && (
+            <Box className={css.stateAlert}>
+              <Notification
+                icon={<IconX style={{ width: 20, height: 20 }} />}
+                color="red"
+                title="Error"
+                withCloseButton={false}>
+                {message}
+              </Notification>
+            </Box>
+          )}
+        </Box>
+      )
     )
   }
   return (

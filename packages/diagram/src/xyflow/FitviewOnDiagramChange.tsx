@@ -1,6 +1,5 @@
-import { useDebouncedEffect, useDebouncedState, useRafEffect } from '@react-hookz/web'
+import { useDebouncedCallback, useDebouncedEffect, useRafEffect } from '@react-hookz/web'
 import { useNodesInitialized } from '@xyflow/react'
-import { shallowEqual } from 'fast-equals'
 import { memo, useEffect, useRef, useState } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
 import { useXYStore } from './hooks'
@@ -38,28 +37,35 @@ function FitViewOnDiagramChanges() {
   const diagramApi = useDiagramStoreApi()
   const [viewportMoved, setViewportMoved] = useState(diagramApi.getState().viewportChanged)
   const [processedChangeId, setProcessed] = useState(diagramChangeId(diagramApi.getState()))
-  const [pendingChangeId, setPending] = useDebouncedState(processedChangeId, 100)
+  const [pendingChangeId, setPending] = useState(processedChangeId)
 
   const isReady = useNodesInitialized({
     includeHiddenNodes: true
   })
 
-  useEffect(
-    () => {
-      return diagramApi.subscribe(
-        s => ({
-          viewportMoved: s.viewportChanged,
-          changeid: diagramChangeId(s)
-        }),
-        ({ viewportMoved, changeid }) => {
-          setPending(changeid)
-          setViewportMoved(viewportMoved)
-        },
-        {
-          equalityFn: shallowEqual
-        }
-      )
+  const schedulePending = useDebouncedCallback(
+    (pendingChangeId: string) => {
+      setPending(pendingChangeId)
     },
+    [setPending],
+    75
+  )
+
+  useEffect(
+    () =>
+      diagramApi.subscribe(
+        s => diagramChangeId(s),
+        schedulePending
+      ),
+    [diagramApi, schedulePending]
+  )
+
+  useEffect(
+    () =>
+      diagramApi.subscribe(
+        s => s.viewportChanged,
+        setViewportMoved
+      ),
     [diagramApi]
   )
 

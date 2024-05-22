@@ -2,18 +2,18 @@ import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
 import { rootClassName } from './globals.css'
+import { KeepAspectRatioContainer } from './KeepAspectRatioContainer'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { WhenInitialized } from './state/WhenInitialized'
-import { KeepAspectRatio } from './ui/KeepAspectRatio'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
 import type { XYFlowData } from './xyflow/types'
-import { XYFlow } from './xyflow/XYFlowWrapper'
+import { XYFlow } from './xyflow/XYFlow'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
@@ -84,7 +84,7 @@ export function LikeC4Diagram({
           onNavigateTo={onNavigateTo}
           onCanvasDblClick={onCanvasDblClick}
         >
-          <KeepAspectRatio
+          <KeepAspectRatioContainer
             className={clsx(rootClassName, className)}
             enabled={keepAspectRatio}
             width={view.width}
@@ -107,7 +107,7 @@ export function LikeC4Diagram({
             >
               {readonly !== true && <OptionsPanel />}
             </XYFlow>
-          </KeepAspectRatio>
+          </KeepAspectRatioContainer>
           <WhenInitialized>
             <SyncWithDiagram />
             <FitViewOnDiagramChange />

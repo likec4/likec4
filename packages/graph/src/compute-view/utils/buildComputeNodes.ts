@@ -20,7 +20,7 @@ export function buildComputeNodes(elements: Iterable<Element>) {
       // Sort from Top to Bottom
       // So we can ensure that parent nodes are created before child nodes
       .sort(compareByFqnHierarchically)
-      .reduce((map, { id, color, shape, ...el }) => {
+      .reduce((map, { id, color, shape, style, ...el }) => {
         let parent = parentFqn(id)
         let level = 0
         // Find the first ancestor that is already in the map
@@ -49,7 +49,10 @@ export function buildComputeNodes(elements: Iterable<Element>) {
           shape: shape ?? DefaultElementShape,
           children: [],
           inEdges: [],
-          outEdges: []
+          outEdges: [],
+          style: {
+            ...style
+          }
         }
         map.set(id, node)
         return map

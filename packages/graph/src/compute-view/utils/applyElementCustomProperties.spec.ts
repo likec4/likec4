@@ -32,7 +32,11 @@ describe('applyElementCustomProperties', () => {
       })
     ]
     const result = applyElementCustomProperties(rules, nodes)
-    expect(result).toEqual([{ id: 'cloud', title: 'value1', technology: 'value2' }, { id: '2' }])
+    expect(result).toEqual([{
+      id: 'cloud',
+      title: 'value1',
+      technology: 'value2'
+    }, { id: '2' }])
     expect(result).not.toBe(nodes) // should return new array
     expect(result[0]).not.toBe(nodes[0]) // should return new node
     expect(nodes[0]).toEqual(nd('cloud')) // should not mutate original node
@@ -46,8 +50,10 @@ describe('applyElementCustomProperties', () => {
         ...nd('customer'),
         title: 'Title',
         description: null,
-        technology: null
-      }
+        technology: null,
+        shape: 'mobile',
+        style: {}
+      } satisfies ComputedNode
     ]
     const rules = [
       $include({
@@ -55,14 +61,30 @@ describe('applyElementCustomProperties', () => {
           element: 'customer',
           title: null as any, // null should be ignored
           technology: undefined as any, // undefined should be ignored
-          description: ''
+          description: '',
+          border: undefined as any, // undefined should be ignored
+          shape: 'queue',
+          color: 'indigo',
+          opacity: 90
         }
       })
     ]
     const result = applyElementCustomProperties(rules, nodes)
     expect(result).toEqual([
-      { id: 'cloud' },
-      { id: 'customer', title: 'Title', description: '', technology: null }
+      {
+        id: 'cloud'
+      },
+      {
+        id: 'customer',
+        title: 'Title',
+        description: '',
+        technology: null,
+        shape: 'queue',
+        color: 'indigo',
+        style: {
+          opacity: 90
+        }
+      }
     ])
   })
 

@@ -78,6 +78,8 @@ describe('model', () => {
         style {
           shape person
           color secondary
+          border none
+          opacity 10%
         }
       }
       user2 = person

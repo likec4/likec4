@@ -1,15 +1,16 @@
 import { Box } from '@mantine/core'
 import clsx from 'clsx'
-import type { HTMLAttributes } from 'react'
-import { wrapper } from './KeepAspectRatio.css'
+import { type HTMLAttributes, useId } from 'react'
+import * as css from './LikeC4Diagram.css'
 
-type KeepAspectRatioProps = HTMLAttributes<HTMLDivElement> & {
+type KeepAspectRatioContainerProps = HTMLAttributes<HTMLDivElement> & {
+  // Whether to keep the aspect ratio
   enabled: boolean
   width: number
   height: number
 }
 
-export function KeepAspectRatio({
+export function KeepAspectRatioContainer({
   children,
   width,
   height,
@@ -17,11 +18,11 @@ export function KeepAspectRatio({
   className,
   style,
   ...rest
-}: KeepAspectRatioProps) {
+}: KeepAspectRatioContainerProps) {
   return (
     <Box
       {...rest}
-      className={clsx(wrapper, className)}
+      className={clsx(css.keepAspectRatioContainer, className)}
       style={enabled
         ? {
           ...style,

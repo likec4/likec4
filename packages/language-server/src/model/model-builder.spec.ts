@@ -73,7 +73,8 @@ describe('LikeC4ModelBuilder', () => {
       element component
       element user {
         style {
-          shape: person
+          shape person
+          opacity 40%
         }
       }
     }
@@ -87,6 +88,7 @@ describe('LikeC4ModelBuilder', () => {
 
           style {
             color secondary
+            border dashed
           }
         }
         component frontend {

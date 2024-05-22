@@ -3,6 +3,7 @@ import { onDidChangeModel } from '@likec4/language-server/protocol'
 import { useUpdateEffect } from '@react-hookz/web'
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react'
 import { DEV } from 'esm-env'
+import { deepEqual } from 'fast-equals'
 import * as monaco from 'monaco-editor'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -33,7 +34,35 @@ export function MonacoEditor() {
     store.setState({
       languageClient: () => ref.current?.getEditorWrapper().getLanguageClient() ?? null
     })
+    const unsubscribe = store.subscribe(s => s.requestedLocation, (location) => {
+      const editor = ref.current?.getEditorWrapper()?.getEditor()
+      if (!location || !editor) {
+        return
+      }
+      const model = monaco.editor.getModel(monaco.Uri.parse(location.uri))
+      if (!model) {
+        return
+      }
+      const { start, end } = location.range
+      editor.setModel(model)
+      const range = new monaco.Range(
+        start.line + 1,
+        start.character + 1,
+        end.line + 1,
+        end.character + 1
+      )
+      editor.setSelection(range)
+      editor.revealRangeNearTop(range, monaco.editor.ScrollType.Smooth)
+      requestIdleCallback(() => {
+        store.setState({
+          requestedLocation: null
+        })
+      })
+    }, {
+      equalityFn: deepEqual
+    })
     return () => {
+      unsubscribe()
       store.setState({
         initialized: ref.current?.getEditorWrapper().isStarted() ?? false,
         languageClient: () => null

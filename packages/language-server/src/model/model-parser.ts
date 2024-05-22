@@ -16,11 +16,11 @@ import {
   cleanParsedModel,
   ElementViewOps,
   isFqnIndexedDocument,
+  parseAstOpacityProperty,
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
   toElementStyle,
-  toElementStyleExcludeDefaults,
   toRelationshipStyleExcludeDefaults
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
@@ -87,7 +87,7 @@ export class LikeC4ModelParser {
         const kindName = kind.name as c4.ElementKind
         c4Specification.kinds[kindName] = {
           ...c4Specification.kinds[kindName],
-          ...toElementStyleExcludeDefaults(style?.props)
+          ...toElementStyle(style?.props)
         }
       } catch (e) {
         logWarnError(e)
@@ -135,7 +135,7 @@ export class LikeC4ModelParser {
     const kind = astNode.kind.$refText as c4.ElementKind
     const tags = this.convertTags(astNode.body)
     const stylePropsAst = astNode.body?.props.find(ast.isStyleProperties)?.props
-    const styleProps = toElementStyleExcludeDefaults(stylePropsAst)
+    const style = toElementStyle(stylePropsAst)
     const astPath = this.getAstNodePath(astNode)
 
     let [title, description, technology] = astNode.props ?? []
@@ -157,7 +157,7 @@ export class LikeC4ModelParser {
       ...(links && isNonEmptyArray(links) && { links }),
       ...(isTruthy(technology) && { technology }),
       ...(isTruthy(description) && { description }),
-      ...styleProps
+      style
     }
   }
 
@@ -284,6 +284,10 @@ export class LikeC4ModelParser {
           acc.custom[prop.key] = value.trim()
           return acc
         }
+        if (ast.isIconProperty(prop)) {
+          acc.custom[prop.key] = prop.value as c4.IconUrl
+          return acc
+        }
         if (ast.isColorProperty(prop)) {
           acc.custom[prop.key] = prop.value
           return acc
@@ -292,6 +296,15 @@ export class LikeC4ModelParser {
           acc.custom[prop.key] = prop.value
           return acc
         }
+        if (ast.isBorderProperty(prop)) {
+          acc.custom[prop.key] = prop.value
+          return acc
+        }
+        if (ast.isOpacityProperty(prop)) {
+          acc.custom[prop.key] = parseAstOpacityProperty(prop)
+          return acc
+        }
+
         nonexhaustive(prop)
       },
       {

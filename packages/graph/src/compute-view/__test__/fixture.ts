@@ -1,4 +1,5 @@
 import type {
+  BorderStyle,
   ComputedView,
   Element,
   ElementExpression as C4ElementExpression,
@@ -104,6 +105,7 @@ const el = ({
   id,
   kind,
   title,
+  style,
   ...props
 }: Partial<Omit<Element, 'id' | 'kind'>> & { id: string; kind: string }): Element => ({
   id: id as Fqn,
@@ -113,6 +115,9 @@ const el = ({
   technology: null,
   tags: null,
   links: null,
+  style: {
+    ...style
+  },
   ...props
 })
 
@@ -315,6 +320,9 @@ type CustomExpr = {
     technology?: string
     shape?: ElementShape
     color?: ThemeColor
+    border?: BorderStyle
+    icon?: string
+    opacity?: number
     navigateTo?: string
   }
 }

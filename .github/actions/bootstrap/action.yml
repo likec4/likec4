@@ -10,7 +10,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/setup-node@v4
+    - name: setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'yarn'
@@ -43,6 +44,16 @@ runs:
     #       yarn-${{ inputs.node-version }}-${{ runner.os }}-
     #       yarn-${{ inputs.node-version }}-
     #       yarn-
+
+    - name: Cache turbo build setup
+      uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ github.ref_name }}-
+          ${{ runner.os }}-turbo-main-
+          ${{ runner.os }}-turbo-
 
     - name: install dependencies
       shell: bash

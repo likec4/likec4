@@ -52,20 +52,44 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   }
 
   const toModelElement = (doc: LangiumDocument) => {
-    return ({ astPath, tags, links, ...parsed }: ParsedAstElement): c4.Element | null => {
+    return ({
+      astPath,
+      tags,
+      links,
+      style: {
+        color,
+        shape,
+        icon,
+        opacity,
+        border
+      },
+      ...parsed
+    }: ParsedAstElement): c4.Element | null => {
       try {
         const kind = c4Specification.kinds[parsed.kind]
-        if (kind) {
-          return {
-            ...kind,
-            description: null,
-            technology: null,
-            tags: tags ?? null,
-            links: links ? resolveLinks(doc, links) : null,
-            ...parsed
-          }
+        if (!kind) {
+          logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+          return null
         }
-        logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+        color ??= kind.color
+        shape ??= kind.shape
+        icon ??= kind.icon
+        opacity ??= kind.opacity
+        border ??= kind.border
+        return {
+          ...(color && { color }),
+          ...(shape && { shape }),
+          ...(icon && { icon }),
+          style: {
+            ...(border && { border }),
+            ...(opacity && { opacity })
+          },
+          description: null,
+          technology: null,
+          tags: tags ?? null,
+          links: links ? resolveLinks(doc, links) : null,
+          ...parsed
+        }
       } catch (e) {
         logWarnError(e)
       }

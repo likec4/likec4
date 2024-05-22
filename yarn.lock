@@ -2503,8 +2503,8 @@ __metadata:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     execa: "npm:^9.1.0"
     remeda: "npm:^1.61.0"
-    safe-stable-stringify: "npm:^2.4.3"
     ts-custom-error: "npm:^3.3.1"
+    type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     vitest: "npm:~1.5.2"
   languageName: unknown
@@ -2805,6 +2805,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     starlight-links-validator: "npm:^0.8.0"
+    tsx: "npm:~4.9.3"
     typescript: "npm:^5.4.5"
   languageName: unknown
   linkType: soft
@@ -17130,13 +17131,6 @@ __metadata:
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
   checksum: 10c0/780ba6b5d99cc9a40f7b951d47152297d0e260f0df01472a1b99d4889679a4b94a13d644f7dbc4f022572f09ae9005fa2fbb93bbbd83643316f365a3e9a45b21
-  languageName: node
-  linkType: hard
-
-"safe-stable-stringify@npm:^2.4.3":
-  version: 2.4.3
-  resolution: "safe-stable-stringify@npm:2.4.3"
-  checksum: 10c0/81dede06b8f2ae794efd868b1e281e3c9000e57b39801c6c162267eb9efda17bd7a9eafa7379e1f1cacd528d4ced7c80d7460ad26f62ada7c9e01dec61b2e768
   languageName: node
   linkType: hard
 
