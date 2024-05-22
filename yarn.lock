@@ -12160,7 +12160,7 @@ __metadata:
     playwright: "npm:1.44.0"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:^1.15.0"
-    pretty-ms: "npm:^8.0.0"
+    pretty-ms: "npm:^9.0.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.2.0"
     react-accessible-treeview: "npm:^2.9.0"
@@ -15378,13 +15378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse-ms@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "parse-ms@npm:3.0.0"
-  checksum: 10c0/056b4a32a9d3749f3f4cfffefb45c45540491deaa8e1d8ad43c2ddde7ba04edd076bd1b298f521238bb5fb084a9b2c4a2ebb78aefa651afbc4c2b0af4232fc54
-  languageName: node
-  linkType: hard
-
 "parse-ms@npm:^4.0.0":
   version: 4.0.0
   resolution: "parse-ms@npm:4.0.0"
@@ -15949,15 +15942,6 @@ __metadata:
     ansi-styles: "npm:^5.0.0"
     react-is: "npm:^18.0.0"
   checksum: 10c0/edc5ff89f51916f036c62ed433506b55446ff739358de77207e63e88a28ca2894caac6e73dcb68166a606e51c8087d32d400473e6a9fdd2dbe743f46c9c0276f
-  languageName: node
-  linkType: hard
-
-"pretty-ms@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "pretty-ms@npm:8.0.0"
-  dependencies:
-    parse-ms: "npm:^3.0.0"
-  checksum: 10c0/e960d633ecca45445cf5c6dffc0f5e4bef6744c92449ab0e8c6c704800675ab71e181c5e02ece5265e02137a33e313d3f3e355fbf8ea30b4b5b23de423329f8d
   languageName: node
   linkType: hard
 

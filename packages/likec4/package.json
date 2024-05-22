@@ -141,7 +141,7 @@
     "pkg-up": "^5.0.0",
     "postcss": "^8.4.38",
     "postcss-preset-mantine": "^1.15.0",
-    "pretty-ms": "^8.0.0",
+    "pretty-ms": "^9.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-accessible-treeview": "^2.9.0",
