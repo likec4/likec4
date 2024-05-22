@@ -1,0 +1,70 @@
+// DO NOT EDIT MANUALLY
+
+specification {
+
+  element group
+  element element
+
+}
+model {
+
+  opacity10 = group "Group" {
+    style {
+      opacity 10%
+    }
+    element child "Opacity 10%"
+  }
+
+  opacity25 = group "Group" {
+    style {
+      opacity 25%
+    }
+    element child "Opacity 25%"
+  }
+
+  opacity40 = group "Group" {
+    style {
+      opacity 40%
+    }
+    element child "Opacity 40%"
+  }
+
+  opacity65 = group "Group" {
+    style {
+      opacity 65%
+    }
+    element child "Opacity 65%"
+  }
+
+  opacity80 = group "Group" {
+    style {
+      opacity 80%
+    }
+    element child "Opacity 80%"
+  }
+
+
+  opacity100 = group "Group" {
+    style {
+      opacity 100%
+    }
+    element child "Opacity 100%"
+  }
+
+
+ // opacity10.child -> opacity25.child
+//
+//opacity25.child -> opacity50.child
+//opacity50.child -> opacity75.child
+//opacity75.child -> opacity100.child
+}
+
+views {
+
+  view opacity_example {
+    title "Opacity and border"
+    include
+      element.kind == group,
+      element.kind == element
+  }
+}

@@ -65,33 +65,36 @@ export const SyncWithDiagram = memo(() => {
           })
         )
 
-        if (lastOnNavigate?.toView === viewId && !lastOnNavigate.positionCorrected) {
+        if (lastOnNavigate?.toView === viewId && lastOnNavigate.positionCorrected !== true) {
           const elFrom = lastOnNavigate.element
           const elTo = nodes.find(n => n.id === elFrom.id)
           if (elTo) {
             const centerFrom = lastOnNavigate.elementCenterScreenPosition
-            const nextZoom = Math.min(elFrom.width / elTo.width, elFrom.height / elTo.height)
+            let nextZoom = Math.min(elFrom.width / elTo.width, elFrom.height / elTo.height)
 
+            // TODO: investigate why 2 animation frames are needed
             requestAnimationFrame(() => {
-              // requestAnimationFrame(() => {
-              const v = xyflowRef.current.getViewport()
-              if (nextZoom < v.zoom) {
-                xyflowRef.current.setViewport({
-                  x: v.x,
-                  y: v.y,
-                  zoom: nextZoom
-                })
-              }
-              const centerTo = xyflowRef.current.flowToScreenPosition({
-                  x: elTo.position[0] + elTo.width / 2,
-                  y: elTo.position[1] + elTo.height / 2
-                }),
-                diff = {
-                  x: toDomPrecision(centerFrom.x - centerTo.x),
-                  y: toDomPrecision(centerFrom.y - centerTo.y)
+              requestAnimationFrame(() => {
+                const v = xyflowRef.current.getViewport()
+                if (nextZoom < v.zoom) {
+                  nextZoom = Math.max(nextZoom, v.zoom * 0.5)
+                  xyflowRef.current.setViewport({
+                    x: v.x,
+                    y: v.y,
+                    zoom: nextZoom
+                  })
                 }
-              xyflowApi.getState().panBy(diff)
-              // })
+
+                const centerTo = xyflowRef.current.flowToScreenPosition({
+                    x: elTo.position[0] + elTo.width / 2,
+                    y: elTo.position[1] + elTo.height / 2
+                  }),
+                  diff = {
+                    x: toDomPrecision(centerFrom.x - centerTo.x),
+                    y: toDomPrecision(centerFrom.y - centerTo.y)
+                  }
+                xyflowApi.getState().panBy(diff)
+              })
             })
           }
           diagramStoreApi.setState(

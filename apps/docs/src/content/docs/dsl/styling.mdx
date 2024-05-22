@@ -8,6 +8,7 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
+import LikeC4ThemeView from '@components/likec4-theme/LikeC4ThemeView.astro';
 import { Aside } from '@astrojs/starlight/components';
 
 You can change colors, shapes, and icons of elements and relationships.
@@ -73,7 +74,9 @@ model {
 Every `style` block may contain the following properties:  
 {'-'} shape  
 {'-'} color  
-{'-'} icon
+{'-'} icon  
+{'-'} opacity  
+{'-'} border
 
 #### Shape
 
@@ -81,9 +84,9 @@ Available element shapes:
 
 | shape     | example |
 | :-------- | :-----: |
-| rectangle |   ..    |
+| rectangle |   check below    |
 | storage   |   ..    |
-| cylinder  |   ..    |
+| cylinder  |   (same as storage)    |
 | browser   |   ..    |
 | mobile    |   ..    |
 | person    |   ..    |
@@ -91,20 +94,67 @@ Available element shapes:
 
 If not set, the default shape is `rectangle`.
 
+<LikeC4ThemeView viewId="themecolor_primary"/>
+
 #### Color
 
 | color          |                                                           |
 | :------------- | :-------------------------------------------------------: |
-| primary, blue  |  <div className="bg-blue-500 rounded-sm w-8 h-6"></div>   |
-| secondary, sky |   <div className="bg-sky-600 rounded-sm w-8 h-6"></div>   |
-| muted, slate   |  <div className="bg-slate-600 rounded-sm w-8 h-6"></div>  |
-| amber          |  <div className="bg-amber-600 rounded-sm w-8 h-6"></div>  |
-| gray           | <div className="bg-neutral-500 rounded-sm w-8 h-6"></div> |
-| green          |  <div className="bg-green-600 rounded-sm w-8 h-6"></div>  |
-| indigo         | <div className="bg-indigo-600 rounded-sm w-8 h-6"></div>  |
-| red            |   <div className="bg-red-500 rounded-sm w-8 h-6"></div>   |
+| primary, blue  |  ...  |
+| secondary, sky |  ...  |
+| muted, slate   |  ...  |
+| amber          |  ...  |
+| gray           |  ...  |
+| green          |  ...  |
+| indigo         |  ...  |
+| red            |  ...  |
 
 If not set, the default color is `primary`.
+
+<LikeC4ThemeView viewId="index"/>
+
+
+#### Opacity
+
+If element displayed as a group (like a container), you can set opacity:
+
+```likec4
+specification {
+
+  element element {
+    style {
+      opacity 10%
+    }
+  }
+
+}
+model {
+
+  element group {
+    element child
+  }
+}
+```
+
+
+<LikeC4ThemeView viewId="opacity_example"/>
+
+#### Border
+
+If element displayed as a group (like a container), you can change border style:
+
+```likec4
+specification {
+
+  element element {
+    style {
+      opacity 10%
+      border dotted
+    }
+  }
+}
+
+```
 
 #### Icon
 

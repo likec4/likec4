@@ -5,9 +5,10 @@
   "packageManager": "yarn@4.2.2",
   "private": true,
   "scripts": {
+    "generate:theme": "tsx scripts/generate-theme-c4.mts && likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./likec4/theme",
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./likec4/index-page",
-    "generate": "yarn generate:bigbank && yarn generate:index",
+    "generate": "yarn generate:theme && yarn generate:bigbank && yarn generate:index",
     "build:turbo": "run -T turbo run build --filter='@likec4/sites-docs'",
     "dev": "astro dev",
     "start": "astro dev",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.4",
-    "likec4": "workspace:*"
+    "likec4": "workspace:*",
+    "tsx": "~4.9.3"
   }
 }

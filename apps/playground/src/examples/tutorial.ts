@@ -49,6 +49,9 @@ views {
   view saas of saas {
     include *
 
+    style * {
+      opacity 25%
+    }
     style customer {
       color muted
     }

@@ -20,6 +20,7 @@ import {
 import { IconAlertCircle, IconChevronDown, IconShare } from '@tabler/icons-react'
 import { Link, useLoaderData } from '@tanstack/react-router'
 import { nanoid } from 'nanoid'
+import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { Logo } from '../../components/Logo'
 import { useWorkspaceState } from '../../state'
 
@@ -84,6 +85,7 @@ export function Header() {
           color="gray">
           GitHub
         </Button>
+        {/* <ColorSchemeToggle /> */}
         {
           /* <ActionIcon
           component="a"
