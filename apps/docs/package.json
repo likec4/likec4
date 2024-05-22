@@ -5,7 +5,8 @@
   "packageManager": "yarn@4.2.2",
   "private": true,
   "scripts": {
-    "generate:theme": "tsx scripts/generate-theme-c4.mts && likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./likec4/theme",
+    "generate:theme-c4": "tsx scripts/generate-theme-c4.mts",
+    "generate:theme": "likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./likec4/theme",
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./likec4/index-page",
     "generate": "yarn generate:theme && yarn generate:bigbank && yarn generate:index",
