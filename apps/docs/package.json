@@ -23,10 +23,10 @@
   "dependencies": {
     "@astrojs/check": "^0.7.0",
     "@astrojs/react": "^3.3.4",
-    "@astrojs/starlight": "^0.22.3",
+    "@astrojs/starlight": "^0.23.1",
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.20",
-    "astro": "^4.8.4",
+    "astro": "^4.8.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "starlight-links-validator": "^0.8.0",
