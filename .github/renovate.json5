@@ -30,6 +30,12 @@
       groupName: "langium",
       matchDepPatterns: ['langium']
     },
+    {
+      groupName: "vanilla-extract",
+      matchPackagePrefixes: [
+        "@vanilla-extract/"
+      ],
+    },
     // Update manually
     {
       enabled: false,
