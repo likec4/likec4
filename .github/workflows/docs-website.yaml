@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -39,7 +39,7 @@ jobs:
           yarn build:turbo
 
       - name: upload a build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: docs-astro
           path: apps/docs/dist/
@@ -53,7 +53,7 @@ jobs:
       name: ${{ github.ref == 'refs/heads/main' && 'docs-prod' || 'docs-preview' }}
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
         with:
           ref: ${{ github.ref }}
 
@@ -61,14 +61,14 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4
         with:
           name: docs-astro
           path: apps/docs/dist/
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
