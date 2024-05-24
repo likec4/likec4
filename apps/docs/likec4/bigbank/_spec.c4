@@ -1,8 +1,20 @@
 specification {
 
-  element enterprise
-  element softwaresystem
-  element container
+  element enterprise {
+    style {
+      opacity 20%
+    }
+  }
+  element softwaresystem {
+    style {
+      opacity 20%
+    }
+  }
+  element container {
+    style {
+      opacity 20%
+    }
+  }
   element component
 
   element person {

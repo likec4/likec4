@@ -46,6 +46,7 @@ views {
     include *
 
     style cloud {
+      opacity 25%
       color muted
     }
     style cloud.* {

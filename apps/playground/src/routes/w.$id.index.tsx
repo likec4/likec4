@@ -34,8 +34,17 @@ export function WorkspacePage() {
           <Stack h={'100%'} gap={0}>
             {hasFiles && (
               <Box flex={0}>
-                <Tabs variant="outline" value={current} onChange={v => v && store.setState({ currentFilename: v })}>
-                  <TabsList>
+                <Tabs
+                  variant="outline"
+                  style={{
+                    overflowX: 'scroll'
+                  }}
+                  value={current}
+                  onChange={v => v && store.setState({ currentFilename: v })}>
+                  <TabsList
+                    style={{
+                      flexWrap: 'nowrap'
+                    }}>
                     {files.map(filename => (
                       <TabsTab key={filename} value={filename} fz={'xs'} fw={'500'}>
                         {filename}

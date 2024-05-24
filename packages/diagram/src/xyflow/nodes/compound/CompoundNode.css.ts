@@ -72,11 +72,6 @@ export const transparent = style({
       vars: {
         [bgTransparencyDelta]: '25%'
       }
-    },
-    [`:where([data-mantine-color-scheme='light']) &`]: {
-      vars: {
-        [vars.compound.titleColor]: vars.element.stroke
-      }
     }
   }
 })
@@ -93,7 +88,7 @@ export const title = style({
   letterSpacing: '0.2px',
   lineHeight: 1,
   opacity: 0.75,
-  color: vars.compound.titleColor,
+  color: `var(--_compound-title-color,${vars.compound.titleColor})`,
   paddingLeft: 12,
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {
@@ -102,6 +97,12 @@ export const title = style({
     [`:where([data-mantine-color-scheme='light']) &`]: {
       opacity: 1
     }
+  }
+})
+
+globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
+  vars: {
+    ['--_compound-title-color']: vars.element.stroke
   }
 })
 
@@ -165,7 +166,12 @@ globalStyle(`${indicator} rect`, {
 // })
 const navigateBtnColor = createVar('navigateBtnColor')
 
-globalStyle(`:where([data-mantine-color-scheme='light']) ${container}:has(${transparent})`, {
+globalStyle(`${container}`, {
+  vars: {
+    [navigateBtnColor]: vars.element.loContrast
+  }
+})
+globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
   vars: {
     [navigateBtnColor]: vars.element.stroke
   }
@@ -177,14 +183,13 @@ export const navigateBtn = style({
   left: 3,
   top: 7,
   cursor: 'pointer',
-  color: navigateBtnColor,
+  color: `var(--_compound-title-color,${navigateBtnColor})`,
   transformOrigin: '90% 70%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
   backgroundColor: 'var(--ai-bg)',
   vars: {
-    [navigateBtnColor]: vars.element.loContrast,
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`,
     '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill} 65%, ${vars.element.stroke})`,
     '--ai-hover': `color-mix(in srgb , ${vars.element.fill} 50%, ${vars.element.stroke})`
@@ -201,10 +206,9 @@ export const navigateBtn = style({
     transitionDelay: '0'
   },
   selectors: {
-    [`:where([data-mantine-color-scheme='light'] ${container}:has(${transparent})) &`]: {
+    [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
       opacity: 0.85,
       vars: {
-        [navigateBtnColor]: vars.element.stroke,
         '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 50%)`,
         '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
       }

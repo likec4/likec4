@@ -9,7 +9,6 @@ specification {
       color secondary
     }
   }
-  element system
 }
 
 model {

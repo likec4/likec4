@@ -1,7 +1,5 @@
 import { createVar, globalStyle, style } from '@vanilla-extract/css'
 
-var fontFamily = createVar()
-
 export const cssRoot = style({
   margin: 0,
   padding: 0,
@@ -49,6 +47,12 @@ export const cssLikeC4Browser = style({
         ['--mantine-color-body']: 'rgb(1 1 1 / 25%) !important'
       }
     }
+  }
+})
+
+globalStyle(`:where(${cssLikeC4Browser}[data-mantine-color-scheme=light] .likec4-compound-transparent)`, {
+  vars: {
+    ['--_compound-title-color']: 'var(--likec4-compound-title-color)'
   }
 })
 

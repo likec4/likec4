@@ -71,7 +71,9 @@ export function LikeC4Browser<ViewId extends string>({
           __html: `
         [data-likec4-instance="${id}"] {
           position: fixed;
-          inset: 0;
+          top: 0;
+          left: 0;
+          right: 0;
           padding: 0;
           margin: 0;
           border: 0 solid transparent;
@@ -94,7 +96,7 @@ export function LikeC4Browser<ViewId extends string>({
           withinPortal={false}
           onClose={closeMe}>
           <ModalOverlay
-            blur={overlay?.blur ?? 16}
+            blur={overlay?.blur ?? 10}
             fixed={false}
             backgroundOpacity={overlay?.opacity ?? 0.6}
           />

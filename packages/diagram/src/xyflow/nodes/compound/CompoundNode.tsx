@@ -50,7 +50,11 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
 
   return (
     <Box
-      className={clsx(css.container, 'likec4-compound-node')}
+      className={clsx(
+        css.container,
+        'likec4-compound-node',
+        opacity < 100 && 'likec4-compound-transparent'
+      )}
       mod={{
         'compound-depth': depth,
         'likec4-color': color,

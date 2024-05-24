@@ -33,21 +33,22 @@ export function Header() {
   const isShareable = isCustom || isModified
   return (
     <Group h="100%" px="md" justify="space-between" align="stretch">
-      <Group gap={'lg'} align="center">
+      <Group gap={'lg'} align="center" visibleFrom="sm">
         <a href="https://likec4.dev/" target="_blank">
           <Logo
             style={{
               height: 20
             }} />
         </a>
-        <Box fz={'sm'} fw={500} visibleFrom="lg">{title}</Box>
+        <Box fz={'sm'} fw={500} visibleFrom="md">{title}</Box>
       </Group>
 
-      <Group h="100%" gap={'xs'}>
+      <Group h="100%" gap={4}>
         {isShareable && (
           <Popover position="bottom" withArrow shadow="md" closeOnClickOutside>
             <PopoverTarget>
               <Button
+                visibleFrom="md"
                 leftSection={<IconShare size={14} />}
                 size="xs">
                 Share
@@ -64,7 +65,6 @@ export function Header() {
           </Popover>
         )}
         <PlaygroundsMenu />
-        <Divider orientation="vertical" />
         <Button
           component="a"
           href="https://docs.likec4.dev/"
@@ -82,10 +82,12 @@ export function Header() {
           variant="subtle"
           px={'xs'}
           size="xs"
+          visibleFrom="md"
           color="gray">
           GitHub
         </Button>
-        {/* <ColorSchemeToggle /> */}
+        {import.meta.env.DEV && <ColorSchemeToggle />}
+
         {
           /* <ActionIcon
           component="a"
@@ -112,8 +114,7 @@ function PlaygroundsMenu() {
           px={'xs'}
           size="xs"
           color="gray"
-          rightSection={<IconChevronDown opacity={0.5} size={14} />}
-          visibleFrom="md">
+          rightSection={<IconChevronDown opacity={0.5} size={14} />}>
           Playgrounds
         </Button>
       </MenuTarget>

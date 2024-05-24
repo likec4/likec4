@@ -6,11 +6,11 @@ interface Props {
 const { viewId } = Astro.props
 ---
 
-<View viewId={viewId} className="likec4-bigbank-view" client:only="react" />
+<View viewId={viewId} className="likec4-bigbank-view" client:only="react" injectFontCss={false} />
 
 <style>
   .likec4-bigbank-view {
-    max-width: 900px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
   }

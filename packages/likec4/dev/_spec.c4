@@ -6,8 +6,16 @@ specification {
     }
   }
 
-  element softwareSystem
-  element container
+  element softwareSystem {
+    style {
+      opacity 25%
+    }
+  }
+  element container {
+    style {
+      opacity 25%
+    }
+  }
   element component
   element service
   element app
@@ -15,6 +23,7 @@ specification {
 
   element externalSystem {
     style {
+      opacity 25%
       color gray
     }
   }
