@@ -2523,9 +2523,9 @@ __metadata:
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/react": "npm:18.2.0"
     "@types/react-dom": "npm:18.2.4"
-    "@vanilla-extract/css": "npm:^1.15.1"
-    "@vanilla-extract/dynamic": "npm:^2.1.0"
-    "@vanilla-extract/esbuild-plugin": "npm:^2.3.5"
+    "@vanilla-extract/css": "npm:1.15.1"
+    "@vanilla-extract/dynamic": "npm:2.1.0"
+    "@vanilla-extract/esbuild-plugin": "npm:2.3.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@xyflow/react": "npm:^12.0.0-next"
     clsx: "npm:^2.1.1"
@@ -2826,8 +2826,8 @@ __metadata:
     "@types/react-dom": "npm:18.2.4"
     "@types/vscode": "npm:~1.88.0"
     "@types/vscode-webview": "npm:^1.57.5"
-    "@vanilla-extract/css": "npm:^1.15.1"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.9"
+    "@vanilla-extract/css": "npm:1.15.1"
+    "@vanilla-extract/vite-plugin": "npm:4.0.9"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     lucide-react: "npm:^0.294.0"
@@ -6044,7 +6044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.15.1":
+"@vanilla-extract/css@npm:1.15.1, @vanilla-extract/css@npm:^1.15.1":
   version: 1.15.1
   resolution: "@vanilla-extract/css@npm:1.15.1"
   dependencies:
@@ -6063,7 +6063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/dynamic@npm:^2.1.0":
+"@vanilla-extract/dynamic@npm:2.1.0, @vanilla-extract/dynamic@npm:^2.1.0":
   version: 2.1.0
   resolution: "@vanilla-extract/dynamic@npm:2.1.0"
   dependencies:
@@ -6072,7 +6072,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/esbuild-plugin@npm:^2.3.5":
+"@vanilla-extract/esbuild-plugin@npm:2.3.5, @vanilla-extract/esbuild-plugin@npm:^2.3.5":
   version: 2.3.5
   resolution: "@vanilla-extract/esbuild-plugin@npm:2.3.5"
   dependencies:
@@ -6113,7 +6113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.9":
+"@vanilla-extract/vite-plugin@npm:4.0.9, @vanilla-extract/vite-plugin@npm:^4.0.9":
   version: 4.0.9
   resolution: "@vanilla-extract/vite-plugin@npm:4.0.9"
   dependencies:
@@ -12135,9 +12135,9 @@ __metadata:
     "@types/react-dom": "npm:18.2.4"
     "@types/string-hash": "npm:^1"
     "@types/yargs": "npm:^17.0.32"
-    "@vanilla-extract/css": "npm:^1.15.1"
-    "@vanilla-extract/dynamic": "npm:^2.1.0"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.9"
+    "@vanilla-extract/css": "npm:1.15.1"
+    "@vanilla-extract/dynamic": "npm:2.1.0"
+    "@vanilla-extract/vite-plugin": "npm:4.0.9"
     "@vitejs/plugin-react": "npm:^4.2.1"
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
