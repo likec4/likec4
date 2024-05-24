@@ -25,7 +25,7 @@ globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
 
 const isSelected = '.react-flow__edge.selected'
 
-globalStyle(`:where(${isSelected}}) ${container}`, {
+globalStyle(`:where(${isSelected}) ${container}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
     [xyvars.edge.strokeWidth]: '3px'
@@ -40,7 +40,7 @@ globalStyle(`${container}[data-edge-hovered='true']`, {
   }
 })
 
-globalStyle(`:where(${isSelected}}) ${container}[data-edge-hovered='true']`, {
+globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
   vars: {
     [xyvars.edge.strokeWidth]: '3.6px'
   }
@@ -78,7 +78,7 @@ export const fillStrokeCtx = style({
   fill: xyvars.edge.stroke,
   stroke: xyvars.edge.stroke
 })
-globalStyle(`:where(${isSelected}}) ${fillStrokeCtx}`, {
+globalStyle(`:where(${isSelected}) ${fillStrokeCtx}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected
   }
