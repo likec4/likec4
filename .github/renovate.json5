@@ -28,13 +28,19 @@
       automerge: true
     },
     {
-      groupName: "langium",
+      groupName: "@langium",
       matchDepPatterns: ['langium']
     },
     {
-      groupName: "vanilla-extract",
+      groupName: "@vanilla-extract",
       matchPackagePrefixes: [
         "@vanilla-extract/"
+      ],
+    },
+    {
+      groupName: "@codingame",
+      matchPackagePrefixes: [
+        "@codingame/"
       ],
     },
     // Update manually
