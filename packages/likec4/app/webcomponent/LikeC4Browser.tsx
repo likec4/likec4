@@ -3,7 +3,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
-import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
+import { bundledStyles, matchesColorScheme, theme } from './styles'
 
 // type MiscellaneousProps = {
 //   focusTrap: HTMLElement
