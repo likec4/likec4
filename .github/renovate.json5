@@ -3,7 +3,8 @@
   extends: [
     "config:best-practices",
     "npm:unpublishSafe",
-    "helpers:disableTypesNodeMajor"
+    "helpers:disableTypesNodeMajor",
+    ":preserveSemverRanges"
   ],
   prHourlyLimit: 10,
   prConcurrentLimit: 10,
@@ -51,7 +52,10 @@
     },
     {
       enabled: false,
-      matchDepPatterns: ['^monaco', '^@monaco']
+      matchDepPatterns: [
+        '^monaco',
+        '^@monaco'
+      ]
     },
     {
       enabled: false,
