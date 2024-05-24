@@ -3,15 +3,16 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
-type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
-
 export { isLikeC4ViewId }
+
+export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
 export function LikeC4View({
   viewId,
   interactive = true,
   colorScheme,
   injectFontCss = true,
+  overlay,
   ...props
 }: LikeC4ViewProps) {
   const view = LikeC4Views[viewId]
@@ -42,7 +43,9 @@ export function LikeC4View({
           view={browserView}
           injectFontCss={false}
           colorScheme={colorScheme}
+          overlay={overlay}
           onNavigateTo={onNavigateTo}
+          background="dots"
           onClose={() => onNavigateTo(null)}
         />,
         document.body,

@@ -25,6 +25,8 @@ export function LikeC4Browser<ViewId extends string>({
   injectFontCss,
   onNavigateTo,
   onClose,
+  overlay,
+  background = 'dots',
   ...props
 }: LikeC4BrowserProps<ViewId>) {
   const id = useId()
@@ -72,10 +74,11 @@ export function LikeC4Browser<ViewId extends string>({
           inset: 0;
           padding: 0;
           margin: 0;
+          border: 0 solid transparent;
           box-sizing: border-box;
           z-index: 9999;
-          width: 100%;
-          height: 100%;
+          width: 100dvw;
+          height: 100dvh;
         }
       `
         }} />
@@ -90,7 +93,11 @@ export function LikeC4Browser<ViewId extends string>({
           fullScreen
           withinPortal={false}
           onClose={closeMe}>
-          <ModalOverlay blur={16} fixed={false} backgroundOpacity={0.5} />
+          <ModalOverlay
+            blur={overlay?.blur ?? 16}
+            fixed={false}
+            backgroundOpacity={overlay?.opacity ?? 0.6}
+          />
           <ModalContent className={modalContent}>
             <ModalCloseButton className={modalCloseButton} />
             <ModalBody className={modalBody}>
@@ -101,6 +108,7 @@ export function LikeC4Browser<ViewId extends string>({
                 pannable
                 zoomable
                 fitView
+                background={background}
                 fitViewPadding={0.05}
                 controls={false}
                 nodesSelectable={false}

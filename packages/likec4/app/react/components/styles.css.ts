@@ -11,10 +11,9 @@ export const cssRoot = style({
   overflow: 'hidden',
   backgroundColor: 'unset',
   vars: {
-    [fontFamily]:
-      `"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`,
-    ['--likec4-default-font-family']: fontFamily,
-    ['--mantine-font-family']: fontFamily
+    ['--likec4-default-font-family']:
+      `"IBM Plex Sans",ui-sans-serif system-ui, sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`
+    // ['--mantine-font-family']: 'var(--likec4-default-font-family)'
   }
 })
 

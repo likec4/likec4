@@ -26,8 +26,6 @@ type OnlyExpectedProps = Required<
     LikeC4DiagramProperties,
     | 'className'
     | 'controls'
-    | 'pannable'
-    | 'zoomable'
     | 'background'
   >
 >
@@ -53,7 +51,8 @@ const selector = (s: DiagramState) => ({
   hasOnCanvasContextMenu: !!s.onCanvasContextMenu,
   hasOnEdgeContextMenu: !!s.onEdgeContextMenu,
   hasOnEdgeClick: !!s.onEdgeClick,
-  hasOnCanvasClick: !!s.onCanvasClick || !!s.onCanvasDblClick
+  zoomable: s.zoomable,
+  pannable: s.pannable
 })
 
 function XYFlowWrapper({
@@ -61,8 +60,6 @@ function XYFlowWrapper({
   children,
   defaultNodes,
   defaultEdges,
-  pannable,
-  zoomable,
   controls,
   background,
   style
@@ -73,6 +70,8 @@ function XYFlowWrapper({
     nodesDraggable,
     fitView,
     fitViewPadding,
+    pannable,
+    zoomable,
     ...editor
   } = useDiagramState(selector)
 
@@ -120,32 +119,26 @@ function XYFlowWrapper({
         selectionKeyCode: null
       })}
       nodesDraggable={nodesDraggable}
-      {...(nodesDraggable && layoutConstraints)}
+      {...nodesDraggable && {
+        onNodeDragStart: layoutConstraints.onNodeDragStart,
+        onNodeDrag: layoutConstraints.onNodeDrag,
+        onNodeDragStop: layoutConstraints.onNodeDragStop
+      }}
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
+      onDoubleClick={handlers.onDoubleClick}
       onPaneClick={handlers.onPaneClick}
-      {...(editor.hasOnNodeClick && {
-        onNodeClick: handlers.onNodeClick
-      })}
-      {...(editor.hasOnEdgeClick && {
-        onEdgeClick: handlers.onEdgeClick
-      })}
       onMoveEnd={handlers.onMoveEnd}
+      onNodeMouseEnter={handlers.onNodeMouseEnter}
+      onNodeMouseLeave={handlers.onNodeMouseLeave}
+      onEdgeMouseEnter={handlers.onEdgeMouseEnter}
+      onEdgeMouseLeave={handlers.onEdgeMouseLeave}
+      onNodeClick={handlers.onNodeClick}
+      onNodeDoubleClick={handlers.onNodeDoubleClick}
+      onEdgeClick={handlers.onEdgeClick}
       onInit={() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')
-      }}
-      onNodeMouseEnter={(_event, node) => {
-        diagramApi.getState().setHoveredNode(node.id)
-      }}
-      onNodeMouseLeave={() => {
-        diagramApi.getState().setHoveredNode(null)
-      }}
-      onEdgeMouseEnter={(_event, edge) => {
-        diagramApi.getState().setHoveredEdge(edge.id)
-      }}
-      onEdgeMouseLeave={() => {
-        diagramApi.getState().setHoveredEdge(null)
       }}
       {...(editor.hasOnNodeContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu

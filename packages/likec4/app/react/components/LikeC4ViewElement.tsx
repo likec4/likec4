@@ -10,7 +10,7 @@ import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
 export type LikeC4ViewElementProps<ViewId extends string> =
-  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive'>
+  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'overlay'>
   & {
     view: DiagramView<ViewId>
     onNavigateTo?: ((to: ViewId) => void) | undefined
@@ -21,6 +21,7 @@ export function LikeC4ViewElement<ViewId extends string>({
   view,
   injectFontCss,
   colorScheme,
+  background = 'transparent',
   ...props
 }: LikeC4ViewElementProps<ViewId>) {
   const id = useId()
@@ -34,11 +35,12 @@ export function LikeC4ViewElement<ViewId extends string>({
           __html: `
         [data-likec4-instance="${id}"] {
           box-sizing: border-box;
+          border: 0 solid transparent;
           padding: 0;
           width: 100%;
           height: auto;
           aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-          max-height: ${Math.ceil(view.height)}px;
+          max-height: ${Math.ceil(view.height * 1.01)}px;
         }
       `
         }} />
@@ -60,7 +62,7 @@ export function LikeC4ViewElement<ViewId extends string>({
           readonly
           pannable={false}
           zoomable={false}
-          background={'transparent'}
+          background={background}
           fitView
           fitViewPadding={0.02}
           showElementLinks

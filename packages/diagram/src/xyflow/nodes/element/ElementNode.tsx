@@ -78,7 +78,7 @@ export function ElementNode({
 }: ElementNodeProps) {
   const { isHovered, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
-    isInteractive: s.nodesDraggable || s.nodesSelectable,
+    isInteractive: s.nodesDraggable || s.nodesSelectable || !!s.onNavigateTo,
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo
   }))
@@ -99,7 +99,7 @@ export function ElementNode({
     case dragging:
       animate = 'idle'
       break
-    case (isInteractive || hasOnNavigateTo) && isHovered:
+    case isInteractive && isHovered:
       animate = 'hovered'
       break
     case selected:

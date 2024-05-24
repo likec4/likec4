@@ -10,6 +10,8 @@ import { cssRoot } from './styles.css'
 const Root: DetailedHTMLFactory<
   HTMLAttributes<HTMLDivElement> & {
     styleSheets?: CSSStyleSheet[]
+    mode?: 'open' | 'closed'
+    delegatesFocus?: boolean
     ssr?: boolean
   },
   HTMLDivElement
@@ -52,7 +54,7 @@ export function ShadowRoot({
       >
         <MantineProvider
           {...(colorScheme && { forceColorScheme: colorScheme })}
-          defaultColorScheme="dark"
+          defaultColorScheme={colorScheme ?? 'dark'}
           getRootElement={() => mantineRootRef.current ?? undefined}
           cssVariablesSelector={rootSelector}
           theme={theme}>
