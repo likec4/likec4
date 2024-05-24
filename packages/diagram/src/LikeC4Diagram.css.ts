@@ -16,7 +16,8 @@ globalStyle(`.react-flow${cssReactFlow}`, {
   }
 })
 globalStyle(`.react-flow${cssReactFlow} .react-flow__viewport`, {
-  willChange: 'transform'
+  // willChange: 'transform'
+  backfaceVisibility: 'hidden'
 })
 
 export const cssDisablePan = style({})

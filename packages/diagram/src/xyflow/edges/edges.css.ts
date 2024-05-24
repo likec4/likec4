@@ -11,7 +11,7 @@ export const container = style({
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
-    [xyvars.edge.strokeWidth]: '2.1px'
+    [xyvars.edge.strokeWidth]: '2.2px'
   }
 })
 
@@ -23,9 +23,12 @@ globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
   }
 })
 
-globalStyle(`:where(.react-flow__edge.selected) ${container}`, {
+const isSelected = '.react-flow__edge.selected'
+
+globalStyle(`:where(${isSelected}}) ${container}`, {
   vars: {
-    [xyvars.edge.strokeWidth]: '2.5px'
+    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
+    [xyvars.edge.strokeWidth]: '3px'
   }
 })
 
@@ -37,9 +40,9 @@ globalStyle(`${container}[data-edge-hovered='true']`, {
   }
 })
 
-globalStyle(`:where(.react-flow__edge.selected) ${container}[data-edge-hovered='true']`, {
+globalStyle(`:where(${isSelected}}) ${container}[data-edge-hovered='true']`, {
   vars: {
-    [xyvars.edge.strokeWidth]: '3.5px'
+    [xyvars.edge.strokeWidth]: '3.6px'
   }
 })
 // globalStyle(`${container}[data-edge-hovered='true']`, {
@@ -56,19 +59,28 @@ globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg
 })
 
 export const edgePathBg = style({
-  strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
-  strokeOpacity: 0.1
+  strokeWidth: xyvars.edge.strokeWidth,
+  strokeOpacity: 0.05,
+  // transition: 'stroke-width 175ms ease-in-out',
+  // transition: 'stroke-width 175ms ease-in-out, stroke-opacity 150ms ease-out',
+  transitionProperty: 'stroke-width, stroke-opacity',
+  transitionDuration: '155ms',
+  transitionTimingFunction: 'ease-out',
+  selectors: {
+    [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
+      strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8px)`,
+      strokeOpacity: 0.11
+    }
+  }
 })
 
 export const fillStrokeCtx = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke,
-  selectors: {
-    ':where(.react-flow__edge.selected) &': {
-      vars: {
-        [xyvars.edge.stroke]: xyvars.edge.strokeSelected
-      }
-    }
+  stroke: xyvars.edge.stroke
+})
+globalStyle(`:where(${isSelected}}) ${fillStrokeCtx}`, {
+  vars: {
+    [xyvars.edge.stroke]: xyvars.edge.strokeSelected
   }
 })
 
@@ -92,7 +104,7 @@ export const cssEdgePath = style({
       animationDelay: '500ms',
       transition: 'all 130ms ease-out'
     },
-    [`:where(.react-flow__edge.selected) &`]: {
+    [`:where(${isSelected}) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
       transition: 'all 130ms ease-out'
@@ -120,7 +132,7 @@ export const edgeLabel = style({
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: '3px',
   transform: varTranslate,
-  willChange: 'transform',
+  backfaceVisibility: 'hidden',
   vars: {
     // [varTranslate]: `translate(calc(${varLabelX} - 50%), calc(${varLabelY} - 50%))`,
     [varTranslate]: `translate(${varLabelX}, ${varLabelY})`,

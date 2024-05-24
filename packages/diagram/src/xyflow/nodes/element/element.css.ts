@@ -13,6 +13,7 @@ export const container = style({
   height: '100%',
   padding: 0,
   margin: 0,
+  backfaceVisibility: 'hidden',
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   }

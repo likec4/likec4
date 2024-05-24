@@ -27,14 +27,20 @@ export const SyncWithDiagram = memo(() => {
       state => ({
         viewId: state.view.id,
         nodes: state.view.nodes,
-        edges: state.view.edges,
-        draggable: state.nodesDraggable,
-        selectable: state.nodesSelectable
+        edges: state.view.edges
       }),
       // listener
-      ({ viewId, nodes, edges, ...opts }) => {
-        const { lastOnNavigate } = diagramStoreApi.getState()
-        const updates = diagramViewToXYFlowData({ nodes, edges }, opts)
+      ({ viewId, nodes, edges }) => {
+        const {
+          lastOnNavigate,
+          nodesDraggable,
+          nodesSelectable,
+          focusedNodeId
+        } = diagramStoreApi.getState()
+        const updates = diagramViewToXYFlowData({ nodes, edges }, {
+          draggable: nodesDraggable,
+          selectable: nodesSelectable || focusedNodeId !== null
+        })
 
         xyflowRef.current.setNodes(prev =>
           updates.nodes.map(update => {

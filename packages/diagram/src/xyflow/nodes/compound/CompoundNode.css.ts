@@ -93,10 +93,10 @@ export const title = style({
   selectors: {
     [`:where([data-likec4-navigable='true']) &`]: {
       paddingLeft: 26
-    },
-    [`:where([data-mantine-color-scheme='light']) &`]: {
-      opacity: 1
     }
+    // [`:where([data-mantine-color-scheme='light']) &`]: {
+    //   opacity: 1
+    // }
   }
 })
 
@@ -104,6 +104,10 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
   vars: {
     ['--_compound-title-color']: vars.element.stroke
   }
+})
+
+globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) ${title}`, {
+  opacity: 1
 })
 
 const indicatorKeyframes = generateIdentifier('indicator')
