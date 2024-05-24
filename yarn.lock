@@ -2747,8 +2747,8 @@ __metadata:
     "@mantine/hooks": "npm:^7.9.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^2.47.0"
-    "@tanstack/react-router": "npm:^1.31.19"
-    "@tanstack/router-vite-plugin": "npm:^1.31.18"
+    "@tanstack/react-router": "npm:^1.33.7"
+    "@tanstack/router-vite-plugin": "npm:^1.32.17"
     "@typefox/monaco-editor-react": "npm:4.1.1"
     "@types/node": "npm:^20.12.12"
     "@types/react": "npm:^18.3.2"
@@ -5182,9 +5182,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.31.19":
-  version: 1.31.19
-  resolution: "@tanstack/react-router@npm:1.31.19"
+"@tanstack/react-router@npm:^1.33.7":
+  version: 1.33.8
+  resolution: "@tanstack/react-router@npm:1.33.8"
   dependencies:
     "@tanstack/history": "npm:1.31.16"
     "@tanstack/react-store": "npm:^0.2.1"
@@ -5193,7 +5193,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10c0/b938c251bc2aea99c88ef9debeeb23a462d305e2066fa31d1c6aa3ab2caf4b0584b01a726442d89ec5ea7b05930faa44babd39f4679203609abb00b101d332f2
+  checksum: 10c0/85c48ac9830461a091f2ff17e8b901f88b80fc5f051ab23cc0b77d883e3c234059fc29b5b006577a14d4250f97cffdef06b94e4c662ead642389ce6720bce410
   languageName: node
   linkType: hard
 
@@ -5210,19 +5210,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-generator@npm:1.30.0":
-  version: 1.30.0
-  resolution: "@tanstack/router-generator@npm:1.30.0"
+"@tanstack/router-generator@npm:1.33.12":
+  version: 1.33.12
+  resolution: "@tanstack/router-generator@npm:1.33.12"
   dependencies:
     prettier: "npm:^3.1.1"
     zod: "npm:^3.22.4"
-  checksum: 10c0/7be6b6e214e22151e5603c06d82c36ee06f3535ec67df85b739d77cf9b3bc6569a8d1d81125a3345e18c17fac44913ca518c8807878eccff5ce61dc8d736b4e4
+  checksum: 10c0/2e1f4c2d3f119032a3aab25ad283338e9393110f6cf1ae1459b4498a1cbebcf5ff932c6b77b23dbf44e1577561e73438f9e7ed4190ecf32561ec0fc40ae32933
   languageName: node
   linkType: hard
 
-"@tanstack/router-vite-plugin@npm:^1.31.18":
-  version: 1.31.18
-  resolution: "@tanstack/router-vite-plugin@npm:1.31.18"
+"@tanstack/router-vite-plugin@npm:^1.32.17":
+  version: 1.33.12
+  resolution: "@tanstack/router-vite-plugin@npm:1.33.12"
   dependencies:
     "@babel/core": "npm:^7.23.7"
     "@babel/generator": "npm:^7.23.6"
@@ -5233,14 +5233,14 @@ __metadata:
     "@babel/template": "npm:^7.24.0"
     "@babel/traverse": "npm:^7.24.1"
     "@babel/types": "npm:^7.24.0"
-    "@tanstack/router-generator": "npm:1.30.0"
+    "@tanstack/router-generator": "npm:1.33.12"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__generator": "npm:^7.6.8"
     "@types/babel__template": "npm:^7.4.4"
     "@types/babel__traverse": "npm:^7.20.5"
     "@vitejs/plugin-react": "npm:^4.2.1"
     zod: "npm:^3.22.4"
-  checksum: 10c0/5b32372e3c418ee8a9232fc41e4b463ac47d6c715a5e95f3c21b6f4166f15ee1165fa5c3371584943d65bd6c5d204e3991a5ca5e72aee9c4a1d66c6e6300ba94
+  checksum: 10c0/d376f03c5ce6109d955476bf3f08291d1d457acb24406911e5b5fefb457f9c856b694d140f157f1094ef7d00fe7f3c68981ab380e164f73040d5d5de38e33d1b
   languageName: node
   linkType: hard
 
@@ -12126,8 +12126,8 @@ __metadata:
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons": "npm:^2.47.0"
     "@tabler/icons-react": "npm:^2.47.0"
-    "@tanstack/react-router": "npm:^1.31.19"
-    "@tanstack/router-vite-plugin": "npm:^1.31.18"
+    "@tanstack/react-router": "npm:^1.33.7"
+    "@tanstack/router-vite-plugin": "npm:^1.32.17"
     "@types/mermaid": "npm:^9.2.0"
     "@types/node": "npm:^20.12.7"
     "@types/prop-types": "npm:^15.7.11"
