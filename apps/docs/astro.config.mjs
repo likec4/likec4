@@ -8,9 +8,6 @@ import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
-  prefetch: {
-    defaultStrategy: 'viewport'
-  },
   site: 'https://docs.likec4.dev',
   // devToolbar: {
   //   enabled: true
@@ -23,10 +20,11 @@ export default defineConfig({
     react(),
     starlight({
       title: 'LikeC4',
+      description:
+        'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
       social: {
         github: 'https://github.com/likec4/likec4'
       },
-      head: [],
       tagline: 'A language for expressing and visualizing software architecture',
       logo: {
         dark: './src/assets/logo-dark.svg',

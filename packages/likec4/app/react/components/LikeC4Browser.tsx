@@ -33,7 +33,7 @@ export function LikeC4Browser<ViewId extends string>({
   const scheme = useColorScheme(colorScheme)
   const [opened, setOpened] = useState(false)
 
-  const defaultOverlayOpacity = scheme === 'light' ? 0.75 : 0.55
+  const defaultOverlayOpacity = scheme === 'light' ? 0.75 : 0.6
 
   const [historyViewId, historyOps, {
     history,

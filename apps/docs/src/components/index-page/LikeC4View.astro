@@ -4,14 +4,9 @@ interface Props {
   viewId: LikeC4ViewId;
 }
 const { viewId } = Astro.props
-
-const overlay = {
-  blur: 10,
-  opacity: 0.65
-}
 ---
 
-<C4View viewId={viewId} className="likec4-index-view" client:only="react" injectFontCss={false} overlay={overlay} />
+<C4View viewId={viewId} className="likec4-index-view" client:only="react" injectFontCss={false} />
 
 <style>
   .likec4-index-view {
