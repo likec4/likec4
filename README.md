@@ -6,7 +6,7 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </h4>
 
-[docs](https://likec4.dev/docs/) | [playground](https://likec4.dev/playground/) | [demo](https://template.likec4.dev/view/cloud)
+[docs](https://docs.likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/cloud)
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 
@@ -48,13 +48,13 @@ Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 > StackBlitz does not support extensions, so no validation, syntax highlighting and etc.\
 > You can try with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4) and suggested extension.
 
-Check the [Tutorial](https://likec4.dev/docs/tutorial/) - a bit better overview of LikeC4.
+Check [Tutorial](https://docs.likec4.dev/tutorial/) - for a quick overview of LikeC4.
 
 ## About this repository
 
 ### Top-level layout
 
-This repository's contents is divided across four primary sections:
+This repository's contents are divided into four primary sections:
 
 - `/docs` contains the content for our docs site at [likec4.dev](https://likec4.dev)
 - `/examples` our local development / examples project

@@ -1,7 +1,6 @@
 import { cn } from '$/lib'
 import dynamic from 'next/dynamic'
 import { Noto_Sans } from 'next/font/google'
-import Link from 'next/link'
 import type { PropsWithChildren } from 'react'
 import type { LikeC4ViewId } from './generated'
 import styles from './index.module.css'
@@ -63,8 +62,8 @@ export const HeroVideo = () => (
 
 export const GetStartedButton = () => (
   <section className={cn('w-full', 'mt-6', 'text-center')}>
-    <Link
-      href={'/docs/'}
+    <a
+      href={'https://docs.likec4.dev/'}
       className={cn(
         heroFont.className,
         'inline-flex items-center justify-center rounded-md text-md',
@@ -75,7 +74,7 @@ export const GetStartedButton = () => (
       )}
     >
       Get Started
-    </Link>
+    </a>
   </section>
 )
 

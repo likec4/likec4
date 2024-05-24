@@ -6,8 +6,8 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </p>
   <p>
-    <a href="https://likec4.dev/docs/">docs</a> |
-    <a href="https://likec4.dev/playground/">playground</a> |
+    <a href="https://docs.likec4.dev/">docs</a> |
+    <a href="https://playground.likec4.dev/">playground</a> |
     <a href="https://template.likec4.dev/view/cloud">demo</a>
   </p>
 
