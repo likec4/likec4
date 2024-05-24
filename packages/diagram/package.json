@@ -51,7 +51,7 @@
     "@react-hookz/web": "^24.0.4",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
-    "framer-motion": "^11.2.2",
+    "framer-motion": "^11.2.5",
     "remeda": "^1.61.0",
     "zustand": "^4.5.2"
   },
