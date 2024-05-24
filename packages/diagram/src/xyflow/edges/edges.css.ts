@@ -1,36 +1,45 @@
 import { rem } from '@mantine/core'
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
+import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
 import { vars, xyvars } from '../../theme.css'
+
+const mixColor = createVar('mix-color')
 
 export const container = style({
   vars: {
+    [mixColor]: `black`,
     [xyvars.edge.stroke]: vars.relation.lineColor,
-    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
+    [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
+    [xyvars.edge.strokeWidth]: '2.1px'
+  }
+})
+
+globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
+  vars: {
+    [mixColor]: `white`,
+    [xyvars.edge.labelColor]: vars.relation.labelColor,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 55%)`
+  }
+})
+
+globalStyle(`:where(.react-flow__edge.selected) ${container}`, {
+  vars: {
     [xyvars.edge.strokeWidth]: '2.5px'
-  },
-  selectors: {
-    [mantine.darkSelector]: {
-      vars: {
-        [xyvars.edge.labelColor]: vars.relation.labelColor,
-        [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 55%)`
-      }
-    }
-    // [mantine.lightSelector]: {
-    //   // mixBlendMode: 'luminosity',
-    //   vars: {
-    //     // [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, #000 85%)`
-    //   }
-    // }
   }
 })
 
 globalStyle(`${container}[data-edge-hovered='true']`, {
   vars: {
-    [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 30%)`,
+    // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
+    [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
     [xyvars.edge.strokeWidth]: '3px'
+  }
+})
+
+globalStyle(`:where(.react-flow__edge.selected) ${container}[data-edge-hovered='true']`, {
+  vars: {
+    [xyvars.edge.strokeWidth]: '3.5px'
   }
 })
 // globalStyle(`${container}[data-edge-hovered='true']`, {
@@ -38,12 +47,6 @@ globalStyle(`${container}[data-edge-hovered='true']`, {
 //     [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, white 35%)`
 //   },
 // })
-
-globalStyle(`.react-flow__edge.selected ${container}`, {
-  vars: {
-    [xyvars.edge.strokeWidth]: '2.5'
-  }
-})
 
 globalStyle(`.react-flow__edges > svg`, {
   mixBlendMode: 'screen'
@@ -61,7 +64,7 @@ export const fillStrokeCtx = style({
   fill: xyvars.edge.stroke,
   stroke: xyvars.edge.stroke,
   selectors: {
-    '.react-flow__edge.selected &': {
+    ':where(.react-flow__edge.selected) &': {
       vars: {
         [xyvars.edge.stroke]: xyvars.edge.strokeSelected
       }
@@ -69,9 +72,29 @@ export const fillStrokeCtx = style({
   }
 })
 
+const strokeKeyframes = generateIdentifier('strokeKeyframes')
+globalKeyframes(strokeKeyframes, {
+  'from': {
+    strokeDashoffset: 18 * 2
+  },
+  'to': {
+    strokeDashoffset: 1
+  }
+})
+
 export const cssEdgePath = style({
+  animationDuration: '800ms',
+  animationIterationCount: 'infinite',
+  animationTimingFunction: 'linear',
   selectors: {
-    [`${container}[data-edge-hovered='true'] &`]: {
+    [`:where([data-edge-hovered='true']) &`]: {
+      animationName: strokeKeyframes,
+      animationDelay: '500ms',
+      transition: 'all 130ms ease-out'
+    },
+    [`:where(.react-flow__edge.selected) &`]: {
+      animationName: strokeKeyframes,
+      animationDelay: '0ms',
       transition: 'all 130ms ease-out'
     }
   }

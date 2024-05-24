@@ -1,5 +1,6 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { Controls, ReactFlow } from '@xyflow/react'
+import { Controls, PanOnScrollMode, ReactFlow } from '@xyflow/react'
+import { DEV } from 'esm-env'
 import { type CSSProperties, memo, type PropsWithChildren } from 'react'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
@@ -9,6 +10,7 @@ import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/useLayoutConstraints'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
+import { SelectEdgesOnNodeFocus } from './SelectEdgesOnNodeFocus'
 import { XYFlowEdge, XYFlowNode } from './types'
 import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
@@ -41,7 +43,7 @@ type XYFlowWrapperProps = Simplify<
 >
 
 const selector = (s: DiagramState) => ({
-  nodesSelectable: s.nodesSelectable,
+  nodesSelectable: s.nodesSelectable || s.focusedNodeId !== null,
   nodesDraggable: s.nodesDraggable,
   fitView: s.fitViewEnabled,
   fitViewPadding: s.fitViewPadding,
@@ -151,6 +153,7 @@ function XYFlowWrapper({
       })}>
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls />}
+      {zoomable && !editor.hasOnNodeClick && <SelectEdgesOnNodeFocus />}
       {children}
     </ReactFlow>
   )

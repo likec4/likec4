@@ -83,6 +83,7 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   prev.id === next.id
   && prev.source === next.source
   && prev.target === next.target
+  && eq(prev.selected ?? false, next.selected ?? false)
   && isSamePoint(prev.sourceX, next.sourceX)
   && isSamePoint(prev.sourceY, next.sourceY)
   && isSamePoint(prev.targetX, next.targetX)
@@ -94,7 +95,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   id,
   data,
   selected: _selected,
-  markerEnd: _markerEnd,
   style,
   source,
   target,
@@ -107,16 +107,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const isNotModified = isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
     && isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
-  invariant(data, 'data is required')
-  const {
-    edge
-  } = data
+  const { edge: diagramEdge } = data
   // const edgePath = bezierPath(edge.points)
 
-  const color = edge.color ?? 'gray'
+  const color = diagramEdge.color ?? 'gray'
   const isHovered = useDiagramState(s => s.hoveredEdgeId === id)
 
-  const line = edge.line ?? 'dashed'
+  const line = diagramEdge.line ?? 'dashed'
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
 
@@ -132,7 +129,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   let edgePath: string, labelX: number, labelY: number
 
   if (isNotModified) {
-    edgePath = bezierPath(edge.points)
+    edgePath = bezierPath(diagramEdge.points)
     labelX = data.label?.bbox.x ?? 0
     labelY = data.label?.bbox.y ?? 0
   } else {
@@ -179,8 +176,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         edgePath={edgePath}
         interactionWidth={interactionWidth ?? 10}
         strokeDasharray={strokeDasharray}
-        markerStart={edge.tailArrow ? marker : undefined}
-        markerEnd={edge.headArrow ? marker : undefined}
+        markerStart={diagramEdge.tailArrow ? marker : undefined}
+        markerEnd={diagramEdge.headArrow ? marker : undefined}
         style={style} />
       {
         /*
@@ -246,20 +243,20 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   )
 }, isEqualProps)
 
-const RelationshipPath = memo<{
-  edgePath: string
-  interactionWidth: number
-  strokeDasharray: string | undefined
-  markerStart: string | undefined
-  markerEnd: string | undefined
-  style: CSSProperties | undefined
-}>(({
+const RelationshipPath = ({
   edgePath,
   interactionWidth,
   strokeDasharray,
   markerStart,
   markerEnd,
   style
+}: {
+  edgePath: string
+  interactionWidth: number
+  strokeDasharray: string | undefined
+  markerStart: string | undefined
+  markerEnd: string | undefined
+  style: CSSProperties | undefined
 }) => (
   <>
     <path
@@ -285,4 +282,4 @@ const RelationshipPath = memo<{
       strokeWidth={interactionWidth}
     />
   </>
-))
+)

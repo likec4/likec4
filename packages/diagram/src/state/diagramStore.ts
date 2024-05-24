@@ -83,6 +83,8 @@ interface DiagramStoreActions {
   setLastClickedNode: (nodeId: string | null) => void
   setLastClickedEdge: (edgeId: string | null) => void
 
+  resetLastClicked: () => void
+
   getElement(id: Fqn): DiagramNode | null
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
@@ -230,6 +232,25 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             }
           },
 
+          resetLastClicked: () => {
+            let {
+              focusedNodeId,
+              lastClickedNodeId,
+              lastClickedEdgeId
+            } = get()
+            if (focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
+              set(
+                {
+                  focusedNodeId: null,
+                  lastClickedNodeId: null,
+                  lastClickedEdgeId: null
+                },
+                noReplace,
+                'resetLastClicked'
+              )
+            }
+          },
+
           getElement: (fqn) => {
             const { view } = get()
             return view.nodes.find(({ id }) => id === fqn) ?? null
@@ -353,7 +374,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             xyflow.fitView({
               includeHiddenNodes: true,
               duration: (centerNode && focusedNodeId) ? 300 : 400,
-              padding: centerNode ? 0 : fitViewPadding,
+              padding: fitViewPadding,
               minZoom: MinZoom,
               maxZoom: 1,
               ...(centerNode && { nodes: [centerNode] })
