@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22@sha256:bbd5e0faa919bfb7470e649c9f09a0c06546eb9a4c7f18322d35cd2dbfe4a69f",
   "features": {
     "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
     "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
