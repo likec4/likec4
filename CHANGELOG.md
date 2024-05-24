@@ -1,17 +1,26 @@
 # [1.1.0](https://github.com/likec4/likec4/compare/v1.0.2...v1.1.0) (2024-05-24)
 
 
+### Features
+
+* Change opacity and border for compounds background ([#723](https://github.com/likec4/likec4/issues/723))
+
+  ```zig
+  view {
+     include some._
+  
+     style some {
+       opacity 20%
+       border dashed
+     }
+  
+  }
+  ```
+
 ### Bug Fixes
 
 * **app:** color scheme inheritance ([70b5243](https://github.com/likec4/likec4/commit/70b52439b83ac2644b1393cf150411f4d5e3f38f))
 * **playground:** show locations ([6af55a6](https://github.com/likec4/likec4/commit/6af55a6c729fad157c13f26c948a2bf7a035e41f))
-
-
-### Features
-
-* change opacity for compounds ([6d8afce](https://github.com/likec4/likec4/commit/6d8afced8e81aa7de766bfef68009dd15da7adf6))
-* interactive focus on node ([#732](https://github.com/likec4/likec4/issues/732)) ([e20a397](https://github.com/likec4/likec4/commit/e20a3975800d2efd48101e5c761fe24a7e2c0a34))
-
 
 
 ## [1.0.2](https://github.com/likec4/likec4/compare/v1.0.1...v1.0.2) (2024-05-21)
