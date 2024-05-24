@@ -1,4 +1,3 @@
-import type { ThemeColor } from '@likec4/core'
 import { defaultTheme } from '@likec4/core'
 import { createGlobalTheme } from '@vanilla-extract/css'
 import { scale, toHex } from 'khroma'

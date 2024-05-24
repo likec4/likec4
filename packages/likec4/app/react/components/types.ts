@@ -7,7 +7,16 @@ export type DiagramView<ViewId extends string> = {
 }
 
 export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
+  /**
+   * View to display.
+   */
   viewId: ViewId
+
+  /**
+   * Background pattern
+   * @default 'transparent'
+   */
+  background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
   /**
    * Click on the view opens a modal with browser.
@@ -29,4 +38,9 @@ export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTM
    * @default true
    */
   injectFontCss?: boolean | undefined
+
+  overlay?: {
+    blur?: number
+    opacity?: number
+  } | undefined
 }

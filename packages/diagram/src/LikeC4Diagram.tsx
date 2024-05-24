@@ -69,6 +69,8 @@ export function LikeC4Diagram({
         <DiagramContextProvider
           view={view}
           readonly={readonly}
+          pannable={pannable}
+          zoomable={zoomable}
           fitViewEnabled={fitView}
           fitViewPadding={fitViewPadding}
           showElementLinks={showElementLinks}
@@ -102,8 +104,6 @@ export function LikeC4Diagram({
               controls={controls}
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
-              pannable={pannable}
-              zoomable={zoomable}
             >
               {readonly !== true && <OptionsPanel />}
             </XYFlow>

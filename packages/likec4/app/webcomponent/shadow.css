@@ -60,15 +60,8 @@
 
   .likec4-react-root {
     cursor: pointer;
-    transition: all 550ms ease-out;
     background-color: unset;
     padding: 2px;
-
-    &:hover {
-      transform: scale(1.015);
-      transition-delay: 300ms;
-      transition-duration: 200ms;
-    }
 
     .likec4-compound-node {
       cursor: pointer;

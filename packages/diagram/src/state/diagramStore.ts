@@ -11,7 +11,7 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 import type { Change, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
-import type { XYFlowInstance } from '../xyflow/types'
+import type { XYFlowInstance, XYFlowNode } from '../xyflow/types'
 
 export type DiagramStore = {
   // Incoming props
@@ -20,6 +20,8 @@ export type DiagramStore = {
   showElementLinks: boolean
   fitViewEnabled: boolean
   fitViewPadding: number
+  zoomable: boolean
+  pannable: boolean
   nodesDraggable: boolean
   nodesSelectable: boolean
 
@@ -30,6 +32,7 @@ export type DiagramStore = {
   // This is XYFlow id's
   lastClickedNodeId: string | null
   lastClickedEdgeId: string | null
+  focusedNodeId: string | null
   hoveredNodeId: string | null
   hoveredEdgeId: string | null
 
@@ -57,6 +60,8 @@ export type DiagramInitialState = // Required properties
     | 'showElementLinks'
     | 'fitViewEnabled'
     | 'fitViewPadding'
+    | 'zoomable'
+    | 'pannable'
     | 'nodesDraggable'
     | 'nodesSelectable'
   >
@@ -81,7 +86,7 @@ interface DiagramStoreActions {
   getElement(id: Fqn): DiagramNode | null
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: () => void
+  fitDiagram: (centerNode?: XYFlowNode) => void
 }
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
@@ -90,6 +95,7 @@ const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 
   initialized: false,
   previousViews: [],
   viewportChanged: false,
+  focusedNodeId: null,
   hoveredNodeId: null,
   hoveredEdgeId: null,
   lastClickedNodeId: null,
@@ -133,6 +139,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               view: currentView,
               lastOnNavigate,
               previousViews,
+              focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId,
               hoveredEdgeId,
@@ -159,6 +166,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (hoveredNodeId && !containsWithId(view.nodes, hoveredNodeId)) {
                 hoveredNodeId = null
               }
+              if (focusedNodeId && !containsWithId(view.nodes, focusedNodeId)) {
+                focusedNodeId = null
+              }
               if (lastClickedEdgeId && !containsWithId(view.edges, lastClickedEdgeId)) {
                 lastClickedEdgeId = null
               }
@@ -171,6 +181,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               lastClickedNodeId = null
               hoveredEdgeId = null
               hoveredNodeId = null
+              focusedNodeId = null
 
               // Update history stack (back button not implemented yet)
               previousViews = [
@@ -186,6 +197,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 previousViews,
                 lastClickedNodeId,
                 lastClickedEdgeId,
+                focusedNodeId,
                 hoveredEdgeId,
                 hoveredNodeId
               },
@@ -336,15 +348,22 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             )
           },
 
-          fitDiagram: () => {
-            const { fitViewPadding, xyflow } = get()
+          fitDiagram: (centerNode) => {
+            const { fitViewPadding, xyflow, focusedNodeId } = get()
             xyflow.fitView({
               includeHiddenNodes: true,
-              duration: 400,
-              padding: fitViewPadding,
+              duration: (centerNode && focusedNodeId) ? 300 : 400,
+              padding: centerNode ? 0 : fitViewPadding,
               minZoom: MinZoom,
-              maxZoom: 1
+              maxZoom: 1,
+              ...(centerNode && { nodes: [centerNode] })
             })
+            if (centerNode && focusedNodeId !== centerNode.id) {
+              set({ focusedNodeId: centerNode.id }, noReplace, 'focus node')
+            }
+            if (!centerNode && !!focusedNodeId) {
+              set({ focusedNodeId: null }, noReplace, 'unfocus')
+            }
           }
         }),
         {

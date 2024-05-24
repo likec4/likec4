@@ -25,6 +25,12 @@ const bundledStyles = () => {
     .replaceAll(':root', `${rootSelector}`)
 }
 
+const createStyleSheet = () => {
+  const bundledCSS = new CSSStyleSheet()
+  bundledCSS.replaceSync(bundledStyles())
+  return bundledCSS
+}
+
 export const useCreateStyleSheet = (injectFontCss = true) => {
   useIsomorphicLayoutEffect(() => {
     if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
@@ -36,11 +42,7 @@ export const useCreateStyleSheet = (injectFontCss = true) => {
     }
   }, [])
 
-  return useCallback(() => {
-    const bundledCSS = new CSSStyleSheet()
-    bundledCSS.replaceSync(bundledStyles())
-    return bundledCSS
-  }, [])
+  return createStyleSheet
 }
 
 const getComputedBodyColorScheme = (): ColorScheme => {
@@ -74,6 +76,7 @@ export const theme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',
+  fontFamily: 'var(--likec4-default-font-family)',
   headings: {
     fontWeight: '500',
     sizes: {
@@ -82,6 +85,7 @@ export const theme = createTheme({
         fontWeight: '600'
       },
       h2: {
+        fontWeight: '500'
         // fontSize: '1.85rem',
       }
     }

@@ -15,9 +15,10 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
       className={clsx('nodrag nopan', className)}
       radius="xl"
       onClick={event => {
-        diagramApi.getState().triggerOnNavigateTo(xynodeId, event)
         event.stopPropagation()
+        diagramApi.getState().triggerOnNavigateTo(xynodeId, event)
       }}
+      onDoubleClick={event => event.stopPropagation()}
     >
       <ZoomIn />
     </ActionIcon>
