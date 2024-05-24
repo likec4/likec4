@@ -2567,7 +2567,7 @@ __metadata:
     execa: "npm:^9.1.0"
     jotai: "npm:^2.6.4"
     khroma: "npm:^2.1.0"
-    konva: "npm:^9.3.6"
+    konva: "npm:^9.3.9"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -11967,10 +11967,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.3.6":
-  version: 9.3.6
-  resolution: "konva@npm:9.3.6"
-  checksum: 10c0/ad4c9abe7b9e61bd4a119f3cf17525be9437645cfa1e38e2fc2c0bd157d2d00db6d5a7304adf3e1056e793889794d99d695e11be3df0109c71d8b5ccccd6ef96
+"konva@npm:^9.3.9":
+  version: 9.3.11
+  resolution: "konva@npm:9.3.11"
+  checksum: 10c0/84ff2f545f0b0164ec8e836b1c2bfa114dd7e1fdaa80e67591e2e7feeb510ec717b03a1a9cd2e37705cbad2104320cc057d711bf114f87391bdc93ad6fcad5a1
   languageName: node
   linkType: hard
 
