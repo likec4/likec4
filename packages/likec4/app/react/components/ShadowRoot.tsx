@@ -29,7 +29,7 @@ export function ShadowRoot({
   children,
   rootClassName,
   colorScheme,
-  injectFontCss,
+  injectFontCss = true,
   ...props
 }: ShadowRootProps) {
   const mantineRootRef = useRef<HTMLDivElement>(null)

@@ -52,10 +52,7 @@ export class LikeC4Browser extends HTMLElement {
   constructor() {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.shadow.innerHTML = `${IbmPlexSans}
-    <div class="likec4-shadow-root likec4-browser">
-      <div class="likec4-react-root"></div>
-    </div>`
+    this.shadow.innerHTML = '<div class="likec4-shadow-root likec4-browser"><div class="likec4-react-root"></div></div>'
     this.shadowRootEl = this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
   }
 
@@ -63,10 +60,17 @@ export class LikeC4Browser extends HTMLElement {
     const hostCss = `
     :host {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0;
+      margin: 0;
+      border: 0 solid transparent;
+      box-sizing: border-box;
       z-index: 9999;
-    }
-    `
+      width: 100dvw;
+      height: 100dvh;
+    }`
     if (hostCss !== this.lastHostCss) {
       this.hostCss?.replaceSync(hostCss)
       this.lastHostCss = hostCss

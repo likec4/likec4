@@ -67,9 +67,9 @@ export const matchesColorScheme = (el: Element) => {
 // export const IbmPlexSans = ``
 // const fonthref = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap'
 // export const IbmPlexSans = `<link href="${fonthref}" rel="stylesheet">`
-export const IbmPlexSans = `<style>
-${fontCss}
-</style>`
+// export const IbmPlexSans = `<style>
+// ${fontCss}
+// </style>`
 
 // const key = '__likec4_fontcheck';
 // (window as any)[key] ??= setTimeout(() => {

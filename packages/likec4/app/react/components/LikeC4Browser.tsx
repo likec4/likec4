@@ -33,6 +33,8 @@ export function LikeC4Browser<ViewId extends string>({
   const scheme = useColorScheme(colorScheme)
   const [opened, setOpened] = useState(false)
 
+  const defaultOverlayOpacity = scheme === 'light' ? 0.75 : 0.55
+
   const [historyViewId, historyOps, {
     history,
     current: historyIndex
@@ -98,7 +100,7 @@ export function LikeC4Browser<ViewId extends string>({
           <ModalOverlay
             blur={overlay?.blur ?? 10}
             fixed={false}
-            backgroundOpacity={overlay?.opacity ?? 0.6}
+            backgroundOpacity={overlay?.opacity ?? defaultOverlayOpacity}
           />
           <ModalContent className={modalContent}>
             <ModalCloseButton className={modalCloseButton} />

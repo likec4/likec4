@@ -4,7 +4,7 @@ import { MantineProvider } from '@mantine/core'
 import ReactDOM from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { ComponentName } from '../src/const'
-import { bundledStyles, IbmPlexSans, matchesColorScheme, theme } from './styles'
+import { bundledStyles, matchesColorScheme, theme } from './styles'
 
 export class LikeC4View extends HTMLElement {
   static observedAttributes = ['view-id']
@@ -20,23 +20,22 @@ export class LikeC4View extends HTMLElement {
   constructor() {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.shadow.innerHTML = `${IbmPlexSans}
-    <div class="likec4-shadow-root likec4-view">
-      <div class="likec4-react-root"></div>
-    </div>`
+    this.shadow.innerHTML = '<div class="likec4-shadow-root likec4-view"><div class="likec4-react-root"></div></div>'
     this.rootEl = this.shadow.querySelector('.likec4-shadow-root') as HTMLDivElement
   }
 
   updateHostCss() {
     const view = this.view
     const hostCss = this.isKeepAspectRatio
-      ? `:host {
+      ? `
+    :host {
       width: 100%;
       height: auto;
       aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
       max-height: ${Math.ceil(1.011 * view.height)}px;
     }`
-      : `:host {
+      : `
+    :host {
       width: 100%;
       height: 100%;
     }`

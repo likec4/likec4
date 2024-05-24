@@ -1,7 +1,7 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
-import { useColorScheme as useColorSchemeMedia, useMediaQuery } from '@mantine/hooks'
+import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { isString } from 'remeda'
 import fontCss from '../../webcomponent/font.css?inline'
 import { cssRoot } from './styles.css'
@@ -31,7 +31,7 @@ const createStyleSheet = () => {
   return bundledCSS
 }
 
-export const useCreateStyleSheet = (injectFontCss = true) => {
+export const useCreateStyleSheet = (injectFontCss: boolean) => {
   useIsomorphicLayoutEffect(() => {
     if (injectFontCss && !document.querySelector(`style[data-likec4-font]`)) {
       const style = document.createElement('style')
@@ -40,7 +40,7 @@ export const useCreateStyleSheet = (injectFontCss = true) => {
       style.appendChild(document.createTextNode(fontCss))
       document.head.appendChild(style)
     }
-  }, [])
+  }, [injectFontCss])
 
   return createStyleSheet
 }
@@ -65,11 +65,14 @@ export const useColorScheme = (explicit?: ColorScheme) => {
       return
     }
     const computed = getComputedBodyColorScheme()
-    if (computed !== current) {
+    if (computed && computed !== current) {
       setCurrent(computed)
     }
   })
-  return explicit ?? current
+  const preferred = usePreferredColorScheme(explicit, {
+    getInitialValueInEffect: true
+  })
+  return explicit ?? current ?? preferred
 }
 
 export const theme = createTheme({

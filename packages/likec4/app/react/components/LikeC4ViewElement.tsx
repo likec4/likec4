@@ -70,10 +70,6 @@ export function LikeC4ViewElement<ViewId extends string>({
           nodesSelectable={false}
           keepAspectRatio={false}
           {...(onNavigateTo && {
-            onNodeClick: ({ event }) => {
-              event.stopPropagation()
-              onNavigateTo(view.id)
-            },
             onNavigateTo: to => onNavigateTo(to as string as ViewId)
           })}
         />
