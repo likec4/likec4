@@ -78,6 +78,12 @@ export const fillStrokeCtx = style({
   fill: xyvars.edge.stroke,
   stroke: xyvars.edge.stroke
 })
+
+export const controlPoint = style({
+  fill: xyvars.edge.stroke,
+  stroke: xyvars.edge.stroke
+})
+
 globalStyle(`:where(${isSelected}) ${fillStrokeCtx}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected

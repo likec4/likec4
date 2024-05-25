@@ -3,7 +3,9 @@ import { Box } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
+import { getNodePositionWithOrigin } from '@xyflow/system'
 import clsx from 'clsx'
+import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
 import { type CSSProperties, memo } from 'react'
 import { hasAtLeast } from 'remeda'
@@ -12,16 +14,7 @@ import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
 import { toDomPrecision } from '../utils'
-import {
-  container,
-  cssEdgePath,
-  edgeLabel,
-  edgeLabelBody,
-  edgePathBg,
-  fillStrokeCtx,
-  varLabelX,
-  varLabelY
-} from './edges.css'
+import * as edgesCss from './edges.css'
 import { getEdgeParams } from './utils'
 // import { getEdgeParams } from './utils'
 
@@ -91,6 +84,8 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && eq(prev.data, next.data)
 )
 
+const curve = d3line<Point>().curve(curveCatmullRomOpen.alpha(1))
+
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
@@ -107,7 +102,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const isNotModified = isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
     && isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
-  const { edge: diagramEdge } = data
+  const { edge: diagramEdge, controlPoints } = data
   // const edgePath = bezierPath(edge.points)
 
   const color = diagramEdge.color ?? 'gray'
@@ -146,17 +141,22 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     edgePath = _edgePath
     labelX = _labelX
     labelY = _labelY
+
+    const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
+    const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
+
+    edgePath = curve([
+      [sourceCenterPos.positionAbsolute.x, sourceCenterPos.positionAbsolute.y],
+      [sx, sy],
+      ...controlPoints,
+      [tx, ty],
+      [targetCenterPos.positionAbsolute.x, targetCenterPos.positionAbsolute.y]
+    ])!
   }
-  // const deferredEdgePath = edgePath
-  //   useTilg()`
-  //   ${id}
-  //   path=${edgePath}
-  //   isModified=${isModified}
-  // `
 
   return (
-    <g className={clsx(container)} data-likec4-color={color} data-edge-hovered={isHovered}>
-      <g className={clsx(fillStrokeCtx)}>
+    <g className={clsx(edgesCss.container)} data-likec4-color={color} data-edge-hovered={isHovered}>
+      <g className={clsx(edgesCss.fillStrokeCtx)}>
         <defs>
           <marker
             id={`arrow-${id}`}
@@ -180,26 +180,25 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         markerEnd={diagramEdge.headArrow ? marker : undefined}
         style={style} />
       {
-        /*
-      {controlPoints.map((p, i) => (
+        /* controlPoints.map((p, i) => (
         <circle
-          className={styles.controlPoint}
+          className={edgesCss.controlPoint}
           key={i}
           cx={p[0]}
           cy={p[1]}
           r={5}
         />
-      ))} */
+      )) */
       }
       {data.label && (
         <EdgeLabelRenderer>
           <Box
-            className={clsx(container, edgeLabel)}
+            className={clsx(edgesCss.container, edgesCss.edgeLabel)}
             data-likec4-color={color}
             style={{
               ...assignInlineVars({
-                [varLabelX]: toDomPrecision(labelX) + 'px',
-                [varLabelY]: toDomPrecision(labelY) + 'px'
+                [edgesCss.varLabelX]: toDomPrecision(labelX) + 'px',
+                [edgesCss.varLabelY]: toDomPrecision(labelY) + 'px'
               }),
               maxWidth: data.label.bbox.width + 10,
               zIndex: edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
@@ -208,7 +207,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
               'data-edge-hovered': isHovered
             }}
           >
-            <Box className={edgeLabelBody}>
+            <Box className={edgesCss.edgeLabelBody}>
               {data.label.text}
             </Box>
             {
@@ -260,13 +259,13 @@ const RelationshipPath = ({
 }) => (
   <>
     <path
-      className={clsx('react-flow__edge-path', edgePathBg)}
+      className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
       d={edgePath}
       style={style}
       strokeLinecap={'round'}
     />
     <path
-      className={clsx('react-flow__edge-path', cssEdgePath)}
+      className={clsx('react-flow__edge-path', edgesCss.cssEdgePath)}
       d={edgePath}
       style={style}
       strokeLinecap={'round'}

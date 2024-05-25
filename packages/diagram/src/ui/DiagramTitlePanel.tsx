@@ -7,8 +7,8 @@ import * as css from './DiagramTitlePanel.css'
 
 const selector = (s: DiagramState) => ({
   id: s.view.id,
-  title: s.view.title ?? 'Untitled',
-  description: s.view.description ?? 'No description',
+  title: s.view.title ?? 'untitled',
+  description: s.view.description,
   links: s.view.links
 })
 
@@ -26,7 +26,6 @@ export default function DiagramTitlePanel() {
           opacity: 0.05,
           scale: 0.6
         }}
-        layout
         className={clsx('react-flow__panel', css.container)}
         style={{
           transformOrigin: 'left center'
@@ -37,9 +36,11 @@ export default function DiagramTitlePanel() {
           withBorder={!isCollapsed}
           className={css.paper}
           p={isCollapsed ? 'sm' : 'md'}
+          onClick={toggle}
+          style={{ cursor: 'pointer' }}
           onDoubleClick={e => e.stopPropagation()}>
           <Stack gap={'sm'} justify="stretch" align="stretch">
-            <Group justify="stretch" wrap="nowrap" onClick={toggle}>
+            <Group justify="stretch" wrap="nowrap">
               <Text
                 component={'div'}
                 flex={'1'}
@@ -62,7 +63,7 @@ export default function DiagramTitlePanel() {
                 style={{
                   userSelect: 'all'
                 }}>
-                <span style={{ userSelect: 'none' }}>view id:{' '}</span>
+                <span style={{ userSelect: 'none' }}>id:{' '}</span>
                 {id}
               </Text>
             </Group>
@@ -79,7 +80,11 @@ export default function DiagramTitlePanel() {
               </Text>
             </Spoiler>
             {links && !isCollapsed && (
-              <Stack gap={3} justify="stretch" align="stretch">
+              <Stack
+                gap={3}
+                justify="stretch"
+                align="stretch"
+                onClick={e => e.stopPropagation()}>
                 {links.map((link) => (
                   <Group key={link} wrap="nowrap" gap={'sm'}>
                     <Box flex={'1'} style={{ overflow: 'hidden' }}>
