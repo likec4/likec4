@@ -152,7 +152,7 @@ function XYFlowWrapper({
         onPaneContextMenu: handlers.onPaneContextMenu
       })}>
       {isBgWithPattern && <XYFlowBackground background={background} />}
-      {controls && <Controls />}
+      {controls && <Controls position={'bottom-right'} />}
       {zoomable && !editor.hasOnNodeClick && <SelectEdgesOnNodeFocus />}
       {children}
     </ReactFlow>

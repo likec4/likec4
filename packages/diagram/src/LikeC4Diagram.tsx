@@ -8,6 +8,7 @@ import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '.
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { WhenInitialized } from './state/WhenInitialized'
+import DiagramTitlePanel from './ui/DiagramTitlePanel'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
@@ -29,6 +30,7 @@ export function LikeC4Diagram({
   background = 'dots',
   controls = false,
   showElementLinks = true,
+  showDiagramTitle = true,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -106,6 +108,7 @@ export function LikeC4Diagram({
               defaultEdges={initialRef.current.defaultEdges}
             >
               {readonly !== true && <OptionsPanel />}
+              {showDiagramTitle === true && <DiagramTitlePanel />}
             </XYFlow>
           </KeepAspectRatioContainer>
           <WhenInitialized>

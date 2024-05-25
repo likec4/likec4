@@ -1,11 +1,16 @@
 import { defaultTheme } from '@likec4/core'
-import { createGlobalTheme } from '@vanilla-extract/css'
+import { createGlobalTheme, globalStyle } from '@vanilla-extract/css'
 import { scale, toHex } from 'khroma'
 import { keys, omit } from 'remeda'
 import { mantine } from './mantine.css'
 import { vars } from './theme.css'
 
 export const rootClassName = 'likec4-diagram-root'
+
+globalStyle(`.${rootClassName}`, {
+  WebkitFontSmoothing: mantine.webkitFontSmoothing,
+  MozOsxFontSmoothing: mantine.mozFontSmoothing
+})
 
 createGlobalTheme(`.${rootClassName}`, {
   ...omit(vars, ['optionsPanel', 'default'])

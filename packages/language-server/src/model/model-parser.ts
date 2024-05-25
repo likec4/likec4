@@ -401,8 +401,8 @@ export class LikeC4ModelParser {
       ) as c4.ViewID
     }
 
-    const title = body.props.find(p => p.key === 'title')?.value
-    const description = body.props.find(p => p.key === 'description')?.value
+    const title = toSingleLine(body.props.find(p => p.key === 'title')?.value)
+    const description = removeIndent(body.props.find(p => p.key === 'description')?.value)
 
     const tags = this.convertTags(body)
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)

@@ -31,6 +31,7 @@ export function StaticLikeC4Diagram({
       controls={false}
       background={background}
       showElementLinks
+      showDiagramTitle={false}
       nodesSelectable={false}
       nodesDraggable={false}
       {...rest}

@@ -61,6 +61,7 @@ function ExportPage() {
           controls={false}
           background={'transparent'}
           showElementLinks={false}
+          showDiagramTitle={false}
           nodesSelectable={false}
           nodesDraggable={false}
           initialWidth={diagram.width}
