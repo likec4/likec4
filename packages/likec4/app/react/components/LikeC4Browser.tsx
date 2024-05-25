@@ -33,7 +33,7 @@ export function LikeC4Browser<ViewId extends string>({
   const scheme = useColorScheme(colorScheme)
   const [opened, setOpened] = useState(false)
 
-  const defaultOverlayOpacity = scheme === 'light' ? 0.75 : 0.6
+  const defaultOverlayOpacity = scheme === 'light' ? 0.7 : 0.6
 
   const [historyViewId, historyOps, {
     history,
@@ -98,7 +98,8 @@ export function LikeC4Browser<ViewId extends string>({
           withinPortal={false}
           onClose={closeMe}>
           <ModalOverlay
-            blur={overlay?.blur ?? 10}
+            blur={overlay?.blur ?? 8}
+            color="var(--mantine-color-body)"
             fixed={false}
             backgroundOpacity={overlay?.opacity ?? defaultOverlayOpacity}
           />

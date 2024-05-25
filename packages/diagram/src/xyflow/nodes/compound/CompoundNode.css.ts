@@ -23,7 +23,7 @@ export const compoundBody = style({
   width: '100%',
   height: '100%',
   position: 'relative',
-  borderRadius: rem(6),
+  borderRadius: 6,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   padding: 8,
   background: vars.element.fill,
@@ -43,7 +43,6 @@ export const compoundBody = style({
 const bgTransparency = createVar('bgTransparency')
 const bgTransparencyDelta = createVar('bgTransparencyDelta')
 export const transparent = style({
-  borderRadius: 8,
   borderStyle: 'dashed',
   borderWidth: 3,
   padding: 6,

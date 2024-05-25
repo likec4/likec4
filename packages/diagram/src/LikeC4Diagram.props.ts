@@ -139,6 +139,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   showElementLinks?: boolean | undefined
+
+  /**
+   * Display panel with diagram title / description
+   * @default true
+   */
+  showDiagramTitle?: boolean | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

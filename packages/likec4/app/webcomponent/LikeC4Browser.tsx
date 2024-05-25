@@ -150,6 +150,8 @@ export class LikeC4Browser extends HTMLElement {
                 zoomable
                 fitView
                 fitViewPadding={0.08}
+                showElementLinks
+                showDiagramTitle
                 controls={false}
                 nodesSelectable={false}
                 nodesDraggable={false}

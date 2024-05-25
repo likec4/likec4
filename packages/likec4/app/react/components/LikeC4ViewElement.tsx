@@ -66,6 +66,7 @@ export function LikeC4ViewElement<ViewId extends string>({
           fitView
           fitViewPadding={0.02}
           showElementLinks
+          showDiagramTitle={false}
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}
