@@ -1,18 +1,12 @@
 ## [1.1.1](https://github.com/likec4/likec4/compare/v1.1.0...v1.1.1) (2024-05-26)
 
-
 ### Bug Fixes
-
-* **deps:** update dependency @types/string-hash to ^1.1.3 ([#698](https://github.com/likec4/likec4/issues/698)) ([6d89dc8](https://github.com/likec4/likec4/commit/6d89dc89ee21cd8c8c6ab72bda967052a16db475))
 * **diagram:** viewport transform is not rounded to integers which results in blurry nodes on some resolution ([d268344](https://github.com/likec4/likec4/commit/d268344e40c9da45fc38fcbc00451ed69c089160)), closes [#734](https://github.com/likec4/likec4/issues/734)
 
-
-### Features
+### Improvements
 
 * change opacity and border style from ui ([f69dbb4](https://github.com/likec4/likec4/commit/f69dbb439a726fe691e98a65911730067fbb752c))
 * diagram title panel ([#741](https://github.com/likec4/likec4/issues/741)) ([1342be4](https://github.com/likec4/likec4/commit/1342be4aee07f3256a2cb2063a6df08f15d387a2))
-
-
 
 # [1.1.0](https://github.com/likec4/likec4/compare/v1.0.2...v1.1.0) (2024-05-24)
 
