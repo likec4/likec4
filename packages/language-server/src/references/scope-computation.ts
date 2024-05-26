@@ -56,7 +56,7 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
 
       try {
-        for (const viewAst of views.flatMap(v => v.views)) {
+        for (const viewAst of views.flatMap(v => [...v.views, ...v.dynamicViews])) {
           if (isTruthy(viewAst.name)) {
             docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
           }

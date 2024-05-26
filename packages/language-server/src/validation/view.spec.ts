@@ -20,4 +20,21 @@ describe('viewChecks', () => {
       expect(diagnostic.message, 'diagnostic message').toBe('Duplicate view \'v1\'')
     }
   })
+
+  it('should report duplicate view names in dynamic and element', async () => {
+    const { validate } = createTestServices()
+    const { diagnostics } = await validate(`
+      views {
+        dynamic view v2 {
+        }
+        view v2 {
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(2)
+    for (const diagnostic of diagnostics) {
+      expect(diagnostic.severity, 'diagnostic severity').toBe(1)
+      expect(diagnostic.message, 'diagnostic message').toBe('Duplicate view \'v2\'')
+    }
+  })
 })

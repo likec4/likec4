@@ -53,6 +53,11 @@ describe('specification', () => {
         element c-
       }`
 
+    test('element kind does not start with dash').invalid`
+      specification {
+        element -kind
+      }`
+
     test('fail if element kind starts with number').invalid`
       specification {
         element 1container

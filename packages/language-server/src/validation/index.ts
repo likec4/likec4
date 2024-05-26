@@ -28,7 +28,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     SpecificationRule: specificationRuleChecks(services),
     Model: modelRuleChecks(services),
     ModelViews: modelViewsChecks(services),
-    ElementView: viewChecks(services),
+    LikeC4View: viewChecks(services),
     Element: elementChecks(services),
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),

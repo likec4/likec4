@@ -141,8 +141,13 @@ RelationStyleProperty:
 
 ModelViews:
   name='views' '{'
-    views+=ElementView*
+    (
+      dynamicViews+=DynamicView |
+      views+=ElementView
+    )*
   '}';
+
+type LikeC4View = ElementView | DynamicView;
 
 ElementView:
   'view' name=Id? (
@@ -151,6 +156,25 @@ ElementView:
   )?
   '{' body=ElementViewBody '}'
 ;
+
+DynamicView:
+  'dynamic' 'view' name=Id '{'
+     body=DynamicViewBody
+  '}'
+;
+
+DynamicViewBody:
+  tags=Tags?
+  props+=ViewProperty*
+  steps+=DynamicViewStep*
+;
+
+DynamicViewStep:
+  source=ElementRef (isBackward?='<-' | '->') target=ElementRef title=String?
+;
+
+ViewRef:
+  view=[LikeC4View];
 
 ElementViewRef:
   view=[ElementView];
@@ -239,7 +263,7 @@ CustomElementExprBody:
 ;
 
 NavigateToProperty:
-  'navigateTo' value=ElementViewRef;
+  'navigateTo' value=ViewRef;
 
 // Common properties -------------------------------------
 
@@ -338,6 +362,8 @@ hidden terminal WS: /\s+/;
 // -----------------------------------
 // Terminals
 
+terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
+
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
@@ -357,4 +383,4 @@ terminal String: /"[^"]*"|'[^']*'/;
 
 // terminal  TagId: HASH LETTER (LETTER | DIGIT | UNDERSCORE | DASH)*;
 // terminal IdTerminal: (LETTER | UNDERSCORE+ (LETTER | DIGIT)) (LETTER | DIGIT | UNDERSCORE | DASH)*;
-terminal IdTerminal:  /\b(_+[a-zA-Z]|[a-zA-Z])[\w_-]*/;
+terminal IdTerminal:  /\b[_]*[a-zA-Z][_-\w]*/;
