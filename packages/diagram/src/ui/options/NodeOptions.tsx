@@ -1,8 +1,9 @@
 import {
-  defaultTheme,
-  type ElementShape,
   ElementShapes,
-  type Fqn,
+  defaultTheme,
+  invariant,
+  type BorderStyle,
+  type ElementShape,
   type NonEmptyArray,
   type ThemeColor
 } from '@likec4/core'
@@ -12,14 +13,18 @@ import {
   ColorSwatch,
   Divider,
   Flex,
-  rem,
+  SegmentedControl,
   Select,
+  Slider,
   Stack,
   Text,
   Tooltip,
-  TooltipGroup
+  TooltipGroup,
+  rem
 } from '@mantine/core'
+import { useEffect, useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
+import type { Changes } from '../../LikeC4Diagram.props'
 import { useDiagramStoreApi } from '../../state'
 import { useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
@@ -52,15 +57,34 @@ export type ColorKey = typeof colors[0]['key']
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
 export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
+// export function NodeOptions(props: { nodes: XYFlowNode[] }) {
   const diagramApi = useDiagramStoreApi()
+  // const nodes = useXYNodesData(props.nodes.map(node => node.id))
   const nodes = useXYNodesData(selectedNodeIds)
   if (!hasAtLeast(nodes, 1)) {
     return null
+  }
+  if (nodes.length !== selectedNodeIds.length) {
+    throw new Error('NodeOptions: nodes and props.nodes should have the same length')
   }
   // Makes sense to show shape option only if there is at least one element node
   const showShapeOption = nodes.some(node => node.type === 'element')
 
   const [firstNode, ...rest] = nodes
+
+  // Makes sense to show opacity option only if there is at least one compound node
+  const showOpacityOption = rest.length === 0 && firstNode.type === 'compound'
+
+  const triggerChange = (style: Changes.ChangeElementStyle['style']) => {
+    const targets = nodes.map(node => node.data.element.id)
+    invariant(hasAtLeast(targets, 1), 'At least one target is required')
+    diagramApi.getState().triggerOnChange([{
+      op: 'change-element-style',
+      style,
+      targets
+    }])
+  }
+
   return (
     <Stack>
       <Box maw={200}>
@@ -72,39 +96,33 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         <ShapeOption
           nodes={nodes}
           onShapeChange={(shape: ElementShape) => {
-            const targets = [] as Fqn[]
-            for (const nd of nodes) {
-              if (nd.data.element.shape !== shape) {
-                targets.push(nd.data.element.id)
-              }
-            }
-            if (hasAtLeast(targets, 1)) {
-              diagramApi.getState().triggerOnChange([{
-                op: 'change-shape',
-                shape,
-                targets
-              }])
-            }
+            triggerChange({ shape })
           }} />
       )}
       <Colors
         nodes={nodes}
         onColorChange={(color: ColorKey | ThemeColorKey) => {
-          const targets = [] as Fqn[]
-          for (const nd of nodes) {
-            if (nd.data.element.color !== color) {
-              targets.push(nd.data.element.id)
-            }
-          }
-          if (hasAtLeast(targets, 1)) {
-            diagramApi.getState().triggerOnChange([{
-              op: 'change-color',
-              color,
-              targets
-            }])
-          }
+          triggerChange({ color })
         }} />
       <NavigateToOption nodes={nodes} />
+      <Box key={firstNode.id}>
+        {showOpacityOption && (
+          <>
+            <Divider label="opacity and border" labelPosition="left" />
+            <OpacityOption
+              node={firstNode}
+              onOpacityChange={(opacity: number) => {
+                triggerChange({ opacity })
+              }} />
+            <BorderStyleOption
+              node={firstNode}
+              onChange={(border: BorderStyle) => {
+                triggerChange({ border })
+              }}
+            />
+          </>
+        )}
+      </Box>
     </Stack>
   )
 }
@@ -247,6 +265,65 @@ function NavigateToOption({
         //   }
         //   onShapeChange(value as ElementShape)
         // }} />
+      />
+    </Box>
+  )
+}
+
+function OpacityOption({
+  node,
+  onOpacityChange
+}: {
+  node: XYNodesData
+  onOpacityChange: (opacity: number) => void
+}) {
+  let selectedOpacity = node.data.element.style.opacity ?? 100
+  const [value, setValue] = useState(selectedOpacity)
+  useEffect(() => {
+    setValue(selectedOpacity)
+  }, [selectedOpacity])
+
+  return (
+    <Slider
+      mt={'xs'}
+      size={'sm'}
+      color={'dark'}
+      value={value}
+      onChange={setValue}
+      onChangeEnd={onOpacityChange} />
+  )
+}
+
+function BorderStyleOption({
+  node,
+  onChange
+}: {
+  node: XYNodesData
+  onChange: (borderStyle: BorderStyle) => void
+}) {
+  let selecteBorderStyle = node.data.element.style.border ?? 'dashed'
+  const [value, setValue] = useState(selecteBorderStyle)
+  useEffect(() => {
+    setValue(selecteBorderStyle)
+  }, [selecteBorderStyle])
+
+  return (
+    <Box mt={'md'}>
+      <SegmentedControl
+        size="xs"
+        fullWidth
+        withItemsBorders={false}
+        value={value}
+        onChange={v => {
+          setValue(v as BorderStyle)
+          onChange(v as BorderStyle)
+        }}
+        data={[
+          { label: 'Solid', value: 'solid' },
+          { label: 'Dashed', value: 'dashed' },
+          { label: 'Dotted', value: 'dotted' },
+          { label: 'None', value: 'none' }
+        ]}
       />
     </Box>
   )

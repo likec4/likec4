@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../state'
 import * as css from './DiagramTitlePanel.css'
+import { useLocalStorage } from '@mantine/hooks'
 
 const selector = (s: DiagramState) => ({
   id: s.view.id,
@@ -14,7 +15,11 @@ const selector = (s: DiagramState) => ({
 
 export default function DiagramTitlePanel() {
   const { id, title, description, links } = useDiagramState(selector)
-  const [isCollapsed, toggle] = useToggle(false)
+  const [isCollapsed, setCollapsed] = useLocalStorage({
+    key: 'diagram-title-panel-collapsed',
+    defaultValue: false
+  })
+  const toggle = () => setCollapsed(v => !v)
 
   return (
     <AnimatePresence mode="wait">
@@ -36,11 +41,9 @@ export default function DiagramTitlePanel() {
           withBorder={!isCollapsed}
           className={css.paper}
           p={isCollapsed ? 'sm' : 'md'}
-          onClick={toggle}
-          style={{ cursor: 'pointer' }}
           onDoubleClick={e => e.stopPropagation()}>
           <Stack gap={'sm'} justify="stretch" align="stretch">
-            <Group justify="stretch" wrap="nowrap">
+            <Group justify="stretch" wrap="nowrap" onClick={toggle} style={{ cursor: 'pointer' }}>
               <Text
                 component={'div'}
                 flex={'1'}
@@ -67,46 +70,66 @@ export default function DiagramTitlePanel() {
                 {id}
               </Text>
             </Group>
-            <Spoiler
-              hidden={isCollapsed}
-              maxHeight={42}
-              showLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">show more</Button>}
-              hideLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">hide</Button>}>
-              <Text
-                component={'div'}
-                size="sm"
-                className={css.description}>
-                {description || 'no description'}
-              </Text>
-            </Spoiler>
-            {links && !isCollapsed && (
-              <Stack
-                gap={3}
-                justify="stretch"
-                align="stretch"
-                onClick={e => e.stopPropagation()}>
-                {links.map((link) => (
-                  <Group key={link} wrap="nowrap" gap={'sm'}>
-                    <Box flex={'1'} style={{ overflow: 'hidden' }}>
-                      <Anchor href={link} target="_blank" fz="xs" truncate="end" display={'inline-block'} w={'100%'}>
-                        {link}
-                      </Anchor>
-                    </Box>
-                    <CopyButton value={link}>
-                      {({ copied, copy }) => (
-                        <Button
-                          size="compact-xs"
-                          fz={'10'}
-                          variant="light"
-                          onClick={copy}
-                          color={copied ? 'teal' : 'gray'}>
-                          {copied ? 'copied' : 'copy'}
-                        </Button>
-                      )}
-                    </CopyButton>
-                  </Group>
-                ))}
-              </Stack>
+            {!isCollapsed && (
+              <>
+                {description && (
+                  <Spoiler
+                    maxHeight={42}
+                    showLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">show more</Button>}
+                    hideLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">hide</Button>}>
+                    <Text
+                      component={'div'}
+                      size="sm"
+                      className={css.description}>
+                      {description || 'no description'}
+                    </Text>
+                  </Spoiler>
+                )}
+                {!description && (
+                  <Text
+                    component={'div'}
+                    size="xs"
+                    c={'dimmed'}>
+                    no description
+                  </Text>
+                )}
+                {links && (
+                  <Stack
+                    gap={3}
+                    justify="stretch"
+                    align="stretch">
+                    {links.map((link) => (
+                      <Group key={link} wrap="nowrap" align='center' gap={'sm'}>
+                        <Box flex={'1'} style={{ overflow: 'hidden' }}>
+                          <Anchor
+                            href={link}
+                            target="_blank"
+                            fz="xs"
+                            truncate="end"
+                            display={'inline-block'}
+                            w={'100%'}>
+                            {link}
+                          </Anchor>
+                        </Box>
+                        <CopyButton value={link}>
+                          {({ copied, copy }) => (
+                            <Button
+                              size="compact-xs"
+                              fz={'10'}
+                              variant="light"
+                              onClick={copy}
+                              color={copied
+                                ? 'teal'
+                                : 'gray'}>
+                              {copied ? 'copied' : 'copy'}
+                            </Button>
+                          )}
+                        </CopyButton>
+                      </Group>
+                    ))}
+                  </Stack>
+                )}
+              </>
             )}
           </Stack>
         </Paper>

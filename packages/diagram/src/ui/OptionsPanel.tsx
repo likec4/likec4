@@ -3,11 +3,11 @@ import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, motion } from 'framer-motion'
-import { memo, useState } from 'react'
-import { NodeOptions } from './options/NodeOptions'
+import { useState } from 'react'
 import * as styles from './OptionsPanel.css'
+import { NodeOptions } from './options/NodeOptions'
 
-const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
+export default function OptionsPanel() {
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
 
   useOnSelectionChange({
@@ -16,26 +16,9 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
       setSelectedNodes(prev => {
         return shallowEqual(prev, next) ? prev : next
       })
-      // if (nodes.length === 0 && edges.length === 0) {
-      //   setSelectedNodes([])
-      //   // setSelectedEdges([])
-      //   return
-      // }
-      // const selected = new Set([
-      //   ...nodes.map((n) => n.id),
-      //   ...edges.flatMap((edge) => [
-      //     edge.source,
-      //     edge.target
-      //   ])
-      // ])
-      // setSelectedNodes([...selected])
-      // setSelectedEdges(edges.map(e => e.id))
     }
   })
 
-  // useUpdateEffect(() => {
-  //   setSelectedNodes([])
-  // }, [viewId])
 
   return (
     <AnimatePresence mode="wait">
@@ -60,6 +43,4 @@ const OptionsPanelMemo = /* @__PURE__ */ memo(function OptionsPanel() {
       )}
     </AnimatePresence>
   )
-})
-
-export default OptionsPanelMemo
+}

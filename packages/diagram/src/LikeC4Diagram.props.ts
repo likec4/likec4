@@ -1,4 +1,5 @@
 import type {
+  BorderStyle,
   DiagramEdge,
   DiagramNode,
   DiagramView,
@@ -10,8 +11,8 @@ import type {
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
+import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
@@ -44,22 +45,20 @@ export type OnEdgeClick = (
 export type OnCanvasClick = (event: ReactMouseEvent) => void
 
 export namespace Changes {
-  export interface ChangeColor {
-    op: 'change-color'
-    color: ThemeColor
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export interface ChangeShape {
-    op: 'change-shape'
-    shape: ElementShape
+  export interface ChangeElementStyle {
+    op: 'change-element-style'
+    style: {
+      border?: BorderStyle
+      opacity?: number
+      shape?: ElementShape
+      color?: ThemeColor
+    }
     targets: NonEmptyArray<Fqn>
   }
 }
 
 export type Change =
-  | Changes.ChangeColor
-  | Changes.ChangeShape
+  | Changes.ChangeElementStyle
 
 export type ChangeEvent = {
   changes: NonEmptyArray<Change>

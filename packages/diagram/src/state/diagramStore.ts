@@ -1,10 +1,20 @@
-import type { DiagramNode, DiagramView, ElementShape, Fqn, NonEmptyArray, ThemeColor, ViewID } from '@likec4/core'
+import type {
+  BorderStyle,
+  DiagramNode,
+  DiagramView,
+  ElementShape,
+  Fqn,
+  NonEmptyArray,
+  ThemeColor,
+  ViewID
+} from '@likec4/core'
 import { invariant, nonexhaustive } from '@likec4/core'
 import type { XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
+import { entries } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -257,82 +267,89 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           triggerOnChange: (changes: NonEmptyArray<Change>) => {
+            if (DEV) {
+              console.debug('triggerOnChange', changes)
+            }
             const newShapes = new Map<Fqn, ElementShape>()
             const newColor = new Map<Fqn, ThemeColor>()
+            const newOpacity = new Map<Fqn, number>()
+            const newBorder = new Map<Fqn, BorderStyle>()
             for (const change of changes) {
-              if (change.op === 'change-shape') {
-                for (const target of change.targets) {
-                  newShapes.set(target, change.shape)
-                }
-                continue
+              if (change.op !== 'change-element-style') {
+                nonexhaustive(change.op)
               }
-              if (change.op === 'change-color') {
-                for (const target of change.targets) {
-                  newColor.set(target, change.color)
+              for (const target of change.targets) {
+                for (const [key, value] of entries.strict(change.style)) {
+                  switch (key) {
+                    case 'shape':
+                      newShapes.set(target, value)
+                      break
+                    case 'color':
+                      newColor.set(target, value)
+                      break
+                    case 'opacity':
+                      newOpacity.set(target, value)
+                      break
+                    case 'border':
+                      newBorder.set(target, value)
+                      break
+                    default:
+                      nonexhaustive(key)
+                  }
                 }
-                continue
               }
-              nonexhaustive(change)
             }
-            // TODO: Update positions/sizes
-            // const { view, updateView } = get()
-            // let hasChanges = false
-            // const nextNodes = view.nodes.map((node) => {
-            //   const shape = newShapes.get(node.id)
-            //   if (shape && shape !== node.shape) {
-            //     hasChanges = true
-            //     node = {
-            //       ...node,
-            //       shape
-            //     }
-            //   }
-            //   const color = newColor.get(node.id)
-            //   if (color && color !== node.color) {
-            //     hasChanges = true
-            //     node = {
-            //       ...node,
-            //       color
-            //     }
-            //   }
-            //   return node
-            // })
-            // if (hasChanges) {
-            //   updateView({
-            //     ...view,
-            //     nodes: nextNodes
-            //   })
-            // }
+
             get().xyflow.setNodes(nodes =>
               nodes.map(node => {
-                let { data } = node
-                const shape = newShapes.get(data.fqn)
-                if (shape && shape !== data.element.shape) {
-                  node = {
-                    ...node,
-                    data: {
-                      ...data,
-                      element: {
-                        ...data.element,
-                        shape
-                      }
-                    }
+                let element = node.data.element
+                const shape = newShapes.get(element.id)
+                if (shape && shape !== element.shape) {
+                  element = {
+                    ...element,
+                    shape
                   }
-                  data = node.data
                 }
-                const color = newColor.get(data.fqn)
-                if (color && color !== data.element.color) {
-                  node = {
-                    ...node,
-                    data: {
-                      ...data,
-                      element: {
-                        ...data.element,
-                        color
-                      }
+                const color = newColor.get(element.id)
+                if (color && color !== element.color) {
+                  element = {
+                    ...element,
+                    color
+                  }
+                }
+
+                const opacity = newOpacity.get(element.id)
+                if (!!opacity && opacity !== element.style?.opacity) {
+                  element = {
+                    ...element,
+                    style: {
+                      ...element.style,
+                      opacity
                     }
                   }
                 }
-                return node
+
+                const border = newBorder.get(element.id)
+                if (border && border !== element.style?.border) {
+                  element = {
+                    ...element,
+                    style: {
+                      ...element.style,
+                      border
+                    }
+                  }
+                }
+
+                if (element === node.data.element) {
+                  return node
+                }
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    element
+                  }
+                }
               })
             )
             get().onChange?.({ changes })

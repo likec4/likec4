@@ -1,5 +1,6 @@
 import type {
   AutoLayoutDirection,
+  BorderStyle,
   DiagramView,
   ElementShape,
   Fqn,
@@ -25,15 +26,14 @@ export namespace WebviewToExtension {
   export const closeMe: NotificationType<never> = { method: 'closeMe' }
 
   export namespace Changes {
-    export interface ChangeColor {
-      op: 'change-color'
-      color: ThemeColor
-      targets: NonEmptyArray<Fqn>
-    }
-
-    export interface ChangeShape {
-      op: 'change-shape'
-      shape: ElementShape
+    export interface ChangeElementStyle {
+      op: 'change-element-style'
+      style: {
+        border?: BorderStyle
+        opacity?: number
+        shape?: ElementShape
+        color?: ThemeColor
+      }
       targets: NonEmptyArray<Fqn>
     }
 
@@ -44,8 +44,7 @@ export namespace WebviewToExtension {
   }
 
   export type ChangeCommand =
-    | Changes.ChangeColor
-    | Changes.ChangeShape
+    | Changes.ChangeElementStyle
     | Changes.ChangeAutoLayout
 
   export const onChange: NotificationType<{ viewId: ViewID; changes: NonEmptyArray<ChangeCommand> }> = {

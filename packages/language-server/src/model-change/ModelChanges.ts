@@ -1,27 +1,35 @@
 import { invariant, nonexhaustive } from '@likec4/core'
-import { Location, Range, TextDocumentEdit, TextEdit } from 'vscode-languageserver-protocol'
+import { Location, Range, TextEdit } from 'vscode-languageserver-protocol'
 import { type ParsedLikeC4LangiumDocument } from '../ast'
 import type { LikeC4ModelLocator } from '../model'
 import type { LikeC4Services } from '../module'
 import type { ChangeViewRequestParams } from '../protocol'
+import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
-import { changeViewStyle } from './changeViewStyle'
 
 function unionRangeOfAllEdits(edits: TextEdit[]): Range {
   let start = Number.MAX_SAFE_INTEGER
   let end = Number.MIN_SAFE_INTEGER
 
-  let startCharacter = 0
-  let endCharacter = 0
+  let startCharacter = Number.MAX_SAFE_INTEGER
+  let endCharacter = Number.MIN_SAFE_INTEGER
 
   for (const { range } of edits) {
-    start = Math.min(start, range.start.line)
-    if (start === range.start.line) {
-      startCharacter = range.start.character
+    if (range.start.line <= start) {
+      if (start == range.start.line) {
+        startCharacter = Math.min(range.start.character, startCharacter)
+      } else {
+        start = range.start.line
+        startCharacter = range.start.character
+      }
     }
-    end = Math.max(end, range.end.line)
-    if (end === range.end.line) {
-      endCharacter = range.end.character
+    if (end <= range.end.line) {
+      if (end == range.end.line) {
+        endCharacter = Math.max(range.end.character, endCharacter)
+      } else {
+        end = range.end.line
+        endCharacter = range.end.character
+      }
     }
   }
   return Range.create(start, startCharacter, end, endCharacter)
@@ -50,9 +58,9 @@ export class LikeC4ModelChanges {
       const applyResult = await lspConnection.workspace.applyEdit({
         label: `LikeC4 - change view ${changeView.viewId}`,
         edit: {
-          documentChanges: [
-            TextDocumentEdit.create(textDocument, edits)
-          ]
+          changes: {
+            [textDocument.uri]: edits
+          }
         }
       })
       if (!applyResult.applied) {
@@ -78,21 +86,11 @@ export class LikeC4ModelChanges {
     const edits = [] as TextEdit[]
     for (const change of changes) {
       switch (change.op) {
-        case 'change-color': {
-          edits.push(...changeViewStyle(this.services, {
+        case 'change-element-style': {
+          edits.push(...changeElementStyle(this.services, {
             ...lookup,
             targets: change.targets,
-            key: 'color',
-            value: change.color
-          }))
-          break
-        }
-        case 'change-shape': {
-          edits.push(...changeViewStyle(this.services, {
-            ...lookup,
-            targets: change.targets,
-            key: 'shape',
-            value: change.shape
+            style: change.style
           }))
           break
         }

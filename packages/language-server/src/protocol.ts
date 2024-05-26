@@ -1,5 +1,6 @@
 import type {
   AutoLayoutDirection,
+  BorderStyle,
   ComputedView,
   ElementShape,
   Fqn,
@@ -56,28 +57,27 @@ export type LocateRequest = typeof locate
 // #endregion
 
 export namespace ChangeView {
-  export interface ChangeColor {
-    op: 'change-color'
-    color: ThemeColor
-    targets: NonEmptyArray<Fqn>
-  }
-
-  export interface ChangeShape {
-    op: 'change-shape'
-    shape: ElementShape
-    targets: NonEmptyArray<Fqn>
-  }
 
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
     layout: AutoLayoutDirection
   }
+
+  export interface ChangeElementStyle {
+    op: 'change-element-style'
+    style: {
+      border?: BorderStyle
+      opacity?: number
+      shape?: ElementShape
+      color?: ThemeColor
+    }
+    targets: NonEmptyArray<Fqn>
+  }
 }
 
 export type ChangeView =
-  | ChangeView.ChangeColor
-  | ChangeView.ChangeShape
   | ChangeView.ChangeAutoLayout
+  | ChangeView.ChangeElementStyle
 
 export interface ChangeViewRequestParams {
   viewId: ViewID

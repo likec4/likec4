@@ -57,21 +57,22 @@ export const transparent = style({
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
   },
   selectors: {
-    [`:where(${container}[data-hovered]) &`]: {
+    [`:where(.react-flow__node.selected) &`]: {
+      transitionDelay: '50ms',
+      // borderColor: 'transparent',
+      // transitionTimingFunction: 'ease-out',
+      vars: {
+        [bgTransparencyDelta]: '5%'
+      }
+    },
+    [`:where([data-hovered]) &`]: {
       transitionDelay: '175ms',
       // transitionTimingFunction: 'ease-out',
       vars: {
         [bgTransparencyDelta]: '15%'
       }
     },
-    [`:where(.react-flow__node.selected) &`]: {
-      transitionDelay: '50ms',
-      borderColor: 'transparent',
-      // transitionTimingFunction: 'ease-out',
-      vars: {
-        [bgTransparencyDelta]: '25%'
-      }
-    }
+
   }
 })
 
