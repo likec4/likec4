@@ -12177,7 +12177,7 @@ __metadata:
     p-limit: "npm:^4.0.0"
     picocolors: "npm:^1.0.0"
     pkg-up: "npm:^5.0.0"
-    playwright: "npm:1.44.0"
+    playwright: "npm:1.44.1"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:^1.15.0"
     pretty-ms: "npm:^9.0.0"
@@ -15703,27 +15703,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.44.0":
-  version: 1.44.0
-  resolution: "playwright-core@npm:1.44.0"
+"playwright-core@npm:1.44.1":
+  version: 1.44.1
+  resolution: "playwright-core@npm:1.44.1"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/e1220371a76cdf145f6aaefb2dd6c5194531d1c1e2b67712c56dbc1d589dffb66fd4fc0168be60cd2115aca40660aa13c572e14be47674c0542bc879705b9fb3
+  checksum: 10c0/6ffa3a04822b3df86d7f47a97e4f20318c0c50868ba4311820e6626ecadaab1424fbd0a3d01f0b4228adc0c781115e44b801742a4970b88739f804d82f142d68
   languageName: node
   linkType: hard
 
-"playwright@npm:1.44.0":
-  version: 1.44.0
-  resolution: "playwright@npm:1.44.0"
+"playwright@npm:1.44.1":
+  version: 1.44.1
+  resolution: "playwright@npm:1.44.1"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.44.0"
+    playwright-core: "npm:1.44.1"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/dcbee9022623dd9e219e9867983789262e80339f0c3601219930883e5a304ce75e1397715c0f378a2bab0a799cf88a73ea4b58fe595cfd9058bd7a82f5d8e3b6
+  checksum: 10c0/de827d17746b18ae2ec67d510a640d8ceebf8ee8e3d8399bccffa83b76a967498ca377777e4e6a1daaef4b3c86cb2c44c7468de53d2d915acc61b3b89c032738
   languageName: node
   linkType: hard
 
