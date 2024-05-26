@@ -193,9 +193,9 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
-  ast.isViewRuleStyle,
+  ast.isCustomElementExprBody,
   ast.isViewRulePredicateExpr,
-  ast.isViewRulePredicate,
+  ast.isTags,
   ast.isViewRule,
   ast.isViewProperty,
   ast.isElementViewBody,
@@ -231,6 +231,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
     invalidNodes
   }
 }
+export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 
 export function* streamModel(doc: LikeC4LangiumDocument) {
   const { isValid } = checksFromDiagnostics(doc)
@@ -321,10 +322,7 @@ export function toElementStyle(props?: Array<ast.StyleProperty>) {
         break
       }
       case ast.isOpacityProperty(prop): {
-        const opacity = parseAstOpacityProperty(prop)
-        if (opacity !== undefined) {
-          result.opacity = opacity
-        }
+        result.opacity = parseAstOpacityProperty(prop)
         break
       }
       default:

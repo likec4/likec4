@@ -13,7 +13,7 @@ type ComputeViewResult =
   }
   | {
     isSuccess: false
-    error: BaseError
+    error: Error
     view: undefined
   }
 
@@ -26,7 +26,7 @@ export function computeView(view: ElementView, graph: LikeC4ModelGraph): Compute
   } catch (e) {
     return {
       isSuccess: false,
-      error: normalizeError(e),
+      error: e instanceof Error ? e : new Error(`Unknown error: ${e}`),
       view: undefined
     }
   }

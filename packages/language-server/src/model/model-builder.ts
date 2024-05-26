@@ -45,7 +45,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     relationships: {}
   }
   forEach(map(docs, prop('c4Specification')), spec => {
-    Object.assign(c4Specification.kinds, spec.kinds), Object.assign(c4Specification.relationships, spec.relationships)
+    Object.assign(c4Specification.kinds, spec.kinds)
+    Object.assign(c4Specification.relationships, spec.relationships)
   })
   const resolveLinks = (doc: LangiumDocument, links: c4.NonEmptyArray<string>) => {
     return links.map(l => services.lsp.DocumentLinkProvider.resolveLink(doc, l)) as c4.NonEmptyArray<string>
@@ -53,7 +54,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   const toModelElement = (doc: LangiumDocument) => {
     return ({
-      astPath,
       tags,
       links,
       style: {
@@ -63,19 +63,23 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         opacity,
         border
       },
-      ...parsed
+      id,
+      kind,
+      title,
+      description,
+      technology
     }: ParsedAstElement): c4.Element | null => {
       try {
-        const kind = c4Specification.kinds[parsed.kind]
-        if (!kind) {
-          logger.warn(`No kind '${parsed.kind}' found for ${parsed.id}`)
+        const __kind = c4Specification.kinds[kind]
+        if (!__kind) {
+          logger.warn(`No kind '${kind}' found for ${id}`)
           return null
         }
-        color ??= kind.color
-        shape ??= kind.shape
-        icon ??= kind.icon
-        opacity ??= kind.opacity
-        border ??= kind.border
+        color ??= __kind.color
+        shape ??= __kind.shape
+        icon ??= __kind.icon
+        opacity ??= __kind.opacity
+        border ??= __kind.border
         return {
           ...(color && { color }),
           ...(shape && { shape }),
@@ -84,11 +88,13 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
             ...(border && { border }),
             ...(opacity && { opacity })
           },
-          description: null,
-          technology: null,
-          tags: tags ?? null,
           links: links ? resolveLinks(doc, links) : null,
-          ...parsed
+          tags: tags ?? null,
+          technology: technology ?? null,
+          description: description ?? null,
+          title,
+          kind,
+          id
         }
       } catch (e) {
         logWarnError(e)
@@ -98,7 +104,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   }
 
   const elements = pipe(
-    flatMap(docs, d => d.c4Elements.map(toModelElement(d))),
+    docs,
+    flatMap(d => d.c4Elements.map(toModelElement(d))),
     filter(isTruthy),
     sort(compareByFqnHierarchically),
     reduce(
@@ -127,27 +134,31 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       target,
       kind,
       links,
+      id,
       ...model
     }: ParsedAstRelation): c4.Relation | null => {
-      if (source in elements && target in elements) {
-        if (!!kind && kind in c4Specification.relationships) {
-          return {
-            source,
-            target,
-            kind,
-            ...(links && { links: resolveLinks(doc, links) }),
-            ...c4Specification.relationships[kind],
-            ...model
-          }
-        }
+      if (isNullish(elements[source]) || isNullish(elements[target])) {
+        return null
+      }
+
+      if (!!kind && kind in c4Specification.relationships) {
         return {
+          ...(links && { links: resolveLinks(doc, links) }),
+          ...c4Specification.relationships[kind],
+          ...model,
           source,
           target,
-          ...(links && { links: resolveLinks(doc, links) }),
-          ...model
+          kind,
+          id,
         }
       }
-      return null
+      return {
+        ...(links && { links: resolveLinks(doc, links) }),
+        ...model,
+        source,
+        target,
+        id,
+      }
     }
   }
 

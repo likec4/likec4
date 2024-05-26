@@ -121,11 +121,12 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
       }
     }
 
-    for (const [name, descriptions] of nestedScopes.entriesGroupedByKey()) {
-      // If name is unique for current scope
-      if (!localScope.has(name) && descriptions.length === 1) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        localScope.add(name, descriptions[0]!)
+    if (nestedScopes.size > 0) {
+      for (const [name, descriptions] of nestedScopes.entriesGroupedByKey()) {
+        // If name is unique for current scope
+        if (!localScope.has(name) && descriptions.length === 1) {
+          localScope.add(name, descriptions[0]!)
+        }
       }
     }
     scopes.addAll(container, localScope.values())

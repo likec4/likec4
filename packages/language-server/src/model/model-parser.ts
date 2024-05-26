@@ -4,6 +4,7 @@ import { AstUtils } from 'langium'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
+  ChecksFromDiagnostics,
   FqnIndexedDocument,
   ParsedAstElement,
   ParsedAstElementView,
@@ -28,6 +29,7 @@ import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import type { FqnIndex } from './fqn-index'
+import { isValid } from 'rambdax'
 
 const { getDocument } = AstUtils
 
@@ -40,6 +42,8 @@ function toSingleLine<T extends string | undefined>(str: T): T {
 function removeIndent<T extends string | undefined>(str: T): T {
   return (str ? stripIndent(str).trim() : undefined) as T
 }
+
+type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
@@ -196,7 +200,7 @@ export class LikeC4ModelParser {
     const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views.filter(isValid) : [])
     for (const view of views) {
       try {
-        const v = this.parseElementView(view)
+        const v = this.parseElementView(view, isValid)
         doc.c4Views.push(v)
       } catch (e) {
         logWarnError(e)
@@ -347,11 +351,11 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
-  private parseViewRule(astRule: ast.ViewRule): c4.ViewRule {
+  private parseViewRule(astRule: ast.ViewRule, isValid: IsValidFn): c4.ViewRule {
     if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
       const exprs = astRule.expressions.flatMap(n => {
         try {
-          return this.parsePredicateExpr(n)
+          return isValid(n) ? this.parsePredicateExpr(n): []
         } catch (e) {
           logWarnError(e)
           return []
@@ -376,7 +380,7 @@ export class LikeC4ModelParser {
     nonexhaustive(astRule)
   }
 
-  private parseElementView(astNode: ast.ElementView): ParsedAstElementView {
+  private parseElementView(astNode: ast.ElementView, isValid: IsValidFn): ParsedAstElementView {
     const body = astNode.body
     invariant(body, 'ElementView body is not defined')
     const astPath = this.getAstNodePath(astNode)
@@ -417,7 +421,7 @@ export class LikeC4ModelParser {
       ...(isNonEmptyArray(links) && { links }),
       rules: body.rules.flatMap(n => {
         try {
-          return this.parseViewRule(n)
+          return isValid(n) ? this.parseViewRule(n, isValid) : []
         } catch (e) {
           logWarnError(e)
           return []
