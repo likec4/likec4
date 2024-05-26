@@ -66,7 +66,7 @@ function FitViewOnDiagramChanges() {
         s => s.viewportChanged,
         setViewportMoved
       ),
-    [diagramApi]
+    [diagramApi, setViewportMoved]
   )
 
   useRafEffect(
@@ -77,7 +77,7 @@ function FitViewOnDiagramChanges() {
       diagramApi.getState().fitDiagram()
       setProcessed(pendingChangeId)
     },
-    [isReady, processedChangeId, pendingChangeId]
+    [isReady, processedChangeId, pendingChangeId, diagramApi]
   )
 
   if (!viewportMoved && isReady) {

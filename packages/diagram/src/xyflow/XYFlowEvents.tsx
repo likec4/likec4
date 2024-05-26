@@ -1,9 +1,9 @@
 import type { ReactFlowProps } from '@xyflow/react'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state'
 import { useXYStoreApi } from './hooks'
-import type { XYFlowEdge, XYFlowNode } from './types'
+import type { XYFlowEdge, XYFlowNode, XYFlowState } from './types'
 
 type XYFlowEventHandlers = Simplify<
   Required<
@@ -22,15 +22,21 @@ type XYFlowEventHandlers = Simplify<
       | 'onNodeMouseLeave'
       | 'onEdgeMouseEnter'
       | 'onEdgeMouseLeave'
+      | 'onViewportChange'
     >
   >
 >
+
+const viewportDomNode = (state: XYFlowState) =>
+  state.domNode?.querySelector<HTMLDivElement>('.react-flow__viewport') ?? null
 
 export function useXYFlowEvents() {
   const diagramApi = useDiagramStoreApi()
   const xyflowApi = useXYStoreApi()
 
   const dblclickTimeout = useRef<number>()
+
+  const viewportRef = useRef(viewportDomNode(xyflowApi.getState()))
 
   const dbclickGuarg = () => {
     if (dblclickTimeout.current !== undefined) {
@@ -41,6 +47,16 @@ export function useXYFlowEvents() {
     }, 250)
     return false
   }
+
+  const transformRef = useRef('')
+  const cbRef = useRef<number>()
+
+  useEffect(() =>
+    xyflowApi.subscribe((state, prev) => {
+      if (state.domNode !== prev.domNode || (state.domNode && !viewportRef.current)) {
+        viewportRef.current = viewportDomNode(state)
+      }
+    }), [xyflowApi])
 
   return useMemo(() =>
     ({
@@ -156,6 +172,23 @@ export function useXYFlowEvents() {
       },
       onEdgeMouseLeave: (event, xyedge) => {
         diagramApi.getState().setHoveredEdge(null)
+      },
+      /**
+       * WOKAROUND:
+       * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+       * https://github.com/xyflow/xyflow/issues/3282
+       */
+      onViewportChange: ({ x, y, zoom }) => {
+        const scale = zoom != 1 ? zoom.toFixed(6) : '1'
+        transformRef.current = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${scale})`
+        cbRef.current ??= requestIdleCallback(() => {
+          cbRef.current = undefined
+          if (viewportRef.current && viewportRef.current.style.transform !== transformRef.current) {
+            viewportRef.current.style.transform = transformRef.current
+          }
+        }, {
+          timeout: 1000
+        })
       }
     }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi])
 }
