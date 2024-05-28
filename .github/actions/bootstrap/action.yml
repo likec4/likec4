@@ -21,32 +21,9 @@ runs:
     #   shell: bash
     #   run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-    # - name: yarn caches
-    #   uses: actions/cache@v4
-    #   # if: github.ref == 'refs/heads/main'
-    #   with:
-    #     path: '.yarn/cache'
-    #     key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-    #     enableCrossOsArchive: true
-    #     restore-keys: |
-    #       yarn-${{ inputs.node-version }}-${{ runner.os }}-
-    #       yarn-${{ inputs.node-version }}-
-    #       yarn-
-
-    # - name: restore only caches
-    #   uses: actions/cache/restore@v4
-    #   if: github.ref != 'refs/heads/main'
-    #   with:
-    #     path: '.yarn/cache'
-    #     key: yarn-${{ inputs.node-version }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-    #     enableCrossOsArchive: true
-    #     restore-keys: |
-    #       yarn-${{ inputs.node-version }}-${{ runner.os }}-
-    #       yarn-${{ inputs.node-version }}-
-    #       yarn-
-
-    - name: Cache turbo build setup
+    - name: cache turbo build
       uses: actions/cache@v4
+      if: github.ref == 'refs/heads/main'
       with:
         path: .turbo
         key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
@@ -54,6 +31,27 @@ runs:
           ${{ runner.os }}-turbo-${{ github.ref_name }}-
           ${{ runner.os }}-turbo-main-
           ${{ runner.os }}-turbo-
+
+    - name: restore only cache turbo build
+      uses: actions/cache/restore@v4
+      if: github.ref != 'refs/heads/main'
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ github.ref_name }}-
+          ${{ runner.os }}-turbo-main-
+          ${{ runner.os }}-turbo-
+
+    # - name: Cache turbo build setup
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: .turbo
+    #     key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-turbo-${{ github.ref_name }}-
+    #       ${{ runner.os }}-turbo-main-
+    #       ${{ runner.os }}-turbo-
 
     - name: install dependencies
       shell: bash
