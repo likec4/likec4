@@ -1,9 +1,10 @@
+import { useDebouncedCallback } from '@react-hookz/web'
 import type { ReactFlowProps } from '@xyflow/react'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state'
 import { useXYStoreApi } from './hooks'
-import type { XYFlowEdge, XYFlowNode, XYFlowState } from './types'
+import type { XYFlowEdge, XYFlowNode } from './types'
 
 type XYFlowEventHandlers = Simplify<
   Required<
@@ -27,16 +28,11 @@ type XYFlowEventHandlers = Simplify<
   >
 >
 
-const viewportDomNode = (state: XYFlowState) =>
-  state.domNode?.querySelector<HTMLDivElement>('.react-flow__viewport') ?? null
-
 export function useXYFlowEvents() {
   const diagramApi = useDiagramStoreApi()
   const xyflowApi = useXYStoreApi()
 
   const dblclickTimeout = useRef<number>()
-
-  const viewportRef = useRef(viewportDomNode(xyflowApi.getState()))
 
   const dbclickGuarg = () => {
     if (dblclickTimeout.current !== undefined) {
@@ -48,46 +44,60 @@ export function useXYFlowEvents() {
     return false
   }
 
-  const transformRef = useRef('')
-  const cbRef = useRef<number>()
-
-  useEffect(() =>
-    xyflowApi.subscribe((state, prev) => {
-      if (state.domNode !== prev.domNode || (state.domNode && !viewportRef.current)) {
-        viewportRef.current = viewportDomNode(state)
+  /**
+   * Called on viewport change
+   * WOKAROUND:
+   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+   * https://github.com/xyflow/xyflow/issues/3282
+   */
+  const fixViewportTransform = useDebouncedCallback(
+    () => {
+      const [x, y, zoom] = xyflowApi.getState().transform
+      const roundedX = Math.round(x), roundedY = Math.round(y)
+      if (x === roundedX && y === roundedY) {
+        return
       }
-    }), [xyflowApi])
+      xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
+    },
+    [xyflowApi],
+    50
+  )
+
+  // If we are in focused mode, on edge enter we want to "highlight" the other node
+  // This ref contains the id of this node
+  const hoveredNodeFromOnEdgeEnterRef = useRef('')
 
   return useMemo(() =>
     ({
       onDoubleClick: (event) => {
-        diagramApi.getState().resetLastClicked()
-        const diagramState = diagramApi.getState()
-        if (diagramState.onCanvasDblClick) {
-          diagramState.onCanvasDblClick(event)
-          return
+        const {
+          fitViewEnabled,
+          onCanvasDblClick,
+          resetLastClicked,
+          fitDiagram
+        } = diagramApi.getState()
+        if (fitViewEnabled) {
+          fitDiagram()
+          if (!onCanvasDblClick) {
+            event.stopPropagation()
+          }
         }
-        if (diagramState.fitViewEnabled && diagramState.zoomable) {
-          diagramState.fitDiagram()
-          event.stopPropagation()
-          return
-        }
+        resetLastClicked()
+        onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
         if (dbclickGuarg()) {
           return
         }
         const { focusedNodeId, fitDiagram, onCanvasClick, resetLastClicked } = diagramApi.getState()
-        resetLastClicked()
-        if (onCanvasClick) {
-          onCanvasClick(event)
-          return
-        }
-        // reset focus if clicked on empty space
-        if (focusedNodeId) {
+        if (!!focusedNodeId) {
           fitDiagram()
-          event.stopPropagation()
+          if (!onCanvasClick) {
+            event.stopPropagation()
+          }
         }
+        resetLastClicked()
+        onCanvasClick?.(event)
       },
       onNodeContextMenu: (event, xynode) => {
         diagramApi.getState().setLastClickedNode(xynode.id)
@@ -110,49 +120,63 @@ export function useXYFlowEvents() {
         })
       },
       onNodeClick: (event, xynode) => {
-        diagramApi.getState().setLastClickedNode(xynode.id)
-        const { focusedNodeId, fitDiagram, onNodeClick } = diagramApi.getState()
-        if (onNodeClick) {
-          onNodeClick({
-            element: xynode.data.element,
-            xynode,
-            event
-          })
-          return
-        }
-        // if we clicked on a node that is not focused, fit the diagram
+        const {
+          focusedNodeId,
+          focusOnNode,
+          onNodeClick,
+          setLastClickedNode
+        } = diagramApi.getState()
+        setLastClickedNode(xynode.id)
+        // if we focused on a node, and clicked on another node - focus on the clicked node
         if (!!focusedNodeId && focusedNodeId !== xynode.id) {
-          fitDiagram(xynode)
-          event.stopPropagation()
+          focusOnNode(xynode.id)
+          if (!onNodeClick) {
+            // user did not provide a custom handler, stop propagation
+            event.stopPropagation()
+          }
         }
+        onNodeClick?.({
+          element: xynode.data.element,
+          xynode,
+          event
+        })
       },
       onNodeDoubleClick: (event, xynode) => {
-        diagramApi.getState().setLastClickedNode(xynode.id)
-        const { zoomable, fitViewEnabled, fitDiagram, onNodeClick } = diagramApi.getState()
-        if (onNodeClick) {
-          return
-        }
-        if (zoomable && fitViewEnabled) {
-          fitDiagram(xynode)
+        const {
+          focusedNodeId,
+          zoomable,
+          fitViewEnabled,
+          fitDiagram,
+          focusOnNode,
+          setLastClickedNode
+        } = diagramApi.getState()
+        setLastClickedNode(xynode.id)
+        if (!!focusedNodeId || (zoomable && fitViewEnabled)) {
+          // if we are already focused on the node, cancel
+          if (focusedNodeId === xynode.id) {
+            fitDiagram()
+          } else {
+            focusOnNode(xynode.id)
+          }
           event.stopPropagation()
         }
       },
       onEdgeClick: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
-        const { focusedNodeId, fitDiagram, onEdgeClick, xyflow } = diagramApi.getState()
-        if (onEdgeClick) {
-          onEdgeClick({
-            relation: xyedge.data.edge,
-            xyedge,
-            event
-          })
-          return
-        }
+        const { focusedNodeId, focusOnNode, onEdgeClick } = diagramApi.getState()
+        // if we focused on a node, and clicked on an edge connected to it - focus on the other node
         if (focusedNodeId && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)) {
-          const nextFocus = focusedNodeId === xyedge.source ? xyedge.target : xyedge.source
-          fitDiagram(xyflow.getNode(nextFocus))
-          event.stopPropagation()
+          focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
+          if (!onEdgeClick) {
+            // user did not provide a custom handler, stop propagation
+            event.stopPropagation()
+          }
         }
+        onEdgeClick?.({
+          relation: xyedge.data.edge,
+          xyedge,
+          event
+        })
       },
       onMoveEnd: (event, _viewport) => {
         // if event is present, the move was triggered by user
@@ -162,33 +186,38 @@ export function useXYFlowEvents() {
         }
       },
       onNodeMouseEnter: (event, xynode) => {
+        hoveredNodeFromOnEdgeEnterRef.current = ''
         diagramApi.getState().setHoveredNode(xynode.id)
       },
       onNodeMouseLeave: (event, xynode) => {
-        diagramApi.getState().setHoveredNode(null)
+        const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
+        if (hoveredNodeId === xynode.id) {
+          setHoveredNode(null)
+        }
       },
-      onEdgeMouseEnter: (event, xyedge) => {
-        diagramApi.getState().setHoveredEdge(xyedge.id)
+      onEdgeMouseEnter: (event, { id, source, target }) => {
+        const { hoveredNodeId, focusedNodeId, setHoveredEdge, setHoveredNode } = diagramApi.getState()
+        setHoveredEdge(id)
+        if ((focusedNodeId === source || focusedNodeId === target) && focusedNodeId !== hoveredNodeId) {
+          const next = hoveredNodeFromOnEdgeEnterRef.current = source === focusedNodeId ? target : source
+          setHoveredNode(next)
+        }
       },
       onEdgeMouseLeave: (event, xyedge) => {
-        diagramApi.getState().setHoveredEdge(null)
+        const { hoveredEdgeId, setHoveredEdge, hoveredNodeId, setHoveredNode } = diagramApi.getState()
+        if (hoveredEdgeId === xyedge.id) {
+          setHoveredEdge(null)
+        }
+        if (hoveredNodeId === hoveredNodeFromOnEdgeEnterRef.current) {
+          hoveredNodeFromOnEdgeEnterRef.current = ''
+          setHoveredNode(null)
+        }
       },
       /**
-       * WOKAROUND:
-       * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
-       * https://github.com/xyflow/xyflow/issues/3282
+       * Fix viewport transform
        */
-      onViewportChange: ({ x, y, zoom }) => {
-        const scale = zoom != 1 ? zoom.toFixed(6) : '1'
-        transformRef.current = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${scale})`
-        cbRef.current ??= requestIdleCallback(() => {
-          cbRef.current = undefined
-          if (viewportRef.current && viewportRef.current.style.transform !== transformRef.current) {
-            viewportRef.current.style.transform = transformRef.current
-          }
-        }, {
-          timeout: 1000
-        })
+      onViewportChange: () => {
+        fixViewportTransform()
       }
-    }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi])
+    }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi, fixViewportTransform])
 }

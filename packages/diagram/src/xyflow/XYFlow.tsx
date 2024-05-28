@@ -1,6 +1,5 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { Controls, PanOnScrollMode, ReactFlow } from '@xyflow/react'
-import { DEV } from 'esm-env'
+import { Controls, ReactFlow } from '@xyflow/react'
 import { type CSSProperties, memo, type PropsWithChildren } from 'react'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
@@ -154,7 +153,7 @@ function XYFlowWrapper({
       })}>
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls position={'bottom-right'} />}
-      {zoomable && !editor.hasOnNodeClick && <SelectEdgesOnNodeFocus />}
+      {fitView && zoomable && <SelectEdgesOnNodeFocus />}
       {children}
     </ReactFlow>
   )

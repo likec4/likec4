@@ -87,6 +87,8 @@ export type DiagramInitialState = // Required properties
 interface DiagramStoreActions {
   updateView: (view: DiagramView) => void
 
+  focusOnNode: (nodeId: string) => void
+
   setHoveredNode: (nodeId: string | null) => void
   setHoveredEdge: (edgeId: string | null) => void
 
@@ -98,7 +100,7 @@ interface DiagramStoreActions {
   getElement(id: Fqn): DiagramNode | null
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: (centerNode?: XYFlowNode) => void
+  fitDiagram: () => void
 }
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
@@ -216,6 +218,12 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               noReplace,
               'update-view'
             )
+          },
+
+          focusOnNode: (nodeId) => {
+            if (nodeId !== get().focusedNodeId) {
+              set({ focusedNodeId: nodeId }, noReplace, `focus on node: ${nodeId}`)
+            }
           },
 
           setHoveredNode: (nodeId) => {
@@ -386,20 +394,16 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             )
           },
 
-          fitDiagram: (centerNode) => {
+          fitDiagram: () => {
             const { fitViewPadding, xyflow, focusedNodeId } = get()
             xyflow.fitView({
               includeHiddenNodes: true,
-              duration: (centerNode && focusedNodeId) ? 300 : 400,
+              duration: 400,
               padding: fitViewPadding,
               minZoom: MinZoom,
-              maxZoom: 1,
-              ...(centerNode && { nodes: [centerNode] })
+              maxZoom: 1
             })
-            if (centerNode && focusedNodeId !== centerNode.id) {
-              set({ focusedNodeId: centerNode.id }, noReplace, 'focus node')
-            }
-            if (!centerNode && !!focusedNodeId) {
+            if (!!focusedNodeId) {
               set({ focusedNodeId: null }, noReplace, 'unfocus')
             }
           }

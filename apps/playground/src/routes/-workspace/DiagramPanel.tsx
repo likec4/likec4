@@ -1,4 +1,5 @@
 import { LikeC4Diagram } from '@likec4/diagram'
+import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification, Text, Title } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
@@ -51,27 +52,6 @@ const selector = (s: WorkspaceState) => {
   }
 }
 
-// type States = ReturnType<typeof selector>['state']
-
-// const stateToText = (state: States) => {
-//   switch (state) {
-//     case 'ok':
-//       return ''
-//     case 'initializing':
-//       return 'Initializing...'
-//     case 'no-views':
-//       return 'No views in model'
-//     case 'removed':
-//       return 'View is invalid or removed'
-//     case 'compute-failed':
-//       return 'Failed to compute view'
-//     case 'layout-failed':
-//       return 'Failed to layout view'
-//     case 'unknown-error':
-//       return 'Unknown error, try another view'
-//   }
-// }
-
 export function DiagramPanel() {
   const store = useStoreApi()
   const { state, message, diagram } = useWorkspaceState(selector)
@@ -79,14 +59,17 @@ export function DiagramPanel() {
   const isInvalid = state !== 'initializing' && state !== 'ok'
   const icon = isInvalid ? <IconX style={{ width: 20, height: 20 }} /> : <IconCheck style={{ width: 20, height: 20 }} />
 
+  const showLocation = (location: LocateParams) => {
+    store.getState().showLocation(location)
+  }
+
   if (diagram) {
     return (
       (
         <Box
           pos={'relative'}
           w={'100%'}
-          h={'100%'}
-          onDoubleClick={() => store.getState().showLocation({ view: diagram.id })}>
+          h={'100%'}>
           <LikeC4Diagram
             view={diagram}
             readonly={false}
@@ -96,20 +79,18 @@ export function DiagramPanel() {
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
             onNodeClick={({ element, event }) => {
+              showLocation({ element: element.id })
               event.stopPropagation()
-              store.getState().showLocation({ element: element.id })
             }}
             onEdgeClick={({ relation, event }) => {
+              showLocation({ relation: relation.relations[0]! })
               event.stopPropagation()
-              store.getState().showLocation({ relation: relation.relations[0]! })
+            }}
+            onCanvasDblClick={(event) => {
+              showLocation({ view: diagram.id })
+              event.stopPropagation()
             }}
           />
-          <Box className={css.diagramTitle}>
-            <Text fz={10} fw={500} c={'dimmed'}>id: {diagram.id}</Text>
-            <Title order={5}>
-              {diagram.title || diagram.id}
-            </Title>
-          </Box>
           {message && (
             <Box className={css.stateAlert}>
               <Notification

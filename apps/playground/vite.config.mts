@@ -133,6 +133,7 @@ export default defineConfig((env) => {
             identifiers: 'short'
           }),
           TanStackRouterVite({
+            semicolons: false,
             routeFileIgnorePattern: '.css.ts',
             generatedRouteTree: resolve('src/routeTree.gen.ts'),
             routesDirectory: resolve('src/routes'),

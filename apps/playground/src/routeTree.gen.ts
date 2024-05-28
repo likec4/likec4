@@ -19,17 +19,17 @@ import { Route as WIdIndexImport } from './routes/w.$id.index'
 
 const IndexRoute = IndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const WIdRoute = WIdImport.update({
   path: '/w/$id',
-  getParentRoute: () => rootRoute
+  getParentRoute: () => rootRoute,
 } as any)
 
 const WIdIndexRoute = WIdIndexImport.update({
   path: '/',
-  getParentRoute: () => WIdRoute
+  getParentRoute: () => WIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -55,7 +55,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  WIdRoute.addChildren([WIdIndexRoute])
+  WIdRoute.addChildren([WIdIndexRoute]),
 ])
 
 /* prettier-ignore-end */
