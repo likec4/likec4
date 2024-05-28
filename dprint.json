@@ -42,13 +42,13 @@
     "docs/out",
     "docs/components/ui/",
     "packages/*/contrib",
-    "packages/likec4/app/src/routeTree.gen.ts",
+    "**/routeTree.gen.ts",
     "packages/*/src/generated"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.90.4.wasm",
+    "https://plugins.dprint.dev/typescript-0.90.5.wasm",
     "https://plugins.dprint.dev/json-0.19.2.wasm",
     "https://plugins.dprint.dev/markdown-0.17.0.wasm",
-    "https://plugins.dprint.dev/biome-0.5.2.wasm"
+    "https://plugins.dprint.dev/biome-0.5.3.wasm"
   ]
 }
