@@ -108,6 +108,7 @@ export interface ParsedAstDynamicView {
   rules: Array<c4.ViewRuleStyle | c4.ViewRuleAutoLayout>
 }
 
+export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView
 export const ViewOps = {
   writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewID): T {
     node[idattr] = id
@@ -147,7 +148,7 @@ export interface LikeC4DocumentProps {
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
   c4Relations?: ParsedAstRelation[]
-  c4Views?: (ParsedAstElementView | ParsedAstDynamicView)[]
+  c4Views?: ParsedAstView[]
   // Fqn -> Element
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
 }

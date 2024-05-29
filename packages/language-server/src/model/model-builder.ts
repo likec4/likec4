@@ -1,5 +1,4 @@
 import {
-  type BasicView,
   type c4,
   compareByFqnHierarchically,
   invariant,
@@ -28,14 +27,12 @@ import {
   sort,
   values
 } from 'remeda'
-import type { Writable } from 'type-fest'
 import { type CancellationToken, Disposable } from 'vscode-languageserver'
 import type {
-  ParsedAstDynamicView,
   ParsedAstElement,
-  ParsedAstElementView,
   ParsedAstRelation,
   ParsedAstSpecification,
+  ParsedAstView,
   ParsedLikeC4LangiumDocument
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
@@ -212,14 +209,18 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
-    return (parsedAstView: ParsedAstElementView | ParsedAstDynamicView): c4.View => {
+    return (parsedAstView: ParsedAstView): c4.View => {
       let {
-        astPath: _ignore,
+        id,
         title,
         description,
         tags,
         links,
-        id,
+
+        // ignore this property
+        astPath: _ignore,
+
+        // model should include discriminant __
         ...model
       } = parsedAstView
 
@@ -231,7 +232,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         title = 'Landscape view'
       }
 
-      const view = {
+      return {
         id,
         title,
         description,
@@ -239,21 +240,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         links: links ? resolveLinks(doc, links) : null,
         docUri,
         ...model
-      } satisfies c4.View
-
-      // switch (parsedAstView.__) {
-      //   case 'element':
-      //     view = toElementView(parsedAstView, doc)
-      //     break
-      //   case 'dynamic':
-      //     view = toDynamicView(parsedAstView, doc)
-      //     break
-      //   default:
-      //     // @ts-expect-error - should not happen
-      //     throw new Error(`Unknown view type: ${parsedAstView.__}`)
-      // }
-      // ;(view as Writable<BasicView>).docUri = docUri
-      return view
+      }
     }
   }
 

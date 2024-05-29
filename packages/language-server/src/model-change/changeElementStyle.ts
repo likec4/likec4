@@ -1,8 +1,8 @@
 import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { entries, findLast, isNumber, last, partition, toPairs } from 'remeda'
+import { entries, filter, findLast, isNumber, last, partition, toPairs } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-protocol'
-import { ast, type ParsedAstElementView, type ParsedLikeC4LangiumDocument } from '../ast'
+import { ast, type ParsedAstElementView, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
 import type { ChangeView } from '../protocol'
@@ -19,9 +19,9 @@ const asViewStyleRule = (target: string, style: ChangeView.ChangeElementStyle['s
 }
 
 type ChangeElementStyleArg = {
-  view: ParsedAstElementView
+  view: ParsedAstView
   doc: ParsedLikeC4LangiumDocument
-  viewAst: ast.ElementView
+  viewAst: ast.LikeC4View
   targets: NonEmptyArray<Fqn>
   style: ChangeView.ChangeElementStyle['style']
 }
@@ -31,18 +31,19 @@ type ChangeElementStyleArg = {
  * - has exactly one target
  * - the target is an ElementRef to the given fqn
  */
-const isMatchingViewRule = (fqn: string, index: FqnIndex) => (rule: ast.ViewRule): rule is ast.ViewRuleStyle => {
-  if (!ast.isViewRuleStyle(rule)) {
-    return false
+const isMatchingViewRule =
+  (fqn: string, index: FqnIndex) => (rule: ast.ViewRule | ast.DynamicViewRule): rule is ast.ViewRuleStyle => {
+    if (!ast.isViewRuleStyle(rule)) {
+      return false
+    }
+    const [target, ...rest] = rule.targets
+    if (!target || rest.length > 0 || !ast.isElementRef(target)) {
+      return false
+    }
+    const ref = target.el.ref
+    const _fqn = ref ? index.getFqn(ref) : null
+    return _fqn === fqn
   }
-  const [target, ...rest] = rule.targets
-  if (!target || rest.length > 0 || !ast.isElementRef(target)) {
-    return false
-  }
-  const ref = target.el.ref
-  const _fqn = ref ? index.getFqn(ref) : null
-  return _fqn === fqn
-}
 
 export function changeElementStyle(services: LikeC4Services, {
   view,
@@ -58,8 +59,8 @@ export function changeElementStyle(services: LikeC4Services, {
   invariant(insertPos, 'insertPos is not defined')
   const indent = viewCstNode.range.start.character + 2
   const fqnIndex = services.likec4.FqnIndex
-  const styleRules = viewAst.body.rules.filter(ast.isViewRuleStyle)
-  const viewOf = view.viewOf
+  const styleRules = filter(viewAst.body.rules, ast.isViewRuleStyle)
+  const viewOf = view.__ === 'element' ? view.viewOf : null
   // Find existing rules
   const existing = [] as Array<{ fqn: Fqn; rule: ast.ViewRuleStyle }>
   const insert = [] as Array<{ fqn: Fqn }>
@@ -127,7 +128,7 @@ export function changeElementStyle(services: LikeC4Services, {
       const ruleCstNode = rule.$cstNode
       invariant(ruleCstNode, 'RuleCstNode not found')
       for (const [key, _value] of entries.strict(style)) {
-        const value = isNumber(_value) ? _value.toString()+'%' : _value
+        const value = isNumber(_value) ? _value.toString() + '%' : _value
         const ruleProp = rule.styleprops.find(p => p.key === key)
         // replace existing  property
         if (ruleProp && ruleProp.$cstNode) {
