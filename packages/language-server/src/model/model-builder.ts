@@ -1,6 +1,8 @@
 import {
   type c4,
   compareByFqnHierarchically,
+  invariant,
+  isElementView,
   isStrictElementView,
   parentFqn,
   type StrictElementView,
@@ -180,9 +182,9 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         title = 'Landscape view'
       }
       return {
-        ...model,
         __: 'element',
         id,
+        ...model,
         title: title ?? null,
         description: description ?? null,
         tags: tags ?? null,
@@ -193,8 +195,37 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     }
   }
 
+  //   const toC4View = (doc: LangiumDocument) => {
+  // const docUri = doc.uri.toString()
+  //     return (view: ParsedLikeC4LangiumDocument['c4Views'][number]): c4.ElementView | null => {
+  //       // eslint-disable-next-line prefer-const
+  //       let { astPath, rules, title, description, tags, links, id, ...model } = view
+  //             if ('__' in model && model.__ === 'dynamic') {
+  //         return null
+  //       }
+  //       if (!title && 'viewOf' in view) {
+  //         title = elements[view.viewOf]?.title
+  //       }
+  //       if (!title && view.id === 'index') {
+  //         title = 'Landscape view'
+  //       }
+  //       return {
+  //         __: 'element',
+  //         id,
+  //         ...model,
+  //         title: title ?? null,
+  //         description: description ?? null,
+  //         tags: tags ?? null,
+  //         links: links ? resolveLinks(doc, links) : null,
+  //         docUri,
+  //         rules
+  //       }
+  //     }
+  //   }
+
   const views = pipe(
-    flatMap(docs, d => map(d.c4Views, toElementView(d))),
+    docs,
+    flatMap(d => map(d.c4Views, toElementView(d))),
     resolveRelativePaths,
     mapToObj(v => [v.id, v]),
     resolveRulesExtendedViews
@@ -281,7 +312,7 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  private previousViews: Record<ViewID, c4.ComputedView> = {}
+  private previousViews: Record<ViewID, c4.ComputedElementView> = {}
 
   public async buildComputedModel(cancelToken?: CancellationToken): Promise<c4.LikeC4ComputedModel | null> {
     const model = await this.buildModel(cancelToken)
@@ -293,12 +324,15 @@ export class LikeC4ModelBuilder {
         await interruptAndCheck(cancelToken)
       }
       const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
-      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedElementView | null>
       return cache.get(MODEL_CACHE, () => {
         const index = new LikeC4ModelGraph(model)
 
-        const allViews = [] as c4.ComputedView[]
+        const allViews = [] as c4.ComputedElementView[]
         for (const view of values(model.views)) {
+          if (!isElementView(view)) {
+            continue
+          }
           const result = computeView(view, index)
           if (!result.isSuccess) {
             logWarnError(result.error)
@@ -323,18 +357,19 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedView | null> {
+  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedElementView | null> {
     const model = await this.buildModel(cancelToken)
     const view = model?.views[viewId]
     if (!view) {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
     }
+    invariant(isElementView(view), `View ${viewId} is not an element view`)
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedElementView | null>
       return cache.get(computedViewKey(viewId), () => {
         const index = new LikeC4ModelGraph(model)
         const result = computeView(view, index)

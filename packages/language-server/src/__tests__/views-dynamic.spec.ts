@@ -67,8 +67,8 @@ async function mkTestServices({ expect }: TestContext) {
   }
 }
 
-describe.skip('dynamic views', () => {
-  it('valid views', async ctx => {
+describe('dynamic views', () => {
+  it.skip('valid views example', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`
       dynamic view index1 {
@@ -95,6 +95,22 @@ describe.skip('dynamic views', () => {
             'System uses Backend'
 
         system.backend -> system.frontend
+      }
+    `)
+  })
+
+  it('valid views', async ctx => {
+    const { valid } = await mkTestServices(ctx)
+    await valid(`
+      dynamic view index1 {
+        user -> system.frontend 'User uses System'
+        system.frontend -> system.backend 'frontend uses backend'
+        system.frontend <- system.backend
+
+        style * {
+          color red
+        }
+        autoLayout BottomTop
       }
     `)
   })

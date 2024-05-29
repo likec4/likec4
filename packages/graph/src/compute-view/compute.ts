@@ -1,6 +1,6 @@
 import type {
   ComputedEdge,
-  ComputedView,
+  ComputedElementView,
   EdgeId,
   Element,
   ElementView,
@@ -85,7 +85,7 @@ export class ComputeCtx {
     protected graph: LikeC4ModelGraph
   ) {}
 
-  protected compute(): ComputedView {
+  protected compute(): ComputedElementView {
     // reset ctx
     this.reset()
     const { rules, ...view } = this.view

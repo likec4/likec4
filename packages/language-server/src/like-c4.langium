@@ -141,9 +141,9 @@ RelationStyleProperty:
 
 ModelViews:
   name='views' '{'
-    (
-      dynamicViews+=DynamicView |
-      views+=ElementView
+    views+=(
+      ElementView |
+      DynamicView
     )*
   '}';
 
@@ -166,12 +166,10 @@ DynamicView:
 DynamicViewBody:
   tags=Tags?
   props+=ViewProperty*
-  steps+=DynamicViewStep*
+  (steps+=DynamicViewStep | rules+=DynamicViewRule)*
 ;
 
-DynamicViewStep:
-  source=ElementRef (isBackward?='<-' | '->') target=ElementRef title=String?
-;
+
 
 ViewRef:
   view=[LikeC4View];
@@ -199,6 +197,15 @@ ViewRule:
   ViewRulePredicate |
   ViewRuleStyle |
   ViewRuleAutoLayout
+;
+
+DynamicViewRule:
+  ViewRuleStyle |
+  ViewRuleAutoLayout
+;
+
+DynamicViewStep:
+  source=ElementRef (isBackward?='<-' | '->') target=ElementRef title=String?
 ;
 
 ViewRulePredicate:
@@ -361,8 +368,7 @@ hidden terminal WS: /\s+/;
 
 // -----------------------------------
 // Terminals
-
-terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
+//terminal LineStartWithDash: /(?<=([\r?\n][^\S\r\n]*))-/;
 
 terminal URI_WITH_SCHEMA: /\w+:\/\/\S+/;
 terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;

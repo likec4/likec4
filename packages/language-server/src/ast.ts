@@ -88,19 +88,23 @@ export interface ParsedAstElementView {
   viewOf?: c4.Fqn
   extends?: c4.ViewID
   astPath: string
-  title?: string
-  description?: string
-  tags?: c4.NonEmptyArray<c4.Tag>
-  links?: c4.NonEmptyArray<string>
+  title: string | null
+  description: string | null
+  tags: c4.NonEmptyArray<c4.Tag> | null
+  links: c4.NonEmptyArray<string> | null
   rules: c4.ViewRule[]
 }
 
 export interface ParsedAstDynamicView {
+  __: 'dynamic'
   id: c4.ViewID
   astPath: string
-  title?: string
-  description?: string
-  rules: c4.ViewRule[]
+  title: string | null
+  description: string | null
+  tags: c4.NonEmptyArray<c4.Tag> | null
+  links: c4.NonEmptyArray<string> | null
+  steps: c4.DynamicViewStep[]
+  rules: Array<c4.ViewRuleStyle | c4.ViewRuleAutoLayout>
 }
 
 export const ViewOps = {
@@ -142,8 +146,7 @@ export interface LikeC4DocumentProps {
   c4Specification?: ParsedAstSpecification
   c4Elements?: ParsedAstElement[]
   c4Relations?: ParsedAstRelation[]
-  c4Views?: ParsedAstElementView[]
-
+  c4Views?: (ParsedAstElementView | ParsedAstDynamicView)[]
   // Fqn -> Element
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
 }
@@ -207,6 +210,7 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isCustomElementExprBody,
   ast.isViewRulePredicateExpr,
   ast.isViewProperty,
+  ast.isStyleProperty,
   ast.isTags,
   ast.isViewRule,
   ast.isDynamicViewStep,
@@ -225,8 +229,8 @@ const isValidatableAstNode = validatableAstNodeGuards([
   ast.isSpecificationRelationshipKind,
   ast.isSpecificationTag,
   ast.isSpecificationRule,
-  ast.isModel,
-  ast.isModelViews
+  ast.isModelViews,
+  ast.isModel
 ])
 type ValidatableAstNode = Guarded<typeof isValidatableAstNode>
 
@@ -246,9 +250,7 @@ export function checksFromDiagnostics(doc: LikeC4LangiumDocument) {
 }
 export type ChecksFromDiagnostics = ReturnType<typeof checksFromDiagnostics>
 
-export function* streamModel(doc: LikeC4LangiumDocument) {
-  const { isValid } = checksFromDiagnostics(doc)
-
+export function* streamModel(doc: LikeC4LangiumDocument, isValid: ChecksFromDiagnostics['isValid']) {
   const traverseStack = doc.parseResult.value.models.flatMap(m => (isValid(m) ? m.elements : []))
   const relations = [] as ast.Relation[]
   let el
