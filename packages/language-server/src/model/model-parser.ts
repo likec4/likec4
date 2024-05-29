@@ -430,6 +430,7 @@ export class LikeC4ModelParser {
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
 
     const view: ParsedAstElementView = {
+      __: 'element',
       id: id as c4.ViewID,
       astPath,
       ...(viewOf && { viewOf }),

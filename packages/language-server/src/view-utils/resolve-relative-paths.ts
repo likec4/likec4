@@ -1,11 +1,10 @@
+import type { View } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import type { ElementView } from '@likec4/core'
-import { uniq, zip } from 'rambdax'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, unique, zip } from 'remeda'
 
-function commonAncestorPath(views: ElementView[], sep = '/') {
+function commonAncestorPath(views: View[], sep = '/') {
   if (views.length <= 1) return ''
-  const uniqURIs = uniq(views.flatMap(({ docUri }) => (docUri ? [docUri] : [])))
+  const uniqURIs = unique(views.flatMap(({ docUri }) => (docUri ? [docUri] : [])))
   if (uniqURIs.length === 0) return ''
   if (uniqURIs.length === 1) {
     invariant(hasAtLeast(uniqURIs, 1))
@@ -31,7 +30,7 @@ function commonAncestorPath(views: ElementView[], sep = '/') {
   return prefix.endsWith(sep) ? prefix : prefix + sep
 }
 
-export function resolveRelativePaths(views: ElementView[]): ElementView[] {
+export function resolveRelativePaths(views: View[]): View[] {
   const commonPrefix = commonAncestorPath(views)
   return (
     views

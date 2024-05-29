@@ -1,4 +1,5 @@
 import {
+  type BasicView,
   type c4,
   compareByFqnHierarchically,
   invariant,
@@ -27,8 +28,10 @@ import {
   sort,
   values
 } from 'remeda'
+import type { Writable } from 'type-fest'
 import { type CancellationToken, Disposable } from 'vscode-languageserver'
 import type {
+  ParsedAstDynamicView,
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
@@ -170,62 +173,93 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     mapToObj(r => [r.id, r])
   )
 
-  const toElementView = (doc: LangiumDocument) => {
+  // const toElementView = (view: ParsedAstElementView, doc: LangiumDocument): c4.ElementView => {
+  //   let { astPath, rules, title, description, tags, links, id, __, ...model } = view
+
+  //   if ('viewOf' in view) {
+  //     title ??= elements[view.viewOf]?.title ?? null
+  //   }
+  //   if (!title && view.id === 'index') {
+  //     title = 'Landscape view'
+  //   }
+  //   return {
+  //     __,
+  //     id,
+  //     ...model,
+  //     title,
+  //     description,
+  //     tags,
+  //     links: links ? resolveLinks(doc, links) : null,
+  //     docUri: '',
+  //     rules
+  //   }
+  // }
+
+  // const toDynamicView = (view: ParsedAstDynamicView, doc: LangiumDocument): c4.DynamicView => {
+  //   let { rules, steps, title, description, tags, links, id, __ } = view
+  //   return {
+  //     __,
+  //     id,
+  //     title,
+  //     description,
+  //     tags,
+  //     links: links ? resolveLinks(doc, links) : null,
+  //     docUri: '',
+  //     rules,
+  //     steps
+  //   }
+  // }
+
+  const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
-    return (view: ParsedAstElementView): c4.ElementView => {
-      // eslint-disable-next-line prefer-const
-      let { astPath, rules, title, description, tags, links, id, ...model } = view
-      if (!title && 'viewOf' in view) {
-        title = elements[view.viewOf]?.title
+    return (parsedAstView: ParsedAstElementView | ParsedAstDynamicView): c4.View => {
+      let {
+        astPath: _ignore,
+        title,
+        description,
+        tags,
+        links,
+        id,
+        ...model
+      } = parsedAstView
+
+      if (parsedAstView.__ === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
+        title ??= elements[parsedAstView.viewOf]?.title ?? null
       }
-      if (!title && view.id === 'index') {
+
+      if (isNullish(title) && id === 'index') {
         title = 'Landscape view'
       }
-      return {
-        __: 'element',
+
+      const view = {
         id,
-        ...model,
-        title: title ?? null,
-        description: description ?? null,
-        tags: tags ?? null,
+        title,
+        description,
+        tags,
         links: links ? resolveLinks(doc, links) : null,
         docUri,
-        rules
-      }
+        ...model
+      } satisfies c4.View
+
+      // switch (parsedAstView.__) {
+      //   case 'element':
+      //     view = toElementView(parsedAstView, doc)
+      //     break
+      //   case 'dynamic':
+      //     view = toDynamicView(parsedAstView, doc)
+      //     break
+      //   default:
+      //     // @ts-expect-error - should not happen
+      //     throw new Error(`Unknown view type: ${parsedAstView.__}`)
+      // }
+      // ;(view as Writable<BasicView>).docUri = docUri
+      return view
     }
   }
 
-  //   const toC4View = (doc: LangiumDocument) => {
-  // const docUri = doc.uri.toString()
-  //     return (view: ParsedLikeC4LangiumDocument['c4Views'][number]): c4.ElementView | null => {
-  //       // eslint-disable-next-line prefer-const
-  //       let { astPath, rules, title, description, tags, links, id, ...model } = view
-  //             if ('__' in model && model.__ === 'dynamic') {
-  //         return null
-  //       }
-  //       if (!title && 'viewOf' in view) {
-  //         title = elements[view.viewOf]?.title
-  //       }
-  //       if (!title && view.id === 'index') {
-  //         title = 'Landscape view'
-  //       }
-  //       return {
-  //         __: 'element',
-  //         id,
-  //         ...model,
-  //         title: title ?? null,
-  //         description: description ?? null,
-  //         tags: tags ?? null,
-  //         links: links ? resolveLinks(doc, links) : null,
-  //         docUri,
-  //         rules
-  //       }
-  //     }
-  //   }
-
   const views = pipe(
     docs,
-    flatMap(d => map(d.c4Views, toElementView(d))),
+    flatMap(d => map(d.c4Views, toC4View(d))),
     resolveRelativePaths,
     mapToObj(v => [v.id, v]),
     resolveRulesExtendedViews

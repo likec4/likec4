@@ -1,5 +1,5 @@
 import graphlib from '@dagrejs/graphlib'
-import { type ElementView, isExtendsElementView } from '@likec4/core'
+import { isExtendsElementView, type View } from '@likec4/core'
 
 // '@dagrejs/graphlib' is a CommonJS module
 // Here is a workaround to import it
@@ -10,7 +10,7 @@ const { Graph, alg } = graphlib
  * (Removes invalid views)
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolveRulesExtendedViews<V extends Record<any, ElementView>>(
+export function resolveRulesExtendedViews<V extends Record<any, View>>(
   unresolvedViews: V
 ): V {
   const g = new Graph({

@@ -84,6 +84,7 @@ export interface ParsedAstRelation {
 }
 
 export interface ParsedAstElementView {
+  __: 'element'
   id: c4.ViewID
   viewOf?: c4.Fqn
   extends?: c4.ViewID
