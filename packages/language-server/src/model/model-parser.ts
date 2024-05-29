@@ -1,6 +1,7 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils } from 'langium'
+import { isValid } from 'rambdax'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
@@ -15,21 +16,20 @@ import {
   ast,
   checksFromDiagnostics,
   cleanParsedModel,
-  ElementViewOps,
   isFqnIndexedDocument,
   parseAstOpacityProperty,
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
   toElementStyle,
-  toRelationshipStyleExcludeDefaults
+  toRelationshipStyleExcludeDefaults,
+  ViewOps
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import { isValid } from 'rambdax'
 
 const { getDocument } = AstUtils
 
@@ -355,7 +355,7 @@ export class LikeC4ModelParser {
     if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
       const exprs = astRule.expressions.flatMap(n => {
         try {
-          return isValid(n) ? this.parsePredicateExpr(n): []
+          return isValid(n) ? this.parsePredicateExpr(n) : []
         } catch (e) {
           logWarnError(e)
           return []
@@ -428,7 +428,7 @@ export class LikeC4ModelParser {
         }
       })
     }
-    ElementViewOps.writeId(astNode, basic.id)
+    ViewOps.writeId(astNode, basic.id)
 
     if ('extends' in astNode) {
       const extendsView = astNode.extends.view.ref

@@ -2,6 +2,7 @@
 
 exports[`compute-element-view > view of cloud 1`] = `
 {
+  "__": "element",
   "autoLayout": "TB",
   "description": null,
   "edges": [
@@ -215,4 +216,188 @@ exports[`compute-element-view > view of cloud 1`] = `
 }
 `;
 
-exports[`compute-element-view > view of cloud.frontend 1`] = `[Function]`;
+exports[`compute-element-view > view of cloud.frontend 1`] = `
+{
+  "__": "element",
+  "autoLayout": "TB",
+  "description": null,
+  "edges": [
+    {
+      "id": "support:cloud.frontend.adminPanel",
+      "label": "manages",
+      "parent": null,
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend.adminPanel",
+    },
+    {
+      "id": "customer:cloud.frontend.dashboard",
+      "label": "opens in browser",
+      "parent": null,
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend.dashboard",
+    },
+    {
+      "id": "cloud.frontend.adminPanel:cloud.backend",
+      "label": "fetches",
+      "parent": null,
+      "relations": [
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.adminPanel",
+      "target": "cloud.backend",
+    },
+    {
+      "id": "cloud.frontend.dashboard:cloud.backend",
+      "label": "requests",
+      "parent": null,
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend",
+    },
+  ],
+  "id": "index",
+  "links": null,
+  "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "parent": null,
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "support",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "customer",
+      "inEdges": [],
+      "kind": "actor",
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "parent": null,
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+    },
+    {
+      "children": [
+        "cloud.frontend.adminPanel",
+        "cloud.frontend.dashboard",
+      ],
+      "color": "primary",
+      "depth": 1,
+      "description": null,
+      "id": "cloud.frontend",
+      "inEdges": [
+        "customer:cloud.frontend.dashboard",
+        "support:cloud.frontend.adminPanel",
+      ],
+      "kind": "container",
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "cloud.frontend.dashboard:cloud.backend",
+        "cloud.frontend.adminPanel:cloud.backend",
+      ],
+      "parent": null,
+      "shape": "browser",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "frontend",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "cloud.frontend.adminPanel",
+      "inEdges": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "kind": "component",
+      "level": 1,
+      "links": null,
+      "outEdges": [
+        "cloud.frontend.adminPanel:cloud.backend",
+      ],
+      "parent": "cloud.frontend",
+      "shape": "rectangle",
+      "style": {},
+      "tags": [
+        "old",
+      ],
+      "technology": null,
+      "title": "adminPanel",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "cloud.frontend.dashboard",
+      "inEdges": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "kind": "component",
+      "level": 1,
+      "links": null,
+      "outEdges": [
+        "cloud.frontend.dashboard:cloud.backend",
+      ],
+      "parent": "cloud.frontend",
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "dashboard",
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "id": "cloud.backend",
+      "inEdges": [
+        "cloud.frontend.dashboard:cloud.backend",
+        "cloud.frontend.adminPanel:cloud.backend",
+      ],
+      "kind": "container",
+      "level": 0,
+      "links": null,
+      "outEdges": [],
+      "parent": null,
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "backend",
+    },
+  ],
+  "tags": null,
+  "title": null,
+  "viewOf": "cloud.frontend",
+}
+`;

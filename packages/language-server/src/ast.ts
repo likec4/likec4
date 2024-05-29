@@ -30,6 +30,9 @@ declare module './generated/ast' {
   export interface ElementView {
     [idattr]?: c4.ViewID | undefined
   }
+  export interface DynamicView {
+    [idattr]?: c4.ViewID | undefined
+  }
 }
 
 type ParsedElementStyle = {
@@ -92,12 +95,20 @@ export interface ParsedAstElementView {
   rules: c4.ViewRule[]
 }
 
-export const ElementViewOps = {
-  writeId(node: ast.ElementView, id: c4.ViewID) {
+export interface ParsedAstDynamicView {
+  id: c4.ViewID
+  astPath: string
+  title?: string
+  description?: string
+  rules: c4.ViewRule[]
+}
+
+export const ViewOps = {
+  writeId<T extends ast.LikeC4View>(node: T, id: c4.ViewID): T {
     node[idattr] = id
     return node
   },
-  readId(node: ast.ElementView) {
+  readId(node: ast.LikeC4View): c4.ViewID | undefined {
     return node[idattr]
   }
 }
@@ -195,14 +206,12 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
 const isValidatableAstNode = validatableAstNodeGuards([
   ast.isCustomElementExprBody,
   ast.isViewRulePredicateExpr,
+  ast.isViewProperty,
   ast.isTags,
   ast.isViewRule,
-  ast.isViewProperty,
   ast.isDynamicViewStep,
   ast.isElementViewBody,
   ast.isDynamicViewBody,
-  ast.isElementView,
-  ast.isDynamicView,
   ast.isLikeC4View,
   ast.isRelationProperty,
   ast.isRelationBody,

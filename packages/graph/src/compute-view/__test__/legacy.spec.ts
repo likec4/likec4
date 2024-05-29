@@ -115,7 +115,7 @@ describe('compute-element-view', () => {
   })
 
   it('view of cloud.frontend', () => {
-    const { nodeIds, edgeIds } = computeView('cloud.frontend', [$include('*')])
+    const { nodeIds, edgeIds, ...view } = computeView('cloud.frontend', [$include('*')])
     expect(nodeIds).toEqual([
       'support',
       'customer',

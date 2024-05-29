@@ -149,7 +149,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id,
+          id
         }
       }
       return {
@@ -157,7 +157,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         ...model,
         source,
         target,
-        id,
+        id
       }
     }
   }
@@ -172,7 +172,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     const docUri = doc.uri.toString()
     return (view: ParsedAstElementView): c4.ElementView => {
       // eslint-disable-next-line prefer-const
-      let { astPath, rules, title, description, tags, links, ...model } = view
+      let { astPath, rules, title, description, tags, links, id, ...model } = view
       if (!title && 'viewOf' in view) {
         title = elements[view.viewOf]?.title
       }
@@ -181,6 +181,8 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       }
       return {
         ...model,
+        __: 'element',
+        id,
         title: title ?? null,
         description: description ?? null,
         tags: tags ?? null,
@@ -200,6 +202,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   // add index view if not present
   if (!('index' in views)) {
     views['index' as ViewID] = {
+      __: 'element',
       id: 'index' as ViewID,
       title: 'Landscape',
       description: null,

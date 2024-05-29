@@ -1,3 +1,4 @@
+import { isNullish } from 'remeda'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { ElementExpression, Expression } from './expression'
@@ -45,14 +46,14 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 
 export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
-export interface BasicElementView {
+export interface BasicView<ViewType extends 'element' | 'dynamic' = 'element' | 'dynamic'> {
+  readonly __?: ViewType
   readonly id: ViewID
-  readonly viewOf?: Fqn
   readonly title: string | null
   readonly description: string | null
   readonly tags: NonEmptyArray<Tag> | null
   readonly links: NonEmptyArray<string> | null
-  readonly rules: ViewRule[]
+
   /**
    * URI to the source file of this view.
    * Undefined if the view is auto-generated.
@@ -69,18 +70,27 @@ export interface BasicElementView {
    */
   readonly relativePath?: string
 }
+
+export interface BasicElementView extends BasicView<'element'> {
+  readonly viewOf?: Fqn
+  readonly rules: ViewRule[]
+}
 export interface StrictElementView extends BasicElementView {
   readonly viewOf: Fqn
 }
-export function isStrictElementView(view: ElementView): view is StrictElementView {
-  return 'viewOf' in view
+
+export function isElementView(view: BasicView): view is ElementView {
+  return isNullish(view.__) || view.__ === 'element'
+}
+export function isStrictElementView(view: BasicView): view is StrictElementView {
+  return isElementView(view) && 'viewOf' in view
 }
 
 export interface ExtendsElementView extends BasicElementView {
   readonly extends: ViewID
 }
-export function isExtendsElementView(view: ElementView): view is ExtendsElementView {
-  return 'extends' in view
+export function isExtendsElementView(view: BasicView): view is ExtendsElementView {
+  return isElementView(view) && 'extends' in view
 }
 
 export type ElementView = StrictElementView | ExtendsElementView | BasicElementView

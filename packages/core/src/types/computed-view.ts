@@ -1,10 +1,10 @@
-import type { SetRequired } from 'type-fest'
 import type { IconUrl, NonEmptyArray } from './_common'
+import type { DynamicView } from './dynamic-view'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
-import type { BasicElementView, ViewID, ViewRuleAutoLayout } from './view'
+import type { ElementView, ViewID, ViewRuleAutoLayout } from './view'
 
 export type NodeId = Fqn
 
@@ -51,9 +51,16 @@ export interface ComputedEdge {
   tail?: RelationshipArrowType
 }
 
-export interface ComputedView extends Omit<BasicElementView, 'rules'> {
+interface ComputedElementView extends Omit<ElementView, 'rules'> {
   readonly extends?: ViewID
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
 }
+interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps'> {
+  readonly autoLayout: ViewRuleAutoLayout['autoLayout']
+  readonly nodes: ComputedNode[]
+  readonly edges: ComputedEdge[]
+}
+
+export type ComputedView = ComputedElementView | ComputedDynamicView

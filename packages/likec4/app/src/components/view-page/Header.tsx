@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/core'
+import { type DiagramView } from '@likec4/core'
 import {
   Badge,
   Box,
@@ -256,11 +256,6 @@ function DiagramTitle({ diagram }: {
               {diagram.id}
             </Code>
           </HoverCardItem>
-          {diagram.viewOf && (
-            <HoverCardItem title="view of">
-              <Code>{diagram.viewOf}</Code>
-            </HoverCardItem>
-          )}
           <HoverCardItem title="description">
             {hasDescription
               ? (

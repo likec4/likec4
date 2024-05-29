@@ -1,7 +1,7 @@
 import { DocumentState, type LangiumDocument, type MaybePromise } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
+import { isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
 import type { LikeC4Services } from '../module'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {
@@ -23,7 +23,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     const views = doc.parseResult.value.views.flatMap(v => v.views)
     return views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const viewId = ElementViewOps.readId(ast)
+      const viewId = ViewOps.readId(ast)
       const range = ast.$cstNode?.range
       if (!range || !viewId) {
         return []
