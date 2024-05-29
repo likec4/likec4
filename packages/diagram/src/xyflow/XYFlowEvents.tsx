@@ -45,19 +45,18 @@ export function useXYFlowEvents() {
   }
 
   /**
-   * Called on viewport change
-   * WOKAROUND:
+   * WORKAROUND - Called on viewport change
    * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
    * https://github.com/xyflow/xyflow/issues/3282
+   * https://github.com/likec4/likec4/issues/734
    */
   const fixViewportTransform = useDebouncedCallback(
     () => {
       const [x, y, zoom] = xyflowApi.getState().transform
       const roundedX = Math.round(x), roundedY = Math.round(y)
-      if (x === roundedX && y === roundedY) {
-        return
-      }
-      xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
+      if (x !== roundedX || y !== roundedY) {
+        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
+      }      
     },
     [xyflowApi],
     50
