@@ -8,7 +8,7 @@ import {
   type StrictElementView,
   type ViewID
 } from '@likec4/core'
-import { computeView, LikeC4ModelGraph } from '@likec4/graph'
+import { computeDynamicView, computeView, LikeC4ModelGraph } from '@likec4/graph'
 import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
@@ -333,7 +333,7 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  private previousViews: Record<ViewID, c4.ComputedElementView> = {}
+  private previousViews: Record<ViewID, c4.ComputedView> = {}
 
   public async buildComputedModel(cancelToken?: CancellationToken): Promise<c4.LikeC4ComputedModel | null> {
     const model = await this.buildModel(cancelToken)
@@ -345,16 +345,13 @@ export class LikeC4ModelBuilder {
         await interruptAndCheck(cancelToken)
       }
       const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.LikeC4ComputedModel | null>
-      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedElementView | null>
+      const viewsCache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
       return cache.get(MODEL_CACHE, () => {
         const index = new LikeC4ModelGraph(model)
 
-        const allViews = [] as c4.ComputedElementView[]
+        const allViews = [] as c4.ComputedView[]
         for (const view of values(model.views)) {
-          if (!isElementView(view)) {
-            continue
-          }
-          const result = computeView(view, index)
+          const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
           if (!result.isSuccess) {
             logWarnError(result.error)
             continue
@@ -378,22 +375,21 @@ export class LikeC4ModelBuilder {
     })
   }
 
-  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedElementView | null> {
+  public async computeView(viewId: ViewID, cancelToken?: CancellationToken): Promise<c4.ComputedView | null> {
     const model = await this.buildModel(cancelToken)
     const view = model?.views[viewId]
     if (!view) {
       logger.warn(`[ModelBuilder] Cannot find view ${viewId}`)
       return null
     }
-    invariant(isElementView(view), `View ${viewId} is not an element view`)
     return await this.services.shared.workspace.WorkspaceLock.read(async () => {
       if (cancelToken) {
         await interruptAndCheck(cancelToken)
       }
-      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedElementView | null>
+      const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
       return cache.get(computedViewKey(viewId), () => {
         const index = new LikeC4ModelGraph(model)
-        const result = computeView(view, index)
+        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logError(result.error)
           return null
