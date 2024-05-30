@@ -114,7 +114,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between element and others (any direction)
    */
-  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]) {
+  public anyEdgesBetween(_element: Fqn | Element, others: Fqn[] | Element[]): RelationEdge[] {
     if (others.length === 0) {
       return []
     }
@@ -162,7 +162,7 @@ export class LikeC4ModelGraph {
   /**
    * Resolve all RelationEdges between elements (any direction)
    */
-  public edgesWithin<T extends Fqn[] | Element[]>(elements: T) {
+  public edgesWithin<T extends Fqn[] | Element[]>(elements: T): RelationEdge[] {
     if (elements.length < 2) {
       return []
     }

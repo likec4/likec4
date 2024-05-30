@@ -161,6 +161,12 @@ export interface ComputedEdge {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
+
+  /**
+   * For layouting purposes, we need to know if this edge is a constraint edge.
+   * @default true
+   */
+  isConstraint?: boolean
 }
 
 export interface ComputedElementView extends Omit<ElementView, 'rules'> {
