@@ -35,7 +35,6 @@ export function WorkspacePage() {
             {hasFiles && (
               <Box flex={0}>
                 <Tabs
-                  variant="outline"
                   style={{
                     overflowX: 'scroll'
                   }}
