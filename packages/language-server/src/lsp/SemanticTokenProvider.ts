@@ -116,7 +116,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     if (ast.isElement(node)) {
       this.highlightAstElement(node, acceptor)
     }
-    if (ast.isElementView(node)) {
+    if (ast.isLikeC4View(node)) {
       this.highlightView(node, acceptor)
     }
   }
@@ -136,7 +136,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
     })
   }
 
-  private highlightView(node: ast.ElementView, acceptor: SemanticTokenAcceptor) {
+  private highlightView(node: ast.LikeC4View, acceptor: SemanticTokenAcceptor) {
     if (node.name) {
       acceptor({
         node,

@@ -15,6 +15,17 @@
       }
     },
     {
+      "match": "\\b(opacity):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.likec4"
+        },
+        "2": {
+          "name": "constant.numeric.likec4"
+        }
+      }
+    },
+    {
       "include": "#comments"
     },
     {
@@ -28,7 +39,7 @@
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.type.likec4"
+          "name": "entity.name.class.likec4"
         }
       }
     },
@@ -50,7 +61,7 @@
       }
     },
     {
-      "match": "\\b(actor|component|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
+      "match": "\\b(actor|component|system|container|service|include|exclude|extend)\\s+([a-zA-Z][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -76,13 +87,13 @@
       "match": "\\b(include|exclude)\\b"
     },
     {
-      "match": "\\b(shape|color|head|tail|line):?\\s+(\\w+)\\b",
+      "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.type.likec4"
+          "name": "variable.other.property.likec4"
         }
       }
     },
@@ -182,7 +193,7 @@
       }
     },
     {
-      "match": "\\s+(->|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\s+(<?->|<-|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "storage.type.function.likec4"
@@ -193,20 +204,20 @@
       }
     },
     {
-      "name": "entity.name.type.likec4",
+      "name": "variable.other.constant.likec4",
       "match": "#[^\\s]+\\b"
     },
     {
       "name": "storage.type.function.likec4",
-      "match": "<?->"
+      "match": "(<?->|<-)"
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|dynamic|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
     },
     {
       "name": "variable.other.constant.likec4",
-      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem)\\b"
+      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|frontend|api|webApp|authService|messageBroker)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

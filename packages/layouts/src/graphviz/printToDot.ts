@@ -1,15 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Graphviz } from '@hpcc-js/wasm/graphviz'
-import type {
-  ComputedEdge,
-  ComputedNode,
-  ComputedView,
-  EdgeId,
-  Fqn,
-  RelationshipArrowType,
-  RelationshipLineType
-} from '@likec4/core'
+import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn, RelationshipLineType } from '@likec4/core'
 import {
   DefaultRelationshipColor,
   defaultTheme,
@@ -21,8 +13,6 @@ import {
 } from '@likec4/core'
 import { first, isNullish as isNil, isNumber, isTruthy, last } from 'remeda'
 import {
-  type $keywords,
-  type ArrowType,
   attribute as _,
   digraph,
   type GraphBaseModel,
@@ -33,49 +23,12 @@ import {
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
 import type { DotSource } from './types'
-import { compoundColor, compoundLabelColor, pxToInch, pxToPoints } from './utils'
-
-// Declare custom attributes.
-declare module 'ts-graphviz' {
-  export namespace ClusterSubgraphAttributeKey {
-    export interface $values extends $keywords<'likec4_id' | 'likec4_level' | 'likec4_depth'> {}
-  }
-
-  export namespace NodeAttributeKey {
-    export interface $values extends $keywords<'likec4_id' | 'likec4_level'> {}
-  }
-
-  export namespace EdgeAttributeKey {
-    export interface $values extends $keywords<'likec4_id'> {}
-  }
-
-  export namespace Attribute {
-    export interface $keys extends $keywords<'likec4_id' | 'likec4_level' | 'likec4_depth'> {}
-
-    export interface $types {
-      likec4_id: string
-      likec4_level: number
-      likec4_depth: number
-    }
-  }
-}
-
-function isCompound(node: ComputedNode) {
-  return node.children.length > 0
-}
-
-function toArrowType(type: RelationshipArrowType): ArrowType {
-  switch (type) {
-    case 'open':
-      return 'vee'
-    default:
-      return type
-  }
-}
+import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints, toArrowType } from './utils'
 
 const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
 export function toGraphvisModel({
+  __: $type,
   autoLayout,
   nodes: viewNodes,
   edges: viewEdges
@@ -131,7 +84,7 @@ export function toGraphvisModel({
     [_.layout]: 'dot',
     [_.compound]: true,
     [_.rankdir]: autoLayout,
-    [_.TBbalance]: 'min',
+    [_.TBbalance]: $type === 'element' ? 'min' : 'max',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
     [_.nodesep]: pxToInch(100),
@@ -394,6 +347,10 @@ export function toGraphvisModel({
           // [_.constraint]: false
         })
       }
+    }
+
+    if (edge.isConstraint === false) {
+      e.attributes.set(_.constraint, false)
     }
 
     if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {

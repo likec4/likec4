@@ -193,7 +193,7 @@
       }
     },
     {
-      "match": "\\s+(<?->|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\s+(<?->|<-|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "storage.type.function.likec4"
@@ -209,11 +209,11 @@
     },
     {
       "name": "storage.type.function.likec4",
-      "match": "<?->"
+      "match": "(<?->|<-)"
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|autoLayout|browser|mobile|actor|color|cylinder|description|dynamic|element|exclude|extends|extend|include|it|model|muted|of|person|primary|queue|rectangle|secondary|shape|specification|storage|style|tag|technology|this|title|view|views|with)\\b"
     },
     {
       "name": "variable.other.constant.likec4",

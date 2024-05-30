@@ -6,11 +6,13 @@ import {
   DefaultLineStyle,
   DefaultRelationshipColor,
   invariant,
+  isViewRuleAutoLayout,
   nonNullable,
   parentFqn
 } from '@likec4/core'
-import { buildComputeNodes } from '../compute-view/utils/buildComputeNodes'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
+import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
+import { buildComputeNodes } from '../utils/buildComputeNodes'
 
 export namespace DynamicViewComputeCtx {
   export interface Step {
@@ -40,10 +42,10 @@ export class DynamicViewComputeCtx {
     // reset ctx
     const { rules, steps, ...view } = this.view
 
-    const sources = new Set<Element>()
-    const stepsStack = new Set<string>()
+    // const sources = new Set<Element>()
+    // const stepsStack = new Set<string>()
 
-    const sourcesOf = new Map<Fqn, Set<Element>>()
+    // const sourcesOf = new Map<Fqn, Set<Element>>()
 
     for (const step of steps) {
       const [sourceId, targetId] = step.isBackward === true ? [step.target, step.source] : [step.source, step.target]
@@ -99,8 +101,6 @@ export class DynamicViewComputeCtx {
 
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
-    // Keep the order of elements
-    const nodes = elements.map(e => nonNullable(nodesMap.get(e.id)))
 
     const edges = this.steps.map((step, index) => {
       const source = nodesMap.get(step.source.id)
@@ -143,9 +143,17 @@ export class DynamicViewComputeCtx {
       return edge
     })
 
+    // Keep order of elements
+    const nodes = applyViewRuleStyles(
+      rules,
+      elements.map(e => nonNullable(nodesMap.get(e.id)))
+    )
+
+    const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)
+
     return {
       ...view,
-      autoLayout: 'LR',
+      autoLayout: autoLayoutRule?.autoLayout ?? 'LR',
       nodes,
       edges
     }
