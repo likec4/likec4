@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')
 
-describe('relationChecks', () => {
-  it('should not report invalid relations', async () => {
+describe.concurrent('relationChecks', () => {
+  it('should not report invalid relations', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -25,7 +25,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid relation of target', async () => {
+  it('should report invalid relation of target', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -40,7 +40,7 @@ describe('relationChecks', () => {
     expect(errors).to.include.members(['Target not found (not parsed/indexed yet)'])
   })
 
-  it('should report invalid relation of source', async () => {
+  it('should report invalid relation of source', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -55,7 +55,7 @@ describe('relationChecks', () => {
     expect(errors).to.include.members(['Source not found (not parsed/indexed yet)'])
   })
 
-  it('should report invalid relation: parent -> child', async () => {
+  it('should report invalid relation: parent -> child', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -73,7 +73,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: -> nested child', async () => {
+  it('should report invalid relation: -> nested child', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -91,7 +91,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: child -> parent', async () => {
+  it('should report invalid relation: child -> parent', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -109,7 +109,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid relation: nested child -> parent', async () => {
+  it('should report invalid relation: nested child -> parent', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -128,7 +128,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should not report for valid tags', async () => {
+  it('should not report for valid tags', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -147,7 +147,7 @@ describe('relationChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid tags', async () => {
+  it('should report invalid tags', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {

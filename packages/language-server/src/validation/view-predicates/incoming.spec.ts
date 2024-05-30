@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
 vi.mock('../../logger')
 
-describe('incomingExpressionChecks', () => {
-  it('should not warn if view of', async () => {
+describe.concurrent('incomingExpressionChecks', () => {
+  it('should not warn if view of', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -22,7 +22,7 @@ describe('incomingExpressionChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should warn if -> *', async () => {
+  it('should warn if -> *', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       views {

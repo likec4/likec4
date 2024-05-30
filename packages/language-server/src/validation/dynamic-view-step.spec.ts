@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')
 
-describe('dynamicViewStepChecks', () => {
-  it('should not report invalid relations', async () => {
+describe.concurrent('dynamicViewStepChecks', () => {
+  it('should not report invalid relations', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -24,7 +24,7 @@ describe('dynamicViewStepChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should report invalid step target', async () => {
+  it('should report invalid step target', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -42,7 +42,7 @@ describe('dynamicViewStepChecks', () => {
     expect(errors).to.include.members(['Target not found (not parsed/indexed yet)'])
   })
 
-  it('should report invalid step source', async () => {
+  it('should report invalid step source', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -60,7 +60,7 @@ describe('dynamicViewStepChecks', () => {
     expect(errors).to.include.members(['Source not found (not parsed/indexed yet)'])
   })
 
-  it('should report invalid step: -> nested child', async () => {
+  it('should report invalid step: -> nested child', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -82,7 +82,7 @@ describe('dynamicViewStepChecks', () => {
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
 
-  it('should report invalid step: child -> parent', async () => {
+  it('should report invalid step: child -> parent', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {

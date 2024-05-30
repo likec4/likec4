@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')
 
-describe('viewChecks', () => {
-  it('should report duplicate view names', async () => {
+describe.concurrent('viewChecks', () => {
+  it('should report duplicate view names', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       views {
@@ -21,7 +21,7 @@ describe('viewChecks', () => {
     }
   })
 
-  it('should report duplicate view names for dynamic', async () => {
+  it('should report duplicate view names for dynamic', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       views {
@@ -38,7 +38,7 @@ describe('viewChecks', () => {
     }
   })
 
-  it('should report duplicate view names between dynamic and element', async () => {
+  it('should report duplicate view names between dynamic and element', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       views {

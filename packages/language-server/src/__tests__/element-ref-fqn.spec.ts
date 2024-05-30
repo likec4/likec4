@@ -3,7 +3,7 @@ import { test } from './asserts'
 
 vi.mock('../logger')
 
-describe('FqnElementRef', () => {
+describe.concurrent('FqnElementRef', () => {
   test('valid').valid`
     specification {
       element component

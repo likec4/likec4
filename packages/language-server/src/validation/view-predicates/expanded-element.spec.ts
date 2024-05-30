@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../../test'
 
 vi.mock('../../logger')
 
-describe('expandElementExprChecks', () => {
-  it('should not warn', async () => {
+describe.concurrent('expandElementExprChecks', () => {
+  it('should not warn', async ({ expect }) => {
     const { validate } = createTestServices()
     const { errors } = await validate(`
       specification {
@@ -22,7 +22,7 @@ describe('expandElementExprChecks', () => {
     expect(errors).toEqual([])
   })
 
-  it('should warn if used as incoming target', async () => {
+  it('should warn if used as incoming target', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
@@ -46,7 +46,7 @@ describe('expandElementExprChecks', () => {
     }
   })
 
-  it('should warn if used as target of relation predicate', async () => {
+  it('should warn if used as target of relation predicate', async ({ expect }) => {
     const { validate } = createTestServices()
     const { diagnostics } = await validate(`
       specification {
