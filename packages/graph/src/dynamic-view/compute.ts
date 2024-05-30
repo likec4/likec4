@@ -107,8 +107,9 @@ export class DynamicViewComputeCtx {
       const target = nodesMap.get(step.target.id)
       invariant(source, `Source node ${step.source.id} not found`)
       invariant(target, `Target node ${step.target.id} not found`)
+      const stepNum = index + 1
       const edge: ComputedEdge = {
-        id: `step-${(index + 1).toString().padStart(3, '0')}` as EdgeId,
+        id: `step-${String(stepNum).padStart(3, '0')}` as EdgeId,
         parent: commonAncestor(step.source.id, step.target.id),
         source: source.id,
         target: target.id,
@@ -116,9 +117,10 @@ export class DynamicViewComputeCtx {
         relations: [],
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
-        head: DefaultArrowType,
-        tail: 'none',
-        isConstraint: step.isBackward !== true
+        head: DefaultArrowType
+      }
+      if (step.isBackward) {
+        edge.dir = 'back'
       }
 
       while (edge.parent && !nodesMap.has(edge.parent)) {

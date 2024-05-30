@@ -23,24 +23,23 @@ describe('dynamic-view', () => {
         id: 'step-001',
         source: 'customer',
         target: 'cloud.frontend.dashboard',
-        isConstraint: true,
         label: 'open dashboard'
       },
       {
         id: 'step-002',
         source: 'cloud.frontend.dashboard',
         target: 'cloud.backend.graphql',
-        isConstraint: true,
         label: null
       },
       {
         id: 'step-003',
         source: 'cloud.backend.graphql',
         target: 'cloud.frontend.dashboard',
-        isConstraint: false,
+        dir: 'back',
         label: 'return data'
       }
     ])
+    expect([edges[0], edges[1]]).have.not.a.property('dir')
   })
 
   it('should build compounds', () => {
@@ -119,36 +118,36 @@ describe('dynamic-view', () => {
       id: 'step-001',
       source: 'customer',
       target: 'cloud.frontend.dashboard',
-      label: null,
-      isConstraint: true
+      label: null
     })
+    expect(step1).not.toHaveProperty('dir')
     expect(step2).toMatchObject({
       id: 'step-002',
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
-      label: null,
-      isConstraint: true
+      label: null
     })
+    expect(step2).not.toHaveProperty('dir')
     expect(step3).toMatchObject({
       id: 'step-003',
       source: 'cloud.backend',
       target: 'amazon',
-      label: null,
-      isConstraint: true
+      label: null
     })
+    expect(step3).not.toHaveProperty('dir')
     expect(step4).toMatchObject({
       id: 'step-004',
       source: 'amazon',
       target: 'cloud.backend',
       label: null,
-      isConstraint: false
+      dir: 'back'
     })
     expect(step5).toMatchObject({
       id: 'step-005',
       source: 'cloud.backend',
       target: 'cloud.frontend',
       label: null,
-      isConstraint: false
+      dir: 'back'
     })
 
     // expect(edges).toMatchObject([
@@ -156,21 +155,21 @@ describe('dynamic-view', () => {
     //     id: 'step-001',
     //     source: 'customer',
     //     target: 'cloud.frontend.dashboard',
-    //     isConstraint: true,
+    //     dir: 'forward',
     //     label: 'open dashboard'
     //   },
     //   {
     //     id: 'step-002',
     //     source: 'cloud.frontend.dashboard',
     //     target: 'cloud.backend.graphql',
-    //     isConstraint: true,
+    //     dir: 'forward',
     //     label: null
     //   },
     //   {
     //     id: 'step-003',
     //     source: 'cloud.backend.graphql',
     //     target: 'cloud.frontend.dashboard',
-    //     isConstraint: false,
+    //     dir: 'back',
     //     label: 'return data'
     //   }
     // ])

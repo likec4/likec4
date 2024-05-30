@@ -163,10 +163,10 @@ export interface ComputedEdge {
   tail?: RelationshipArrowType
 
   /**
-   * For layouting purposes, we need to know if this edge is a constraint edge.
-   * @default true
+   * For layouting purposes
+   * @default 'forward'
    */
-  isConstraint?: boolean
+  dir?: 'forward' | 'back'
 }
 
 export interface ComputedElementView extends Omit<ElementView, 'rules'> {

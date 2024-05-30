@@ -32,8 +32,7 @@ export function changeViewLayout(services: LikeC4Services, {
   }
 
   const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
-    ?? last(viewAst.body.props)?.$cstNode?.range.end
-    ?? viewAst.body.$cstNode?.range.start
+    ?? viewAst.body.$cstNode?.range.end
   invariant(insertPos, 'insertPos is not defined')
   const indent = ' '.repeat(2 + viewCstNode.range.start.character)
   const insert = `\n\n${indent}autoLayout ${newlayout}`

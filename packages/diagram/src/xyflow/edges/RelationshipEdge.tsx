@@ -63,9 +63,9 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   return path
 }
 
-// If points are within 2px, consider them the same
+// If points are within 3px, consider them the same
 const isSamePoint = (a: number, b: number) => {
-  return Math.abs(a - b) < 2.1
+  return Math.abs(a - b) < 3.1
 }
 
 const isSamePosition = (a: XYPosition, [bx, by]: Point) => {
@@ -99,8 +99,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
 
-  const isNotModified = isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-    && isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
+  const isModified = !isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+    || !isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
   const { edge: diagramEdge, controlPoints } = data
   // const edgePath = bezierPath(edge.points)
@@ -123,7 +123,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   let edgePath: string, labelX: number, labelY: number
 
-  if (isNotModified) {
+  if (!isModified) {
     edgePath = bezierPath(diagramEdge.points)
     labelX = data.label?.bbox.x ?? 0
     labelY = data.label?.bbox.y ?? 0
@@ -179,17 +179,15 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         markerStart={diagramEdge.tailArrow ? marker : undefined}
         markerEnd={diagramEdge.headArrow ? marker : undefined}
         style={style} />
-      {
-        /* controlPoints.map((p, i) => (
+      {isModified && controlPoints.map((p, i) => (
         <circle
           className={edgesCss.controlPoint}
           key={i}
           cx={p[0]}
           cy={p[1]}
-          r={5}
+          r={3}
         />
-      )) */
-      }
+      ))}
       {data.label && (
         <EdgeLabelRenderer>
           <Box

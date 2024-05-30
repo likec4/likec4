@@ -252,18 +252,18 @@ export function toGraphvisModel({
     }
   }
 
-  function resolveEdgeSource(edge: ComputedEdge) {
-    let sourceNode = getComputedNode(edge.source)
-    let source = graphvizNodes.get(edge.source)
+  function resolveEdgeSource(sourceId: Fqn) {
+    let sourceNode = getComputedNode(sourceId)
+    let source = graphvizNodes.get(sourceId)
     let ltail: string | undefined
     if (!source) {
       invariant(isCompound(sourceNode), 'source node should be compound')
       // Edge with cluster as source
-      ltail = subgraphs.get(edge.source)?.id
-      invariant(ltail, `subgraph ${edge.source} not found`)
+      ltail = subgraphs.get(sourceId)?.id
+      invariant(ltail, `subgraph ${sourceId} not found`)
       sourceNode = nonNullable(
-        last(leafElements(edge.source)),
-        `last leaf element in ${edge.source} not found`
+        last(leafElements(sourceId)),
+        `last leaf element in ${sourceId} not found`
       )
       source = nonNullable(
         graphvizNodes.get(sourceNode.id),
@@ -273,18 +273,18 @@ export function toGraphvisModel({
     return [sourceNode, source, ltail] as const
   }
 
-  function resolveEdgeTarget(edge: ComputedEdge) {
-    let targetNode = getComputedNode(edge.target)
-    let target = graphvizNodes.get(edge.target)
+  function resolveEdgeTarget(targetFqn: Fqn) {
+    let targetNode = getComputedNode(targetFqn)
+    let target = graphvizNodes.get(targetFqn)
     let lhead: string | undefined
     if (!target) {
       invariant(isCompound(targetNode), 'target node should be compound')
       // Edge with cluster as target
-      lhead = subgraphs.get(edge.target)?.id
-      invariant(lhead, `subgraph ${edge.target} not found`)
+      lhead = subgraphs.get(targetFqn)?.id
+      invariant(lhead, `subgraph ${targetFqn} not found`)
       targetNode = nonNullable(
-        first(leafElements(edge.target)),
-        `first leaf element in ${edge.target} not found`
+        first(leafElements(targetFqn)),
+        `first leaf element in ${targetFqn} not found`
       )
       target = nonNullable(
         graphvizNodes.get(targetNode.id),
@@ -295,8 +295,9 @@ export function toGraphvisModel({
   }
 
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
-    const [sourceNode, source, ltail] = resolveEdgeSource(edge)
-    const [targetNode, target, lhead] = resolveEdgeTarget(edge)
+    const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
+    const [sourceNode, source, ltail] = resolveEdgeSource(sourceFqn)
+    const [targetNode, target, lhead] = resolveEdgeTarget(targetFqn)
 
     const edgeParentId = edge.parent
 
@@ -329,6 +330,20 @@ export function toGraphvisModel({
         [_.fontcolor]: Theme.relationships[edge.color].labelColor
       })
     }
+
+    if (edge.dir === 'back') {
+      if (edge.head) {
+        e.attributes.set(_.arrowtail, toArrowType(edge.head))
+      }
+      if (edge.tail && edge.tail !== 'none') {
+        e.attributes.set(_.arrowhead, toArrowType(edge.tail))
+      } else {
+        e.attributes.set(_.arrowhead, 'none')
+      }
+      e.attributes.set(_.dir, 'back')
+      return
+    }
+
     if (edge.head) {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(edge.head)
@@ -337,7 +352,7 @@ export function toGraphvisModel({
     if (edge.tail && edge.tail !== 'none') {
       if (edge.head === 'none') {
         e.attributes.apply({
-          [_.arrowhead]: toArrowType(edge.tail),
+          [_.arrowtail]: toArrowType(edge.tail),
           [_.dir]: 'back'
         })
       } else {
@@ -349,10 +364,6 @@ export function toGraphvisModel({
       }
     }
 
-    if (edge.isConstraint === false) {
-      e.attributes.set(_.constraint, false)
-    }
-
     if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
       e.attributes.apply({
         [_.arrowtail]: 'none',
@@ -361,6 +372,11 @@ export function toGraphvisModel({
         // [_.minlen]: 0
         [_.constraint]: false
       })
+      return
+    }
+
+    // Don't do further processing for dynamic views
+    if ($type === 'dynamic') {
       return
     }
 
@@ -472,6 +488,10 @@ export function printToDot(view: ComputedView): DotSource {
 
 export function toDot(graphviz: Graphviz, computedView: ComputedView) {
   const initial = printToDot(computedView)
+
+  // if (computedView.__ === 'dynamic') {
+  //   return initial
+  // }
 
   // const acyclicResult = graphviz.acyclic(initial, true)
   // const acyclicDot = acyclicResult.outFile ?? initial

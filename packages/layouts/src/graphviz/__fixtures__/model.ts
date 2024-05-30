@@ -203,6 +203,7 @@ const fakeRelations = {
 } satisfies Record<string, Relation>
 
 export const indexView = {
+  __: 'element',
   id: 'index' as Opaque<'index', 'ViewID'>,
   title: '',
   description: null,
@@ -220,6 +221,7 @@ export const indexView = {
 } satisfies ElementView
 
 export const cloudView = {
+  __: 'element',
   id: 'cloudView' as Opaque<'cloudView', 'ViewID'>,
   title: '',
   description: null,
@@ -234,6 +236,7 @@ export const cloudView = {
 } satisfies ElementView
 
 export const cloud3levels = {
+  __: 'element',
   id: 'cloud3levels' as Opaque<'cloud3levels', 'ViewID'>,
   title: '',
   viewOf: 'cloud' as Fqn,
@@ -261,6 +264,7 @@ export const cloud3levels = {
 } satisfies ElementView
 
 export const amazonView = {
+  __: 'element',
   id: 'amazon' as Opaque<'amazon', 'ViewID'>,
   title: '',
   viewOf: 'amazon' as Fqn,
