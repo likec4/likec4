@@ -1,8 +1,8 @@
 import { useDebouncedCallback, useDebouncedEffect, useRafEffect } from '@react-hookz/web'
-import { useNodesInitialized } from '@xyflow/react'
+import { useNodesInitialized, useOnViewportChange } from '@xyflow/react'
 import { memo, useEffect, useRef, useState } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
-import { useXYStore } from './hooks'
+import { useXYStore, useXYStoreApi } from './hooks'
 import type { XYFlowState } from './types'
 
 function selectDimensions(state: XYFlowState) {
@@ -34,6 +34,7 @@ const diagramChangeId = (s: DiagramState) => s.view.id + '_' + s.view.autoLayout
  * Fits the view when the view changes and nodes are initialized
  */
 function FitViewOnDiagramChanges() {
+  const xyflowApi = useXYStoreApi()
   const diagramApi = useDiagramStoreApi()
   const [viewportMoved, setViewportMoved] = useState(diagramApi.getState().viewportChanged)
   const [processedChangeId, setProcessed] = useState(diagramChangeId(diagramApi.getState()))
@@ -79,6 +80,21 @@ function FitViewOnDiagramChanges() {
     },
     [isReady, processedChangeId, pendingChangeId, diagramApi]
   )
+
+  /**
+   * WORKAROUND - Called on viewport change
+   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+   * https://github.com/xyflow/xyflow/issues/3282
+   * https://github.com/likec4/likec4/issues/734
+   */
+  useOnViewportChange({
+    onEnd: ({ x, y, zoom }) => {
+      const roundedX = Math.round(x), roundedY = Math.round(y)
+      if (x !== roundedX || y !== roundedY) {
+        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
+      }
+    }
+  })
 
   if (!viewportMoved && isReady) {
     return <FitViewOnViewportResize diagramApi={diagramApi} />

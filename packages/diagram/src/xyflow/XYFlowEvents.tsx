@@ -1,4 +1,3 @@
-import { useDebouncedCallback } from '@react-hookz/web'
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import type { Simplify } from 'type-fest'
@@ -23,7 +22,6 @@ type XYFlowEventHandlers = Simplify<
       | 'onNodeMouseLeave'
       | 'onEdgeMouseEnter'
       | 'onEdgeMouseLeave'
-      | 'onViewportChange'
     >
   >
 >
@@ -43,24 +41,6 @@ export function useXYFlowEvents() {
     }, 250)
     return false
   }
-
-  /**
-   * WORKAROUND - Called on viewport change
-   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
-   * https://github.com/xyflow/xyflow/issues/3282
-   * https://github.com/likec4/likec4/issues/734
-   */
-  const fixViewportTransform = useDebouncedCallback(
-    () => {
-      const [x, y, zoom] = xyflowApi.getState().transform
-      const roundedX = Math.round(x), roundedY = Math.round(y)
-      if (x !== roundedX || y !== roundedY) {
-        xyflowApi.setState({ transform: [roundedX, roundedY, zoom] })
-      }      
-    },
-    [xyflowApi],
-    50
-  )
 
   // If we are in focused mode, on edge enter we want to "highlight" the other node
   // This ref contains the id of this node
@@ -211,12 +191,6 @@ export function useXYFlowEvents() {
           hoveredNodeFromOnEdgeEnterRef.current = ''
           setHoveredNode(null)
         }
-      },
-      /**
-       * Fix viewport transform
-       */
-      onViewportChange: () => {
-        fixViewportTransform()
       }
-    }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi, fixViewportTransform])
+    }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi])
 }

@@ -138,7 +138,7 @@ function XYFlowWrapper({
       onNodeClick={handlers.onNodeClick}
       onNodeDoubleClick={handlers.onNodeDoubleClick}
       onEdgeClick={handlers.onEdgeClick}
-      onViewportChange={handlers.onViewportChange}
+      // onViewportChange={handlers.onViewportChange}
       onInit={() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')
       }}
