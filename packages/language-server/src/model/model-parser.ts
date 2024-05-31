@@ -381,18 +381,24 @@ export class LikeC4ModelParser {
   }
 
   private parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
-    const source = elementRef(node.source)
-    if (!source) {
+    const sourceEl = elementRef(node.source)
+    if (!sourceEl) {
       throw new Error('Invalid reference to source')
     }
-    const target = elementRef(node.target)
-    if (!target) {
+    const targetEl = elementRef(node.target)
+    if (!targetEl) {
       throw new Error('Invalid reference to target')
     }
+    let source = this.resolveFqn(sourceEl)
+    let target = this.resolveFqn(targetEl)
+    if (node.isBackward) {
+      ;[source, target] = [target, source]
+    }
+
     const title = toSingleLine(node.title) ?? null
     return {
-      source: this.resolveFqn(source),
-      target: this.resolveFqn(target),
+      source,
+      target,
       title,
       isBackward: node.isBackward
     }

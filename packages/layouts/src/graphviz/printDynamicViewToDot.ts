@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Graphviz } from '@hpcc-js/wasm/graphviz'
-import type { ComputedEdge, ComputedNode, ComputedView, EdgeId, Fqn, RelationshipLineType } from '@likec4/core'
+import type { ComputedDynamicView, ComputedEdge, ComputedNode, Fqn } from '@likec4/core'
 import {
   DefaultRelationshipColor,
   defaultTheme,
@@ -11,7 +8,7 @@ import {
   nonNullable,
   parentFqn
 } from '@likec4/core'
-import { first, isNullish as isNil, isNumber, isTruthy, last } from 'remeda'
+import { first, isNullish, isNullish as isNil, isNumber, isTruthy, last } from 'remeda'
 import {
   attribute as _,
   digraph,
@@ -22,20 +19,18 @@ import {
   toDot as modelToDot
 } from 'ts-graphviz'
 import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
+import { DefaultEdgeStyle } from './printElementViewToDot'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints, toArrowType } from './utils'
 
-const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
-
-export function toGraphvisModel({
-  __: $type,
+export function dynamicViewToGraphvisModel({
   autoLayout,
   nodes: viewNodes,
   edges: viewEdges
-}: ComputedView): RootGraphModel {
+}: ComputedDynamicView): RootGraphModel {
   function leafElements(parentId: Fqn | null): ComputedNode[] {
     if (parentId === null) {
-      return viewNodes.filter(n => !isCompound(n))
+      return viewNodes.filter(n => !isCompound(n) && isNullish(n.parent))
     }
     const prefix = parentId + '.'
     return viewNodes.filter(
@@ -50,45 +45,18 @@ export function toGraphvisModel({
     )
   }
 
-  /**
-   * At the moment, we don't show edges between clusters.
-   * But they are still used to calculate the rank of nodes.
-   * UPDATE: we show edges between clusters now.
-   */
-  function isEdgeVisible(_edge: ComputedEdge | EdgeId) {
-    // const edge = getEdge(_edge)
-    // if (cacheIsEdgeVisible.has(edge)) {
-    //   return cacheIsEdgeVisible.get(edge)!
-    // }
-    // const hasCompoundEndpoint = viewNodes.some(
-    //   n => (n.id === edge.source || n.id === edge.target) && isCompound(n)
-    // )
-    // cacheIsEdgeVisible.set(edge, !hasCompoundEndpoint)
-    // return !hasCompoundEndpoint
-    return true
-  }
-
-  function findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
-    if (parentId === null) {
-      return viewEdges.filter(isEdgeVisible)
-    }
-    const prefix = parentId + '.'
-    return viewEdges.filter(
-      e => e.parent && (e.parent === parentId || e.parent.startsWith(prefix)) && isEdgeVisible(e)
-    )
-  }
-
   const Theme = defaultTheme
   const G = digraph({
     [_.bgcolor]: 'transparent',
     [_.layout]: 'dot',
     [_.compound]: true,
     [_.rankdir]: autoLayout,
-    [_.TBbalance]: $type === 'element' ? 'min' : 'max',
+    [_.TBbalance]: 'max',
     [_.splines]: 'spline',
     [_.outputorder]: 'nodesfirst',
-    [_.nodesep]: pxToInch(100),
-    [_.ranksep]: pxToInch(110),
+    [_.newrank]: true,
+    [_.nodesep]: pxToInch(110),
+    [_.ranksep]: pxToInch(130),
     [_.pack]: pxToPoints(180),
     [_.packmode]: 'array_3',
     [_.pad]: pxToInch(10)
@@ -121,7 +89,7 @@ export function toGraphvisModel({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(13),
     [_.penwidth]: pxToPoints(2),
-    [_.style]: DefaultEdgeStyle,
+    [_.style]: 'dashed',
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -252,54 +220,34 @@ export function toGraphvisModel({
     }
   }
 
-  function resolveEdgeSource(sourceId: Fqn) {
-    let sourceNode = getComputedNode(sourceId)
-    let source = graphvizNodes.get(sourceId)
+  function resolveEdgeEndpoint(
+    sourceId: Fqn,
+    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined = first
+  ) {
+    let computedNode = getComputedNode(sourceId)
+    let endpoint = graphvizNodes.get(sourceId)
     let ltail: string | undefined
-    if (!source) {
-      invariant(isCompound(sourceNode), 'source node should be compound')
-      // Edge with cluster as source
+    if (!endpoint) {
+      invariant(isCompound(computedNode), 'endpoint node should be compound')
+      // Edge with cluster as endpoint
       ltail = subgraphs.get(sourceId)?.id
       invariant(ltail, `subgraph ${sourceId} not found`)
-      sourceNode = nonNullable(
-        last(leafElements(sourceId)),
-        `last leaf element in ${sourceId} not found`
+      computedNode = nonNullable(
+        pickFromCluster(leafElements(sourceId)),
+        `leaf element in ${sourceId} not found`
       )
-      source = nonNullable(
-        graphvizNodes.get(sourceNode.id),
-        `source graphviz node ${sourceNode.id} not found`
-      )
-    }
-    return [sourceNode, source, ltail] as const
-  }
-
-  function resolveEdgeTarget(targetFqn: Fqn) {
-    let targetNode = getComputedNode(targetFqn)
-    let target = graphvizNodes.get(targetFqn)
-    let lhead: string | undefined
-    if (!target) {
-      invariant(isCompound(targetNode), 'target node should be compound')
-      // Edge with cluster as target
-      lhead = subgraphs.get(targetFqn)?.id
-      invariant(lhead, `subgraph ${targetFqn} not found`)
-      targetNode = nonNullable(
-        first(leafElements(targetFqn)),
-        `first leaf element in ${targetFqn} not found`
-      )
-      target = nonNullable(
-        graphvizNodes.get(targetNode.id),
-        `target graphviz node ${targetNode.id} not found`
+      endpoint = nonNullable(
+        graphvizNodes.get(computedNode.id),
+        `source graphviz node ${computedNode.id} not found`
       )
     }
-    return [targetNode, target, lhead] as const
+    return [endpoint, ltail] as const
   }
 
   function addEdge<E extends ComputedEdge>(edge: E, parent: GraphBaseModel) {
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [sourceNode, source, ltail] = resolveEdgeSource(sourceFqn)
-    const [targetNode, target, lhead] = resolveEdgeTarget(targetFqn)
-
-    const edgeParentId = edge.parent
+    const [source, ltail] = resolveEdgeEndpoint(sourceFqn, nodes => last(nodes))
+    const [target, lhead] = resolveEdgeEndpoint(targetFqn, first)
 
     const e = parent.edge([source, target], {
       [_.likec4_id]: edge.id,
@@ -308,15 +256,6 @@ export function toGraphvisModel({
 
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
-
-    if (lhead || ltail) {
-      const sourceId = source.attributes.get(_.likec4_id) as Fqn
-      const targetId = target.attributes.get(_.likec4_id) as Fqn
-      const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
-      if (existingVisibleEdge) {
-        e.attributes.set(_.weight, 0)
-      }
-    }
 
     const label = edge.label?.trim() ?? ''
     if (isTruthy(label)) {
@@ -331,10 +270,18 @@ export function toGraphvisModel({
       })
     }
 
+    if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
+      e.attributes.apply({
+        [_.arrowtail]: 'none',
+        [_.arrowhead]: 'none',
+        [_.dir]: 'none',
+        [_.minlen]: 0
+      })
+      return
+    }
+
     if (edge.dir === 'back') {
-      if (edge.head) {
-        e.attributes.set(_.arrowtail, toArrowType(edge.head))
-      }
+      e.attributes.set(_.arrowtail, toArrowType(edge.head ?? 'normal'))
       if (edge.tail && edge.tail !== 'none') {
         e.attributes.set(_.arrowhead, toArrowType(edge.tail))
       } else {
@@ -344,92 +291,11 @@ export function toGraphvisModel({
       return
     }
 
-    if (edge.head) {
-      e.attributes.apply({
-        [_.arrowhead]: toArrowType(edge.head)
-      })
+    if (edge.head && edge.head !== 'normal') {
+      e.attributes.set(_.arrowhead, toArrowType(edge.head))
     }
     if (edge.tail && edge.tail !== 'none') {
-      if (edge.head === 'none') {
-        e.attributes.apply({
-          [_.arrowtail]: toArrowType(edge.tail),
-          [_.dir]: 'back'
-        })
-      } else {
-        e.attributes.apply({
-          [_.arrowtail]: toArrowType(edge.tail),
-          [_.dir]: 'both'
-          // [_.constraint]: false
-        })
-      }
-    }
-
-    if (edge.head === 'none' && (isNil(edge.tail) || edge.tail === 'none')) {
-      e.attributes.apply({
-        [_.arrowtail]: 'none',
-        [_.arrowhead]: 'none',
-        [_.dir]: 'none',
-        // [_.minlen]: 0
-        [_.constraint]: false
-      })
-      return
-    }
-
-    // Don't do further processing for dynamic views
-    if ($type === 'dynamic') {
-      return
-    }
-
-    let otherEdges
-    if (edgeParentId === null && sourceNode.parent == null && targetNode.parent == null) {
-      otherEdges = viewEdges.filter(e => {
-        // hide self
-        if (e.id === edge.id) {
-          return false
-        }
-        // hide edges with the same endpoints
-        if (
-          (e.source === edge.source && e.target === edge.target)
-          || (e.source === edge.target && e.target === edge.source)
-        ) {
-          return false
-        }
-        // hide edges inside clusters
-        if (e.parent !== null) {
-          return false
-        }
-        const edgeSource = getComputedNode(e.source)
-        const edgeTarget = getComputedNode(e.target)
-        // hide edges with compound endpoints
-        if (isCompound(edgeSource) || isCompound(edgeTarget)) {
-          return false
-        }
-        // only edges between top-level nodes
-        return edgeSource.parent == null && edgeTarget.parent == null
-      })
-    } else {
-      otherEdges = findNestedEdges(edgeParentId).filter(e => {
-        // hide self
-        if (e.id === edge.id) {
-          return false
-        }
-        // hide edges with the same endpoints
-        if (
-          (e.source === edge.source && e.target === edge.target)
-          || (e.source === edge.target && e.target === edge.source)
-        ) {
-          return false
-        }
-        return true
-      })
-    }
-    const isTheOnlyEdge = otherEdges.length === 0
-    if (isTheOnlyEdge) {
-      if (edgeParentId === null || leafElements(edgeParentId).length <= 3) {
-        // don't rank the edge
-        // e.attributes.set(_.minlen, 0)
-        e.attributes.set(_.constraint, false)
-      }
+      e.attributes.set(_.arrowtail, toArrowType(edge.tail))
     }
   }
 
@@ -482,24 +348,6 @@ export function toGraphvisModel({
   return G
 }
 
-export function printToDot(view: ComputedView): DotSource {
-  return modelToDot(toGraphvisModel(view)) as DotSource
-}
-
-export function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  const initial = printToDot(computedView)
-
-  // if (computedView.__ === 'dynamic') {
-  //   return initial
-  // }
-
-  // const acyclicResult = graphviz.acyclic(initial, true)
-  // const acyclicDot = acyclicResult.outFile ?? initial
-
-  // console.log('acyclicDot ---------------')
-  // console.log(acyclicDot)
-  // console.log('acyclicDot ---------------')
-
-  const unflattened = graphviz.unflatten(initial, 1, true, 2)
-  return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ')
+export function printDynamicViewToDot(view: ComputedDynamicView): DotSource {
+  return modelToDot(dynamicViewToGraphvisModel(view)) as DotSource
 }

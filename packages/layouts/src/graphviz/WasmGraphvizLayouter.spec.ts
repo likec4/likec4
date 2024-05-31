@@ -8,7 +8,7 @@ import {
   issue577_fail,
   issue577_valid
 } from './__fixtures__'
-import { WasmGraphvizLayouter } from './DotLayouter'
+import { WasmGraphvizLayouter } from './WasmGraphvizLayouter'
 
 const wasmGraphviz = new WasmGraphvizLayouter()
 
@@ -16,7 +16,7 @@ async function dotLayout(computedView: ComputedView) {
   return (await wasmGraphviz.layout(computedView)).diagram
 }
 
-describe('dotLayout:', () => {
+describe('WasmGraphvizLayouter:', () => {
   it('computedIndexView', async ({ expect }) => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()

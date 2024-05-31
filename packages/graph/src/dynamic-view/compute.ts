@@ -48,9 +48,8 @@ export class DynamicViewComputeCtx {
     // const sourcesOf = new Map<Fqn, Set<Element>>()
 
     for (const step of steps) {
-      const [sourceId, targetId] = step.isBackward === true ? [step.target, step.source] : [step.source, step.target]
-      const source = this.graph.element(sourceId)
-      const target = this.graph.element(targetId)
+      const source = this.graph.element(step.source)
+      const target = this.graph.element(step.target)
 
       // let sources = new Set([
       //   ...(sourcesOf.get(step.target) ?? []),
@@ -102,15 +101,15 @@ export class DynamicViewComputeCtx {
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
 
-    const edges = this.steps.map((step, index) => {
-      const source = nodesMap.get(step.source.id)
-      const target = nodesMap.get(step.target.id)
-      invariant(source, `Source node ${step.source.id} not found`)
-      invariant(target, `Target node ${step.target.id} not found`)
+    const edges = this.steps.map(({ source, target, ...step }, index) => {
+      const sourceNode = nodesMap.get(source.id)
+      const targetNode = nodesMap.get(target.id)
+      invariant(sourceNode, `Source node ${source.id} not found`)
+      invariant(targetNode, `Target node ${target.id} not found`)
       const stepNum = index + 1
       const edge: ComputedEdge = {
         id: `step-${String(stepNum).padStart(3, '0')}` as EdgeId,
-        parent: commonAncestor(step.source.id, step.target.id),
+        parent: commonAncestor(source.id, target.id),
         source: source.id,
         target: target.id,
         label: step.title,
@@ -126,8 +125,8 @@ export class DynamicViewComputeCtx {
       while (edge.parent && !nodesMap.has(edge.parent)) {
         edge.parent = parentFqn(edge.parent)
       }
-      source.outEdges.push(edge.id)
-      target.inEdges.push(edge.id)
+      sourceNode.outEdges.push(edge.id)
+      targetNode.inEdges.push(edge.id)
       // Process edge source ancestors
       for (const sourceAncestor of ancestorsFqn(edge.source)) {
         if (sourceAncestor === edge.parent) {

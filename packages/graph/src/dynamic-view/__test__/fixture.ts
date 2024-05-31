@@ -24,7 +24,7 @@ export function $step(expr: StepExpr, title?: string): DynamicViewStep {
     }
   }
   if (expr.includes(' <- ')) {
-    const [source, target] = expr.split(' <- ')
+    const [target, source] = expr.split(' <- ')
     return {
       source: source as Fqn,
       target: target as Fqn,
