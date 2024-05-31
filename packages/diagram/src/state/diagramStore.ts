@@ -165,11 +165,6 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               return
             }
 
-            // Reset lastOnNavigate if the view is not the source or target view
-            if (lastOnNavigate && lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
-              lastOnNavigate = null
-            }
-
             const isSameView = currentView.id === view.id
 
             if (isSameView) {
@@ -190,6 +185,11 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 hoveredEdgeId = null
               }
             } else {
+              // Reset lastOnNavigate if the view is not the source or target view
+              if (lastOnNavigate && lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
+                lastOnNavigate = null
+              }
+
               // Reset hovered / clicked node/edge if the view is different
               lastClickedEdgeId = null
               lastClickedNodeId = null

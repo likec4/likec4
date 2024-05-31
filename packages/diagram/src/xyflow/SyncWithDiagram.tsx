@@ -30,7 +30,7 @@ export const SyncWithDiagram = memo(() => {
         edges: state.view.edges
       }),
       // listener
-      ({ viewId, nodes, edges }) => {
+      ({ viewId, nodes, edges }, prev) => {
         const {
           lastOnNavigate,
           nodesDraggable,
@@ -71,7 +71,7 @@ export const SyncWithDiagram = memo(() => {
           })
         )
 
-        if (lastOnNavigate?.toView === viewId && lastOnNavigate.positionCorrected !== true) {
+        if (prev.viewId !== viewId && lastOnNavigate?.toView === viewId && lastOnNavigate.positionCorrected !== true) {
           const elFrom = lastOnNavigate.element
           const elTo = nodes.find(n => n.id === elFrom.id)
           if (elTo) {
