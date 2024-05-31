@@ -71,7 +71,7 @@ export class WasmGraphvizLayouter implements GraphvizLayouter {
         dot: dot
           .split('\n')
           // workaround for graphviz svg issue (only in cli)
-          .filter(l => !l.includes('margin=33.21'))
+          .filter(l => !l.includes('margin=33.21') && !l.includes('margin = 33.21'))
           .join('\n') as DotSource,
         diagram
       }

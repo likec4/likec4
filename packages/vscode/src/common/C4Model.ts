@@ -92,7 +92,7 @@ export class C4Model extends AbstractDisposable {
 
   private layoutView(view: ComputedView) {
     Logger.debug(`[Extension.C4Model] layoutView ${view.id}`)
-    const promise = this.ctrl.graphviz.layout(view)
+    const promise = Promise.resolve().then(() => this.ctrl.graphviz.layout(view))
     return xs.fromPromise(pTimeout(promise, {
       milliseconds: 15_000,
       message: `layoutView ${view.id} timeout`

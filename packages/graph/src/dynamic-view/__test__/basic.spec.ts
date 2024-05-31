@@ -29,7 +29,7 @@ describe('dynamic-view', () => {
         id: 'step-002',
         source: 'cloud.frontend.dashboard',
         target: 'cloud.backend.graphql',
-        label: null
+        label: 'requests' // inferred from relations
       },
       {
         id: 'step-003',
@@ -118,21 +118,21 @@ describe('dynamic-view', () => {
       id: 'step-001',
       source: 'customer',
       target: 'cloud.frontend.dashboard',
-      label: null
+      label: 'opens in browser' // inferred from relations
     })
     expect(step1).not.toHaveProperty('dir')
     expect(step2).toMatchObject({
       id: 'step-002',
       source: 'cloud.frontend.dashboard',
       target: 'cloud.backend.graphql',
-      label: null
+      label: 'requests' // inferred from relations
     })
     expect(step2).not.toHaveProperty('dir')
     expect(step3).toMatchObject({
       id: 'step-003',
       source: 'cloud.backend',
       target: 'amazon',
-      label: null
+      label: 'uploads' // inferred from relations
     })
     expect(step3).not.toHaveProperty('dir')
     expect(step4).toMatchObject({

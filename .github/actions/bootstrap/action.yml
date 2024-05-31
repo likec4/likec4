@@ -34,7 +34,7 @@ runs:
 
     - name: restore only cache turbo build
       uses: actions/cache/restore@v4
-      if: github.ref != 'refs/heads/main'
+      if: github.ref != 'refs/heads/main' && runner.os != 'windows-latest'
       with:
         path: .turbo
         key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}

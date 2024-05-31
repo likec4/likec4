@@ -205,7 +205,7 @@ DynamicViewRule:
 ;
 
 DynamicViewStep:
-  source=ElementRef (isBackward?='<-' | '->') target=ElementRef title=String?
+  source=ElementRef (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->') target=ElementRef title=String?
 ;
 
 ViewRulePredicate:

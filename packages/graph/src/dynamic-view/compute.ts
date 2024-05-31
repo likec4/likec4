@@ -1,4 +1,4 @@
-import type { ComputedDynamicView, ComputedEdge, DynamicView, EdgeId, Element, Fqn } from '@likec4/core'
+import type { ComputedDynamicView, ComputedEdge, DynamicView, EdgeId, Element, RelationID } from '@likec4/core'
 import {
   ancestorsFqn,
   commonAncestor,
@@ -10,6 +10,7 @@ import {
   nonNullable,
   parentFqn
 } from '@likec4/core'
+import { isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
@@ -19,6 +20,7 @@ export namespace DynamicViewComputeCtx {
     source: Element
     target: Element
     title: string | null
+    relations: RelationID[]
     isBackward: boolean
   }
 }
@@ -47,53 +49,20 @@ export class DynamicViewComputeCtx {
 
     // const sourcesOf = new Map<Fqn, Set<Element>>()
 
-    for (const step of steps) {
+    for (let step of steps) {
       const source = this.graph.element(step.source)
       const target = this.graph.element(step.target)
 
-      // let sources = new Set([
-      //   ...(sourcesOf.get(step.target) ?? []),
-      //   source,
-      //   ...(sourcesOf.get(step.source) ?? [])
-      // ])
-      // sourcesOf.set(step.target, sources)
-
-      // comesToFrom.)
-
-      // let isBack = sources.has(target)
-
-      // if (!isBack) {
-      //   sources.add(source)
-      // }
-
-      // const stepKey = `${step.source} :: ${step.target}`
-      // const backwardStepKey = `${step.target} :: ${step.source}`
-
-      // let isConstraint = true
-      // let isBackward = step.isBackward ?? false
-
-      // if (isBackward) {
-      //   if (stepsStack.has(stepKey)) {
-      //     stepsStack.delete(stepKey)
-      //     isConstraint = false
-      //   } else {
-      //     stepsStack.add(backwardStepKey)
-      //   }
-      // } else {
-      //   if (stepsStack.has(backwardStepKey)) {
-      //     stepsStack.delete(backwardStepKey)
-      //     isConstraint = false
-      //   } else {
-      //     stepsStack.add(stepKey)
-      //   }
-      // }
-
       this.explicits.add(source)
       this.explicits.add(target)
+
+      const { title, relations } = this.inferRelations(source, target)
+
       this.steps.push({
         source,
         target,
-        title: step.title,
+        title: step.title ?? title,
+        relations,
         isBackward: step.isBackward ?? false
       })
     }
@@ -101,7 +70,7 @@ export class DynamicViewComputeCtx {
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
 
-    const edges = this.steps.map(({ source, target, ...step }, index) => {
+    const edges = this.steps.map(({ source, target, relations, ...step }, index) => {
       const sourceNode = nodesMap.get(source.id)
       const targetNode = nodesMap.get(target.id)
       invariant(sourceNode, `Source node ${source.id} not found`)
@@ -113,7 +82,7 @@ export class DynamicViewComputeCtx {
         source: source.id,
         target: target.id,
         label: step.title,
-        relations: [],
+        relations,
         color: DefaultRelationshipColor,
         line: DefaultLineStyle,
         head: DefaultArrowType
@@ -157,6 +126,45 @@ export class DynamicViewComputeCtx {
       autoLayout: autoLayoutRule?.autoLayout ?? 'LR',
       nodes,
       edges
+    }
+  }
+
+  private inferRelations(source: Element, target: Element): {
+    title: string | null
+    relations: RelationID[]
+  } {
+    const relationships = this.graph.edgesBetween(source, target).flatMap(e => e.relations)
+    const relations = unique(relationships.map(r => r.id))
+    if (relationships.length === 0) {
+      return { title: null, relations }
+    }
+    let relation
+    if (relationships.length === 1) {
+      relation = relationships[0]
+    } else {
+      relation = relationships.find(r => r.source === source.id && r.target === target.id)
+    }
+
+    if (relation && isTruthy(relation.title)) {
+      return {
+        title: relation.title,
+        relations
+      }
+    }
+
+    // This edge represents mutliple relations
+    // We use label if only it is the same for all relations
+    const labels = unique(relationships.flatMap(r => (isTruthy(r.title) ? r.title : [])))
+    if (labels.length === 1) {
+      return {
+        title: labels[0]!,
+        relations
+      }
+    }
+
+    return {
+      title: null,
+      relations
     }
   }
 }
