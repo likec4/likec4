@@ -12,6 +12,7 @@ import DiagramTitlePanel from './ui/DiagramTitlePanel'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
+import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
 import type { XYFlowData } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
@@ -110,11 +111,13 @@ export function LikeC4Diagram({
               {readonly !== true && <OptionsPanel />}
               {showDiagramTitle === true && <DiagramTitlePanel />}
             </XYFlow>
+
+            <WhenInitialized>
+              <SyncWithDiagram />
+              {fitView && <FitViewOnDiagramChange />}
+              {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+            </WhenInitialized>
           </KeepAspectRatioContainer>
-          <WhenInitialized>
-            <SyncWithDiagram />
-            <FitViewOnDiagramChange />
-          </WhenInitialized>
         </DiagramContextProvider>
       </XYFlowProvider>
     </EnsureMantine>

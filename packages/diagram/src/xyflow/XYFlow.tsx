@@ -1,5 +1,5 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { Controls, ReactFlow } from '@xyflow/react'
+import { Controls, ReactFlow, useOnViewportChange } from '@xyflow/react'
 import { type CSSProperties, memo, type PropsWithChildren } from 'react'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
@@ -7,9 +7,9 @@ import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state
 import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
 import { useLayoutConstraints } from './hooks/useLayoutConstraints'
+import { useXYStoreApi } from './hooks/useXYFlow'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
-import { SelectEdgesOnNodeFocus } from './SelectEdgesOnNodeFocus'
 import { XYFlowEdge, XYFlowNode } from './types'
 import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
@@ -65,6 +65,7 @@ function XYFlowWrapper({
   background,
   style
 }: XYFlowWrapperProps) {
+  const xyflowApi = useXYStoreApi()
   const diagramApi = useDiagramStoreApi()
   const {
     nodesSelectable,
@@ -73,7 +74,12 @@ function XYFlowWrapper({
     fitViewPadding,
     pannable,
     zoomable,
-    ...editor
+    hasOnNodeClick,
+    hasOnNavigateTo,
+    hasOnNodeContextMenu,
+    hasOnCanvasContextMenu,
+    hasOnEdgeContextMenu,
+    hasOnEdgeClick
   } = useDiagramState(selector)
 
   const layoutConstraints = useLayoutConstraints()
@@ -83,6 +89,24 @@ function XYFlowWrapper({
 
   const { colorScheme } = useMantineColorScheme()
   const colorMode = colorScheme !== 'auto' ? colorScheme : undefined
+
+  /**
+   * WORKAROUND - Called on viewport change
+   * Viewport transform is not rounded to integers which results in blurry nodes on some resolution
+   * https://github.com/xyflow/xyflow/issues/3282
+   * https://github.com/likec4/likec4/issues/734
+   */
+  useOnViewportChange({
+    onEnd: ({ x, y, zoom }) => {
+      const rounded = {
+        x: Math.round(x),
+        y: Math.round(y)
+      }
+      if (x !== rounded.x || y !== rounded.y) {
+        xyflowApi.setState({ transform: [rounded.x, rounded.y, zoom] })
+      }
+    }
+  })
 
   return (
     <ReactFlow<XYFlowNode, XYFlowEdge>
@@ -114,8 +138,8 @@ function XYFlowWrapper({
       panOnScroll={pannable}
       panOnDrag={pannable}
       elementsSelectable={nodesSelectable}
-      nodesFocusable={nodesDraggable || nodesSelectable || editor.hasOnNodeClick || editor.hasOnNavigateTo}
-      edgesFocusable={editor.hasOnEdgeClick}
+      nodesFocusable={nodesDraggable || nodesSelectable || hasOnNodeClick || hasOnNavigateTo}
+      edgesFocusable={hasOnEdgeClick}
       {...(!nodesSelectable && {
         selectionKeyCode: null
       })}
@@ -138,22 +162,20 @@ function XYFlowWrapper({
       onNodeClick={handlers.onNodeClick}
       onNodeDoubleClick={handlers.onNodeDoubleClick}
       onEdgeClick={handlers.onEdgeClick}
-      // onViewportChange={handlers.onViewportChange}
       onInit={() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')
       }}
-      {...(editor.hasOnNodeContextMenu && {
+      {...(hasOnNodeContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu
       })}
-      {...(editor.hasOnEdgeContextMenu && {
+      {...(hasOnEdgeContextMenu && {
         onEdgeContextMenu: handlers.onEdgeContextMenu
       })}
-      {...(editor.hasOnCanvasContextMenu && {
+      {...(hasOnCanvasContextMenu && {
         onPaneContextMenu: handlers.onPaneContextMenu
       })}>
       {isBgWithPattern && <XYFlowBackground background={background} />}
       {controls && <Controls position={'bottom-right'} />}
-      {fitView && zoomable && <SelectEdgesOnNodeFocus />}
       {children}
     </ReactFlow>
   )

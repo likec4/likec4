@@ -166,7 +166,10 @@ export function useXYFlowEvents() {
       },
       onNodeMouseEnter: (event, xynode) => {
         hoveredNodeFromOnEdgeEnterRef.current = ''
-        diagramApi.getState().setHoveredNode(xynode.id)
+        const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
+        if (hoveredNodeId !== xynode.id) {
+          setHoveredNode(xynode.id)
+        }
       },
       onNodeMouseLeave: (event, xynode) => {
         const { hoveredNodeId, setHoveredNode } = diagramApi.getState()

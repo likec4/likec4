@@ -38,6 +38,7 @@ export type DiagramStore = {
   // Internal state
   xyflow: XYFlowInstance
   initialized: boolean
+  xyflowSynced: boolean
 
   // This is XYFlow id's
   lastClickedNodeId: string | null
@@ -107,6 +108,7 @@ export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
   initialized: false,
+  xyflowSynced: false,
   previousViews: [],
   viewportChanged: false,
   focusedNodeId: null,
@@ -150,6 +152,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           updateView: (view) => {
             let {
+              xyflowSynced,
               view: currentView,
               lastOnNavigate,
               previousViews,
@@ -157,10 +160,14 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               lastClickedNodeId,
               lastClickedEdgeId,
               hoveredEdgeId,
-              hoveredNodeId
+              hoveredNodeId,
+              xyflow
             } = get()
 
             if (shallowEqual(currentView, view)) {
+              if (!xyflowSynced) {
+                set({ xyflowSynced: true }, noReplace, 'updateView: xyflow synced')
+              }
               DEV && console.debug('store: skip updateView')
               return
             }
@@ -184,10 +191,13 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (hoveredEdgeId && !containsWithId(view.edges, hoveredEdgeId)) {
                 hoveredEdgeId = null
               }
+              xyflowSynced = shallowEqual(currentView.nodes, view.nodes) && shallowEqual(currentView.edges, view.edges)
             } else {
               // Reset lastOnNavigate if the view is not the source or target view
-              if (lastOnNavigate && lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
-                lastOnNavigate = null
+              if (lastOnNavigate) {
+                if (lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
+                  lastOnNavigate = null
+                }
               }
 
               // Reset hovered / clicked node/edge if the view is different
@@ -202,11 +212,13 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 currentView,
                 ...previousViews.filter((v) => v.id !== view.id && v.id !== currentView.id)
               ]
+              xyflowSynced = false
             }
 
             set(
               {
                 view,
+                xyflowSynced,
                 lastOnNavigate,
                 previousViews,
                 lastClickedNodeId,
@@ -395,13 +407,16 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           fitDiagram: () => {
-            const { fitViewPadding, xyflow, focusedNodeId } = get()
-            xyflow.fitView({
-              includeHiddenNodes: true,
+            const { fitViewPadding, view, xyflow, focusedNodeId } = get()
+            const bounds = {
+              x: 0,
+              y: 0,
+              width: view.width,
+              height: view.height
+            }
+            xyflow.fitBounds(bounds, {
               duration: 400,
-              padding: fitViewPadding,
-              minZoom: MinZoom,
-              maxZoom: 1
+              padding: fitViewPadding
             })
             if (!!focusedNodeId) {
               set({ focusedNodeId: null }, noReplace, 'unfocus')
