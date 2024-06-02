@@ -12,7 +12,7 @@ import { invariant, nonexhaustive } from '@likec4/core'
 import type { XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
-import { shallowEqual } from 'fast-equals'
+import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { entries } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
@@ -26,6 +26,7 @@ import type { XYFlowInstance, XYFlowNode } from '../xyflow/types'
 export type DiagramStore = {
   // Incoming props
   view: DiagramView
+  $type: NonNullable<DiagramView['__']>
   readonly: boolean
   showElementLinks: boolean
   fitViewEnabled: boolean
@@ -108,6 +109,7 @@ export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
   initialized: false,
+  $type: 'element',
   xyflowSynced: false,
   previousViews: [],
   viewportChanged: false,
@@ -149,22 +151,22 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
         (set, get) => ({
           ...DEFAULT_PROPS,
           ...(props as CreateDiagramStore),
+          $type: props.view.__ ?? 'element',
 
-          updateView: (view) => {
+          updateView: (nextView) => {
             let {
               xyflowSynced,
-              view: currentView,
+              view: current,
               lastOnNavigate,
               previousViews,
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId,
               hoveredEdgeId,
-              hoveredNodeId,
-              xyflow
+              hoveredNodeId
             } = get()
 
-            if (shallowEqual(currentView, view)) {
+            if (shallowEqual(current, nextView)) {
               if (!xyflowSynced) {
                 set({ xyflowSynced: true }, noReplace, 'updateView: xyflow synced')
               }
@@ -172,30 +174,30 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               return
             }
 
-            const isSameView = currentView.id === view.id
+            const isSameView = current.id === nextView.id
 
             if (isSameView) {
               // Reset clicked/hovered node/edge if the node/edge is not in the new view
-              if (lastClickedNodeId && !containsWithId(view.nodes, lastClickedNodeId)) {
+              if (lastClickedNodeId && !containsWithId(nextView.nodes, lastClickedNodeId)) {
                 lastClickedNodeId = null
               }
-              if (hoveredNodeId && !containsWithId(view.nodes, hoveredNodeId)) {
+              if (hoveredNodeId && !containsWithId(nextView.nodes, hoveredNodeId)) {
                 hoveredNodeId = null
               }
-              if (focusedNodeId && !containsWithId(view.nodes, focusedNodeId)) {
+              if (focusedNodeId && !containsWithId(nextView.nodes, focusedNodeId)) {
                 focusedNodeId = null
               }
-              if (lastClickedEdgeId && !containsWithId(view.edges, lastClickedEdgeId)) {
+              if (lastClickedEdgeId && !containsWithId(nextView.edges, lastClickedEdgeId)) {
                 lastClickedEdgeId = null
               }
-              if (hoveredEdgeId && !containsWithId(view.edges, hoveredEdgeId)) {
+              if (hoveredEdgeId && !containsWithId(nextView.edges, hoveredEdgeId)) {
                 hoveredEdgeId = null
               }
-              xyflowSynced = shallowEqual(currentView.nodes, view.nodes) && shallowEqual(currentView.edges, view.edges)
+              xyflowSynced = deepEqual(current.nodes, nextView.nodes) && deepEqual(current.edges, nextView.edges)
             } else {
               // Reset lastOnNavigate if the view is not the source or target view
               if (lastOnNavigate) {
-                if (lastOnNavigate.toView !== view.id && lastOnNavigate.fromView !== view.id) {
+                if (lastOnNavigate.toView !== nextView.id && lastOnNavigate.fromView !== nextView.id) {
                   lastOnNavigate = null
                 }
               }
@@ -209,15 +211,16 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
               // Update history stack (back button not implemented yet)
               previousViews = [
-                currentView,
-                ...previousViews.filter((v) => v.id !== view.id && v.id !== currentView.id)
+                current,
+                ...previousViews.filter((v) => v.id !== nextView.id && v.id !== current.id)
               ]
               xyflowSynced = false
             }
 
             set(
               {
-                view,
+                view: nextView,
+                $type: nextView.__ ?? 'element',
                 xyflowSynced,
                 lastOnNavigate,
                 previousViews,

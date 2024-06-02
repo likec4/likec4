@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 export const icon = style({
   width: rem(20),

@@ -26,7 +26,8 @@ export function DiagramContextProvider({ children, view, ...props }: PropsWithCh
 
   useUpdateEffect(
     () => store.current?.getState().updateView(view),
-    [view]
+    [view],
+    Object.is
   )
 
   useUpdateEffect(

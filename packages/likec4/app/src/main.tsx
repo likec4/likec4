@@ -12,7 +12,6 @@ import '@fontsource/ibm-plex-sans/cyrillic-ext-500.css'
 import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
 
 // dprint-ignore
-import '@radix-ui/themes/styles.css'
 import '@mantine/core/styles.css'
 import '@xyflow/react/dist/style.css'
 import './main.css'

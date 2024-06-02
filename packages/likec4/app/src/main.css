@@ -22,30 +22,11 @@
   /* --xy-background-pattern-color: var(--mantine-color-dark-8); */
 }
 
-:root[data-mantine-color-scheme='light'] {
-  --color-page-background: var(--mantine-color-body);
-}
-
-:root[data-mantine-color-scheme='dark'] {
-  /* --mantine-color-body: var(--mantine-color-dark-8); */
-  /* --xy-background-pattern-color: var(--mantine-color-dark-2); */
-  --color-page-background: var(--mantine-color-body);
-}
-
 body {
   margin: 0;
   padding: 0;
   width: 100dvw;
   height: 100dvh;
-  --font-family: var(--likec4-app-font);
-}
-
-.radix-themes {
-  --font-weight-bold: 600;
-  --color-text-dimmed: var(--gray-a8);
-  --font-family: var(--likec4-app-font);
-  --default-font-family: var(--likec4-app-font);
-  --color-page-background: var(--mantine-color-body);
 }
 
 #like4-root {
@@ -53,13 +34,6 @@ body {
   padding: 0;
   width: 100dvw;
   height: 100dvh;
-
-  &>.radix-themes {
-    margin: 0;
-    padding: 0;
-    width: 100dvw;
-    height: 100dvh;
-  }
 }
 
 .mantine-ActionIcon-icon .tabler-icon {

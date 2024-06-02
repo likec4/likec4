@@ -29,7 +29,7 @@ export function LikeC4Diagram({
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
-  controls = false,
+  controls = !readonly,
   showElementLinks = true,
   showDiagramTitle = true,
   initialWidth,
@@ -108,10 +108,9 @@ export function LikeC4Diagram({
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
             >
-              {readonly !== true && <OptionsPanel />}
+              {readonly === false && <OptionsPanel />}
               {showDiagramTitle === true && <DiagramTitlePanel />}
             </XYFlow>
-
             <WhenInitialized>
               <SyncWithDiagram />
               {fitView && <FitViewOnDiagramChange />}

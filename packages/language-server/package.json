@@ -80,7 +80,7 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.13.0",
     "@types/object-hash": "^3.0.6",
     "@types/string-hash": "^1",
     "execa": "^9.1.0",
