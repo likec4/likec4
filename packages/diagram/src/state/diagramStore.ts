@@ -20,6 +20,7 @@ import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 import type { Change, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
+import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowInstance } from '../xyflow/types'
 
@@ -410,7 +411,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           fitDiagram: (xyStore) => {
-            const { width, height, minZoom, panZoom } = xyStore.getState()
+            const { width, height, panZoom } = xyStore.getState()
             const { fitViewPadding, view, focusedNodeId } = get()
             const bounds = {
               x: 0,
@@ -418,7 +419,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               width: view.width,
               height: view.height
             }
-            const viewport = getViewportForBounds(bounds, width, height, minZoom, 1, fitViewPadding)
+            const viewport = getViewportForBounds(bounds, width, height, MinZoom, 1, fitViewPadding)
             panZoom?.setViewport(viewport, { duration: 400 })
             if (!!focusedNodeId) {
               set({ focusedNodeId: null }, noReplace, 'unfocus')

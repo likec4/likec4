@@ -25,7 +25,7 @@ function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
       fitDiagram(xyflowApi)
       prevDimensionsRef.current = dimensions
     },
-    [dimensions],
+    [dimensions, diagramApi, xyflowApi],
     200,
     800
   )
@@ -112,7 +112,7 @@ export function FitViewOnDiagramChange() {
     diagramApi.getState().fitDiagram(xyflowApi)
   }, [pendingViewId, xyflowSynced, waitCorrection])
 
-  if (!viewportChanged && xyflowSynced && pendingViewId === processedRef.current) {
+  if (!viewportChanged && xyflowSynced) {
     return <FitViewOnViewportResize xyflowApi={xyflowApi} diagramApi={diagramApi} />
   }
   return null
