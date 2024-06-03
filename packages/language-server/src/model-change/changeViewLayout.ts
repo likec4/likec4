@@ -17,7 +17,7 @@ type ChangeViewLayoutArg = {
 export function changeViewLayout(services: LikeC4Services, {
   viewAst,
   layout
-}: ChangeViewLayoutArg): TextEdit[] {
+}: ChangeViewLayoutArg): TextEdit {
   const viewCstNode = viewAst.$cstNode
   invariant(viewCstNode, 'viewCstNode')
   const newlayout = toAstViewLayoutDirection(layout)
@@ -26,9 +26,9 @@ export function changeViewLayout(services: LikeC4Services, {
   if (existingRule && existingRule.$cstNode) {
     const directionCstNode = findNodeForProperty(existingRule.$cstNode, 'direction')
     if (directionCstNode) {
-      return [TextEdit.replace(directionCstNode.range, newlayout)]
+      return TextEdit.replace(directionCstNode.range, newlayout)
     }
-    return [TextEdit.replace(existingRule.$cstNode.range, `autoLayout ${newlayout}`)]
+    return TextEdit.replace(existingRule.$cstNode.range, `autoLayout ${newlayout}`)
   }
 
   const insertPos = last(viewAst.body.rules)?.$cstNode?.range.end
@@ -37,5 +37,5 @@ export function changeViewLayout(services: LikeC4Services, {
   const indent = ' '.repeat(2 + viewCstNode.range.start.character)
   const insert = `\n\n${indent}autoLayout ${newlayout}`
 
-  return [TextEdit.insert(insertPos, insert)]
+  return TextEdit.insert(insertPos, insert)
 }

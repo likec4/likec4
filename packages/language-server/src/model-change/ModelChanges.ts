@@ -7,32 +7,32 @@ import type { ChangeViewRequestParams } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
 
-function unionRangeOfAllEdits(edits: TextEdit[]): Range {
-  let start = Number.MAX_SAFE_INTEGER
-  let end = Number.MIN_SAFE_INTEGER
+function unionRangeOfAllEdits(ranges: Range[]): Range {
+  let startLine = Number.MAX_SAFE_INTEGER
+  let endLine = Number.MIN_SAFE_INTEGER
 
   let startCharacter = Number.MAX_SAFE_INTEGER
   let endCharacter = Number.MIN_SAFE_INTEGER
 
-  for (const { range } of edits) {
-    if (range.start.line <= start) {
-      if (start == range.start.line) {
-        startCharacter = Math.min(range.start.character, startCharacter)
+  for (const { start, end } of ranges) {
+    if (start.line <= startLine) {
+      if (startLine == start.line) {
+        startCharacter = Math.min(start.character, startCharacter)
       } else {
-        start = range.start.line
-        startCharacter = range.start.character
+        startLine = start.line
+        startCharacter = start.character
       }
     }
-    if (end <= range.end.line) {
-      if (end == range.end.line) {
-        endCharacter = Math.max(range.end.character, endCharacter)
+    if (endLine <= end.line) {
+      if (endLine == end.line) {
+        endCharacter = Math.max(end.character, endCharacter)
       } else {
-        end = range.end.line
-        endCharacter = range.end.character
+        endLine = end.line
+        endCharacter = end.character
       }
     }
   }
-  return Range.create(start, startCharacter, end, endCharacter)
+  return Range.create(startLine, startCharacter, endLine, endCharacter)
 }
 
 export class LikeC4ModelChanges {
@@ -69,7 +69,7 @@ export class LikeC4ModelChanges {
       }
       result = {
         uri: textDocument.uri,
-        range: unionRangeOfAllEdits(edits)
+        range: unionRangeOfAllEdits(edits.map(edit => edit.range))
       }
     })
     return result
@@ -77,28 +77,34 @@ export class LikeC4ModelChanges {
 
   protected convertToTextEdit({ viewId, changes }: ChangeViewRequestParams): {
     doc: ParsedLikeC4LangiumDocument
+    ranges: Range[]
     edits: TextEdit[]
   } {
     const lookup = this.locator.locateViewAst(viewId)
     if (!lookup) {
       throw new Error(`View not found: ${viewId}`)
     }
+    const ranges = [] as Range[]
     const edits = [] as TextEdit[]
     for (const change of changes) {
       switch (change.op) {
         case 'change-element-style': {
-          edits.push(...changeElementStyle(this.services, {
+          const { edits: elementEdits, modifiedRange } = changeElementStyle(this.services, {
             ...lookup,
             targets: change.targets,
             style: change.style
-          }))
+          })
+          ranges.push(modifiedRange)
+          edits.push(...elementEdits)
           break
         }
         case 'change-autolayout': {
-          edits.push(...changeViewLayout(this.services, {
+          const edit = changeViewLayout(this.services, {
             ...lookup,
             layout: change.layout
-          }))
+          })
+          edits.push(edit)
+          ranges.push(edit.range)
           break
         }
         default:
@@ -107,6 +113,7 @@ export class LikeC4ModelChanges {
     }
     return {
       doc: lookup.doc,
+      ranges,
       edits
     }
   }
