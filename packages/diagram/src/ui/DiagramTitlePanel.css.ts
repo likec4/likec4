@@ -10,7 +10,7 @@ export const container = style({
 
 export const paper = style({
   cursor: 'default',
-  minWidth: 200,
+  minWidth: 100,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
   backdropFilter: 'blur(8px)',

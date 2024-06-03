@@ -1,9 +1,9 @@
 import {
-  ElementShapes,
-  defaultTheme,
-  invariant,
   type BorderStyle,
+  defaultTheme,
   type ElementShape,
+  ElementShapes,
+  invariant,
   type NonEmptyArray,
   type ThemeColor
 } from '@likec4/core'
@@ -13,14 +13,14 @@ import {
   ColorSwatch,
   Divider,
   Flex,
+  rem,
   SegmentedControl,
   Select,
   Slider,
   Stack,
   Text,
   Tooltip,
-  TooltipGroup,
-  rem
+  TooltipGroup
 } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
@@ -57,7 +57,7 @@ export type ColorKey = typeof colors[0]['key']
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
 export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
-// export function NodeOptions(props: { nodes: XYFlowNode[] }) {
+  // export function NodeOptions(props: { nodes: XYFlowNode[] }) {
   const diagramApi = useDiagramStoreApi()
   // const nodes = useXYNodesData(props.nodes.map(node => node.id))
   const nodes = useXYNodesData(selectedNodeIds)
@@ -104,25 +104,24 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         onColorChange={(color: ColorKey | ThemeColorKey) => {
           triggerChange({ color })
         }} />
+
+      {showOpacityOption && (
+        <Box key={firstNode.id}>
+          <Divider label="opacity and border" labelPosition="left" />
+          <OpacityOption
+            node={firstNode}
+            onOpacityChange={(opacity: number) => {
+              triggerChange({ opacity })
+            }} />
+          <BorderStyleOption
+            node={firstNode}
+            onChange={(border: BorderStyle) => {
+              triggerChange({ border })
+            }}
+          />
+        </Box>
+      )}
       <NavigateToOption nodes={nodes} />
-      <Box key={firstNode.id}>
-        {showOpacityOption && (
-          <>
-            <Divider label="opacity and border" labelPosition="left" />
-            <OpacityOption
-              node={firstNode}
-              onOpacityChange={(opacity: number) => {
-                triggerChange({ opacity })
-              }} />
-            <BorderStyleOption
-              node={firstNode}
-              onChange={(border: BorderStyle) => {
-                triggerChange({ border })
-              }}
-            />
-          </>
-        )}
-      </Box>
     </Stack>
   )
 }

@@ -39,7 +39,7 @@ export default function DiagramTitlePanel() {
           radius="sm"
           withBorder={!isCollapsed}
           className={css.paper}
-          p={isCollapsed ? 'sm' : 'md'}
+          p={isCollapsed ? 'xs' : 'lg'}
           onDoubleClick={e => e.stopPropagation()}>
           <Stack gap={'sm'} justify="stretch" align="stretch">
             <Group justify="stretch" wrap="nowrap" onClick={toggle} style={{ cursor: 'pointer' }}>
