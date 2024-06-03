@@ -21,7 +21,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
         || hasType(ast.Model) || hasType(ast.ModelViews) || hasType(ast.SpecificationRule): {
         return SymbolKind.Namespace
       }
-      case (ast.isElementView(node) || hasType(ast.ElementView)): {
+      case (ast.isLikeC4View(node) || hasType(ast.LikeC4View)): {
         return SymbolKind.Class
       }
       case (ast.isTag(node) || hasType(ast.Tag))
@@ -50,6 +50,8 @@ export class NodeKindProvider implements LspNodeKindProvider {
         return CompletionItemKind.Module
       case SymbolKind.Class:
         return CompletionItemKind.Class
+      case SymbolKind.Enum:
+        return CompletionItemKind.Enum
       case SymbolKind.EnumMember:
         return CompletionItemKind.EnumMember
       case SymbolKind.TypeParameter:
@@ -59,7 +61,7 @@ export class NodeKindProvider implements LspNodeKindProvider {
       case SymbolKind.Event:
         return CompletionItemKind.Event
       default:
-        return CompletionItemKind.Keyword
+        return CompletionItemKind.Reference
     }
   }
 }

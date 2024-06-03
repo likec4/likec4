@@ -1,6 +1,5 @@
-import { MantineProvider, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
-import { Theme } from '@radix-ui/themes'
-import { createRootRouteWithContext, Link, Outlet, ScrollRestoration } from '@tanstack/react-router'
+import { MantineProvider } from '@mantine/core'
+import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { theme as mantineTheme } from '../theme'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
@@ -40,24 +39,6 @@ export const Route = createRootRouteWithContext<{}>()({
   }
 })
 
-function RadixTheme({ children }: { children: React.ReactNode }) {
-  const { colorScheme } = useMantineColorScheme()
-  const computedScheme = useComputedColorScheme(undefined, {
-    getInitialValueInEffect: false
-  })
-  const appearance = colorScheme === 'auto' ? computedScheme : colorScheme
-  return (
-    <Theme
-      hasBackground={false}
-      appearance={appearance}
-      accentColor="indigo"
-      radius="small"
-    >
-      {children}
-    </Theme>
-  )
-}
-
 function RootComponent() {
   const { theme } = Route.useSearch()
   return (
@@ -65,10 +46,8 @@ function RootComponent() {
       {...(theme && { forceColorScheme: theme })}
       defaultColorScheme={theme ?? 'dark'}
       theme={mantineTheme}>
-      <RadixTheme>
-        <ScrollRestoration />
-        <Outlet />
-      </RadixTheme>
+      <ScrollRestoration />
+      <Outlet />
     </MantineProvider>
   )
 }

@@ -58,6 +58,7 @@ export default class Messenger extends AbstractDisposable {
             selection: location.range
           })
           editor.revealRange(location.range, vscode.TextEditorRevealType.InCenter)
+          await vscode.workspace.save(location.uri)
         }
       })
     )

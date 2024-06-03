@@ -1,10 +1,11 @@
-import type { ComputedView } from '@likec4/core'
+import { type ComputedElementView, type ComputedView, isComputedElementView } from '@likec4/core'
 import { execa } from 'execa'
 import pLimit from 'p-limit'
-import { parseGraphvizJson } from '../dotLayout'
-import type { GraphvizLayouter } from '../DotLayouter'
-import { printToDot } from '../printToDot'
+import { parseGraphvizJson } from '../parseGraphvizJson'
+import { printDynamicViewToDot } from '../printDynamicViewToDot'
+import { printElementViewToDot } from '../printElementViewToDot'
 import type { DotLayoutResult, DotSource } from '../types'
+import type { GraphvizLayouter } from '../WasmGraphvizLayouter'
 
 const limit = pLimit(2)
 
@@ -19,31 +20,40 @@ export class BinaryGraphvizLayouter implements GraphvizLayouter {
     // no-op
   }
 
+  protected async prepareElementViewDot(view: ComputedElementView): Promise<DotSource> {
+    let dot = printElementViewToDot(view)
+    const unflatten = await execa('unflatten', ['-f', '-l 1', '-c 2'], {
+      reject: false,
+      timeout: 5_000,
+      input: dot,
+      stdin: 'pipe',
+      encoding: 'utf8'
+    })
+    if (unflatten instanceof Error) {
+      if (unflatten.stdout) {
+        console.warn(
+          `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nbut returned\n${unflatten.stdout}`
+        )
+      } else {
+        console.error(
+          `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nnothing returned, ignoring...`
+        )
+      }
+    }
+
+    if (unflatten.stdout) {
+      dot = unflatten.stdout.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
+    }
+    return dot
+  }
+
   async layout(view: ComputedView): Promise<DotLayoutResult> {
     return await limit(async () => {
-      // console.debug(`[BinaryGraphvizLayouter.layout] view=${view.id}`)
-      let dot = printToDot(view)
-      const unflatten = await execa('unflatten', ['-f', '-l 1', '-c 2'], {
-        reject: false,
-        timeout: 5_000,
-        input: dot,
-        stdin: 'pipe',
-        encoding: 'utf8'
-      })
-      if (unflatten instanceof Error) {
-        if (unflatten.stdout) {
-          console.warn(
-            `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nbut returned\n${unflatten.stdout}`
-          )
-        } else {
-          console.error(
-            `[BinaryGraphvizLayouter.layout] '${unflatten.command}' failed: ${unflatten.stderr}\n\nnothing returned, ignoring...`
-          )
-        }
-      }
-
-      if (unflatten.stdout) {
-        dot = unflatten.stdout.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
+      let dot
+      if (isComputedElementView(view)) {
+        dot = await this.prepareElementViewDot(view)
+      } else {
+        dot = printDynamicViewToDot(view)
       }
 
       const dotcmd = await execa(this.path, ['-Tjson', '-y'], {

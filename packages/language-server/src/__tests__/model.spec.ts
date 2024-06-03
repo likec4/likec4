@@ -3,7 +3,7 @@ import { test } from './asserts'
 
 vi.mock('../logger')
 
-describe('model', () => {
+describe.concurrent('model', () => {
   test('name on the right side').valid`
     specification {
       element person

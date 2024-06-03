@@ -10,11 +10,7 @@ createRoot(document.getElementById('likec4-root')!).render(
   <>
     <style>{mantineStyle}</style>
     <MantineProvider defaultColorScheme="auto">
-      <LikeC4View
-        viewId={viewId}
-        style={{
-          maxHeight: '100%'
-        }} />
+      <LikeC4View viewId={viewId} />
     </MantineProvider>
   </>
 )

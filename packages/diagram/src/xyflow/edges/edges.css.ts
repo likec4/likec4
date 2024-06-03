@@ -107,7 +107,7 @@ export const cssEdgePath = style({
   selectors: {
     [`:where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
-      animationDelay: '500ms',
+      animationDelay: '350ms',
       transition: 'all 130ms ease-out'
     },
     [`:where(${isSelected}) &`]: {

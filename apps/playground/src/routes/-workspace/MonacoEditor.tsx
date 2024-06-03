@@ -53,7 +53,7 @@ export function MonacoEditor() {
       )
       editor.setSelection(range)
       editor.revealRangeNearTop(range, monaco.editor.ScrollType.Smooth)
-      requestIdleCallback(() => {
+      queueMicrotask(() => {
         store.setState({
           requestedLocation: null
         })

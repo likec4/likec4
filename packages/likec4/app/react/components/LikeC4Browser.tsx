@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 
 import { LikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
 import { ActionIcon, Group, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, ModalRoot } from '@mantine/core'

@@ -1,6 +1,18 @@
-import { invariant, nonexhaustive, type Point } from '@likec4/core'
+import { type ComputedNode, invariant, nonexhaustive, type Point, type RelationshipArrowType } from '@likec4/core'
 import { scale, toHex, transparentize } from 'khroma'
-import type { Color } from 'ts-graphviz'
+import type { ArrowType, Color } from 'ts-graphviz'
+export function isCompound(node: ComputedNode) {
+  return node.children.length > 0
+}
+
+export function toArrowType(type: RelationshipArrowType): ArrowType {
+  switch (type) {
+    case 'open':
+      return 'vee'
+    default:
+      return type
+  }
+}
 
 // export const pointToPx = (pt: number) => Math.ceil((pt * 96 ) / 72)
 // export const inchToPx = (inch: number) => Math.ceil(inch * 96)

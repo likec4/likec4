@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`printToDot > computedAmazonView 1`] = `
+exports[`printElementViewToDot > computedAmazonView 1`] = `
 "digraph {
   bgcolor = "transparent";
   layout = "dot";
@@ -88,7 +88,7 @@ exports[`printToDot > computedAmazonView 1`] = `
 }"
 `;
 
-exports[`printToDot > computedCloud3levels 1`] = `
+exports[`printElementViewToDot > computedCloud3levels 1`] = `
 "digraph {
   bgcolor = "transparent";
   layout = "dot";
@@ -233,7 +233,7 @@ exports[`printToDot > computedCloud3levels 1`] = `
 }"
 `;
 
-exports[`printToDot > computedCloudView 1`] = `
+exports[`printElementViewToDot > computedCloudView 1`] = `
 "digraph {
   bgcolor = "transparent";
   layout = "dot";
@@ -343,7 +343,7 @@ exports[`printToDot > computedCloudView 1`] = `
 }"
 `;
 
-exports[`printToDot > computedIndexView 1`] = `
+exports[`printElementViewToDot > computedIndexView 1`] = `
 "digraph {
   bgcolor = "transparent";
   layout = "dot";

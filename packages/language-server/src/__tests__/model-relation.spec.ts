@@ -3,7 +3,7 @@ import { invalid, valid } from './asserts'
 
 vi.mock('../logger')
 
-describe('model relation', () => {
+describe.concurrent('model relation', () => {
   test(
     'valid',
     valid`

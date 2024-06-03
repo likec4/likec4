@@ -307,6 +307,8 @@ describe('Completions', () => {
         view view2 {
           include *
         }
+        dynamic view view3 { // should also suggest dynamic views
+        }
         view {
           include root <|>with {
             <|>navigateTo <|>
@@ -341,7 +343,7 @@ describe('Completions', () => {
     await completion({
       text,
       index: 2,
-      expectedItems: ['index', 'view2'],
+      expectedItems: ['index', 'view2', 'view3'],
       disposeAfterCheck: true
     })
   })

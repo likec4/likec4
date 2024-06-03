@@ -66,25 +66,21 @@ export class LikeC4ModelLocator {
         if (targetNode) {
           return {
             uri: doc.uri.toString(),
-            range: {
-              start: targetNode.range.start,
-              end: targetNode.range.end
-            }
+            range: targetNode.range
           }
         }
       }
-      const targetNode = (node.kind
-        ? findNodeForProperty(node.$cstNode, 'kind')
-        : findNodeForKeyword(node.$cstNode, '->')) ?? findNodeForProperty(node.$cstNode, 'target')
-      return targetNode
-        ? {
-          uri: doc.uri.toString(),
-          range: {
-            start: targetNode.range.start,
-            end: targetNode.range.end
-          }
-        }
-        : null
+      let targetNode = node.kind ? findNodeForProperty(node.$cstNode, 'kind') : findNodeForKeyword(node.$cstNode, '->')
+      targetNode ??= findNodeForProperty(node.$cstNode, 'target')
+
+      if (!targetNode) {
+        return null
+      }
+
+      return {
+        uri: doc.uri.toString(),
+        range: targetNode.range
+      }
     }
     return null
   }
@@ -99,7 +95,7 @@ export class LikeC4ModelLocator {
         doc.parseResult.value,
         view.astPath
       )
-      if (ast.isElementView(viewAst)) {
+      if (ast.isLikeC4View(viewAst)) {
         return {
           doc,
           view,
@@ -122,15 +118,13 @@ export class LikeC4ModelLocator {
     } else if ('viewOf' in node) {
       targetNode = findNodeForProperty(node.$cstNode, 'viewOf') ?? targetNode
     }
+    targetNode ??= findNodeForKeyword(node.$cstNode, 'view')
     if (!targetNode) {
       return null
     }
     return {
       uri: res.doc.uri.toString(),
-      range: {
-        start: targetNode.range.start,
-        end: targetNode.range.start
-      }
+      range: targetNode.range
     }
   }
 }

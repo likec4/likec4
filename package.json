@@ -19,6 +19,7 @@
     "build": "turbo run build --filter='./packages/*'",
     "ci:build": "turbo run build --filter='./packages/*'",
     "typecheck": "turbo run typecheck",
+    "ci:typecheck": "turbo run typecheck --filter='./packages/*'",
     "ts": "tsc -b",
     "ts:watch": "tsc -b -w",
     "release": "shipjs prepare",
@@ -37,7 +38,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.1",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.13.0",
     "@vitest/ui": "~1.5.2",
     "dprint": "0.46.0",
     "esbuild": "^0.21.0",

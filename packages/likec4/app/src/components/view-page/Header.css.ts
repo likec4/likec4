@@ -18,7 +18,9 @@ export const cssHeader = style({
   padding: 2,
   display: 'flex',
   flexWrap: 'nowrap',
-  alignItems: 'stretch',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  // alignItems: 'stretch',
   paddingLeft: 60,
   paddingRight: 20,
   backgroundColor: mantine.colors.body,
@@ -26,11 +28,6 @@ export const cssHeader = style({
   // border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 })
 
-export const cssDiagramTitleBox = style({
-  flex: '1 1 100%',
-  width: '100%',
-  overflow: 'hidden'
-})
 export const cssDiagramTitle = style({
   // display: 'flex',
   // alignItems: 'center'

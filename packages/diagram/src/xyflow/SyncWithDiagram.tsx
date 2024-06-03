@@ -1,125 +1,73 @@
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { useXYFlow, useXYStoreApi } from './hooks'
-import type { XYFlowNode } from './types'
+import { deepEqual as eq } from 'fast-equals'
+import { useXYStoreApi } from './hooks'
 
-import { memo, useEffect, useRef } from 'react'
-import { useDiagramStoreApi } from '../state'
+import { useEffect } from 'react'
+import { useDiagramState, useDiagramStoreApi } from '../state'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
-import { toDomPrecision } from './utils'
-
-const isSameNode = (a: XYFlowNode) => (b: XYFlowNode) =>
-  a.id === b.id && a.type === b.type && Object.is(a.parentId, b.parentId)
 
 /**
  * Syncs the diagram state with the XYFlow instance
  */
-export const SyncWithDiagram = memo(() => {
-  const _xyflow = useXYFlow()
-  const xyflowRef = useRef(_xyflow)
-  xyflowRef.current = _xyflow
-
+export function SyncWithDiagram() {
+  const xyflowSynced = useDiagramState(s => s.xyflowSynced)
   const xyflowApi = useXYStoreApi()
   const diagramStoreApi = useDiagramStoreApi()
 
   useEffect(() => {
-    return diagramStoreApi.subscribe(
-      // selector
-      state => ({
-        viewId: state.view.id,
-        nodes: state.view.nodes,
-        edges: state.view.edges
-      }),
-      // listener
-      ({ viewId, nodes, edges }) => {
-        const {
-          lastOnNavigate,
-          nodesDraggable,
-          nodesSelectable,
-          focusedNodeId
-        } = diagramStoreApi.getState()
-        const updates = diagramViewToXYFlowData({ nodes, edges }, {
-          draggable: nodesDraggable,
-          selectable: nodesSelectable || focusedNodeId !== null
-        })
+    if (xyflowSynced) {
+      return
+    }
+    const {
+      view,
+      nodesDraggable,
+      nodesSelectable,
+      focusedNodeId
+    } = diagramStoreApi.getState()
+    const updates = diagramViewToXYFlowData(view, {
+      draggable: nodesDraggable,
+      selectable: nodesSelectable || focusedNodeId !== null
+    })
 
-        xyflowRef.current.setNodes(prev =>
-          updates.nodes.map(update => {
-            const existing = prev.find(isSameNode(update))
-            if (existing) {
-              if (eq(existing.data.element, update.data.element)) {
-                return existing
-              }
-              return {
-                ...existing,
-                ...update
-              }
-            }
-            return update
-          })
-        )
+    const {
+      nodeLookup,
+      edgeLookup,
+      setNodes,
+      setEdges
+    } = xyflowApi.getState()
 
-        xyflowRef.current.setEdges(prev =>
-          updates.edges.map(update => {
-            const existing = prev.find(e => e.id === update.id)
-            if (existing) {
-              return eq(existing.data, update.data) ? existing : {
-                ...existing,
-                ...update
-              }
-            }
-            return update
-          })
-        )
-
-        if (lastOnNavigate?.toView === viewId && lastOnNavigate.positionCorrected !== true) {
-          const elFrom = lastOnNavigate.element
-          const elTo = nodes.find(n => n.id === elFrom.id)
-          if (elTo) {
-            const centerFrom = lastOnNavigate.elementCenterScreenPosition
-            let nextZoom = Math.min(elFrom.width / elTo.width, elFrom.height / elTo.height)
-
-            // TODO: investigate why 2 animation frames are needed
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                const v = xyflowRef.current.getViewport()
-                if (nextZoom < v.zoom) {
-                  nextZoom = Math.max(nextZoom, v.zoom * 0.5)
-                  xyflowRef.current.setViewport({
-                    x: v.x,
-                    y: v.y,
-                    zoom: nextZoom
-                  })
-                }
-
-                const centerTo = xyflowRef.current.flowToScreenPosition({
-                    x: elTo.position[0] + elTo.width / 2,
-                    y: elTo.position[1] + elTo.height / 2
-                  }),
-                  diff = {
-                    x: toDomPrecision(centerFrom.x - centerTo.x),
-                    y: toDomPrecision(centerFrom.y - centerTo.y)
-                  }
-                xyflowApi.getState().panBy(diff)
-              })
-            })
-          }
-          diagramStoreApi.setState(
-            {
-              lastOnNavigate: {
-                ...lastOnNavigate,
-                positionCorrected: true
-              }
-            },
-            false,
-            'positionCorrected'
-          )
+    setNodes(updates.nodes.map(update => {
+      const existing = nodeLookup.get(update.id)?.internals.userNode
+      if (existing && existing.type === update.type && eq(existing.parentId, update.parentId)) {
+        if (eq(existing.data.element, update.data.element)) {
+          return existing
         }
-      },
-      {
-        equalityFn: shallowEqual
+        return {
+          ...existing,
+          ...update
+        }
       }
+      return update
+    }))
+
+    setEdges(updates.edges.map(update => {
+      const existing = edgeLookup.get(update.id)
+      if (existing) {
+        return eq(existing.data.edge, update.data.edge) ? existing : {
+          ...existing,
+          ...update
+        }
+      }
+      return update
+    }))
+
+    diagramStoreApi.setState(
+      {
+        xyflowSynced: true
+      },
+      false,
+      'xyflowSynced'
     )
-  }, [xyflowApi, diagramStoreApi])
+  }, [xyflowSynced, xyflowApi, diagramStoreApi])
 
   return null
-})
+}

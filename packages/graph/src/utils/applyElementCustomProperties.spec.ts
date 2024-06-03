@@ -1,6 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
-import { $include } from '../__test__/fixture'
+import { $include } from '../compute-view/__test__/fixture'
 import { applyElementCustomProperties } from './applyElementCustomProperties'
 
 function nd(id: string): ComputedNode {

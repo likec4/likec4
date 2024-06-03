@@ -9,6 +9,7 @@ export const bundledStyles = () => {
   } else {
     BundledStyles = Array.from(__likec4styles.values()).filter(isString).join('\n')
   }
+  ensureFontCss()
   // return BundledStyles
   return BundledStyles.replaceAll('body {', '.likec4-react-root{')
     .replaceAll('body{', '.likec4-react-root{')
@@ -64,24 +65,12 @@ export const matchesColorScheme = (el: Element) => {
   return undefined
 }
 
-// export const IbmPlexSans = ``
-// const fonthref = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap'
-// export const IbmPlexSans = `<link href="${fonthref}" rel="stylesheet">`
-// export const IbmPlexSans = `<style>
-// ${fontCss}
-// </style>`
-
-// const key = '__likec4_fontcheck';
-// (window as any)[key] ??= setTimeout(() => {
-//   (window as any)[key] = undefined
-//   // if (document.fonts.check(`16px 'IBM Plex Sans'`)) {
-//   //   return
-//   // }
-if (!document.querySelector(`style[data-likec4-font]`)) {
-  const style = document.createElement('style')
-  style.setAttribute('type', 'text/css')
-  style.setAttribute('data-likec4-font', '')
-  style.appendChild(document.createTextNode(fontCss))
-  document.head.appendChild(style)
+function ensureFontCss() {
+  if (!document.querySelector(`style[data-likec4-font]`)) {
+    const style = document.createElement('style')
+    style.setAttribute('type', 'text/css')
+    style.setAttribute('data-likec4-font', '')
+    style.appendChild(document.createTextNode(fontCss))
+    document.head.appendChild(style)
+  }
 }
-// }, 100)

@@ -1,6 +1,5 @@
 import { Button, Drawer as MantineDrawer, ScrollArea } from '@mantine/core'
-import { ArrowLeftIcon } from '@radix-ui/react-icons'
-import { Theme as RadixTheme } from '@radix-ui/themes'
+import { IconArrowLeft } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
 import { DiagramsTree } from './DiagramsTree'
 
@@ -18,8 +17,7 @@ export function SidebarDrawer({ opened, onClose }: SidebarDrawerProps) {
         <Button
           component={Link}
           to="/"
-          startTransition
-          leftSection={<ArrowLeftIcon />}
+          leftSection={<IconArrowLeft />}
           color="dimmed"
           variant="subtle"
           size="xs">
@@ -27,9 +25,7 @@ export function SidebarDrawer({ opened, onClose }: SidebarDrawerProps) {
         </Button>
       }
       scrollAreaComponent={ScrollArea.Autosize}>
-      <RadixTheme isRoot={false}>
-        <DiagramsTree />
-      </RadixTheme>
+      <DiagramsTree />
     </MantineDrawer>
   )
 }

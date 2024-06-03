@@ -1,4 +1,3 @@
-import type { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type {
   BBox as LabelBBox,
   ComputedEdge,
@@ -13,8 +12,6 @@ import type {
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { first, hasAtLeast, last, maxBy } from 'remeda'
-import { toDot } from './printToDot'
-import type { DotLayoutResult, DotSource } from './types'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx, toKonvaAlign } from './utils'
 
@@ -219,25 +216,6 @@ function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdges: Compu
     edge.tailArrow = tdraw
   }
   return edge
-}
-
-export function dotLayoutFn(graphviz: Graphviz, computedView: ComputedView): DotLayoutResult {
-  const initialDot = toDot(graphviz, computedView)
-  const dot = initialDot
-
-  const rawjson = graphviz.dot(dot, 'json', {
-    yInvert: true
-  })
-
-  const diagram = parseGraphvizJson(rawjson, computedView)
-
-  return {
-    dot: dot
-      .split('\n')
-      .filter(l => !l.includes('margin=33.21'))
-      .join('\n') as DotSource,
-    diagram
-  }
 }
 
 export function parseGraphvizJson(json: string, computedView: ComputedView): DiagramView {

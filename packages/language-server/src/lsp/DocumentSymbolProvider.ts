@@ -1,7 +1,7 @@
 import { nonexhaustive } from '@likec4/core'
 import { type AstNode, GrammarUtils, type MaybePromise } from 'langium'
 import type { DocumentSymbolProvider, NodeKindProvider } from 'langium/lsp'
-import { compact, isEmpty, map, pipe } from 'remeda'
+import { filter, isEmpty, isTruthy, map, pipe } from 'remeda'
 import { type DocumentSymbol, SymbolKind } from 'vscode-languageserver-protocol'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { getFqnElementRef } from '../elementRef'
@@ -43,15 +43,20 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     const specSymbols = pipe(
       [...astSpec.elements, ...astSpec.tags, ...astSpec.relationships],
       map(nd => {
-        if (ast.isSpecificationElementKind(nd) || ast.isSpecificationRelationshipKind(nd)) {
-          return this.getKindSymbol(nd)
-        }
-        if (ast.isSpecificationTag(nd)) {
-          return this.getTagSymbol(nd)
+        try {
+          if (ast.isSpecificationElementKind(nd) || ast.isSpecificationRelationshipKind(nd)) {
+            return this.getKindSymbol(nd)
+          }
+          if (ast.isSpecificationTag(nd)) {
+            return this.getTagSymbol(nd)
+          }
+        } catch (e) {
+          logError(e)
+          return null
         }
         nonexhaustive(nd)
       }),
-      compact
+      filter(isTruthy)
     )
 
     if (specSymbols.length === 0) return []
@@ -146,7 +151,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
         name: astViews.name,
         range: cst.range,
         selectionRange: nameNode.range,
-        children: astViews.views.flatMap(e => this.getElementViewSymbol(e))
+        children: astViews.views.flatMap(e => this.getViewSymbol(e))
       }
     ]
   }
@@ -174,7 +179,7 @@ export class LikeC4DocumentSymbolProvider implements DocumentSymbolProvider {
     }
   }
 
-  protected getElementViewSymbol(astView: ast.ElementView): DocumentSymbol[] {
+  protected getViewSymbol(astView: ast.LikeC4View): DocumentSymbol[] {
     const cst = astView?.$cstNode
     if (!cst) return []
     const nameNode = astView.name ? GrammarUtils.findNodeForProperty(cst, 'name') : null

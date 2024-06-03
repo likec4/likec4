@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/core'
+import { type DiagramView } from '@likec4/core'
 import {
   Badge,
   Box,
@@ -22,10 +22,17 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
-import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
+import {
+  Link,
+  type RegisteredRouter,
+  type RouteIds,
+  useMatchRoute,
+  useParams,
+  useRouterState
+} from '@tanstack/react-router'
 import { findLast, isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
-import { cssDiagramTitle, cssDiagramTitleBox, cssHeader } from './Header.css'
+import { cssDiagramTitle, cssHeader } from './Header.css'
 import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -40,9 +47,11 @@ export function Header({ diagram }: HeaderProps) {
   const [opened, { open, close }] = useDisclosure(false)
   return (
     <header className={cssHeader}>
-      <DiagramTitle diagram={diagram} />
+      <Box flex={1} visibleFrom="xs">
+        <DiagramTitle diagram={diagram} />
+      </Box>
 
-      <Group gap={isTablet ? 'xs' : 4} visibleFrom="xs" flex={'0 0 auto'}>
+      <Group gap={isTablet ? 'xs' : 4}>
         <ViewPageButton isTablet={isTablet} />
         <ColorSchemeToggle />
         <Divider orientation="vertical" />
@@ -186,11 +195,17 @@ function ExportButton({ diagram }: HeaderProps) {
     from: '/view/$viewId'
   })
 
+  useMatchRoute
+
   const onClick = async () => {
     const { toPng } = await import('html-to-image')
     const imageWidth = diagram.width + 32
     const imageHeight = diagram.height + 32
-    toPng(document.querySelector<HTMLDivElement>('.react-flow__viewport')!, {
+    const viewPort = document.querySelector<HTMLDivElement>('.react-flow__viewport')
+    if (!viewPort) {
+      return
+    }
+    toPng(viewPort, {
       backgroundColor: 'transparent',
       width: imageWidth,
       height: imageHeight,
@@ -243,11 +258,9 @@ function DiagramTitle({ diagram }: {
   return (
     <HoverCard closeDelay={500} position="bottom-start">
       <HoverCardTarget>
-        <Flex px={'3'} align={'center'} className={cssDiagramTitleBox}>
-          <Text className={cssDiagramTitle}>
-            {diagram.title || 'Untitled'}
-          </Text>
-        </Flex>
+        <Text className={cssDiagramTitle}>
+          {diagram.title || 'Untitled'}
+        </Text>
       </HoverCardTarget>
       <HoverCardDropdown>
         <Flex direction="column" gap={'xs'}>
@@ -256,11 +269,6 @@ function DiagramTitle({ diagram }: {
               {diagram.id}
             </Code>
           </HoverCardItem>
-          {diagram.viewOf && (
-            <HoverCardItem title="view of">
-              <Code>{diagram.viewOf}</Code>
-            </HoverCardItem>
-          )}
           <HoverCardItem title="description">
             {hasDescription
               ? (

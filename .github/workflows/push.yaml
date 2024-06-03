@@ -54,7 +54,7 @@ jobs:
         run: yarn ci:build
 
       - name: typecheck
-        run: yarn typecheck
+        run: yarn ci:typecheck
 
       - name: test
         env:
@@ -123,9 +123,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
 
       - name: build docs nextjs
         working-directory: docs
-        run: yarn build:turbo
+        run: |
+          yarn build:turbo
+
+      - name: typecheck
+        working-directory: docs
+        run: |
+          yarn typecheck:turbo

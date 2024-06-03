@@ -288,6 +288,7 @@ export const fakeModel = new LikeC4ModelGraph({
 })
 
 const emptyView = {
+  __: 'element' as const,
   id: 'index' as ViewID,
   title: null,
   description: null,

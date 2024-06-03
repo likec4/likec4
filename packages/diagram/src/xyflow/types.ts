@@ -24,6 +24,10 @@ type TypedXYFlowNode<D extends Record<string, unknown>, T extends string> = SetR
   SetRequired<Node<D, T>, 'type'>,
   'id' | 'type'
 >
+type TypedXYFlowEdge<D extends Record<string, unknown>, T extends string> = SetReadonly<
+  SetRequired<Edge<D, T>, 'type' | 'data'>,
+  'id' | 'type'
+>
 
 export type ElementXYFlowNode = TypedXYFlowNode<ElementNodeData, 'element'>
 
@@ -63,14 +67,7 @@ export type RelationshipData = {
   }
 }
 
-export type RelationshipEdge = Simplify<
-  SetRequired<
-    Omit<Edge<RelationshipData>, 'type'>,
-    'data'
-  > & {
-    type: 'relationship'
-  }
->
+export type RelationshipEdge = TypedXYFlowEdge<RelationshipData, 'relationship'>
 
 export type XYFlowEdge = RelationshipEdge
 

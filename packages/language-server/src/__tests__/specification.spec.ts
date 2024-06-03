@@ -3,7 +3,7 @@ import { test } from './asserts'
 
 vi.mock('../logger')
 
-describe('specification', () => {
+describe.concurrent('specification', () => {
   test('valid').valid`
       specification {
         element container
@@ -51,6 +51,11 @@ describe('specification', () => {
     test('element kind with dash').valid`
       specification {
         element c-
+      }`
+
+    test('element kind does not start with dash').invalid`
+      specification {
+        element -kind
       }`
 
     test('fail if element kind starts with number').invalid`

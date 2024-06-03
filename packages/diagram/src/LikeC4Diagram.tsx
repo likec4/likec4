@@ -1,3 +1,4 @@
+import '@xyflow/react/dist/style.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'
@@ -12,6 +13,7 @@ import DiagramTitlePanel from './ui/DiagramTitlePanel'
 import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
+import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
 import type { XYFlowData } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
@@ -28,7 +30,7 @@ export function LikeC4Diagram({
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
-  controls = false,
+  controls = !readonly,
   showElementLinks = true,
   showDiagramTitle = true,
   initialWidth,
@@ -107,14 +109,15 @@ export function LikeC4Diagram({
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
             >
-              {readonly !== true && <OptionsPanel />}
+              {readonly === false && <OptionsPanel />}
               {showDiagramTitle === true && <DiagramTitlePanel />}
             </XYFlow>
+            <WhenInitialized>
+              <SyncWithDiagram />
+              {fitView && <FitViewOnDiagramChange />}
+              {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+            </WhenInitialized>
           </KeepAspectRatioContainer>
-          <WhenInitialized>
-            <SyncWithDiagram />
-            <FitViewOnDiagramChange />
-          </WhenInitialized>
         </DiagramContextProvider>
       </XYFlowProvider>
     </EnsureMantine>

@@ -1,9 +1,10 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { type ComputedView } from '@likec4/core'
-import { delay } from '@likec4/core'
+import { type ComputedView, delay, isComputedElementView } from '@likec4/core'
 import pLimit from 'p-limit'
-import { dotLayoutFn } from './dotLayout'
-import type { DotLayoutResult } from './types'
+import { parseGraphvizJson } from './parseGraphvizJson'
+import { printDynamicViewToDot } from './printDynamicViewToDot'
+import { printElementViewToDot } from './printElementViewToDot'
+import type { DotLayoutResult, DotSource } from './types'
 
 const limit = pLimit(1)
 
@@ -11,6 +12,23 @@ export interface GraphvizLayouter {
   dispose(): void
   layout(view: ComputedView): Promise<DotLayoutResult>
   svg(dot: string, view: ComputedView): Promise<string>
+}
+
+function toDot(graphviz: Graphviz, computedView: ComputedView) {
+  if (isComputedElementView(computedView)) {
+    const initial = printElementViewToDot(computedView)
+
+    // const acyclicResult = graphviz.acyclic(initial, true)
+    // const acyclicDot = acyclicResult.outFile ?? initial
+
+    // console.log('acyclicDot ---------------')
+    // console.log(acyclicDot)
+    // console.log('acyclicDot ---------------')
+
+    const unflattened = graphviz.unflatten(initial, 1, true, 2)
+    return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
+  }
+  return printDynamicViewToDot(computedView)
 }
 
 // WASM Graphviz layouter
@@ -42,7 +60,21 @@ export class WasmGraphvizLayouter implements GraphvizLayouter {
   private async attempt(view: ComputedView) {
     try {
       const graphviz = await Graphviz.load()
-      return dotLayoutFn(graphviz, view)
+      const dot = toDot(graphviz, view)
+      const rawjson = graphviz.dot(dot, 'json', {
+        yInvert: true
+      })
+
+      const diagram = parseGraphvizJson(rawjson, view)
+
+      return {
+        dot: dot
+          .split('\n')
+          // workaround for graphviz svg issue (only in cli)
+          .filter(l => !l.includes('margin=33.21') && !l.includes('margin = 33.21'))
+          .join('\n') as DotSource,
+        diagram
+      }
     } catch (err) {
       console.error(`Failed attempt to layout with graphviz: ${view.id}`)
       console.error(err)

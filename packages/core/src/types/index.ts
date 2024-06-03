@@ -1,6 +1,4 @@
 export * from './_common'
-export * from './computed-view'
-export * from './diagram'
 export * from './element'
 export * from './expression'
 export * from './model'

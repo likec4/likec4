@@ -86,6 +86,9 @@ export function createMonacoConfig(store: StoreApi) {
           'scrollbar': {
             vertical: 'hidden'
           },
+          stickyScroll: {
+            enabled: false
+          },
           'guides': {
             indentation: false,
             bracketPairs: false,

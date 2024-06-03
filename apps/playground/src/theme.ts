@@ -5,6 +5,7 @@ export const theme = createTheme({
   cursorType: 'pointer',
   fontFamily: 'var(--likec4-app-font)',
   defaultRadius: 'sm',
+  respectReducedMotion: true,
   headings: {
     fontWeight: '500',
     sizes: {

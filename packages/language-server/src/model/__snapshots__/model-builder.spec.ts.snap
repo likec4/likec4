@@ -68,6 +68,7 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
   },
   "views": {
     "index": {
+      "__": "element",
       "autoLayout": "TB",
       "description": null,
       "edges": [
@@ -203,6 +204,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
   },
   "views": {
     "frontend": {
+      "__": "element",
       "autoLayout": "TB",
       "description": null,
       "docUri": "file:///test/workspace/src/2.c4",
@@ -297,6 +299,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "viewOf": "system.frontend",
     },
     "index": {
+      "__": "element",
       "autoLayout": "TB",
       "description": null,
       "docUri": "file:///test/workspace/src/2.c4",
@@ -359,6 +362,7 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "title": "Index",
     },
     "v1": {
+      "__": "element",
       "autoLayout": "LR",
       "description": null,
       "docUri": "file:///test/workspace/src/2.c4",
@@ -486,6 +490,7 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
   },
   "views": {
     "index": {
+      "__": "element",
       "autoLayout": "TB",
       "description": null,
       "edges": [
@@ -587,6 +592,7 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
   },
   "views": {
     "index": {
+      "__": "element",
       "autoLayout": "TB",
       "description": null,
       "edges": [

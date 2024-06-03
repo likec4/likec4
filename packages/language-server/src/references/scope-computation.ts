@@ -5,7 +5,7 @@ import {
   MultiMap,
   type PrecomputedScopes
 } from 'langium'
-import { isEmpty, isTruthy } from 'remeda'
+import { isTruthy } from 'remeda'
 import type { CancellationToken } from 'vscode-languageserver'
 import { ast, type LikeC4LangiumDocument } from '../ast'
 import { logError } from '../logger'
@@ -13,59 +13,66 @@ import { logError } from '../logger'
 type ElementsContainer = ast.Model | ast.ElementBody | ast.ExtendElementBody
 
 export class LikeC4ScopeComputation extends DefaultScopeComputation {
-  override computeExports(
+  override async computeExports(
     document: LikeC4LangiumDocument,
     _cancelToken?: CancellationToken
   ): Promise<AstNodeDescription[]> {
-    return new Promise(resolve => {
-      const docExports: AstNodeDescription[] = []
+    const docExports: AstNodeDescription[] = []
+    try {
       const { specifications, models, views } = document.parseResult.value
 
-      try {
-        for (const spec of specifications.flatMap(s => [...s.elements, ...s.relationships])) {
+      // Process specification
+      for (
+        const spec of specifications.flatMap(s => [
+          ...s.elements,
+          ...s.relationships,
+          ...s.tags
+        ])
+      ) {
+        try {
+          if (ast.isSpecificationTag(spec)) {
+            if (spec.tag && isTruthy(spec.tag.name)) {
+              docExports.push(
+                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+              )
+            }
+            continue
+          }
           if (spec.kind && isTruthy(spec.kind.name)) {
             docExports.push(
               this.descriptions.createDescription(spec.kind, spec.kind.name, document)
             )
           }
+        } catch (e) {
+          logError(e)
         }
-      } catch (e) {
-        logError(e)
       }
 
-      try {
-        for (const spec of specifications.flatMap(s => s.tags)) {
-          if (spec.tag && isTruthy(spec.tag.name)) {
-            docExports.push(
-              this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
-            )
-          }
-        }
-      } catch (e) {
-        logError(e)
-      }
-
-      try {
-        for (const elAst of models.flatMap(m => m.elements)) {
+      // Process models
+      for (const elAst of models.flatMap(m => m.elements)) {
+        try {
           if (ast.isElement(elAst) && isTruthy(elAst.name)) {
             docExports.push(this.descriptions.createDescription(elAst, elAst.name, document))
           }
+        } catch (e) {
+          logError(e)
         }
-      } catch (e) {
-        logError(e)
       }
 
-      try {
-        for (const viewAst of views.flatMap(v => v.views)) {
+      // Process views
+      for (const viewAst of views.flatMap(v => v.views)) {
+        try {
           if (isTruthy(viewAst.name)) {
             docExports.push(this.descriptions.createDescription(viewAst, viewAst.name, document))
           }
+        } catch (e) {
+          logError(e)
         }
-      } catch (e) {
-        logError(e)
       }
-      resolve(docExports)
-    })
+    } catch (e) {
+      logError(e)
+    }
+    return docExports
   }
 
   override computeLocalScopes(

@@ -22,7 +22,7 @@ export function WorkspaceContextPage() {
   return (
     <AppShell
       header={{ height: 50 }}
-      withBorder={false}
+      // withBo rder={false}
     >
       <WorkspaceContextProvider key={id} name={id} {...data}>
         <AppShellHeader>

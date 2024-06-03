@@ -1,12 +1,14 @@
 import {
   type c4,
   compareByFqnHierarchically,
+  invariant,
+  isElementView,
   isStrictElementView,
   parentFqn,
   type StrictElementView,
   type ViewID
 } from '@likec4/core'
-import { computeView, LikeC4ModelGraph } from '@likec4/graph'
+import { computeDynamicView, computeView, LikeC4ModelGraph } from '@likec4/graph'
 import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
@@ -28,9 +30,9 @@ import {
 import { type CancellationToken, Disposable } from 'vscode-languageserver'
 import type {
   ParsedAstElement,
-  ParsedAstElementView,
   ParsedAstRelation,
   ParsedAstSpecification,
+  ParsedAstView,
   ParsedLikeC4LangiumDocument
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
@@ -149,7 +151,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           source,
           target,
           kind,
-          id,
+          id
         }
       }
       return {
@@ -157,7 +159,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
         ...model,
         source,
         target,
-        id,
+        id
       }
     }
   }
@@ -168,31 +170,83 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     mapToObj(r => [r.id, r])
   )
 
-  const toElementView = (doc: LangiumDocument) => {
+  // const toElementView = (view: ParsedAstElementView, doc: LangiumDocument): c4.ElementView => {
+  //   let { astPath, rules, title, description, tags, links, id, __, ...model } = view
+
+  //   if ('viewOf' in view) {
+  //     title ??= elements[view.viewOf]?.title ?? null
+  //   }
+  //   if (!title && view.id === 'index') {
+  //     title = 'Landscape view'
+  //   }
+  //   return {
+  //     __,
+  //     id,
+  //     ...model,
+  //     title,
+  //     description,
+  //     tags,
+  //     links: links ? resolveLinks(doc, links) : null,
+  //     docUri: '',
+  //     rules
+  //   }
+  // }
+
+  // const toDynamicView = (view: ParsedAstDynamicView, doc: LangiumDocument): c4.DynamicView => {
+  //   let { rules, steps, title, description, tags, links, id, __ } = view
+  //   return {
+  //     __,
+  //     id,
+  //     title,
+  //     description,
+  //     tags,
+  //     links: links ? resolveLinks(doc, links) : null,
+  //     docUri: '',
+  //     rules,
+  //     steps
+  //   }
+  // }
+
+  const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
-    return (view: ParsedAstElementView): c4.ElementView => {
-      // eslint-disable-next-line prefer-const
-      let { astPath, rules, title, description, tags, links, ...model } = view
-      if (!title && 'viewOf' in view) {
-        title = elements[view.viewOf]?.title
+    return (parsedAstView: ParsedAstView): c4.View => {
+      let {
+        id,
+        title,
+        description,
+        tags,
+        links,
+
+        // ignore this property
+        astPath: _ignore,
+
+        // model should include discriminant __
+        ...model
+      } = parsedAstView
+
+      if (parsedAstView.__ === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
+        title ??= elements[parsedAstView.viewOf]?.title ?? null
       }
-      if (!title && view.id === 'index') {
+
+      if (isNullish(title) && id === 'index') {
         title = 'Landscape view'
       }
+
       return {
-        ...model,
-        title: title ?? null,
-        description: description ?? null,
-        tags: tags ?? null,
+        id,
+        title,
+        description,
+        tags,
         links: links ? resolveLinks(doc, links) : null,
         docUri,
-        rules
+        ...model
       }
     }
   }
 
   const views = pipe(
-    flatMap(docs, d => map(d.c4Views, toElementView(d))),
+    docs,
+    flatMap(d => map(d.c4Views, toC4View(d))),
     resolveRelativePaths,
     mapToObj(v => [v.id, v]),
     resolveRulesExtendedViews
@@ -200,6 +254,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   // add index view if not present
   if (!('index' in views)) {
     views['index' as ViewID] = {
+      __: 'element',
       id: 'index' as ViewID,
       title: 'Landscape',
       description: null,
@@ -296,7 +351,7 @@ export class LikeC4ModelBuilder {
 
         const allViews = [] as c4.ComputedView[]
         for (const view of values(model.views)) {
-          const result = computeView(view, index)
+          const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
           if (!result.isSuccess) {
             logWarnError(result.error)
             continue
@@ -334,7 +389,7 @@ export class LikeC4ModelBuilder {
       const cache = this.services.WorkspaceCache as WorkspaceCache<string, c4.ComputedView | null>
       return cache.get(computedViewKey(viewId), () => {
         const index = new LikeC4ModelGraph(model)
-        const result = computeView(view, index)
+        const result = isElementView(view) ? computeView(view, index) : computeDynamicView(view, index)
         if (!result.isSuccess) {
           logError(result.error)
           return null

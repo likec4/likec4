@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { mantine } from '../mantine.css'
 
 export const dimmed = style({
   color: 'var(--color-text-dimmed)'
@@ -14,7 +15,7 @@ export const previewBg = style({
   padding: 0,
   margin: 0,
   backgroundOrigin: 'padding-box',
-  backgroundImage: 'radial-gradient(var(--gray-a5) 15%, var(--color-panel-translucent) 15%)',
+  backgroundImage: `radial-gradient(${mantine.colors.defaultBorder} 15%, ${mantine.colors.body} 15%)`,
   backgroundPosition: '0 0',
   backgroundSize: '12px 12px',
   ':after': {
@@ -25,8 +26,5 @@ export const previewBg = style({
     right: '0',
     bottom: '0',
     zIndex: '1'
-  },
-  vars: {
-    '--likec4-background-color': 'transparent'
   }
 })

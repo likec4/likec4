@@ -1,7 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`dotLayout: > computedAmazonView 1`] = `
+exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
 {
+  "__": "element",
   "autoLayout": "TB",
   "description": null,
   "edges": [
@@ -277,8 +278,9 @@ exports[`dotLayout: > computedAmazonView 1`] = `
 }
 `;
 
-exports[`dotLayout: > computedCloud3levels 1`] = `
+exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
 {
+  "__": "element",
   "autoLayout": "TB",
   "description": null,
   "edges": [
@@ -1201,8 +1203,9 @@ exports[`dotLayout: > computedCloud3levels 1`] = `
 }
 `;
 
-exports[`dotLayout: > computedCloudView 1`] = `
+exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
 {
+  "__": "element",
   "autoLayout": "TB",
   "description": null,
   "edges": [
@@ -1778,8 +1781,9 @@ exports[`dotLayout: > computedCloudView 1`] = `
 }
 `;
 
-exports[`dotLayout: > computedIndexView 1`] = `
+exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
 {
+  "__": "element",
   "autoLayout": "TB",
   "description": null,
   "edges": [

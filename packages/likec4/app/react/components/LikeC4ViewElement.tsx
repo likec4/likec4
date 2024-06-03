@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
@@ -40,7 +39,7 @@ export function LikeC4ViewElement<ViewId extends string>({
           width: 100%;
           height: auto;
           aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-          max-height: ${Math.ceil(view.height * 1.01)}px;
+          max-height: var(--likec4-view-max-height, ${Math.ceil(view.height)}px);
         }
       `
         }} />
@@ -64,7 +63,7 @@ export function LikeC4ViewElement<ViewId extends string>({
           zoomable={false}
           background={background}
           fitView
-          fitViewPadding={0.02}
+          fitViewPadding={0}
           showElementLinks
           showDiagramTitle={false}
           controls={false}

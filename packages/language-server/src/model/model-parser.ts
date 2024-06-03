@@ -6,6 +6,7 @@ import stripIndent from 'strip-indent'
 import type {
   ChecksFromDiagnostics,
   FqnIndexedDocument,
+  ParsedAstDynamicView,
   ParsedAstElement,
   ParsedAstElementView,
   ParsedAstRelation,
@@ -15,21 +16,20 @@ import {
   ast,
   checksFromDiagnostics,
   cleanParsedModel,
-  ElementViewOps,
   isFqnIndexedDocument,
   parseAstOpacityProperty,
   resolveRelationPoints,
   streamModel,
   toAutoLayout,
   toElementStyle,
-  toRelationshipStyleExcludeDefaults
+  toRelationshipStyleExcludeDefaults,
+  ViewOps
 } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
 import type { FqnIndex } from './fqn-index'
-import { isValid } from 'rambdax'
 
 const { getDocument } = AstUtils
 
@@ -71,17 +71,14 @@ export class LikeC4ModelParser {
 
   protected parseLikeC4Document(_doc: FqnIndexedDocument) {
     const doc = cleanParsedModel(_doc)
-    this.parseSpecification(doc)
-    this.parseModel(doc)
-    this.parseViews(doc)
+    const { isValid } = checksFromDiagnostics(doc)
+    this.parseSpecification(doc, isValid)
+    this.parseModel(doc, isValid)
+    this.parseViews(doc, isValid)
     return doc
-    // const prevHash = doc.c4hash ?? ''
-    // doc.c4hash = c4hash(doc)
-    // return prevHash !== doc.c4hash
   }
 
-  private parseSpecification(doc: ParsedLikeC4LangiumDocument) {
-    const { isValid } = checksFromDiagnostics(doc)
+  private parseSpecification(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
     const { parseResult, c4Specification } = doc
 
     const specifications = parseResult.value.specifications.filter(isValid)
@@ -112,8 +109,8 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseModel(doc: ParsedLikeC4LangiumDocument) {
-    for (const el of streamModel(doc)) {
+  private parseModel(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
+    for (const el of streamModel(doc, isValid)) {
       if (ast.isElement(el)) {
         try {
           doc.c4Elements.push(this.parseElement(el))
@@ -195,13 +192,16 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseViews(doc: ParsedLikeC4LangiumDocument) {
-    const { isValid } = checksFromDiagnostics(doc)
-    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views.filter(isValid) : [])
+  private parseViews(doc: ParsedLikeC4LangiumDocument, isValid: IsValidFn) {
+    const views = doc.parseResult.value.views.flatMap(v => isValid(v) ? v.views : [])
     for (const view of views) {
       try {
-        const v = this.parseElementView(view, isValid)
-        doc.c4Views.push(v)
+        if (!isValid(view)) {
+          continue
+        }
+        doc.c4Views.push(
+          ast.isElementView(view) ? this.parseElementView(view, isValid) : this.parseDynamicElementView(view, isValid)
+        )
       } catch (e) {
         logWarnError(e)
       }
@@ -355,7 +355,7 @@ export class LikeC4ModelParser {
     if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
       const exprs = astRule.expressions.flatMap(n => {
         try {
-          return isValid(n) ? this.parsePredicateExpr(n): []
+          return isValid(n) ? this.parsePredicateExpr(n) : []
         } catch (e) {
           logWarnError(e)
           return []
@@ -378,6 +378,30 @@ export class LikeC4ModelParser {
       }
     }
     nonexhaustive(astRule)
+  }
+
+  private parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
+    const sourceEl = elementRef(node.source)
+    if (!sourceEl) {
+      throw new Error('Invalid reference to source')
+    }
+    const targetEl = elementRef(node.target)
+    if (!targetEl) {
+      throw new Error('Invalid reference to target')
+    }
+    let source = this.resolveFqn(sourceEl)
+    let target = this.resolveFqn(targetEl)
+    if (node.isBackward) {
+      ;[source, target] = [target, source]
+    }
+
+    const title = toSingleLine(node.title) ?? null
+    return {
+      source,
+      target,
+      title,
+      isBackward: node.isBackward
+    }
   }
 
   private parseElementView(astNode: ast.ElementView, isValid: IsValidFn): ParsedAstElementView {
@@ -405,20 +429,21 @@ export class LikeC4ModelParser {
       ) as c4.ViewID
     }
 
-    const title = toSingleLine(body.props.find(p => p.key === 'title')?.value)
-    const description = removeIndent(body.props.find(p => p.key === 'description')?.value)
+    const title = toSingleLine(body.props.find(p => p.key === 'title')?.value) ?? null
+    const description = removeIndent(body.props.find(p => p.key === 'description')?.value) ?? null
 
     const tags = this.convertTags(body)
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
 
-    const basic: ParsedAstElementView = {
+    const view: ParsedAstElementView = {
+      __: 'element',
       id: id as c4.ViewID,
       astPath,
       ...(viewOf && { viewOf }),
-      ...(title && { title }),
-      ...(description && { description }),
-      ...(tags && { tags }),
-      ...(isNonEmptyArray(links) && { links }),
+      title,
+      description,
+      tags,
+      links: isNonEmptyArray(links) ? links : null,
       rules: body.rules.flatMap(n => {
         try {
           return isValid(n) ? this.parseViewRule(n, isValid) : []
@@ -428,18 +453,88 @@ export class LikeC4ModelParser {
         }
       })
     }
-    ElementViewOps.writeId(astNode, basic.id)
+    ViewOps.writeId(astNode, view.id)
 
     if ('extends' in astNode) {
       const extendsView = astNode.extends.view.ref
       invariant(extendsView?.name, 'view extends is not resolved: ' + astNode.$cstNode?.text)
-      return {
-        ...basic,
+      return Object.assign(view, {
         extends: extendsView.name as c4.ViewID
-      }
+      })
     }
 
-    return basic
+    return view
+  }
+
+  private parseDynamicElementView(astNode: ast.DynamicView, isValid: IsValidFn): ParsedAstDynamicView {
+    const body = astNode.body
+    invariant(body, 'ElementView body is not defined')
+    // only valid props
+    const props = body.props.filter(isValid)
+    const astPath = this.getAstNodePath(astNode)
+
+    let id = astNode.name
+    if (!id) {
+      id = 'dynamic_' + stringHash(
+        getDocument(astNode).uri.toString(),
+        astPath
+      ) as c4.ViewID
+    }
+
+    const title = toSingleLine(props.find(p => p.key === 'title')?.value) ?? null
+    const description = removeIndent(props.find(p => p.key === 'description')?.value) ?? null
+
+    const tags = this.convertTags(body)
+    const links = props.filter(ast.isLinkProperty).map(p => p.value)
+
+    ViewOps.writeId(astNode, id as c4.ViewID)
+
+    return {
+      __: 'dynamic',
+      id: id as c4.ViewID,
+      astPath,
+      title,
+      description,
+      tags,
+      links: isNonEmptyArray(links) ? links : null,
+      rules: body.rules.reduce((acc, n) => {
+        if (!isValid(n)) {
+          return acc
+        }
+        try {
+          if (ast.isViewRuleStyle(n)) {
+            const styleProps = toElementStyle(n.styleprops)
+            acc.push({
+              targets: n.targets.map(n => this.parseElementExpr(n)),
+              style: {
+                ...styleProps
+              }
+            })
+            return acc
+          }
+          if (ast.isViewRuleAutoLayout(n)) {
+            acc.push({
+              autoLayout: toAutoLayout(n.direction)
+            })
+            return acc
+          }
+          nonexhaustive(n)
+        } catch (e) {
+          logWarnError(e)
+          return acc
+        }
+      }, [] as Array<c4.ViewRuleStyle | c4.ViewRuleAutoLayout>),
+      steps: body.steps.reduce((acc, n) => {
+        try {
+          if (isValid(n)) {
+            acc.push(this.parseDynamicStep(n))
+          }
+        } catch (e) {
+          logWarnError(e)
+        }
+        return acc
+      }, [] as c4.DynamicViewStep[])
+    }
   }
 
   protected resolveFqn(node: ast.Element | ast.ExtendElement) {

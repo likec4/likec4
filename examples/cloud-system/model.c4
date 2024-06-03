@@ -25,7 +25,7 @@ model {
       link ./.github/workflows/update-diagrams.yml#L19-L25
     }
 
-    next = container 'Cloud Next' {      
+    next = container 'Cloud Next' {
       description 'Cloud Next is the next version of our cloud systems'
     }
 
@@ -60,7 +60,20 @@ views {
 
     style supportUser {
       color indigo
-    }  
-  }  
+    }
+  }
+
+  dynamic view index2 {
+    
+    customer -> ui.dashboard 'opens'
+    //ui -> cloud.next
+    ui.dashboard -> cloud.graphql 'requests'
+    ui.dashboard <- cloud.graphql 'returns'
+
+    ui.mobile -> cloud.graphql 'requests'
+    ui.mobile <- cloud.graphql 'returns'
+
+    autoLayout TopBottom
+  }
 
 }

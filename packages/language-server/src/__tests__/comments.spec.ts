@@ -3,7 +3,7 @@ import { test } from './asserts'
 
 vi.mock('../logger')
 
-describe('comments', () => {
+describe.concurrent('comments', () => {
   test('line comment').valid`
     // line1
     specification { // }

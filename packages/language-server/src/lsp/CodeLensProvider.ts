@@ -1,7 +1,8 @@
 import { DocumentState, type LangiumDocument, type MaybePromise } from 'langium'
 import type { CodeLensProvider } from 'langium/lsp'
 import type { CancellationToken, CodeLens, CodeLensParams } from 'vscode-languageserver'
-import { ElementViewOps, isParsedLikeC4LangiumDocument } from '../ast'
+import { isParsedLikeC4LangiumDocument, ViewOps } from '../ast'
+import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
 
 export class LikeC4CodeLensProvider implements CodeLensProvider {
@@ -15,7 +16,9 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     cancelToken?: CancellationToken
   ): Promise<CodeLens[] | undefined> {
     if (doc.state !== DocumentState.Validated) {
+      logger.debug(`Waiting for document ${doc.uri.path} to be validated`)
       await this.services.shared.workspace.DocumentBuilder.waitUntil(DocumentState.Validated, doc.uri, cancelToken)
+      logger.debug(`Document ${doc.uri.path} is validated`)
     }
     if (!isParsedLikeC4LangiumDocument(doc)) {
       return
@@ -23,7 +26,7 @@ export class LikeC4CodeLensProvider implements CodeLensProvider {
     const views = doc.parseResult.value.views.flatMap(v => v.views)
     return views.flatMap<CodeLens>(ast => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const viewId = ElementViewOps.readId(ast)
+      const viewId = ViewOps.readId(ast)
       const range = ast.$cstNode?.range
       if (!range || !viewId) {
         return []

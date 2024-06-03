@@ -1,5 +1,4 @@
 import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 
 import { ComponentName } from '../src/const'
 import { LikeC4Browser } from './LikeC4Browser'

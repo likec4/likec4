@@ -1,6 +1,6 @@
 import type {
   ComputedEdge,
-  ComputedView,
+  ComputedElementView,
   EdgeId,
   Element,
   ElementView,
@@ -22,6 +22,10 @@ import {
 } from '@likec4/core'
 import { hasAtLeast, isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
+import { applyElementCustomProperties } from '../utils/applyElementCustomProperties'
+import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
+import { buildComputeNodes } from '../utils/buildComputeNodes'
+import { sortNodes } from '../utils/sortNodes'
 import {
   excludeElementKindOrTag,
   excludeElementRef,
@@ -40,10 +44,6 @@ import {
   includeRelationExpr,
   includeWildcardRef
 } from './compute-predicates'
-import { applyElementCustomProperties } from './utils/applyElementCustomProperties'
-import { applyViewRuleStyles } from './utils/applyViewRuleStyles'
-import { buildComputeNodes } from './utils/buildComputeNodes'
-import { sortNodes } from './utils/sortNodes'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ComputeCtx {
@@ -85,7 +85,7 @@ export class ComputeCtx {
     protected graph: LikeC4ModelGraph
   ) {}
 
-  protected compute(): ComputedView {
+  protected compute(): ComputedElementView {
     // reset ctx
     this.reset()
     const { rules, ...view } = this.view

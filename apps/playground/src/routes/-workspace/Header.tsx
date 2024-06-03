@@ -34,12 +34,12 @@ export function Header() {
   return (
     <Group h="100%" px="md" justify="space-between" align="stretch">
       <Group gap={'lg'} align="center" visibleFrom="sm">
-        <a href="https://likec4.dev/" target="_blank">
+        <Anchor href="https://likec4.dev/" target="_blank" display="contents">
           <Logo
             style={{
-              height: 20
+              height: 22
             }} />
-        </a>
+        </Anchor>
         <Box fz={'sm'} fw={500} visibleFrom="md">{title}</Box>
       </Group>
 

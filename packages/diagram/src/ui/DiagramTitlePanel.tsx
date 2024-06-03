@@ -1,10 +1,9 @@
 import { Anchor, Box, Button, CopyButton, Group, Paper, Spoiler, Stack, Text } from '@mantine/core'
-import { useToggle } from '@react-hookz/web'
+import { useLocalStorage } from '@mantine/hooks'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../state'
 import * as css from './DiagramTitlePanel.css'
-import { useLocalStorage } from '@mantine/hooks'
 
 const selector = (s: DiagramState) => ({
   id: s.view.id,
@@ -40,7 +39,7 @@ export default function DiagramTitlePanel() {
           radius="sm"
           withBorder={!isCollapsed}
           className={css.paper}
-          p={isCollapsed ? 'sm' : 'md'}
+          p={isCollapsed ? 'xs' : 'lg'}
           onDoubleClick={e => e.stopPropagation()}>
           <Stack gap={'sm'} justify="stretch" align="stretch">
             <Group justify="stretch" wrap="nowrap" onClick={toggle} style={{ cursor: 'pointer' }}>
@@ -99,7 +98,7 @@ export default function DiagramTitlePanel() {
                     justify="stretch"
                     align="stretch">
                     {links.map((link) => (
-                      <Group key={link} wrap="nowrap" align='center' gap={'sm'}>
+                      <Group key={link} wrap="nowrap" align="center" gap={'sm'}>
                         <Box flex={'1'} style={{ overflow: 'hidden' }}>
                           <Anchor
                             href={link}

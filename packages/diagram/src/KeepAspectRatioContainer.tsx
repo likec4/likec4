@@ -27,7 +27,7 @@ export function KeepAspectRatioContainer({
         ? {
           ...style,
           aspectRatio: `${Math.ceil(width)}/${Math.ceil(height)}`,
-          maxHeight: Math.ceil(height)
+          maxHeight: `var(--likec4-view-max-height, ${Math.ceil(height)}px)`
         }
         : style}>
       {children}

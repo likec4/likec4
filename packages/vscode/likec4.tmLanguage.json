@@ -81,11 +81,11 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|border|browser|color|crow|cylinder|dashed|description|diamond|dotted|element|exclude|extend|extends|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|opacity|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
+      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|border|browser|color|crow|cylinder|dashed|description|diamond|dotted|dynamic|element|exclude|extend|extends|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|opacity|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
     },
     {
       "name": "keyword.symbol.langium",
-      "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|\\,|\\;|\\!|\\=)"
+      "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|<-|\\,|\\;|\\!|\\=)"
     }
   ],
   "repository": {
