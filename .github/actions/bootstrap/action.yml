@@ -29,18 +29,6 @@ runs:
         key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-turbo-${{ github.ref_name }}-
-          ${{ runner.os }}-turbo-main-
-          ${{ runner.os }}-turbo-
-
-    - name: restore only cache turbo build
-      uses: actions/cache/restore@v4
-      if: github.ref != 'refs/heads/main'
-      with:
-        path: .turbo
-        key: ${{ runner.os }}-turbo-${{ github.ref_name }}-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-turbo-${{ github.ref_name }}-
-          ${{ runner.os }}-turbo-main-
           ${{ runner.os }}-turbo-
 
     # - name: Cache turbo build setup
