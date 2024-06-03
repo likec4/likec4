@@ -34,7 +34,7 @@
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",
     "open-web": "run build:turbo && yarn dlx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",

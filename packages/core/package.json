@@ -11,7 +11,7 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build": "tsc",
     "prepack": "tsc -p tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",

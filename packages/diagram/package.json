@@ -39,7 +39,7 @@
   },
   "packageManager": "yarn@4.2.2",
   "scripts": {
-    "typecheck": "tsc",
+    "typecheck": "tsc -b",
     "prepack": "vite build --mode production",
     "build:turbo": "run -T turbo build --filter='diagram'",
     "build": "vite build --mode development && tsc -b",
