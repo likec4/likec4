@@ -97,7 +97,11 @@ export function KonvaHtml({ children, groupProps, divProps, transform, transform
   }, [divProps, transformFunc])
 
   useLayoutEffect(() => {
-    root.render(children)
+    root.render(
+      <>
+        {children}
+      </>
+    )
   })
 
   useLayoutEffect(() => {

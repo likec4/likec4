@@ -67,20 +67,24 @@ export function FullscreenDiagramBrowser<ViewId extends string>({
     [viewsRef, setViewId]
   )
 
-  return createPortal(
-    <FullscreenDiagram
-      diagram={diagram}
-      initialPosition={initialPosition}
-      closeOnEsc
-      closeOnOutsideClick
-      onNodeClick={onNodeClick}
-      onClose={onClose}
-      {...props}
-    >
-      <FullscreenDiagramTitle>{diagram.title}</FullscreenDiagramTitle>
-    </FullscreenDiagram>,
-    document.body,
-    'FullscreenDiagramBrowser'
+  return (
+    <>
+      {createPortal(
+        <FullscreenDiagram
+          diagram={diagram}
+          initialPosition={initialPosition}
+          closeOnEsc
+          closeOnOutsideClick
+          onNodeClick={onNodeClick}
+          onClose={onClose}
+          {...props}
+        >
+          <FullscreenDiagramTitle>{diagram.title}</FullscreenDiagramTitle>
+        </FullscreenDiagram>,
+        document.body,
+        'FullscreenDiagramBrowser'
+      )}
+    </>
   )
 }
 FullscreenDiagramBrowser.displayName = 'FullscreenDiagramBrowser'

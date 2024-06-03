@@ -32,12 +32,12 @@
   },
   "packageManager": "yarn@4.2.2",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build:turbo": "run -T turbo build --filter='diagrams'",
     "build": "unbuild",
     "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf dist"
+    "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"  
   },
   "dependencies": {
     "@likec4/core": "workspace:*",

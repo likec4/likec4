@@ -1,13 +1,22 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": [],
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "jsx": "react-jsx"
   },
+  "include": [
+    "src"
+  ],
   "references": [
-    {
-      "path": "tsconfig.src.json"
-    },
     {
       "path": "../core"
     }

@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
-/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import KonvaCore from 'konva/lib/Core'
 import { Circle, Ellipse, Group, Image, Layer, Line, Path, Rect, Stage, Text } from 'react-konva/es/ReactKonvaCore'
 
@@ -67,12 +63,19 @@ export type AnimatedTextComponent = AnimatedNode<Konva.Text, Konva.TextConfig>
 export type AnimatedPathComponent = AnimatedNode<Konva.Path, Konva.PathConfig>
 export type AnimatedEllipseComponent = AnimatedNode<Konva.Ellipse, Konva.EllipseConfig>
 
-// @ts-ignore
+// @ts-expect-error invalid konva typings
 export const AnimatedStage: AnimatedStageComponent = /* @__PURE__ */ animated(Stage)
+// @ts-expect-error invalid konva typings
 export const AnimatedRect: AnimatedRectComponent = /* @__PURE__ */ animated(Rect)
+// @ts-expect-error invalid konva typings
 export const AnimatedGroup: AnimatedGroupComponent = /* @__PURE__ */ animated(Group)
+// @ts-expect-error invalid konva typings
 export const AnimatedText: AnimatedTextComponent = /* @__PURE__ */ animated(Text)
+// @ts-expect-error invalid konva typings
 export const AnimatedPath: AnimatedPathComponent = /* @__PURE__ */ animated(Path)
+// @ts-expect-error invalid konva typings
 export const AnimatedLine: AnimatedLineComponent = /* @__PURE__ */ animated(Line)
+// @ts-expect-error invalid konva typings
 export const AnimatedCircle: AnimatedCircleComponent = /* @__PURE__ */ animated(Circle)
+// @ts-expect-error invalid konva typings
 export const AnimatedEllipse: AnimatedEllipseComponent = /* @__PURE__ */ animated(Ellipse)
