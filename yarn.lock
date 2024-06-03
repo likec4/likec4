@@ -2496,6 +2496,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@likec4/apps-docs@workspace:apps/docs":
+  version: 0.0.0-use.local
+  resolution: "@likec4/apps-docs@workspace:apps/docs"
+  dependencies:
+    "@astrojs/check": "npm:^0.7.0"
+    "@astrojs/react": "npm:^3.4.0"
+    "@astrojs/starlight": "npm:^0.23.1"
+    "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
+    "@fontsource/ibm-plex-sans": "npm:^5.0.20"
+    "@types/react": "npm:18.2.0"
+    "@types/react-dom": "npm:18.2.4"
+    astro: "npm:^4.9.1"
+    likec4: "workspace:*"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    starlight-links-validator: "npm:^0.8.0"
+    tsx: "npm:~4.9.3"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
+
 "@likec4/core@workspace:*, @likec4/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@likec4/core@workspace:packages/core"
@@ -2789,27 +2810,6 @@ __metadata:
     vscode-languageserver-types: "npm:~3.17.5"
     vscode-uri: "npm:~3.0.8"
     zustand: "npm:^4.5.2"
-  languageName: unknown
-  linkType: soft
-
-"@likec4/sites-docs@workspace:apps/docs":
-  version: 0.0.0-use.local
-  resolution: "@likec4/sites-docs@workspace:apps/docs"
-  dependencies:
-    "@astrojs/check": "npm:^0.7.0"
-    "@astrojs/react": "npm:^3.4.0"
-    "@astrojs/starlight": "npm:^0.23.1"
-    "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
-    "@fontsource/ibm-plex-sans": "npm:^5.0.20"
-    "@types/react": "npm:18.2.0"
-    "@types/react-dom": "npm:18.2.4"
-    astro: "npm:^4.9.1"
-    likec4: "workspace:*"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
-    starlight-links-validator: "npm:^0.8.0"
-    tsx: "npm:~4.9.3"
-    typescript: "npm:^5.4.5"
   languageName: unknown
   linkType: soft
 

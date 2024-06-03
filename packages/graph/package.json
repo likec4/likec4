@@ -33,7 +33,7 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b",
     "build": "tsc -b",
     "prepack": "tsc -p tsconfig.build.json",
     "lint": "run -T eslint src/ --fix",

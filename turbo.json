@@ -1,13 +1,19 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "generate": {
       "outputMode": "new-only"
     },
     "typecheck": {
-      "cache": false,
-      "dependsOn": ["generate", "^build"],
-      "outputs": []
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "topo"],
+      "outputs": [
+        ".tsbuildinfo/**",
+        "**/*.tsbuildinfo"
+      ]
     },
     "build": {
       "outputMode": "new-only",
@@ -18,6 +24,7 @@
       "cache": false
     }
   },
+  "experimentalUI": true,
   "globalDependencies": [
     "tsconfig.*.json",
     "tsconfig.json",

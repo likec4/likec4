@@ -2,14 +2,22 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "pipeline": {
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "generate": {
+      "outputMode": "new-only",
       "dependsOn": ["likec4#build"],
       "outputs": ["src/components/*/likec4-views.*"],
       "inputs": ["likec4/**"]
     },
     "typecheck": {
-      "dependsOn": ["generate", "^build"],
-      "outputs": []
+      "outputMode": "new-only",
+      "dependsOn": ["generate", "topo"],
+      "outputs": [
+        ".tsbuildinfo/**",
+        "**/*.tsbuildinfo"
+      ]
     },
     "build": {
       "dependsOn": ["generate", "^build"],

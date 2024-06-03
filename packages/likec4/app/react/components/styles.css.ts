@@ -1,4 +1,4 @@
-import { createVar, globalStyle, style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 export const cssRoot = style({
   margin: 0,
