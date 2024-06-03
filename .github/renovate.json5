@@ -43,6 +43,14 @@
         "@codingame/"
       ],
     },
+    // Auto merge
+    {
+      matchPackagePrefixes: [
+        "@tabler/",
+        "@fontsource/",
+      ],
+      automerge: true
+    },
     // Update manually
     {
       enabled: false,
@@ -51,10 +59,7 @@
         'lucide-react',
         'react-icons',
         'tailwind'
-      ],
-      "matchPackagePrefixes": [
-        "@tabler/"
-      ],
+      ]
     },
     {
       enabled: false,
