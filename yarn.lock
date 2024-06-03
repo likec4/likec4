@@ -2542,6 +2542,7 @@ __metadata:
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@total-typescript/ts-reset": "npm:^0.5.1"
+    "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3"
     "@types/react": "npm:18.2.0"
     "@types/react-dom": "npm:18.2.4"
@@ -2550,6 +2551,7 @@ __metadata:
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.6"
     "@vitejs/plugin-react": "npm:^4.2.1"
     "@xyflow/react": "npm:^12.0.0-next"
+    bezier-js: "npm:^6.1.4"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
     esm-env: "npm:^1.0.0"
@@ -4796,6 +4798,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bezier-js@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@types/bezier-js@npm:4.1.3"
+  checksum: 10c0/de13b7ef7c2fc04ffc0bfee7ff81d0332aab0b09df638173ac7e09f21e9b496f37124f0417a5722478ae55269ff2f7effe4924b4218da68027429ea48e61cb6f
+  languageName: node
+  linkType: hard
+
 "@types/cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
@@ -6443,6 +6452,13 @@ __metadata:
   version: 2.2.3
   resolution: "before-after-hook@npm:2.2.3"
   checksum: 10c0/0488c4ae12df758ca9d49b3bb27b47fd559677965c52cae7b335784724fb8bf96c42b6e5ba7d7afcbc31facb0e294c3ef717cc41c5bc2f7bd9e76f8b90acd31c
+  languageName: node
+  linkType: hard
+
+"bezier-js@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "bezier-js@npm:6.1.4"
+  checksum: 10c0/2785010f1f26b5229aa2a11e0b4dbd57476eec02c62385eed11960e420421ad9894f6130349304bbbc90bc5a15ee54109ca43ddd0556dca4d63bd725c7e36b22
   languageName: node
   linkType: hard
 

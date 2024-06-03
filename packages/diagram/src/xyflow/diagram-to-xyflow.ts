@@ -7,7 +7,7 @@ import {
   nonNullable,
   type Point
 } from '@likec4/core'
-import { getBezierEdgeCenter } from '@xyflow/react'
+import { Bezier } from 'bezier-js'
 import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
 
@@ -20,24 +20,16 @@ function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
 
   while (hasAtLeast(bezierPoints, 3)) {
     const [cp1, cp2, end, ...rest] = bezierPoints
-    const [centerX, centerY] = getBezierEdgeCenter({
-      sourceX: start[0],
-      sourceY: start[1],
-      targetX: end[0],
-      targetY: end[1],
-      sourceControlX: cp1[0],
-      sourceControlY: cp1[1],
-      targetControlX: cp2[0],
-      targetControlY: cp2[1]
+    const bezier = new Bezier(start[0], start[1], cp1[0], cp1[1], cp2[0], cp2[1], end[0], end[1])
+    // const { x, y } = bezier.get(0.5)
+    const inflections = bezier.inflections()
+    if (inflections.length === 0) {
+      inflections.push(0.5)
+    }
+    inflections.forEach(t => {
+      const { x, y } = bezier.get(t)
+      handles.push([x, y])
     })
-    handles.push(
-      [centerX, centerY]
-    )
-    // if (rest.length === 0) {
-    //   handles.push(
-    //     end
-    //   )
-    // }
     bezierPoints = rest
     start = end
   }

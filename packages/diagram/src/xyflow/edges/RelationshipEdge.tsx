@@ -4,18 +4,19 @@ import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
 import { getNodePositionWithOrigin } from '@xyflow/system'
+import { Bezier } from 'bezier-js'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
 import { type CSSProperties, memo } from 'react'
-import { hasAtLeast } from 'remeda'
+import { first, hasAtLeast, last } from 'remeda'
 import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
 import { toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
-import { getEdgeParams } from './utils'
+import { getEdgeParams, getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
@@ -84,7 +85,8 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && eq(prev.data, next.data)
 )
 
-const curve = d3line<Point>().curve(curveCatmullRomOpen.alpha(1))
+const curve = d3line<Point>()
+  .curve(curveCatmullRomOpen)
 
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
@@ -147,9 +149,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
     edgePath = curve([
       [sourceCenterPos.positionAbsolute.x, sourceCenterPos.positionAbsolute.y],
-      [sx, sy],
+      getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
       ...controlPoints,
-      [tx, ty],
+      getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
       [targetCenterPos.positionAbsolute.x, targetCenterPos.positionAbsolute.y]
     ])!
   }

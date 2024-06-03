@@ -1,5 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
 const mixColor = createVar('mix-color')
@@ -81,7 +82,14 @@ export const fillStrokeCtx = style({
 
 export const controlPoint = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke
+  stroke: xyvars.edge.stroke,
+  selectors: {
+    [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
+      transition: 'all 150ms ease-out',
+      stroke: xyvars.edge.strokeSelected,
+      strokeWidth: 8
+    }
+  }
 })
 
 globalStyle(`:where(${isSelected}) ${fillStrokeCtx}`, {
