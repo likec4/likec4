@@ -37,7 +37,7 @@
     "build": "unbuild",
     "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
-    "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"  
+    "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
