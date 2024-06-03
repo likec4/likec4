@@ -32,7 +32,7 @@ export class LikeC4View extends HTMLElement {
       width: 100%;
       height: auto;
       aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-      max-height: ${Math.ceil(1.011 * view.height)}px;
+      max-height: var(--likec4-view-max-height, ${Math.ceil(1.011 * view.height)}px);
     }`
       : `
     :host {

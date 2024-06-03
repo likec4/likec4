@@ -13,7 +13,6 @@ import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
 
 // dprint-ignore
 import '@mantine/core/styles.css'
-import '@xyflow/react/dist/style.css'
 import './main.css'
 
 import ReactDOM from 'react-dom/client'

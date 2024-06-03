@@ -9,7 +9,7 @@ import type {
   ViewID
 } from '@likec4/core'
 import { invariant, nonexhaustive } from '@likec4/core'
-import type { XYPosition } from '@xyflow/react'
+import { getViewportForBounds, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
@@ -20,8 +20,8 @@ import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 import type { Change, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
-import { MinZoom } from '../xyflow/const'
-import type { XYFlowInstance, XYFlowNode } from '../xyflow/types'
+import type { XYStoreApi } from '../xyflow/hooks'
+import type { XYFlowInstance } from '../xyflow/types'
 
 export type DiagramStore = {
   // Incoming props
@@ -102,7 +102,7 @@ interface DiagramStoreActions {
   getElement(id: Fqn): DiagramNode | null
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: () => void
+  fitDiagram: (xyStore: XYStoreApi) => void
 }
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
@@ -409,18 +409,17 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             )
           },
 
-          fitDiagram: () => {
-            const { fitViewPadding, view, xyflow, focusedNodeId } = get()
+          fitDiagram: (xyStore) => {
+            const { width, height, minZoom, panZoom } = xyStore.getState()
+            const { fitViewPadding, view, focusedNodeId } = get()
             const bounds = {
               x: 0,
               y: 0,
               width: view.width,
               height: view.height
             }
-            xyflow.fitBounds(bounds, {
-              duration: 400,
-              padding: fitViewPadding
-            })
+            const viewport = getViewportForBounds(bounds, width, height, minZoom, 1, fitViewPadding)
+            panZoom?.setViewport(viewport, { duration: 400 })
             if (!!focusedNodeId) {
               set({ focusedNodeId: null }, noReplace, 'unfocus')
             }

@@ -56,7 +56,7 @@ export function useXYFlowEvents() {
           fitDiagram
         } = diagramApi.getState()
         if (fitViewEnabled) {
-          fitDiagram()
+          fitDiagram(xyflowApi)
           if (!onCanvasDblClick) {
             event.stopPropagation()
           }
@@ -70,7 +70,7 @@ export function useXYFlowEvents() {
         }
         const { focusedNodeId, fitDiagram, onCanvasClick, resetLastClicked } = diagramApi.getState()
         if (!!focusedNodeId) {
-          fitDiagram()
+          fitDiagram(xyflowApi)
           if (!onCanvasClick) {
             event.stopPropagation()
           }
@@ -133,7 +133,7 @@ export function useXYFlowEvents() {
         if (!!focusedNodeId || (zoomable && fitViewEnabled)) {
           // if we are already focused on the node, cancel
           if (focusedNodeId === xynode.id) {
-            fitDiagram()
+            fitDiagram(xyflowApi)
           } else {
             focusOnNode(xynode.id)
           }

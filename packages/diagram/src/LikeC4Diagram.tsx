@@ -1,3 +1,4 @@
+import '@xyflow/react/dist/style.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
 import { useRef } from 'react'

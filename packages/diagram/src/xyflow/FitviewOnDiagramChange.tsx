@@ -1,7 +1,7 @@
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useEffect, useRef } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
-import { useXYStore, useXYStoreApi } from './hooks'
+import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks'
 import type { XYFlowState } from './types'
 import { toDomPrecision } from './utils'
 
@@ -9,7 +9,10 @@ function selectDimensions(state: XYFlowState) {
   return `${Math.round(state.width)}:${Math.round(state.height)}`
 }
 
-function FitViewOnViewportResize({ diagramApi }: { diagramApi: DiagramStoreApi }) {
+function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
+  xyflowApi: XYStoreApi
+  diagramApi: DiagramStoreApi
+}) {
   const dimensions = useXYStore(selectDimensions)
   const prevDimensionsRef = useRef(dimensions)
 
@@ -19,7 +22,7 @@ function FitViewOnViewportResize({ diagramApi }: { diagramApi: DiagramStoreApi }
       if (focusedNodeId || prevDimensionsRef.current === dimensions) {
         return
       }
-      fitDiagram()
+      fitDiagram(xyflowApi)
       prevDimensionsRef.current = dimensions
     },
     [dimensions],
@@ -106,11 +109,11 @@ export function FitViewOnDiagramChange() {
       return
     }
     processedRef.current = pendingViewId
-    diagramApi.getState().fitDiagram()
+    diagramApi.getState().fitDiagram(xyflowApi)
   }, [pendingViewId, xyflowSynced, waitCorrection])
 
   if (!viewportChanged && xyflowSynced && pendingViewId === processedRef.current) {
-    return <FitViewOnViewportResize diagramApi={diagramApi} />
+    return <FitViewOnViewportResize xyflowApi={xyflowApi} diagramApi={diagramApi} />
   }
   return null
 }
