@@ -91,6 +91,7 @@ export function dynamicViewToGraphvisModel({
     [_.fontsize]: pxToPoints(13),
     [_.penwidth]: pxToPoints(2),
     [_.style]: 'dashed',
+    [_.weight]: 1,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -290,6 +291,7 @@ export function dynamicViewToGraphvisModel({
       } else {
         e.attributes.set(_.arrowhead, 'none')
       }
+      e.attributes.set(_.weight, 0)
       e.attributes.set(_.dir, 'back')
       return
     }

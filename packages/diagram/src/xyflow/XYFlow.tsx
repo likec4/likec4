@@ -1,6 +1,8 @@
 import { useMantineColorScheme } from '@mantine/core'
 import { Controls, ReactFlow, useOnViewportChange } from '@xyflow/react'
+import { deepEqual as eq, shallowEqual } from 'fast-equals'
 import { type CSSProperties, memo, type PropsWithChildren } from 'react'
+import { omit, omitBy } from 'remeda'
 import type { SetNonNullable, Simplify } from 'type-fest'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state'
@@ -22,24 +24,22 @@ const edgeTypes = {
   relationship: RelationshipEdge
 }
 
-type OnlyExpectedProps = Required<
-  Pick<
-    LikeC4DiagramProperties,
-    | 'className'
-    | 'controls'
-    | 'background'
-  >
->
+type XYFlowWrapperProps = PropsWithChildren<{
+  className?: string | undefined
+  defaultNodes: XYFlowNode[]
+  defaultEdges: XYFlowEdge[]
+  style?: CSSProperties | undefined
+}>
 
-type XYFlowWrapperProps = Simplify<
-  PropsWithChildren<
-    SetNonNullable<OnlyExpectedProps> & {
-      defaultNodes: XYFlowNode[]
-      defaultEdges: XYFlowEdge[]
-      style?: CSSProperties | undefined
-    }
-  >
->
+// const propsAreEqual = (
+//   prev: XYFlowWrapperProps,
+//   next: XYFlowWrapperProps
+// ) => {
+//   return shallowEqual(
+//     omit(prev, ['children']),
+//     omit(next, ['children'])
+//   )
+// }
 
 const selector = (s: DiagramState) => ({
   nodesSelectable: s.nodesSelectable || s.focusedNodeId !== null,
@@ -56,13 +56,11 @@ const selector = (s: DiagramState) => ({
   pannable: s.pannable
 })
 
-function XYFlowWrapper({
+export function XYFlow({
   className,
   children,
   defaultNodes,
   defaultEdges,
-  controls,
-  background,
   style
 }: XYFlowWrapperProps) {
   const xyflowApi = useXYStoreApi()
@@ -85,7 +83,6 @@ function XYFlowWrapper({
   const layoutConstraints = useLayoutConstraints()
 
   const handlers = useXYFlowEvents()
-  const isBgWithPattern = background !== 'transparent' && background !== 'solid'
 
   const { colorScheme } = useMantineColorScheme()
   const colorMode = colorScheme !== 'auto' ? colorScheme : undefined
@@ -174,11 +171,9 @@ function XYFlowWrapper({
       {...(hasOnCanvasContextMenu && {
         onPaneContextMenu: handlers.onPaneContextMenu
       })}>
-      {isBgWithPattern && <XYFlowBackground background={background} />}
-      {controls && <Controls position={'bottom-right'} />}
       {children}
     </ReactFlow>
   )
 }
 
-export const XYFlow = memo(XYFlowWrapper) as typeof XYFlowWrapper
+// export const XYFlow = memo(XYFlowWrapper, propsAreEqual) as typeof XYFlowWrapper

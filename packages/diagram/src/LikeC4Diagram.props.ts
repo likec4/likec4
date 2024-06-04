@@ -11,8 +11,8 @@ import type {
 } from '@likec4/core'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
-import type { XYBackgroundProps } from './xyflow/XYFlowBackground'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
+import type { XYBackground, XYBackgroundProps } from './xyflow/XYFlowBackground'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 
@@ -57,8 +57,7 @@ export namespace Changes {
   }
 }
 
-export type Change =
-  | Changes.ChangeElementStyle
+export type Change = Changes.ChangeElementStyle
 
 export type ChangeEvent = {
   changes: NonEmptyArray<Change>
@@ -131,7 +130,7 @@ export interface LikeC4DiagramProperties {
    * Background pattern
    * @default 'dots'
    */
-  background?: 'transparent' | 'solid' | XYBackgroundProps | undefined
+  background?: 'transparent' | 'solid' | XYBackground | undefined
 
   /**
    * Display hovercards with element links
@@ -144,6 +143,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   showDiagramTitle?: boolean | undefined
+
+  /**
+   * If Walkthrough for dynamic views should be enabled
+   * @default false
+   */
+  enableDynamicViewWalkthrough?: boolean | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

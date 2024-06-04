@@ -4,10 +4,13 @@ import clsx from 'clsx'
 import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
-import * as styles from './OptionsPanel.css'
+import { isNullish, isTruthy } from 'remeda'
+import { useDiagramState } from '../state'
 import { NodeOptions } from './options/NodeOptions'
+import * as styles from './OptionsPanel.css'
 
 export default function OptionsPanel() {
+  const isFocusDisabled = useDiagramState(s => isNullish(s.focusedNodeId))
   const [selectedNodes, setSelectedNodes] = useState([] as string[])
 
   useOnSelectionChange({
@@ -19,10 +22,9 @@ export default function OptionsPanel() {
     }
   })
 
-
   return (
     <AnimatePresence mode="wait">
-      {selectedNodes.length > 0 && (
+      {isFocusDisabled && selectedNodes.length > 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}

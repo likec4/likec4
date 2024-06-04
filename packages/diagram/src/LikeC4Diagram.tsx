@@ -9,14 +9,13 @@ import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from '.
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { WhenInitialized } from './state/WhenInitialized'
-import DiagramTitlePanel from './ui/DiagramTitlePanel'
-import OptionsPanel from './ui/OptionsPanel'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
 import type { XYFlowData } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
+import { XYFlowInner } from './xyflow/XYFlowInner'
 
 export type LikeC4DiagramProps = LikeC4DiagramProperties & LikeC4DiagramEventHandlers
 export function LikeC4Diagram({
@@ -33,6 +32,7 @@ export function LikeC4Diagram({
   controls = !readonly,
   showElementLinks = true,
   showDiagramTitle = true,
+  enableDynamicViewWalkthrough = true,
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
@@ -46,6 +46,7 @@ export function LikeC4Diagram({
   onNodeClick,
   onNodeContextMenu
 }: LikeC4DiagramProps) {
+  console.log('LikeC4Diagram')
   const initialRef = useRef<{
     defaultNodes: XYFlowData['nodes']
     defaultEdges: XYFlowData['edges']
@@ -104,13 +105,15 @@ export function LikeC4Diagram({
                 pannable !== true && cssDisablePan,
                 background === 'transparent' && cssTransparentBg
               )}
-              background={background}
-              controls={controls}
               defaultNodes={initialRef.current.defaultNodes}
               defaultEdges={initialRef.current.defaultEdges}
             >
-              {readonly === false && <OptionsPanel />}
-              {showDiagramTitle === true && <DiagramTitlePanel />}
+              <XYFlowInner
+                showDiagramTitle={showDiagramTitle}
+                enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+                background={background}
+                controls={controls}
+              />
             </XYFlow>
             <WhenInitialized>
               <SyncWithDiagram />

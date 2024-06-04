@@ -2520,6 +2520,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.10.1"
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@react-hookz/web": "npm:^24.0.4"
+    "@tabler/icons-react": "npm:^2.47.0"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3"
@@ -4594,7 +4595,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons@npm:2.47.0, @tabler/icons@npm:^2.47.0":
+"@tabler/icons@npm:2.47.0":
   version: 2.47.0
   resolution: "@tabler/icons@npm:2.47.0"
   checksum: 10c0/ffdffa1289ca958f7d7c06c19e35c51a664d916df510fb44fb673abc2031747f2b3c47e21ba4c1ca07a6872b793f2063179bbbfb6afd1c68b522ca333460a7f3
@@ -11565,7 +11566,6 @@ __metadata:
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons": "npm:^2.47.0"
     "@tabler/icons-react": "npm:^2.47.0"
     "@tanstack/react-router": "npm:^1.31.19"
     "@tanstack/router-vite-plugin": "npm:^1.31.18"

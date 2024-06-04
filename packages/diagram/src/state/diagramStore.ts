@@ -1,5 +1,6 @@
 import type {
   BorderStyle,
+  DiagramEdge,
   DiagramNode,
   DiagramView,
   ElementShape,
@@ -8,7 +9,7 @@ import type {
   ThemeColor,
   ViewID
 } from '@likec4/core'
-import { invariant, nonexhaustive } from '@likec4/core'
+import { invariant, nonexhaustive, StepEdgeId } from '@likec4/core'
 import { getViewportForBounds, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
@@ -27,7 +28,6 @@ import type { XYFlowInstance } from '../xyflow/types'
 export type DiagramStore = {
   // Incoming props
   view: DiagramView
-  $type: NonNullable<DiagramView['__']>
   readonly: boolean
   showElementLinks: boolean
   fitViewEnabled: boolean
@@ -41,6 +41,9 @@ export type DiagramStore = {
   xyflow: XYFlowInstance
   initialized: boolean
   xyflowSynced: boolean
+
+  // If Dynamic View
+  activeDynamicViewStep: number | null
 
   // This is XYFlow id's
   lastClickedNodeId: string | null
@@ -93,6 +96,8 @@ export type DiagramInitialState = // Required properties
   & LikeC4DiagramEventHandlers
 
 interface DiagramStoreActions {
+  isDynamicView: () => boolean
+
   updateView: (view: DiagramView) => void
 
   focusOnNode: (nodeId: string) => void
@@ -109,16 +114,19 @@ interface DiagramStoreActions {
   triggerOnChange: (changes: NonEmptyArray<Change>) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
   fitDiagram: (xyStore: XYStoreApi) => void
+
+  nextDynamicStep: (increment?: number) => void
+  stopDynamicView: () => void
 }
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
   initialized: false,
-  $type: 'element',
   xyflowSynced: false,
   previousViews: [],
   viewportChanged: false,
+  activeDynamicViewStep: null,
   focusedNodeId: null,
   hoveredNodeId: null,
   hoveredEdgeId: null,
@@ -158,7 +166,10 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
         (set, get) => ({
           ...DEFAULT_PROPS,
           ...(props as CreateDiagramStore),
-          $type: props.view.__ ?? 'element',
+
+          isDynamicView: () => {
+            return get().view?.__ === 'dynamic'
+          },
 
           updateView: (nextView) => {
             let {
@@ -170,6 +181,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId,
+              activeDynamicViewStep,
               hoveredEdgeId,
               hoveredNodeId
             } = get()
@@ -203,6 +215,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (hoveredEdgeId && !edgeIds.has(hoveredEdgeId)) {
                 hoveredEdgeId = null
               }
+              if (activeDynamicViewStep && !edgeIds.has(StepEdgeId(activeDynamicViewStep))) {
+                activeDynamicViewStep = null
+              }
               xyflowSynced = deepEqual(current.nodes, nextView.nodes) && deepEqual(current.edges, nextView.edges)
               if (!xyflowSynced) {
                 let nextDimmed = new StringSet([...dimmed].filter(id => nodeIds.has(id) || edgeIds.has(id)))
@@ -224,6 +239,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredEdgeId = null
               hoveredNodeId = null
               focusedNodeId = null
+              activeDynamicViewStep = null
               dimmed = EmptyStringSet
 
               // Update history stack (back button not implemented yet)
@@ -237,7 +253,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             set(
               {
                 view: nextView,
-                $type: nextView.__ ?? 'element',
+                activeDynamicViewStep,
                 xyflowSynced,
                 lastOnNavigate,
                 previousViews,
@@ -473,6 +489,54 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 'unfocus'
               )
             }
+          },
+
+          nextDynamicStep: (increment = 1) => {
+            const { view, activeDynamicViewStep, xyflow, fitViewPadding } = get()
+            invariant(view.__ === 'dynamic', 'view is not dynamic')
+            const nextStep = (activeDynamicViewStep ?? 0) + increment
+            const edgeId = StepEdgeId(nextStep)
+            const dimmed = new StringSet()
+            let edge: DiagramEdge | null = null
+            for (const e of view.edges) {
+              if (e.id === edgeId) {
+                edge = e
+                continue
+              }
+              dimmed.add(e.id)
+            }
+            invariant(!!edge, `edge not found: ${edgeId}`)
+            for (const n of view.nodes) {
+              if (n.id === edge.source || n.id === edge.target) {
+                continue
+              }
+              dimmed.add(n.id)
+            }
+            set({
+              activeDynamicViewStep: nextStep,
+              dimmed
+            })
+            xyflow.fitView({
+              duration: 400,
+              maxZoom: 1,
+              minZoom: MinZoom,
+              padding: fitViewPadding,
+              nodes: [{ id: edge.source }, { id: edge.target }]
+            })
+          },
+
+          stopDynamicView: () => {
+            const { xyflow, fitViewPadding } = get()
+            set({
+              activeDynamicViewStep: null,
+              dimmed: EmptyStringSet
+            })
+            xyflow.fitView({
+              duration: 400,
+              maxZoom: 1,
+              minZoom: MinZoom,
+              padding: fitViewPadding
+            })
           }
         }),
         {

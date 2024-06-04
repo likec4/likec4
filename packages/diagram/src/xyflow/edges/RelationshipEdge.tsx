@@ -129,6 +129,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   if (!isModified) {
     edgePath = bezierPath(diagramEdge.points)
+    // if (diagramEdge.tailArrowPoint) {
+    //   edgePath = `M ${diagramEdge.tailArrowPoint[0]},${diagramEdge.tailArrowPoint[1]} L ${edgePath.substring(1)}`
+    // }
+    // if (diagramEdge.headArrowPoint) {
+    //   edgePath += ` L ${diagramEdge.headArrowPoint[0]},${diagramEdge.headArrowPoint[1]}`
+    // }
     labelX = data.label?.bbox.x ?? 0
     labelY = data.label?.bbox.y ?? 0
   } else {
@@ -169,13 +175,15 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       <defs>
         <marker
           id={`arrow-${id}`}
-          viewBox="0 0 10 8"
-          refX={isModified ? '8' : '3'}
-          refY="4"
+          viewBox="0 0 16 10"
+          refX={isModified ? '12' : '10'}
+          refY="5"
           markerWidth="5"
-          markerHeight="5"
+          markerHeight="4"
+          markerUnits="strokeWidth"
+          preserveAspectRatio="xMaxYMid meet"
           orient="auto-start-reverse">
-          <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-stroke" />
+          <path d="M 0 0 L 16 5 L 0 10 z" stroke="context-stroke" fill="context-stroke" />
         </marker>
       </defs>
       <RelationshipPath

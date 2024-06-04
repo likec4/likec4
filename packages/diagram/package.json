@@ -49,6 +49,7 @@
   "dependencies": {
     "@likec4/core": "workspace:*",
     "@react-hookz/web": "^24.0.4",
+    "@tabler/icons-react": "^2.47.0",
     "d3-shape": "^3.2.0",
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",

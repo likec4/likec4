@@ -112,6 +112,9 @@ export function LikeC4Browser<ViewId extends string>({
                 pannable
                 zoomable
                 fitView
+                showDiagramTitle
+                showElementLinks
+                enableDynamicViewWalkthrough
                 background={background}
                 fitViewPadding={0.05}
                 controls={false}

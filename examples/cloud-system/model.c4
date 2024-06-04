@@ -64,14 +64,14 @@ views {
   }
 
   dynamic view index2 {
-    
+
     customer -> ui.dashboard 'opens'
     //ui -> cloud.next
     ui.dashboard -> cloud.graphql 'requests'
     ui.dashboard <- cloud.graphql 'returns'
 
     ui.mobile -> cloud.graphql 'requests'
-    ui.mobile <- cloud.graphql 'returns'
+    ui.mobile <- cloud.graphql
 
     autoLayout TopBottom
   }

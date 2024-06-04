@@ -7,7 +7,7 @@ export function ColorSchemeToggle() {
 
   return (
     <ActionIcon
-      visibleFrom="md"
+      visibleFrom="sm"
       size={'md'}
       variant="subtle"
       color="gray"

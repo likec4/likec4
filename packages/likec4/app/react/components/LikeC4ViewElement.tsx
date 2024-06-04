@@ -26,21 +26,36 @@ export function LikeC4ViewElement<ViewId extends string>({
   const id = useId()
   const scheme = useColorScheme(colorScheme)
 
+  const isLandscape = view.width > view.height
+
   return (
     <>
       <style
         type="text/css"
         dangerouslySetInnerHTML={{
           __html: `
-        [data-likec4-instance="${id}"] {
-          box-sizing: border-box;
-          border: 0 solid transparent;
-          padding: 0;
-          width: 100%;
-          height: auto;
-          aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-          max-height: var(--likec4-view-max-height, ${Math.ceil(view.height)}px);
-        }
+  [data-likec4-instance="${id}"] {
+    box-sizing: border-box;
+    border: 0 solid transparent;
+    padding: 0;
+    ${
+            isLandscape ? '' : `
+    margin-left: auto;
+    margin-right: auto;
+    `
+          }
+    width: ${isLandscape ? '100%' : 'auto'};
+    width: -webkit-fill-available;
+    height: ${isLandscape ? 'auto' : '100%'};
+    height: -webkit-fill-available;
+    ${
+            isLandscape ? '' : `
+    min-height: 100px;
+    `
+          }
+    aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
+    max-height: var(--likec4-view-max-height, ${Math.ceil(view.height)}px);
+  }
       `
         }} />
       <ShadowRoot
@@ -66,6 +81,7 @@ export function LikeC4ViewElement<ViewId extends string>({
           fitViewPadding={0}
           showElementLinks
           showDiagramTitle={false}
+          enableDynamicViewWalkthrough={false}
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}

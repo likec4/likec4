@@ -32,7 +32,7 @@ export function useXYFlowEvents() {
 
   const dblclickTimeout = useRef<number>()
 
-  const dbclickGuarg = () => {
+  const dbclickLock = () => {
     if (dblclickTimeout.current !== undefined) {
       return true
     }
@@ -65,7 +65,7 @@ export function useXYFlowEvents() {
         onCanvasDblClick?.(event)
       },
       onPaneClick: (event) => {
-        if (dbclickGuarg()) {
+        if (dbclickLock()) {
           return
         }
         const { focusedNodeId, fitDiagram, onCanvasClick, resetLastClicked } = diagramApi.getState()

@@ -1,15 +1,17 @@
 import { nonexhaustive } from '@likec4/core'
 import { Background, type BackgroundProps, BackgroundVariant } from '@xyflow/react'
-import { deepEqual } from 'fast-equals'
-import { memo } from 'react'
 import type { OverrideProperties } from 'type-fest'
 
 export type XYBackgroundVariant = 'dots' | 'lines' | 'cross'
-export type XYBackgroundProps =
+export type XYBackground =
   | XYBackgroundVariant
   | OverrideProperties<BackgroundProps, {
     variant: XYBackgroundVariant
   }>
+
+export type XYBackgroundProps = {
+  background: XYBackground
+}
 
 function literalToEnum(value: XYBackgroundVariant): BackgroundVariant {
   switch (value) {
@@ -24,10 +26,10 @@ function literalToEnum(value: XYBackgroundVariant): BackgroundVariant {
   }
 }
 
-export const XYFlowBackground = memo<{ background: XYBackgroundProps }>(({ background }) => {
+export function XYFlowBackground({ background }: XYBackgroundProps) {
   if (typeof background === 'string') {
     return <Background variant={literalToEnum(background)} />
   }
   const { variant, ...rest } = background
   return <Background variant={literalToEnum(variant)} {...rest} />
-}, deepEqual)
+}

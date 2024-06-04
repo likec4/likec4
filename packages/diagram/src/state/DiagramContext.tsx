@@ -1,4 +1,5 @@
-import { createContext, type PropsWithChildren, useRef } from 'react'
+import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
+import { hasSubObject, isIncludedIn } from 'remeda'
 import { useUpdateEffect } from '../hooks'
 import { useXYFlow } from '../xyflow/hooks'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
@@ -18,21 +19,28 @@ export function DiagramContextProvider({ children, view, ...props }: PropsWithCh
     })
   }
 
-  useUpdateEffect(
-    () => store.current?.setState({ xyflow }, false, 'update xyflow'),
-    [xyflow],
-    Object.is
+  useEffect(
+    () => {
+      if (store.current?.getState().xyflow !== xyflow) {
+        store.current?.setState({ xyflow }, false, 'update xyflow')
+      }
+    },
+    [xyflow]
   )
 
   useUpdateEffect(
-    () => store.current?.getState().updateView(view),
-    [view],
-    Object.is
-  )
-
-  useUpdateEffect(
-    () => store.current?.setState(props, false, 'update incoming props'),
-    [props]
+    () => {
+      if (!store.current) return
+      const state = store.current.getState()
+      if (state.view !== view) {
+        state.updateView(view)
+      }
+      if (!hasSubObject(state, props)) {
+        store.current.setState(props, false, 'update incoming props')
+      }
+      isIncludedIn
+    },
+    [view, props]
   )
 
   return (

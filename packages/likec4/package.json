@@ -108,7 +108,6 @@
     "@mantine/vanilla-extract": "^7.10.1",
     "@nanostores/react": "^0.7.2",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons": "^2.47.0",
     "@tabler/icons-react": "^2.47.0",
     "@tanstack/react-router": "^1.31.19",
     "@tanstack/router-vite-plugin": "^1.31.18",
