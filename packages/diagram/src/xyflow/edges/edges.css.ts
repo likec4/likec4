@@ -1,6 +1,5 @@
 import { rem } from '@mantine/core'
 import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
-import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
 const mixColor = createVar('mix-color')
@@ -14,6 +13,10 @@ export const container = style({
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
     [xyvars.edge.strokeWidth]: '2.2px'
   }
+})
+
+export const dimmed = style({
+  filter: vars.filterDimmed
 })
 
 globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
@@ -55,13 +58,13 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 globalStyle(`.react-flow__edges > svg`, {
   mixBlendMode: 'screen'
 })
-globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
-  mixBlendMode: 'lighten'
-})
+// globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
+//   mixBlendMode: 'lighten'
+// })
 
 export const edgePathBg = style({
   strokeWidth: xyvars.edge.strokeWidth,
-  strokeOpacity: 0.05,
+  strokeOpacity: 0.08,
   // transition: 'stroke-width 175ms ease-in-out',
   // transition: 'stroke-width 175ms ease-in-out, stroke-opacity 150ms ease-out',
   transitionProperty: 'stroke-width, stroke-opacity',
@@ -70,31 +73,24 @@ export const edgePathBg = style({
   selectors: {
     [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
       strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8px)`,
-      strokeOpacity: 0.11
+      strokeOpacity: 0.15
     }
   }
-})
-
-export const fillStrokeCtx = style({
-  fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke
 })
 
 export const controlPoint = style({
   fill: xyvars.edge.stroke,
   stroke: xyvars.edge.stroke,
+  fillOpacity: 0.75,
+  strokeWidth: 1,
+  cursor: 'grab',
+  pointerEvents: 'visible',
   selectors: {
     [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
       transition: 'all 150ms ease-out',
-      stroke: xyvars.edge.strokeSelected,
-      strokeWidth: 8
+      fillOpacity: 1,
+      strokeWidth: 3
     }
-  }
-})
-
-globalStyle(`:where(${isSelected}) ${fillStrokeCtx}`, {
-  vars: {
-    [xyvars.edge.stroke]: xyvars.edge.strokeSelected
   }
 })
 

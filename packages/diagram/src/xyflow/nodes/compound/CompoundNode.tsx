@@ -37,15 +37,17 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   // const h = toDomPrecision(height ?? compound.height)
   const opacity = style.opacity ?? 100
 
-  const { isHovered, hasOnNavigateTo } = useDiagramState(s => ({
+  const { isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
+    isDimmed: s.dimmed.has(id),
     hasOnNavigateTo: !!s.onNavigateTo
   }))
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
+  // invert opacity to transparency
   const transparency = clamp(100 - opacity, {
     min: 0,
-    max: 98
+    max: 99
   })
 
   return (
@@ -53,7 +55,8 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       className={clsx(
         css.container,
         'likec4-compound-node',
-        opacity < 100 && 'likec4-compound-transparent'
+        opacity < 100 && 'likec4-compound-transparent',
+        isDimmed && css.dimmed
       )}
       mod={{
         'compound-depth': depth,

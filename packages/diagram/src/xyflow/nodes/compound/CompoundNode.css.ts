@@ -11,6 +11,11 @@ export const container = style({
   margin: 0
 })
 
+export const dimmed = style({
+  filter: vars.filterDimmed,
+  transition: 'filter 800ms ease-out'
+})
+
 export const varTransparency = createVar('transparency')
 
 const outlineColor = fallbackVar(
@@ -71,8 +76,7 @@ export const transparent = style({
       vars: {
         [bgTransparencyDelta]: '15%'
       }
-    },
-
+    }
   }
 })
 

@@ -25,6 +25,7 @@ createGlobalTheme(`.${rootClassName}`, {
       }
     }
   },
+  filterDimmed: 'brightness(.6) grayscale(.8) blur(1px)',
   compound: {
     font: vars.likec4.font,
     titleColor: vars.element.loContrast

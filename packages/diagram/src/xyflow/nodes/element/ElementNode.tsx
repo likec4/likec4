@@ -7,16 +7,7 @@ import { useDiagramState } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import {
-  container,
-  cssElement,
-  cssNavigateBtn,
-  cssShapeSvg,
-  description as cssdescription,
-  indicator,
-  technology as csstechnology,
-  title as cssTitle
-} from './element.css'
+import * as css from './element.css'
 import { ElementIcon } from './ElementIcon'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
@@ -38,6 +29,13 @@ const variants = {
       delay: isNumber(scale) && scale > selectedScale ? 0.075 : 0
     }
   }),
+  // dimmed: {
+  //   filter: 'brightness(0.5)',
+  //   transition: {
+  //     duration: 0.8,
+  //     ease: 'easeInOut',
+  //   }
+  // },
   // dragging: {
   //   scale: selectedScale
   // },
@@ -76,8 +74,9 @@ export function ElementNode({
   width,
   height
 }: ElementNodeProps) {
-  const { isHovered, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
+  const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
+    isDimmed: s.dimmed.has(id),
     isInteractive: s.nodesDraggable || s.nodesSelectable || !!s.onNavigateTo,
     isHovercards: s.showElementLinks,
     hasOnNavigateTo: !!s.onNavigateTo
@@ -112,7 +111,11 @@ export function ElementNode({
   return (
     <motion.div
       id={id}
-      className={clsx(container, 'likec4-element-node')}
+      className={clsx([
+        css.container,
+        isDimmed && css.dimmed,
+        'likec4-element-node'
+      ])}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}
@@ -162,12 +165,14 @@ export function ElementNode({
         style={{ visibility: 'hidden' }}
       />
       <svg
-        className={cssShapeSvg}
+        className={clsx(
+          css.cssShapeSvg
+        )}
         viewBox={`0 0 ${w} ${h}`}
         width={w}
         height={h}
       >
-        <g className={indicator}>
+        <g className={css.indicator}>
           <SelectedIndicator
             shape={element.shape}
             w={w}
@@ -180,24 +185,24 @@ export function ElementNode({
           h={h}
         />
       </svg>
-      <div className={clsx(cssElement, 'likec4-element')}>
+      <div className={clsx(css.element, 'likec4-element')}>
         {element.icon && <ElementIcon node={element} />}
         <Text
           component="div"
-          className={clsx(cssTitle, 'likec4-element-title')}>
+          className={clsx(css.title, 'likec4-element-title')}>
           {element.title}
         </Text>
         {element.technology && (
           <Text
             component="div"
-            className={clsx(csstechnology, 'likec4-element-technology')}>
+            className={clsx(css.technology, 'likec4-element-technology')}>
             {element.technology}
           </Text>
         )}
         {element.description && (
           <Text
             component="div"
-            className={clsx(cssdescription, 'likec4-element-description')}>
+            className={clsx(css.description, 'likec4-element-description')}>
             {element.description}
           </Text>
         )}
@@ -219,7 +224,7 @@ export function ElementNode({
       ))} */
       }
       {isHovercards && element.links && <ElementLink element={element} />}
-      {isNavigable && <NavigateToBtn xynodeId={id} className={cssNavigateBtn} />}
+      {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
     </motion.div>
   )
 }

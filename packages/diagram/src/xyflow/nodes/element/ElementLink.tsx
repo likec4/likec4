@@ -68,7 +68,10 @@ export function ElementLink({
             <span>links</span>
           </UnstyledButton>
         </HoverCardTarget>
-        <HoverCardDropdown onClick={e => e.stopPropagation()} p={'xs'}>
+        <HoverCardDropdown
+          onPointerDownCapture={e => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
+          p={'xs'}>
           <Stack gap={'xs'}>
             {element.links.map((link) => (
               <Group key={link} wrap="nowrap" gap={'sm'}>
@@ -79,8 +82,15 @@ export function ElementLink({
                 </Box>
                 <CopyButton value={link}>
                   {({ copied, copy }) => (
-                    <Button size="compact-xs" fz={'12'} onClick={copy} color={copied ? 'teal' : 'gray'}>
-                      {copied ? 'Copied' : 'Copy'}
+                    <Button
+                      size="compact-xs"
+                      fz={'10'}
+                      variant="light"
+                      onClick={copy}
+                      color={copied
+                        ? 'teal'
+                        : 'gray'}>
+                      {copied ? 'copied' : 'copy'}
                     </Button>
                   )}
                 </CopyButton>

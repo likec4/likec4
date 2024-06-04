@@ -14,6 +14,7 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
     <ActionIcon
       className={clsx('nodrag nopan', className)}
       radius="xl"
+      onPointerDownCapture={e => e.stopPropagation()}
       onClick={event => {
         event.stopPropagation()
         diagramApi.getState().triggerOnNavigateTo(xynodeId, event)

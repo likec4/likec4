@@ -19,6 +19,13 @@ export const container = style({
   }
 })
 
+export const dimmed = style({})
+
+globalStyle(`.react-flow__node:has(${dimmed})`, {
+  filter: vars.filterDimmed,
+  transition: 'filter 800ms ease-out'
+})
+
 const indicatorKeyframes = generateIdentifier('indicator')
 globalKeyframes(indicatorKeyframes, {
   'from': {
@@ -120,7 +127,7 @@ export const technology = style({
   }
 })
 
-export const cssElement = style({
+export const element = style({
   position: 'relative',
   width: '100%',
   height: '100%',

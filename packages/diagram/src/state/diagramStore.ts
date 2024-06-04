@@ -14,7 +14,7 @@ import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries } from 'remeda'
+import { entries, filter, map, prop } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -49,6 +49,9 @@ export type DiagramStore = {
   hoveredNodeId: string | null
   hoveredEdgeId: string | null
 
+  // id's of nodes / edges that
+  dimmed: ReadonlySet<string>
+
   // Stack of previous distinct views (unique id's)
   previousViews: DiagramView[]
 
@@ -64,6 +67,8 @@ export type DiagramStore = {
   // User changed the viewport by dragging or zooming
   viewportChanged: boolean
 } & Required<LikeC4DiagramEventHandlers>
+
+const StringSet = Set<string>
 
 export type DiagramInitialState = // Required properties
   & Pick<
@@ -119,6 +124,7 @@ const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 
   hoveredEdgeId: null,
   lastClickedNodeId: null,
   lastClickedEdgeId: null,
+  dimmed: new StringSet(),
   lastOnNavigate: null,
   onChange: null,
   onNavigateTo: null,
@@ -137,7 +143,7 @@ const noReplace = false
 
 let storeDevId = 1
 
-const containsWithId = <T extends { id: string }>(arr: T[], id: string) => arr.some((x) => x.id === id)
+const EmptyStringSet: ReadonlySet<string> = new StringSet()
 
 export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
   return createWithEqualityFn<
@@ -156,6 +162,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           updateView: (nextView) => {
             let {
+              dimmed,
               xyflowSynced,
               view: current,
               lastOnNavigate,
@@ -178,23 +185,31 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const isSameView = current.id === nextView.id
 
             if (isSameView) {
+              const nodeIds = new StringSet(nextView.nodes.map((n) => n.id))
+              const edgeIds = new StringSet(nextView.edges.map((e) => e.id))
               // Reset clicked/hovered node/edge if the node/edge is not in the new view
-              if (lastClickedNodeId && !containsWithId(nextView.nodes, lastClickedNodeId)) {
+              if (lastClickedNodeId && !nodeIds.has(lastClickedNodeId)) {
                 lastClickedNodeId = null
               }
-              if (hoveredNodeId && !containsWithId(nextView.nodes, hoveredNodeId)) {
+              if (hoveredNodeId && !nodeIds.has(hoveredNodeId)) {
                 hoveredNodeId = null
               }
-              if (focusedNodeId && !containsWithId(nextView.nodes, focusedNodeId)) {
+              if (focusedNodeId && !nodeIds.has(focusedNodeId)) {
                 focusedNodeId = null
               }
-              if (lastClickedEdgeId && !containsWithId(nextView.edges, lastClickedEdgeId)) {
+              if (lastClickedEdgeId && !edgeIds.has(lastClickedEdgeId)) {
                 lastClickedEdgeId = null
               }
-              if (hoveredEdgeId && !containsWithId(nextView.edges, hoveredEdgeId)) {
+              if (hoveredEdgeId && !edgeIds.has(hoveredEdgeId)) {
                 hoveredEdgeId = null
               }
               xyflowSynced = deepEqual(current.nodes, nextView.nodes) && deepEqual(current.edges, nextView.edges)
+              if (!xyflowSynced) {
+                let nextDimmed = new StringSet([...dimmed].filter(id => nodeIds.has(id) || edgeIds.has(id)))
+                if (nextDimmed.size !== dimmed.size) {
+                  dimmed = nextDimmed
+                }
+              }
             } else {
               // Reset lastOnNavigate if the view is not the source or target view
               if (lastOnNavigate) {
@@ -209,6 +224,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredEdgeId = null
               hoveredNodeId = null
               focusedNodeId = null
+              dimmed = EmptyStringSet
 
               // Update history stack (back button not implemented yet)
               previousViews = [
@@ -229,7 +245,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 lastClickedEdgeId,
                 focusedNodeId,
                 hoveredEdgeId,
-                hoveredNodeId
+                hoveredNodeId,
+                dimmed
               },
               noReplace,
               'update-view'
@@ -237,8 +254,32 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           focusOnNode: (nodeId) => {
-            if (nodeId !== get().focusedNodeId) {
-              set({ focusedNodeId: nodeId }, noReplace, `focus on node: ${nodeId}`)
+            const { focusedNodeId, view } = get()
+            if (nodeId !== focusedNodeId) {
+              const notDimmed = new StringSet([nodeId])
+              const dimmed = new StringSet()
+              for (const edge of view.edges) {
+                if (edge.source === nodeId || edge.target === nodeId) {
+                  notDimmed.add(edge.source)
+                  notDimmed.add(edge.target)
+                } else {
+                  dimmed.add(edge.id)
+                }
+              }
+              for (const node of view.nodes) {
+                if (notDimmed.has(node.id)) {
+                  continue
+                }
+                dimmed.add(node.id)
+              }
+              set(
+                {
+                  focusedNodeId: nodeId,
+                  dimmed
+                },
+                noReplace,
+                `focus on node: ${nodeId}`
+              )
             }
           },
 
@@ -277,7 +318,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 {
                   focusedNodeId: null,
                   lastClickedNodeId: null,
-                  lastClickedEdgeId: null
+                  lastClickedEdgeId: null,
+                  dimmed: EmptyStringSet
                 },
                 noReplace,
                 'resetLastClicked'
@@ -422,7 +464,14 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, 1, fitViewPadding)
             panZoom?.setViewport(viewport, { duration: 400 })
             if (!!focusedNodeId) {
-              set({ focusedNodeId: null }, noReplace, 'unfocus')
+              set(
+                {
+                  focusedNodeId: null,
+                  dimmed: EmptyStringSet
+                },
+                noReplace,
+                'unfocus'
+              )
             }
           }
         }),

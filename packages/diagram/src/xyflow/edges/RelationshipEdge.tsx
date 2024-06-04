@@ -4,7 +4,6 @@ import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
 import { getNodePositionWithOrigin } from '@xyflow/system'
-import { Bezier } from 'bezier-js'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
@@ -108,7 +107,10 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   // const edgePath = bezierPath(edge.points)
 
   const color = diagramEdge.color ?? 'gray'
-  const isHovered = useDiagramState(s => s.hoveredEdgeId === id)
+  const { isHovered, isDimmed } = useDiagramState(s => ({
+    isHovered: s.hoveredEdgeId === id,
+    isDimmed: s.dimmed.has(id)
+  }))
 
   const line = diagramEdge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -157,23 +159,25 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   }
 
   return (
-    <g className={clsx(edgesCss.container)} data-likec4-color={color} data-edge-hovered={isHovered}>
-      <g className={clsx(edgesCss.fillStrokeCtx)}>
-        <defs>
-          <marker
-            id={`arrow-${id}`}
-            viewBox="0 0 10 8"
-            refX="0"
-            refY="4"
-            markerWidth="5"
-            markerHeight="5"
-            markerUnits="strokeWidth"
-            preserveAspectRatio="xMaxYMid meet"
-            orient="auto-start-reverse">
-            <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-stroke" />
-          </marker>
-        </defs>
-      </g>
+    <g
+      className={clsx([
+        edgesCss.container,
+        isDimmed && edgesCss.dimmed
+      ])}
+      data-likec4-color={color}
+      data-edge-hovered={isHovered}>
+      <defs>
+        <marker
+          id={`arrow-${id}`}
+          viewBox="0 0 10 8"
+          refX={isModified ? '8' : '3'}
+          refY="4"
+          markerWidth="5"
+          markerHeight="5"
+          orient="auto-start-reverse">
+          <path d="M 0 0 L 10 4 L 0 8 z" stroke="context-stroke" fill="context-stroke" />
+        </marker>
+      </defs>
       <RelationshipPath
         edgePath={edgePath}
         interactionWidth={interactionWidth ?? 10}
@@ -193,7 +197,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       {data.label && (
         <EdgeLabelRenderer>
           <Box
-            className={clsx(edgesCss.container, edgesCss.edgeLabel)}
+            className={clsx([
+              edgesCss.container,
+              edgesCss.edgeLabel,
+              isDimmed && edgesCss.dimmed
+            ])}
             data-likec4-color={color}
             style={{
               ...assignInlineVars({
