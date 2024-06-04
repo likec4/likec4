@@ -11,7 +11,7 @@ import type {
   Point
 } from '@likec4/core'
 import { invariant } from '@likec4/core'
-import { first, hasAtLeast, last, maxBy } from 'remeda'
+import { first, firstBy, hasAtLeast, last } from 'remeda'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx, toKonvaAlign } from './utils'
 
@@ -194,7 +194,7 @@ function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdges: Compu
     labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding
 
     // x and width - from the label with max width
-    const _maxWidth = maxBy(labels, l => l.width) ?? labels[0]
+    const _maxWidth = firstBy(labels, [l => l.width, 'desc'])
     labelBBox.x = _maxWidth.pt[0] - labelPadding
     labelBBox.width = _maxWidth.width + labelPadding * 2
 

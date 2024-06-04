@@ -1,5 +1,5 @@
 import { Graphviz } from '@hpcc-js/wasm/graphviz'
-import { type ComputedView, delay, isComputedElementView } from '@likec4/core'
+import { type ComputedView, delay, isComputedDynamicView } from '@likec4/core'
 import pLimit from 'p-limit'
 import { parseGraphvizJson } from './parseGraphvizJson'
 import { printDynamicViewToDot } from './printDynamicViewToDot'
@@ -15,20 +15,14 @@ export interface GraphvizLayouter {
 }
 
 function toDot(graphviz: Graphviz, computedView: ComputedView) {
-  if (isComputedElementView(computedView)) {
-    const initial = printElementViewToDot(computedView)
-
-    // const acyclicResult = graphviz.acyclic(initial, true)
-    // const acyclicDot = acyclicResult.outFile ?? initial
-
-    // console.log('acyclicDot ---------------')
-    // console.log(acyclicDot)
-    // console.log('acyclicDot ---------------')
-
-    const unflattened = graphviz.unflatten(initial, 1, true, 2)
-    return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
+  if (isComputedDynamicView(computedView)) {
+    return printDynamicViewToDot(computedView)
   }
-  return printDynamicViewToDot(computedView)
+
+  const initial = printElementViewToDot(computedView)
+
+  const unflattened = graphviz.unflatten(initial, 1, true, 2)
+  return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
 }
 
 // WASM Graphviz layouter

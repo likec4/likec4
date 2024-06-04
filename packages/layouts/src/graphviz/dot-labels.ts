@@ -1,4 +1,5 @@
 import { type ComputedNode, ElementColors as Colors } from '@likec4/core'
+import { DefaultRelationshipColor, defaultTheme as Theme } from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
@@ -108,4 +109,24 @@ export function edgeLabel(text: string) {
     align: 'left'
   })
   return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD>${html}</TD></TR></TABLE>>`
+}
+
+const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}"`
+
+export function stepEdgeLabel(step: number, text?: string | null) {
+  const num =
+    `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0" ${BGCOLOR} STYLE="ROUNDED" FIXEDSIZE="TRUE"><TR><TD ALIGN="CENTER" WIDTH="20" HEIGHT="18" VALIGN="MIDDLE"><FONT POINT-SIZE="${
+      pxToPoints(14)
+    }"><B>${step}</B></FONT></TD></TR></TABLE>`
+  if (!isTruthy(text)) {
+    return `<${num}>`
+  }
+  const html = wrapToHTML({
+    text,
+    maxchars: 35,
+    fontsize: 13,
+    lineHeight: 1.125,
+    align: 'left'
+  })
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
 }

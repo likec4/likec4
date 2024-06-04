@@ -122,6 +122,22 @@ export type NodeId = Fqn
 
 export type EdgeId = Opaque<string, 'EdgeId'>
 
+export type StepEdgeIdLiteral = `step-${number}`
+export type StepEdgeId = Opaque<StepEdgeIdLiteral, 'EdgeId'>
+export function StepEdgeId(step: number): StepEdgeId {
+  return `step-${String(step).padStart(3, '0')}` as StepEdgeId
+}
+
+export function isStepEdgeId(id: string): id is StepEdgeId {
+  return id.startsWith('step-')
+}
+export function extractStep(id: EdgeId): number {
+  if (!isStepEdgeId(id)) {
+    throw new Error(`Invalid step edge id: ${id}`)
+  }
+  return Number(id.slice('step-'.length))
+}
+
 export interface ComputedNode {
   id: NodeId
   kind: ElementKind
@@ -179,6 +195,9 @@ export interface ComputedDynamicView extends Omit<DynamicView, 'rules' | 'steps'
   readonly autoLayout: ViewRuleAutoLayout['autoLayout']
   readonly nodes: ComputedNode[]
   readonly edges: ComputedEdge[]
+}
+export function isComputedDynamicView(view: ComputedView): view is ComputedDynamicView {
+  return view.__ === 'dynamic'
 }
 
 export type ComputedView = ComputedElementView | ComputedDynamicView

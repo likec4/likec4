@@ -8,7 +8,8 @@ import {
   invariant,
   isViewRuleAutoLayout,
   nonNullable,
-  parentFqn
+  parentFqn,
+  StepEdgeId
 } from '@likec4/core'
 import { isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
@@ -28,7 +29,6 @@ export namespace DynamicViewComputeCtx {
 export class DynamicViewComputeCtx {
   // Intermediate state
   private explicits = new Set<Element>()
-  private implicits = new Set<Element>()
   private steps = [] as DynamicViewComputeCtx.Step[]
 
   public static compute(view: DynamicView, graph: LikeC4ModelGraph): ComputedDynamicView {
@@ -56,7 +56,7 @@ export class DynamicViewComputeCtx {
       this.explicits.add(source)
       this.explicits.add(target)
 
-      const { title, relations } = this.inferRelations(source, target)
+      const { title, relations } = this.findRelations(source, target)
 
       this.steps.push({
         source,
@@ -77,7 +77,7 @@ export class DynamicViewComputeCtx {
       invariant(targetNode, `Target node ${target.id} not found`)
       const stepNum = index + 1
       const edge: ComputedEdge = {
-        id: `step-${String(stepNum).padStart(3, '0')}` as EdgeId,
+        id: StepEdgeId(stepNum),
         parent: commonAncestor(source.id, target.id),
         source: source.id,
         target: target.id,
@@ -113,9 +113,9 @@ export class DynamicViewComputeCtx {
       return edge
     })
 
-    // Keep order of elements
     const nodes = applyViewRuleStyles(
       rules,
+      // Keep order of elements
       elements.map(e => nonNullable(nodesMap.get(e.id)))
     )
 
@@ -129,7 +129,7 @@ export class DynamicViewComputeCtx {
     }
   }
 
-  private inferRelations(source: Element, target: Element): {
+  private findRelations(source: Element, target: Element): {
     title: string | null
     relations: RelationID[]
   } {

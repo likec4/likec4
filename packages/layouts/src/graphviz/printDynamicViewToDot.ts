@@ -3,6 +3,7 @@ import {
   DefaultRelationshipColor,
   defaultTheme,
   DefaultThemeColor,
+  extractStep,
   invariant,
   nameFromFqn,
   nonNullable,
@@ -18,7 +19,7 @@ import {
   type SubgraphModel,
   toDot as modelToDot
 } from 'ts-graphviz'
-import { edgeLabel, nodeLabel, sanitize } from './dot-labels'
+import { nodeLabel, sanitize, stepEdgeLabel } from './dot-labels'
 import { DefaultEdgeStyle } from './printElementViewToDot'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints, toArrowType } from './utils'
@@ -74,7 +75,7 @@ export function dynamicViewToGraphvisModel({
   G.attributes.node.apply({
     [_.fontname]: Theme.font,
     [_.fontsize]: pxToPoints(20),
-    [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
+    // [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
     [_.shape]: 'rect',
     [_.width]: pxToInch(330),
     [_.height]: pxToInch(185),
@@ -257,11 +258,13 @@ export function dynamicViewToGraphvisModel({
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    const label = edge.label?.trim() ?? ''
+    const step = extractStep(edge.id)
+    const label = edge.label?.trim()
+    e.attributes.apply({
+      [_.label]: stepEdgeLabel(step, label)
+    })
     if (isTruthy(label)) {
-      e.attributes.apply({
-        [_.label]: edgeLabel(label)
-      })
+      e.attributes.set(_.decorate, true)
     }
     if (edge.color) {
       e.attributes.apply({
