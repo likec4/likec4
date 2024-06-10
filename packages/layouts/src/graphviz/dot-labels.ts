@@ -60,7 +60,7 @@ export function nodeLabel(node: ComputedNode) {
     wrapToHTML({
       text: node.title,
       fontsize: 20,
-      maxchars: 35,
+      maxchars: 30,
       color: Colors[node.color].hiContrast
     })
   ]
@@ -80,7 +80,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapToHTML({
         text: node.description,
         fontsize: 14,
-        lineHeight: 1.125,
+        lineHeight: 1.25,
         maxchars: 45,
         color: Colors[node.color].loContrast
       })
@@ -104,7 +104,7 @@ export function edgeLabel(text: string) {
     text,
     maxchars: 35,
     fontsize: 13,
-    lineHeight: 1.125,
+    lineHeight: 1.25,
     bold: text === '[...]',
     align: 'left'
   })
@@ -123,9 +123,9 @@ export function stepEdgeLabel(step: number, text?: string | null) {
   }
   const html = wrapToHTML({
     text,
-    maxchars: 35,
+    maxchars: 30,
     fontsize: 13,
-    lineHeight: 1.125,
+    lineHeight: 1.25,
     align: 'left'
   })
   return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`

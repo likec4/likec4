@@ -103,4 +103,24 @@ describe.concurrent('dynamicViewStepChecks', () => {
     `)
     expect(errors).toEqual(['Invalid parent-child relationship'])
   })
+
+  it('should not report self-reference (loop)', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { errors } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1 {
+          component c2
+        }
+      }
+      views {
+        dynamic view index {
+          c2 -> c2
+        }
+      }
+    `)
+    expect(errors).toHaveLength(0)
+  })
 })

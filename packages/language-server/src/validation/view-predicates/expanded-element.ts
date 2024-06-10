@@ -9,6 +9,7 @@ export const expandElementExprChecks = (
   return (el, accept) => {
     switch (true) {
       case ast.isIncludePredicate(el.$container):
+      case ast.isDynamicViewRulePredicate(el.$container):
       case ast.isViewRuleStyle(el.$container):
         return
       case ast.isCustomElementExpr(el.$container):

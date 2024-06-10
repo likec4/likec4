@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import { $include } from '../../compute-view/__test__/fixture'
 import { $step, compute } from './fixture'
 
 describe('dynamic-view', () => {
-  it('should include nodes and edges', () => {
+  it('should include nodes and edges from steps', () => {
     const { nodeIds, edgeIds, edges } = compute([
       $step('customer -> cloud.frontend.dashboard', 'open dashboard'),
       $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
@@ -173,5 +174,127 @@ describe('dynamic-view', () => {
     //     label: 'return data'
     //   }
     // ])
+  })
+
+  it('should include nodes and edges from rules', () => {
+    const { nodeIds, edgeIds, nodes, edges } = compute([
+      $step('customer -> cloud.frontend.dashboard'),
+      $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
+      $include('cloud.*'),
+      $step('cloud.frontend.dashboard <- cloud.backend.graphql')
+    ])
+    expect(nodeIds).toEqual([
+      'customer',
+      'cloud.frontend.dashboard',
+      'cloud.backend.graphql',
+      'cloud'
+    ])
+    expect(edgeIds).toEqual([
+      'step-001',
+      'step-002',
+      'step-003'
+    ])
+
+    expect(nodes).toMatchObject([
+      {
+        id: 'customer',
+        parent: null,
+        outEdges: ['step-001'],
+        inEdges: []
+      },
+      {
+        id: 'cloud.frontend.dashboard',
+        parent: 'cloud',
+        inEdges: [
+          'step-001',
+          'step-003'
+        ],
+        outEdges: ['step-002']
+      },
+      {
+        id: 'cloud.backend.graphql',
+        parent: 'cloud',
+        inEdges: ['step-002'],
+        outEdges: ['step-003']
+      },
+      {
+        id: 'cloud',
+        parent: null,
+        inEdges: [
+          'step-001'
+        ],
+        outEdges: []
+      }
+    ])
+    const [step1, step2, step3] = edges
+    expect(step1).toMatchObject({
+      id: 'step-001',
+      source: 'customer',
+      target: 'cloud.frontend.dashboard',
+      label: 'opens in browser' // inferred from relations
+    })
+    expect(step1).not.toHaveProperty('dir')
+    expect(step2).toMatchObject({
+      id: 'step-002',
+      source: 'cloud.frontend.dashboard',
+      target: 'cloud.backend.graphql',
+      label: 'requests' // inferred from relations
+    })
+    expect(step2).not.toHaveProperty('dir')
+    expect(step3).toMatchObject({
+      id: 'step-003',
+      source: 'cloud.backend.graphql',
+      target: 'cloud.frontend.dashboard',
+      label: null
+    })
+    expect(step3).toHaveProperty('dir', 'back')
+  })
+
+  it('should include nodes and edges from rules (even not relative)', () => {
+    const { nodeIds, edgeIds, nodes, edges } = compute([
+      $step('customer -> cloud.frontend.dashboard'),
+      $step('cloud.frontend.dashboard -> cloud.backend.graphql'),
+      // Include expanded node
+      $include('amazon._')
+    ])
+    expect(nodeIds).toEqual([
+      'customer',
+      'cloud.frontend.dashboard',
+      'cloud.backend.graphql',
+      'amazon'
+    ])
+    expect(edgeIds).toEqual([
+      'step-001',
+      'step-002'
+    ])
+
+    expect(nodes).toMatchObject([
+      {
+        id: 'customer',
+        parent: null,
+        outEdges: ['step-001'],
+        inEdges: []
+      },
+      {
+        id: 'cloud.frontend.dashboard',
+        parent: null,
+        inEdges: [
+          'step-001'
+        ],
+        outEdges: ['step-002']
+      },
+      {
+        id: 'cloud.backend.graphql',
+        parent: null,
+        inEdges: ['step-002'],
+        outEdges: []
+      },
+      {
+        id: 'amazon',
+        parent: null,
+        inEdges: [],
+        outEdges: []
+      }
+    ])
   })
 })
