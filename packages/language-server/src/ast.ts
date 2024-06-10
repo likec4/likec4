@@ -1,10 +1,8 @@
 import {
   type c4,
   DefaultArrowType,
-  DefaultElementShape,
   DefaultLineStyle,
   DefaultRelationshipColor,
-  DefaultThemeColor,
   nonexhaustive,
   RelationRefError
 } from '@likec4/core'
@@ -105,7 +103,7 @@ export interface ParsedAstDynamicView {
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<string> | null
   steps: c4.DynamicViewStep[]
-  rules: Array<c4.ViewRuleStyle | c4.ViewRuleAutoLayout>
+  rules: Array<c4.DynamicViewRule>
 }
 
 export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView
@@ -211,10 +209,12 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
 const isValidatableAstNode = validatableAstNodeGuards([
   ast.isCustomElementExprBody,
   ast.isViewRulePredicateExpr,
+  ast.isDynamicViewRulePredicate,
   ast.isViewProperty,
   ast.isStyleProperty,
   ast.isTags,
   ast.isViewRule,
+  ast.isDynamicViewRule,
   ast.isDynamicViewStep,
   ast.isElementViewBody,
   ast.isDynamicViewBody,

@@ -1,4 +1,4 @@
-import { isSameHierarchy } from '@likec4/core'
+import { isAncestor } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import { ast } from '../ast'
 import { elementRef } from '../elementRef'
@@ -27,7 +27,7 @@ export const dynamicViewStep = (services: LikeC4Services): ValidationCheck<ast.D
         })
       }
 
-      if (source && target && isSameHierarchy(source, target)) {
+      if (source && target && (isAncestor(source, target) || isAncestor(target, source))) {
         accept('error', 'Invalid parent-child relationship', {
           node: el
         })

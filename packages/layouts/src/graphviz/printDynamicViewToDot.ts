@@ -59,7 +59,7 @@ export function dynamicViewToGraphvisModel({
     [_.nodesep]: pxToInch(110),
     [_.ranksep]: pxToInch(130),
     [_.pack]: pxToPoints(180),
-    [_.packmode]: 'array_3',
+    [_.packmode]: 'array_4',
     [_.pad]: pxToInch(10)
   })
 
@@ -91,7 +91,7 @@ export function dynamicViewToGraphvisModel({
     [_.fontsize]: pxToPoints(13),
     [_.penwidth]: pxToPoints(2),
     [_.style]: 'dashed',
-    [_.weight]: 1,
+    // [_.weight]: 1,
     [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
     [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
   })
@@ -264,10 +264,10 @@ export function dynamicViewToGraphvisModel({
     e.attributes.apply({
       [_.label]: stepEdgeLabel(step, label)
     })
-    if (isTruthy(label)) {
-      e.attributes.set(_.decorate, true)
-    }
-    if (edge.color) {
+    // if (isTruthy(label)) {
+    //   e.attributes.set(_.decorate, true)
+    // }
+    if (edge.color && edge.color !== DefaultRelationshipColor) {
       e.attributes.apply({
         [_.color]: Theme.relationships[edge.color].lineColor,
         [_.fontcolor]: Theme.relationships[edge.color].labelColor
@@ -279,7 +279,8 @@ export function dynamicViewToGraphvisModel({
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
-        [_.minlen]: 0
+        [_.minlen]: 0,
+        [_.weight]: 0
       })
       return
     }
@@ -291,9 +292,20 @@ export function dynamicViewToGraphvisModel({
       } else {
         e.attributes.set(_.arrowhead, 'none')
       }
-      e.attributes.set(_.weight, 0)
-      e.attributes.set(_.dir, 'back')
+      e.attributes.apply({
+        [_.dir]: 'back',
+        [_.weight]: 0
+      })
       return
+    }
+
+    const sourceIdx = viewNodes.findIndex(n => n.id === sourceFqn)
+    const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
+    if (targetIdx < sourceIdx) {
+      e.attributes.apply({
+        [_.minlen]: 0,
+        [_.weight]: 0
+      })
     }
 
     if (edge.head && edge.head !== 'normal') {

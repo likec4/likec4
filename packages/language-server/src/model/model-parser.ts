@@ -502,14 +502,34 @@ export class LikeC4ModelParser {
           return acc
         }
         try {
+          if (ast.isDynamicViewRulePredicate(n)) {
+            const include = [] as (c4.ElementExpression | c4.CustomElementExpr)[]
+            for (const expr of n.expressions) {
+              if (ast.isElementExpr(expr)) {
+                include.push(this.parseElementExpr(expr))
+                continue
+              }
+              if (ast.isCustomElementExpr(expr)) {
+                include.push(this.parseCustomElementExpr(expr))
+                continue
+              }
+            }
+            if (include.length > 0) {
+              acc.push({ include })
+            }
+            return acc
+          }
           if (ast.isViewRuleStyle(n)) {
             const styleProps = toElementStyle(n.styleprops)
-            acc.push({
-              targets: n.targets.map(n => this.parseElementExpr(n)),
-              style: {
-                ...styleProps
-              }
-            })
+            const targets = n.targets.map(n => this.parseElementExpr(n))
+            if (targets.length > 0) {
+              acc.push({
+                targets,
+                style: {
+                  ...styleProps
+                }
+              })
+            }
             return acc
           }
           if (ast.isViewRuleAutoLayout(n)) {
@@ -523,7 +543,7 @@ export class LikeC4ModelParser {
           logWarnError(e)
           return acc
         }
-      }, [] as Array<c4.ViewRuleStyle | c4.ViewRuleAutoLayout>),
+      }, [] as Array<c4.DynamicViewRule>),
       steps: body.steps.reduce((acc, n) => {
         try {
           if (isValid(n)) {

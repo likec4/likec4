@@ -1,7 +1,7 @@
 import { isNullish } from 'remeda'
 import type { IconUrl, NonEmptyArray } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
-import type { ElementExpression, Expression } from './expression'
+import type { CustomElementExpr, ElementExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ColorLiteral, ThemeColor } from './theme'
@@ -92,7 +92,15 @@ export interface DynamicViewStep {
   readonly isBackward?: boolean
 }
 
-export type DynamicViewRule = ViewRuleStyle | ViewRuleAutoLayout
+export type DynamicViewIncludeRule = {
+  include: (ElementExpression | CustomElementExpr)[]
+}
+
+export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is DynamicViewIncludeRule {
+  return 'include' in rule && Array.isArray(rule.include)
+}
+
+export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleAutoLayout
 export interface DynamicView extends BasicView<'dynamic'> {
   readonly __: 'dynamic'
 

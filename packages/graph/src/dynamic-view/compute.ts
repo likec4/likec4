@@ -6,6 +6,10 @@ import {
   DefaultLineStyle,
   DefaultRelationshipColor,
   invariant,
+  isCustomElement,
+  isDynamicViewIncludeRule,
+  isElementRef,
+  isExpandedElementExpr,
   isViewRuleAutoLayout,
   nonNullable,
   parentFqn,
@@ -13,6 +17,7 @@ import {
 } from '@likec4/core'
 import { isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
+import { applyElementCustomProperties } from '../utils/applyElementCustomProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
 
@@ -67,6 +72,26 @@ export class DynamicViewComputeCtx {
       })
     }
 
+    for (const rule of rules) {
+      if (isDynamicViewIncludeRule(rule)) {
+        for (const expr of rule.include) {
+          if (isElementRef(expr)) {
+            this.explicits.add(this.graph.element(expr.element))
+            continue
+          }
+          if (isExpandedElementExpr(expr)) {
+            this.explicits.add(this.graph.element(expr.expanded))
+            continue
+          }
+          if (isCustomElement(expr)) {
+            this.explicits.add(this.graph.element(expr.custom.element))
+            continue
+          }
+          console.warn('Unsupported include expression: ', expr)
+        }
+      }
+    }
+
     const elements = [...this.explicits]
     const nodesMap = buildComputeNodes(elements)
 
@@ -113,10 +138,13 @@ export class DynamicViewComputeCtx {
       return edge
     })
 
-    const nodes = applyViewRuleStyles(
+    const nodes = applyElementCustomProperties(
       rules,
-      // Keep order of elements
-      elements.map(e => nonNullable(nodesMap.get(e.id)))
+      applyViewRuleStyles(
+        rules,
+        // Keep order of elements
+        elements.map(e => nonNullable(nodesMap.get(e.id)))
+      )
     )
 
     const autoLayoutRule = rules.findLast(isViewRuleAutoLayout)

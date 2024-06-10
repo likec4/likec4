@@ -1,6 +1,7 @@
 import { type ast } from '../ast'
 import { logger } from '../logger'
 import type { LikeC4Services } from '../module'
+import { dynamicViewRulePredicate } from './dynamic-view-rule'
 import { dynamicViewStep } from './dynamic-view-step'
 import { elementChecks } from './element'
 import { opacityPropertyRuleChecks } from './property-checks'
@@ -35,6 +36,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
     Tag: tagChecks(services),
+    DynamicViewRulePredicate: dynamicViewRulePredicate(services),
     CustomElementExpr: customElementExprChecks(services),
     ExpandElementExpr: expandElementExprChecks(services),
     RelationshipKind: relationshipChecks(services),

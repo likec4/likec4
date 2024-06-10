@@ -169,8 +169,6 @@ DynamicViewBody:
   (steps+=DynamicViewStep | rules+=DynamicViewRule)*
 ;
 
-
-
 ViewRef:
   view=[LikeC4View];
 
@@ -200,6 +198,7 @@ ViewRule:
 ;
 
 DynamicViewRule:
+  DynamicViewRulePredicate |
   ViewRuleStyle |
   ViewRuleAutoLayout
 ;
@@ -211,6 +210,10 @@ DynamicViewStep:
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
   expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
+;
+
+DynamicViewRulePredicate:
+  'include' expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 ViewRuleStyle:

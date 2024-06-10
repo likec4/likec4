@@ -1,8 +1,6 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, nonNullable } from '@likec4/core'
-import { isDefined, isEmpty, isNullish as isNil, omitBy } from 'remeda'
-
-const omitNil = omitBy(isNil)
+import { isEmpty, isNullish as isNil, omitBy } from 'remeda'
 
 export function applyElementCustomProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
   const rules = _rules.flatMap(r => ('include' in r ? r.include.filter(Expr.isCustomElement) : []))
