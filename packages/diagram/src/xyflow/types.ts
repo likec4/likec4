@@ -61,6 +61,8 @@ export type RelationshipData = {
   headPoint: Point | null
   tailPoint: Point | null
   type: 'bezier' | 'poly'
+  // if dynamic view
+  stepNum: number | null
   label: null | {
     bbox: BBox
     text: string

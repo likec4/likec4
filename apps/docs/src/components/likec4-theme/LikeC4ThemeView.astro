@@ -1,16 +1,22 @@
 ---
-import { LikeC4View as C4View, type LikeC4ViewId } from './likec4-views'
+import { LikeC4View, type LikeC4ViewId } from './likec4-views'
 interface Props {
   viewId: LikeC4ViewId;
 }
 const { viewId } = Astro.props
 ---
 
-<C4View viewId={viewId} className="likec4-theme-view" client:only="react" injectFontCss={false} />
+<LikeC4View
+  className="likec4-theme-view"
+  viewId={viewId}
+  injectFontCss={false}
+  interactive={true}
+  client:only="react">
+</LikeC4View>
 
 <style>
   .likec4-theme-view {
-    max-width: 600px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
   }

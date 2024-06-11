@@ -217,7 +217,7 @@
     },
     {
       "name": "variable.other.constant.likec4",
-      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|frontend|api|webApp|authService|messageBroker)\\b"
+      "match": "\\b(customer|bigbank|singlePageApplication|mobileApp|apiApplication|mainframe|email|internetBankingSystem|cloud|ui|backend|auth|web|frontend|api|webApp|authService|messageBroker)\\b"
     },
     {
       "match": "(\\b\\.)?(\\*|_),?",

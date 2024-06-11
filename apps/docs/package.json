@@ -6,10 +6,11 @@
   "private": true,
   "scripts": {
     "generate:theme-c4": "tsx scripts/generate-theme-c4.mts",
+    "generate:dynamic": "likec4 gen react -o src/components/dynamic-view/likec4-views.jsx ./likec4/dynamic-view",
     "generate:theme": "likec4 gen react -o src/components/likec4-theme/likec4-views.jsx ./likec4/theme",
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./likec4/index-page",
-    "generate": "yarn generate:theme && yarn generate:bigbank && yarn generate:index",
+    "generate": "run generate:theme && run generate:bigbank && run generate:index && run generate:dynamic",
     "build:turbo": "run -T turbo run build --filter='@likec4/docs-astro'",
     "dev": "astro dev",
     "start": "astro dev",

@@ -99,7 +99,7 @@ export const description = style({
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: rem(14),
-  lineHeight: 1.125,
+  lineHeight: 1.25,
   textAlign: 'center',
   textWrap: 'pretty',
   color: vars.element.loContrast,
