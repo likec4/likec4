@@ -4,6 +4,8 @@ sidebar:
   order: 3
 ---
 
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
 
 LikeC4 has an official [extension for VSCode](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode) - open-source and available on [github](https://github.com/likec4/likec4/tree/develop/packages/vscode).  
 The extension provides:
@@ -18,3 +20,19 @@ The extension provides:
 
 Extension is universal and can run in the browser.  
 Try [example-cloud-system](https://github.dev/likec4/example-cloud-system) with:
+
+<CardGrid>
+<LinkCard
+  title="github.dev"
+  description="Open example project in the browser using github.dev"
+  href="https://github.dev/likec4/example-cloud-system/blob/main/model.c4"
+  target="_blank"
+/>
+
+<LinkCard
+  title="vscode.dev"
+  description="Open example project in the browser using vscode.dev"
+  href="https://vscode.dev/github/likec4/example-cloud-system/blob/main/model.c4"
+  target="_blank"
+/>
+</CardGrid>

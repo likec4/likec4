@@ -55,8 +55,11 @@ export async function webcomponentHandler({
 
   const filename = basename(outfilepath)
   consola.debug(`${k.dim('filename')} ${filename}`)
-  if (extname(filename).toLowerCase() !== '.js') {
-    throw new Error(`output file must be a js file: ${outfile}`)
+
+  const ext = extname(filename).toLocaleLowerCase()
+  if (ext !== '.js' && ext !== '.mjs') {
+    console.warn(`output file ${outfile} has extension "${ext}"`)
+    throw new Error(`output file ${outfile} must be a .js or .mjs`)
   }
 
   const publicDir = await mkTempPublicDir()
@@ -93,7 +96,7 @@ export async function webcomponentHandler({
      ${relative(cwd(), outfilepath)}
 
     ${k.dim('Setup and usage instructions:')}
-     ${k.blue('https://docs.likec4.dev/tooling/codegen/#webcomponents')}
+     ${k.blue('https://likec4.dev/tooling/codegen/#webcomponent')}
   `).trim()
   )
 

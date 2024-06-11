@@ -33,6 +33,9 @@ export default defineConfig({
         light: './src/assets/logo-light.svg',
         replacesTitle: true
       },
+      editLink: {
+        baseUrl: 'https://github.com/likec4/likec4/edit/main/apps/docs/'
+      },
       customCss: [
         // Fontsource files for to regular and semi-bold font weights.
         '@fontsource/ibm-plex-sans/cyrillic-400.css',
@@ -51,23 +54,19 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'What is LikeC4',
-          link: '/'
-        },
-        {
           label: 'Getting started',
           items: [
             {
               label: 'Tutorial',
               link: '/tutorial'
-            },
-            {
-              label: 'Playground',
-              link: 'https://playground.likec4.dev/w/tutorial/',
-              attrs: {
-                target: '_blank'
-              }
             }
+            // {
+            //   label: 'Playground',
+            //   link: 'https://playground.likec4.dev/w/tutorial/',
+            //   attrs: {
+            //     target: '_blank'
+            //   }
+            // }
           ]
         },
         {
@@ -122,6 +121,9 @@ export default defineConfig({
       },
       pagination: false,
       credits: false,
+      components: {
+        SiteTitle: './src/components/starlight/SiteTitle.astro'
+      },
       plugins: [
         starlightLinksValidator({
           exclude: [

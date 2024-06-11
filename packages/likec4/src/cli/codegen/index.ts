@@ -50,13 +50,13 @@ export const codegenCmd = {
       // react-next command
       .command(
         'react [path]',
-        'generate react component to render likec4 views',
+        'generate react component to embed likec4 views',
         yargs =>
           yargs
             .option('outfile', {
               alias: 'o',
               type: 'string',
-              desc: '<file> path to output file (.js or .mjs)',
+              desc: '<file> path to output file (.jsx, .mjs or .js)',
               normalize: true,
               coerce: resolve
             })
