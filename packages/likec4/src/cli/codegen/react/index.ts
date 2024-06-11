@@ -50,10 +50,10 @@ export async function reactHandler({ path, useDotBin, outfile }: HandlerParams) 
   const filename = basename(outfilepath)
   consola.debug(`${k.dim('filename')} ${filename}`)
 
-  const ext = extname(filename)
+  const ext = extname(filename).toLocaleLowerCase()
   if (ext !== '.js' && ext !== '.mjs' && ext !== '.jsx') {
     console.warn(`output file ${outfile} has extension "${ext}"`)
-    throw new Error(`output file ${outfile} must be a .js or .mjs`)
+    throw new Error(`output file ${outfile} must be a .js, .jsx or .mjs`)
   }
 
   const cfg = await viteReactConfig({
@@ -93,7 +93,7 @@ export declare function LikeC4View({viewId, ...props}: LikeC4ViewProps): React.R
       ${relative(cwd(), outfilepath)}
 
     ${k.dim('How to use:')}
-     ${k.blue('https://docs.likec4.dev/tooling/codegen/#react')}
+     ${k.blue('https://likec4.dev/tooling/codegen/#react')}
   `).trim()
   )
 

@@ -37,57 +37,47 @@ You can use LikeC4 as a standalone tool or integrate it into your existing toolc
 
 ### What does LikeC4 look like?
 
-```likec4 title="example.c4"
-specification {
-  // Element kinds used in our architecture
+```likec4
+//example.c4
+specification { // define "types" of architecture elements
   element actor {
     style {
-      shape person
+      shape person // how to render
     }
   }
   element system
   element component
-  // Relationship kind
-  relationship async
+  relationship async // allow "typed" relationship
 }
 
-// Describe the architecture
-model {
+model { // describe your architecture, single source of truth
   customer = actor 'Customer' {
-    description 'Customer of Cloud System'
+    description 'A user of our product with active subscription'
+    -> ui 'opens in browser' // how relationships are
   }
-
-  cloud = system 'Cloud System' {
-
+  cloud = system 'Our SaaS' {
     backend = component 'Backend' {
-      description 'Backend services and API'
+      description '
+        Implements business logic
+        and provides GraphQL API
+      '
     }
 
     ui = component 'Frontend' {
-      description '
-        All the frontend applications
-        of Cloud System
-      '
+      description 'NextJs application'
       style {
         shape browser
       }
     }
+
+    ui -[async]-> backend 'requests via HTTPS'
   }
-
-  customer -> ui 'opens in browser'
-
-  // Relationship of predefined kind
-  ui -[async]-> backend 'requests via GraphQL'
 }
 
-// What diagrams to generate
 views {
-  view index of cloud {
-    include *
+  view index {
+    include *, cloud.*
 
-    style cloud {
-      color muted
-    }
     style cloud.* {
       color green
     }
@@ -95,24 +85,14 @@ views {
 }
 ```
 
-{/* <Code code={importedCode} lang="likec4" title="example.c4" /> */}
+Run to preview: 
+
+```bash
+npx likec4 start
+```
+
+And this is rendered (click to explore):
 
 <LikeC4View viewId="index"/>
 
-### Getting Started
-
-Try the [tutorial](/tutorial) to get the idea, or:
-
-- Online playgrounds:
-  - <a href="https://playground.likec4.dev/w/tutorial/" target='_blank'>Tutorial</a>
-  - <a href="https://playground.likec4.dev/w/bigbank/" target='_blank'>Big Bank Architecture</a>
-- Online with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4)
-- Online with [vscode.dev](https://vscode.dev/github/likec4/template/blob/main/src/model.c4)
-- Install [VSCode extension](https://marketplace.visualstudio.com/items?itemName=likec4.likec4-vscode)
-
-### From Template
-
-Fork this [template repository](https://github.com/likec4/template)  
-It provides a minimal setup to start with LikeC4 ([live demo](https://template.likec4.dev/view/cloud)).
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/likec4/template?file=src%2Fmodel.c4&initialpath=%2Fview%2Findex)
+Check the [Tutorial](/tutorial/) - for a quick overview of LikeC4.
