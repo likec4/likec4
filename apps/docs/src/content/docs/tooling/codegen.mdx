@@ -21,6 +21,19 @@ import { Card } from '@astrojs/starlight/components';
 likec4 codegen react --outfile ./src/likec4.generated.jsx
 ```
 
+```tsx
+import { LikeC4View } from './likec4.generated'
+
+const App = () => {
+  return (
+    <div>
+      <LikeC4View viewId="index" />
+    </div>
+  )
+}
+
+```
+
 #### Webcomponent
 
 ....
@@ -36,4 +49,3 @@ likec4 codegen views-data --outfile ./src/likec4.generated.ts
 likec4 codegen views ...
 likec4 codegen ts ...
 ```
-

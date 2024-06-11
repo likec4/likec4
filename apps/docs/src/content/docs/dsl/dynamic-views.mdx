@@ -14,28 +14,83 @@ import { Card } from '@astrojs/starlight/components';
 import DynamicLikeC4View from '@components/dynamic-view/DynamicLikeC4View.astro';
 
 <Aside type='caution' title="Experimental" >
-  This implementation is experimental and may change in the future.  
-  The main purpose is to gather your feedback, suggestions and ideas.
+  The implementation is experimental and may change in the future.  
+  The main purpose is to gather feedback, suggestions and ideas.
 </Aside>
 
 
 Dynamic view describes a particular use-case or scenario, with specific elements and interactions, defined only in the view (without polluting the model).
 
-### View definition
+### Dynamic view definition
 
-Views are defined in `views` section.  
-Views may be named (must be unique) or unnamed (can't be referenced):
+```likec4 showLineNumbers copy collapse={1-54}
+//dynamic-view.c4
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+}
 
-```likec4
+model {
+  customer = actor 'Customer' {
+    description 'Customer of Cloud System'
+  }
+
+  cloud = system 'Cloud System' {
+    backend = component 'Backend' {
+      description 'Backend services and API'
+
+      auth = component 'Authentication'
+
+      api = component 'Backend API' {
+        description 'RESTful API'
+      }
+
+      api -> auth 'validates bearer token' 
+    }
+
+    ui = component 'Frontend' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      style {
+        shape browser
+      }
+
+      web = component 'Customer Dashboard' {
+        description 'React Application'
+        style {
+          shape browser
+        }
+      }
+
+      web -> auth
+      web -> api 'requests'
+    }
+  }
+
+  customer -> web 'opens in browser'
+
+}
+
 views {
   dynamic view example {
     title 'Dynamic View Example'
     customer -> web 'opens in browser'
     web -> auth 'updates bearer token if needed'
     web -> api 'POST request'
-    api -> auth 'validates bearer token'
-    api -> api 'process request'
+    api -> auth // title is derived from the model
+    api -> api 'process request' // allow self-call
+
+    // reverse direction, as a response to line 59
     web <- api 'returns JSON'
+
+    // Include elements, that are not participating
     include cloud, ui, backend
 
     style cloud {
