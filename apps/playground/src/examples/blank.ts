@@ -9,6 +9,7 @@ specification {
       color secondary
     }
   }
+  element system
 }
 
 model {
@@ -16,10 +17,10 @@ model {
     description 'A user of my software system'
   }
   softwareSystem = system 'Software System' {
-    description 'My software system.'
+    description 'My software system'
   }
 
-  user -> softwareSystem "Uses"
+  user -> softwareSystem 'uses'
 }
 
 views {
