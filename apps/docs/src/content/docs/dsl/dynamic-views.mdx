@@ -1,0 +1,52 @@
+---
+title: Dynamic views
+sidebar: 
+  order: 9
+  badge: new
+tableOfContents:
+  minHeadingLevel: 3
+  maxHeadingLevel: 4
+---
+
+import { Aside, FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
+
+import { Card } from '@astrojs/starlight/components';
+import DynamicLikeC4View from '@components/dynamic-view/DynamicLikeC4View.astro';
+
+<Aside type='caution' title="Experimental" >
+  This implementation is experimental and may change in the future.  
+  The main purpose is to gather your feedback, suggestions and ideas.
+</Aside>
+
+
+Dynamic view describes a particular use-case or scenario, with specific elements and interactions, defined only in the view (without polluting the model).
+
+### View definition
+
+Views are defined in `views` section.  
+Views may be named (must be unique) or unnamed (can't be referenced):
+
+```likec4
+views {
+  dynamic view example {
+    title 'Dynamic View Example'
+    customer -> web 'opens in browser'
+    web -> auth 'updates bearer token if needed'
+    web -> api 'POST request'
+    api -> auth 'validates bearer token'
+    api -> api 'process request'
+    web <- api 'returns JSON'
+    include cloud, ui, backend
+
+    style cloud {
+      color muted
+      opacity 0%
+    }
+    style ui, backend {
+      opacity 0%
+    }
+  }
+}
+```
+
+<DynamicLikeC4View viewId="example"/>

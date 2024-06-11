@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { createVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
 import { vars, xyvars } from '../../theme.css'
 
 const mixColor = createVar('mix-color')
@@ -36,7 +36,7 @@ globalStyle(`:where(${isSelected}) ${container}`, {
   }
 })
 
-globalStyle(`${container}[data-edge-hovered='true']`, {
+globalStyle(`${container}:is([data-edge-hovered='true'],[data-edge-active='true'])`, {
   vars: {
     // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
@@ -71,7 +71,7 @@ export const edgePathBg = style({
   transitionDuration: '155ms',
   transitionTimingFunction: 'ease-out',
   selectors: {
-    [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
+    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
       strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8px)`,
       strokeOpacity: 0.15
     }
@@ -86,7 +86,7 @@ export const controlPoint = style({
   cursor: 'grab',
   pointerEvents: 'visible',
   selectors: {
-    [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
+    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
       transition: 'all 150ms ease-out',
       fillOpacity: 1,
       strokeWidth: 3
@@ -114,10 +114,13 @@ export const cssEdgePath = style({
       animationDelay: '350ms',
       transition: 'all 130ms ease-out'
     },
-    [`:where(${isSelected}) &`]: {
+    [`:where(${isSelected}, [data-edge-active='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
       transition: 'all 130ms ease-out'
+    },
+    [`:where([data-edge-dir='back']) &`]: {
+      animationDirection: 'reverse'
     }
   }
 })
@@ -135,19 +138,13 @@ export const edgeLabel = style({
   pointerEvents: 'all',
   cursor: 'pointer',
   transformOrigin: '50% 50%',
-  textAlign: 'left',
   mixBlendMode: 'screen',
-  padding: '2px 6px 4px 6px',
-  width: 'max-content',
+  color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: '3px',
   transform: varTranslate,
-  backfaceVisibility: 'hidden',
   vars: {
-    // [varTranslate]: `translate(calc(${varLabelX} - 50%), calc(${varLabelY} - 50%))`,
-    [varTranslate]: `translate(${varLabelX}, ${varLabelY})`,
-    [varLabelX]: '50%',
-    [varLabelY]: '50%'
+    [varTranslate]: `translate(${fallbackVar(varLabelX, '50%')}, ${fallbackVar(varLabelY, '50%')})`
   },
   selectors: {
     // [mantine.darkSelector]: {
@@ -160,10 +157,32 @@ export const edgeLabel = style({
   }
 })
 
-export const edgeLabelBody = style({
-  // display: 'inline',
-  color: xyvars.edge.labelColor,
+export const stepEdgeNumber = style({
+  position: 'absolute',
+  top: -2,
+  left: -2,
+  fontWeight: 500,
+  fontSize: rem(16),
+  lineHeight: 0.9,
+  padding: '4px 6px',
+  borderRadius: 99999,
+  textAlign: 'center',
+  minWidth: 22,
+  backgroundColor: xyvars.edge.labelBgColor,
+  transition: 'all 120ms ease-out',
+  transform: 'translateX(-100%)',
+  fontVariantNumeric: 'tabular-nums',
+  selectors: {
+    ':where([data-edge-hovered="true"],[data-edge-active="true"]) &': {
+      fontWeight: 600,
+      backgroundColor: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 5%)`
+    }
+  }
+})
+
+export const edgeLabelText = style({
+  padding: '2px 6px 4px 6px',
+  textAlign: 'left',
   fontSize: rem(12.5),
-  lineHeight: 1.12,
-  transition: 'color 120ms ease-out'
+  lineHeight: 1.2
 })

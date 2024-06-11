@@ -1,6 +1,7 @@
 import {
   type DiagramNode,
   type DiagramView,
+  extractStep,
   type Fqn,
   invariant,
   type NonEmptyArray,
@@ -42,12 +43,13 @@ function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
 const nodeZIndex = (node: DiagramNode) => node.level + 1
 
 export function diagramViewToXYFlowData(
-  view: Pick<DiagramView, 'nodes' | 'edges'>,
+  view: Pick<DiagramView, 'nodes' | 'edges' | '__'>,
   opts: {
     draggable: boolean
     selectable: boolean
   }
 ): XYFlowData {
+  const isDynamicView = view.__ === 'dynamic'
   const editor: XYFlowData = {
     nodes: [],
     edges: []
@@ -170,11 +172,12 @@ export function diagramViewToXYFlowData(
         controlPoints,
         headPoint: edge.headArrowPoint ?? null,
         tailPoint: edge.tailArrowPoint ?? null,
-        label: edge.labelBBox && edge.label
+        stepNum: isDynamicView ? extractStep(edge.id) : null,
+        label: !!edge.labelBBox
           ? {
             bbox: edge.labelBBox,
             // text: edge.labels ? edge.labels.map(l => l.text).join('\n') : ''
-            text: edge.label
+            text: edge.label ?? ''
           }
           : null
       },

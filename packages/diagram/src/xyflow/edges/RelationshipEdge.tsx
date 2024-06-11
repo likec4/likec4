@@ -8,12 +8,11 @@ import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
 import { type CSSProperties, memo } from 'react'
-import { first, hasAtLeast, last } from 'remeda'
+import { first, hasAtLeast, last, zip } from 'remeda'
 import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
-import { toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
 import { getEdgeParams, getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
@@ -81,7 +80,11 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && isSamePoint(prev.sourceY, next.sourceY)
   && isSamePoint(prev.targetX, next.targetX)
   && isSamePoint(prev.targetY, next.targetY)
-  && eq(prev.data, next.data)
+  && eq(prev.data.stepNum, next.data.stepNum)
+  && eq(prev.data.edge, next.data.edge)
+  && zip(prev.data.controlPoints, next.data.controlPoints).every(([a, b]) =>
+    isSamePoint(a[0], b[0]) && isSamePoint(a[1], b[1])
+  )
 )
 
 const curve = d3line<Point>()
@@ -104,10 +107,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     || !isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
 
   const { edge: diagramEdge, controlPoints } = data
+
   // const edgePath = bezierPath(edge.points)
 
   const color = diagramEdge.color ?? 'gray'
-  const { isHovered, isDimmed } = useDiagramState(s => ({
+  const isStepEdge = data.stepNum !== null
+  const { isActive, isHovered, isDimmed } = useDiagramState(s => ({
+    isActive: s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum,
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id)
   }))
@@ -171,6 +177,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         isDimmed && edgesCss.dimmed
       ])}
       data-likec4-color={color}
+      data-edge-dir={diagramEdge.dir}
+      data-edge-active={isActive}
       data-edge-hovered={isHovered}>
       <defs>
         <marker
@@ -202,7 +210,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           r={3}
         />
       ))}
-      {data.label && (
+      {(data.label || isStepEdge) && (
         <EdgeLabelRenderer>
           <Box
             className={clsx([
@@ -213,19 +221,29 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             data-likec4-color={color}
             style={{
               ...assignInlineVars({
-                [edgesCss.varLabelX]: toDomPrecision(labelX) + 'px',
-                [edgesCss.varLabelY]: toDomPrecision(labelY) + 'px'
+                [edgesCss.varLabelX]: Math.floor(labelX) + 'px',
+                [edgesCss.varLabelY]: Math.floor(labelY) + 'px'
               }),
-              maxWidth: data.label.bbox.width + 10,
+              ...(data.label && {
+                maxWidth: data.label.bbox.width + 12
+              }),
               zIndex: edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
             }}
             mod={{
-              'data-edge-hovered': isHovered
+              'data-edge-hovered': isHovered,
+              'data-edge-active': isActive
             }}
           >
-            <Box className={edgesCss.edgeLabelBody}>
-              {data.label.text}
-            </Box>
+            {isStepEdge && (
+              <Box className={edgesCss.stepEdgeNumber}>
+                {data.stepNum}
+              </Box>
+            )}
+            {data.label?.text && (
+              <Box className={edgesCss.edgeLabelText}>
+                {data.label.text}
+              </Box>
+            )}
             {
               /* <Popover
                 position="bottom"

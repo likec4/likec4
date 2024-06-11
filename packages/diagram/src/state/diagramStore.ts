@@ -290,6 +290,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               set(
                 {
+                  activeDynamicViewStep: null,
                   focusedNodeId: nodeId,
                   dimmed
                 },
@@ -513,6 +514,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               dimmed.add(n.id)
             }
             set({
+              focusedNodeId: null,
               activeDynamicViewStep: nextStep,
               dimmed
             })

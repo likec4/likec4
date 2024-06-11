@@ -112,6 +112,7 @@ export class LikeC4View extends HTMLElement {
           fitViewPadding={0.01}
           showElementLinks
           showDiagramTitle={false}
+          enableDynamicViewWalkthrough={false}
           controls={false}
           nodesSelectable={false}
           keepAspectRatio={false}

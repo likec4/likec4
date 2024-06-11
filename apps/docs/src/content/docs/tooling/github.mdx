@@ -1,5 +1,6 @@
 ---
 title: GitHub Actions
+description: Integrate LikeC4 into your CI/CD pipeline to keep architecture diagrams up-to-date.
 ---
 
 ![GitHub release](https://img.shields.io/github/release/likec4/actions.svg)
@@ -21,7 +22,7 @@ steps:
       action: build
       path: src/likec4
       output: dist
-      base: baseurl
+      base: /baseurl/
 
   - name: upload artifacts
     uses: actions/upload-artifact@v3

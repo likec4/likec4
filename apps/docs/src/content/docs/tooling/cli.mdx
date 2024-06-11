@@ -14,15 +14,15 @@ tableOfContents:
 
 import { LinkCard } from '@astrojs/starlight/components';
 
-The `likec4` CLI is a tool for various operations and automation over LikeC4 projects, such as:
+The `likec4` CLI is a tool for various operations and automation, such as:
 
-- Preview diagrams in a local web server (with fast hot-reload on changes)
+- Start development server to preview diagrams (with hot-reload)
 - Build a static website for sharing and embedding diagrams
 - Export to PNG, Mermaid, Dot, D2
-- Generate Typescript with:
+- Generate Typescript:
   - React components
-  - Web components
-  - Structured data
+  - Webcomponents
+  - Typed data
 
 ### Install
 
@@ -139,6 +139,11 @@ likec4 export png -o ./assets
 This command starts local web server and uses Playwright to take screenshots.  
 If you plan to use it on CI, refer to [Playwright documentation](https://playwright.dev/docs/ci) for details
 or consider [LikeC4 GitHub Actions](/tooling/github)
+
+:::note
+Export to PNG requires Playwright.  
+You will be prompted with a command to install it if it's not found.
+:::
 
 #### Export to JSON
 

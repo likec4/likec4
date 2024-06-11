@@ -1,0 +1,105 @@
+specification {
+  // Element kinds used in our architecture
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element component
+}
+
+// Describe the architecture
+model {
+  customer = actor 'Customer' {
+    description 'Customer of Cloud System'
+  }
+
+  cloud = system 'Cloud System' {
+
+
+    backend = component 'Backend' {
+      description 'Backend services and API'
+
+      auth = component 'Authentication'
+
+      api = component 'Backend API' {
+        description 'RESTful API'
+      }
+
+      api -> auth
+    }
+
+    ui = component 'Frontend' {
+      description '
+        All the frontend applications
+        of Cloud System
+      '
+      style {
+        shape browser
+      }
+
+      web = component 'Customer Dashboard' {
+        description 'React Application'
+        style {
+          shape browser
+        }
+      }
+
+      web -> auth
+      web -> api 'requests'
+    }
+  }
+
+  customer -> web 'opens in browser'
+
+}
+
+// What diagrams to generate
+views {
+  view index of customer {
+    include
+      customer,
+      cloud,
+      web
+
+    style cloud {
+      opacity 25%
+      color muted
+    }
+    style cloud.* {
+      color green
+    }
+  }
+
+  view cloud of cloud {
+    include *
+  }
+
+  view backend of backend {
+    include *
+  }
+
+  view web of web {
+    include *
+  }
+
+  dynamic view example {
+    title 'Dynamic View Example'
+    customer -> web 'opens in browser'
+    web -> auth 'updates bearer token if needed'
+    web -> api 'POST request'
+    api -> auth 'validates bearer token'
+    api -> api 'process request'
+    web <- api 'returns JSON'
+    include cloud, ui, backend
+
+    style cloud {
+      color muted
+      opacity 0%
+    }
+    style ui, backend {
+      opacity 0%
+    }
+  }
+}
