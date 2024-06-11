@@ -290,7 +290,7 @@ view {
 
 ###### Outgoing
 
-Include elements of only they have outgoing relationships to visible elements:
+Include elements if only they have outgoing relationships to visible elements:
 
 ```likec4
 include customer ->
@@ -299,7 +299,7 @@ include cloud.* ->
 
 ###### In/Out
 
-For example, include nested elements of `cloud`, that have any relationships with visible elements:
+Include nested elements of `cloud`, that have any relationships with visible elements:
 
 ```likec4
 include -> cloud.* ->
@@ -307,7 +307,7 @@ include -> cloud.* ->
 
 ###### Directed relationships
 
-Include relationships of specific direction and the elements:
+Include elements if they have relationships of specific direction:
 
 ```likec4
 include customer -> cloud.*
@@ -315,7 +315,7 @@ include customer -> cloud.*
 
 ###### Any relationship
 
-Include any relationships between elements:
+Include elements if they have any relationships:
 
 ```likec4
 include customer <-> cloud
@@ -384,7 +384,7 @@ view apiApp of internetBankingSystem.apiApplication {
 
 ### Extend views
 
-Views can be extended to avoid duplication, create a "baseline" or, for example, "slides" for a presentation:
+Views can be extended to avoid duplication, to create a "baseline" or, for example, "slides" for a presentation:
 
 ```likec4
 views {

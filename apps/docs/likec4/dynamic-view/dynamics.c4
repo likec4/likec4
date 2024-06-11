@@ -27,7 +27,7 @@ model {
         description 'RESTful API'
       }
 
-      api -> auth
+      api -> auth 'validates bearer token' 
     }
 
     ui = component 'Frontend' {
@@ -86,7 +86,7 @@ views {
 
   dynamic view example {
     title 'Dynamic View Example'
-    customer -> web 'opens in browser'
+    customer -> web
     web -> auth 'updates bearer token if needed'
     web -> api 'POST request'
     api -> auth 'validates bearer token'

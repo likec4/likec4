@@ -1,5 +1,6 @@
 import react from '@astrojs/react'
 import starlight from '@astrojs/starlight'
+import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections'
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
 import starlightLinksValidator from 'starlight-links-validator'
@@ -9,6 +10,7 @@ import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
 // https://astro.build/config
 export default defineConfig({
   site: 'https://docs.likec4.dev',
+
   // devToolbar: {
   //   enabled: true
   // },
@@ -101,7 +103,8 @@ export default defineConfig({
       ],
       expressiveCode: {
         plugins: [
-          pluginLineNumbers()
+          pluginLineNumbers(),
+          pluginCollapsibleSections()
         ],
         styleOverrides: {
           borderRadius: '4px'
@@ -118,6 +121,7 @@ export default defineConfig({
         }
       },
       pagination: false,
+      credits: false,
       plugins: [
         starlightLinksValidator({
           exclude: [
