@@ -1,3 +1,31 @@
+# [1.2.0](https://github.com/likec4/likec4/compare/v1.1.1...v1.2.0) (2024-06-12)
+
+### 🚀 Features  
+
+**Dynamic Views [Experimental]**  
+
+  Describe a particular use-case or scenario, with ad-hoc interactions (without polluting the model).
+
+  ```zig
+  dynamic view example {
+    title 'Dynamic View Example'
+    customer -> web 'opens in browser'
+    web -> api 'POST request'
+    web <- api 'returns JSON'
+  }
+  ```
+
+  Check [example](https://docs.likec4.dev/dsl/dynamic-views/)
+
+### Bug Fixes
+
+* **diagram:** always zoom to 1.0 on container resize ([f5b898c](https://github.com/likec4/likec4/commit/f5b898c01f90212cb4e171530e8e6142cb27c076))
+* **diagram:** backdrop in safari ([94530ae](https://github.com/likec4/likec4/commit/94530ae4fe2da710337512c11a616698b06f2bdb))
+* **diagram:** focus in dynamic walkthrough ([b4c1752](https://github.com/likec4/likec4/commit/b4c1752aed96049b2605ffcabc8812762c363fa9))
+* **playground:** missing element type ([4aad466](https://github.com/likec4/likec4/commit/4aad4668885b0b6f88825a7fe58704b8dcf39401))
+* **playground:** unique extension for each playground ([8fcfed6](https://github.com/likec4/likec4/commit/8fcfed6d8e26d43d3da5306d0985501696d2c516))
+
+
 ## [1.1.1](https://github.com/likec4/likec4/compare/v1.1.0...v1.1.1) (2024-05-26)
 
 ### Bug Fixes
