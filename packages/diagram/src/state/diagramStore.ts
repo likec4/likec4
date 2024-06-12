@@ -23,7 +23,7 @@ import { createWithEqualityFn } from 'zustand/traditional'
 import type { Change, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
-import type { XYFlowInstance } from '../xyflow/types'
+import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 
 export type DiagramStore = {
   // Incoming props
@@ -498,8 +498,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const nextStep = (activeDynamicViewStep ?? 0) + increment
             const edgeId = StepEdgeId(nextStep)
             const dimmed = new StringSet()
-            let edge: DiagramEdge | null = null
-            for (const e of view.edges) {
+            let edge: XYFlowEdge | null = null
+            for (const e of xyflow.getEdges()) {
               if (e.id === edgeId) {
                 edge = e
                 continue
@@ -507,23 +507,25 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               dimmed.add(e.id)
             }
             invariant(!!edge, `edge not found: ${edgeId}`)
-            for (const n of view.nodes) {
+            const selected = [] as XYFlowNode[]
+            for (const n of xyflow.getNodes()) {
               if (n.id === edge.source || n.id === edge.target) {
+                selected.push(n)
                 continue
               }
               dimmed.add(n.id)
             }
-            set({
-              focusedNodeId: null,
-              activeDynamicViewStep: nextStep,
-              dimmed
-            })
             xyflow.fitView({
               duration: 400,
               maxZoom: 1,
               minZoom: MinZoom,
               padding: fitViewPadding,
-              nodes: [{ id: edge.source }, { id: edge.target }]
+              nodes: selected
+            })
+            set({
+              focusedNodeId: null,
+              activeDynamicViewStep: nextStep,
+              dimmed
             })
           },
 
