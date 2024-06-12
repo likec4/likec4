@@ -2371,7 +2371,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.10.1"
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^2.47.0"
+    "@tabler/icons-react": "npm:^3.0.0"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/bezier-js": "npm:^4.1.3"
     "@types/d3-shape": "npm:^3"
@@ -2625,7 +2625,7 @@ __metadata:
     "@mantine/hooks": "npm:^7.10.1"
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^2.47.0"
+    "@tabler/icons-react": "npm:^3.0.0"
     "@tanstack/react-router": "npm:^1.31.19"
     "@tanstack/router-vite-plugin": "npm:^1.31.18"
     "@typefox/monaco-editor-react": "npm:4.2.0"
@@ -4428,22 +4428,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tabler/icons-react@npm:^2.47.0":
-  version: 2.47.0
-  resolution: "@tabler/icons-react@npm:2.47.0"
+"@tabler/icons-react@npm:^3.0.0":
+  version: 3.5.0
+  resolution: "@tabler/icons-react@npm:3.5.0"
   dependencies:
-    "@tabler/icons": "npm:2.47.0"
-    prop-types: "npm:^15.7.2"
+    "@tabler/icons": "npm:3.5.0"
   peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/09a78a1b88aab69a11cd783c7d1bb75aeabe2ed03e3f957d00113dfde974ec73ee850551c430664634469ebcf32db749497a81bd30c01f2fb3425884cba7429c
+    react: ">= 16"
+  checksum: 10c0/9669d26e2ab4654d3d1c124a5ffd42c276d5a7ebc83b81ecb200e1f89dc3e9271557cf6eccc78bdd0ebdd0536fa4cd566e2b638ab4407e9415457c28ef05786e
   languageName: node
   linkType: hard
 
-"@tabler/icons@npm:2.47.0":
-  version: 2.47.0
-  resolution: "@tabler/icons@npm:2.47.0"
-  checksum: 10c0/ffdffa1289ca958f7d7c06c19e35c51a664d916df510fb44fb673abc2031747f2b3c47e21ba4c1ca07a6872b793f2063179bbbfb6afd1c68b522ca333460a7f3
+"@tabler/icons@npm:3.5.0":
+  version: 3.5.0
+  resolution: "@tabler/icons@npm:3.5.0"
+  checksum: 10c0/0d6b15266e116dcf56bca417d013f1027b57404e5ed7f9a2a14e216eabdd04980ff971129491b666ffdc11953107c0b4540033c92d611fa74e127fc9d443fc4f
   languageName: node
   linkType: hard
 
@@ -11279,7 +11278,7 @@ __metadata:
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
-    "@tabler/icons-react": "npm:^2.47.0"
+    "@tabler/icons-react": "npm:^3.0.0"
     "@tanstack/react-router": "npm:^1.31.19"
     "@tanstack/router-vite-plugin": "npm:^1.31.18"
     "@types/mermaid": "npm:^9.2.0"
