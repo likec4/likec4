@@ -40,7 +40,7 @@
     "@babel/preset-typescript": "^7.24.1",
     "@types/node": "^20.13.0",
     "@vitest/ui": "~1.5.2",
-    "dprint": "0.46.1",
+    "dprint": "0.46.2",
     "esbuild": "^0.21.0",
     "execa": "^9.1.0",
     "global": "^4.4.0",
