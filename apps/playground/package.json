@@ -72,5 +72,5 @@
     "vscode-uri": "~3.0.8",
     "zustand": "^4.5.2"
   },
-  "packageManager": "yarn@4.2.2"
+  "packageManager": "yarn@4.3.0"
 }
