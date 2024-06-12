@@ -1,9 +1,9 @@
 {
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "moduleResolution": "Bundler",
-    "incremental": true,
-    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@components/*": [
@@ -13,16 +13,5 @@
         "src/assets/*"
       ]
     }
-  },
-  "references": [
-    {
-      "path": "../../packages/core/tsconfig.json",
-    },
-    {
-      "path": "../../packages/diagram/tsconfig.json"
-    },
-    {
-      "path": "../../packages/likec4/app"
-    }
-  ]
+  }
 }

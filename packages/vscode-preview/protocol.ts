@@ -7,8 +7,7 @@ import type {
   NonEmptyArray,
   RelationID,
   ThemeColor,
-  ViewID,
-  ViewRuleAutoLayout
+  ViewID
 } from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 

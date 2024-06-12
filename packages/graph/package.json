@@ -33,9 +33,8 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc -b",
-    "build": "tsc -b",
-    "prepack": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
     "test": "run -T vitest run",
     "clean": "run -T rimraf dist"
@@ -47,6 +46,7 @@
     "remeda": "^1.61.0"
   },
   "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
     "execa": "^9.1.0",
     "typescript": "^5.4.5",
     "unbuild": "^2.0.0",

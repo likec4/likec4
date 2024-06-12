@@ -1,7 +1,6 @@
 import {
   type c4,
   compareByFqnHierarchically,
-  invariant,
   isElementView,
   isStrictElementView,
   parentFqn,
@@ -292,7 +291,7 @@ export class LikeC4ModelBuilder {
     this.langiumDocuments = services.shared.workspace.LangiumDocuments
     const parser = services.likec4.ModelParser
 
-    services.shared.workspace.DocumentBuilder.onUpdate((changed, deleted) => {
+    services.shared.workspace.DocumentBuilder.onUpdate((_changed, deleted) => {
       if (deleted.length > 0) {
         this.notifyListeners(deleted)
       }

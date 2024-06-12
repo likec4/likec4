@@ -1,39 +1,19 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "noEmit": true,
-    "rootDir": ".",
     "outDir": "./dist",
-    "target": "ES2022",
-    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "noEmit": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
     "types": [
       "vite/client",
       "vscode-webview"
     ],
-    "jsx": "react-jsx"
   },
   "include": [
     "protocol.ts",
     "./src"
-  ],
-  "exclude": [
-    "**/node_modules",
-  ],
-  "references": [
-    {
-      "path": "../core/tsconfig.json"
-    },
-    {
-      "path": "../diagram/tsconfig.json"
-    }
   ]
 }

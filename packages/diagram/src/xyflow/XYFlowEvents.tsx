@@ -164,20 +164,20 @@ export function useXYFlowEvents() {
           diagramApi.setState({ viewportChanged }, false, `viewport-changed: ${viewportChanged}`)
         }
       },
-      onNodeMouseEnter: (event, xynode) => {
+      onNodeMouseEnter: (_event, xynode) => {
         hoveredNodeFromOnEdgeEnterRef.current = ''
         const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
         if (hoveredNodeId !== xynode.id) {
           setHoveredNode(xynode.id)
         }
       },
-      onNodeMouseLeave: (event, xynode) => {
+      onNodeMouseLeave: (_event, xynode) => {
         const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
         if (hoveredNodeId === xynode.id) {
           setHoveredNode(null)
         }
       },
-      onEdgeMouseEnter: (event, { id, source, target }) => {
+      onEdgeMouseEnter: (_event, { id, source, target }) => {
         const { hoveredNodeId, focusedNodeId, setHoveredEdge, setHoveredNode } = diagramApi.getState()
         setHoveredEdge(id)
         if ((focusedNodeId === source || focusedNodeId === target) && focusedNodeId !== hoveredNodeId) {
@@ -185,7 +185,7 @@ export function useXYFlowEvents() {
           setHoveredNode(next)
         }
       },
-      onEdgeMouseLeave: (event, xyedge) => {
+      onEdgeMouseLeave: (_event, xyedge) => {
         const { hoveredEdgeId, setHoveredEdge, hoveredNodeId, setHoveredNode } = diagramApi.getState()
         if (hoveredEdgeId === xyedge.id) {
           setHoveredEdge(null)

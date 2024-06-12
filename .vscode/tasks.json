@@ -2,55 +2,24 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "typecheck",
       "type": "npm",
-      "script": "vs:tasks:build",
-      "group": "build",
-      "problemMatcher": [
-        "$tsc"
-      ],
+      "script": "vscode:typecheck",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "promptOnClose": false,
       "presentation": {
         "panel": "dedicated",
         "echo": false,
         "showReuseMessage": false,
-        "reveal": "silent",
+        "reveal": "always",
         "group": "build",
-        "revealProblems": "onProblem",
-        "clear": true
-      }
-    },
-    {
-      "type": "typescript",
-      "tsconfig": "tsconfig.json",
-      "option": "watch",
-      "isBackground": true,
-      "problemMatcher": [
-        "$tsc-watch"
-      ],
-      "group": {
-        "kind": "build",
-      },
-      "label": "tsc: watch"
-    },
-    {
-      "type": "typescript",
-      "tsconfig": "tsconfig.json",
-      "label": "tsc: build",
-      "problemMatcher": [
-        "$tsc"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "echo":   true,
-        "showReuseMessage": false,
         "revealProblems": "onProblem",
         "clear": true,
         "close": true
-      },
-    }
+      }
+    },
   ]
 }

@@ -32,9 +32,7 @@
   },
   "packageManager": "yarn@4.3.0",
   "scripts": {
-    "typecheck": "tsc -b",
-    "build:turbo": "run -T turbo build --filter='diagrams'",
-    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
     "prepack": "unbuild",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
@@ -57,6 +55,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "execa": "^9.1.0",

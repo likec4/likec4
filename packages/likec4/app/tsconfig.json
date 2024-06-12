@@ -1,7 +1,7 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "../.tsbuildinfo/app.tsbuildinfo",
+    "composite": true,
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "esnext",
@@ -19,16 +19,5 @@
     "./src",
     "./webcomponent",
     "./react"
-  ],
-  "references": [
-    {
-      "path": "../../core"
-    },
-    {
-      "path": "../../diagram"
-    },
-    {
-      "path": "../../diagrams"
-    }
   ]
 }

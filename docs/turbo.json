@@ -1,20 +1,37 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": ["//"],
-  "pipeline": {
+  "extends": [
+    "//"
+  ],
+  "tasks": {
     "generate": {
-      "dependsOn": ["likec4#build"],
-      "outputs": ["components/**/generated.tsx"],
-      "inputs": ["likec4/**"]
+      "dependsOn": [
+        "likec4#build"
+      ],
+      "outputs": [
+        "components/**/generated.tsx"
+      ],
+      "inputs": [
+        "likec4/**"
+      ]
     },
     "typecheck": {
-      "cache": false,
-      "dependsOn": ["generate", "^build"],
-      "outputs": []
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "outputLogs": "errors-only"
     },
     "build": {
-      "dependsOn": ["generate", "^build"],
-      "outputs": [".next/**", "out/**", "!.next/cache/**"]
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "out/**",
+        "!.next/cache/**"
+      ]
     }
   }
 }

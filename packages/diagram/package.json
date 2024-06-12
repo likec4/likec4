@@ -39,10 +39,8 @@
   },
   "packageManager": "yarn@4.3.0",
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --noEmit",
     "prepack": "vite build --mode production",
-    "build:turbo": "run -T turbo build --filter='diagram'",
-    "build": "vite build --mode development && tsc -b",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf -v -g 'dist/*' .tsbuildinfo"
   },
@@ -64,6 +62,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
     "@lume/kiwi": "^0.4.3",
     "@mantine/core": "^7.10.1",
     "@mantine/hooks": "^7.10.1",

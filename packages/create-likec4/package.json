@@ -30,6 +30,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.13.0",
     "@types/prompts": "^2.4.8",
     "execa": "^9.1.0",

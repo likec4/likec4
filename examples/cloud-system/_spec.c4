@@ -6,7 +6,11 @@ specification {
     }
   }
 
-  element system
+  element system {
+    style {
+      opacity 01%
+    }
+  }
 
   element externalSystem {
     style {
