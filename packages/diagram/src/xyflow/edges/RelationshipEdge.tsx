@@ -180,20 +180,22 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       data-edge-dir={diagramEdge.dir}
       data-edge-active={isActive}
       data-edge-hovered={isHovered}>
-      <defs>
-        <marker
-          id={`arrow-${id}`}
-          viewBox="0 0 16 10"
-          refX={isModified ? '12' : '10'}
-          refY="5"
-          markerWidth="5"
-          markerHeight="4"
-          markerUnits="strokeWidth"
-          preserveAspectRatio="xMaxYMid meet"
-          orient="auto-start-reverse">
-          <path d="M 0 0 L 16 5 L 0 10 z" stroke="context-stroke" fill="context-stroke" />
-        </marker>
-      </defs>
+      <g className={edgesCss.markerContext}>
+        <defs>
+          <marker
+            id={`arrow-${id}`}
+            viewBox="0 0 16 10"
+            refX={isModified ? '12' : '10'}
+            refY="5"
+            markerWidth="5"
+            markerHeight="4"
+            markerUnits="strokeWidth"
+            preserveAspectRatio="xMaxYMid meet"
+            orient="auto-start-reverse">
+            <path d="M 0 0 L 16 5 L 0 10 z" stroke="context-stroke" fill="context-stroke" />
+          </marker>
+        </defs>
+      </g>
       <RelationshipPath
         edgePath={edgePath}
         interactionWidth={interactionWidth ?? 10}
