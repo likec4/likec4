@@ -13,6 +13,7 @@ export const paper = style({
   minWidth: 100,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
+  WebkitBackdropFilter: 'blur(8px)',
   backdropFilter: 'blur(8px)',
   '@media': {
     [mantine.largerThan('md')]: {
