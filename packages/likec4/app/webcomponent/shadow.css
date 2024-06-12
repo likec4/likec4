@@ -34,10 +34,8 @@
 
 .likec4-shadow-root.likec4-browser {
   --mantine-color-body: rgb(0 0 0 / 0%);
-
-  &[data-mantine-color-scheme] {
-    backdrop-filter: blur(16px);
-  }
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 
   &[data-mantine-color-scheme=light] {
     --mantine-color-body: rgb(255 255 255 / 10%) !important;

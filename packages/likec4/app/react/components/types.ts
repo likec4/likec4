@@ -40,7 +40,7 @@ export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTM
   injectFontCss?: boolean | undefined
 
   overlay?: {
-    blur?: number
-    opacity?: number
+    blur?: number | string | undefined
+    opacity?: number | undefined
   } | undefined
 }

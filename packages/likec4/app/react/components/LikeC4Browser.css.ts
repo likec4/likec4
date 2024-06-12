@@ -4,8 +4,6 @@ export const modalContent = style({
   backgroundColor: 'transparent',
   width: '100%',
   height: '100%'
-  // backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[7]}, transparent 50%)`,
-  // backdropFilter: 'blur(2px)',
 })
 
 export const modalBody = style({
@@ -13,15 +11,6 @@ export const modalBody = style({
   padding: 0,
   width: '100%',
   height: '100%'
-  // backgroundColor: `color-mix(in srgb, var(--mantine-color-body), transparent 70%)`,
-  // selectors: {
-  //   [':where([data-mantine-color-scheme=light]) &']: {
-  //     backgroundColor: 'rgb(255 255 255 / 35%)'
-  //   },
-  //   [':where([data-mantine-color-scheme=dark]) &']: {
-  //     backgroundColor: 'rgb(1 1 1 / 25%)'
-  //   }
-  // }
 })
 
 export const cssDiagram = style({
