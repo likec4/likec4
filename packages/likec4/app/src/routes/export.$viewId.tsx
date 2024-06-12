@@ -60,6 +60,7 @@ function ExportPage() {
           zoomable={false}
           controls={false}
           background={'transparent'}
+          enableDynamicViewWalkthrough={false}
           showElementLinks={false}
           showDiagramTitle={false}
           nodesSelectable={false}

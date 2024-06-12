@@ -17,7 +17,7 @@ type HandlerParams =
   }
   & (
     | {
-      format: 'react' | 'views'
+      format: 'views'
       outfile: string | undefined
     }
     | {
@@ -148,7 +148,6 @@ export async function reactLegacyHandler({ path, useDotBin, ...outparams }: Hand
   }
 
   switch (outparams.format) {
-    case 'react':
     case 'views': {
       await singleFileCodegenAction(languageServices, outparams.format, outparams.outfile, logger)
       break

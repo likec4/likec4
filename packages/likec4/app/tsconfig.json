@@ -1,7 +1,6 @@
 {
   "extends": "@likec4/tsconfig/react-lib.json",
   "compilerOptions": {
-    "composite": true,
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "esnext",

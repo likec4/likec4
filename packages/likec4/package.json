@@ -101,7 +101,6 @@
     "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
-    "@likec4/diagrams": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",

@@ -84,15 +84,6 @@ const viewPages = [
     )
   },
   {
-    route: '/view/$viewId/react-legacy',
-    icon: <IconBrandReact opacity={0.7} size={16} />,
-    title: (
-      <>
-        React <Text component="span" size="xs" c={'dimmed'} ml={4}>(pre 1.0)</Text>
-      </>
-    )
-  },
-  {
     route: '/view/$viewId/dot',
     icon: <IconFile opacity={0.7} size={16} />,
     title: (
@@ -194,8 +185,6 @@ function ExportButton({ diagram }: HeaderProps) {
   const params = useParams({
     from: '/view/$viewId'
   })
-
-  useMatchRoute
 
   const onClick = async () => {
     const { toPng } = await import('html-to-image')

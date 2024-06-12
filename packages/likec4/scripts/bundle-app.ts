@@ -22,8 +22,7 @@ export async function bundleApp() {
     resolve: {
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
-        '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        '@likec4/diagrams': resolve('../diagrams/src/index.ts')
+        '@likec4/diagram': resolve('../diagram/src/index.ts')
       }
     },
     mode: 'production',
