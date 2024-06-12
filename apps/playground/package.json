@@ -31,7 +31,7 @@
     "@mantine/hooks": "^7.10.1",
     "@mantine/vanilla-extract": "^7.10.1",
     "@react-hookz/web": "^24.0.4",
-    "@tabler/icons-react": "^2.47.0",
+    "@tabler/icons-react": "^3.0.0",
     "@tanstack/react-router": "^1.31.19",
     "@tanstack/router-vite-plugin": "^1.31.18",
     "@typefox/monaco-editor-react": "4.2.0",
