@@ -15,8 +15,11 @@ export const container = style({
   }
 })
 
-export const dimmed = style({
-  filter: vars.filterDimmed
+export const dimmed = style({})
+
+globalStyle(`svg:has(${dimmed})`, {
+  filter: vars.filterDimmed,
+  transition: 'filter 800ms ease-out'
 })
 
 globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
@@ -76,6 +79,13 @@ export const edgePathBg = style({
       strokeOpacity: 0.15
     }
   }
+})
+
+// To fix issue with marker not inheriting color from path - we need to create container
+export const markerContext = style({
+  fill: xyvars.edge.stroke,
+  stroke: xyvars.edge.stroke,
+  pointerEvents: 'none'
 })
 
 export const controlPoint = style({
@@ -147,12 +157,13 @@ export const edgeLabel = style({
     [varTranslate]: `translate(${fallbackVar(varLabelX, '50%')}, ${fallbackVar(varLabelY, '50%')})`
   },
   selectors: {
-    // [mantine.darkSelector]: {
-    //   mixBlendMode: 'luminosity'
-    // },
     '&[data-edge-hovered="true"]': {
       transition: 'all 140ms ease-out',
       transform: `${varTranslate} scale(1.1)`
+    },
+    [`&:is(${dimmed})`]: {
+      transition: 'filter 800ms ease-out',
+      filter: vars.filterDimmed
     }
   }
 })
