@@ -1,3 +1,23 @@
+# [1.2.0](https://github.com/likec4/likec4/compare/v1.1.1...v1.2.0) (2024-06-12)
+
+
+### Bug Fixes
+
+* **diagram:** always zoom to 1.0 on container resize ([f5b898c](https://github.com/likec4/likec4/commit/f5b898c01f90212cb4e171530e8e6142cb27c076))
+* **diagram:** backdrop in safari ([94530ae](https://github.com/likec4/likec4/commit/94530ae4fe2da710337512c11a616698b06f2bdb))
+* **diagram:** focus in dynamic walkthrough ([b4c1752](https://github.com/likec4/likec4/commit/b4c1752aed96049b2605ffcabc8812762c363fa9))
+* **playground:** missing element type ([4aad466](https://github.com/likec4/likec4/commit/4aad4668885b0b6f88825a7fe58704b8dcf39401))
+* **playground:** unique extension for each playground ([8fcfed6](https://github.com/likec4/likec4/commit/8fcfed6d8e26d43d3da5306d0985501696d2c516))
+
+
+### Features
+
+* `include` in dynamic views ([44ace8e](https://github.com/likec4/likec4/commit/44ace8e129ae36d2e8c154b59708203679f27654))
+* display step number ([4bc9dc5](https://github.com/likec4/likec4/commit/4bc9dc505f6f0005ded6445008f9c0f26d70d0fc))
+* walkthrough dynamic views ([54a9986](https://github.com/likec4/likec4/commit/54a998699950e0cb1644a81ddb8c26a69a50c55b))
+
+
+
 ## [1.1.1](https://github.com/likec4/likec4/compare/v1.1.0...v1.1.1) (2024-05-26)
 
 ### Bug Fixes
