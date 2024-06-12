@@ -110,7 +110,7 @@ export function createMonacoConfig(store: StoreApi) {
         useDiffEditor: false,
         extensions: [{
           config: {
-            name: 'likec4',
+            name: 'likec4-' + state.uniqueId,
             publisher: 'likec4',
             version: '1.0.0',
             engines: {

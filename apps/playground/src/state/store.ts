@@ -1,16 +1,8 @@
 import { type ComputedView, type DiagramView, invariant, type LikeC4Model, type ViewID } from '@likec4/core'
-import {
-  changeView,
-  computeView,
-  fetchModel,
-  locate,
-  type LocateParams,
-  type LocateRequest
-} from '@likec4/language-server/protocol'
+import { changeView, computeView, fetchModel, locate, type LocateParams } from '@likec4/language-server/protocol'
 import { DEV } from 'esm-env'
 import { deepEqual } from 'fast-equals'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-import { first, keys } from 'remeda'
 import type { Simplify } from 'type-fest'
 import type { Location } from 'vscode-languageserver-protocol'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
@@ -18,8 +10,10 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
+import { nanoid } from 'nanoid'
 
 export type WorkspaceStore = {
+  readonly uniqueId: string
   /**
    * The name of the workspace.
    * Used as path-prefix.
@@ -97,6 +91,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
   // userConfig
 }: T) {
   let seq = 1
+  const uniqueId = nanoid(6)
   return createWithEqualityFn<
     WorkspaceState,
     [
@@ -107,6 +102,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
     subscribeWithSelector(
       devtools<WorkspaceState>(
         (set, get) => ({
+          uniqueId,
           name: name,
           // editor: () => null,
           languageClient: () => null,

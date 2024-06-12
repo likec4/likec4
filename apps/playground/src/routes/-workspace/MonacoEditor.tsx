@@ -6,11 +6,11 @@ import { DEV } from 'esm-env'
 import { deepEqual } from 'fast-equals'
 import * as monaco from 'monaco-editor'
 import type { MonacoLanguageClient } from 'monaco-languageclient'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useStoreApi, useWorkspaceState } from '../../state'
 import * as css from './styles.css'
 
-export function MonacoEditor() {
+export const MonacoEditor = memo(function MonacoEditorMemo() {
   const store = useStoreApi()
   const [languageClient, setLanguageClient] = useState<null | MonacoLanguageClient>(null)
 
@@ -129,4 +129,4 @@ export function MonacoEditor() {
       }}
     />
   )
-}
+})
