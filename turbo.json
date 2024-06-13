@@ -1,8 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [
-    "tsconfig.*.json",
-    "tsconfig.json"
+    "yarn.lock",
+    "package.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV"
   ],
   "tasks": {
     "topo": {

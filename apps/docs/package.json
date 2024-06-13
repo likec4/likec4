@@ -11,7 +11,7 @@
     "generate:bigbank": "likec4 gen react -o src/components/bigbank/likec4-views.jsx ./likec4/bigbank",
     "generate:index": "likec4 gen react -o src/components/index-page/likec4-views.jsx ./likec4/index-page",
     "generate": "run-p 'generate:*'",
-    "build:turbo": "run -T turbo run build --filter='docs-astro'",
+    "build:turbo": "run -T turbo run build --filter='@likec4/docs-astro'",
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check",
