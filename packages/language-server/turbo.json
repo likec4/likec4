@@ -1,34 +1,37 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": ["//"],
-  "pipeline": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
+  "extends": [
+    "//"
+  ],
+  "tasks": {
     "generate": {
-      "outputMode": "new-only",
-      "outputs": ["contrib/**", "src/generated/**"],
+      "outputs": [
+        "contrib/**",
+        "src/generated/**"
+      ],
       "inputs": [
         "src/**/*.langium",
         "langium-config.json",
         "package.json"
-      ]
+      ],
+      "outputLogs": "errors-only"
     },
     "typecheck": {
-      "outputMode": "new-only",
-      "dependsOn": ["generate", "topo"],
-      "outputs": [
-        ".tsbuildinfo/**",
-        "**/*.tsbuildinfo"
-      ]
+      "dependsOn": [
+        "generate",
+        "topo"
+      ],
+      "outputLogs": "errors-only"
     },
     "build": {
-      "outputMode": "new-only",
-      "dependsOn": ["generate", "^build"],
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
       "outputs": [
-        "dist/**",
-        ".tsbuildinfo/**"
-      ]
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
     }
   }
 }

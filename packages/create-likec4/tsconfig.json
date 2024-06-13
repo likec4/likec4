@@ -1,12 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "include": [],
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
+    "outDir": "dist",
+    "module": "esnext",
   },
-  "references": [
-    {
-      "path": "tsconfig.src.json"
-    }
+  "include": [
+    "src/"
   ]
 }

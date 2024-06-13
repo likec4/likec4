@@ -1,11 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
+    "noUnusedParameters": false,
     "module": "esnext",
     "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
-    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
     "types": [
       "node"
     ],
@@ -23,21 +24,6 @@
   "references": [
     {
       "path": "./app/tsconfig.json"
-    },
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../graph"
-    },
-    {
-      "path": "../generators"
-    },
-    {
-      "path": "../layouts"
-    },
-    {
-      "path": "../language-server"
     }
   ]
 }

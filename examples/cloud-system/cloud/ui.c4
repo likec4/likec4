@@ -59,6 +59,10 @@ views {
     }    
     style cloud.ui, cloud.ui.* {
       color primary
+    }
+    style cloud {
+      border dashed
+      color indigo
     }      
   }
 

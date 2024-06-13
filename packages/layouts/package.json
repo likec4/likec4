@@ -39,9 +39,8 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc -b",
-    "prepack": "tsc -p tsconfig.build.json",
-    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
     "test": "vitest run",
     "clean": "run -T rimraf -g 'dist/**' '.tsbuildinfo/**'"
@@ -72,6 +71,7 @@
     "@hpcc-js/wasm": "^2.16.2",
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.13.0",
     "typescript": "^5.4.5",
     "vitest": "~1.5.2"

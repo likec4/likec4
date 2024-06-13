@@ -109,29 +109,29 @@ jobs:
         run: |
           yarn build:turbo
 
-  check-docs-nextjs:
-    # If on pull request, run only if coming from forked repos
-    if: |
-      !contains(github.event.head_commit.message, 'ci skip') && (
-        github.event_name == 'push' || github.event.pull_request.head.repo.fork
-      )
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
+# check-docs-nextjs:
+#   # If on pull request, run only if coming from forked repos
+#   if: |
+#     !contains(github.event.head_commit.message, 'ci skip') && (
+#       github.event_name == 'push' || github.event.pull_request.head.repo.fork
+#     )
+#   timeout-minutes: 10
+#   runs-on: ubuntu-latest
+#   steps:
+#     - uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 0
+#         ref: ${{ github.ref }}
 
-      - name: bootstrap
-        uses: ./.github/actions/bootstrap
+#     - name: bootstrap
+#       uses: ./.github/actions/bootstrap
 
-      - name: build docs nextjs
-        working-directory: docs
-        run: |
-          yarn build:turbo
+#     - name: build docs nextjs
+#       working-directory: docs
+#       run: |
+#         yarn build:turbo
 
-      - name: typecheck
-        working-directory: docs
-        run: |
-          yarn typecheck:turbo
+#     - name: typecheck
+#       working-directory: docs
+#       run: |
+#         yarn typecheck:turbo

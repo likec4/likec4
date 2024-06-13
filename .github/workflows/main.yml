@@ -94,14 +94,14 @@ jobs:
     uses: ./.github/workflows/playground.yaml
     secrets: inherit
 
-  docs-website:
+  docs-astro:
     needs: build
     name: docs.likec4.dev
-    uses: ./.github/workflows/docs-website.yaml
+    uses: ./.github/workflows/docs-astro.yaml
     secrets: inherit
 
-  docs:
-    name: docs nextjs
-    uses: ./.github/workflows/docs.yaml
-    needs: build
-    secrets: inherit
+  # docs:
+  #   name: docs nextjs
+  #   uses: ./.github/workflows/docs.yaml
+  #   needs: build
+  #   secrets: inherit

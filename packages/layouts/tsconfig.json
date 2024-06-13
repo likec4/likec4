@@ -1,19 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
-    "rootDir": ".",
-    "outDir": "./dist",
+    "outDir": "dist"
   },
   "include": [
-    "./src"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../graph"
-    }
+    "src/"
   ]
 }

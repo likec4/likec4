@@ -6,7 +6,6 @@
   "packageManager": "yarn@4.3.0",
   "type": "module",
   "workspaces": [
-    "docs",
     "apps/*",
     "packages/*"
   ],
@@ -19,9 +18,8 @@
     "build": "turbo run build --filter='./packages/*'",
     "ci:build": "turbo run build --filter='./packages/*'",
     "typecheck": "turbo run typecheck",
+    "vscode:typecheck": "turbo run typecheck --filter='./packages/*'",
     "ci:typecheck": "turbo run typecheck --filter='./packages/*'",
-    "ts": "tsc -b",
-    "ts:watch": "tsc -b -w",
     "release": "shipjs prepare",
     "clean": "turbo run clean && rimraf -v -g '**/.tsbuildinfo' '**/.turbo' 'node_modules/.cache/turbo'",
     "clean:turbo": "rimraf -v -g '**/.turbo' 'node_modules/.cache/turbo'",
@@ -29,12 +27,10 @@
     "clean:vitetmp": "rimraf -v -g '**/vi*.config.ts.timestamp-*'",
     "clean:after:publish": "rimraf -v -g '**/package*.tgz'",
     "git:pre-commit": "lint-staged",
-    "test": "vitest run",
+    "test": "vitest run --no-isolate",
     "ci:test": "vitest run --reporter=basic --reporter=github-actions --no-isolate",
     "test:watch": "vitest",
-    "test:integration": "node integration/like4-cli-tests/run-suit.mjs",
-    "vitest:ui": "vitest --ui",
-    "vs:tasks:build": "turbo run typecheck --log-prefix=none --log-order=grouped --filter='!docs-website'"
+    "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.24.1",
@@ -49,7 +45,7 @@
     "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
     "tsx": "~4.9.3",
-    "turbo": "^1.13.3",
+    "turbo": "^2.0.3",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vitest": "~1.5.2",

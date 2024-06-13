@@ -1,10 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo",
-    "outDir": "./dist"
+    "outDir": "dist"
   },
   "include": [
-    "./src"
+    "src/"
   ]
 }

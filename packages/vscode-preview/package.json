@@ -13,7 +13,7 @@
     "!**/*.map"
   ],
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --noEmit",
     "build": "vite build --mode production",
     "dev": "vite build --watch --mode watch-dev",
     "start": "vite",
@@ -24,6 +24,7 @@
     "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "^7.10.1",
     "@mantine/hooks": "^7.10.1",
     "@react-hookz/deep-equal": "^2.0.2",

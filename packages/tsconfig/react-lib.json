@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "React Library",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "es2023",
+      "webworker"
+    ],
+    "module": "ESNext",
+    "target": "es2022",
+    "moduleResolution": "Bundler"
+  }
+}

@@ -1,33 +1,48 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "globalDependencies": [
+    "yarn.lock",
+    "package.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV"
+  ],
+  "tasks": {
     "topo": {
-      "dependsOn": ["^topo"]
-    },
-    "generate": {
-      "outputMode": "new-only"
-    },
-    "typecheck": {
-      "outputMode": "new-only",
-      "dependsOn": ["generate", "topo"],
-      "outputs": [
-        ".tsbuildinfo/**",
-        "**/*.tsbuildinfo"
+      "dependsOn": [
+        "^topo"
       ]
     },
+    "generate": {
+      "outputLogs": "errors-only"
+    },
+    "typecheck": {
+      "dependsOn": [
+        "generate",
+        "topo"
+      ],
+      "outputLogs": "errors-only"
+    },
     "build": {
-      "outputMode": "new-only",
-      "dependsOn": ["generate", "^build"],
-      "outputs": ["dist/**", ".tsbuildinfo/**"]
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "dev": {
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false
     }
-  },
-  "experimentalUI": true,
-  "globalDependencies": [
-    "tsconfig.*.json",
-    "tsconfig.json",
-    "yarn.lock"
-  ]
+  }
 }

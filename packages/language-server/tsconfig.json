@@ -1,27 +1,16 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@likec4/tsconfig/base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/tsconfig.tsbuildinfo"
+    "outDir": "dist",
+    "lib": [
+      "esnext",
+      "dom",
+      "WebWorker"
+    ],
+    "noUnusedParameters": false
   },
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.src.json"
-    },
-    {
-      "path": "./tsconfig.src.browser.json"
-    },
-    {
-      "path": "./tsconfig.src.node.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    },
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../graph"
-    }
+  "include": [
+    "src/"
   ]
 }

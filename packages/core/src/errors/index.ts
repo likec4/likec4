@@ -75,7 +75,12 @@ export function normalizeError(e: unknown): Error {
   }
   const message = isString(e) ? e : String(e)
   const error = new UnknownError(message)
-  Error.captureStackTrace(error, normalizeError)
+  try {
+    // @ts-ignore
+    Error.captureStackTrace(error, normalizeError)
+  } catch {
+    // Ignore
+  }
   return error
 }
 

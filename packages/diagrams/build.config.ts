@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { $ } from 'execa'
 import type { MkdistOptions } from 'mkdist'
 import { defineBuildConfig } from 'unbuild'
 
@@ -24,10 +23,5 @@ export default defineBuildConfig({
     }
   ],
   // if clean enabled, TS Language server in VSCode has to be restarted
-  clean: false,
-  hooks: {
-    'build:before': async (ctx) => {
-      await $`tsc --emitDeclarationOnly --declaration --declarationMap -p tsconfig.src.json`
-    }
-  }
+  clean: false
 })

@@ -14,7 +14,7 @@ type ChangeViewLayoutArg = {
   layout: AutoLayoutDirection
 }
 
-export function changeViewLayout(services: LikeC4Services, {
+export function changeViewLayout(_services: LikeC4Services, {
   viewAst,
   layout
 }: ChangeViewLayoutArg): TextEdit {

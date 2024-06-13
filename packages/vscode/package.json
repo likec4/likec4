@@ -34,12 +34,12 @@
   "scripts": {
     "vscode:prepublish": "tsx scripts/prepublish.mts",
     "open-web": "run build:turbo && yarn dlx @vscode/test-web --open-devtools --extensionDevelopmentPath=. ../likec4/dev",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='likec4-vscode'",
     "build": "tsx scripts/build.mts",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf contrib dist src/generated",
-    "vsce:publish": "vsce publish --skip-duplicate"
+    "vsce:publish": "yarn dlx vsce publish --skip-duplicate"
   },
   "engines": {
     "vscode": "^1.88.0"
@@ -193,12 +193,12 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^18.19.31",
     "@types/vscode": "~1.88.0",
     "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.6",
-    "@vscode/vsce": "^2.26.0",
     "consola": "^3.2.3",
     "esbuild": "^0.21.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.3",

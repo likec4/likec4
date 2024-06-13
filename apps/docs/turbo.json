@@ -1,27 +1,42 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": ["//"],
-  "pipeline": {
+  "extends": [
+    "//"
+  ],
+  "tasks": {
     "topo": {
-      "dependsOn": ["^topo"]
-    },
-    "generate": {
-      "outputMode": "new-only",
-      "dependsOn": ["likec4#build"],
-      "outputs": ["src/components/*/likec4-views.*"],
-      "inputs": ["likec4/**"]
-    },
-    "typecheck": {
-      "outputMode": "new-only",
-      "dependsOn": ["generate", "topo"],
-      "outputs": [
-        ".tsbuildinfo/**",
-        "**/*.tsbuildinfo"
+      "dependsOn": [
+        "^topo"
       ]
     },
+    "generate": {
+      "dependsOn": [
+        "likec4#build"
+      ],
+      "outputs": [
+        "src/components/*/likec4-views.*"
+      ],
+      "inputs": [
+        "likec4/**"
+      ],
+      "outputLogs": "new-only"
+    },
+    "typecheck": {
+      "dependsOn": [
+        "generate",
+        "topo"
+      ],
+      "outputLogs": "new-only"
+    },
     "build": {
-      "dependsOn": ["generate", "^build"],
-      "outputs": ["dist/**", ".astro/**"]
+      "dependsOn": [
+        "generate",
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".astro/**"
+      ]
     }
   }
 }

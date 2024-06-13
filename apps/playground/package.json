@@ -4,8 +4,8 @@
   "version": "1.2.0",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
-    "typecheck": "tsc -b",
+    "dev": "vite dev --clearScreen false",
+    "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='@likec4/playground' --log-prefix=none --log-order=grouped",
     "build": "vite build --mode pre && vite build",
     "deploy": "npx wrangler pages deploy dist ----project-name likec4-playground",

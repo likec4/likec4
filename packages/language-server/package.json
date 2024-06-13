@@ -9,6 +9,7 @@
   "files": [
     "dist",
     "contrib",
+    "src",
     "!**/__mocks__/",
     "!**/__tests__/",
     "!**/*.spec.*",
@@ -49,13 +50,10 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc --noEmit",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
-    "prepack": "unbuild",
-    "build:turbo": "run -T turbo build --filter='language-server'",
-    "build": "unbuild",
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
@@ -80,6 +78,7 @@
     "vscode-uri": "3.0.8"
   },
   "devDependencies": {
+    "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.13.0",
     "@types/object-hash": "^3.0.6",
     "@types/string-hash": "^1",
@@ -87,7 +86,6 @@
     "langium-cli": "3.0.3",
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
-    "unbuild": "^2.0.0",
     "vitest": "~1.5.2"
   },
   "packageManager": "yarn@4.3.0"

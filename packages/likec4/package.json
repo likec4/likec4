@@ -103,6 +103,7 @@
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/layouts": "workspace:*",
+    "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "^7.10.1",
     "@mantine/hooks": "^7.10.1",
     "@mantine/vanilla-extract": "^7.10.1",
