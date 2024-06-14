@@ -1,4 +1,3 @@
-import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type { ComputedView } from '@likec4/core'
 import { describe, it } from 'vitest'
 import {
@@ -7,8 +6,7 @@ import {
   computedCloudView,
   computedIndexView,
   issue577_fail,
-  issue577_valid,
-  simpleView
+  issue577_valid
 } from '../__fixtures__'
 import { GraphvizLayouter } from '../GraphvizLayoter'
 import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
