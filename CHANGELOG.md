@@ -1,12 +1,6 @@
 ## [1.2.2](https://github.com/likec4/likec4/compare/v1.2.1...v1.2.2) (2024-06-14)
 
-
-### Bug Fixes
-
-* **cli:** build with vite 5.3 ([dd1ed5d](https://github.com/likec4/likec4/commit/dd1ed5d14620bd32fe85768b5f2194fbb875aa58))
-* search params are required ([b99be87](https://github.com/likec4/likec4/commit/b99be8756ad6b49c18eef7fa7ef7941708319239))
-
-
+1.2.1 did not fix [#765](https://github.com/likec4/likec4/issues/765) 
 
 ## [1.2.1](https://github.com/likec4/likec4/compare/v1.2.0...v1.2.1) (2024-06-14)
 
