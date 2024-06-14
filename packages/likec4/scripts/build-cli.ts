@@ -2,6 +2,7 @@ import consola from 'consola'
 import { build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeExternalsPlugin } from 'esbuild-node-externals'
 import { writeFile } from 'node:fs/promises'
+import { amIExecuted } from './_utils'
 
 export async function buildCli(isDev = false) {
   consola.start(`Building CLI...`)
@@ -71,4 +72,9 @@ export async function buildCli(isDev = false) {
   if (bundle.metafile) {
     await writeFile('dist/cli/metafile.json', JSON.stringify(bundle.metafile))
   }
+}
+
+if (amIExecuted(import.meta.filename)) {
+  consola.info('Running as script')
+  await buildCli()
 }

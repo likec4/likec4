@@ -7,6 +7,7 @@ import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { modules } from '../src/vite/plugin'
+import { amIExecuted } from './_utils'
 
 export async function bundleApp() {
   const root = resolve('app')
@@ -124,4 +125,9 @@ export async function bundleApp() {
     copyFile('app/favicon.svg', 'dist/__app__/favicon.svg'),
     copyFile('app/src/const.js', 'dist/__app__/src/const.js')
   ])
+}
+
+if (amIExecuted(import.meta.filename)) {
+  consola.info('Running as script')
+  await bundleApp()
 }

@@ -1,3 +1,4 @@
+import '@mantine/core/styles.css'
 import { createTheme, type MantineTheme } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'

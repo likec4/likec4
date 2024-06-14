@@ -1,10 +1,9 @@
-import '@mantine/core/styles.css'
-
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
 import { useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
+
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
