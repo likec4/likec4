@@ -3,7 +3,7 @@
 
 ### Bug Fixes
 
-* compatibility with vite 5.3 ([3ab29bf](https://github.com/likec4/likec4/commit/3ab29bfc4a423052a3d5b46ddca6055f5e96b2c2))
+* **cli:** compatibility with vite 5.3 (closes [#765](https://github.com/likec4/likec4/issues/765), thanks to [@simonwfarrow](https://github.com/simonwfarrow))
 * **deps:** playwright 1.44.1 ([3f277f7](https://github.com/likec4/likec4/commit/3f277f71cbd5cf4b3a31ea515c6f475bab20ab4d))
 
 
