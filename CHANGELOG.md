@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/likec4/likec4/compare/v1.2.0...v1.2.1) (2024-06-14)
+
+
+### Bug Fixes
+
+* compatibility with vite 5.3 ([3ab29bf](https://github.com/likec4/likec4/commit/3ab29bfc4a423052a3d5b46ddca6055f5e96b2c2))
+* **deps:** playwright 1.44.1 ([3f277f7](https://github.com/likec4/likec4/commit/3f277f71cbd5cf4b3a31ea515c6f475bab20ab4d))
+
+
+
 # [1.2.0](https://github.com/likec4/likec4/compare/v1.1.1...v1.2.0) (2024-06-12)
 
 ### 🚀 Features  
