@@ -1,7 +1,7 @@
 {
   "name": "@likec4/vscode-preview",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
