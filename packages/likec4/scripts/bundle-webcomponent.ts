@@ -7,6 +7,7 @@ import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
 import { modules } from '../src/vite/plugin'
+import { amIExecuted } from './_utils'
 
 export async function buildWebcomponentBundle(_isDev = false) {
   const root = resolve('app')
@@ -108,4 +109,9 @@ export async function buildWebcomponentBundle(_isDev = false) {
   }
 
   await rm(resolve(outDir, 'style.css'))
+}
+
+if (amIExecuted(import.meta.filename)) {
+  consola.info('Running as script')
+  await buildWebcomponentBundle()
 }

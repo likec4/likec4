@@ -33,11 +33,11 @@
     "vitest:ui": "vitest --ui --no-isolate"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.24.1",
-    "@types/node": "^20.13.0",
-    "@vitest/ui": "~1.5.2",
+    "@babel/preset-typescript": "^7.24.7",
+    "@types/node": "^20.14.2",
+    "@vitest/ui": "~1.5.3",
     "dprint": "0.46.2",
-    "esbuild": "^0.21.0",
+    "esbuild": "^0.21.5",
     "execa": "^9.1.0",
     "global": "^4.4.0",
     "husky": "^8.0.3",
@@ -47,8 +47,8 @@
     "tsx": "~4.9.3",
     "turbo": "^2.0.3",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11",
-    "vitest": "~1.5.2",
+    "vite": "5.3.0",
+    "vitest": "~1.5.3",
     "wireit": "^0.14.4"
   },
   "resolutions": {

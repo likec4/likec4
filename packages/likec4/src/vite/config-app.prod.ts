@@ -74,8 +74,10 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       'process.env.NODE_ENV': '"production"'
     },
     optimizeDeps: {
-      noDiscovery: true,
-      include: []
+      include: [
+        'nanostores'
+      ],
+      force: true
     },
     build: {
       outDir,

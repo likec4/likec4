@@ -11,16 +11,15 @@ const $ = $_({
   }
 })
 
-consola.info('clean dist')
 await rm('dist/', { recursive: true, force: true })
 
 consola.start('Building...')
 
 // Run build
-await $`yarn build:turbo`
+await $`yarn turbo-build`
 
-// Run build
-await $`yarn tsc -p app/tsconfig.react.json`
+// Build type definitions
+await $`yarn tsc -p ./app/react/tsconfig-build.json `
 
 const components = 'dist/__app__/react/components.mjs'
 if (!existsSync(components)) {

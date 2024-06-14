@@ -1,4 +1,5 @@
 ./dist
+./react
 dev/export
 dev/dist
 .vscode/

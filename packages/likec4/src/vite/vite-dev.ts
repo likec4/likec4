@@ -60,11 +60,6 @@ export async function viteDev({
     server: {
       host: '0.0.0.0',
       port,
-      warmup: {
-        clientFiles: [
-          './src/**/*.{js,tsx}'
-        ]
-      },
       hmr: {
         overlay: true,
         // needed for hmr to work over network aka WSL2

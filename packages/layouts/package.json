@@ -72,9 +72,9 @@
     "@likec4/core": "workspace:*",
     "@likec4/graph": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
-    "@types/node": "^20.13.0",
+    "@types/node": "^20.14.2",
     "typescript": "^5.4.5",
-    "vitest": "~1.5.2"
+    "vitest": "~1.5.3"
   },
   "packageManager": "yarn@4.3.0"
 }

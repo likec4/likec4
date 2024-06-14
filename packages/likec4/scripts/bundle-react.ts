@@ -6,6 +6,7 @@ import { resolve } from 'path'
 import postcssPresetMantine from 'postcss-preset-mantine'
 import { build } from 'vite'
 import { shadowStyle } from 'vite-plugin-shadow-style'
+import { amIExecuted } from './_utils'
 
 export async function buildReact(_isDev = false) {
   const root = resolve('app')
@@ -121,4 +122,7 @@ export async function buildReact(_isDev = false) {
   await copyFile('app/react/likec4.tsx', resolve(outDir, 'likec4.tsx'))
 }
 
-// await buildReact()
+if (amIExecuted(import.meta.filename)) {
+  consola.info('Running as script')
+  await buildReact()
+}
