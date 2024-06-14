@@ -20,14 +20,6 @@ export async function bundleApp() {
     configFile: false,
     clearScreen: false,
     resolve: {
-      dedupe: [
-        'react',
-        'react/jsx-runtime',
-        'react-dom',
-        'react-dom/client',
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
       alias: {
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
@@ -39,7 +31,6 @@ export async function bundleApp() {
       'process.env.NODE_ENV': '"production"'
     },
     esbuild: {
-      treeShaking: true,
       legalComments: 'none',
       minifyIdentifiers: false,
       minifyWhitespace: true,
@@ -52,39 +43,27 @@ export async function bundleApp() {
       cssCodeSplit: false,
       cssMinify: true,
       minify: 'esbuild',
-      sourcemap: false,
-      assetsInlineLimit: 0,
       target: 'esnext',
+      sourcemap: false,
       lib: {
         entry: {
           main: 'src/main.tsx'
-          //   router: 'src/router.tsx',
-          //   'routes/view.$viewId.index' : 'src/routes/view.$viewId.index.tsx',
-          //   'routes/view.$viewId.react-legacy.lazy' : 'src/routes/view.$viewId.react-legacy.lazy.tsx'
         },
-        // fileName(format, entryName) {
-        //   return `${entryName}.${format}.mjs`
-        // },
+        fileName: (_format, entryName) => `${entryName}.mjs`,
         formats: ['es']
-        // name: 'LikeC4',
       },
       commonjsOptions: {
-        // include: [
-        //   'framer-motion'
-        // ],
-        transformMixedEsModules: true,
         esmExternals: true,
-        // requireReturnsDefault: 'namespace',
-        ignoreTryCatch: 'remove'
-        // defaultIsModuleExports: ''
-        // include: ['react', 'react-dom']
+        ignoreTryCatch: 'remove',
+        transformMixedEsModules: true
       },
-
       rollupOptions: {
-        treeshake: true,
         output: {
+          esModule: true,
           compact: true,
-          exports: 'named'
+          chunkFileNames(_chunkInfo) {
+            return '[name]-[hash].mjs'
+          }
         },
         external: [
           'virtual:likec4',

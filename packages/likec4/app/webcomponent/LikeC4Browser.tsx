@@ -5,38 +5,6 @@ import ReactDOM from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
 
-// type MiscellaneousProps = {
-//   focusTrap: HTMLElement
-//   onEscape: () => void
-// }
-// const Miscellaneous = ({
-//   focusTrap,
-//   onEscape
-// }: MiscellaneousProps) => {
-//   const trap = useFocusTrap()
-
-//   useEffect(() => {
-//     trap(focusTrap)
-//   }, [focusTrap])
-
-//   useHotkeys([
-//     ['s', (e) => {
-//       console.log('s', e)
-//     }],
-//     ['escape', (e) => {
-//       onEscape()
-//     }]
-//   ])
-//   return null
-// }
-
-// const genHostCss = (viewId: string) => `
-// :host-context(likec4-browser[view-id="${viewId}"]) {
-//   position: fixed;
-//   inset: 0;
-//   z-index: 9999;
-// }`
-
 export class LikeC4Browser extends HTMLElement {
   static observedAttributes = ['view-id']
 

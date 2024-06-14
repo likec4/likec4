@@ -1,11 +1,11 @@
 import { Code, ScrollArea } from '@mantine/core'
-import { createLazyFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
 import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
 
-export const Route = createLazyFileRoute('/view/$viewId/d2')({
+export const Route = createFileRoute('/view/$viewId/d2')({
   component: ViewAsD2
 })
 

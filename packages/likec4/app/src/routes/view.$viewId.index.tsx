@@ -27,7 +27,10 @@ function ViewReact() {
           to: '/view/$viewId',
           params: { viewId },
           startTransition: true,
-          search: true
+          search: {
+            padding: undefined,
+            theme: undefined
+          }
         })
       }}
     />

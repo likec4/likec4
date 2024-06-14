@@ -1,10 +1,10 @@
-import { createLazyFileRoute, notFound, useRouter } from '@tanstack/react-router'
+import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 
 import { useCallback } from 'react'
 import { useLikeC4View } from '../data'
 import { ViewAsReact } from '../pages/view-page/ViewAsReact'
 
-export const Route = createLazyFileRoute('/view/$viewId/react-legacy')({
+export const Route = createFileRoute('/view/$viewId/react-legacy')({
   component: ViewReactLegacy
 })
 
@@ -18,7 +18,10 @@ function ViewReactLegacy() {
       to: '/view/$viewId/react-legacy',
       params: { viewId: node.navigateTo },
       startTransition: true,
-      search: true
+      search: {
+        padding: undefined,
+        theme: undefined
+      }
     })
   }, [router])
 

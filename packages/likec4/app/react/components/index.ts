@@ -1,3 +1,5 @@
+import '@mantine/core/styles.css'
+
 export { LikeC4Browser } from './LikeC4Browser'
 export { LikeC4ViewElement } from './LikeC4ViewElement'
 

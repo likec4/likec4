@@ -1,29 +1,30 @@
 import { Code, ScrollArea } from '@mantine/core'
-import { createLazyFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { dotSource, svgSource } from 'virtual:likec4/dot-sources'
 import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
 import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
 
-export const Route = createLazyFileRoute('/view/$viewId/dot')({
-  component: ViewAsDot
+export const Route = createFileRoute('/view/$viewId/dot')({
+  component: ViewAsDot,
+  loader: async ({ params }) => {
+    const { viewId } = params
+    try {
+      const { dotSource, svgSource } = await import('virtual:likec4/dot-sources')
+      const dot = dotSource(viewId)
+      const dotSvg = svgSource(viewId)
+      return {
+        dot,
+        dotSvg
+      }
+    } catch (error) {
+      throw notFound()
+    }
+  }
 })
 
-const useData = () => {
-  const { viewId } = Route.useParams()
-  try {
-    return {
-      dot: dotSource(viewId),
-      dotSvg: svgSource(viewId)
-    }
-  } catch (error) {
-    throw notFound()
-  }
-}
-
 function ViewAsDot() {
-  const { dot, dotSvg } = useData()
+  const { dot, dotSvg } = Route.useLoaderData()
   return (
     <PanelGroup direction="horizontal" autoSaveId="viewAsDot">
       <Panel>

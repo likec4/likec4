@@ -88,6 +88,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       copyPublicDir: true,
       chunkSizeWarningLimit,
       commonjsOptions: {
+        esmExternals: true,
+        transformMixedEsModules: true,
         ignoreTryCatch: 'remove'
       }
     },
