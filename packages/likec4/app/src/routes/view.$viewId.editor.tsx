@@ -28,10 +28,7 @@ function ViewEditor() {
           to: '/view/$viewId/editor',
           params: { viewId },
           startTransition: true,
-          search: {
-            padding: undefined,
-            theme: undefined
-          }
+          search: true
         })
       }}
       onChange={event => {

@@ -17,7 +17,7 @@ function round(n: number, d = 1) {
   return Math.round(n * m) / m
 }
 
-export function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
+export default function ViewAsReact({ diagram, onNodeClick }: ViewAsReactProps) {
   const { width, height } = useWindowSize()
   const pageDivRef = useRef<HTMLDivElement>(null)
   const [ref, api] = useDiagramApi()

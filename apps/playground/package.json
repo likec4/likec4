@@ -4,6 +4,7 @@
   "version": "1.2.1",
   "private": true,
   "scripts": {
+    "generate": "tsr generate",
     "dev": "vite dev --clearScreen false",
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='@likec4/playground' --log-prefix=none --log-order=grouped",
@@ -33,7 +34,6 @@
     "@mantine/vanilla-extract": "^7.10.1",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.0.0",
-    "@tanstack/react-router": "^1.36.3",
     "@tanstack/router-vite-plugin": "^1.37.0",
     "@typefox/monaco-editor-react": "4.2.0",
     "@types/node": "^20.14.2",
@@ -73,5 +73,8 @@
     "vscode-uri": "~3.0.8",
     "zustand": "^4.5.2"
   },
-  "packageManager": "yarn@4.3.0"
+  "packageManager": "yarn@4.3.0",
+  "devDependencies": {
+    "@tanstack/router-cli": "^1.37.0"
+  }
 }

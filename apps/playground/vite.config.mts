@@ -132,13 +132,7 @@ export default defineConfig((env) => {
           vanillaExtractPlugin({
             identifiers: 'short'
           }),
-          TanStackRouterVite({
-            semicolons: false,
-            routeFileIgnorePattern: '.css.ts',
-            generatedRouteTree: resolve('src/routeTree.gen.ts'),
-            routesDirectory: resolve('src/routes'),
-            quoteStyle: 'single'
-          }),
+          TanStackRouterVite(),
           react({
             // jsxRuntime: 'classic'
           })
@@ -192,12 +186,7 @@ export default defineConfig((env) => {
       return mergeConfig(baseConfig(env), {
         plugins: [
           vanillaExtractPlugin({}),
-          TanStackRouterVite({
-            routeFileIgnorePattern: '.css.ts',
-            generatedRouteTree: resolve('src/routeTree.gen.ts'),
-            routesDirectory: resolve('src/routes'),
-            quoteStyle: 'single'
-          }),
+          TanStackRouterVite(),
           react({})
         ]
       })

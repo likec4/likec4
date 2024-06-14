@@ -2421,7 +2421,7 @@ __metadata:
     "@mantine/vanilla-extract": "npm:^7.10.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.0.0"
-    "@tanstack/react-router": "npm:^1.36.3"
+    "@tanstack/router-cli": "npm:^1.37.0"
     "@tanstack/router-vite-plugin": "npm:^1.37.0"
     "@typefox/monaco-editor-react": "npm:4.2.0"
     "@types/node": "npm:^20.14.2"
@@ -3503,6 +3503,19 @@ __metadata:
     react: ">=16"
     react-dom: ">=16"
   checksum: 10c0/b4feb33c4eea6a1185cd8a9401864a02601cb833c8cde221bf8bca657b0d9b90aeab87775500dcf1417f724ea33f28a9728cd9d4acbed4619068048cc089bb3f
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-cli@npm:^1.37.0":
+  version: 1.37.0
+  resolution: "@tanstack/router-cli@npm:1.37.0"
+  dependencies:
+    "@tanstack/router-generator": "npm:1.37.0"
+    chokidar: "npm:^3.5.3"
+    yargs: "npm:^17.6.2"
+  bin:
+    tsr: bin/tsr.cjs
+  checksum: 10c0/6bf43d0cf94f6b3147713c654e107466fd38f31052e9ff64d9249864660845883d3dcd38c4c3cebfce2a1e871cdc5d447d8c8eab502a80aa96d9620638d354b3
   languageName: node
   linkType: hard
 
@@ -15633,7 +15646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.2, yargs@npm:^17.7.2":
+"yargs@npm:17.7.2, yargs@npm:^17.6.2, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:

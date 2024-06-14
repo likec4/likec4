@@ -1,0 +1,7 @@
+{
+  "semicolons": false,
+  "routeFileIgnorePattern": ".css.ts",
+  "generatedRouteTree": "src/routeTree.gen.ts",
+  "routesDirectory": "src/routes",
+  "quoteStyle": "single"
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "outputs": [
+        "src/routeTree.gen.ts"
+      ],
+      "inputs": [
+        "src/routes/**/*.tsx",
+        "tsr.config.json",
+        "package.json"
+      ],
+      "outputLogs": "errors-only"
+    }
+  }
+}

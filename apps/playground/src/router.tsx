@@ -7,11 +7,11 @@ import { routeTree } from './routeTree.gen'
 type RouteTree = typeof routeTree
 
 function createRouter() {
-  return createTanstackRouter<RouteTree, 'preserve'>({
+  return createTanstackRouter<RouteTree, 'always'>({
     routeTree,
     context: {},
     basepath,
-    trailingSlash: 'preserve',
+    trailingSlash: 'always',
     // history: useHasHistory ? createHashHistory() : createBrowserHistory(),
     // defaultErrorComponent
     // defaultPendingMinMs: 600,

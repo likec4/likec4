@@ -1,8 +1,12 @@
 import { AppShell, AppShellHeader, AppShellMain } from '@mantine/core'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { BlankExample, Examples } from '../examples'
 import { WorkspaceContextProvider } from '../state'
+import { DiagramPanel } from './-workspace/DiagramPanel'
+import { EditorPanel } from './-workspace/EditorPanel'
 import { Header } from './-workspace/Header'
+import * as css from './w.$id.css'
 
 export const Route = createFileRoute('/w/$id')({
   component: WorkspaceContextPage,
@@ -29,19 +33,22 @@ export function WorkspaceContextPage() {
           <Header />
         </AppShellHeader>
         <AppShellMain h={'100dvh'}>
-          <Outlet />
+          <PanelGroup
+            direction="horizontal"
+            autoSaveId={`playground-${id}`}>
+            <Panel
+              collapsible={true}
+              minSize={5}
+              defaultSize={40}>
+              <EditorPanel />
+            </Panel>
+            <PanelResizeHandle className={css.resize} />
+            <Panel>
+              <DiagramPanel />
+            </Panel>
+          </PanelGroup>
         </AppShellMain>
       </WorkspaceContextProvider>
     </AppShell>
-    // <Stack pos={'fixed'} inset={0}>
-    //   <Group flex={0}>
-
-    //   </Group>
-    //   <Box flex={1}>
-    //     <WorkspaceContextProvider key={id} name={id}>
-    //       <Outlet />
-    //     </WorkspaceContextProvider>
-    //   </Box>
-    // </Stack>
   )
 }

@@ -24,8 +24,8 @@ const asPadding = (v: unknown) => {
 }
 
 export type SearchParams = {
-  theme: 'light' | 'dark' | undefined
-  padding: number | undefined
+  theme?: 'light' | 'dark' | undefined
+  padding?: number | undefined
 }
 
 export const Route = createRootRouteWithContext<{}>()({

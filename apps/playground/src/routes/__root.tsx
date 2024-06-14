@@ -1,5 +1,5 @@
-import { MantineProvider, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
-import { createRootRouteWithContext, Link, Outlet, ScrollRestoration } from '@tanstack/react-router'
+import { MantineProvider } from '@mantine/core'
+import { createRootRouteWithContext, Outlet, ScrollRestoration } from '@tanstack/react-router'
 import { theme as mantineTheme } from '../theme'
 
 const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
@@ -14,7 +14,7 @@ const asTheme = (v: unknown): 'light' | 'dark' | undefined => {
 }
 
 export type SearchParams = {
-  theme: 'light' | 'dark' | undefined
+  theme?: 'light' | 'dark' | undefined
   // padding: number | undefined
 }
 
