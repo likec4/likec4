@@ -41,7 +41,7 @@
     "execa": "^9.1.0",
     "global": "^4.4.0",
     "husky": "^8.0.3",
-    "lint-staged": "15.2.5",
+    "lint-staged": "15.2.6",
     "rimraf": "^5.0.5",
     "shipjs": "^0.26.3",
     "tsx": "~4.9.3",
