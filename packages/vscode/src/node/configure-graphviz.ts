@@ -1,4 +1,4 @@
-import { BinaryGraphvizLayouter } from '@likec4/layouts/graphviz/binary'
+import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
 import * as vscode from 'vscode'
 import which from 'which'
 import type { ExtensionController } from '../common/ExtensionController'
@@ -51,11 +51,9 @@ export function configureGraphviz(ctrl: ExtensionController) {
       }
       return
     }
-    if (ctrl.graphviz instanceof BinaryGraphvizLayouter) {
-      ctrl.graphviz.path = binaryPath
-    } else {
-      ctrl.graphviz = new BinaryGraphvizLayouter(binaryPath)
-    }
+
+    ctrl.graphviz.changePort(new GraphvizBinaryAdapter(binaryPath))
+
     Logger.info(`[Extension] Graphviz binary ${binaryPath}`)
   }
 

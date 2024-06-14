@@ -10,6 +10,7 @@ import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
 
 import type { LikeC4DiagramProps } from '@likec4/diagram'
+import { graphvizLayouter } from '@likec4/layouts'
 import { nanoid } from 'nanoid'
 
 export type WorkspaceStore = {
@@ -199,9 +200,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
                 )
                 return
               }
-              const { WasmGraphvizLayouter } = await import('@likec4/layouts')
-              const dot = new WasmGraphvizLayouter()
-              const layoutRes = await dot.layout(view).catch(e => {
+              const layoutRes = await graphvizLayouter.layout(view).catch(e => {
                 console.error(e)
                 return {
                   diagram: null,

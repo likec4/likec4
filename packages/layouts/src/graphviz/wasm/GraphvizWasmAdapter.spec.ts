@@ -1,3 +1,4 @@
+import { Graphviz } from '@hpcc-js/wasm/graphviz'
 import type { ComputedView } from '@likec4/core'
 import { describe, it } from 'vitest'
 import {
@@ -6,17 +7,30 @@ import {
   computedCloudView,
   computedIndexView,
   issue577_fail,
-  issue577_valid
-} from './__fixtures__'
-import { WasmGraphvizLayouter } from './WasmGraphvizLayouter'
-
-const wasmGraphviz = new WasmGraphvizLayouter()
+  issue577_valid,
+  simpleView
+} from '../__fixtures__'
+import { GraphvizLayouter } from '../GraphvizLayoter'
+import { GraphvizWasmAdapter } from './GraphvizWasmAdapter'
 
 async function dotLayout(computedView: ComputedView) {
-  return (await wasmGraphviz.layout(computedView)).diagram
+  const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
+  return (await graphviz.layout(computedView)).diagram
 }
 
-describe('WasmGraphvizLayouter:', () => {
+describe('GraphvizWasmAdapter:', () => {
+  // it('computedIndexView', async ({ expect }) => {
+  //   const graphviz = new GraphvizLayouter(new GraphvizWasmAdapter())
+
+  //   const {diagram, dot} = await graphviz.layout(computedCloud3levels)
+  //   // expect(diagram).toMatchSnapshot()
+  //   expect(dot).toMatchSnapshot()
+
+  //   const nextdot = await graphviz.dot(computedCloud3levels, diagram)
+
+  //   expect(nextdot).toMatchSnapshot()
+  // })
+
   it('computedIndexView', async ({ expect }) => {
     const diagram = await dotLayout(computedIndexView)
     expect(diagram).toMatchSnapshot()

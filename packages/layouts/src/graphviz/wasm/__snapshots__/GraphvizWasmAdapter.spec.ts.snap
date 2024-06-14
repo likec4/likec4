@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
+exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
@@ -9,29 +9,29 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
     {
       "headArrow": [
         [
-          573,
-          161,
+          564,
+          159,
         ],
         [
-          583,
-          165,
+          574,
+          162,
         ],
         [
-          573,
-          168,
+          564,
+          166,
         ],
       ],
       "headArrowPoint": [
-        587,
-        165,
+        577,
+        162,
       ],
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 435,
-        "y": 137,
+        "x": 425,
+        "y": 134,
       },
       "labels": [
         {
@@ -39,8 +39,8 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            439,
-            154,
+            429,
+            151,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -49,20 +49,20 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "parent": null,
       "points": [
         [
-          392,
-          165,
+          382,
+          162,
         ],
         [
-          451,
-          165,
+          441,
+          162,
         ],
         [
-          515,
-          165,
+          506,
+          162,
         ],
         [
-          574,
-          165,
+          564,
+          162,
         ],
       ],
       "relations": [
@@ -72,30 +72,30 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          392,
-          165,
+          382,
+          162,
         ],
         [
-          386,
-          161,
+          376,
+          158,
         ],
         [
-          380,
-          165,
+          370,
+          162,
         ],
         [
-          386,
-          169,
+          376,
+          166,
         ],
       ],
       "tailArrowPoint": [
-        378,
-        165,
+        368,
+        162,
       ],
       "target": "amazon.s3",
     },
   ],
-  "height": 305,
+  "height": 300,
   "id": "amazon",
   "links": null,
   "nodes": [
@@ -106,7 +106,7 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 289,
+      "height": 284,
       "id": "cloud",
       "inEdges": [],
       "kind": "system",
@@ -139,7 +139,45 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 410,
+      "width": 400,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "height": 180,
+      "id": "cloud.backend",
+      "inEdges": [],
+      "kind": "component",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            123,
+            96,
+          ],
+          "text": "Backend",
+          "width": 78,
+        },
+      ],
+      "level": 1,
+      "links": null,
+      "outEdges": [
+        "cloud.backend:amazon.s3",
+      ],
+      "parent": "cloud",
+      "position": [
+        47,
+        72,
+      ],
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Backend",
+      "width": 321,
     },
     {
       "children": [
@@ -148,7 +186,7 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": "Amazon is a cloud provider",
-      "height": 289,
+      "height": 284,
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon.s3",
@@ -173,7 +211,7 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        546,
+        536,
         8,
       ],
       "shape": "rectangle",
@@ -181,51 +219,13 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 410,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "height": 186,
-      "id": "cloud.backend",
-      "inEdges": [],
-      "kind": "component",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            128,
-            99,
-          ],
-          "text": "Backend",
-          "width": 78,
-        },
-      ],
-      "level": 1,
-      "links": null,
-      "outEdges": [
-        "cloud.backend:amazon.s3",
-      ],
-      "parent": "cloud",
-      "position": [
-        47,
-        72,
-      ],
-      "shape": "rectangle",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Backend",
-      "width": 331,
+      "width": 400,
     },
     {
       "children": [],
       "color": "primary",
       "description": "S3 is a storage service",
-      "height": 186,
+      "height": 180,
       "id": "amazon.s3",
       "inEdges": [
         "cloud.backend:amazon.s3",
@@ -237,8 +237,8 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            154,
-            88,
+            149,
+            86,
           ],
           "text": "S3",
           "width": 25,
@@ -248,8 +248,8 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            96,
-            112,
+            91,
+            108,
           ],
           "text": "S3 is a storage service",
           "width": 142,
@@ -260,7 +260,7 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        585,
+        575,
         72,
       ],
       "shape": "rectangle",
@@ -268,17 +268,17 @@ exports[`WasmGraphvizLayouter: > computedAmazonView 1`] = `
       "tags": null,
       "technology": null,
       "title": "S3",
-      "width": 331,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 964,
+  "width": 944,
 }
 `;
 
-exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
+exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
@@ -287,228 +287,29 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          605,
-          781,
+          232,
+          318,
         ],
         [
-          615,
-          784,
+          228,
+          328,
         ],
         [
-          605,
-          788,
+          225,
+          318,
         ],
       ],
       "headArrowPoint": [
-        618,
-        784,
-      ],
-      "id": "cloud.backend.graphql:cloud.backend.storage",
-      "label": null,
-      "parent": "cloud.backend",
-      "points": [
-        [
-          418,
-          784,
-        ],
-        [
-          478,
-          784,
-        ],
-        [
-          545,
-          784,
-        ],
-        [
-          605,
-          784,
-        ],
-      ],
-      "relations": [
-        "cloud.backend.graphql:cloud.backend.storage",
-      ],
-      "source": "cloud.backend.graphql",
-      "target": "cloud.backend.storage",
-    },
-    {
-      "headArrow": [
-        [
-          251,
-          679,
-        ],
-        [
-          248,
-          689,
-        ],
-        [
-          244,
-          679,
-        ],
-      ],
-      "headArrowPoint": [
-        248,
-        692,
-      ],
-      "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": "fetches data in zero trust network with sso authentification",
-      "labelBBox": {
-        "height": 38,
-        "width": 200,
-        "x": 249,
-        "y": 577,
-      },
-      "labels": [
-        {
-          "align": "left",
-          "color": "#c6c6c6",
-          "fontSize": 13,
-          "pt": [
-            253,
-            594,
-          ],
-          "text": "fetches data in zero trust network",
-          "width": 192,
-        },
-        {
-          "align": "left",
-          "color": "#c6c6c6",
-          "fontSize": 13,
-          "pt": [
-            253,
-            611,
-          ],
-          "text": "with sso authentification",
-          "width": 139,
-        },
-      ],
-      "parent": "cloud",
-      "points": [
-        [
-          239,
-          522,
-        ],
-        [
-          241,
-          570,
-        ],
-        [
-          245,
-          629,
-        ],
-        [
-          248,
-          679,
-        ],
-      ],
-      "relations": [
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.adminPanel",
-      "target": "cloud.backend.graphql",
-    },
-    {
-      "headArrow": [
-        [
-          395,
-          687,
-        ],
-        [
-          385,
-          690,
-        ],
-        [
-          391,
-          681,
-        ],
-      ],
-      "headArrowPoint": [
-        382,
-        692,
-      ],
-      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
-      "label": "fetches data",
-      "labelBBox": {
-        "height": 21,
-        "width": 79,
-        "x": 522,
-        "y": 586,
-      },
-      "labels": [
-        {
-          "align": "left",
-          "color": "#c6c6c6",
-          "fontSize": 13,
-          "pt": [
-            526,
-            603,
-          ],
-          "text": "fetches data",
-          "width": 71,
-        },
-      ],
-      "parent": "cloud",
-      "points": [
-        [
-          577,
-          522,
-        ],
-        [
-          545,
-          554,
-        ],
-        [
-          509,
-          589,
-        ],
-        [
-          473,
-          619,
-        ],
-        [
-          448,
-          641,
-        ],
-        [
-          420,
-          663,
-        ],
-        [
-          392,
-          684,
-        ],
-      ],
-      "relations": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-      ],
-      "source": "cloud.frontend.dashboard",
-      "target": "cloud.backend.graphql",
-    },
-    {
-      "headArrow": [
-        [
-          237,
-          324,
-        ],
-        [
-          233,
-          334,
-        ],
-        [
-          230,
-          324,
-        ],
-      ],
-      "headArrowPoint": [
-        233,
-        337,
+        228,
+        331,
       ],
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 239,
-        "y": 241,
+        "x": 234,
+        "y": 234,
       },
       "labels": [
         {
@@ -516,8 +317,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            243,
-            258,
+            238,
+            251,
           ],
           "text": "manages",
           "width": 54,
@@ -526,20 +327,20 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          233,
-          185,
-        ],
-        [
-          233,
           228,
+          180,
         ],
         [
-          233,
-          280,
+          228,
+          223,
         ],
         [
-          233,
-          324,
+          228,
+          274,
+        ],
+        [
+          228,
+          318,
         ],
       ],
       "relations": [
@@ -551,29 +352,29 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          668,
-          324,
+          662,
+          318,
         ],
         [
-          664,
-          334,
+          658,
+          328,
         ],
         [
-          661,
-          324,
+          655,
+          318,
         ],
       ],
       "headArrowPoint": [
-        664,
-        337,
+        658,
+        331,
       ],
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
         "height": 21,
         "width": 107,
-        "x": 670,
-        "y": 241,
+        "x": 664,
+        "y": 234,
       },
       "labels": [
         {
@@ -581,8 +382,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            674,
-            258,
+            668,
+            251,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -591,20 +392,20 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          664,
-          185,
+          658,
+          180,
         ],
         [
-          664,
-          228,
+          658,
+          223,
         ],
         [
-          664,
-          280,
+          658,
+          274,
         ],
         [
-          664,
-          324,
+          658,
+          318,
         ],
       ],
       "relations": [
@@ -616,29 +417,29 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          787,
-          1033,
+          246,
+          667,
         ],
         [
-          783,
-          1043,
+          243,
+          677,
         ],
         [
-          780,
-          1033,
+          239,
+          667,
         ],
       ],
       "headArrowPoint": [
-        783,
-        1046,
+        243,
+        680,
       ],
-      "id": "cloud.backend.storage:amazon",
-      "label": "persists artifacts",
+      "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
+      "label": "fetches data in zero trust network with sso authentification",
       "labelBBox": {
-        "height": 21,
-        "width": 102,
-        "x": 789,
-        "y": 966,
+        "height": 38,
+        "width": 200,
+        "x": 244,
+        "y": 566,
       },
       "labels": [
         {
@@ -646,8 +447,207 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            793,
-            983,
+            248,
+            583,
+          ],
+          "text": "fetches data in zero trust network",
+          "width": 192,
+        },
+        {
+          "align": "left",
+          "color": "#c6c6c6",
+          "fontSize": 13,
+          "pt": [
+            248,
+            600,
+          ],
+          "text": "with sso authentification",
+          "width": 139,
+        },
+      ],
+      "parent": "cloud",
+      "points": [
+        [
+          234,
+          510,
+        ],
+        [
+          236,
+          558,
+        ],
+        [
+          240,
+          618,
+        ],
+        [
+          243,
+          667,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.adminPanel",
+      "target": "cloud.backend.graphql",
+    },
+    {
+      "headArrow": [
+        [
+          389,
+          675,
+        ],
+        [
+          379,
+          678,
+        ],
+        [
+          385,
+          670,
+        ],
+      ],
+      "headArrowPoint": [
+        376,
+        680,
+      ],
+      "id": "cloud.frontend.dashboard:cloud.backend.graphql",
+      "label": "fetches data",
+      "labelBBox": {
+        "height": 21,
+        "width": 79,
+        "x": 517,
+        "y": 574,
+      },
+      "labels": [
+        {
+          "align": "left",
+          "color": "#c6c6c6",
+          "fontSize": 13,
+          "pt": [
+            521,
+            591,
+          ],
+          "text": "fetches data",
+          "width": 71,
+        },
+      ],
+      "parent": "cloud",
+      "points": [
+        [
+          573,
+          511,
+        ],
+        [
+          541,
+          542,
+        ],
+        [
+          504,
+          578,
+        ],
+        [
+          468,
+          608,
+        ],
+        [
+          443,
+          630,
+        ],
+        [
+          414,
+          652,
+        ],
+        [
+          386,
+          673,
+        ],
+      ],
+      "relations": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+      ],
+      "source": "cloud.frontend.dashboard",
+      "target": "cloud.backend.graphql",
+    },
+    {
+      "headArrow": [
+        [
+          595,
+          767,
+        ],
+        [
+          605,
+          770,
+        ],
+        [
+          595,
+          774,
+        ],
+      ],
+      "headArrowPoint": [
+        608,
+        770,
+      ],
+      "id": "cloud.backend.graphql:cloud.backend.storage",
+      "label": null,
+      "parent": "cloud.backend",
+      "points": [
+        [
+          408,
+          770,
+        ],
+        [
+          467,
+          770,
+        ],
+        [
+          535,
+          770,
+        ],
+        [
+          595,
+          770,
+        ],
+      ],
+      "relations": [
+        "cloud.backend.graphql:cloud.backend.storage",
+      ],
+      "source": "cloud.backend.graphql",
+      "target": "cloud.backend.storage",
+    },
+    {
+      "headArrow": [
+        [
+          772,
+          1014,
+        ],
+        [
+          768,
+          1024,
+        ],
+        [
+          765,
+          1014,
+        ],
+      ],
+      "headArrowPoint": [
+        768,
+        1027,
+      ],
+      "id": "cloud.backend.storage:amazon",
+      "label": "persists artifacts",
+      "labelBBox": {
+        "height": 21,
+        "width": 102,
+        "x": 774,
+        "y": 948,
+      },
+      "labels": [
+        {
+          "align": "left",
+          "color": "#c6c6c6",
+          "fontSize": 13,
+          "pt": [
+            778,
+            965,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -656,20 +656,20 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          783,
-          893,
+          768,
+          876,
         ],
         [
-          783,
-          937,
+          768,
+          920,
         ],
         [
-          783,
-          989,
+          768,
+          971,
         ],
         [
-          783,
-          1033,
+          768,
+          1015,
         ],
       ],
       "relations": [
@@ -679,33 +679,131 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          783,
-          893,
+          768,
+          876,
         ],
         [
-          787,
-          887,
+          772,
+          870,
         ],
         [
-          783,
-          881,
+          768,
+          864,
         ],
         [
-          779,
-          887,
+          764,
+          870,
         ],
       ],
       "tailArrowPoint": [
-        783,
-        879,
+        768,
+        862,
       ],
       "target": "amazon",
     },
   ],
-  "height": 1231,
+  "height": 1207,
   "id": "cloud3levels",
   "links": null,
   "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Support engineers are responsible for supporting customers",
+      "height": 180,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            84,
+            76,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            44,
+            100,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            95,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "parent": null,
+      "position": [
+        67,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Support Engineer",
+      "width": 321,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "height": 180,
+      "id": "customer",
+      "inEdges": [],
+      "kind": "actor",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            120,
+            96,
+          ],
+          "text": "customer",
+          "width": 83,
+        },
+      ],
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "parent": null,
+      "position": [
+        497,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+      "width": 321,
+    },
     {
       "children": [
         "cloud.frontend.adminPanel",
@@ -715,7 +813,7 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 2,
       "description": null,
-      "height": 684,
+      "height": 674,
       "id": "cloud",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
@@ -730,7 +828,7 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "fontStyle": "bold",
           "pt": [
             8,
-            14,
+            15,
           ],
           "text": "CLOUD",
           "width": 47,
@@ -744,191 +842,20 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "parent": null,
       "position": [
         8,
-        274,
+        267,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 1020,
-    },
-    {
-      "children": [
-        "cloud.backend.graphql",
-        "cloud.backend.storage",
-      ],
-      "color": "primary",
-      "depth": 1,
-      "description": null,
-      "height": 291,
-      "id": "cloud.backend",
-      "inEdges": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "kind": "component",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#bfdbfeb3",
-          "fontSize": 13,
-          "fontStyle": "bold",
-          "pt": [
-            8,
-            15,
-          ],
-          "text": "BACKEND",
-          "width": 65,
-        },
-      ],
-      "level": 1,
-      "links": null,
-      "outEdges": [
-        "cloud.backend.storage:amazon",
-      ],
-      "parent": "cloud",
-      "position": [
-        48,
-        627,
-      ],
-      "shape": "rectangle",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Backend",
-      "width": 940,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": "Component that allows to query data via GraphQL.",
-      "height": 186,
-      "id": "cloud.backend.graphql",
-      "inEdges": [
-        "cloud.frontend.dashboard:cloud.backend.graphql",
-        "cloud.frontend.adminPanel:cloud.backend.graphql",
-      ],
-      "kind": "component",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            112,
-            79,
-          ],
-          "text": "Graphql API",
-          "width": 109,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            42,
-            104,
-          ],
-          "text": "Component that allows to query data via",
-          "width": 250,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            136,
-            122,
-          ],
-          "text": "GraphQL.",
-          "width": 62,
-        },
-      ],
-      "level": 2,
-      "links": null,
-      "outEdges": [
-        "cloud.backend.graphql:cloud.backend.storage",
-      ],
-      "parent": "cloud.backend",
-      "position": [
-        87,
-        691,
-      ],
-      "shape": "rectangle",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Graphql API",
-      "width": 331,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": "The backend storage is a component that stores data.",
-      "height": 188,
-      "id": "cloud.backend.storage",
-      "inEdges": [
-        "cloud.backend.graphql:cloud.backend.storage",
-      ],
-      "kind": "component",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            90,
-            80,
-          ],
-          "text": "Backend Storage",
-          "width": 154,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            38,
-            105,
-          ],
-          "text": "The backend storage is a component that",
-          "width": 258,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            130,
-            123,
-          ],
-          "text": "stores data.",
-          "width": 74,
-        },
-      ],
-      "level": 2,
-      "links": null,
-      "outEdges": [
-        "cloud.backend.storage:amazon",
-      ],
-      "parent": "cloud.backend",
-      "position": [
-        617,
-        690,
-      ],
-      "shape": "storage",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Backend Storage",
-      "width": 331,
+      "width": 1000,
     },
     {
       "children": [],
       "color": "primary",
       "description": "The admin panel is a webapp that allows support staff to manage customer data.",
-      "height": 186,
+      "height": 180,
       "id": "cloud.frontend.adminPanel",
       "inEdges": [
         "support:cloud.frontend.adminPanel",
@@ -940,8 +867,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            70,
-            79,
+            65,
+            76,
           ],
           "text": "Admin Panel Webapp",
           "width": 194,
@@ -951,8 +878,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            40,
-            103,
+            35,
+            99,
           ],
           "text": "The admin panel is a webapp that allows",
           "width": 253,
@@ -962,8 +889,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            45,
-            121,
+            40,
+            117,
           ],
           "text": "support staff to manage customer data.",
           "width": 244,
@@ -977,20 +904,20 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         67,
-        337,
+        331,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Admin Panel Webapp",
-      "width": 331,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "The customer dashboard is a webapp that allows customers to view their data.",
-      "height": 186,
+      "height": 180,
       "id": "cloud.frontend.dashboard",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
@@ -1002,8 +929,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            32,
-            79,
+            35,
+            76,
           ],
           "text": "Customer Dashboard Webapp",
           "width": 271,
@@ -1013,8 +940,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            37,
-            103,
+            40,
+            99,
           ],
           "text": "The customer dashboard is a webapp that",
           "width": 262,
@@ -1024,8 +951,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            57,
-            121,
+            60,
+            117,
           ],
           "text": "allows customers to view their data.",
           "width": 221,
@@ -1038,119 +965,192 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        497,
-        337,
+        488,
+        331,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Customer Dashboard Webapp",
-      "width": 333,
+      "width": 339,
     },
     {
-      "children": [],
+      "children": [
+        "cloud.backend.graphql",
+        "cloud.backend.storage",
+      ],
       "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
-      "height": 186,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
+      "depth": 1,
+      "description": null,
+      "height": 285,
+      "id": "cloud.backend",
+      "inEdges": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "kind": "component",
       "labels": [
         {
           "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
+          "color": "#bfdbfeb3",
+          "fontSize": 13,
+          "fontStyle": "bold",
           "pt": [
-            89,
-            79,
+            8,
+            14,
           ],
-          "text": "Support Engineer",
-          "width": 156,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            49,
-            104,
-          ],
-          "text": "Support engineers are responsible for",
-          "width": 235,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            100,
-            122,
-          ],
-          "text": "supporting customers",
-          "width": 134,
+          "text": "BACKEND",
+          "width": 65,
         },
       ],
-      "level": 0,
+      "level": 1,
       "links": null,
       "outEdges": [
-        "support:cloud.frontend.adminPanel",
+        "cloud.backend.storage:amazon",
       ],
-      "parent": null,
+      "parent": "cloud",
       "position": [
-        67,
-        0,
+        48,
+        616,
       ],
-      "shape": "person",
+      "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
-      "title": "Support Engineer",
-      "width": 331,
+      "title": "Backend",
+      "width": 920,
     },
     {
       "children": [],
       "color": "primary",
-      "description": null,
-      "height": 186,
-      "id": "customer",
-      "inEdges": [],
-      "kind": "actor",
+      "description": "Component that allows to query data via GraphQL.",
+      "height": 180,
+      "id": "cloud.backend.graphql",
+      "inEdges": [
+        "cloud.frontend.dashboard:cloud.backend.graphql",
+        "cloud.frontend.adminPanel:cloud.backend.graphql",
+      ],
+      "kind": "component",
       "labels": [
         {
           "align": "left",
           "color": "#eff6ff",
           "fontSize": 20,
+          "pt": [
+            107,
+            76,
+          ],
+          "text": "Graphql API",
+          "width": 109,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            37,
+            100,
+          ],
+          "text": "Component that allows to query data via",
+          "width": 250,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            131,
+            118,
+          ],
+          "text": "GraphQL.",
+          "width": 62,
+        },
+      ],
+      "level": 2,
+      "links": null,
+      "outEdges": [
+        "cloud.backend.graphql:cloud.backend.storage",
+      ],
+      "parent": "cloud.backend",
+      "position": [
+        87,
+        680,
+      ],
+      "shape": "rectangle",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Graphql API",
+      "width": 321,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "The backend storage is a component that stores data.",
+      "height": 182,
+      "id": "cloud.backend.storage",
+      "inEdges": [
+        "cloud.backend.graphql:cloud.backend.storage",
+      ],
+      "kind": "component",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            85,
+            77,
+          ],
+          "text": "Backend Storage",
+          "width": 154,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            33,
+            101,
+          ],
+          "text": "The backend storage is a component that",
+          "width": 258,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
           "pt": [
             125,
-            100,
+            119,
           ],
-          "text": "customer",
-          "width": 83,
+          "text": "stores data.",
+          "width": 74,
         },
       ],
-      "level": 0,
+      "level": 2,
       "links": null,
       "outEdges": [
-        "customer:cloud.frontend.dashboard",
+        "cloud.backend.storage:amazon",
       ],
-      "parent": null,
+      "parent": "cloud.backend",
       "position": [
-        498,
-        0,
+        607,
+        679,
       ],
-      "shape": "person",
+      "shape": "storage",
       "style": {},
       "tags": null,
       "technology": null,
-      "title": "customer",
-      "width": 331,
+      "title": "Backend Storage",
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 186,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud.backend.storage:amazon",
@@ -1162,8 +1162,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            130,
-            88,
+            125,
+            86,
           ],
           "text": "Amazon",
           "width": 74,
@@ -1173,8 +1173,8 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            82,
-            113,
+            77,
+            109,
           ],
           "text": "Amazon is a cloud provider",
           "width": 169,
@@ -1185,25 +1185,25 @@ exports[`WasmGraphvizLayouter: > computedCloud3levels 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        617,
-        1045,
+        607,
+        1027,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 331,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1036,
+  "width": 1016,
 }
 `;
 
-exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
+exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
@@ -1212,29 +1212,159 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          733,
-          426,
+          310,
+          318,
         ],
         [
-          743,
-          430,
+          312,
+          328,
         ],
         [
-          733,
-          433,
+          304,
+          322,
         ],
       ],
       "headArrowPoint": [
-        746,
-        430,
+        314,
+        331,
+      ],
+      "id": "customer:cloud.frontend",
+      "label": "opens in browser",
+      "labelBBox": {
+        "height": 21,
+        "width": 107,
+        "x": 272,
+        "y": 234,
+      },
+      "labels": [
+        {
+          "align": "left",
+          "color": "#c6c6c6",
+          "fontSize": 13,
+          "pt": [
+            276,
+            251,
+          ],
+          "text": "opens in browser",
+          "width": 99,
+        },
+      ],
+      "parent": null,
+      "points": [
+        [
+          217,
+          180,
+        ],
+        [
+          245,
+          223,
+        ],
+        [
+          278,
+          275,
+        ],
+        [
+          307,
+          320,
+        ],
+      ],
+      "relations": [
+        "customer:cloud.frontend.dashboard",
+      ],
+      "source": "customer",
+      "target": "cloud.frontend",
+    },
+    {
+      "headArrow": [
+        [
+          437,
+          322,
+        ],
+        [
+          429,
+          328,
+        ],
+        [
+          431,
+          318,
+        ],
+      ],
+      "headArrowPoint": [
+        427,
+        331,
+      ],
+      "id": "support:cloud.frontend",
+      "label": "manages",
+      "labelBBox": {
+        "height": 21,
+        "width": 62,
+        "x": 494,
+        "y": 234,
+      },
+      "labels": [
+        {
+          "align": "left",
+          "color": "#c6c6c6",
+          "fontSize": 13,
+          "pt": [
+            498,
+            251,
+          ],
+          "text": "manages",
+          "width": 54,
+        },
+      ],
+      "parent": null,
+      "points": [
+        [
+          524,
+          180,
+        ],
+        [
+          496,
+          223,
+        ],
+        [
+          463,
+          275,
+        ],
+        [
+          434,
+          320,
+        ],
+      ],
+      "relations": [
+        "support:cloud.frontend.adminPanel",
+      ],
+      "source": "support",
+      "target": "cloud.frontend",
+    },
+    {
+      "headArrow": [
+        [
+          718,
+          417,
+        ],
+        [
+          728,
+          421,
+        ],
+        [
+          718,
+          424,
+        ],
+      ],
+      "headArrowPoint": [
+        731,
+        421,
       ],
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
         "height": 21,
         "width": 28,
-        "x": 635,
-        "y": 401,
+        "x": 620,
+        "y": 392,
       },
       "labels": [
         {
@@ -1243,8 +1373,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "fontSize": 13,
           "fontStyle": "bold",
           "pt": [
-            639,
-            418,
+            624,
+            409,
           ],
           "text": "[...]",
           "width": 20,
@@ -1253,20 +1383,20 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       "parent": "cloud",
       "points": [
         [
-          545,
-          430,
+          530,
+          421,
         ],
         [
-          605,
-          430,
+          590,
+          421,
         ],
         [
-          672,
-          430,
+          657,
+          421,
         ],
         [
-          733,
-          430,
+          718,
+          421,
         ],
       ],
       "relations": [
@@ -1279,159 +1409,29 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          318,
-          324,
+          894,
+          631,
         ],
         [
-          320,
-          335,
+          891,
+          641,
         ],
         [
-          312,
-          328,
+          887,
+          631,
         ],
       ],
       "headArrowPoint": [
-        322,
-        337,
-      ],
-      "id": "customer:cloud.frontend",
-      "label": "opens in browser",
-      "labelBBox": {
-        "height": 21,
-        "width": 107,
-        "x": 279,
-        "y": 241,
-      },
-      "labels": [
-        {
-          "align": "left",
-          "color": "#c6c6c6",
-          "fontSize": 13,
-          "pt": [
-            283,
-            258,
-          ],
-          "text": "opens in browser",
-          "width": 99,
-        },
-      ],
-      "parent": null,
-      "points": [
-        [
-          224,
-          185,
-        ],
-        [
-          252,
-          229,
-        ],
-        [
-          286,
-          281,
-        ],
-        [
-          315,
-          326,
-        ],
-      ],
-      "relations": [
-        "customer:cloud.frontend.dashboard",
-      ],
-      "source": "customer",
-      "target": "cloud.frontend",
-    },
-    {
-      "headArrow": [
-        [
-          449,
-          328,
-        ],
-        [
-          441,
-          335,
-        ],
-        [
-          443,
-          324,
-        ],
-      ],
-      "headArrowPoint": [
-        439,
-        337,
-      ],
-      "id": "support:cloud.frontend",
-      "label": "manages",
-      "labelBBox": {
-        "height": 21,
-        "width": 62,
-        "x": 507,
-        "y": 241,
-      },
-      "labels": [
-        {
-          "align": "left",
-          "color": "#c6c6c6",
-          "fontSize": 13,
-          "pt": [
-            511,
-            258,
-          ],
-          "text": "manages",
-          "width": 54,
-        },
-      ],
-      "parent": null,
-      "points": [
-        [
-          537,
-          185,
-        ],
-        [
-          509,
-          229,
-        ],
-        [
-          475,
-          281,
-        ],
-        [
-          446,
-          326,
-        ],
-      ],
-      "relations": [
-        "support:cloud.frontend.adminPanel",
-      ],
-      "source": "support",
-      "target": "cloud.frontend",
-    },
-    {
-      "headArrow": [
-        [
-          914,
-          644,
-        ],
-        [
-          911,
-          654,
-        ],
-        [
-          907,
-          644,
-        ],
-      ],
-      "headArrowPoint": [
-        911,
-        657,
+        891,
+        644,
       ],
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 917,
-        "y": 577,
+        "x": 897,
+        "y": 564,
       },
       "labels": [
         {
@@ -1439,8 +1439,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            921,
-            594,
+            901,
+            581,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1449,20 +1449,20 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          911,
-          536,
+          891,
+          525,
         ],
         [
-          911,
-          571,
+          891,
+          559,
         ],
         [
-          911,
-          610,
+          891,
+          597,
         ],
         [
-          911,
-          645,
+          891,
+          631,
         ],
       ],
       "relations": [
@@ -1472,33 +1472,131 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          911,
-          536,
-        ],
-        [
-          915,
-          530,
-        ],
-        [
-          911,
+          891,
           524,
         ],
         [
-          907,
-          530,
+          895,
+          518,
+        ],
+        [
+          891,
+          512,
+        ],
+        [
+          887,
+          518,
         ],
       ],
       "tailArrowPoint": [
-        911,
-        522,
+        891,
+        511,
       ],
       "target": "amazon",
     },
   ],
-  "height": 842,
+  "height": 824,
   "id": "cloudView",
   "links": null,
   "nodes": [
+    {
+      "children": [],
+      "color": "primary",
+      "description": null,
+      "height": 180,
+      "id": "customer",
+      "inEdges": [],
+      "kind": "actor",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            119,
+            96,
+          ],
+          "text": "customer",
+          "width": 83,
+        },
+      ],
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "customer:cloud.frontend",
+      ],
+      "parent": null,
+      "position": [
+        0,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "customer",
+      "width": 321,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Support engineers are responsible for supporting customers",
+      "height": 180,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            83,
+            76,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            43,
+            100,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            94,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "support:cloud.frontend",
+      ],
+      "parent": null,
+      "position": [
+        420,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Support Engineer",
+      "width": 321,
+    },
     {
       "children": [
         "cloud.frontend",
@@ -1507,7 +1605,7 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       "color": "primary",
       "depth": 1,
       "description": null,
-      "height": 288,
+      "height": 284,
       "id": "cloud",
       "inEdges": [
         "support:cloud.frontend",
@@ -1522,7 +1620,7 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "fontStyle": "bold",
           "pt": [
             8,
-            14,
+            15,
           ],
           "text": "CLOUD",
           "width": 47,
@@ -1535,21 +1633,21 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        176,
-        274,
+        171,
+        267,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 939,
+      "width": 919,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 186,
+      "height": 180,
       "id": "cloud.frontend",
       "inEdges": [
         "support:cloud.frontend",
@@ -1562,8 +1660,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            125,
-            99,
+            120,
+            96,
           ],
           "text": "Frontend",
           "width": 81,
@@ -1576,21 +1674,21 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        215,
-        337,
+        210,
+        331,
       ],
       "shape": "browser",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Frontend",
-      "width": 331,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 186,
+      "height": 180,
       "id": "cloud.backend",
       "inEdges": [
         "cloud.frontend:cloud.backend",
@@ -1602,8 +1700,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            127,
-            99,
+            122,
+            96,
           ],
           "text": "Backend",
           "width": 78,
@@ -1616,119 +1714,21 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        745,
-        337,
+        730,
+        331,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 331,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": null,
-      "height": 186,
-      "id": "customer",
-      "inEdges": [],
-      "kind": "actor",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            124,
-            100,
-          ],
-          "text": "customer",
-          "width": 83,
-        },
-      ],
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "customer:cloud.frontend",
-      ],
-      "parent": null,
-      "position": [
-        0,
-        0,
-      ],
-      "shape": "person",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "customer",
-      "width": 331,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
-      "height": 186,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            88,
-            79,
-          ],
-          "text": "Support Engineer",
-          "width": 156,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            48,
-            104,
-          ],
-          "text": "Support engineers are responsible for",
-          "width": 235,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            99,
-            122,
-          ],
-          "text": "supporting customers",
-          "width": 134,
-        },
-      ],
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "support:cloud.frontend",
-      ],
-      "parent": null,
-      "position": [
-        430,
-        0,
-      ],
-      "shape": "person",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Support Engineer",
-      "width": 331,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 186,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud.backend:amazon",
@@ -1740,8 +1740,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            129,
-            88,
+            124,
+            86,
           ],
           "text": "Amazon",
           "width": 74,
@@ -1751,8 +1751,8 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            81,
-            112,
+            76,
+            108,
           ],
           "text": "Amazon is a cloud provider",
           "width": 169,
@@ -1763,25 +1763,25 @@ exports[`WasmGraphvizLayouter: > computedCloudView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        745,
-        657,
+        730,
+        644,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 331,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1123,
+  "width": 1098,
 }
 `;
 
-exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
+exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
 {
   "__": "element",
   "autoLayout": "TB",
@@ -1790,29 +1790,29 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          314,
-          308,
-        ],
-        [
-          317,
-          318,
+          306,
+          301,
         ],
         [
           309,
           312,
         ],
+        [
+          300,
+          305,
+        ],
       ],
       "headArrowPoint": [
-        319,
-        321,
+        311,
+        314,
       ],
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
         "height": 21,
         "width": 107,
-        "x": 286,
-        "y": 241,
+        "x": 279,
+        "y": 234,
       },
       "labels": [
         {
@@ -1820,8 +1820,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            290,
-            258,
+            283,
+            251,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1830,20 +1830,20 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          227,
-          185,
+          220,
+          180,
         ],
         [
-          253,
-          224,
+          246,
+          219,
         ],
         [
-          284,
-          270,
+          277,
+          264,
         ],
         [
-          312,
-          310,
+          303,
+          303,
         ],
       ],
       "relations": [
@@ -1855,29 +1855,29 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          453,
+          441,
+          305,
+        ],
+        [
+          432,
           312,
         ],
         [
-          444,
-          318,
-        ],
-        [
-          447,
-          308,
+          435,
+          301,
         ],
       ],
       "headArrowPoint": [
-        442,
-        321,
+        430,
+        314,
       ],
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
         "height": 21,
         "width": 62,
-        "x": 500,
-        "y": 241,
+        "x": 488,
+        "y": 234,
       },
       "labels": [
         {
@@ -1885,8 +1885,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            504,
-            258,
+            492,
+            251,
           ],
           "text": "manages",
           "width": 54,
@@ -1895,20 +1895,20 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          534,
-          185,
+          521,
+          180,
         ],
         [
-          508,
-          224,
+          495,
+          219,
         ],
         [
-          477,
-          270,
+          464,
+          264,
         ],
         [
-          450,
-          310,
+          438,
+          303,
         ],
       ],
       "relations": [
@@ -1920,29 +1920,29 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          384,
-          628,
+          374,
+          615,
         ],
         [
-          381,
-          638,
+          371,
+          625,
         ],
         [
-          377,
-          628,
+          367,
+          615,
         ],
       ],
       "headArrowPoint": [
-        381,
-        641,
+        371,
+        628,
       ],
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
         "height": 21,
         "width": 102,
-        "x": 387,
-        "y": 561,
+        "x": 377,
+        "y": 548,
       },
       "labels": [
         {
@@ -1950,8 +1950,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            391,
-            578,
+            381,
+            565,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1960,20 +1960,20 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          381,
-          519,
+          371,
+          508,
         ],
         [
-          381,
-          554,
+          371,
+          542,
         ],
         [
-          381,
-          593,
+          371,
+          581,
         ],
         [
-          381,
-          628,
+          371,
+          615,
         ],
       ],
       "relations": [
@@ -1983,30 +1983,30 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          381,
-          519,
+          371,
+          508,
         ],
         [
-          385,
-          513,
+          375,
+          502,
         ],
         [
-          381,
-          507,
+          371,
+          496,
         ],
         [
-          377,
-          513,
+          367,
+          502,
         ],
       ],
       "tailArrowPoint": [
-        381,
-        505,
+        371,
+        494,
       ],
       "target": "amazon",
     },
   ],
-  "height": 826,
+  "height": 808,
   "id": "index",
   "links": null,
   "nodes": [
@@ -2014,7 +2014,7 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 186,
+      "height": 180,
       "id": "customer",
       "inEdges": [],
       "kind": "actor",
@@ -2024,8 +2024,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            124,
-            100,
+            119,
+            96,
           ],
           "text": "customer",
           "width": 83,
@@ -2046,13 +2046,73 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "tags": null,
       "technology": null,
       "title": "customer",
-      "width": 331,
+      "width": 321,
+    },
+    {
+      "children": [],
+      "color": "primary",
+      "description": "Support engineers are responsible for supporting customers",
+      "height": 180,
+      "id": "support",
+      "inEdges": [],
+      "kind": "actor",
+      "labels": [
+        {
+          "align": "left",
+          "color": "#eff6ff",
+          "fontSize": 20,
+          "pt": [
+            83,
+            76,
+          ],
+          "text": "Support Engineer",
+          "width": 156,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            43,
+            100,
+          ],
+          "text": "Support engineers are responsible for",
+          "width": 235,
+        },
+        {
+          "align": "left",
+          "color": "#bfdbfe",
+          "fontSize": 14,
+          "pt": [
+            94,
+            118,
+          ],
+          "text": "supporting customers",
+          "width": 134,
+        },
+      ],
+      "level": 0,
+      "links": null,
+      "outEdges": [
+        "support:cloud",
+      ],
+      "parent": null,
+      "position": [
+        420,
+        0,
+      ],
+      "shape": "person",
+      "style": {},
+      "tags": null,
+      "technology": null,
+      "title": "Support Engineer",
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": null,
-      "height": 186,
+      "height": 180,
       "id": "cloud",
       "inEdges": [
         "support:cloud",
@@ -2065,8 +2125,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            142,
-            100,
+            137,
+            96,
           ],
           "text": "cloud",
           "width": 48,
@@ -2079,81 +2139,21 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        215,
-        320,
+        210,
+        314,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 331,
-    },
-    {
-      "children": [],
-      "color": "primary",
-      "description": "Support engineers are responsible for supporting customers",
-      "height": 186,
-      "id": "support",
-      "inEdges": [],
-      "kind": "actor",
-      "labels": [
-        {
-          "align": "left",
-          "color": "#eff6ff",
-          "fontSize": 20,
-          "pt": [
-            88,
-            79,
-          ],
-          "text": "Support Engineer",
-          "width": 156,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            48,
-            104,
-          ],
-          "text": "Support engineers are responsible for",
-          "width": 235,
-        },
-        {
-          "align": "left",
-          "color": "#bfdbfe",
-          "fontSize": 14,
-          "pt": [
-            99,
-            122,
-          ],
-          "text": "supporting customers",
-          "width": 134,
-        },
-      ],
-      "level": 0,
-      "links": null,
-      "outEdges": [
-        "support:cloud",
-      ],
-      "parent": null,
-      "position": [
-        430,
-        0,
-      ],
-      "shape": "person",
-      "style": {},
-      "tags": null,
-      "technology": null,
-      "title": "Support Engineer",
-      "width": 331,
+      "width": 321,
     },
     {
       "children": [],
       "color": "primary",
       "description": "Amazon is a cloud provider",
-      "height": 186,
+      "height": 180,
       "id": "amazon",
       "inEdges": [
         "cloud:amazon",
@@ -2165,8 +2165,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            129,
-            88,
+            124,
+            85,
           ],
           "text": "Amazon",
           "width": 74,
@@ -2176,8 +2176,8 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            81,
-            113,
+            76,
+            108,
           ],
           "text": "Amazon is a cloud provider",
           "width": 169,
@@ -2188,19 +2188,19 @@ exports[`WasmGraphvizLayouter: > computedIndexView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        215,
-        640,
+        210,
+        628,
       ],
       "shape": "rectangle",
       "style": {},
       "tags": null,
       "technology": null,
       "title": "Amazon",
-      "width": 331,
+      "width": 321,
     },
   ],
   "tags": null,
   "title": "",
-  "width": 761,
+  "width": 741,
 }
 `;

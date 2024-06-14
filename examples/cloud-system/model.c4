@@ -14,7 +14,15 @@ model {
     '
 
     ui = container 'Frontends' {
-      description 'All the frontend applications of the cloud system'
+      description '
+        All the frontend
+         applications of the cloud system
+         applications of the cloud system
+         applications of the cloud system
+         applications of the cloud system
+         applications of the cloud system
+         2
+      '
     }
 
     legacy = container 'Cloud Legacy' {

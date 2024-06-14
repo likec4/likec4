@@ -22,7 +22,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts"
+    "./graphviz/binary": "./src/graphviz/binary/index.ts",
+    "./graphviz/wasm": "./src/graphviz/wasm/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -35,6 +36,10 @@
       "./graphviz/binary": {
         "types": "./dist/graphviz/binary/index.d.ts",
         "default": "./dist/graphviz/binary/index.js"
+      },
+      "./graphviz/wasm": {
+        "types": "./dist/graphviz/wasm/index.d.ts",
+        "default": "./dist/graphviz/wasm/index.js"
       }
     }
   },

@@ -33,17 +33,20 @@ function wrapToHTML({
   color?: string
   align?: 'left' | 'right' | 'center'
 }) {
+  const Color = color ? ` COLOR="${color}"` : ``
+  let rows = wrap(text, maxchars)
+    .map(text => (isEmpty(text) ? ' ' : text))
+    .map(text => (bold ? `<B>${text}</B>` : text))
+    .map(text => `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${text}</FONT>`)
+
+  if (rows.length === 1) {
+    return rows[0]
+  }
   // Change row height if line height is not 1
   const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
   const TDheight = lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
-  const fontOpts = ` POINT-SIZE="${pxToPoints(fontsize)}"${color ? ` COLOR="${color}"` : ``}`
-  const rows = wrap(text, maxchars)
-    .map(text => (isEmpty(text) ? ' ' : text))
-    .map(text => `<FONT${fontOpts}>${text}</FONT>`)
-    .map(text => (bold ? `<B>${text}</B>` : text))
-    .map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
-    .join('')
-  return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows}</TABLE>`
+  rows = rows.map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
+  return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows.join('')}</TABLE>`
 }
 
 /**
@@ -70,7 +73,7 @@ export function nodeLabel(node: ComputedNode) {
         text: node.technology,
         fontsize: 12,
         lineHeight: 1.125,
-        maxchars: 45,
+        maxchars: 40,
         color: Colors[node.color].loContrast
       })
     )
@@ -81,7 +84,7 @@ export function nodeLabel(node: ComputedNode) {
         text: node.description,
         fontsize: 14,
         lineHeight: 1.25,
-        maxchars: 45,
+        maxchars: 40,
         color: Colors[node.color].loContrast
       })
     )
@@ -96,7 +99,7 @@ export function nodeLabel(node: ComputedNode) {
     )
   }
   const joinedRows = rows.join('')
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="5">${joinedRows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${joinedRows}</TABLE>>`
 }
 
 export function edgeLabel(text: string) {

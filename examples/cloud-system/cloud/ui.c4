@@ -61,8 +61,9 @@ views {
       color primary
     }
     style cloud {
+      opacity 55%
       border dashed
-      color indigo
+      color red
     }      
   }
 
@@ -89,7 +90,9 @@ views {
     
     style cloud.ui, cloud.ui.* {
       color primary
-    }  
+    }
+
+    autoLayout TopBottom  
   }
   
   view cloud_ui_supportPanel of supportPanel {

@@ -162,17 +162,17 @@ function parseEdgeArrowPolygon(edgeDebugId: string, ops: GraphvizJson.DrawOp[]):
   }
 }
 
-function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdges: ComputedEdge[]): DiagramEdge | null {
-  if (!graphvizEdge.likec4_id) {
-    return null
-  }
-  const edgeData = computedEdges.find(i => i.id === graphvizEdge.likec4_id)
-  if (!edgeData) {
-    console.warn(`Edge ${graphvizEdge.likec4_id} not found, how did it get into the graphviz output?`)
-    return null
-  }
+function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdge: ComputedEdge): DiagramEdge {
+  // if (!graphvizEdge.likec4_id) {
+  //   return null
+  // }
+  // const edgeData = computedEdges.find(i => i.id === graphvizEdge.likec4_id)
+  // if (!edgeData) {
+  //   console.warn(`Edge ${graphvizEdge.likec4_id} not found, how did it get into the graphviz output?`)
+  //   return null
+  // }
   const edge: DiagramEdge = {
-    ...edgeData,
+    ...computedEdge,
     points: parseEdgePoints(graphvizEdge)
   }
   if (graphvizEdge.pos) {
@@ -234,17 +234,9 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   // const diagramNodes = new Map<NodeId, DiagramNode>()
 
   const graphvizObjects = graphvizJson.objects ?? []
-  for (const { likec4_id, ...obj } of graphvizObjects) {
-    if (!likec4_id) {
-      continue
-    }
-    const computed = computedNodes.find(n => n.id === likec4_id)
-    if (!computed) {
-      console.warn(
-        `Node likec4_id=${likec4_id} not found, how did it get into the graphviz output?`
-      )
-      continue
-    }
+  for (const computed of computedNodes) {
+    const obj = graphvizObjects.find(o => o.likec4_id === computed.id)
+    invariant(obj, `Element ${computed.id} not found in graphviz output`)
 
     const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
@@ -261,15 +253,18 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   }
 
   const graphvizEdges = graphvizJson.edges ?? []
-  for (const graphvizEdge of graphvizEdges) {
+  for (const computedEdge of computedEdges) {
     try {
-      const edge = parseGraphvizEdge(graphvizEdge, computedEdges)
-      if (!edge) {
+      const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
+      if (!graphvizEdge) {
+        console.warn(`Edge ${computedEdge.id} not found in graphviz output, skipping`)
         continue
       }
-      diagram.edges.push(edge)
+      diagram.edges.push(
+        parseGraphvizEdge(graphvizEdge, computedEdge)
+      )
     } catch (e) {
-      console.error(`failed on parsing edge ${graphvizEdge.likec4_id}:\n${String(e)}`)
+      console.error(`failed on parsing edge ${computedEdge.id}:\n${String(e)}`)
     }
   }
 

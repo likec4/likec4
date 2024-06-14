@@ -2,8 +2,8 @@ import vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 
 import { type ViewID } from '@likec4/core'
-import type { GraphvizLayouter } from '@likec4/layouts'
-import { WasmGraphvizLayouter } from '@likec4/layouts'
+import { GraphvizLayouter } from '@likec4/layouts'
+import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
@@ -21,7 +21,7 @@ export class ExtensionController extends AbstractDisposable {
 
   private _telemetry: TelemetryReporter
 
-  public graphviz: GraphvizLayouter = new WasmGraphvizLayouter()
+  public graphviz: GraphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
 
   constructor(
     _context: vscode.ExtensionContext,

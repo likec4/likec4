@@ -1,7 +1,8 @@
 import type { LikeC4Services, LikeC4SharedServices } from '@likec4/language-server'
 import { createCustomLanguageServices, logger as lspLogger } from '@likec4/language-server'
-import { type GraphvizLayouter, WasmGraphvizLayouter } from '@likec4/layouts'
-import { BinaryGraphvizLayouter } from '@likec4/layouts/graphviz/binary'
+import { GraphvizLayouter } from '@likec4/layouts'
+import { GraphvizBinaryAdapter } from '@likec4/layouts/graphviz/binary'
+import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import type { DeepPartial, Module } from 'langium'
 import { NodeFileSystem } from 'langium/node'
 import type { Constructor } from 'type-fest'
@@ -53,7 +54,7 @@ export function createServices({
   const module = {
     logger: () => logger,
     likec4: {
-      Layouter: () => (useDotBin === true ? new BinaryGraphvizLayouter() : new WasmGraphvizLayouter())
+      Layouter: () => new GraphvizLayouter(useDotBin === true ? new GraphvizBinaryAdapter() : new GraphvizWasmAdapter())
     }
   } satisfies Module<CliServices, DeepPartial<CliAddedServices>>
   lspLogger.silent(true)
