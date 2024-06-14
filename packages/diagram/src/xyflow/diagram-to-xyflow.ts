@@ -9,8 +9,9 @@ import {
   type Point
 } from '@likec4/core'
 import { Bezier } from 'bezier-js'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, reduce } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
+import { toDomPrecision } from './utils'
 
 function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...bezierPoints] = bezierSpline
@@ -22,14 +23,14 @@ function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
   while (hasAtLeast(bezierPoints, 3)) {
     const [cp1, cp2, end, ...rest] = bezierPoints
     const bezier = new Bezier(start[0], start[1], cp1[0], cp1[1], cp2[0], cp2[1], end[0], end[1])
-    // const { x, y } = bezier.get(0.5)
+    // TODO: temporary, we need correcly derive catmull-rom from bezier. Actually, from poly-bezier
     const inflections = bezier.inflections()
     if (inflections.length === 0) {
       inflections.push(0.5)
     }
     inflections.forEach(t => {
       const { x, y } = bezier.get(t)
-      handles.push([x, y])
+      handles.push([toDomPrecision(x), toDomPrecision(y)])
     })
     bezierPoints = rest
     start = end

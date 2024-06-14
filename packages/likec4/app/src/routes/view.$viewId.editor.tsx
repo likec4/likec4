@@ -20,7 +20,6 @@ function ViewEditor() {
     <LikeC4Diagram
       view={view}
       readonly={false}
-      controls
       nodesDraggable
       fitViewPadding={0.08}
       onNavigateTo={viewId => {

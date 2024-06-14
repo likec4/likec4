@@ -11,8 +11,9 @@ import { type CSSProperties, memo } from 'react'
 import { first, hasAtLeast, last, zip } from 'remeda'
 import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
-import { useXYStoreApi } from '../hooks'
+import { useXYFlow, useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
+import { toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
 import { getEdgeParams, getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
@@ -99,12 +100,21 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
-  const { nodeLookup, edgeLookup } = useXYStoreApi().getState()
+  const xyflowStore = useXYStoreApi()
+  const xyflow = useXYFlow()
+  const { isActive, isEditable, isHovered, isDimmed } = useDiagramState(s => ({
+    isEditable: s.readonly !== true,
+    isActive: s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum,
+    isHovered: s.hoveredEdgeId === id,
+    isDimmed: s.dimmed.has(id)
+  }))
+  const { nodeLookup, edgeLookup } = xyflowStore.getState()
   const sourceNode = nonNullable(nodeLookup.get(source)!, `source node ${source} not found`)
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
 
-  const isModified = !isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-    || !isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position)
+  const isModified = isEditable && (0
+    || !isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+    || !isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position))
 
   const { edge: diagramEdge, controlPoints } = data
 
@@ -112,11 +122,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 
   const color = diagramEdge.color ?? 'gray'
   const isStepEdge = data.stepNum !== null
-  const { isActive, isHovered, isDimmed } = useDiagramState(s => ({
-    isActive: s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum,
-    isHovered: s.hoveredEdgeId === id,
-    isDimmed: s.dimmed.has(id)
-  }))
 
   const line = diagramEdge.line ?? 'dashed'
   const isDotted = line === 'dotted'
@@ -170,6 +175,30 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     ])!
   }
 
+  const onControlPointerDown = (index: number) => (e: React.PointerEvent) => {
+    const domNode = xyflowStore.getState().domNode
+    if (!domNode) return
+    e.stopPropagation()
+    let hasMoved = false
+    let pointer = { x: e.clientX, y: e.clientY }
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isSamePoint(e.clientX, pointer.x) || !isSamePoint(e.clientY, pointer.y)) {
+        hasMoved = true
+        pointer = { x: e.clientX, y: e.clientY }
+        const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
+        const newControlPoints = controlPoints.slice()
+        newControlPoints[index] = [toDomPrecision(x), toDomPrecision(y)]
+        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+      }
+    }
+    const onPointerUp = () => {
+      domNode.removeEventListener('pointermove', onPointerMove)
+      domNode.removeEventListener('pointerup', onPointerUp)
+    }
+    domNode.addEventListener('pointermove', onPointerMove)
+    domNode.addEventListener('pointerup', onPointerUp, { once: true })
+  }
+
   return (
     <g
       className={clsx([
@@ -185,7 +214,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           <marker
             id={`arrow-${id}`}
             viewBox="0 0 16 10"
-            refX={isModified ? '12' : '10'}
+            // TODO: graphviz cut bezier path at arrow, we don't
+            refX={isModified ? '15' : '1'}
             refY="5"
             markerWidth="5"
             markerHeight="4"
@@ -205,6 +235,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         style={style} />
       {isModified && controlPoints.map((p, i) => (
         <circle
+          onPointerDown={onControlPointerDown(i)}
           className={edgesCss.controlPoint}
           key={i}
           cx={p[0]}

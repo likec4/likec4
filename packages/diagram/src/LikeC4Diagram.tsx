@@ -29,7 +29,7 @@ export function LikeC4Diagram({
   nodesSelectable = !readonly,
   nodesDraggable = !readonly,
   background = 'dots',
-  controls = !readonly,
+  controls = false,
   showElementLinks = true,
   showDiagramTitle = true,
   enableDynamicViewWalkthrough = true,
