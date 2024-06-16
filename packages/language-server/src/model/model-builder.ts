@@ -17,6 +17,7 @@ import {
   flatMap,
   forEach,
   isNullish,
+  isNumber,
   isTruthy,
   map,
   mapToObj,
@@ -87,7 +88,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(icon && { icon }),
           style: {
             ...(border && { border }),
-            ...(opacity && { opacity })
+            ...(isNumber(opacity) && { opacity })
           },
           links: links ? resolveLinks(doc, links) : null,
           tags: tags ?? null,
