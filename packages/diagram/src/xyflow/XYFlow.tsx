@@ -1,10 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core'
-import { Controls, ReactFlow, useOnViewportChange } from '@xyflow/react'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
+import { ReactFlow, useOnViewportChange } from '@xyflow/react'
+import { shallowEqual } from 'fast-equals'
 import { type CSSProperties, memo, type PropsWithChildren } from 'react'
-import { omit, omitBy } from 'remeda'
-import type { SetNonNullable, Simplify } from 'type-fest'
-import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state'
 import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
@@ -13,7 +10,6 @@ import { useXYStoreApi } from './hooks/useXYFlow'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
-import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
 
 const nodeTypes = {
@@ -56,7 +52,7 @@ const selector = (s: DiagramState) => ({
   pannable: s.pannable
 })
 
-export function XYFlow({
+function XYFlowWrapper({
   className,
   children,
   defaultNodes,
@@ -176,4 +172,4 @@ export function XYFlow({
   )
 }
 
-// export const XYFlow = memo(XYFlowWrapper, propsAreEqual) as typeof XYFlowWrapper
+export const XYFlow = memo(XYFlowWrapper, shallowEqual) as typeof XYFlowWrapper

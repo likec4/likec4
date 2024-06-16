@@ -149,6 +149,12 @@ export interface LikeC4DiagramProperties {
    * @default false
    */
   enableDynamicViewWalkthrough?: boolean | undefined
+
+  /**
+   * Experimental feature to enable edge editing
+   * @default false
+   */
+  experimentalEdgeEditing?: boolean | undefined
 }
 
 export interface LikeC4DiagramEventHandlers {

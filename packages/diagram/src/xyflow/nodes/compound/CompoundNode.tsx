@@ -19,10 +19,10 @@ type CompoundNodeProps = Pick<
 // @ts-ignore
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
-  && prev.selected === next.selected
-  && prev.width === next.width
-  && prev.height === next.height
-  && eq(prev.data, next.data)
+  // && prev.selected === next.selected
+  // && eq(prev.width, next.width)
+  // && eq(prev.height, next.height)
+  && eq(prev.data.element, next.data.element)
 )
 
 export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function CompoundNode({
@@ -103,4 +103,4 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
       />
     </Box>
   )
-})
+}, isEqualProps)

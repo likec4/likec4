@@ -1,21 +1,22 @@
 import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
 import { Box } from '@mantine/core'
+import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
-import { EdgeLabelRenderer, getBezierPath } from '@xyflow/react'
+import { EdgeLabelRenderer } from '@xyflow/react'
 import { getNodePositionWithOrigin } from '@xyflow/system'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
-import { type CSSProperties, memo } from 'react'
-import { first, hasAtLeast, last, zip } from 'remeda'
+import { memo, useRef, useState } from 'react'
+import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYFlow, useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
-import { toDomPrecision } from '../utils'
+import { bezierControlPoints, toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
-import { getEdgeParams, getNodeIntersectionFromCenterToPoint } from './utils'
+import { getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
 
 // function getBend(a: XYPosition, b: XYPosition, c: XYPosition, size = 8): string {
@@ -64,12 +65,20 @@ function bezierPath(bezierSpline: NonEmptyArray<Point>) {
 }
 
 // If points are within 3px, consider them the same
-const isSamePoint = (a: number, b: number) => {
+const isSame = (a: number, b: number) => {
   return Math.abs(a - b) < 3.1
 }
 
-const isSamePosition = (a: XYPosition, [bx, by]: Point) => {
-  return isSamePoint(a.x, bx) && isSamePoint(a.y, by)
+const isSamePoint = (a: XYPosition | Point, b: XYPosition | Point) => {
+  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
+  const [bx, by] = isArray(b) ? b : [b.x, b.y]
+  return isSame(ax, bx) && isSame(ay, by)
+}
+
+const sameControlPoints = (a: Point[] | null, b: Point[] | null) => {
+  if (a === b) return true
+  if (!a || !b || a.length !== b.length) return false
+  return a.every((ap, i) => isSamePoint(ap, b[i]!))
 }
 
 const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
@@ -77,15 +86,13 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && prev.source === next.source
   && prev.target === next.target
   && eq(prev.selected ?? false, next.selected ?? false)
-  && isSamePoint(prev.sourceX, next.sourceX)
-  && isSamePoint(prev.sourceY, next.sourceY)
-  && isSamePoint(prev.targetX, next.targetX)
-  && isSamePoint(prev.targetY, next.targetY)
+  && isSame(prev.sourceX, next.sourceX)
+  && isSame(prev.sourceY, next.sourceY)
+  && isSame(prev.targetX, next.targetX)
+  && isSame(prev.targetY, next.targetY)
   && eq(prev.data.stepNum, next.data.stepNum)
+  && sameControlPoints(prev.data.controlPoints, next.data.controlPoints)
   && eq(prev.data.edge, next.data.edge)
-  && zip(prev.data.controlPoints, next.data.controlPoints).every(([a, b]) =>
-    isSamePoint(a[0], b[0]) && isSamePoint(a[1], b[1])
-  )
 )
 
 const curve = d3line<Point>()
@@ -102,8 +109,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
 }) {
   const xyflowStore = useXYStoreApi()
   const xyflow = useXYFlow()
-  const { isActive, isEditable, isHovered, isDimmed } = useDiagramState(s => ({
+  const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
     isEditable: s.readonly !== true,
+    isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true,
     isActive: s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum,
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id)
@@ -113,17 +121,22 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const targetNode = nonNullable(nodeLookup.get(target)!, `target node ${target} not found`)
 
   const isModified = isEditable && (0
-    || !isSamePosition(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
-    || !isSamePosition(targetNode.internals.positionAbsolute, targetNode.data.element.position))
+    || isTruthy(data.controlPoints)
+    || !isSamePoint(sourceNode.internals.positionAbsolute, sourceNode.data.element.position)
+    || !isSamePoint(targetNode.internals.positionAbsolute, targetNode.data.element.position))
 
-  const { edge: diagramEdge, controlPoints } = data
+  const {
+    label,
+    edge: {
+      points: diagramEdgePoints,
+      line = 'dashed',
+      color = 'gray',
+      ...diagramEdge
+    }
+  } = data
 
-  // const edgePath = bezierPath(edge.points)
-
-  const color = diagramEdge.color ?? 'gray'
+  const controlPoints = data.controlPoints ?? bezierControlPoints(diagramEdgePoints)
   const isStepEdge = data.stepNum !== null
-
-  const line = diagramEdge.line ?? 'dashed'
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
 
@@ -134,46 +147,49 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     strokeDasharray = '8,10'
   }
 
-  const marker = `url(#arrow-${id})`
+  let labelX = label?.bbox.x ?? 0,
+    labelY = label?.bbox.y ?? 0
 
-  let edgePath: string, labelX: number, labelY: number
+  const [labelPos, setLabelPosition] = useState<XYPosition>({
+    x: labelX,
+    y: labelY
+  })
 
-  if (!isModified) {
-    edgePath = bezierPath(diagramEdge.points)
+  let edgePath: string
+
+  if (isModified) {
+    labelX = labelPos.x
+    labelY = labelPos.y
+    const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
+    const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
+    edgePath = nonNullable(curve([
+      [sourceCenterPos.positionAbsolute.x, sourceCenterPos.positionAbsolute.y],
+      getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
+      ...controlPoints,
+      getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
+      [targetCenterPos.positionAbsolute.x, targetCenterPos.positionAbsolute.y]
+    ]))
+  } else {
+    edgePath = bezierPath(diagramEdgePoints)
     // if (diagramEdge.tailArrowPoint) {
     //   edgePath = `M ${diagramEdge.tailArrowPoint[0]},${diagramEdge.tailArrowPoint[1]} L ${edgePath.substring(1)}`
     // }
     // if (diagramEdge.headArrowPoint) {
     //   edgePath += ` L ${diagramEdge.headArrowPoint[0]},${diagramEdge.headArrowPoint[1]}`
     // }
-    labelX = data.label?.bbox.x ?? 0
-    labelY = data.label?.bbox.y ?? 0
-  } else {
-    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode)
-
-    const [_edgePath, _labelX, _labelY] = getBezierPath({
-      sourceX: sx,
-      sourceY: sy,
-      sourcePosition: sourcePos,
-      targetPosition: targetPos,
-      targetX: tx,
-      targetY: ty
-    })
-    edgePath = _edgePath
-    labelX = _labelX
-    labelY = _labelY
-
-    const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
-    const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
-
-    edgePath = curve([
-      [sourceCenterPos.positionAbsolute.x, sourceCenterPos.positionAbsolute.y],
-      getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
-      ...controlPoints,
-      getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
-      [targetCenterPos.positionAbsolute.x, targetCenterPos.positionAbsolute.y]
-    ])!
   }
+
+  const svgPathRef = useRef<SVGPathElement>(null)
+  useIsomorphicLayoutEffect(() => {
+    const path = svgPathRef.current
+    if (!path) return
+    const dompoint = path.getPointAtLength(path.getTotalLength() * 0.5)
+    const point = {
+      x: Math.round(dompoint.x),
+      y: Math.round(dompoint.y)
+    }
+    setLabelPosition(current => isSamePoint(current, point) ? current : point)
+  }, [edgePath, xyflow])
 
   const onControlPointerDown = (index: number) => (e: React.PointerEvent) => {
     const domNode = xyflowStore.getState().domNode
@@ -182,7 +198,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
     const onPointerMove = (e: PointerEvent) => {
-      if (!isSamePoint(e.clientX, pointer.x) || !isSamePoint(e.clientY, pointer.y)) {
+      if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
         hasMoved = true
         pointer = { x: e.clientX, y: e.clientY }
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
@@ -198,6 +214,10 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     domNode.addEventListener('pointermove', onPointerMove)
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
   }
+
+  const marker = `url(#arrow-${id})`
+  const markerStart = diagramEdge.tailArrow ? marker : undefined
+  const markerEnd = diagramEdge.headArrow ? marker : undefined
 
   return (
     <g
@@ -225,15 +245,31 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             <path d="M 0 0 L 16 5 L 0 10 z" stroke="context-stroke" fill="context-stroke" />
           </marker>
         </defs>
+        <path
+          className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
+          d={edgePath}
+          style={style}
+          strokeLinecap={'round'}
+        />
+        <path
+          ref={svgPathRef}
+          className={clsx('react-flow__edge-path', edgesCss.cssEdgePath)}
+          d={edgePath}
+          style={style}
+          strokeLinecap={'round'}
+          strokeDasharray={strokeDasharray}
+          markerStart={markerStart}
+          markerEnd={markerEnd}
+        />
       </g>
-      <RelationshipPath
-        edgePath={edgePath}
-        interactionWidth={interactionWidth ?? 10}
-        strokeDasharray={strokeDasharray}
-        markerStart={diagramEdge.tailArrow ? marker : undefined}
-        markerEnd={diagramEdge.headArrow ? marker : undefined}
-        style={style} />
-      {isModified && controlPoints.map((p, i) => (
+      <path
+        className={clsx('react-flow__edge-interaction')}
+        d={edgePath}
+        fill="none"
+        strokeOpacity={0}
+        strokeWidth={interactionWidth ?? 10}
+      />
+      {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
           onPointerDown={onControlPointerDown(i)}
           className={edgesCss.controlPoint}
@@ -254,8 +290,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             data-likec4-color={color}
             style={{
               ...assignInlineVars({
-                [edgesCss.varLabelX]: Math.floor(labelX) + 'px',
-                [edgesCss.varLabelY]: Math.floor(labelY) + 'px'
+                [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
+                [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
               }),
               ...(data.label && {
                 maxWidth: data.label.bbox.width + 12
@@ -308,44 +344,3 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     </g>
   )
 }, isEqualProps)
-
-const RelationshipPath = ({
-  edgePath,
-  interactionWidth,
-  strokeDasharray,
-  markerStart,
-  markerEnd,
-  style
-}: {
-  edgePath: string
-  interactionWidth: number
-  strokeDasharray: string | undefined
-  markerStart: string | undefined
-  markerEnd: string | undefined
-  style: CSSProperties | undefined
-}) => (
-  <>
-    <path
-      className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
-      d={edgePath}
-      style={style}
-      strokeLinecap={'round'}
-    />
-    <path
-      className={clsx('react-flow__edge-path', edgesCss.cssEdgePath)}
-      d={edgePath}
-      style={style}
-      strokeLinecap={'round'}
-      strokeDasharray={strokeDasharray}
-      markerStart={markerStart}
-      markerEnd={markerEnd}
-    />
-    <path
-      className={clsx('react-flow__edge-interaction')}
-      d={edgePath}
-      fill="none"
-      strokeOpacity={0}
-      strokeWidth={interactionWidth}
-    />
-  </>
-)

@@ -4,6 +4,7 @@ export const theme = createTheme({
   primaryColor: 'indigo',
   cursorType: 'pointer',
   defaultRadius: 'sm',
+  respectReducedMotion: true,
   headings: {
     fontWeight: '500',
     sizes: {

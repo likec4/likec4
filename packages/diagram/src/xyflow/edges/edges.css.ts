@@ -16,13 +16,6 @@ export const container = style({
   }
 })
 
-export const dimmed = style({})
-
-globalStyle(`svg:has(${dimmed})`, {
-  filter: vars.filterDimmed,
-  transition: 'filter 800ms ease-out'
-})
-
 globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
   vars: {
     [mixColor]: `white`,
@@ -62,6 +55,14 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 globalStyle(`.react-flow__edges > svg`, {
   mixBlendMode: 'screen'
 })
+
+export const dimmed = style({})
+
+globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
+  filter: vars.filterDimmed,
+  mixBlendMode: 'normal',
+  transition: 'filter 800ms ease-out'
+})
 // globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
 //   mixBlendMode: 'lighten'
 // })
@@ -85,8 +86,7 @@ export const edgePathBg = style({
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke,
-  pointerEvents: 'none'
+  stroke: xyvars.edge.stroke
 })
 
 export const controlPoint = style({
@@ -160,7 +160,7 @@ export const edgeLabel = style({
   borderRadius: '3px',
   transform: varTranslate,
   vars: {
-    [varTranslate]: `translate(${fallbackVar(varLabelX, '50%')}, ${fallbackVar(varLabelY, '50%')})`
+    [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
   },
   selectors: {
     '&[data-edge-hovered="true"]': {

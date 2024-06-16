@@ -54,7 +54,14 @@ export function SyncWithDiagram() {
       if (existing) {
         return eq(existing.data.edge, update.data.edge) ? existing : {
           ...existing,
-          ...update
+          ...update,
+          data: {
+            ...existing.data,
+            ...update.data,
+            // null-coalesce because we don't want accidentally
+            // overwrite existing control points with null
+            controlPoints: update.data.controlPoints ?? existing.data.controlPoints
+          }
         }
       }
       return update

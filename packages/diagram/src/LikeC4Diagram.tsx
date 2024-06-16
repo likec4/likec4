@@ -1,7 +1,10 @@
 import '@xyflow/react/dist/style.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
 import clsx from 'clsx'
+import { DEV } from 'esm-env'
+import { domAnimation, LazyMotion } from 'framer-motion'
 import { useRef } from 'react'
+import useTilg from 'tilg'
 import { rootClassName } from './globals.css'
 import { KeepAspectRatioContainer } from './KeepAspectRatioContainer'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
@@ -36,6 +39,7 @@ export function LikeC4Diagram({
   initialWidth,
   initialHeight,
   keepAspectRatio = false,
+  experimentalEdgeEditing = false,
   onCanvasClick,
   onCanvasContextMenu,
   onCanvasDblClick,
@@ -46,7 +50,7 @@ export function LikeC4Diagram({
   onNodeClick,
   onNodeContextMenu
 }: LikeC4DiagramProps) {
-  console.log('LikeC4Diagram')
+  DEV && useTilg()
   const initialRef = useRef<{
     defaultNodes: XYFlowData['nodes']
     defaultEdges: XYFlowData['edges']
@@ -81,6 +85,7 @@ export function LikeC4Diagram({
           showElementLinks={showElementLinks}
           nodesDraggable={nodesDraggable}
           nodesSelectable={nodesSelectable}
+          experimentalEdgeEditing={experimentalEdgeEditing}
           onCanvasClick={onCanvasClick}
           onCanvasContextMenu={onCanvasContextMenu}
           onEdgeClick={onEdgeClick}
@@ -91,36 +96,38 @@ export function LikeC4Diagram({
           onNavigateTo={onNavigateTo}
           onCanvasDblClick={onCanvasDblClick}
         >
-          <KeepAspectRatioContainer
-            className={clsx(rootClassName, className)}
-            enabled={keepAspectRatio}
-            width={view.width}
-            height={view.height}
-          >
-            <XYFlow
-              className={clsx(
-                'likec4-diagram',
-                cssReactFlow,
-                controls === false && cssNoControls,
-                pannable !== true && cssDisablePan,
-                background === 'transparent' && cssTransparentBg
-              )}
-              defaultNodes={initialRef.current.defaultNodes}
-              defaultEdges={initialRef.current.defaultEdges}
+          <LazyMotion features={domAnimation} strict>
+            <KeepAspectRatioContainer
+              className={clsx(rootClassName, className)}
+              enabled={keepAspectRatio}
+              width={view.width}
+              height={view.height}
             >
-              <XYFlowInner
-                showDiagramTitle={showDiagramTitle}
-                enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-                background={background}
-                controls={controls}
-              />
-            </XYFlow>
-            <WhenInitialized>
-              <SyncWithDiagram />
-              {fitView && <FitViewOnDiagramChange />}
-              {fitView && zoomable && <SelectEdgesOnNodeFocus />}
-            </WhenInitialized>
-          </KeepAspectRatioContainer>
+              <XYFlow
+                className={clsx(
+                  'likec4-diagram',
+                  cssReactFlow,
+                  controls === false && cssNoControls,
+                  pannable !== true && cssDisablePan,
+                  background === 'transparent' && cssTransparentBg
+                )}
+                defaultNodes={initialRef.current.defaultNodes}
+                defaultEdges={initialRef.current.defaultEdges}
+              >
+                <XYFlowInner
+                  showDiagramTitle={showDiagramTitle}
+                  enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+                  background={background}
+                  controls={controls}
+                />
+              </XYFlow>
+              <WhenInitialized>
+                <SyncWithDiagram />
+                {fitView && <FitViewOnDiagramChange />}
+                {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+              </WhenInitialized>
+            </KeepAspectRatioContainer>
+          </LazyMotion>
         </DiagramContextProvider>
       </XYFlowProvider>
     </EnsureMantine>

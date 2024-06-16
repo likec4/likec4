@@ -5,6 +5,7 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { dirname, resolve } from 'node:path'
 import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
+import tanStackRouterViteCfg from './tsr.config.json' assert { "type": "json" }
 
 const root = dirname(__filename)
 
@@ -132,7 +133,7 @@ export default defineConfig((env) => {
           vanillaExtractPlugin({
             identifiers: 'short'
           }),
-          TanStackRouterVite(),
+          TanStackRouterVite(tanStackRouterViteCfg),
           react({
             // jsxRuntime: 'classic'
           })
@@ -186,7 +187,7 @@ export default defineConfig((env) => {
       return mergeConfig(baseConfig(env), {
         plugins: [
           vanillaExtractPlugin({}),
-          TanStackRouterVite(),
+          TanStackRouterVite(tanStackRouterViteCfg),
           react({})
         ]
       })

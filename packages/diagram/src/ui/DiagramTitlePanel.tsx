@@ -1,7 +1,7 @@
 import { Anchor, Box, Button, CopyButton, Group, Paper, Spoiler, Stack, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
 import clsx from 'clsx'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../state'
 import * as css from './DiagramTitlePanel.css'
 
@@ -22,7 +22,7 @@ export default function DiagramTitlePanel() {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div
+      <m.div
         key={id}
         initial={{ opacity: 0.05, scale: 0.7 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -132,7 +132,7 @@ export default function DiagramTitlePanel() {
             )}
           </Stack>
         </Paper>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   )
 }

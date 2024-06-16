@@ -1,7 +1,7 @@
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
-import { motion, type Variants } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import { isNumber } from 'remeda'
 import { useDiagramState } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
@@ -109,7 +109,7 @@ export function ElementNode({
   // useTilg(animate, isHovered, isInteractive)
 
   return (
-    <motion.div
+    <m.div
       id={id}
       className={clsx([
         css.container,
@@ -225,6 +225,6 @@ export function ElementNode({
       }
       {isHovercards && element.links && <ElementLink element={element} />}
       {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
-    </motion.div>
+    </m.div>
   )
 }

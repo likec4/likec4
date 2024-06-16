@@ -22,16 +22,13 @@ import {
   Tooltip,
   TooltipGroup
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
+import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { Changes } from '../../LikeC4Diagram.props'
 import { useDiagramStoreApi } from '../../state'
 import { useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
-
-// const ColorPanel = () => {
-//   const selectedNodes = useStore(state => state.nodeInternals
-// }
 
 const {
   primary,
@@ -87,11 +84,11 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
 
   return (
     <Stack>
-      <Box maw={200}>
+      <div>
         <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
           {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
         </Text>
-      </Box>
+      </div>
       {showShapeOption && (
         <ShapeOption
           nodes={nodes}
@@ -106,7 +103,7 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
         }} />
 
       {showOpacityOption && (
-        <Box key={firstNode.id}>
+        <div key={firstNode.id}>
           <Divider label="opacity and border" labelPosition="left" />
           <OpacityOption
             node={firstNode}
@@ -119,7 +116,7 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
               triggerChange({ border })
             }}
           />
-        </Box>
+        </div>
       )}
       <NavigateToOption nodes={nodes} />
     </Stack>
@@ -148,7 +145,7 @@ function Colors({
     onColorChange(color)
   }
   return (
-    <Box>
+    <div>
       <TooltipGroup openDelay={400} closeDelay={300}>
         <Divider label="color" labelPosition="left" />
         <Flex mt={'xs'} maw={150} gap="xs" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
@@ -194,7 +191,7 @@ function Colors({
           ))}
         </Flex>
       </TooltipGroup>
-    </Box>
+    </div>
   )
 }
 
@@ -215,7 +212,7 @@ function ShapeOption({
   })
 
   return (
-    <Box>
+    <div>
       <Divider label="shape" labelPosition="left" />
       <Select
         mt={'xs'}
@@ -232,7 +229,7 @@ function ShapeOption({
           }
           onShapeChange(value as ElementShape)
         }} />
-    </Box>
+    </div>
   )
 }
 
@@ -243,7 +240,7 @@ function NavigateToOption({
 }) {
   const isMultiple = nodes.length >= 1
   return (
-    <Box>
+    <div>
       <Divider label="navigate to" labelPosition="left" />
       <Select
         mt={'xs'}
@@ -265,7 +262,7 @@ function NavigateToOption({
         //   onShapeChange(value as ElementShape)
         // }} />
       />
-    </Box>
+    </div>
   )
 }
 
@@ -278,7 +275,7 @@ function OpacityOption({
 }) {
   let selectedOpacity = node.data.element.style.opacity ?? 100
   const [value, setValue] = useState(selectedOpacity)
-  useEffect(() => {
+  useUpdateEffect(() => {
     setValue(selectedOpacity)
   }, [selectedOpacity])
 
@@ -302,7 +299,7 @@ function BorderStyleOption({
 }) {
   let selecteBorderStyle = node.data.element.style.border ?? 'dashed'
   const [value, setValue] = useState(selecteBorderStyle)
-  useEffect(() => {
+  useUpdateEffect(() => {
     setValue(selecteBorderStyle)
   }, [selecteBorderStyle])
 

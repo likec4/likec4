@@ -1,6 +1,6 @@
-// import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
+import { DEV } from 'esm-env'
 import { useLikeC4View } from '../data'
 
 export const Route = createFileRoute('/view/$viewId/editor')({
@@ -21,6 +21,7 @@ function ViewEditor() {
       view={view}
       readonly={false}
       nodesDraggable
+      experimentalEdgeEditing={DEV}
       fitViewPadding={0.08}
       onNavigateTo={viewId => {
         router.navigate({

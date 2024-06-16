@@ -36,6 +36,7 @@ export type DiagramStore = {
   pannable: boolean
   nodesDraggable: boolean
   nodesSelectable: boolean
+  experimentalEdgeEditing: boolean
 
   // Internal state
   xyflow: XYFlowInstance
@@ -85,6 +86,7 @@ export type DiagramInitialState = // Required properties
     | 'pannable'
     | 'nodesDraggable'
     | 'nodesSelectable'
+    | 'experimentalEdgeEditing'
   >
   // Optional properties
   // & Partial<

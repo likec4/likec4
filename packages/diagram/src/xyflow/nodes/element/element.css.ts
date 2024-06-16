@@ -21,7 +21,7 @@ export const container = style({
 
 export const dimmed = style({})
 
-globalStyle(`.react-flow__node:has(${dimmed})`, {
+globalStyle(`.react-flow__node-element:has(${dimmed})`, {
   filter: vars.filterDimmed,
   transition: 'filter 800ms ease-out'
 })

@@ -57,7 +57,8 @@ export namespace XYFlowNode {
 
 export type RelationshipData = {
   edge: DiagramEdge
-  controlPoints: Point[]
+  // if set - edge was changed by user
+  controlPoints: Point[] | null
   headPoint: Point | null
   tailPoint: Point | null
   type: 'bezier' | 'poly'
