@@ -51,6 +51,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "build": "tsc",
     "watch:langium": "langium generate --watch",
     "watch:ts": "tsc --watch",
     "generate": "langium generate",
