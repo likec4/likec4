@@ -35,7 +35,7 @@ jobs:
 
       - name: build
         run: |
-          yarn turbo run build --filter='@likec4/playground'
+          yarn turbo run build --filter='@likec4/docs-astro'
 
       - name: upload a build artifact
         uses: actions/upload-artifact@v4

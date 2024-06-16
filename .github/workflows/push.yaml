@@ -78,14 +78,12 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/playground
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/playground'
 
       - name: typecheck
-        working-directory: apps/playground
         run: |
-          yarn typecheck
+          yarn turbo run typecheck --filter='@likec4/playground'
 
   check-docs-astro:
     # If on pull request, run only if coming from forked repos
@@ -105,9 +103,8 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/docs
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/docs-astro'
 
 # check-docs-nextjs:
 #   # If on pull request, run only if coming from forked repos
