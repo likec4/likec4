@@ -4,11 +4,6 @@
     "//"
   ],
   "tasks": {
-    "topo": {
-      "dependsOn": [
-        "^topo"
-      ]
-    },
     "generate": {
       "dependsOn": [
         "likec4#build"
@@ -21,17 +16,9 @@
       ],
       "outputLogs": "new-only"
     },
-    "typecheck": {
-      "dependsOn": [
-        "generate",
-        "topo"
-      ],
-      "outputLogs": "new-only"
-    },
     "build": {
       "dependsOn": [
-        "generate",
-        "^build"
+        "generate"
       ],
       "outputs": [
         "dist/**",

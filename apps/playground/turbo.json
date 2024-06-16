@@ -13,7 +13,7 @@
         "tsr.config.json",
         "package.json"
       ],
-      "outputLogs": "errors-only"
+      "outputLogs": "new-only"
     }
   }
 }

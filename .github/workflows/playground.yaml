@@ -33,14 +33,12 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/playground
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/playground'
 
       - name: typecheck
-        working-directory: apps/playground
         run: |
-          yarn typecheck
+          yarn turbo run typecheck --filter='@likec4/playground'
 
       - name: upload a build artifact
         uses: actions/upload-artifact@v4

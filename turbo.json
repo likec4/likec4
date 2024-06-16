@@ -14,14 +14,14 @@
       ]
     },
     "generate": {
-      "outputLogs": "errors-only"
+      "outputLogs": "new-only"
     },
     "typecheck": {
       "dependsOn": [
         "generate",
         "topo"
       ],
-      "outputLogs": "errors-only"
+      "outputLogs": "new-only"
     },
     "build": {
       "dependsOn": [

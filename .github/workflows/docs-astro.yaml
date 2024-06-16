@@ -34,9 +34,8 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/docs
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/playground'
 
       - name: upload a build artifact
         uses: actions/upload-artifact@v4
