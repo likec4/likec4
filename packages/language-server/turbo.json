@@ -14,23 +14,6 @@
         "langium-config.json",
         "package.json"
       ],
-      "outputLogs": "errors-only"
-    },
-    "typecheck": {
-      "dependsOn": [
-        "generate",
-        "topo"
-      ],
-      "outputLogs": "errors-only"
-    },
-    "build": {
-      "dependsOn": [
-        "generate",
-        "^build"
-      ],
-      "outputs": [
-        "dist/**"
-      ],
       "outputLogs": "new-only"
     }
   }

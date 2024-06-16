@@ -166,10 +166,7 @@ export function useXYFlowEvents() {
       },
       onNodeMouseEnter: (_event, xynode) => {
         hoveredNodeFromOnEdgeEnterRef.current = ''
-        const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
-        if (hoveredNodeId !== xynode.id) {
-          setHoveredNode(xynode.id)
-        }
+        diagramApi.getState().setHoveredNode(xynode.id)
       },
       onNodeMouseLeave: (_event, xynode) => {
         const { hoveredNodeId, setHoveredNode } = diagramApi.getState()
@@ -191,9 +188,9 @@ export function useXYFlowEvents() {
           setHoveredEdge(null)
         }
         if (hoveredNodeId === hoveredNodeFromOnEdgeEnterRef.current) {
-          hoveredNodeFromOnEdgeEnterRef.current = ''
           setHoveredNode(null)
         }
+        hoveredNodeFromOnEdgeEnterRef.current = ''
       }
     }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi])
 }
