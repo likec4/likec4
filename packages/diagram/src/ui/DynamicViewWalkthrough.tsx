@@ -64,21 +64,22 @@ export function DynamicViewWalkthrough() {
 
           <Button
             {...buttonProps}
-            px={'sm'}
+            px={hasNextSteps ? 'md' : 'xl'}
             onClick={e => {
               e.stopPropagation()
               stopDynamicView()
             }}>
-            <IconPlayerStopFilled />
+            {hasNextSteps && <IconPlayerStopFilled />}
+            {!hasNextSteps && 'End'}
           </Button>
-
-          <Button
-            {...buttonProps}
-            pr={'lg'}
-            disabled={!hasNextSteps}
-            onClick={nextStep()}>
-            <IconPlayerSkipForwardFilled />
-          </Button>
+          {hasNextSteps && (
+            <Button
+              {...buttonProps}
+              pr={'lg'}
+              onClick={nextStep()}>
+              <IconPlayerSkipForwardFilled />
+            </Button>
+          )}
         </Button.Group>
       )}
     </Box>

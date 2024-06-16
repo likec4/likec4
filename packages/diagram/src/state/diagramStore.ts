@@ -1,6 +1,5 @@
 import type {
   BorderStyle,
-  DiagramEdge,
   DiagramNode,
   DiagramView,
   ElementShape,
@@ -15,7 +14,7 @@ import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, filter, map, prop } from 'remeda'
+import { entries } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -63,7 +62,8 @@ export type DiagramStore = {
     fromView: ViewID
     toView: ViewID
     element: DiagramNode
-    elementCenterScreenPosition: XYPosition
+    // Position of the element in the source view
+    elementPosition: XYPosition
     // If node from the target view is placed on the same position as the node from the source view
     positionCorrected: boolean
   }
@@ -175,6 +175,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           updateView: (nextView) => {
             let {
+              xyflow,
               dimmed,
               xyflowSynced,
               view: current,
@@ -233,6 +234,11 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 if (lastOnNavigate.toView !== nextView.id && lastOnNavigate.fromView !== nextView.id) {
                   lastOnNavigate = null
                 }
+              }
+
+              if (!lastOnNavigate) {
+                const zoom = xyflow.getZoom()
+                xyflow.setCenter(nextView.width / 2, nextView.height / 2, { zoom })
               }
 
               // Reset hovered / clicked node/edge if the view is different
@@ -453,9 +459,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                   fromView: view.id,
                   toView: element.navigateTo,
                   element: element,
-                  elementCenterScreenPosition: xyflow.flowToScreenPosition({
-                    x: xynode.internals.positionAbsolute.x + dimensions.width / 2,
-                    y: xynode.internals.positionAbsolute.y + dimensions.height / 2
+                  elementPosition: xyflow.flowToScreenPosition({
+                    x: xynode.internals.positionAbsolute.x, // + dimensions.width / 2,
+                    y: xynode.internals.positionAbsolute.y // + dimensions.height / 2
                   }),
                   positionCorrected: false
                 }

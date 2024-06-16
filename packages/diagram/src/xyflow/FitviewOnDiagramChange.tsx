@@ -1,3 +1,4 @@
+import { invariant } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { useEffect, useRef } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
@@ -81,31 +82,21 @@ export function FitViewOnDiagramChange() {
       return
     }
     if (waitCorrection && elTo && elFrom) {
-      const [x, y, zoom] = xyflowApi.getState().transform
       const { xyflow, lastOnNavigate } = diagramApi.getState()
-      const nextZoom = Math.min(
-        elFrom.width / elTo.width,
-        elFrom.height / elTo.height
-      )
-      const centerFrom = lastOnNavigate!.elementCenterScreenPosition
-      if (nextZoom !== 1 && nextZoom < zoom) {
-        xyflowApi.setState({ transform: [x, y, nextZoom] })
-        xyflow.setViewport({
-          x,
-          y,
-          zoom: nextZoom
-        })
-      }
-      const centerTo = xyflow.flowToScreenPosition({
-          x: elTo.position[0] + elTo.width / 2,
-          y: elTo.position[1] + elTo.height / 2
+      invariant(lastOnNavigate, 'lastOnNavigate should be defined')
+      const fromPos = lastOnNavigate.elementPosition
+      const toPos = xyflow.flowToScreenPosition({
+          x: elTo.position[0], // + elFrom.width / 2,
+          y: elTo.position[1] // + elFrom.height / 2
         }),
         diff = {
-          x: toDomPrecision(centerFrom.x - centerTo.x),
-          y: toDomPrecision(centerFrom.y - centerTo.y)
+          x: toDomPrecision(fromPos.x - toPos.x),
+          y: toDomPrecision(fromPos.y - toPos.y)
         }
       xyflowApi.getState().panBy(diff)
-      diagramApi.setState({ lastOnNavigate: null })
+      requestIdleCallback(() => {
+        diagramApi.setState({ lastOnNavigate: null })
+      }, { timeout: 75 })
       return
     }
     processedRef.current = pendingViewId
