@@ -13,7 +13,7 @@
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.other.property.likec4"
         },
         "2": {
           "name": "string.quoted.single.likec4"
@@ -31,7 +31,7 @@
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.class.likec4"
+          "name": "entity.name.type.enum.likec4"
         }
       }
     },
@@ -39,7 +39,7 @@
       "match": "\\b(opacity):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.other.property.likec4"
         },
         "2": {
           "name": "constant.numeric.likec4"
@@ -50,13 +50,13 @@
       "match": "(-\\[)([^\\]]*)(\\]->)",
       "captures": {
         "1": {
-          "name": "keyword.symbol.langium"
+          "name": "keyword.symbol.likec4"
         },
         "2": {
-          "name": "entity.name.type.likec4"
+          "name": "entity.name.function.likec4"
         },
         "3": {
-          "name": "keyword.symbol.langium"
+          "name": "keyword.symbol.likec4"
         }
       }
     },
@@ -64,16 +64,29 @@
       "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.other.property.likec4"
         },
         "2": {
-          "name": "variable.other.property.likec4"
+          "name": "entity.name.type.enum.likec4"
         }
       }
     },
+
     {
       "name": "entity.name.variable.likec4",
       "match": "\\b\\.(\\*|_)"
+    },
+    {
+      "name": "entity.name.type.enum.likec4",
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
+    },
+        {
+      "name": "entity.name.type.enum.likec4",
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
+    },
+    {
+      "name": "variable.other.property.likec4",
+      "match": "\\b(title|description|technology|navigateTo)\\b"
     },
     {
       "name": "keyword.control.likec4",
@@ -81,10 +94,10 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(BottomTop|LeftRight|RightLeft|TopBottom|amber|autoLayout|blue|border|browser|color|crow|cylinder|dashed|description|diamond|dotted|dynamic|element|exclude|extend|extends|gray|green|head|icon|include|indigo|it|kind|line|link|mobile|model|muted|navigateTo|none|normal|odiamond|of|onormal|opacity|open|person|primary|queue|rectangle|red|relationship|secondary|shape|sky|slate|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
+      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dotted|dynamic|element|exclude|extend|extends|head|icon|include|it|kind|line|link|mobile|model|navigateTo|none|normal|odiamond|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
     },
     {
-      "name": "keyword.symbol.langium",
+      "name": "keyword.symbol.likec4",
       "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|<-|\\,|\\;|\\!|\\=)"
     }
   ],

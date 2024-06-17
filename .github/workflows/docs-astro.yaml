@@ -60,6 +60,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'yarn'
 
       - name: download artifact
         uses: actions/download-artifact@v4
@@ -75,4 +76,3 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name=likec4-docs-astro
           workingDirectory: apps/docs
-          packageManager: yarn

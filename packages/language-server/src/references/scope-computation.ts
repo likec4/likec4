@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import {
   type AstNode,
   type AstNodeDescription,
@@ -30,18 +31,35 @@ export class LikeC4ScopeComputation extends DefaultScopeComputation {
         ])
       ) {
         try {
-          if (ast.isSpecificationTag(spec)) {
-            if (spec.tag && isTruthy(spec.tag.name)) {
-              docExports.push(
-                this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
-              )
+          switch (true) {
+            case ast.isSpecificationElementKind(spec): {
+              if (isTruthy(spec.kind.name)) {
+                docExports.push(
+                  this.descriptions.createDescription(spec.kind, spec.kind.name, document)
+                )
+              }
+              continue
             }
-            continue
-          }
-          if (spec.kind && isTruthy(spec.kind.name)) {
-            docExports.push(
-              this.descriptions.createDescription(spec.kind, spec.kind.name, document)
-            )
+            case ast.isSpecificationTag(spec): {
+              if (isTruthy(spec.tag.name)) {
+                docExports.push(
+                  this.descriptions.createDescription(spec.tag, '#' + spec.tag.name, document)
+                )
+              }
+              continue
+            }
+            case ast.isSpecificationRelationshipKind(spec): {
+              if (isTruthy(spec.kind.name)) {
+                docExports.push(
+                  this.descriptions.createDescription(spec.kind, spec.kind.name, document),
+                  this.descriptions.createDescription(spec.kind, '.' + spec.kind.name, document)
+                )
+              }
+              continue
+            }
+            // Thow error if not exhaustive
+            default:
+              nonexhaustive(spec)
           }
         } catch (e) {
           logError(e)

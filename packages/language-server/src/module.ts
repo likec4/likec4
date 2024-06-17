@@ -13,6 +13,7 @@ import { LikeC4GeneratedModule, LikeC4GeneratedSharedModule } from './generated/
 import { logger } from './logger'
 import {
   LikeC4CodeLensProvider,
+  LikeC4CompletionProvider,
   LikeC4DocumentHighlightProvider,
   LikeC4DocumentLinkProvider,
   LikeC4DocumentSymbolProvider,
@@ -69,6 +70,7 @@ export interface LikeC4AddedServices {
     ModelChanges: LikeC4ModelChanges
   }
   lsp: {
+    CompletionProvider: LikeC4CompletionProvider
     DocumentHighlightProvider: LikeC4DocumentHighlightProvider
     DocumentSymbolProvider: LikeC4DocumentSymbolProvider
     SemanticTokenProvider: LikeC4SemanticTokenProvider
@@ -100,6 +102,7 @@ export const LikeC4Module: Module<LikeC4Services, PartialLangiumServices & LikeC
     ModelLocator: bind(LikeC4ModelLocator)
   },
   lsp: {
+    CompletionProvider: bind(LikeC4CompletionProvider),
     DocumentHighlightProvider: bind(LikeC4DocumentHighlightProvider),
     DocumentSymbolProvider: bind(LikeC4DocumentSymbolProvider),
     SemanticTokenProvider: bind(LikeC4SemanticTokenProvider),

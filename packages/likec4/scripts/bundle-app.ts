@@ -49,7 +49,6 @@ export async function bundleApp() {
         entry: {
           main: 'src/main.tsx'
         },
-        fileName: (_format, entryName) => `${entryName}.mjs`,
         formats: ['es']
       },
       commonjsOptions: {
@@ -61,9 +60,8 @@ export async function bundleApp() {
         output: {
           esModule: true,
           compact: true,
-          chunkFileNames(_chunkInfo) {
-            return '[name]-[hash].mjs'
-          }
+          entryFileNames: '[name].mjs',
+          chunkFileNames: '[name]-[hash].mjs'
         },
         external: [
           'virtual:likec4',

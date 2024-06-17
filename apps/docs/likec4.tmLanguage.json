@@ -4,29 +4,21 @@
   "fileTypes": [".c4", ".likec4", ".like-c4"],
   "patterns": [
     {
+      "include": "#comments"
+    },
+    {
+      "include": "#string"
+    },
+    {
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.other.property.likec4"
         },
         "2": {
           "name": "string.quoted.single.likec4"
         }
       }
-    },
-    {
-      "match": "\\b(opacity):?\\s+([^\\s]+)",
-      "captures": {
-        "1": {
-          "name": "keyword.control.likec4"
-        },
-        "2": {
-          "name": "constant.numeric.likec4"
-        }
-      }
-    },
-    {
-      "include": "#comments"
     },
     {
       "name": "keyword.control.likec4",
@@ -39,7 +31,18 @@
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.class.likec4"
+          "name": "entity.name.type.enum.likec4"
+        }
+      }
+    },
+    {
+      "match": "\\b(opacity):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "variable.other.property.likec4"
+        },
+        "2": {
+          "name": "constant.numeric.likec4"
         }
       }
     },
@@ -53,7 +56,7 @@
           "name": "keyword.control.likec4"
         },
         "3": {
-          "name": "storage.type.function.likec4"
+          "name": "keyword.symbol.likec4"
         },
         "4": {
           "name": "variable.other.constant.likec4"
@@ -90,12 +93,20 @@
       "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
-          "name": "keyword.control.likec4"
+          "name": "variable.other.property.likec4"
         },
         "2": {
-          "name": "variable.other.property.likec4"
+          "name": "entity.name.type.enum.likec4"
         }
       }
+    },
+    {
+      "name": "entity.name.type.enum.likec4",
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
+    },
+        {
+      "name": "entity.name.type.enum.likec4",
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
     },
     {
       "match": "\\b([^\\W]+)\\s*(=)\\s*([^\\W]+)\\b",
@@ -174,7 +185,7 @@
           "name": "variable.other.constant.likec4"
         },
         "2": {
-          "name": "storage.type.function.likec4"
+          "name": "entity.name.function.likec4"
         },
         "3": {
           "name": "variable.other.constant.likec4"
@@ -196,7 +207,7 @@
       "match": "\\s+(<?->|<-|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
-          "name": "storage.type.function.likec4"
+          "name": "storage.type.function.likec4"s
         },
         "2": {
           "name": "variable.other.constant.likec4"
@@ -275,6 +286,30 @@
           },
           "end": "(?=$)",
           "name": "comment.line.likec4"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.likec4",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.likec4",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
         }
       ]
     },
