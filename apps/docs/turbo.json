@@ -8,21 +8,32 @@
       "dependsOn": [
         "likec4#build"
       ],
-      "outputs": [
-        "src/components/*/likec4-views.*"
-      ],
       "inputs": [
-        "likec4/**"
+        "src/content/config.ts",
+        "src/**/*.c4"
+      ],
+      "outputs": [
+        "src/components/*/likec4-views.*",
+        ".astro/**",
+        "src/env.d.ts"
       ]
     },
     "build": {
       "dependsOn": [
         "generate"
       ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/content/config.ts",
+        "!likec4/**"
+      ],
       "outputs": [
-        "dist/**",
-        ".astro/**"
+        "dist/**"
       ]
+    },
+    // We override the default "test" task to exclude the "generate"
+    "test": {
+      "dependsOn": []
     }
   }
 }

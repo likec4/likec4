@@ -7,22 +7,23 @@
       "include": "#comments"
     },
     {
-      "include": "#string"
-    },
-    {
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "variable.other.property.likec4"
+          "name": "variable.parameter.function.likec4"
         },
         "2": {
-          "name": "string.quoted.single.likec4"
+          "name": "constant.other.reference.link.likec4"
         }
       }
     },
     {
       "name": "keyword.control.likec4",
       "match": "\\b(specification|model|views)\\b"
+    },
+        {
+      "name": "variable.other.likec4",
+      "match": "#[^\\s]+\\b"
     },
     {
       "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
@@ -31,7 +32,7 @@
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.type.enum.likec4"
+          "name": "variable.other.constant.likec4"
         }
       }
     },
@@ -39,7 +40,7 @@
       "match": "\\b(opacity):?\\s+([^\\s]+)",
       "captures": {
         "1": {
-          "name": "variable.other.property.likec4"
+          "name": "keyword.control.likec4"
         },
         "2": {
           "name": "constant.numeric.likec4"
@@ -93,19 +94,19 @@
       "match": "\\b(shape|color|head|tail|line|border):?\\s+(\\w+)\\b",
       "captures": {
         "1": {
-          "name": "variable.other.property.likec4"
+          "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "entity.name.type.enum.likec4"
+          "name": "variable.other.likec4"
         }
       }
     },
     {
-      "name": "entity.name.type.enum.likec4",
+      "name": "variable.other.likec4",
       "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
     },
-        {
-      "name": "entity.name.type.enum.likec4",
+    {
+      "name": "variable.other.likec4",
       "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
     },
     {
@@ -185,7 +186,7 @@
           "name": "variable.other.constant.likec4"
         },
         "2": {
-          "name": "entity.name.function.likec4"
+          "name": "storage.type.function.likec4"
         },
         "3": {
           "name": "variable.other.constant.likec4"
@@ -207,7 +208,7 @@
       "match": "\\s+(<?->|<-|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
-          "name": "storage.type.function.likec4"s
+          "name": "storage.type.function.likec4"
         },
         "2": {
           "name": "variable.other.constant.likec4"
@@ -215,11 +216,7 @@
       }
     },
     {
-      "name": "variable.other.constant.likec4",
-      "match": "#[^\\s]+\\b"
-    },
-    {
-      "name": "storage.type.function.likec4",
+      "name": "storage.type.likec4",
       "match": "(<?->|<-)"
     },
     {
@@ -239,24 +236,7 @@
       }
     },
     {
-      "name": "string.quoted.double.likec4",
-      "begin": "\"",
-      "end": "\"",
-      "patterns": [
-        {
-          "include": "#string-character-escape"
-        }
-      ]
-    },
-    {
-      "name": "string.quoted.single.likec4",
-      "begin": "'",
-      "end": "'",
-      "patterns": [
-        {
-          "include": "#string-character-escape"
-        }
-      ]
+      "include": "#string"
     }
   ],
   "repository": {
