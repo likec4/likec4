@@ -81,7 +81,16 @@ views {
     ui.mobile -> cloud.graphql 'requests'
     ui.mobile <- cloud.graphql
 
+    include cloud
+
     autoLayout TopBottom
+    style * {
+      color secondary
+    }
+    style cloud {
+      opacity 40%
+      color muted
+    }
   }
 
 }
