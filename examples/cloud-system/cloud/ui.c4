@@ -22,9 +22,9 @@ model {
         written in Swift
       '
 
-      -> cloud.graphql.myAccount "fetches via GraphQL"
-      -> cloud.graphql.updateAccount "mutates via GraphQL"
-      -> cloud.legacy.services "fetches via REST"
+      .requests cloud.graphql.myAccount "fetches via GraphQL"
+      .uses cloud.graphql.updateAccount "mutates via GraphQL"
+      .uses cloud.legacy.services "fetches via REST"
     }
 
     supportPanel = app {
@@ -35,7 +35,7 @@ model {
       }
       -> cloud.next.graphql "updates data in case of a support request"
       -> amazon.aurora.tblUsers "reads users from the database"
-    }    
+    }
 
   }
 
@@ -56,7 +56,7 @@ views {
     }
     style customer, cloud.supportUser {
       color secondary
-    }    
+    }
     style cloud.ui, cloud.ui.* {
       color primary
     }
@@ -64,12 +64,12 @@ views {
       opacity 55%
       border dashed
       color red
-    }      
+    }
   }
 
   view mobile of mobile {
     include *
-    include cloud 
+    include cloud
 
     style * {
       color secondary
@@ -77,7 +77,7 @@ views {
     style mobile {
       color primary
     }
-  }  
+  }
 
   view cloud_ui_dashboard of dashboard {
     include *
@@ -87,14 +87,14 @@ views {
     style * {
       color muted
     }
-    
+
     style cloud.ui, cloud.ui.* {
       color primary
     }
 
-    autoLayout TopBottom  
+    autoLayout TopBottom
   }
-  
+
   view cloud_ui_supportPanel of supportPanel {
     include
       *,
@@ -102,14 +102,14 @@ views {
       cloud,
       supportPanel -> *,
       amazon.aurora
-    
+
     style cloud, cloud.* {
       color muted
     }
-    
+
     style cloud.ui, cloud.ui.* {
       color primary
-    }  
+    }
   }
 
 }

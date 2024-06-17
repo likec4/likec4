@@ -94,10 +94,10 @@ ExtendElementBody:
 
 //
 FqnElementRef:
-  el=[Element] ({infer FqnElementRef.parent=current} Dot el=[Element])*;
+  el=[Element] ({infer FqnElementRef.parent=current} StickyDot el=[Element])*;
 
 ElementRef:
-  el=[Element] ({infer ElementRef.parent=current} Dot el=[Element])*;
+  el=[Element] ({infer ElementRef.parent=current} StickyDot el=[Element])*;
 
 Tags:
   value+=[Tag:TagId] (Comma? value+=[Tag:TagId])* (Comma | SemiColon)?;
@@ -106,7 +106,7 @@ Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  ('->' | '-[' kind=[RelationshipKind] ']->')
+  ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:IdWithDotPrefix] )
   target=ElementRef
   title=String?
   tags=Tags?
@@ -142,8 +142,8 @@ RelationStyleProperty:
 ModelViews:
   name='views' '{'
     views+=(
-      ElementView |
-      DynamicView
+      DynamicView |
+      ElementView
     )*
   '}';
 
@@ -180,6 +180,8 @@ ElementViewBody:
   props+=ViewProperty*
   rules+=ViewRule*
 ;
+
+type StringProperty = ElementStringProperty| ViewStringProperty;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
@@ -251,7 +253,7 @@ WildcardExpr:
 ;
 
 ElementSelectorExpr infers ElementExpr:
-  'element' Dot (
+  'element' StickyDot (
     {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagId] |
     {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind]
   )
@@ -273,7 +275,7 @@ CustomElementExprBody:
 ;
 
 NavigateToProperty:
-  'navigateTo' value=ViewRef;
+  key='navigateTo' value=ViewRef;
 
 // Common properties -------------------------------------
 
@@ -345,7 +347,10 @@ Uri returns string:
 // Percent returns string: PERCENT;
 
 TagId returns string:
-  TagHash Id;
+  Hash Id;
+
+IdWithDotPrefix returns string:
+  Dot Id;
 
 Id returns string:
   IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
@@ -378,15 +383,17 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal DotUnderscore: /\b\._/;
 terminal DotWildcard: /\b\.\*/;
-terminal TagHash: /\#\b/;
-terminal Dot: /\b\./;
+terminal Hash: '#';
+
+// No space allowed before dot
+terminal StickyDot: /\b\./;
+terminal Dot: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';
 terminal Percent: /\b\d+%/;
-// terminal Percent: ('0'..'9')+ '%';
 
 terminal String: /"[^"]*"|'[^']*'/;
 

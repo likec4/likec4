@@ -47,7 +47,8 @@
     "typecheck": "tsc --noEmit",
     "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
-    "test": "vitest run",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest",
     "clean": "run -T rimraf -g 'dist/**' '.tsbuildinfo/**'"
   },
   "dependencies": {

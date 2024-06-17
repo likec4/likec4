@@ -1,9 +1,5 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "yarn.lock",
-    "package.json"
-  ],
   "globalEnv": [
     "NODE_ENV"
   ],
@@ -31,29 +27,6 @@
         "dist/**"
       ]
     },
-    "likec4#build": {
-      "dependsOn": [
-        "^generate"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
-    },
-    "likec4-vscode#build": {
-      "dependsOn": [
-        "^generate",
-        "@likec4/vscode-preview#build"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
-    },
-    "@likec4/vscode-preview#build": {
-      "dependsOn": [],
-      "outputs": [
-        "dist/**"
-      ]
-    },
     "dev": {
       "dependsOn": [
         "generate",
@@ -64,6 +37,18 @@
     },
     "clean": {
       "cache": false
+    },
+    "//#clean:root": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": [
+        "generate"
+      ]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

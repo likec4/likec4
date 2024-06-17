@@ -49,6 +49,9 @@ specification {
   element gqlQuery
   element lambda
 
+  relationship uses
+  relationship requests
+
   tag deprecated
   tag next
   tag api

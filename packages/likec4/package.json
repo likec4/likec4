@@ -63,8 +63,6 @@
     "prepack": "tsx scripts/prepack.ts",
     "postpack": "tsx scripts/postpack.ts",
     "lint": "run -T eslint src/ --fix",
-    "test": "run -T vitest run",
-    "test:watch": "run -T vitest",
     "clean": "run -T rimraf dist app/dist dev/.export dev/dist node_modules/.vite",
     "dev": "tsx watch src/cli/index.ts serve dev",
     "dev:bigbank": "tsx watch src/cli/index.ts serve ../../docs/likec4/bigbank",
@@ -100,7 +98,7 @@
     }
   },
   "devDependencies": {
-    "@fontsource/ibm-plex-sans": "^5.0.19",
+    "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/diagrams": "workspace:*",
