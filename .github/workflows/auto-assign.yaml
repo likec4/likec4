@@ -10,7 +10,7 @@ jobs:
       pull-requests: write
     steps:
     - name: 'auto-assign issue'
-      uses: pozil/auto-assign-issue@v1
+      uses: pozil/auto-assign-issue@d11e715efc663fe323c3d8d4d3cbbfdddd539baf # v1
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: davydkov
