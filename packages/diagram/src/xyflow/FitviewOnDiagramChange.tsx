@@ -1,5 +1,6 @@
 import { invariant } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
+import { shallowEqual } from 'fast-equals'
 import { useEffect, useRef } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
 import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks'
@@ -73,7 +74,7 @@ export function FitViewOnDiagramChange() {
     waitCorrection,
     elFrom,
     elTo
-  } = useDiagramState(selector)
+  } = useDiagramState(selector, shallowEqual)
   const diagramApi = useDiagramStoreApi()
   const processedRef = useRef(pendingViewId)
 
@@ -81,7 +82,9 @@ export function FitViewOnDiagramChange() {
     if (!xyflowSynced || pendingViewId === processedRef.current) {
       return
     }
-    if (waitCorrection && elTo && elFrom) {
+    if (waitCorrection) {
+      invariant(elTo, 'elTo should be defined')
+      invariant(elFrom, 'elFrom should be defined')
       const { xyflow, lastOnNavigate } = diagramApi.getState()
       invariant(lastOnNavigate, 'lastOnNavigate should be defined')
       const fromPos = lastOnNavigate.elementPosition
@@ -94,9 +97,7 @@ export function FitViewOnDiagramChange() {
           y: toDomPrecision(fromPos.y - toPos.y)
         }
       xyflowApi.getState().panBy(diff)
-      requestIdleCallback(() => {
-        diagramApi.setState({ lastOnNavigate: null })
-      }, { timeout: 75 })
+      diagramApi.setState({ lastOnNavigate: null })
       return
     }
     processedRef.current = pendingViewId

@@ -168,6 +168,7 @@ export default defineConfig((env) => {
                 if (
                   id.includes('node_modules') && (
                     id.includes('/vscode/')
+                    || id.includes('/vscode-')
                     || id.includes('/monaco')
                   )
                 ) {

@@ -14,14 +14,13 @@
       ]
     },
     "generate": {
-      "outputLogs": "new-only"
     },
     "typecheck": {
       "dependsOn": [
         "generate",
         "topo"
       ],
-      "outputLogs": "new-only"
+      "outputLogs": "errors-only"
     },
     "build": {
       "dependsOn": [
@@ -30,8 +29,30 @@
       ],
       "outputs": [
         "dist/**"
+      ]
+    },
+    "likec4#build": {
+      "dependsOn": [
+        "^generate"
       ],
-      "outputLogs": "new-only"
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "likec4-vscode#build": {
+      "dependsOn": [
+        "^generate",
+        "@likec4/vscode-preview#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "@likec4/vscode-preview#build": {
+      "dependsOn": [],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "dev": {
       "dependsOn": [

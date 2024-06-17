@@ -25,7 +25,6 @@ createGlobalTheme(`.${rootClassName}`, {
       }
     }
   },
-  filterDimmed: 'blur(1px) grayscale(.85) opacity(.4)',
   compound: {
     font: vars.likec4.font,
     titleColor: vars.element.loContrast

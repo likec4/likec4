@@ -1,9 +1,10 @@
-import '@xyflow/react/dist/style.css'
 import { ReactFlowProvider as XYFlowProvider } from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import clsx from 'clsx'
 import { DEV } from 'esm-env'
+import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import useTilg from 'tilg'
 import { rootClassName } from './globals.css'
 import { KeepAspectRatioContainer } from './KeepAspectRatioContainer'
@@ -16,7 +17,7 @@ import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
-import type { XYFlowData } from './xyflow/types'
+import type { XYFlowData, XYFlowEdge, XYFlowNode } from './xyflow/types'
 import { XYFlow } from './xyflow/XYFlow'
 import { XYFlowInner } from './xyflow/XYFlowInner'
 
@@ -103,29 +104,17 @@ export function LikeC4Diagram({
               width={view.width}
               height={view.height}
             >
-              <XYFlow
-                className={clsx(
-                  'likec4-diagram',
-                  cssReactFlow,
-                  controls === false && cssNoControls,
-                  pannable !== true && cssDisablePan,
-                  background === 'transparent' && cssTransparentBg
-                )}
+              <LikeC4DiagramInnerMemo
                 defaultNodes={initialRef.current.defaultNodes}
                 defaultEdges={initialRef.current.defaultEdges}
-              >
-                <XYFlowInner
-                  showDiagramTitle={showDiagramTitle}
-                  enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-                  background={background}
-                  controls={controls}
-                />
-              </XYFlow>
-              <WhenInitialized>
-                <SyncWithDiagram />
-                {fitView && <FitViewOnDiagramChange />}
-                {fitView && zoomable && <SelectEdgesOnNodeFocus />}
-              </WhenInitialized>
+                fitView={fitView}
+                zoomable={zoomable}
+                background={background}
+                controls={controls}
+                pannable={pannable}
+                showDiagramTitle={showDiagramTitle}
+                enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+              />
             </KeepAspectRatioContainer>
           </LazyMotion>
         </DiagramContextProvider>
@@ -133,3 +122,55 @@ export function LikeC4Diagram({
     </EnsureMantine>
   )
 }
+
+type LikeC4DiagramInnerProps = {
+  background: NonNullable<LikeC4DiagramProperties['background']>
+  fitView: boolean
+  zoomable: boolean
+  pannable: boolean
+  controls: boolean
+  defaultNodes: XYFlowNode[]
+  defaultEdges: XYFlowEdge[]
+  showDiagramTitle: boolean
+  enableDynamicViewWalkthrough: boolean
+}
+const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
+  background,
+  fitView,
+  zoomable,
+  controls,
+  pannable,
+  defaultNodes,
+  defaultEdges,
+  showDiagramTitle,
+  enableDynamicViewWalkthrough
+}) {
+  DEV && useTilg()
+  return (
+    <>
+      <XYFlow
+        defaultNodes={defaultNodes}
+        defaultEdges={defaultEdges}
+        className={clsx(
+          'likec4-diagram',
+          cssReactFlow,
+          controls === false && cssNoControls,
+          pannable !== true && cssDisablePan,
+          background === 'transparent' && cssTransparentBg
+        )}
+      >
+        <XYFlowInner
+          showDiagramTitle={showDiagramTitle}
+          enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+          background={background}
+          controls={controls}
+        />
+      </XYFlow>
+      <WhenInitialized>
+        <SyncWithDiagram />
+        {fitView && <FitViewOnDiagramChange />}
+        {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+      </WhenInitialized>
+    </>
+  )
+}, shallowEqual)

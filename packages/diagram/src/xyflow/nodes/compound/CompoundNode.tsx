@@ -2,13 +2,14 @@ import { Box, Text } from '@mantine/core'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
+import { DEV } from 'esm-env'
 import { deepEqual as eq } from 'fast-equals'
 import { memo } from 'react'
 import { clamp } from 'remeda'
+import useTilg from 'tilg'
 import { useDiagramState } from '../../../state'
 import type { CompoundXYFlowNode } from '../../types'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
-import { compoundBody, container, indicator, navigateBtn, title } from './CompoundNode.css'
 import * as css from './CompoundNode.css'
 
 type CompoundNodeProps = Pick<
@@ -16,7 +17,6 @@ type CompoundNodeProps = Pick<
   'id' | 'data' | 'width' | 'height' | 'selected'
 >
 
-// @ts-ignore
 const isEqualProps = (prev: CompoundNodeProps, next: CompoundNodeProps) => (
   prev.id === next.id
   // && prev.selected === next.selected
@@ -31,11 +31,18 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     element
   }
 }) {
-  // useTilg()
+  DEV && useTilg()
   const { color, style, depth = 1, ...compound } = element
   // const w = toDomPrecision(width ?? compound.width)
   // const h = toDomPrecision(height ?? compound.height)
-  const opacity = style.opacity ?? 100
+  const opacity = clamp((style.opacity ?? 100) / 100, {
+    min: 0,
+    max: 1
+  })
+  const borderTransparency = clamp(50 - opacity * 50, {
+    min: 0,
+    max: 50
+  })
 
   const { isHovered, isDimmed, hasOnNavigateTo } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
@@ -44,30 +51,19 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   }))
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
-  // invert opacity to transparency
-  const transparency = clamp(100 - opacity, {
-    min: 0,
-    max: 99
-  })
-
   return (
     <Box
       className={clsx(
         css.container,
         'likec4-compound-node',
-        opacity < 100 && 'likec4-compound-transparent',
+        opacity < 1 && 'likec4-compound-transparent',
         isDimmed && css.dimmed
       )}
       mod={{
         'compound-depth': depth,
         'likec4-color': color,
-        'likec4-shape': compound.shape,
-        'likec4-navigable': isnavigable,
         hovered: isHovered
       }}
-      style={assignInlineVars({
-        [css.varTransparency]: transparency + '%'
-      })}
     >
       <Handle
         type="target"
@@ -84,14 +80,28 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
         />
       </svg>
       <div
-        className={clsx(css.compoundBody, opacity < 100 && css.transparent, 'likec4-compound')}
-        style={{
-          borderStyle: opacity < 100 ? style.border : undefined
-        }}
+        className={clsx(
+          css.compoundBody,
+          opacity < 1 && css.transparent,
+          'likec4-compound'
+        )}
+        style={opacity < 1
+          ? {
+            ...assignInlineVars({
+              [css.varBorderTransparency]: `${borderTransparency}%`,
+              [css.varOpacity]: opacity.toFixed(2)
+            }),
+            borderStyle: style.border ?? 'dashed'
+          }
+          : undefined}
       >
         <Text
           component="div"
-          className={clsx(css.title, 'likec4-compound-title')}>
+          className={clsx(
+            css.title,
+            isnavigable && css.titleWithNavigation,
+            'likec4-compound-title'
+          )}>
           {compound.title}
         </Text>
       </div>

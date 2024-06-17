@@ -4,7 +4,6 @@ export const vars = createGlobalThemeContract({
   default: {
     font: 'default-font-family'
   },
-  filterDimmed: 'filter-dimmed',
   likec4: {
     font: 'font-family',
     background: {

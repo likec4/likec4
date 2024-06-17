@@ -13,8 +13,7 @@
       ],
       "inputs": [
         "likec4/**"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "build": {
       "dependsOn": [

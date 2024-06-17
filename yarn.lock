@@ -2219,6 +2219,7 @@ __metadata:
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@vanilla-extract/css": "npm:^1.15.2"
+    "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.6"
     "@vitejs/plugin-react": "npm:^4.3.1"
@@ -2238,7 +2239,6 @@ __metadata:
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
-    unbuild: "npm:^2.0.0"
     vite: "npm:5.3.0"
     vite-plugin-dts: "npm:^3.9.1"
     zustand: "npm:^4.5.2"
@@ -4069,6 +4069,13 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.23.9"
   checksum: 10c0/ddf52ff1134f721bb14a8ffe5e5f5b982f3681390a2ccadcf37d08073102bacbb995dfb213cc73e4ad847d3cff21bca8af5d511808f22950d04b4c36de214e61
+  languageName: node
+  linkType: hard
+
+"@vanilla-extract/css-utils@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@vanilla-extract/css-utils@npm:0.1.4"
+  checksum: 10c0/b822770927fa201cdd0363d25734f213ba57b9f03d97557729fdcc39a5898d122b91e694f2baf0711f65254964ecdb1e26341889f53596fb4b4c23a8a80e8a22
   languageName: node
   linkType: hard
 

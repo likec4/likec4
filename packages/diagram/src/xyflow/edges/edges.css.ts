@@ -59,13 +59,12 @@ globalStyle(`.react-flow__edges > svg`, {
 export const dimmed = style({})
 
 globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
-  filter: vars.filterDimmed,
-  mixBlendMode: 'normal',
-  transition: 'filter 800ms ease-out'
+  opacity: 0.8,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: 'grayscale(0.85) blur(1px)',
+  willChange: 'opacity, filter'
 })
-// globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
-//   mixBlendMode: 'lighten'
-// })
 
 export const edgePathBg = style({
   strokeWidth: xyvars.edge.strokeWidth,
@@ -168,8 +167,11 @@ export const edgeLabel = style({
       transform: `${varTranslate} scale(1.1)`
     },
     [`&:is(${dimmed})`]: {
-      transition: 'filter 800ms ease-out',
-      filter: vars.filterDimmed
+      opacity: 0.8,
+      transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+      transitionDelay: '200ms',
+      filter: 'grayscale(0.85) blur(2px)',
+      willChange: 'opacity, filter'
     }
   }
 })
