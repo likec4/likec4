@@ -16,6 +16,7 @@
     },
     "build": {
       "dependsOn": [
+        "^generate",
         "generate"
       ],
       "outputs": [
