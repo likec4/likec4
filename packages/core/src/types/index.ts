@@ -6,5 +6,6 @@ export * from './opaque'
 export * from './relation'
 export * from './theme'
 export * from './view'
+export * from './view-changes'
 
 export * as Expr from './expression'

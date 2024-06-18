@@ -5,7 +5,10 @@ import type { InternalXYFlowNode } from '../types'
 
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
-export function getNodeIntersectionFromCenterToPoint(intersectionNode: InternalXYFlowNode, [x1, y1]: Point) {
+export function getNodeIntersectionFromCenterToPoint(
+  intersectionNode: InternalXYFlowNode,
+  { x: x1, y: y1 }: XYPosition
+) {
   // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
@@ -30,7 +33,7 @@ export function getNodeIntersectionFromCenterToPoint(intersectionNode: InternalX
   const x = w * (xx3 + yy3) + x2
   const y = h * (-xx3 + yy3) + y2
 
-  return [x, y] as const
+  return { x, y }
 }
 
 // this helper function returns the intersection point

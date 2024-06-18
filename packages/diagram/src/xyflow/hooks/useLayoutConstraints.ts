@@ -1,11 +1,13 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
+import { useDebouncedCallback } from '@react-hookz/web'
 import type { InternalNode, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import { useDiagramStoreApi } from '../../state'
 import { type XYFlowInstance, XYFlowNode } from '../types'
+import { isSamePoint } from '../utils'
 import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
 abstract class Rect {
@@ -273,8 +275,25 @@ export function useLayoutConstraints(): LayoutConstraints {
   const xyflowApi = useXYStoreApi()
   const solverRef = useRef<ReturnType<typeof createLayoutConstraints>>()
 
+  const dragStartedAt = useRef({
+    x: 0,
+    y: 0
+  })
+
+  const triggerSaveManualLayout = useDebouncedCallback(
+    () => {
+      diagramApi.getState().triggerSaveManualLayout()
+    },
+    [diagramApi],
+    200
+  )
+
   return useMemo((): LayoutConstraints => ({
-    onNodeDragStart: (_event, xynode) => {
+    onNodeDragStart: (event, xynode) => {
+      dragStartedAt.current = {
+        x: event.clientX,
+        y: event.clientY
+      }
       const { xyflow } = diagramApi.getState()
       solverRef.current = createLayoutConstraints(xyflow, xyflowApi, xynode.id)
     },
@@ -282,8 +301,11 @@ export function useLayoutConstraints(): LayoutConstraints {
       invariant(solverRef.current, 'solverRef.current should be defined')
       solverRef.current?.onNodeDrag(xynode)
     },
-    onNodeDragStop: (_event, _xynode) => {
+    onNodeDragStop: (event, _xynode) => {
+      if (!isSamePoint(dragStartedAt.current, { x: event.clientX, y: event.clientY })) {
+        triggerSaveManualLayout()
+      }
       solverRef.current = undefined
     }
-  }), [xyflowApi])
+  }), [xyflowApi, diagramApi])
 }

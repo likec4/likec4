@@ -87,7 +87,7 @@ export function FitViewOnDiagramChange() {
       invariant(elFrom, 'elFrom should be defined')
       const { xyflow, lastOnNavigate } = diagramApi.getState()
       invariant(lastOnNavigate, 'lastOnNavigate should be defined')
-      const fromPos = lastOnNavigate.elementPosition
+      const fromPos = lastOnNavigate.elementScreenPosition
       const toPos = xyflow.flowToScreenPosition({
           x: elTo.position[0], // + elFrom.width / 2,
           y: elTo.position[1] // + elFrom.height / 2

@@ -1,25 +1,16 @@
-import type {
-  BorderStyle,
-  DiagramNode,
-  DiagramView,
-  ElementShape,
-  Fqn,
-  NonEmptyArray,
-  ThemeColor,
-  ViewID
-} from '@likec4/core'
-import { invariant, nonexhaustive, StepEdgeId } from '@likec4/core'
+import type { DiagramNode, DiagramView, Fqn, ViewID } from '@likec4/core'
+import { invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
 import { getViewportForBounds, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries } from 'remeda'
+import { entries, mapToObj, reduce } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import { createWithEqualityFn } from 'zustand/traditional'
-import type { Change, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
+import type { Changes, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } from '../LikeC4Diagram.props'
 import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
@@ -63,7 +54,7 @@ export type DiagramStore = {
     toView: ViewID
     element: DiagramNode
     // Position of the element in the source view
-    elementPosition: XYPosition
+    elementScreenPosition: XYPosition
     // If node from the target view is placed on the same position as the node from the source view
     positionCorrected: boolean
   }
@@ -113,7 +104,8 @@ interface DiagramStoreActions {
   resetLastClicked: () => void
 
   getElement(id: Fqn): DiagramNode | null
-  triggerOnChange: (changes: NonEmptyArray<Change>) => void
+  triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
+  triggerSaveManualLayout: () => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
   fitDiagram: (xyStore: XYStoreApi) => void
 
@@ -221,8 +213,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (activeDynamicViewStep && !edgeIds.has(StepEdgeId(activeDynamicViewStep))) {
                 activeDynamicViewStep = null
               }
-              xyflowSynced = deepEqual(current.nodes, nextView.nodes) && deepEqual(current.edges, nextView.edges)
-              if (!xyflowSynced) {
+              xyflowSynced = deepEqual([current.nodes, current.edges], [nextView.nodes, nextView.edges])
+              if (dimmed.size > 0) {
                 let nextDimmed = new StringSet([...dimmed].filter(id => nodeIds.has(id) || edgeIds.has(id)))
                 if (nextDimmed.size !== dimmed.size) {
                   dimmed = nextDimmed
@@ -357,93 +349,111 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             return view.nodes.find(({ id }) => id === fqn) ?? null
           },
 
-          triggerOnChange: (changes: NonEmptyArray<Change>) => {
+          triggerChangeElementStyle: (change) => {
             if (DEV) {
-              console.debug('triggerOnChange', changes)
+              console.debug('triggerChangeElementStyle', change)
             }
-            const newShapes = new Map<Fqn, ElementShape>()
-            const newColor = new Map<Fqn, ThemeColor>()
-            const newOpacity = new Map<Fqn, number>()
-            const newBorder = new Map<Fqn, BorderStyle>()
-            for (const change of changes) {
-              if (change.op !== 'change-element-style') {
-                nonexhaustive(change.op)
+            const { view, updateView, onChange } = get()
+
+            // Style changes we already apply to the view
+            let hasChanges = false
+            const nodes = view.nodes.map(origin => {
+              if (!change.targets.includes(origin.id)) {
+                return origin
               }
-              for (const target of change.targets) {
-                for (const [key, value] of entries.strict(change.style)) {
-                  switch (key) {
-                    case 'shape':
-                      newShapes.set(target, value)
-                      break
-                    case 'color':
-                      newColor.set(target, value)
-                      break
-                    case 'opacity':
-                      newOpacity.set(target, value)
-                      break
-                    case 'border':
-                      newBorder.set(target, value)
-                      break
-                    default:
-                      nonexhaustive(key)
-                  }
+              let element = origin
+              for (const [key, value] of entries.strict(change.style)) {
+                switch (key) {
+                  case 'shape':
+                    if (value !== element.shape) {
+                      element = {
+                        ...element,
+                        shape: value
+                      }
+                    }
+                    break
+                  case 'color':
+                    if (value !== element.color) {
+                      element = {
+                        ...element,
+                        color: value
+                      }
+                    }
+                    break
+                  case 'opacity':
+                    if (value !== element.style?.opacity) {
+                      element = {
+                        ...element,
+                        style: {
+                          ...element.style,
+                          opacity: value
+                        }
+                      }
+                    }
+                    break
+                  case 'border':
+                    if (value !== element.style?.border) {
+                      element = {
+                        ...element,
+                        style: {
+                          ...element.style,
+                          border: value
+                        }
+                      }
+                    }
+                    break
+                  default:
+                    nonexhaustive(key)
                 }
               }
-            }
-
-            get().xyflow.setNodes(nodes =>
-              nodes.map(node => {
-                let element = node.data.element
-                const shape = newShapes.get(element.id)
-                if (shape && shape !== element.shape) {
-                  element = {
-                    ...element,
-                    shape
-                  }
-                }
-                const color = newColor.get(element.id)
-                if (color && color !== element.color) {
-                  element = {
-                    ...element,
-                    color
-                  }
-                }
-
-                const opacity = newOpacity.get(element.id)
-                if (!!opacity && opacity !== element.style?.opacity) {
-                  element = {
-                    ...element,
-                    style: {
-                      ...element.style,
-                      opacity
-                    }
-                  }
-                }
-
-                const border = newBorder.get(element.id)
-                if (border && border !== element.style?.border) {
-                  element = {
-                    ...element,
-                    style: {
-                      ...element.style,
-                      border
-                    }
-                  }
-                }
-
-                if (element === node.data.element) {
-                  return node
-                }
-                return {
-                  ...node,
-                  data: {
-                    ...node.data,
-                    element
-                  }
-                }
+              if (element !== origin) {
+                hasChanges = true
+                return element
+              }
+              return origin
+            })
+            if (hasChanges) {
+              updateView({
+                ...view,
+                nodes
               })
-            )
-            get().onChange?.({ changes })
+            }
+            // Trigger change event, even if there are no changes with local state
+            // but we maybe out of sync with the server
+            onChange?.({ change })
+          },
+
+          triggerSaveManualLayout: () => {
+            const { xyflow, view, onChange } = get()
+            const nodes = mapToObj(view.nodes, ({ id }) => {
+              const node = nonNullable(xyflow.getInternalNode(id), `internal node ${id} not found`)
+              const dimensions = getNodeDimensions(node)
+              return [id, {
+                x: node.internals.positionAbsolute.x,
+                y: node.internals.positionAbsolute.y,
+                width: dimensions.width,
+                height: dimensions.height
+              }]
+            })
+            const edges = reduce(xyflow.getEdges(), (acc, { data }) => {
+              if (data.controlPoints) {
+                acc[data.edge.id] = {
+                  controlPoints: data.controlPoints
+                }
+              }
+              return acc
+            }, {} as Changes.SaveManualLayout['edges'])
+
+            const change: Changes.SaveManualLayout = {
+              op: 'save-manual-layout',
+              nodes,
+              edges
+            }
+
+            if (DEV) {
+              console.debug('triggerSaveManualLayout', change)
+            }
+            onChange?.({ change })
           },
 
           triggerOnNavigateTo: (xynodeId, event) => {
@@ -451,7 +461,6 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const xynode = xyflow.getInternalNode(xynodeId)
             const element = xynode?.data.element as DiagramNodeWithNavigate
             invariant(!!xynode && element?.navigateTo, `node is not navigable: ${xynodeId}`)
-            const dimensions = getNodeDimensions(xynode)
             set(
               {
                 lastClickedNodeId: xynodeId,
@@ -459,7 +468,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                   fromView: view.id,
                   toView: element.navigateTo,
                   element: element,
-                  elementPosition: xyflow.flowToScreenPosition({
+                  elementScreenPosition: xyflow.flowToScreenPosition({
                     x: xynode.internals.positionAbsolute.x, // + dimensions.width / 2,
                     y: xynode.internals.positionAbsolute.y // + dimensions.height / 2
                   }),

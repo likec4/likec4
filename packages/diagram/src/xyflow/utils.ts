@@ -2,6 +2,7 @@ import { hasAtLeast, invariant } from '@likec4/core'
 import type { NonEmptyArray, Point } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { Bezier } from 'bezier-js'
+import { isArray } from 'remeda'
 
 export function toDomPrecision(v: number | null) {
   if (v === null) {
@@ -19,7 +20,7 @@ export function bezierControlPoints(bezierSpline: NonEmptyArray<Point>) {
   invariant(start, 'start should be defined')
   const handles = [
     // start
-  ] as Point[]
+  ] as XYPosition[]
 
   while (hasAtLeast(bezierPoints, 3)) {
     const [cp1, cp2, end, ...rest] = bezierPoints
@@ -31,7 +32,10 @@ export function bezierControlPoints(bezierSpline: NonEmptyArray<Point>) {
     }
     inflections.forEach(t => {
       const { x, y } = bezier.get(t)
-      handles.push([toDomPrecision(x), toDomPrecision(y)])
+      handles.push({
+        x: toDomPrecision(x),
+        y: toDomPrecision(y)
+      })
     })
     bezierPoints = rest
     start = end
@@ -39,4 +43,15 @@ export function bezierControlPoints(bezierSpline: NonEmptyArray<Point>) {
   invariant(bezierPoints.length === 0, 'all points should be consumed')
 
   return handles
+}
+
+// If points are within 3px, consider them the same
+const isClose = (a: number, b: number) => {
+  return Math.abs(a - b) < 3.1
+}
+
+export function isSamePoint(a: XYPosition | Point, b: XYPosition | Point) {
+  const [ax, ay] = isArray(a) ? a : [a.x, a.y]
+  const [bx, by] = isArray(b) ? b : [b.x, b.y]
+  return isClose(ax, bx) && isClose(ay, by)
 }

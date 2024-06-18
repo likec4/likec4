@@ -75,11 +75,11 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
   const triggerChange = (style: Changes.ChangeElementStyle['style']) => {
     const targets = nodes.map(node => node.data.element.id)
     invariant(hasAtLeast(targets, 1), 'At least one target is required')
-    diagramApi.getState().triggerOnChange([{
+    diagramApi.getState().triggerChangeElementStyle({
       op: 'change-element-style',
       style,
       targets
-    }])
+    })
   }
 
   return (

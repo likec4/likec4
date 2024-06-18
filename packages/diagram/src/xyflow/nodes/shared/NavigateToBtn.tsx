@@ -1,6 +1,6 @@
 import { ActionIcon } from '@mantine/core'
+import { IconZoomScan } from '@tabler/icons-react'
 import clsx from 'clsx'
-import { ZoomIn } from '../../../icons'
 import { useDiagramStoreApi } from '../../../state'
 
 export type NavigateToBtnProps = {
@@ -13,7 +13,7 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
   return (
     <ActionIcon
       className={clsx('nodrag nopan', className)}
-      radius="xl"
+      radius="md"
       onPointerDownCapture={e => e.stopPropagation()}
       onClick={event => {
         event.stopPropagation()
@@ -21,7 +21,11 @@ export function NavigateToBtn({ xynodeId, className }: NavigateToBtnProps) {
       }}
       onDoubleClick={event => event.stopPropagation()}
     >
-      <ZoomIn />
+      <IconZoomScan
+        style={{
+          width: '75%',
+          height: '75%'
+        }} />
     </ActionIcon>
   )
 }

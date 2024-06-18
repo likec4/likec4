@@ -1,5 +1,6 @@
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
+import { isNullish } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state'
 import { useXYStoreApi } from './hooks'
@@ -30,6 +31,8 @@ export function useXYFlowEvents() {
   const diagramApi = useDiagramStoreApi()
   const xyflowApi = useXYStoreApi()
 
+  const lastClickTimestamp = useRef<number>()
+
   const dblclickTimeout = useRef<number>()
 
   const dbclickLock = () => {
@@ -40,6 +43,10 @@ export function useXYFlowEvents() {
       dblclickTimeout.current = undefined
     }, 250)
     return false
+  }
+
+  const lastClickWasRecent = (ms = 1500) => {
+    return lastClickTimestamp.current && (Date.now() - lastClickTimestamp.current) < ms
   }
 
   // If we are in focused mode, on edge enter we want to "highlight" the other node
@@ -100,20 +107,28 @@ export function useXYFlowEvents() {
       },
       onNodeClick: (event, xynode) => {
         const {
+          zoomable,
+          fitViewEnabled,
           focusedNodeId,
           focusOnNode,
           onNodeClick,
+          lastClickedNodeId,
           setLastClickedNode
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
+        const focusPossible = zoomable && fitViewEnabled
         // if we focused on a node, and clicked on another node - focus on the clicked node
-        if (!!focusedNodeId && focusedNodeId !== xynode.id) {
+        const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
+        // if user clicked on the same node twice in a short time, focus on it
+        const clickedRecently = isNullish(focusedNodeId) && lastClickedNodeId === xynode.id && lastClickWasRecent()
+        if (focusPossible && (shallChangeFocus || clickedRecently)) {
           focusOnNode(xynode.id)
           if (!onNodeClick) {
             // user did not provide a custom handler, stop propagation
             event.stopPropagation()
           }
         }
+        lastClickTimestamp.current = Date.now()
         onNodeClick?.({
           element: xynode.data.element,
           xynode,

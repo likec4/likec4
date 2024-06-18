@@ -75,7 +75,7 @@ const isSamePoint = (a: XYPosition | Point, b: XYPosition | Point) => {
   return isSame(ax, bx) && isSame(ay, by)
 }
 
-const sameControlPoints = (a: Point[] | null, b: Point[] | null) => {
+const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
   if (a === b) return true
   if (!a || !b || a.length !== b.length) return false
   return a.every((ap, i) => isSamePoint(ap, b[i]!))
@@ -95,8 +95,10 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && eq(prev.data.edge, next.data.edge)
 )
 
-const curve = d3line<Point>()
+const curve = d3line<XYPosition>()
   .curve(curveCatmullRomOpen)
+  .x(d => d.x)
+  .y(d => d.y)
 
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
@@ -163,11 +165,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
     const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
     edgePath = nonNullable(curve([
-      [sourceCenterPos.positionAbsolute.x, sourceCenterPos.positionAbsolute.y],
+      sourceCenterPos.positionAbsolute,
       getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
       ...controlPoints,
       getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
-      [targetCenterPos.positionAbsolute.x, targetCenterPos.positionAbsolute.y]
+      targetCenterPos.positionAbsolute
     ]))
   } else {
     edgePath = bezierPath(diagramEdgePoints)
@@ -203,7 +205,10 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         pointer = { x: e.clientX, y: e.clientY }
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         const newControlPoints = controlPoints.slice()
-        newControlPoints[index] = [toDomPrecision(x), toDomPrecision(y)]
+        newControlPoints[index] = {
+          x: toDomPrecision(x),
+          y: toDomPrecision(y)
+        }
         xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
       }
     }
@@ -274,8 +279,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           onPointerDown={onControlPointerDown(i)}
           className={edgesCss.controlPoint}
           key={i}
-          cx={p[0]}
-          cy={p[1]}
+          cx={p.x}
+          cy={p.y}
           r={3}
         />
       ))}

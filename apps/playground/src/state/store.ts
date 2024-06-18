@@ -226,7 +226,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             }
           },
 
-          onChanges: ({ changes }) => {
+          onChanges: ({ change }) => {
             const { languageClient, diagram } = get()
             invariant(diagram, 'Diagram is not initialized')
             const client = languageClient()
@@ -234,7 +234,7 @@ export function createWorkspaceStore<T extends CreateWorkspaceStore>({
             void client
               .sendRequest(changeView, {
                 viewId: diagram.id,
-                changes
+                change
               })
               .then((location) => {
                 if (location) {

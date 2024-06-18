@@ -6,6 +6,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "chrome",
+      "name": "Launch Playground",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/playground",
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/apps/playground/**",
+        "${workspaceFolder}/packages/**",
+        "!${workspaceFolder}/packages/*/dist/"
+      ],
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Debug Current Test File",

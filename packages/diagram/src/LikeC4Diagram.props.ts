@@ -3,12 +3,14 @@ import type {
   DiagramEdge,
   DiagramNode,
   DiagramView,
+  EdgeId,
   ElementShape,
   Fqn,
   NonEmptyArray,
   ThemeColor,
   ViewID
 } from '@likec4/core'
+import type { XYPosition } from '@xyflow/system'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
@@ -55,12 +57,25 @@ export namespace Changes {
     }
     targets: NonEmptyArray<Fqn>
   }
+
+  export interface SaveManualLayout {
+    op: 'save-manual-layout'
+    nodes: Record<Fqn, {
+      x: number
+      y: number
+      width: number
+      height: number
+    }>
+    edges: Record<EdgeId, {
+      controlPoints: XYPosition[]
+    }>
+  }
 }
 
-export type Change = Changes.ChangeElementStyle
+export type Change = Changes.ChangeElementStyle | Changes.SaveManualLayout
 
 export type ChangeEvent = {
-  changes: NonEmptyArray<Change>
+  change: Change
 }
 export type OnChange = {
   (event: ChangeEvent): void
