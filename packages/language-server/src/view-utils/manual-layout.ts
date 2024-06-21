@@ -18,8 +18,11 @@ export namespace CompactViewManualLayout {
     controlPoints: number[]
   ]
 
+  // TODO replace with Zod/Valibot
   export function isCompactLayout(layout: any): layout is CompactViewManualLayout {
-    return Array.isArray(layout) && hasAtLeast(layout, 3) && layout[0] === 1 && Array.isArray(layout[1])
+    return Array.isArray(layout) && hasAtLeast(layout, 3)
+      && layout[0] === 1
+      && Array.isArray(layout[1])
       && Array.isArray(layout[2])
   }
 

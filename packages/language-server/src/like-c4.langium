@@ -61,16 +61,17 @@ Element:
       )?
     )?
   )?
-  ('{' body=ElementBody '}')?
+  body=ElementBody?
 ;
 
-ElementBody:
+ElementBody: '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
     Relation |
     Element
   )*
+  '}'
 ;
 
 ElementProperty:
@@ -80,27 +81,26 @@ ElementStringProperty:
   key=('title' | 'technology' | 'description') Colon? value=String SemiColon?;
 
 ExtendElement:
-  'extend' element=FqnElementRef '{'
-    body=ExtendElementBody
-  '}'
+  'extend' element=FqnElementRef body=ExtendElementBody
 ;
 
-ExtendElementBody:
+ExtendElementBody:  '{'
   elements+=(
     ExplicitRelation |
     Element
   )*
+  '}'
 ;
 
 //
 FqnElementRef:
-  el=[Element] ({infer FqnElementRef.parent=current} StickyDot el=[Element])*;
+  el=[Element] ({infer FqnElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 ElementRef:
-  el=[Element] ({infer ElementRef.parent=current} StickyDot el=[Element])*;
+  el=[Element] ({infer ElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 Tags:
-  value+=[Tag:TagId] (Comma? value+=[Tag:TagId])* (Comma | SemiColon)?;
+  value+=[Tag:TagId] (commas+=Comma? value+=[Tag:TagId])* (Comma | SemiColon)?;
 
 Relation:
   ExplicitRelation | ImplicitRelation;
@@ -110,7 +110,7 @@ fragment RelationFragment:
   target=ElementRef
   title=String?
   tags=Tags?
-  ('{' body=RelationBody '}')?
+  body=RelationBody?
 ;
 
 ExplicitRelation:
@@ -119,9 +119,10 @@ ExplicitRelation:
 ImplicitRelation:
   ('this' | 'it')? RelationFragment;
 
-RelationBody:
+RelationBody: '{'
   tags=Tags?
   props+=RelationProperty*
+'}'
 ;
 
 RelationProperty:
@@ -154,19 +155,18 @@ ElementView:
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
   )?
-  '{' body=ElementViewBody '}'
+  body=ElementViewBody
 ;
 
 DynamicView:
-  'dynamic' 'view' name=Id '{'
-     body=DynamicViewBody
-  '}'
+  'dynamic' 'view' name=Id body=DynamicViewBody
 ;
 
-DynamicViewBody:
+DynamicViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   (steps+=DynamicViewStep | rules+=DynamicViewRule)*
+  '}'
 ;
 
 ViewRef:
@@ -175,10 +175,11 @@ ViewRef:
 ElementViewRef:
   view=[ElementView];
 
-ElementViewBody:
+ElementViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=ViewRule*
+'}'
 ;
 
 type StringProperty = ElementStringProperty| ViewStringProperty;
@@ -211,15 +212,15 @@ DynamicViewStep:
 
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
+  expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 DynamicViewRulePredicate:
-  'include' expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
+  'include' expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (Comma targets+=ElementExpr)* Comma? '{'
+  'style' targets+=ElementExpr (commas+=Comma targets+=ElementExpr)* Comma? '{'
     styleprops+=StyleProperty*
   '}';
 
@@ -229,7 +230,7 @@ ViewRuleAutoLayout:
 ViewRulePredicateExpr:
   InOutExpr |
   ElementExpr (
-    {infer CustomElementExpr.target=current} 'with' '{' body=CustomElementExprBody '}' |
+    {infer CustomElementExpr.target=current} 'with'  body=CustomElementExprBody |
     {infer RelationExpr.source=current} (isBidirectional?='<->' | '->') target=ElementExpr |
     {infer OutgoingExpr.from=current} '->'
   )?
@@ -266,12 +267,13 @@ DescedantsExpr infers ElementExpr:
   )?
 ;
 
-CustomElementExprBody:
+CustomElementExprBody: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
     StyleProperty
   )*
+'}'
 ;
 
 NavigateToProperty:

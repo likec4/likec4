@@ -8,7 +8,7 @@ export const viewChecks = (services: LikeC4Services): ValidationCheck<ast.LikeC4
   return (el, accept) => {
     const commentNode = CstUtils.findCommentNode(el.$cstNode, ['BLOCK_COMMENT'])
     if (commentNode && hasManualLayout(commentNode.text) && !deserializeFromComment(commentNode.text)) {
-      accept('warning', `Mailformed @likec4-generated, ignored`, {
+      accept('warning', `Malformed @likec4-generated (ignored)`, {
         node: el,
         range: commentNode.range
       })

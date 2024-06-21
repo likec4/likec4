@@ -145,7 +145,6 @@ export class PreviewPanel extends AbstractDisposable {
 
   protected _activate() {
     if (this._listener) {
-      Logger.warn(`[Extension.PreviewPanel] _activate: already activated`)
       this._deactivate()
     }
     const id = '' + random(1000, 9999) + '_' + this._viewId
