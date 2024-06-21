@@ -1,5 +1,5 @@
 import type { Element, ElementKind, ElementView, Fqn, IconUrl, Opaque, Relation, RelationID } from '@likec4/core'
-import { LikeC4ModelGraph } from '@likec4/graph'
+import { LikeC4ModelGraph } from '@likec4/language-server/model-graph'
 
 /**
               ┌──────────────────────────────────────────────────┐

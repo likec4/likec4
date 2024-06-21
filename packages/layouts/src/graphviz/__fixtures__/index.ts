@@ -1,4 +1,4 @@
-import { computeElementView } from '@likec4/graph'
+import { computeElementView } from '@likec4/language-server/model-graph'
 import { amazonView, cloud3levels, cloudView, fakeModel, indexView, issue577View } from './model'
 
 const model = fakeModel()

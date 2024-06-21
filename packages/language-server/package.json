@@ -25,7 +25,8 @@
     ".": "./src/index.ts",
     "./browser": "./src/browser/index.ts",
     "./protocol": "./src/protocol.ts",
-    "./node": "./src/node/index.ts"
+    "./node": "./src/node/index.ts",
+    "./model-graph": "./src/model-graph/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -46,6 +47,10 @@
       "./node": {
         "types": "./dist/node/index.d.ts",
         "default": "./dist/node/index.js"
+      },
+      "./model-graph": {
+        "types": "./dist/model-graph/index.d.ts",
+        "default": "./dist/model-graph/index.js"
       }
     }
   },
@@ -61,8 +66,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@dagrejs/graphlib": "^2.2.2",
     "@likec4/core": "workspace:*",
-    "@likec4/graph": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
     "fast-equals": "^5.0.1",
     "indent-string": "^5.0.0",

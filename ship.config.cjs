@@ -6,7 +6,6 @@ module.exports = {
     packagesToPublish: [
       'packages/core',
       'packages/diagram',
-      'packages/graph',
       'packages/generators',
       'packages/language-server',
       'packages/layouts',

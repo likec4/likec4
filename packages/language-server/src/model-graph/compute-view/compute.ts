@@ -43,7 +43,7 @@ import {
   includeOutgoingExpr,
   includeRelationExpr,
   includeWildcardRef
-} from './compute-predicates'
+} from './predicates'
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ComputeCtx {
