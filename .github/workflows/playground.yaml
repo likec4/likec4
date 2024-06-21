@@ -79,3 +79,4 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy dist --project-name=likec4-playground
           workingDirectory: apps/playground
+          packageManager: yarn
