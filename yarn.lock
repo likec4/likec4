@@ -2250,35 +2250,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/diagrams@workspace:*, @likec4/diagrams@workspace:packages/diagrams":
-  version: 0.0.0-use.local
-  resolution: "@likec4/diagrams@workspace:packages/diagrams"
-  dependencies:
-    "@likec4/core": "workspace:*"
-    "@likec4/tsconfig": "workspace:*"
-    "@react-hookz/deep-equal": "npm:^2.0.2"
-    "@react-hookz/web": "npm:^24.0.4"
-    "@react-spring/konva": "npm:^9.7.3"
-    "@types/react": "npm:18.3.3"
-    "@types/react-dom": "npm:18.3.0"
-    "@use-gesture/react": "npm:^10.3.0"
-    body-scroll-lock-upgrade: "npm:^1.1.0"
-    execa: "npm:^9.1.0"
-    jotai: "npm:^2.6.4"
-    khroma: "npm:^2.1.0"
-    konva: "npm:^9.3.6"
-    rambdax: "npm:^9.1.1"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-konva: "npm:^18.2.10"
-    typescript: "npm:^5.4.5"
-    unbuild: "npm:^2.0.0"
-  peerDependencies:
-    react: ^18.3.1
-    react-dom: ^18.3.1
-  languageName: unknown
-  linkType: soft
-
 "@likec4/docs-astro@workspace:apps/docs":
   version: 0.0.0-use.local
   resolution: "@likec4/docs-astro@workspace:apps/docs"
@@ -3084,65 +3055,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spring/animated@npm:~9.7.3":
-  version: 9.7.3
-  resolution: "@react-spring/animated@npm:9.7.3"
-  dependencies:
-    "@react-spring/shared": "npm:~9.7.3"
-    "@react-spring/types": "npm:~9.7.3"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/5151da4fa7da010bb2edbee05871aa7a4aea8763fe617389d17605810aa0dd817374205e5fb3930b650f4a7f25fcdf23205fdfb7365686ff75888bdfd0b39839
-  languageName: node
-  linkType: hard
-
-"@react-spring/core@npm:~9.7.3":
-  version: 9.7.3
-  resolution: "@react-spring/core@npm:9.7.3"
-  dependencies:
-    "@react-spring/animated": "npm:~9.7.3"
-    "@react-spring/shared": "npm:~9.7.3"
-    "@react-spring/types": "npm:~9.7.3"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/e28c05de8435bf2eaf8481f8acdf093909d4be9881a9a854c51dfac7c2d5562088d0fb2ce04e2f07e1b3bf621d8da3ab57bf6fedb4fdc954e3aa263bc1e393af
-  languageName: node
-  linkType: hard
-
-"@react-spring/konva@npm:^9.7.3":
-  version: 9.7.3
-  resolution: "@react-spring/konva@npm:9.7.3"
-  dependencies:
-    "@react-spring/animated": "npm:~9.7.3"
-    "@react-spring/core": "npm:~9.7.3"
-    "@react-spring/shared": "npm:~9.7.3"
-    "@react-spring/types": "npm:~9.7.3"
-  peerDependencies:
-    konva: ">=2.6"
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-konva: ^16.8.0 || ^16.8.7-0 || ^16.9.0-0 || ^16.10.1-0 || ^16.12.0-0 || ^16.13.0-0 || ^17.0.0-0 || ^17.0.1-0 || ^17.0.2-0 || ^18.0.0-0
-  checksum: 10c0/67011f9c257e04982ba6f1497985319abd430bf7119091e0cdea7a567c5e7700dbbccc4d8721ebcf5c06435861b28eab4096a19a9c60ee11fbcb326321b73151
-  languageName: node
-  linkType: hard
-
-"@react-spring/shared@npm:~9.7.3":
-  version: 9.7.3
-  resolution: "@react-spring/shared@npm:9.7.3"
-  dependencies:
-    "@react-spring/types": "npm:~9.7.3"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/afb03ed28ccf62efa4012e531c3659999bb364d1e0eb0fb729b962f9bd21a0b772a2d98e862062c9c32c06edf72327afcc45984d9eb22fdd961706b6ddf6950d
-  languageName: node
-  linkType: hard
-
-"@react-spring/types@npm:~9.7.3":
-  version: 9.7.3
-  resolution: "@react-spring/types@npm:9.7.3"
-  checksum: 10c0/d645044f3cc9ceb7c4f6c4d061aaf6660018568a1553d05638f56b3328c5f91597ee4118334abe22fc8f07f5ee02f054340170c1d52e11b3faea22888b5170d4
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-alias@npm:^5.0.0":
   version: 5.0.0
   resolution: "@rollup/plugin-alias@npm:5.0.0"
@@ -3923,15 +3835,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-reconciler@npm:^0.28.0, @types/react-reconciler@npm:^0.28.2":
-  version: 0.28.2
-  resolution: "@types/react-reconciler@npm:0.28.2"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/8b8819b492972f08b9975efdf59dec668094f9e9483408b84698659ac02f4966c9c082ba79e80fef723c4f46279c5c3b15a7de7fa70af00a20741a8a15890b82
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*, @types/react@npm:18.3.3, @types/react@npm:^18.3.3":
   version: 18.3.3
   resolution: "@types/react@npm:18.3.3"
@@ -4020,24 +3923,6 @@ __metadata:
   version: 1.2.0
   resolution: "@ungap/structured-clone@npm:1.2.0"
   checksum: 10c0/8209c937cb39119f44eb63cf90c0b73e7c754209a6411c707be08e50e29ee81356dca1a848a405c8bdeebfe2f5e4f831ad310ae1689eeef65e7445c090c6657d
-  languageName: node
-  linkType: hard
-
-"@use-gesture/core@npm:10.3.0":
-  version: 10.3.0
-  resolution: "@use-gesture/core@npm:10.3.0"
-  checksum: 10c0/7a92017fcc0a483043b2f202acd2b2e89ee3b81183a1537e5efd321cc18e36101c49c805d7932b5485c2fc3baa511eae759677c81cb77f149fa047616e78cfbd
-  languageName: node
-  linkType: hard
-
-"@use-gesture/react@npm:^10.3.0":
-  version: 10.3.0
-  resolution: "@use-gesture/react@npm:10.3.0"
-  dependencies:
-    "@use-gesture/core": "npm:10.3.0"
-  peerDependencies:
-    react: ">= 16.8.0"
-  checksum: 10c0/82e7a0149f05301b0363de0c5a29112adbf8e2740ba1a0e06756ee63fe44ab094dd54fe64df3bd8ec163ebad53a38f1e6156c0b454756bb2e3aee02a4444fcf1
   languageName: node
   linkType: hard
 
@@ -4921,13 +4806,6 @@ __metadata:
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
   checksum: 10c0/d73d8b897238a2d3ffa5f59c0241870043aa7471335e89ea5e1ff48edb7c2d0bb471517a3e4c5c3f4c043615caa2717b5f80a5e61e07503d51dc85cb848e665d
-  languageName: node
-  linkType: hard
-
-"body-scroll-lock-upgrade@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "body-scroll-lock-upgrade@npm:1.1.0"
-  checksum: 10c0/caa16109e601ee9975ac684ecdf91468610b4c5d505ed06745612617e84f0b5fd4dbeaad9a32c5c6090be980b07b7bedaec105cb43880703667cda8178921d3e
   languageName: node
   linkType: hard
 
@@ -8728,17 +8606,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"its-fine@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "its-fine@npm:1.1.1"
-  dependencies:
-    "@types/react-reconciler": "npm:^0.28.0"
-  peerDependencies:
-    react: ">=18.0"
-  checksum: 10c0/66059a859720de19563a8abdb10f06eb6117df1897d984a54b0a71ab9dc02da3dc366428b1f0c5e085740962abb7d6ccc0b8c3e00725b0a2120c846f352adffc
-  languageName: node
-  linkType: hard
-
 "jackspeak@npm:^2.3.5":
   version: 2.3.6
   resolution: "jackspeak@npm:2.3.6"
@@ -8786,21 +8653,6 @@ __metadata:
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 10c0/f3f444557e4364cfc06b1abf8331bf3778b26c0c8552ca54429bc0092652172fdea26cbffe33e1017b303d5aa506f7ede8571857400efe459cb7439180e2acad
-  languageName: node
-  linkType: hard
-
-"jotai@npm:^2.6.4":
-  version: 2.6.4
-  resolution: "jotai@npm:2.6.4"
-  peerDependencies:
-    "@types/react": ">=17.0.0"
-    react: ">=17.0.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/2cda03cccff7f6509d5733412194543634dc496a01a88da4e81d6bf1c46c27383833e8bd9462ecbcd4b745316b54edf5aa403b42c098900561cc08a0f5fcaa54
   languageName: node
   linkType: hard
 
@@ -8989,13 +8841,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"konva@npm:^9.3.6":
-  version: 9.3.6
-  resolution: "konva@npm:9.3.6"
-  checksum: 10c0/ad4c9abe7b9e61bd4a119f3cf17525be9437645cfa1e38e2fc2c0bd157d2d00db6d5a7304adf3e1056e793889794d99d695e11be3df0109c71d8b5ccccd6ef96
-  languageName: node
-  linkType: hard
-
 "langium-cli@npm:3.1.0":
   version: 3.1.0
   resolution: "langium-cli@npm:3.1.0"
@@ -9095,7 +8940,6 @@ __metadata:
     "@hpcc-js/wasm": "npm:2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
-    "@likec4/diagrams": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
@@ -12088,22 +11932,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-konva@npm:^18.2.10":
-  version: 18.2.10
-  resolution: "react-konva@npm:18.2.10"
-  dependencies:
-    "@types/react-reconciler": "npm:^0.28.2"
-    its-fine: "npm:^1.1.1"
-    react-reconciler: "npm:~0.29.0"
-    scheduler: "npm:^0.23.0"
-  peerDependencies:
-    konva: ^8.0.1 || ^7.2.5 || ^9.0.0
-    react: ">=18.0.0"
-    react-dom: ">=18.0.0"
-  checksum: 10c0/4eb2e961829f25ac6e396fc29cacd54344f0a1df598ccdbe2ceec0e3a465a9b0115daa8700dd630e7aeaf0568580d7a6d798d97f91f14f6970c9fd2e765289bd
-  languageName: node
-  linkType: hard
-
 "react-number-format@npm:^5.3.1":
   version: 5.3.1
   resolution: "react-number-format@npm:5.3.1"
@@ -12113,18 +11941,6 @@ __metadata:
     react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/9e37698ab3d8224fd6cf5a69845c0308720d04de8459757031de0304379cfd2c0c897834cc9f62869933c4702a97888ba51abeb6490b7282e237a4c19a5fab04
-  languageName: node
-  linkType: hard
-
-"react-reconciler@npm:~0.29.0":
-  version: 0.29.0
-  resolution: "react-reconciler@npm:0.29.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.0"
-  peerDependencies:
-    react: ^18.2.0
-  checksum: 10c0/637442f98ee816b8f86586f537712a0463b53e12c0f4dec716dfdde68dfa52cef1d10138acfad194d5571296cde8715c331aa3986e538087acdc1ef83187a9b0
   languageName: node
   linkType: hard
 
@@ -12953,7 +12769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.0, scheduler@npm:^0.23.2":
+"scheduler@npm:^0.23.2":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:

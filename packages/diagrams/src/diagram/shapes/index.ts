@@ -1,8 +1,0 @@
-export { CompoundShape } from './Compound'
-export { CylinderShape } from './Cylinder'
-export { Edge } from './Edge'
-export { MobileShape } from './Mobile'
-export { PersonShape } from './Person'
-export { QueueShape } from './Queue'
-export { RectangleShape } from './Rectangle'
-export type * from './types'

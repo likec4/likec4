@@ -65,7 +65,7 @@ This repository's contents are divided into four primary sections:
 
 - `core`: model and type definitions
 - `create-likec4`: scaffolding tool
-- `diagrams`: react components rendering diagrams
+- `diagram`: react components rendering diagrams
 - `generators`: _LikeC4 -> Other formats_
 - `graph`: Operations over architecture model, like compute views
 - `language-server`: parser and language server
