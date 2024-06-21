@@ -7,7 +7,6 @@ import {
   type StrictElementView,
   type ViewID
 } from '@likec4/core'
-import { computeDynamicView, computeView, LikeC4ModelGraph } from '@likec4/graph'
 import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
@@ -37,6 +36,7 @@ import type {
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
+import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'

@@ -2289,27 +2289,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@likec4/graph@workspace:*, @likec4/graph@workspace:packages/graph":
-  version: 0.0.0-use.local
-  resolution: "@likec4/graph@workspace:packages/graph"
-  dependencies:
-    "@dagrejs/graphlib": "npm:^2.2.2"
-    "@likec4/core": "workspace:*"
-    "@likec4/tsconfig": "workspace:*"
-    execa: "npm:^9.1.0"
-    rambdax: "npm:^9.1.1"
-    remeda: "npm:^1.61.0"
-    typescript: "npm:^5.4.5"
-    vitest: "npm:~1.5.3"
-  languageName: unknown
-  linkType: soft
-
 "@likec4/language-server@workspace:*, @likec4/language-server@workspace:packages/language-server":
   version: 0.0.0-use.local
   resolution: "@likec4/language-server@workspace:packages/language-server"
   dependencies:
+    "@dagrejs/graphlib": "npm:^2.2.2"
     "@likec4/core": "workspace:*"
-    "@likec4/graph": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/node": "npm:^20.14.2"
@@ -2344,7 +2329,7 @@ __metadata:
   dependencies:
     "@hpcc-js/wasm": "npm:^2.16.2"
     "@likec4/core": "workspace:*"
-    "@likec4/graph": "workspace:*"
+    "@likec4/language-server": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.14.2"
     esm-env: "npm:^1.0.0"
@@ -2362,10 +2347,6 @@ __metadata:
   peerDependencies:
     "@hpcc-js/wasm": ^2.16.2
     "@likec4/core": "workspace:*"
-    "@likec4/graph": "workspace:*"
-  peerDependenciesMeta:
-    "@likec4/graph":
-      optional: true
   languageName: unknown
   linkType: soft
 
@@ -2387,7 +2368,6 @@ __metadata:
     "@hpcc-js/wasm": "npm:^2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
-    "@likec4/graph": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@mantine/core": "npm:7.10.2"

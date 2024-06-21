@@ -22,14 +22,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
-import {
-  Link,
-  type RegisteredRouter,
-  type RouteIds,
-  useMatchRoute,
-  useParams,
-  useRouterState
-} from '@tanstack/react-router'
+import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
 import { findLast, isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssDiagramTitle, cssHeader } from './Header.css'

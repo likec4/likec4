@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/diagrams'
+import type { DiagramView } from '@likec4/core'
 import { ActionIcon, Box, Code, CopyButton, Group, Stack, Text } from '@mantine/core'
 import { IconExternalLink } from '@tabler/icons-react'
 import { useRouter } from '@tanstack/react-router'
