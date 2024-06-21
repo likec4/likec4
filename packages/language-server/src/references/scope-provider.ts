@@ -6,6 +6,7 @@ import {
   CstUtils,
   DefaultScopeProvider,
   DONE_RESULT,
+  EMPTY_SCOPE,
   EMPTY_STREAM,
   GrammarUtils,
   type ReferenceInfo,
@@ -17,7 +18,7 @@ import {
 } from 'langium'
 import { ast } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
-import { logError } from '../logger'
+import { logger } from '../logger'
 import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
@@ -102,26 +103,31 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   override getScope(context: ReferenceInfo): Scope {
-    const referenceType = this.reflection.getReferenceType(context)
     try {
-      const container = context.container
-      if (ast.isFqnElementRef(container) && context.property === 'el') {
-        const parent = container.parent
-        if (!parent) {
-          return this.getGlobalScope(referenceType)
+      const referenceType = this.reflection.getReferenceType(context)
+      try {
+        const container = context.container
+        if (ast.isFqnElementRef(container) && context.property === 'el') {
+          const parent = container.parent
+          if (!parent) {
+            return this.getGlobalScope(referenceType)
+          }
+          return new StreamScope(this.directChildrenOf(getFqnElementRef(parent)))
         }
-        return new StreamScope(this.directChildrenOf(getFqnElementRef(parent)))
-      }
-      if (ast.isElementRef(container) && context.property === 'el') {
-        const parent = container.parent
-        if (parent) {
-          return new StreamScope(this.scopeElementRef(parent))
+        if (ast.isElementRef(container) && context.property === 'el') {
+          const parent = container.parent
+          if (parent) {
+            return new StreamScope(this.scopeElementRef(parent))
+          }
         }
+        return this.computeScope(context)
+      } catch (e) {
+        logger.error(e)
+        return this.getGlobalScope(referenceType)
       }
-      return this.computeScope(context)
     } catch (e) {
-      logError(e)
-      return this.getGlobalScope(referenceType)
+      logger.warn(e)
+      return EMPTY_SCOPE
     }
   }
 

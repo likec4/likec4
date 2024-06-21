@@ -21,7 +21,11 @@ RelationshipKind:
 
 SpecificationRule:
   name='specification' '{'
-    (elements+=SpecificationElementKind | tags+=SpecificationTag | relationships+=SpecificationRelationshipKind)*
+    (
+      elements+=SpecificationElementKind |
+      tags+=SpecificationTag |
+      relationships+=SpecificationRelationshipKind
+    )*
   '}';
 
 SpecificationElementKind:
@@ -47,7 +51,8 @@ Model:
       ExplicitRelation |
       Element
     )*
-  '}';
+  '}'
+;
 
 Element:
   (
@@ -71,7 +76,7 @@ ElementBody: '{'
     Relation |
     Element
   )*
-  '}'
+'}'
 ;
 
 ElementProperty:
@@ -89,7 +94,7 @@ ExtendElementBody:  '{'
     ExplicitRelation |
     Element
   )*
-  '}'
+'}'
 ;
 
 //
@@ -100,13 +105,14 @@ ElementRef:
   el=[Element] ({infer ElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 Tags:
-  value+=[Tag:TagId] (commas+=Comma? value+=[Tag:TagId])* (Comma | SemiColon)?;
+  (value+=[Tag:TagId] comma+=(Comma | SemiColon)?)+
+;
 
 Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:IdWithDotPrefix] )
+  ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
   target=ElementRef
   title=String?
   tags=Tags?
@@ -327,7 +333,11 @@ RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
 LineOptions returns string:
-  'solid' | 'dashed' | 'dotted';
+  'solid' |
+  'dashed' |
+  'dotted'
+;
+
 ArrowType returns string:
   'none' |
   'normal' |
@@ -351,7 +361,7 @@ Uri returns string:
 TagId returns string:
   Hash Id;
 
-IdWithDotPrefix returns string:
+DotId returns string:
   Dot Id;
 
 Id returns string:

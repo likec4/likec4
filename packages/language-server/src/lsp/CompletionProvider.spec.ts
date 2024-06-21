@@ -1,9 +1,13 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
-import { pluck } from 'rambdax'
+import { map, prop, take } from 'remeda'
 import { describe, expect, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 
 vi.mock('../logger')
+
+function pluck<K extends keyof T, T>(property: K, list: T[]): T[K][] {
+  return map(list, prop(property))
+}
 
 function expectCompletion() {
   const services = createTestServices().services
@@ -344,6 +348,60 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 2,
       expectedItems: ['index', 'view2', 'view3'],
+      disposeAfterCheck: true
+    })
+  })
+
+  it('should suggest tags', async ({ expect }) => {
+    const text = `
+      specification {
+        element component
+        tag deprecated
+        tag experimental
+      }
+      model {
+        c1 = component
+        c2 = component {
+          <|>#<|>deprecated
+          -> c1 <|>
+        }
+      }
+
+    `
+    const completion = expectCompletion()
+
+    await completion({
+      text,
+      index: 0,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 2)
+        expect(pluck('label', first)).toEqual([
+          '#deprecated',
+          '#experimental'
+        ])
+      },
+      disposeAfterCheck: true
+    })
+
+    // #<|>deprecated
+    await completion({
+      text,
+      index: 1,
+      expectedItems: ['#deprecated', '#experimental']
+    })
+    // > c1 <|>
+    await completion({
+      text,
+      index: 2,
+      assert: completions => {
+        expect(completions.items).not.to.be.empty
+        const first = take(completions.items, 2)
+        expect(pluck('label', first)).toEqual([
+          '#deprecated',
+          '#experimental'
+        ])
+      },
       disposeAfterCheck: true
     })
   })
