@@ -1,5 +1,5 @@
 import { hasAtLeast, invariant } from '@likec4/core'
-import type { NonEmptyArray, Point } from '@likec4/core/types'
+import type { DiagramEdge, NonEmptyArray, Point } from '@likec4/core/types'
 import type { XYPosition } from '@xyflow/react'
 import { Bezier } from 'bezier-js'
 import { isArray } from 'remeda'
@@ -15,8 +15,8 @@ export function distance(a: XYPosition, b: XYPosition) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
-export function bezierControlPoints(bezierSpline: NonEmptyArray<Point>) {
-  let [start, ...bezierPoints] = bezierSpline
+export function bezierControlPoints(diagramEdge: DiagramEdge) {
+  let [start, ...bezierPoints] = diagramEdge.points
   invariant(start, 'start should be defined')
   const handles = [
     // start
@@ -41,6 +41,9 @@ export function bezierControlPoints(bezierSpline: NonEmptyArray<Point>) {
     start = end
   }
   invariant(bezierPoints.length === 0, 'all points should be consumed')
+  if (diagramEdge.dir === 'back' && handles.length > 0) {
+    handles.reverse()
+  }
 
   return handles
 }

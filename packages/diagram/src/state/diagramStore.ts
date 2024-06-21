@@ -1,11 +1,11 @@
 import type { DiagramNode, DiagramView, Fqn, ViewID } from '@likec4/core'
 import { invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
 import { getViewportForBounds, type XYPosition } from '@xyflow/react'
-import { getNodeDimensions } from '@xyflow/system'
+import { getInternalNodesBounds, getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { entries, mapToObj, reduce } from 'remeda'
+import { debounce, entries, mapToObj, reduce } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -14,6 +14,7 @@ import type { Changes, DiagramNodeWithNavigate, LikeC4DiagramEventHandlers } fro
 import { MinZoom } from '../xyflow/const'
 import type { XYStoreApi } from '../xyflow/hooks'
 import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
+import { bezierControlPoints, isSamePoint } from '../xyflow/utils'
 
 export type DiagramStore = {
   // Incoming props
@@ -29,6 +30,9 @@ export type DiagramStore = {
   experimentalEdgeEditing: boolean
 
   // Internal state
+  viewSyncState: 'synced' | 'changed'
+  viewSyncDebounceTimeout: number | null
+
   xyflow: XYFlowInstance
   initialized: boolean
   xyflowSynced: boolean
@@ -105,7 +109,7 @@ interface DiagramStoreActions {
 
   getElement(id: Fqn): DiagramNode | null
   triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
-  triggerSaveManualLayout: () => void
+  triggerSaveManualLayout: (xystore: XYStoreApi) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
   fitDiagram: (xyStore: XYStoreApi) => void
 
@@ -116,6 +120,8 @@ interface DiagramStoreActions {
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
+  viewSyncState: 'synced',
+  viewSyncDebounceTimeout: null,
   initialized: false,
   xyflowSynced: false,
   previousViews: [],
@@ -167,6 +173,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           updateView: (nextView) => {
             let {
+              viewSyncDebounceTimeout,
+              viewSyncState,
               xyflow,
               dimmed,
               xyflowSynced,
@@ -181,9 +189,21 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredNodeId
             } = get()
 
+            if (viewSyncDebounceTimeout) {
+              clearTimeout(viewSyncDebounceTimeout)
+              viewSyncDebounceTimeout = null
+            }
+
             if (shallowEqual(current, nextView)) {
-              if (!xyflowSynced) {
-                set({ xyflowSynced: true }, noReplace, 'updateView: xyflow synced')
+              if (!xyflowSynced || viewSyncState === 'changed') {
+                set(
+                  {
+                    viewSyncState: 'synced',
+                    xyflowSynced: true
+                  },
+                  noReplace,
+                  'updateView: xyflow synced'
+                )
               }
               DEV && console.debug('store: skip updateView')
               return
@@ -252,6 +272,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
             set(
               {
+                viewSyncState: 'synced',
+                viewSyncDebounceTimeout,
                 view: nextView,
                 activeDynamicViewStep,
                 xyflowSynced,
@@ -417,43 +439,76 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 ...view,
                 nodes
               })
+              if (onChange) {
+                set({ viewSyncState: 'changed' }, noReplace, 'change sync state')
+              }
             }
             // Trigger change event, even if there are no changes with local state
             // but we maybe out of sync with the server
             onChange?.({ change })
           },
 
-          triggerSaveManualLayout: () => {
-            const { xyflow, view, onChange } = get()
-            const nodes = mapToObj(view.nodes, ({ id }) => {
-              const node = nonNullable(xyflow.getInternalNode(id), `internal node ${id} not found`)
-              const dimensions = getNodeDimensions(node)
-              return [id, {
-                x: node.internals.positionAbsolute.x,
-                y: node.internals.positionAbsolute.y,
-                width: dimensions.width,
-                height: dimensions.height
-              }]
-            })
-            const edges = reduce(xyflow.getEdges(), (acc, { data }) => {
-              if (data.controlPoints) {
-                acc[data.edge.id] = {
-                  controlPoints: data.controlPoints
+          triggerSaveManualLayout: (xystore) => {
+            let { viewSyncDebounceTimeout: debounced, onChange } = get()
+            if (!onChange) {
+              DEV && console.debug('ignore triggerSaveManualLayout, as no onChange handler is set')
+              return
+            }
+            if (debounced) {
+              clearTimeout(debounced)
+            }
+            debounced = setTimeout(() => {
+              const { nodeLookup } = xystore.getState()
+              const { xyflow, onChange } = get()
+
+              const movedNodes = new StringSet()
+              const nodes = reduce([...nodeLookup.values()], (acc, node) => {
+                const dimensions = getNodeDimensions(node)
+                if (!isSamePoint(node.internals.positionAbsolute, node.data.element.position)) {
+                  movedNodes.add(node.id)
                 }
+                acc[node.data.fqn] = {
+                  x: node.internals.positionAbsolute.x,
+                  y: node.internals.positionAbsolute.y,
+                  width: dimensions.width,
+                  height: dimensions.height
+                }
+                return acc
+              }, {} as Changes.SaveManualLayout['nodes'])
+              const edges = reduce(xyflow.getEdges(), (acc, { source, target, data }) => {
+                let controlPoints = data.controlPoints
+                // If edge control points are not set, but the source or target node was moved
+                if (!controlPoints && (movedNodes.has(source) || movedNodes.has(target))) {
+                  controlPoints = bezierControlPoints(data.edge)
+                }
+                if (controlPoints) {
+                  acc[data.edge.id] = {
+                    controlPoints
+                  }
+                }
+                return acc
+              }, {} as Changes.SaveManualLayout['edges'])
+
+              const change: Changes.SaveManualLayout = {
+                op: 'save-manual-layout',
+                nodes,
+                edges
               }
-              return acc
-            }, {} as Changes.SaveManualLayout['edges'])
 
-            const change: Changes.SaveManualLayout = {
-              op: 'save-manual-layout',
-              nodes,
-              edges
-            }
-
-            if (DEV) {
-              console.debug('triggerSaveManualLayout', change)
-            }
-            onChange?.({ change })
+              if (DEV) {
+                console.debug('triggerSaveManualLayout', change)
+              }
+              set({ viewSyncDebounceTimeout: null }, noReplace, 'clear debounce timeout')
+              onChange?.({ change })
+            }, 5000)
+            set(
+              {
+                viewSyncDebounceTimeout: debounced,
+                viewSyncState: 'changed'
+              },
+              noReplace,
+              'change sync state'
+            )
           },
 
           triggerOnNavigateTo: (xynodeId, event) => {

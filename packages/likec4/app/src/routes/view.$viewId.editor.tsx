@@ -21,7 +21,7 @@ function ViewEditor() {
       view={view}
       readonly={false}
       nodesDraggable
-      experimentalEdgeEditing={DEV}
+      experimentalEdgeEditing
       fitViewPadding={0.08}
       onNavigateTo={viewId => {
         router.navigate({
@@ -31,9 +31,11 @@ function ViewEditor() {
           search: true
         })
       }}
-      onChange={event => {
-        console.log('onChange', event)
-      }}
+      {...(DEV && {
+        onChange: event => {
+          console.log('onChange', event)
+        }
+      })}
     />
   )
 }

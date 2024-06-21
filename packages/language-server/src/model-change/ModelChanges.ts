@@ -6,34 +6,35 @@ import type { LikeC4Services } from '../module'
 import type { ChangeViewRequestParams } from '../protocol'
 import { changeElementStyle } from './changeElementStyle'
 import { changeViewLayout } from './changeViewLayout'
+import { saveManualLayout } from './saveManualLayout'
 
-function unionRangeOfAllEdits(ranges: Range[]): Range {
-  let startLine = Number.MAX_SAFE_INTEGER
-  let endLine = Number.MIN_SAFE_INTEGER
+// function unionRangeOfAllEdits(ranges: Range[]): Range {
+//   let startLine = Number.MAX_SAFE_INTEGER
+//   let endLine = Number.MIN_SAFE_INTEGER
 
-  let startCharacter = Number.MAX_SAFE_INTEGER
-  let endCharacter = Number.MIN_SAFE_INTEGER
+//   let startCharacter = Number.MAX_SAFE_INTEGER
+//   let endCharacter = Number.MIN_SAFE_INTEGER
 
-  for (const { start, end } of ranges) {
-    if (start.line <= startLine) {
-      if (startLine == start.line) {
-        startCharacter = Math.min(start.character, startCharacter)
-      } else {
-        startLine = start.line
-        startCharacter = start.character
-      }
-    }
-    if (endLine <= end.line) {
-      if (endLine == end.line) {
-        endCharacter = Math.max(end.character, endCharacter)
-      } else {
-        endLine = end.line
-        endCharacter = end.character
-      }
-    }
-  }
-  return Range.create(startLine, startCharacter, endLine, endCharacter)
-}
+//   for (const { start, end } of ranges) {
+//     if (start.line <= startLine) {
+//       if (startLine == start.line) {
+//         startCharacter = Math.min(start.character, startCharacter)
+//       } else {
+//         startLine = start.line
+//         startCharacter = start.character
+//       }
+//     }
+//     if (endLine <= end.line) {
+//       if (endLine == end.line) {
+//         endCharacter = Math.max(end.character, endCharacter)
+//       } else {
+//         endLine = end.line
+//         endCharacter = end.character
+//       }
+//     }
+//   }
+//   return Range.create(startLine, startCharacter, endLine, endCharacter)
+// }
 
 export class LikeC4ModelChanges {
   private locator: LikeC4ModelLocator
@@ -47,7 +48,7 @@ export class LikeC4ModelChanges {
     invariant(lspConnection, 'LSP Connection not available')
     let result: Location | null = null
     await this.services.shared.workspace.WorkspaceLock.write(async () => {
-      const { doc, edits } = this.convertToTextEdit(changeView)
+      const { doc, edits, modifiedRange } = this.convertToTextEdit(changeView)
       const textDocument = {
         uri: doc.textDocument.uri,
         version: doc.textDocument.version
@@ -69,52 +70,56 @@ export class LikeC4ModelChanges {
       }
       result = {
         uri: textDocument.uri,
-        range: unionRangeOfAllEdits(edits.map(edit => edit.range))
+        range: modifiedRange
       }
     })
     return result
   }
 
-  protected convertToTextEdit({ viewId, changes }: ChangeViewRequestParams): {
+  protected convertToTextEdit({ viewId, change }: ChangeViewRequestParams): {
     doc: ParsedLikeC4LangiumDocument
-    ranges: Range[]
+    modifiedRange: Range
     edits: TextEdit[]
   } {
     const lookup = this.locator.locateViewAst(viewId)
     if (!lookup) {
       throw new Error(`View not found: ${viewId}`)
     }
-    const ranges = [] as Range[]
-    const edits = [] as TextEdit[]
-    for (const change of changes) {
-      switch (change.op) {
-        case 'change-element-style': {
-          const { edits: elementEdits, modifiedRange } = changeElementStyle(this.services, {
+    switch (change.op) {
+      case 'change-element-style': {
+        return {
+          doc: lookup.doc,
+          ...changeElementStyle(this.services, {
             ...lookup,
             targets: change.targets,
             style: change.style
           })
-          ranges.push(modifiedRange)
-          edits.push(...elementEdits)
-          break
         }
-        case 'change-autolayout': {
-          const edit = changeViewLayout(this.services, {
-            ...lookup,
-            layout: change.layout
-          })
-          edits.push(edit)
-          ranges.push(edit.range)
-          break
-        }
-        default:
-          nonexhaustive(change)
       }
-    }
-    return {
-      doc: lookup.doc,
-      ranges,
-      edits
+      case 'change-autolayout': {
+        const edit = changeViewLayout(this.services, {
+          ...lookup,
+          layout: change.layout
+        })
+        return {
+          doc: lookup.doc,
+          modifiedRange: edit.range,
+          edits: [edit]
+        }
+      }
+      case 'save-manual-layout':
+        const edit = saveManualLayout(this.services, {
+          ...lookup,
+          nodes: change.nodes,
+          edges: change.edges
+        })
+        return {
+          doc: lookup.doc,
+          modifiedRange: edit.range,
+          edits: [edit]
+        }
+      default:
+        nonexhaustive(change)
     }
   }
 }

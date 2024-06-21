@@ -9,29 +9,29 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
     {
       "headArrow": [
         [
-          564,
+          554,
           159,
         ],
         [
-          574,
+          564,
           162,
         ],
         [
-          564,
+          554,
           166,
         ],
       ],
       "headArrowPoint": [
-        577,
+        567,
         162,
       ],
       "id": "cloud.backend:amazon.s3",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 21,
-        "width": 102,
-        "x": 425,
-        "y": 134,
+        "height": 17,
+        "width": 98,
+        "x": 419,
+        "y": 138,
       },
       "labels": [
         {
@@ -39,8 +39,8 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            429,
-            151,
+            421,
+            153,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -53,15 +53,15 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
           162,
         ],
         [
-          441,
+          438,
           162,
         ],
         [
-          506,
+          499,
           162,
         ],
         [
-          564,
+          554,
           162,
         ],
       ],
@@ -211,7 +211,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        536,
+        526,
         8,
       ],
       "shape": "rectangle",
@@ -260,7 +260,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        575,
+        565,
         72,
       ],
       "shape": "rectangle",
@@ -274,7 +274,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 944,
+  "width": 934,
 }
 `;
 
@@ -288,27 +288,27 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           232,
-          318,
+          314,
         ],
         [
           228,
-          328,
+          324,
         ],
         [
           225,
-          318,
+          314,
         ],
       ],
       "headArrowPoint": [
         228,
-        331,
+        327,
       ],
       "id": "support:cloud.frontend.adminPanel",
       "label": "manages",
       "labelBBox": {
-        "height": 21,
-        "width": 62,
-        "x": 234,
+        "height": 17,
+        "width": 58,
+        "x": 228,
         "y": 234,
       },
       "labels": [
@@ -317,8 +317,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            238,
-            251,
+            230,
+            249,
           ],
           "text": "manages",
           "width": 54,
@@ -332,15 +332,15 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
         ],
         [
           228,
-          223,
+          222,
         ],
         [
           228,
-          274,
+          271,
         ],
         [
           228,
-          318,
+          314,
         ],
       ],
       "relations": [
@@ -353,27 +353,27 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           662,
-          318,
+          314,
         ],
         [
           658,
-          328,
+          324,
         ],
         [
           655,
-          318,
+          314,
         ],
       ],
       "headArrowPoint": [
         658,
-        331,
+        327,
       ],
       "id": "customer:cloud.frontend.dashboard",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 21,
-        "width": 107,
-        "x": 664,
+        "height": 17,
+        "width": 103,
+        "x": 658,
         "y": 234,
       },
       "labels": [
@@ -382,8 +382,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            668,
-            251,
+            660,
+            249,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -397,15 +397,15 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
         ],
         [
           658,
-          223,
+          222,
         ],
         [
           658,
-          274,
+          271,
         ],
         [
           658,
-          318,
+          314,
         ],
       ],
       "relations": [
@@ -418,28 +418,28 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           246,
-          667,
+          659,
         ],
         [
           243,
-          677,
+          669,
         ],
         [
           239,
-          667,
+          659,
         ],
       ],
       "headArrowPoint": [
         243,
-        680,
+        672,
       ],
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
       "label": "fetches data in zero trust network with sso authentification",
       "labelBBox": {
-        "height": 38,
-        "width": 200,
-        "x": 244,
-        "y": 566,
+        "height": 34,
+        "width": 196,
+        "x": 238,
+        "y": 562,
       },
       "labels": [
         {
@@ -447,8 +447,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            248,
-            583,
+            240,
+            577,
           ],
           "text": "fetches data in zero trust network",
           "width": 192,
@@ -458,8 +458,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            248,
-            600,
+            240,
+            594,
           ],
           "text": "with sso authentification",
           "width": 139,
@@ -469,19 +469,19 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "points": [
         [
           234,
-          510,
+          507,
         ],
         [
           236,
-          558,
+          553,
         ],
         [
           240,
-          618,
+          611,
         ],
         [
           243,
-          667,
+          659,
         ],
       ],
       "relations": [
@@ -493,29 +493,29 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          389,
-          675,
+          380,
+          667,
         ],
         [
-          379,
-          678,
-        ],
-        [
-          385,
+          370,
           670,
+        ],
+        [
+          376,
+          661,
         ],
       ],
       "headArrowPoint": [
-        376,
-        680,
+        368,
+        672,
       ],
       "id": "cloud.frontend.dashboard:cloud.backend.graphql",
       "label": "fetches data",
       "labelBBox": {
-        "height": 21,
-        "width": 79,
-        "x": 517,
-        "y": 574,
+        "height": 17,
+        "width": 75,
+        "x": 497,
+        "y": 570,
       },
       "labels": [
         {
@@ -523,8 +523,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            521,
-            591,
+            499,
+            585,
           ],
           "text": "fetches data",
           "width": 71,
@@ -533,32 +533,32 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "points": [
         [
-          573,
-          511,
+          564,
+          507,
         ],
         [
-          541,
-          542,
+          531,
+          537,
         ],
         [
-          504,
-          578,
+          494,
+          570,
         ],
         [
-          468,
-          608,
+          458,
+          600,
         ],
         [
-          443,
-          630,
+          433,
+          621,
         ],
         [
-          414,
-          652,
+          405,
+          643,
         ],
         [
-          386,
-          673,
+          378,
+          664,
         ],
       ],
       "relations": [
@@ -571,20 +571,20 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "headArrow": [
         [
           595,
-          767,
+          759,
         ],
         [
           605,
-          770,
+          762,
         ],
         [
           595,
-          774,
+          766,
         ],
       ],
       "headArrowPoint": [
         608,
-        770,
+        762,
       ],
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
@@ -592,19 +592,19 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "points": [
         [
           408,
-          770,
+          762,
         ],
         [
           467,
-          770,
+          762,
         ],
         [
           535,
-          770,
+          762,
         ],
         [
           595,
-          770,
+          762,
         ],
       ],
       "relations": [
@@ -616,29 +616,29 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     {
       "headArrow": [
         [
-          772,
-          1014,
+          1114,
+          759,
         ],
         [
-          768,
-          1024,
+          1124,
+          762,
         ],
         [
-          765,
-          1014,
+          1114,
+          766,
         ],
       ],
       "headArrowPoint": [
-        768,
-        1027,
+        1127,
+        762,
       ],
       "id": "cloud.backend.storage:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 21,
-        "width": 102,
-        "x": 774,
-        "y": 948,
+        "height": 17,
+        "width": 98,
+        "x": 979,
+        "y": 738,
       },
       "labels": [
         {
@@ -646,8 +646,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            778,
-            965,
+            981,
+            753,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -656,20 +656,20 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": null,
       "points": [
         [
-          768,
-          876,
+          943,
+          762,
         ],
         [
-          768,
-          920,
+          998,
+          762,
         ],
         [
-          768,
-          971,
+          1059,
+          762,
         ],
         [
-          768,
-          1015,
+          1114,
+          762,
         ],
       ],
       "relations": [
@@ -679,30 +679,30 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          768,
-          876,
+          943,
+          762,
         ],
         [
-          772,
-          870,
+          937,
+          758,
         ],
         [
-          768,
-          864,
+          931,
+          762,
         ],
         [
-          764,
-          870,
+          937,
+          766,
         ],
       ],
       "tailArrowPoint": [
-        768,
-        862,
+        929,
+        762,
       ],
       "target": "amazon",
     },
   ],
-  "height": 1207,
+  "height": 941,
   "id": "cloud3levels",
   "links": null,
   "nodes": [
@@ -813,7 +813,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "color": "primary",
       "depth": 2,
       "description": null,
-      "height": 674,
+      "height": 670,
       "id": "cloud",
       "inEdges": [
         "customer:cloud.frontend.dashboard",
@@ -842,7 +842,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": null,
       "position": [
         8,
-        267,
+        263,
       ],
       "shape": "rectangle",
       "style": {},
@@ -904,7 +904,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         67,
-        331,
+        327,
       ],
       "shape": "rectangle",
       "style": {},
@@ -966,7 +966,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         488,
-        331,
+        327,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1012,7 +1012,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud",
       "position": [
         48,
-        616,
+        608,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1075,7 +1075,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud.backend",
       "position": [
         87,
-        680,
+        672,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1137,7 +1137,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "parent": "cloud.backend",
       "position": [
         607,
-        679,
+        671,
       ],
       "shape": "storage",
       "style": {},
@@ -1174,7 +1174,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           "fontSize": 14,
           "pt": [
             77,
-            109,
+            108,
           ],
           "text": "Amazon is a cloud provider",
           "width": 169,
@@ -1185,8 +1185,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        607,
-        1027,
+        1125,
+        672,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1199,7 +1199,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1016,
+  "width": 1446,
 }
 `;
 
@@ -1212,28 +1212,28 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          310,
+          309,
+          314,
+        ],
+        [
+          311,
+          324,
+        ],
+        [
+          303,
           318,
-        ],
-        [
-          312,
-          328,
-        ],
-        [
-          304,
-          322,
         ],
       ],
       "headArrowPoint": [
-        314,
-        331,
+        313,
+        327,
       ],
       "id": "customer:cloud.frontend",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 21,
-        "width": 107,
-        "x": 272,
+        "height": 17,
+        "width": 103,
+        "x": 266,
         "y": 234,
       },
       "labels": [
@@ -1242,8 +1242,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            276,
-            251,
+            268,
+            249,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1252,20 +1252,20 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          217,
+          218,
           180,
         ],
         [
           245,
-          223,
+          222,
         ],
         [
           278,
-          275,
+          273,
         ],
         [
-          307,
-          320,
+          306,
+          316,
         ],
       ],
       "relations": [
@@ -1277,28 +1277,28 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          437,
-          322,
-        ],
-        [
-          429,
-          328,
-        ],
-        [
-          431,
+          438,
           318,
+        ],
+        [
+          430,
+          324,
+        ],
+        [
+          432,
+          314,
         ],
       ],
       "headArrowPoint": [
-        427,
-        331,
+        428,
+        327,
       ],
       "id": "support:cloud.frontend",
       "label": "manages",
       "labelBBox": {
-        "height": 21,
-        "width": 62,
-        "x": 494,
+        "height": 17,
+        "width": 58,
+        "x": 485,
         "y": 234,
       },
       "labels": [
@@ -1307,8 +1307,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            498,
-            251,
+            487,
+            249,
           ],
           "text": "manages",
           "width": 54,
@@ -1317,20 +1317,20 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          524,
+          523,
           180,
         ],
         [
           496,
-          223,
+          222,
         ],
         [
           463,
-          275,
+          273,
         ],
         [
-          434,
-          320,
+          435,
+          316,
         ],
       ],
       "relations": [
@@ -1343,27 +1343,27 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "headArrow": [
         [
           718,
-          417,
+          413,
         ],
         [
           728,
-          421,
+          417,
         ],
         [
           718,
-          424,
+          420,
         ],
       ],
       "headArrowPoint": [
         731,
-        421,
+        417,
       ],
       "id": "cloud.frontend:cloud.backend",
       "label": "[...]",
       "labelBBox": {
-        "height": 21,
-        "width": 28,
-        "x": 620,
+        "height": 17,
+        "width": 24,
+        "x": 619,
         "y": 392,
       },
       "labels": [
@@ -1373,8 +1373,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "fontSize": 13,
           "fontStyle": "bold",
           "pt": [
-            624,
-            409,
+            621,
+            407,
           ],
           "text": "[...]",
           "width": 20,
@@ -1384,19 +1384,19 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "points": [
         [
           530,
-          421,
+          417,
         ],
         [
           590,
-          421,
+          417,
         ],
         [
           657,
-          421,
+          417,
         ],
         [
           718,
-          421,
+          417,
         ],
       ],
       "relations": [
@@ -1409,29 +1409,29 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
     {
       "headArrow": [
         [
-          894,
-          631,
+          1236,
+          413,
         ],
         [
-          891,
-          641,
+          1246,
+          417,
         ],
         [
-          887,
-          631,
+          1236,
+          420,
         ],
       ],
       "headArrowPoint": [
-        891,
-        644,
+        1249,
+        417,
       ],
       "id": "cloud.backend:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 21,
-        "width": 102,
-        "x": 897,
-        "y": 564,
+        "height": 17,
+        "width": 98,
+        "x": 1101,
+        "y": 393,
       },
       "labels": [
         {
@@ -1439,8 +1439,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            901,
-            581,
+            1103,
+            408,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1449,20 +1449,20 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": null,
       "points": [
         [
-          891,
-          525,
+          1064,
+          417,
         ],
         [
-          891,
-          559,
+          1120,
+          417,
         ],
         [
-          891,
-          597,
+          1181,
+          417,
         ],
         [
-          891,
-          631,
+          1236,
+          417,
         ],
       ],
       "relations": [
@@ -1472,30 +1472,30 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          891,
-          524,
+          1064,
+          417,
         ],
         [
-          895,
-          518,
+          1058,
+          413,
         ],
         [
-          891,
-          512,
+          1052,
+          417,
         ],
         [
-          887,
-          518,
+          1058,
+          421,
         ],
       ],
       "tailArrowPoint": [
-        891,
-        511,
+        1050,
+        417,
       ],
       "target": "amazon",
     },
   ],
-  "height": 824,
+  "height": 555,
   "id": "cloudView",
   "links": null,
   "nodes": [
@@ -1634,7 +1634,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": null,
       "position": [
         171,
-        267,
+        263,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1675,7 +1675,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": "cloud",
       "position": [
         210,
-        331,
+        327,
       ],
       "shape": "browser",
       "style": {},
@@ -1715,7 +1715,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "parent": "cloud",
       "position": [
         730,
-        331,
+        327,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1740,8 +1740,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "color": "#eff6ff",
           "fontSize": 20,
           "pt": [
-            124,
-            86,
+            125,
+            85,
           ],
           "text": "Amazon",
           "width": 74,
@@ -1751,7 +1751,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
           "color": "#bfdbfe",
           "fontSize": 14,
           "pt": [
-            76,
+            77,
             108,
           ],
           "text": "Amazon is a cloud provider",
@@ -1763,8 +1763,8 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        730,
-        644,
+        1247,
+        327,
       ],
       "shape": "rectangle",
       "style": {},
@@ -1777,7 +1777,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1098,
+  "width": 1568,
 }
 `;
 
@@ -1790,28 +1790,28 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          306,
-          301,
+          305,
+          298,
         ],
         [
-          309,
-          312,
+          308,
+          308,
         ],
         [
           300,
-          305,
+          302,
         ],
       ],
       "headArrowPoint": [
-        311,
-        314,
+        310,
+        310,
       ],
       "id": "customer:cloud",
       "label": "opens in browser",
       "labelBBox": {
-        "height": 21,
-        "width": 107,
-        "x": 279,
+        "height": 17,
+        "width": 103,
+        "x": 273,
         "y": 234,
       },
       "labels": [
@@ -1820,8 +1820,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            283,
-            251,
+            275,
+            249,
           ],
           "text": "opens in browser",
           "width": 99,
@@ -1830,20 +1830,20 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          220,
+          221,
           180,
         ],
         [
-          246,
-          219,
+          247,
+          218,
         ],
         [
-          277,
-          264,
+          276,
+          261,
         ],
         [
           303,
-          303,
+          300,
         ],
       ],
       "relations": [
@@ -1856,27 +1856,27 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "headArrow": [
         [
           441,
-          305,
+          302,
         ],
         [
-          432,
-          312,
+          433,
+          308,
         ],
         [
-          435,
-          301,
+          436,
+          298,
         ],
       ],
       "headArrowPoint": [
-        430,
-        314,
+        431,
+        310,
       ],
       "id": "support:cloud",
       "label": "manages",
       "labelBBox": {
-        "height": 21,
-        "width": 62,
-        "x": 488,
+        "height": 17,
+        "width": 58,
+        "x": 482,
         "y": 234,
       },
       "labels": [
@@ -1885,8 +1885,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            492,
-            251,
+            484,
+            249,
           ],
           "text": "manages",
           "width": 54,
@@ -1895,20 +1895,20 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          521,
+          520,
           180,
         ],
         [
-          495,
-          219,
+          494,
+          218,
         ],
         [
-          464,
-          264,
+          465,
+          261,
         ],
         [
           438,
-          303,
+          300,
         ],
       ],
       "relations": [
@@ -1920,29 +1920,29 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
     {
       "headArrow": [
         [
-          374,
-          615,
+          716,
+          397,
         ],
         [
-          371,
-          625,
+          726,
+          400,
         ],
         [
-          367,
-          615,
+          716,
+          404,
         ],
       ],
       "headArrowPoint": [
-        371,
-        628,
+        729,
+        400,
       ],
       "id": "cloud:amazon",
       "label": "persists artifacts",
       "labelBBox": {
-        "height": 21,
-        "width": 102,
-        "x": 377,
-        "y": 548,
+        "height": 17,
+        "width": 98,
+        "x": 581,
+        "y": 376,
       },
       "labels": [
         {
@@ -1950,8 +1950,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
           "color": "#c6c6c6",
           "fontSize": 13,
           "pt": [
-            381,
-            565,
+            583,
+            391,
           ],
           "text": "persists artifacts",
           "width": 94,
@@ -1960,20 +1960,20 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "parent": null,
       "points": [
         [
-          371,
-          508,
+          544,
+          400,
         ],
         [
-          371,
-          542,
+          600,
+          400,
         ],
         [
-          371,
-          581,
+          661,
+          400,
         ],
         [
-          371,
-          615,
+          716,
+          400,
         ],
       ],
       "relations": [
@@ -1983,30 +1983,30 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "tail": "odiamond",
       "tailArrow": [
         [
-          371,
-          508,
+          544,
+          400,
         ],
         [
-          375,
-          502,
+          538,
+          396,
         ],
         [
-          371,
-          496,
+          532,
+          400,
         ],
         [
-          367,
-          502,
+          538,
+          404,
         ],
       ],
       "tailArrowPoint": [
-        371,
-        494,
+        531,
+        400,
       ],
       "target": "amazon",
     },
   ],
-  "height": 808,
+  "height": 490,
   "id": "index",
   "links": null,
   "nodes": [
@@ -2140,7 +2140,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "parent": null,
       "position": [
         210,
-        314,
+        310,
       ],
       "shape": "rectangle",
       "style": {},
@@ -2166,7 +2166,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
           "fontSize": 20,
           "pt": [
             124,
-            85,
+            86,
           ],
           "text": "Amazon",
           "width": 74,
@@ -2188,8 +2188,8 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        210,
-        628,
+        728,
+        310,
       ],
       "shape": "rectangle",
       "style": {},
@@ -2201,6 +2201,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   ],
   "tags": null,
   "title": "",
-  "width": 741,
+  "width": 1048,
 }
 `;

@@ -111,14 +111,14 @@ export function edgeLabel(text: string) {
     bold: text === '[...]',
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD WIDTH="2"></TD><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
 }
 
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}"`
 
 export function stepEdgeLabel(step: number, text?: string | null) {
   const num =
-    `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0" ${BGCOLOR} STYLE="ROUNDED" FIXEDSIZE="TRUE"><TR><TD ALIGN="CENTER" WIDTH="20" HEIGHT="18" VALIGN="MIDDLE"><FONT POINT-SIZE="${
+    `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1" CELLSPACING="0" ${BGCOLOR} STYLE="ROUNDED" FIXEDSIZE="TRUE"><TR><TD ALIGN="CENTER" WIDTH="20" HEIGHT="18" VALIGN="MIDDLE"><FONT POINT-SIZE="${
       pxToPoints(14)
     }"><B>${step}</B></FONT></TD></TR></TABLE>`
   if (!isTruthy(text)) {
@@ -131,5 +131,5 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     lineHeight: 1.25,
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="1"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
 }

@@ -280,14 +280,6 @@ export function useLayoutConstraints(): LayoutConstraints {
     y: 0
   })
 
-  const triggerSaveManualLayout = useDebouncedCallback(
-    () => {
-      diagramApi.getState().triggerSaveManualLayout()
-    },
-    [diagramApi],
-    200
-  )
-
   return useMemo((): LayoutConstraints => ({
     onNodeDragStart: (event, xynode) => {
       dragStartedAt.current = {
@@ -303,7 +295,7 @@ export function useLayoutConstraints(): LayoutConstraints {
     },
     onNodeDragStop: (event, _xynode) => {
       if (!isSamePoint(dragStartedAt.current, { x: event.clientX, y: event.clientY })) {
-        triggerSaveManualLayout()
+        diagramApi.getState().triggerSaveManualLayout(xyflowApi)
       }
       solverRef.current = undefined
     }

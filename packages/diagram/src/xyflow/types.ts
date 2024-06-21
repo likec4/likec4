@@ -1,4 +1,4 @@
-import type { BBox, DiagramEdge, DiagramNode, Fqn, Point, XYPosition } from '@likec4/core'
+import type { BBox, DiagramEdge, DiagramNode, Fqn, Point, ViewID, XYPosition } from '@likec4/core'
 import type {
   Edge,
   EdgeMouseHandler,
@@ -57,6 +57,8 @@ export namespace XYFlowNode {
 
 export type RelationshipData = {
   edge: DiagramEdge
+  // to replace edges on view change
+  // viewId: ViewID
   // if set - edge was changed by user
   controlPoints: XYPosition[] | null
   headPoint: Point | null

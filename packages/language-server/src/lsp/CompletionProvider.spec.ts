@@ -1,16 +1,16 @@
 import { expectCompletion as langiumExpectCompletion } from 'langium/test'
 import { pluck } from 'rambdax'
 import { describe, expect, it, vi } from 'vitest'
-import { createTestServices } from '../../test'
+import { createTestServices } from '../test'
 
-vi.mock('../../logger')
+vi.mock('../logger')
 
 function expectCompletion() {
   const services = createTestServices().services
   return langiumExpectCompletion(services)
 }
 
-describe('Completions', () => {
+describe('LikeC4CompletionProvider', () => {
   it('should suggest keywords inside specification', async () => {
     const text = `
       <|>spe<|>cification {

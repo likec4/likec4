@@ -100,7 +100,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
     }
     if (ast.isTag(node)) {
-      acceptor({
+      return acceptor({
         node,
         property: 'name',
         type: SemanticTokenTypes.type,
@@ -146,6 +146,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.number
       })
+      return
     }
     if (
       ast.isLinkProperty(node)
@@ -167,10 +168,10 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       return
     }
     if (ast.isElement(node)) {
-      this.highlightAstElement(node, acceptor)
+      return this.highlightAstElement(node, acceptor)
     }
     if (ast.isLikeC4View(node)) {
-      this.highlightView(node, acceptor)
+      return this.highlightView(node, acceptor)
     }
   }
 

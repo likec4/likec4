@@ -266,17 +266,13 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
 }
 
 export interface ViewManualLayout {
-  readonly nodes: Readonly<
-    Record<Fqn, {
-      x: number
-      y: number
-      width: number
-      height: number
-    }>
-  >
-  readonly edges: Readonly<
-    Record<EdgeId, {
-      controlPoints: XYPosition[]
-    }>
-  >
+  readonly nodes: Record<Fqn, {
+    x: number
+    y: number
+    width: number
+    height: number
+  }>
+  readonly edges: Record<EdgeId, {
+    controlPoints: XYPosition[]
+  }>
 }

@@ -2208,9 +2208,9 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
-    "@mantine/core": "npm:^7.10.1"
-    "@mantine/hooks": "npm:^7.10.1"
-    "@mantine/vanilla-extract": "npm:^7.10.1"
+    "@mantine/core": "npm:7.10.2"
+    "@mantine/hooks": "npm:7.10.2"
+    "@mantine/vanilla-extract": "npm:7.10.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.0.0"
     "@total-typescript/ts-reset": "npm:^0.5.1"
@@ -2218,10 +2218,10 @@ __metadata:
     "@types/d3-shape": "npm:^3"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
-    "@vanilla-extract/css": "npm:^1.15.2"
+    "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/css-utils": "npm:^0.1.4"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
-    "@vanilla-extract/esbuild-plugin": "npm:^2.3.6"
+    "@vanilla-extract/esbuild-plugin": "npm:^2.3.7"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@xyflow/react": "npm:12.0.0-next.21"
     "@xyflow/system": "npm:0.0.29"
@@ -2239,12 +2239,12 @@ __metadata:
     tilg: "npm:^0.1.1"
     type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
-    vite: "npm:5.3.0"
+    vite: "npm:5.3.1"
     vite-plugin-dts: "npm:^3.9.1"
     zustand: "npm:^4.5.2"
   peerDependencies:
-    "@mantine/core": ^7.10.1
-    "@mantine/hooks": ^7.10.1
+    "@mantine/core": 7.10.2
+    "@mantine/hooks": 7.10.2
     react: ^18.3.1
     react-dom: ^18.3.1
   languageName: unknown
@@ -2346,6 +2346,8 @@ __metadata:
     "@types/string-hash": "npm:^1"
     execa: "npm:^9.1.0"
     fast-equals: "npm:^5.0.1"
+    indent-string: "npm:^5.0.0"
+    json5: "npm:^2.2.3"
     langium: "npm:^3.0.0"
     langium-cli: "npm:3.0.3"
     npm-run-all2: "npm:^6.1.2"
@@ -2417,9 +2419,9 @@ __metadata:
     "@likec4/graph": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@mantine/core": "npm:^7.10.1"
-    "@mantine/hooks": "npm:^7.10.1"
-    "@mantine/vanilla-extract": "npm:^7.10.1"
+    "@mantine/core": "npm:7.10.2"
+    "@mantine/hooks": "npm:7.10.2"
+    "@mantine/vanilla-extract": "npm:7.10.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.0.0"
     "@tanstack/router-cli": "npm:^1.37.0"
@@ -2429,10 +2431,10 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:18.3.0"
     "@types/string-hash": "npm:^1.1.3"
-    "@vanilla-extract/css": "npm:^1.15.2"
+    "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
-    "@vanilla-extract/esbuild-plugin": "npm:^2.3.6"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.10"
+    "@vanilla-extract/esbuild-plugin": "npm:^2.3.7"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.11"
     "@vitejs/plugin-react": "npm:^4.3.1"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.0.0"
@@ -2454,7 +2456,7 @@ __metadata:
     type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
-    vite: "npm:5.3.0"
+    vite: "npm:5.3.1"
     vscode: "npm:@codingame/monaco-vscode-api@5.2.0"
     vscode-languageclient: "npm:~9.0.1"
     vscode-languageserver: "npm:~9.0.1"
@@ -2478,8 +2480,8 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:^7.10.1"
-    "@mantine/hooks": "npm:^7.10.1"
+    "@mantine/core": "npm:7.10.2"
+    "@mantine/hooks": "npm:7.10.2"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@types/node": "npm:^20.14.2"
@@ -2487,10 +2489,11 @@ __metadata:
     "@types/react-dom": "npm:18.3.0"
     "@types/vscode": "npm:~1.88.0"
     "@types/vscode-webview": "npm:^1.57.5"
-    "@vanilla-extract/css": "npm:^1.15.2"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.10"
+    "@vanilla-extract/css": "npm:^1.15.3"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.11"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
+    esm-env: "npm:1.0.0"
     lucide-react: "npm:^0.294.0"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:^1.15.0"
@@ -2499,7 +2502,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
     typescript: "npm:^5.4.5"
-    vite: "npm:5.3.0"
+    vite: "npm:5.3.1"
     vscode-messenger-webview: "npm:^0.4.5"
   languageName: unknown
   linkType: soft
@@ -2511,9 +2514,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:^7.10.1":
-  version: 7.10.1
-  resolution: "@mantine/core@npm:7.10.1"
+"@mantine/core@npm:7.10.2":
+  version: 7.10.2
+  resolution: "@mantine/core@npm:7.10.2"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:^2.1.1"
@@ -2522,28 +2525,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.10.1
+    "@mantine/hooks": 7.10.2
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/4c52704661e1eef7aecd1ba8dc0d3fb056c93b7c136762ae093cb9510490a65d2849d25bb4c27c884a30ad65a231e17d69964c293fe295faa507932acfac00d9
+  checksum: 10c0/6cbddd40e12c0432925c6c68cad0182d4fb1dfdf6616cf6e1614b8b1f8fab7a96b49e3c4bf91dc0241fe0ff0c478a4a6c6ee32bc9da2ef81e8a49f18045a71d4
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:^7.10.1":
-  version: 7.10.1
-  resolution: "@mantine/hooks@npm:7.10.1"
+"@mantine/hooks@npm:7.10.2":
+  version: 7.10.2
+  resolution: "@mantine/hooks@npm:7.10.2"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10c0/1b165c56416087a8e24de40633cf64bf356b62c74a8dd99b63b3436f14ecf587274410965f3d670dba61d81e649dd9e602d8c4b74b6e8780f96b26023ec409b9
+  checksum: 10c0/ebe2f1d21b5ca960194526aab76c72b684875655db651953afef211f07379b25dc7ca9fd36a7aaffe7a50536ef042c99c434c0b0de9c62d74845ab1228923cd1
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:^7.10.1":
-  version: 7.10.1
-  resolution: "@mantine/vanilla-extract@npm:7.10.1"
+"@mantine/vanilla-extract@npm:7.10.2":
+  version: 7.10.2
+  resolution: "@mantine/vanilla-extract@npm:7.10.2"
   peerDependencies:
-    "@mantine/core": 7.10.1
-  checksum: 10c0/38645ccba686bbfd16a1a39b85e2e4fb6bd84c101d058b78ce004786e32a92e8a6b30a88f3a2bacdc445fbe42444118fb54edb4e0a4e696c9ec8dc946c30579e
+    "@mantine/core": 7.10.2
+  checksum: 10c0/15ad6f8b2b4831f151b4a8eedeceaef7d39b6b9d8eeba8f95369758eb7cd320e4fc314a78c733a33686dc7cc6d906ed8cdd60261c6f9bba613987b0da811eed5
   languageName: node
   linkType: hard
 
@@ -4054,9 +4057,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.15.2":
-  version: 1.15.2
-  resolution: "@vanilla-extract/css@npm:1.15.2"
+"@vanilla-extract/css@npm:^1.15.3":
+  version: 1.15.3
+  resolution: "@vanilla-extract/css@npm:1.15.3"
   dependencies:
     "@emotion/hash": "npm:^0.9.0"
     "@vanilla-extract/private": "npm:^1.0.5"
@@ -4069,7 +4072,7 @@ __metadata:
     media-query-parser: "npm:^2.0.2"
     modern-ahocorasick: "npm:^1.0.0"
     picocolors: "npm:^1.0.0"
-  checksum: 10c0/c2a9101110cfd3917feb70af775d03a9fa1974726d0bdf48e7d20260528006cf8de5dacbcf140cd586b2accf3c383bf07a1fbf30f1e4a51bf9abcd96c39cbf67
+  checksum: 10c0/57c53e961bc0a273fa792c65c1b6cc6ce45d8f0d3c8b239df6ece4fbf2c58d09764ed70773bf25582e3cc6789ccce2b920c33d177ef276f63c6604c85dbc5c01
   languageName: node
   linkType: hard
 
@@ -4082,28 +4085,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/esbuild-plugin@npm:^2.3.6":
-  version: 2.3.6
-  resolution: "@vanilla-extract/esbuild-plugin@npm:2.3.6"
+"@vanilla-extract/esbuild-plugin@npm:^2.3.7":
+  version: 2.3.7
+  resolution: "@vanilla-extract/esbuild-plugin@npm:2.3.7"
   dependencies:
-    "@vanilla-extract/integration": "npm:^7.1.5"
+    "@vanilla-extract/integration": "npm:^7.1.6"
   peerDependencies:
     esbuild: ">=0.17.6"
   peerDependenciesMeta:
     esbuild:
       optional: true
-  checksum: 10c0/570ae26356dfe2a2503e4fee3608ae353a35321389078fb72e31408248717a2475de9a3320bf2b771f518a4ebd577a687c7c1facc4622d59e3c1d91e9ff1d565
+  checksum: 10c0/d89789eda083cd1f9f1b1348ba67885cbd67fdbbb2ef25bad007a45bc88e6600f8ed4bfe694b53f2ed6a6fbc28efcc5c35b6f60040661c80553a20407ebeb668
   languageName: node
   linkType: hard
 
-"@vanilla-extract/integration@npm:^7.1.5":
-  version: 7.1.5
-  resolution: "@vanilla-extract/integration@npm:7.1.5"
+"@vanilla-extract/integration@npm:^7.1.6":
+  version: 7.1.6
+  resolution: "@vanilla-extract/integration@npm:7.1.6"
   dependencies:
     "@babel/core": "npm:^7.23.9"
     "@babel/plugin-syntax-typescript": "npm:^7.23.3"
     "@vanilla-extract/babel-plugin-debug-ids": "npm:^1.0.6"
-    "@vanilla-extract/css": "npm:^1.15.2"
+    "@vanilla-extract/css": "npm:^1.15.3"
     dedent: "npm:^1.5.3"
     esbuild: "npm:esbuild@~0.17.6 || ~0.18.0 || ~0.19.0"
     eval: "npm:0.1.8"
@@ -4112,7 +4115,7 @@ __metadata:
     mlly: "npm:^1.4.2"
     vite: "npm:^5.0.11"
     vite-node: "npm:^1.2.0"
-  checksum: 10c0/2f850f7cde8aa3f829280b85ffa506fb4b7b9aaa0430a4a1cbd8ab76648d96fbb9c9eff46593dcfb8996c3baab55753fd0651d172d041af3bb8f712457388194
+  checksum: 10c0/0e7ce448bf062d3ea6b9afca98e910e3bcc9663f3b2e8b475249add114cac9257c882dc70249b18f646711f97300ff40dcb6bd7abaf93aab3ffaf58b6f7a35f4
   languageName: node
   linkType: hard
 
@@ -4123,14 +4126,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.10":
-  version: 4.0.10
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.10"
+"@vanilla-extract/vite-plugin@npm:^4.0.11":
+  version: 4.0.11
+  resolution: "@vanilla-extract/vite-plugin@npm:4.0.11"
   dependencies:
-    "@vanilla-extract/integration": "npm:^7.1.5"
+    "@vanilla-extract/integration": "npm:^7.1.6"
   peerDependencies:
     vite: ^4.0.3 || ^5.0.0
-  checksum: 10c0/cc1240c17e9224783835fa7f828f473ea13c8b1bbd7b65d591cd57e2c23ccc26e60c6374f02870016c5780ad37a8a4d532bd7ed072d3a5100a151faf0b8cadc0
+  checksum: 10c0/4d2207af634bb84a9fc0a74370a4a802dc12d756c16f69c70152fc92904ad19a25dcaa49b8da446402a5f059be48ce08ac146ffbba5e7800eedc2e3a58990a92
   languageName: node
   linkType: hard
 
@@ -9097,9 +9100,9 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:^7.10.1"
-    "@mantine/hooks": "npm:^7.10.1"
-    "@mantine/vanilla-extract": "npm:^7.10.1"
+    "@mantine/core": "npm:7.10.2"
+    "@mantine/hooks": "npm:7.10.2"
+    "@mantine/vanilla-extract": "npm:7.10.2"
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.0.0"
@@ -9112,9 +9115,9 @@ __metadata:
     "@types/react-dom": "npm:18.3.0"
     "@types/string-hash": "npm:^1"
     "@types/yargs": "npm:^17.0.32"
-    "@vanilla-extract/css": "npm:^1.15.2"
+    "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.10"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.11"
     "@vitejs/plugin-react": "npm:4.3.1"
     ci-info: "npm:^3.9.0"
     classnames: "npm:^2.3.2"
@@ -9153,7 +9156,7 @@ __metadata:
     type-fest: "npm:^4.18.2"
     typescript: "npm:^5.4.5"
     ufo: "npm:^1.5.3"
-    vite: "npm:5.3.0"
+    vite: "npm:5.3.1"
     vite-plugin-css-injected-by-js: "npm:^3.5.1"
     vite-plugin-shadow-style: "npm:^1.1.0"
     vitest: "npm:~1.5.3"
@@ -12874,7 +12877,7 @@ __metadata:
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.0.3"
     typescript: "npm:^5.4.5"
-    vite: "npm:5.3.0"
+    vite: "npm:5.3.1"
     vitest: "npm:~1.5.3"
     wireit: "npm:^0.14.4"
   languageName: unknown
@@ -14816,47 +14819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.3.0":
-  version: 5.3.0
-  resolution: "vite@npm:5.3.0"
-  dependencies:
-    esbuild: "npm:^0.21.3"
-    fsevents: "npm:~2.3.3"
-    postcss: "npm:^8.4.38"
-    rollup: "npm:^4.13.0"
-  peerDependencies:
-    "@types/node": ^18.0.0 || >=20.0.0
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10c0/d07e1a2ce713d3f73cb83f6289c9ff320da5953f37c35edb8c1388d610e8ca1c98edd642d5c3f163f8771dae294d3d430356a09285e344f0de9fa4b058c541f0
-  languageName: node
-  linkType: hard
-
-"vite@npm:^5.0.0, vite@npm:^5.0.11, vite@npm:^5.3.1":
+"vite@npm:5.3.1, vite@npm:^5.0.0, vite@npm:^5.0.11, vite@npm:^5.3.1":
   version: 5.3.1
   resolution: "vite@npm:5.3.1"
   dependencies:

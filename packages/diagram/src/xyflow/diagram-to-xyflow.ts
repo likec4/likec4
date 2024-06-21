@@ -17,7 +17,7 @@ import { toDomPrecision } from './utils'
 const nodeZIndex = (node: DiagramNode) => node.level + 1
 
 export function diagramViewToXYFlowData(
-  view: Pick<DiagramView, 'nodes' | 'edges' | '__'>,
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
   opts: {
     draggable: boolean
     selectable: boolean
@@ -143,7 +143,7 @@ export function diagramViewToXYFlowData(
       data: {
         edge,
         type: 'bezier',
-        controlPoints: null,
+        controlPoints: view.manualLayout?.edges[edge.id]?.controlPoints || null,
         headPoint: edge.headArrowPoint ?? null,
         tailPoint: edge.tailArrowPoint ?? null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,

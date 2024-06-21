@@ -1,4 +1,4 @@
-import type { Element, ViewID } from '@likec4/core'
+import type { EdgeId, Element, Fqn, ViewID } from '@likec4/core'
 import { keys, values } from 'rambdax'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
@@ -719,6 +719,44 @@ describe('LikeC4ModelBuilder', () => {
         'file:///test/workspace/src/samefolder.html',
         'https://example1.com'
       ]
+    })
+  })
+
+  // Base64 taken from saveManualLayout.spec.ts
+  it.concurrent('parses manual layout', async ({ expect }) => {
+    const { validate, buildModel } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component sys1
+        component sys2
+        sys1 -> sys2
+      }
+      views {
+        /**
+         * @likec4-generated(v1)
+         * WzEsW1snc3lzMScsMCwwLDAsMF0sWydzeXMyJywyMDAwLC0zMDAwLDEwMDAwMDAsOTAwMDAwMF1dLFtbJ3N5czEtPnN5czInLFsx
+         * MCwxMCwyMDAsMjAwXV1dXQ==
+         */
+        view index {
+          include *
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(0)
+    const model = await buildModel()
+    const indexView = model?.views['index' as ViewID]!
+    expect(indexView).toBeDefined()
+    expect(indexView).toHaveProperty('manualLayout', {
+      nodes: {
+        ['sys1' as Fqn]: { x: 0, y: 0, width: 0, height: 0 },
+        ['sys2' as Fqn]: { x: 2000, y: -3000, width: 1000000, height: 9000000 }
+      },
+      edges: {
+        ['sys1->sys2' as EdgeId]: { controlPoints: [{ x: 10, y: 10 }, { x: 200, y: 200 }] }
+      }
     })
   })
 })

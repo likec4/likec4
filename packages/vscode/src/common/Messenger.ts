@@ -46,9 +46,9 @@ export default class Messenger extends AbstractDisposable {
       })
     )
     this.onDispose(
-      this.messenger.onNotification(WebviewToExtension.onChange, async ({ changes, viewId }) => {
+      this.messenger.onNotification(WebviewToExtension.onChange, async ({ change, viewId }) => {
         // Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.changes, null, 4)}`)
-        let loc = await this.rpc.changeView({ viewId, changes })
+        let loc = await this.rpc.changeView({ viewId, change })
         if (loc) {
           const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
           const previewColumn = PreviewPanel.current?.panel.viewColumn ?? vscode.ViewColumn.One

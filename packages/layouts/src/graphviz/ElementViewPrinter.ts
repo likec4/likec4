@@ -1,5 +1,5 @@
 import type { ComputedEdge, ComputedElementView, Fqn, RelationshipLineType } from '@likec4/core'
-import { defaultTheme as Theme, nonNullable } from '@likec4/core'
+import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
 import { first, isNullish, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
@@ -54,48 +54,46 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       })
     }
 
+    let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
+
     if (edge.dir === 'back') {
-      if (edge.head) {
-        e.attributes.set(_.arrowtail, toArrowType(edge.head))
-      }
-      if (edge.tail && edge.tail !== 'none') {
-        e.attributes.set(_.arrowhead, toArrowType(edge.tail))
-      } else {
-        e.attributes.set(_.arrowhead, 'none')
-      }
-      e.attributes.set(_.dir, 'back')
-      return e
-    }
-
-    if (edge.head) {
       e.attributes.apply({
-        [_.arrowhead]: toArrowType(edge.head)
+        [_.arrowtail]: toArrowType(head),
+        [_.dir]: 'back'
       })
-    }
-    if (edge.tail && edge.tail !== 'none') {
-      if (edge.head === 'none') {
+      if (tail !== 'none') {
         e.attributes.apply({
-          [_.arrowtail]: toArrowType(edge.tail),
-          [_.dir]: 'back'
-        })
-      } else {
-        e.attributes.apply({
-          [_.arrowtail]: toArrowType(edge.tail),
+          [_.arrowhead]: toArrowType(tail),
           [_.dir]: 'both'
-          // [_.constraint]: false
         })
       }
+      return e
     }
 
-    if (edge.head === 'none' && (isNullish(edge.tail) || edge.tail === 'none')) {
+    if ((head === 'none' && tail === 'none') || (head !== 'none' && tail !== 'none')) {
       e.attributes.apply({
-        [_.arrowtail]: 'none',
-        [_.arrowhead]: 'none',
-        [_.dir]: 'none',
-        // [_.minlen]: 0
-        [_.constraint]: false
+        [_.arrowhead]: toArrowType(head),
+        [_.arrowtail]: toArrowType(tail),
+        [_.dir]: 'both',
+        [_.minlen]: 0
+      })
+      if (head === 'none') {
+        e.attributes.set(_.constraint, false)
+      }
+      return e
+    }
+
+    if (head === 'none') {
+      e.attributes.delete(_.arrowhead)
+      e.attributes.apply({
+        [_.arrowtail]: toArrowType(tail),
+        [_.minlen]: 0,
+        [_.dir]: 'back'
       })
       return e
+    }
+    if (head !== DefaultArrowType) {
+      e.attributes.set(_.arrowhead, toArrowType(head))
     }
 
     // This heuristic removes the rank constraint from the edge

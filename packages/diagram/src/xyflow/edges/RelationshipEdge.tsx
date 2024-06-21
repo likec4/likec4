@@ -10,7 +10,7 @@ import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
 import { memo, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
-import { useDiagramState } from '../../state'
+import { useDiagramState, useDiagramStoreApi } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYFlow, useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
@@ -109,8 +109,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
+  const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
-  const xyflow = useXYFlow()
   const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
     isEditable: s.readonly !== true,
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true,
@@ -137,7 +137,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     }
   } = data
 
-  const controlPoints = data.controlPoints ?? bezierControlPoints(diagramEdgePoints)
+  let controlPoints = data.controlPoints ?? bezierControlPoints(data.edge)
+
   const isStepEdge = data.stepNum !== null
   const isDotted = line === 'dotted'
   const isDashed = isDotted || line === 'dashed'
@@ -164,13 +165,16 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     labelY = labelPos.y
     const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
     const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
-    edgePath = nonNullable(curve([
+
+    const points = [
       sourceCenterPos.positionAbsolute,
       getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
       ...controlPoints,
       getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
       targetCenterPos.positionAbsolute
-    ]))
+    ]
+
+    edgePath = nonNullable(curve(points))
   } else {
     edgePath = bezierPath(diagramEdgePoints)
     // if (diagramEdge.tailArrowPoint) {
@@ -191,11 +195,12 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       y: Math.round(dompoint.y)
     }
     setLabelPosition(current => isSamePoint(current, point) ? current : point)
-  }, [edgePath, xyflow])
+  }, [edgePath])
 
-  const onControlPointerDown = (index: number) => (e: React.PointerEvent) => {
-    const domNode = xyflowStore.getState().domNode
+  const onControlPointerDown = (index: number, e: React.PointerEvent) => {
+    const { domNode } = xyflowStore.getState()
     if (!domNode) return
+    const { xyflow } = diagramStore.getState()
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
@@ -215,14 +220,20 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     const onPointerUp = () => {
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
+      if (hasMoved) {
+        diagramStore.getState().triggerSaveManualLayout(xyflowStore)
+      }
     }
     domNode.addEventListener('pointermove', onPointerMove)
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
   }
 
   const marker = `url(#arrow-${id})`
-  const markerStart = diagramEdge.tailArrow ? marker : undefined
-  const markerEnd = diagramEdge.headArrow ? marker : undefined
+  let markerStart = diagramEdge.tailArrow ? marker : undefined
+  let markerEnd = diagramEdge.headArrow ? marker : undefined
+  if (isModified && diagramEdge.dir === 'back') {
+    ;[markerStart, markerEnd] = [markerEnd, markerStart]
+  }
 
   return (
     <g
@@ -276,7 +287,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       />
       {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
-          onPointerDown={onControlPointerDown(i)}
+          onPointerDown={e => onControlPointerDown(i, e)}
           className={edgesCss.controlPoint}
           key={i}
           cx={p.x}
@@ -297,6 +308,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
               ...assignInlineVars({
                 [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
                 [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
+              }),
+              ...(isEdgePathEditable && {
+                pointerEvents: 'none'
               }),
               ...(data.label && {
                 maxWidth: data.label.bbox.width + 12

@@ -187,20 +187,22 @@ function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdge: Comput
       width: 0,
       height: 0
     } as LabelBBox
-    // edge label is inside table with cell spacing 4
-    const labelPadding = pointToPx(4)
-    // first label has the lowest y
-    const _first = first(labels)
-    labelBBox.y = _first.pt[1] - _first.fontSize - labelPadding
+    // edge label is inside table with cellpadding 2
+    const labelPadding = pointToPx(2)
+    // lowest y
+    const labelWithLowestY = firstBy(labels, [l => l.pt[1] - l.fontSize, 'asc'])
+    labelBBox.y = labelWithLowestY.pt[1] - labelWithLowestY.fontSize - labelPadding
 
     // x and width - from the label with max width
-    const _maxWidth = firstBy(labels, [l => l.width, 'desc'])
-    labelBBox.x = _maxWidth.pt[0] - labelPadding
-    labelBBox.width = _maxWidth.width + labelPadding * 2
+    const minX = firstBy(labels, [l => l.pt[0], 'asc'])
+    labelBBox.x = minX.pt[0] - labelPadding
+    const maxXLabel = firstBy(labels, [l => l.pt[0] + l.width, 'desc'])
+    const maxX = maxXLabel.pt[0] + maxXLabel.width + labelPadding
+    labelBBox.width = maxX - labelBBox.x
 
     // height - y from the last label
-    const _last = last(labels)
-    const lastY = _last.pt[1] + labelPadding
+    const maxYLabel = firstBy(labels, [l => l.pt[1], 'desc'])
+    const lastY = maxYLabel.pt[1] + labelPadding
     labelBBox.height = lastY - labelBBox.y
     edge.labels = labels
     edge.labelBBox = labelBBox

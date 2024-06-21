@@ -170,43 +170,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     mapToObj(r => [r.id, r])
   )
 
-  // const toElementView = (view: ParsedAstElementView, doc: LangiumDocument): c4.ElementView => {
-  //   let { astPath, rules, title, description, tags, links, id, __, ...model } = view
-
-  //   if ('viewOf' in view) {
-  //     title ??= elements[view.viewOf]?.title ?? null
-  //   }
-  //   if (!title && view.id === 'index') {
-  //     title = 'Landscape view'
-  //   }
-  //   return {
-  //     __,
-  //     id,
-  //     ...model,
-  //     title,
-  //     description,
-  //     tags,
-  //     links: links ? resolveLinks(doc, links) : null,
-  //     docUri: '',
-  //     rules
-  //   }
-  // }
-
-  // const toDynamicView = (view: ParsedAstDynamicView, doc: LangiumDocument): c4.DynamicView => {
-  //   let { rules, steps, title, description, tags, links, id, __ } = view
-  //   return {
-  //     __,
-  //     id,
-  //     title,
-  //     description,
-  //     tags,
-  //     links: links ? resolveLinks(doc, links) : null,
-  //     docUri: '',
-  //     rules,
-  //     steps
-  //   }
-  // }
-
   const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
     return (parsedAstView: ParsedAstView): c4.View => {

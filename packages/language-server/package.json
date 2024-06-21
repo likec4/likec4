@@ -65,6 +65,8 @@
     "@likec4/graph": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
     "fast-equals": "^5.0.1",
+    "indent-string": "^5.0.0",
+    "json5": "^2.2.3",
     "langium": "^3.0.0",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",

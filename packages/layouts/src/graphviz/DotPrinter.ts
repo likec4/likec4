@@ -13,9 +13,10 @@ import type {
   ComputedView,
   DiagramView,
   Fqn,
-  RelationshipLineType
+  RelationshipLineType,
+  ViewManualLayout
 } from '@likec4/core/types'
-import { first, isNullish, isNumber, isTruthy } from 'remeda'
+import { entries, first, isNullish, isNumber, isTruthy, values } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -97,25 +98,39 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
    * Use coordinates from given diagram as initial position for nodes
    * (try to keep existing layout as much as possible)
    */
-  public useInitional({ nodes, height }: DiagramView): this {
+  public applyManualLayout({ nodes, edges }: ViewManualLayout): this {
+    const height = Math.max(
+      ...values(nodes).map(({ y, height }) => y + height),
+      ...values(edges).flatMap(({ controlPoints }) => controlPoints.map(p => p.y))
+    )
     let inherited = false
-    for (const node of nodes) {
-      const model = this.getGraphNode(node.id)
+    for (const [id, pos] of entries.strict(nodes)) {
+      const model = this.getGraphNode(id)
       if (model) {
         // Invert Y axis and convert to inches
-        const x = pxToInch(node.position[0] + node.width / 2)
-        const y = pxToInch(height - (node.position[1] + node.height / 2))
-        model.attributes.set(_.pos, `${x},${y}!`)
+        const x = pxToInch(pos.x + pos.width / 2)
+        const y = pxToInch(height - (pos.y + pos.height / 2))
+        model.attributes.apply({
+          [_.pos]: `${x},${y}!`,
+          [_.width]: pxToInch(pos.width),
+          [_.height]: pxToInch(pos.height)
+        })
         inherited = true
       }
     }
     if (inherited) {
       this.graphvizModel.apply({
         [_.layout]: 'fdp',
-        [_.overlap]: false,
-        [_.sep]: '+40,40',
-        [_.esep]: '+20,20'
+        [_.scale]: 72.0,
+        [_.overlap]: 'vpsc',
+        [_.sep]: '+50,50',
+        [_.esep]: '+10,10',
+        [_.splines]: 'curved'
       })
+      this.graphvizModel.delete(_.compound)
+      this.graphvizModel.delete(_.rankdir)
+      this.graphvizModel.delete(_.nodesep)
+      this.graphvizModel.delete(_.ranksep)
     }
     return this
   }

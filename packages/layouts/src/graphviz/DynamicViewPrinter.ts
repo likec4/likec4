@@ -1,5 +1,5 @@
 import type { ComputedDynamicView, ComputedEdge, ComputedElementView } from '@likec4/core'
-import { DefaultRelationshipColor, defaultTheme as Theme, extractStep } from '@likec4/core'
+import { DefaultArrowType, DefaultRelationshipColor, defaultTheme as Theme, extractStep } from '@likec4/core'
 import { first, isNullish, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
@@ -45,17 +45,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       })
     }
 
-    if (edge.head === 'none' && (isNullish(edge.tail) || edge.tail === 'none')) {
-      e.attributes.apply({
-        [_.arrowtail]: 'none',
-        [_.arrowhead]: 'none',
-        [_.dir]: 'none',
-        [_.minlen]: 0,
-        [_.weight]: 0
-      })
-      return e
-    }
-
     // IF we already have "seen" the target node in previous steps
     // We don't want constraints to be applied
     const sourceIdx = viewNodes.findIndex(n => n.id === sourceFqn)
@@ -67,25 +56,47 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       })
     }
 
+    let [head, tail] = [edge.head ?? DefaultArrowType, edge.tail ?? 'none']
+
     if (edge.dir === 'back') {
-      e.attributes.set(_.arrowtail, toArrowType(edge.head ?? 'normal'))
-      if (edge.tail && edge.tail !== 'none') {
-        e.attributes.set(_.arrowhead, toArrowType(edge.tail))
-      } else {
-        e.attributes.set(_.arrowhead, 'none')
-      }
       e.attributes.apply({
-        [_.dir]: 'back',
-        [_.weight]: 0
+        [_.arrowtail]: toArrowType(head),
+        [_.minlen]: 0,
+        [_.weight]: 0,
+        [_.dir]: 'back'
+      })
+      if (tail !== 'none') {
+        e.attributes.apply({
+          [_.arrowhead]: toArrowType(tail),
+          [_.dir]: 'both'
+        })
+      }
+      return e
+    }
+
+    if ((head === 'none' && tail === 'none') || (head !== 'none' && tail !== 'none')) {
+      e.attributes.apply({
+        [_.arrowhead]: toArrowType(head),
+        [_.arrowtail]: toArrowType(tail),
+        [_.weight]: 0,
+        [_.dir]: 'both',
+        [_.minlen]: 0
       })
       return e
     }
 
-    if (edge.head && edge.head !== 'normal') {
-      e.attributes.set(_.arrowhead, toArrowType(edge.head))
+    if (head === 'none') {
+      e.attributes.delete(_.arrowhead)
+      e.attributes.apply({
+        [_.arrowtail]: toArrowType(tail),
+        [_.minlen]: 0,
+        [_.weight]: 0,
+        [_.dir]: 'back'
+      })
+      return e
     }
-    if (edge.tail && edge.tail !== 'none') {
-      e.attributes.set(_.arrowtail, toArrowType(edge.tail))
+    if (head !== DefaultArrowType) {
+      e.attributes.set(_.arrowhead, toArrowType(head))
     }
 
     return e
