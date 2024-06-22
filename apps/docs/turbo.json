@@ -4,39 +4,32 @@
     "//"
   ],
   "tasks": {
-    "topo": {
-      "dependsOn": [
-        "^topo"
-      ]
-    },
     "generate": {
       "dependsOn": [
         "likec4#build"
       ],
+      "inputs": [
+        "src/**/*.c4"
+      ],
       "outputs": [
         "src/components/*/likec4-views.*"
-      ],
-      "inputs": [
-        "likec4/**"
-      ],
-      "outputLogs": "new-only"
-    },
-    "typecheck": {
-      "dependsOn": [
-        "generate",
-        "topo"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "build": {
       "dependsOn": [
-        "generate",
-        "^build"
+        "generate"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.c4"
       ],
       "outputs": [
-        "dist/**",
-        ".astro/**"
+        "dist/**"
       ]
+    },
+    // We override the default "test" task to exclude the "generate"
+    "test": {
+      "dependsOn": []
     }
   }
 }

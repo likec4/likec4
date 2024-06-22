@@ -9,16 +9,18 @@
         "kind": "build",
         "isDefault": true
       },
+      "options": {
+        "env": {
+          "TURBO_UI": "0"
+        }
+      },
       "promptOnClose": false,
       "presentation": {
-        "panel": "dedicated",
         "echo": false,
         "showReuseMessage": false,
         "reveal": "always",
         "group": "build",
-        "revealProblems": "onProblem",
         "clear": true,
-        "close": true
       }
     },
   ]

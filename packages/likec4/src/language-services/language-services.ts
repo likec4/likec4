@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { type LikeC4Services } from '@likec4/language-server'
-import { WasmGraphvizLayouter } from '@likec4/layouts'
+import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import { DocumentState } from 'langium'
 import { resolve } from 'node:path'
 import k from 'picocolors'
@@ -60,7 +60,7 @@ export async function mkLanguageServices({
   const services = createServices({ useDotBin }).likec4
   const logger = services.logger
   logger.info(`${k.dim('version')} ${pkg.version}`)
-  logger.info(`${k.dim('layout')} ${services.likec4.Layouter instanceof WasmGraphvizLayouter ? 'wasm' : 'binary'}`)
+  logger.info(`${k.dim('layout')} ${services.likec4.Layouter.port instanceof GraphvizWasmAdapter ? 'wasm' : 'binary'}`)
 
   const workspace = resolve(path)
 

@@ -9,41 +9,15 @@ import {
   type Point
 } from '@likec4/core'
 import { Bezier } from 'bezier-js'
-import { hasAtLeast } from 'remeda'
+import { hasAtLeast, reduce } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
-
-function deriveEdgePoints(bezierSpline: NonEmptyArray<Point>) {
-  let [start, ...bezierPoints] = bezierSpline
-  invariant(start, 'start should be defined')
-  const handles = [
-    // start
-  ] as Point[]
-
-  while (hasAtLeast(bezierPoints, 3)) {
-    const [cp1, cp2, end, ...rest] = bezierPoints
-    const bezier = new Bezier(start[0], start[1], cp1[0], cp1[1], cp2[0], cp2[1], end[0], end[1])
-    // const { x, y } = bezier.get(0.5)
-    const inflections = bezier.inflections()
-    if (inflections.length === 0) {
-      inflections.push(0.5)
-    }
-    inflections.forEach(t => {
-      const { x, y } = bezier.get(t)
-      handles.push([x, y])
-    })
-    bezierPoints = rest
-    start = end
-  }
-  invariant(bezierPoints.length === 0, 'all points should be consumed')
-
-  return handles
-}
+import { toDomPrecision } from './utils'
 
 // const nodeZIndex = (node: DiagramNode) => node.level + (hasAtLeast(node.children, 1) ? 2 : 1)
 const nodeZIndex = (node: DiagramNode) => node.level + 1
 
 export function diagramViewToXYFlowData(
-  view: Pick<DiagramView, 'nodes' | 'edges' | '__'>,
+  view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
   opts: {
     draggable: boolean
     selectable: boolean
@@ -147,7 +121,7 @@ export function diagramViewToXYFlowData(
     const target = edge.target
     const id = ns + edge.id
     // const points = isElkEdge(edge) ? edge.points : deriveEdgePoints(edge.points)
-    const controlPoints = deriveEdgePoints(edge.points)
+    // const controlPoints = deriveEdgePoints(edge.points)
     // if (edge.tailArrowPoint) {
     //   controlPoints.unshift([...edge.tailArrowPoint])
     // }
@@ -169,7 +143,7 @@ export function diagramViewToXYFlowData(
       data: {
         edge,
         type: 'bezier',
-        controlPoints,
+        controlPoints: view.manualLayout?.edges[edge.id]?.controlPoints || null,
         headPoint: edge.headArrowPoint ?? null,
         tailPoint: edge.tailArrowPoint ?? null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,

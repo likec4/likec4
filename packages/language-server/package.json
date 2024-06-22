@@ -25,7 +25,8 @@
     ".": "./src/index.ts",
     "./browser": "./src/browser/index.ts",
     "./protocol": "./src/protocol.ts",
-    "./node": "./src/node/index.ts"
+    "./node": "./src/node/index.ts",
+    "./model-graph": "./src/model-graph/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -46,6 +47,10 @@
       "./node": {
         "types": "./dist/node/index.d.ts",
         "default": "./dist/node/index.js"
+      },
+      "./model-graph": {
+        "types": "./dist/model-graph/index.d.ts",
+        "default": "./dist/model-graph/index.js"
       }
     }
   },
@@ -57,14 +62,17 @@
     "dev": "run-p 'watch:*'",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
-    "test": "vitest run"
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@dagrejs/graphlib": "^2.2.2",
     "@likec4/core": "workspace:*",
-    "@likec4/graph": "workspace:*",
     "@total-typescript/ts-reset": "^0.5.1",
     "fast-equals": "^5.0.1",
-    "langium": "^3.0.0",
+    "indent-string": "^5.0.0",
+    "json5": "^2.2.3",
+    "langium": "3.1.0",
     "object-hash": "^3.0.0",
     "p-debounce": "^4.0.0",
     "rambdax": "^9.1.1",
@@ -81,9 +89,9 @@
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.2",
     "@types/object-hash": "^3.0.6",
-    "@types/string-hash": "^1",
+    "@types/string-hash": "^1.1.3",
     "execa": "^9.1.0",
-    "langium-cli": "3.0.3",
+    "langium-cli": "3.1.0",
     "npm-run-all2": "^6.1.2",
     "typescript": "^5.4.5",
     "vitest": "~1.5.3"

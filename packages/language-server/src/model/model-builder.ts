@@ -7,7 +7,6 @@ import {
   type StrictElementView,
   type ViewID
 } from '@likec4/core'
-import { computeDynamicView, computeView, LikeC4ModelGraph } from '@likec4/graph'
 import { deepEqual as eq } from 'fast-equals'
 import type { URI, WorkspaceCache } from 'langium'
 import { DocumentState, interruptAndCheck, type LangiumDocument, type LangiumDocuments } from 'langium'
@@ -17,6 +16,7 @@ import {
   flatMap,
   forEach,
   isNullish,
+  isNumber,
   isTruthy,
   map,
   mapToObj,
@@ -36,6 +36,7 @@ import type {
 } from '../ast'
 import { isParsedLikeC4LangiumDocument } from '../ast'
 import { logError, logger, logWarnError } from '../logger'
+import { computeDynamicView, computeView, LikeC4ModelGraph } from '../model-graph'
 import type { LikeC4Services } from '../module'
 import { printDocs } from '../utils/printDocs'
 import { assignNavigateTo, resolveRelativePaths, resolveRulesExtendedViews } from '../view-utils'
@@ -87,7 +88,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
           ...(icon && { icon }),
           style: {
             ...(border && { border }),
-            ...(opacity && { opacity })
+            ...(isNumber(opacity) && { opacity })
           },
           links: links ? resolveLinks(doc, links) : null,
           tags: tags ?? null,
@@ -168,43 +169,6 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
     filter(isTruthy),
     mapToObj(r => [r.id, r])
   )
-
-  // const toElementView = (view: ParsedAstElementView, doc: LangiumDocument): c4.ElementView => {
-  //   let { astPath, rules, title, description, tags, links, id, __, ...model } = view
-
-  //   if ('viewOf' in view) {
-  //     title ??= elements[view.viewOf]?.title ?? null
-  //   }
-  //   if (!title && view.id === 'index') {
-  //     title = 'Landscape view'
-  //   }
-  //   return {
-  //     __,
-  //     id,
-  //     ...model,
-  //     title,
-  //     description,
-  //     tags,
-  //     links: links ? resolveLinks(doc, links) : null,
-  //     docUri: '',
-  //     rules
-  //   }
-  // }
-
-  // const toDynamicView = (view: ParsedAstDynamicView, doc: LangiumDocument): c4.DynamicView => {
-  //   let { rules, steps, title, description, tags, links, id, __ } = view
-  //   return {
-  //     __,
-  //     id,
-  //     title,
-  //     description,
-  //     tags,
-  //     links: links ? resolveLinks(doc, links) : null,
-  //     docUri: '',
-  //     rules,
-  //     steps
-  //   }
-  // }
 
   const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()

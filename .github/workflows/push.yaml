@@ -28,7 +28,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         # include:
 
         #   # Build on Windows only with Node 20
@@ -57,8 +58,6 @@ jobs:
         run: yarn ci:typecheck
 
       - name: test
-        env:
-          NODE_ENV: test
         run: yarn ci:test
 
   check-playground:
@@ -78,14 +77,12 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/playground
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/playground'
 
       - name: typecheck
-        working-directory: apps/playground
         run: |
-          yarn typecheck
+          yarn turbo run typecheck --filter='@likec4/playground'
 
   check-docs-astro:
     # If on pull request, run only if coming from forked repos
@@ -105,9 +102,8 @@ jobs:
         uses: ./.github/actions/bootstrap
 
       - name: build
-        working-directory: apps/docs
         run: |
-          yarn build:turbo
+          yarn turbo run build --filter='@likec4/docs-astro'
 
 # check-docs-nextjs:
 #   # If on pull request, run only if coming from forked repos

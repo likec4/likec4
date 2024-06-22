@@ -1,1 +1,1 @@
-export { ElementNode } from './ElementNode'
+export { ElementNodeMemo as ElementNode } from './ElementNode'

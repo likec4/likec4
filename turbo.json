@@ -1,9 +1,5 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "yarn.lock",
-    "package.json"
-  ],
   "globalEnv": [
     "NODE_ENV"
   ],
@@ -14,11 +10,11 @@
       ]
     },
     "generate": {
-      "outputLogs": "errors-only"
     },
     "typecheck": {
       "dependsOn": [
         "generate",
+        "^generate",
         "topo"
       ],
       "outputLogs": "errors-only"
@@ -26,12 +22,12 @@
     "build": {
       "dependsOn": [
         "generate",
-        "^build"
+        "^build",
+        "topo"
       ],
       "outputs": [
         "dist/**"
-      ],
-      "outputLogs": "new-only"
+      ]
     },
     "dev": {
       "dependsOn": [
@@ -43,6 +39,18 @@
     },
     "clean": {
       "cache": false
+    },
+    "//#clean:root": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": [
+        "generate"
+      ]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

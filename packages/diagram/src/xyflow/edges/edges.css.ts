@@ -1,5 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
 const mixColor = createVar('mix-color')
@@ -13,13 +14,6 @@ export const container = style({
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
     [xyvars.edge.strokeWidth]: '2.2px'
   }
-})
-
-export const dimmed = style({})
-
-globalStyle(`svg:has(${dimmed})`, {
-  filter: vars.filterDimmed,
-  transition: 'filter 800ms ease-out'
 })
 
 globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
@@ -61,9 +55,16 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 globalStyle(`.react-flow__edges > svg`, {
   mixBlendMode: 'screen'
 })
-// globalStyle(`:where([data-mantine-color-scheme="dark"]) .react-flow__edges > svg`, {
-//   mixBlendMode: 'lighten'
-// })
+
+export const dimmed = style({})
+
+globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
+  opacity: 0.8,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: 'grayscale(0.85) blur(1px)',
+  willChange: 'opacity, filter'
+})
 
 export const edgePathBg = style({
   strokeWidth: xyvars.edge.strokeWidth,
@@ -84,8 +85,7 @@ export const edgePathBg = style({
 // To fix issue with marker not inheriting color from path - we need to create container
 export const markerContext = style({
   fill: xyvars.edge.stroke,
-  stroke: xyvars.edge.stroke,
-  pointerEvents: 'none'
+  stroke: xyvars.edge.stroke
 })
 
 export const controlPoint = style({
@@ -94,12 +94,20 @@ export const controlPoint = style({
   fillOpacity: 0.75,
   strokeWidth: 1,
   cursor: 'grab',
-  pointerEvents: 'visible',
+  pointerEvents: 'auto',
+  visibility: 'hidden',
+  ':hover': {
+    stroke: mantine.colors.primaryColors.filledHover,
+    strokeWidth: 9,
+    transition: 'stroke 100ms ease-out, stroke-width 100ms ease-out'
+  },
   selectors: {
-    [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
-      transition: 'all 150ms ease-out',
+    [`:where(${isSelected}, [data-edge-hovered='true']) &`]: {
+      visibility: 'visible',
+      transition: 'fill-opacity 150ms ease-out, stroke 150ms ease-out, stroke-width 150ms ease-out',
+      transitionDelay: '50ms',
       fillOpacity: 1,
-      strokeWidth: 3
+      strokeWidth: 5
     }
   }
 })
@@ -122,12 +130,12 @@ export const cssEdgePath = style({
     [`:where([data-edge-hovered='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '350ms',
-      transition: 'all 130ms ease-out'
+      transition: 'stroke,stroke-width 130ms ease-out'
     },
     [`:where(${isSelected}, [data-edge-active='true']) &`]: {
       animationName: strokeKeyframes,
       animationDelay: '0ms',
-      transition: 'all 130ms ease-out'
+      transition: 'stroke,stroke-width 130ms ease-out'
     },
     [`:where([data-edge-dir='back']) &`]: {
       animationDirection: 'reverse'
@@ -154,7 +162,7 @@ export const edgeLabel = style({
   borderRadius: '3px',
   transform: varTranslate,
   vars: {
-    [varTranslate]: `translate(${fallbackVar(varLabelX, '50%')}, ${fallbackVar(varLabelY, '50%')})`
+    [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
   },
   selectors: {
     '&[data-edge-hovered="true"]': {
@@ -162,8 +170,11 @@ export const edgeLabel = style({
       transform: `${varTranslate} scale(1.1)`
     },
     [`&:is(${dimmed})`]: {
-      transition: 'filter 800ms ease-out',
-      filter: vars.filterDimmed
+      opacity: 0.8,
+      transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+      transitionDelay: '200ms',
+      filter: 'grayscale(0.85) blur(2px)',
+      willChange: 'opacity, filter'
     }
   }
 })

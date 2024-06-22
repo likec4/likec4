@@ -28,17 +28,17 @@
     "editor.defaultFormatter": "dprint.dprint",
   },
   "search.exclude": {
-    "**/.turbo": true,
+    ".yarn/**": true,
+    "yarn.lock": true,
     "node_modules/**": true,
     "docs/.next/**": true,
     "docs/node_modules/**": true,
-    "apps/*/dist/**": true,
-    "examples/*/dist/**": true,
-    "packages/*/dist/**": true,
+    "*/*/dist/**": true,
     "packages/*/node_modules/**": true
   },
   "files.exclude": {
     "**/.tsbuildinfo": true,
+    "**/.turbo": true,
     "examples/diagrams-dev": true,
     "packages/*/.vscode-test-web": true
   },

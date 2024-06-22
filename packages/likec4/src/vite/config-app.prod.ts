@@ -73,12 +73,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       __USE_HASH_HISTORY__: cfg?.useHashHistory === true ? 'true' : 'false',
       'process.env.NODE_ENV': '"production"'
     },
-    optimizeDeps: {
-      include: [
-        'nanostores'
-      ],
-      force: true
-    },
     build: {
       outDir,
       emptyOutDir: false,

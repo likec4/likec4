@@ -52,10 +52,29 @@ export function SyncWithDiagram() {
     setEdges(updates.edges.map(update => {
       const existing = edgeLookup.get(update.id)
       if (existing) {
-        return eq(existing.data.edge, update.data.edge) ? existing : {
-          ...existing,
-          ...update
+        if (eq(existing.data.controlPoints, update.data.controlPoints) && eq(existing.data.edge, update.data.edge)) {
+          return existing
         }
+        return {
+          ...existing,
+          ...update,
+          data: {
+            ...existing.data,
+            ...update.data
+          }
+        }
+        // if (update.data.controlPoints === null && existing.data.controlPoints !== null) {
+        //   // we don't want accidentally
+        //   // overwrite existing control points
+        //   return {
+        //     ...existing,
+        //     ...update,
+        //     data: {
+        //       ...update.data,
+        //       controlPoints: existing.data.controlPoints
+        //     }
+        //   }
+        // }
       }
       return update
     }))

@@ -30,10 +30,8 @@ export function SelectEdgesOnNodeFocus() {
           type: 'select',
           selected: true
         })
-        const anotherNode = nodeLookup.get(edge.source === focusedNodeId ? edge.target : edge.source)
-        if (anotherNode) {
-          fitViewNodes.add(anotherNode)
-        }
+        const anotherNode = nonNullable(nodeLookup.get(edge.source === focusedNodeId ? edge.target : edge.source))
+        fitViewNodes.add(anotherNode)
       } else if (edge.selected) {
         edgeChanges.push({
           id: edge.id,
@@ -62,8 +60,7 @@ export function SelectEdgesOnNodeFocus() {
     triggerNodeChanges(nodeChanges)
 
     fitView({
-      includeHiddenNodes: true,
-      duration: 300,
+      duration: 350,
       padding: 0.1,
       minZoom: MinZoom,
       maxZoom: Math.max(1, transform[2]),

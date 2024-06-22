@@ -17,17 +17,23 @@ export const logger = {
     if (isSilent) return
     console.info(message)
   },
-  warn(message: string) {
+  warn(message: unknown) {
     if (isSilent) return
-    console.warn(message)
+    if (typeof message === 'string' || message instanceof Error) {
+      console.warn(message)
+      return
+    }
+    const error = normalizeError(message)
+    console.warn(`${error.name}: ${error.message}`)
   },
-  error(message: any) {
+  error(message: unknown) {
     if (isSilent) return
-    if (typeof message === 'string') {
+    if (typeof message === 'string' || message instanceof Error) {
       console.error(message)
       return
     }
-    console.error(normalizeError(message))
+    const error = normalizeError(message)
+    console.error(`${error.name}: ${error.message}`, error)
   },
   silent(silent = true) {
     isSilent = silent
@@ -36,8 +42,16 @@ export const logger = {
 
 export type Logger = typeof logger
 
-export function logError(error: unknown): void {
-  logger.error(error)
+export function logError(err: unknown): void {
+  if (typeof err === 'string') {
+    logger.error(err)
+    return
+  }
+  if (err instanceof Error) {
+    logger.error(err.stack ?? err.message)
+    return
+  }
+  logger.error(normalizeError(err))
 }
 
 export function logWarnError(err: unknown): void {

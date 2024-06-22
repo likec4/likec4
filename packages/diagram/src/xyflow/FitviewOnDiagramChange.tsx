@@ -1,4 +1,6 @@
+import { invariant } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
+import { shallowEqual } from 'fast-equals'
 import { useEffect, useRef } from 'react'
 import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
 import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks'
@@ -26,8 +28,8 @@ function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
       prevDimensionsRef.current = dimensions
     },
     [dimensions, diagramApi, xyflowApi],
-    200,
-    800
+    250,
+    1000
   )
 
   return null
@@ -72,7 +74,7 @@ export function FitViewOnDiagramChange() {
     waitCorrection,
     elFrom,
     elTo
-  } = useDiagramState(selector)
+  } = useDiagramState(selector, shallowEqual)
   const diagramApi = useDiagramStoreApi()
   const processedRef = useRef(pendingViewId)
 
@@ -80,29 +82,19 @@ export function FitViewOnDiagramChange() {
     if (!xyflowSynced || pendingViewId === processedRef.current) {
       return
     }
-    if (waitCorrection && elTo && elFrom) {
-      const [x, y, zoom] = xyflowApi.getState().transform
+    if (waitCorrection) {
+      invariant(elTo, 'elTo should be defined')
+      invariant(elFrom, 'elFrom should be defined')
       const { xyflow, lastOnNavigate } = diagramApi.getState()
-      const nextZoom = Math.min(
-        elFrom.width / elTo.width,
-        elFrom.height / elTo.height
-      )
-      const centerFrom = lastOnNavigate!.elementCenterScreenPosition
-      if (nextZoom !== 1 && nextZoom < zoom) {
-        xyflowApi.setState({ transform: [x, y, nextZoom] })
-        xyflow.setViewport({
-          x,
-          y,
-          zoom: nextZoom
-        })
-      }
-      const centerTo = xyflow.flowToScreenPosition({
-          x: elTo.position[0] + elTo.width / 2,
-          y: elTo.position[1] + elTo.height / 2
+      invariant(lastOnNavigate, 'lastOnNavigate should be defined')
+      const fromPos = lastOnNavigate.elementScreenPosition
+      const toPos = xyflow.flowToScreenPosition({
+          x: elTo.position[0], // + elFrom.width / 2,
+          y: elTo.position[1] // + elFrom.height / 2
         }),
         diff = {
-          x: toDomPrecision(centerFrom.x - centerTo.x),
-          y: toDomPrecision(centerFrom.y - centerTo.y)
+          x: toDomPrecision(fromPos.x - toPos.x),
+          y: toDomPrecision(fromPos.y - toPos.y)
         }
       xyflowApi.getState().panBy(diff)
       diagramApi.setState({ lastOnNavigate: null })

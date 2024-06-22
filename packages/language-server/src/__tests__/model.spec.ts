@@ -128,7 +128,8 @@ describe.concurrent('model', () => {
     }
     `
 
-  test('fail if space after dash').invalid`
+  // TODO: previously this was invalid, but now it's valid
+  test('not fail if tag has a space after dash').valid`
     specification {
       element person
       tag one

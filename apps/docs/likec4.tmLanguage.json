@@ -4,13 +4,35 @@
   "fileTypes": [".c4", ".likec4", ".like-c4"],
   "patterns": [
     {
+      "include": "#comments"
+    },
+    {
       "match": "\\b(link|icon):?\\s+([^\\s]+)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.function.likec4"
+        },
+        "2": {
+          "name": "constant.other.reference.link.likec4"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.likec4",
+      "match": "\\b(specification|model|views)\\b"
+    },
+        {
+      "name": "variable.other.likec4",
+      "match": "#[^\\s]+\\b"
+    },
+    {
+      "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "string.quoted.single.likec4"
+          "name": "variable.other.constant.likec4"
         }
       }
     },
@@ -26,24 +48,6 @@
       }
     },
     {
-      "include": "#comments"
-    },
-    {
-      "name": "keyword.control.likec4",
-      "match": "\\b(specification|model|views)\\b"
-    },
-    {
-      "match": "\\b(element|tag|relationship)\\s+([^\\s]+)\\b",
-      "captures": {
-        "1": {
-          "name": "keyword.control.likec4"
-        },
-        "2": {
-          "name": "entity.name.class.likec4"
-        }
-      }
-    },
-    {
       "match": "\\b(include|exclude)\\s+(element\\.kind|element\\.tag)\\s*(==|\\!=|=)\\s*([a-zA-Z#][_\\*\\.\\w]*)\\b",
       "captures": {
         "1": {
@@ -53,7 +57,7 @@
           "name": "keyword.control.likec4"
         },
         "3": {
-          "name": "storage.type.function.likec4"
+          "name": "keyword.symbol.likec4"
         },
         "4": {
           "name": "variable.other.constant.likec4"
@@ -93,9 +97,17 @@
           "name": "keyword.control.likec4"
         },
         "2": {
-          "name": "variable.other.property.likec4"
+          "name": "variable.other.likec4"
         }
       }
+    },
+    {
+      "name": "variable.other.likec4",
+      "match": "\\b(TopBottom|LeftRight|BottomTop|RightLeft)\\b"
+    },
+    {
+      "name": "variable.other.likec4",
+      "match": "\\b(amber|blue|gray|green|indigo|muted|primary|secondary|red|sky|slate)\\b"
     },
     {
       "match": "\\b([^\\W]+)\\s*(=)\\s*([^\\W]+)\\b",
@@ -204,11 +216,7 @@
       }
     },
     {
-      "name": "variable.other.constant.likec4",
-      "match": "#[^\\s]+\\b"
-    },
-    {
-      "name": "storage.type.function.likec4",
+      "name": "storage.type.likec4",
       "match": "(<?->|<-)"
     },
     {
@@ -228,24 +236,7 @@
       }
     },
     {
-      "name": "string.quoted.double.likec4",
-      "begin": "\"",
-      "end": "\"",
-      "patterns": [
-        {
-          "include": "#string-character-escape"
-        }
-      ]
-    },
-    {
-      "name": "string.quoted.single.likec4",
-      "begin": "'",
-      "end": "'",
-      "patterns": [
-        {
-          "include": "#string-character-escape"
-        }
-      ]
+      "include": "#string"
     }
   ],
   "repository": {
@@ -275,6 +266,30 @@
           },
           "end": "(?=$)",
           "name": "comment.line.likec4"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.likec4",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.likec4",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "include": "#string-character-escape"
+            }
+          ]
         }
       ]
     },

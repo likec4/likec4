@@ -22,7 +22,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./graphviz/binary": "./src/graphviz/binary/index.ts"
+    "./graphviz/binary": "./src/graphviz/binary/index.ts",
+    "./graphviz/wasm": "./src/graphviz/wasm/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -35,6 +36,10 @@
       "./graphviz/binary": {
         "types": "./dist/graphviz/binary/index.d.ts",
         "default": "./dist/graphviz/binary/index.js"
+      },
+      "./graphviz/wasm": {
+        "types": "./dist/graphviz/wasm/index.d.ts",
+        "default": "./dist/graphviz/wasm/index.js"
       }
     }
   },
@@ -42,7 +47,8 @@
     "typecheck": "tsc --noEmit",
     "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
-    "test": "vitest run",
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest",
     "clean": "run -T rimraf -g 'dist/**' '.tsbuildinfo/**'"
   },
   "dependencies": {
@@ -58,19 +64,13 @@
     "word-wrap": "^1.2.5"
   },
   "peerDependencies": {
-    "@hpcc-js/wasm": "^2.16.2",
-    "@likec4/core": "workspace:*",
-    "@likec4/graph": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@likec4/graph": {
-      "optional": true
-    }
+    "@hpcc-js/wasm": "2.16.2",
+    "@likec4/core": "workspace:*"
   },
   "devDependencies": {
-    "@hpcc-js/wasm": "^2.16.2",
+    "@hpcc-js/wasm": "2.16.2",
     "@likec4/core": "workspace:*",
-    "@likec4/graph": "workspace:*",
+    "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.2",
     "typescript": "^5.4.5",

@@ -38,7 +38,6 @@ export function DiagramContextProvider({ children, view, ...props }: PropsWithCh
       if (!hasSubObject(state, props)) {
         store.current.setState(props, false, 'update incoming props')
       }
-      isIncludedIn
     },
     [view, props]
   )

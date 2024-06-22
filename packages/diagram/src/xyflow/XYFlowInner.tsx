@@ -1,11 +1,12 @@
 import { isDynamicView } from '@likec4/core'
 import { Controls } from '@xyflow/react'
-import type { PropsWithChildren } from 'react'
+import { shallowEqual } from 'fast-equals'
+import { memo, type PropsWithChildren } from 'react'
 import { isNonNull, isNonNullish, isNullish } from 'remeda'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramState } from '../state/useDiagramStore'
-import { DynamicViewWalkthrough } from '../ui'
 import DiagramTitlePanel from '../ui/DiagramTitlePanel'
+import { DynamicViewWalkthrough } from '../ui/DynamicViewWalkthrough'
 import OptionsPanel from '../ui/OptionsPanel'
 import { XYFlowBackground } from './XYFlowBackground'
 
@@ -16,7 +17,7 @@ type XYFlowInnerProps = PropsWithChildren<{
   enableDynamicViewWalkthrough: boolean
 }>
 
-export function XYFlowInner({
+export const XYFlowInner = memo(function XYFlowInnerR({
   children,
   background,
   controls,
@@ -47,4 +48,4 @@ export function XYFlowInner({
       {children}
     </>
   )
-}
+}, shallowEqual)

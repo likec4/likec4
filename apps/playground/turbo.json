@@ -9,11 +9,19 @@
         "src/routeTree.gen.ts"
       ],
       "inputs": [
-        "src/routes/**/*.tsx",
+        "src/routes/*.tsx",
         "tsr.config.json",
         "package.json"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^generate",
+        "generate"
       ],
-      "outputLogs": "errors-only"
+      "outputs": [
+        "dist/**"
+      ]
     }
   }
 }

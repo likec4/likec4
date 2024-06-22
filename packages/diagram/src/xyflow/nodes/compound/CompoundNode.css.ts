@@ -1,5 +1,6 @@
 import { rem } from '@mantine/core'
-import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
@@ -11,12 +12,18 @@ export const container = style({
   margin: 0
 })
 
-export const dimmed = style({
-  filter: vars.filterDimmed,
-  transition: 'filter 800ms ease-out'
+export const dimmed = style({})
+
+globalStyle(`.react-flow__node-compound:has(${dimmed})`, {
+  opacity: 0.25,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: 'grayscale(0.85) blur(1px)',
+  willChange: 'opacity, filter'
 })
 
-export const varTransparency = createVar('transparency')
+export const varOpacity = createVar('opacity')
+export const varBorderTransparency = createVar('border-transparency')
 
 const outlineColor = fallbackVar(
   mantine.colors.primaryColors.outline,
@@ -31,7 +38,6 @@ export const compoundBody = style({
   borderRadius: 6,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   padding: 8,
-  background: vars.element.fill,
   transition: 'all 200ms ease-out',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
@@ -42,39 +48,47 @@ export const compoundBody = style({
       outline: `3px solid ${outlineColor}`,
       outlineOffset: rem(1.5)
     }
+  },
+  ':before': {
+    content: '" "',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: 6,
+    pointerEvents: 'none',
+    transition: 'background 175ms ease-out, opacity 175ms ease-out',
+    background: vars.element.fill,
+    backgroundClip: 'padding-box'
   }
 })
 
-const bgTransparency = createVar('bgTransparency')
-const bgTransparencyDelta = createVar('bgTransparencyDelta')
+const opacityDeltaOnHover = createVar('opacityDeltaOnHover')
 export const transparent = style({
   borderStyle: 'dashed',
   borderWidth: 3,
   padding: 6,
-  borderColor: `color-mix(in srgb , ${vars.element.stroke},  transparent min(${bgTransparency}, 30%))`,
-  background: `color-mix(in srgb , ${vars.element.fill},  transparent ${bgTransparency})`,
+  boxShadow: 'none',
+  borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
   backgroundClip: 'padding-box',
-  // transitionTimingFunction: 'ease-in',
-  // transition: 'all 150ms ease-in-out',
   vars: {
-    [bgTransparency]: `calc(${fallbackVar(varTransparency, '80%')} - ${bgTransparencyDelta})`,
-    [bgTransparencyDelta]: '0%',
+    [opacityDeltaOnHover]: '0',
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
+  },
+  ':before': {
+    transitionDelay: '200ms',
+    opacity: calc.add(fallbackVar(varOpacity, '1'), opacityDeltaOnHover)
   },
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
-      transitionDelay: '50ms',
-      // borderColor: 'transparent',
-      // transitionTimingFunction: 'ease-out',
       vars: {
-        [bgTransparencyDelta]: '5%'
+        [opacityDeltaOnHover]: '.05'
       }
     },
     [`:where([data-hovered]) &`]: {
-      transitionDelay: '175ms',
-      // transitionTimingFunction: 'ease-out',
       vars: {
-        [bgTransparencyDelta]: '15%'
+        [opacityDeltaOnHover]: '.1'
       }
     }
   }
@@ -93,15 +107,10 @@ export const title = style({
   lineHeight: 1,
   opacity: 0.75,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  paddingLeft: 12,
-  selectors: {
-    [`:where([data-likec4-navigable='true']) &`]: {
-      paddingLeft: 26
-    }
-    // [`:where([data-mantine-color-scheme='light']) &`]: {
-    //   opacity: 1
-    // }
-  }
+  paddingLeft: 12
+})
+export const titleWithNavigation = style({
+  paddingLeft: 26
 })
 
 globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
@@ -114,8 +123,7 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
   opacity: 1
 })
 
-const indicatorKeyframes = generateIdentifier('indicator')
-globalKeyframes(indicatorKeyframes, {
+const indicatorKeyframes = keyframes({
   'from': {
     opacity: 0.6
   },

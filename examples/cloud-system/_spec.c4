@@ -8,7 +8,7 @@ specification {
 
   element system {
     style {
-      opacity 01%
+      opacity 10%
     }
   }
 
@@ -48,6 +48,9 @@ specification {
   element gqlMutation
   element gqlQuery
   element lambda
+
+  relationship uses
+  relationship requests
 
   tag deprecated
   tag next

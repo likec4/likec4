@@ -22,14 +22,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
-import {
-  Link,
-  type RegisteredRouter,
-  type RouteIds,
-  useMatchRoute,
-  useParams,
-  useRouterState
-} from '@tanstack/react-router'
+import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
 import { findLast, isEmpty } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
 import { cssDiagramTitle, cssHeader } from './Header.css'
@@ -81,15 +74,6 @@ const viewPages = [
       <Text size="sm" fw={'500'} variant="gradient" gradient={{ from: 'pink', to: 'violet', deg: 90 }}>
         Editor
       </Text>
-    )
-  },
-  {
-    route: '/view/$viewId/react-legacy',
-    icon: <IconBrandReact opacity={0.7} size={16} />,
-    title: (
-      <>
-        React <Text component="span" size="xs" c={'dimmed'} ml={4}>(pre 1.0)</Text>
-      </>
     )
   },
   {
@@ -194,8 +178,6 @@ function ExportButton({ diagram }: HeaderProps) {
   const params = useParams({
     from: '/view/$viewId'
   })
-
-  useMatchRoute
 
   const onClick = async () => {
     const { toPng } = await import('html-to-image')

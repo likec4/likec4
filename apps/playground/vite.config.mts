@@ -5,6 +5,7 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { dirname, resolve } from 'node:path'
 import { type AliasOptions, defineConfig, mergeConfig, type UserConfig, type UserConfigFnObject } from 'vite'
+import tanStackRouterViteCfg from './tsr.config.json' assert { 'type': 'json' }
 
 const root = dirname(__filename)
 
@@ -25,7 +26,6 @@ const baseConfig: UserConfigFnObject = () => {
     resolve: {
       dedupe: [
         'react',
-        // 'vscode',
         'react-dom',
         'react-dom/client',
         '@mantine/core',
@@ -43,22 +43,6 @@ const baseConfig: UserConfigFnObject = () => {
       cssCodeSplit: false
     },
     optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'langium/lsp',
-        'vscode-languageserver/browser',
-        'langium',
-        'ufo',
-        'vscode-languageserver',
-        'strip-indent',
-        'vscode-uri',
-        'string-hash',
-        '@dagrejs/graphlib',
-        'rambdax',
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin,
@@ -96,7 +80,8 @@ export default defineConfig((env) => {
           rollupOptions: {
             output: {
               preserveModules: true,
-              preserveModulesRoot: resolve('src')
+              preserveModulesRoot: resolve('src'),
+              entryFileNames: '[name].mjs'
             },
             makeAbsoluteExternalsRelative: 'ifRelativeSource',
             external: [
@@ -121,10 +106,8 @@ export default defineConfig((env) => {
           },
           lib: {
             entry: {
-              // main: resolve('src/main.tsx')
               main: 'src/main.tsx'
             },
-            fileName: (format, entryname) => `${entryname}.mjs`,
             formats: ['es']
           }
         },
@@ -132,7 +115,7 @@ export default defineConfig((env) => {
           vanillaExtractPlugin({
             identifiers: 'short'
           }),
-          TanStackRouterVite(),
+          TanStackRouterVite(tanStackRouterViteCfg),
           react({
             // jsxRuntime: 'classic'
           })
@@ -167,6 +150,7 @@ export default defineConfig((env) => {
                 if (
                   id.includes('node_modules') && (
                     id.includes('/vscode/')
+                    || id.includes('/vscode-')
                     || id.includes('/monaco')
                   )
                 ) {
@@ -186,7 +170,7 @@ export default defineConfig((env) => {
       return mergeConfig(baseConfig(env), {
         plugins: [
           vanillaExtractPlugin({}),
-          TanStackRouterVite(),
+          TanStackRouterVite(tanStackRouterViteCfg),
           react({})
         ]
       })

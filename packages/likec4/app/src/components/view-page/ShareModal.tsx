@@ -1,4 +1,4 @@
-import type { DiagramView } from '@likec4/diagrams'
+import type { DiagramView } from '@likec4/core'
 import {
   Button,
   Group,

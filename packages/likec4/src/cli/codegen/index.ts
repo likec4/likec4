@@ -96,30 +96,6 @@ export const codegenCmd = {
         }
       })
       // ----------------------
-      // react command
-      .command({
-        command: 'react-legacy [path]',
-        describe: 'generate legacy react components (.tsx)',
-        builder: yargs =>
-          yargs
-            .option('outfile', {
-              alias: 'o',
-              type: 'string',
-              desc: '<file> output .tsx file',
-              normalize: true,
-              coerce: resolve
-            })
-            .option('use-dot', useDotBin),
-        handler: async args => {
-          await reactLegacyHandler({
-            format: 'react',
-            useDotBin: args.useDotBin,
-            path: args.path,
-            outfile: args.outfile
-          })
-        }
-      })
-      // ----------------------
       // views-data command
       .command({
         command: 'views-data [path]',

@@ -1,4 +1,5 @@
 import { ActionIcon, Box, Button, rem, useComputedColorScheme } from '@mantine/core'
+import { useHotkeys } from '@mantine/hooks'
 import {
   IconHeart,
   IconPhoto,
@@ -25,6 +26,24 @@ export function DynamicViewWalkthrough() {
     activeDynamicViewStep: s.activeDynamicViewStep,
     hasNextSteps: (s.activeDynamicViewStep ?? 1) < s.view.edges.length
   }))
+
+  const isActive = isNumber(activeDynamicViewStep)
+
+  useHotkeys(
+    isActive
+      ? [
+        ['ArrowLeft', () => nextDynamicStep(-1)],
+        ['ArrowRight', () => nextDynamicStep()],
+        ['Escape', (e) => {
+          e.stopImmediatePropagation()
+          stopDynamicView()
+        }, { preventDefault: true }]
+      ]
+      : [
+        ['ArrowLeft', () => nextDynamicStep()],
+        ['ArrowRight', () => nextDynamicStep()]
+      ]
+  )
 
   const buttonProps = {
     className: css.btn,
@@ -64,21 +83,22 @@ export function DynamicViewWalkthrough() {
 
           <Button
             {...buttonProps}
-            px={'sm'}
+            px={hasNextSteps ? 'md' : 'xl'}
             onClick={e => {
               e.stopPropagation()
               stopDynamicView()
             }}>
-            <IconPlayerStopFilled />
+            {hasNextSteps && <IconPlayerStopFilled />}
+            {!hasNextSteps && 'End'}
           </Button>
-
-          <Button
-            {...buttonProps}
-            pr={'lg'}
-            disabled={!hasNextSteps}
-            onClick={nextStep()}>
-            <IconPlayerSkipForwardFilled />
-          </Button>
+          {hasNextSteps && (
+            <Button
+              {...buttonProps}
+              pr={'lg'}
+              onClick={nextStep()}>
+              <IconPlayerSkipForwardFilled />
+            </Button>
+          )}
         </Button.Group>
       )}
     </Box>

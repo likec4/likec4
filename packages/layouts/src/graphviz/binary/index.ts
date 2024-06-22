@@ -1,2 +1,1 @@
-export { BinaryGraphvizLayouter } from './BinaryGraphvizLayout'
-export { BinaryGraphvizLayouter as default } from './BinaryGraphvizLayout'
+export { GraphvizBinaryAdapter } from './GraphvizBinaryAdapter'

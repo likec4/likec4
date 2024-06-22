@@ -1,10 +1,8 @@
-import { useMantineColorScheme } from '@mantine/core'
-import { Controls, ReactFlow, useOnViewportChange } from '@xyflow/react'
-import { deepEqual as eq, shallowEqual } from 'fast-equals'
-import { type CSSProperties, memo, type PropsWithChildren } from 'react'
-import { omit, omitBy } from 'remeda'
-import type { SetNonNullable, Simplify } from 'type-fest'
-import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
+import { ReactFlow, useOnViewportChange } from '@xyflow/react'
+import { DEV } from 'esm-env'
+import { deepEqual as eq } from 'fast-equals'
+import { type CSSProperties, type PropsWithChildren, useCallback } from 'react'
+import useTilg from 'tilg'
 import { type DiagramState, useDiagramState, useDiagramStoreApi } from '../state'
 import { MinZoom } from './const'
 import { RelationshipEdge } from './edges/RelationshipEdge'
@@ -13,7 +11,6 @@ import { useXYStoreApi } from './hooks/useXYFlow'
 import { CompoundNode } from './nodes/compound'
 import { ElementNode } from './nodes/element'
 import { XYFlowEdge, XYFlowNode } from './types'
-import { XYFlowBackground } from './XYFlowBackground'
 import { useXYFlowEvents } from './XYFlowEvents'
 
 const nodeTypes = {
@@ -25,6 +22,7 @@ const edgeTypes = {
 }
 
 type XYFlowWrapperProps = PropsWithChildren<{
+  colorMode?: 'system' | 'light' | 'dark'
   className?: string | undefined
   defaultNodes: XYFlowNode[]
   defaultEdges: XYFlowEdge[]
@@ -45,7 +43,12 @@ const selector = (s: DiagramState) => ({
   nodesSelectable: s.nodesSelectable || s.focusedNodeId !== null,
   nodesDraggable: s.nodesDraggable,
   fitView: s.fitViewEnabled,
-  fitViewPadding: s.fitViewPadding,
+  fitViewOptions: {
+    minZoom: MinZoom,
+    maxZoom: 1,
+    padding: s.fitViewPadding,
+    includeHiddenNodes: true
+  },
   hasOnNavigateTo: !!s.onNavigateTo,
   hasOnNodeClick: !!s.onNodeClick,
   hasOnNodeContextMenu: !!s.onNodeContextMenu,
@@ -57,19 +60,21 @@ const selector = (s: DiagramState) => ({
 })
 
 export function XYFlow({
+  colorMode = 'system',
   className,
   children,
   defaultNodes,
   defaultEdges,
   style
 }: XYFlowWrapperProps) {
+  DEV && useTilg()
   const xyflowApi = useXYStoreApi()
   const diagramApi = useDiagramStoreApi()
   const {
     nodesSelectable,
     nodesDraggable,
     fitView,
-    fitViewPadding,
+    fitViewOptions,
     pannable,
     zoomable,
     hasOnNodeClick,
@@ -78,14 +83,11 @@ export function XYFlow({
     hasOnCanvasContextMenu,
     hasOnEdgeContextMenu,
     hasOnEdgeClick
-  } = useDiagramState(selector)
+  } = useDiagramState(selector, eq)
 
   const layoutConstraints = useLayoutConstraints()
 
   const handlers = useXYFlowEvents()
-
-  const { colorScheme } = useMantineColorScheme()
-  const colorMode = colorScheme !== 'auto' ? colorScheme : undefined
 
   /**
    * WORKAROUND - Called on viewport change
@@ -122,12 +124,7 @@ export function XYFlow({
       maxZoom={zoomable ? 1.9 : 1}
       minZoom={zoomable ? MinZoom : 1}
       fitView={fitView}
-      fitViewOptions={{
-        minZoom: MinZoom,
-        maxZoom: 1,
-        padding: fitViewPadding,
-        includeHiddenNodes: true
-      }}
+      fitViewOptions={fitViewOptions}
       preventScrolling={zoomable || pannable}
       defaultMarkerColor="var(--xy-edge-stroke)"
       noDragClassName="nodrag"
@@ -159,9 +156,9 @@ export function XYFlow({
       onNodeClick={handlers.onNodeClick}
       onNodeDoubleClick={handlers.onNodeDoubleClick}
       onEdgeClick={handlers.onEdgeClick}
-      onInit={() => {
+      onInit={useCallback(() => {
         diagramApi.setState({ initialized: true }, false, 'initialized')
-      }}
+      }, [diagramApi])}
       {...(hasOnNodeContextMenu && {
         onNodeContextMenu: handlers.onNodeContextMenu
       })}
@@ -176,4 +173,4 @@ export function XYFlow({
   )
 }
 
-// export const XYFlow = memo(XYFlowWrapper, propsAreEqual) as typeof XYFlowWrapper
+// export const XYFlow = memo(XYFlowWrapper) as typeof XYFlowWrapper

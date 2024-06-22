@@ -14,7 +14,10 @@ model {
     '
 
     ui = container 'Frontends' {
-      description 'All the frontend applications of the cloud system'
+      description '
+        All the frontend applications
+        of Cloud System
+      '
     }
 
     legacy = container 'Cloud Legacy' {
@@ -38,8 +41,7 @@ model {
       -> customer 'helps with questions'
     }
   }
-
-  customer -> cloud 'uses and pays'
+  customer .uses cloud 'uses and pays'
 
 }
 
@@ -63,17 +65,28 @@ views {
     }
   }
 
-  dynamic view index2 {
+  dynamic view dynamic-view-1 {
+    title 'Dynamic View Example'
+
+    link https://docs.likec4.dev/dsl/dynamic-views/
 
     customer -> ui.dashboard 'opens'
-    //ui -> cloud.next
     ui.dashboard -> cloud.graphql 'requests'
     ui.dashboard <- cloud.graphql 'returns'
 
     ui.mobile -> cloud.graphql 'requests'
     ui.mobile <- cloud.graphql
 
+    include cloud
+
     autoLayout TopBottom
+    style * {
+      color secondary
+    }
+    style cloud {
+      opacity 40%
+      color muted
+    }
   }
 
 }

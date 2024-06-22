@@ -1,6 +1,6 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { Box, LoadingOverlay, Notification, Text, Title } from '@mantine/core'
+import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
@@ -73,9 +73,11 @@ export function DiagramPanel() {
           <LikeC4Diagram
             view={diagram}
             readonly={false}
+            controls={false}
             fitView
-            fitViewPadding={0.06}
-            nodesDraggable={false}
+            fitViewPadding={0.07}
+            experimentalEdgeEditing
+            nodesDraggable
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
             onNodeClick={({ element, event }) => {

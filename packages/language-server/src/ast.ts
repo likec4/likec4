@@ -92,6 +92,7 @@ export interface ParsedAstElementView {
   tags: c4.NonEmptyArray<c4.Tag> | null
   links: c4.NonEmptyArray<string> | null
   rules: c4.ViewRule[]
+  manualLayout?: c4.ViewManualLayout
 }
 
 export interface ParsedAstDynamicView {
@@ -104,6 +105,7 @@ export interface ParsedAstDynamicView {
   links: c4.NonEmptyArray<string> | null
   steps: c4.DynamicViewStep[]
   rules: Array<c4.DynamicViewRule>
+  manualLayout?: c4.ViewManualLayout
 }
 
 export type ParsedAstView = ParsedAstElementView | ParsedAstDynamicView

@@ -34,12 +34,13 @@
     "prepack": "tsc",
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist",
-    "test": "run -T vitest run"
+    "test": "vitest run --no-isolate",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@likec4/core": "workspace:*",
     "json5": "^2.2.3",
-    "langium": "^3.0.0",
+    "langium": "3.1.0",
     "remeda": "^1.61.0"
   },
   "devDependencies": {

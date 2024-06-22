@@ -6,6 +6,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "chrome",
+      "name": "Launch Playground",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "sourceMaps": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Debug Current Test File",

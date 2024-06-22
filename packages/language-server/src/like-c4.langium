@@ -21,7 +21,11 @@ RelationshipKind:
 
 SpecificationRule:
   name='specification' '{'
-    (elements+=SpecificationElementKind | tags+=SpecificationTag | relationships+=SpecificationRelationshipKind)*
+    (
+      elements+=SpecificationElementKind |
+      tags+=SpecificationTag |
+      relationships+=SpecificationRelationshipKind
+    )*
   '}';
 
 SpecificationElementKind:
@@ -47,7 +51,8 @@ Model:
       ExplicitRelation |
       Element
     )*
-  '}';
+  '}'
+;
 
 Element:
   (
@@ -61,16 +66,17 @@ Element:
       )?
     )?
   )?
-  ('{' body=ElementBody '}')?
+  body=ElementBody?
 ;
 
-ElementBody:
+ElementBody: '{'
   tags=Tags?
   props+=ElementProperty*
   elements+=(
     Relation |
     Element
   )*
+'}'
 ;
 
 ElementProperty:
@@ -80,37 +86,37 @@ ElementStringProperty:
   key=('title' | 'technology' | 'description') Colon? value=String SemiColon?;
 
 ExtendElement:
-  'extend' element=FqnElementRef '{'
-    body=ExtendElementBody
-  '}'
+  'extend' element=FqnElementRef body=ExtendElementBody
 ;
 
-ExtendElementBody:
+ExtendElementBody:  '{'
   elements+=(
     ExplicitRelation |
     Element
   )*
+'}'
 ;
 
 //
 FqnElementRef:
-  el=[Element] ({infer FqnElementRef.parent=current} Dot el=[Element])*;
+  el=[Element] ({infer FqnElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 ElementRef:
-  el=[Element] ({infer ElementRef.parent=current} Dot el=[Element])*;
+  el=[Element] ({infer ElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 Tags:
-  value+=[Tag:TagId] (Comma? value+=[Tag:TagId])* (Comma | SemiColon)?;
+  (value+=[Tag:TagId] comma+=(Comma | SemiColon)?)+
+;
 
 Relation:
   ExplicitRelation | ImplicitRelation;
 
 fragment RelationFragment:
-  ('->' | '-[' kind=[RelationshipKind] ']->')
+  ('->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] )
   target=ElementRef
   title=String?
   tags=Tags?
-  ('{' body=RelationBody '}')?
+  body=RelationBody?
 ;
 
 ExplicitRelation:
@@ -119,9 +125,10 @@ ExplicitRelation:
 ImplicitRelation:
   ('this' | 'it')? RelationFragment;
 
-RelationBody:
+RelationBody: '{'
   tags=Tags?
   props+=RelationProperty*
+'}'
 ;
 
 RelationProperty:
@@ -142,8 +149,8 @@ RelationStyleProperty:
 ModelViews:
   name='views' '{'
     views+=(
-      ElementView |
-      DynamicView
+      DynamicView |
+      ElementView
     )*
   '}';
 
@@ -154,19 +161,18 @@ ElementView:
     'extends' extends=ElementViewRef |
     'of' viewOf=ElementRef
   )?
-  '{' body=ElementViewBody '}'
+  body=ElementViewBody
 ;
 
 DynamicView:
-  'dynamic' 'view' name=Id '{'
-     body=DynamicViewBody
-  '}'
+  'dynamic' 'view' name=Id body=DynamicViewBody
 ;
 
-DynamicViewBody:
+DynamicViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   (steps+=DynamicViewStep | rules+=DynamicViewRule)*
+  '}'
 ;
 
 ViewRef:
@@ -175,11 +181,14 @@ ViewRef:
 ElementViewRef:
   view=[ElementView];
 
-ElementViewBody:
+ElementViewBody: '{'
   tags=Tags?
   props+=ViewProperty*
   rules+=ViewRule*
+'}'
 ;
+
+type StringProperty = ElementStringProperty| ViewStringProperty;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
@@ -209,15 +218,15 @@ DynamicViewStep:
 
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
+  expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 DynamicViewRulePredicate:
-  'include' expressions+=ViewRulePredicateExpr (Comma expressions+=ViewRulePredicateExpr)* Comma?
+  'include' expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (Comma targets+=ElementExpr)* Comma? '{'
+  'style' targets+=ElementExpr (commas+=Comma targets+=ElementExpr)* Comma? '{'
     styleprops+=StyleProperty*
   '}';
 
@@ -227,7 +236,7 @@ ViewRuleAutoLayout:
 ViewRulePredicateExpr:
   InOutExpr |
   ElementExpr (
-    {infer CustomElementExpr.target=current} 'with' '{' body=CustomElementExprBody '}' |
+    {infer CustomElementExpr.target=current} 'with'  body=CustomElementExprBody |
     {infer RelationExpr.source=current} (isBidirectional?='<->' | '->') target=ElementExpr |
     {infer OutgoingExpr.from=current} '->'
   )?
@@ -251,7 +260,7 @@ WildcardExpr:
 ;
 
 ElementSelectorExpr infers ElementExpr:
-  'element' Dot (
+  'element' StickyDot (
     {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagId] |
     {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind]
   )
@@ -264,16 +273,17 @@ DescedantsExpr infers ElementExpr:
   )?
 ;
 
-CustomElementExprBody:
+CustomElementExprBody: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
     StyleProperty
   )*
+'}'
 ;
 
 NavigateToProperty:
-  'navigateTo' value=ViewRef;
+  key='navigateTo' value=ViewRef;
 
 // Common properties -------------------------------------
 
@@ -323,7 +333,11 @@ RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
 
 LineOptions returns string:
-  'solid' | 'dashed' | 'dotted';
+  'solid' |
+  'dashed' |
+  'dotted'
+;
+
 ArrowType returns string:
   'none' |
   'normal' |
@@ -345,7 +359,10 @@ Uri returns string:
 // Percent returns string: PERCENT;
 
 TagId returns string:
-  TagHash Id;
+  Hash Id;
+
+DotId returns string:
+  Dot Id;
 
 Id returns string:
   IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
@@ -378,15 +395,17 @@ terminal URI_RELATIVE: /\.{0,2}\/[^\/]\S+/;
 
 terminal DotUnderscore: /\b\._/;
 terminal DotWildcard: /\b\.\*/;
-terminal TagHash: /\#\b/;
-terminal Dot: /\b\./;
+terminal Hash: '#';
+
+// No space allowed before dot
+terminal StickyDot: /\b\./;
+terminal Dot: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
 terminal Colon: ':';
 terminal SemiColon: ';';
 terminal Comma: ',';
 terminal Percent: /\b\d+%/;
-// terminal Percent: ('0'..'9')+ '%';
 
 terminal String: /"[^"]*"|'[^']*'/;
 

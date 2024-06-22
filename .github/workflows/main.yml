@@ -37,6 +37,9 @@ jobs:
       - name: build
         run: yarn ci:build
 
+      - name: typecheck
+        run: yarn ci:typecheck
+
   test:
     name: test
     needs: build

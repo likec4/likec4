@@ -68,21 +68,8 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'likec4/react': resolve('app/react/components/index.ts'),
         '@likec4/core': resolve('../core/src/index.ts'),
         '@likec4/diagram': resolve('../diagram/src/index.ts'),
-        '@likec4/diagrams': resolve('../diagrams/src/index.ts'),
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
-    },
-    optimizeDeps: {
-      include: [
-        'react-dom',
-        'react',
-        'framer-motion',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
-      force: true
     },
     clearScreen: false,
     base,

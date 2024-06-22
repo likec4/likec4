@@ -1,0 +1,1 @@
+export { GraphvizWasmAdapter } from './GraphvizWasmAdapter'

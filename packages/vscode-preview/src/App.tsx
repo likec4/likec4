@@ -112,7 +112,8 @@ const App = () => {
           fitViewPadding={0.08}
           readonly={false}
           controls={false}
-          nodesDraggable={false}
+          nodesDraggable
+          experimentalEdgeEditing
           onNavigateTo={(to) => {
             resetLastClickedNd()
             extensionApi.goToViewSource(to)
@@ -142,8 +143,8 @@ const App = () => {
               event.stopPropagation()
             }
           }}
-          onChange={({ changes }) => {
-            extensionApi.change(view.id, changes)
+          onChange={({ change }) => {
+            extensionApi.change(view.id, change)
           }}
           onCanvasClick={() => {
             resetLastClickedNd()

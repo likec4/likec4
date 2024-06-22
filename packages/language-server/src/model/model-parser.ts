@@ -1,6 +1,6 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
-import { AstUtils } from 'langium'
+import { AstUtils, CstUtils } from 'langium'
 import { isTruthy } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
@@ -29,6 +29,7 @@ import { elementRef, getFqnElementRef } from '../elementRef'
 import { logError, logger, logWarnError } from '../logger'
 import type { LikeC4Services } from '../module'
 import { stringHash } from '../utils'
+import { deserializeFromComment } from '../view-utils/manual-layout'
 import type { FqnIndex } from './fqn-index'
 
 const { getDocument } = AstUtils
@@ -380,6 +381,14 @@ export class LikeC4ModelParser {
     nonexhaustive(astRule)
   }
 
+  private parseViewManualLaout(node: ast.DynamicView | ast.ElementView): c4.ViewManualLayout | undefined {
+    const commentNode = CstUtils.findCommentNode(node.$cstNode, ['BLOCK_COMMENT'])
+    if (!commentNode) {
+      return undefined
+    }
+    return deserializeFromComment(commentNode.text)
+  }
+
   private parseDynamicStep(node: ast.DynamicViewStep): c4.DynamicViewStep {
     const sourceEl = elementRef(node.source)
     if (!sourceEl) {
@@ -435,11 +444,12 @@ export class LikeC4ModelParser {
     const tags = this.convertTags(body)
     const links = body.props.filter(ast.isLinkProperty).map(p => p.value)
 
+    const manualLayout = this.parseViewManualLaout(astNode)
+
     const view: ParsedAstElementView = {
       __: 'element',
       id: id as c4.ViewID,
       astPath,
-      ...(viewOf && { viewOf }),
       title,
       description,
       tags,
@@ -451,7 +461,9 @@ export class LikeC4ModelParser {
           logWarnError(e)
           return []
         }
-      })
+      }),
+      ...(viewOf && { viewOf }),
+      ...(manualLayout && { manualLayout })
     }
     ViewOps.writeId(astNode, view.id)
 
@@ -488,6 +500,8 @@ export class LikeC4ModelParser {
     const links = props.filter(ast.isLinkProperty).map(p => p.value)
 
     ViewOps.writeId(astNode, id as c4.ViewID)
+
+    const manualLayout = this.parseViewManualLaout(astNode)
 
     return {
       __: 'dynamic',
@@ -553,7 +567,8 @@ export class LikeC4ModelParser {
           logWarnError(e)
         }
         return acc
-      }, [] as c4.DynamicViewStep[])
+      }, [] as c4.DynamicViewStep[]),
+      ...(manualLayout && { manualLayout })
     }
   }
 

@@ -1,14 +1,4 @@
-import type {
-  AutoLayoutDirection,
-  BorderStyle,
-  DiagramView,
-  ElementShape,
-  Fqn,
-  NonEmptyArray,
-  RelationID,
-  ThemeColor,
-  ViewID
-} from '@likec4/core'
+import type { AutoLayoutDirection, DiagramView, Fqn, RelationID, ViewChangeOp, ViewID } from '@likec4/core'
 import type { NotificationType, RequestType } from 'vscode-messenger-common'
 
 export namespace ExtensionToPanel {
@@ -25,17 +15,6 @@ export namespace WebviewToExtension {
   export const closeMe: NotificationType<never> = { method: 'closeMe' }
 
   export namespace Changes {
-    export interface ChangeElementStyle {
-      op: 'change-element-style'
-      style: {
-        border?: BorderStyle
-        opacity?: number
-        shape?: ElementShape
-        color?: ThemeColor
-      }
-      targets: NonEmptyArray<Fqn>
-    }
-
     export interface ChangeAutoLayout {
       op: 'change-autolayout'
       layout: AutoLayoutDirection
@@ -43,10 +22,10 @@ export namespace WebviewToExtension {
   }
 
   export type ChangeCommand =
-    | Changes.ChangeElementStyle
+    | ViewChangeOp
     | Changes.ChangeAutoLayout
 
-  export const onChange: NotificationType<{ viewId: ViewID; changes: NonEmptyArray<ChangeCommand> }> = {
+  export const onChange: NotificationType<{ viewId: ViewID; change: ChangeCommand }> = {
     method: 'onChange'
   }
 

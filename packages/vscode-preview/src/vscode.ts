@@ -44,10 +44,8 @@ export const extensionApi = {
   locate: (params: WebviewToExtension.LocateParams) => {
     messenger.sendNotification(WebviewToExtension.locate, HOST_EXTENSION, params)
   },
-  change: (viewId: ViewID, change: WebviewToExtension.ChangeCommand | WebviewToExtension.ChangeCommand[]) => {
-    const changes = Array.isArray(change) ? change : [change]
-    invariant(hasAtLeast(changes, 1), 'no changes')
-    messenger.sendNotification(WebviewToExtension.onChange, HOST_EXTENSION, { viewId, changes })
+  change: (viewId: ViewID, change: WebviewToExtension.ChangeCommand) => {
+    messenger.sendNotification(WebviewToExtension.onChange, HOST_EXTENSION, { viewId, change })
   },
 
   goToElement: (element: Fqn) => {

@@ -17,7 +17,6 @@ import { Route as ViewViewIdImport } from './routes/view.$viewId'
 import { Route as ExportViewIdImport } from './routes/export.$viewId'
 import { Route as EmbedViewIdImport } from './routes/embed.$viewId'
 import { Route as ViewViewIdIndexImport } from './routes/view.$viewId.index'
-import { Route as ViewViewIdReactLegacyImport } from './routes/view.$viewId.react-legacy'
 import { Route as ViewViewIdMmdImport } from './routes/view.$viewId.mmd'
 import { Route as ViewViewIdEditorImport } from './routes/view.$viewId.editor'
 import { Route as ViewViewIdDotImport } from './routes/view.$viewId.dot'
@@ -52,11 +51,6 @@ const EmbedViewIdRoute = EmbedViewIdImport.update({
 
 const ViewViewIdIndexRoute = ViewViewIdIndexImport.update({
   path: '/',
-  getParentRoute: () => ViewViewIdRoute,
-} as any)
-
-const ViewViewIdReactLegacyRoute = ViewViewIdReactLegacyImport.update({
-  path: '/react-legacy',
   getParentRoute: () => ViewViewIdRoute,
 } as any)
 
@@ -147,13 +141,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ViewViewIdMmdImport
       parentRoute: typeof ViewViewIdImport
     }
-    '/view/$viewId/react-legacy': {
-      id: '/view/$viewId/react-legacy'
-      path: '/react-legacy'
-      fullPath: '/view/$viewId/react-legacy'
-      preLoaderRoute: typeof ViewViewIdReactLegacyImport
-      parentRoute: typeof ViewViewIdImport
-    }
     '/view/$viewId/': {
       id: '/view/$viewId/'
       path: '/'
@@ -175,7 +162,6 @@ export const routeTree = rootRoute.addChildren({
     ViewViewIdDotRoute,
     ViewViewIdEditorRoute,
     ViewViewIdMmdRoute,
-    ViewViewIdReactLegacyRoute,
     ViewViewIdIndexRoute,
   }),
   WebcomponentSplatRoute,
@@ -212,7 +198,6 @@ export const routeTree = rootRoute.addChildren({
         "/view/$viewId/dot",
         "/view/$viewId/editor",
         "/view/$viewId/mmd",
-        "/view/$viewId/react-legacy",
         "/view/$viewId/"
       ]
     },
@@ -233,10 +218,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/view/$viewId/mmd": {
       "filePath": "view.$viewId.mmd.tsx",
-      "parent": "/view/$viewId"
-    },
-    "/view/$viewId/react-legacy": {
-      "filePath": "view.$viewId.react-legacy.tsx",
       "parent": "/view/$viewId"
     },
     "/view/$viewId/": {

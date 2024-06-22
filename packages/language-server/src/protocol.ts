@@ -1,14 +1,11 @@
 import type {
   AutoLayoutDirection,
-  BorderStyle,
   ComputedView,
-  ElementShape,
   Fqn,
   LikeC4ComputedModel,
   LikeC4Model,
-  NonEmptyArray,
   RelationID,
-  ThemeColor,
+  ViewChangeOp,
   ViewID
 } from '@likec4/core'
 import type { DocumentUri, Location } from 'vscode-languageserver-protocol'
@@ -57,31 +54,19 @@ export type LocateRequest = typeof locate
 // #endregion
 
 export namespace ChangeView {
-
   export interface ChangeAutoLayout {
     op: 'change-autolayout'
     layout: AutoLayoutDirection
-  }
-
-  export interface ChangeElementStyle {
-    op: 'change-element-style'
-    style: {
-      border?: BorderStyle
-      opacity?: number
-      shape?: ElementShape
-      color?: ThemeColor
-    }
-    targets: NonEmptyArray<Fqn>
   }
 }
 
 export type ChangeView =
   | ChangeView.ChangeAutoLayout
-  | ChangeView.ChangeElementStyle
+  | ViewChangeOp
 
 export interface ChangeViewRequestParams {
   viewId: ViewID
-  changes: NonEmptyArray<ChangeView>
+  change: ChangeView
 }
 export const changeView = new RequestType<ChangeViewRequestParams, Location | null, void>('likec4/change-view')
 export type ChangeViewRequest = typeof changeView

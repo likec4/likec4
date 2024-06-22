@@ -17,10 +17,10 @@ globalStyle(`.react-flow${cssReactFlow}`, {
     [xyvars.background.pattern.color]: vars.likec4.background.pattern.color
   }
 })
-globalStyle(`.react-flow${cssReactFlow} .react-flow__viewport`, {
-  // willChange: 'transform'
-  backfaceVisibility: 'hidden'
-})
+
+// globalStyle(`.react-flow${cssReactFlow} .react-flow__node`, {
+//   willChange: 'transform'
+// })
 
 export const cssDisablePan = style({})
 

@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
@@ -8,12 +8,12 @@ const elPadding = createVar('el-padding')
 // assignVars
 
 export const container = style({
-  position: 'relative',
   width: '100%',
   height: '100%',
   padding: 0,
   margin: 0,
-  backfaceVisibility: 'hidden',
+  display: 'flex',
+  alignItems: 'stretch',
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   }
@@ -21,13 +21,15 @@ export const container = style({
 
 export const dimmed = style({})
 
-globalStyle(`.react-flow__node:has(${dimmed})`, {
-  filter: vars.filterDimmed,
-  transition: 'filter 800ms ease-out'
+globalStyle(`.react-flow__node-element:has(${dimmed})`, {
+  opacity: 0.25,
+  transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
+  transitionDelay: '200ms',
+  filter: 'grayscale(0.85) blur(2px)',
+  willChange: 'opacity, filter'
 })
 
-const indicatorKeyframes = generateIdentifier('indicator')
-globalKeyframes(indicatorKeyframes, {
+const indicatorKeyframes = keyframes({
   'from': {
     opacity: 0.6
   },
@@ -63,6 +65,9 @@ export const indicator = style({
     },
     ':where([data-likec4-shape="queue"], [data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       strokeWidth: 10
+    },
+    [`${dimmed} &`]: {
+      visibility: 'hidden'
     }
   }
 })
@@ -128,9 +133,7 @@ export const technology = style({
 })
 
 export const element = style({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
+  flex: '1',
   padding: elPadding,
   display: 'flex',
   flexDirection: 'column',
@@ -165,10 +168,6 @@ export const elementIcon = style({
   flex: `0 1 ${iconMaxH}`,
   maxHeight: iconMaxH,
   marginTop: -8,
-  // display: 'flex',
-  // justifyContent: 'flex-end',
-  // flexDirection: 'column',
-  // alignItems: 'center',
   position: 'relative',
   userSelect: 'none',
   pointerEvents: 'none',
@@ -203,6 +202,7 @@ export const cssShapeSvg = style({
   filter: fallbackVar(filterShadowHovered, filterShadow),
   transition: 'filter 300ms ease-out',
   transitionDelay: '0ms',
+  zIndex: -1,
   vars: {
     [filterShadow]: `
       drop-shadow(0 2px 1px rgba(0, 0, 0, 0.21))

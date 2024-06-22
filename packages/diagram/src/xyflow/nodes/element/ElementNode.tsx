@@ -1,8 +1,12 @@
 import { Text } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
-import { motion, type Variants } from 'framer-motion'
+import { DEV } from 'esm-env'
+import { deepEqual as eq } from 'fast-equals'
+import { m, type Variants } from 'framer-motion'
+import { memo } from 'react'
 import { isNumber } from 'remeda'
+import useTilg from 'tilg'
 import { useDiagramState } from '../../../state'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
@@ -64,7 +68,16 @@ const variants = {
   // }
 } satisfies Variants
 
-export function ElementNode({
+const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
+  prev.id === next.id
+  && eq(prev.selected ?? false, next.selected ?? false)
+  && eq(prev.dragging ?? false, next.dragging ?? false)
+  && eq(prev.width ?? 0, next.width ?? 0)
+  && eq(prev.height ?? 0, next.height ?? 0)
+  && eq(prev.data.element, next.data.element)
+)
+
+export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   id,
   data: {
     element
@@ -73,7 +86,8 @@ export function ElementNode({
   selected = false,
   width,
   height
-}: ElementNodeProps) {
+}) {
+  DEV && useTilg()
   const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),
@@ -109,7 +123,7 @@ export function ElementNode({
   // useTilg(animate, isHovered, isInteractive)
 
   return (
-    <motion.div
+    <m.div
       id={id}
       className={clsx([
         css.container,
@@ -225,6 +239,6 @@ export function ElementNode({
       }
       {isHovercards && element.links && <ElementLink element={element} />}
       {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
-    </motion.div>
+    </m.div>
   )
-}
+}, isEqualProps)

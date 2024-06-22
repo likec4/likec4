@@ -1,5 +1,5 @@
 import { isNullish } from 'remeda'
-import type { IconUrl, NonEmptyArray } from './_common'
+import type { IconUrl, NonEmptyArray, Point, XYPosition } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
 import type { CustomElementExpr, ElementExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
@@ -70,6 +70,11 @@ export interface BasicView<ViewType extends 'element' | 'dynamic' = 'element' | 
    * Undefined if the view is auto-generated.
    */
   readonly relativePath?: string
+
+  /**
+   * If the view is changed manually this field contains the layout data.
+   */
+  readonly manualLayout?: ViewManualLayout | undefined
 }
 
 export interface BasicElementView extends BasicView<'element'> {
@@ -214,8 +219,6 @@ export function isComputedElementView(view: ComputedView): view is ComputedEleme
   return isNullish(view.__) || view.__ === 'element'
 }
 
-export type Point = readonly [x: number, y: number]
-
 // Bounding box
 export type BBox = {
   x: number
@@ -260,4 +263,16 @@ export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
   readonly edges: DiagramEdge[]
   readonly width: number
   readonly height: number
+}
+
+export interface ViewManualLayout {
+  readonly nodes: Record<Fqn, {
+    x: number
+    y: number
+    width: number
+    height: number
+  }>
+  readonly edges: Record<EdgeId, {
+    controlPoints: XYPosition[]
+  }>
 }

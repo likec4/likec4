@@ -1,15 +1,14 @@
-import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable } from '@likec4/core'
+import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChanges } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { entries, filter, findLast, isNumber, last, partition, toPairs } from 'remeda'
+import { entries, filter, findLast, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-protocol'
-import { ast, type ParsedAstElementView, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
+import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { FqnIndex } from '../model'
 import type { LikeC4Services } from '../module'
-import type { ChangeView } from '../protocol'
 
 const { findNodeForKeyword, findNodeForProperty } = GrammarUtils
 
-const asViewStyleRule = (target: string, style: ChangeView.ChangeElementStyle['style'], indent = 0) => {
+const asViewStyleRule = (target: string, style: ViewChanges.ChangeElementStyle['style'], indent = 0) => {
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''
   return [
     indentStr + `style ${target} {`,
@@ -25,7 +24,7 @@ type ChangeElementStyleArg = {
   doc: ParsedLikeC4LangiumDocument
   viewAst: ast.LikeC4View
   targets: NonEmptyArray<Fqn>
-  style: ChangeView.ChangeElementStyle['style']
+  style: ViewChanges.ChangeElementStyle['style']
 }
 
 /**

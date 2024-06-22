@@ -2,6 +2,9 @@ model {
 
   amazon = externalSystem 'Amazon' {
     description: 'Cloud and managed services provider'
+    style {
+      color amber
+    }
 
     rds = container 'RDS' {
       description: 'Relational Database Service'
@@ -38,6 +41,7 @@ model {
     }
 
     lambdas = container {
+      #db, #deprecated #api
       title: 'Lambdas'
       description: 'Serverless compute'
 
