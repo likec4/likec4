@@ -166,9 +166,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.24.2":
-  version: 0.24.2
-  resolution: "@astrojs/starlight@npm:0.24.2"
+"@astrojs/starlight@npm:^0.24.4":
+  version: 0.24.4
+  resolution: "@astrojs/starlight@npm:0.24.4"
   dependencies:
     "@astrojs/mdx": "npm:^3.1.0"
     "@astrojs/sitemap": "npm:^3.1.5"
@@ -192,7 +192,7 @@ __metadata:
     vfile: "npm:^6.0.1"
   peerDependencies:
     astro: ^4.8.6
-  checksum: 10c0/c0b1923590b8e9778570bbd018f589c146cec05ec8678397513a7a7e14ac27111ffcfe8d31822053b806ab50ccbc2cc3d3b86b55250fb476f8b756743bd6728c
+  checksum: 10c0/34f16b07700ff529cae6cf4499fe47443fe4c5a4a59b372cd9d750c87bc233d07427701e1c0e3c82503e26dec93458345ce0b05e1437cbc4aab0844ce2bbb640
   languageName: node
   linkType: hard
 
@@ -2256,14 +2256,14 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.7.0"
     "@astrojs/react": "npm:^3.6.0"
-    "@astrojs/starlight": "npm:^0.24.2"
+    "@astrojs/starlight": "npm:^0.24.4"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.35.3"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
     "@types/picomatch": "npm:^2.3.3"
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:18.3.0"
-    astro: "npm:^4.10.3"
+    astro: "npm:^4.11.0"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.1.2"
     react: "npm:18.3.1"
@@ -4627,9 +4627,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro@npm:^4.10.3":
-  version: 4.10.3
-  resolution: "astro@npm:4.10.3"
+"astro@npm:^4.11.0":
+  version: 4.11.0
+  resolution: "astro@npm:4.11.0"
   dependencies:
     "@astrojs/compiler": "npm:^2.8.0"
     "@astrojs/internal-helpers": "npm:0.4.0"
@@ -4700,7 +4700,7 @@ __metadata:
       optional: true
   bin:
     astro: astro.js
-  checksum: 10c0/f5978680b6a66540f0f7cd49165c71cd71fb0b3a94ee503840d389e310d4374be1957049086e2c4d59cffe4e6c9a8ad1f25f9127d9abe3df0e8ca877b239750c
+  checksum: 10c0/98c6f626aa69a9e205a8653a49b21503e5bdb8e77bc9a7acda5855302ef6eec52256c476e253eecebe3045761c1247d0acdfc56598fe190d7355123cb90c5cc2
   languageName: node
   linkType: hard
 

@@ -33,8 +33,11 @@ export function DynamicViewWalkthrough() {
     isActive
       ? [
         ['ArrowLeft', () => nextDynamicStep(-1)],
-        ['Escape', () => stopDynamicView()],
-        ['ArrowRight', () => nextDynamicStep()]
+        ['ArrowRight', () => nextDynamicStep()],
+        ['Escape', (e) => {
+          e.stopImmediatePropagation()
+          stopDynamicView()
+        }, { preventDefault: true }]
       ]
       : [
         ['ArrowLeft', () => nextDynamicStep()],
