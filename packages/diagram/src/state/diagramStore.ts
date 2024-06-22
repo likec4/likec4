@@ -551,7 +551,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               height: view.height
             }
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, 1, fitViewPadding)
-            panZoom?.setViewport(viewport, { duration: 400 })
+            panZoom?.setViewport(viewport, { duration: 500 })
             if (!!focusedNodeId) {
               set(
                 {

@@ -71,18 +71,6 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         'react-dom/server': resolve('app/react/react-dom-server-mock.ts')
       }
     },
-    optimizeDeps: {
-      include: [
-        'react-dom',
-        'react',
-        'framer-motion',
-        'react/jsx-runtime',
-        'react/jsx-dev-runtime',
-        '@mantine/core',
-        '@mantine/hooks'
-      ],
-      force: true
-    },
     clearScreen: false,
     base,
     build: {

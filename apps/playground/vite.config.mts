@@ -26,7 +26,6 @@ const baseConfig: UserConfigFnObject = () => {
     resolve: {
       dedupe: [
         'react',
-        // 'vscode',
         'react-dom',
         'react-dom/client',
         '@mantine/core',
@@ -44,23 +43,6 @@ const baseConfig: UserConfigFnObject = () => {
       cssCodeSplit: false
     },
     optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'langium/lsp',
-        'vscode-languageserver/browser',
-        'langium',
-        'ufo',
-        'vscode-languageserver',
-        'strip-indent',
-        'vscode-uri',
-        'string-hash',
-        '@dagrejs/graphlib',
-        '@mantine/core',
-        '@mantine/hooks',
-        'indent-string',
-        'json5'
-      ],
       esbuildOptions: {
         plugins: [
           importMetaUrlPlugin,

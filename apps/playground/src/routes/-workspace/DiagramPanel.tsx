@@ -74,10 +74,11 @@ export function DiagramPanel() {
           <LikeC4Diagram
             view={diagram}
             readonly={false}
+            controls={false}
             fitView
-            fitViewPadding={0.06}
-            experimentalEdgeEditing={DEV}
-            nodesDraggable={DEV}
+            fitViewPadding={0.07}
+            experimentalEdgeEditing
+            nodesDraggable
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
             onNodeClick={({ element, event }) => {

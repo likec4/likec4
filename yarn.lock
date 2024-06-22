@@ -1901,7 +1901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:2.16.2, @hpcc-js/wasm@npm:^2.16.2":
+"@hpcc-js/wasm@npm:2.16.2":
   version: 2.16.2
   resolution: "@hpcc-js/wasm@npm:2.16.2"
   dependencies:
@@ -2327,7 +2327,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@hpcc-js/wasm": "npm:^2.16.2"
+    "@hpcc-js/wasm": "npm:2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
@@ -2345,7 +2345,7 @@ __metadata:
     vitest: "npm:~1.5.3"
     word-wrap: "npm:^1.2.5"
   peerDependencies:
-    "@hpcc-js/wasm": ^2.16.2
+    "@hpcc-js/wasm": 2.16.2
     "@likec4/core": "workspace:*"
   languageName: unknown
   linkType: soft
@@ -2365,7 +2365,7 @@ __metadata:
     "@codingame/monaco-vscode-textmate-service-override": "npm:5.2.0"
     "@codingame/monaco-vscode-theme-defaults-default-extension": "npm:5.2.0"
     "@codingame/monaco-vscode-theme-service-override": "npm:5.2.0"
-    "@hpcc-js/wasm": "npm:^2.16.2"
+    "@hpcc-js/wasm": "npm:2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/language-server": "workspace:*"
@@ -8879,7 +8879,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
-    "@hpcc-js/wasm": "npm:^2.16.2"
+    "@hpcc-js/wasm": "npm:2.16.2"
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"

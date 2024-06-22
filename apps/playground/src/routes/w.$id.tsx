@@ -14,6 +14,7 @@ export const Route = createFileRoute('/w/$id')({
     const id = params.id as keyof typeof Examples
     return Examples[id] ?? {
       isCustom: true,
+      title: `Blank - ${id}`,
       ...BlankExample
     }
   }
@@ -24,11 +25,13 @@ export function WorkspaceContextPage() {
   const { isCustom, ...data } = Route.useLoaderData()
 
   return (
-    <AppShell
-      header={{ height: 50 }}
-      // withBo rder={false}
-    >
-      <WorkspaceContextProvider key={id} name={id} {...data}>
+    <AppShell header={{ height: 50 }}>
+      <WorkspaceContextProvider
+        key={id}
+        name={id}
+        skipHydration={!isCustom}
+        {...data}
+      >
         <AppShellHeader>
           <Header />
         </AppShellHeader>

@@ -37,10 +37,6 @@ export async function viteWebcomponentConfig({
       WEBCOMPONENT_PREFIX: JSON.stringify(webcomponentPrefix),
       'process.env.NODE_ENV': '"production"'
     },
-    optimizeDeps: {
-      noDiscovery: true,
-      include: []
-    },
     esbuild: {
       ...JsBanners
     },

@@ -1,8 +1,8 @@
 import {
+  ActionIcon,
   Anchor,
   Box,
   Button,
-  Divider,
   Group,
   Menu,
   MenuDivider,
@@ -14,17 +14,18 @@ import {
   PopoverDropdown,
   PopoverTarget,
   Text,
-  ThemeIcon,
-  Title
+  ThemeIcon
 } from '@mantine/core'
-import { IconAlertCircle, IconChevronDown, IconShare } from '@tabler/icons-react'
+import { IconAlertCircle, IconChevronDown, IconShare, IconTrash } from '@tabler/icons-react'
 import { Link, useLoaderData } from '@tanstack/react-router'
 import { nanoid } from 'nanoid'
+import { memo } from 'react'
 import { ColorSchemeToggle } from '../../components/ColorSchemeToggle'
 import { Logo } from '../../components/Logo'
 import { useWorkspaceState } from '../../state'
+import { useWorkspaces } from '../../state/use-workspaces'
 
-export function Header() {
+export const Header = memo(() => {
   const { isCustom, title } = useLoaderData({
     from: '/w/$id'
   })
@@ -103,11 +104,21 @@ export function Header() {
       </Group>
     </Group>
   )
-}
+})
 
 function PlaygroundsMenu() {
+  const current = useWorkspaceState(s => s.name)
+  const [workspaces, setWorkspaces] = useWorkspaces()
+
+  const removeWorkspace = (name: string) => {
+    const workspace = workspaces.find(w => w.name === name)
+    if (!workspace) return
+    setWorkspaces(workspaces.filter(w => w.name !== name))
+    localStorage.removeItem(workspace.key)
+  }
+
   return (
-    <Menu shadow="md" width={160} trigger="click-hover" openDelay={200}>
+    <Menu shadow="md" trigger="click-hover" openDelay={200}>
       <MenuTarget>
         <Button
           variant="subtle"
@@ -125,6 +136,40 @@ function PlaygroundsMenu() {
         <MenuLabel>Examples</MenuLabel>
         <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'tutorial' }}>Tutorial</MenuItem>
         <MenuItem component={Link} to={'/w/$id/'} params={{ id: 'bigbank' }}>BigBank</MenuItem>
+        {workspaces.length > 0 && (
+          <>
+            <MenuDivider />
+            <MenuLabel>Saved</MenuLabel>
+          </>
+        )}
+        {workspaces.map(({ key, name, title }) => (
+          <MenuItem
+            key={key}
+            activeProps={{
+              // @ts-expect-error data-hovered is not in MenuItemProps
+              ['data-hovered']: true
+            }}
+            component={Link}
+            to={'/w/$id/'}
+            params={{ id: name }}
+            rightSection={current !== name
+              ? (
+                <ActionIcon
+                  variant="subtle"
+                  color="red"
+                  onClick={e => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    removeWorkspace(name)
+                  }}>
+                  <IconTrash size={14} />
+                </ActionIcon>
+              )
+              : null}
+          >
+            {title}
+          </MenuItem>
+        ))}
       </MenuDropdown>
     </Menu>
   )

@@ -28,8 +28,8 @@ function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
       prevDimensionsRef.current = dimensions
     },
     [dimensions, diagramApi, xyflowApi],
-    200,
-    800
+    250,
+    1000
   )
 
   return null
