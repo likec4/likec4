@@ -20,8 +20,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npx wrangler pages deploy dist ----project-name likec4-docs-astro",
-    "deploy:prod": "run deploy --branch main"
+    "deploy": "npx wrangler pages deploy dist --project-name likec4-docs-astro",
+    "deploy:prod": "run deploy --branch main",
+    "clean": "run -T rimraf -v 'dist' '.astro' 'node_modules'"
   },
   "dependencies": {
     "@astrojs/check": "^0.7.0",
@@ -31,6 +32,7 @@
     "@expressive-code/plugin-line-numbers": "^0.35.3",
     "@fontsource/ibm-plex-sans": "^5.0.20",
     "astro": "^4.11.0",
+    "astro-og-canvas": "^0.5.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "starlight-links-validator": "^0.9.0",

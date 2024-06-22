@@ -38,6 +38,18 @@ specification {
 
 Element kinds are required for the [model](/dsl/model).
 
+### Relationship
+
+```likec4
+specification {
+  relationship async
+  relationship subscribes
+  relationship is-downstream-of
+}
+```
+
+More in the [relationships](/dsl/relationships/#relationship-kinds)
+
 ### Tag
 
 Tags may be used to mark, group, filter elements/relationships/views, or give some additional semantics, like `#deprecated`, `#epic-123` or `#team2`.
@@ -51,17 +63,6 @@ specification {
 
 }
 ```
-
-### Relationship
-
-```likec4
-specification {
-  relationship async
-  relationship notify
-}
-```
-
-More in the [relationships](/dsl/relationships/#relationship-kinds)
 
 {/*
 

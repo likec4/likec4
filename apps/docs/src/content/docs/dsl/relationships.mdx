@@ -29,8 +29,10 @@ Relationships can be "kinded":
 
 ```likec4
 specification {
-  // Define a relationship kind in specifications
+  element system
+  // Define a relationship kind in specification
   relationship async
+  relationship uses
 }
 
 model {
@@ -38,6 +40,9 @@ model {
   system2 = system 'System 2'
 
   system1 -[async]-> system2
+
+  // Or prefix with '.' to use the kind
+  system1 .uses system2
 }
 ```
 

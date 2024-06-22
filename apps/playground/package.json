@@ -9,8 +9,9 @@
     "typecheck": "tsc --noEmit",
     "build:turbo": "run -T turbo run build --filter='@likec4/playground' --log-prefix=none --log-order=grouped",
     "build": "vite build --mode pre && vite build",
-    "deploy": "npx wrangler pages deploy dist ----project-name likec4-playground",
-    "deploy:prod": "run deploy --branch main"
+    "deploy": "npx wrangler pages deploy dist --project-name likec4-playground",
+    "deploy:prod": "run deploy --branch main",
+    "clean": "run -T rimraf -v dist"
   },
   "dependencies": {
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.2",

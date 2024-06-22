@@ -4,30 +4,21 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import { defineConfig } from 'astro/config'
 import starlightLinksValidator from 'starlight-links-validator'
+import { searchForWorkspaceRoot } from 'vite'
 import likec4grammar from './likec4.tmLanguage.json' assert { type: 'json' }
 import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://docs.likec4.dev',
-
-  // devToolbar: {
-  //   enabled: true
-  // },
-  // server: {
-  //   port: 4321,
-  //   host: true
-  // },
+  output: 'static',
   integrations: [
     react(),
     starlight({
       title: 'LikeC4',
-      description:
-        'Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code',
+      description: 'DSL and Toolchain for your architecture diagrams',
       social: {
         github: 'https://github.com/likec4/likec4'
       },
-      tagline: 'A language for expressing and visualizing software architecture',
       logo: {
         dark: './src/assets/logo-dark.svg',
         light: './src/assets/logo-light.svg',
@@ -60,13 +51,6 @@ export default defineConfig({
               label: 'Tutorial',
               link: '/tutorial'
             }
-            // {
-            //   label: 'Playground',
-            //   link: 'https://playground.likec4.dev/w/tutorial/',
-            //   attrs: {
-            //     target: '_blank'
-            //   }
-            // }
           ]
         },
         {
@@ -134,5 +118,19 @@ export default defineConfig({
         })
       ]
     })
-  ]
+  ],
+
+  vite: {
+    resolve: {
+      alias: {
+        '@': new URL('./src', import.meta.url).pathname
+      }
+    },
+    server: {
+      fs: {
+        // https://vitejs.dev/config/server-options.html#server-fs-allow
+        allow: [searchForWorkspaceRoot(process.cwd())]
+      }
+    }
+  }
 })

@@ -3,11 +3,13 @@ title: GitHub Actions
 description: Integrate LikeC4 into your CI/CD pipeline to keep architecture diagrams up-to-date.
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 ![GitHub release](https://img.shields.io/github/release/likec4/actions.svg)
 
 This action wraps [CLI](/tooling/cli) as a GitHub Action.
 
-## Usage
+### Usage
 
 Build website:
 
@@ -31,8 +33,10 @@ steps:
       path: dist
 ```
 
-> **Tip:**  
-> [likec4/template](https://github.com/likec4/template) repository demonstrates how to deploy to github pages.
+<Aside type='tip'>
+  Github repository [likec4/template](https://github.com/likec4/template) demonstrates how to deploy to github pages.
+</Aside>
+
 
 Export diagrams to PNG:
 
@@ -44,7 +48,7 @@ steps:
     with:
       export: png
       path: src/likec4
-      output: images
+      output: out/images
       use-dot-bin: 'true'
 ```
 
@@ -57,10 +61,10 @@ steps:
     uses: likec4/actions@v1
     with:
       codegen: react
-      output: __generated__/likec4.tsx
+      output: __generated__/likec4.jsx
 ```
 
-## Inputs
+### Inputs
 
 | Name          | Description                                                                                           |
 | ------------- | ----------------------------------------------------------------------------------------------------- |

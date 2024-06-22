@@ -166,7 +166,7 @@
       }
     },
     {
-      "match": "\\b(it|this)\\s+(->|-\\[\\w+\\]->)\\s+([^\\W]+)",
+      "match": "\\b(it|this)\\s+(->|-\\[\\w+\\]->|\\.\\w+)\\s+([^\\W]+)",
       "captures": {
         "1": {
           "name": "keyword.control.likec4"
@@ -180,7 +180,7 @@
       }
     },
     {
-      "match": "(\\b[_\\.\\w]+|\\*)\\s+(<?->|-\\[\\w+\\]->)\\s+([_\\.\\w]+)\\b",
+      "match": "(\\b[_\\.\\w]+|\\*)\\s+(<-|<?->|-\\[\\w+\\]->|\\.\\w+)\\s+([_\\.\\w]+)\\b",
       "captures": {
         "1": {
           "name": "variable.other.constant.likec4"
@@ -205,7 +205,7 @@
       }
     },
     {
-      "match": "\\s+(<?->|<-|-\\[\\w+\\]->)\\s+([a-zA-Z][_\\.\\w]*)\\b",
+      "match": "\\s+(<-|<?->|-\\[\\w+\\]->|\\.\\w+)\\s+([a-zA-Z][_\\.\\w]*)\\b",
       "captures": {
         "1": {
           "name": "storage.type.function.likec4"
@@ -216,8 +216,8 @@
       }
     },
     {
-      "name": "storage.type.likec4",
-      "match": "(<?->|<-)"
+      "name": "storage.type.function.likec4",
+      "match": "(<-|<?->)"
     },
     {
       "name": "keyword.control.likec4",
@@ -230,10 +230,17 @@
     {
       "match": "(\\b\\.)?(\\*|_),?",
       "captures": {
+        "1": {
+          "name": "variable.other.constant.likec4"
+        },
         "2": {
           "name": "variable.other.constant.likec4"
         }
       }
+    },
+    {
+      "name": "keyword.symbol.likec4",
+      "match": "(\\{|\\}|\\:|\\]->|-\\[|<?->|<-|\\,|\\;|\\!|\\=)"
     },
     {
       "include": "#string"

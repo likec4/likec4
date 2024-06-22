@@ -4,7 +4,11 @@ specification { // define "types", allowed in model
       shape person // how to render
     }
   }
-  element system
+  element system {
+    style {
+      opacity 40%
+    }
+  }
   element component
   relationship async // allow "typed" relationship
 }
@@ -23,18 +27,20 @@ model {
 
     backend = component 'Backend' {
       description '
-        Implements business logic
+        Implement business logic
         and provides GraphQL API
       '
 
       api = component 'GraphQL' {
-        description 'Configured Hasura, provides access to data from database or calls services'
+        technology 'Hasura'
+        description 'Provide access to the data from database or calls services'
       }
 
-      services = component 'Services' {
+      services = component 'Service Functions' {
         technology 'serverless functions'
         description '
-          Implement business logic and
+          Implement business logic,
+          process change requests and
           comminucate with external services
         '
       }
@@ -45,7 +51,7 @@ model {
     }
 
     ui = component 'Frontend' {
-      description 'NextJs application'
+      description 'NextJS application'
       style {
         shape browser
       }
@@ -112,24 +118,29 @@ views {
       color secondary
     }
     style cloud {
+      opacity 1%
+      border solid
       color muted
     }
     style backend, backend.* {
+      opacity 20%
+      border solid
       color green
     }
   }
 
+
   view infra of infra {
     include
       *,
-      cloud,
       backend,
       backend.* -> infra
 
     style * {
       color secondary
     }
-    style cloud, infra {
+    style backend, infra {
+      opacity 40%
       color muted
     }
     style infra.* {

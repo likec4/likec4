@@ -114,7 +114,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
     isEditable: s.readonly !== true,
     isEdgePathEditable: s.readonly !== true && s.experimentalEdgeEditing === true,
-    isActive: s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum,
+    isActive: s.focusedNodeId === source || s.focusedNodeId === target
+      || (s.activeDynamicViewStep !== null && s.activeDynamicViewStep === data.stepNum),
     isHovered: s.hoveredEdgeId === id,
     isDimmed: s.dimmed.has(id)
   }))

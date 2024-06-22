@@ -1,31 +1,51 @@
 ---
-title: What is LikeC4?
-description: LikeC4 is a DSL for describing software architecture
+title: LikeC4
+head:
+  - tag: title
+    content: LikeC4
+description: Toolchain for your architecture diagrams
+editUrl: false
+next: false
+template: splash
+
+hero:
+  # title: One toolchain for your web project
+  title: Toolchain for your architecture diagrams
+  tagline: Architecture-as-a-code with live diagrams
+  # image:
+  #   alt: Biome, Toolchain of the web
+  #   dark: "@/assets/svg/slogan-dark-transparent.svg"
+  #   light: "@/assets/svg/slogan-light-transparent.svg"
+  actions:
+    - text: Get started
+      link: /tutorial/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/likec4/likec4
+      icon: external
+      variant: secondary
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 import LikeC4View from '@components/index-page/LikeC4View.astro';
+import FooterIndex from '@components/FooterIndex.astro';
 
-LikeC4 is a language, a DSL, that describes architecture as a single model and then compiled into multiple diagrams, from different perspectives and details.  
+### What is LikeC4?
 
-You have a _**single source of truth - your code**_.  
-Any change, refinement or deprecation in the model is reflected automatically,
-keeping diagrams up-to-date and synchronized with the actual state.
+LikeC4 is a set of tools and DSL, that describes architecture as a single model and then compiled into multiple diagrams.  
 
-### Why "like"?
+Your code is _**single source of truth**_.  
+Any change, refinement or deprecation is reflected automatically in the architecture diagrams.  
+No more outdated documentation!  
+And history of changes is your version control system.
 
-<Aside type='tip'>
-  If you never heard about _C4 Model_, check the [website](https://c4model.com/), you get the idea very quickly.
-</Aside>
-
-LikeC4 inherits the simplicity of C4, but allows you to use your _own notation_, _your element types_ and any number of nested levels and detalization.  
-
-Also, LikeC4 is a _**toolchain**_ that provides:
+LikeC4 provides:
 
 - architecture-as-a-code with native IDE support
 - development server with live reload
 - static website generation (<a href="https://template.likec4.dev/view/cloud" target='_blank'>live demo</a>)
-- interactive and customizable React diagrams _in-the-box_
+- React and Webcomponents generation to embed to your website
 - CI/CD automation via CLI and GitHub Actions
 - export to various formats:
   - PNG
@@ -33,12 +53,19 @@ Also, LikeC4 is a _**toolchain**_ that provides:
   - D2
   - DOT (Graphviz)
 
-You can use LikeC4 as a standalone tool or integrate it into your existing toolchain.
+You can use LikeC4 standalone or integrate with existing toolchain.
+
+### Why "like"?
+
+LikeC4 is inspired by the C4 model and Structurizr DSL, and goes beyond them by offering flexibility and customization.   
+You can _**use your ubiquitous language**_, your terms and any number of nested levels.  
+
+If you never heard about _C4 Model_, check the <a href="https://c4model.com/" target='_blank'>website</a>.
+
 
 ### What does LikeC4 look like?
 
 ```likec4
-//example.c4
 specification { // define "types" of architecture elements
   element actor {
     style {
@@ -50,21 +77,18 @@ specification { // define "types" of architecture elements
   relationship async // allow "typed" relationship
 }
 
-model { // describe your architecture, single source of truth
+model { // single source of truth
   customer = actor 'Customer' {
     description 'A user of our product with active subscription'
-    -> ui 'opens in browser' // how relationships are
+    -> ui 'opens in browser'
   }
   cloud = system 'Our SaaS' {
     backend = component 'Backend' {
-      description '
-        Implements business logic
-        and provides GraphQL API
-      '
+      description 'Implements business logic and provides GraphQL API'
     }
 
     ui = component 'Frontend' {
-      description 'NextJs application'
+      description 'NextJS application'
       style {
         shape browser
       }
@@ -76,6 +100,7 @@ model { // describe your architecture, single source of truth
 
 views {
   view index {
+    title 'Landscape view'
     include *, cloud.*
 
     style cloud.* {
@@ -85,10 +110,10 @@ views {
 }
 ```
 
-Run to preview: 
+Run CLI to preview: 
 
 ```bash
-npx likec4 start
+likec4 start
 ```
 
 And this is rendered (click to explore):
@@ -96,3 +121,6 @@ And this is rendered (click to explore):
 <LikeC4View viewId="index"/>
 
 Check the [Tutorial](/tutorial/) - for a quick overview of LikeC4.
+
+
+<FooterIndex/>

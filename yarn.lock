@@ -2264,6 +2264,7 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:18.3.0"
     astro: "npm:^4.11.0"
+    astro-og-canvas: "npm:^0.5.1"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.1.2"
     react: "npm:18.3.1"
@@ -4311,6 +4312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webgpu/types@npm:0.1.21":
+  version: 0.1.21
+  resolution: "@webgpu/types@npm:0.1.21"
+  checksum: 10c0/74de9683b70064aeadcdd31381747650b323e7e2183fb38f90a35f1a79f80ad267c0a2ee5010c264befb3d31ad213dbdffa04897e2808f6b04feff8d66bc53e0
+  languageName: node
+  linkType: hard
+
 "@xyflow/react@npm:12.0.0-next.21":
   version: 12.0.0-next.21
   resolution: "@xyflow/react@npm:12.0.0-next.21"
@@ -4624,6 +4632,19 @@ __metadata:
   peerDependencies:
     astro: ^4.0.0-beta || ^3.3.0
   checksum: 10c0/de278f6860524cd27a04c5c4a3db7ad00f2a5ff7d21008d21d8bce64c2e1fed4b4d4d04e381d26aaa228599ea0e2343f1034de5ff5aae7a3b112e566baed98ac
+  languageName: node
+  linkType: hard
+
+"astro-og-canvas@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "astro-og-canvas@npm:0.5.1"
+  dependencies:
+    canvaskit-wasm: "npm:^0.39.1"
+    deterministic-object-hash: "npm:^2.0.2"
+    entities: "npm:^4.4.0"
+  peerDependencies:
+    astro: ^3.0.0 || ^4.0.0
+  checksum: 10c0/403797263c2b1b3d94cf598b64866ab1375d840c7b03fb9fc7b3856e9d23da6f2afe2c9ac2a8cbf601c74a643d993905e9951e2f1d36bf56f14cad5d35bb06d6
   languageName: node
   linkType: hard
 
@@ -4947,6 +4968,15 @@ __metadata:
   version: 1.0.30001615
   resolution: "caniuse-lite@npm:1.0.30001615"
   checksum: 10c0/49029ff6cdbb35cf84cc9d9d4782dff3a8fb6afb547a83f3e43f13addcb0c4ac6015dc528a42f0f78846dc06261b3fab16555e3979114ad20e15cf7a91e64c33
+  languageName: node
+  linkType: hard
+
+"canvaskit-wasm@npm:^0.39.1":
+  version: 0.39.1
+  resolution: "canvaskit-wasm@npm:0.39.1"
+  dependencies:
+    "@webgpu/types": "npm:0.1.21"
+  checksum: 10c0/0ae60ae5c430aaa88152f3a20f40fc9a6debb15714a2ce1bdebef93005ec6d5e72e0316b91ab637f50aab220dd8694101abac497209bcf16788d00db78f5a898
   languageName: node
   linkType: hard
 

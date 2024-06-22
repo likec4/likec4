@@ -12,11 +12,15 @@ import { Card } from '@astrojs/starlight/components';
 
 #### React
 
-This will generate a file with React component (and type definitions):
+This will generate a jsx-file with React component (and type definitions `.d.ts` if you use TypeScript):
 
 ```sh
 likec4 codegen react --outfile ./src/likec4.generated.jsx
 ```
+
+:::tip
+Check `likec4 codegen react --help` for available options.
+:::
 
 Components are ready to be embedded, like in MDX.  
 The examples on this website are rendered with this approach.
@@ -42,26 +46,34 @@ const App = () => {
 
 Any other property will be passed to the underlying `div` element.
 
-:::tip
-Better to exclude from Server-side-rendering (SSR).
-
-And don't forget to check `--help` for more options.
+:::caution
+React component does not work correctly in Server-side-rendering (SSR).  
 :::
 
 #### Webcomponent
 
 ```sh
 likec4 codegen webcomponent -o ./src/likec4-webcomponent.js
-```
-
-By default, this will generate a `likec4-view` webcomponent.  
-To change the prefix use option `-w, --webcomponent-prefix`  
+```  
 
 You can use it in your HTML:
 
-```html title="usage.html"
+```html
 <script src="./src/likec4-webcomponent.js"></script>
 <likec4-view view-id="index"></likec4-view>
+```
+
+By default, this will generate a `likec4-view` webcomponent.  
+To change the prefix use option `-w, --webcomponent-prefix`.
+
+For example:
+
+```sh
+likec4 codegen webcomponent -w custom-c4 -o ./src/likec4-webcomponent.js
+```  
+
+```html
+<custom-c4-view view-id="index"></custom-c4-view>
 ```
 
 #### Typed Model
