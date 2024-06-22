@@ -75,8 +75,14 @@ export function useXYFlowEvents() {
         if (dbclickLock()) {
           return
         }
-        const { focusedNodeId, fitDiagram, onCanvasClick, resetLastClicked } = diagramApi.getState()
-        if (!!focusedNodeId) {
+        const {
+          focusedNodeId,
+          activeDynamicViewStep,
+          fitDiagram,
+          onCanvasClick,
+          resetLastClicked
+        } = diagramApi.getState()
+        if (focusedNodeId || activeDynamicViewStep) {
           fitDiagram(xyflowApi)
           if (!onCanvasClick) {
             event.stopPropagation()

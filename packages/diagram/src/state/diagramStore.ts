@@ -348,13 +348,15 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           resetLastClicked: () => {
             let {
+              activeDynamicViewStep,
               focusedNodeId,
               lastClickedNodeId,
               lastClickedEdgeId
             } = get()
-            if (focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
+            if (activeDynamicViewStep || focusedNodeId || lastClickedNodeId || lastClickedEdgeId) {
               set(
                 {
+                  activeDynamicViewStep: null,
                   focusedNodeId: null,
                   lastClickedNodeId: null,
                   lastClickedEdgeId: null,
@@ -568,6 +570,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const { view, activeDynamicViewStep, xyflow, fitViewPadding } = get()
             invariant(view.__ === 'dynamic', 'view is not dynamic')
             const nextStep = (activeDynamicViewStep ?? 0) + increment
+            if (nextStep <= 0 || nextStep > view.edges.length) {
+              return
+            }
             const edgeId = StepEdgeId(nextStep)
             const dimmed = new StringSet()
             let edge: XYFlowEdge | null = null

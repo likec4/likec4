@@ -1,4 +1,5 @@
 import { ActionIcon, Box, Button, rem, useComputedColorScheme } from '@mantine/core'
+import { useHotkeys } from '@mantine/hooks'
 import {
   IconHeart,
   IconPhoto,
@@ -25,6 +26,21 @@ export function DynamicViewWalkthrough() {
     activeDynamicViewStep: s.activeDynamicViewStep,
     hasNextSteps: (s.activeDynamicViewStep ?? 1) < s.view.edges.length
   }))
+
+  const isActive = isNumber(activeDynamicViewStep)
+
+  useHotkeys(
+    isActive
+      ? [
+        ['ArrowLeft', () => nextDynamicStep(-1)],
+        ['Escape', () => stopDynamicView()],
+        ['ArrowRight', () => nextDynamicStep()]
+      ]
+      : [
+        ['ArrowLeft', () => nextDynamicStep()],
+        ['ArrowRight', () => nextDynamicStep()]
+      ]
+  )
 
   const buttonProps = {
     className: css.btn,

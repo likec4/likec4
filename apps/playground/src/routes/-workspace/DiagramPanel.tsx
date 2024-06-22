@@ -1,8 +1,7 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
-import { Box, LoadingOverlay, Notification, Text, Title } from '@mantine/core'
+import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
-import { DEV } from 'esm-env'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 
