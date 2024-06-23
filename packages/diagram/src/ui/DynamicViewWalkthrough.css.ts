@@ -41,6 +41,7 @@ export const btn = style({
   }
 })
 
-globalStyle(`${btn} .tabler-icon`, {
-  width: '80%'
+globalStyle(`:where(${buttons}, ${btn}) .tabler-icon`, {
+  width: '0.85em',
+  height: '0.85em'
 })

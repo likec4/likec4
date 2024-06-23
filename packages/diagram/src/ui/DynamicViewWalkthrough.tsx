@@ -1,20 +1,19 @@
-import { ActionIcon, Box, Button, rem, useComputedColorScheme } from '@mantine/core'
+import { Box, Button } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import {
-  IconHeart,
-  IconPhoto,
   IconPlayerPlayFilled,
   IconPlayerSkipBackFilled,
   IconPlayerSkipForwardFilled,
-  IconPlayerStopFilled,
-  IconSettings
+  IconPlayerStopFilled
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { isNullish, isNumber } from 'remeda'
 import { useDiagramState } from '../state/useDiagramStore'
+import { useXYStore } from '../xyflow/hooks/useXYFlow'
 import * as css from './DynamicViewWalkthrough.css'
 
 export function DynamicViewWalkthrough() {
+  const isMobile = useXYStore(s => s.width <= 750)
   const {
     nextDynamicStep,
     stopDynamicView,
@@ -47,8 +46,8 @@ export function DynamicViewWalkthrough() {
 
   const buttonProps = {
     className: css.btn,
-    size: 'compact-xl',
-    radius: 'xl'
+    size: isMobile ? 'compact-md' : 'lg',
+    radius: isMobile ? 'lg' : 'xl'
   }
 
   const nextStep = (increment = 1) => (e: React.MouseEvent) => {
