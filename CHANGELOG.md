@@ -1,3 +1,25 @@
+# [1.3.0](https://github.com/likec4/likec4/compare/v1.2.2...v1.3.0) (2024-06-23)
+
+
+### Bug Fixes
+
+* **deps:** upgrade langium to 3.1.0 ([a309316](https://github.com/likec4/likec4/commit/a309316834c5b5ede51e2812d2f1a0d88d4f471a))
+* **diagram:** correct FitViewOnDiagramChange ([f51d847](https://github.com/likec4/likec4/commit/f51d847ffba413fad4dd320ce6aaeb408dfc321f))
+* **diagram:** rendering performance ([2eef48b](https://github.com/likec4/likec4/commit/2eef48bed6192e32f312a709bd591a3b179f2b39))
+* **diagram:** responsive dynamic view buttons ([ad03301](https://github.com/likec4/likec4/commit/ad03301a2d0a10ae9742f00d451c0cf89b010e73))
+* **lsp:** 0% opacity in specification ([bbec0a8](https://github.com/likec4/likec4/commit/bbec0a84b1e8411c6ee4c9a8efb1f0d4fbf70920))
+
+
+### Features
+
+* **diagram:** editable edges ([57c30c6](https://github.com/likec4/likec4/commit/57c30c641be2033dc8ee4ccad1d8b99e484290f7))
+* **dynamic-view:** hotkeys navigation ([8e36d7b](https://github.com/likec4/likec4/commit/8e36d7b91d4d50e47b05578ba3b4e14e59576bb6)), closes [#769](https://github.com/likec4/likec4/issues/769)
+* **lsp:** improve symantic highlighting ([3968e07](https://github.com/likec4/likec4/commit/3968e07bca2f578800d476c102ad216d11111e7d))
+* **playground:** persistent workspace ([911c632](https://github.com/likec4/likec4/commit/911c63273a7bf0284dcce2e0aa7df22e0e39035b))
+* update LikeC4 DSL syntax highlighting rules ([2b5a6e1](https://github.com/likec4/likec4/commit/2b5a6e1ba92ac67a7185d6e21850b0b1c401e316))
+
+
+
 ## [1.2.2](https://github.com/likec4/likec4/compare/v1.2.1...v1.2.2) (2024-06-14)
 
 1.2.1 did not fix [#765](https://github.com/likec4/likec4/issues/765) 
