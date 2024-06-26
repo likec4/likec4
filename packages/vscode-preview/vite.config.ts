@@ -39,6 +39,8 @@ export default defineConfig(({ mode }) => {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
       emptyOutDir: !isDev,
       cssCodeSplit: false,
+      // in bytes
+      assetsInlineLimit: 1_000_000,
       /**
        * Adjust chunk size warning limit (in kB).
        */

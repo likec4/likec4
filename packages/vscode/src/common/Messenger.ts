@@ -2,14 +2,13 @@ import vscode from 'vscode'
 
 import { type DiagramView } from '@likec4/core'
 import { ExtensionToPanel, WebviewToExtension } from '@likec4/vscode-preview/protocol'
-import { type Location } from 'vscode-languageclient'
 import { Messenger as VsCodeMessenger } from 'vscode-messenger'
 import { type WebviewTypeMessageParticipant } from 'vscode-messenger-common'
 import { cmdLocate } from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
+import type { C4Model } from './C4Model'
 import { PreviewPanel } from './panel/PreviewPanel'
-import type { Rpc } from './Rpc'
 
 const toPreviewPanel = {
   type: 'webview',
@@ -22,7 +21,7 @@ export default class Messenger extends AbstractDisposable {
   })
 
   constructor(
-    private rpc: Rpc
+    private c4model: C4Model
   ) {
     super()
     this.onDispose(
@@ -46,19 +45,11 @@ export default class Messenger extends AbstractDisposable {
       })
     )
     this.onDispose(
-      this.messenger.onNotification(WebviewToExtension.onChange, async ({ change, viewId }) => {
-        // Logger.debug(`[Messenger] onChange: ${JSON.stringify(params.changes, null, 4)}`)
-        let loc = await this.rpc.changeView({ viewId, change })
-        if (loc) {
-          const location = this.rpc.client.protocol2CodeConverter.asLocation(loc)
-          const previewColumn = PreviewPanel.current?.panel.viewColumn ?? vscode.ViewColumn.One
-
-          const editor = await vscode.window.showTextDocument(location.uri, {
-            viewColumn: previewColumn >= 2 ? previewColumn - 1 : vscode.ViewColumn.Beside,
-            selection: location.range
-          })
-          editor.revealRange(location.range, vscode.TextEditorRevealType.InCenter)
-          await vscode.workspace.save(location.uri)
+      this.messenger.onNotification(WebviewToExtension.onChange, async (changeReq) => {
+        try {
+          await this.c4model.changeView(changeReq)
+        } catch (e) {
+          Logger.error(`[Messenger] onChange error: ${e}`)
         }
       })
     )

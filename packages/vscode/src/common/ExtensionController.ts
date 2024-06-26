@@ -7,7 +7,15 @@ import { GraphvizWasmAdapter } from '@likec4/layouts/graphviz/wasm'
 import type { WebviewToExtension } from '@likec4/vscode-preview/protocol'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import pTimeout from 'p-timeout'
-import { cmdLocate, cmdOpenPreview, cmdPreviewContextOpenSource, cmdRebuild, telemetryKey } from '../const'
+import {
+  cmdLocate,
+  cmdOpenPreview,
+  cmdPreviewContextOpenSource,
+  cmdRebuild,
+  isDev,
+  isProd,
+  telemetryKey
+} from '../const'
 import { Logger } from '../logger'
 import { AbstractDisposable } from '../util'
 import { C4Model } from './C4Model'
@@ -16,15 +24,20 @@ import Messenger from './Messenger'
 import { PreviewPanel } from './panel/PreviewPanel'
 import { Rpc } from './Rpc'
 
+const GlobalStateKeys = {
+  informedAboutManualLayout: 'informedAboutManualLayout'
+}
+
 export class ExtensionController extends AbstractDisposable {
   public static extensionUri: vscode.Uri
 
   private _telemetry: TelemetryReporter
+  private _shouldInformAboutManualLayout: boolean
 
   public graphviz: GraphvizLayouter = new GraphvizLayouter(new GraphvizWasmAdapter())
 
   constructor(
-    _context: vscode.ExtensionContext,
+    private _context: vscode.ExtensionContext,
     public client: LanguageClient
   ) {
     super()
@@ -41,6 +54,13 @@ export class ExtensionController extends AbstractDisposable {
     this.onDispose(() => {
       Logger.telemetry = null
     })
+    this._context.globalState.setKeysForSync([GlobalStateKeys.informedAboutManualLayout])
+
+    // If the user has not been informed about manual layout, we should inform them
+    this._shouldInformAboutManualLayout = !this._context.globalState.get<boolean>(
+      GlobalStateKeys.informedAboutManualLayout,
+      false
+    )
   }
 
   /**
@@ -77,11 +97,11 @@ export class ExtensionController extends AbstractDisposable {
       const rpc = new Rpc(this.client)
       this.onDispose(rpc)
 
-      const messenger = new Messenger(rpc)
-      this.onDispose(messenger)
-
       const c4model = new C4Model(this, rpc, this._telemetry)
       this.onDispose(c4model)
+
+      const messenger = new Messenger(c4model)
+      this.onDispose(messenger)
 
       this.onDispose(
         vscode.window.registerWebviewPanelSerializer(
@@ -141,25 +161,26 @@ export class ExtensionController extends AbstractDisposable {
           void rebuildWorkspace(rpc)
         })
       )
-
       if ((await startingPromise) !== true) {
         this._telemetry.sendTelemetryErrorEvent('lsp-timedout')
         await vscode.window.showErrorMessage(`Failed to start LikeC4 Language Server.
-VSCode restart may be required, if the problem persists, please, report this issue`)
+Restart VSCode. Please report this issue, if it persists.`)
         return Promise.reject()
       }
 
       await initWorkspace(rpc)
 
-      c4model.turnOnTelemetry()
+      if (isProd) {
+        c4model.turnOnTelemetry()
 
-      this._telemetry.sendTelemetryEvent(
-        'activation',
-        {},
-        {
-          workspaceFolders: workspaceFolders.length
-        }
-      )
+        this._telemetry.sendTelemetryEvent(
+          'activation',
+          {},
+          {
+            workspaceFolders: workspaceFolders.length
+          }
+        )
+      }
       Logger.info(`[Extension] activated`)
       //
     } catch (e) {
@@ -169,6 +190,15 @@ VSCode restart may be required, if the problem persists, please, report this iss
       }
       return Promise.reject(e)
     }
+  }
+
+  public shouldInformAboutManualLayout() {
+    if (this._shouldInformAboutManualLayout || isDev) {
+      this._shouldInformAboutManualLayout = false
+      this._context.globalState.update(GlobalStateKeys.informedAboutManualLayout, true)
+      return true
+    }
+    return false
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

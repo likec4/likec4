@@ -17,3 +17,14 @@ export const telemetryKey = '36d9aa84-b503-45ea-ae34-b236e4f83bea' as const
 
 export const isWebUi = () => vscode.env.uiKind === vscode.UIKind.Web
 export const isVirtual = () => vscode.workspace.workspaceFolders?.every(f => f.uri.scheme !== 'file') || false
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV?: string | undefined
+    }
+  }
+}
+
+export const isProd = process.env.NODE_ENV == 'production'
+export const isDev = !isProd

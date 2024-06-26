@@ -119,12 +119,18 @@ export class PreviewPanel extends AbstractDisposable {
     )
 
     this.onDispose(() => {
+      this._deactivate()
       this._panel.dispose()
     })
 
-    this.onDispose(() => {
-      this._deactivate()
-    })
+    this.onDispose(
+      vscode.workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration('likec4.experimental.layoutEditor')) {
+          Logger.debug(`[PreviewPanel] onDidChangeConfiguration`)
+          this._update()
+        }
+      })
+    )
   }
 
   get panel() {
@@ -185,7 +191,7 @@ export class PreviewPanel extends AbstractDisposable {
     }
     const conf = vscode.workspace.getConfiguration('likec4.experimental.layoutEditor')
     const isEditorEnabled = conf.get<boolean>('enabled') ?? true
-    Logger.debug(`[Extension.PreviewPanel] isEditorEnabled=${isEditorEnabled}`)
+    Logger.debug(`[Extension.PreviewPanel._update] isEditorEnabled=${isEditorEnabled}`)
     const nonce = getNonce()
 
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
