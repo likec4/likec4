@@ -1,17 +1,6 @@
-import {
-  type DiagramNode,
-  type DiagramView,
-  extractStep,
-  type Fqn,
-  invariant,
-  type NonEmptyArray,
-  nonNullable,
-  type Point
-} from '@likec4/core'
-import { Bezier } from 'bezier-js'
-import { hasAtLeast, reduce } from 'remeda'
+import { type DiagramNode, type DiagramView, extractStep, type Fqn, invariant, nonNullable } from '@likec4/core'
+import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
-import { toDomPrecision } from './utils'
 
 // const nodeZIndex = (node: DiagramNode) => node.level + (hasAtLeast(node.children, 1) ? 2 : 1)
 const nodeZIndex = (node: DiagramNode) => node.level + 1

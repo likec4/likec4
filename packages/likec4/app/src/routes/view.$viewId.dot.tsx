@@ -3,7 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
-import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
+import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/dot')({
   component: ViewAsDot,
@@ -26,7 +26,7 @@ export const Route = createFileRoute('/view/$viewId/dot')({
 function ViewAsDot() {
   const { dot, dotSvg } = Route.useLoaderData()
   return (
-    <PanelGroup direction="horizontal" autoSaveId="viewAsDot">
+    <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsDot">
       <Panel>
         <ScrollArea
           className={cssScrollArea}

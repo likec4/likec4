@@ -1,31 +1,26 @@
 import { type DiagramView } from '@likec4/core'
 import {
   Badge,
-  Box,
   Button,
   Center,
-  Code,
   Divider,
-  Flex,
   Group,
-  HoverCard,
-  HoverCardDropdown,
-  HoverCardTarget,
   Menu,
   MenuDivider,
   MenuDropdown,
   MenuItem,
   MenuLabel,
   MenuTarget,
+  Paper,
   Text,
   useMantineTheme
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconBrandReact, IconChevronDown, IconFile, IconShare } from '@tabler/icons-react'
 import { Link, type RegisteredRouter, type RouteIds, useParams, useRouterState } from '@tanstack/react-router'
-import { findLast, isEmpty } from 'remeda'
+import { findLast } from 'remeda'
 import { ColorSchemeToggle } from '../ColorSchemeToggle'
-import { cssDiagramTitle, cssHeader } from './Header.css'
+import * as css from './Header.css'
 import { ShareModal } from './ShareModal'
 
 type RegisteredRoute = RouteIds<RegisteredRouter['routeTree']>
@@ -39,12 +34,16 @@ export function Header({ diagram }: HeaderProps) {
   const isTablet = useMediaQuery(`(min-width: ${breakpoints.md})`) ?? false
   const [opened, { open, close }] = useDisclosure(false)
   return (
-    <header className={cssHeader}>
-      <Box flex={1} visibleFrom="xs">
-        <DiagramTitle diagram={diagram} />
-      </Box>
-
-      <Group gap={isTablet ? 'xs' : 4}>
+    <Paper
+      className={css.cssHeader}
+      pos={'fixed'}
+      top={'0.5rem'}
+      right={'0.5rem'}
+      py={5}
+      px={'md'}
+      radius={'sm'}
+      shadow="xl">
+      <Group gap={isTablet ? 'xs' : 4} wrap="nowrap">
         <ViewPageButton isTablet={isTablet} />
         <ColorSchemeToggle />
         <Divider orientation="vertical" />
@@ -57,7 +56,7 @@ export function Header({ diagram }: HeaderProps) {
         opened={opened}
         onClose={close}
         diagram={diagram} />
-    </header>
+    </Paper>
   )
 }
 
@@ -112,26 +111,6 @@ function ViewPageButton({
   const matched = (matchedRoute && viewPages.find(({ route }) => route === matchedRoute.routeId)) ?? viewPages[0]
   return (
     <>
-      {matched.route === '/view/$viewId' && (
-        <Center h="100%" visibleFrom="md">
-          <Link
-            to={`/view/$viewId/editor`}
-            params={{ viewId }}
-            style={{
-              display: 'inline-block',
-              lineHeight: '16px'
-            }}>
-            <Badge
-              size="xs"
-              radius="xs"
-              variant="gradient"
-              gradient={{ from: 'pink', to: 'violet', deg: 90 }}
-            >
-              editor preview
-            </Badge>
-          </Link>
-        </Center>
-      )}
       <Menu shadow="md" width={200} trigger="click-hover" openDelay={100}>
         <MenuTarget>
           <Button
@@ -232,97 +211,3 @@ function ExportButton({ diagram }: HeaderProps) {
     </Menu>
   )
 }
-
-function DiagramTitle({ diagram }: {
-  diagram: DiagramView
-}) {
-  const hasDescription = !isEmpty(diagram.description?.trim())
-  return (
-    <HoverCard closeDelay={500} position="bottom-start">
-      <HoverCardTarget>
-        <Text className={cssDiagramTitle}>
-          {diagram.title || 'Untitled'}
-        </Text>
-      </HoverCardTarget>
-      <HoverCardDropdown>
-        <Flex direction="column" gap={'xs'}>
-          <HoverCardItem title="view id">
-            <Code color="gray">
-              {diagram.id}
-            </Code>
-          </HoverCardItem>
-          <HoverCardItem title="description">
-            {hasDescription
-              ? (
-                <Text component="p" style={{ whiteSpace: 'pre-line' }}>
-                  {diagram.description?.trim()}
-                </Text>
-              )
-              : (
-                <Text c={'dimmed'} fz={'xs'}>
-                  no description
-                </Text>
-              )}
-          </HoverCardItem>
-        </Flex>
-      </HoverCardDropdown>
-    </HoverCard>
-  )
-}
-function HoverCardItem({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <Box>
-      <Text size="xs" c="dimmed">
-        {title}
-      </Text>
-      {children}
-    </Box>
-  )
-}
-
-// function DiagramLinks({ diagram: { links } }: HeaderProps) {
-//   if (!links) {
-//     return null
-//   }
-//   if (links.length > 1) {
-//     return (
-//       <Flex align={'center'}>
-//         <Box grow={'0'} height={'4'}>
-//           <HoverCard.Root closeDelay={500}>
-//             <HoverCard.Trigger>
-//               <IconButton color="gray" variant="ghost" size={'2'}>
-//                 <Link2Icon width={16} height={16} />
-//               </IconButton>
-//             </HoverCard.Trigger>
-//             <HoverCard.Content size={'2'} align="center">
-//               <Flex direction="column" gap="2">
-//                 {links.map(link => (
-//                   <Flex asChild align={'center'} gap={'2'} key={link}>
-//                     <Link href={link} target="_blank">
-//                       <ExternalLinkIcon width={13} height={13} />
-//                       <Text size="2">{link}</Text>
-//                     </Link>
-//                   </Flex>
-//                 ))}
-//               </Flex>
-//             </HoverCard.Content>
-//           </HoverCard.Root>
-//         </Box>
-//       </Flex>
-//     )
-//   }
-//   const link = links[0]
-//   return (
-//     <Flex align={'center'}>
-//       <Tooltip content={link}>
-//         <Box grow={'0'}>
-//           <IconButton asChild color="gray" variant="ghost" size={'2'}>
-//             <Link href={link} target="_blank">
-//               <Link2Icon width={16} height={16} />
-//             </Link>
-//           </IconButton>
-//         </Box>
-//       </Tooltip>
-//     </Flex>
-//   )
-// }

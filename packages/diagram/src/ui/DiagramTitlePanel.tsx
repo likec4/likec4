@@ -1,5 +1,6 @@
-import { Anchor, Box, Button, CopyButton, Group, Paper, Spoiler, Stack, Text } from '@mantine/core'
+import { Anchor, Box, Button, Card, CardSection, CopyButton, Group, Spoiler, Stack, Text } from '@mantine/core'
 import { useLocalStorage } from '@mantine/hooks'
+import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
 import { type DiagramState, useDiagramState } from '../state'
@@ -35,103 +36,114 @@ export default function DiagramTitlePanel() {
           transformOrigin: 'left center'
         }}
       >
-        <Paper
+        <Card
           radius="sm"
-          withBorder={!isCollapsed}
-          className={css.paper}
-          p={isCollapsed ? 'xs' : 'lg'}
+          className={css.card}
+          p={'md'}
           onDoubleClick={e => e.stopPropagation()}>
-          <Stack gap={'sm'} justify="stretch" align="stretch">
-            <Group justify="stretch" wrap="nowrap" onClick={toggle} style={{ cursor: 'pointer' }}>
-              <Text
-                component={'div'}
-                flex={'1'}
-                size={isCollapsed ? 'sm' : 'lg'}
-                fw={500}
-                lh={1.1}
-                className={css.title}
-              >
-                {title}
-              </Text>
-              <Text
-                hidden={isCollapsed}
-                component={'div'}
-                flex={'0 0 auto'}
-                inline
-                size="xs"
-                fz={9}
-                fw={500}
-                c={'dimmed'}
-                style={{
-                  userSelect: 'all'
-                }}>
-                <span style={{ userSelect: 'none' }}>id:{' '}</span>
-                {id}
-              </Text>
-            </Group>
-            {!isCollapsed && (
-              <>
-                {description && (
-                  <Spoiler
-                    maxHeight={42}
-                    showLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">show more</Button>}
-                    hideLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">hide</Button>}>
-                    <Text
-                      component={'div'}
-                      size="sm"
-                      className={css.description}>
-                      {description || 'no description'}
-                    </Text>
-                  </Spoiler>
-                )}
-                {!description && (
+          <CardSection mb={4}>
+            <Button
+              fullWidth
+              size="xs"
+              h={'sm'}
+              py={2}
+              radius={'0'}
+              variant="subtle"
+              color="gray"
+              onClick={toggle}
+            >
+              <IconMenu size={11} opacity={0.4} />
+            </Button>
+          </CardSection>
+          <Group justify="stretch" wrap="nowrap" mb={isCollapsed ? 0 : 'sm'}>
+            <Text
+              component={'div'}
+              flex={'1'}
+              size={isCollapsed ? 'sm' : 'lg'}
+              fw={500}
+              lh={1.1}
+              className={css.title}
+            >
+              {title}
+            </Text>
+            <Text
+              hidden={isCollapsed}
+              component={'div'}
+              flex={'0 0 auto'}
+              inline
+              size="xs"
+              fz={9}
+              fw={500}
+              c={'dimmed'}
+              style={{
+                userSelect: 'all'
+              }}>
+              <span style={{ userSelect: 'none' }}>id:{' '}</span>
+              {id}
+            </Text>
+          </Group>
+          {!isCollapsed && (
+            <>
+              {description && (
+                <Spoiler
+                  maxHeight={42}
+                  showLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">show more</Button>}
+                  hideLabel={<Button color="gray" variant="light" fz={'10'} size="compact-xs">hide</Button>}>
                   <Text
                     component={'div'}
-                    size="xs"
-                    c={'dimmed'}>
-                    no description
+                    size="sm"
+                    className={css.description}>
+                    {description || 'no description'}
                   </Text>
-                )}
-                {links && (
-                  <Stack
-                    gap={3}
-                    justify="stretch"
-                    align="stretch">
-                    {links.map((link) => (
-                      <Group key={link} wrap="nowrap" align="center" gap={'sm'}>
-                        <Box flex={'1'} style={{ overflow: 'hidden' }}>
-                          <Anchor
-                            href={link}
-                            target="_blank"
-                            fz="xs"
-                            truncate="end"
-                            display={'inline-block'}
-                            w={'100%'}>
-                            {link}
-                          </Anchor>
-                        </Box>
-                        <CopyButton value={link}>
-                          {({ copied, copy }) => (
-                            <Button
-                              size="compact-xs"
-                              fz={'10'}
-                              variant="light"
-                              onClick={copy}
-                              color={copied
-                                ? 'teal'
-                                : 'gray'}>
-                              {copied ? 'copied' : 'copy'}
-                            </Button>
-                          )}
-                        </CopyButton>
-                      </Group>
-                    ))}
-                  </Stack>
-                )}
-              </>
-            )}
-          </Stack>
-        </Paper>
+                </Spoiler>
+              )}
+              {!description && (
+                <Text
+                  component={'div'}
+                  size="xs"
+                  c={'dimmed'}>
+                  no description
+                </Text>
+              )}
+              {links && (
+                <Stack
+                  gap={3}
+                  justify="stretch"
+                  align="stretch">
+                  {links.map((link) => (
+                    <Group key={link} wrap="nowrap" align="center" gap={'sm'}>
+                      <Box flex={'1'} style={{ overflow: 'hidden' }}>
+                        <Anchor
+                          href={link}
+                          target="_blank"
+                          fz="xs"
+                          truncate="end"
+                          display={'inline-block'}
+                          w={'100%'}>
+                          {link}
+                        </Anchor>
+                      </Box>
+                      <CopyButton value={link}>
+                        {({ copied, copy }) => (
+                          <Button
+                            size="compact-xs"
+                            fz={'10'}
+                            variant="light"
+                            onClick={copy}
+                            color={copied
+                              ? 'teal'
+                              : 'gray'}>
+                            {copied ? 'copied' : 'copy'}
+                          </Button>
+                        )}
+                      </CopyButton>
+                    </Group>
+                  ))}
+                </Stack>
+              )}
+            </>
+          )}
+        </Card>
       </m.div>
     </AnimatePresence>
   )

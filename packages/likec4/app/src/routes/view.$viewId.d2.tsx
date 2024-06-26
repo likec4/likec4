@@ -3,7 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
-import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
+import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/d2')({
   component: ViewAsD2
@@ -21,7 +21,7 @@ const useData = () => {
 function ViewAsD2() {
   const source = useData()
   return (
-    <PanelGroup direction="horizontal" autoSaveId="viewAsD2">
+    <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
       <Panel>
         <ScrollArea
           className={cssScrollArea}

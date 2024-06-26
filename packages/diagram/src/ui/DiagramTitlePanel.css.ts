@@ -9,9 +9,9 @@ export const container = style({
   margin: 0
 })
 
-export const paper = style({
+export const card = style({
   cursor: 'default',
-  minWidth: 100,
+  minWidth: 150,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
   WebkitBackdropFilter: fallbackVar(vars.dimmed.blur, 'blur(8px)'),
@@ -19,6 +19,11 @@ export const paper = style({
   '@media': {
     [mantine.largerThan('md')]: {
       maxWidth: '45vw'
+    }
+  },
+  selectors: {
+    [`:where([data-mantine-color-scheme='dark']) &`]: {
+      backgroundColor: `color-mix(in srgb, ${mantine.colors.dark[6]}, transparent 20%)`
     }
   }
 })

@@ -1,5 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css'
-import { headerHeight } from '../components/view-page/Header.css'
+import { createVar, globalStyle, style } from '@vanilla-extract/css'
 
 // Index page
 
@@ -20,18 +19,24 @@ globalStyle(`${svgContainer} svg`, {
   height: 'auto'
 })
 
+export const headerHeight = createVar('header-height')
+
 export const cssViewOutlet = style({
   padding: 0,
   margin: 0,
-  paddingTop: headerHeight,
+  // paddingTop: headerHeight,
   width: '100%',
-  height: '100%'
+  height: '100%',
   // position: 'absolute',
   // top: headerHeight,
   // left: 0,
   // width: '100vw',
   // height: `calc(100vh - ${headerHeight})`
+  vars: {
+    [headerHeight]: '60px'
+  }
 })
+
 export const cssCaptureGesturesLayer = style({
   position: 'absolute',
   top: headerHeight,

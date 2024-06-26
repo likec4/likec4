@@ -6,7 +6,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
-import { cssCodeBlock, cssScrollArea } from './view_viewId_.css'
+import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/mmd')({
   component: ViewAsMmd
@@ -43,7 +43,7 @@ function ViewAsMmd() {
   }, [source])
 
   return (
-    <PanelGroup direction="horizontal" autoSaveId="viewAsMmd">
+    <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsMmd">
       <Panel>
         <ScrollArea
           className={cssScrollArea}

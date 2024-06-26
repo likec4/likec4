@@ -81,14 +81,14 @@ export const transparent = style({
     opacity: calc.add(fallbackVar(varOpacity, '1'), opacityDeltaOnHover)
   },
   selectors: {
-    [`:where(.react-flow__node.selected) &`]: {
-      vars: {
-        [opacityDeltaOnHover]: '.05'
-      }
-    },
+    // [`:where(.react-flow__node.selected) &`]: {
+    //   vars: {
+    //     [opacityDeltaOnHover]: '.05'
+    //   }
+    // },
     [`:where([data-hovered]) &`]: {
       vars: {
-        [opacityDeltaOnHover]: '.1'
+        [opacityDeltaOnHover]: '.07'
       }
     }
   }
@@ -212,7 +212,7 @@ export const navigateBtn = style({
   },
   ':hover': {
     boxShadow: mantine.shadows.lg,
-    transform: 'scale(1.466)',
+    transform: 'scale(1.42)',
     opacity: 1,
     transitionDelay: '0'
   },

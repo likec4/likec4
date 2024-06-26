@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css'
-import { headerHeight } from '../components/view-page/Header.css'
+import { headerHeight } from './view.css'
 
 // Index page
 
@@ -18,4 +18,8 @@ globalStyle(`.${cssScrollArea} .mantine-ScrollArea-viewport > div`, {
 
 export const cssCodeBlock = style({
   minHeight: '100%'
+})
+
+export const viewWithTopPadding = style({
+  paddingTop: headerHeight
 })
