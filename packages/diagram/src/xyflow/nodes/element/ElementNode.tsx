@@ -24,13 +24,13 @@ const variants = {
   idle: (_, { scale }) => ({
     scale: 1,
     transition: {
-      delay: isNumber(scale) && scale > selectedScale ? 0.075 : 0
+      delay: isNumber(scale) && scale > selectedScale ? 0.09 : 0
     }
   }),
   selected: (_, { scale }) => ({
     scale: selectedScale,
     transition: {
-      delay: isNumber(scale) && scale > selectedScale ? 0.075 : 0
+      delay: isNumber(scale) && scale > selectedScale ? 0.09 : 0
     }
   }),
   // dimmed: {
@@ -57,7 +57,7 @@ const variants = {
   hovered: (_, { scale }) => ({
     scale: 1.06,
     transition: {
-      delay: isNumber(scale) && scale !== 1 && scale !== selectedScale ? 0 : 0.15
+      delay: isNumber(scale) && scale !== 1 && scale !== selectedScale ? 0 : 0.06
     }
   }),
   tap: {
