@@ -1,29 +1,40 @@
 import { Card } from '@mantine/core'
-import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
-import { deepEqual as eq } from 'fast-equals'
+import { DEV } from 'esm-env'
+import { shallowEqual } from 'fast-equals'
 import { AnimatePresence, m } from 'framer-motion'
-import { memo, useState } from 'react'
-import { isNullish } from 'remeda'
+import { useCallback } from 'react'
+import { reduce } from 'remeda'
+import useTilg from 'tilg'
 import { useDiagramState } from '../state'
+import { useXYStore } from '../xyflow/hooks'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
 
-const OptionsPanelMemo = memo(function OptionsPanel() {
-  const isFocusDisabled = useDiagramState(s => isNullish(s.focusedNodeId))
-  const [selectedNodes, setSelectedNodes] = useState([] as string[])
-
-  useOnSelectionChange({
-    onChange: ({ nodes }) => {
-      const next = nodes.map(n => n.id)
-      setSelectedNodes(prev => eq(prev, next) ? prev : next)
-    }
-  })
-
+const Empty = [] as string[]
+export default function OptionsPanel() {
+  const { isFocusDisabled, viewId } = useDiagramState(s => ({
+    viewId: s.view.id,
+    isFocusDisabled: s.focusedNodeId === null && s.activeDynamicViewStep === null
+  }))
+  const selectedNodes = useXYStore(
+    useCallback(s =>
+      s.elementsSelectable && isFocusDisabled
+        ? reduce(s.nodes, (acc, n) => {
+          if (n.selected) {
+            acc.push(n.id)
+          }
+          return acc
+        }, [] as string[])
+        : Empty, [isFocusDisabled]),
+    shallowEqual
+  )
+  DEV && useTilg()
   return (
     <AnimatePresence mode="wait">
-      {isFocusDisabled && selectedNodes.length > 0 && (
+      {selectedNodes.length > 0 && (
         <m.div
+          key={viewId}
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{
@@ -43,6 +54,4 @@ const OptionsPanelMemo = memo(function OptionsPanel() {
       )}
     </AnimatePresence>
   )
-})
-
-export default OptionsPanelMemo
+}

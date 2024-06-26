@@ -62,7 +62,7 @@ globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
   opacity: 0.8,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
-  filter: 'grayscale(0.85) blur(1px)',
+  filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(1px)')}`,
   willChange: 'opacity, filter'
 })
 
@@ -170,10 +170,10 @@ export const edgeLabel = style({
       transform: `${varTranslate} scale(1.1)`
     },
     [`&:is(${dimmed})`]: {
-      opacity: 0.8,
+      opacity: 0.6,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
-      filter: 'grayscale(0.85) blur(2px)',
+      filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(1px)')}`,
       willChange: 'opacity, filter'
     }
   }

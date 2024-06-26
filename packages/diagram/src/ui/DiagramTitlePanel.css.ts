@@ -1,5 +1,6 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { fallbackVar, globalStyle, style } from '@vanilla-extract/css'
 import { mantine } from '../mantine.css'
+import { vars } from '../theme.css'
 
 export const container = style({
   bottom: 0,
@@ -13,8 +14,8 @@ export const paper = style({
   minWidth: 100,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-  WebkitBackdropFilter: 'blur(8px)',
-  backdropFilter: 'blur(8px)',
+  WebkitBackdropFilter: fallbackVar(vars.dimmed.blur, 'blur(8px)'),
+  backdropFilter: fallbackVar(vars.dimmed.blur, 'blur(8px)'),
   '@media': {
     [mantine.largerThan('md')]: {
       maxWidth: '45vw'

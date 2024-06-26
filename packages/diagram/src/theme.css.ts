@@ -1,6 +1,9 @@
 import { createGlobalThemeContract } from '@vanilla-extract/css'
 
 export const vars = createGlobalThemeContract({
+  dimmed: {
+    blur: 'dimmed-filter-blur'
+  },
   default: {
     font: 'default-font-family'
   },

@@ -9,7 +9,17 @@ export const keepAspectRatioContainer = style({
   padding: 0
 })
 
-export const cssReactFlow = style({})
+export const cssReactFlow = style({
+  '@supports': {
+    // https://wojtek.im/journal/targeting-safari-with-css-media-query
+    '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
+      // TODO: this workaround disables blur filter on dimmed nodes in Safari (to improve performance)
+      vars: {
+        [vars.dimmed.blur]: ''
+      }
+    }
+  }
+})
 
 globalStyle(`.react-flow${cssReactFlow}`, {
   vars: {

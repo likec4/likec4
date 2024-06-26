@@ -128,6 +128,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
       className={clsx([
         css.container,
         isDimmed && css.dimmed,
+        animate !== 'idle' && css.containerAnimated,
         'likec4-element-node'
       ])}
       data-likec4-color={element.color}
