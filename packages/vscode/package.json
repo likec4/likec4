@@ -101,6 +101,11 @@
     "configuration": {
       "title": "%ext.title%",
       "properties": {
+        "likec4.experimental.layoutEditor.enabled": {
+          "description": "Disable diagrams layout editor if you are experiencing issues.",
+          "type": "boolean",
+          "default": true
+        },
         "likec4.graphviz.mode": {
           "title": "Graphviz mode",
           "description": "If you are experiencing issues with the bundled WASM Graphviz, you switch to local binary (\"dot\").",

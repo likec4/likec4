@@ -14,7 +14,7 @@ import {
 import { Toolbar } from './Toolbar'
 import { cssToolbarLeft } from './Toolbar.css'
 import { useViewHistory } from './useViewHistory'
-import { extensionApi, getPreviewWindowState, savePreviewWindowState, useMessenger } from './vscode'
+import { extensionApi, getPreviewWindowState, isEditorEnabled, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
   <div className={likec4error}>
@@ -112,8 +112,8 @@ const App = () => {
           fitViewPadding={0.08}
           readonly={false}
           controls={false}
-          nodesDraggable
-          experimentalEdgeEditing
+          nodesDraggable={isEditorEnabled}
+          experimentalEdgeEditing={isEditorEnabled}
           onNavigateTo={(to) => {
             resetLastClickedNd()
             extensionApi.goToViewSource(to)

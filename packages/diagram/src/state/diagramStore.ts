@@ -1,11 +1,11 @@
 import type { DiagramNode, DiagramView, Fqn, ViewID } from '@likec4/core'
-import { invariant, nonexhaustive, nonNullable, StepEdgeId } from '@likec4/core'
+import { invariant, nonexhaustive, StepEdgeId } from '@likec4/core'
 import { getViewportForBounds, type XYPosition } from '@xyflow/react'
-import { getInternalNodesBounds, getNodeDimensions } from '@xyflow/system'
+import { getNodeDimensions } from '@xyflow/system'
 import { DEV } from 'esm-env'
 import { deepEqual, shallowEqual } from 'fast-equals'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import { debounce, entries, mapToObj, reduce } from 'remeda'
+import { entries, isEmpty, reduce } from 'remeda'
 import type { Exact, Except, RequiredKeysOf, Simplify } from 'type-fest'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
@@ -30,7 +30,6 @@ export type DiagramStore = {
   experimentalEdgeEditing: boolean
 
   // Internal state
-  viewSyncState: 'synced' | 'changed'
   viewSyncDebounceTimeout: number | null
 
   xyflow: XYFlowInstance
@@ -109,6 +108,8 @@ interface DiagramStoreActions {
 
   getElement(id: Fqn): DiagramNode | null
   triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
+
+  cancelSaveManualLayout: () => void
   triggerSaveManualLayout: (xystore: XYStoreApi) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
   fitDiagram: (xyStore: XYStoreApi) => void
@@ -120,7 +121,6 @@ interface DiagramStoreActions {
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
 const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
-  viewSyncState: 'synced',
   viewSyncDebounceTimeout: null,
   initialized: false,
   xyflowSynced: false,
@@ -174,7 +174,6 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           updateView: (nextView) => {
             let {
               viewSyncDebounceTimeout,
-              viewSyncState,
               xyflow,
               dimmed,
               xyflowSynced,
@@ -189,22 +188,12 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredNodeId
             } = get()
 
-            if (viewSyncDebounceTimeout) {
+            if (viewSyncDebounceTimeout !== null) {
               clearTimeout(viewSyncDebounceTimeout)
               viewSyncDebounceTimeout = null
             }
 
             if (shallowEqual(current, nextView)) {
-              if (!xyflowSynced || viewSyncState === 'changed') {
-                set(
-                  {
-                    viewSyncState: 'synced',
-                    xyflowSynced: true
-                  },
-                  noReplace,
-                  'updateView: xyflow synced'
-                )
-              }
               DEV && console.debug('store: skip updateView')
               return
             }
@@ -272,7 +261,6 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
             set(
               {
-                viewSyncState: 'synced',
                 viewSyncDebounceTimeout,
                 view: nextView,
                 activeDynamicViewStep,
@@ -441,13 +429,18 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 ...view,
                 nodes
               })
-              if (onChange) {
-                set({ viewSyncState: 'changed' }, noReplace, 'change sync state')
-              }
             }
             // Trigger change event, even if there are no changes with local state
             // but we maybe out of sync with the server
             onChange?.({ change })
+          },
+
+          cancelSaveManualLayout: () => {
+            let { viewSyncDebounceTimeout } = get()
+            if (viewSyncDebounceTimeout !== null) {
+              clearTimeout(viewSyncDebounceTimeout)
+              set({ viewSyncDebounceTimeout: null }, noReplace, 'cancelSaveManualLayout')
+            }
           },
 
           triggerSaveManualLayout: (xystore) => {
@@ -462,6 +455,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             debounced = setTimeout(() => {
               const { nodeLookup } = xystore.getState()
               const { xyflow, onChange } = get()
+              set({ viewSyncDebounceTimeout: null }, noReplace, 'clear debounce timeout')
 
               const movedNodes = new StringSet()
               const nodes = reduce([...nodeLookup.values()], (acc, node) => {
@@ -490,6 +484,10 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 }
                 return acc
               }, {} as Changes.SaveManualLayout['edges'])
+              if (movedNodes.size === 0 && isEmpty(edges)) {
+                DEV && console.debug('ignore triggerSaveManualLayout, as no changes detected')
+                return
+              }
 
               const change: Changes.SaveManualLayout = {
                 op: 'save-manual-layout',
@@ -500,16 +498,15 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               if (DEV) {
                 console.debug('triggerSaveManualLayout', change)
               }
-              set({ viewSyncDebounceTimeout: null }, noReplace, 'clear debounce timeout')
+
               onChange?.({ change })
-            }, 5000)
+            }, 2000)
             set(
               {
-                viewSyncDebounceTimeout: debounced,
-                viewSyncState: 'changed'
+                viewSyncDebounceTimeout: debounced
               },
               noReplace,
-              'change sync state'
+              'debounce sync state'
             )
           },
 

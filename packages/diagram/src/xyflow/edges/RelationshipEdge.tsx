@@ -207,6 +207,9 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     let pointer = { x: e.clientX, y: e.clientY }
     const onPointerMove = (e: PointerEvent) => {
       if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
+        if (!hasMoved) {
+          diagramStore.getState().cancelSaveManualLayout()
+        }
         hasMoved = true
         pointer = { x: e.clientX, y: e.clientY }
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })

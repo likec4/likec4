@@ -37,12 +37,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
-      emptyOutDir: true,
+      emptyOutDir: !isDev,
       cssCodeSplit: false,
-      // minify: !isDev ? 'esbuild' : false,
-      // cssMinify: !isDev,
-      // Static asset files smaller than this number (in bytes) will be inlined as base64 strings
-      assetsInlineLimit: 500 * 1024,
       /**
        * Adjust chunk size warning limit (in kB).
        */
@@ -53,7 +49,6 @@ export default defineConfig(({ mode }) => {
         external: ['vscode'],
         output: {
           strict: true,
-          minifyInternalExports: true,
           entryFileNames: `[name].js`,
           assetFileNames: `[name].[ext]`
         }

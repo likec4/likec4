@@ -1,8 +1,10 @@
-import { type DiagramView, type Fqn, hasAtLeast, invariant, type RelationID, type ViewID } from '@likec4/core'
+import { type DiagramView, type Fqn, type RelationID, type ViewID } from '@likec4/core'
 import { useEffect, useRef } from 'react'
 import { HOST_EXTENSION, isMessage } from 'vscode-messenger-common'
 import { Messenger } from 'vscode-messenger-webview'
 import { ExtensionToPanel, WebviewToExtension } from '../protocol'
+
+export const isEditorEnabled = __EDITOR_ENABLED === true || __EDITOR_ENABLED === 'true'
 
 const vscode = acquireVsCodeApi<{
   view: DiagramView

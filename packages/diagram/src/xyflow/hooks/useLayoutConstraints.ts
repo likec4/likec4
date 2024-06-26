@@ -286,7 +286,8 @@ export function useLayoutConstraints(): LayoutConstraints {
         x: event.clientX,
         y: event.clientY
       }
-      const { xyflow } = diagramApi.getState()
+      const { xyflow, cancelSaveManualLayout } = diagramApi.getState()
+      cancelSaveManualLayout()
       solverRef.current = createLayoutConstraints(xyflow, xyflowApi, xynode.id)
     },
     onNodeDrag: (_event, xynode) => {

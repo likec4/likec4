@@ -183,7 +183,9 @@ export class PreviewPanel extends AbstractDisposable {
       //   vscode.Uri.joinPath(this.context.extensionUri, 'dist')
       // ]
     }
-
+    const conf = vscode.workspace.getConfiguration('likec4.experimental.layoutEditor')
+    const isEditorEnabled = conf.get<boolean>('enabled') ?? true
+    Logger.debug(`[Extension.PreviewPanel] isEditorEnabled=${isEditorEnabled}`)
     const nonce = getNonce()
 
     const stylesUri = getUri(webview, ['dist', 'preview', 'style.css'])
@@ -206,6 +208,9 @@ export class PreviewPanel extends AbstractDisposable {
     <link rel="stylesheet" type="text/css" href="${stylesUri}">
   </head>
   <body class="${theme}">
+    <script nonce="${nonce}">
+      var __EDITOR_ENABLED = ${isEditorEnabled};
+    </script>
     <div id="root"></div>
     <script src="${scriptUri}"></script>
   </body>
