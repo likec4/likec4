@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { DEV } from 'esm-env'
 import { shallowEqual } from 'fast-equals'
 import { domAnimation, LazyMotion } from 'framer-motion'
-import { memo, useRef } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import useTilg from 'tilg'
 import { rootClassName } from './globals.css'
 import { KeepAspectRatioContainer } from './KeepAspectRatioContainer'
@@ -12,7 +12,7 @@ import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
-import { WhenInitialized } from './state/WhenInitialized'
+import { useDiagramStoreApi } from './state/useDiagramStore'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
@@ -146,6 +146,22 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
   enableDynamicViewWalkthrough
 }) {
   DEV && useTilg()
+  const diagramApi = useDiagramStoreApi()
+  const [isInitialized, setIsInitialized] = useState(diagramApi.getState().initialized)
+
+  useEffect(() => {
+    if (isInitialized) {
+      return
+    }
+    return diagramApi.subscribe(
+      s => s.initialized,
+      setIsInitialized,
+      {
+        fireImmediately: true
+      }
+    )
+  }, [isInitialized])
+
   return (
     <>
       <XYFlow
@@ -166,11 +182,13 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
           controls={controls}
         />
       </XYFlow>
-      <WhenInitialized>
-        <SyncWithDiagram />
-        {fitView && <FitViewOnDiagramChange />}
-        {fitView && zoomable && <SelectEdgesOnNodeFocus />}
-      </WhenInitialized>
+      {isInitialized && (
+        <>
+          <SyncWithDiagram />
+          {fitView && <FitViewOnDiagramChange />}
+          {fitView && zoomable && <SelectEdgesOnNodeFocus />}
+        </>
+      )}
     </>
   )
 }, shallowEqual)
