@@ -2,17 +2,20 @@ import { createVar, style } from '@vanilla-extract/css'
 import { mantine } from '../mantine.css'
 
 const bg = createVar()
+
+export const panel = style({
+  isolation: 'isolate'
+})
+
 export const resize = style({
   cursor: 'ew-resize',
   userSelect: 'none',
   boxSizing: 'border-box',
   borderLeft: '0px solid transparent',
-  width: 4,
-  padding: '0 1px',
-  height: '100%',
   transition: 'all 175ms ease-in-out',
   backgroundColor: mantine.colors.defaultBorder,
   backgroundClip: 'content-box',
+  flex: '0 0 5px',
   // position: 'relative',
   // vars: {
   //   [bg]: mantine.colors.defaultBorder

@@ -1,4 +1,5 @@
 import { AppShell, AppShellHeader, AppShellMain } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { createFileRoute } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { BlankExample, Examples } from '../examples'
@@ -23,6 +24,7 @@ export const Route = createFileRoute('/w/$id')({
 export function WorkspaceContextPage() {
   const { id } = Route.useParams()
   const { isCustom, ...data } = Route.useLoaderData()
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   return (
     <AppShell header={{ height: 50 }}>
@@ -37,16 +39,21 @@ export function WorkspaceContextPage() {
         </AppShellHeader>
         <AppShellMain h={'100dvh'}>
           <PanelGroup
-            direction="horizontal"
+            direction={isMobile ? 'vertical' : 'horizontal'}
             autoSaveId={`playground-${id}`}>
             <Panel
+              className={css.panel}
               collapsible={true}
               minSize={5}
               defaultSize={40}>
               <EditorPanel />
             </Panel>
-            <PanelResizeHandle className={css.resize} />
-            <Panel>
+            <PanelResizeHandle
+              className={css.resize}
+              style={{
+                padding: isMobile ? '1px 0' : '0 1px'
+              }} />
+            <Panel className={css.panel}>
               <DiagramPanel />
             </Panel>
           </PanelGroup>
