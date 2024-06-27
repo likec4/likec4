@@ -66,7 +66,7 @@
     "type-fest": "^4.18.2",
     "typescript": "^5.4.5",
     "ufo": "^1.5.3",
-    "vite": "5.3.1",
+    "vite": "5.3.2",
     "vscode": "npm:@codingame/monaco-vscode-api@5.2.0",
     "vscode-languageclient": "~9.0.1",
     "vscode-languageserver": "~9.0.1",
