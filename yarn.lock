@@ -2436,6 +2436,7 @@ __metadata:
     "@mantine/hooks": "npm:7.10.2"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
+    "@tabler/icons-react": "npm:^3.0.0"
     "@types/node": "npm:^20.14.2"
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:18.3.0"
@@ -2446,9 +2447,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     esm-env: "npm:1.0.0"
-    lucide-react: "npm:^0.294.0"
     postcss: "npm:^8.4.38"
-    postcss-preset-mantine: "npm:^1.15.0"
     rambdax: "npm:^9.1.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -9288,15 +9287,6 @@ __metadata:
   version: 10.0.1
   resolution: "lru-cache@npm:10.0.1"
   checksum: 10c0/982dabfb227b9a2daf56d712ae0e72e01115a28c0a2068cd71277bca04568f3417bbf741c6c7941abc5c620fd8059e34f15607f90ebccbfa0a17533322d27a8e
-  languageName: node
-  linkType: hard
-
-"lucide-react@npm:^0.294.0":
-  version: 0.294.0
-  resolution: "lucide-react@npm:0.294.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/3c8d05743c5bac0299ac23ebcb78b6c0ae03182878cd80f4a51ccb89507ea564145cc8bc77757874066044e7a96af14a2a986cd759ae2b971dcab953c6b0c566
   languageName: node
   linkType: hard
 

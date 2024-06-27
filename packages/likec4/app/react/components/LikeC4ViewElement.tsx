@@ -4,6 +4,7 @@ import { useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 
+import { ShadowRootMantine } from './ShadowRootMantine'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
@@ -58,10 +59,8 @@ export function LikeC4ViewElement<ViewId extends string>({
       `
         }} />
       <ShadowRoot
-        colorScheme={scheme}
         data-likec4-instance={id}
         injectFontCss={injectFontCss}
-        rootClassName={clsx(cssLikeC4View, !!onNavigateTo && cssInteractive)}
         {...props}
         {...(onNavigateTo && {
           onClick: (e) => {
@@ -70,24 +69,30 @@ export function LikeC4ViewElement<ViewId extends string>({
           }
         })}
       >
-        <LikeC4Diagram
-          view={view as any}
-          readonly
-          pannable={false}
-          zoomable={false}
-          background={background}
-          fitView
-          fitViewPadding={0}
-          showElementLinks
-          showDiagramTitle={false}
-          enableDynamicViewWalkthrough={false}
-          controls={false}
-          nodesSelectable={false}
-          keepAspectRatio={false}
-          {...(onNavigateTo && {
-            onNavigateTo: to => onNavigateTo(to as string as ViewId)
-          })}
-        />
+        <ShadowRootMantine
+          colorScheme={scheme}
+          rootClassName={clsx(cssLikeC4View, !!onNavigateTo && cssInteractive)}
+        >
+          <LikeC4Diagram
+            view={view as any}
+            readonly
+            pannable={false}
+            zoomable={false}
+            background={background}
+            fitView
+            fitViewPadding={0}
+            showElementLinks
+            showDiagramTitle={false}
+            enableDynamicViewWalkthrough={false}
+            showNavigationButtons={false}
+            controls={false}
+            nodesSelectable={false}
+            keepAspectRatio={false}
+            {...(onNavigateTo && {
+              onNavigateTo: to => onNavigateTo(to as string as ViewId)
+            })}
+          />
+        </ShadowRootMantine>
       </ShadowRoot>
     </>
   )

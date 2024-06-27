@@ -1,13 +1,11 @@
-import { LikeC4Diagram, useUpdateEffect } from '@likec4/diagram'
-import { ActionIcon, Group, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, ModalRoot } from '@mantine/core'
-import { useStateHistory } from '@mantine/hooks'
+import { LikeC4Diagram } from '@likec4/diagram'
 import { useMountEffect } from '@react-hookz/web'
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
-import { useId, useState } from 'react'
-import { cssDiagram, historyButtons, modalBody, modalCloseButton, modalContent } from './LikeC4Browser.css'
+import { useId, useRef, useState } from 'react'
+import { cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
+import { ShadowRootMantine } from './ShadowRootMantine'
 import { useColorScheme } from './styles'
-import { cssLikeC4Browser } from './styles.css'
+import * as css from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
 export type LikeC4BrowserProps<ViewId extends string> = Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive'> & {
@@ -22,44 +20,23 @@ export function LikeC4Browser<ViewId extends string>({
   injectFontCss,
   onNavigateTo,
   onClose,
-  overlay,
-  background = 'dots',
-  ...props
+  background = 'dots'
 }: LikeC4BrowserProps<ViewId>) {
+  const [opened, setOpened] = useState(false)
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const id = useId()
   const scheme = useColorScheme(colorScheme)
-  const [opened, setOpened] = useState(false)
-
-  const defaultOverlayOpacity = scheme === 'light' ? 0.85 : 0.7
-
-  const [historyViewId, historyOps, {
-    history,
-    current: historyIndex
-  }] = useStateHistory(view.id)
-
-  const hasBack = historyIndex > 0
-  const hasForward = historyIndex < history.length - 1
-
-  useUpdateEffect(() => {
-    if (view.id !== historyViewId) {
-      historyOps.set(view.id)
-    }
-  }, [view.id])
-
-  useUpdateEffect(() => {
-    if (view.id !== historyViewId) {
-      onNavigateTo(historyViewId)
-    }
-  }, [historyViewId])
 
   useMountEffect(() => {
-    setOpened(true)
+    dialogRef.current?.showModal()
+    setTimeout(() => {
+      setOpened(true)
+    }, 50)
   })
   const closeMe = () => {
-    setOpened(false)
     setTimeout(() => {
       onClose()
-    }, 200)
+    }, 400)
   }
 
   return (
@@ -69,39 +46,92 @@ export function LikeC4Browser<ViewId extends string>({
         dangerouslySetInnerHTML={{
           __html: `
         [data-likec4-instance="${id}"] {
-          position: fixed;
+          animation: likec4-dialog-fade-out 0.18s ease-out;
+        }
+
+        [data-likec4-instance="${id}"][open] {
+          animation: likec4-dialog-fade-in 0.21s ease-out;
+        }
+
+        [data-likec4-instance="${id}"][open]::backdrop {
+          animation: likec4-dialog-backdrop-fade-in 0.21s ease-out forwards;
+        }
+
+        @keyframes likec4-dialog-fade-in {
+          0% {
+            opacity: 0.1;
+            transform: scale(0.8);
+            display: none;
+          }
+
+          100% {
+            opacity: 1;
+            transform: scale(1);
+            display: block;
+          }
+        }
+
+        @keyframes likec4-dialog-fade-out {
+          0% {
+            opacity: 1;
+            transform: scale(1);
+            display: block;
+          }
+
+          100% {
+            opacity: 0;
+            transform: scale(0.8);
+            display: none;
+          }
+        }
+
+        @keyframes likec4-dialog-backdrop-fade-in {
+          0% {
+            background-color: rgb(36 36 36 / 0%);
+          }
+
+          100% {
+            background-color: rgb(36 36 36 / 85%);
+          }
+        }
+        [data-likec4-instance="${id}"] {
           top: 0;
           left: 0;
           padding: 0;
           margin: 0;
           border: 0 solid transparent;
           box-sizing: border-box;
-          z-index: 9999;
-          width: 100dvw;
-          height: 100dvh;
+          width: 100%;
+          min-width: 100dvw;
+          height: 100%;
+          min-height: 100dvh;
+          background: transparent;
+        }
+        [data-likec4-instance="${id}"] > div {
+          width: 100%;
+          height: 100%;
+          padding: 0;
+          margin: 0;
+          border: 0 solid transparent;
+          box-sizing: border-box;
+        }
+        [data-likec4-instance="${id}"]::backdrop {
+          -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
         }
       `
         }} />
-      <ShadowRoot
-        colorScheme={scheme}
-        injectFontCss={injectFontCss}
-        rootClassName={cssLikeC4Browser}
+      <dialog
+        aria-modal="true"
         data-likec4-instance={id}
-        {...props}>
-        <ModalRoot
-          opened={opened}
-          fullScreen
-          withinPortal={false}
-          onClose={closeMe}>
-          <ModalOverlay
-            blur={overlay?.blur ?? 8}
-            color="var(--mantine-color-body)"
-            fixed={false}
-            backgroundOpacity={overlay?.opacity ?? defaultOverlayOpacity}
-          />
-          <ModalContent className={modalContent}>
-            <ModalCloseButton className={modalCloseButton} />
-            <ModalBody className={modalBody}>
+        ref={dialogRef}
+        onClose={closeMe}>
+        <ShadowRoot injectFontCss={injectFontCss}>
+          <ShadowRootMantine
+            colorScheme={scheme}
+            rootClassName={css.cssLikeC4Browser}
+          >
+            {opened && (
               <LikeC4Diagram
                 className={cssDiagram}
                 view={view as any}
@@ -109,37 +139,22 @@ export function LikeC4Browser<ViewId extends string>({
                 pannable
                 zoomable
                 fitView
+                fitViewPadding={0.05}
                 showDiagramTitle
                 showElementLinks
                 enableDynamicViewWalkthrough
+                showNavigationButtons
                 background={background}
-                fitViewPadding={0.05}
                 controls={false}
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}
                 onNavigateTo={to => onNavigateTo(to as string as ViewId)}
               />
-              <Group className={historyButtons} gap={'xs'}>
-                {hasBack && (
-                  <ActionIcon variant="light" color="gray" size={'lg'} onClick={() => historyOps.back()}>
-                    <IconChevronLeft />
-                  </ActionIcon>
-                )}
-                {hasForward && (
-                  <ActionIcon
-                    variant="light"
-                    color="gray"
-                    size={'lg'}
-                    onClick={() => historyOps.forward()}>
-                    <IconChevronRight />
-                  </ActionIcon>
-                )}
-              </Group>
-            </ModalBody>
-          </ModalContent>
-        </ModalRoot>
-      </ShadowRoot>
+            )}
+          </ShadowRootMantine>
+        </ShadowRoot>
+      </dialog>
     </>
   )
 }

@@ -17,7 +17,16 @@ const bundledStyles = () => {
   if (__USE_SHADOW_STYLE__) {
     BundledStyles = SHADOW_STYLE
   } else {
-    BundledStyles = Array.from(__likec4styles.values()).filter(isString).join('\n')
+    BundledStyles = [
+      ...Array.from(__likec4styles.values()),
+      // vanilla-extract in transform mode
+      ...Array.from(document.querySelectorAll(`style[data-package="likec4"]`)).map((style) => {
+        if (style.getAttribute('data-file')?.endsWith('.css.ts')) {
+          return style.textContent
+        }
+        return null
+      })
+    ].filter(isString).join('\n')
   }
   // return BundledStyles
   return BundledStyles.replaceAll('body {', `${rootSelector}{`)
