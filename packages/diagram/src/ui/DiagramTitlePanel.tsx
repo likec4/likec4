@@ -52,7 +52,7 @@ export default function DiagramTitlePanel() {
               color="gray"
               onClick={toggle}
             >
-              <IconMenu size={11} opacity={0.4} />
+              <IconMenu size={11} opacity={0.7} />
             </Button>
           </CardSection>
           <Group justify="stretch" wrap="nowrap" mb={isCollapsed ? 0 : 'sm'}>

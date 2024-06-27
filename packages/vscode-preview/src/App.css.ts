@@ -107,3 +107,8 @@ globalStyle(`${likec4ParsingScreen} section`, {
 globalStyle('.react-flow .react-flow__attribution', {
   display: 'none'
 })
+
+globalStyle(`.mantine-ActionIcon-icon .tabler-icon`, {
+  width: '75%',
+  height: '75%'
+})

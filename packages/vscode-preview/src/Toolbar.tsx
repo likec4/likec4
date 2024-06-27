@@ -3,15 +3,21 @@ import {
   ActionIcon,
   ActionIconGroup,
   Box,
-  Button,
-  Divider,
-  Group,
   HoverCard,
   HoverCardDropdown,
   HoverCardTarget,
-  Stack
+  SimpleGrid,
+  Text,
+  Tooltip,
+  TooltipGroup
 } from '@mantine/core'
-import { MoveHorizontalIcon, MoveVerticalIcon, ScanEyeIcon } from 'lucide-react'
+import {
+  IconArrowAutofitDown,
+  IconArrowAutofitLeft,
+  IconArrowAutofitRight,
+  IconArrowAutofitUp,
+  IconLayout2Filled
+} from '@tabler/icons-react'
 import { toolbar } from './Toolbar.css'
 import { extensionApi } from './vscode'
 
@@ -25,8 +31,8 @@ export function Toolbar({ view }: { view: DiagramView }) {
   }
 
   const buttonProps = (layout: AutoLayoutDirection) => ({
-    size: 'compact-sm',
-    fz: 'xs',
+    size: 'md',
+    // fz: 'xs',
     variant: layout === view.autoLayout ? 'filled' : 'light',
     color: layout === view.autoLayout ? 'blue' : 'gray',
     onClick: changeLayout(layout)
@@ -36,44 +42,60 @@ export function Toolbar({ view }: { view: DiagramView }) {
     <ActionIconGroup className={toolbar}>
       <HoverCard
         position="bottom-end"
+        closeDelay={300}
         transitionProps={{
           transition: 'pop'
         }}
       >
         <HoverCardTarget>
           <ActionIcon color="gray" variant="light">
-            <ScanEyeIcon style={{ width: '70%', height: '70%' }} />
+            <IconLayout2Filled />
           </ActionIcon>
         </HoverCardTarget>
-        <HoverCardDropdown>
-          <Group gap={'md'}>
-            <Stack gap={'sm'}>
-              <Divider
-                labelPosition="left"
-                label={
-                  <>
-                    <MoveVerticalIcon size={12} />
-                    <Box ml={5}>vertical</Box>
-                  </>
-                }
-              />
-              <Button {...buttonProps('TB')}>Top-Bottom</Button>
-              <Button {...buttonProps('BT')}>Bottom-Top</Button>
-            </Stack>
-            <Stack gap={'sm'}>
-              <Divider
-                labelPosition="left"
-                label={
-                  <>
-                    <MoveHorizontalIcon size={12} />
-                    <Box ml={5}>horizontal</Box>
-                  </>
-                }
-              />
-              <Button {...buttonProps('LR')}>Left-Right</Button>
-              <Button {...buttonProps('RL')}>Right-Left</Button>
-            </Stack>
-          </Group>
+        <HoverCardDropdown p={'xs'}>
+          <Box>
+            <Text inline fz={'xs'} c={'dimmed'}>Auto direction:</Text>
+          </Box>
+          <TooltipGroup openDelay={100}>
+            <SimpleGrid cols={3} mt={'xs'} verticalSpacing={1} spacing={4}>
+              {/* 1 row */}
+              <div></div>
+              <div>
+                <Tooltip label={'Bottom to Top'} fz={'sm'}>
+                  <ActionIcon {...buttonProps('BT')}>
+                    <IconArrowAutofitUp />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
+              <div></div>
+              {/* 2 row */}
+              <div>
+                <Tooltip label={'Right to Left'} fz={'sm'}>
+                  <ActionIcon {...buttonProps('RL')}>
+                    <IconArrowAutofitLeft />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
+              <div></div>
+              <div>
+                <Tooltip label={'Left to Right'} fz={'sm'}>
+                  <ActionIcon {...buttonProps('LR')}>
+                    <IconArrowAutofitRight />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
+              {/* 3 row */}
+              <div></div>
+              <div>
+                <Tooltip label={'Top to Bottom'} fz={'sm'}>
+                  <ActionIcon {...buttonProps('TB')}>
+                    <IconArrowAutofitDown />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
+              <div></div>
+            </SimpleGrid>
+          </TooltipGroup>
         </HoverCardDropdown>
       </HoverCard>
     </ActionIconGroup>

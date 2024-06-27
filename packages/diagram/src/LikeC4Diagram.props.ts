@@ -21,9 +21,10 @@ export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigat
 export type OnNavigateTo = {
   (
     to: ViewID,
-    event: ReactMouseEvent,
-    element: DiagramNodeWithNavigate,
-    xynode: XYFlowNode
+    // These fields present if navigateTo triggered by a node click
+    event?: ReactMouseEvent,
+    element?: DiagramNodeWithNavigate,
+    xynode?: XYFlowNode
   ): void
 }
 export type OnNodeClick = (
@@ -158,6 +159,12 @@ export interface LikeC4DiagramProperties {
    * @default true
    */
   showDiagramTitle?: boolean | undefined
+
+  /**
+   * Show back/forward navigation buttons
+   * @default false
+   */
+  showNavigationButtons?: undefined | boolean
 
   /**
    * If Walkthrough for dynamic views should be enabled

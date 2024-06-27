@@ -76,7 +76,9 @@ export async function viteWebcomponentConfig({
     },
     plugins: [
       react({}),
-      vanillaExtractPlugin({}),
+      vanillaExtractPlugin({
+        unstable_mode: 'transform'
+      }),
       likec4Plugin({ languageServices })
     ],
     css: {

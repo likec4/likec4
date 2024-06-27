@@ -80,10 +80,11 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
       sourcemap: false,
       minify: true,
       copyPublicDir: true,
-      // 500Kb
-      assetsInlineLimit: 500 * 1024,
+      assetsInlineLimit: 1_000_000,
       chunkSizeWarningLimit,
       commonjsOptions: {
+        esmExternals: true,
+        transformMixedEsModules: true,
         ignoreTryCatch: 'remove'
       }
     },
@@ -96,6 +97,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
     },
     customLogger,
     plugins: [
+      vanillaExtractPlugin({
+        unstable_mode: 'transform'
+      }),
       react(),
       likec4Plugin({ languageServices }),
       TanStackRouterVite({
@@ -104,11 +108,9 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         routesDirectory: resolve(root, 'src/routes'),
         quoteStyle: 'single'
       }),
-      vanillaExtractPlugin({}),
       cssInjectedByJsPlugin({
         injectionCodeFormat: 'esm',
-        styleId: () => 'likec4-style-' + Math.random().toString(36).slice(4),
-        injectCodeFunction: function injectCodeCustomRunTimeFunction(cssCode: string, options) {
+        injectCodeFunction: function(cssCode: string, options) {
           try {
             if (typeof document != 'undefined') {
               const id = options.styleId ?? options.attributes?.['data-vite-dev-id']
@@ -138,8 +140,10 @@ export const viteConfig = async (cfg?: LikeC4ViteConfig) => {
         },
         dev: {
           enableDev: true,
-          removeStyleCodeFunction: function removeStyleCode(id) {
-            document.querySelectorAll(`style[data-vite-dev-id="${id}"]`).forEach((el) => el.remove())
+          removeStyleCodeFunction: function(id) {
+            document.querySelectorAll(`[data-vite-dev-id="${id}"]`).forEach((el) => {
+              el.parentNode!.removeChild(el)
+            })
             // @ts-ignore
             if (window.__likec4styles) {
               // @ts-ignore

@@ -22,6 +22,7 @@ function ViewEditor() {
       readonly={false}
       nodesDraggable
       experimentalEdgeEditing
+      showNavigationButtons
       fitViewPadding={0.08}
       onNavigateTo={viewId => {
         router.navigate({

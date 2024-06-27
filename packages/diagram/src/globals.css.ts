@@ -13,7 +13,7 @@ globalStyle(`.${rootClassName}`, {
 })
 
 createGlobalTheme(`.${rootClassName}`, {
-  ...omit(vars, ['optionsPanel', 'dimmed', 'default'])
+  ...omit(vars, ['optionsPanel', 'navigationPanel', 'dimmed', 'default'])
 }, {
   likec4: {
     font:

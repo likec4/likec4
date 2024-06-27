@@ -4,6 +4,7 @@ import { memo, type PropsWithChildren } from 'react'
 import { isNonNull } from 'remeda'
 import type { LikeC4DiagramProperties } from '../LikeC4Diagram.props'
 import { useDiagramState } from '../state/useDiagramStore'
+import { BackwardForwardPanel } from '../ui/BackwardForwardPanel'
 import DiagramTitlePanel from '../ui/DiagramTitlePanel'
 import { DynamicViewWalkthrough } from '../ui/DynamicViewWalkthrough'
 import OptionsPanel from '../ui/OptionsPanel'
@@ -13,6 +14,7 @@ type XYFlowInnerProps = PropsWithChildren<{
   background: NonNullable<LikeC4DiagramProperties['background']>
   controls: boolean
   showDiagramTitle: boolean
+  showNavigationButtons: boolean
   enableDynamicViewWalkthrough: boolean
 }>
 
@@ -21,6 +23,7 @@ export const XYFlowInner = memo(function XYFlowInnerR({
   background,
   controls,
   showDiagramTitle,
+  showNavigationButtons,
   enableDynamicViewWalkthrough
 }: XYFlowInnerProps) {
   const {
@@ -44,6 +47,7 @@ export const XYFlowInner = memo(function XYFlowInnerR({
       {readonly === false && <OptionsPanel />}
       {isDiagramTitleVisible && <DiagramTitlePanel />}
       {isDynamicView && enableDynamicViewWalkthrough && <DynamicViewWalkthrough />}
+      {showNavigationButtons && <BackwardForwardPanel />}
       {children}
     </>
   )

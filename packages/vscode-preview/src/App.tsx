@@ -1,8 +1,6 @@
 import { type DiagramNode, type DiagramView, hasAtLeast } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
-import { ActionIcon } from '@mantine/core'
 import { VSCodeButton, VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react'
-import { ArrowLeftIcon } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   likec4Container,
@@ -12,8 +10,6 @@ import {
   likec4ParsingScreen
 } from './App.css'
 import { Toolbar } from './Toolbar'
-import { cssToolbarLeft } from './Toolbar.css'
-import { useViewHistory } from './useViewHistory'
 import { extensionApi, getPreviewWindowState, isEditorEnabled, savePreviewWindowState, useMessenger } from './vscode'
 
 const ErrorMessage = ({ error }: { error: string | null }) => (
@@ -69,8 +65,6 @@ const App = () => {
     extensionApi.imReady()
   }, [])
 
-  const prevView = useViewHistory(view)
-
   if (!view) {
     return (
       <div className={likec4ParsingScreen}>
@@ -114,6 +108,7 @@ const App = () => {
           controls={false}
           nodesDraggable={isEditorEnabled}
           experimentalEdgeEditing={isEditorEnabled}
+          showNavigationButtons
           onNavigateTo={(to) => {
             resetLastClickedNd()
             extensionApi.goToViewSource(to)
@@ -164,22 +159,6 @@ const App = () => {
             <VSCodeProgressRing />
           </div>
         </>
-      )}
-      {prevView && (
-        <div className={cssToolbarLeft}>
-          <ActionIcon
-            color="gray"
-            variant="light"
-            onClick={e => {
-              e.stopPropagation()
-              extensionApi.goToViewSource(prevView.id)
-              extensionApi.openView(prevView.id)
-              // optimistic update
-              updateView(prevView)
-            }}>
-            <ArrowLeftIcon style={{ width: '70%', height: '70%' }} />
-          </ActionIcon>
-        </div>
       )}
       <Toolbar view={view} />
     </>

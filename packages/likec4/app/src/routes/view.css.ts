@@ -33,7 +33,10 @@ export const cssViewOutlet = style({
   // width: '100vw',
   // height: `calc(100vh - ${headerHeight})`
   vars: {
-    [headerHeight]: '60px'
+    [headerHeight]: '60px',
+    // TODO: temporary hack to fix the navigation panel position
+    ['--likec4-navigation-panel-top']: '0.8rem',
+    ['--likec4-navigation-panel-left']: '3rem'
   }
 })
 

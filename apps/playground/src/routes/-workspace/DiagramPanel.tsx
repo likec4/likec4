@@ -78,6 +78,7 @@ export function DiagramPanel() {
             fitViewPadding={0.07}
             experimentalEdgeEditing
             nodesDraggable
+            showNavigationButtons
             onNavigateTo={id => store.getState().fetchDiagram(id)}
             onChange={ev => store.getState().onChanges(ev)}
             onNodeClick={({ element, event }) => {

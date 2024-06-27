@@ -36,6 +36,7 @@ export function LikeC4Diagram({
   controls = false,
   showElementLinks = true,
   showDiagramTitle = true,
+  showNavigationButtons = false,
   enableDynamicViewWalkthrough = true,
   initialWidth,
   initialHeight,
@@ -113,6 +114,7 @@ export function LikeC4Diagram({
                 controls={controls}
                 pannable={pannable}
                 showDiagramTitle={showDiagramTitle}
+                showNavigationButtons={showNavigationButtons}
                 enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
               />
             </KeepAspectRatioContainer>
@@ -132,6 +134,7 @@ type LikeC4DiagramInnerProps = {
   defaultNodes: XYFlowNode[]
   defaultEdges: XYFlowEdge[]
   showDiagramTitle: boolean
+  showNavigationButtons: boolean
   enableDynamicViewWalkthrough: boolean
 }
 const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4DiagramInner({
@@ -143,6 +146,7 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
   defaultNodes,
   defaultEdges,
   showDiagramTitle,
+  showNavigationButtons,
   enableDynamicViewWalkthrough
 }) {
   DEV && useTilg()
@@ -176,6 +180,7 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
         )}
       >
         <XYFlowInner
+          showNavigationButtons={showNavigationButtons}
           showDiagramTitle={showDiagramTitle}
           enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
           background={background}

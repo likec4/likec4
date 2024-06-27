@@ -1,7 +1,6 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
-import postcssPresetMantine from 'postcss-preset-mantine'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) => {
@@ -28,16 +27,9 @@ export default defineConfig(({ mode }) => {
       // treeShaking: true,
       jsxInject: `import React from 'react'`
     },
-    css: {
-      postcss: {
-        plugins: [
-          postcssPresetMantine()
-        ]
-      }
-    },
     build: {
       outDir: isDev ? resolve(__dirname, '..', 'vscode', 'dist', 'preview') : 'dist',
-      emptyOutDir: !isDev,
+      emptyOutDir: true,
       cssCodeSplit: false,
       // in bytes
       assetsInlineLimit: 1_000_000,

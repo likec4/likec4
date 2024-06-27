@@ -35,6 +35,10 @@ export const vars = createGlobalThemeContract({
   optionsPanel: {
     top: 'options-panel-top',
     right: 'options-panel-right'
+  },
+  navigationPanel: {
+    top: 'navigation-panel-top',
+    left: 'navigation-panel-left'
   }
 }, (value) => `likec4-${value}`)
 

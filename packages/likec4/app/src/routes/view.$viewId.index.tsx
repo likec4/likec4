@@ -22,6 +22,7 @@ function ViewReact() {
       readonly
       controls={false}
       fitViewPadding={0.08}
+      showNavigationButtons
       onNavigateTo={(viewId) => {
         router.navigate({
           to: '/view/$viewId',
