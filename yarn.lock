@@ -9009,7 +9009,7 @@ __metadata:
     p-limit: "npm:^5.0.0"
     picocolors: "npm:^1.0.0"
     pkg-up: "npm:^5.0.0"
-    playwright: "npm:1.44.1"
+    playwright: "npm:1.45.0"
     postcss: "npm:^8.4.38"
     postcss-preset-mantine: "npm:^1.15.0"
     pretty-ms: "npm:^9.0.0"
@@ -11603,27 +11603,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.44.1":
-  version: 1.44.1
-  resolution: "playwright-core@npm:1.44.1"
+"playwright-core@npm:1.45.0":
+  version: 1.45.0
+  resolution: "playwright-core@npm:1.45.0"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/6ffa3a04822b3df86d7f47a97e4f20318c0c50868ba4311820e6626ecadaab1424fbd0a3d01f0b4228adc0c781115e44b801742a4970b88739f804d82f142d68
+  checksum: 10c0/5c3c205ad6d52c674fb3a91981a2068b17e7d02350c868cb3bc51e0c236df1b5da7c123ebdb6c22c66c8182965d2bba0831fa272a8a388c4e545eac5b3efa501
   languageName: node
   linkType: hard
 
-"playwright@npm:1.44.1":
-  version: 1.44.1
-  resolution: "playwright@npm:1.44.1"
+"playwright@npm:1.45.0":
+  version: 1.45.0
+  resolution: "playwright@npm:1.45.0"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.44.1"
+    playwright-core: "npm:1.45.0"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/de827d17746b18ae2ec67d510a640d8ceebf8ee8e3d8399bccffa83b76a967498ca377777e4e6a1daaef4b3c86cb2c44c7468de53d2d915acc61b3b89c032738
+  checksum: 10c0/dbb1c3fe127650bd4b96a84b5271fbb56eea298bc87fa43a16b5054a4f011e00edd9a1a5e769efe4776a7c60d2a87c280543930a19cd12846d3d1e266198d4df
   languageName: node
   linkType: hard
 
@@ -12709,7 +12709,7 @@ __metadata:
     rimraf: "npm:^5.0.5"
     shipjs: "npm:^0.26.3"
     tsx: "npm:~4.9.3"
-    turbo: "npm:^2.0.3"
+    turbo: "npm:^2.0.5"
     typescript: "npm:^5.4.5"
     vite: "npm:5.3.1"
     vitest: "npm:~1.5.3"
@@ -13868,58 +13868,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-darwin-64@npm:2.0.3"
+"turbo-darwin-64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-darwin-64@npm:2.0.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-darwin-arm64@npm:2.0.3"
+"turbo-darwin-arm64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-darwin-arm64@npm:2.0.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-linux-64@npm:2.0.3"
+"turbo-linux-64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-linux-64@npm:2.0.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-linux-arm64@npm:2.0.3"
+"turbo-linux-arm64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-linux-arm64@npm:2.0.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-windows-64@npm:2.0.3"
+"turbo-windows-64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-windows-64@npm:2.0.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.0.3":
-  version: 2.0.3
-  resolution: "turbo-windows-arm64@npm:2.0.3"
+"turbo-windows-arm64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "turbo-windows-arm64@npm:2.0.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "turbo@npm:2.0.3"
+"turbo@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "turbo@npm:2.0.5"
   dependencies:
-    turbo-darwin-64: "npm:2.0.3"
-    turbo-darwin-arm64: "npm:2.0.3"
-    turbo-linux-64: "npm:2.0.3"
-    turbo-linux-arm64: "npm:2.0.3"
-    turbo-windows-64: "npm:2.0.3"
-    turbo-windows-arm64: "npm:2.0.3"
+    turbo-darwin-64: "npm:2.0.5"
+    turbo-darwin-arm64: "npm:2.0.5"
+    turbo-linux-64: "npm:2.0.5"
+    turbo-linux-arm64: "npm:2.0.5"
+    turbo-windows-64: "npm:2.0.5"
+    turbo-windows-arm64: "npm:2.0.5"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -13935,7 +13935,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10c0/154f2fab8ce2faa66444a32950171e3cb520576d07f20c58f13052442997a80bf31146e5826ce4e05abddfe99d71c68f309b7efab84cad05ee984352ef1f2621
+  checksum: 10c0/f6590b90d9de060c2c522415e0a63a4ddec750fff892e334dde7f7c726f6e07a7605fdab424ce3c31ed09420cefa9c0f34e2fbd6774d3890c1302b4eb94b3650
   languageName: node
   linkType: hard
 
