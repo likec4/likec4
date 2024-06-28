@@ -1,3 +1,21 @@
+# [1.4.0](https://github.com/likec4/likec4/compare/v1.3.0...v1.4.0) (2024-06-28)
+
+### 🚀 Features  
+
+* **vscode:** disable experimental editor in vscode preferences ([effdef1](https://github.com/likec4/likec4/commit/effdef1402a7df94e659cf6623103a16ac4d04a9))
+* **cli:** use dev server when exporting to png (faster) ([9a19db3](https://github.com/likec4/likec4/commit/9a19db3dc686fa4cbf5511b4dcdb9b1d8fe2a796))
+* **diagram:** back/forward navigation buttons ([4d258ed](https://github.com/likec4/likec4/commit/4d258ed53a64e4d226b37c15897261bafa36df63))
+* **react:** use html dialog for browser ([0981df2](https://github.com/likec4/likec4/commit/0981df2fa93804107635d83a00d28fcf03b68f1c))
+
+### Bug Fixes
+
+* **deps:** upgrade playwright to 1.45.0 ([486140b](https://github.com/likec4/likec4/commit/486140b8370ce7ae0a019c463c4ed913b43674f2))
+* **deps:** upgrade vite to 5.3.2 ([cf8956f](https://github.com/likec4/likec4/commit/cf8956f3f5d68bfff667e906ff7ebbf7fea5cd28))
+* **diagram:** disable blur filter in safari ([dd14526](https://github.com/likec4/likec4/commit/dd14526ebdbb736c378cb0074edbda2358ab2d02))
+* **diagram:** improve rendering in safari ([d530d98](https://github.com/likec4/likec4/commit/d530d988ad987607edc5f5a8169280f2ad270c74))
+* **playground:** switch to vertical layout for better mobile experience ([99b6b60](https://github.com/likec4/likec4/commit/99b6b607564b88533b0002286e9c754362c78c59))
+
+
 # [1.3.0](https://github.com/likec4/likec4/compare/v1.2.2...v1.3.0) (2024-06-23)
 
 ### 🚀 Features  

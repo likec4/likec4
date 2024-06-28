@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "license": "MIT",
   "packageManager": "yarn@4.3.0",
@@ -20,7 +20,7 @@
     "typecheck": "turbo run typecheck --filter='!@likec4/docs-astro'",
     "typecheck:full": "turbo run typecheck",
     "ci:typecheck": "turbo run typecheck  --filter='!@likec4/docs-astro'",
-    "ci:build": "turbo run build  --filter='!@likec4/docs-astro'",
+    "ci:build": "turbo run build  --filter='!@likec4/docs-astro' --filter='!@likec4/playground'",
     "ci:test": "vitest run --reporter=basic --reporter=github-actions --no-isolate",
     "vscode:typecheck": "turbo run typecheck --filter='!@likec4/docs-astro' --log-prefix=none",
     "release": "shipjs prepare",
