@@ -4,12 +4,12 @@ import { useUpdateEffect } from '../hooks'
 import { useXYFlow } from '../xyflow/hooks'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
 
-type DiagramContextValue = ReturnType<typeof createDiagramStore>
-export const DiagramContext = createContext<DiagramContextValue | null>(null)
+export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
+export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
 export function DiagramContextProvider({ children, view, ...props }: PropsWithChildren<DiagramInitialState>) {
   const xyflow = useXYFlow()
-  const store = useRef<DiagramContextValue>()
+  const store = useRef<DiagramZustandStore>()
 
   if (!store.current) {
     store.current = createDiagramStore({

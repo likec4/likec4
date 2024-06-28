@@ -312,25 +312,25 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
 
           setHoveredNode: (nodeId) => {
             if (nodeId !== get().hoveredNodeId) {
-              set({ hoveredNodeId: nodeId }, noReplace, nodeId ? 'setHoveredNode' : 'unsetHoveredNode')
+              set({ hoveredNodeId: nodeId })
             }
           },
 
           setHoveredEdge: (edgeId) => {
             if (edgeId !== get().hoveredEdgeId) {
-              set({ hoveredEdgeId: edgeId }, noReplace, edgeId ? 'setHoveredEdge' : 'unsetHoveredEdge')
+              set({ hoveredEdgeId: edgeId })
             }
           },
 
           setLastClickedNode: (nodeId) => {
             if (nodeId !== get().lastClickedNodeId) {
-              set({ lastClickedNodeId: nodeId }, noReplace, nodeId ? 'setLastClickedNode' : 'unsetLastClickedNode')
+              set({ lastClickedNodeId: nodeId })
             }
           },
 
           setLastClickedEdge: (edgeId) => {
             if (edgeId !== get().lastClickedEdgeId) {
-              set({ lastClickedEdgeId: edgeId }, noReplace, edgeId ? 'setLastClickedEdge' : 'unsetLastClickedEdge')
+              set({ lastClickedEdgeId: edgeId })
             }
           },
 
@@ -439,7 +439,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             let { viewSyncDebounceTimeout } = get()
             if (viewSyncDebounceTimeout !== null) {
               clearTimeout(viewSyncDebounceTimeout)
-              set({ viewSyncDebounceTimeout: null }, noReplace, 'cancelSaveManualLayout')
+              set({ viewSyncDebounceTimeout: null })
             }
           },
 
@@ -455,7 +455,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             debounced = setTimeout(() => {
               const { nodeLookup } = xystore.getState()
               const { xyflow, onChange } = get()
-              set({ viewSyncDebounceTimeout: null }, noReplace, 'clear debounce timeout')
+              set({ viewSyncDebounceTimeout: null })
 
               const movedNodes = new StringSet()
               const nodes = reduce([...nodeLookup.values()], (acc, node) => {
