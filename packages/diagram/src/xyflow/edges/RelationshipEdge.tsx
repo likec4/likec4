@@ -103,7 +103,7 @@ const curve = d3line<XYPosition>()
 export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(function RelationshipEdgeR({
   id,
   data,
-  selected: _selected,
+  selected,
   style,
   source,
   target,
@@ -313,7 +313,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
                 [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
                 [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
               }),
-              ...(isEdgePathEditable && {
+              ...(isEdgePathEditable && selected && {
                 pointerEvents: 'none'
               }),
               ...(data.label && {

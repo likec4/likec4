@@ -19,6 +19,12 @@ export type LikeC4ViewBaseProps<ViewId extends string> = Omit<HTMLAttributes<HTM
   background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
 
   /**
+   * Background pattern for the browser view.
+   * @default 'dots'
+   */
+  browserBackground?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
+
+  /**
    * Click on the view opens a modal with browser.
    *
    * @default true

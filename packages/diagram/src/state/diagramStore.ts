@@ -112,7 +112,7 @@ interface DiagramStoreActions {
   cancelSaveManualLayout: () => void
   triggerSaveManualLayout: (xystore: XYStoreApi) => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: (xyStore: XYStoreApi) => void
+  fitDiagram: (xyStore: XYStoreApi, duration?: number) => void
 
   nextDynamicStep: (increment?: number) => void
   stopDynamicView: () => void
@@ -540,7 +540,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             )
           },
 
-          fitDiagram: (xyStore) => {
+          fitDiagram: (xyStore, duration = 500) => {
             const { width, height, panZoom } = xyStore.getState()
             const { fitViewPadding, view, focusedNodeId } = get()
             const bounds = {
@@ -550,7 +550,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               height: view.height
             }
             const viewport = getViewportForBounds(bounds, width, height, MinZoom, 1, fitViewPadding)
-            panZoom?.setViewport(viewport, { duration: 500 })
+            panZoom?.setViewport(viewport, { duration })
             if (!!focusedNodeId) {
               set(
                 {

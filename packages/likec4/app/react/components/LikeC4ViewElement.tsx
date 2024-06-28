@@ -9,7 +9,7 @@ import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
 export type LikeC4ViewElementProps<ViewId extends string> =
-  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'overlay'>
+  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'browserBackground'>
   & {
     view: DiagramView<ViewId>
     onNavigateTo?: ((to: ViewId) => void) | undefined

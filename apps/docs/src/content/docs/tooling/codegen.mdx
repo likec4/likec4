@@ -37,16 +37,18 @@ const App = () => {
 }
 ```
 
-| Property      | Description                                                                                         |
-| ------------- | --------------------------------------------------------------------------------------------------- |
-| `viewId`      | Typed enumeration of your views                                                                     |
-| `interactive` | Clicking on the view opens a modal with the views browser.<br/>Default value is `true`.                  |
-| `background`  | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `dots`.                           |
+| Property            | Description                                                                                         |
+| -----------------   | --------------------------------------------------------------------------------------------------- |
+| `viewId`            | Typed enumeration of your views                                                                     |
+| `interactive`       | Clicking on the view opens a modal with the views browser.<br/>Default value is `true`.                  |
+| `injectFontCss`     | Injects CSS to load <a href='https://fontsource.org/fonts/ibm-plex-sans' target='_blank'>IBM Plex Sans</a> font from CDN.<br/>Default value is `true` |
+| `background`        | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `transparent`. |
+| `browserBackground` | Options: `dots`, `lines`, `cross`, `transparent`, `solid`, or `undefined`.<br/>Default value is `dots`. |
 
 Any other property will be passed to the underlying `div` element.
 
 :::caution
-React component does not work correctly in Server-side-rendering (SSR).  
+React component does not rehydrate correctly if rendered on the server (Server-side-rendering, SSR), client-side preferable.
 :::
 
 #### Webcomponent

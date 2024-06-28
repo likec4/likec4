@@ -39,16 +39,18 @@ export default function DiagramTitlePanel() {
         <Card
           radius="sm"
           className={css.card}
+          withBorder
           p={'md'}
+          pb={isCollapsed ? 'sm' : 'md'}
           onDoubleClick={e => e.stopPropagation()}>
-          <CardSection mb={4}>
+          <CardSection mb={isCollapsed ? 10 : 'sm'}>
             <Button
               fullWidth
               size="xs"
               h={'sm'}
               py={2}
               radius={'0'}
-              variant="subtle"
+              variant={isCollapsed ? 'light' : 'subtle'}
               color="gray"
               onClick={toggle}
             >

@@ -18,7 +18,7 @@ type LikeC4ViteReactConfig = {
 export async function viteReactConfig({
   languageServices,
   outDir,
-  filename = 'likec4-views.mjs'
+  filename = 'likec4-react.mjs'
 }: LikeC4ViteReactConfig): Promise<InlineConfig> {
   consola.warn('DEVELOPMENT MODE')
   const customLogger = createLikeC4Logger('c4:react')
@@ -41,11 +41,14 @@ export async function viteReactConfig({
     clearScreen: false,
     mode: 'production',
     esbuild: {
-      ...JsBanners,
+      banner: `'use client'\n` + JsBanners.banner,
+      footer: JsBanners.footer,
       jsx: isJsx ? 'preserve' : 'automatic',
       minifyIdentifiers: false,
       minifySyntax: true,
-      minifyWhitespace: true
+      minifyWhitespace: true,
+      sourcesContent: false,
+      sourcemap: false
     },
     build: {
       outDir,
@@ -53,7 +56,7 @@ export async function viteReactConfig({
       sourcemap: false,
       minify: 'esbuild',
       copyPublicDir: false,
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 5000,
       lib: {
         entry: 'react/likec4.tsx',
         fileName(_format, _entryName) {
@@ -67,6 +70,7 @@ export async function viteReactConfig({
           'react',
           'react-dom',
           'react/jsx-runtime',
+          'react/jsx-dev-runtime',
           'react-dom/client'
         ]
       }

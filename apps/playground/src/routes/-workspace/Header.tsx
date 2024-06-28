@@ -68,7 +68,7 @@ export const Header = memo(() => {
         <PlaygroundsMenu />
         <Button
           component="a"
-          href="https://docs.likec4.dev/"
+          href="https://docs.likec4.dev/tutorial"
           target="_blank"
           variant="subtle"
           px={'xs'}

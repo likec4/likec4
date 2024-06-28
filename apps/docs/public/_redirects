@@ -1,0 +1,5 @@
+/docs   /tutorial  301
+/docs/dsl/introduction/ /dsl/intro/ 301
+/docs/tools/react/ /tooling/codegen/#react 301
+/docs/tools/cli/ /tooling/cli/ 301
+/docs/* /:splat

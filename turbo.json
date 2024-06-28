@@ -3,6 +3,10 @@
   "globalEnv": [
     "NODE_ENV"
   ],
+  "globalDependencies": [
+    "yarn.lock",
+    ".yarnrc.yml"
+  ],
   "tasks": {
     "topo": {
       "dependsOn": [

@@ -166,17 +166,24 @@ function ExportButton({ diagram }: HeaderProps) {
     if (!viewPort) {
       return
     }
-    toPng(viewPort, {
-      backgroundColor: 'transparent',
-      width: imageWidth,
-      height: imageHeight,
-      cacheBust: true,
-      style: {
-        width: imageWidth + 'px',
-        height: imageHeight + 'px',
-        transform: `translate(16px, 16px) scale(1)`
-      }
-    }).then(data => downloadImage(diagram.id, data))
+    try {
+      const data = await toPng(viewPort, {
+        backgroundColor: 'transparent',
+        width: imageWidth,
+        height: imageHeight,
+        cacheBust: true,
+        imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+        style: {
+          width: imageWidth + 'px',
+          height: imageHeight + 'px',
+          transform: `translate(16px, 16px) scale(1)`
+        }
+      })
+      downloadImage(diagram.id, data)
+    } catch (err) {
+      console.error(err)
+      window.alert(`Failed to export to PNG, check the console for more details.`)
+    }
   }
 
   return (

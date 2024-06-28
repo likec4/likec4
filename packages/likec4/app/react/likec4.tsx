@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
 export { isLikeC4ViewId }
+
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
 export function LikeC4View({
@@ -10,6 +11,8 @@ export function LikeC4View({
   interactive = true,
   colorScheme,
   injectFontCss = true,
+  background = 'transparent',
+  browserBackground = 'dots',
   ...props
 }: LikeC4ViewProps) {
   const view = LikeC4Views[viewId]
@@ -37,6 +40,7 @@ export function LikeC4View({
         colorScheme={colorScheme}
         injectFontCss={injectFontCss}
         onNavigateTo={interactive ? onNavigateTo : undefined}
+        background={background}
         {...props}
       />
       {browserView && (
@@ -45,7 +49,7 @@ export function LikeC4View({
           injectFontCss={false}
           colorScheme={colorScheme}
           onNavigateTo={onNavigateTo}
-          background="dots"
+          background={browserBackground}
           onClose={closeBrowser}
         />
       )}

@@ -24,11 +24,11 @@ function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
       if (focusedNodeId || prevDimensionsRef.current === dimensions) {
         return
       }
-      fitDiagram(xyflowApi)
+      fitDiagram(xyflowApi, 300)
       prevDimensionsRef.current = dimensions
     },
     [dimensions, diagramApi, xyflowApi],
-    250,
+    300,
     1000
   )
 
@@ -77,6 +77,7 @@ export function FitViewOnDiagramChange() {
   } = useDiagramState(selector, shallowEqual)
   const diagramApi = useDiagramStoreApi()
   const processedRef = useRef(pendingViewId)
+  const durationRef = useRef(300)
 
   useEffect(() => {
     if (!xyflowSynced || pendingViewId === processedRef.current) {
@@ -97,11 +98,14 @@ export function FitViewOnDiagramChange() {
           y: toDomPrecision(fromPos.y - toPos.y)
         }
       xyflowApi.getState().panBy(diff)
+      durationRef.current = 500
       diagramApi.setState({ lastOnNavigate: null })
       return
     }
     processedRef.current = pendingViewId
-    diagramApi.getState().fitDiagram(xyflowApi)
+    diagramApi.getState().fitDiagram(xyflowApi, durationRef.current)
+    // Reset duration
+    durationRef.current = 300
   }, [pendingViewId, xyflowSynced, waitCorrection])
 
   if (!viewportChanged && xyflowSynced) {

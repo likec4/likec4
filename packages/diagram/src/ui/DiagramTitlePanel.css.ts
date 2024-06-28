@@ -11,14 +11,19 @@ export const container = style({
 
 export const card = style({
   cursor: 'default',
-  minWidth: 150,
+  minWidth: 200,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
   WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   '@media': {
+    [mantine.largerThan('sm')]: {
+      minWidth: 300,
+      maxWidth: '90vw'
+    },
     [mantine.largerThan('md')]: {
-      maxWidth: '45vw'
+      minWidth: 400,
+      maxWidth: '70vw'
     }
   },
   selectors: {

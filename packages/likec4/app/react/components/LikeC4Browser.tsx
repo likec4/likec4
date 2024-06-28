@@ -10,11 +10,13 @@ import { useColorScheme } from './styles'
 import * as css from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
-export type LikeC4BrowserProps<ViewId extends string> = Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive'> & {
-  view: DiagramView<ViewId>
-  onNavigateTo: (to: ViewId) => void
-  onClose: () => void
-}
+export type LikeC4BrowserProps<ViewId extends string> =
+  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'browserBackground'>
+  & {
+    view: DiagramView<ViewId>
+    onNavigateTo: (to: ViewId) => void
+    onClose: () => void
+  }
 
 export function LikeC4Browser<ViewId extends string>({
   colorScheme,
@@ -33,7 +35,7 @@ export function LikeC4Browser<ViewId extends string>({
     dialogRef.current?.showModal()
     setTimeout(() => {
       setOpened(true)
-    }, 20)
+    }, 50)
   })
   const closeMe = () => {
     setTimeout(() => {
@@ -55,14 +57,12 @@ export function LikeC4Browser<ViewId extends string>({
             transform: scale(0.7);
             display: none;
           }
-
           100% {
             opacity: 1;
             transform: scale(1);
             display: block;
           }
         }
-
         @keyframes likec4-dialog-fade-out {
           0% {
             opacity: 1;
@@ -72,25 +72,25 @@ export function LikeC4Browser<ViewId extends string>({
 
           100% {
             opacity: 0;
-            transform: scale(0.85);
+            transform: scale(0.9);
             display: none;
           }
         }
-
         @keyframes likec4-dialog-backdrop-fade-in {
           0% {
-            background-color: rgb(${backdropRgb} / 5%);
+            -webkit-backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
+            background-color: rgb(${backdropRgb} / 30%);
           }
-
           100% {
-            background-color: rgb(${backdropRgb} / 90%);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            background-color: rgb(${backdropRgb} / 75%);
           }
         }
         [data-likec4-instance="${id}"] {
           top: 0;
           left: 0;
-          padding: 0;
-          margin: 0;
           border: 0 solid transparent;
           box-sizing: border-box;
           width: 100%;
@@ -113,12 +113,12 @@ export function LikeC4Browser<ViewId extends string>({
           box-sizing: border-box;
         }
         [data-likec4-instance="${id}"]::backdrop {
-          -webkit-backdrop-filter: blur(8px);
-          backdrop-filter: blur(8px);
-          background-color: rgb(${backdropRgb} / 5%);
+          -webkit-backdrop-filter: blur(1px);
+          backdrop-filter: blur(1px);
+          background-color: rgb(${backdropRgb} / 30%);
         }
         [data-likec4-instance="${id}"][open]::backdrop {
-          animation: likec4-dialog-backdrop-fade-in 500ms ease-out forwards;
+          animation: likec4-dialog-backdrop-fade-in 450ms ease-out forwards;
         }
       `
         }} />
@@ -126,6 +126,11 @@ export function LikeC4Browser<ViewId extends string>({
         aria-modal="true"
         data-likec4-instance={id}
         ref={dialogRef}
+        style={{
+          margin: 0,
+          padding: 0,
+          border: '0 solid transparent'
+        }}
         onClose={closeMe}>
         <ShadowRoot injectFontCss={injectFontCss}>
           <ShadowRootMantineProvider
@@ -150,7 +155,8 @@ export function LikeC4Browser<ViewId extends string>({
                 nodesSelectable={false}
                 nodesDraggable={false}
                 keepAspectRatio={false}
-                onNavigateTo={to => onNavigateTo(to as string as ViewId)}
+                // @ts-expect-error string cast to ViewId
+                onNavigateTo={onNavigateTo}
               />
             )}
             <ActionIcon
