@@ -55,7 +55,7 @@
     "monaco-languageclient": "8.5.0",
     "nanoid": "^5.0.7",
     "react": "^18.3.1",
-    "react-accessible-treeview": "^2.9.0",
+    "react-accessible-treeview": "^2.9.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.0.13",
     "react-resizable-panels": "^2.0.19",

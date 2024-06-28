@@ -11,6 +11,7 @@ import structurizr from './structurizr.tmLanguage.json' assert { type: 'json' }
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  site: 'https://likec4.dev',
   integrations: [
     react(),
     starlight({
