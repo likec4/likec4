@@ -40,14 +40,14 @@ export function Header({ diagram }: HeaderProps) {
       top={'0.5rem'}
       right={'0.5rem'}
       py={5}
-      px={'md'}
+      px={'xs'}
       radius={'sm'}
       shadow="xl">
-      <Group gap={isTablet ? 'xs' : 4} wrap="nowrap">
+      <Group gap={isTablet ? 6 : 4} wrap="nowrap">
         <ViewPageButton isTablet={isTablet} />
         <ColorSchemeToggle />
-        <Divider orientation="vertical" />
-        <Button ml={'xs'} size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
+        <Divider orientation="vertical" mr={isTablet ? 4 : 'xs'} />
+        <Button size={isTablet ? 'sm' : 'xs'} leftSection={<IconShare size={14} />} onClick={open}>
           Share
         </Button>
         <ExportButton diagram={diagram} />
@@ -118,6 +118,7 @@ function ViewPageButton({
             variant="subtle"
             size={isTablet ? 'sm' : 'xs'}
             color="gray"
+            px={'xs'}
             rightSection={<IconChevronDown opacity={0.5} size={14} />}>
             {matched.title}
           </Button>
@@ -193,6 +194,7 @@ function ExportButton({ diagram }: HeaderProps) {
           variant="subtle"
           size="sm"
           color="gray"
+          px={'sm'}
           rightSection={<IconChevronDown opacity={0.5} size={14} />}
           visibleFrom="md">
           Export

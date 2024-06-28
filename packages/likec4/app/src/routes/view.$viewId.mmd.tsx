@@ -3,13 +3,23 @@ import { useAsync } from '@react-hookz/web'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { mmdSource } from 'virtual:likec4/mmd-sources'
 import { CopyToClipboard } from '../components'
 import { svgContainer } from './view.css'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/mmd')({
-  component: ViewAsMmd
+  component: ViewAsMmd,
+  loader: async ({ params }) => {
+    const { viewId } = params
+    try {
+      const { mmdSource } = await import('./-view-lazy-data')
+      return {
+        source: mmdSource(viewId)
+      }
+    } catch (error) {
+      throw notFound()
+    }
+  }
 })
 
 const renderSvg = async (viewId: string, diagram: string) => {
@@ -23,18 +33,9 @@ const renderSvg = async (viewId: string, diagram: string) => {
   return svg
 }
 
-const useData = () => {
-  const { viewId } = Route.useParams()
-  try {
-    return mmdSource(viewId)
-  } catch (error) {
-    throw notFound()
-  }
-}
-
 function ViewAsMmd() {
   const { viewId } = Route.useParams()
-  const source = useData()
+  const { source } = Route.useLoaderData()
 
   const [mmdSvg, { execute }] = useAsync(renderSvg, null)
 

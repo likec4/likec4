@@ -10,7 +10,7 @@ export const Route = createFileRoute('/view/$viewId/dot')({
   loader: async ({ params }) => {
     const { viewId } = params
     try {
-      const { dotSource, svgSource } = await import('virtual:likec4/dot-sources')
+      const { dotSource, svgSource } = await import('./-view-lazy-data')
       const dot = dotSource(viewId)
       const dotSvg = svgSource(viewId)
       return {

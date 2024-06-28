@@ -1,25 +1,26 @@
 import { Code, ScrollArea } from '@mantine/core'
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { d2Source } from 'virtual:likec4/d2-sources'
 import { CopyToClipboard } from '../components'
 import { cssCodeBlock, cssScrollArea, viewWithTopPadding } from './view_viewId_.css'
 
 export const Route = createFileRoute('/view/$viewId/d2')({
-  component: ViewAsD2
+  component: ViewAsD2,
+  loader: async ({ params }) => {
+    const { viewId } = params
+    try {
+      const { d2Source } = await import('./-view-lazy-data')
+      return {
+        source: d2Source(viewId)
+      }
+    } catch (error) {
+      throw notFound()
+    }
+  }
 })
 
-const useData = () => {
-  const { viewId } = Route.useParams()
-  try {
-    return d2Source(viewId)
-  } catch (error) {
-    throw notFound()
-  }
-}
-
 function ViewAsD2() {
-  const source = useData()
+  const { source } = Route.useLoaderData()
   return (
     <PanelGroup className={viewWithTopPadding} direction="horizontal" autoSaveId="viewAsD2">
       <Panel>
