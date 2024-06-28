@@ -1,5 +1,5 @@
 import { rem } from '@mantine/core'
-import { createVar, fallbackVar, generateIdentifier, globalKeyframes, globalStyle, style } from '@vanilla-extract/css'
+import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
 import { mantine } from '../../mantine.css'
 import { vars, xyvars } from '../../theme.css'
 
@@ -62,7 +62,7 @@ globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
   opacity: 0.8,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(1px)')}`,
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
   willChange: 'opacity, filter'
 })
 
@@ -112,8 +112,7 @@ export const controlPoint = style({
   }
 })
 
-const strokeKeyframes = generateIdentifier('strokeKeyframes')
-globalKeyframes(strokeKeyframes, {
+const strokeKeyframes = keyframes({
   'from': {
     strokeDashoffset: 18 * 2
   },
@@ -126,19 +125,24 @@ export const cssEdgePath = style({
   animationDuration: '800ms',
   animationIterationCount: 'infinite',
   animationTimingFunction: 'linear',
+  animationName: strokeKeyframes,
+  animationPlayState: 'paused',
   selectors: {
     [`:where([data-edge-hovered='true']) &`]: {
-      animationName: strokeKeyframes,
+      animationPlayState: 'running',
       animationDelay: '350ms',
-      transition: 'stroke,stroke-width 130ms ease-out'
+      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
     },
     [`:where(${isSelected}, [data-edge-active='true']) &`]: {
-      animationName: strokeKeyframes,
+      animationPlayState: 'running',
       animationDelay: '0ms',
-      transition: 'stroke,stroke-width 130ms ease-out'
+      transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
     },
     [`:where([data-edge-dir='back']) &`]: {
       animationDirection: 'reverse'
+    },
+    [`${dimmed} &`]: {
+      animationPlayState: 'paused'
     }
   }
 })
@@ -173,7 +177,7 @@ export const edgeLabel = style({
       opacity: 0.6,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
-      filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(1px)')}`,
+      filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
       willChange: 'opacity, filter'
     }
   }

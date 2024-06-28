@@ -16,6 +16,14 @@ export const container = style({
   alignItems: 'stretch',
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
+  },
+  selectors: {
+    ':where(.react-flow__node.selected) &': {
+      willChange: 'transform'
+    },
+    '&[data-hovered="true"]': {
+      willChange: 'transform'
+    }
   }
 })
 
@@ -29,8 +37,8 @@ globalStyle(`.react-flow__node-element:has(${dimmed})`, {
   opacity: 0.25,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(2px)')}`,
-  willChange: 'transform, opacity, filter'
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(2px)')}`,
+  willChange: 'opacity, filter'
 })
 
 const indicatorKeyframes = keyframes({
@@ -53,16 +61,16 @@ export const indicator = style({
   transformOrigin: 'center center',
   strokeWidth: 6,
   animationDuration: '800ms',
-  animationName: indicatorKeyframes,
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
+  opacity: 0.6,
   visibility: 'hidden',
   selectors: {
     ':where(.react-flow__node.selected) &': {
-      visibility: 'visible'
+      visibility: 'visible',
+      animationName: fallbackVar(vars.safariAnimationHook, indicatorKeyframes)
     },
     [`:where(.react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-      animationName: 'none',
       strokeWidth: 10,
       stroke: outlineColor,
       visibility: 'visible'
@@ -71,7 +79,8 @@ export const indicator = style({
       strokeWidth: 10
     },
     [`${dimmed} &`]: {
-      visibility: 'hidden'
+      visibility: 'hidden',
+      display: 'none'
     }
   }
 })

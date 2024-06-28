@@ -128,6 +128,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         animate !== 'idle' && css.containerAnimated,
         'likec4-element-node'
       ])}
+      data-hovered={!dragging && isHovered}
       data-likec4-color={element.color}
       data-likec4-shape={element.shape}
       variants={variants}

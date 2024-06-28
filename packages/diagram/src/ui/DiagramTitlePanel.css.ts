@@ -14,8 +14,8 @@ export const card = style({
   minWidth: 150,
   maxWidth: 'calc(100vw - 16px)',
   backgroundColor: `color-mix(in srgb, ${mantine.colors.body}, transparent 20%)`,
-  WebkitBackdropFilter: fallbackVar(vars.dimmed.blur, 'blur(8px)'),
-  backdropFilter: fallbackVar(vars.dimmed.blur, 'blur(8px)'),
+  WebkitBackdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
+  backdropFilter: fallbackVar(vars.safariAnimationHook, 'blur(8px)'),
   '@media': {
     [mantine.largerThan('md')]: {
       maxWidth: '45vw'

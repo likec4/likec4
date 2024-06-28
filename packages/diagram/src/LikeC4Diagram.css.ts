@@ -13,9 +13,9 @@ export const cssReactFlow = style({
   '@supports': {
     // https://wojtek.im/journal/targeting-safari-with-css-media-query
     '(hanging-punctuation: first) and (font: -apple-system-body) and (-webkit-appearance: none)': {
-      // TODO: this workaround disables blur filter on dimmed nodes in Safari (to improve performance)
+      // TODO: this workaround disables animations in Safari (to improve performance)
       vars: {
-        [vars.dimmed.blur]: ''
+        [vars.safariAnimationHook]: ''
       }
     }
   }

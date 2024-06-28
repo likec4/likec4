@@ -18,7 +18,7 @@ globalStyle(`.react-flow__node-compound:has(${dimmed})`, {
   opacity: 0.25,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
-  filter: `grayscale(0.85) ${fallbackVar(vars.dimmed.blur, 'blur(1px)')}`,
+  filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
   willChange: 'opacity, filter'
 })
 
