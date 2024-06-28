@@ -36,7 +36,7 @@
     "execa": "^9.1.0",
     "prompts": "^2.4.2",
     "tsx": "~4.9.3",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "unbuild": "^2.0.0"
   },
   "packageManager": "yarn@4.3.0"
