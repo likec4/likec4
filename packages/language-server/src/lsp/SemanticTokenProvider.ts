@@ -23,12 +23,22 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         type: SemanticTokenTypes.function
       })
     }
-    if (ast.isElementViewRef(node)) {
-      return acceptor({
+    if (ast.isNavigateToProperty(node)) {
+      acceptor({
         node,
-        property: 'view',
-        type: SemanticTokenTypes.variable
+        property: 'key',
+        type: SemanticTokenTypes.property
       })
+      acceptor({
+        node,
+        property: 'value',
+        type: SemanticTokenTypes.variable,
+        modifier: [
+          SemanticTokenModifiers.definition,
+          SemanticTokenModifiers.readonly
+        ]
+      })
+      return 'prune'
     }
     if (ast.isDescedantsExpr(node) && node.$cstNode) {
       acceptor({
@@ -98,6 +108,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.interface
       })
+      return
     }
     if (ast.isTag(node)) {
       return acceptor({
