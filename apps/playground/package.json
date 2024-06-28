@@ -25,7 +25,7 @@
     "@codingame/monaco-vscode-textmate-service-override": "5.2.0",
     "@codingame/monaco-vscode-theme-defaults-default-extension": "5.2.0",
     "@codingame/monaco-vscode-theme-service-override": "5.2.0",
-    "@hpcc-js/wasm": "2.16.2",
+    "@hpcc-js/wasm": "2.17.0",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
     "@likec4/language-server": "workspace:*",

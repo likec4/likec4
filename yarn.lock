@@ -1927,14 +1927,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hpcc-js/wasm@npm:2.16.2":
-  version: 2.16.2
-  resolution: "@hpcc-js/wasm@npm:2.16.2"
+"@hpcc-js/wasm@npm:2.17.0":
+  version: 2.17.0
+  resolution: "@hpcc-js/wasm@npm:2.17.0"
   dependencies:
     yargs: "npm:17.7.2"
   bin:
     dot-wasm: bin/dot-wasm.js
-  checksum: 10c0/ee16da6f17c0f9996989219f6c0e6bc95ddc67531d4cdc3975d22c7b0877b6bb7c670b8fb4f24c108d8c350415226742af3256e8a0f532e5921a04db18f9c0fa
+  checksum: 10c0/4e29e5380981a236238d627285544019ecab0d5b9c62a9181c1fc3a2a1d047eb65d12a12386d71e5493529d023f7bff561f0ec5d3c766abd77f316f492a472f0
   languageName: node
   linkType: hard
 
@@ -2354,7 +2354,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@likec4/layouts@workspace:packages/layouts"
   dependencies:
-    "@hpcc-js/wasm": "npm:2.16.2"
+    "@hpcc-js/wasm": "npm:2.17.0"
     "@likec4/core": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
@@ -2372,7 +2372,7 @@ __metadata:
     vitest: "npm:~1.5.3"
     word-wrap: "npm:^1.2.5"
   peerDependencies:
-    "@hpcc-js/wasm": 2.16.2
+    "@hpcc-js/wasm": 2.17.0
     "@likec4/core": "workspace:*"
   languageName: unknown
   linkType: soft
@@ -2392,7 +2392,7 @@ __metadata:
     "@codingame/monaco-vscode-textmate-service-override": "npm:5.2.0"
     "@codingame/monaco-vscode-theme-defaults-default-extension": "npm:5.2.0"
     "@codingame/monaco-vscode-theme-service-override": "npm:5.2.0"
-    "@hpcc-js/wasm": "npm:2.16.2"
+    "@hpcc-js/wasm": "npm:2.17.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/language-server": "workspace:*"
@@ -8950,7 +8950,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "likec4-vscode@workspace:packages/vscode"
   dependencies:
-    "@hpcc-js/wasm": "npm:2.16.2"
+    "@hpcc-js/wasm": "npm:2.17.0"
     "@likec4/core": "workspace:*"
     "@likec4/generators": "workspace:*"
     "@likec4/language-server": "workspace:*"
@@ -8988,7 +8988,7 @@ __metadata:
   resolution: "likec4@workspace:packages/likec4"
   dependencies:
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
-    "@hpcc-js/wasm": "npm:2.16.2"
+    "@hpcc-js/wasm": "npm:2.17.0"
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/generators": "workspace:*"
