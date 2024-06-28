@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { hasAtLeast } from '@likec4/core'
-import { rm } from 'fs/promises'
-import { resolve } from 'node:path'
 import { hrtime } from 'node:process'
 import k from 'picocolors'
 import { chromium } from 'playwright'
 import { LanguageServices } from '../../../language-services'
 import { createLikeC4Logger, inMillis, startTimer } from '../../../logger'
-import { viteBuild } from '../../../vite/vite-build'
-import { vitePreview } from '../../../vite/vite-preview'
+import { viteDev } from '../../../vite/vite-dev'
 import { takeScreenshot } from './takeScreenshot'
 
 type HandlerParams = {
@@ -39,23 +36,17 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
     throw new Error('no views found')
   }
 
-  const buildOutputDir = resolve(output, '.build-cache')
-  await viteBuild({
-    languageServices,
-    outputDir: buildOutputDir,
-    buildWebcomponent: false
-  })
-
   logger.info(k.cyan(`start preview server`))
-  const previewServer = await vitePreview({
+  const server = await viteDev({
     languageServices,
-    outputDir: buildOutputDir,
-    open: false
+    buildWebcomponent: false,
+    openBrowser: false,
+    hmr: false
   })
-  if (!previewServer.resolvedUrls) {
+  if (!server.resolvedUrls) {
     throw new Error('Vite server is not ready, no resolvedUrls')
   }
-  const hosts = [...previewServer.resolvedUrls.network, ...previewServer.resolvedUrls.local]
+  const hosts = [...server.resolvedUrls.network, ...server.resolvedUrls.local]
   if (!hasAtLeast(hosts, 1)) {
     logger.error(`no preview server url`)
     throw new Error(`no preview server url`)
@@ -95,12 +86,8 @@ export async function pngHandler({ path, useDotBin, theme, output, ignore, timeo
     await browserContext.close()
     await browser.close()
 
-    // delete vite cache
-    logger.info(k.cyan('clean build outDir'))
-    await rm(buildOutputDir, { recursive: true, force: true })
-
     logger.info(k.cyan(`stop preview server`))
-    await previewServer.close()
+    await server.close()
   } finally {
   }
 

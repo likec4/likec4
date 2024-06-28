@@ -28,6 +28,8 @@ export async function handler({
   const languageServices = await LanguageServices.get({ path, useDotBin })
 
   await viteDev({
+    buildWebcomponent: false,
+    hmr: true,
     base,
     webcomponentPrefix,
     languageServices,

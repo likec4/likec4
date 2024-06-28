@@ -8,10 +8,19 @@ import { build, createServer } from 'vite'
 import { printServerUrls } from './printServerUrls'
 import { mkTempPublicDir } from './utils'
 
+type Config = LikeC4ViteConfig & {
+  buildWebcomponent?: boolean
+  openBrowser?: boolean
+  hmr?: boolean
+}
+
 export async function viteDev({
+  buildWebcomponent = true,
+  hmr = true,
   webcomponentPrefix = 'likec4',
+  openBrowser,
   ...cfg
-}: LikeC4ViteConfig): Promise<ViteDevServer> {
+}: Config): Promise<ViteDevServer> {
   const { isDev, languageServices, ...config } = await viteConfig({
     ...cfg,
     webcomponentPrefix
@@ -30,7 +39,7 @@ export async function viteDev({
   const publicDir = await mkTempPublicDir()
 
   let webcomponentPromise: Promise<unknown> | undefined
-  if (!isDev) {
+  if (buildWebcomponent) {
     const webcomponentConfig = await viteWebcomponentConfig({
       webcomponentPrefix,
       languageServices: languageServices,
@@ -48,19 +57,13 @@ export async function viteDev({
     })
   }
 
-  // languageServices.onModelUpdate(() => {
-  //   consola.info('watcher onModelUpdate')
-  //   watcher.emit('event', {code: 'START'})
-  //   watcher.emit('change', 'virtual:likec4/views', {event: 'update'})
-  // })
-
   const server = await createServer({
     ...config,
     publicDir,
     server: {
       host: '0.0.0.0',
       port,
-      hmr: {
+      hmr: hmr && {
         overlay: true,
         // needed for hmr to work over network aka WSL2
         // host: 'localhost',
@@ -69,7 +72,7 @@ export async function viteDev({
       fs: {
         strict: false
       },
-      open: !isDev
+      open: openBrowser ?? !isDev
     }
   })
 
