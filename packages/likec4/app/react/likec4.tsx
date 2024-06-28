@@ -1,10 +1,8 @@
-import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement as LikeC4ViewComponent } from 'likec4/react'
-import { useState } from 'react'
-import { createPortal } from 'react-dom'
+import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement } from 'likec4/react'
+import { useCallback, useState } from 'react'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
 export { isLikeC4ViewId }
-
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
 export function LikeC4View({
@@ -12,7 +10,6 @@ export function LikeC4View({
   interactive = true,
   colorScheme,
   injectFontCss = true,
-  overlay,
   ...props
 }: LikeC4ViewProps) {
   const view = LikeC4Views[viewId]
@@ -20,6 +17,10 @@ export function LikeC4View({
   const [browserViewId, onNavigateTo] = useState(null as LikeC4ViewId | null)
 
   const browserView = browserViewId ? LikeC4Views[browserViewId] : null
+
+  const closeBrowser = useCallback(() => {
+    onNavigateTo(null)
+  }, [onNavigateTo])
 
   if (!view) {
     throw new Error(`View with id ${viewId} not found`)
@@ -31,26 +32,23 @@ export function LikeC4View({
 
   return (
     <>
-      <LikeC4ViewComponent<LikeC4ViewId>
+      <LikeC4ViewElement<LikeC4ViewId>
         view={view}
         colorScheme={colorScheme}
         injectFontCss={injectFontCss}
         onNavigateTo={interactive ? onNavigateTo : undefined}
         {...props}
       />
-      {browserView && (createPortal(
+      {browserView && (
         <LikeC4Browser<LikeC4ViewId>
           view={browserView}
           injectFontCss={false}
           colorScheme={colorScheme}
-          overlay={overlay}
           onNavigateTo={onNavigateTo}
           background="dots"
-          onClose={() => onNavigateTo(null)}
-        />,
-        document.body,
-        view.id
-      ))}
+          onClose={closeBrowser}
+        />
+      )}
     </>
   )
 }

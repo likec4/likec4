@@ -54,12 +54,9 @@ const variants = {
   //     delay: 1
   //   }
   // }),
-  hovered: (_, { scale }) => ({
-    scale: 1.06,
-    transition: {
-      delay: isNumber(scale) && scale !== 1 && scale !== selectedScale ? 0 : 0.06
-    }
-  }),
+  hovered: {
+    scale: 1.06
+  },
   tap: {
     scale: 0.975
   }

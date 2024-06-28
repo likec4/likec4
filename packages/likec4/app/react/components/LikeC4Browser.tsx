@@ -1,9 +1,11 @@
 import { LikeC4Diagram } from '@likec4/diagram'
+import { ActionIcon } from '@mantine/core'
 import { useMountEffect } from '@react-hookz/web'
+import { IconX } from '@tabler/icons-react'
 import { useId, useRef, useState } from 'react'
-import { cssDiagram } from './LikeC4Browser.css'
+import { closeButton, cssDiagram } from './LikeC4Browser.css'
 import { ShadowRoot } from './ShadowRoot'
-import { ShadowRootMantine } from './ShadowRootMantine'
+import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme } from './styles'
 import * as css from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
@@ -31,7 +33,7 @@ export function LikeC4Browser<ViewId extends string>({
     dialogRef.current?.showModal()
     setTimeout(() => {
       setOpened(true)
-    }, 50)
+    }, 20)
   })
   const closeMe = () => {
     setTimeout(() => {
@@ -39,28 +41,18 @@ export function LikeC4Browser<ViewId extends string>({
     }, 400)
   }
 
+  const backdropRgb = scheme === 'dark' ? '36 36 36' : '255 255 255'
+
   return (
     <>
       <style
         type="text/css"
         dangerouslySetInnerHTML={{
           __html: `
-        [data-likec4-instance="${id}"] {
-          animation: likec4-dialog-fade-out 0.18s ease-out;
-        }
-
-        [data-likec4-instance="${id}"][open] {
-          animation: likec4-dialog-fade-in 0.21s ease-out;
-        }
-
-        [data-likec4-instance="${id}"][open]::backdrop {
-          animation: likec4-dialog-backdrop-fade-in 0.21s ease-out forwards;
-        }
-
         @keyframes likec4-dialog-fade-in {
           0% {
-            opacity: 0.1;
-            transform: scale(0.8);
+            opacity: 0;
+            transform: scale(0.7);
             display: none;
           }
 
@@ -80,18 +72,18 @@ export function LikeC4Browser<ViewId extends string>({
 
           100% {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.85);
             display: none;
           }
         }
 
         @keyframes likec4-dialog-backdrop-fade-in {
           0% {
-            background-color: rgb(36 36 36 / 0%);
+            background-color: rgb(${backdropRgb} / 5%);
           }
 
           100% {
-            background-color: rgb(36 36 36 / 85%);
+            background-color: rgb(${backdropRgb} / 90%);
           }
         }
         [data-likec4-instance="${id}"] {
@@ -106,6 +98,11 @@ export function LikeC4Browser<ViewId extends string>({
           height: 100%;
           min-height: 100dvh;
           background: transparent;
+          animation: likec4-dialog-fade-out 0.15s ease-out;
+          transform-origin: 50% 20%;
+        }
+        [data-likec4-instance="${id}"][open] {
+          animation: likec4-dialog-fade-in 0.3s ease-out;
         }
         [data-likec4-instance="${id}"] > div {
           width: 100%;
@@ -118,6 +115,10 @@ export function LikeC4Browser<ViewId extends string>({
         [data-likec4-instance="${id}"]::backdrop {
           -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
+          background-color: rgb(${backdropRgb} / 5%);
+        }
+        [data-likec4-instance="${id}"][open]::backdrop {
+          animation: likec4-dialog-backdrop-fade-in 500ms ease-out forwards;
         }
       `
         }} />
@@ -127,9 +128,9 @@ export function LikeC4Browser<ViewId extends string>({
         ref={dialogRef}
         onClose={closeMe}>
         <ShadowRoot injectFontCss={injectFontCss}>
-          <ShadowRootMantine
+          <ShadowRootMantineProvider
             colorScheme={scheme}
-            rootClassName={css.cssLikeC4Browser}
+            className={css.cssLikeC4Browser}
           >
             {opened && (
               <LikeC4Diagram
@@ -152,7 +153,15 @@ export function LikeC4Browser<ViewId extends string>({
                 onNavigateTo={to => onNavigateTo(to as string as ViewId)}
               />
             )}
-          </ShadowRootMantine>
+            <ActionIcon
+              className={closeButton}
+              variant="light"
+              color="gray"
+              autoFocus
+              onClick={() => dialogRef.current?.close()}>
+              <IconX />
+            </ActionIcon>
+          </ShadowRootMantineProvider>
         </ShadowRoot>
       </dialog>
     </>

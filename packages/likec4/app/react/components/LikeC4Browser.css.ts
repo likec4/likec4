@@ -31,15 +31,19 @@ export const cssDiagram = style({
 //   right: '1rem'
 // })
 
-export const modalCloseButton = style({
+export const closeButton = style({
   position: 'absolute',
   zIndex: 1,
   top: '1rem',
-  right: '1rem'
-})
-export const historyButtons = style({
-  position: 'absolute',
-  zIndex: 1,
-  top: '1rem',
-  left: '1rem'
+  right: '1rem',
+  vars: {
+    ['--ai-size']: 'var(--ai-size-md)'
+  },
+  '@media': {
+    '(min-width: 62em)': {
+      vars: {
+        ['--ai-size']: 'var(--ai-size-lg)'
+      }
+    }
+  }
 })

@@ -4,7 +4,7 @@ import { useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 
-import { ShadowRootMantine } from './ShadowRootMantine'
+import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView, LikeC4ViewBaseProps } from './types'
 
@@ -17,6 +17,7 @@ export type LikeC4ViewElementProps<ViewId extends string> =
 
 export function LikeC4ViewElement<ViewId extends string>({
   onNavigateTo,
+  className,
   view,
   injectFontCss,
   colorScheme,
@@ -41,8 +42,7 @@ export function LikeC4ViewElement<ViewId extends string>({
     ${
             isLandscape ? '' : `
     margin-left: auto;
-    margin-right: auto;
-    `
+    margin-right: auto;`
           }
     width: ${isLandscape ? '100%' : 'auto'};
     width: -webkit-fill-available;
@@ -50,8 +50,7 @@ export function LikeC4ViewElement<ViewId extends string>({
     height: -webkit-fill-available;
     ${
             isLandscape ? '' : `
-    min-height: 100px;
-    `
+    min-height: 100px;`
           }
     aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
     max-height: var(--likec4-view-max-height, ${Math.ceil(view.height)}px);
@@ -61,6 +60,7 @@ export function LikeC4ViewElement<ViewId extends string>({
       <ShadowRoot
         data-likec4-instance={id}
         injectFontCss={injectFontCss}
+        className={clsx('likec4-view', className)}
         {...props}
         {...(onNavigateTo && {
           onClick: (e) => {
@@ -69,9 +69,9 @@ export function LikeC4ViewElement<ViewId extends string>({
           }
         })}
       >
-        <ShadowRootMantine
+        <ShadowRootMantineProvider
           colorScheme={scheme}
-          rootClassName={clsx(cssLikeC4View, !!onNavigateTo && cssInteractive)}
+          className={clsx(cssLikeC4View, !!onNavigateTo && cssInteractive)}
         >
           <LikeC4Diagram
             view={view as any}
@@ -92,7 +92,7 @@ export function LikeC4ViewElement<ViewId extends string>({
               onNavigateTo: to => onNavigateTo(to as string as ViewId)
             })}
           />
-        </ShadowRootMantine>
+        </ShadowRootMantineProvider>
       </ShadowRoot>
     </>
   )

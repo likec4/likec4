@@ -1,12 +1,13 @@
 import { createTheme, type MantineTheme } from '@mantine/core'
 import { useColorScheme as usePreferredColorScheme } from '@mantine/hooks'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { isString } from 'remeda'
 import fontCss from '../../webcomponent/font.css?inline'
 import { cssRoot } from './styles.css'
 
-const rootSelector = `.${cssRoot}`
+// Also used by MantineProvider as cssVariablesSelector
+export const ShadowRootCssSelector = `.${cssRoot}`
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_SHADOW_STYLE__: boolean
@@ -20,18 +21,15 @@ const bundledStyles = () => {
     BundledStyles = [
       ...Array.from(__likec4styles.values()),
       // vanilla-extract in transform mode
-      ...Array.from(document.querySelectorAll(`style[data-package="likec4"]`)).map((style) => {
-        if (style.getAttribute('data-file')?.endsWith('.css.ts')) {
-          return style.textContent
-        }
-        return null
+      ...Array.from(document.querySelectorAll(`style[data-package="likec4"][data-file$=".css.ts"]`)).map((style) => {
+        return style.textContent
       })
     ].filter(isString).join('\n')
   }
   // return BundledStyles
-  return BundledStyles.replaceAll('body {', `${rootSelector}{`)
-    .replaceAll('body{', `${rootSelector}{`)
-    .replaceAll(':root', `${rootSelector}`)
+  return BundledStyles.replaceAll('body {', `${ShadowRootCssSelector}{`)
+    .replaceAll('body{', `${ShadowRootCssSelector}{`)
+    .replaceAll(':root', `${ShadowRootCssSelector}`)
 }
 
 const createStyleSheet = () => {
@@ -54,7 +52,7 @@ export const useCreateStyleSheet = (injectFontCss: boolean) => {
   return createStyleSheet
 }
 
-const getComputedBodyColorScheme = (): ColorScheme => {
+const getComputedBodyColorScheme = (): ColorScheme | undefined => {
   try {
     const colorScheme = window.getComputedStyle(document.body).colorScheme
     if (colorScheme === 'light' || colorScheme === 'dark') {
@@ -66,10 +64,10 @@ const getComputedBodyColorScheme = (): ColorScheme => {
   return undefined
 }
 
-type ColorScheme = 'light' | 'dark' | undefined
+type ColorScheme = 'light' | 'dark'
 export const useColorScheme = (explicit?: ColorScheme) => {
-  const [current, setCurrent] = useState<ColorScheme>(explicit)
-  useIsomorphicLayoutEffect(() => {
+  const [current, setCurrent] = useState<ColorScheme | undefined>(explicit)
+  useEffect(() => {
     if (explicit) {
       return
     }

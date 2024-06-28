@@ -12,7 +12,7 @@ import { memo, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state'
 import { ZIndexes } from '../const'
-import { useXYFlow, useXYStoreApi } from '../hooks'
+import { useXYStoreApi } from '../hooks'
 import { type XYFlowEdge } from '../types'
 import { bezierControlPoints, toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
@@ -249,6 +249,13 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       data-edge-dir={diagramEdge.dir}
       data-edge-active={isActive}
       data-edge-hovered={isHovered}>
+      <path
+        className={clsx('react-flow__edge-interaction')}
+        d={edgePath}
+        fill="none"
+        stroke={'transparent'}
+        strokeWidth={interactionWidth ?? 10}
+      />
       <g className={edgesCss.markerContext}>
         <defs>
           <marker
@@ -282,13 +289,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           markerEnd={markerEnd}
         />
       </g>
-      <path
-        className={clsx('react-flow__edge-interaction')}
-        d={edgePath}
-        fill="none"
-        strokeOpacity={0}
-        strokeWidth={interactionWidth ?? 10}
-      />
       {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
           onPointerDown={e => onControlPointerDown(i, e)}

@@ -31,7 +31,7 @@ export function ShadowRoot({
     return () => {
       css.replaceSync('')
     }
-  }, [])
+  }, [createCssStyleSheet])
 
   return (
     <Root styleSheets={styleSheets} {...props}>
