@@ -7,6 +7,7 @@ import {
   Group,
   HoverCard,
   HoverCardDropdown,
+  type HoverCardProps,
   HoverCardTarget,
   Stack,
   UnstyledButton
@@ -15,6 +16,7 @@ import clsx from 'clsx'
 import { useId } from 'react'
 import { clamp } from 'remeda'
 import { Link } from '../../../icons'
+import { type DiagramState, useDiagramState } from '../../../state'
 import type { XYFlowNode } from '../../types'
 import { elementLink, trigger } from './ElementLink.css'
 
@@ -22,11 +24,17 @@ type ElementLinkProps = {
   element: XYFlowNode['data']['element']
 }
 
+const selector = (s: DiagramState) => {
+  const target = s.getContainer()
+  return target ? { target } : null
+}
+
 export function ElementLink({
   element
 }: ElementLinkProps) {
   invariant(element.links, 'ElementLink: links are required')
   const id = useId()
+  const portalProps = useDiagramState(selector)
   // const mantineCtx = useMantineContext()
   // const root = mantineCtx.getRootElement()
 
@@ -51,8 +59,7 @@ export function ElementLink({
         transitionProps={{
           transition: 'pop'
         }}
-        // portalProps={portalProps}
-        withinPortal={false}
+        {...(portalProps ? { portalProps } : { withinPortal: false })}
         floatingStrategy={'fixed'}
         openDelay={350}
         closeDelay={800}

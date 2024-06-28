@@ -28,6 +28,8 @@ export type DiagramStore = {
   nodesDraggable: boolean
   nodesSelectable: boolean
   experimentalEdgeEditing: boolean
+  // Diagram Container, see DiagramContainer.tsx
+  getContainer: () => HTMLDivElement | null
 
   // Internal state
   viewSyncDebounceTimeout: number | null
@@ -120,7 +122,7 @@ interface DiagramStoreActions {
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
-const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow'> = {
+const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow' | 'getContainer'> = {
   viewSyncDebounceTimeout: null,
   initialized: false,
   xyflowSynced: false,
@@ -145,7 +147,7 @@ const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 
   onCanvasDblClick: null
 }
 
-type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xyflow'>
+type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xyflow' | 'getContainer'>
 
 const noReplace = false
 

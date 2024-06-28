@@ -1,8 +1,8 @@
-import type { View } from '@likec4/core'
+import type { LikeC4View } from '@likec4/core'
 import { invariant } from '@likec4/core'
 import { hasAtLeast, unique, zip } from 'remeda'
 
-function commonAncestorPath(views: View[], sep = '/') {
+function commonAncestorPath(views: LikeC4View[], sep = '/') {
   if (views.length <= 1) return ''
   const uniqURIs = unique(views.flatMap(({ docUri }) => (docUri ? [docUri] : [])))
   if (uniqURIs.length === 0) return ''
@@ -30,7 +30,7 @@ function commonAncestorPath(views: View[], sep = '/') {
   return prefix.endsWith(sep) ? prefix : prefix + sep
 }
 
-export function resolveRelativePaths(views: View[]): View[] {
+export function resolveRelativePaths(views: LikeC4View[]): LikeC4View[] {
   const commonPrefix = commonAncestorPath(views)
   return (
     views

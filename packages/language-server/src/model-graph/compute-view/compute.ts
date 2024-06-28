@@ -14,7 +14,7 @@ import {
   Expr,
   invariant,
   isAncestor,
-  isStrictElementView,
+  isScopedElementView,
   isViewRuleAutoLayout,
   isViewRuleExpression,
   nonexhaustive,
@@ -161,7 +161,7 @@ export class ComputeCtx {
   }
 
   protected get root() {
-    return isStrictElementView(this.view) ? this.view.viewOf : null
+    return isScopedElementView(this.view) ? this.view.viewOf : null
   }
 
   protected get computedEdges(): ComputedEdge[] {

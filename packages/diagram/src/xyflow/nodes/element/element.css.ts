@@ -1,5 +1,6 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
+import { calc } from '@vanilla-extract/css-utils'
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
@@ -175,34 +176,34 @@ export const element = style({
   }
 })
 
-export const iconMaxH = createVar('max-h')
+export const iconOffsetY = createVar('offset-y')
+
+const iconMaxH = createVar('max-h')
 
 export const elementIcon = style({
   flex: `0 1 ${iconMaxH}`,
   maxHeight: iconMaxH,
-  marginTop: -8,
   position: 'relative',
   userSelect: 'none',
   pointerEvents: 'none',
   overflow: 'visible',
   mixBlendMode: 'hard-light',
   'vars': {
-    [iconMaxH]: '30px'
+    [iconMaxH]: calc(iconOffsetY).subtract('12px').toString()
   }
 })
 
 globalStyle(`${elementIcon} img`, {
   position: 'absolute',
   left: 0,
-  bottom: 0,
+  bottom: 4,
   width: '100%',
   height: 'auto',
   objectFit: 'contain',
-  maxHeight: `calc(${iconMaxH} + 16px)`
+  maxHeight: iconOffsetY
 })
 
 const filterShadow = createVar('filter-shadow')
-const filterShadowHovered = createVar('filter-shadow-hovered')
 
 export const cssShapeSvg = style({
   top: '0px',
@@ -212,7 +213,7 @@ export const cssShapeSvg = style({
   fill: vars.element.fill,
   stroke: vars.element.stroke,
   overflow: 'visible',
-  filter: fallbackVar(filterShadowHovered, filterShadow),
+  filter: filterShadow,
   transition: 'filter 300ms ease-out',
   transitionDelay: '0ms',
   zIndex: -1,
@@ -225,7 +226,9 @@ export const cssShapeSvg = style({
   },
   selectors: {
     [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
-      filter: 'none'
+      vars: {
+        [filterShadow]: `none`
+      }
     }
   }
 })

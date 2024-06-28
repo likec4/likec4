@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual as eq } from 'fast-equals'
 import { memo, useRef, useState } from 'react'
-import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
+import { first, hasAtLeast, isArray, isNullish, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
@@ -233,8 +233,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   }
 
   const marker = `url(#arrow-${id})`
-  let markerStart = diagramEdge.tailArrow ? marker : undefined
-  let markerEnd = diagramEdge.headArrow ? marker : undefined
+  let markerStart = diagramEdge.tail && diagramEdge.tail !== 'none' ? marker : undefined
+  let markerEnd = isNullish(diagramEdge.head) || diagramEdge.head !== 'none' ? marker : undefined
   if (isModified && diagramEdge.dir === 'back') {
     ;[markerStart, markerEnd] = [markerEnd, markerStart]
   }

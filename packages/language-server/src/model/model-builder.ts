@@ -2,9 +2,9 @@ import {
   type c4,
   compareByFqnHierarchically,
   isElementView,
-  isStrictElementView,
+  isScopedElementView,
   parentFqn,
-  type StrictElementView,
+  type ScopedElementView,
   type ViewID
 } from '@likec4/core'
 import { deepEqual as eq } from 'fast-equals'
@@ -26,7 +26,7 @@ import {
   sort,
   values
 } from 'remeda'
-import { type CancellationToken, Disposable } from 'vscode-languageserver'
+import { type CancellationToken, Disposable } from 'vscode-languageserver-protocol'
 import type {
   ParsedAstElement,
   ParsedAstRelation,
@@ -107,7 +107,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
 
   const elements = pipe(
     docs,
-    flatMap(d => d.c4Elements.map(toModelElement(d))),
+    flatMap(d => map(d.c4Elements, toModelElement(d))),
     filter(isTruthy),
     sort(compareByFqnHierarchically),
     reduce(
@@ -140,10 +140,13 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       ...model
     }: ParsedAstRelation): c4.Relation | null => {
       if (isNullish(elements[source]) || isNullish(elements[target])) {
+        logger.warn(
+          `Invalid relation ${id}, source: ${source}(${!!elements[source]}), target: ${target}(${!!elements[target]})`
+        )
         return null
       }
 
-      if (!!kind && kind in c4Specification.relationships) {
+      if (!isNullish(kind) && kind in c4Specification.relationships) {
         return {
           ...(links && { links: resolveLinks(doc, links) }),
           ...c4Specification.relationships[kind],
@@ -165,14 +168,15 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
   }
 
   const relations = pipe(
-    flatMap(docs, d => map(d.c4Relations, toModelRelation(d))),
+    docs,
+    flatMap(d => map(d.c4Relations, toModelRelation(d))),
     filter(isTruthy),
     mapToObj(r => [r.id, r])
   )
 
   const toC4View = (doc: LangiumDocument) => {
     const docUri = doc.uri.toString()
-    return (parsedAstView: ParsedAstView): c4.View => {
+    return (parsedAstView: ParsedAstView): c4.LikeC4View => {
       let {
         id,
         title,
@@ -188,7 +192,7 @@ function buildModel(services: LikeC4Services, docs: ParsedLikeC4LangiumDocument[
       } = parsedAstView
 
       if (parsedAstView.__ === 'element' && isNullish(title) && 'viewOf' in parsedAstView) {
-        title ??= elements[parsedAstView.viewOf]?.title ?? null
+        title = elements[parsedAstView.viewOf]?.title ?? null
       }
 
       if (isNullish(title) && id === 'index') {
@@ -359,7 +363,7 @@ export class LikeC4ModelBuilder {
         }
 
         const allElementViews = values(model.views).filter(
-          (v): v is StrictElementView => isStrictElementView(v) && v.id !== viewId
+          (v): v is ScopedElementView => isScopedElementView(v) && v.id !== viewId
         )
 
         let computedView = result.view

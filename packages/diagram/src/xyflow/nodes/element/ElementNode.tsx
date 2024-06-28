@@ -199,7 +199,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
         />
       </svg>
       <div className={clsx(css.element, 'likec4-element')}>
-        {element.icon && <ElementIcon node={element} />}
+        <ElementIcon node={element} />
         <Text
           component="div"
           className={clsx(css.title, 'likec4-element-title')}>

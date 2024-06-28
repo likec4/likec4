@@ -1,14 +1,6 @@
 import { globalStyle, style } from '@vanilla-extract/css'
 import { vars, xyvars } from './theme.css'
 
-export const keepAspectRatioContainer = style({
-  overflow: 'hidden',
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  padding: 0
-})
-
 export const cssReactFlow = style({
   '@supports': {
     // https://wojtek.im/journal/targeting-safari-with-css-media-query

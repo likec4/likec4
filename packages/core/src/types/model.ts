@@ -1,11 +1,11 @@
 import type { Element, Fqn } from './element'
 import type { Relation, RelationID } from './relation'
-import type { ComputedView, View, ViewID } from './view'
+import type { ComputedView, LikeC4View, ViewID } from './view'
 
 export interface LikeC4Model {
   elements: Record<Fqn, Element>
   relations: Record<RelationID, Relation>
-  views: Record<ViewID, View>
+  views: Record<ViewID, LikeC4View>
 }
 
 export interface LikeC4ComputedModel {

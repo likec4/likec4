@@ -7,7 +7,6 @@ import { domAnimation, LazyMotion } from 'framer-motion'
 import { memo, useEffect, useRef, useState } from 'react'
 import useTilg from 'tilg'
 import { rootClassName } from './globals.css'
-import { KeepAspectRatioContainer } from './KeepAspectRatioContainer'
 import { cssDisablePan, cssNoControls, cssReactFlow, cssTransparentBg } from './LikeC4Diagram.css'
 import { type LikeC4DiagramEventHandlers, type LikeC4DiagramProperties } from './LikeC4Diagram.props'
 import { EnsureMantine } from './mantine/EnsureMantine'
@@ -79,6 +78,8 @@ export function LikeC4Diagram({
       >
         <DiagramContextProvider
           view={view}
+          keepAspectRatio={keepAspectRatio}
+          className={clsx(rootClassName, className)}
           readonly={readonly}
           pannable={pannable}
           zoomable={zoomable}
@@ -99,25 +100,18 @@ export function LikeC4Diagram({
           onCanvasDblClick={onCanvasDblClick}
         >
           <LazyMotion features={domAnimation} strict>
-            <KeepAspectRatioContainer
-              className={clsx(rootClassName, className)}
-              enabled={keepAspectRatio}
-              width={view.width}
-              height={view.height}
-            >
-              <LikeC4DiagramInnerMemo
-                defaultNodes={initialRef.current.defaultNodes}
-                defaultEdges={initialRef.current.defaultEdges}
-                fitView={fitView}
-                zoomable={zoomable}
-                background={background}
-                controls={controls}
-                pannable={pannable}
-                showDiagramTitle={showDiagramTitle}
-                showNavigationButtons={showNavigationButtons}
-                enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
-              />
-            </KeepAspectRatioContainer>
+            <LikeC4DiagramInnerMemo
+              defaultNodes={initialRef.current.defaultNodes}
+              defaultEdges={initialRef.current.defaultEdges}
+              fitView={fitView}
+              zoomable={zoomable}
+              background={background}
+              controls={controls}
+              pannable={pannable}
+              showDiagramTitle={showDiagramTitle}
+              showNavigationButtons={showNavigationButtons}
+              enableDynamicViewWalkthrough={enableDynamicViewWalkthrough}
+            />
           </LazyMotion>
         </DiagramContextProvider>
       </XYFlowProvider>

@@ -1,4 +1,5 @@
-import { type DiagramNode, type DiagramView, extractStep, type Fqn, invariant, nonNullable } from '@likec4/core'
+import { extractStep, invariant, nonNullable } from '@likec4/core'
+import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
 
@@ -133,8 +134,6 @@ export function diagramViewToXYFlowData(
         edge,
         type: 'bezier',
         controlPoints: view.manualLayout?.edges[edge.id]?.controlPoints || null,
-        headPoint: edge.headArrowPoint ?? null,
-        tailPoint: edge.tailArrowPoint ?? null,
         stepNum: isDynamicView ? extractStep(edge.id) : null,
         label: !!edge.labelBBox
           ? {

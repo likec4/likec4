@@ -61,8 +61,6 @@ export type RelationshipData = {
   // viewId: ViewID
   // if set - edge was changed by user
   controlPoints: XYPosition[] | null
-  headPoint: Point | null
-  tailPoint: Point | null
   type: 'bezier' | 'poly'
   // if dynamic view
   stepNum: number | null

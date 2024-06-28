@@ -8,6 +8,13 @@ import { vars } from './theme.css'
 export const rootClassName = 'likec4-diagram-root'
 
 globalStyle(`.${rootClassName}`, {
+  overflow: 'hidden',
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  padding: 0,
+  margin: 0,
+  boxSizing: 'border-box',
   WebkitFontSmoothing: mantine.webkitFontSmoothing,
   MozOsxFontSmoothing: mantine.mozFontSmoothing
 })

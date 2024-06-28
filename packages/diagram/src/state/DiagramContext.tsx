@@ -1,5 +1,5 @@
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
-import { hasSubObject, isIncludedIn } from 'remeda'
+import { hasSubObject } from 'remeda'
 import { useUpdateEffect } from '../hooks'
 import { useXYFlow } from '../xyflow/hooks'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
@@ -7,7 +7,21 @@ import { createDiagramStore, type DiagramInitialState } from './diagramStore'
 export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
 export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
-export function DiagramContextProvider({ children, view, ...props }: PropsWithChildren<DiagramInitialState>) {
+type DiagramContextProviderProps = PropsWithChildren<
+  DiagramInitialState & {
+    className: string
+    keepAspectRatio: boolean
+  }
+>
+
+export function DiagramContextProvider({
+  children,
+  view,
+  className,
+  keepAspectRatio,
+  ...props
+}: DiagramContextProviderProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const xyflow = useXYFlow()
   const store = useRef<DiagramZustandStore>()
 
@@ -15,6 +29,7 @@ export function DiagramContextProvider({ children, view, ...props }: PropsWithCh
     store.current = createDiagramStore({
       xyflow,
       view,
+      getContainer: () => containerRef.current,
       ...props
     })
   }
@@ -41,10 +56,19 @@ export function DiagramContextProvider({ children, view, ...props }: PropsWithCh
     },
     [view, props]
   )
-
   return (
-    <DiagramContext.Provider value={store.current}>
-      {children}
-    </DiagramContext.Provider>
+    <div
+      ref={containerRef}
+      className={className}
+      {...(keepAspectRatio && {
+        style: {
+          aspectRatio: `${Math.ceil(view.width)}/${Math.ceil(view.height)}`,
+          maxHeight: Math.ceil(view.height)
+        }
+      })}>
+      <DiagramContext.Provider value={store.current}>
+        {children}
+      </DiagramContext.Provider>
+    </div>
   )
 }

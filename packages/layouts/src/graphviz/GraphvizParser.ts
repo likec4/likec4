@@ -3,17 +3,14 @@ import type {
   ComputedEdge,
   ComputedView,
   DiagramEdge,
-  DiagramLabel,
-  DiagramNode,
   DiagramView,
   EdgeId,
-  NonEmptyArray,
   Point
 } from '@likec4/core'
-import { invariant } from '@likec4/core'
-import { first, firstBy, hasAtLeast, last } from 'remeda'
+import { invariant, nonNullable } from '@likec4/core'
+import { hasAtLeast } from 'remeda'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
-import { inchToPx, pointToPx, toKonvaAlign } from './utils'
+import { inchToPx, pointToPx } from './utils'
 
 function parseBB(bb: string | undefined): BoundingBox {
   const [llx, lly, urx, ury] = bb
@@ -39,7 +36,7 @@ function parsePos(pos: string): GVPos {
       y: pointToPx(parseFloat(y))
     }
   } catch (e) {
-    console.error(`failed on parsing pos: ${pos}`)
+    console.error(`failed on parsing pos: ${pos}`, e)
     throw e
   }
 }
@@ -57,49 +54,62 @@ function parseNode({ pos, width, height }: GraphvizJson.GvNodeObject): BoundingB
   }
 }
 
-function parseLabelDraws(
+function parseLabelBbox(
   { _ldraw_ = [] }: GraphvizJson.GvObject | GraphvizJson.Edge,
   [containerX, containerY]: Point = [0, 0]
-): DiagramLabel[] {
-  const labels = [] as DiagramLabel[]
-
-  let fontSize: number | undefined
-  let color: DiagramLabel['color']
-  let fontStyle: DiagramLabel['fontStyle']
-
-  for (const draw of _ldraw_) {
-    if (draw.op === 'F') {
-      fontSize = pointToPx(draw.size)
-      continue
-    }
-    if (draw.op === 'c') {
-      color = draw.color as DiagramLabel['color']
-      continue
-    }
-    if (draw.op === 't') {
-      if (draw.fontchar === 1) {
-        fontStyle = 'bold'
-      } else {
-        fontStyle = undefined
-      }
-      continue
-    }
-    if (draw.op === 'T') {
-      if (fontSize && draw.text.trim() !== '') {
-        labels.push({
-          fontSize,
-          ...(fontStyle ? { fontStyle } : {}),
-          ...(color ? { color } : {}),
-          text: draw.text,
-          pt: [pointToPx(draw.pt[0]) - containerX, pointToPx(draw.pt[1]) - containerY],
-          align: toKonvaAlign(draw.align),
-          width: pointToPx(draw.width)
-        })
-      }
-      continue
-    }
+): LabelBBox | null {
+  if (_ldraw_.length === 0) {
+    return null
   }
-  return labels
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity
+
+  let fontSize = 13
+
+  try {
+    for (const draw of _ldraw_) {
+      if (draw.op === 'F') {
+        fontSize = pointToPx(draw.size)
+        continue
+      }
+      if (draw.op === 'T') {
+        let x = pointToPx(draw.pt[0]) - containerX
+        let width = pointToPx(draw.width)
+        switch (draw.align) {
+          case 'r':
+            x -= width
+            break
+          case 'c':
+            x -= Math.round(width / 2)
+            break
+        }
+
+        minX = Math.min(minX, x)
+        maxX = Math.max(maxX, x + width)
+
+        let y = pointToPx(draw.pt[1]) - containerY
+        minY = Math.min(minY, y - fontSize)
+        maxY = Math.max(maxY, y)
+      }
+    }
+  } catch (e) {
+    console.error(`failed on parsing _ldraw_:\n${JSON.stringify(_ldraw_, null, 2)}`, e)
+    return null
+  }
+
+  // If no draw.op === 'T' found, return null
+  if (minX === Infinity) {
+    return null
+  }
+  const padding = 2
+  return {
+    x: minX - padding,
+    y: minY - padding,
+    width: maxX - minX + padding,
+    height: maxY - minY + padding
+  }
 }
 
 // Discussion:
@@ -121,103 +131,14 @@ function parseEdgePoints({ _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.E
     throw e
   }
 }
-function parseEdgeArrowPos(pos: string): Pick<DiagramEdge, 'headArrowPoint' | 'tailArrowPoint'> {
-  try {
-    const result = {} as Pick<DiagramEdge, 'headArrowPoint' | 'tailArrowPoint'>
-    // we interested only in the first two parts (according to the graphviz docs)
-    const parts = pos.split(' ').slice(0, 3)
-    for (const part of parts) {
-      const isTail = part.startsWith('s,')
-      const isHead = part.startsWith('e,')
-      if (isTail || isHead) {
-        const { x, y } = parsePos(part.substring(2))
-        if (isTail) {
-          result.tailArrowPoint = [x, y]
-        } else {
-          result.headArrowPoint = [x, y]
-        }
-      }
-    }
-    return result
-  } catch (e) {
-    console.error(`failed on parsing edge pos: ${pos}`)
-    throw e
-  }
-}
-
-function parseEdgeArrowPolygon(edgeDebugId: string, ops: GraphvizJson.DrawOp[]): NonEmptyArray<Point> | undefined {
-  try {
-    const polygons = ops.filter((v): v is GraphvizJson.DrawOps.Polygon => v.op.toLowerCase() === 'p')
-    invariant(hasAtLeast(polygons, 1), `edge ${edgeDebugId} arrow should have at least one polygon`)
-    if (polygons.length > 1) {
-      console.warn(`edge ${edgeDebugId} arrow has more than one polygon, using the first one only`)
-    }
-    const p = polygons[0]
-    const points = p.points.map(p => pointToPx(p))
-    invariant(hasAtLeast(points, 1))
-    return points
-  } catch (e) {
-    console.error(`failed on parsing edge ${edgeDebugId} arrow polygon:\n${JSON.stringify(ops, null, 2)}`)
-    return undefined
-  }
-}
 
 function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdge: ComputedEdge): DiagramEdge {
-  // if (!graphvizEdge.likec4_id) {
-  //   return null
-  // }
-  // const edgeData = computedEdges.find(i => i.id === graphvizEdge.likec4_id)
-  // if (!edgeData) {
-  //   console.warn(`Edge ${graphvizEdge.likec4_id} not found, how did it get into the graphviz output?`)
-  //   return null
-  // }
-  const edge: DiagramEdge = {
+  const labelBBox = parseLabelBbox(graphvizEdge)
+  return {
     ...computedEdge,
-    points: parseEdgePoints(graphvizEdge)
+    points: parseEdgePoints(graphvizEdge),
+    ...(labelBBox ? { labelBBox } : {})
   }
-  if (graphvizEdge.pos) {
-    Object.assign(edge, parseEdgeArrowPos(graphvizEdge.pos))
-  }
-
-  const labels = parseLabelDraws(graphvizEdge)
-  if (hasAtLeast(labels, 1)) {
-    const labelBBox = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0
-    } as LabelBBox
-    // edge label is inside table with cellpadding 2
-    const labelPadding = pointToPx(2)
-    // lowest y
-    const labelWithLowestY = firstBy(labels, [l => l.pt[1] - l.fontSize, 'asc'])
-    labelBBox.y = labelWithLowestY.pt[1] - labelWithLowestY.fontSize - labelPadding
-
-    // x and width - from the label with max width
-    const minX = firstBy(labels, [l => l.pt[0], 'asc'])
-    labelBBox.x = minX.pt[0] - labelPadding
-    const maxXLabel = firstBy(labels, [l => l.pt[0] + l.width, 'desc'])
-    const maxX = maxXLabel.pt[0] + maxXLabel.width + labelPadding
-    labelBBox.width = maxX - labelBBox.x
-
-    // height - y from the last label
-    const maxYLabel = firstBy(labels, [l => l.pt[1], 'desc'])
-    const lastY = maxYLabel.pt[1] + labelPadding
-    labelBBox.height = lastY - labelBBox.y
-    edge.labels = labels
-    edge.labelBBox = labelBBox
-  }
-
-  const hdraw = graphvizEdge._hdraw_ && parseEdgeArrowPolygon(edge.id + ' head ', graphvizEdge._hdraw_)
-  const tdraw = graphvizEdge._tdraw_ && parseEdgeArrowPolygon(edge.id + ' tail ', graphvizEdge._tdraw_)
-
-  if (hdraw) {
-    edge.headArrow = hdraw
-  }
-  if (tdraw) {
-    edge.tailArrow = tdraw
-  }
-  return edge
 }
 
 export function parseGraphvizJson(json: string, computedView: ComputedView): DiagramView {
@@ -233,8 +154,6 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
     edges: []
   }
 
-  // const diagramNodes = new Map<NodeId, DiagramNode>()
-
   const graphvizObjects = graphvizJson.objects ?? []
   for (const computed of computedNodes) {
     const obj = graphvizObjects.find(o => o.likec4_id === computed.id)
@@ -244,30 +163,25 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
 
     const position = [x, y] as Point
 
-    const node: DiagramNode = {
+    diagram.nodes.push({
       ...computed,
       position,
       width,
       height,
-      labels: parseLabelDraws(obj, position)
-    }
-    diagram.nodes.push(node)
+      labelBBox: nonNullable(parseLabelBbox(obj, position), 'Node label bbox not found')
+    })
   }
 
   const graphvizEdges = graphvizJson.edges ?? []
   for (const computedEdge of computedEdges) {
-    try {
-      const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
-      if (!graphvizEdge) {
-        console.warn(`Edge ${computedEdge.id} not found in graphviz output, skipping`)
-        continue
-      }
-      diagram.edges.push(
-        parseGraphvizEdge(graphvizEdge, computedEdge)
-      )
-    } catch (e) {
-      console.error(`failed on parsing edge ${computedEdge.id}:\n${String(e)}`)
+    const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
+    if (!graphvizEdge) {
+      console.warn(`Edge ${computedEdge.id} not found in graphviz output, skipping`)
+      continue
     }
+    diagram.edges.push(
+      parseGraphvizEdge(graphvizEdge, computedEdge)
+    )
   }
 
   return diagram

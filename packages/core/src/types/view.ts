@@ -47,7 +47,7 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
 
 export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
 
-export interface BasicView<ViewType extends 'element' | 'dynamic' = 'element' | 'dynamic'> {
+export interface BasicView<ViewType extends 'element' | 'dynamic'> {
   readonly __?: ViewType
   readonly id: ViewID
   readonly title: string | null
@@ -81,14 +81,14 @@ export interface BasicElementView extends BasicView<'element'> {
   readonly viewOf?: Fqn
   readonly rules: ViewRule[]
 }
-export interface StrictElementView extends BasicElementView {
+export interface ScopedElementView extends BasicElementView {
   readonly viewOf: Fqn
 }
 
 export interface ExtendsElementView extends BasicElementView {
   readonly extends: ViewID
 }
-export type ElementView = StrictElementView | ExtendsElementView | BasicElementView
+export type ElementView = ScopedElementView | ExtendsElementView | BasicElementView
 
 export interface DynamicViewStep {
   readonly source: Fqn
@@ -114,27 +114,26 @@ export interface DynamicView extends BasicView<'dynamic'> {
   readonly rules: DynamicViewRule[]
 }
 
-export type View = ElementView | DynamicView
+export type LikeC4View = ElementView | DynamicView
 
-export function isDynamicView(view: View): view is DynamicView {
+export function isDynamicView(view: LikeC4View): view is DynamicView {
   return view.__ === 'dynamic'
 }
-export function isElementView(view: View): view is ElementView {
+export function isElementView(view: LikeC4View): view is ElementView {
   return isNullish(view.__) || view.__ === 'element'
 }
 
-export function isExtendsElementView(view: View): view is ExtendsElementView {
+export function isExtendsElementView(view: LikeC4View): view is ExtendsElementView {
   return isElementView(view) && 'extends' in view
 }
 
-export function isStrictElementView(view: View): view is StrictElementView {
+export function isScopedElementView(view: LikeC4View): view is ScopedElementView {
   return isElementView(view) && 'viewOf' in view
 }
 
 export type NodeId = Fqn
 
 export type EdgeId = Opaque<string, 'EdgeId'>
-
 export type StepEdgeIdLiteral = `step-${number}`
 export type StepEdgeId = Opaque<StepEdgeIdLiteral, 'EdgeId'>
 export function StepEdgeId(step: number): StepEdgeId {
@@ -227,34 +226,16 @@ export type BBox = {
   height: number
 }
 
-export interface DiagramLabel {
-  align: 'left' | 'right' | 'center'
-  fontStyle?: 'bold' | 'normal'
-  color?: ColorLiteral
-  fontSize: number
-  pt: Point
-  width: number
-  text: string
-}
-
 export interface DiagramNode extends ComputedNode {
   width: number
   height: number
-  position: Point // Absolute position, top left
-  // relative: Point // Top left, relative to parent
-  labels: DiagramLabel[]
+  // Absolute position, top left
+  position: Point
+  labelBBox: BBox
 }
 
 export interface DiagramEdge extends ComputedEdge {
   points: NonEmptyArray<Point>
-  // Polygons are used to draw arrows
-  headArrow?: NonEmptyArray<Point>
-  // Draw arrow from the last point of the edge to this point
-  headArrowPoint?: Point
-  tailArrow?: NonEmptyArray<Point>
-  // Draw arrow from the first point of the edge to this point
-  tailArrowPoint?: Point
-  labels?: NonEmptyArray<DiagramLabel>
   labelBBox?: BBox
 }
 
