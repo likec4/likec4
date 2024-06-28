@@ -6,7 +6,7 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </p>
   <p>
-    <a href="https://docs.likec4.dev/">docs</a> |
+    <a href="https://likec4.dev/">docs</a> |
     <a href="https://playground.likec4.dev/">playground</a> |
     <a href="https://template.likec4.dev/view/cloud">demo</a>
   </p>
@@ -46,7 +46,7 @@ And result:
 Template repository - [likec4/template](https://github.com/likec4/template)\
 Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 
-Check the [Tutorial](https://likec4.dev/docs/tutorial/) - a bit better overview of LikeC4.
+Check the [Tutorial](https://likec4.dev/tutorial/) - a bit better overview of LikeC4.
 
 ---
 

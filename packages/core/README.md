@@ -1,6 +1,6 @@
 # `@likec4/core`
 
-[docs](https://docs.likec4.dev/)
+[docs](https://likec4.dev/)
 
 Package contains:
 

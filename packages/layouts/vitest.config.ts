@@ -2,6 +2,7 @@ import { defineProject } from 'vitest/config'
 
 export default defineProject({
   test: {
-    name: 'layouts'
+    name: 'layouts',
+    onConsoleLog: () => false
   }
 })

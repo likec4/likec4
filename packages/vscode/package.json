@@ -102,13 +102,13 @@
       "title": "%ext.title%",
       "properties": {
         "likec4.experimental.layoutEditor.enabled": {
-          "description": "Disable diagrams layout editor if you are experiencing issues.",
+          "description": "Enable layout editor (Experimental)",
           "type": "boolean",
           "default": true
         },
         "likec4.graphviz.mode": {
           "title": "Graphviz mode",
-          "description": "If you are experiencing issues with the bundled WASM Graphviz, you switch to local binary (\"dot\").",
+          "description": "If you are experiencing issues with the bundled WASM Graphviz, try switch to local binary (\"dot\")",
           "type": "string",
           "enum": [
             "wasm",
@@ -196,7 +196,7 @@
   "main": "dist/node/extension.js",
   "browser": "dist/browser/extension.js",
   "devDependencies": {
-    "@hpcc-js/wasm": "2.17.0",
+    "@hpcc-js/wasm": "2.17.1",
     "@likec4/core": "workspace:*",
     "@likec4/generators": "workspace:*",
     "@likec4/language-server": "workspace:*",
@@ -211,7 +211,7 @@
     "esbuild": "^0.21.5",
     "esbuild-plugins-node-modules-polyfill": "^1.6.4",
     "execa": "^9.1.0",
-    "langium": "3.1.0",
+    "langium": "3.1.1",
     "p-timeout": "^6.1.2",
     "rambdax": "^9.1.1",
     "remeda": "^1.61.0",

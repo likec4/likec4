@@ -78,7 +78,7 @@
     "cli:export:json": "tsx src/cli/index.ts export json -o dev/export/likec4.json dev"
   },
   "dependencies": {
-    "@hpcc-js/wasm": "2.17.0",
+    "@hpcc-js/wasm": "2.17.1",
     "@vitejs/plugin-react": "4.3.1",
     "esm-env": "1.0.0",
     "nanostores": "0.10.3",
@@ -135,7 +135,7 @@
     "get-port": "^7.1.0",
     "html-to-image": "^1.11.11",
     "json5": "^2.2.3",
-    "langium": "3.1.0",
+    "langium": "3.1.1",
     "mkdirp": "^3.0.1",
     "npm-run-all2": "^6.1.2",
     "p-limit": "^5.0.0",

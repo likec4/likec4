@@ -6,7 +6,7 @@
     Visualize, collaborate, and evolve the software architecture with always actual and live diagrams from your code
   </h4>
 
-[docs](https://docs.likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/cloud)
+[docs](https://likec4.dev/) | [playground](https://playground.likec4.dev/) | [demo](https://template.likec4.dev/view/cloud)
 
 ![vscode extension](https://github.com/likec4/likec4/assets/824903/d6994540-55d1-4167-b66b-45056754cc29)
 

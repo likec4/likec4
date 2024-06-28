@@ -57,6 +57,17 @@
   "onEnterRules": [
     {
       "beforeText": {
+        "pattern": "{\\s*$"
+      },
+      "afterText": {
+        "pattern": "}\\s*$"
+      },
+      "action": {
+        "indent": "indentOutdent"
+      }
+    },
+    {
+      "beforeText": {
         "pattern": "\\s*\"$"
       },
       "afterText": {

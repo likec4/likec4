@@ -64,11 +64,11 @@
     "word-wrap": "^1.2.5"
   },
   "peerDependencies": {
-    "@hpcc-js/wasm": "2.17.0",
+    "@hpcc-js/wasm": "^2.17.1",
     "@likec4/core": "workspace:*"
   },
   "devDependencies": {
-    "@hpcc-js/wasm": "2.17.0",
+    "@hpcc-js/wasm": "2.17.1",
     "@likec4/core": "workspace:*",
     "@likec4/language-server": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
