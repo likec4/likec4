@@ -6,7 +6,7 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "homepage": "https://likec4.dev",
   "author": "Denis Davydkov <denis@davydkov.com>",
-  "packageManager": "yarn@4.3.0",
+  "packageManager": "yarn@4.3.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/likec4/likec4.git"
