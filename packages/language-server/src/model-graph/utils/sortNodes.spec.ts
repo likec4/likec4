@@ -6,11 +6,11 @@ import {
   type ComputedNode,
   type Fqn
 } from '@likec4/core'
-import { pluck } from 'rambdax'
+import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { sortNodes } from './sortNodes'
 
-type TestComputedNode = {
+export type TestComputedNode = {
   id: string
   parent?: string
 }
@@ -179,7 +179,7 @@ describe('sortNodes', () => {
 
     it('should keep sorting, if no edges', () => {
       const sorted = sortNodes(testnodes(nodes))
-      expect(pluck('id', sorted)).toEqual([
+      expect(map(sorted, prop('id'))).toEqual([
         'customer',
         'amazon',
         'cloud.frontend',
@@ -203,7 +203,7 @@ describe('sortNodes', () => {
           ['cloud.backend', 'cloud.db']
         ])
       )
-      expect(pluck('id', sorted)).toEqual([
+      expect(map(sorted, prop('id'))).toEqual([
         'cloud',
         'cloud.frontend',
         'cloud.backend',

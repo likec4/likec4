@@ -1,8 +1,9 @@
 import type { Element } from '@likec4/core'
 import { Expr, invariant, nonexhaustive, parentFqn } from '@likec4/core'
-import type { Predicate } from 'rambdax'
 import { isNullish as isNil } from 'remeda'
 import type { ComputeCtx } from './compute'
+
+type Predicate<T> = (x: T) => boolean
 
 export function includeElementRef(this: ComputeCtx, expr: Expr.ElementRefExpr) {
   // Get the elements that are already in the Ctx before any mutations
