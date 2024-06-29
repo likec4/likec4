@@ -37,12 +37,6 @@
         "@vanilla-extract/"
       ],
     },
-    {
-      groupName: "@codingame",
-      matchPackagePrefixes: [
-        "@codingame/"
-      ],
-    },
     // Auto merge
     {
       matchPackagePrefixes: [
@@ -54,18 +48,10 @@
     // Update manually
     {
       enabled: false,
-      matchDepNames: [
-        'next',
-        'lucide-react',
-        'react-icons',
-        'tailwind'
-      ]
-    },
-    {
-      enabled: false,
       matchDepPatterns: [
         '^monaco',
-        '^@monaco'
+        '^@monaco',
+        '^@codingame'
       ]
     },
     {
@@ -73,5 +59,11 @@
       matchDepNames: ['@types/vscode', 'vscode'],
       matchDepPatterns: ['^vscode-']
     },
+    {
+      "matchDepTypes": [
+        "action"
+      ],
+      "pinDigests": false
+    }
   ]
 }
