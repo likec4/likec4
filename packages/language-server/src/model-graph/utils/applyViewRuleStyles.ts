@@ -1,7 +1,8 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, isViewRuleStyle, nonexhaustive, parentFqn } from '@likec4/core'
-import { anyPass, filter, type Predicate } from 'rambdax'
-import { isDefined, isNullish } from 'remeda'
+import { anyPass, filter, isDefined, isNullish } from 'remeda'
+
+type Predicate<T> = (x: T) => boolean
 
 export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
   const rules = _rules.filter(isViewRuleStyle)
@@ -42,7 +43,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
       }
       nonexhaustive(target)
     }
-    filter(anyPass(predicates), nodes).forEach(n => {
+    filter(nodes, anyPass(predicates)).forEach(n => {
       n.shape = rule.style.shape ?? n.shape
       n.color = rule.style.color ?? n.color
       if (isDefined(rule.style.icon)) {

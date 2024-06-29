@@ -1,5 +1,4 @@
 import { type ElementKind, type Fqn, type IconUrl, type Tag } from '@likec4/core'
-import { view } from 'rambdax'
 import { describe, expect, it } from 'vitest'
 import { $exclude, $include, computeView } from './fixture'
 

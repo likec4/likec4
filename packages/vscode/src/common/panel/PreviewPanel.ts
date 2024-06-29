@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { invariant, type ViewID } from '@likec4/core'
-import { random } from 'rambdax'
+import { randomString } from 'remeda'
 import * as vscode from 'vscode'
 import { type Disposable, ViewColumn, type Webview, type WebviewPanel } from 'vscode'
 import { Logger } from '../../logger'
@@ -153,7 +153,7 @@ export class PreviewPanel extends AbstractDisposable {
     if (this._listener) {
       this._deactivate()
     }
-    const id = '' + random(1000, 9999) + '_' + this._viewId
+    const id = randomString(5) + '_' + this._viewId
     Logger.debug(`[Extension.PreviewPanel.listener.${id}] activating...`)
     const subscribeToView = this.c4model.subscribeToView(this._viewId, result => {
       if (result.success) {

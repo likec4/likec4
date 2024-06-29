@@ -2329,7 +2329,6 @@ __metadata:
     npm-run-all2: "npm:^6.1.2"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
-    rambdax: "npm:^9.1.1"
     remeda: "npm:^2.2.1"
     string-hash: "npm:^1.1.3"
     strip-indent: "npm:^4.0.0"
@@ -2467,7 +2466,6 @@ __metadata:
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     esm-env: "npm:1.0.0"
     postcss: "npm:^8.4.38"
-    rambdax: "npm:^9.1.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
@@ -8527,7 +8525,6 @@ __metadata:
     execa: "npm:^9.1.0"
     langium: "npm:3.1.1"
     p-timeout: "npm:^6.1.2"
-    rambdax: "npm:^9.1.1"
     remeda: "npm:^2.2.1"
     tslib: "npm:^2.6.3"
     tsx: "npm:~4.9.3"
@@ -11130,13 +11127,6 @@ __metadata:
   version: 1.0.0
   resolution: "railroad-diagrams@npm:1.0.0"
   checksum: 10c0/81bf8f86870a69fb9ed243102db9ad6416d09c4cb83964490d44717690e07dd982f671503236a1f8af28f4cb79d5d7a87613930f10ac08defa845ceb6764e364
-  languageName: node
-  linkType: hard
-
-"rambdax@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "rambdax@npm:9.1.1"
-  checksum: 10c0/0e12406be7d871e3c98ef638ed9e5864dc86a7bc5e4194d7ec329a685adfe13cc307c999fa42edb5c9bed5e009da912b7074d2908602fad03d12b498233a032a
   languageName: node
   linkType: hard
 

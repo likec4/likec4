@@ -1,4 +1,4 @@
-import { delay } from 'rambdax'
+import { setTimeout as delay } from 'timers/promises'
 import * as vscode from 'vscode'
 import type { BaseLanguageClient as LanguageClient } from 'vscode-languageclient'
 import { globPattern, isVirtual, isWebUi } from '../const'

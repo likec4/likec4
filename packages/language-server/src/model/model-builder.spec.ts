@@ -1,5 +1,5 @@
 import type { EdgeId, Element, Fqn, ViewID } from '@likec4/core'
-import { keys, values } from 'rambdax'
+import { keys, values } from 'remeda'
 import { describe, it, vi } from 'vitest'
 import { createTestServices } from '../test'
 

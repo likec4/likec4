@@ -16,10 +16,10 @@ import type {
   ViewRuleExpression,
   ViewRuleStyle
 } from '@likec4/core'
-import { pluck } from 'rambdax'
-import { indexBy, isString, pick } from 'remeda'
+import { indexBy, isString, map, pick, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { computeElementView } from '../index'
+import type { FakeElementIds } from './fixture'
 
 /**
               ┌──────────────────────────────────────────────────┐
@@ -432,7 +432,7 @@ export function computeView(
     )
   }
   return Object.assign(result, {
-    nodeIds: pluck('id', result.nodes) as string[],
-    edgeIds: pluck('id', result.edges) as string[]
+    nodeIds: map(result.nodes, prop('id')) as string[],
+    edgeIds: map(result.edges, prop('id')) as string[]
   })
 }
