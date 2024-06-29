@@ -140,7 +140,7 @@
     "npm-run-all2": "^6.1.2",
     "p-limit": "^5.0.0",
     "package-up": "^5.0.0",
-    "picocolors": "^1.0.0",
+    "picocolors": "^1.0.1",
     "postcss": "^8.4.38",
     "postcss-preset-mantine": "^1.15.0",
     "pretty-ms": "^9.0.0",
