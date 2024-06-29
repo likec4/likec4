@@ -203,7 +203,7 @@
     "@likec4/layouts": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@likec4/vscode-preview": "workspace:*",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.9",
     "@types/vscode": "~1.88.0",
     "@types/which": "^3.0.3",
     "@vscode/extension-telemetry": "^0.9.6",

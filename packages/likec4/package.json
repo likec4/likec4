@@ -114,7 +114,7 @@
     "@tabler/icons-react": "^3.7.0",
     "@tanstack/react-router": "^1.41.0",
     "@tanstack/router-vite-plugin": "^1.41.0",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.9",
     "@types/prop-types": "^15.7.11",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
