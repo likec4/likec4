@@ -85,7 +85,7 @@ export function LikeC4Browser<ViewId extends string>({
           100% {
             -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
-            background-color: rgb(${backdropRgb} / 75%);
+            background-color: rgb(${backdropRgb} / ${scheme === 'dark' ? '85' : '75'}%);
           }
         }
         [data-likec4-instance="${id}"] {
