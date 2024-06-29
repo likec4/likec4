@@ -58,6 +58,6 @@ export function compoundColor(color: string, depth: number): Color {
     })
   ) as Color
 }
-export function compoundLabelColor(color: string): Color {
-  return toHex(transparentize(color, 0.3)) as Color
+export function compoundLabelColor(color: string): `#${string}` {
+  return toHex(transparentize(color, 0.3)) as any
 }

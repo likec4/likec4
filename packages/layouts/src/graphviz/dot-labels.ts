@@ -1,5 +1,9 @@
-import { type ComputedNode, ElementColors as Colors } from '@likec4/core'
-import { DefaultRelationshipColor, defaultTheme as Theme } from '@likec4/core'
+import {
+  type ComputedNode,
+  DefaultRelationshipColor,
+  defaultTheme as Theme,
+  ElementColors as Colors
+} from '@likec4/core'
 import { isEmpty, isTruthy } from 'remeda'
 import wordWrap from 'word-wrap'
 import { IconSizePoints, pxToPoints } from './utils'
@@ -102,11 +106,24 @@ export function nodeLabel(node: ComputedNode) {
   return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${joinedRows}</TABLE>>`
 }
 
+export function compoundLabel(node: ComputedNode, color?: string) {
+  const html = wrapToHTML({
+    text: node.title.toUpperCase(),
+    maxchars: 40,
+    fontsize: 14.5,
+    lineHeight: 1.2,
+    bold: true,
+    align: 'left',
+    color: color ?? Colors[node.color].loContrast
+  })
+  return `<${html}>`
+}
+
 export function edgeLabel(text: string) {
   const html = wrapToHTML({
     text,
-    maxchars: 35,
-    fontsize: 13,
+    maxchars: 40,
+    fontsize: 14,
     lineHeight: 1.25,
     bold: text === '[...]',
     align: 'left'
@@ -126,8 +143,8 @@ export function stepEdgeLabel(step: number, text?: string | null) {
   }
   const html = wrapToHTML({
     text,
-    maxchars: 30,
-    fontsize: 13,
+    maxchars: 40,
+    fontsize: 14,
     lineHeight: 1.25,
     align: 'left'
   })

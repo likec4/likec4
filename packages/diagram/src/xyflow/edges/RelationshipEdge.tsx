@@ -317,7 +317,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
                 pointerEvents: 'none'
               }),
               ...(data.label && {
-                maxWidth: data.label.bbox.width + 12
+                maxWidth: data.label.bbox.width + 16
               }),
               zIndex: edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
             }}

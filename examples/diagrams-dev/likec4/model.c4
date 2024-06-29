@@ -117,7 +117,7 @@ views {
   view customer of customer {
     title "Overview Customer"
     include
-      *,  
+      *,
       ui._
 
     style * {
@@ -176,7 +176,6 @@ views {
     title "Overview Backend"
     include
       *,
-      cloud,
       cloud.*,
       ui.* -> backend,
       backend.* -> amazon.*
@@ -192,6 +191,8 @@ views {
     style backend, backend.* {
       color green
     }
+
+    autoLayout LeftRight
   }
 
   view cloud_backend_services of services {

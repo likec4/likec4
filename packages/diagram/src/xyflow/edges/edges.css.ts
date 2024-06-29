@@ -53,7 +53,7 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 // })
 
 globalStyle(`.react-flow__edges > svg`, {
-  mixBlendMode: 'screen'
+  mixBlendMode: 'color-dodge'
 })
 
 export const dimmed = style({})
@@ -170,8 +170,8 @@ export const edgeLabel = style({
   },
   selectors: {
     '&[data-edge-hovered="true"]': {
-      transition: 'all 140ms ease-out',
-      transform: `${varTranslate} scale(1.1)`
+      transition: 'all 140ms ease-in-out',
+      transform: `${varTranslate} scale(1.12)`
     },
     [`&:is(${dimmed})`]: {
       opacity: 0.6,
@@ -209,6 +209,8 @@ export const stepEdgeNumber = style({
 export const edgeLabelText = style({
   padding: '2px 6px 4px 6px',
   textAlign: 'left',
-  fontSize: rem(12.5),
+  textWrap: 'pretty',
+  whiteSpaceCollapse: 'preserve-breaks',
+  fontSize: rem(14),
   lineHeight: 1.2
 })

@@ -28,7 +28,7 @@ createGlobalTheme(`.${rootClassName}`, {
     background: {
       color: mantine.colors.body,
       pattern: {
-        color: mantine.colors.dimmed
+        color: mantine.colors.dark[3]
       }
     }
   },
@@ -81,7 +81,7 @@ createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}
   likec4: {
     background: {
       pattern: {
-        color: mantine.colors.dark[3]
+        color: mantine.colors.gray[6]
       }
     }
   }

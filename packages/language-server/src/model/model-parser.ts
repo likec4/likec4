@@ -44,7 +44,7 @@ function removeIndent<T extends string | undefined>(str: T): T {
   return (str ? stripIndent(str).trim() : undefined) as T
 }
 
-type IsValidFn = ChecksFromDiagnostics['isValid']
+export type IsValidFn = ChecksFromDiagnostics['isValid']
 
 export class LikeC4ModelParser {
   private fqnIndex: FqnIndex
@@ -171,7 +171,7 @@ export class LikeC4ModelParser {
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
     const kind = astNode.kind?.ref?.name as c4.RelationshipKind
     const astPath = this.getAstNodePath(astNode)
-    const title = toSingleLine(
+    const title = removeIndent(
       astNode.title ?? astNode.body?.props.find((p): p is ast.RelationStringProperty => p.key === 'title')?.value
     ) ?? ''
     const styleProp = astNode.body?.props.find(ast.isRelationStyleProperty)

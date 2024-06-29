@@ -11,12 +11,11 @@ import type {
   ComputedEdge,
   ComputedNode,
   ComputedView,
-  DiagramView,
   Fqn,
   RelationshipLineType,
   ViewManualLayout
 } from '@likec4/core/types'
-import { entries, first, isNullish, isNumber, isTruthy, values } from 'remeda'
+import { entries, first, isNullish, isNumber, values } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -30,7 +29,7 @@ import {
   type SubgraphModel,
   toDot as modelToDot
 } from 'ts-graphviz'
-import { nodeLabel, sanitize } from './dot-labels'
+import { compoundLabel, nodeLabel } from './dot-labels'
 import type { DotSource } from './types'
 import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } from './utils'
 
@@ -136,6 +135,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
 
   protected createGraph(): RootGraphModel {
+    const isHorizontal = this.view.autoLayout === 'LR' || this.view.autoLayout === 'RL'
     const G = digraph({
       [_.bgcolor]: 'transparent',
       [_.layout]: 'dot',
@@ -144,15 +144,15 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
-      [_.nodesep]: pxToInch(100),
-      [_.ranksep]: pxToInch(110),
+      [_.nodesep]: pxToInch(isHorizontal ? 120 : 150),
+      [_.ranksep]: pxToInch(isHorizontal ? 150 : 110),
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(10)
     })
     G.attributes.graph.apply({
       [_.fontname]: Theme.font,
-      [_.fontsize]: pxToPoints(13),
+      [_.fontsize]: pxToPoints(15),
       [_.labeljust]: this.view.autoLayout === 'RL' ? 'r' : 'l',
       [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't',
       [_.penwidth]: pxToPoints(1)
@@ -179,7 +179,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
     edge.apply({
       [_.fontname]: Theme.font,
-      [_.fontsize]: pxToPoints(13),
+      [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
       [_.style]: DefaultEdgeStyle,
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
@@ -230,6 +230,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   protected elementToSubgraph(compound: ComputedNode, subgraph: SubgraphModel) {
     invariant(isCompound(compound), 'node should be compound')
     invariant(isNumber(compound.depth), 'node.depth should be defined')
+    const textColor = compoundLabelColor(Theme.elements[compound.color].loContrast)
+    const label = compoundLabel(compound, textColor)
     subgraph.apply({
       [_.likec4_id]: compound.id,
       [_.likec4_level]: compound.level,
@@ -239,13 +241,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.style]: 'filled',
       [_.margin]: pxToPoints(40)
     })
-    const label = sanitize(compound.title.toUpperCase())
-    if (isTruthy(label)) {
-      const color = compoundLabelColor(Theme.elements[compound.color].loContrast)
-      subgraph.apply({
-        [_.fontcolor]: color,
-        [_.label]: `<<B>${label}</B>>`
-      })
+    if (label) {
+      subgraph.set(_.label, label)
     }
     return subgraph
   }
@@ -255,13 +252,9 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
+      [_.fillcolor]: Theme.elements[element.color].fill,
       [_.margin]: pxToInch(30)
     })
-    if (element.color !== DefaultThemeColor) {
-      node.attributes.apply({
-        [_.fillcolor]: Theme.elements[element.color].fill
-      })
-    }
     switch (element.shape) {
       case 'browser': {
         node.attributes.apply({
@@ -280,7 +273,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(26)},${pxToInch(30)}`,
+          [_.margin]: `${pxToInch(26)},${pxToInch(28)}`,
           [_.color]: Theme.elements[element.color].stroke,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder'

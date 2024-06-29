@@ -37,7 +37,7 @@ export class GraphvizWasmAdapter implements GraphvizPort {
   async unflatten(dot: DotSource): Promise<DotSource> {
     return await this.attempt(async () => {
       const graphviz = await this.graphviz()
-      const unflattened = graphviz.unflatten(dot, 1, true, 2)
+      const unflattened = graphviz.unflatten(dot, 1, false, 3)
       return unflattened.replaceAll(/\t\[/g, ' [').replaceAll(/\t/g, '    ') as DotSource
     })
   }

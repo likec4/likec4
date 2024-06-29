@@ -14,7 +14,7 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
 
   async unflatten(dot: DotSource): Promise<DotSource> {
     return await limit(async () => {
-      const unflatten = await execa('unflatten', ['-f', '-l 1', '-c 2'], {
+      const unflatten = await execa('unflatten', ['-l 1', '-c 3'], {
         reject: false,
         timeout: 5_000,
         input: dot,

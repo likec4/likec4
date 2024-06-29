@@ -90,7 +90,7 @@ function parseLabelBbox(
         maxX = Math.max(maxX, x + width)
 
         let y = pointToPx(draw.pt[1]) - containerY
-        minY = Math.min(minY, y - fontSize)
+        minY = Math.min(minY, Math.round(y - fontSize * 1.15))
         maxY = Math.max(maxY, y)
       }
     }

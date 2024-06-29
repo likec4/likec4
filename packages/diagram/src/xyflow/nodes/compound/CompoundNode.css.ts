@@ -101,11 +101,11 @@ export const title = style({
   textAlign: 'left',
   display: 'inline-block',
   fontWeight: 600,
-  fontSize: '14px',
+  fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
   lineHeight: 1,
-  opacity: 0.75,
+  opacity: 0.8,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
   paddingLeft: 12
 })

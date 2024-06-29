@@ -105,7 +105,7 @@ export const title = style({
   fontStyle: 'normal',
   textAlign: 'center',
   fontWeight: 500,
-  fontSize: rem(19),
+  fontSize: rem(19.5),
   lineHeight: 1.2,
   textWrap: 'balance',
   color: vars.element.hiContrast
