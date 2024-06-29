@@ -39,7 +39,7 @@
     "clsx": "^2.1.1",
     "jotai": "^2.6.4",
     "langium": "^3.0.0",
-    "lucide-react": "^0.294.0",
+    "lucide-react": "^0.396.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
     "next": "13.4.19",
