@@ -1,16 +1,20 @@
 {
   "$schema": 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: [
-    "config:best-practices",
+  "configMigration": true,
+  "extends": [
+    "config:recommended",
+    "group:monorepos",
     "npm:unpublishSafe",
-    "helpers:disableTypesNodeMajor",
-    ":preserveSemverRanges"
+    "helpers:disableTypesNodeMajor"
   ],
-  prHourlyLimit: 10,
+  prHourlyLimit: 5,
   prConcurrentLimit: 10,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: ['dependencies'],
+  "lockFileMaintenance": {
+     "enabled": true
+  },
   packageRules: [
     {
       "groupName": "linters",
