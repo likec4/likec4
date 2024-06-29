@@ -16,10 +16,9 @@ import type {
   ViewRuleExpression,
   ViewRuleStyle
 } from '@likec4/core'
-import { indexBy, isString, map, pick, prop } from 'remeda'
+import { indexBy, isString, map, prop } from 'remeda'
 import { LikeC4ModelGraph } from '../../LikeC4ModelGraph'
 import { computeElementView } from '../index'
-import type { FakeElementIds } from './fixture'
 
 /**
               ┌──────────────────────────────────────────────────┐

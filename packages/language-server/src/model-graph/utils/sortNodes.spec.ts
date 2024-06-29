@@ -9,7 +9,6 @@ import {
 import { map, prop } from 'remeda'
 import { describe, expect, it } from 'vitest'
 import { sortNodes } from './sortNodes'
-import type { TestComputedNode } from './sortNodes.spec'
 
 export type TestComputedNode = {
   id: string
