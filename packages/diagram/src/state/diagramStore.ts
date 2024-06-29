@@ -376,7 +376,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 return origin
               }
               let element = origin
-              for (const [key, value] of entries.strict(change.style)) {
+              for (const [key, value] of entries(change.style)) {
                 switch (key) {
                   case 'shape':
                     if (value !== element.shape) {

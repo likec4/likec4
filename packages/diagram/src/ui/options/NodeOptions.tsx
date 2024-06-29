@@ -43,7 +43,7 @@ export const themedColors = [
   { key: 'muted', value: muted.fill }
 ] satisfies Array<{ key: ThemeColor; value: string }>
 
-export const colors = keys.strict(otherColors).map(key => ({
+export const colors = keys(otherColors).map(key => ({
   key,
   value: defaultTheme.elements[key].fill
 }))

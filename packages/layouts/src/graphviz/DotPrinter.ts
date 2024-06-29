@@ -104,8 +104,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       ...values(edges).flatMap(({ controlPoints }) => controlPoints.map(p => p.y))
     )
     let inherited = false
-    for (const [id, pos] of entries.strict(nodes)) {
-      const model = this.getGraphNode(id)
+    for (const [id, pos] of entries(nodes)) {
+      const model = this.getGraphNode(id as Fqn)
       if (model) {
         // Invert Y axis and convert to inches
         const x = pxToInch(pos.x + pos.width / 2)

@@ -87,7 +87,7 @@ createGlobalTheme(`:where([data-mantine-color-scheme='light']) .${rootClassName}
   }
 })
 
-for (const color of keys.strict(defaultTheme.elements)) {
+for (const color of keys(defaultTheme.elements)) {
   createGlobalTheme(`:where([data-likec4-color='${color}'])`, {
     element: {
       fill: vars.element.fill,

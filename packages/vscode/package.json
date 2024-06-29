@@ -214,7 +214,7 @@
     "langium": "3.1.1",
     "p-timeout": "^6.1.2",
     "rambdax": "^9.1.1",
-    "remeda": "^1.61.0",
+    "remeda": "^2.2.1",
     "tslib": "^2.6.3",
     "tsx": "~4.9.3",
     "typescript": "^5.5.2",

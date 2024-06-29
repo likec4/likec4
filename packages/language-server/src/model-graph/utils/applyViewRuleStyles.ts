@@ -45,14 +45,14 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
     filter(anyPass(predicates), nodes).forEach(n => {
       n.shape = rule.style.shape ?? n.shape
       n.color = rule.style.color ?? n.color
-      if (isDefined.strict(rule.style.icon)) {
+      if (isDefined(rule.style.icon)) {
         n.icon = rule.style.icon
       }
       let styleOverride: ComputedNode['style'] | undefined
-      if (isDefined.strict(rule.style.border)) {
+      if (isDefined(rule.style.border)) {
         styleOverride = { ...styleOverride, border: rule.style.border }
       }
-      if (isDefined.strict(rule.style.opacity)) {
+      if (isDefined(rule.style.opacity)) {
         styleOverride = { ...styleOverride, opacity: rule.style.opacity }
       }
       if (styleOverride) {

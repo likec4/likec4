@@ -12,7 +12,7 @@ const asViewStyleRule = (target: string, style: ViewChanges.ChangeElementStyle['
   const indentStr = indent > 0 ? ' '.repeat(indent) : ''
   return [
     indentStr + `style ${target} {`,
-    ...entries.strict(style).map(([key, value]) =>
+    ...entries(style).map(([key, value]) =>
       indentStr + `  ${key} ${key === 'opacity' ? value.toString() + '%' : value}`
     ),
     indentStr + `}`
@@ -125,7 +125,7 @@ export function changeElementStyle(services: LikeC4Services, {
     for (const { rule } of existing) {
       const ruleCstNode = rule.$cstNode
       invariant(ruleCstNode, 'RuleCstNode not found')
-      for (const [key, _value] of entries.strict(style)) {
+      for (const [key, _value] of entries(style)) {
         const value = key === 'opacity' ? _value.toString() + '%' : _value
         const ruleProp = rule.styleprops.find(p => p.key === key)
         // replace existing  property

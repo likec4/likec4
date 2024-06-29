@@ -29,8 +29,10 @@ export namespace CompactViewManualLayout {
   export function pack(layout: ViewManualLayout): CompactViewManualLayout {
     return [
       1,
-      entries.strict(layout.nodes).map(([id, { x, y, width, height }]) => [id, x, y, width, height]),
-      entries.strict(layout.edges).map(([id, { controlPoints }]) => [id, controlPoints.flatMap(({ x, y }) => [x, y])])
+      entries(layout.nodes).map(([id, { x, y, width, height }]) => [id as Fqn, x, y, width, height]),
+      entries(layout.edges).map((
+        [id, { controlPoints }]
+      ) => [id as EdgeId, controlPoints.flatMap(({ x, y }) => [x, y])])
     ]
   }
 
