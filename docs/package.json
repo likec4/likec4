@@ -42,7 +42,7 @@
     "lucide-react": "^0.294.0",
     "monaco-editor": "0.36.1",
     "monaco-languageclient": "5.0.1",
-    "next": "13.4.19",
+    "next": "13.5.6",
     "nextra": "^2.13.2",
     "nextra-theme-docs": "^2.13.2",
     "rambdax": "^9.1.1",
