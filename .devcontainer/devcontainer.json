@@ -2,11 +2,11 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
   "name": "LikeC4 Dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22@sha256:bbd5e0faa919bfb7470e649c9f09a0c06546eb9a4c7f18322d35cd2dbfe4a69f",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
   "features": {
-    "ghcr.io/devcontainers-contrib/features/dprint-asdf:2@sha256:056ad0c43ded376371c6a80d6067453a37316adaf03f9e467a09ecba7c13669e": {},
-    "ghcr.io/devcontainers-contrib/features/turborepo-npm:1@sha256:691d62a3db9f96181d0478fd52178f609cc0bd76edf8eb220cba231540e031a5": {},
-    "ghcr.io/devcontainers-contrib/features/tsx:1@sha256:b4ef8072187fab528b53438cc83b77a655e5cc4a73f0e38f9f125123276e92f2": {}
+    "ghcr.io/devcontainers-contrib/features/dprint-asdf:2": {},
+    "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
+    "ghcr.io/devcontainers-contrib/features/tsx:1": {}
   },
   "containerEnv": {
     "TURBO_CACHE_DIR": "/workspace/.turbo"

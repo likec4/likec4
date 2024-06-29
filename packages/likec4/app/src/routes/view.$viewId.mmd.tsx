@@ -30,7 +30,7 @@ const renderSvg = async (viewId: string, diagram: string) => {
     theme: 'dark'
   })
   const { svg } = await mermaid.render(viewId, diagram)
-  return svg
+  return svg as string
 }
 
 function ViewAsMmd() {
