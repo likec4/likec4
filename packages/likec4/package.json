@@ -159,7 +159,7 @@
     "ufo": "^1.5.3",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-shadow-style": "^1.1.0",
-    "vitest": "~1.5.3",
+    "vitest": "~1.6.0",
     "yargs": "^17.7.2"
   },
   "packageManager": "yarn@4.3.1"
