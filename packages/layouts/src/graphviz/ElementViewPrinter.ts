@@ -1,6 +1,6 @@
-import type { ComputedEdge, ComputedElementView, Fqn, RelationshipLineType } from '@likec4/core'
+import type { ComputedEdge, ComputedElementView, Fqn } from '@likec4/core'
 import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
-import { first, isNullish, isTruthy, last } from 'remeda'
+import { first, isTruthy, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgeLabel } from './dot-labels'
@@ -70,30 +70,31 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       return e
     }
 
-    if ((head === 'none' && tail === 'none') || (head !== 'none' && tail !== 'none')) {
+    if (head === 'none' && tail === 'none') {
+      e.attributes.apply({
+        [_.arrowtail]: 'none',
+        [_.arrowhead]: 'none',
+        [_.dir]: 'none',
+        [_.constraint]: false
+      })
+      return e
+    }
+
+    if (head !== 'none' && tail !== 'none') {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
         [_.dir]: 'both',
         [_.minlen]: 0
       })
-      if (head === 'none') {
-        e.attributes.set(_.constraint, false)
-      }
       return e
     }
 
-    if (head === 'none') {
-      e.attributes.delete(_.arrowhead)
-      e.attributes.apply({
-        [_.arrowtail]: toArrowType(tail),
-        [_.minlen]: 0,
-        [_.dir]: 'back'
-      })
-      return e
-    }
     if (head !== DefaultArrowType) {
       e.attributes.set(_.arrowhead, toArrowType(head))
+    }
+    if (tail !== 'none') {
+      e.attributes.set(_.arrowtail, toArrowType(tail))
     }
 
     // This heuristic removes the rank constraint from the edge
