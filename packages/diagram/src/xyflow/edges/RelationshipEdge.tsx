@@ -7,13 +7,13 @@ import { EdgeLabelRenderer } from '@xyflow/react'
 import { getNodePositionWithOrigin } from '@xyflow/system'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
-import { deepEqual as eq } from 'fast-equals'
+import { deepEqual, deepEqual as eq } from 'fast-equals'
 import { memo, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isNullish, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
-import { type XYFlowEdge } from '../types'
+import { type RelationshipData, type XYFlowEdge } from '../types'
 import { bezierControlPoints, toDomPrecision } from '../utils'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
@@ -300,70 +300,94 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         />
       ))}
       {(data.label || isStepEdge) && (
-        <EdgeLabelRenderer>
-          <Box
-            className={clsx([
-              edgesCss.container,
-              edgesCss.edgeLabel,
-              isDimmed && edgesCss.dimmed
-            ])}
-            data-likec4-color={color}
-            style={{
-              ...assignInlineVars({
-                [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
-                [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
-              }),
-              ...(isEdgePathEditable && selected && {
-                pointerEvents: 'none'
-              }),
-              ...(data.label && {
-                maxWidth: data.label.bbox.width + 16
-              }),
-              zIndex: edgeLookup.get(id)?.zIndex ?? ZIndexes.Edge
-            }}
-            mod={{
-              'data-edge-hovered': isHovered,
-              'data-edge-active': isActive
-            }}
-          >
-            {isStepEdge && (
-              <Box className={edgesCss.stepEdgeNumber}>
-                {data.stepNum}
-              </Box>
-            )}
-            {data.label?.text && (
-              <Box className={edgesCss.edgeLabelText}>
-                {data.label.text}
-              </Box>
-            )}
-            {
-              /* <Popover
-                position="bottom"
-                floatingStrategy="fixed"
-                shadow="lg"
-                disabled={!selected}
-                transitionProps={{
-                  transition: 'pop'
-                }}>
-                <Popover.Target>
-                  <Box className={clsx('nodrag nopan', edgeLabelBody)}>
-                    {data.label.text}
-                  </Box>
-                </Popover.Target>
-                <Popover.Dropdown>
-                  {edge.relations.map((relation) => (
-                    <Box key={relation}>
-                      <Text size='xs'>{relation}</Text>
-                    </Box>
-                  ))}
-                  <TextInput label="Name" placeholder="Name" size="xs" />
-                  <TextInput label="Email" placeholder="john@doe.com" size="xs" mt="xs" />
-                </Popover.Dropdown>
-              </Popover> */
-            }
-          </Box>
-        </EdgeLabelRenderer>
+        <EdgeLabel
+          {...({
+            isDimmed,
+            color,
+            isModified,
+            labelX,
+            labelY,
+            isEdgePathEditable,
+            selected: selected ?? false,
+            stepNum: data.stepNum,
+            label: data.label,
+            zIndex: edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge,
+            isHovered,
+            isActive,
+            isStepEdge
+          })} />
       )}
     </g>
   )
 }, isEqualProps)
+
+type EdgeLabelProps = {
+  isDimmed: boolean
+  color: string
+  isModified: boolean
+  labelX: number
+  labelY: number
+  isEdgePathEditable: boolean
+  selected: boolean
+  stepNum: number | null
+  label: RelationshipData['label']
+  isHovered: boolean
+  isActive: boolean
+  zIndex: number
+}
+
+const EdgeLabel = memo<EdgeLabelProps>(({
+  isDimmed,
+  color,
+  isModified,
+  labelX,
+  labelY,
+  isEdgePathEditable,
+  selected,
+  label,
+  stepNum,
+  isHovered,
+  isActive,
+  zIndex
+}) => {
+  return (
+    <EdgeLabelRenderer>
+      <Box
+        className={clsx([
+          edgesCss.container,
+          edgesCss.edgeLabel,
+          isDimmed && edgesCss.dimmed
+        ])}
+        style={{
+          ...assignInlineVars({
+            [edgesCss.varLabelX]: isModified ? `calc(${labelX}px - 10%)` : `${labelX}px`,
+            [edgesCss.varLabelY]: isModified ? `${labelY - 5}px` : `${labelY}px`
+          }),
+          ...(isEdgePathEditable && selected && {
+            pointerEvents: 'none'
+          }),
+          ...(label && {
+            maxWidth: label.bbox.width + 16
+          }),
+          zIndex
+        }}
+        mod={{
+          'data-likec4-color': color,
+          'data-edge-hovered': isHovered,
+          'data-edge-active': isActive
+        }}
+      >
+        {stepNum !== null && (
+          <Box className={edgesCss.stepEdgeNumber}>
+            {stepNum}
+          </Box>
+        )}
+        {isTruthy(label?.text) && (
+          <Box className={edgesCss.edgeLabelText}>
+            {label.text}
+          </Box>
+        )}
+      </Box>
+    </EdgeLabelRenderer>
+  )
+}, deepEqual)

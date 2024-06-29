@@ -103,7 +103,7 @@ function parseLabelBbox(
   if (minX === Infinity) {
     return null
   }
-  const padding = 2
+  const padding = 3
   return {
     x: minX - padding,
     y: minY - padding,

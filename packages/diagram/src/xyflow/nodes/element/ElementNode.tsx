@@ -84,7 +84,6 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   width,
   height
 }) {
-  DEV && useTilg()
   const { isHovered, isDimmed, hasOnNavigateTo, isHovercards, isInteractive } = useDiagramState(s => ({
     isHovered: s.hoveredNodeId === id,
     isDimmed: s.dimmed.has(id),

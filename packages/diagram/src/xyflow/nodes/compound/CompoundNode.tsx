@@ -31,7 +31,6 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
     element
   }
 }) {
-  DEV && useTilg()
   const { color, style, depth = 1, ...compound } = element
   // const w = toDomPrecision(width ?? compound.width)
   // const h = toDomPrecision(height ?? compound.height)

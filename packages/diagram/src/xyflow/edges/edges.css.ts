@@ -207,10 +207,10 @@ export const stepEdgeNumber = style({
 })
 
 export const edgeLabelText = style({
-  padding: '2px 6px 4px 6px',
+  padding: 3,
   textAlign: 'left',
   textWrap: 'pretty',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
-  lineHeight: 1.2
+  lineHeight: 1.25
 })

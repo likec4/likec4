@@ -15,9 +15,12 @@ import '@fontsource/ibm-plex-sans/cyrillic-ext-600.css'
 import '@mantine/core/styles.css'
 import './main.css'
 
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Routes } from './router'
 
 ReactDOM.createRoot(document.getElementById('like4-root')!).render(
-  <Routes />
+  <StrictMode>
+    <Routes />
+  </StrictMode>
 )

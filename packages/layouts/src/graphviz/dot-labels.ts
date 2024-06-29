@@ -128,7 +128,7 @@ export function edgeLabel(text: string) {
     bold: text === '[...]',
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
 }
 
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}"`
@@ -148,5 +148,5 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     lineHeight: 1.25,
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="2" CELLSPACING="1"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4" CELLSPACING="1"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
 }
