@@ -48,7 +48,7 @@ Deployed - [https://template.likec4.dev](https://template.likec4.dev/view/cloud)
 > StackBlitz does not support extensions, so no validation, syntax highlighting and etc.\
 > You can try with [github.dev](https://github.dev/likec4/template/blob/main/src/model.c4) and suggested extension.
 
-Check [Tutorial](https://docs.likec4.dev/tutorial/) - for a quick overview of LikeC4.
+Check [Tutorial](https://likec4.dev/tutorial/) - for a quick overview of LikeC4.
 
 ## About this repository
 
@@ -56,9 +56,8 @@ Check [Tutorial](https://docs.likec4.dev/tutorial/) - for a quick overview of Li
 
 This repository's contents are divided into four primary sections:
 
-- `/docs` contains the content for our docs site at [likec4.dev](https://likec4.dev)
-- `/examples` our local development / examples project
-- `/integration` integration tests (not yet implemented)
+- `/apps/docs` contains the content for our docs site at [likec4.dev](https://likec4.dev)
+- `/apps/playground` - site [playground.likec4.dev](https://playground.likec4.dev)
 - `/packages` contains the source for packages
 
 ### Packages
@@ -78,8 +77,8 @@ This repository's contents are divided into four primary sections:
 
 Development tasks:
 
+- `yarn build`: Build packages (without typecheck)
 - `yarn typecheck`: TypeScript compilation
-- `yarn build`: Build packages
 - `yarn test`: Test packages
 - `yarn vitest:ui`: Opens Vitest UI
 

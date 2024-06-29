@@ -16,12 +16,12 @@ env:
   TURBO_CACHE_DIR: ${{ github.workspace }}/.turbo
 
 concurrency:
-  group: docs-nextjs-${{ github.ref_name }}
+  group: docs-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   build-docs:
-    name: Build
+    name: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -30,100 +30,50 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Docs NextJS Cache
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
-        with:
-          path: |
-            docs/.next/cache
-          key: ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('docs/**/*') }}
-          restore-keys: |
-            ${{ runner.os }}-docs-${{ hashFiles('yarn.lock') }}-
-            ${{ runner.os }}-docs-
-
-      - name: Bootstrap
+      - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: Prebuild dependencies
-        run: yarn turbo run build --filter='docs-website^...'
-
-      - name: Build NextJS
-        working-directory: docs
+      - name: build
         run: |
-          yarn generate
-          yarn build
+          yarn turbo run build --filter='@likec4/docs-astro'
 
       - name: upload a build artifact
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
-          name: docs-website
-          path: docs/out/
+          name: docs-astro
+          path: apps/docs/dist/
 
-  deploy-preview:
-    name: Deploy to Preview
+  deploy-docs:
+    name: deploy
     runs-on: ubuntu-latest
     needs: build-docs
     timeout-minutes: 10
     environment:
-      name: preview
-      url: ${{ steps.cloudflare.outputs.url }}
+      name: ${{ github.ref == 'refs/heads/main' && 'docs-prod' || 'docs-preview' }}
+      url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
-          fetch-depth: 0
           ref: ${{ github.ref }}
+
+      - name: setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
 
       - name: download artifact
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4
         with:
-          name: docs-website
-          path: docs/out/
+          name: docs-astro
+          path: apps/docs/dist/
 
       - id: cloudflare
         name: publish to cloudflare
-        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: likec4-docs
-          workingDirectory: docs
-          directory: out
-          branch: preview
-          wranglerVersion: '3'
-
-  deploy-production:
-    name: Deploy to Prod
-    # Deploy to Preview if only we are not in a workflow_call
-    # or if we are in a workflow_call and the commit message contains 'chore: release'
-    if: |
-      github.event_name == 'workflow_dispatch' || (
-        contains(github.event.head_commit.message, 'chore: release')
-      )
-    runs-on: ubuntu-latest
-    needs: deploy-preview
-    timeout-minutes: 10
-    environment:
-      name: production
-      url: ${{ steps.cloudflare.outputs.url }}
-    steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
-
-      - name: download artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4
-        with:
-          name: docs-website
-          path: docs/out/
-
-      - id: cloudflare
-        name: publish to cloudflare
-        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: likec4-docs
-          workingDirectory: docs
-          directory: out
-          branch: main
-          wranglerVersion: '3'
+          command: pages deploy dist --project-name likec4-docs-astro --commit-dirty
+          workingDirectory: apps/docs
+          packageManager: yarn
