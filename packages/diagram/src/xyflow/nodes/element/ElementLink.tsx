@@ -12,11 +12,11 @@ import {
   Stack,
   UnstyledButton
 } from '@mantine/core'
+import { IconLink } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { useId } from 'react'
 import { clamp } from 'remeda'
-import { Link } from '../../../icons'
-import { type DiagramState, useDiagramState } from '../../../state'
+import { type DiagramState, useDiagramState } from '../../../state/hooks'
 import type { XYFlowNode } from '../../types'
 import { elementLink, trigger } from './ElementLink.css'
 
@@ -35,18 +35,6 @@ export function ElementLink({
   invariant(element.links, 'ElementLink: links are required')
   const id = useId()
   const portalProps = useDiagramState(selector)
-  // const mantineCtx = useMantineContext()
-  // const root = mantineCtx.getRootElement()
-
-  // const targetSelector = `.react-flow:has([data-likec4-linkid="${id}"])`
-  // // const target = root?.querySelector<HTMLDivElement>(targetSelector) ?? targetSelector
-
-  // const portalProps = useMemo(() => ({
-  //   get target(): HTMLElement | string {
-  //     const root = mantineCtx.getRootElement()
-  //     return root?.querySelector<HTMLDivElement>(targetSelector) ?? targetSelector
-  //   }
-  // }), [targetSelector])
   return (
     <div className={elementLink} data-likec4-linkid={id}>
       <HoverCard
@@ -71,7 +59,7 @@ export function ElementLink({
           <UnstyledButton
             className={clsx('nodrag nopan', trigger)}
             autoFocus={false}>
-            <Link />
+            <IconLink size={12} />
             <span>links</span>
           </UnstyledButton>
         </HoverCardTarget>

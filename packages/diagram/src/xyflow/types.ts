@@ -1,4 +1,4 @@
-import type { BBox, DiagramEdge, DiagramNode, Fqn, Point, ViewID, XYPosition } from '@likec4/core'
+import type { BBox, DiagramEdge, DiagramNode, Fqn, XYPosition } from '@likec4/core'
 import type {
   Edge,
   EdgeMouseHandler,
@@ -13,7 +13,7 @@ import type {
 import { isNode } from '@xyflow/react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { isTruthy } from 'remeda'
-import type { SetReadonly, SetRequired, Simplify } from 'type-fest'
+import type { SetReadonly, SetRequired } from 'type-fest'
 
 export type ElementNodeData = {
   fqn: Fqn

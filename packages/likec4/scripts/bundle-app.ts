@@ -1,6 +1,7 @@
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'path'
@@ -72,6 +73,7 @@ export async function bundleApp() {
     css: {
       postcss: {
         plugins: [
+          autoprefixer(),
           postcssPresetMantine()
         ]
       }

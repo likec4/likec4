@@ -4,10 +4,10 @@ import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { useEffect, useState } from 'react'
 import { isString } from 'remeda'
 import fontCss from '../../webcomponent/font.css?inline'
-import { cssRoot } from './styles.css'
+import { shadowRoot } from './styles.css'
 
 // Also used by MantineProvider as cssVariablesSelector
-export const ShadowRootCssSelector = `.${cssRoot}`
+export const ShadowRootCssSelector = `.${shadowRoot}`
 
 declare const __likec4styles: Map<string, string>
 declare const __USE_SHADOW_STYLE__: boolean
@@ -64,40 +64,27 @@ const getComputedBodyColorScheme = (): ColorScheme | undefined => {
   return undefined
 }
 
-type ColorScheme = 'light' | 'dark'
+export type ColorScheme = 'light' | 'dark'
 export const useColorScheme = (explicit?: ColorScheme) => {
-  const [current, setCurrent] = useState<ColorScheme | undefined>(explicit)
+  const preferred = usePreferredColorScheme(explicit)
+  const [current, setCurrent] = useState<ColorScheme>(explicit ?? preferred)
+
   useEffect(() => {
     if (explicit) {
       return
     }
     const computed = getComputedBodyColorScheme()
-    if (computed && computed !== current) {
-      setCurrent(computed)
-    }
-  })
-  const preferred = usePreferredColorScheme(explicit, {
-    getInitialValueInEffect: true
-  })
-  return explicit ?? current ?? preferred
-}
-
-export const theme = createTheme({
-  primaryColor: 'indigo',
-  cursorType: 'pointer',
-  defaultRadius: 'sm',
-  fontFamily: 'var(--likec4-default-font-family)',
-  headings: {
-    fontWeight: '500',
-    sizes: {
-      h1: {
-        // fontSize: '2rem',
-        fontWeight: '600'
-      },
-      h2: {
-        fontWeight: '500'
-        // fontSize: '1.85rem',
+    if (!computed) {
+      if (current !== preferred) {
+        setCurrent(preferred)
       }
+      return
     }
-  }
-}) as MantineTheme
+    if (computed !== current) {
+      setCurrent(computed)
+      return
+    }
+  })
+
+  return explicit ?? current
+}

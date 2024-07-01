@@ -1,6 +1,6 @@
 import { globalStyle, style } from '@vanilla-extract/css'
 
-export const cssRoot = style({
+export const shadowRoot = style({
   margin: 0,
   padding: 0,
   display: 'block',

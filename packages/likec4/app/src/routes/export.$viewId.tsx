@@ -6,14 +6,6 @@ import { useLikeC4View } from '../data'
 import { useTransparentBackground } from '../useTransparentBackground'
 import { cssExportBox, cssExportView } from './view.css'
 
-// const asPadding = (v: unknown) => {
-//   const parsed = typeof v === 'string' ? parseFloat(v) : undefined
-//   if (parsed && isFinite(parsed) && isNaN(parsed) === false) {
-//     return Math.round(parsed)
-//   }
-//   return undefined
-// }
-
 export const Route = createFileRoute('/export/$viewId')({
   component: ExportPage
 })

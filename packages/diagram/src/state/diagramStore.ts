@@ -35,6 +35,7 @@ export type DiagramStore = {
   viewSyncDebounceTimeout: number | null
 
   xyflow: XYFlowInstance
+  xystore: XYStoreApi
   initialized: boolean
   xyflowSynced: boolean
 
@@ -112,9 +113,9 @@ interface DiagramStoreActions {
   triggerChangeElementStyle: (change: Changes.ChangeElementStyle) => void
 
   cancelSaveManualLayout: () => void
-  triggerSaveManualLayout: (xystore: XYStoreApi) => void
+  triggerSaveManualLayout: () => void
   triggerOnNavigateTo: (xynodeId: string, event: ReactMouseEvent) => void
-  fitDiagram: (xyStore: XYStoreApi, duration?: number) => void
+  fitDiagram: (duration?: number) => void
 
   nextDynamicStep: (increment?: number) => void
   stopDynamicView: () => void
@@ -122,32 +123,33 @@ interface DiagramStoreActions {
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
-const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xyflow' | 'getContainer'> = {
-  viewSyncDebounceTimeout: null,
-  initialized: false,
-  xyflowSynced: false,
-  previousViews: [],
-  viewportChanged: false,
-  activeDynamicViewStep: null,
-  focusedNodeId: null,
-  hoveredNodeId: null,
-  hoveredEdgeId: null,
-  lastClickedNodeId: null,
-  lastClickedEdgeId: null,
-  dimmed: new StringSet(),
-  lastOnNavigate: null,
-  onChange: null,
-  onNavigateTo: null,
-  onNodeClick: null,
-  onNodeContextMenu: null,
-  onCanvasContextMenu: null,
-  onEdgeClick: null,
-  onEdgeContextMenu: null,
-  onCanvasClick: null,
-  onCanvasDblClick: null
-}
+const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xystore' | 'xyflow' | 'getContainer'> =
+  {
+    viewSyncDebounceTimeout: null,
+    initialized: false,
+    xyflowSynced: false,
+    previousViews: [],
+    viewportChanged: false,
+    activeDynamicViewStep: null,
+    focusedNodeId: null,
+    hoveredNodeId: null,
+    hoveredEdgeId: null,
+    lastClickedNodeId: null,
+    lastClickedEdgeId: null,
+    dimmed: new StringSet(),
+    lastOnNavigate: null,
+    onChange: null,
+    onNavigateTo: null,
+    onNodeClick: null,
+    onNodeContextMenu: null,
+    onCanvasContextMenu: null,
+    onEdgeClick: null,
+    onEdgeContextMenu: null,
+    onCanvasClick: null,
+    onCanvasDblClick: null
+  }
 
-type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xyflow' | 'getContainer'>
+export type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xystore' | 'xyflow' | 'getContainer'>
 
 const noReplace = false
 
@@ -190,14 +192,14 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               hoveredNodeId
             } = get()
 
-            if (viewSyncDebounceTimeout !== null) {
-              clearTimeout(viewSyncDebounceTimeout)
-              viewSyncDebounceTimeout = null
-            }
-
             if (shallowEqual(current, nextView)) {
               DEV && console.debug('store: skip updateView')
               return
+            }
+
+            if (viewSyncDebounceTimeout !== null) {
+              clearTimeout(viewSyncDebounceTimeout)
+              viewSyncDebounceTimeout = null
             }
 
             const isSameView = current.id === nextView.id
@@ -277,7 +279,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
                 dimmed
               },
               noReplace,
-              'update-view'
+              isSameView ? 'update-view [same]' : 'update-view [another]'
             )
           },
 
@@ -445,7 +447,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             }
           },
 
-          triggerSaveManualLayout: (xystore) => {
+          triggerSaveManualLayout: () => {
             let { viewSyncDebounceTimeout: debounced, onChange } = get()
             if (!onChange) {
               DEV && console.debug('ignore triggerSaveManualLayout, as no onChange handler is set')
@@ -455,8 +457,8 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               clearTimeout(debounced)
             }
             debounced = setTimeout(() => {
+              const { xyflow, onChange, xystore } = get()
               const { nodeLookup } = xystore.getState()
-              const { xyflow, onChange } = get()
               set({ viewSyncDebounceTimeout: null })
 
               const movedNodes = new StringSet()
@@ -515,8 +517,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           triggerOnNavigateTo: (xynodeId, event) => {
             const { xyflow, view } = get()
             const xynode = xyflow.getInternalNode(xynodeId)
-            const element = xynode?.data.element as DiagramNodeWithNavigate
-            invariant(!!xynode && element?.navigateTo, `node is not navigable: ${xynodeId}`)
+            invariant(!!xynode, `node not found: ${xynodeId}`)
+            const element = xynode.data.element as DiagramNodeWithNavigate
+            invariant(element.navigateTo, `node is not navigable: ${xynodeId}`)
             set(
               {
                 lastClickedNodeId: xynodeId,
@@ -542,20 +545,23 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             )
           },
 
-          fitDiagram: (xyStore, duration = 500) => {
-            const { width, height, panZoom } = xyStore.getState()
-            const { fitViewPadding, view, focusedNodeId } = get()
+          fitDiagram: (duration = 500) => {
+            const { fitViewPadding, view, focusedNodeId, activeDynamicViewStep, xystore } = get()
+            const { width, height, panZoom, transform } = xystore.getState()
+
             const bounds = {
               x: 0,
               y: 0,
               width: view.width,
               height: view.height
             }
-            const viewport = getViewportForBounds(bounds, width, height, MinZoom, 1, fitViewPadding)
+            const maxZoom = Math.max(1, transform[2])
+            const viewport = getViewportForBounds(bounds, width, height, MinZoom, maxZoom, fitViewPadding)
             panZoom?.setViewport(viewport, { duration })
-            if (!!focusedNodeId) {
+            if ((focusedNodeId ?? activeDynamicViewStep) !== null) {
               set(
                 {
+                  activeDynamicViewStep: null,
                   focusedNodeId: null,
                   dimmed: EmptyStringSet
                 },
@@ -566,7 +572,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           nextDynamicStep: (increment = 1) => {
-            const { view, activeDynamicViewStep, xyflow, fitViewPadding } = get()
+            const { view, activeDynamicViewStep, xyflow, xystore, fitViewPadding } = get()
             invariant(view.__ === 'dynamic', 'view is not dynamic')
             const nextStep = (activeDynamicViewStep ?? 0) + increment
             if (nextStep <= 0 || nextStep > view.edges.length) {
@@ -591,9 +597,10 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
               dimmed.add(n.id)
             }
-            xyflow.fitView({
+            const { fitView, transform } = xystore.getState()
+            fitView({
               duration: 400,
-              maxZoom: 1,
+              maxZoom: Math.max(1, transform[2]),
               minZoom: MinZoom,
               padding: fitViewPadding,
               nodes: selected
@@ -606,17 +613,18 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           },
 
           stopDynamicView: () => {
-            const { xyflow, fitViewPadding } = get()
-            set({
-              activeDynamicViewStep: null,
-              dimmed: EmptyStringSet
-            })
-            xyflow.fitView({
-              duration: 400,
-              maxZoom: 1,
-              minZoom: MinZoom,
-              padding: fitViewPadding
-            })
+            get().fitDiagram()
+            // const { xyflow, fitDiagram, fitViewPadding } = get()
+            // set({
+            //   activeDynamicViewStep: null,
+            //   dimmed: EmptyStringSet
+            // })
+            // xyflow.fitView({
+            //   duration: 400,
+            //   maxZoom: 1,
+            //   minZoom: MinZoom,
+            //   padding: fitViewPadding
+            // })
           }
         }),
         {

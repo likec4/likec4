@@ -2,7 +2,7 @@ import { deepEqual as eq } from 'fast-equals'
 import { useXYStoreApi } from './hooks'
 
 import { useEffect } from 'react'
-import { useDiagramState, useDiagramStoreApi } from '../state'
+import { useDiagramState, useDiagramStoreApi } from '../state/hooks'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
 /**
@@ -10,7 +10,6 @@ import { diagramViewToXYFlowData } from './diagram-to-xyflow'
  */
 export function SyncWithDiagram() {
   const xyflowSynced = useDiagramState(s => s.xyflowSynced)
-  const xyflowApi = useXYStoreApi()
   const diagramStoreApi = useDiagramStoreApi()
 
   useEffect(() => {
@@ -21,7 +20,8 @@ export function SyncWithDiagram() {
       view,
       nodesDraggable,
       nodesSelectable,
-      focusedNodeId
+      focusedNodeId,
+      xystore
     } = diagramStoreApi.getState()
     const updates = diagramViewToXYFlowData(view, {
       draggable: nodesDraggable,
@@ -33,7 +33,7 @@ export function SyncWithDiagram() {
       edgeLookup,
       setNodes,
       setEdges
-    } = xyflowApi.getState()
+    } = xystore.getState()
 
     setNodes(updates.nodes.map(update => {
       const existing = nodeLookup.get(update.id)?.internals.userNode
@@ -63,18 +63,6 @@ export function SyncWithDiagram() {
             ...update.data
           }
         }
-        // if (update.data.controlPoints === null && existing.data.controlPoints !== null) {
-        //   // we don't want accidentally
-        //   // overwrite existing control points
-        //   return {
-        //     ...existing,
-        //     ...update,
-        //     data: {
-        //       ...update.data,
-        //       controlPoints: existing.data.controlPoints
-        //     }
-        //   }
-        // }
       }
       return update
     }))
@@ -86,7 +74,7 @@ export function SyncWithDiagram() {
       false,
       'xyflowSynced'
     )
-  }, [xyflowSynced, xyflowApi, diagramStoreApi])
+  }, [xyflowSynced, diagramStoreApi])
 
   return null
 }

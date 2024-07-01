@@ -1,4 +1,4 @@
-import { Box, Button } from '@mantine/core'
+import { Box, Button, ButtonGroup } from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import {
   IconPlayerPlayFilled,
@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { isNullish, isNumber } from 'remeda'
-import { useDiagramState } from '../state/useDiagramStore'
+import { useDiagramState } from '../state/hooks'
 import { useXYStore } from '../xyflow/hooks/useXYFlow'
 import * as css from './DynamicViewWalkthrough.css'
 
@@ -71,7 +71,7 @@ export function DynamicViewWalkthrough() {
           </Button>
         )}
       {isNumber(activeDynamicViewStep) && (
-        <Button.Group className={css.buttons}>
+        <ButtonGroup className={css.buttons}>
           <Button
             {...buttonProps}
             pl={'lg'}
@@ -98,7 +98,7 @@ export function DynamicViewWalkthrough() {
               <IconPlayerSkipForwardFilled />
             </Button>
           )}
-        </Button.Group>
+        </ButtonGroup>
       )}
     </Box>
   )

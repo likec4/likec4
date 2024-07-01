@@ -3,7 +3,7 @@ import { useLocalStorage } from '@mantine/hooks'
 import { IconMenu } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { type DiagramState, useDiagramState } from '../state'
+import { type DiagramState, useDiagramState } from '../state/hooks'
 import * as css from './DiagramTitlePanel.css'
 
 const selector = (s: DiagramState) => ({

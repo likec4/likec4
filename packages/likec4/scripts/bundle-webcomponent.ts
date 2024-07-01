@@ -1,5 +1,6 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -83,6 +84,7 @@ export async function buildWebcomponentBundle(_isDev = false) {
     css: {
       postcss: {
         plugins: [
+          autoprefixer(),
           postcssPresetMantine()
         ]
       }

@@ -1,5 +1,6 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
 import { consola } from 'consola'
 import { copyFile, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'path'
@@ -76,7 +77,8 @@ export async function buildReact(_isDev = false) {
         treeshake: true,
         output: {
           esModule: true,
-          exports: 'named'
+          exports: 'named',
+          compact: true
         },
         external: [
           'react',
@@ -93,6 +95,7 @@ export async function buildReact(_isDev = false) {
     css: {
       postcss: {
         plugins: [
+          autoprefixer(),
           postcssPresetMantine()
         ]
       }

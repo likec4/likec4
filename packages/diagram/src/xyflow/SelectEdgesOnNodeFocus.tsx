@@ -1,7 +1,7 @@
 import { nonNullable } from '@likec4/core'
 import type { EdgeChange, NodeChange } from '@xyflow/react'
 import { useUpdateEffect } from '../hooks/useUpdateEffect'
-import { useDiagramState, useDiagramStoreApi } from '../state/useDiagramStore'
+import { useDiagramState, useDiagramStoreApi } from '../state/hooks'
 import { MinZoom } from './const'
 import { useXYStoreApi } from './hooks/useXYFlow'
 import type { XYFlowEdge, XYFlowNode } from './types'

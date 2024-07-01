@@ -26,7 +26,7 @@ import { useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { Changes } from '../../LikeC4Diagram.props'
-import { useDiagramStoreApi } from '../../state'
+import { useDiagramStoreApi } from '../../state/hooks'
 import { useXYNodesData } from '../../xyflow/hooks'
 import { XYFlowNode } from '../../xyflow/types'
 

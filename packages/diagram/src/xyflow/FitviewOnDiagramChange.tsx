@@ -2,7 +2,7 @@ import { invariant } from '@likec4/core'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { shallowEqual } from 'fast-equals'
 import { useEffect, useRef } from 'react'
-import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state'
+import { type DiagramState, type DiagramStoreApi, useDiagramState, useDiagramStoreApi } from '../state/hooks'
 import { useXYStore, useXYStoreApi, type XYStoreApi } from './hooks'
 import type { XYFlowState } from './types'
 import { toDomPrecision } from './utils'
@@ -24,7 +24,7 @@ function FitViewOnViewportResize({ diagramApi, xyflowApi }: {
       if (focusedNodeId || prevDimensionsRef.current === dimensions) {
         return
       }
-      fitDiagram(xyflowApi, 300)
+      fitDiagram(300)
       prevDimensionsRef.current = dimensions
     },
     [dimensions, diagramApi, xyflowApi],
@@ -103,7 +103,7 @@ export function FitViewOnDiagramChange() {
       return
     }
     processedRef.current = pendingViewId
-    diagramApi.getState().fitDiagram(xyflowApi, durationRef.current)
+    diagramApi.getState().fitDiagram(durationRef.current)
     // Reset duration
     durationRef.current = 300
   }, [pendingViewId, xyflowSynced, waitCorrection])

@@ -14,7 +14,7 @@ import type { XYPosition } from '@xyflow/system'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import type { SetRequired, Simplify } from 'type-fest'
 import type { XYFlowEdge, XYFlowNode } from './xyflow/types'
-import type { XYBackground, XYBackgroundProps } from './xyflow/XYFlowBackground'
+import type { XYBackground } from './xyflow/XYFlowBackground'
 
 export type DiagramNodeWithNavigate = Simplify<SetRequired<DiagramNode, 'navigateTo'>>
 

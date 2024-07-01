@@ -1,12 +1,11 @@
 import { invariant, isAncestor, nonNullable } from '@likec4/core'
 import { Expression, Expression as Expr, Operator, Solver, Strength, Variable } from '@lume/kiwi'
-import { useDebouncedCallback } from '@react-hookz/web'
 import type { InternalNode, ReactFlowProps, XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
-import { useDiagramStoreApi } from '../../state'
-import { type XYFlowInstance, XYFlowNode } from '../types'
+import { useDiagramStoreApi } from '../../state/hooks'
+import type { XYFlowInstance, XYFlowNode } from '../types'
 import { isSamePoint } from '../utils'
 import { useXYStoreApi, type XYStoreApi } from './useXYFlow'
 
@@ -296,7 +295,7 @@ export function useLayoutConstraints(): LayoutConstraints {
     },
     onNodeDragStop: (event, _xynode) => {
       if (!isSamePoint(dragStartedAt.current, { x: event.clientX, y: event.clientY })) {
-        diagramApi.getState().triggerSaveManualLayout(xyflowApi)
+        diagramApi.getState().triggerSaveManualLayout()
       }
       solverRef.current = undefined
     }

@@ -2,7 +2,7 @@ import { ActionIcon, Group } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import clsx from 'clsx'
 import { AnimatePresence, m } from 'framer-motion'
-import { useNavigationHistory } from '../state/useNavigationHistory'
+import { useNavigationHistory } from '../state/hooks'
 import * as css from './BackwardForwardPanel.css'
 
 export function BackwardForwardPanel() {

@@ -2,7 +2,7 @@ import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import { isNullish } from 'remeda'
 import type { Simplify } from 'type-fest'
-import { useDiagramStoreApi } from '../state'
+import { useDiagramStoreApi } from '../state/hooks'
 import { useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
@@ -63,7 +63,7 @@ export function useXYFlowEvents() {
           fitDiagram
         } = diagramApi.getState()
         if (fitViewEnabled) {
-          fitDiagram(xyflowApi)
+          fitDiagram()
           if (!onCanvasDblClick) {
             event.stopPropagation()
           }
@@ -83,7 +83,7 @@ export function useXYFlowEvents() {
           resetLastClicked
         } = diagramApi.getState()
         if (focusedNodeId || activeDynamicViewStep) {
-          fitDiagram(xyflowApi)
+          fitDiagram()
           if (!onCanvasClick) {
             event.stopPropagation()
           }
@@ -154,7 +154,7 @@ export function useXYFlowEvents() {
         if (!!focusedNodeId || (zoomable && fitViewEnabled)) {
           // if we are already focused on the node, cancel
           if (focusedNodeId === xynode.id) {
-            fitDiagram(xyflowApi)
+            fitDiagram()
           } else {
             focusOnNode(xynode.id)
           }

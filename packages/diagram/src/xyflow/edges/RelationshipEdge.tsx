@@ -10,7 +10,7 @@ import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
 import { memo, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isNullish, isTruthy, last } from 'remeda'
-import { useDiagramState, useDiagramStoreApi } from '../../state'
+import { useDiagramState, useDiagramStoreApi } from '../../state/hooks'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type RelationshipData, type XYFlowEdge } from '../types'
@@ -225,7 +225,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
       if (hasMoved) {
-        diagramStore.getState().triggerSaveManualLayout(xyflowStore)
+        diagramStore.getState().triggerSaveManualLayout()
       }
     }
     domNode.addEventListener('pointermove', onPointerMove)

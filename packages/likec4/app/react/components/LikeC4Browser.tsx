@@ -8,15 +8,34 @@ import { ShadowRoot } from './ShadowRoot'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { useColorScheme } from './styles'
 import * as css from './styles.css'
-import type { DiagramView, LikeC4ViewBaseProps } from './types'
+import type { DiagramView } from './types'
 
-export type LikeC4BrowserProps<ViewId extends string> =
-  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'browserBackground'>
-  & {
-    view: DiagramView<ViewId>
-    onNavigateTo: (to: ViewId) => void
-    onClose: () => void
-  }
+export type LikeC4BrowserProps<ViewId extends string> = {
+  view: DiagramView<ViewId>
+
+  /**
+   * By default determined by the user's system preferences.
+   */
+  colorScheme?: 'light' | 'dark' | undefined
+
+  /**
+   * LikeC4 views are using 'IBM Plex Sans' font.
+   * By default, component injects the CSS to document head.
+   * Set to false if you want to handle the font yourself.
+   *
+   * @default true
+   */
+  injectFontCss?: boolean | undefined
+
+  /**
+   * Background pattern
+   * @default 'dots'
+   */
+  background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
+
+  onNavigateTo: (to: ViewId) => void
+  onClose: () => void
+}
 
 export function LikeC4Browser<ViewId extends string>({
   colorScheme,

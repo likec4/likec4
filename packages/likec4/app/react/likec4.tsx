@@ -1,12 +1,12 @@
 import { LikeC4Browser, type LikeC4ViewBaseProps, LikeC4ViewElement } from 'likec4/react'
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { isLikeC4ViewId, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 
 export { isLikeC4ViewId }
 
 export type LikeC4ViewProps = LikeC4ViewBaseProps<LikeC4ViewId>
 
-export function LikeC4View({
+export const LikeC4View = memo<LikeC4ViewProps>(function LikeC4ViewComponent({
   viewId,
   interactive = true,
   colorScheme,
@@ -14,7 +14,7 @@ export function LikeC4View({
   background = 'transparent',
   browserBackground = 'dots',
   ...props
-}: LikeC4ViewProps) {
+}) {
   const view = LikeC4Views[viewId]
 
   const [browserViewId, onNavigateTo] = useState(null as LikeC4ViewId | null)
@@ -55,4 +55,4 @@ export function LikeC4View({
       )}
     </>
   )
-}
+})

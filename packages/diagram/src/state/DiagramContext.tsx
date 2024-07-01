@@ -1,13 +1,13 @@
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
 import { hasSubObject } from 'remeda'
 import { useUpdateEffect } from '../hooks'
-import { useXYFlow } from '../xyflow/hooks'
+import { useXYFlow, useXYStoreApi } from '../xyflow/hooks'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
 
 export type DiagramZustandStore = ReturnType<typeof createDiagramStore>
 export const DiagramContext = createContext<DiagramZustandStore | null>(null)
 
-type DiagramContextProviderProps = PropsWithChildren<
+export type DiagramContextProviderProps = PropsWithChildren<
   DiagramInitialState & {
     className: string
     keepAspectRatio: boolean
@@ -22,11 +22,13 @@ export function DiagramContextProvider({
   ...props
 }: DiagramContextProviderProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const xystore = useXYStoreApi()
   const xyflow = useXYFlow()
   const store = useRef<DiagramZustandStore>()
 
   if (!store.current) {
     store.current = createDiagramStore({
+      xystore,
       xyflow,
       view,
       getContainer: () => containerRef.current,
@@ -36,11 +38,13 @@ export function DiagramContextProvider({
 
   useEffect(
     () => {
-      if (store.current?.getState().xyflow !== xyflow) {
-        store.current?.setState({ xyflow }, false, 'update xyflow')
+      if (!store.current) return
+      const state = store.current.getState()
+      if (state.xyflow !== xyflow || state.xystore !== xystore) {
+        store.current.setState({ xyflow, xystore }, false, 'update xyflow and xystore')
       }
     },
-    [xyflow]
+    [xyflow, xystore]
   )
 
   useUpdateEffect(

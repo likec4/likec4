@@ -1,19 +1,38 @@
 import { LikeC4Diagram } from '@likec4/diagram'
 import clsx from 'clsx'
-import { useId } from 'react'
+import { type HTMLAttributes, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
-import type { DiagramView, LikeC4ViewBaseProps } from './types'
+import type { DiagramView } from './types'
 
-export type LikeC4ViewElementProps<ViewId extends string> =
-  & Omit<LikeC4ViewBaseProps<ViewId>, 'viewId' | 'interactive' | 'browserBackground'>
-  & {
-    view: DiagramView<ViewId>
-    onNavigateTo?: ((to: ViewId) => void) | undefined
-  }
+export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
+  view: DiagramView<ViewId>
+
+  /**
+   * By default determined by the user's system preferences.
+   */
+  colorScheme?: 'light' | 'dark' | undefined
+
+  /**
+   * LikeC4 views are using 'IBM Plex Sans' font.
+   * By default, component injects the CSS to document head.
+   * Set to false if you want to handle the font yourself.
+   *
+   * @default true
+   */
+  injectFontCss?: boolean | undefined
+
+  /**
+   * Background pattern
+   * @default 'transparent'
+   */
+  background?: 'dots' | 'lines' | 'cross' | 'transparent' | 'solid' | undefined
+
+  onNavigateTo?: ((to: ViewId) => void) | undefined
+}
 
 export function LikeC4ViewElement<ViewId extends string>({
   onNavigateTo,
