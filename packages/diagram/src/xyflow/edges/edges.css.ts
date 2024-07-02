@@ -12,7 +12,7 @@ export const container = style({
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
     [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
-    [xyvars.edge.strokeWidth]: '2.2px'
+    [xyvars.edge.strokeWidth]: '3'
   }
 })
 
@@ -29,7 +29,7 @@ const isSelected = '.react-flow__edge.selected'
 globalStyle(`:where(${isSelected}) ${container}`, {
   vars: {
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3px'
+    [xyvars.edge.strokeWidth]: '3'
   }
 })
 
@@ -37,13 +37,13 @@ globalStyle(`${container}:is([data-edge-hovered='true'],[data-edge-active='true'
   vars: {
     // [xyvars.edge.stroke]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.stroke]: xyvars.edge.strokeSelected,
-    [xyvars.edge.strokeWidth]: '3px'
+    [xyvars.edge.strokeWidth]: '3'
   }
 })
 
 globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
   vars: {
-    [xyvars.edge.strokeWidth]: '3.6px'
+    [xyvars.edge.strokeWidth]: '4'
   }
 })
 // globalStyle(`${container}[data-edge-hovered='true']`, {
@@ -67,7 +67,7 @@ globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
 })
 
 export const edgePathBg = style({
-  strokeWidth: xyvars.edge.strokeWidth,
+  // strokeWidth: xyvars.edge.strokeWidth,
   strokeOpacity: 0.08,
   // transition: 'stroke-width 175ms ease-in-out',
   // transition: 'stroke-width 175ms ease-in-out, stroke-opacity 150ms ease-out',
@@ -76,7 +76,7 @@ export const edgePathBg = style({
   transitionTimingFunction: 'ease-out',
   selectors: {
     [`:where(${isSelected}, [data-edge-active='true'], [data-edge-hovered='true']) &`]: {
-      strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8px)`,
+      strokeWidth: `calc(${xyvars.edge.strokeWidth} + 8)`,
       strokeOpacity: 0.15
     }
   }

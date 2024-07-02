@@ -215,8 +215,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         const { x, y } = xyflow.screenToFlowPosition(pointer, { snapToGrid: false })
         const newControlPoints = controlPoints.slice()
         newControlPoints[index] = {
-          x: toDomPrecision(x),
-          y: toDomPrecision(y)
+          x: Math.round(x),
+          y: Math.round(y)
         }
         xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
       }

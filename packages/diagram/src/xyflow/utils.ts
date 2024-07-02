@@ -33,8 +33,8 @@ export function bezierControlPoints(diagramEdge: DiagramEdge) {
     inflections.forEach(t => {
       const { x, y } = bezier.get(t)
       handles.push({
-        x: toDomPrecision(x),
-        y: toDomPrecision(y)
+        x: Math.round(x),
+        y: Math.round(y)
       })
     })
     bezierPoints = rest
