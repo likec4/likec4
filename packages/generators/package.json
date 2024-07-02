@@ -46,7 +46,7 @@
   "devDependencies": {
     "@likec4/tsconfig": "workspace:*",
     "@types/node": "^20.14.9",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "vitest": "~1.6.0"
   },
   "packageManager": "yarn@4.3.1"

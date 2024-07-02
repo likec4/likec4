@@ -64,7 +64,7 @@
     "strip-indent": "^4.0.0",
     "tsx": "~4.9.3",
     "type-fest": "^4.20.1",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "ufo": "^1.5.3",
     "vite": "5.3.2",
     "vscode": "npm:@codingame/monaco-vscode-api@5.2.0",
