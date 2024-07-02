@@ -41,6 +41,12 @@
         "@vanilla-extract/"
       ],
     },
+    {
+      groupName: "@xyflow",
+      matchPackagePrefixes: [
+        "@xyflow"
+      ],
+    },
     // Auto merge
     {
       matchPackagePrefixes: [
