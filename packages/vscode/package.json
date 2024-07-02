@@ -205,7 +205,7 @@
     "@likec4/vscode-preview": "workspace:*",
     "@types/node": "^20.14.9",
     "@types/vscode": "~1.88.0",
-    "@types/which": "^3.0.3",
+    "@types/which": "^3.0.4",
     "@vscode/extension-telemetry": "^0.9.6",
     "consola": "^3.2.3",
     "esbuild": "^0.21.5",
