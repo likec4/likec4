@@ -213,7 +213,7 @@
     "execa": "^9.3.0",
     "langium": "3.1.1",
     "p-timeout": "^6.1.2",
-    "remeda": "^2.2.1",
+    "remeda": "^2.2.2",
     "tslib": "^2.6.3",
     "tsx": "~4.9.3",
     "typescript": "^5.5.2",
