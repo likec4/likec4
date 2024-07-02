@@ -36,7 +36,7 @@ export type LikeC4ViewElementProps<ViewId extends string> = Omit<HTMLAttributes<
 }
 
 export function LikeC4ViewElement<ViewId extends string>({
-  onNavigateTo,
+  onNavigateTo: _onNavigateTo,
   className,
   view,
   injectFontCss,
@@ -49,8 +49,8 @@ export function LikeC4ViewElement<ViewId extends string>({
 
   const isLandscape = view.width > view.height
 
-  const onNavigateToCb = useCallbackRef((to: string) => {
-    onNavigateTo?.(to as ViewId)
+  const onNavigateTo = useCallbackRef((to: string) => {
+    _onNavigateTo?.(to as ViewId)
   })
 
   return (
@@ -86,7 +86,7 @@ export function LikeC4ViewElement<ViewId extends string>({
         injectFontCss={injectFontCss}
         className={clsx('likec4-view', className)}
         {...props}
-        {...(onNavigateTo && {
+        {...(_onNavigateTo && {
           onClick: (e) => {
             e.stopPropagation()
             onNavigateTo(view.id)
@@ -95,7 +95,7 @@ export function LikeC4ViewElement<ViewId extends string>({
       >
         <ShadowRootMantineProvider
           colorScheme={scheme}
-          className={clsx(cssLikeC4View, !!onNavigateTo && cssInteractive)}
+          className={clsx(cssLikeC4View, !!_onNavigateTo && cssInteractive)}
         >
           <LikeC4Diagram
             view={view as any}
@@ -112,8 +112,8 @@ export function LikeC4ViewElement<ViewId extends string>({
             controls={false}
             nodesSelectable={false}
             keepAspectRatio={false}
-            {...(onNavigateTo && {
-              onNavigateTo: onNavigateToCb
+            {...(_onNavigateTo && {
+              onNavigateTo
             })}
           />
         </ShadowRootMantineProvider>
