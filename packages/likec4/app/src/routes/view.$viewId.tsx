@@ -1,18 +1,19 @@
 import { Alert, Box, Burger, Button, Code, Container, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useUpdateEffect } from '@react-hookz/web'
-import { createFileRoute, isNotFound, Outlet } from '@tanstack/react-router'
+import { createFileRoute, isNotFound, Outlet, useRouter } from '@tanstack/react-router'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { SidebarDrawer } from '../components/sidebar/Drawer'
 import { Header } from '../components/view-page/Header'
 import { useLikeC4View } from '../data'
-import { cssCaptureGesturesLayer, cssViewOutlet } from './view.css'
+import * as css from './view.css'
 
 export const Route = createFileRoute('/view/$viewId')({
   component: ViewLayout
 })
 
 function Fallback({ error, resetErrorBoundary }: FallbackProps) {
+  const router = useRouter()
   const { viewId } = Route.useParams()
 
   useUpdateEffect(() => {
@@ -30,7 +31,20 @@ function Fallback({ error, resetErrorBoundary }: FallbackProps) {
             </Code>{' '}
             does not exist or contains errors
           </Text>
-          <Button onClick={resetErrorBoundary} variant="light" color="orange" mt={'lg'} size="xs">Refresh</Button>
+          <Button
+            onClick={() => {
+              resetErrorBoundary()
+              router.navigate({
+                to: '/',
+                search: true
+              })
+            }}
+            variant="light"
+            color="orange"
+            mt={'lg'}
+            size="xs">
+            Go to overview
+          </Button>
         </Alert>
       </Container>
     )
@@ -53,15 +67,10 @@ function ViewLayout() {
 
   return (
     <>
-      <Box className={cssViewOutlet}>
+      <Box className={css.cssViewOutlet}>
         <ErrorBoundary FallbackComponent={Fallback}>
           <Outlet />
         </ErrorBoundary>
-      </Box>
-      {/* Handle back gesture */}
-      <Box
-        visibleFrom="lg"
-        className={cssCaptureGesturesLayer}>
       </Box>
       <ViewHeader />
       <SidebarDrawer opened={opened} onClose={close} />

@@ -1,5 +1,6 @@
-// import { LikeC4Diagram, type OnNavigateTo } from '@likec4/diagram'
+import type { ViewID } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
+import { useCallbackRef } from '@mantine/hooks'
 import { createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { useLikeC4View } from '../data'
 
@@ -12,6 +13,15 @@ function ViewReact() {
   const { viewId } = Route.useParams()
   const view = useLikeC4View(viewId)
 
+  const onNavigateTo = useCallbackRef((viewId: ViewID) => {
+    router.navigate({
+      to: '/view/$viewId',
+      params: { viewId },
+      startTransition: true,
+      search: true
+    })
+  })
+
   if (!view) {
     throw notFound()
   }
@@ -23,14 +33,7 @@ function ViewReact() {
       controls={false}
       fitViewPadding={0.08}
       showNavigationButtons
-      onNavigateTo={(viewId) => {
-        router.navigate({
-          to: '/view/$viewId',
-          params: { viewId },
-          startTransition: true,
-          search: true
-        })
-      }}
+      onNavigateTo={onNavigateTo}
     />
   )
 }

@@ -4,6 +4,7 @@ import { type HTMLAttributes, useId } from 'react'
 import { ShadowRoot } from './ShadowRoot'
 import { useColorScheme } from './styles'
 
+import { useCallbackRef } from '@mantine/hooks'
 import { ShadowRootMantineProvider } from './ShadowRootMantineProvider'
 import { cssInteractive, cssLikeC4View } from './styles.css'
 import type { DiagramView } from './types'
@@ -47,6 +48,10 @@ export function LikeC4ViewElement<ViewId extends string>({
   const scheme = useColorScheme(colorScheme)
 
   const isLandscape = view.width > view.height
+
+  const onNavigateToCb = useCallbackRef((to: string) => {
+    onNavigateTo?.(to as ViewId)
+  })
 
   return (
     <>
@@ -108,7 +113,7 @@ export function LikeC4ViewElement<ViewId extends string>({
             nodesSelectable={false}
             keepAspectRatio={false}
             {...(onNavigateTo && {
-              onNavigateTo: to => onNavigateTo(to as string as ViewId)
+              onNavigateTo: onNavigateToCb
             })}
           />
         </ShadowRootMantineProvider>

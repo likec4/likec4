@@ -58,6 +58,8 @@ export function DynamicViewWalkthrough() {
   return (
     <Box
       className={clsx('react-flow__panel', css.container)}
+      onClick={(e) => e.stopPropagation()}
+      onDoubleClick={(e) => e.stopPropagation()}
     >
       {isNullish(activeDynamicViewStep)
         && (

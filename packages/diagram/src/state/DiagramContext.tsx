@@ -1,5 +1,6 @@
+import { shallowEqual } from 'fast-equals'
 import { createContext, type PropsWithChildren, useEffect, useRef } from 'react'
-import { hasSubObject } from 'remeda'
+import { hasSubObject, isNonNullish, pickBy } from 'remeda'
 import { useUpdateEffect } from '../hooks'
 import { useXYFlow, useXYStoreApi } from '../xyflow/hooks'
 import { createDiagramStore, type DiagramInitialState } from './diagramStore'
@@ -54,11 +55,13 @@ export function DiagramContextProvider({
       if (state.view !== view) {
         state.updateView(view)
       }
-      if (!hasSubObject(state, props)) {
-        store.current.setState(props, false, 'update incoming props')
+      const newProps = pickBy(props, isNonNullish)
+      if (!hasSubObject(state, newProps)) {
+        store.current.setState(newProps, false, 'update incoming props')
       }
     },
-    [view, props]
+    [view, props],
+    shallowEqual
   )
   return (
     <div

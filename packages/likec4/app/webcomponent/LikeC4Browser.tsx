@@ -1,16 +1,79 @@
 import { invariant } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider, ModalBody, ModalCloseButton, ModalContent, ModalRoot } from '@mantine/core'
-import ReactDOM from 'react-dom/client'
+import { useTimeoutEffect } from '@react-hookz/web'
+import { memo, useEffect, useState } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
+
+const BrowserModal = memo<{
+  view: DiagramView
+  onNavigateTo: (to: string) => void
+  onClose: () => void
+}>((
+  {
+    view,
+    onNavigateTo,
+    onClose
+  }
+) => {
+  const [opened, setOpened] = useState(false)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    setOpened(true)
+  }, [])
+
+  useTimeoutEffect(() => {
+    setVisible(true)
+  }, 20)
+
+  return (
+    (
+      <ModalRoot
+        keepMounted
+        opened={opened}
+        lockScroll={false}
+        fullScreen
+        trapFocus={false}
+        withinPortal={false}
+        onClose={() => {
+          setOpened(false)
+          setTimeout(onClose, 200)
+        }}>
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody w={'100%'} h={'100%'} p={0}>
+            {visible && (
+              <LikeC4Diagram
+                view={view as any}
+                readonly
+                pannable
+                zoomable
+                fitView
+                fitViewPadding={0.08}
+                showElementLinks
+                showDiagramTitle
+                controls={false}
+                nodesSelectable={false}
+                nodesDraggable={false}
+                keepAspectRatio={false}
+                onNavigateTo={onNavigateTo} />
+            )}
+          </ModalBody>
+        </ModalContent>
+      </ModalRoot>
+    )
+  )
+}, (prev, next) => prev.view === next.view)
 
 export class LikeC4Browser extends HTMLElement {
   static observedAttributes = ['view-id']
 
   private shadowRootEl: HTMLDivElement
   private shadow: ShadowRoot
-  private root: ReactDOM.Root | undefined
+  private root: Root | undefined
 
   private bundledCSS: CSSStyleSheet | undefined
   private hostCss: CSSStyleSheet | undefined
@@ -37,6 +100,8 @@ export class LikeC4Browser extends HTMLElement {
       z-index: 9999;
       width: 100dvw;
       height: 100dvh;
+      display: block;
+      background-color: transparent;
     }`
     if (hostCss !== this.lastHostCss) {
       this.hostCss?.replaceSync(hostCss)
@@ -89,7 +154,7 @@ export class LikeC4Browser extends HTMLElement {
 
     this.updateHostCss()
 
-    this.root ??= ReactDOM.createRoot(this.shadow.querySelector('.likec4-react-root')!)
+    this.root ??= createRoot(this.shadow.querySelector('.likec4-react-root')!)
 
     const colorScheme = matchesColorScheme(this)
 
@@ -100,41 +165,17 @@ export class LikeC4Browser extends HTMLElement {
         {...(colorScheme && { forceColorScheme: colorScheme })}
         getRootElement={() => this.shadowRootEl}
         cssVariablesSelector={'.likec4-shadow-root'}>
-        <ModalRoot
-          keepMounted
-          opened
-          lockScroll={false}
-          fullScreen
-          withinPortal={false}
-          onClose={() => this.close()}>
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody w={'100%'} h={'100%'} p={0}>
-              <LikeC4Diagram
-                view={view as any}
-                readonly
-                pannable
-                zoomable
-                fitView
-                fitViewPadding={0.08}
-                showElementLinks
-                showDiagramTitle
-                controls={false}
-                nodesSelectable={false}
-                nodesDraggable={false}
-                keepAspectRatio={false}
-                onNavigateTo={to => {
-                  this.setAttribute('view-id', to)
-                }}
-              />
-            </ModalBody>
-          </ModalContent>
-        </ModalRoot>
+        <BrowserModal
+          view={view}
+          onNavigateTo={(to) => this.setAttribute('view-id', to)}
+          onClose={() => this.close()} />
       </MantineProvider>
     )
   }
 
   close() {
+    this.root?.unmount()
+    this.root = undefined
     this.parentElement?.removeChild(this)
   }
 

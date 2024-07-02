@@ -61,7 +61,7 @@ export function SelectEdgesOnNodeFocus() {
 
     fitView({
       duration: 350,
-      padding: 0.1,
+      padding: 0.2,
       minZoom: MinZoom,
       maxZoom: Math.max(1, transform[2]),
       nodes: Array.from(fitViewNodes)

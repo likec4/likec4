@@ -1,7 +1,7 @@
 import { invariant, type ViewID } from '@likec4/core'
 import { LikeC4Diagram } from '@likec4/diagram'
 import { MantineProvider } from '@mantine/core'
-import ReactDOM from 'react-dom/client'
+import { createRoot, type Root } from 'react-dom/client'
 import { type DiagramView, type LikeC4ViewId, LikeC4Views } from 'virtual:likec4/views'
 import { ComponentName } from '../src/const'
 import { bundledStyles, matchesColorScheme, theme } from './styles'
@@ -11,7 +11,7 @@ export class LikeC4View extends HTMLElement {
 
   private rootEl: HTMLDivElement
   private shadow: ShadowRoot
-  private root: ReactDOM.Root | undefined
+  private root: Root | undefined
 
   private bundledCSS: CSSStyleSheet | undefined
   private hostCss: CSSStyleSheet | undefined
@@ -26,16 +26,35 @@ export class LikeC4View extends HTMLElement {
 
   updateHostCss() {
     const view = this.view
+    const isLandscape = view.width > view.height
     const hostCss = this.isKeepAspectRatio
       ? `
     :host {
-      width: 100%;
-      height: auto;
+      display: block;
+      background-color: transparent;
+      box-sizing: border-box;
+      border: 0 solid transparent;
+      padding: 0;
+      ${
+        isLandscape ? '' : `
+      margin-left: auto;
+      margin-right: auto;`
+      }
+      width: ${isLandscape ? '100%' : 'auto'};
+      width: -webkit-fill-available;
+      height: ${isLandscape ? 'auto' : '100%'};
+      height: -webkit-fill-available;
+      ${
+        isLandscape ? '' : `
+      min-height: 100px;`
+      }
       aspect-ratio: ${Math.ceil(view.width)} / ${Math.ceil(view.height)};
-      max-height: var(--likec4-view-max-height, ${Math.ceil(1.011 * view.height)}px);
+      max-height: var(--likec4-view-max-height, ${Math.ceil(view.height * 1.05)}px);
     }`
       : `
     :host {
+      display: block;
+      background-color: transparent;
       width: 100%;
       height: 100%;
     }`
@@ -91,7 +110,7 @@ export class LikeC4View extends HTMLElement {
 
     this.updateHostCss()
 
-    this.root ??= ReactDOM.createRoot(this.shadow.querySelector('.likec4-react-root')!)
+    this.root ??= createRoot(this.shadow.querySelector('.likec4-react-root')!)
 
     const colorScheme = matchesColorScheme(this)
 

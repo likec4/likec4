@@ -1,10 +1,3 @@
-
-
-:host {
-  display: block;
-  background-color: transparent;
-}
-
 .likec4-shadow-root,
 .likec4-react-root {
   margin: 0;
@@ -30,7 +23,6 @@
   --mantine-default-font-family: var(--font-family);
   --mantine-font-family: var(--font-family);
 }
-
 
 .likec4-shadow-root.likec4-browser {
   --mantine-color-body: rgb(0 0 0 / 0%);

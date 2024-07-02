@@ -5,8 +5,9 @@ import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state/hooks'
 import { useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
+import type { XYFlowEventHandlers } from './XYFlowEvents'
 
-type XYFlowEventHandlers = Simplify<
+export type XYFlowEventHandlers = Simplify<
   Required<
     Pick<
       ReactFlowProps<XYFlowNode, XYFlowEdge>,
@@ -82,7 +83,7 @@ export function useXYFlowEvents() {
           onCanvasClick,
           resetLastClicked
         } = diagramApi.getState()
-        if (focusedNodeId || activeDynamicViewStep) {
+        if ((focusedNodeId ?? activeDynamicViewStep) !== null) {
           fitDiagram()
           if (!onCanvasClick) {
             event.stopPropagation()
@@ -126,7 +127,7 @@ export function useXYFlowEvents() {
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
         // if user clicked on the same node twice in a short time, focus on it
-        const clickedRecently = isNullish(focusedNodeId) && lastClickedNodeId === xynode.id && lastClickWasRecent()
+        const clickedRecently = focusedNodeId !== xynode.id && lastClickedNodeId === xynode.id && lastClickWasRecent()
         if (focusPossible && (shallChangeFocus || clickedRecently)) {
           focusOnNode(xynode.id)
           if (!onNodeClick) {
@@ -151,6 +152,7 @@ export function useXYFlowEvents() {
           setLastClickedNode
         } = diagramApi.getState()
         setLastClickedNode(xynode.id)
+        lastClickTimestamp.current = Date.now()
         if (!!focusedNodeId || (zoomable && fitViewEnabled)) {
           // if we are already focused on the node, cancel
           if (focusedNodeId === xynode.id) {

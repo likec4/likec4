@@ -602,29 +602,33 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               duration: 400,
               maxZoom: Math.max(1, transform[2]),
               minZoom: MinZoom,
-              padding: fitViewPadding,
+              padding: Math.max(fitViewPadding, 0.2),
               nodes: selected
             })
-            set({
-              focusedNodeId: null,
-              activeDynamicViewStep: nextStep,
-              dimmed
-            })
+            set(
+              {
+                focusedNodeId: null,
+                activeDynamicViewStep: nextStep,
+                dimmed
+              },
+              noReplace,
+              'nextDynamicStep'
+            )
           },
 
           stopDynamicView: () => {
-            get().fitDiagram()
-            // const { xyflow, fitDiagram, fitViewPadding } = get()
-            // set({
-            //   activeDynamicViewStep: null,
-            //   dimmed: EmptyStringSet
-            // })
-            // xyflow.fitView({
-            //   duration: 400,
-            //   maxZoom: 1,
-            //   minZoom: MinZoom,
-            //   padding: fitViewPadding
-            // })
+            if (get().activeDynamicViewStep !== null) {
+              set(
+                {
+                  activeDynamicViewStep: null,
+                  focusedNodeId: null,
+                  dimmed: EmptyStringSet
+                },
+                noReplace,
+                'stopDynamicView'
+              )
+              get().fitDiagram()
+            }
           }
         }),
         {

@@ -40,15 +40,6 @@ export const cssViewOutlet = style({
   }
 })
 
-export const cssCaptureGesturesLayer = style({
-  position: 'absolute',
-  top: headerHeight,
-  left: 0,
-  width: 40,
-  height: 'calc(100vh - 170px)',
-  zIndex: 1
-})
-
 export const cssExportView = style({
   position: 'fixed',
   boxSizing: 'border-box',

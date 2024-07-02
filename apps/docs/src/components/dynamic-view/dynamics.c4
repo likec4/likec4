@@ -1,12 +1,22 @@
 specification {
-  // Element kinds used in our architecture
   element actor {
     style {
       shape person
     }
   }
-  element system
-  element component
+  element system {
+    style {
+      opacity 35%
+      color secondary
+    }
+  }
+  element component {
+    style {
+      opacity 25%
+      border none
+      color secondary
+    }
+  }
 }
 
 // Describe the architecture
@@ -21,13 +31,16 @@ model {
     backend = component 'Backend' {
       description 'Backend services and API'
 
-      auth = component 'Authentication'
-
-      api = component 'Backend API' {
-        description 'RESTful API'
+      auth = component 'Authentication' {
+        description 'Self-Hosted Authentication Service'
       }
 
-      api -> auth 'validates bearer token' 
+      api = component 'Backend API' {
+        description 'Java Spring Web-service
+        provides access via REST API'
+      }
+
+      api -> auth 'validates bearer token'
     }
 
     ui = component 'Frontend' {
@@ -40,7 +53,8 @@ model {
       }
 
       web = component 'Customer Dashboard' {
-        description 'React Application'
+        technology 'React, Typescript'
+        description 'Browser Single-Page Application'
         style {
           shape browser
         }
@@ -76,12 +90,30 @@ views {
     include *
   }
 
+  view ui of ui {
+    include cloud, *
+  }
+
   view backend of backend {
-    include *
+    include cloud, *
+
+    style cloud, backend {
+      opacity 0%
+      border dashed
+      color muted
+    }
   }
 
   view web of web {
-    include *
+    include *, cloud, backend._
+    exclude ui
+
+
+    style cloud, backend {
+      opacity 0%
+      border dashed
+      color muted
+    }
   }
 
   dynamic view example {
@@ -98,8 +130,8 @@ views {
       color muted
       opacity 0%
     }
-    style ui, backend {
-      opacity 0%
+    style ui._ {
+      color green
     }
   }
 }

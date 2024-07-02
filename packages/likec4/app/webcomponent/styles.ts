@@ -7,7 +7,13 @@ export const bundledStyles = () => {
   if (__USE_SHADOW_STYLE__) {
     BundledStyles = SHADOW_STYLE
   } else {
-    BundledStyles = Array.from(__likec4styles.values()).filter(isString).join('\n')
+    BundledStyles = [
+      ...Array.from(__likec4styles.values()),
+      // vanilla-extract in transform mode
+      ...Array.from(document.querySelectorAll(`style[data-package="likec4"][data-file$=".css.ts"]`)).map((style) => {
+        return style.textContent
+      })
+    ].filter(isString).join('\n')
   }
   ensureFontCss()
   // return BundledStyles
@@ -53,12 +59,10 @@ export const matchesColorScheme = (el: Element) => {
     if (colorScheme) {
       return colorScheme
     }
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light'
-    }
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark'
     }
+    return 'light'
   } catch (_e) {
     // noop
   }

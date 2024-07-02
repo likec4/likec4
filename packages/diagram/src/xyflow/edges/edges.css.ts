@@ -155,6 +155,7 @@ const varTranslate = createVar('translate')
 export const edgeLabel = style({
   top: 0,
   left: 0,
+  padding: '1px 3px 4px 3px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
@@ -207,10 +208,9 @@ export const stepEdgeNumber = style({
 })
 
 export const edgeLabelText = style({
-  padding: 3,
   textAlign: 'left',
   textWrap: 'pretty',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
-  lineHeight: 1.25
+  lineHeight: 1.2
 })
