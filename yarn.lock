@@ -166,7 +166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.24.4":
+"@astrojs/starlight@npm:^0.24.5":
   version: 0.24.5
   resolution: "@astrojs/starlight@npm:0.24.5"
   dependencies:
@@ -2246,7 +2246,7 @@ __metadata:
   dependencies:
     "@astrojs/check": "npm:^0.7.0"
     "@astrojs/react": "npm:^3.6.0"
-    "@astrojs/starlight": "npm:^0.24.4"
+    "@astrojs/starlight": "npm:^0.24.5"
     "@expressive-code/plugin-collapsible-sections": "npm:^0.35.3"
     "@expressive-code/plugin-line-numbers": "npm:^0.35.3"
     "@fontsource/ibm-plex-sans": "npm:^5.0.20"
