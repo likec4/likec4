@@ -28,6 +28,12 @@ export const container = style({
   }
 })
 
+export const handleCenter = style({
+  top: '50%',
+  left: '50%',
+  visibility: 'hidden'
+})
+
 export const containerAnimated = style({
   willChange: 'transform'
 })

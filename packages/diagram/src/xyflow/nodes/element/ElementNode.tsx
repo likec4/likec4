@@ -117,124 +117,81 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
   // useTilg(animate, isHovered, isInteractive)
 
   return (
-    <m.div
-      id={id}
-      className={clsx([
-        css.container,
-        isDimmed && css.dimmed,
-        animate !== 'idle' && css.containerAnimated,
-        'likec4-element-node'
-      ])}
-      data-hovered={!dragging && isHovered}
-      data-likec4-color={element.color}
-      data-likec4-shape={element.shape}
-      variants={variants}
-      initial={false}
-      animate={animate}
-      {...(isInteractive && {
-        whileTap: dragging ? animate : 'tap'
-      })}
-    >
-      {
-        /* <NodeToolbar
-        position={Position.Bottom}
-        align={'start'}
-        offset={-10}
-        isVisible={selected || isHovered}>
-<Button>editggg</Button>
-      </NodeToolbar> */
-      }
-      {
-        /* <NodeResizer minWidth={100} minHeight={30} />
-      <NodeToolbar
-        position={Position.Right}
-        align={'start'}
-        style={{
-          background: 'blue'
-        }}>
-        <Stack>
-          <Button>edit</Button>
-
-        </Stack>
-      </NodeToolbar>*/
-      }
-      {
-        /* {element.inEdges.map((edge) => (
-        <Handle
-          key={edge}
-          id={edge}
-          type="target"
-          position={Position.Top}
-          style={{ visibility: 'hidden' }}
-        />
-      ))} */
-      }
+    <>
       <Handle
         type="target"
         position={Position.Top}
-        style={{ visibility: 'hidden' }}
+        className={css.handleCenter}
       />
-      <svg
-        className={clsx(
-          css.cssShapeSvg
-        )}
-        viewBox={`0 0 ${w} ${h}`}
-        width={w}
-        height={h}
+      <m.div
+        id={id}
+        className={clsx([
+          css.container,
+          isDimmed && css.dimmed,
+          animate !== 'idle' && css.containerAnimated,
+          'likec4-element-node'
+        ])}
+        data-hovered={!dragging && isHovered}
+        data-likec4-color={element.color}
+        data-likec4-shape={element.shape}
+        variants={variants}
+        initial={false}
+        animate={animate}
+        {...(isInteractive && {
+          whileTap: dragging ? animate : 'tap'
+        })}
       >
-        <g className={css.indicator}>
-          <SelectedIndicator
+        <svg
+          className={clsx(
+            css.cssShapeSvg
+          )}
+          viewBox={`0 0 ${w} ${h}`}
+          width={w}
+          height={h}
+        >
+          <g className={css.indicator}>
+            <SelectedIndicator
+              shape={element.shape}
+              w={w}
+              h={h}
+            />
+          </g>
+          <ElementShapeSvg
             shape={element.shape}
             w={w}
             h={h}
           />
-        </g>
-        <ElementShapeSvg
-          shape={element.shape}
-          w={w}
-          h={h}
-        />
-      </svg>
-      <div className={clsx(css.element, 'likec4-element')}>
-        <ElementIcon node={element} />
-        <Text
-          component="div"
-          className={clsx(css.title, 'likec4-element-title')}>
-          {element.title}
-        </Text>
-        {element.technology && (
+        </svg>
+        <div className={clsx(css.element, 'likec4-element')}>
+          <ElementIcon node={element} />
           <Text
             component="div"
-            className={clsx(css.technology, 'likec4-element-technology')}>
-            {element.technology}
+            className={clsx(css.title, 'likec4-element-title')}>
+            {element.title}
           </Text>
-        )}
-        {element.description && (
-          <Text
-            component="div"
-            className={clsx(css.description, 'likec4-element-description')}>
-            {element.description}
-          </Text>
-        )}
-      </div>
+          {element.technology && (
+            <Text
+              component="div"
+              className={clsx(css.technology, 'likec4-element-technology')}>
+              {element.technology}
+            </Text>
+          )}
+          {element.description && (
+            <Text
+              component="div"
+              className={clsx(css.description, 'likec4-element-description')}>
+              {element.description}
+            </Text>
+          )}
+        </div>
+        {isHovercards && element.links && <ElementLink element={element} />}
+        {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
+      </m.div>
       <Handle
         type="source"
-        position={Position.Bottom}
-        style={{ visibility: 'hidden' }}
+        position={Position.Top}
+        className={css.handleCenter}
       />
-      {
-        /* {element.outEdges.map((edge) => (
-        <Handle
-        key={edge}
-          id={edge}
-          type="source"
-          position={Position.Bottom}
-          style={{ visibility: 'hidden' }}
-        />
-      ))} */
-      }
-      {isHovercards && element.links && <ElementLink element={element} />}
-      {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}
-    </m.div>
+    </>
   )
 }, isEqualProps)

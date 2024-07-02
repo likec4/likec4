@@ -12,6 +12,12 @@ export const container = style({
   margin: 0
 })
 
+export const nodeHandlerInCenter = style({
+  top: '50%',
+  left: '50%',
+  visibility: 'hidden'
+})
+
 export const dimmed = style({})
 
 globalStyle(`.react-flow__node-compound:has(${dimmed})`, {

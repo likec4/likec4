@@ -49,65 +49,67 @@ export const CompoundNodeMemo = /* @__PURE__ */ memo<CompoundNodeProps>(function
   const isnavigable = !!compound.navigateTo && hasOnNavigateTo
 
   return (
-    <Box
-      className={clsx(
-        css.container,
-        'likec4-compound-node',
-        opacity < 1 && 'likec4-compound-transparent',
-        isDimmed && css.dimmed
-      )}
-      mod={{
-        'compound-depth': depth,
-        'likec4-color': color,
-        hovered: isHovered
-      }}
-    >
+    <>
       <Handle
         type="target"
         position={Position.Top}
-        style={{ visibility: 'hidden' }}
+        className={css.nodeHandlerInCenter}
       />
-      <svg className={css.indicator}>
-        <rect
-          x={0}
-          y={0}
-          width={'100%'}
-          height={'100%'}
-          rx={6}
-        />
-      </svg>
-      <div
+      <Box
         className={clsx(
-          css.compoundBody,
-          opacity < 1 && css.transparent,
-          'likec4-compound'
+          css.container,
+          'likec4-compound-node',
+          opacity < 1 && 'likec4-compound-transparent',
+          isDimmed && css.dimmed
         )}
-        style={opacity < 1
-          ? {
-            ...assignInlineVars({
-              [css.varBorderTransparency]: `${borderTransparency}%`,
-              [css.varOpacity]: opacity.toFixed(2)
-            }),
-            borderStyle: style.border ?? 'dashed'
-          }
-          : undefined}
+        mod={{
+          'compound-depth': depth,
+          'likec4-color': color,
+          hovered: isHovered
+        }}
       >
-        <Text
-          component="div"
+        <svg className={css.indicator}>
+          <rect
+            x={0}
+            y={0}
+            width={'100%'}
+            height={'100%'}
+            rx={6}
+          />
+        </svg>
+        <div
           className={clsx(
-            css.title,
-            isnavigable && css.titleWithNavigation,
-            'likec4-compound-title'
-          )}>
-          {compound.title}
-        </Text>
-      </div>
-      {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
+            css.compoundBody,
+            opacity < 1 && css.transparent,
+            'likec4-compound'
+          )}
+          style={opacity < 1
+            ? {
+              ...assignInlineVars({
+                [css.varBorderTransparency]: `${borderTransparency}%`,
+                [css.varOpacity]: opacity.toFixed(2)
+              }),
+              borderStyle: style.border ?? 'dashed'
+            }
+            : undefined}
+        >
+          <Text
+            component="div"
+            className={clsx(
+              css.title,
+              isnavigable && css.titleWithNavigation,
+              'likec4-compound-title'
+            )}>
+            {compound.title}
+          </Text>
+        </div>
+        {isnavigable && <NavigateToBtn xynodeId={id} className={css.navigateBtn} />}
+      </Box>
       <Handle
         type="source"
-        position={Position.Bottom}
-        style={{ visibility: 'hidden' }}
+        position={Position.Top}
+        className={css.nodeHandlerInCenter}
       />
-    </Box>
+    </>
   )
 }, isEqualProps)

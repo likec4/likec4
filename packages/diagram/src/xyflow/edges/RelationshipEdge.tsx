@@ -254,6 +254,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         d={edgePath}
         fill="none"
         stroke={'transparent'}
+        strokeDasharray={0}
         strokeWidth={interactionWidth ?? 10}
       />
       <g className={edgesCss.markerContext}>
@@ -269,13 +270,20 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             markerUnits="strokeWidth"
             preserveAspectRatio="xMaxYMid meet"
             orient="auto-start-reverse">
-            <path d="M 0 0 L 16 5 L 0 10 z" stroke="context-stroke" fill="context-stroke" />
+            <path
+              d="M 0 0 L 16 5 L 0 10 z"
+              stroke="context-stroke"
+              fill="context-stroke"
+              strokeDasharray={0}
+              strokeWidth={1}
+            />
           </marker>
         </defs>
         <path
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
           d={edgePath}
           style={style}
+          strokeDasharray={0}
           strokeLinecap={'round'}
         />
         <path
