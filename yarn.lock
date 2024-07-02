@@ -3861,7 +3861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/which@npm:^3.0.3":
+"@types/which@npm:^3.0.4":
   version: 3.0.4
   resolution: "@types/which@npm:3.0.4"
   checksum: 10c0/036e4cb243ebfd5cf4893be2ab3b9a60a22368811c1f1c78fb8fc70cadc274024282d04b8d7c0948268372600003252d84e2d3a5e064014a543a5da235c5989d
@@ -8716,7 +8716,7 @@ __metadata:
     "@likec4/vscode-preview": "workspace:*"
     "@types/node": "npm:^20.14.9"
     "@types/vscode": "npm:~1.88.0"
-    "@types/which": "npm:^3.0.3"
+    "@types/which": "npm:^3.0.4"
     "@vscode/extension-telemetry": "npm:^0.9.6"
     consola: "npm:^3.2.3"
     esbuild: "npm:^0.21.5"
