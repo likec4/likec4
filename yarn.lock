@@ -2436,7 +2436,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     esm-env: "npm:1.0.0"
-    postcss: "npm:^8.4.38"
+    postcss: "npm:^8.4.39"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-error-boundary: "npm:^4.0.13"
@@ -8791,7 +8791,7 @@ __metadata:
     package-up: "npm:^5.0.0"
     picocolors: "npm:^1.0.1"
     playwright: "npm:1.45.0"
-    postcss: "npm:^8.4.38"
+    postcss: "npm:^8.4.39"
     postcss-preset-mantine: "npm:^1.15.0"
     pretty-ms: "npm:^9.0.0"
     prop-types: "npm:^15.8.1"
@@ -11454,7 +11454,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.38":
+"postcss@npm:^8.4.38, postcss@npm:^8.4.39":
   version: 8.4.39
   resolution: "postcss@npm:8.4.39"
   dependencies:
