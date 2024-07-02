@@ -9,6 +9,8 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "out";
+  mclimit = 5;
   nodesep = 2.084;
   ranksep = 1.528;
   pack = 180;
@@ -19,7 +21,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
-    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -97,6 +98,8 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "out";
+  mclimit = 5;
   nodesep = 2.084;
   ranksep = 1.528;
   pack = 180;
@@ -107,7 +110,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
-    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -248,6 +250,8 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "out";
+  mclimit = 5;
   nodesep = 2.084;
   ranksep = 1.528;
   pack = 180;
@@ -258,7 +262,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
-    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";
@@ -363,6 +366,8 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
+  ordering = "out";
+  mclimit = 5;
   nodesep = 2.084;
   ranksep = 1.528;
   pack = 180;
@@ -373,7 +378,6 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
-    penwidth = 1;
   ];
   edge [
     fontname = "Helvetica";

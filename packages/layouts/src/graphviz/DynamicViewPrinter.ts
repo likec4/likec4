@@ -1,6 +1,6 @@
-import type { ComputedDynamicView, ComputedEdge, ComputedElementView } from '@likec4/core'
+import type { ComputedDynamicView, ComputedEdge } from '@likec4/core'
 import { DefaultArrowType, DefaultRelationshipColor, defaultTheme as Theme, extractStep } from '@likec4/core'
-import { first, isNullish, last } from 'remeda'
+import { first, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
@@ -51,8 +51,7 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
     if (targetIdx < sourceIdx) {
       e.attributes.apply({
-        [_.minlen]: 0,
-        [_.weight]: 0
+        [_.constraint]: false
       })
     }
 
@@ -61,8 +60,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     if (edge.dir === 'back') {
       e.attributes.apply({
         [_.arrowtail]: toArrowType(head),
-        [_.minlen]: 0,
-        [_.weight]: 0,
         [_.dir]: 'back'
       })
       if (tail !== 'none') {
@@ -78,9 +75,8 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
-        [_.weight]: 0,
         [_.dir]: 'both',
-        [_.minlen]: 0
+        [_.constraint]: false
       })
       return e
     }
@@ -89,8 +85,8 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       e.attributes.delete(_.arrowhead)
       e.attributes.apply({
         [_.arrowtail]: toArrowType(tail),
-        [_.minlen]: 0,
-        [_.weight]: 0,
+        [_.constraint]: false,
+        // [_.minlen]: 0,
         [_.dir]: 'back'
       })
       return e

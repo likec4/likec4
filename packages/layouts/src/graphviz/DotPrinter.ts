@@ -144,6 +144,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
+      [_.ordering]: 'out',
+      [_.mclimit]: 5,
       [_.nodesep]: pxToInch(isHorizontal ? 120 : 150),
       [_.ranksep]: pxToInch(isHorizontal ? 150 : 110),
       [_.pack]: pxToPoints(180),
@@ -154,8 +156,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(15),
       [_.labeljust]: this.view.autoLayout === 'RL' ? 'r' : 'l',
-      [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't',
-      [_.penwidth]: pxToPoints(1)
+      [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't'
     })
 
     return G
