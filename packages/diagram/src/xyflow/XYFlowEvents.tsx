@@ -1,11 +1,9 @@
 import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
-import { isNullish } from 'remeda'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state/hooks'
 import { useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
-import type { XYFlowEventHandlers } from './XYFlowEvents'
 
 export type XYFlowEventHandlers = Simplify<
   Required<
