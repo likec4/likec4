@@ -2365,8 +2365,8 @@ __metadata:
     "@mantine/vanilla-extract": "npm:7.11.0"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
-    "@tanstack/router-cli": "npm:^1.41.0"
-    "@tanstack/router-vite-plugin": "npm:^1.41.0"
+    "@tanstack/router-cli": "npm:^1.43.1"
+    "@tanstack/router-vite-plugin": "npm:^1.43.1"
     "@typefox/monaco-editor-react": "npm:4.2.0"
     "@types/node": "npm:^20.14.9"
     "@types/react": "npm:18.3.3"
@@ -3368,7 +3368,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.41.0":
+"@tanstack/react-router@npm:^1.43.1":
   version: 1.43.4
   resolution: "@tanstack/react-router@npm:1.43.4"
   dependencies:
@@ -3396,7 +3396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-cli@npm:^1.41.0":
+"@tanstack/router-cli@npm:^1.43.1":
   version: 1.43.1
   resolution: "@tanstack/router-cli@npm:1.43.1"
   dependencies:
@@ -3451,7 +3451,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/router-vite-plugin@npm:^1.41.0":
+"@tanstack/router-vite-plugin@npm:^1.43.1":
   version: 1.43.1
   resolution: "@tanstack/router-vite-plugin@npm:1.43.1"
   dependencies:
@@ -8757,8 +8757,8 @@ __metadata:
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
-    "@tanstack/react-router": "npm:^1.41.0"
-    "@tanstack/router-vite-plugin": "npm:^1.41.0"
+    "@tanstack/react-router": "npm:^1.43.1"
+    "@tanstack/router-vite-plugin": "npm:^1.43.1"
     "@types/node": "npm:^20.14.9"
     "@types/prop-types": "npm:^15.7.11"
     "@types/react": "npm:18.3.3"
