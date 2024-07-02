@@ -134,8 +134,10 @@ function parseEdgePoints({ _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.E
 
 function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdge: ComputedEdge): DiagramEdge {
   const labelBBox = parseLabelBbox(graphvizEdge)
+  const isBack = graphvizEdge.dir === 'back' || computedEdge.dir === 'back'
   return {
     ...computedEdge,
+    ...(isBack ? { dir: 'back' } : {}),
     points: parseEdgePoints(graphvizEdge),
     ...(labelBBox ? { labelBBox } : {})
   }

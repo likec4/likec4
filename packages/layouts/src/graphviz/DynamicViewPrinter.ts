@@ -51,7 +51,8 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
     if (targetIdx < sourceIdx) {
       e.attributes.apply({
-        [_.constraint]: false
+        [_.constraint]: false,
+        [_.minlen]: 1
       })
     }
 
@@ -65,6 +66,7 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       if (tail !== 'none') {
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
+          [_.constraint]: false,
           [_.dir]: 'both'
         })
       }
@@ -76,7 +78,8 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
         [_.dir]: 'both',
-        [_.constraint]: false
+        [_.constraint]: false,
+        [_.minlen]: 1
       })
       return e
     }
@@ -86,7 +89,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       e.attributes.apply({
         [_.arrowtail]: toArrowType(tail),
         [_.constraint]: false,
-        // [_.minlen]: 0,
         [_.dir]: 'back'
       })
       return e
