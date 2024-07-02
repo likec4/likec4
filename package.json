@@ -42,7 +42,7 @@
     "@vitest/ui": "~1.6.0",
     "dprint": "0.46.3",
     "esbuild": "^0.21.5",
-    "execa": "^9.1.0",
+    "execa": "^9.3.0",
     "global": "^4.4.0",
     "husky": "^8.0.3",
     "lint-staged": "15.2.7",
