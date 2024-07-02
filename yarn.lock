@@ -2256,7 +2256,7 @@ __metadata:
     astro: "npm:^4.11.3"
     astro-og-canvas: "npm:^0.5.1"
     likec4: "workspace:*"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^6.2.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     starlight-links-validator: "npm:^0.9.0"
@@ -2297,7 +2297,7 @@ __metadata:
     json5: "npm:^2.2.3"
     langium: "npm:3.1.1"
     langium-cli: "npm:3.1.0"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^6.2.0"
     object-hash: "npm:^3.0.0"
     p-debounce: "npm:^4.0.0"
     remeda: "npm:^2.2.1"
@@ -8786,7 +8786,7 @@ __metadata:
     langium: "npm:3.1.1"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:0.10.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^6.2.0"
     p-limit: "npm:^5.0.0"
     package-up: "npm:^5.0.0"
     picocolors: "npm:^1.0.1"
@@ -10452,7 +10452,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^6.1.2":
+"npm-run-all2@npm:^6.2.0":
   version: 6.2.0
   resolution: "npm-run-all2@npm:6.2.0"
   dependencies:
@@ -12400,7 +12400,7 @@ __metadata:
     global: "npm:^4.4.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.7"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^6.2.0"
     rimraf: "npm:^5.0.7"
     shipjs: "npm:^0.26.3"
     tsx: "npm:~4.9.3"
