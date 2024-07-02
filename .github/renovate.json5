@@ -16,6 +16,13 @@
      "enabled": true
   },
   packageRules: [
+    // Disable pin digest for CI Actions
+    {
+      "matchDepTypes": [
+        "action"
+      ],
+      "pinDigests": false
+    },
     {
       "groupName": "linters",
       "matchDepNames": [
@@ -38,7 +45,7 @@
     {
       groupName: "@vanilla-extract",
       matchPackagePrefixes: [
-        "@vanilla-extract/"
+        "@vanilla-extract"
       ],
     },
     {
@@ -50,8 +57,8 @@
     // Auto merge
     {
       matchPackagePrefixes: [
-        "@tabler/",
-        "@fontsource/",
+        "@tabler",
+        "@fontsource",
       ],
       automerge: true
     },
@@ -68,12 +75,6 @@
       enabled: false,
       matchDepNames: ['@types/vscode', 'vscode'],
       matchDepPatterns: ['^vscode-']
-    },
-    {
-      "matchDepTypes": [
-        "action"
-      ],
-      "pinDigests": false
     }
   ]
 }
