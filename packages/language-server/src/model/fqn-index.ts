@@ -32,6 +32,7 @@ export class FqnIndex {
         for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
             delete doc.c4fqns
+            delete doc.c4fqnIndex
             delete doc.c4Elements
             delete doc.c4Specification
             delete doc.c4Relations
@@ -65,6 +66,15 @@ export class FqnIndex {
         return []
       })
     )
+  }
+
+  private indexed(filterByFqn?: (fqn: Fqn) => boolean) {
+    return this.documents.flatMap(doc => {
+      if (filterByFqn) {
+        return doc.c4fqnIndex.keys().filter(filterByFqn).flatMap(fqn => doc.c4fqnIndex.get(fqn))
+      }
+      return doc.c4fqnIndex.values()
+    })
   }
 
   public getFqn(el: ast.Element): Fqn | null {

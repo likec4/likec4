@@ -1,7 +1,7 @@
 import { type c4, InvalidModelError, invariant, isNonEmptyArray, nonexhaustive } from '@likec4/core'
 import type { AstNode, LangiumDocument } from 'langium'
 import { AstUtils, CstUtils } from 'langium'
-import { isTruthy } from 'remeda'
+import { isTruthy, mapToObj } from 'remeda'
 import stripIndent from 'strip-indent'
 import type {
   ChecksFromDiagnostics,
@@ -37,11 +37,11 @@ const { getDocument } = AstUtils
 export type ModelParsedListener = () => void
 
 function toSingleLine<T extends string | undefined>(str: T): T {
-  return (str ? removeIndent(str).split('\n').join(' ') : undefined) as T
+  return (isTruthy(str) ? removeIndent(str).split('\n').join(' ') : undefined) as T
 }
 
 function removeIndent<T extends string | undefined>(str: T): T {
-  return (str ? stripIndent(str).trim() : undefined) as T
+  return (isTruthy(str) ? stripIndent(str).trim() : undefined) as T
 }
 
 export type IsValidFn = ChecksFromDiagnostics['isValid']
@@ -142,11 +142,11 @@ export class LikeC4ModelParser {
 
     let [title, description, technology] = astNode.props ?? []
 
-    const bodyProps = astNode.body?.props.filter(ast.isElementStringProperty) ?? []
+    const bodyProps = mapToObj(astNode.body?.props.filter(ast.isElementStringProperty) ?? [], p => [p.key, p.value])
 
-    title = toSingleLine(title ?? bodyProps.find(p => p.key === 'title')?.value)
-    description = removeIndent(description ?? bodyProps.find(p => p.key === 'description')?.value)
-    technology = toSingleLine(technology ?? bodyProps.find(p => p.key === 'technology')?.value)
+    title = toSingleLine(title ?? bodyProps.title)
+    description = removeIndent(description ?? bodyProps.description)
+    technology = toSingleLine(technology ?? bodyProps.technology)
 
     const links = astNode.body?.props.filter(ast.isLinkProperty).map(p => p.value)
 

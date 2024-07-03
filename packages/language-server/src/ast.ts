@@ -6,7 +6,7 @@ import {
   nonexhaustive,
   RelationRefError
 } from '@likec4/core'
-import type { AstNode, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
+import type { AstNode, AstNodeDescription, DiagnosticInfo, LangiumDocument, MultiMap } from 'langium'
 import { AstUtils, DocumentState } from 'langium'
 import { clamp, isNullish } from 'remeda'
 import type { ConditionalPick, SetRequired, ValueOf } from 'type-fest'
@@ -139,6 +139,10 @@ export interface DocFqnIndexEntry {
   path: string
 }
 
+export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
+  fqn: c4.Fqn
+}
+
 // export type LikeC4AstNode = ast.LikeC4AstType[keyof ast.LikeC4AstType]
 export type LikeC4AstNode = ValueOf<ConditionalPick<ast.LikeC4AstType, AstNode>>
 type LikeC4DocumentDiagnostic = Diagnostic & DiagnosticInfo<LikeC4AstNode>
@@ -151,13 +155,14 @@ export interface LikeC4DocumentProps {
   c4Views?: ParsedAstView[]
   // Fqn -> Element
   c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
+  c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
 
 export interface LikeC4LangiumDocument
   extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4DocumentProps
 {}
 export interface FqnIndexedDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqns'>
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqns' | 'c4fqnIndex'>
 {}
 
 // export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
@@ -166,7 +171,7 @@ export interface ParsedLikeC4LangiumDocument
 {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns' | 'diagnostics'>> = {
+  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns' | 'c4fqnIndex' | 'diagnostics'>> = {
     c4Specification: {
       kinds: {},
       relationships: {}
@@ -179,7 +184,7 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
 }
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqns
+  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqns && !!doc.c4fqnIndex
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
@@ -196,6 +201,7 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Elements
     && !!doc.c4Relations
     && !!doc.c4Views
+    && !!doc.c4fqnIndex
     && !!doc.c4fqns
   )
 }
