@@ -3,20 +3,20 @@ import { mantine } from '../mantine.css'
 import { vars } from '../theme.css'
 
 export const panel = style({
-  top: fallbackVar(vars.navigationPanel.top, '1rem'),
+  top: fallbackVar(vars.navigationPanel.top, '0.8rem'),
   left: fallbackVar(vars.navigationPanel.left, '1rem'),
   margin: 0
 })
 
 globalStyle(`${panel} .mantine-ActionIcon-root`, {
   vars: {
-    ['--ai-size']: 'var(--ai-size-md)'
-  },
-  '@media': {
-    [mantine.largerThan('md')]: {
-      vars: {
-        ['--ai-size']: 'var(--ai-size-lg)'
-      }
-    }
+    ['--ai-size']: 'var(--ai-size-lg)'
   }
+  // '@media': {
+  //   [mantine.largerThan('lg')]: {
+  //     vars: {
+  //       ['--ai-size']: 'var(--ai-size-xl)'
+  //     }
+  //   }
+  // }
 })

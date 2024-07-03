@@ -66,8 +66,8 @@ Properties should be defined before any predicates.
 
 ### Scoped views
 
-View may be defined for some element (`view of ..`).  
-View inherits the [scope](/dsl/references#scope) of the element:
+View may be defined for a specific element (`view of ..`).  
+Then, view inherits the [scope](/dsl/references#scope) of the element:
 
 ```likec4
 views {
@@ -77,13 +77,17 @@ views {
   }
 
   view of cloud.backend {
-    include api // ✅ This is OK, references 'cloud.backend.api'
+    include api // ✅ This is OK, resolves to 'cloud.backend.api'
+  }
+
+  view of legacy {
+    include api // ✅ This is OK, resolves to 'legacy.api'
   }
 
 }
 ```
 
-This view becomes the default view for the element:
+This view becomes default for the element:
 
 ```likec4
 views {
@@ -100,7 +104,8 @@ views {
 }
 ```
 
-You may have multiple views for the same element, but which one is default is not determined.
+You may have multiple views for the same element, but which one is default may be different from time to time.
+
 
 ### View predicates
 
@@ -366,8 +371,13 @@ view apiApp of internetBankingSystem.apiApplication {
     color secondary
   }
 
-  // apply only to apiApplication and its descendants
-  style apiApplication, apiApplication.* {
+  // apply only to nested of apiApplication
+  style apiApplication.* {
+    color primary
+  }
+
+  // apply apiApplication and nested
+  style apiApplication._ {
     color primary
   }
 
@@ -429,4 +439,4 @@ views {
   }
 
 }
-```
+```* as componentscomponents.AsideAside: components.Asidecomponents.TabItemTabItem: components.TabItemcomponents.TabsTabs: components.Tabscomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Aside

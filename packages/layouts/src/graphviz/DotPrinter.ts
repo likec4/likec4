@@ -48,6 +48,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     this.applyEdgeAttributes(G.attributes.edge)
     this.buildGraphvizModel(G)
   }
+
   protected buildGraphvizModel(G: RootGraphModel): void {
     // ----------------------------------------------
     // Traverse clusters first
@@ -144,10 +145,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
-      [_.ordering]: 'out',
       [_.mclimit]: 5,
-      [_.nodesep]: pxToInch(isHorizontal ? 120 : 150),
-      [_.ranksep]: pxToInch(isHorizontal ? 150 : 110),
+      // [_.nslimit]: 5,
+      // [_.nslimit1]: 5,
+      [_.nodesep]: pxToInch(isHorizontal ? 120 : 140),
+      [_.ranksep]: pxToInch(isHorizontal ? 140 : 120),
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(10)
@@ -182,7 +184,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      [_.style]: DefaultEdgeStyle,
+      // [_.style]: DefaultEdgeStyle,
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
       [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
     })
@@ -250,16 +252,17 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   protected elementToNode(element: ComputedNode, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
+    let marginOffset = element.icon ? 4 : 0
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
       [_.fillcolor]: Theme.elements[element.color].fill,
-      [_.margin]: pxToInch(30)
+      [_.margin]: `${pxToInch(30)},${pxToInch(30 - marginOffset)}`
     })
     switch (element.shape) {
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(30)},${pxToInch(32)}`
+          [_.margin]: `${pxToInch(30)},${pxToInch(32 - marginOffset)}`
         })
         break
       }
@@ -267,14 +270,14 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         node.attributes.apply({
           [_.width]: pxToInch(320),
           [_.height]: pxToInch(165),
-          [_.margin]: `${pxToInch(30)},${pxToInch(26)}`
+          [_.margin]: `${pxToInch(30)},${pxToInch(26 - marginOffset)}`
         })
         break
       }
       case 'cylinder':
       case 'storage': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(26)},${pxToInch(28)}`,
+          [_.margin]: `${pxToInch(26)},${pxToInch(28 - marginOffset)}`,
           [_.color]: Theme.elements[element.color].stroke,
           [_.penwidth]: pxToPoints(2),
           [_.shape]: 'cylinder'

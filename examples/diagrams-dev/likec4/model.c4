@@ -176,6 +176,7 @@ views {
     title "Overview Backend"
     include
       *,
+      cloud,
       cloud.*,
       ui.* -> backend,
       backend.* -> amazon.*

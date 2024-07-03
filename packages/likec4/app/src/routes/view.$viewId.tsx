@@ -76,7 +76,7 @@ function ViewLayout() {
       <SidebarDrawer opened={opened} onClose={close} />
       <Box
         pos={'fixed'}
-        top={10}
+        top={14}
         left={10}>
         <Burger
           size={'sm'}

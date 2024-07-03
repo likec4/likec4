@@ -2,9 +2,9 @@ import { extractStep, invariant, nonNullable } from '@likec4/core'
 import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
+import { ZIndexes } from './const'
 
-// const nodeZIndex = (node: DiagramNode) => node.level + (hasAtLeast(node.children, 1) ? 2 : 1)
-const nodeZIndex = (node: DiagramNode) => node.level + 1
+const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
@@ -40,10 +40,10 @@ export function diagramViewToXYFlowData(
   const nodeById = (id: Fqn) => nonNullable(nodeLookup.get(id), `Node not found: ${id}`)
 
   let next: typeof traverse[0] | undefined
-  while ((next = traverse.pop())) {
+  while ((next = traverse.shift())) {
     const { node, parent } = next
     if (node.children.length > 0) {
-      traverse.unshift(...node.children.map(child => ({ node: nodeById(child), parent: node })))
+      traverse.push(...node.children.map(child => ({ node: nodeById(child), parent: node })))
     }
     const isCompound = hasAtLeast(node.children, 1)
     const position = {
@@ -70,10 +70,10 @@ export function diagramViewToXYFlowData(
       selectable: opts.selectable,
       deletable: false,
       position,
-      zIndex: nodeZIndex(node),
+      zIndex: isCompound ? ZIndexes.Compound : ZIndexes.Element,
       hidden: false,
-      /*       initialWidth: node.width,
-      initialHeight: node.height, */
+      initialWidth: node.width,
+      initialHeight: node.height,
       width: node.width,
       height: node.height,
       // measured: {
@@ -83,26 +83,6 @@ export function diagramViewToXYFlowData(
       ...(parent && {
         parentId: ns + parent.id
       })
-      // handles: [
-      //   ...outEdges.map(out => ({
-      //     id: `${out.id}`,
-      //     type: 'source' as const,
-      //     position: Position.Bottom,
-      //     x: out.points[0][0],
-      //     y: out.points[0][1],
-      //     width: 10,
-      //     height: 10
-      //   })),
-      //   ...inEdges.map(out => ({
-      //     id: out.id,
-      //     type: 'target' as const,
-      //     position: Position.Top,
-      //     x: out.points[0][0],
-      //     y: out.points[0][1],
-      //     width: 10,
-      //     height: 10
-      //   }))
-      // ],
     })
   }
 
@@ -121,14 +101,14 @@ export function diagramViewToXYFlowData(
     invariant(hasAtLeast(edge.points, 2), 'edge should have at least 2 points')
     // invariant(hasAtLeast(controlPoints, 2), 'edge controlPoints should have at least 2 points')
 
-    const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
+    // const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
 
     editor.edges.push({
       id,
       type: 'relationship',
       source: ns + source,
       target: ns + target,
-      zIndex: level,
+      zIndex: ZIndexes.Edge,
       deletable: false,
       data: {
         edge,
@@ -138,7 +118,6 @@ export function diagramViewToXYFlowData(
         label: !!edge.labelBBox
           ? {
             bbox: edge.labelBBox,
-            // text: edge.labels ? edge.labels.map(l => l.text).join('\n') : ''
             text: edge.label ?? ''
           }
           : null

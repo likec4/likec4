@@ -155,7 +155,7 @@ const varTranslate = createVar('translate')
 export const edgeLabel = style({
   top: 0,
   left: 0,
-  padding: '1px 3px 4px 3px',
+  padding: '1px 3px 4px 4px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
@@ -164,7 +164,7 @@ export const edgeLabel = style({
   mixBlendMode: 'screen',
   color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
-  borderRadius: '3px',
+  borderRadius: '4px',
   transform: varTranslate,
   vars: {
     [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
@@ -209,7 +209,6 @@ export const stepEdgeNumber = style({
 
 export const edgeLabelText = style({
   textAlign: 'left',
-  textWrap: 'pretty',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
   lineHeight: 1.2

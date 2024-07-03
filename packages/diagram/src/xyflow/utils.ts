@@ -41,9 +41,6 @@ export function bezierControlPoints(diagramEdge: DiagramEdge) {
     start = end
   }
   invariant(bezierPoints.length === 0, 'all points should be consumed')
-  if (diagramEdge.dir === 'back' && handles.length > 0) {
-    handles.reverse()
-  }
 
   return handles
 }

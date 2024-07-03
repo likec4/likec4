@@ -9,10 +9,9 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  ordering = "out";
   mclimit = 5;
-  nodesep = 2.084;
-  ranksep = 1.528;
+  nodesep = 1.945;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
   pad = 0.139;
@@ -26,7 +25,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
-    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -56,7 +54,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
       likec4_id = "cloud.backend";
       likec4_level = 1;
       fillcolor = "#3b82f6";
-      margin = 0.417;
+      margin = "0.417,0.417";
       label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">Backend</FONT>>;
     ];
   }
@@ -73,7 +71,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
       likec4_id = "amazon.s3";
       likec4_level = 1;
       fillcolor = "#3b82f6";
-      margin = 0.417;
+      margin = "0.417,0.417";
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">S3</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">S3 is a storage service</FONT></TD></TR></TABLE>>;
     ];
   }
@@ -98,10 +96,9 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  ordering = "out";
   mclimit = 5;
-  nodesep = 2.084;
-  ranksep = 1.528;
+  nodesep = 1.945;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
   pad = 0.139;
@@ -115,7 +112,6 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
-    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -136,21 +132,21 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     likec4_id = "support";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Support Engineer</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">supporting customers</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
   ];
   "customer" [
     likec4_id = "customer";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">customer</FONT>>;
   ];
   "amazon" [
     likec4_id = "amazon";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   subgraph "cluster_cloud" {
@@ -166,15 +162,17 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
       likec4_id = "cloud.frontend.adminPanel";
       likec4_level = 1;
       fillcolor = "#3b82f6";
-      margin = 0.417;
+      margin = "0.417,0.417";
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Admin Panel Webapp</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The admin panel is a webapp that allows</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">support staff to manage customer data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+      group = "cloud";
     ];
     "dashboard" [
       likec4_id = "cloud.frontend.dashboard";
       likec4_level = 1;
       fillcolor = "#3b82f6";
-      margin = 0.417;
+      margin = "0.417,0.417";
       label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Customer Dashboard Webapp</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The customer dashboard is a webapp that</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">allows customers to view their data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+      group = "cloud";
     ];
     subgraph "cluster_backend" {
       likec4_id = "cloud.backend";
@@ -189,8 +187,9 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
         likec4_id = "cloud.backend.graphql";
         likec4_level = 2;
         fillcolor = "#3b82f6";
-        margin = 0.417;
+        margin = "0.417,0.417";
         label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Graphql API</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Component that allows to query data via</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">GraphQL.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+        group = "cloud";
       ];
       "storage" [
         likec4_id = "cloud.backend.storage";
@@ -201,6 +200,7 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
         penwidth = 2;
         shape = "cylinder";
         label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Backend Storage</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">The backend storage is a component that</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">stores data.</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
+        group = "cloud";
       ];
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
@@ -250,10 +250,9 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  ordering = "out";
   mclimit = 5;
-  nodesep = 2.084;
-  ranksep = 1.528;
+  nodesep = 1.945;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
   pad = 0.139;
@@ -267,7 +266,6 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
-    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -288,21 +286,21 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     likec4_id = "customer";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">customer</FONT>>;
   ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Support Engineer</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">supporting customers</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
   ];
   "amazon" [
     likec4_id = "amazon";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   subgraph "cluster_cloud" {
@@ -325,7 +323,7 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
       likec4_id = "cloud.backend";
       likec4_level = 1;
       fillcolor = "#3b82f6";
-      margin = 0.417;
+      margin = "0.417,0.417";
       label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">Backend</FONT>>;
     ];
     "frontend" -> "backend" [
@@ -366,10 +364,9 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   TBbalance = "min";
   splines = "spline";
   outputorder = "nodesfirst";
-  ordering = "out";
   mclimit = 5;
-  nodesep = 2.084;
-  ranksep = 1.528;
+  nodesep = 1.945;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
   pad = 0.139;
@@ -383,7 +380,6 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
-    style = "dashed";
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
@@ -404,28 +400,28 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
     likec4_id = "customer";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">customer</FONT>>;
   ];
   "support" [
     likec4_id = "support";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Support Engineer</FONT></TD></TR><TR><TD><TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">Support engineers are responsible for</FONT></TD></TR><TR><TD VALIGN="BOTTOM" HEIGHT="18"><FONT POINT-SIZE="14" COLOR="#bfdbfe">supporting customers</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
   ];
   "cloud" [
     likec4_id = "cloud";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<FONT POINT-SIZE="20" COLOR="#eff6ff">cloud</FONT>>;
   ];
   "amazon" [
     likec4_id = "amazon";
     likec4_level = 0;
     fillcolor = "#3b82f6";
-    margin = 0.417;
+    margin = "0.417,0.417";
     label = <<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4"><TR><TD><FONT POINT-SIZE="20" COLOR="#eff6ff">Amazon</FONT></TD></TR><TR><TD><FONT POINT-SIZE="14" COLOR="#bfdbfe">Amazon is a cloud provider</FONT></TD></TR></TABLE>>;
   ];
   "customer" -> "cloud" [

@@ -167,13 +167,21 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
     const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
 
-    const points = [
-      sourceCenterPos.positionAbsolute,
-      getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
-      ...controlPoints,
-      getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
-      targetCenterPos.positionAbsolute
-    ]
+    const points = diagramEdge.dir === 'back'
+      ? [
+        targetCenterPos.positionAbsolute,
+        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints)!),
+        ...controlPoints,
+        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints)!),
+        sourceCenterPos.positionAbsolute
+      ]
+      : [
+        sourceCenterPos.positionAbsolute,
+        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
+        ...controlPoints,
+        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
+        targetCenterPos.positionAbsolute
+      ]
 
     edgePath = nonNullable(curve(points))
   } else {
@@ -243,7 +251,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   const marker = `url(#arrow-${id})`
   let markerStart = diagramEdge.tail && diagramEdge.tail !== 'none' ? marker : undefined
   let markerEnd = isNullish(diagramEdge.head) || diagramEdge.head !== 'none' ? marker : undefined
-  if (isModified && diagramEdge.dir === 'back') {
+  if (diagramEdge.dir === 'back') {
     ;[markerStart, markerEnd] = [markerEnd, markerStart]
   }
 
@@ -388,7 +396,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
             pointerEvents: 'none'
           }),
           ...(label && {
-            maxWidth: label.bbox.width + 16
+            maxWidth: label.bbox.width + 20
           }),
           zIndex
         }}
