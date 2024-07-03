@@ -232,6 +232,14 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
   }
 
+  const onControlPointerDoubleClick = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const { xyflow } = diagramStore.getState()
+    const newControlPoints = controlPoints.slice()
+    newControlPoints.splice(index, 1)
+    xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+  }
+
   const marker = `url(#arrow-${id})`
   let markerStart = diagramEdge.tail && diagramEdge.tail !== 'none' ? marker : undefined
   let markerEnd = isNullish(diagramEdge.head) || diagramEdge.head !== 'none' ? marker : undefined
@@ -263,7 +271,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             id={`arrow-${id}`}
             viewBox="0 0 16 10"
             // TODO: graphviz cut bezier path at arrow, we don't
-            refX={isModified ? '15' : '1'}
+            refX={isModified ? '16' : '4'}
             refY="5"
             markerWidth="5"
             markerHeight="4"
@@ -300,6 +308,11 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
           onPointerDown={e => onControlPointerDown(i, e)}
+          {...(selected && controlPoints.length > 1 && {
+            onDoubleClick: e => {
+              onControlPointerDoubleClick(i, e)
+            }
+          })}
           className={edgesCss.controlPoint}
           key={i}
           cx={p.x}
