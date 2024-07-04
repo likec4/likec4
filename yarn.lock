@@ -2273,7 +2273,7 @@ __metadata:
     "@likec4/tsconfig": "workspace:*"
     "@types/node": "npm:^20.14.9"
     json5: "npm:^2.2.3"
-    langium: "npm:3.1.1"
+    langium: "npm:3.1.2"
     remeda: "npm:^2.2.2"
     typescript: "npm:^5.5.3"
     vitest: "npm:~1.6.0"
@@ -2295,7 +2295,7 @@ __metadata:
     fast-equals: "npm:^5.0.1"
     indent-string: "npm:^5.0.0"
     json5: "npm:^2.2.3"
-    langium: "npm:3.1.1"
+    langium: "npm:3.1.2"
     langium-cli: "npm:3.1.0"
     npm-run-all2: "npm:^6.2.0"
     object-hash: "npm:^3.0.0"
@@ -8689,7 +8689,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langium@npm:3.1.1, langium@npm:~3.1.0":
+"langium@npm:3.1.2":
+  version: 3.1.2
+  resolution: "langium@npm:3.1.2"
+  dependencies:
+    chevrotain: "npm:~11.0.3"
+    chevrotain-allstar: "npm:~0.3.0"
+    vscode-languageserver: "npm:~9.0.1"
+    vscode-languageserver-textdocument: "npm:~1.0.11"
+    vscode-uri: "npm:~3.0.8"
+  checksum: 10c0/219fb8cb868a03d483d7db85f52bc8317e7308f83e28e1780b631170310447bb8a77208176af721c2c42728cad567878d9fdcb48180eb0dcb4bd7aa42d9529df
+  languageName: node
+  linkType: hard
+
+"langium@npm:~3.1.0":
   version: 3.1.1
   resolution: "langium@npm:3.1.1"
   dependencies:
@@ -8721,7 +8734,7 @@ __metadata:
     esbuild: "npm:^0.21.5"
     esbuild-plugins-node-modules-polyfill: "npm:^1.6.4"
     execa: "npm:^9.3.0"
-    langium: "npm:3.1.1"
+    langium: "npm:3.1.2"
     p-timeout: "npm:^6.1.2"
     remeda: "npm:^2.2.2"
     tslib: "npm:^2.6.3"
@@ -8782,7 +8795,7 @@ __metadata:
     get-port: "npm:^7.1.0"
     html-to-image: "npm:^1.11.11"
     json5: "npm:^2.2.3"
-    langium: "npm:3.1.1"
+    langium: "npm:3.1.2"
     mkdirp: "npm:^3.0.1"
     nanostores: "npm:0.10.3"
     npm-run-all2: "npm:^6.2.0"
