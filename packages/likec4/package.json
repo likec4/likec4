@@ -112,7 +112,7 @@
     "@nanostores/react": "^0.7.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.7.0",
-    "@tanstack/react-router": "^1.43.1",
+    "@tanstack/react-router": "^1.43.4",
     "@tanstack/router-vite-plugin": "^1.43.1",
     "@types/node": "^20.14.9",
     "@types/prop-types": "^15.7.11",
