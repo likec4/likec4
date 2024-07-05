@@ -2259,7 +2259,7 @@ __metadata:
     npm-run-all2: "npm:^6.2.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    starlight-links-validator: "npm:^0.9.0"
+    starlight-links-validator: "npm:^0.9.1"
     tsx: "npm:~4.9.3"
     typescript: "npm:^5.5.3"
   languageName: unknown
@@ -13008,9 +13008,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starlight-links-validator@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "starlight-links-validator@npm:0.9.0"
+"starlight-links-validator@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "starlight-links-validator@npm:0.9.1"
   dependencies:
     github-slugger: "npm:2.0.0"
     hast-util-from-html: "npm:2.0.1"
@@ -13023,7 +13023,7 @@ __metadata:
   peerDependencies:
     "@astrojs/starlight": ">=0.15.0"
     astro: ">=4.0.0"
-  checksum: 10c0/70649ad20febafdeeea9bc64bdac943d019fa76ec54bcbf59aa5ab4f1315ddd95139267acf6f7deb444fabd40768d4401fed49e8c2ec8aa7eef83dea55b4fe23
+  checksum: 10c0/3a4799449ed3741abebe03ecf908b278fac4a6cf102a31542fef35c3e49e1e2820994c4af6ed73da2514a4ac044e6802f60c7b8201f8ea7afd6a32cb21e88979
   languageName: node
   linkType: hard
 
