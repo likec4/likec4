@@ -12,7 +12,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 106,
-        "x": 435,
+        "x": 430,
         "y": 127,
       },
       "parent": null,
@@ -22,15 +22,15 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
           154,
         ],
         [
-          446,
+          443,
           154,
         ],
         [
-          531,
+          524,
           154,
         ],
         [
-          605,
+          595,
           154,
         ],
       ],
@@ -135,7 +135,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        587,
+        577,
         8,
       ],
       "shape": "rectangle",
@@ -166,7 +166,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
       "outEdges": [],
       "parent": "amazon",
       "position": [
-        616,
+        606,
         64,
       ],
       "shape": "rectangle",
@@ -180,7 +180,7 @@ exports[`GraphvizWasmAdapter: > computedAmazonView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "amazon",
-  "width": 975,
+  "width": 965,
 }
 `;
 
@@ -230,25 +230,25 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 111,
-        "x": 700,
+        "x": 690,
         "y": 241,
       },
       "parent": null,
       "points": [
         [
-          698,
+          688,
           180,
         ],
         [
-          698,
+          688,
           222,
         ],
         [
-          698,
+          688,
           273,
         ],
         [
-          698,
+          688,
           316,
         ],
       ],
@@ -298,33 +298,33 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 81,
-        "x": 557,
+        "x": 554,
         "y": 580,
       },
       "parent": "cloud",
       "points": [
         [
-          619,
+          613,
           509,
         ],
         [
-          586,
+          581,
           544,
         ],
         [
-          545,
+          542,
           583,
         ],
         [
-          504,
+          502,
           614,
         ],
         [
-          473,
+          472,
           638,
         ],
         [
-          438,
+          437,
           660,
         ],
         [
@@ -348,15 +348,15 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
           770,
         ],
         [
-          480,
+          474,
           770,
         ],
         [
-          588,
+          574,
           770,
         ],
         [
-          678,
+          658,
           770,
         ],
       ],
@@ -372,25 +372,25 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 106,
-        "x": 1092,
+        "x": 1067,
         "y": 743,
       },
       "parent": null,
       "points": [
         [
-          1030,
+          1010,
           770,
         ],
         [
-          1103,
+          1080,
           770,
         ],
         [
-          1188,
+          1161,
           770,
         ],
         [
-          1261,
+          1231,
           770,
         ],
       ],
@@ -458,7 +458,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       ],
       "parent": null,
       "position": [
-        537,
+        527,
         0,
       ],
       "shape": "person",
@@ -505,7 +505,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 1067,
+      "width": 1047,
     },
     {
       "children": [],
@@ -563,7 +563,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        528,
+        518,
         329,
       ],
       "shape": "rectangle",
@@ -609,7 +609,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "tags": null,
       "technology": null,
       "title": "Backend",
-      "width": 1007,
+      "width": 987,
     },
     {
       "children": [],
@@ -668,7 +668,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       ],
       "parent": "cloud.backend",
       "position": [
-        691,
+        671,
         677,
       ],
       "shape": "storage",
@@ -699,7 +699,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        1272,
+        1242,
         680,
       ],
       "shape": "rectangle",
@@ -713,7 +713,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1593,
+  "width": 1563,
 }
 `;
 
@@ -729,25 +729,25 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 111,
-        "x": 287,
+        "x": 284,
         "y": 241,
       },
       "parent": null,
       "points": [
         [
-          224,
+          223,
           180,
         ],
         [
-          255,
+          253,
           223,
         ],
         [
-          292,
+          290,
           275,
         ],
         [
-          324,
+          321,
           319,
         ],
       ],
@@ -763,25 +763,25 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 62,
-        "x": 522,
+        "x": 514,
         "y": 241,
       },
       "parent": null,
       "points": [
         [
-          567,
+          558,
           180,
         ],
         [
-          536,
+          528,
           223,
         ],
         [
-          499,
+          491,
           275,
         ],
         [
-          467,
+          460,
           319,
         ],
       ],
@@ -797,25 +797,25 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 25,
-        "x": 693,
+        "x": 678,
         "y": 391,
       },
       "parent": "cloud",
       "points": [
         [
-          555,
+          551,
           419,
         ],
         [
-          643,
+          633,
           419,
         ],
         [
-          753,
+          734,
           419,
         ],
         [
-          843,
+          818,
           419,
         ],
       ],
@@ -832,25 +832,25 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 106,
-        "x": 1252,
+        "x": 1222,
         "y": 392,
       },
       "parent": null,
       "points": [
         [
-          1189,
+          1164,
           419,
         ],
         [
-          1263,
+          1235,
           419,
         ],
         [
-          1348,
+          1316,
           419,
         ],
         [
-          1422,
+          1387,
           419,
         ],
       ],
@@ -918,7 +918,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        470,
+        460,
         0,
       ],
       "shape": "person",
@@ -956,7 +956,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "parent": null,
       "position": [
-        206,
+        201,
         273,
       ],
       "shape": "rectangle",
@@ -964,7 +964,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "tags": null,
       "technology": null,
       "title": "cloud",
-      "width": 999,
+      "width": 979,
     },
     {
       "children": [],
@@ -990,7 +990,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        235,
+        230,
         329,
       ],
       "shape": "browser",
@@ -1013,7 +1013,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "labelBBox": {
         "height": 24,
         "width": 82,
-        "x": 121,
+        "x": 120,
         "y": 74,
       },
       "level": 1,
@@ -1023,7 +1023,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       ],
       "parent": "cloud",
       "position": [
-        854,
+        830,
         329,
       ],
       "shape": "rectangle",
@@ -1054,7 +1054,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        1433,
+        1398,
         329,
       ],
       "shape": "rectangle",
@@ -1068,7 +1068,7 @@ exports[`GraphvizWasmAdapter: > computedCloudView 1`] = `
   "tags": null,
   "title": "",
   "viewOf": "cloud",
-  "width": 1754,
+  "width": 1719,
 }
 `;
 
@@ -1084,25 +1084,25 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 111,
-        "x": 288,
+        "x": 285,
         "y": 241,
       },
       "parent": null,
       "points": [
         [
-          225,
+          224,
           180,
         ],
         [
-          255,
+          253,
           222,
         ],
         [
-          292,
+          289,
           272,
         ],
         [
-          323,
+          320,
           315,
         ],
       ],
@@ -1118,25 +1118,25 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 62,
-        "x": 522,
+        "x": 514,
         "y": 241,
       },
       "parent": null,
       "points": [
         [
-          566,
+          557,
           180,
         ],
         [
-          536,
+          528,
           222,
         ],
         [
-          499,
+          492,
           272,
         ],
         [
-          468,
+          461,
           315,
         ],
       ],
@@ -1152,25 +1152,25 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "labelBBox": {
         "height": 18,
         "width": 106,
-        "x": 632,
+        "x": 622,
         "y": 388,
       },
       "parent": null,
       "points": [
         [
-          569,
+          564,
           415,
         ],
         [
-          643,
+          635,
           415,
         ],
         [
-          728,
+          716,
           415,
         ],
         [
-          802,
+          787,
           415,
         ],
       ],
@@ -1238,7 +1238,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        470,
+        460,
         0,
       ],
       "shape": "person",
@@ -1272,7 +1272,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       ],
       "parent": null,
       "position": [
-        235,
+        230,
         325,
       ],
       "shape": "rectangle",
@@ -1303,7 +1303,7 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
       "outEdges": [],
       "parent": null,
       "position": [
-        814,
+        799,
         325,
       ],
       "shape": "rectangle",
@@ -1316,6 +1316,6 @@ exports[`GraphvizWasmAdapter: > computedIndexView 1`] = `
   ],
   "tags": null,
   "title": "",
-  "width": 1134,
+  "width": 1119,
 }
 `;
