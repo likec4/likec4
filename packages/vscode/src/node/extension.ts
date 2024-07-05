@@ -1,4 +1,5 @@
 import os from 'node:os'
+import path from 'node:path'
 import * as vscode from 'vscode'
 import {
   LanguageClient as NodeLanguageClient,
@@ -45,12 +46,12 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   // Disposed explicitly by the controller
   // context.subscriptions.push(outputChannel)
 
-  const serverModule = vscode.Uri.joinPath(
-    context.extensionUri,
+  const serverModule = path.join(
+    context.extensionPath,
     'dist',
     'node',
     'language-server.js'
-  ).fsPath
+  )
 
   // @ts-ignore
   const isProduction = process.env.NODE_ENV === 'production'
@@ -58,8 +59,22 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
-    module: serverModule,
-    transport: TransportKind.ipc
+    run: {
+      module: serverModule,
+      transport: TransportKind.ipc
+    },
+    debug: {
+      module: serverModule,
+      runtime: 'node',
+      transport: TransportKind.ipc,
+      options: {
+        detached: false,
+        execArgv: [
+          '--nolazy',
+          `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '9229'}`
+        ]
+      }
+    }
   }
 
   if (!isProduction) {
@@ -67,19 +82,6 @@ function createLanguageClient(context: vscode.ExtensionContext) {
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
     // By setting `process.env.DEBUG_BREAK` to a truthy value, the language server will wait until a debugger is attached.
-    serverOptions = {
-      run: serverOptions,
-      debug: {
-        module: serverModule,
-        transport: TransportKind.ipc,
-        options: {
-          execArgv: [
-            '--nolazy',
-            `--inspect${process.env['DEBUG_BREAK'] ? '-brk' : ''}=${process.env['DEBUG_SOCKET'] || '6009'}`
-          ]
-        }
-      }
-    }
   }
 
   const workspaceFolders = vscode.workspace.workspaceFolders ?? []
@@ -103,7 +105,9 @@ function createLanguageClient(context: vscode.ExtensionContext) {
   const clientOptions: LanguageClientOptions = {
     revealOutputChannelOn: RevealOutputChannelOn.Warn,
     outputChannel,
-    documentSelector
+    documentSelector,
+    diagnosticCollectionName: 'likec4',
+    progressOnInitialization: true
   }
   outputChannel.info(`Document selector: ${JSON.stringify(clientOptions.documentSelector, null, 2)}`)
 

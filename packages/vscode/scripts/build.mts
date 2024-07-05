@@ -2,7 +2,7 @@ import { consola } from 'consola'
 import { analyzeMetafileSync, build, type BuildOptions, formatMessagesSync } from 'esbuild'
 import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 import { existsSync, writeFileSync } from 'node:fs'
-import { cp, mkdir, rm, rmdir } from 'node:fs/promises'
+import { cp, mkdir } from 'node:fs/promises'
 
 import path, { resolve } from 'node:path'
 
@@ -32,13 +32,16 @@ const base = {
   metafile: isDev,
   outdir: 'dist',
   outbase: 'src',
-  logLevel: isDev ? 'debug' : 'info',
+  // logLevel: isDev ? 'debug' : 'info',
+  logLevel: 'info',
   color: true,
   bundle: true,
-  external: [
-    'vscode'
+  external: isDev ? [
+    'vscode',
+    '@hpcc-js/wasm',
+  ] : [
+    'vscode',
   ],
-  treeShaking: true,
   ...(!isDev && {
     define: {
       'process.env.NODE_ENV': '"production"'
@@ -46,7 +49,6 @@ const base = {
   }),
   sourcemap: true,
   sourcesContent: isDev,
-  keepNames: true,
   minify: !isDev,
   legalComments: 'none'
 } satisfies BuildOptions
