@@ -36,7 +36,7 @@ function wrapToHTML({
   bold?: boolean
   color?: string
   align?: 'left' | 'right' | 'center'
-}) {
+}): string {
   const Color = color ? ` COLOR="${color}"` : ``
   let rows = wrap(text, maxchars)
     .map(text => (isEmpty(text) ? ' ' : text))
@@ -44,22 +44,25 @@ function wrapToHTML({
     .map(text => `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${text}</FONT>`)
 
   if (rows.length === 1) {
-    return rows[0]
+    return rows[0]!
   }
   // Change row height if line height is not 1
+  const Gap = Math.max(pxToPoints(Math.floor(fontsize * (lineHeight - 1))), 1)
   const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
-  const TDheight = lineHeight !== 1 ? ` VALIGN="BOTTOM" HEIGHT="${pxToPoints(fontsize * lineHeight)}"` : ''
-  rows = rows.map(text => `<TR><TD${ALIGN}${TDheight}>${text}</TD></TR>`)
-  return `<TABLE${ALIGN} BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0">${rows.join('')}</TABLE>`
+  return [
+    `<TABLE${ALIGN} BORDER="0" CELLPADDING="0" CELLSPACING="${Gap}">`,
+    ...rows.map(rowText => `<TR><TD${ALIGN}>${rowText}</TD></TR>`),
+    `</TABLE>`
+  ].join('')
 }
 
 /**
  * "Faking" a node icon with a blue square
  * to preserve space for real icons.
- * #11223300
+ * #112233
  */
 export function nodeIcon(_src: string) {
-  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#11223300" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
+  return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 export function nodeLabel(node: ComputedNode) {
@@ -68,6 +71,7 @@ export function nodeLabel(node: ComputedNode) {
       text: node.title,
       fontsize: 20,
       maxchars: 30,
+      lineHeight: 1.2,
       color: Colors[node.color].hiContrast
     })
   ]
@@ -103,7 +107,7 @@ export function nodeLabel(node: ComputedNode) {
     )
   }
   const joinedRows = rows.join('')
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="0" CELLSPACING="4">${joinedRows}</TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${joinedRows}</TABLE>>`
 }
 
 export function compoundLabel(node: ComputedNode, color?: string) {
@@ -113,7 +117,6 @@ export function compoundLabel(node: ComputedNode, color?: string) {
     fontsize: 14.5,
     lineHeight: 1.2,
     bold: true,
-    align: 'left',
     color: color ?? Colors[node.color].loContrast
   })
   return `<${html}>`
@@ -124,29 +127,40 @@ export function edgeLabel(text: string) {
     text,
     maxchars: 40,
     fontsize: 14,
-    lineHeight: 1.25,
+    lineHeight: 1.1,
     bold: text === '[...]',
     align: 'left'
   })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0"><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" ${BGCOLOR}><TR><TD>${html}</TD></TR></TABLE>>`
 }
 
-const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}"`
+const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
 
 export function stepEdgeLabel(step: number, text?: string | null) {
   const num =
-    `<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="1" CELLSPACING="0" ${BGCOLOR} STYLE="ROUNDED" FIXEDSIZE="TRUE"><TR><TD ALIGN="CENTER" WIDTH="20" HEIGHT="18" VALIGN="MIDDLE"><FONT POINT-SIZE="${
+    `<TABLE FIXEDSIZE="TRUE" BORDER="0" CELLPADDING="6" ${BGCOLOR}><TR><TD WIDTH="20" HEIGHT="20"><FONT POINT-SIZE="${
       pxToPoints(14)
     }"><B>${step}</B></FONT></TD></TR></TABLE>`
+
   if (!isTruthy(text)) {
     return `<${num}>`
   }
-  const html = wrapToHTML({
-    text,
-    maxchars: 40,
-    fontsize: 14,
-    lineHeight: 1.25,
-    align: 'left'
-  })
-  return `<<TABLE BORDER="0" CELLBORDER="0" CELLPADDING="4" CELLSPACING="1"><TR><TD VALIGN="MIDDLE">${num}</TD><TD VALIGN="TOP">${html}</TD></TR></TABLE>>`
+
+  let html = [
+    `<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">`,
+    `<TR>`,
+    `<TD>${num}</TD>`,
+    `<TD ${BGCOLOR} CELLPADDING="2">`,
+    wrapToHTML({
+      text,
+      maxchars: 40,
+      fontsize: 14,
+      lineHeight: 1.1,
+      align: 'left'
+    }),
+    `</TD>`,
+    `</TR>`,
+    `</TABLE>`
+  ]
+  return `<${html.join('')}>`
 }

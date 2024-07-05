@@ -67,42 +67,36 @@ async function mkTestServices({ expect }: TestContext) {
   }
 }
 
-describe('dynamic views', () => {
-  it.skip('valid views example', async ctx => {
+describe.concurrent('dynamic views', () => {
+  it('valid dynamic view', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`
       dynamic view index1 {
-        user
-          -> system.frontend 'User uses System'
-           -> system.backend 'System uses Backend'
-           <- 'System uses Backend'
-          <-
+        title 'System Context'
 
+        user -> system.frontend 'User uses System'
+        system.frontend -> system.backend 'frontend uses backend'
+        system.frontend <- system.backend
 
-        user -> system.frontend 'User uses System' {
-          -> system.backend 'System uses Backend' {
-            <- 'System uses Backend'
-          }
-          <-
+        style * {
+          color red
         }
-
-           1.1. -> system.backend {
-
-           }
-           1.2. <- system.backend
-
-        2. system.frontend -> system.backend
-            'System uses Backend'
-
-        system.backend -> system.frontend
+        autoLayout BottomTop
       }
     `)
   })
 
-  it('valid views', async ctx => {
+  it('valid dynamic view with tags and links', async ctx => {
     const { valid } = await mkTestServices(ctx)
     await valid(`
       dynamic view index1 {
+        #epic-123 #next
+        title 'System Context'
+        description: "
+          Index view description
+        ";
+        link https://domain.com/path
+
         user -> system.frontend 'User uses System'
         system.frontend -> system.backend 'frontend uses backend'
         system.frontend <- system.backend
@@ -123,4 +117,34 @@ describe('dynamic views', () => {
       }
     `)
   })
+
+  //  it.skip('valid views example', async ctx => {
+  //   const { valid } = await mkTestServices(ctx)
+  //   await valid(`
+  //     dynamic view index1 {
+  //       user
+  //         -> system.frontend 'User uses System'
+  //          -> system.backend 'System uses Backend'
+  //          <- 'System uses Backend'
+  //         <-
+
+  //       user -> system.frontend 'User uses System' {
+  //         -> system.backend 'System uses Backend' {
+  //           <- 'System uses Backend'
+  //         }
+  //         <-
+  //       }
+
+  //          1.1. -> system.backend {
+
+  //          }
+  //          1.2. <- system.backend
+
+  //       2. system.frontend -> system.backend
+  //           'System uses Backend'
+
+  //       system.backend -> system.frontend
+  //     }
+  //   `)
+  // })
 })

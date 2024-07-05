@@ -142,7 +142,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.layout]: 'dot',
       [_.compound]: true,
       [_.rankdir]: this.view.autoLayout,
-      [_.TBbalance]: 'min',
+      // [_.TBbalance]: 'min',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
       [_.mclimit]: 5,
@@ -150,9 +150,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       // [_.nslimit1]: 5,
       [_.nodesep]: pxToInch(isHorizontal ? 120 : 140),
       [_.ranksep]: pxToInch(isHorizontal ? 140 : 120),
+      // [_.ranksep]: `1.5 equally`,
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
-      [_.pad]: pxToInch(10)
+      [_.pad]: pxToInch(12)
     })
     G.attributes.graph.apply({
       [_.fontname]: Theme.font,
@@ -184,7 +185,6 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
-      // [_.style]: DefaultEdgeStyle,
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,
       [_.fontcolor]: Theme.relationships[DefaultRelationshipColor].labelColor
     })
@@ -242,7 +242,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(Theme.elements[compound.color].fill, compound.depth),
       [_.color]: compoundColor(Theme.elements[compound.color].stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(40)
+      [_.margin]: pxToPoints(30)
     })
     if (label) {
       subgraph.set(_.label, label)
