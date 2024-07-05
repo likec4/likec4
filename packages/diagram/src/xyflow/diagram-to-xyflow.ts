@@ -4,7 +4,7 @@ import { hasAtLeast } from 'remeda'
 import type { XYFlowData } from '../xyflow/types'
 import { ZIndexes } from './const'
 
-const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
+// const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
 
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
@@ -76,10 +76,6 @@ export function diagramViewToXYFlowData(
       initialHeight: node.height,
       width: node.width,
       height: node.height,
-      // measured: {
-      //   width: node.width,
-      //   height: node.height
-      // },
       ...(parent && {
         parentId: ns + parent.id
       })
@@ -109,6 +105,7 @@ export function diagramViewToXYFlowData(
       source: ns + source,
       target: ns + target,
       zIndex: ZIndexes.Edge,
+      selectable: opts.selectable,
       deletable: false,
       data: {
         edge,
