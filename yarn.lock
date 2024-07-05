@@ -3367,9 +3367,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-router@npm:^1.43.1":
-  version: 1.43.4
-  resolution: "@tanstack/react-router@npm:1.43.4"
+"@tanstack/react-router@npm:^1.43.4":
+  version: 1.43.6
+  resolution: "@tanstack/react-router@npm:1.43.6"
   dependencies:
     "@tanstack/history": "npm:1.41.0"
     "@tanstack/react-store": "npm:^0.2.1"
@@ -3378,7 +3378,7 @@ __metadata:
   peerDependencies:
     react: ">=18"
     react-dom: ">=18"
-  checksum: 10c0/9cfb4f9fc61052d07a215627e67c66fa91be29eed8ee2c720822f843ff4e55e8cb61340b195c5e063d35f9a9861ac209841d4931dd9675f6adaec724ed12b7b8
+  checksum: 10c0/af77f74481bc1acfde5e9f03861fdc8bc653391112d09bc8b3478565fa76210ea9d216e10daf0fd50539b5f6a11d8ced932666d172abc0f61e06f4b11069d2c1
   languageName: node
   linkType: hard
 
@@ -8769,7 +8769,7 @@ __metadata:
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
-    "@tanstack/react-router": "npm:^1.43.1"
+    "@tanstack/react-router": "npm:^1.43.4"
     "@tanstack/router-vite-plugin": "npm:^1.43.1"
     "@types/node": "npm:^20.14.9"
     "@types/prop-types": "npm:^15.7.11"
