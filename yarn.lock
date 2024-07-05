@@ -2198,9 +2198,9 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
     "@lume/kiwi": "npm:^0.4.3"
-    "@mantine/core": "npm:7.11.0"
-    "@mantine/hooks": "npm:7.11.0"
-    "@mantine/vanilla-extract": "npm:7.11.0"
+    "@mantine/core": "npm:7.11.1"
+    "@mantine/hooks": "npm:7.11.1"
+    "@mantine/vanilla-extract": "npm:7.11.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
     "@total-typescript/ts-reset": "npm:^0.5.1"
@@ -2233,8 +2233,8 @@ __metadata:
     vite-plugin-dts: "npm:^3.9.1"
     zustand: "npm:^4.5.4"
   peerDependencies:
-    "@mantine/core": ^7.11.0
-    "@mantine/hooks": ^7.11.0
+    "@mantine/core": ^7.11.1
+    "@mantine/hooks": ^7.11.1
     react: ^18.3.1
     react-dom: ^18.3.1
   languageName: unknown
@@ -2359,9 +2359,9 @@ __metadata:
     "@likec4/diagram": "workspace:*"
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
-    "@mantine/core": "npm:7.11.0"
-    "@mantine/hooks": "npm:7.11.0"
-    "@mantine/vanilla-extract": "npm:7.11.0"
+    "@mantine/core": "npm:7.11.1"
+    "@mantine/hooks": "npm:7.11.1"
+    "@mantine/vanilla-extract": "npm:7.11.1"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
     "@tanstack/router-cli": "npm:^1.43.1"
@@ -2420,8 +2420,8 @@ __metadata:
     "@likec4/core": "workspace:*"
     "@likec4/diagram": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.11.0"
-    "@mantine/hooks": "npm:7.11.0"
+    "@mantine/core": "npm:7.11.1"
+    "@mantine/hooks": "npm:7.11.1"
     "@react-hookz/deep-equal": "npm:^2.0.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
@@ -2452,9 +2452,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/core@npm:7.11.0":
-  version: 7.11.0
-  resolution: "@mantine/core@npm:7.11.0"
+"@mantine/core@npm:7.11.1":
+  version: 7.11.1
+  resolution: "@mantine/core@npm:7.11.1"
   dependencies:
     "@floating-ui/react": "npm:^0.26.9"
     clsx: "npm:^2.1.1"
@@ -2463,28 +2463,28 @@ __metadata:
     react-textarea-autosize: "npm:8.5.3"
     type-fest: "npm:^4.12.0"
   peerDependencies:
-    "@mantine/hooks": 7.11.0
+    "@mantine/hooks": 7.11.1
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/41fb80ed5e9cfe67bca3dd9a764c00e66f8c78b92f2f71f4f4fd73b1621d682053b07532590a609bce7e876d8d4f67d69fcacc37168a294595b8af7c2ffce616
+  checksum: 10c0/f501aa262441a6344e813d85d3c5dfb0946a29cb8a1d57312e26c0899af523f7dd4edfc019df26824c7f93b605de4bc77734e558ef404cbe25849d46171e4d42
   languageName: node
   linkType: hard
 
-"@mantine/hooks@npm:7.11.0":
-  version: 7.11.0
-  resolution: "@mantine/hooks@npm:7.11.0"
+"@mantine/hooks@npm:7.11.1":
+  version: 7.11.1
+  resolution: "@mantine/hooks@npm:7.11.1"
   peerDependencies:
     react: ^18.2.0
-  checksum: 10c0/5fb96b46145f0f1fbbe2a4934ce26e374e59dfc4b0d7b1f0b96e4d9a93997315bb57e5d2747331648e33280669404555a52b0e9857bb8b81b1121fe02eede5ac
+  checksum: 10c0/e21ed0b67f160d2500819b515bd61f741220019d780afefe59bdab69de0cf6db839920b5673f4dfe17fbd2598d8ed14b5deea11ce97af9bf06b42ce433b43226
   languageName: node
   linkType: hard
 
-"@mantine/vanilla-extract@npm:7.11.0":
-  version: 7.11.0
-  resolution: "@mantine/vanilla-extract@npm:7.11.0"
+"@mantine/vanilla-extract@npm:7.11.1":
+  version: 7.11.1
+  resolution: "@mantine/vanilla-extract@npm:7.11.1"
   peerDependencies:
-    "@mantine/core": 7.11.0
-  checksum: 10c0/0f295eae493f86c73b5dc405fa47350b44d52e52d64ac8ed1788fb9bc9b522d502e672ac648ce856ba2b8a698f7e04397ab4b850cf0bfadb14a123c3fdaad37d
+    "@mantine/core": 7.11.1
+  checksum: 10c0/706dc6e4afd2afa8e081362ce784eb0ca67d7122f00df57e2c56d944c7e90757ce426b3d47ebcaf2660dc56ba374108a1c495ceff923229183cb2530268dee65
   languageName: node
   linkType: hard
 
@@ -8763,9 +8763,9 @@ __metadata:
     "@likec4/language-server": "workspace:*"
     "@likec4/layouts": "workspace:*"
     "@likec4/tsconfig": "workspace:*"
-    "@mantine/core": "npm:7.11.0"
-    "@mantine/hooks": "npm:7.11.0"
-    "@mantine/vanilla-extract": "npm:7.11.0"
+    "@mantine/core": "npm:7.11.1"
+    "@mantine/hooks": "npm:7.11.1"
+    "@mantine/vanilla-extract": "npm:7.11.1"
     "@nanostores/react": "npm:^0.7.2"
     "@react-hookz/web": "npm:^24.0.4"
     "@tabler/icons-react": "npm:^3.7.0"
