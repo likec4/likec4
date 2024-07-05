@@ -15,12 +15,21 @@ specification {
   element externalSystem {
     style {
       color secondary
+      opacity 10%
     }
   }
 
-  element container
+  element container {
+    style {
+      opacity 50%
+    }
+  }
   element app
-  element component
+  element component {
+    style {
+      opacity 50%
+    }
+  }
 
   element mobileApp {
     style {

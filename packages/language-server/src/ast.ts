@@ -133,12 +133,6 @@ export const ElementOps = {
   }
 }
 
-export interface DocFqnIndexEntry {
-  name: string
-  el: WeakRef<ast.Element>
-  path: string
-}
-
 export interface DocFqnIndexAstNodeDescription extends AstNodeDescription {
   fqn: c4.Fqn
 }
@@ -154,7 +148,6 @@ export interface LikeC4DocumentProps {
   c4Relations?: ParsedAstRelation[]
   c4Views?: ParsedAstView[]
   // Fqn -> Element
-  c4fqns?: MultiMap<c4.Fqn, DocFqnIndexEntry>
   c4fqnIndex?: MultiMap<c4.Fqn, DocFqnIndexAstNodeDescription>
 }
 
@@ -162,7 +155,7 @@ export interface LikeC4LangiumDocument
   extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, LikeC4DocumentProps
 {}
 export interface FqnIndexedDocument
-  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqns' | 'c4fqnIndex'>
+  extends Omit<LangiumDocument<LikeC4Grammar>, 'diagnostics'>, SetRequired<LikeC4DocumentProps, 'c4fqnIndex'>
 {}
 
 // export type ParsedLikeC4LangiumDocument = SetRequired<FqnIndexedDocument, keyof  LikeC4DocumentProps>
@@ -171,7 +164,7 @@ export interface ParsedLikeC4LangiumDocument
 {}
 
 export function cleanParsedModel(doc: LikeC4LangiumDocument) {
-  const props: Required<Omit<LikeC4DocumentProps, 'c4fqns' | 'c4fqnIndex' | 'diagnostics'>> = {
+  const props: Required<Omit<LikeC4DocumentProps, 'c4fqnIndex' | 'diagnostics'>> = {
     c4Specification: {
       kinds: {},
       relationships: {}
@@ -184,7 +177,7 @@ export function cleanParsedModel(doc: LikeC4LangiumDocument) {
 }
 
 export function isFqnIndexedDocument(doc: LangiumDocument): doc is FqnIndexedDocument {
-  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqns && !!doc.c4fqnIndex
+  return isLikeC4LangiumDocument(doc) && doc.state >= DocumentState.IndexedContent && !!doc.c4fqnIndex
 }
 
 export function isLikeC4LangiumDocument(doc: LangiumDocument): doc is LikeC4LangiumDocument {
@@ -202,7 +195,6 @@ export function isParsedLikeC4LangiumDocument(
     && !!doc.c4Relations
     && !!doc.c4Views
     && !!doc.c4fqnIndex
-    && !!doc.c4fqns
   )
 }
 

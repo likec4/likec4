@@ -32,7 +32,6 @@ function toAstNodeDescription(
 }
 
 export function computeDocumentFqn(document: LikeC4LangiumDocument, services: LikeC4Services) {
-  const c4fqns = (document.c4fqns = new MultiMap())
   const c4fqnIndex = (document.c4fqnIndex = new MultiMap())
   const elements = document.parseResult.value.models.flatMap(m => m.elements)
   if (elements.length === 0) {
@@ -55,14 +54,8 @@ export function computeDocumentFqn(document: LikeC4LangiumDocument, services: Li
     }
     if (ast.isElement(el)) {
       const fqn = AsFqn(el.name, parent)
-      const astNodeDescription = toAstNodeDescription(locator, el, document)
-      c4fqns.add(fqn, {
-        el: new WeakRef(el),
-        path: astNodeDescription.path,
-        name: el.name
-      })
       c4fqnIndex.add(fqn, {
-        ...astNodeDescription,
+        ...toAstNodeDescription(locator, el, document),
         fqn
       })
       ElementOps.writeId(el, fqn)
