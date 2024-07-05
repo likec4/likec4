@@ -37,7 +37,9 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
       if (Expr.isElementRef(target)) {
         const { element, isDescedants } = target
         predicates.push(
-          isDescedants ? n => n.id.startsWith(element + '.') : n => (n.id as string) === element
+          isDescedants
+            ? n => n.id.startsWith(element + '.')
+            : n => (n.id as string) === element
         )
         continue
       }
@@ -51,7 +53,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
       }
       let styleOverride: ComputedNode['style'] | undefined
       if (isDefined(rule.style.border)) {
-        styleOverride = { ...styleOverride, border: rule.style.border }
+        styleOverride = { border: rule.style.border }
       }
       if (isDefined(rule.style.opacity)) {
         styleOverride = { ...styleOverride, opacity: rule.style.opacity }

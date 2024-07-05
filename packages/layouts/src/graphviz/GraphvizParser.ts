@@ -90,7 +90,7 @@ function parseLabelBbox(
         maxX = Math.max(maxX, x + width)
 
         let y = pointToPx(draw.pt[1]) - containerY
-        minY = Math.min(minY, Math.round(y - fontSize * 1.15))
+        minY = Math.min(minY, Math.round(y - fontSize))
         maxY = Math.max(maxY, y)
       }
     }
@@ -103,12 +103,12 @@ function parseLabelBbox(
   if (minX === Infinity) {
     return null
   }
-  const padding = 3
+  const padding = 2
   return {
     x: minX - padding,
     y: minY - padding,
-    width: maxX - minX + padding,
-    height: maxY - minY + padding
+    width: maxX - minX + 2 * padding,
+    height: maxY - minY + 2 * padding
   }
 }
 

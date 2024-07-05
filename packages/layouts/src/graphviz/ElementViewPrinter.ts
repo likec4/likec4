@@ -1,27 +1,6 @@
 import type { ComputedEdge, ComputedElementView, Fqn } from '@likec4/core'
-import {
-  compareByFqnHierarchically,
-  compareFqnHierarchically,
-  DefaultArrowType,
-  defaultTheme as Theme,
-  nonNullable
-} from '@likec4/core'
-import {
-  entries,
-  filter,
-  first,
-  groupBy,
-  isTruthy,
-  last,
-  map,
-  mapToObj,
-  omitBy,
-  pipe,
-  pullObject,
-  reverse,
-  sort,
-  unique
-} from 'remeda'
+import { compareFqnHierarchically, DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
+import { filter, first, isTruthy, last, map, pipe, reverse, sort } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgeLabel } from './dot-labels'
@@ -43,28 +22,30 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       map(n => n.id),
       sort(compareFqnHierarchically),
       reverse(),
-      mapToObj(id => {
+      map(id => {
         // edges only inside clusters, compound endpoints are not considered
         const edges = this.findNestedEdges(id).filter(e =>
           !!this.getGraphNode(e.source) && !!this.getGraphNode(e.target)
         )
-        return [id, edges]
+        return { id, edges }
       }),
-      omitBy((v, _k) => v.length <= 1 || v.length > 8),
-      entries(),
-      map(([id, edges]) => ({ id: id as Fqn, edges }))
+      filter(({ edges }) => edges.length > 1 && edges.length <= 8)
     )
 
     const processed = new Set<Fqn>()
     for (const group of groups) {
       const edges = group.edges.filter(e => !processed.has(e.source) && !processed.has(e.target))
       for (const edge of edges) {
-        const sourceNode = nonNullable(this.getGraphNode(edge.source), `Graphviz Node not found for ${edge.source}`)
-        const targetNode = nonNullable(this.getGraphNode(edge.target), `Graphviz Node not found for ${edge.target}`)
-        processed.add(edge.source)
-        processed.add(edge.target)
-        sourceNode.attributes.set(_.group, group.id)
-        targetNode.attributes.set(_.group, group.id)
+        try {
+          const sourceNode = nonNullable(this.getGraphNode(edge.source), `Graphviz Node not found for ${edge.source}`)
+          const targetNode = nonNullable(this.getGraphNode(edge.target), `Graphviz Node not found for ${edge.target}`)
+          processed.add(edge.source)
+          processed.add(edge.target)
+          sourceNode.attributes.set(_.group, group.id)
+          targetNode.attributes.set(_.group, group.id)
+        } catch (e) {
+          console.error(e)
+        }
       }
     }
   }
@@ -97,11 +78,13 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       }
     }
 
-    const label = edge.label?.trim() ?? ''
+    const label = isTruthy(edge.label) ? edgeLabel(edge.label) : null
     if (isTruthy(label)) {
-      e.attributes.apply({
-        [_.label]: edgeLabel(label)
-      })
+      if (lhead || ltail) {
+        e.attributes.set(_.xlabel, label)
+      } else {
+        e.attributes.set(_.label, label)
+      }
     }
     if (edge.color) {
       e.attributes.apply({

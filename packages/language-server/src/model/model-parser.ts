@@ -398,18 +398,22 @@ export class LikeC4ModelParser {
     if (!targetEl) {
       throw new Error('Invalid reference to target')
     }
+    const title = removeIndent(node.title) ?? null
     let source = this.resolveFqn(sourceEl)
     let target = this.resolveFqn(targetEl)
     if (node.isBackward) {
-      ;[source, target] = [target, source]
+      return {
+        source: target,
+        target: source,
+        title,
+        isBackward: true
+      }
     }
 
-    const title = toSingleLine(node.title) ?? null
     return {
       source,
       target,
-      title,
-      isBackward: node.isBackward
+      title
     }
   }
 

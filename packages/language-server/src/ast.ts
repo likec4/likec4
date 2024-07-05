@@ -209,15 +209,15 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
   return (n: AstNode): n is Guarded<Predicates[number]> => predicates.some(p => p(n))
 }
 const isValidatableAstNode = validatableAstNodeGuards([
-  ast.isCustomElementExprBody,
+  ast.isCustomElementExpr,
   ast.isViewRulePredicateExpr,
   ast.isDynamicViewRulePredicate,
+  ast.isDynamicViewStep,
   ast.isViewProperty,
   ast.isStyleProperty,
   ast.isTags,
   ast.isViewRule,
   ast.isDynamicViewRule,
-  ast.isDynamicViewStep,
   ast.isElementViewBody,
   ast.isDynamicViewBody,
   ast.isLikeC4View,
