@@ -3,6 +3,16 @@ import { Position, type XYPosition } from '@xyflow/react'
 import { getNodeDimensions } from '@xyflow/system'
 import type { InternalXYFlowNode } from '../types'
 
+export function getNodeCenter(node: InternalXYFlowNode): XYPosition {
+  const { width, height } = getNodeDimensions(node)
+  const { x, y } = node.internals.positionAbsolute
+
+  return {
+    x: x + width / 2,
+    y: y + height / 2
+  }
+}
+
 // this helper function returns the intersection point
 // of the line between the center of the intersectionNode and the target node
 export function getNodeIntersectionFromCenterToPoint(

@@ -4,7 +4,6 @@ import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
 import type { EdgeProps, XYPosition } from '@xyflow/react'
 import { EdgeLabelRenderer } from '@xyflow/react'
-import { getNodePositionWithOrigin } from '@xyflow/system'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
@@ -14,7 +13,7 @@ import { useDiagramState, useDiagramStoreApi } from '../../state/hooks'
 import { ZIndexes } from '../const'
 import { useXYStoreApi } from '../hooks'
 import { type RelationshipData, type XYFlowEdge } from '../types'
-import { bezierControlPoints, toDomPrecision } from '../utils'
+import { bezierControlPoints } from '../utils'
 import * as edgesCss from './edges.css'
 import { getNodeIntersectionFromCenterToPoint } from './utils'
 // import { getEdgeParams } from './utils'
@@ -104,6 +103,10 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   id,
   data,
   selected,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
   style,
   source,
   target,
@@ -164,23 +167,23 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   if (isModified) {
     labelX = labelPos.x
     labelY = labelPos.y
-    const sourceCenterPos = getNodePositionWithOrigin(sourceNode, [-0.5, -0.5])
-    const targetCenterPos = getNodePositionWithOrigin(targetNode, [-0.5, -0.5])
+    const sourceCenterPos = { x: sourceX, y: sourceY }
+    const targetCenterPos = { x: targetX, y: targetY }
 
     const points = diagramEdge.dir === 'back'
       ? [
-        targetCenterPos.positionAbsolute,
-        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints)!),
+        targetCenterPos,
+        getNodeIntersectionFromCenterToPoint(targetNode, first(controlPoints) ?? sourceCenterPos),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints)!),
-        sourceCenterPos.positionAbsolute
+        getNodeIntersectionFromCenterToPoint(sourceNode, last(controlPoints) ?? targetCenterPos),
+        sourceCenterPos
       ]
       : [
-        sourceCenterPos.positionAbsolute,
-        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints)!),
+        sourceCenterPos,
+        getNodeIntersectionFromCenterToPoint(sourceNode, first(controlPoints) ?? targetCenterPos),
         ...controlPoints,
-        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints)!),
-        targetCenterPos.positionAbsolute
+        getNodeIntersectionFromCenterToPoint(targetNode, last(controlPoints) ?? sourceCenterPos),
+        targetCenterPos
       ]
 
     edgePath = nonNullable(curve(points))
@@ -270,7 +273,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         d={edgePath}
         fill="none"
         stroke={'transparent'}
-        strokeDasharray={0}
         strokeWidth={interactionWidth ?? 10}
       />
       <g className={edgesCss.markerContext}>
@@ -299,7 +301,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
           d={edgePath}
           style={style}
-          strokeDasharray={0}
           strokeLinecap={'round'}
         />
         <path

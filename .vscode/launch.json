@@ -10,21 +10,9 @@
       "name": "Launch Playground",
       "request": "launch",
       "url": "http://localhost:5173",
-      "sourceMaps": true,
       "skipFiles": [
         "<node_internals>/**"
       ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Current Test File",
-      "autoAttachChildProcesses": true,
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
-      "args": ["run", "${relativeFile}", "--single-thread"],
-      "smartStep": true,
-      "console": "integratedTerminal"
     },
     {
       "name": "Run Extension",
@@ -36,10 +24,12 @@
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
         "${workspaceFolder}/examples/cloud-system",
       ],
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode/dist/**/*.js",
+      ],
       "sourceMaps": true,
       "resolveSourceMapLocations": [
         "${workspaceFolder}/packages/**",
-        "!${workspaceFolder}/packages/*/dist/",
         "!**/node_modules/**"
       ],
       "autoAttachChildProcesses": true,
@@ -48,6 +38,15 @@
         "script": "build:turbo",
         "path": "packages/vscode"
       }
+    },
+    {
+      "name": "Attach to Extension",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
     },
     {
       "name": "Run Web Extension in VS Code",

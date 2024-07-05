@@ -600,6 +600,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
             const { fitView, transform } = xystore.getState()
             fitView({
               duration: 400,
+              includeHiddenNodes: true,
               maxZoom: Math.max(1, transform[2]),
               minZoom: MinZoom,
               padding: Math.max(fitViewPadding, 0.2),
