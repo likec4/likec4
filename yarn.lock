@@ -2253,7 +2253,7 @@ __metadata:
     "@types/picomatch": "npm:^2.3.4"
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:18.3.0"
-    astro: "npm:^4.11.3"
+    astro: "npm:^4.11.5"
     astro-og-canvas: "npm:^0.5.1"
     likec4: "workspace:*"
     npm-run-all2: "npm:^6.2.0"
@@ -3300,6 +3300,13 @@ __metadata:
   version: 1.10.0
   resolution: "@shikijs/core@npm:1.10.0"
   checksum: 10c0/5c964f58933a89a47e77d7512b3c536d8d2f6de55ea229e61ee0025b7db8af2b0233c59d9ce39331d4ccb082abdd5bce0724bca6434e2d7b9186d1f29f2194e4
+  languageName: node
+  linkType: hard
+
+"@shikijs/core@npm:1.10.1":
+  version: 1.10.1
+  resolution: "@shikijs/core@npm:1.10.1"
+  checksum: 10c0/586711b6485833323937f1193635e1d7ffc63ac9e664aa3fef16c7583dfdbaf4362bb268712ebaba9113a96f871e6e1f993f1c8eb3f558353880a54e436002a9
   languageName: node
   linkType: hard
 
@@ -4603,9 +4610,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"astro@npm:^4.11.3":
-  version: 4.11.3
-  resolution: "astro@npm:4.11.3"
+"astro@npm:^4.11.5":
+  version: 4.11.5
+  resolution: "astro@npm:4.11.5"
   dependencies:
     "@astrojs/compiler": "npm:^2.8.1"
     "@astrojs/internal-helpers": "npm:0.4.1"
@@ -4658,13 +4665,13 @@ __metadata:
     rehype: "npm:^13.0.1"
     semver: "npm:^7.6.2"
     sharp: "npm:^0.33.3"
-    shiki: "npm:^1.9.0"
-    string-width: "npm:^7.1.0"
+    shiki: "npm:^1.10.0"
+    string-width: "npm:^7.2.0"
     strip-ansi: "npm:^7.1.0"
-    tsconfck: "npm:^3.1.0"
+    tsconfck: "npm:^3.1.1"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.1"
-    vite: "npm:^5.3.1"
+    vite: "npm:^5.3.2"
     vitefu: "npm:^0.2.5"
     which-pm: "npm:^2.2.0"
     yargs-parser: "npm:^21.1.1"
@@ -4675,7 +4682,7 @@ __metadata:
       optional: true
   bin:
     astro: astro.js
-  checksum: 10c0/162853dff115a31d5aba996e27fe6a9e2c53437c3023a76a53f05a75a4567654bee71373327a88314c1f1da118b5021781124a703041ba995f34302f13461614
+  checksum: 10c0/04532da698ca80e7632dd0666cc8700eef4b61ffaf2a39fd043f457a56852e5411545e778e9168c2f82ab9301adc1ae0a5597c8b81459f4bcfbd812460e3b6c2
   languageName: node
   linkType: hard
 
@@ -12700,6 +12707,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shiki@npm:^1.10.0":
+  version: 1.10.1
+  resolution: "shiki@npm:1.10.1"
+  dependencies:
+    "@shikijs/core": "npm:1.10.1"
+  checksum: 10c0/ba0fbb6ffc1e08b4089c679a84e8c2800a7e6609519ada3892831b691d35e73cface539c486e888fc77aa48a70310ceded990158d2153a963efc2d1b084a4e5f
+  languageName: node
+  linkType: hard
+
 "shipjs-lib@npm:0.26.3":
   version: 0.26.3
   resolution: "shipjs-lib@npm:0.26.3"
@@ -13084,7 +13100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-width@npm:^7.0.0, string-width@npm:^7.1.0":
+"string-width@npm:^7.0.0, string-width@npm:^7.2.0":
   version: 7.2.0
   resolution: "string-width@npm:7.2.0"
   dependencies:
@@ -13537,7 +13553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfck@npm:^3.1.0":
+"tsconfck@npm:^3.1.1":
   version: 3.1.1
   resolution: "tsconfck@npm:3.1.1"
   peerDependencies:
@@ -14262,7 +14278,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:5.3.3":
+"vite@npm:5.3.3, vite@npm:^5.3.2":
   version: 5.3.3
   resolution: "vite@npm:5.3.3"
   dependencies:
@@ -14302,7 +14318,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.0.0, vite@npm:^5.0.11, vite@npm:^5.3.1":
+"vite@npm:^5.0.0, vite@npm:^5.0.11":
   version: 5.3.2
   resolution: "vite@npm:5.3.2"
   dependencies:
