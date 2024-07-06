@@ -197,7 +197,7 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const { title, ...shared } = relations.reduce((acc, r) => {
+        const shared = relations.reduce((acc, r) => {
           if (r.color && acc.color !== r.color) {
             acc.color = undefined
           }
@@ -223,8 +223,11 @@ export class ComputeCtx {
         })
         return Object.assign(
           edge,
-          isTruthy(title) && { label: title },
-          shared
+          isTruthy(shared.title) && { label: shared.title },
+          shared.color && { color: shared.color },
+          shared.line && { line: shared.line },
+          shared.head && { head: shared.head },
+          shared.tail && { tail: shared.tail }
         )
       }
 
