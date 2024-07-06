@@ -197,7 +197,7 @@ export class ComputeCtx {
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const { title, ...shared } = relations.reduce((acc, r, i) => {
+        const { title, ...shared } = relations.reduce((acc, r) => {
           if (r.color && acc.color !== r.color) {
             acc.color = undefined
           }
