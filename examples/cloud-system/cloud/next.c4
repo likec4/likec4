@@ -71,7 +71,11 @@ views {
   view cloud_next of cloud.next {
     include
       *,
-      amazon._
+      amazon._,
+      cloud.* -> amazon.* with {
+        color indigo
+        line solid
+      }
     exclude
       cloud.ui.supportPanel -> amazon,
 

@@ -1,5 +1,6 @@
 import type { IconUrl } from './_common'
 import type { BorderStyle, ElementKind, ElementShape, Fqn, Tag } from './element'
+import type { RelationshipArrowType, RelationshipLineType } from './relation'
 import type { ThemeColor } from './theme'
 import type { ViewID } from './view'
 
@@ -17,6 +18,7 @@ interface BaseExpr {
   inout?: never
   incoming?: never
   outgoing?: never
+  customRelation?: never
 }
 
 export interface ElementRefExpr extends Omit<BaseExpr, 'element' | 'isDescedants'> {
@@ -89,6 +91,8 @@ export function isElement(expr: Expression): expr is ElementExpression {
     || isExpandedElementExpr(expr)
 }
 
+export type ElementPredicateExpression = ElementExpression | CustomElementExpr
+
 export interface RelationExpr extends Omit<BaseExpr, 'source' | 'target'> {
   source: ElementExpression
   target: ElementExpression
@@ -118,13 +122,27 @@ export function isOutgoing(expr: Expression): expr is OutgoingExpr {
   return 'outgoing' in expr
 }
 
-export type AnyRelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
-
-export function isAnyRelation(expr: Expression): expr is AnyRelationExpression {
-  return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr)
+export interface CustomRelationExpr extends Omit<BaseExpr, 'customRelation'> {
+  customRelation: {
+    relation: RelationExpr
+    title?: string
+    color?: ThemeColor
+    line?: RelationshipLineType
+    head?: RelationshipArrowType
+    tail?: RelationshipArrowType
+  }
+}
+export function isCustomRelationExpr(expr: Expression): expr is CustomRelationExpr {
+  return 'customRelation' in expr
 }
 
-export type Expression = ElementExpression | CustomElementExpr | AnyRelationExpression
+export type RelationPredicateExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr | CustomRelationExpr
+
+export function isAnyRelation(expr: Expression): expr is RelationPredicateExpression {
+  return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr) || isCustomRelationExpr(expr)
+}
+
+export type Expression = ElementPredicateExpression | RelationPredicateExpression
 
 // export const Expr = {
 //   isElementRef,

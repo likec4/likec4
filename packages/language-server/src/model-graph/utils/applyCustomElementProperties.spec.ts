@@ -1,7 +1,7 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { describe, expect, it } from 'vitest'
 import { $include } from '../compute-view/__test__/fixture'
-import { applyElementCustomProperties } from './applyElementCustomProperties'
+import { applyCustomElementProperties } from './applyCustomElementProperties'
 
 function nd(id: string): ComputedNode {
   return { id } as ComputedNode
@@ -11,13 +11,13 @@ describe('applyElementCustomProperties', () => {
   it('should return nodes if there are no rules', () => {
     const nodes = [nd('1'), nd('2')]
     const rules = [] as ViewRule[]
-    expect(applyElementCustomProperties(rules, nodes)).toBe(nodes)
+    expect(applyCustomElementProperties(rules, nodes)).toBe(nodes)
   })
 
   it('should return nodes if there are no CustomElement rules', () => {
     const nodes = [nd('1'), nd('2')]
     const rules = [$include('*')]
-    expect(applyElementCustomProperties(rules, nodes)).toBe(nodes)
+    expect(applyCustomElementProperties(rules, nodes)).toBe(nodes)
   })
 
   it('should apply custom properties to matching nodes', () => {
@@ -31,9 +31,10 @@ describe('applyElementCustomProperties', () => {
         }
       })
     ]
-    const result = applyElementCustomProperties(rules, nodes)
+    const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([{
       id: 'cloud',
+      isCustomized: true,
       title: 'value1',
       technology: 'value2'
     }, { id: '2' }])
@@ -69,7 +70,7 @@ describe('applyElementCustomProperties', () => {
         }
       })
     ]
-    const result = applyElementCustomProperties(rules, nodes)
+    const result = applyCustomElementProperties(rules, nodes)
     expect(result).toEqual([
       {
         id: 'cloud'
@@ -81,6 +82,7 @@ describe('applyElementCustomProperties', () => {
         technology: null,
         shape: 'queue',
         color: 'indigo',
+        isCustomized: true,
         style: {
           opacity: 90
         }
@@ -99,7 +101,7 @@ describe('applyElementCustomProperties', () => {
         }
       })
     ]
-    const result = applyElementCustomProperties(rules, nodes)
+    const result = applyCustomElementProperties(rules, nodes)
     expect(result).not.toBe(nodes) // should return new array
     expect(result).toEqual(nodes) // but with same nodes
   })

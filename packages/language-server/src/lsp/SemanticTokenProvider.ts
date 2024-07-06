@@ -40,7 +40,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isDescedantsExpr(node) && node.$cstNode) {
+    if ((ast.isDescedantsExpr(node) || ast.isWildcardExpr(node)) && node.$cstNode) {
       acceptor({
         cst: node.$cstNode,
         type: SemanticTokenTypes.variable,
@@ -51,18 +51,6 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isWildcardExpr(node) && node.$cstNode) {
-      acceptor({
-        cst: node.$cstNode,
-        type: SemanticTokenTypes.variable,
-        modifier: [
-          SemanticTokenModifiers.definition,
-          SemanticTokenModifiers.readonly
-        ]
-      })
-      return 'prune'
-    }
-
     if (ast.isElementKindExpr(node)) {
       acceptor({
         node,
@@ -145,6 +133,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.enum
       })
+      return 'prune'
     }
     if (ast.isOpacityProperty(node)) {
       acceptor({
@@ -157,14 +146,12 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.number
       })
-      return
+      return 'prune'
     }
     if (
       ast.isLinkProperty(node)
       || ast.isIconProperty(node)
-      || ast.isElementStringProperty(node)
-      || ast.isRelationStringProperty(node)
-      || ast.isViewStringProperty(node)
+      || ast.isStringProperty(node)
     ) {
       acceptor({
         node,
@@ -176,7 +163,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         property: 'value',
         type: SemanticTokenTypes.string
       })
-      return
+      return 'prune'
     }
     if (ast.isElement(node)) {
       return this.highlightAstElement(node, acceptor)

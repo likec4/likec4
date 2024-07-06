@@ -1,10 +1,10 @@
 import { isNullish } from 'remeda'
 import type { IconUrl, NonEmptyArray, Point, XYPosition } from './_common'
 import type { ElementKind, ElementShape, ElementStyle, Fqn, Tag } from './element'
-import type { CustomElementExpr, ElementExpression, Expression } from './expression'
+import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
 import type { Opaque } from './opaque'
 import type { RelationID, RelationshipArrowType, RelationshipLineType } from './relation'
-import type { ColorLiteral, ThemeColor } from './theme'
+import type { ThemeColor } from './theme'
 
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
@@ -98,7 +98,7 @@ export interface DynamicViewStep {
 }
 
 export type DynamicViewIncludeRule = {
-  include: (ElementExpression | CustomElementExpr)[]
+  include: ElementPredicateExpression[]
 }
 
 export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is DynamicViewIncludeRule {
@@ -176,6 +176,10 @@ export interface ComputedNode {
   level: number
   // For compound nodes, the max depth of nested nodes
   depth?: number
+  /**
+   * If this node was customized in the view
+   */
+  isCustomized?: boolean
 }
 
 export interface ComputedEdge {
@@ -189,7 +193,10 @@ export interface ComputedEdge {
   line?: RelationshipLineType
   head?: RelationshipArrowType
   tail?: RelationshipArrowType
-
+  /**
+   * If this edge is derived from custom relationship predicate
+   */
+  isCustomized?: boolean
   /**
    * For layouting purposes
    * @default 'forward'

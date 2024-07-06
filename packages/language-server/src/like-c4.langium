@@ -83,7 +83,7 @@ ElementProperty:
   ElementStringProperty | StyleProperties | LinkProperty;
 
 ElementStringProperty:
-  key=('title' | 'technology' | 'description') Colon? value=String SemiColon?;
+  key=('title' | 'technology' | 'description') ':'? value=String ';'?;
 
 ExtendElement:
   'extend' element=FqnElementRef body=ExtendElementBody
@@ -105,7 +105,7 @@ ElementRef:
   el=[Element] ({infer ElementRef.parent=current} dot=StickyDot el=[Element])*;
 
 Tags:
-  (value+=[Tag:TagId] comma+=(Comma | SemiColon)?)+
+  value+=[Tag:TagId] (','? value+=[Tag:TagId])* (';')?
 ;
 
 Relation:
@@ -135,7 +135,7 @@ RelationProperty:
   RelationStringProperty | RelationStyleProperty |  LinkProperty;
 
 RelationStringProperty:
-  key='title' Colon? value=String SemiColon?;
+  key='title' ':'? value=String ';'?;
 
 RelationStyleProperty:
   key='style' '{'
@@ -168,13 +168,6 @@ DynamicView:
   'dynamic' 'view' name=Id body=DynamicViewBody
 ;
 
-DynamicViewBody: '{'
-  tags=Tags?
-  props+=ViewProperty*
-  (steps+=DynamicViewStep | rules+=DynamicViewRule)*
-  '}'
-;
-
 ViewRef:
   view=[LikeC4View];
 
@@ -188,14 +181,22 @@ ElementViewBody: '{'
 '}'
 ;
 
-type StringProperty = ElementStringProperty| ViewStringProperty;
+DynamicViewBody: '{'
+  tags=Tags?
+  props+=ViewProperty*
+  (steps+=DynamicViewStep | rules+=DynamicViewRule)*
+  '}'
+;
+
+
+type StringProperty = ElementStringProperty| ViewStringProperty | RelationStringProperty;
 
 ViewProperty:
   ViewStringProperty | LinkProperty
 ;
 
 ViewStringProperty:
-  key=('title' | 'description') Colon? value=String SemiColon?;
+  key=('title' | 'description') ':'? value=String ';'?;
 
 ViewLayoutDirection returns string:
   'TopBottom' | 'LeftRight' | 'BottomTop' | 'RightLeft';
@@ -218,15 +219,15 @@ DynamicViewStep:
 
 ViewRulePredicate:
   ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
+  expressions+=ViewRulePredicateExpr (',' expressions+=ViewRulePredicateExpr)* ','?
 ;
 
 DynamicViewRulePredicate:
-  'include' expressions+=ViewRulePredicateExpr (commas+=Comma expressions+=ViewRulePredicateExpr)* Comma?
+  'include' expressions+=ElementPredicateExpression (',' expressions+=ElementPredicateExpression)* ','?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (commas+=Comma targets+=ElementExpr)* Comma? '{'
+  'style' targets+=ElementExpr (',' targets+=ElementExpr)* ','? '{'
     styleprops+=StyleProperty*
   '}';
 
@@ -234,20 +235,37 @@ ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
 ViewRulePredicateExpr:
-  InOutExpr |
-  ElementExpr (
-    {infer CustomElementExpr.target=current} 'with'  body=CustomElementExprBody |
-    {infer RelationExpr.source=current} (isBidirectional?='<->' | '->') target=ElementExpr |
-    {infer OutgoingExpr.from=current} '->'
-  )?
+  ElementPredicateExpression |
+  RelationPredicateExpression
 ;
 
-InOutExpr infers ViewRulePredicateExpr:
+ElementPredicateExpression:
+  ElementExpr ({infer CustomElementExpr.target=current} 'with' body=CustomElementExprBody)?
+;
+
+RelationPredicateExpression:
+  InOutExpr |
+  CustomRelationExpr |
+  OutgoingExpr
+;
+
+CustomRelationExpr infers ViewRulePredicateRelations:
+  RelationExpr ({infer CustomRelationExpr.relation=current} 'with' body=CustomRelationExprBody)?
+;
+
+RelationExpr:
+  source=ElementExpr (isBidirectional?='<->' | '->') target=ElementExpr
+;
+
+OutgoingExpr:
+  from=ElementExpr '->'
+;
+
+InOutExpr infers ViewRulePredicateRelations:
   IncomingExpr ({infer InOutExpr.inout=current} '->')?;
 
 IncomingExpr:
   '->' to=ElementExpr;
-
 
 ElementExpr:
   WildcardExpr |
@@ -282,32 +300,40 @@ CustomElementExprBody: '{'
 '}'
 ;
 
+CustomRelationExprBody: '{'
+  props+=(
+    RelationStringProperty |
+    RelationshipStyleProperty
+  )*
+'}'
+;
+
 NavigateToProperty:
   key='navigateTo' value=ViewRef;
 
 // Common properties -------------------------------------
 
 LinkProperty:
-  key='link' Colon? value=Uri SemiColon?;
+  key='link' ':'? value=Uri ';'?;
 ColorProperty:
-  key='color' Colon? value=ThemeColor SemiColon?;
+  key='color' ':'? value=ThemeColor ';'?;
 
 OpacityProperty:
-  key='opacity' Colon? value=Percent SemiColon?;
+  key='opacity' ':'? value=Percent ';'?;
 
 // Element properties -------------------------------------
 IconProperty:
-  key='icon' Colon? value=Uri SemiColon?;
+  key='icon' ':'? value=Uri ';'?;
 
 ShapeProperty:
-  key='shape' Colon? value=ElementShape SemiColon?;
+  key='shape' ':'? value=ElementShape ';'?;
 
 
 BorderStyleValue returns string:
   LineOptions | 'none';
 
 BorderProperty:
-  key='border' Colon? value=BorderStyleValue SemiColon?;
+  key='border' ':'? value=BorderStyleValue ';'?;
 
 StyleProperty:
   ColorProperty |
@@ -325,9 +351,9 @@ StyleProperties:
 // -------------------------
 // Relationship Style Properties
 LineProperty:
-  key='line' Colon? value=LineOptions SemiColon?;
+  key='line' ':'? value=LineOptions ';'?;
 ArrowProperty:
-  key=('head' | 'tail') Colon? value=ArrowType SemiColon?;
+  key=('head' | 'tail') ':'? value=ArrowType ';'?;
 
 RelationshipStyleProperty:
   ColorProperty | LineProperty | ArrowProperty;
@@ -402,9 +428,6 @@ terminal StickyDot: /\b\./;
 terminal Dot: '.';
 terminal NotEqual: /\!\={1,2}/;
 terminal Eq: /\={1,2}/;
-terminal Colon: ':';
-terminal SemiColon: ';';
-terminal Comma: ',';
 terminal Percent: /\b\d+%/;
 
 terminal String: /"[^"]*"|'[^']*'/;

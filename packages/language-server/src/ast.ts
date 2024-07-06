@@ -208,6 +208,7 @@ function validatableAstNodeGuards<const Predicates extends Guard<AstNode>[]>(
 }
 const isValidatableAstNode = validatableAstNodeGuards([
   ast.isCustomElementExpr,
+  ast.isCustomRelationExpr,
   ast.isViewRulePredicateExpr,
   ast.isDynamicViewRulePredicate,
   ast.isDynamicViewStep,

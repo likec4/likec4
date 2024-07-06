@@ -1,3 +1,4 @@
+import { nonexhaustive } from '@likec4/core'
 import type { ValidationCheck } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
@@ -7,15 +8,25 @@ export const customElementExprChecks = (
 ): ValidationCheck<ast.CustomElementExpr> => {
   return (el, accept) => {
     if (ast.isExcludePredicate(el.$container)) {
-      accept('error', 'Invalid inside "exclude"', {
+      accept('error', 'Invalid usage inside "exclude"', {
         node: el
       })
     }
-    if (!ast.isElementRef(el.target)) {
-      accept('error', 'Invalid target for customization', {
-        node: el,
-        property: 'target'
-      })
+    switch (true) {
+      case ast.isElementRef(el.target):
+        return
+      case ast.isExpandElementExpr(el.target):
+      case ast.isElementKindExpr(el.target):
+      case ast.isElementTagExpr(el.target):
+      case ast.isWildcardExpr(el.target):
+      case ast.isDescedantsExpr(el.target):
+        accept('error', 'Invalid target (expect reference to specific element)', {
+          node: el,
+          property: 'target'
+        })
+        return
+      default:
+        nonexhaustive(el.target)
     }
   }
 }

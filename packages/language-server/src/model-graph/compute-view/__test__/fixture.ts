@@ -1,6 +1,7 @@
 import type {
   BorderStyle,
   ComputedView,
+  CustomRelationExpr as C4CustomRelationExpr,
   Element,
   ElementExpression as C4ElementExpression,
   ElementKind,
@@ -9,6 +10,8 @@ import type {
   Fqn,
   Relation,
   RelationID,
+  RelationshipArrowType,
+  RelationshipLineType,
   Tag,
   ThemeColor,
   ViewID,
@@ -194,16 +197,23 @@ export type FakeElementIds = keyof typeof fakeElements
 const rel = ({
   source,
   target,
-  title
+  title,
+  ...props
 }: {
   source: FakeElementIds
   target: FakeElementIds
   title?: string
+  kind?: string
+  color?: ThemeColor
+  line?: RelationshipLineType
+  head?: RelationshipArrowType
+  tail?: RelationshipArrowType
 }): Relation => ({
   id: `${source}:${target}` as RelationID,
   title: title ?? '',
   source: source as Fqn,
-  target: target as Fqn
+  target: target as Fqn,
+  ...(props as any)
 })
 
 export const fakeRelations = [
@@ -250,17 +260,24 @@ export const fakeRelations = [
   rel({
     source: 'cloud.frontend.dashboard',
     target: 'cloud.backend.graphql',
-    title: 'requests'
+    kind: 'graphlql',
+    title: 'requests',
+    line: 'solid'
   }),
   rel({
     source: 'cloud.frontend.adminPanel',
     target: 'cloud.backend.graphql',
-    title: 'fetches'
+    kind: 'graphlql',
+    title: 'fetches',
+    line: 'dashed',
+    tail: 'odiamond'
   }),
   rel({
     source: 'cloud',
     target: 'amazon',
-    title: 'uses'
+    title: 'uses',
+    head: 'diamond',
+    tail: 'odiamond'
   }),
   rel({
     source: 'cloud.backend',
@@ -327,7 +344,7 @@ type CustomExpr = {
   }
 }
 
-type Expression =
+export type Expression =
   | ElementRefExpr
   | InOutExpr
   | IncomingExpr
@@ -335,7 +352,19 @@ type Expression =
   | RelationExpr
   | CustomExpr
 
-function toExpression(expr: Expression): C4Expression {
+export function $customRelation(
+  relation: RelationExpr,
+  props: Omit<C4CustomRelationExpr['customRelation'], 'relation'>
+): C4CustomRelationExpr {
+  return {
+    customRelation: {
+      relation: $expr(relation) as any,
+      ...props
+    }
+  }
+}
+
+export function $expr(expr: Expression | C4Expression): C4Expression {
   if (!isString(expr)) {
     return expr as C4Expression
   }
@@ -345,31 +374,31 @@ function toExpression(expr: Expression): C4Expression {
   if (expr.startsWith('->')) {
     if (expr.endsWith('->')) {
       return {
-        inout: toExpression(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
+        inout: $expr(expr.replace(/->/g, '').trim() as ElementRefExpr) as any
       }
     }
     return {
-      incoming: toExpression(expr.replace('-> ', '') as ElementRefExpr) as any
+      incoming: $expr(expr.replace('-> ', '') as ElementRefExpr) as any
     }
   }
   if (expr.endsWith(' ->')) {
     return {
-      outgoing: toExpression(expr.replace(' ->', '') as ElementRefExpr) as any
+      outgoing: $expr(expr.replace(' ->', '') as ElementRefExpr) as any
     }
   }
   if (expr.includes(' <-> ')) {
     const [source, target] = expr.split(' <-> ')
     return {
-      source: toExpression(source as ElementRefExpr) as any,
-      target: toExpression(target as ElementRefExpr) as any,
+      source: $expr(source as ElementRefExpr) as any,
+      target: $expr(target as ElementRefExpr) as any,
       isBidirectional: true
     }
   }
   if (expr.includes(' -> ')) {
     const [source, target] = expr.split(' -> ')
     return {
-      source: toExpression(source as ElementRefExpr) as any,
-      target: toExpression(target as ElementRefExpr) as any
+      source: $expr(source as ElementRefExpr) as any,
+      target: $expr(target as ElementRefExpr) as any
     }
   }
   if (expr.endsWith('._')) {
@@ -389,20 +418,20 @@ function toExpression(expr: Expression): C4Expression {
   }
 }
 
-export function $include(expr: Expression): ViewRuleExpression {
+export function $include(expr: Expression | C4Expression): ViewRuleExpression {
   return {
-    include: [toExpression(expr)]
+    include: [$expr(expr)]
   }
 }
-export function $exclude(expr: Expression): ViewRuleExpression {
+export function $exclude(expr: Expression | C4Expression): ViewRuleExpression {
   return {
-    exclude: [toExpression(expr)]
+    exclude: [$expr(expr)]
   }
 }
 
 export function $style(element: ElementRefExpr, style: ViewRuleStyle['style']): ViewRuleStyle {
   return {
-    targets: [toExpression(element) as C4ElementExpression],
+    targets: [$expr(element) as C4ElementExpression],
     style: Object.assign({}, style)
   }
 }

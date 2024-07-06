@@ -1,8 +1,8 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
 import { Expr, nonNullable } from '@likec4/core'
-import { isDefined, isEmpty, isNonNullish, isNullish as isNil, isTruthy, omitBy, pickBy } from 'remeda'
+import { isEmpty, isNonNullish, pickBy } from 'remeda'
 
-export function applyElementCustomProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
+export function applyCustomElementProperties(_rules: ViewRule[], _nodes: ComputedNode[]) {
   const rules = _rules.flatMap(r => ('include' in r ? r.include.filter(Expr.isCustomElement) : []))
   if (rules.length === 0) {
     return _nodes
@@ -22,6 +22,7 @@ export function applyElementCustomProperties(_rules: ViewRule[], _nodes: Compute
     if (!isEmpty(rest)) {
       node = {
         ...node,
+        isCustomized: true,
         ...rest
       }
     }
@@ -36,6 +37,7 @@ export function applyElementCustomProperties(_rules: ViewRule[], _nodes: Compute
     if (styleOverride) {
       node = {
         ...node,
+        isCustomized: true,
         style: {
           ...node.style,
           ...styleOverride

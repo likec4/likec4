@@ -245,16 +245,19 @@ exports[`compute-element-view > view of cloud.frontend 1`] = `
     {
       "id": "cloud.frontend.adminPanel:cloud.backend",
       "label": "fetches",
+      "line": "dashed",
       "parent": null,
       "relations": [
         "cloud.frontend.adminPanel:cloud.backend.graphql",
       ],
       "source": "cloud.frontend.adminPanel",
+      "tail": "odiamond",
       "target": "cloud.backend",
     },
     {
       "id": "cloud.frontend.dashboard:cloud.backend",
       "label": "requests",
+      "line": "solid",
       "parent": null,
       "relations": [
         "cloud.frontend.dashboard:cloud.backend.graphql",

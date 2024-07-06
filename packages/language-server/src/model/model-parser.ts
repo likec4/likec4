@@ -321,12 +321,11 @@ export class LikeC4ModelParser {
   }
 
   private parsePredicateExpr(astNode: ast.ViewRulePredicateExpr): c4.Expression {
+    if (ast.isCustomRelationExpr(astNode)) {
+      return this.parseCustomRelationExpr(astNode)
+    }
     if (ast.isRelationExpr(astNode)) {
-      return {
-        source: this.parseElementExpr(astNode.source),
-        target: this.parseElementExpr(astNode.target),
-        isBidirectional: astNode.isBidirectional
-      }
+      return this.parseRelationExpr(astNode)
     }
     if (ast.isInOutExpr(astNode)) {
       return {
@@ -350,6 +349,48 @@ export class LikeC4ModelParser {
       return this.parseElementExpr(astNode)
     }
     nonexhaustive(astNode)
+  }
+
+  private parseCustomRelationExpr(astNode: ast.CustomRelationExpr): c4.CustomRelationExpr {
+    const relation = this.parseRelationExpr(astNode.relation)
+    const props = astNode.body?.props ?? []
+    return props.reduce(
+      (acc, prop) => {
+        if (ast.isRelationStringProperty(prop)) {
+          const value = removeIndent(prop.value)
+          if (isTruthy(value)) {
+            acc.customRelation['title'] = value
+          }
+          return acc
+        }
+        if (ast.isArrowProperty(prop)) {
+          acc.customRelation[prop.key] = prop.value
+          return acc
+        }
+        if (ast.isColorProperty(prop)) {
+          acc.customRelation[prop.key] = prop.value
+          return acc
+        }
+        if (ast.isLineProperty(prop)) {
+          acc.customRelation[prop.key] = prop.value
+          return acc
+        }
+        nonexhaustive(prop)
+      },
+      {
+        customRelation: {
+          relation
+        }
+      } as c4.CustomRelationExpr
+    )
+  }
+
+  private parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
+    return {
+      source: this.parseElementExpr(astNode.source),
+      target: this.parseElementExpr(astNode.target),
+      isBidirectional: astNode.isBidirectional
+    }
   }
 
   private parseViewRule(astRule: ast.ViewRule, isValid: IsValidFn): c4.ViewRule {

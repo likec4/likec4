@@ -57,7 +57,9 @@ views {
   view customer of customer {
     include
       *,
-      customer -> cloud.ui.*,
+      customer -> cloud.ui with {
+        color red
+      },
       supportUser
 
     style supportUser {
