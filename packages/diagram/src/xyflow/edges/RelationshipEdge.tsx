@@ -279,9 +279,22 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         <defs>
           <marker
             id={`arrow-${id}`}
-            viewBox="-8 -5 18 10"
+            viewBox="0 0 15 10"
+            refX={isModified ? 12 : 8}
+            refY={5}
+            markerWidth="5"
+            markerHeight="4"
+            markerUnits="strokeWidth"
+            preserveAspectRatio="xMaxYMid meet"
+            orient="auto-start-reverse">
+            <path d="M 0 0 L 14 5 L 0 10 z" />
+          </marker>
+          {
+            /* <marker
+            id={`arrow-${id}`}
+            viewBox="-12 -5 14 10"
             // TODO: graphviz cut bezier path at arrow, we don't
-            refX={isModified ? '8' : '-3'}
+            refX={isModified ? '1' : '-8'}
             refY={0}
             markerWidth="5"
             markerHeight="4"
@@ -289,14 +302,15 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             preserveAspectRatio="xMaxYMid meet"
             orient="auto-start-reverse">
             <polygon
-              points="-8,-5 8,0 -8,5 -8,-5"
+              points="-12,-5 0,0 -12,5 -12,-5"
               stroke="context-stroke"
               fill="context-stroke"
               strokeDasharray={0}
               strokeWidth={1}
             >
             </polygon>
-          </marker>
+          </marker> */
+          }
         </defs>
         <path
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
