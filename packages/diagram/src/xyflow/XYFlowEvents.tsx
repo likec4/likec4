@@ -115,6 +115,7 @@ export function useXYFlowEvents() {
           zoomable,
           fitViewEnabled,
           focusedNodeId,
+          fitDiagram,
           focusOnNode,
           onNodeClick,
           lastClickedNodeId,
@@ -125,13 +126,21 @@ export function useXYFlowEvents() {
         // if we focused on a node, and clicked on another node - focus on the clicked node
         const shallChangeFocus = !!focusedNodeId && focusedNodeId !== xynode.id
         // if user clicked on the same node twice in a short time, focus on it
-        const clickedRecently = focusedNodeId !== xynode.id && lastClickedNodeId === xynode.id && lastClickWasRecent()
-        if (focusPossible && (shallChangeFocus || clickedRecently)) {
-          focusOnNode(xynode.id)
-          if (!onNodeClick) {
-            // user did not provide a custom handler, stop propagation
-            event.stopPropagation()
+        const clickedRecently = lastClickedNodeId === xynode.id && lastClickWasRecent()
+        if (focusPossible) {
+          switch (true) {
+            case !focusedNodeId && clickedRecently:
+            case shallChangeFocus:
+              focusOnNode(xynode.id)
+              break
+            case focusedNodeId === xynode.id && clickedRecently:
+              fitDiagram()
+              break
           }
+          // if (!onNodeClick) {
+          //   // user did not provide a custom handler, stop propagation
+          //   event.stopPropagation()
+          // }
         }
         lastClickTimestamp.current = Date.now()
         onNodeClick?.({

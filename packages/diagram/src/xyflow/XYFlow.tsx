@@ -134,9 +134,6 @@ export function XYFlow({
       elementsSelectable={nodesSelectable}
       nodesFocusable={nodesDraggable || nodesSelectable || hasOnNodeClick || hasOnNavigateTo}
       edgesFocusable={hasOnEdgeClick}
-      {...(!nodesSelectable && {
-        selectionKeyCode: null
-      })}
       nodesDraggable={nodesDraggable}
       {...nodesDraggable && {
         onNodeDragStart: layoutConstraints.onNodeDragStart,
@@ -146,6 +143,7 @@ export function XYFlow({
       zoomOnDoubleClick={false}
       elevateNodesOnSelect={false} // or edges are not visible after select
       selectNodesOnDrag={false} // or weird camera movement
+      selectionKeyCode={null}
       onDoubleClick={handlers.onDoubleClick}
       onPaneClick={handlers.onPaneClick}
       onMoveEnd={handlers.onMoveEnd}

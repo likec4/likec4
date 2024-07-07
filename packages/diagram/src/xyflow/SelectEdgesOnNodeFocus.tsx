@@ -13,7 +13,6 @@ export function SelectEdgesOnNodeFocus() {
     () =>
       diagramStore.subscribe(s => s.focusedNodeId, focusedNodeId => {
         if (!focusedNodeId) {
-          diagramStore.getState().xystore.getState().resetSelectedElements()
           return
         }
 

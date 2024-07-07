@@ -112,6 +112,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
+  const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
   const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
@@ -230,6 +231,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     let pointer = { x: e.clientX, y: e.clientY }
     const onPointerMove = (e: PointerEvent) => {
       if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
+        setIsControlPointDragging(true)
         if (!hasMoved) {
           diagramStore.getState().cancelSaveManualLayout()
         }
@@ -245,6 +247,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       }
     }
     const onPointerUp = () => {
+      setIsControlPointDragging(false)
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
       if (hasMoved) {
@@ -266,7 +269,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     <g
       className={clsx([
         edgesCss.container,
-        isDimmed && edgesCss.dimmed
+        isDimmed && edgesCss.dimmed,
+        isControlPointDragging && edgesCss.controlDragging
       ])}
       data-likec4-color={color}
       data-edge-dir={diagramEdge.dir}

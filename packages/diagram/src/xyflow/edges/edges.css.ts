@@ -97,7 +97,7 @@ export const controlPoint = style({
   stroke: xyvars.edge.stroke,
   fillOpacity: 0.75,
   strokeWidth: 1,
-  cursor: 'grab',
+  cursor: 'default',
   pointerEvents: 'auto',
   visibility: 'hidden',
   ':hover': {
@@ -114,6 +114,14 @@ export const controlPoint = style({
       strokeWidth: 5
     }
   }
+})
+
+export const controlDragging = style({
+  cursor: 'grabbing'
+})
+
+globalStyle(`${controlDragging} *`, {
+  cursor: 'grabbing'
 })
 
 const strokeKeyframes = keyframes({
