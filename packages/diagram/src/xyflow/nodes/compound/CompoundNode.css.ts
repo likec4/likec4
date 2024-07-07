@@ -45,6 +45,8 @@ export const compoundBody = style({
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
   padding: 8,
   transition: 'all 200ms ease-out',
+  backgroundClip: 'padding-box',
+  overflow: 'hidden',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
@@ -62,11 +64,9 @@ export const compoundBody = style({
     left: 0,
     width: '100%',
     height: '100%',
-    borderRadius: 6,
     pointerEvents: 'none',
     transition: 'background 175ms ease-out, opacity 175ms ease-out',
-    background: vars.element.fill,
-    backgroundClip: 'padding-box'
+    background: vars.element.fill
   }
 })
 
@@ -77,13 +77,13 @@ export const transparent = style({
   padding: 6,
   boxShadow: 'none',
   borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
-  backgroundClip: 'padding-box',
   vars: {
     [opacityDeltaOnHover]: '0',
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
   },
   ':before': {
-    transitionDelay: '200ms',
+    borderRadius: 'unset',
+    transitionDelay: '100ms',
     opacity: calc.add(fallbackVar(varOpacity, '1'), opacityDeltaOnHover)
   },
   selectors: {
@@ -94,7 +94,7 @@ export const transparent = style({
     // },
     [`:where([data-hovered]) &`]: {
       vars: {
-        [opacityDeltaOnHover]: '.07'
+        [opacityDeltaOnHover]: '.08'
       }
     }
   }
@@ -110,10 +110,10 @@ export const title = style({
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  lineHeight: 1,
-  opacity: 0.8,
+  lineHeight: 1.12,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  paddingLeft: 12
+  paddingLeft: 12,
+  mixBlendMode: 'screen'
 })
 export const titleWithNavigation = style({
   paddingLeft: 26
@@ -123,10 +123,6 @@ globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transpa
   vars: {
     ['--_compound-title-color']: vars.element.stroke
   }
-})
-
-globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) ${title}`, {
-  opacity: 1
 })
 
 const indicatorKeyframes = keyframes({

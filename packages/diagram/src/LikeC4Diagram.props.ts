@@ -36,7 +36,7 @@ export type OnNodeClick = (
 ) => void
 export type OnEdgeClick = (
   event: {
-    relation: DiagramEdge
+    edge: DiagramEdge
     xyedge: XYFlowEdge
     event: ReactMouseEvent
   }

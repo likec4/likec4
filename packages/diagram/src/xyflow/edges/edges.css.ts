@@ -11,7 +11,7 @@ export const container = style({
     [xyvars.edge.stroke]: vars.relation.lineColor,
     [xyvars.edge.strokeSelected]: `color-mix(in srgb, ${vars.relation.lineColor}, ${mixColor} 35%)`,
     [xyvars.edge.labelColor]: `color-mix(in srgb, ${vars.relation.labelColor}, rgba(255 255 255 / 0.85) 20%)`,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 35%)`,
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 40%)`,
     [xyvars.edge.strokeWidth]: '3'
   }
 })
@@ -20,7 +20,7 @@ globalStyle(`:where([data-mantine-color-scheme="dark"]) ${container}`, {
   vars: {
     [mixColor]: `white`,
     [xyvars.edge.labelColor]: vars.relation.labelColor,
-    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 55%)`
+    [xyvars.edge.labelBgColor]: `color-mix(in srgb, ${vars.relation.labelBgColor}, transparent 50%)`
   }
 })
 
@@ -53,8 +53,12 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 // })
 
 globalStyle(`.react-flow__edges > svg`, {
-  mixBlendMode: 'color-dodge'
+  mixBlendMode: 'screen'
 })
+
+// globalStyle(`:where([data-mantine-color-scheme="light"]) .react-flow__edges > svg`, {
+//   mixBlendMode: 'screen'
+// })
 
 export const dimmed = style({})
 
@@ -155,7 +159,7 @@ const varTranslate = createVar('translate')
 export const edgeLabel = style({
   top: 0,
   left: 0,
-  padding: '1px 3px 4px 4px',
+  padding: '2px 3px 3px 4px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
@@ -164,7 +168,7 @@ export const edgeLabel = style({
   mixBlendMode: 'screen',
   color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
-  borderRadius: '4px',
+  borderRadius: 3,
   transform: varTranslate,
   vars: {
     [varTranslate]: `translate(${fallbackVar(varLabelX, '-50%')}, ${fallbackVar(varLabelY, '-50%')})`
@@ -211,5 +215,5 @@ export const edgeLabelText = style({
   textAlign: 'left',
   whiteSpaceCollapse: 'preserve-breaks',
   fontSize: rem(14),
-  lineHeight: 1.2
+  lineHeight: 1.185
 })

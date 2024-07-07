@@ -105,7 +105,7 @@ export function useXYFlowEvents() {
       onEdgeContextMenu: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
         diagramApi.getState().onEdgeContextMenu?.({
-          relation: xyedge.data.edge,
+          edge: xyedge.data.edge,
           xyedge,
           event
         })
@@ -173,7 +173,7 @@ export function useXYFlowEvents() {
           }
         }
         onEdgeClick?.({
-          relation: xyedge.data.edge,
+          edge: xyedge.data.edge,
           xyedge,
           event
         })

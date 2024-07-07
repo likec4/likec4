@@ -82,8 +82,8 @@ const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
 
 const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
   prev.id === next.id
-  && prev.source === next.source
-  && prev.target === next.target
+  && eq(prev.source, next.source)
+  && eq(prev.target, next.target)
   && eq(prev.selected ?? false, next.selected ?? false)
   && isSame(prev.sourceX, next.sourceX)
   && isSame(prev.sourceY, next.sourceY)
@@ -209,10 +209,22 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     setLabelPosition(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
 
-  const onControlPointerDown = (index: number, e: React.PointerEvent) => {
+  const onControlPointerDown = (index: number, e: React.PointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
-    if (!domNode) return
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
     const { xyflow } = diagramStore.getState()
+    if (e.button === 2 && selected && controlPoints.length > 1) {
+      const newControlPoints = controlPoints.slice()
+      newControlPoints.splice(index, 1)
+      xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+      e.stopPropagation()
+      return
+    }
+    if (e.button !== 0) {
+      return
+    }
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
@@ -241,14 +253,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     }
     domNode.addEventListener('pointermove', onPointerMove)
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
-  }
-
-  const onControlPointerDoubleClick = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const { xyflow } = diagramStore.getState()
-    const newControlPoints = controlPoints.slice()
-    newControlPoints.splice(index, 1)
-    xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
   }
 
   const marker = `url(#arrow-${id})`
@@ -332,11 +336,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
           onPointerDown={e => onControlPointerDown(i, e)}
-          {...(selected && controlPoints.length > 1 && {
-            onDoubleClick: e => {
-              onControlPointerDoubleClick(i, e)
-            }
-          })}
           className={edgesCss.controlPoint}
           key={i}
           cx={p.x}
@@ -412,7 +411,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
             pointerEvents: 'none'
           }),
           ...(label && {
-            maxWidth: label.bbox.width + 20
+            maxWidth: label.bbox.width + 18
           }),
           zIndex
         }}
