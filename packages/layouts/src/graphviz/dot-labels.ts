@@ -12,7 +12,7 @@ export function sanitize(text: string) {
   return text.trim().replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 }
 
-function wrap(text: string, maxChars: number) {
+export function wrap(text: string, maxChars: number) {
   return wordWrap(text, {
     width: maxChars,
     indent: '',
@@ -122,10 +122,12 @@ export function compoundLabel(node: ComputedNode, color?: string) {
   return `<${html}>`
 }
 
+export const EDGE_LABEL_MAX_CHARS = 40
+
 export function edgeLabel(text: string) {
   const html = wrapToHTML({
     text,
-    maxchars: 40,
+    maxchars: EDGE_LABEL_MAX_CHARS,
     fontsize: 14,
     lineHeight: 1.1,
     bold: text === '[...]',
@@ -153,7 +155,7 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     `<TD ${BGCOLOR} CELLPADDING="2">`,
     wrapToHTML({
       text,
-      maxchars: 40,
+      maxchars: EDGE_LABEL_MAX_CHARS,
       fontsize: 14,
       lineHeight: 1.1,
       align: 'left'

@@ -243,7 +243,7 @@ export interface DiagramNode extends ComputedNode {
 
 export interface DiagramEdge extends ComputedEdge {
   points: NonEmptyArray<Point>
-  labelBBox?: BBox
+  labelBBox?: BBox | null
 }
 
 export interface DiagramView extends Omit<ComputedView, 'nodes' | 'edges'> {
