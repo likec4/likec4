@@ -2,7 +2,6 @@ import type { ReactFlowProps } from '@xyflow/react'
 import { useMemo, useRef } from 'react'
 import type { Simplify } from 'type-fest'
 import { useDiagramStoreApi } from '../state/hooks'
-import { useXYStoreApi } from './hooks'
 import type { XYFlowEdge, XYFlowNode } from './types'
 
 export type XYFlowEventHandlers = Simplify<
@@ -28,32 +27,31 @@ export type XYFlowEventHandlers = Simplify<
 
 export function useXYFlowEvents() {
   const diagramApi = useDiagramStoreApi()
-  const xyflowApi = useXYStoreApi()
 
   const lastClickTimestamp = useRef<number>()
 
   const dblclickTimeout = useRef<number>()
 
-  const dbclickLock = () => {
-    if (dblclickTimeout.current !== undefined) {
-      return true
-    }
-    dblclickTimeout.current = window.setTimeout(() => {
-      dblclickTimeout.current = undefined
-    }, 250)
-    return false
-  }
-
-  const lastClickWasRecent = (ms = 1500) => {
-    return lastClickTimestamp.current && (Date.now() - lastClickTimestamp.current) < ms
-  }
-
   // If we are in focused mode, on edge enter we want to "highlight" the other node
   // This ref contains the id of this node
   const hoveredNodeFromOnEdgeEnterRef = useRef('')
 
-  return useMemo(() =>
-    ({
+  return useMemo(() => {
+    const dbclickLock = () => {
+      if (dblclickTimeout.current !== undefined) {
+        return true
+      }
+      dblclickTimeout.current = window.setTimeout(() => {
+        dblclickTimeout.current = undefined
+      }, 250)
+      return false
+    }
+
+    const lastClickWasRecent = (ms = 1500) => {
+      return lastClickTimestamp.current && (Date.now() - lastClickTimestamp.current) < ms
+    }
+
+    return ({
       onDoubleClick: (event) => {
         const {
           fitViewEnabled,
@@ -128,19 +126,22 @@ export function useXYFlowEvents() {
         // if user clicked on the same node twice in a short time, focus on it
         const clickedRecently = lastClickedNodeId === xynode.id && lastClickWasRecent()
         if (focusPossible) {
+          let stopPropagation = false
           switch (true) {
             case !focusedNodeId && clickedRecently:
             case shallChangeFocus:
+              stopPropagation = true
               focusOnNode(xynode.id)
               break
             case focusedNodeId === xynode.id && clickedRecently:
+              stopPropagation = true
               fitDiagram()
               break
           }
-          // if (!onNodeClick) {
-          //   // user did not provide a custom handler, stop propagation
-          //   event.stopPropagation()
-          // }
+          if (!onNodeClick && stopPropagation) {
+            // user did not provide a custom handler, stop propagation
+            event.stopPropagation()
+          }
         }
         lastClickTimestamp.current = Date.now()
         onNodeClick?.({
@@ -172,7 +173,11 @@ export function useXYFlowEvents() {
       },
       onEdgeClick: (event, xyedge) => {
         diagramApi.getState().setLastClickedEdge(xyedge.id)
-        const { focusedNodeId, focusOnNode, onEdgeClick } = diagramApi.getState()
+        const {
+          focusedNodeId,
+          focusOnNode,
+          onEdgeClick
+        } = diagramApi.getState()
         // if we focused on a node, and clicked on an edge connected to it - focus on the other node
         if (focusedNodeId && (focusedNodeId === xyedge.source || focusedNodeId === xyedge.target)) {
           focusOnNode(focusedNodeId === xyedge.source ? xyedge.target : xyedge.source)
@@ -222,5 +227,6 @@ export function useXYFlowEvents() {
         }
         hoveredNodeFromOnEdgeEnterRef.current = ''
       }
-    }) satisfies XYFlowEventHandlers, [diagramApi, xyflowApi])
+    }) satisfies XYFlowEventHandlers
+  }, [diagramApi])
 }
