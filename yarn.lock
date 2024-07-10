@@ -2374,7 +2374,7 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
     "@vanilla-extract/esbuild-plugin": "npm:^2.3.8"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.12"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.13"
     "@vitejs/plugin-react": "npm:^4.3.1"
     clsx: "npm:^2.1.1"
     esm-env: "npm:^1.0.0"
@@ -2431,7 +2431,7 @@ __metadata:
     "@types/vscode": "npm:~1.88.0"
     "@types/vscode-webview": "npm:^1.57.5"
     "@vanilla-extract/css": "npm:^1.15.3"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.12"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.13"
     "@vitejs/plugin-react": "npm:^4.3.1"
     "@vscode/webview-ui-toolkit": "npm:^1.4.0"
     esm-env: "npm:1.0.0"
@@ -3975,14 +3975,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/vite-plugin@npm:^4.0.12":
-  version: 4.0.12
-  resolution: "@vanilla-extract/vite-plugin@npm:4.0.12"
+"@vanilla-extract/vite-plugin@npm:^4.0.13":
+  version: 4.0.13
+  resolution: "@vanilla-extract/vite-plugin@npm:4.0.13"
   dependencies:
     "@vanilla-extract/integration": "npm:^7.1.7"
   peerDependencies:
     vite: ^4.0.3 || ^5.0.0
-  checksum: 10c0/7c91707c76be40531b479733140139c3c8fdb6f3874f09749a5de2a0a45380379300cdcf646f44c6b4e873752f390b746d897df8495ca1bb954cb0553f9ccb38
+  checksum: 10c0/89b49b0734cbd7b57ac91d1528ecf0dd4999e67ef1c020e7fceb27bea13a277a03149c8500401a0a84259aac1f989a4838ea2a82be37d618209cdd0095c3d8aa
   languageName: node
   linkType: hard
 
@@ -8779,7 +8779,7 @@ __metadata:
     "@types/yargs": "npm:^17.0.32"
     "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/dynamic": "npm:^2.1.1"
-    "@vanilla-extract/vite-plugin": "npm:^4.0.12"
+    "@vanilla-extract/vite-plugin": "npm:^4.0.13"
     "@vitejs/plugin-react": "npm:4.3.1"
     autoprefixer: "npm:^10.4.19"
     ci-info: "npm:^3.9.0"
