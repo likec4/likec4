@@ -402,6 +402,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
     <EdgeLabelRenderer>
       <Box
         className={clsx([
+          'nodrag nopan',
           edgesCss.container,
           edgesCss.edgeLabel,
           isDimmed && edgesCss.dimmed

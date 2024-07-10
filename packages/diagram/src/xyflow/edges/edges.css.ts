@@ -167,11 +167,12 @@ const varTranslate = createVar('translate')
 export const edgeLabel = style({
   top: 0,
   left: 0,
-  padding: '2px 3px 3px 4px',
+  padding: '2px 4px 4px 4px',
   fontFamily: vars.likec4.font,
   position: 'absolute',
   pointerEvents: 'all',
   cursor: 'pointer',
+  width: 'fit-content',
   transformOrigin: '50% 50%',
   mixBlendMode: 'screen',
   color: xyvars.edge.labelColor,

@@ -86,8 +86,11 @@ export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeId
   }
 
   return (
-    <Stack>
+    <Stack gap={'xs'}>
       <div>
+        <Text fz={rem(9)} fw={'500'} c={'dimmed'}>
+          ELEMENT{rest.length > 0 ? 'S' : ``}
+        </Text>
         <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
           {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
         </Text>
@@ -247,32 +250,26 @@ function NavigateToOption({
   return (
     <div>
       <Divider label="navigate to" labelPosition="left" />
-      <Space h={'xs'} />
       {isMultiple && (
         <Text size="xs" c={'dimmed'}>
           {'[ multiple ]'}
         </Text>
       )}
       {!isMultiple && (
-        <Select
-          size="xs"
-          variant="filled"
-          value={!isMultiple ? (node.data.element.navigateTo ?? null) : null}
-          disabled={isMultiple}
-          placeholder={isMultiple ? '[ multiple ]' : 'select'}
-          data={node.data.element.navigateTo
-            ? [{ value: node.data.element.navigateTo, label: node.data.element.navigateTo }]
-            : []}
-          // data={ElementShapes}
-          allowDeselect={true}
-          checkIconPosition="right"
-          // onChange={(value) => {
-          //   if (!value || value === selectedShape) {
-          //     return
-          //   }
-          //   onShapeChange(value as ElementShape)
-          // }} />
-        />
+        <>
+          <Space h={'xs'} />
+          <Select
+            size="xs"
+            variant="filled"
+            value={node.data.element.navigateTo ?? null}
+            placeholder={'select'}
+            data={node.data.element.navigateTo
+              ? [{ value: node.data.element.navigateTo, label: node.data.element.navigateTo }]
+              : []}
+            allowDeselect={true}
+            checkIconPosition="right"
+          />
+        </>
       )}
     </div>
   )

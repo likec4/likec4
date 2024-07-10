@@ -1,11 +1,9 @@
 import { Card } from '@mantine/core'
 import { useOnSelectionChange } from '@xyflow/react'
 import clsx from 'clsx'
-import { DEV } from 'esm-env'
 import { deepEqual as eq } from 'fast-equals'
 import { AnimatePresence, m } from 'framer-motion'
 import { useState } from 'react'
-import useTilg from 'tilg'
 import { useDiagramState } from '../state/hooks'
 import { NodeOptions } from './options/NodeOptions'
 import * as styles from './OptionsPanel.css'
@@ -33,13 +31,9 @@ export default function OptionsPanel() {
       }
     }
   })
-  const hasAnySelection = !isFocused && (selected.nodes.length > 0) // || selected.edges.length > 0)
-  DEV && useTilg()`
-    OptionsPanel
-      isFocused: ${isFocused}
-      selected.nodes: ${JSON.stringify(selected.nodes)}
-      selected.edges: ${JSON.stringify(selected.edges)}
-    `
+  const { nodes } = selected
+  // const hasAnySelection = !isFocused && (nodes.length > 0 || edges.length > 0)
+  const hasAnySelection = !isFocused && nodes.length > 0
   return (
     <AnimatePresence mode="wait">
       {hasAnySelection && (
@@ -54,11 +48,17 @@ export default function OptionsPanel() {
           transition={{ duration: 0.14 }}
           className={clsx('react-flow__panel', styles.panel)}
           style={{
-            transformOrigin: 'center right'
+            transformOrigin: 'center right',
+            maxWidth: '320px'
           }}
         >
-          <Card shadow="sm">
-            <NodeOptions selectedNodeIds={selected.nodes} />
+          <Card shadow="md">
+            {nodes.length > 0 && <NodeOptions selectedNodeIds={nodes} />}
+            {
+              /* nodes.length === 0 && edges.length > 0 && (
+              <EdgeOptions selectedEdgeIds={edges} />
+            ) */
+            }
           </Card>
         </m.div>
       )}
