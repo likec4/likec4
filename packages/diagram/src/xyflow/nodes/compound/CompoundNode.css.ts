@@ -43,10 +43,12 @@ export const compoundBody = style({
   position: 'relative',
   borderRadius: 6,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  padding: 8,
+  padding: 0,
+  margin: 0,
   transition: 'all 200ms ease-out',
   backgroundClip: 'padding-box',
   overflow: 'hidden',
+  cursor: 'default',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
@@ -74,7 +76,6 @@ const opacityDeltaOnHover = createVar('opacityDeltaOnHover')
 export const transparent = style({
   borderStyle: 'dashed',
   borderWidth: 3,
-  padding: 6,
   boxShadow: 'none',
   borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
   vars: {
@@ -102,21 +103,25 @@ export const transparent = style({
 
 export const title = style({
   fontFamily: vars.compound.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
   textAlign: 'left',
-  display: 'inline-block',
   fontWeight: 600,
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  lineHeight: 1.12,
+  lineHeight: 1.25,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
   paddingLeft: 12,
-  mixBlendMode: 'screen'
+  paddingTop: 8,
+  paddingBottom: 6,
+  mixBlendMode: 'screen',
+  selectors: {
+    [`:where(.react-flow__node.draggable) &`]: {
+      cursor: 'grab'
+    }
+  }
 })
 export const titleWithNavigation = style({
-  paddingLeft: 26
+  paddingLeft: 30
 })
 
 globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
@@ -199,10 +204,10 @@ export const navigateBtn = style({
   position: 'absolute',
   pointerEvents: 'all',
   left: 3,
-  top: 7,
+  top: 6,
   cursor: 'pointer',
   color: `var(--_compound-title-color,${navigateBtnColor})`,
-  transformOrigin: '90% 70%',
+  transformOrigin: '90% 50%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
@@ -227,7 +232,7 @@ export const navigateBtn = style({
     [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
       opacity: 0.85,
       vars: {
-        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 50%)`,
+        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 60%)`,
         '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
       }
     },
@@ -243,8 +248,8 @@ export const navigateBtn = style({
   }
 })
 globalStyle(`${navigateBtn} svg.icon`, {
-  width: '70%',
-  height: '70%',
+  width: '75%',
+  height: '75%',
   strokeWidth: 1.5
 })
 
