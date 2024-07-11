@@ -1,6 +1,6 @@
-import type { ComputedEdge, ComputedElementView, Fqn } from '@likec4/core'
+import type { ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
 import { compareFqnHierarchically, DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
-import { filter, first, isTruthy, last, map, pipe, reverse, sort } from 'remeda'
+import { chunk, clamp, filter, first, isNonNullish, isTruthy, last, map, pipe, reverse, sort, take } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgeLabel } from './dot-labels'
@@ -16,38 +16,50 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
   protected override buildGraphvizModel(G: RootGraphModel): void {
     super.buildGraphvizModel(G)
 
-    const groups = pipe(
-      this.view.nodes,
-      filter(n => n.children.length > 0),
-      map(n => n.id),
-      sort(compareFqnHierarchically),
-      reverse(),
-      map(id => {
-        // edges only inside clusters, compound endpoints are not considered
-        const edges = this.findNestedEdges(id).filter(e =>
-          !!this.getGraphNode(e.source) && !!this.getGraphNode(e.target)
-        )
-        return { id, edges }
-      }),
-      filter(({ edges }) => edges.length > 1 && edges.length <= 8)
-    )
+    // const compoundIds = new Set<Fqn>()
+    // const compounds = this.view.nodes.reduce((acc, node) => {
+    //   if (isCompound(node)) {
+    //     compoundIds.add(node.id)
+    //     acc.push(node)
+    //   }
+    //   return acc
+    // }, [] as ComputedNode[])
 
-    const processed = new Set<Fqn>()
-    for (const group of groups) {
-      const edges = group.edges.filter(e => !processed.has(e.source) && !processed.has(e.target))
-      for (const edge of edges) {
-        try {
-          const sourceNode = nonNullable(this.getGraphNode(edge.source), `Graphviz Node not found for ${edge.source}`)
-          const targetNode = nonNullable(this.getGraphNode(edge.target), `Graphviz Node not found for ${edge.target}`)
-          processed.add(edge.source)
-          processed.add(edge.target)
-          sourceNode.attributes.set(_.group, group.id)
-          targetNode.attributes.set(_.group, group.id)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    }
+    // for (const compound of compounds) {
+    //   if (compound.depth! > 1 || this.hasInternalEdges(compound.id)) {
+    //     continue
+    //   }
+    //   const subgraph = nonNullable(this.getSubgraph(compound.id), `Subgraph not found for ${compound.id}`)
+    //   let chunkSize = 2
+    //   switch (true) {
+    //     case compound.children.length % 4 === 0 || compound.children.length % 4 >= 2:
+    //       chunkSize = 4
+    //       break
+    //     case compound.children.length % 3 === 0 || compound.children.length % 3 === 2:
+    //       chunkSize = 3
+    //       break
+    //   }
+    //   if (compound.children.length <= chunkSize) {
+    //     subgraph.set(_.rank, 'same')
+    //     continue
+    //   }
+    //   chunk(compound.children, chunkSize).forEach((chunk) => {
+    //     if (chunk.length <= 1) {
+    //       return
+    //     }
+    //     const ranked = subgraph.createSubgraph({
+    //       [_.rank]: 'same'
+    //     })
+    //     for (const child of chunk) {
+    //       const nd = this.getGraphNode(child)
+    //       if (nd) {
+    //         ranked.node(nd.id)
+    //       }
+    //     }
+    //   })
+    // }
+
+    this.assignGroups()
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -69,12 +81,33 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    if (lhead || ltail) {
+    const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
+
+    if (hasCompoundEndpoint) {
       const sourceId = source.attributes.get(_.likec4_id) as Fqn
       const targetId = target.attributes.get(_.likec4_id) as Fqn
       const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
       if (existingVisibleEdge) {
         e.attributes.set(_.weight, 0)
+      }
+    }
+
+    if (!hasCompoundEndpoint) {
+      let weight = 1
+      // "Strengthen" edges that are single in/out
+      switch (true) {
+        case sourceNode.outEdges.length === 1 && targetNode.inEdges.length === 1:
+          weight = Math.max(targetNode.outEdges.length + sourceNode.inEdges.length, 2)
+          break
+        case sourceNode.outEdges.length === 1 && sourceNode.inEdges.length <= 1:
+          weight = targetNode.inEdges.length - sourceNode.inEdges.length
+          break
+        case targetNode.inEdges.length === 1 && targetNode.outEdges.length <= 1:
+          weight = sourceNode.outEdges.length - targetNode.outEdges.length
+          break
+      }
+      if (weight > 1) {
+        e.attributes.set(_.weight, weight)
       }
     }
 
@@ -136,24 +169,29 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       e.attributes.set(_.arrowtail, toArrowType(tail))
     }
 
+    // Skip the following heuristic if this is the only edge in view
+    if (viewEdges.length === 1) {
+      return e
+    }
+
     // This heuristic removes the rank constraint from the edge
     // if it is the only edge within container.
     let otherEdges
     if (edgeParentId === null && sourceNode.parent == null && targetNode.parent == null) {
       otherEdges = viewEdges.filter(e => {
-        // hide self
+        // exclude self
         if (e.id === edge.id) {
           return false
         }
-        // hide edges with the same endpoints
+        // exclude edges inside clusters
+        if (e.parent !== null) {
+          return false
+        }
+        // exclude edges with the same endpoints
         if (
           (e.source === edge.source && e.target === edge.target)
           || (e.source === edge.target && e.target === edge.source)
         ) {
-          return false
-        }
-        // hide edges inside clusters
-        if (e.parent !== null) {
           return false
         }
         const edgeSource = this.viewElement(e.source)
@@ -166,12 +204,12 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
         return edgeSource.parent == null && edgeTarget.parent == null
       })
     } else {
-      otherEdges = this.findNestedEdges(edgeParentId).filter(e => {
-        // hide self
+      otherEdges = this.findInternalEdges(edgeParentId).filter(e => {
+        // exclude self
         if (e.id === edge.id) {
           return false
         }
-        // hide edges with the same endpoints
+        // exclude edges with the same endpoints
         if (
           (e.source === edge.source && e.target === edge.target)
           || (e.source === edge.target && e.target === edge.source)
@@ -185,7 +223,7 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
     if (isTheOnlyEdge) {
       if (edgeParentId === null || this.leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
-        // e.attributes.set(_.minlen, 0)
+        e.attributes.set(_.minlen, 1)
         e.attributes.set(_.constraint, false)
       }
     }

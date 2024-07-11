@@ -6,11 +6,11 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
+  TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  mclimit = 5;
-  nodesep = 1.945;
-  ranksep = 1.667;
+  nodesep = 1.5;
+  ranksep = 1.528;
   pack = 180;
   packmode = "array_3";
   pad = 0.167;
@@ -21,6 +21,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     labelloc = "t";
   ];
   edge [
+    arrowsize = 0.75;
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
@@ -77,6 +78,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
@@ -92,11 +94,11 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
+  TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  mclimit = 5;
-  nodesep = 1.945;
-  ranksep = 1.667;
+  nodesep = 1.5;
+  ranksep = 1.528;
   pack = 180;
   packmode = "array_3";
   pad = 0.167;
@@ -107,6 +109,7 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     labelloc = "t";
   ];
   edge [
+    arrowsize = 0.75;
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
@@ -203,6 +206,8 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
         style = "dashed";
+        weight = 3;
+        minlen = 1;
         constraint = false;
       ];
     }
@@ -220,16 +225,19 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   "support" -> "adminpanel" [
     likec4_id = "support:cloud.frontend.adminPanel";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "customer" -> "dashboard" [
     likec4_id = "customer:cloud.frontend.dashboard";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "storage" -> "amazon" [
     likec4_id = "cloud.backend.storage:amazon";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
@@ -245,11 +253,11 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
+  TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  mclimit = 5;
-  nodesep = 1.945;
-  ranksep = 1.667;
+  nodesep = 1.5;
+  ranksep = 1.528;
   pack = 180;
   packmode = "array_3";
   pad = 0.167;
@@ -260,6 +268,7 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     labelloc = "t";
   ];
   edge [
+    arrowsize = 0.75;
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
@@ -326,23 +335,28 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       style = "dashed";
+      weight = 3;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
+      minlen = 1;
       constraint = false;
     ];
   }
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "backend" -> "amazon" [
     likec4_id = "cloud.backend:amazon";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
@@ -358,11 +372,11 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
+  TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  mclimit = 5;
-  nodesep = 1.945;
-  ranksep = 1.667;
+  nodesep = 1.5;
+  ranksep = 1.528;
   pack = 180;
   packmode = "array_3";
   pad = 0.167;
@@ -373,6 +387,7 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
     labelloc = "t";
   ];
   edge [
+    arrowsize = 0.75;
     fontname = "Helvetica";
     fontsize = 14;
     penwidth = 2;
@@ -423,16 +438,19 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   "customer" -> "cloud" [
     likec4_id = "customer:cloud";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     style = "dashed";
+    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";

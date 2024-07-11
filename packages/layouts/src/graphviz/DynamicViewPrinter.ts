@@ -1,6 +1,6 @@
 import type { ComputedDynamicView, ComputedEdge } from '@likec4/core'
 import { DefaultArrowType, DefaultRelationshipColor, defaultTheme as Theme, extractStep } from '@likec4/core'
-import { first, last } from 'remeda'
+import { first, isNonNullish, isNullish, last } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
@@ -19,11 +19,16 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     return G
   }
 
+  protected override buildGraphvizModel(G: RootGraphModel): void {
+    super.buildGraphvizModel(G)
+    this.assignGroups()
+  }
+
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
     const { nodes: viewNodes } = this.view
     const [sourceFqn, targetFqn] = edge.dir === 'back' ? [edge.target, edge.source] : [edge.source, edge.target]
-    const [, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
-    const [, target, lhead] = this.edgeEndpoint(targetFqn, first)
+    const [sourceNode, source, ltail] = this.edgeEndpoint(sourceFqn, nodes => last(nodes))
+    const [targetNode, target, lhead] = this.edgeEndpoint(targetFqn, first)
 
     const e = G.edge([source, target], {
       [_.likec4_id]: edge.id,
@@ -45,14 +50,32 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       })
     }
 
+    const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
+
+    if (!hasCompoundEndpoint) {
+      let weight = 1
+      // "Strengthen" edges that are single in/out
+      switch (true) {
+        case sourceNode.outEdges.length === 1 && sourceNode.inEdges.length <= 1:
+          weight = targetNode.inEdges.length - sourceNode.inEdges.length
+          break
+        case targetNode.inEdges.length === 1 && targetNode.outEdges.length <= 1:
+          weight = sourceNode.outEdges.length - targetNode.outEdges.length
+          break
+      }
+      if (weight > 1) {
+        e.attributes.set(_.weight, weight)
+      }
+    }
+
     // IF we already have "seen" the target node in previous steps
     // We don't want constraints to be applied
     const sourceIdx = viewNodes.findIndex(n => n.id === sourceFqn)
     const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
-    if (targetIdx < sourceIdx) {
+    if (targetIdx < sourceIdx || targetIdx === sourceIdx) {
       e.attributes.apply({
         [_.constraint]: false,
-        [_.minlen]: 1
+        [_.minlen]: targetIdx === sourceIdx ? 0 : 1
       })
     }
 

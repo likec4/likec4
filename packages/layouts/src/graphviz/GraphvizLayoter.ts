@@ -1,5 +1,4 @@
 import { type ComputedView, type DiagramView, isComputedDynamicView } from '@likec4/core'
-import { DEV } from 'esm-env'
 import { DynamicViewPrinter } from './DynamicViewPrinter'
 import { ElementViewPrinter } from './ElementViewPrinter'
 import { parseGraphvizJson } from './GraphvizParser'
@@ -7,9 +6,8 @@ import type { DotSource } from './types'
 
 export interface GraphvizPort {
   unflatten(dot: DotSource): Promise<DotSource>
-
+  acyclic(dot: DotSource): Promise<DotSource>
   layoutJson(dot: DotSource): Promise<string>
-
   svg(dot: DotSource): Promise<string>
 }
 
@@ -50,29 +48,17 @@ export class GraphvizLayouter {
       ? new DynamicViewPrinter(computedView)
       : new ElementViewPrinter(computedView)
 
-    if (DEV) {
-      console.log(`Dot source ${computedView.id}:`)
-      console.log(printer.print() + '\n\n')
-    }
-
     if (computedView.manualLayout) {
       printer.applyManualLayout(computedView.manualLayout)
-      if (DEV) {
-        console.log('After manual layout')
-        console.log(printer.print() + '\n\n')
-      }
     }
 
     if (isComputedDynamicView(computedView)) {
       return printer.print()
     }
 
-    const dot = await this.graphviz.unflatten(printer.print())
-
-    if (DEV) {
-      console.log(`Unflattened source ${computedView.id}:`)
-      console.log(dot + '\n\n')
-    }
+    let dot = printer.print()
+    // let dot = await this.graphviz.acyclic(printer.print())
+    dot = await this.graphviz.unflatten(dot)
 
     return dot
   }

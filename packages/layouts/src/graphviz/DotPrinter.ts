@@ -1,11 +1,13 @@
 import {
+  compareFqnHierarchically,
   DefaultRelationshipColor,
   defaultTheme as Theme,
   DefaultThemeColor,
   invariant,
   nameFromFqn,
   nonNullable,
-  parentFqn
+  parentFqn,
+  parentFqnPredicate
 } from '@likec4/core'
 import type {
   ComputedEdge,
@@ -15,7 +17,7 @@ import type {
   RelationshipLineType,
   ViewManualLayout
 } from '@likec4/core/types'
-import { entries, first, isNullish, isNumber, values } from 'remeda'
+import { entries, filter, first, isNullish, isNumber, map, pipe, reverse, sort, take, values } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -136,21 +138,20 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
 
   protected createGraph(): RootGraphModel {
-    const isHorizontal = this.view.autoLayout === 'LR' || this.view.autoLayout === 'RL'
+    const isVertical = this.view.autoLayout === 'TB' || this.view.autoLayout === 'BT'
     const G = digraph({
       [_.bgcolor]: 'transparent',
       [_.layout]: 'dot',
       [_.compound]: true,
       [_.rankdir]: this.view.autoLayout,
-      // [_.TBbalance]: 'min',
+      [_.TBbalance]: 'max',
       [_.splines]: 'spline',
       [_.outputorder]: 'nodesfirst',
-      [_.mclimit]: 5,
+      // [_.mclimit]: 5,
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
-      [_.nodesep]: pxToInch(isHorizontal ? 120 : 140),
-      [_.ranksep]: pxToInch(isHorizontal ? 140 : 120),
-      // [_.ranksep]: `1.5 equally`,
+      [_.nodesep]: pxToInch(isVertical ? 108 : 144),
+      [_.ranksep]: pxToInch(isVertical ? 110 : 72),
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(12)
@@ -182,6 +183,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
     edge.apply({
+      [_.arrowsize]: 0.75,
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
@@ -303,7 +305,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     }
     const prefix = parentId + '.'
     return this.view.nodes.filter(
-      n => !isCompound(n) && (n.parent === parentId || n.parent?.startsWith(prefix))
+      n => !isCompound(n) && n.id.startsWith(prefix)
     )
   }
 
@@ -323,39 +325,83 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   }
 
   /**
-   * In case edge with cluster as endpoint, picks nested node to use as endpoint
+   * In case edge has a cluster as endpoint,
+   * pick nested node to use as endpoint
    */
   protected edgeEndpoint(
-    sourceId: Fqn,
-    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined = first
+    endpointId: Fqn,
+    pickFromCluster: (data: ComputedNode[]) => ComputedNode | undefined
   ) {
-    let element = this.viewElement(sourceId)
-    let endpoint = this.getGraphNode(sourceId)
-    let ltail: string | undefined
+    let element = this.viewElement(endpointId)
+    let endpoint = this.getGraphNode(endpointId)
+    // see https://graphviz.org/docs/attrs/lhead/
+    let logicalEndpoint: string | undefined
+
     if (!endpoint) {
       invariant(isCompound(element), 'endpoint node should be compound')
       // Edge with cluster as endpoint
-      ltail = this.getSubgraph(sourceId)?.id
-      invariant(ltail, `subgraph ${sourceId} not found`)
+      logicalEndpoint = this.getSubgraph(endpointId)?.id
+      invariant(logicalEndpoint, `subgraph ${endpointId} not found`)
       element = nonNullable(
-        pickFromCluster(this.leafElements(sourceId)),
-        `leaf element in ${sourceId} not found`
+        pickFromCluster(this.leafElements(endpointId)),
+        `leaf element in ${endpointId} not found`
       )
       endpoint = nonNullable(
         this.getGraphNode(element.id),
         `source graphviz node ${element.id} not found`
       )
     }
-    return [element, endpoint, ltail] as const
+    return [element, endpoint, logicalEndpoint] as const
   }
 
-  protected findNestedEdges(parentId: Fqn | null): ComputedEdge[] {
+  protected hasInternalEdges(parentId: Fqn | null): boolean {
+    if (parentId === null) {
+      return this.view.edges.length > 0
+    }
+    return this.view.edges.some(parentFqnPredicate(parentId))
+  }
+
+  protected findInternalEdges(parentId: Fqn | null): ComputedEdge[] {
     if (parentId === null) {
       return this.view.edges.slice()
     }
-    const prefix = parentId + '.'
-    return this.view.edges.filter(
-      e => e.parent && (e.parent === parentId || e.parent.startsWith(prefix))
+    return this.view.edges.filter(parentFqnPredicate(parentId))
+  }
+
+  protected assignGroups() {
+    const groups = pipe(
+      this.view.nodes,
+      filter(isCompound),
+      map(n => n.id),
+      sort(compareFqnHierarchically),
+      reverse(),
+      map(id => {
+        // edges only inside clusters, compound endpoints are not considered
+        const edges = this.findInternalEdges(id).filter(e =>
+          e.source !== e.target && !!this.getGraphNode(e.source) && !!this.getGraphNode(e.target)
+        )
+        return { id, edges }
+      }),
+      filter(({ edges }) => edges.length > 1 && edges.length <= 8),
+      // take only first 4 groups, otherwise grahviz eats the memory
+      take(4)
     )
+
+    const processed = new Set<Fqn>()
+    for (const group of groups) {
+      const edges = group.edges.filter(e => !processed.has(e.source) && !processed.has(e.target))
+      for (const edge of edges) {
+        try {
+          const sourceNode = nonNullable(this.getGraphNode(edge.source), `Graphviz Node not found for ${edge.source}`)
+          const targetNode = nonNullable(this.getGraphNode(edge.target), `Graphviz Node not found for ${edge.target}`)
+          processed.add(edge.source)
+          processed.add(edge.target)
+          sourceNode.attributes.set(_.group, group.id)
+          targetNode.attributes.set(_.group, group.id)
+        } catch (e) {
+          console.error(e)
+        }
+      }
+    }
   }
 }

@@ -1,6 +1,8 @@
 import type { Element, Fqn } from '../types'
 import { isString } from './guards'
 
+type Predicate<T> = (x: T) => boolean
+
 export function nameFromFqn(fqn: Fqn) {
   const lastDot = fqn.lastIndexOf('.')
   if (lastDot > 0) {
@@ -62,6 +64,11 @@ export function parentFqn(fqn: Fqn): Fqn | null {
     return fqn.substring(0, lastDot) as Fqn
   }
   return null
+}
+
+export function parentFqnPredicate<T extends { parent: Fqn | null }>(parent: Fqn): Predicate<T> {
+  const prefix = parent + '.'
+  return (e: T) => !!e.parent && (e.parent === parent || e.parent.startsWith(prefix))
 }
 
 /**

@@ -1,6 +1,7 @@
 import { type ComputedNode, invariant, nonexhaustive, type Point, type RelationshipArrowType } from '@likec4/core'
 import { scale, toHex, transparentize } from 'khroma'
 import type { ArrowType, Color } from 'ts-graphviz'
+
 export function isCompound(node: ComputedNode) {
   return node.children.length > 0
 }

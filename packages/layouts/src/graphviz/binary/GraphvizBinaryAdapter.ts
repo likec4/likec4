@@ -64,6 +64,10 @@ export class GraphvizBinaryAdapter implements GraphvizPort {
     })
   }
 
+  async acyclic(_dot: DotSource): Promise<DotSource> {
+    return Promise.reject(new Error('Method not implemented.'))
+  }
+
   async svg(dot: DotSource): Promise<string> {
     return await limit(async () => {
       const result = await execa(this.path, ['-Tsvg', '-y'], {
