@@ -55,7 +55,7 @@
     "esm-env": "^1.0.0",
     "fast-equals": "^5.0.1",
     "framer-motion": "^11.2.13",
-    "remeda": "^2.2.2",
+    "remeda": "^2.3.0",
     "zustand": "^4.5.4"
   },
   "peerDependencies": {
