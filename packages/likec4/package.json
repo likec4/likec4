@@ -139,7 +139,7 @@
     "langium": "3.1.2",
     "mkdirp": "^3.0.1",
     "npm-run-all2": "^6.2.2",
-    "p-limit": "^5.0.0",
+    "p-limit": "^6.0.0",
     "package-up": "^5.0.0",
     "picocolors": "^1.0.1",
     "postcss": "^8.4.39",
