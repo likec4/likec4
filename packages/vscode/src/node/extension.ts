@@ -92,7 +92,7 @@ function createLanguageClient(context: vscode.ExtensionContext) {
 
   // The glob pattern used to find likec4 source files inside the workspace
   const scheme = isVirtual() ? 'vscode-vfs' : 'file'
-  const documentSelector = isWindows()
+  const documentSelector = (isWindows() || workspaceFolders.length === 0)
     ? [
       { language: languageId, scheme } // TODO: Can't figure out why
     ]
