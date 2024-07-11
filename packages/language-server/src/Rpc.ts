@@ -46,6 +46,8 @@ export class Rpc implements Disposable {
       }
     )
 
+    let isFirstBuild = true
+
     this.disposables.push(
       Disposable.create(() => {
         notifyModelParsed.cancel()
@@ -75,6 +77,25 @@ export class Rpc implements Disposable {
   changed (total ${changed.length}):${docs.map(d => '\n    - ' + d).join('')}
   deleted (total ${deleted.length}):${deleted.map(d => '\n    - ' + d.toString()).join('\n')}`
         )
+
+        if (!isFirstBuild && (changed.length + deleted.length) > 0) {
+          await Promise.allSettled(
+            [...changed, ...deleted].map(async d => {
+              const uri = d.toString()
+              logger.debug(`clear diagnostics for ${uri}`)
+              try {
+                await connection.sendDiagnostics({
+                  uri,
+                  diagnostics: []
+                })
+              } catch (e) {
+                // Ignore
+                logger.warn(`error clearing diagnostics for ${uri}: ${e}`)
+              }
+            })
+          )
+        }
+        isFirstBuild = false
         await DocumentBuilder.update(changed, deleted, cancelToken)
       }),
       connection.onRequest(locate, params => {
