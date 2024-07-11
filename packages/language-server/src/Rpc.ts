@@ -3,7 +3,7 @@ import { logError, logger } from './logger'
 import type { LikeC4Services } from './module'
 
 import { nonexhaustive } from '@likec4/core'
-import { Disposable, URI, UriUtils } from 'langium'
+import { Disposable, interruptAndCheck, URI, UriUtils } from 'langium'
 import { isLikeC4LangiumDocument } from './ast'
 import {
   buildDocuments,
@@ -94,6 +94,7 @@ export class Rpc implements Disposable {
               }
             })
           )
+          await interruptAndCheck(cancelToken)
         }
         isFirstBuild = false
         await DocumentBuilder.update(changed, deleted, cancelToken)
