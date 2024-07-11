@@ -12302,14 +12302,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^5.0.7":
-  version: 5.0.7
-  resolution: "rimraf@npm:5.0.7"
+"rimraf@npm:^5.0.8":
+  version: 5.0.9
+  resolution: "rimraf@npm:5.0.9"
   dependencies:
     glob: "npm:^10.3.7"
   bin:
     rimraf: dist/esm/bin.mjs
-  checksum: 10c0/bd6dbfaa98ae34ce1e54d1e06045d2d63e8859d9a1979bb4a4628b652b459a2d17b17dc20ee072b034bd2d09bd691e801d24c4d9cfe94e16fdbcc8470a1d4807
+  checksum: 10c0/87374682492b9e64de9c6fcbf2c8f209c7a2cd0e9749b3732eef8a62c6f859a9ed996d46f662d9ad5dd38c2c469f8e88de56b6c509026070ee3f06369cac1bc8
   languageName: node
   linkType: hard
 
@@ -12420,7 +12420,7 @@ __metadata:
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.7"
     npm-run-all2: "npm:^6.2.0"
-    rimraf: "npm:^5.0.7"
+    rimraf: "npm:^5.0.8"
     shipjs: "npm:^0.26.3"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.0.6"
