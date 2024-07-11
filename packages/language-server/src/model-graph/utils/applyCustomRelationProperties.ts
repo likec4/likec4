@@ -25,11 +25,15 @@ export function applyCustomRelationProperties(
     const isTarget = elementExprToPredicate(relation.target)
     const satisfies = (edge: ComputedEdge) => {
       const source = nodes.find(n => n.id === edge.source)
-      if (!source || !isSource(source)) {
+      const target = nodes.find(n => n.id === edge.target)
+      if (!source || !target) {
         return false
       }
-      const target = nodes.find(n => n.id === edge.target)
-      return target && isTarget(target)
+      let result = isSource(source) && isTarget(target)
+      if (!result && relation.isBidirectional) {
+        result = isSource(target) && isTarget(source)
+      }
+      return result
     }
     edges.forEach((edge, i) => {
       if (satisfies(edge)) {

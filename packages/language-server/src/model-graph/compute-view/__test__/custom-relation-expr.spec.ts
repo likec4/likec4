@@ -91,4 +91,35 @@ describe('custom-relation-expr', () => {
       }
     `)
   })
+
+  it('handles <->', () => {
+    // in model we have cloud -> amazon
+    const { edges, edgeIds } = computeView([
+      $include($customRelation(
+        'amazon.* <-> cloud.*',
+        {
+          color: 'red',
+          title: 'custom label'
+        }
+      ))
+    ])
+    expect(edgeIds).toEqual([
+      'cloud.backend:amazon.s3'
+    ])
+    const [edge1] = edges
+    expect(edge1).toMatchInlineSnapshot(`
+      {
+        "color": "red",
+        "id": "cloud.backend:amazon.s3",
+        "isCustomized": true,
+        "label": "custom label",
+        "parent": null,
+        "relations": [
+          "cloud.backend.storage:amazon.s3",
+        ],
+        "source": "cloud.backend",
+        "target": "amazon.s3",
+      }
+    `)
+  })
 })
