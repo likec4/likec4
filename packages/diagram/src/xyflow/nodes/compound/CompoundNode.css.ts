@@ -43,8 +43,12 @@ export const compoundBody = style({
   position: 'relative',
   borderRadius: 6,
   boxShadow: '0 4px 10px 0.5px rgba(0,0,0,0.1) , 0 2px 2px -1px rgba(0,0,0,0.4)',
-  padding: 8,
+  padding: 0,
+  margin: 0,
   transition: 'all 200ms ease-out',
+  backgroundClip: 'padding-box',
+  overflow: 'hidden',
+  cursor: 'default',
   selectors: {
     [`:where(.react-flow__node.selected) &`]: {
       boxShadow: 'none'
@@ -62,11 +66,9 @@ export const compoundBody = style({
     left: 0,
     width: '100%',
     height: '100%',
-    borderRadius: 6,
     pointerEvents: 'none',
     transition: 'background 175ms ease-out, opacity 175ms ease-out',
-    background: vars.element.fill,
-    backgroundClip: 'padding-box'
+    background: vars.element.fill
   }
 })
 
@@ -74,16 +76,15 @@ const opacityDeltaOnHover = createVar('opacityDeltaOnHover')
 export const transparent = style({
   borderStyle: 'dashed',
   borderWidth: 3,
-  padding: 6,
   boxShadow: 'none',
   borderColor: `color-mix(in srgb , ${vars.element.stroke}, transparent ${fallbackVar(varBorderTransparency, '10%')})`,
-  backgroundClip: 'padding-box',
   vars: {
     [opacityDeltaOnHover]: '0',
     '--ai-bg': `color-mix(in srgb , ${vars.element.fill},  transparent 99%)`
   },
   ':before': {
-    transitionDelay: '200ms',
+    borderRadius: 'unset',
+    transitionDelay: '100ms',
     opacity: calc.add(fallbackVar(varOpacity, '1'), opacityDeltaOnHover)
   },
   selectors: {
@@ -94,7 +95,7 @@ export const transparent = style({
     // },
     [`:where([data-hovered]) &`]: {
       vars: {
-        [opacityDeltaOnHover]: '.07'
+        [opacityDeltaOnHover]: '.08'
       }
     }
   }
@@ -102,31 +103,31 @@ export const transparent = style({
 
 export const title = style({
   fontFamily: vars.compound.font,
-  fontOpticalSizing: 'auto',
-  fontStyle: 'normal',
   textAlign: 'left',
-  display: 'inline-block',
   fontWeight: 600,
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  lineHeight: 1,
-  opacity: 0.8,
+  lineHeight: 1.25,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  paddingLeft: 12
+  paddingLeft: 12,
+  paddingTop: 8,
+  paddingBottom: 6,
+  mixBlendMode: 'screen',
+  selectors: {
+    [`:where(.react-flow__node.draggable) &`]: {
+      cursor: 'grab'
+    }
+  }
 })
 export const titleWithNavigation = style({
-  paddingLeft: 26
+  paddingLeft: 30
 })
 
 globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {
   vars: {
     ['--_compound-title-color']: vars.element.stroke
   }
-})
-
-globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) ${title}`, {
-  opacity: 1
 })
 
 const indicatorKeyframes = keyframes({
@@ -203,10 +204,10 @@ export const navigateBtn = style({
   position: 'absolute',
   pointerEvents: 'all',
   left: 3,
-  top: 7,
+  top: 6,
   cursor: 'pointer',
   color: `var(--_compound-title-color,${navigateBtnColor})`,
-  transformOrigin: '90% 70%',
+  transformOrigin: '90% 50%',
   opacity: 0.75,
   transition: 'all 150ms ease-out',
   transitionDelay: '0ms',
@@ -231,7 +232,7 @@ export const navigateBtn = style({
     [`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent) &`]: {
       opacity: 0.85,
       vars: {
-        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 50%)`,
+        '--ai-bg-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 60%)`,
         '--ai-hover': `color-mix(in srgb , ${vars.element.fill},  transparent 20%)`
       }
     },
@@ -247,8 +248,8 @@ export const navigateBtn = style({
   }
 })
 globalStyle(`${navigateBtn} svg.icon`, {
-  width: '70%',
-  height: '70%',
+  width: '75%',
+  height: '75%',
   strokeWidth: 1.5
 })
 

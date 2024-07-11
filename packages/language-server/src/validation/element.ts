@@ -6,6 +6,7 @@ const { getDocument } = AstUtils
 
 export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Element> => {
   const fqnIndex = services.likec4.FqnIndex
+  const locator = services.workspace.AstNodeLocator
   return (el, accept) => {
     const fqn = fqnIndex.getFqn(el)
     if (!fqn) {
@@ -15,12 +16,15 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
       })
       return
     }
+    const doc = getDocument(el)
+    const docUri = doc.uri
+    const elPath = locator.getAstNodePath(el)
     const withSameFqn = fqnIndex
       .byFqn(fqn)
-      .filter(v => v.el !== el)
+      .filter(v => v.documentUri !== docUri || v.path !== elPath)
       .head()
     if (withSameFqn) {
-      const isAnotherDoc = withSameFqn.doc.uri !== getDocument(el).uri
+      const isAnotherDoc = withSameFqn.documentUri !== docUri
       accept(
         'error',
         `Duplicate element name ${el.name !== fqn ? el.name + ' (' + fqn + ')' : el.name}`,
@@ -31,8 +35,8 @@ export const elementChecks = (services: LikeC4Services): ValidationCheck<ast.Ele
             relatedInformation: [
               {
                 location: {
-                  range: withSameFqn.el.$cstNode!.range,
-                  uri: withSameFqn.doc.uri.toString()
+                  range: (withSameFqn.nameSegment?.range ?? withSameFqn.selectionSegment?.range)!,
+                  uri: withSameFqn.documentUri.toString()
                 },
                 message: `conflicting element`
               }

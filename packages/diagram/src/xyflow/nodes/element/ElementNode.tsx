@@ -67,6 +67,7 @@ const isEqualProps = (prev: ElementNodeProps, next: ElementNodeProps) => (
   prev.id === next.id
   && eq(prev.selected ?? false, next.selected ?? false)
   && eq(prev.dragging ?? false, next.dragging ?? false)
+  && eq(prev.draggable ?? false, next.draggable ?? false)
   && eq(prev.width ?? 0, next.width ?? 0)
   && eq(prev.height ?? 0, next.height ?? 0)
   && eq(prev.data.element, next.data.element)
@@ -78,6 +79,7 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
     element
   },
   dragging,
+  // draggable = false,
   selected = false,
   width,
   height

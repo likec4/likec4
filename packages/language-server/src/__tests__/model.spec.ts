@@ -108,6 +108,10 @@ describe.concurrent('model', () => {
         #three
         title 'Person4'
       }
+      user5 = person {
+        #one #two #three;
+        title 'Person4'
+      }
     }`
 
   test('fail if name is string').invalid`
@@ -140,7 +144,7 @@ describe.concurrent('model', () => {
       }
     }`
 
-  test('not fail if comma left after tag').valid`
+  test('fail if comma left after tag').invalid`
     specification {
       element person
       tag one

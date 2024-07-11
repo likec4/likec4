@@ -82,8 +82,8 @@ const sameControlPoints = (a: XYPosition[] | null, b: XYPosition[] | null) => {
 
 const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) => (
   prev.id === next.id
-  && prev.source === next.source
-  && prev.target === next.target
+  && eq(prev.source, next.source)
+  && eq(prev.target, next.target)
   && eq(prev.selected ?? false, next.selected ?? false)
   && isSame(prev.sourceX, next.sourceX)
   && isSame(prev.sourceY, next.sourceY)
@@ -112,6 +112,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   target,
   interactionWidth
 }) {
+  const [isControlPointDragging, setIsControlPointDragging] = useState(false)
   const diagramStore = useDiagramStoreApi()
   const xyflowStore = useXYStoreApi()
   const { isActive, isEditable, isEdgePathEditable, isHovered, isDimmed } = useDiagramState(s => ({
@@ -209,15 +210,28 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     setLabelPosition(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
 
-  const onControlPointerDown = (index: number, e: React.PointerEvent) => {
+  const onControlPointerDown = (index: number, e: React.PointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
-    if (!domNode) return
+    if (!domNode || e.pointerType !== 'mouse') {
+      return
+    }
     const { xyflow } = diagramStore.getState()
+    if (e.button === 2 && selected && controlPoints.length > 1) {
+      const newControlPoints = controlPoints.slice()
+      newControlPoints.splice(index, 1)
+      xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+      e.stopPropagation()
+      return
+    }
+    if (e.button !== 0) {
+      return
+    }
     e.stopPropagation()
     let hasMoved = false
     let pointer = { x: e.clientX, y: e.clientY }
     const onPointerMove = (e: PointerEvent) => {
       if (!isSamePoint(pointer, [e.clientX, e.clientY])) {
+        setIsControlPointDragging(true)
         if (!hasMoved) {
           diagramStore.getState().cancelSaveManualLayout()
         }
@@ -233,6 +247,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       }
     }
     const onPointerUp = () => {
+      setIsControlPointDragging(false)
       domNode.removeEventListener('pointermove', onPointerMove)
       domNode.removeEventListener('pointerup', onPointerUp)
       if (hasMoved) {
@@ -241,14 +256,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     }
     domNode.addEventListener('pointermove', onPointerMove)
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
-  }
-
-  const onControlPointerDoubleClick = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const { xyflow } = diagramStore.getState()
-    const newControlPoints = controlPoints.slice()
-    newControlPoints.splice(index, 1)
-    xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
   }
 
   const marker = `url(#arrow-${id})`
@@ -262,7 +269,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     <g
       className={clsx([
         edgesCss.container,
-        isDimmed && edgesCss.dimmed
+        isDimmed && edgesCss.dimmed,
+        isControlPointDragging && edgesCss.controlDragging
       ])}
       data-likec4-color={color}
       data-edge-dir={diagramEdge.dir}
@@ -279,23 +287,38 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         <defs>
           <marker
             id={`arrow-${id}`}
-            viewBox="0 0 16 10"
-            // TODO: graphviz cut bezier path at arrow, we don't
-            refX={isModified ? '16' : '4'}
-            refY="5"
+            viewBox="0 0 15 10"
+            refX={isModified ? 12 : 8}
+            refY={5}
             markerWidth="5"
             markerHeight="4"
             markerUnits="strokeWidth"
             preserveAspectRatio="xMaxYMid meet"
             orient="auto-start-reverse">
-            <path
-              d="M 0 0 L 16 5 L 0 10 z"
+            <path d="M 0 0 L 14 5 L 0 10 z" />
+          </marker>
+          {
+            /* <marker
+            id={`arrow-${id}`}
+            viewBox="-12 -5 14 10"
+            // TODO: graphviz cut bezier path at arrow, we don't
+            refX={isModified ? '1' : '-8'}
+            refY={0}
+            markerWidth="5"
+            markerHeight="4"
+            markerUnits="strokeWidth"
+            preserveAspectRatio="xMaxYMid meet"
+            orient="auto-start-reverse">
+            <polygon
+              points="-12,-5 0,0 -12,5 -12,-5"
               stroke="context-stroke"
               fill="context-stroke"
               strokeDasharray={0}
               strokeWidth={1}
-            />
-          </marker>
+            >
+            </polygon>
+          </marker> */
+          }
         </defs>
         <path
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
@@ -317,11 +340,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
       {isEdgePathEditable && controlPoints.map((p, i) => (
         <circle
           onPointerDown={e => onControlPointerDown(i, e)}
-          {...(selected && controlPoints.length > 1 && {
-            onDoubleClick: e => {
-              onControlPointerDoubleClick(i, e)
-            }
-          })}
           className={edgesCss.controlPoint}
           key={i}
           cx={p.x}
@@ -384,6 +402,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
     <EdgeLabelRenderer>
       <Box
         className={clsx([
+          'nodrag nopan',
           edgesCss.container,
           edgesCss.edgeLabel,
           isDimmed && edgesCss.dimmed
@@ -397,7 +416,7 @@ const EdgeLabel = memo<EdgeLabelProps>(({
             pointerEvents: 'none'
           }),
           ...(label && {
-            maxWidth: label.bbox.width + 20
+            maxWidth: label.bbox.width + 18
           }),
           zIndex
         }}

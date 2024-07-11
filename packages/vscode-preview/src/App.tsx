@@ -131,10 +131,10 @@ const App = () => {
             event.stopPropagation()
             event.preventDefault()
           }}
-          onEdgeClick={({ relation, event }) => {
+          onEdgeClick={({ edge, event }) => {
             resetLastClickedNd()
-            if (hasAtLeast(relation.relations, 1)) {
-              extensionApi.goToRelation(relation.relations[0])
+            if (hasAtLeast(edge.relations, 1)) {
+              extensionApi.goToRelation(edge.relations[0])
               event.stopPropagation()
             }
           }}

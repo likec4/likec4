@@ -121,18 +121,10 @@ If element displayed as a group (like a container), you can set opacity:
 
 ```likec4
 specification {
-
   element element {
     style {
       opacity 10%
     }
-  }
-
-}
-model {
-
-  element group {
-    element child
   }
 }
 ```
@@ -146,16 +138,17 @@ If element displayed as a group (like a container), you can change border style:
 
 ```likec4
 specification {
-
   element element {
     style {
       opacity 10%
-      border dotted
+      border dotted // or dashed, solid, none
     }
   }
 }
 
 ```
+
+<LikeC4ThemeView viewId="border_example"/>
 
 #### Icon
 

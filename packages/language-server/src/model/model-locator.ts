@@ -33,18 +33,18 @@ export class LikeC4ModelLocator {
     return doc.c4Elements.find(e => e.id === fqn) ?? null
   }
 
-  public locateElement(fqn: c4.Fqn, property = 'name'): Location | null {
+  public locateElement(fqn: c4.Fqn, _property = 'name'): Location | null {
     const entry = this.fqnIndex.byFqn(fqn).head()
     if (!entry) {
       return null
     }
-    const propertyNode = findNodeForProperty(entry.el.$cstNode, property) ?? entry.el.$cstNode
-    if (!propertyNode) {
-      return null
-    }
+    // const propertyNode = findNodeForProperty(entry.el.$cstNode, property) ?? entry.el.$cstNode
+    // if (!propertyNode) {
+    //   return null
+    // }
     return {
-      uri: entry.doc.uri.toString(),
-      range: propertyNode.range
+      uri: entry.documentUri.toString(),
+      range: entry.nameSegment?.range!
     }
   }
 

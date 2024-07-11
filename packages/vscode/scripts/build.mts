@@ -47,8 +47,8 @@ const base = {
       'process.env.NODE_ENV': '"production"'
     }
   }),
-  sourcemap: true,
-  sourcesContent: isDev,
+  sourcemap: isDev,
+  sourcesContent: false,
   minify: !isDev,
   legalComments: 'none'
 } satisfies BuildOptions

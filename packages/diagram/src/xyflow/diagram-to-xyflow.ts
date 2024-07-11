@@ -59,6 +59,7 @@ export function diagramViewToXYFlowData(
     // const inEdges = node.inEdges.map(e => view.edges.find(edge => edge.id === e)).filter(Boolean)
 
     const id = ns + node.id
+    const draggable = opts.draggable && (!parent || parent.children.length > 1)
     editor.nodes.push({
       id,
       type: isCompound ? 'compound' : 'element',
@@ -66,7 +67,7 @@ export function diagramViewToXYFlowData(
         fqn: node.id,
         element: node
       },
-      draggable: opts.draggable && (!parent || parent.children.length > 1),
+      draggable,
       selectable: opts.selectable,
       deletable: false,
       position,
@@ -78,6 +79,9 @@ export function diagramViewToXYFlowData(
       height: node.height,
       ...(parent && {
         parentId: ns + parent.id
+      }),
+      ...(isCompound && {
+        dragHandle: '.likec4-compound-title'
       })
     })
   }

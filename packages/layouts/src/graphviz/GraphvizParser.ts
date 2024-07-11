@@ -9,6 +9,7 @@ import type {
 } from '@likec4/core'
 import { invariant, nonNullable } from '@likec4/core'
 import { hasAtLeast } from 'remeda'
+import { EDGE_LABEL_MAX_CHARS, wrap } from './dot-labels'
 import type { BoundingBox, GraphvizJson, GVPos } from './types-dot'
 import { inchToPx, pointToPx } from './utils'
 
@@ -132,14 +133,23 @@ function parseEdgePoints({ _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.E
   }
 }
 
-function parseGraphvizEdge(graphvizEdge: GraphvizJson.Edge, computedEdge: ComputedEdge): DiagramEdge {
+function parseGraphvizEdge(
+  graphvizEdge: GraphvizJson.Edge,
+  { id, source, target, dir, label, ...computedEdge }: ComputedEdge
+): DiagramEdge {
   const labelBBox = parseLabelBbox(graphvizEdge)
-  const isBack = graphvizEdge.dir === 'back' || computedEdge.dir === 'back'
+  const isBack = graphvizEdge.dir === 'back' || dir === 'back'
+  label = label ? wrap(label, EDGE_LABEL_MAX_CHARS).join('\n') : null
+
   return {
-    ...computedEdge,
-    ...(isBack ? { dir: 'back' } : {}),
+    id,
+    source,
+    target,
+    label,
     points: parseEdgePoints(graphvizEdge),
-    ...(labelBBox ? { labelBBox } : {})
+    labelBBox,
+    ...(isBack ? { dir: 'back' } : {}),
+    ...computedEdge
   }
 }
 

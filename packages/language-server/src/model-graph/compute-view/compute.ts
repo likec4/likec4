@@ -11,6 +11,8 @@ import {
   ancestorsFqn,
   commonAncestor,
   compareRelations,
+  DefaultLineStyle,
+  DefaultRelationshipColor,
   Expr,
   invariant,
   isAncestor,
@@ -20,9 +22,12 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { hasAtLeast, isTruthy, unique } from 'remeda'
+import { deepEqual as eq } from 'fast-equals'
+import { first, flatMap, hasAtLeast, isTruthy, unique } from 'remeda'
+import type { Writable } from 'type-fest'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
-import { applyElementCustomProperties } from '../utils/applyElementCustomProperties'
+import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
+import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
 import { sortNodes } from '../utils/sortNodes'
@@ -35,6 +40,7 @@ import {
   excludeRelationExpr,
   excludeWildcardRef,
   includeCustomElement,
+  includeCustomRelation,
   includeElementKindOrTag,
   includeElementRef,
   includeExpandedElementExpr,
@@ -132,7 +138,7 @@ export class ComputeCtx {
     // but we need to keep the initial sort
     const initialSort = elements.flatMap(e => nodesMap.get(e.id) ?? [])
 
-    const nodes = applyElementCustomProperties(
+    const nodes = applyCustomElementProperties(
       rules,
       applyViewRuleStyles(
         rules,
@@ -156,7 +162,7 @@ export class ComputeCtx {
       ...view,
       autoLayout: autoLayoutRule?.autoLayout ?? 'TB',
       nodes,
-      edges: [...sortedEdges]
+      edges: applyCustomRelationProperties(rules, nodes, sortedEdges)
     }
   }
 
@@ -185,21 +191,44 @@ export class ComputeCtx {
         relation = relations[0]
       } else {
         relation = relations.find(r => r.source === source && r.target === target)
-        relation ??= relations.find(r => r.source === source || r.target === target)
+        // relation ??= relations.toReversed().find(r => r.source === source || r.target === target)
       }
 
       // This edge represents mutliple relations
       // We use label if only it is the same for all relations
       if (!relation) {
-        const labels = unique(relations.flatMap(r => (isTruthy(r.title) ? r.title : [])))
-        if (hasAtLeast(labels, 1)) {
-          if (labels.length === 1) {
-            edge.label = labels[0]
-          } else {
-            edge.label = '[...]'
+        const shared = relations.reduce((acc, r) => {
+          if (r.color && acc.color !== r.color) {
+            acc.color = undefined
           }
-        }
-        return edge
+          if (r.head && acc.head !== r.kind) {
+            acc.head = undefined
+          }
+          if (r.tail && acc.tail !== r.kind) {
+            acc.tail = undefined
+          }
+          if (r.line && acc.line !== r.line) {
+            acc.line = undefined
+          }
+          if (isTruthy(r.title) && acc.title !== r.title) {
+            acc.title = '[...]'
+          }
+          return acc
+        }, {
+          title: first(flatMap(relations, r => isTruthy(r.title) ? r.title : [])),
+          head: first(flatMap(relations, r => isTruthy(r.head) ? r.head : [])),
+          tail: first(flatMap(relations, r => isTruthy(r.tail) ? r.tail : [])),
+          color: first(flatMap(relations, r => isTruthy(r.color) ? r.color : [])),
+          line: first(flatMap(relations, r => isTruthy(r.line) ? r.line : []))
+        })
+        return Object.assign(
+          edge,
+          isTruthy(shared.title) && { label: shared.title },
+          shared.color && { color: shared.color },
+          shared.line && { line: shared.line },
+          shared.head && { head: shared.head },
+          shared.tail && { tail: shared.tail }
+        )
       }
 
       return Object.assign(
@@ -383,6 +412,12 @@ export class ComputeCtx {
         if (Expr.isCustomElement(expr)) {
           if (isInclude) {
             includeCustomElement.call(this, expr)
+          }
+          continue
+        }
+        if (Expr.isCustomRelationExpr(expr)) {
+          if (isInclude) {
+            includeCustomRelation.call(this, expr)
           }
           continue
         }

@@ -403,3 +403,7 @@ export function includeCustomElement(this: ComputeCtx, expr: Expr.CustomElementE
     this.addEdges(this.graph.anyEdgesBetween(el, currentElements))
   }
 }
+
+export function includeCustomRelation(this: ComputeCtx, expr: Expr.CustomRelationExpr) {
+  includeRelationExpr.call(this, expr.customRelation.relation)
+}

@@ -260,7 +260,8 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     },
     {
       "id": "cloud.frontend.adminPanel:cloud.backend.graphql",
-      "label": "fetches data in zero trust network with sso authentification",
+      "label": "fetches data in zero trust network with
+sso authentification",
       "labelBBox": {
         "height": 36,
         "width": 239,
@@ -341,6 +342,7 @@ exports[`GraphvizWasmAdapter: > computedCloud3levels 1`] = `
     {
       "id": "cloud.backend.graphql:cloud.backend.storage",
       "label": null,
+      "labelBBox": null,
       "parent": "cloud.backend",
       "points": [
         [

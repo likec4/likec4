@@ -63,6 +63,7 @@
     "lint": "run -T eslint src/ --fix",
     "clean": "run -T rimraf dist contrib",
     "test": "vitest run --no-isolate",
+    "vitest:ui": "vitest --no-isolate --ui",
     "test:watch": "vitest"
   },
   "dependencies": {

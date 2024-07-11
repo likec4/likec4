@@ -15,34 +15,19 @@ model {
     element child "Opacity 10%"
   }
 
-  opacity25 = group "Group" {
+  opacity30 = group "Group" {
     style {
-      opacity 25%
+      opacity 30%
     }
-    element child "Opacity 25%"
+    element child "Opacity 30%"
   }
 
-  opacity40 = group "Group" {
+  opacity60 = group "Group" {
     style {
-      opacity 40%
+      opacity 60%
     }
-    element child "Opacity 40%"
+    element child "Opacity 60%"
   }
-
-  opacity65 = group "Group" {
-    style {
-      opacity 65%
-    }
-    element child "Opacity 65%"
-  }
-
-  opacity80 = group "Group" {
-    style {
-      opacity 80%
-    }
-    element child "Opacity 80%"
-  }
-
 
   opacity100 = group "Group" {
     style {
@@ -51,12 +36,6 @@ model {
     element child "Opacity 100%"
   }
 
-
- // opacity10.child -> opacity25.child
-//
-//opacity25.child -> opacity50.child
-//opacity50.child -> opacity75.child
-//opacity75.child -> opacity100.child
 }
 
 views {
@@ -66,5 +45,41 @@ views {
     include
       element.kind == group,
       element.kind == element
+
+    style * {
+      color green
+    }
+
+    autoLayout LeftRight
+  }
+
+  view border_example {
+    title "Opacity and border"
+    include
+      opacity10 with {
+        border solid
+      },
+      opacity10.child with {
+        title 'Solid'
+      },
+      opacity30 with {
+        border dashed
+      },
+      opacity30.child with {
+        title 'Dashed'
+      },
+      opacity60 with {
+        border dotted
+      },
+      opacity60.child with {
+        title 'Dotted'
+      },
+
+    style * {
+      color amber
+      opacity 30%
+    }
+
+    autoLayout LeftRight
   }
 }

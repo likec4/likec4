@@ -189,8 +189,12 @@ describe.concurrent('views2', () => {
       await invalid(`
         include random
       `)
-      // inambiqutes Two api: in backend and auth
+      await invalid(`
+        # no comma
+        include system.backend system.model
+      `)
 
+      // inambiqutes Two api: in backend and auth
       await invalid(`
         include system.api
       `)
@@ -415,6 +419,49 @@ describe.concurrent('views2', () => {
       `)
     })
 
+    it('element -> element with { ... }', async ctx => {
+      const { valid, invalid } = await mkTestServices(ctx)
+
+      await valid(`
+        include * -> * with {
+          color red
+          line dotted
+          head normal
+          tail none
+        }
+      `)
+      await valid(`
+        include system -> infra
+      `)
+      await invalid(`
+        include system { } -> infra
+      `)
+      await valid(`
+        include system.backend.* -> infra.*
+      `)
+      await invalid(`
+        include system.backend.* -> random
+      `)
+      await valid(`
+        include
+          * -> *,
+          * -> infra,
+          * -> infra.*,
+          system -> infra,
+          system.backend.* -> infra.*,
+          system.backend.* -> *
+      `)
+      await valid(`
+        exclude
+          * -> *,
+          * -> infra,
+          * -> infra.*,
+          system -> infra,
+          system.backend.* -> infra.*,
+          system.backend.* -> *
+      `)
+    })
+
     it('element <-> element', async ctx => {
       const { valid, invalid } = await mkTestServices(ctx)
 
@@ -457,16 +504,16 @@ describe.concurrent('views2', () => {
       const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
 
       await onlyWarnings(`
-        include * ->
+        include * ->,
       `)
       await invalid(`
-        include * <->
+        include * <->,
       `)
       await valid(`
-        include system ->
+        include system ->,
       `)
       await valid(`
-        include system.backend.* ->
+        include system.backend.* ->,
       `)
       await onlyWarnings(`
         include

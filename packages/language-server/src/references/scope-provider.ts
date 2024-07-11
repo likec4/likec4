@@ -3,12 +3,10 @@ import type { AstNode } from 'langium'
 import {
   type AstNodeDescription,
   AstUtils,
-  CstUtils,
   DefaultScopeProvider,
   DONE_RESULT,
   EMPTY_SCOPE,
   EMPTY_STREAM,
-  GrammarUtils,
   type ReferenceInfo,
   type Scope,
   type Stream,
@@ -19,28 +17,10 @@ import {
 import { ast } from '../ast'
 import { elementRef, getFqnElementRef } from '../elementRef'
 import { logger } from '../logger'
-import type { FqnIndex, FqnIndexEntry } from '../model/fqn-index'
+import type { FqnIndex } from '../model/fqn-index'
 import type { LikeC4Services } from '../module'
 
-const { findNodeForProperty } = GrammarUtils
-const { toDocumentSegment } = CstUtils
 const { getDocument } = AstUtils
-
-function toAstNodeDescription(entry: FqnIndexEntry): AstNodeDescription {
-  const $cstNode = findNodeForProperty(entry.el.$cstNode, 'name')
-  return {
-    documentUri: entry.doc.uri,
-    name: entry.name,
-    ...(entry.el.$cstNode && {
-      selectionSegment: toDocumentSegment(entry.el.$cstNode)
-    }),
-    ...($cstNode && {
-      nameSegment: toDocumentSegment($cstNode)
-    }),
-    path: entry.path,
-    type: ast.Element
-  }
-}
 
 export class LikeC4ScopeProvider extends DefaultScopeProvider {
   private fqnIndex: FqnIndex
@@ -51,7 +31,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
   }
 
   private directChildrenOf(parent: c4.Fqn): Stream<AstNodeDescription> {
-    return this.fqnIndex.directChildrenOf(parent).map(toAstNodeDescription)
+    return this.fqnIndex.directChildrenOf(parent)
   }
 
   // we need lazy resolving here
@@ -61,7 +41,7 @@ export class LikeC4ScopeProvider extends DefaultScopeProvider {
         const element = of()
         const fqn = element && this.fqnIndex.getFqn(element)
         if (fqn) {
-          return this.fqnIndex.uniqueDescedants(fqn).map(toAstNodeDescription).iterator()
+          return this.fqnIndex.uniqueDescedants(fqn).iterator()
         }
         return null
       },

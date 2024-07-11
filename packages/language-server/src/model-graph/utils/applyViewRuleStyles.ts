@@ -1,6 +1,7 @@
 import type { ComputedNode, ViewRule } from '@likec4/core'
-import { Expr, isViewRuleStyle, nonexhaustive, parentFqn } from '@likec4/core'
-import { anyPass, filter, isDefined, isNullish } from 'remeda'
+import { Expr, isViewRuleStyle } from '@likec4/core'
+import { anyPass, filter, isDefined } from 'remeda'
+import { elementExprToPredicate } from './elementExpressionToPredicate'
 
 type Predicate<T> = (x: T) => boolean
 
@@ -16,34 +17,7 @@ export function applyViewRuleStyles(_rules: ViewRule[], nodes: ComputedNode[]) {
         predicates.push(() => true)
         break
       }
-      if (Expr.isElementKindExpr(target)) {
-        predicates.push(
-          target.isEqual ? n => n.kind === target.elementKind : n => n.kind !== target.elementKind
-        )
-        continue
-      }
-      if (Expr.isElementTagExpr(target)) {
-        predicates.push(
-          target.isEqual
-            ? ({ tags }) => !!tags && tags.includes(target.elementTag)
-            : ({ tags }) => isNullish(tags) || !tags.includes(target.elementTag)
-        )
-        continue
-      }
-      if (Expr.isExpandedElementExpr(target)) {
-        predicates.push(n => n.id === target.expanded || parentFqn(n.id) === target.expanded)
-        continue
-      }
-      if (Expr.isElementRef(target)) {
-        const { element, isDescedants } = target
-        predicates.push(
-          isDescedants
-            ? n => n.id.startsWith(element + '.')
-            : n => (n.id as string) === element
-        )
-        continue
-      }
-      nonexhaustive(target)
+      predicates.push(elementExprToPredicate(target))
     }
     filter(nodes, anyPass(predicates)).forEach(n => {
       n.shape = rule.style.shape ?? n.shape

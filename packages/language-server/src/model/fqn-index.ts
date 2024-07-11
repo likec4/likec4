@@ -1,8 +1,8 @@
 import type { Fqn } from '@likec4/core'
 import { nameFromFqn, parentFqn } from '@likec4/core'
-import type { LangiumDocuments, Stream } from 'langium'
+import type { AstNodeDescription, LangiumDocuments, Stream } from 'langium'
 import { DocumentState, DONE_RESULT, MultiMap, stream, StreamImpl } from 'langium'
-import type { ast, FqnIndexedDocument } from '../ast'
+import type { ast, DocFqnIndexAstNodeDescription, FqnIndexedDocument } from '../ast'
 import { ElementOps, isFqnIndexedDocument, isLikeC4LangiumDocument } from '../ast'
 import { logError, logger } from '../logger'
 import type { LikeC4Services } from '../module'
@@ -17,8 +17,6 @@ export interface FqnIndexEntry {
   path: string
 }
 
-const True = () => true
-
 export class FqnIndex {
   protected langiumDocuments: LangiumDocuments
 
@@ -31,7 +29,7 @@ export class FqnIndex {
         logger.debug(`[FqnIndex] onIndexedContent ${docs.length}:\n` + printDocs(docs))
         for (const doc of docs) {
           if (isLikeC4LangiumDocument(doc)) {
-            delete doc.c4fqns
+            delete doc.c4fqnIndex
             delete doc.c4Elements
             delete doc.c4Specification
             delete doc.c4Relations
@@ -53,18 +51,13 @@ export class FqnIndex {
     return this.langiumDocuments.all.filter(isFqnIndexedDocument)
   }
 
-  private entries(filterByFqn: (fqn: Fqn) => boolean = True): Stream<FqnIndexEntry> {
-    return this.documents.flatMap(doc =>
-      doc.c4fqns.entries().flatMap(([fqn, entry]): FqnIndexEntry | FqnIndexEntry[] => {
-        if (filterByFqn(fqn)) {
-          const el = entry.el.deref()
-          if (el) {
-            return { ...entry, fqn, el, doc }
-          }
-        }
-        return []
-      })
-    )
+  private entries(filterByFqn?: (fqn: Fqn) => boolean): Stream<DocFqnIndexAstNodeDescription> {
+    return this.documents.flatMap(doc => {
+      if (filterByFqn) {
+        return doc.c4fqnIndex.keys().filter(filterByFqn).flatMap(fqn => doc.c4fqnIndex.get(fqn))
+      }
+      return doc.c4fqnIndex.values()
+    })
   }
 
   public getFqn(el: ast.Element): Fqn | null {
@@ -83,22 +76,16 @@ export class FqnIndex {
     // return fqn
   }
 
-  public byFqn(fqn: Fqn): Stream<FqnIndexEntry> {
+  public byFqn(fqn: Fqn): Stream<AstNodeDescription> {
     return this.documents.flatMap(doc => {
-      return doc.c4fqns.get(fqn).flatMap(entry => {
-        const el = entry.el.deref()
-        if (el) {
-          return { fqn, el, doc, path: entry.path, name: entry.name }
-        }
-        return []
-      })
+      return doc.c4fqnIndex.get(fqn)
     })
   }
 
-  public directChildrenOf(parent: Fqn): Stream<FqnIndexEntry> {
+  public directChildrenOf(parent: Fqn): Stream<AstNodeDescription> {
     return stream([parent]).flatMap(_parent => {
       const children = this.entries(fqn => parentFqn(fqn) === _parent)
-        .map((entry): [string, FqnIndexEntry] => [entry.name, entry])
+        .map((entry) => [entry.name, entry] as [string, AstNodeDescription])
         .toArray()
       if (children.length === 0) {
         return []
@@ -113,15 +100,15 @@ export class FqnIndex {
   /**
    * Returns descedant elements with unique names in the scope
    */
-  public uniqueDescedants(parent: Fqn): Stream<FqnIndexEntry> {
+  public uniqueDescedants(parent: Fqn): Stream<AstNodeDescription> {
     return new StreamImpl(
       () => {
         const prefix = `${parent}.`
 
         const childrenNames = new Set<string>()
-        const descedants = [] as FqnIndexEntry[]
+        const descedants = [] as AstNodeDescription[]
 
-        const nested = new MultiMap<string, FqnIndexEntry>()
+        const nested = new MultiMap<string, AstNodeDescription>()
 
         this.entries(f => f.startsWith(prefix)).forEach(e => {
           const name = nameFromFqn(e.fqn)
@@ -154,7 +141,7 @@ export class FqnIndex {
         if (iterator) {
           return iterator.next()
         }
-        return DONE_RESULT as IteratorResult<FqnIndexEntry>
+        return DONE_RESULT as IteratorResult<AstNodeDescription>
       }
     )
   }

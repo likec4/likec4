@@ -2,6 +2,7 @@ import { LikeC4Diagram } from '@likec4/diagram'
 import type { LocateParams } from '@likec4/language-server/protocol'
 import { Box, LoadingOverlay, Notification } from '@mantine/core'
 import { IconCheck, IconX } from '@tabler/icons-react'
+import { hasAtLeast } from 'remeda'
 import { useStoreApi, useWorkspaceState, type WorkspaceState } from '../../state'
 import * as css from './styles.css'
 
@@ -85,9 +86,11 @@ export function DiagramPanel() {
               showLocation({ element: element.id })
               event.stopPropagation()
             }}
-            onEdgeClick={({ relation, event }) => {
-              showLocation({ relation: relation.relations[0]! })
-              event.stopPropagation()
+            onEdgeClick={({ edge, event }) => {
+              if (hasAtLeast(edge.relations, 1)) {
+                showLocation({ relation: edge.relations[0] })
+                event.stopPropagation()
+              }
             }}
             onCanvasDblClick={(event) => {
               showLocation({ view: diagram.id })

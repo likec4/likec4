@@ -17,12 +17,14 @@ import {
   SegmentedControl,
   Select,
   Slider,
+  Space,
   Stack,
   Text,
   Tooltip,
   TooltipGroup
 } from '@mantine/core'
-import { useState } from 'react'
+import { shallowEqual } from 'fast-equals'
+import { memo, useState } from 'react'
 import { hasAtLeast, keys, takeWhile } from 'remeda'
 import { useUpdateEffect } from '../../hooks/useUpdateEffect'
 import type { Changes } from '../../LikeC4Diagram.props'
@@ -53,7 +55,7 @@ export type ColorKey = typeof colors[0]['key']
 
 type XYNodesData = Pick<XYFlowNode, 'id' | 'data' | 'type'>
 
-export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) {
+export const NodeOptions = memo<{ selectedNodeIds: string[] }>(({ selectedNodeIds }) => {
   // export function NodeOptions(props: { nodes: XYFlowNode[] }) {
   const diagramApi = useDiagramStoreApi()
   // const nodes = useXYNodesData(props.nodes.map(node => node.id))
@@ -70,7 +72,8 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
   const [firstNode, ...rest] = nodes
 
   // Makes sense to show opacity option only if there is at least one compound node
-  const showOpacityOption = rest.length === 0 && firstNode.type === 'compound'
+  const showOpacityOption = firstNode.type === 'compound'
+    && (rest.length === 0 || rest.every(node => node.type === 'compound'))
 
   const triggerChange = (style: Changes.ChangeElementStyle['style']) => {
     const targets = nodes.map(node => node.data.element.id)
@@ -83,8 +86,11 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
   }
 
   return (
-    <Stack>
+    <Stack gap={'xs'}>
       <div>
+        <Text fz={rem(9)} fw={'500'} c={'dimmed'}>
+          ELEMENT{rest.length > 0 ? 'S' : ``}
+        </Text>
         <Text size="xs" c={rest.length > 0 ? 'dimmed' : ''} truncate>
           {rest.length === 0 ? firstNode.data.element.title : `[ multiple ]`}
         </Text>
@@ -105,11 +111,13 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
       {showOpacityOption && (
         <div key={firstNode.id}>
           <Divider label="opacity and border" labelPosition="left" />
+          <Space h={'xs'} />
           <OpacityOption
             node={firstNode}
             onOpacityChange={(opacity: number) => {
               triggerChange({ opacity })
             }} />
+          <Space h={'sm'} />
           <BorderStyleOption
             node={firstNode}
             onChange={(border: BorderStyle) => {
@@ -121,7 +129,7 @@ export function NodeOptions({ selectedNodeIds }: { selectedNodeIds: string[] }) 
       <NavigateToOption nodes={nodes} />
     </Stack>
   )
-}
+}, (prevProps, nextProps) => shallowEqual(prevProps.selectedNodeIds, nextProps.selectedNodeIds))
 
 function Colors({
   nodes: [firstNode, ...nodes],
@@ -242,26 +250,27 @@ function NavigateToOption({
   return (
     <div>
       <Divider label="navigate to" labelPosition="left" />
-      <Select
-        mt={'xs'}
-        size="xs"
-        variant="filled"
-        value={!isMultiple ? (node.data.element.navigateTo ?? null) : null}
-        disabled={isMultiple}
-        placeholder={isMultiple ? '[ multiple ]' : 'select'}
-        data={node.data.element.navigateTo
-          ? [{ value: node.data.element.navigateTo, label: node.data.element.navigateTo }]
-          : []}
-        // data={ElementShapes}
-        allowDeselect={true}
-        checkIconPosition="right"
-        // onChange={(value) => {
-        //   if (!value || value === selectedShape) {
-        //     return
-        //   }
-        //   onShapeChange(value as ElementShape)
-        // }} />
-      />
+      {isMultiple && (
+        <Text size="xs" c={'dimmed'}>
+          {'[ multiple ]'}
+        </Text>
+      )}
+      {!isMultiple && (
+        <>
+          <Space h={'xs'} />
+          <Select
+            size="xs"
+            variant="filled"
+            value={node.data.element.navigateTo ?? null}
+            placeholder={'select'}
+            data={node.data.element.navigateTo
+              ? [{ value: node.data.element.navigateTo, label: node.data.element.navigateTo }]
+              : []}
+            allowDeselect={true}
+            checkIconPosition="right"
+          />
+        </>
+      )}
     </div>
   )
 }
@@ -281,7 +290,6 @@ function OpacityOption({
 
   return (
     <Slider
-      mt={'xs'}
       size={'sm'}
       color={'dark'}
       value={value}
@@ -304,7 +312,7 @@ function BorderStyleOption({
   }, [selecteBorderStyle])
 
   return (
-    <Box mt={'md'}>
+    <Box>
       <SegmentedControl
         size="xs"
         fullWidth

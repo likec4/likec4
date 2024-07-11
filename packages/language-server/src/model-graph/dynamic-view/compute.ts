@@ -17,7 +17,7 @@ import {
 } from '@likec4/core'
 import { isTruthy, unique } from 'remeda'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
-import { applyElementCustomProperties } from '../utils/applyElementCustomProperties'
+import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyViewRuleStyles } from '../utils/applyViewRuleStyles'
 import { buildComputeNodes } from '../utils/buildComputeNodes'
 
@@ -138,7 +138,7 @@ export class DynamicViewComputeCtx {
       return edge
     })
 
-    const nodes = applyElementCustomProperties(
+    const nodes = applyCustomElementProperties(
       rules,
       applyViewRuleStyles(
         rules,
