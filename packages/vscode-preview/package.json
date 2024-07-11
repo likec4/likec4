@@ -30,7 +30,7 @@
     "@react-hookz/deep-equal": "^2.0.2",
     "@react-hookz/web": "^24.0.4",
     "@tabler/icons-react": "^3.9.0",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/vscode": "~1.88.0",
