@@ -1,6 +1,6 @@
 ---
 title: Styling
-description: Customize diagrams to match your brand, needs or style guide.
+description: How to customize architecture diagrams to match your brand and style guide.
 sidebar: 
   label: Styling
   order: 7
@@ -69,6 +69,10 @@ model {
   }
 }
 ```
+
+#### Per view
+
+[Next section](/dsl/views/#style-predicates) clarifies how to customize elements per view.
 
 ### Style properties
 
@@ -167,6 +171,13 @@ model {
 
 ### Relationship
 
+There are multiple ways to style relationships:
+- Style all relationships of a kind in `specification`
+- Specific relationship in `model`
+- Customize per `view` ([explained here](/dsl/views/#relationship-customization))
+
+#### Relationships of a kind
+
 Relationships can be styled using the [kinds](/dsl/relationships/#relationship-kinds):
 
 ```likec4
@@ -180,8 +191,26 @@ specification {
 }
 ```
 
-At the moment, the styling applies globally and cannot be overridden per view.  
-Let us know and [open an issue](https://github.com/likec4/likec4/issues) if you need it.
+#### Specific Relationship
+
+```likec4
+model {
+  customer -> ui 'opens in browser' {
+    style {
+      line solid
+      color amber
+    }
+  }
+}
+```
+
+#### Relationship per view
+
+[Next section](/dsl/views/#relationship-customization) clarifies how to customize relationships per view.
+
+### Relationship properties
+
+Besides the `color`, relationships may have the following properties:  
 
 #### Line
 
@@ -212,5 +241,17 @@ By default, the head is `normal` and the tail is `none`.
 
 > `onormal` means "outlined normal", i.e. no fill  
 > `odiamond` - "outlined diamond"
+
+```likec4
+model {
+  customer -> ui 'opens in browser' {
+    style {
+      head diamond
+      tail crow
+    }
+  }
+}
+```
+
 
 Refer to [Graphviz arrowType](https://graphviz.org/docs/attr-types/arrowType/) for visuals.

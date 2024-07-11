@@ -1,6 +1,6 @@
 ---
 title: Views
-description: Foster communication, visualize and present the architecture to different stakeholders
+description: Views are architecture diagrams, automatically updated and always reflecting the current state
 sidebar: 
   label: Views
   order: 8
@@ -290,7 +290,7 @@ view {
 ```
 
 <Aside type='tip'>
-  Predicates can be used to exclude relationships and hide elements.
+  Relationship predicates are good for tailoring your diagrams, narrowing down the scope, and focusing on specific parts of the system.
 </Aside>
 
 ###### Outgoing
@@ -326,6 +326,31 @@ Include elements if they have any relationships:
 include customer <-> cloud
 ```
 
+###### Relationship customization
+
+Relationships can be customized per view:
+
+```likec4
+include
+  // Include elements if they have any relationships
+  // and customize these relationships
+  cloud.* <-> amazon.* with {
+    color red
+    line solid
+  },
+  // or only directed 
+  customer -> cloud.*  with {
+    // Override label
+    title 'Customer uses cloud'
+  },  
+```
+
+:::caution
+It is possible to customize relationships only with known endpoints  
+(i.e. [directed](#directed-relationships) or [any between](#any-relationship))   
+For example, `* -> *` is valid, but just outgoing `cloud.* ->` is not
+:::
+
 #### Expand predicate
 
 Expand predicate is a mix of element's and relationship's.  
@@ -353,7 +378,6 @@ Possible values are `TopBottom` (default), `BottomTop`, `LeftRight`, `RightLeft`
 ### Style predicates
 
 Style predicates define how elements are rendered.  
-Example from [BigBank](/examples/bigbank#components):
 
 ```likec4
 view apiApp of internetBankingSystem.apiApplication {
@@ -376,21 +400,26 @@ view apiApp of internetBankingSystem.apiApplication {
     color primary
   }
 
-  // apply apiApplication and nested
+  // apply to apiApplication and nested
   style apiApplication._ {
     color primary
   }
 
-  // apply only to the tagged elements
+  // apply only to elements with specific tag
   style element.tag = #deprecated {
     color muted
   }
+
+  // apply to elements not tagged
+  style element.tag != #deprecated {
+    opacity 20%
+  }  
 }
 ```
 
-<Aside>
-  [Overrides](#with-overrides) have higher priority than style rules.
-</Aside>
+:::caution
+[Overrides](#with-overrides) have higher priority.
+:::
 
 ### Extend views
 
@@ -439,4 +468,4 @@ views {
   }
 
 }
-```* as componentscomponents.AsideAside: components.Asidecomponents.TabItemTabItem: components.TabItemcomponents.TabsTabs: components.Tabscomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Asidecomponents.Aside
+```
