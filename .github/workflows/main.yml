@@ -34,51 +34,21 @@ jobs:
       - name: bootstrap
         uses: ./.github/actions/bootstrap
 
-      - name: build
-        run: yarn ci:build
-
       - name: typecheck
-        run: yarn ci:typecheck
-
-  test:
-    name: test
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    concurrency:
-      group: ${{ github.workflow }}-build
-      cancel-in-progress: true
-    steps:
-      - name: checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-
-      - name: bootstrap
-        uses: ./.github/actions/bootstrap
-
-      - name: typecheck
-        run: yarn typecheck
+        run: yarn typecheck:all
 
       - name: test
         env:
           NODE_ENV: test
         run: yarn ci:test
 
-      # - name: Run СLI test
-      #   run: yarn test:integration
-
-      # - name: Upload CLI test artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: cli-test-artifacts
-      #     path: integration/like4-cli-tests/out/
-      #     if-no-files-found: error
-      #     retention-days: 2
+      - name: build
+        run: yarn build:all
 
   release:
     uses: ./.github/workflows/release.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
-    needs: test
+    needs: build
     concurrency:
       group: ${{ github.workflow }}-release
     secrets: inherit
@@ -86,7 +56,7 @@ jobs:
   vscode:
     uses: ./.github/workflows/vscode.yaml
     if: "contains(github.event.head_commit.message, 'chore: release')"
-    needs: test
+    needs: build
     concurrency:
       group: ${{ github.workflow }}-vscode
     secrets: inherit

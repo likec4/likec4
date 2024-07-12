@@ -44,15 +44,30 @@ jobs:
         uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4
         with:
           name: playground-website
+          if-no-files-found: error
           path: apps/playground/dist/
 
-  deploy-playground:
-    name: deploy
+  deploy-playground-preview:
+    # Deploy to Preview
+    # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
+    # - we are in workflow_dispatch on main branch
+    if: |
+      (
+        github.event_name == 'workflow_dispatch' &&
+        github.ref != 'refs/heads/main'
+      ) || (
+        github.event_name == 'workflow_call' &&
+        (
+          github.ref != 'refs/heads/main' ||
+          !contains(github.event.head_commit.message, 'chore: release')
+        )
+      )
+    name: deploy preview
     runs-on: ubuntu-latest
     needs: build-playground
     timeout-minutes: 10
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'playground-prod' || 'playground-preview' }}
+      name: 'playground-preview'
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
@@ -77,6 +92,53 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=likec4-playground
+          command: pages deploy dist --project-name=likec4-playground --branch preview
+          workingDirectory: apps/playground
+          packageManager: yarn
+
+  deploy-playground-prod:
+    # Deploy to Prod
+    # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
+    # - we are in workflow_dispatch on main branch
+    if: |
+      (
+        github.event_name == 'workflow_dispatch' &&
+        github.ref == 'refs/heads/main'
+      ) || (
+        github.event_name == 'workflow_call' &&
+        github.ref == 'refs/heads/main' &&
+        contains(github.event.head_commit.message, 'chore: release')
+      )
+    name: deploy prod
+    runs-on: ubuntu-latest
+    needs: build-playground
+    timeout-minutes: 10
+    environment:
+      name: 'playground-prod'
+      url: ${{ steps.cloudflare.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: setup Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: download artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: playground-website
+          path: apps/playground/dist/
+
+      - id: cloudflare
+        name: publish to cloudflare
+        uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=likec4-playground --branch main
           workingDirectory: apps/playground
           packageManager: yarn
