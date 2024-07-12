@@ -13,7 +13,6 @@ import { EnsureMantine } from './mantine/EnsureMantine'
 import { DiagramContextProvider } from './state/DiagramContext'
 import { useDiagramStoreApi } from './state/useDiagramStore'
 import { diagramViewToXYFlowData } from './xyflow/diagram-to-xyflow'
-import { EdgeMarkers } from './xyflow/EdgeMarkers'
 import { FitViewOnDiagramChange } from './xyflow/FitviewOnDiagramChange'
 import { SelectEdgesOnNodeFocus } from './xyflow/SelectEdgesOnNodeFocus'
 import { SyncWithDiagram } from './xyflow/SyncWithDiagram'
@@ -163,7 +162,6 @@ const LikeC4DiagramInnerMemo = memo<LikeC4DiagramInnerProps>(function LikeC4Diag
 
   return (
     <>
-      <EdgeMarkers />
       <XYFlow
         defaultNodes={defaultNodes}
         defaultEdges={defaultEdges}

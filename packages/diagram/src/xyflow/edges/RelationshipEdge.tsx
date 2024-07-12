@@ -1,4 +1,11 @@
-import { invariant, type NonEmptyArray, nonNullable, type Point } from '@likec4/core'
+import {
+  invariant,
+  type NonEmptyArray,
+  nonexhaustive,
+  nonNullable,
+  type Point,
+  type RelationshipArrowType
+} from '@likec4/core'
 import { Box } from '@mantine/core'
 import { useIsomorphicLayoutEffect } from '@react-hookz/web'
 import { assignInlineVars } from '@vanilla-extract/dynamic'
@@ -8,9 +15,10 @@ import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
 import { memo, type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
-import { first, hasAtLeast, isArray, isNullish, isTruthy, last } from 'remeda'
+import { first, hasAtLeast, isArray, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state/hooks'
 import { ZIndexes } from '../const'
+import { EdgeMarkers } from '../EdgeMarkers'
 import { useXYStoreApi } from '../hooks'
 import { type RelationshipData, type XYFlowEdge } from '../types'
 import { bezierControlPoints } from '../utils'
@@ -47,6 +55,32 @@ import { getNodeIntersectionFromCenterToPoint } from './utils'
 //   }
 //   return path + segment
 // }
+
+const toMarker = (arrowType?: RelationshipArrowType) => {
+  if (!arrowType || arrowType === 'none') {
+    return undefined
+  }
+  switch (arrowType) {
+    case 'normal':
+    case 'crow':
+      return 'Arrow' as const
+    case 'onormal':
+      return 'OArrow' as const
+    case 'diamond':
+      return 'Diamond' as const
+    case 'odiamond':
+      return 'ODiamond' as const
+    case 'open':
+    case 'vee':
+      return 'Open' as const
+    case 'dot':
+      return 'Dot' as const
+    case 'odot':
+      return `ODot` as const
+    default:
+      nonexhaustive(arrowType)
+  }
+}
 
 function bezierPath(bezierSpline: NonEmptyArray<Point>) {
   let [start, ...points] = bezierSpline
@@ -89,8 +123,6 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && isSame(prev.sourceY, next.sourceY)
   && isSame(prev.targetX, next.targetX)
   && isSame(prev.targetY, next.targetY)
-  && eq(prev.markerEnd, next.markerEnd)
-  && eq(prev.markerStart, next.markerStart)
   && eq(prev.data.stepNum, next.data.stepNum)
   && sameControlPoints(prev.data.controlPoints, next.data.controlPoints)
   && eq(prev.data.edge, next.data.edge)
@@ -109,8 +141,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   sourceY,
   targetX,
   targetY,
-  markerStart,
-  markerEnd,
   style,
   source,
   target,
@@ -265,6 +295,15 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
   }
 
+  let markerStartName = toMarker(diagramEdge.tail)
+  let markerEndName = toMarker(diagramEdge.head ?? 'normal')
+  if (diagramEdge.dir === 'back') {
+    ;[markerStartName, markerEndName] = [markerEndName, markerStartName]
+  }
+
+  const MarkerStart = markerStartName ? EdgeMarkers[markerStartName] : null
+  const MarkerEnd = markerEndName ? EdgeMarkers[markerEndName] : null
+
   return (
     <g
       className={clsx([
@@ -284,6 +323,10 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         strokeWidth={interactionWidth ?? 10}
       />
       <g className={edgesCss.markerContext}>
+        <defs>
+          {MarkerStart && <MarkerStart id={'start' + id} />}
+          {MarkerEnd && <MarkerEnd id={'end' + id} />}
+        </defs>
         <path
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
           d={edgePath}
@@ -297,8 +340,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           style={style}
           strokeLinecap={'round'}
           strokeDasharray={strokeDasharray}
-          markerStart={markerStart}
-          markerEnd={markerEnd}
+          markerStart={MarkerStart ? `url(#start${id})` : undefined}
+          markerEnd={MarkerEnd ? `url(#end${id})` : undefined}
         />
       </g>
 
