@@ -200,6 +200,10 @@ describe.concurrent('specification', () => {
           head normal
           tail none
         }
+        relationship withdots {
+          head dot
+          tail odot
+        }
       }`
 
     test('spec with relationshipkind defining only color').valid`

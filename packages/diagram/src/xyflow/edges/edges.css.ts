@@ -126,10 +126,10 @@ globalStyle(`${controlDragging} *`, {
 
 const strokeKeyframes = keyframes({
   'from': {
-    strokeDashoffset: 18 * 2
+    strokeDashoffset: 18 * 2 + 10
   },
   'to': {
-    strokeDashoffset: 1
+    strokeDashoffset: 10
   }
 })
 
@@ -137,16 +137,16 @@ export const cssEdgePath = style({
   animationDuration: '800ms',
   animationIterationCount: 'infinite',
   animationTimingFunction: 'linear',
-  animationName: strokeKeyframes,
-  animationPlayState: 'paused',
+  animationFillMode: 'both',
+  strokeDashoffset: 10,
   selectors: {
     [`:where([data-edge-hovered='true']) &`]: {
-      animationPlayState: 'running',
-      animationDelay: '350ms',
+      animationName: strokeKeyframes,
+      animationDelay: '450ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
     },
     [`:where(${isSelected}, [data-edge-active='true']) &`]: {
-      animationPlayState: 'running',
+      animationName: strokeKeyframes,
       animationDelay: '0ms',
       transition: 'stroke 130ms ease-out,stroke-width 130ms ease-out'
     },

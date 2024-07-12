@@ -1,7 +1,7 @@
 import { deepEqual as eq } from 'fast-equals'
-import { useXYStoreApi } from './hooks'
 
 import { useEffect } from 'react'
+import { omit } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../state/hooks'
 import { diagramViewToXYFlowData } from './diagram-to-xyflow'
 
@@ -52,11 +52,16 @@ export function SyncWithDiagram() {
     setEdges(updates.edges.map(update => {
       const existing = edgeLookup.get(update.id)
       if (existing) {
-        if (eq(existing.data.controlPoints, update.data.controlPoints) && eq(existing.data.edge, update.data.edge)) {
+        if (
+          eq(existing.data.controlPoints, update.data.controlPoints)
+          && eq(existing.markerStart, update.markerStart)
+          && eq(existing.markerEnd, update.markerEnd)
+          && eq(existing.data.edge, update.data.edge)
+        ) {
           return existing
         }
         return {
-          ...existing,
+          ...omit(existing, ['data', 'markerStart', 'markerEnd']),
           ...update,
           data: {
             ...existing.data,

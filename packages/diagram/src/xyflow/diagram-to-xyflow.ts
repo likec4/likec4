@@ -1,10 +1,33 @@
-import { extractStep, invariant, nonNullable } from '@likec4/core'
-import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
+import { extractStep, invariant, nonexhaustive, nonNullable } from '@likec4/core'
+import type { DiagramNode, DiagramView, Fqn, RelationshipArrowType } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
-import type { XYFlowData } from '../xyflow/types'
+import type { XYFlowData, XYFlowEdge } from '../xyflow/types'
 import { ZIndexes } from './const'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)
+
+const toMarker = (arrowType?: RelationshipArrowType) => {
+  if (!arrowType || arrowType === 'none') {
+    return undefined
+  }
+  switch (arrowType) {
+    case 'normal':
+    case 'crow':
+      return 'likec4-marker-arrow' as const
+    case 'diamond':
+    case 'odiamond':
+      return `likec4-marker-${arrowType}` as const
+    case 'open':
+    case 'onormal':
+    case 'vee':
+      return 'likec4-marker-vee' as const
+    case 'dot':
+    case 'odot':
+      return `likec4-marker-dot` as const
+    default:
+      nonexhaustive(arrowType)
+  }
+}
 
 export function diagramViewToXYFlowData(
   view: Pick<DiagramView, 'id' | 'nodes' | 'edges' | '__' | 'manualLayout'>,
@@ -103,7 +126,7 @@ export function diagramViewToXYFlowData(
 
     // const level = Math.max(nodeZIndex(nodeById(source)), nodeZIndex(nodeById(target)))
 
-    editor.edges.push({
+    let xyedge: XYFlowEdge = {
       id,
       type: 'relationship',
       source: ns + source,
@@ -123,11 +146,22 @@ export function diagramViewToXYFlowData(
           }
           : null
       },
-      // markerEnd: {
-      //   type: MarkerType.ArrowClosed
-      // },
       interactionWidth: 20
-    })
+    }
+
+    let markerStart = toMarker(edge.tail)
+    let markerEnd = toMarker(edge.head ?? 'normal')
+    if (edge.dir === 'back') {
+      ;[markerStart, markerEnd] = [markerEnd, markerStart]
+    }
+    if (markerStart) {
+      xyedge.markerStart = markerStart
+    }
+    if (markerEnd) {
+      xyedge.markerEnd = markerEnd
+    }
+
+    editor.edges.push(xyedge)
   }
 
   return editor

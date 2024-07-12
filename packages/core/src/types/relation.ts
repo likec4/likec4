@@ -13,6 +13,8 @@ export type RelationshipArrowType =
   | 'none'
   | 'normal'
   | 'onormal'
+  | 'dot'
+  | 'odot'
   | 'diamond'
   | 'odiamond'
   | 'crow'

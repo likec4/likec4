@@ -368,6 +368,8 @@ ArrowType returns string:
   'none' |
   'normal' |
   'onormal' |
+  'dot' |
+  'odot' |
   'diamond' |
   'odiamond' |
   'crow' |

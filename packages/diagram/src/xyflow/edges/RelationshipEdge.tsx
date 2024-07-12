@@ -7,7 +7,7 @@ import { EdgeLabelRenderer } from '@xyflow/react'
 import clsx from 'clsx'
 import { curveCatmullRomOpen, line as d3line } from 'd3-shape'
 import { deepEqual, deepEqual as eq } from 'fast-equals'
-import { memo, useRef, useState } from 'react'
+import { memo, type PointerEvent as ReactPointerEvent, useRef, useState } from 'react'
 import { first, hasAtLeast, isArray, isNullish, isTruthy, last } from 'remeda'
 import { useDiagramState, useDiagramStoreApi } from '../../state/hooks'
 import { ZIndexes } from '../const'
@@ -89,6 +89,8 @@ const isEqualProps = (prev: EdgeProps<XYFlowEdge>, next: EdgeProps<XYFlowEdge>) 
   && isSame(prev.sourceY, next.sourceY)
   && isSame(prev.targetX, next.targetX)
   && isSame(prev.targetY, next.targetY)
+  && eq(prev.markerEnd, next.markerEnd)
+  && eq(prev.markerStart, next.markerStart)
   && eq(prev.data.stepNum, next.data.stepNum)
   && sameControlPoints(prev.data.controlPoints, next.data.controlPoints)
   && eq(prev.data.edge, next.data.edge)
@@ -107,6 +109,8 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
   sourceY,
   targetX,
   targetY,
+  markerStart,
+  markerEnd,
   style,
   source,
   target,
@@ -210,17 +214,20 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     setLabelPosition(current => isSamePoint(current, point) ? current : point)
   }, [edgePath])
 
-  const onControlPointerDown = (index: number, e: React.PointerEvent<SVGCircleElement>) => {
+  const onControlPointerDown = (index: number, e: ReactPointerEvent<SVGCircleElement>) => {
     const { domNode } = xyflowStore.getState()
     if (!domNode || e.pointerType !== 'mouse') {
       return
     }
     const { xyflow } = diagramStore.getState()
-    if (e.button === 2 && selected && controlPoints.length > 1) {
+    if (e.button === 2 && controlPoints.length > 1) {
       const newControlPoints = controlPoints.slice()
       newControlPoints.splice(index, 1)
-      xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
       e.stopPropagation()
+      // Defer the update to avoid conflict with the pointerup event
+      setTimeout(() => {
+        xyflow.updateEdgeData(id, { controlPoints: newControlPoints })
+      }, 10)
       return
     }
     if (e.button !== 0) {
@@ -258,13 +265,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
     domNode.addEventListener('pointerup', onPointerUp, { once: true })
   }
 
-  const marker = `url(#arrow-${id})`
-  let markerStart = diagramEdge.tail && diagramEdge.tail !== 'none' ? marker : undefined
-  let markerEnd = isNullish(diagramEdge.head) || diagramEdge.head !== 'none' ? marker : undefined
-  if (diagramEdge.dir === 'back') {
-    ;[markerStart, markerEnd] = [markerEnd, markerStart]
-  }
-
   return (
     <g
       className={clsx([
@@ -284,42 +284,6 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
         strokeWidth={interactionWidth ?? 10}
       />
       <g className={edgesCss.markerContext}>
-        <defs>
-          <marker
-            id={`arrow-${id}`}
-            viewBox="0 0 15 10"
-            refX={isModified ? 12 : 8}
-            refY={5}
-            markerWidth="5"
-            markerHeight="4"
-            markerUnits="strokeWidth"
-            preserveAspectRatio="xMaxYMid meet"
-            orient="auto-start-reverse">
-            <path d="M 0 0 L 14 5 L 0 10 z" />
-          </marker>
-          {
-            /* <marker
-            id={`arrow-${id}`}
-            viewBox="-12 -5 14 10"
-            // TODO: graphviz cut bezier path at arrow, we don't
-            refX={isModified ? '1' : '-8'}
-            refY={0}
-            markerWidth="5"
-            markerHeight="4"
-            markerUnits="strokeWidth"
-            preserveAspectRatio="xMaxYMid meet"
-            orient="auto-start-reverse">
-            <polygon
-              points="-12,-5 0,0 -12,5 -12,-5"
-              stroke="context-stroke"
-              fill="context-stroke"
-              strokeDasharray={0}
-              strokeWidth={1}
-            >
-            </polygon>
-          </marker> */
-          }
-        </defs>
         <path
           className={clsx('react-flow__edge-path', edgesCss.edgePathBg)}
           d={edgePath}
@@ -337,16 +301,25 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
           markerEnd={markerEnd}
         />
       </g>
-      {isEdgePathEditable && controlPoints.map((p, i) => (
-        <circle
-          onPointerDown={e => onControlPointerDown(i, e)}
-          className={edgesCss.controlPoint}
-          key={i}
-          cx={p.x}
-          cy={p.y}
-          r={3}
-        />
-      ))}
+
+      {isEdgePathEditable && (
+        <g
+          onContextMenu={e => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}>
+          {controlPoints.map((p, i) => (
+            <circle
+              onPointerDown={e => onControlPointerDown(i, e)}
+              className={edgesCss.controlPoint}
+              key={i}
+              cx={p.x}
+              cy={p.y}
+              r={3}
+            />
+          ))}
+        </g>
+      )}
       {(data.label || isStepEdge) && (
         <EdgeLabel
           {...({

@@ -94,7 +94,7 @@
     },
     {
       "name": "keyword.control.likec4",
-      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dotted|dynamic|element|exclude|extend|extends|head|icon|include|it|kind|line|link|mobile|model|navigateTo|none|normal|odiamond|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
+      "match": "\\b(autoLayout|border|browser|color|crow|cylinder|dashed|description|diamond|dot|dotted|dynamic|element|exclude|extend|extends|head|icon|include|it|kind|line|link|mobile|model|navigateTo|none|normal|odiamond|odot|of|onormal|opacity|open|person|queue|rectangle|relationship|shape|solid|specification|storage|style|tag|tail|technology|this|title|vee|view|views|with)\\b"
     },
     {
       "name": "keyword.symbol.likec4",

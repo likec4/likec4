@@ -17,6 +17,7 @@ import type { XYFlowEdge, XYFlowInstance, XYFlowNode } from '../xyflow/types'
 import { bezierControlPoints, isSamePoint } from '../xyflow/utils'
 
 export type DiagramStore = {
+  readonly storeDevId: string
   // Incoming props
   view: DiagramView
   readonly: boolean
@@ -85,13 +86,6 @@ export type DiagramInitialState = // Required properties
     | 'nodesSelectable'
     | 'experimentalEdgeEditing'
   >
-  // Optional properties
-  // & Partial<
-  //   Pick<
-  //     DiagramStore,
-  //     'colorScheme'
-  //   >
-  // >
   & LikeC4DiagramEventHandlers
 
 interface DiagramStoreActions {
@@ -123,41 +117,44 @@ interface DiagramStoreActions {
 
 export type DiagramState = Simplify<DiagramStore & DiagramStoreActions>
 
-const DEFAULT_PROPS: Except<DiagramStore, RequiredKeysOf<DiagramInitialState> | 'xystore' | 'xyflow' | 'getContainer'> =
-  {
-    viewSyncDebounceTimeout: null,
-    initialized: false,
-    xyflowSynced: false,
-    previousViews: [],
-    viewportChanged: false,
-    activeDynamicViewStep: null,
-    focusedNodeId: null,
-    hoveredNodeId: null,
-    hoveredEdgeId: null,
-    lastClickedNodeId: null,
-    lastClickedEdgeId: null,
-    dimmed: new StringSet(),
-    lastOnNavigate: null,
-    onChange: null,
-    onNavigateTo: null,
-    onNodeClick: null,
-    onNodeContextMenu: null,
-    onCanvasContextMenu: null,
-    onEdgeClick: null,
-    onEdgeContextMenu: null,
-    onCanvasClick: null,
-    onCanvasDblClick: null
-  }
+const DEFAULT_PROPS: Except<
+  DiagramStore,
+  RequiredKeysOf<DiagramInitialState> | 'xystore' | 'xyflow' | 'getContainer' | 'storeDevId'
+> = {
+  viewSyncDebounceTimeout: null,
+  initialized: false,
+  xyflowSynced: false,
+  previousViews: [],
+  viewportChanged: false,
+  activeDynamicViewStep: null,
+  focusedNodeId: null,
+  hoveredNodeId: null,
+  hoveredEdgeId: null,
+  lastClickedNodeId: null,
+  lastClickedEdgeId: null,
+  dimmed: new StringSet(),
+  lastOnNavigate: null,
+  onChange: null,
+  onNavigateTo: null,
+  onNodeClick: null,
+  onNodeContextMenu: null,
+  onCanvasContextMenu: null,
+  onEdgeClick: null,
+  onEdgeContextMenu: null,
+  onCanvasClick: null,
+  onCanvasDblClick: null
+}
 
 export type CreateDiagramStore = DiagramInitialState & Pick<DiagramStore, 'xystore' | 'xyflow' | 'getContainer'>
 
 const noReplace = false
 
-let storeDevId = 1
+let StoreDevId = 1
 
 const EmptyStringSet: ReadonlySet<string> = new StringSet()
 
 export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props: T) {
+  const storeDevId = 'DiagramStore' + String(StoreDevId++).padStart(2, '0')
   return createWithEqualityFn<
     DiagramState,
     [
@@ -168,9 +165,9 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
     subscribeWithSelector(
       devtools(
         (set, get) => ({
+          storeDevId,
           ...DEFAULT_PROPS,
           ...(props as CreateDiagramStore),
-
           isDynamicView: () => {
             return get().view?.__ === 'dynamic'
           },
@@ -633,7 +630,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
           }
         }),
         {
-          name: `DiagramStore ${storeDevId++} - ${props.view.id}`,
+          name: `${storeDevId} - ${props.view.id}`,
           enabled: DEV
         }
       )

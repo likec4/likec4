@@ -63,8 +63,11 @@ const outlineColor = fallbackVar(
   vars.element.stroke
 )
 
+const indicatorStroke = createVar('indicator-stroke')
+
 export const indicator = style({
-  stroke: vars.element.loContrast,
+  stroke: indicatorStroke,
+  fill: 'none',
   transformOrigin: 'center center',
   strokeWidth: 6,
   animationDuration: '800ms',
@@ -72,6 +75,9 @@ export const indicator = style({
   animationDirection: 'alternate',
   opacity: 0.6,
   visibility: 'hidden',
+  vars: {
+    [indicatorStroke]: vars.element.loContrast
+  },
   selectors: {
     ':where(.react-flow__node.selected) &': {
       visibility: 'visible',
@@ -84,6 +90,11 @@ export const indicator = style({
     },
     ':where([data-likec4-shape="queue"], [data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
       strokeWidth: 10
+    },
+    [`:where([data-mantine-color-scheme='light']) &`]: {
+      vars: {
+        [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 60%, ${vars.element.loContrast})`
+      }
     },
     [`${dimmed} &`]: {
       visibility: 'hidden',
