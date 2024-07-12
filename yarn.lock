@@ -12320,7 +12320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^5.0.8":
+"rimraf@npm:^5.0.9":
   version: 5.0.9
   resolution: "rimraf@npm:5.0.9"
   dependencies:
@@ -12438,7 +12438,7 @@ __metadata:
     husky: "npm:^8.0.3"
     lint-staged: "npm:15.2.7"
     npm-run-all2: "npm:^6.2.2"
-    rimraf: "npm:^5.0.8"
+    rimraf: "npm:^5.0.9"
     shipjs: "npm:^0.26.3"
     tsx: "npm:~4.9.3"
     turbo: "npm:^2.0.6"
