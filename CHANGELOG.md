@@ -1,3 +1,40 @@
+# [1.5.0](https://github.com/likec4/likec4/compare/v1.4.0...v1.5.0) (2024-07-12)
+
+
+### Bug Fixes
+
+* **deps:** update [@xyflow](https://github.com/xyflow) ([#807](https://github.com/likec4/likec4/issues/807)) ([2408e16](https://github.com/likec4/likec4/commit/2408e160f69b0497b0eefbb5c122ab30ad364b36))
+* **deps:** update dependency @astrojs/starlight to ^0.24.5 ([#803](https://github.com/likec4/likec4/issues/803)) ([6cc824a](https://github.com/likec4/likec4/commit/6cc824a76b162df30bc4e63504c97ddb0af8c04d))
+* **deps:** update dependency astro to ^4.11.5 ([#818](https://github.com/likec4/likec4/issues/818)) ([9cc7f44](https://github.com/likec4/likec4/commit/9cc7f44ad8833defec3c764cae0fafe70e4be852))
+* **deps:** update dependency astro-og-canvas to ^0.5.3 ([#835](https://github.com/likec4/likec4/issues/835)) ([bea7ea7](https://github.com/likec4/likec4/commit/bea7ea7e20d4892031df7f42768fd18504423c1a))
+* **deps:** update dependency starlight-links-validator to ^0.9.1 ([eea921b](https://github.com/likec4/likec4/commit/eea921b0e8bdbe50a78176a7bf13f650dc9061a9))
+* **deps:** upgrade `monaco-vscode` ([36be81e](https://github.com/likec4/likec4/commit/36be81e2e981c288a31df0cdb915ce90496bd129))
+* **deps:** upgrade mantine to 7.11 ([23bde17](https://github.com/likec4/likec4/commit/23bde17b43094180b1eaf3466938d6b3c2886e3b))
+* **deps:** upgrade typescript to 5.5.2 ([dc996c8](https://github.com/likec4/likec4/commit/dc996c84ac61a58a4801c0ad130cd36e8a5c31c3))
+* **diagram:** add css autoprefixer and inject xystore to diagram store ([a15644b](https://github.com/likec4/likec4/commit/a15644b4967c52d27a358dc49125777fe8dd988a))
+* **diagram:** arrow types ([86eca4c](https://github.com/likec4/likec4/commit/86eca4cfb950e42324d629a485f558d78084c647)), closes [#755](https://github.com/likec4/likec4/issues/755)
+* **diagram:** compound node draggable by title ([9c3ff1f](https://github.com/likec4/likec4/commit/9c3ff1fe9ec3f42e82f43d585e9632c267607530))
+* **diagram:** edge rendering ([dbd5a65](https://github.com/likec4/likec4/commit/dbd5a657c502e816611cf73dbaf58bfb21faf209))
+* **diagram:** improve edge rendering and label bbox ([a8f8d17](https://github.com/likec4/likec4/commit/a8f8d17cbcea0efb6fbb0b137f1efd7d64bd55a3))
+* **edge:** remove control point on dbl click ([831077b](https://github.com/likec4/likec4/commit/831077bf2dee65c95d5600e01c9f9cd7c50d036e))
+* **layout:** single relashionships ([ebeaeef](https://github.com/likec4/likec4/commit/ebeaeeff4c129dcfa2791a662767916179e30db2))
+* **layout:** update layouts ([851ec59](https://github.com/likec4/likec4/commit/851ec59cbc5fe7b895470cd12133251a11897a22))
+* **layout:** wrap edge label ([0f007ff](https://github.com/likec4/likec4/commit/0f007ff5f80cbb584ef82644df25d2d1ed8f0d2f))
+* **lsp:** clear diagnostics for on rebuild ([46206df](https://github.com/likec4/likec4/commit/46206dfdb2a0f6210b458fbf030d543357059c8e))
+* **lsp:** customize `<->` relationships ([98c8b1f](https://github.com/likec4/likec4/commit/98c8b1f14e324eab804558807ea69734d31b8231))
+* **lsp:** semantic token for navigateTo ([09b1a11](https://github.com/likec4/likec4/commit/09b1a116620a7bc913382816982504fa05beafc7))
+* **vscode:** update documentSelector if workspaceFolders is empty ([9678ed2](https://github.com/likec4/likec4/commit/9678ed298bb48bf92cf7dea09d09c854c026824f))
+* **webcomponent:** improve dynamic view ([65c2961](https://github.com/likec4/likec4/commit/65c2961fd710a0ce60a41731fe808be0fdb0eabe))
+
+
+### Features
+
+* **diagram:** edge arrows ([ace83c1](https://github.com/likec4/likec4/commit/ace83c14787c19dffaa526cb66cbb4eb27ad3a39))
+* **diagram:** increase  font size of edges label to increase readability ([f31dc2f](https://github.com/likec4/likec4/commit/f31dc2f562bf3d58fc3249df93885e1111777500))
+* **lsp:** customize relationships per view ([5ef8f1d](https://github.com/likec4/likec4/commit/5ef8f1d157f19984f18214b8eefa1acea17dac81))
+
+
+
 # [1.4.0](https://github.com/likec4/likec4/compare/v1.3.0...v1.4.0) (2024-06-28)
 
 ### 🚀 Features  
