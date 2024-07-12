@@ -37,6 +37,8 @@ export class C4Model extends AbstractDisposable {
 
   private changesStream: MemoryStream<number>
 
+  private viewsWithReportedErrors = new Set<ViewID>()
+
   constructor(
     private ctrl: ExtensionController,
     private rpc: Rpc,
@@ -83,10 +85,7 @@ export class C4Model extends AbstractDisposable {
     return xs
       .fromPromise(pTimeout(promise, {
         milliseconds: 15_000,
-        fallback: () => {
-          vscode.window.showErrorMessage(`LikeC4: Fetch view ${viewId} timed out`)
-          return null
-        }
+        message: `fetchView ${viewId} timeout`
       }))
   }
 
@@ -100,6 +99,7 @@ export class C4Model extends AbstractDisposable {
   }
 
   public subscribeToView(viewId: ViewID, callback: (result: Callback) => void) {
+    this.viewsWithReportedErrors.delete(viewId)
     Logger.debug(`[Extension.C4Model.subscribe] >> ${viewId}`)
     let t1 = null as null | number
     const subscription = this.changesStream
@@ -128,6 +128,7 @@ export class C4Model extends AbstractDisposable {
             Logger.debug(`[Extension.C4Model.layoutView] ${viewId} in ${ms}ms`)
             t1 = null
           }
+          this.viewsWithReportedErrors.delete(viewId)
           callback({
             success: true,
             diagram
@@ -145,6 +146,10 @@ export class C4Model extends AbstractDisposable {
             t1 = null
           } else {
             logError(err)
+          }
+          if (!this.viewsWithReportedErrors.has(viewId)) {
+            vscode.window.showErrorMessage(`LikeC4: ${errMessage}`)
+            this.viewsWithReportedErrors.add(viewId)
           }
 
           callback({
