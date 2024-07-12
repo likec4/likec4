@@ -4764,6 +4764,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"balanced-match@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "balanced-match@npm:3.0.1"
+  checksum: 10c0/ac8dd63a5b260610c2cbda982f436e964c1b9ae8764d368a523769da40a31710abd6e19f0fdf1773c4ad7b2ea7ba7b285d547375dc723f6e754369835afc8e9f
+  languageName: node
+  linkType: hard
+
 "base-64@npm:^1.0.0":
   version: 1.0.0
   resolution: "base-64@npm:1.0.0"
@@ -4852,7 +4859,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.2, braces@npm:^3.0.3, braces@npm:~3.0.2":
+"brace-expansion@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "brace-expansion@npm:4.0.0"
+  dependencies:
+    balanced-match: "npm:^3.0.0"
+  checksum: 10c0/6da74748109c4b23e63a1d6bf3a83ba55ba406ac9de1f2afd0c8a6e8630b086e0424b5134e1339e1d379cd0ab235942d3a93b8c54cac944a5205d4f7255eb067
+  languageName: node
+  linkType: hard
+
+"braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
   dependencies:
@@ -12445,7 +12461,7 @@ __metadata:
     typescript: "npm:^5.5.3"
     vite: "npm:5.3.3"
     vitest: "npm:~1.6.0"
-    wireit: "npm:^0.14.4"
+    wireit: "npm:^0.14.5"
   languageName: unknown
   linkType: soft
 
@@ -14861,18 +14877,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wireit@npm:^0.14.4":
-  version: 0.14.4
-  resolution: "wireit@npm:0.14.4"
+"wireit@npm:^0.14.5":
+  version: 0.14.5
+  resolution: "wireit@npm:0.14.5"
   dependencies:
-    braces: "npm:^3.0.2"
+    brace-expansion: "npm:^4.0.0"
     chokidar: "npm:^3.5.3"
     fast-glob: "npm:^3.2.11"
     jsonc-parser: "npm:^3.0.0"
     proper-lockfile: "npm:^4.1.2"
   bin:
     wireit: bin/wireit.js
-  checksum: 10c0/72978bb2274e632857d82e0608dee0269fa0595478848a4af1233c9e13394ccb4454e4106ea8d690beafddf0008f5f5ddfe635e6c471fed1dfd5a1355335a751
+  checksum: 10c0/3e62111a6457b13cd56502a7f95750ef40cbc49e10429558ce375f1b2397ffdae8ba738aecd4f5a7aa56ac4e018828d272abf896ef5087668ba438b52cc24a19
   languageName: node
   linkType: hard
 
