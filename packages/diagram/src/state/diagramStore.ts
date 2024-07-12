@@ -501,7 +501,7 @@ export function createDiagramStore<T extends Exact<CreateDiagramStore, T>>(props
               }
 
               onChange?.({ change })
-            }, 2000)
+            }, 2000) as any as number // explicit typecast to number to suppress TS error in astro build
             set(
               {
                 viewSyncDebounceTimeout: debounced
