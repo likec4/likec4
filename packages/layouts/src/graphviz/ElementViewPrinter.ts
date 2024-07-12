@@ -1,6 +1,6 @@
-import type { ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
-import { compareFqnHierarchically, DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
-import { chunk, clamp, filter, first, isNonNullish, isTruthy, last, map, pipe, reverse, sort, take } from 'remeda'
+import type { ComputedEdge, ComputedElementView, Fqn } from '@likec4/core'
+import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
+import { difference, first, isNonNullish, isTruthy, last, unique } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgeLabel } from './dot-labels'
@@ -92,18 +92,26 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       }
     }
 
+    let weight = 1
     if (!hasCompoundEndpoint) {
-      let weight = 1
+      const cleanSourceNode = this.withoutCompoundEdges(sourceNode)
+      const cleanTargetNode = this.withoutCompoundEdges(targetNode)
       // "Strengthen" edges that are single in/out
       switch (true) {
-        case sourceNode.outEdges.length === 1 && targetNode.inEdges.length === 1:
-          weight = Math.max(targetNode.outEdges.length + sourceNode.inEdges.length, 2)
+        case cleanSourceNode.outEdges.length === 1 && targetNode.inEdges.length === 1:
+          weight = unique([...cleanSourceNode.inEdges, ...targetNode.outEdges]).length + 1
           break
-        case sourceNode.outEdges.length === 1 && sourceNode.inEdges.length <= 1:
-          weight = targetNode.inEdges.length - sourceNode.inEdges.length
+        case cleanSourceNode.outEdges.length === 1:
+          weight = difference(unique([...cleanTargetNode.outEdges, ...cleanTargetNode.inEdges]), [
+            ...cleanSourceNode.inEdges,
+            ...cleanSourceNode.outEdges
+          ]).length
           break
-        case targetNode.inEdges.length === 1 && targetNode.outEdges.length <= 1:
-          weight = sourceNode.outEdges.length - targetNode.outEdges.length
+        case cleanTargetNode.inEdges.length === 1:
+          weight = difference(unique([...cleanSourceNode.inEdges, ...cleanSourceNode.outEdges]), [
+            ...cleanTargetNode.inEdges,
+            ...cleanTargetNode.outEdges
+          ]).length
           break
       }
       if (weight > 1) {
@@ -113,7 +121,7 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
 
     const label = isTruthy(edge.label) ? edgeLabel(edge.label) : null
     if (isTruthy(label)) {
-      if (lhead || ltail) {
+      if (hasCompoundEndpoint) {
         e.attributes.set(_.xlabel, label)
       } else {
         e.attributes.set(_.label, label)
@@ -136,7 +144,8 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
       if (tail !== 'none') {
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
-          [_.dir]: 'both'
+          [_.dir]: 'both',
+          [_.minlen]: 0
         })
       }
       return e
@@ -147,6 +156,7 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
         [_.arrowtail]: 'none',
         [_.arrowhead]: 'none',
         [_.dir]: 'none',
+        [_.minlen]: 0,
         [_.constraint]: false
       })
       return e
@@ -223,7 +233,7 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
     if (isTheOnlyEdge) {
       if (edgeParentId === null || this.leafElements(edgeParentId).length <= 3) {
         // don't rank the edge
-        e.attributes.set(_.minlen, 1)
+        e.attributes.set(_.minlen, 0)
         e.attributes.set(_.constraint, false)
       }
     }

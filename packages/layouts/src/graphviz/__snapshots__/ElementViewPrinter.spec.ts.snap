@@ -9,16 +9,17 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.5;
-  ranksep = 1.528;
+  nodesep = 1.667;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
-  pad = 0.167;
+  pad = 0.209;
   graph [
     fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
+    margin = 50.1;
   ];
   edge [
     arrowsize = 0.75;
@@ -78,7 +79,6 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
-    weight = 2;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
@@ -97,16 +97,17 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.5;
-  ranksep = 1.528;
+  nodesep = 1.667;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
-  pad = 0.167;
+  pad = 0.209;
   graph [
     fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
+    margin = 50.1;
   ];
   edge [
     arrowsize = 0.75;
@@ -206,19 +207,21 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
       "graphql" -> "storage" [
         likec4_id = "cloud.backend.graphql:cloud.backend.storage";
         style = "dashed";
-        weight = 3;
-        minlen = 1;
+        weight = 4;
+        minlen = 0;
         constraint = false;
       ];
     }
     "adminpanel" -> "graphql" [
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       style = "dashed";
+      weight = 2;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><TABLE ALIGN="LEFT" BORDER="0" CELLPADDING="0" CELLSPACING="1"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="14">fetches data in zero trust network with</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="14">sso authentification</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       style = "dashed";
+      weight = 2;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">fetches data</FONT></TD></TR></TABLE>>;
     ];
   }
@@ -256,16 +259,17 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.5;
-  ranksep = 1.528;
+  nodesep = 1.667;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
-  pad = 0.167;
+  pad = 0.209;
   graph [
     fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
+    margin = 50.1;
   ];
   edge [
     arrowsize = 0.75;
@@ -335,9 +339,9 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     "frontend" -> "backend" [
       likec4_id = "cloud.frontend:cloud.backend";
       style = "dashed";
-      weight = 3;
+      weight = 4;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14"><B>[...]</B></FONT></TD></TR></TABLE>>;
-      minlen = 1;
+      minlen = 0;
       constraint = false;
     ];
   }
@@ -375,16 +379,17 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   TBbalance = "max";
   splines = "spline";
   outputorder = "nodesfirst";
-  nodesep = 1.5;
-  ranksep = 1.528;
+  nodesep = 1.667;
+  ranksep = 1.667;
   pack = 180;
   packmode = "array_3";
-  pad = 0.167;
+  pad = 0.209;
   graph [
     fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
+    margin = 50.1;
   ];
   edge [
     arrowsize = 0.75;
@@ -450,7 +455,7 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   "cloud" -> "amazon" [
     likec4_id = "cloud:amazon";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";

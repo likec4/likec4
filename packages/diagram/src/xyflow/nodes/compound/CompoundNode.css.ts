@@ -108,20 +108,23 @@ export const title = style({
   fontSize: rem(15),
   textTransform: 'uppercase',
   letterSpacing: '0.2px',
-  lineHeight: 1.25,
+  lineHeight: 1,
   color: `var(--_compound-title-color,${vars.compound.titleColor})`,
-  paddingLeft: 12,
-  paddingTop: 8,
+  paddingLeft: 14,
+  paddingTop: 13,
   paddingBottom: 6,
   mixBlendMode: 'screen',
   selectors: {
     [`:where(.react-flow__node.draggable) &`]: {
       cursor: 'grab'
+    },
+    [`:where(.likec4-compound-transparent) &`]: {
+      paddingTop: 10
     }
   }
 })
 export const titleWithNavigation = style({
-  paddingLeft: 30
+  paddingLeft: 32
 })
 
 globalStyle(`:where([data-mantine-color-scheme='light'] .likec4-compound-transparent)`, {

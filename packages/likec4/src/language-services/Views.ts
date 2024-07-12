@@ -17,8 +17,6 @@ type GraphvizOut = {
 export class Views {
   private cache = new WeakMap<ComputedView, DotLayoutResult>()
 
-  private svgCache = new SimpleCache<string, string>()
-
   private layouter: GraphvizLayouter
 
   private previousAction = Promise.resolve() as Promise<unknown>
@@ -81,18 +79,13 @@ export class Views {
     if (cache.has(KEY)) {
       return await Promise.resolve(cache.get(KEY)!)
     }
-    const layouted = await this.layoutViews()
-    const svgCache = this.svgCache
-    const tasks = layouted.map(l =>
+    const views = await this.computedViews()
+    const tasks = views.map(l =>
       limit(async (): Promise<GraphvizOut> => {
-        let svg = svgCache.get(l.dot)
-        if (!svg) {
-          svg = await this.layouter.port.svg(l.dot)
-          svgCache.set(l.dot, svg)
-        }
+        const { dot, svg } = await this.layouter.svg(l)
         return {
-          id: l.diagram.id,
-          dot: l.dot,
+          id: l.id,
+          dot,
           svg
         }
       })

@@ -11,8 +11,6 @@ import {
   ancestorsFqn,
   commonAncestor,
   compareRelations,
-  DefaultLineStyle,
-  DefaultRelationshipColor,
   Expr,
   invariant,
   isAncestor,
@@ -22,9 +20,7 @@ import {
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
-import { deepEqual as eq } from 'fast-equals'
 import { first, flatMap, hasAtLeast, isTruthy, unique } from 'remeda'
-import type { Writable } from 'type-fest'
 import type { LikeC4ModelGraph } from '../LikeC4ModelGraph'
 import { applyCustomElementProperties } from '../utils/applyCustomElementProperties'
 import { applyCustomRelationProperties } from '../utils/applyCustomRelationProperties'
@@ -173,7 +169,7 @@ export class ComputeCtx {
   protected get computedEdges(): ComputedEdge[] {
     return this.ctxEdges.map((e): ComputedEdge => {
       invariant(hasAtLeast(e.relations, 1), 'Edge must have at least one relation')
-      const relations = [...e.relations].sort(compareRelations)
+      const relations = e.relations.toSorted(compareRelations)
       const source = e.source.id
       const target = e.target.id
 

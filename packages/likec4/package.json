@@ -70,6 +70,7 @@
     "dev:index-page": "tsx watch src/cli/index.ts serve ../../apps/docs/src/components/index-page",
     "dev:template": "tsx watch src/cli/index.ts serve ../create-likec4/template",
     "dev:example-cloud": "tsx watch src/cli/index.ts serve ../../examples/cloud-system",
+    "dev:failed": "tsx watch src/cli/index.ts serve ../../examples/failed",
     "dev:example-dev": "tsx watch src/cli/index.ts serve ../../examples/diagrams-dev/likec4",
     "cli": "tsx src/cli/index.ts",
     "cli:serve": "tsx watch src/cli/index.ts serve dev",

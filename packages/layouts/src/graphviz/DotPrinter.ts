@@ -13,6 +13,7 @@ import type {
   ComputedEdge,
   ComputedNode,
   ComputedView,
+  EdgeId,
   Fqn,
   RelationshipLineType,
   ViewManualLayout
@@ -41,10 +42,20 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   private ids = new Set<string>()
   private subgraphs = new Map<Fqn, SubgraphModel>()
   private nodes = new Map<Fqn, NodeModel>()
+  protected compoundIds: Set<Fqn>
+  protected edgesWithCompounds: Set<EdgeId>
 
   public readonly graphvizModel: RootGraphModel
 
   constructor(protected view: V) {
+    this.compoundIds = new Set(view.nodes.filter(isCompound).map(n => n.id))
+    this.edgesWithCompounds = new Set(
+      this.compoundIds.size > 0
+        ? view.edges
+          .filter(e => this.compoundIds.has(e.source) || this.compoundIds.has(e.target))
+          .map(n => n.id)
+        : []
+    )
     const G = this.graphvizModel = this.createGraph()
     this.applyNodeAttributes(G.attributes.node)
     this.applyEdgeAttributes(G.attributes.edge)
@@ -150,17 +161,18 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       // [_.mclimit]: 5,
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
-      [_.nodesep]: pxToInch(isVertical ? 108 : 144),
-      [_.ranksep]: pxToInch(isVertical ? 110 : 72),
+      [_.nodesep]: pxToInch(20 + (isVertical ? 100 : 80)),
+      [_.ranksep]: pxToInch(20 + (isVertical ? 100 : 72)),
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
-      [_.pad]: pxToInch(12)
+      [_.pad]: pxToInch(15)
     })
     G.attributes.graph.apply({
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(15),
       [_.labeljust]: this.view.autoLayout === 'RL' ? 'r' : 'l',
-      [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't'
+      [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't',
+      [_.margin]: 50.1 // space around clusters, but SVG output requires hack
     })
 
     return G
@@ -366,6 +378,17 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       return this.view.edges.slice()
     }
     return this.view.edges.filter(parentFqnPredicate(parentId))
+  }
+
+  protected withoutCompoundEdges(element: ComputedNode) {
+    if (this.edgesWithCompounds.size === 0) {
+      return element
+    }
+    return {
+      ...element,
+      inEdges: element.inEdges.filter(e => !this.edgesWithCompounds.has(e)),
+      outEdges: element.outEdges.filter(e => !this.edgesWithCompounds.has(e))
+    }
   }
 
   protected assignGroups() {

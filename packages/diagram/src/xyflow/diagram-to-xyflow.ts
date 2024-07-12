@@ -1,7 +1,7 @@
-import { extractStep, invariant, nonexhaustive, nonNullable } from '@likec4/core'
-import type { DiagramNode, DiagramView, Fqn, RelationshipArrowType } from '@likec4/core/types'
+import { extractStep, invariant, nonNullable } from '@likec4/core'
+import type { DiagramNode, DiagramView, Fqn } from '@likec4/core/types'
 import { hasAtLeast } from 'remeda'
-import type { XYFlowData, XYFlowEdge } from '../xyflow/types'
+import type { XYFlowData } from '../xyflow/types'
 import { ZIndexes } from './const'
 
 // const nodeZIndex = (node: DiagramNode) => node.level - (node.children.length > 0 ? 1 : 0)

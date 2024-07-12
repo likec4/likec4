@@ -1,6 +1,6 @@
 import type { ComputedDynamicView, ComputedEdge } from '@likec4/core'
 import { DefaultArrowType, DefaultRelationshipColor, defaultTheme as Theme, extractStep } from '@likec4/core'
-import { first, isNonNullish, isNullish, last } from 'remeda'
+import { difference, first, isNonNullish, last, unique } from 'remeda'
 import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { stepEdgeLabel } from './dot-labels'
@@ -38,11 +38,6 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     lhead && e.attributes.set(_.lhead, lhead)
     ltail && e.attributes.set(_.ltail, ltail)
 
-    const step = extractStep(edge.id)
-    const label = edge.label?.trim()
-    e.attributes.apply({
-      [_.label]: stepEdgeLabel(step, label)
-    })
     if (edge.color && edge.color !== DefaultRelationshipColor) {
       e.attributes.apply({
         [_.color]: Theme.relationships[edge.color].lineColor,
@@ -52,15 +47,34 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
+    const step = extractStep(edge.id)
+    const label = stepEdgeLabel(step, edge.label?.trim())
+    if (hasCompoundEndpoint) {
+      e.attributes.set(_.xlabel, label)
+    } else {
+      e.attributes.set(_.label, label)
+    }
+
+    let weight = 1
     if (!hasCompoundEndpoint) {
-      let weight = 1
+      const cleanSourceNode = this.withoutCompoundEdges(sourceNode)
+      const cleanTargetNode = this.withoutCompoundEdges(targetNode)
       // "Strengthen" edges that are single in/out
       switch (true) {
-        case sourceNode.outEdges.length === 1 && sourceNode.inEdges.length <= 1:
-          weight = targetNode.inEdges.length - sourceNode.inEdges.length
+        case cleanSourceNode.outEdges.length === 1 && targetNode.inEdges.length === 1:
+          weight = unique([...cleanSourceNode.inEdges, ...targetNode.outEdges]).length + 1
           break
-        case targetNode.inEdges.length === 1 && targetNode.outEdges.length <= 1:
-          weight = sourceNode.outEdges.length - targetNode.outEdges.length
+        case cleanSourceNode.outEdges.length === 1:
+          weight = difference(unique([...cleanTargetNode.outEdges, ...cleanTargetNode.inEdges]), [
+            ...cleanSourceNode.inEdges,
+            ...cleanSourceNode.outEdges
+          ]).length
+          break
+        case cleanTargetNode.inEdges.length === 1:
+          weight = difference(unique([...cleanSourceNode.inEdges, ...cleanSourceNode.outEdges]), [
+            ...cleanTargetNode.inEdges,
+            ...cleanTargetNode.outEdges
+          ]).length
           break
       }
       if (weight > 1) {

@@ -28,14 +28,22 @@ export class GraphvizLayouter {
   }
 
   async layout(view: ComputedView): Promise<LayoutResult> {
-    const dot = await this.dot(view)
+    let dot = await this.dot(view)
     const rawjson = await this.graphviz.layoutJson(dot)
     const diagram = parseGraphvizJson(rawjson, view)
+    dot = dot
+      .split('\n')
+      .filter(l => !l.includes('margin=50.1')) // see DotPrinter.ts#L175
+      .join('\n') as DotSource
     return { dot, diagram }
   }
 
   async svg(view: ComputedView) {
-    const dot = await this.dot(view)
+    let dot = await this.dot(view)
+    dot = dot
+      .split('\n')
+      .filter(l => !l.includes('margin=50.1')) // see DotPrinter.ts#L175
+      .join('\n') as DotSource
     const svg = await this.graphviz.svg(dot)
     return {
       svg,
