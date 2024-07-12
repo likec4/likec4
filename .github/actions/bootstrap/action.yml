@@ -27,6 +27,8 @@ runs:
       with:
         path: .turbo
         key: turbo-cache-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          turbo-cache-${{ github.ref_name }}-
 
     # - name: Cache turbo build setup
     #   uses: actions/cache@v4

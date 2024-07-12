@@ -51,17 +51,11 @@ jobs:
     # Deploy to Preview
     # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
     # - we are in workflow_dispatch on main branch
-    if: |
-      (
-        github.event_name == 'workflow_dispatch' &&
-        github.ref != 'refs/heads/main'
-      ) || (
-        github.event_name == 'workflow_call' &&
-        (
-          github.ref != 'refs/heads/main' ||
-          !contains(github.event.head_commit.message, 'chore: release')
-        )
-      )
+    # if: |
+    #   ${{ (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') || (
+    #     github.event_name == 'workflow_call' &&
+    #     !contains(github.event.head_commit.message, 'chore: release')
+    #   )
     name: deploy preview
     runs-on: ubuntu-latest
     needs: build-playground
@@ -101,12 +95,8 @@ jobs:
     # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
     # - we are in workflow_dispatch on main branch
     if: |
-      (
-        github.event_name == 'workflow_dispatch' &&
-        github.ref == 'refs/heads/main'
-      ) || (
+      ( github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' ) || (
         github.event_name == 'workflow_call' &&
-        github.ref == 'refs/heads/main' &&
         contains(github.event.head_commit.message, 'chore: release')
       )
     name: deploy prod
