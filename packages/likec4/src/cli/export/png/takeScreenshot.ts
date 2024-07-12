@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import k from 'picocolors'
 import type { BrowserContext, Page } from 'playwright'
-import { clamp, isString } from 'remeda'
+import { clamp, isString, isTruthy } from 'remeda'
 import type { Logger } from 'vite'
 
 type TakeScreenshotParams = {
@@ -54,24 +54,17 @@ export async function takeScreenshot({
 
       page ??= await browserContext.newPage()
 
-      await page.setViewportSize({
-        width: view.width + padding * 2 + 4,
-        height: view.height + padding * 2 + 4
-      })
-
       await page.goto(url + `?padding=${padding}&theme=${theme}`)
 
-      await page.waitForSelector('.transparent-bg')
-
-      const hasImages = view.nodes.some(n => isString(n.icon))
+      const diagramElement = page.getByRole('presentation')
+      const hasImages = view.nodes.some(n => isTruthy(n.icon))
       if (hasImages) {
         await waitAllImages(page, timeout)
       }
 
       const path = resolve(output, view.relativePath ?? '.', `${view.id}.png`)
-      await page.screenshot({
+      await diagramElement.screenshot({
         path,
-        animations: 'disabled',
         omitBackground: true
       })
 

@@ -30,9 +30,12 @@ function ExportPage() {
   return (
     <Box
       className={cssExportView}
+      role="presentation"
       style={{
         minWidth: diagram.width + padding * 2,
+        width: diagram.width + padding * 2,
         minHeight: diagram.height + padding * 2,
+        height: diagram.height + padding * 2,
         padding
       }}>
       <Box

@@ -43,15 +43,12 @@ export const cssViewOutlet = style({
 })
 
 export const cssExportView = style({
-  position: 'fixed',
   boxSizing: 'border-box',
   border: '0px solid transparent',
-  top: 0,
-  left: 0,
-  right: 0,
-  width: '100%',
-  height: '100%',
   padding: 0,
+  margin: 0,
+  marginRight: 'auto',
+  marginBottom: 'auto',
   background: 'transparent'
 })
 export const cssExportBox = style({
