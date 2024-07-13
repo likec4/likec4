@@ -1,15 +1,15 @@
-import type { ValidationCheck } from 'langium'
+import { AstUtils, type ValidationCheck } from 'langium'
 import { isNullish } from 'remeda'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 
 export const incomingExpressionChecks = (
   _services: LikeC4Services
-): ValidationCheck<ast.IncomingExpr> => {
+): ValidationCheck<ast.IncomingRelationExpression> => {
   return (el, accept) => {
-    if (ast.isWildcardExpr(el.to) && ast.isViewRulePredicate(el.$container)) {
-      const view = el.$container.$container.$container
-      if (isNullish(view.viewOf)) {
+    if (ast.isWildcardExpression(el.to) && ast.isExpressions(el.$container)) {
+      const view = AstUtils.getContainerOfType(el, ast.isElementView)
+      if (isNullish(view?.viewOf)) {
         accept('warning', 'Predicate is ignored as it concerns all relationships', {
           node: el
         })

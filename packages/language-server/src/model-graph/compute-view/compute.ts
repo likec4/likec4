@@ -5,7 +5,7 @@ import type {
   Element,
   ElementView,
   Relation,
-  ViewRuleExpression
+  ViewRulePredicate
 } from '@likec4/core'
 import {
   ancestorsFqn,
@@ -16,7 +16,7 @@ import {
   isAncestor,
   isScopedElementView,
   isViewRuleAutoLayout,
-  isViewRuleExpression,
+  isViewRulePredicate,
   nonexhaustive,
   parentFqn
 } from '@likec4/core'
@@ -92,7 +92,7 @@ export class ComputeCtx {
     this.reset()
     const { rules, ...view } = this.view
 
-    const viewPredicates = rules.filter(isViewRuleExpression)
+    const viewPredicates = rules.filter(isViewRulePredicate)
     if (this.root && viewPredicates.length == 0) {
       this.addElement(this.graph.element(this.root))
     }
@@ -399,7 +399,7 @@ export class ComputeCtx {
     }, [] as ComputeCtx.Edge[])
   }
 
-  protected processPredicates(viewRules: ViewRuleExpression[]): this {
+  protected processPredicates(viewRules: ViewRulePredicate[]): this {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     for (const rule of viewRules) {
       const isInclude = 'include' in rule

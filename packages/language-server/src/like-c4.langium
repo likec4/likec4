@@ -214,84 +214,95 @@ DynamicViewRule:
 ;
 
 DynamicViewStep:
-  source=ElementRef (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->') target=ElementRef title=String?
+  source=ElementRef (isBackward?='<-' |  '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId] ) target=ElementRef title=String?
 ;
 
 ViewRulePredicate:
-  ({infer IncludePredicate} 'include' | {infer ExcludePredicate} 'exclude')
-  expressions+=ViewRulePredicateExpr (',' expressions+=ViewRulePredicateExpr)* ','?
+  {infer IncludePredicate} 'include' exprs=Expressions |
+  {infer ExcludePredicate} 'exclude' exprs=Expressions
+;
+
+// IncludePredicate:
+//   'include' expr=WithExpressions ({infer IncludePredicate.prev=current} ',' (expr=WithExpressions)?)*
+// ;
+// ExcludePredicate:
+//   'exclude' expr=WithExpressions ({infer ExcludePredicate.prev=current} ',' (expr=WithExpressions)?)*
+// ;
+
+Expressions:
+  value=WithExpressions ({infer Expressions.prev=current} ',' (value=WithExpressions)?)*
+;
+
+WithExpressions infers Expression:
+  RelationExpression ({infer CustomRelationExpression.relation=current} 'with' custom=CustomRelationProperties)? |
+  ElementExpression ({infer CustomElementExpression.target=current} 'with' custom=CustomElementProperties)?
+;
+
+ElementExpression:
+  ElementSelectorExpression |
+  ElementDescedantsExpression
+;
+
+ElementSelectorExpression infers ElementExpression:
+  {infer WildcardExpression} isWildcard?='*' |
+  {infer ElementTagExpression} 'element.tag' IsEqual tag=[Tag:TagId]? |
+  {infer ElementKindExpression} 'element.kind' IsEqual kind=[ElementKind]?
+;
+
+ElementDescedantsExpression infers ElementExpression:
+  ElementRef (
+    {infer ExpandElementExpression.expand=current} DotUnderscore |
+    {infer ElementDescedantsExpression.parent=current} DotWildcard
+  )?
+;
+
+RelationExpression:
+  InOutRelationExpressions |
+  DirectedRelationExpressions
+;
+
+InOutRelationExpressions infers RelationExpression:
+  IncomingRelationExpression ({infer InOutRelationExpression.inout=current} '->')?
+;
+
+IncomingRelationExpression:
+  '->' to=ElementExpression;
+
+DirectedRelationExpressions infers RelationExpression:
+  OutgoingRelationExpression ({infer DirectedRelationExpression.source=current} target=ElementExpression)?
+;
+
+OutgoingRelationExpression:
+  from=ElementExpression
+  (isBidirectional?='<->' | '->' | '-[' kind=[RelationshipKind] ']->' | kind=[RelationshipKind:DotId])
+;
+
+// Comma-separated list of ElementExpressions
+ElementExpressionsIterator:
+  value=ElementExpression ({infer ElementExpressionsIterator.prev=current} ',' (value=ElementExpression)?)*
 ;
 
 DynamicViewRulePredicate:
-  'include' expressions+=ElementPredicateExpression (',' expressions+=ElementPredicateExpression)* ','?
+  'include' exprs=DynamicViewRulePredicateIterator
+;
+
+DynamicViewRulePredicateIterator:
+  value=DynamicViewElementExpressions ({infer DynamicViewRulePredicateIterator.prev=current} ',' (value=DynamicViewElementExpressions)?)*
+;
+
+DynamicViewElementExpressions infers DynamicViewElementExpression:
+  ElementExpression ({infer CustomElementExpression.target=current} 'with' custom=CustomElementProperties)?
 ;
 
 ViewRuleStyle:
-  'style' targets+=ElementExpr (',' targets+=ElementExpr)* ','? '{'
+  'style' target=ElementExpressionsIterator '{'
     styleprops+=StyleProperty*
   '}';
 
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection;
 
-ViewRulePredicateExpr:
-  ElementPredicateExpression |
-  RelationPredicateExpression
-;
-
-ElementPredicateExpression:
-  ElementExpr ({infer CustomElementExpr.target=current} 'with' body=CustomElementExprBody)?
-;
-
-RelationPredicateExpression:
-  InOutExpr |
-  CustomRelationExpr |
-  OutgoingExpr
-;
-
-CustomRelationExpr infers ViewRulePredicateRelations:
-  RelationExpr ({infer CustomRelationExpr.relation=current} 'with' body=CustomRelationExprBody)?
-;
-
-RelationExpr:
-  source=ElementExpr (isBidirectional?='<->' | '->') target=ElementExpr
-;
-
-OutgoingExpr:
-  from=ElementExpr '->'
-;
-
-InOutExpr infers ViewRulePredicateRelations:
-  IncomingExpr ({infer InOutExpr.inout=current} '->')?;
-
-IncomingExpr:
-  '->' to=ElementExpr;
-
-ElementExpr:
-  WildcardExpr |
-  ElementSelectorExpr |
-  DescedantsExpr
-;
-
-WildcardExpr:
-  isWildcard?='*'
-;
-
-ElementSelectorExpr infers ElementExpr:
-  'element' StickyDot (
-    {infer ElementTagExpr} 'tag' IsEqual tag=[Tag:TagId] |
-    {infer ElementKindExpr} 'kind' IsEqual kind=[ElementKind]
-  )
-;
-
-DescedantsExpr infers ElementExpr:
-  ElementRef (
-    {infer ExpandElementExpr.parent=current} DotUnderscore |
-    {infer DescedantsExpr.parent=current} DotWildcard
-  )?
-;
-
-CustomElementExprBody: '{'
+CustomElementProperties: '{'
   props+=(
     NavigateToProperty |
     ElementStringProperty |
@@ -300,7 +311,7 @@ CustomElementExprBody: '{'
 '}'
 ;
 
-CustomRelationExprBody: '{'
+CustomRelationProperties: '{'
   props+=(
     RelationStringProperty |
     RelationshipStyleProperty

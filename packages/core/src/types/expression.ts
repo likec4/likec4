@@ -136,7 +136,9 @@ export function isCustomRelationExpr(expr: Expression): expr is CustomRelationEx
   return 'customRelation' in expr
 }
 
-export type RelationPredicateExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr | CustomRelationExpr
+export type RelationExpression = RelationExpr | InOutExpr | IncomingExpr | OutgoingExpr
+
+export type RelationPredicateExpression = RelationExpression | CustomRelationExpr
 
 export function isAnyRelation(expr: Expression): expr is RelationPredicateExpression {
   return isRelation(expr) || isInOut(expr) || isIncoming(expr) || isOutgoing(expr) || isCustomRelationExpr(expr)

@@ -1,6 +1,6 @@
 import { type Fqn, invariant, isAncestor, type NonEmptyArray, nonNullable, type ViewChanges } from '@likec4/core'
 import { GrammarUtils } from 'langium'
-import { entries, filter, findLast, last } from 'remeda'
+import { entries, filter, findLast, isTruthy, last } from 'remeda'
 import { type Range, TextEdit } from 'vscode-languageserver-protocol'
 import { ast, type ParsedAstView, type ParsedLikeC4LangiumDocument } from '../ast'
 import type { FqnIndex } from '../model'
@@ -37,8 +37,8 @@ const isMatchingViewRule =
     if (!ast.isViewRuleStyle(rule)) {
       return false
     }
-    const [target, ...rest] = rule.targets
-    if (!target || rest.length > 0 || !ast.isElementRef(target)) {
+    const target = rule.target.value
+    if (!target || isTruthy(rule.target.prev) || !ast.isElementRef(target)) {
       return false
     }
     const ref = target.el.ref

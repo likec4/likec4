@@ -37,13 +37,13 @@ export function registerValidationChecks(services: LikeC4Services) {
     ElementKind: elementKindChecks(services),
     Relation: relationChecks(services),
     Tag: tagChecks(services),
-    DynamicViewRulePredicate: dynamicViewRulePredicate(services),
-    CustomElementExpr: customElementExprChecks(services),
-    CustomRelationExpr: customRelationExprChecks(services),
-    ExpandElementExpr: expandElementExprChecks(services),
+    DynamicViewRulePredicateIterator: dynamicViewRulePredicate(services),
+    CustomElementExpression: customElementExprChecks(services),
+    CustomRelationExpression: customRelationExprChecks(services),
+    ExpandElementExpression: expandElementExprChecks(services),
     RelationshipKind: relationshipChecks(services),
-    IncomingExpr: incomingExpressionChecks(services),
-    OutgoingExpr: outgoingExpressionChecks(services)
+    IncomingRelationExpression: incomingExpressionChecks(services),
+    OutgoingRelationExpression: outgoingExpressionChecks(services)
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

@@ -1,4 +1,4 @@
-import type { DynamicViewRule, DynamicViewStep, Fqn, ViewID, ViewRuleExpression } from '@likec4/core'
+import type { DynamicViewRule, DynamicViewStep, Fqn, ViewID, ViewRulePredicate } from '@likec4/core'
 import { partition } from 'remeda'
 import { type FakeElementIds, fakeModel } from '../../compute-view/__test__/fixture'
 import { computeDynamicView } from '../index'
@@ -36,7 +36,7 @@ export function $step(expr: StepExpr, title?: string): DynamicViewStep {
   throw new Error(`Invalid step expression: ${expr}`)
 }
 
-export function compute(stepsAndRules: (DynamicViewStep | ViewRuleExpression)[]) {
+export function compute(stepsAndRules: (DynamicViewStep | ViewRulePredicate)[]) {
   const [steps, rules] = partition(stepsAndRules, (s): s is DynamicViewStep => 'source' in s)
   const result = computeDynamicView(
     {

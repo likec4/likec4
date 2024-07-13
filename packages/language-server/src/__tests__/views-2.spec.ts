@@ -244,12 +244,15 @@ describe.concurrent('views2', () => {
     })
 
     it('element { }', async ctx => {
-      const { valid, invalid } = await mkTestServices(ctx)
+      const { valid, invalid, onlyWarnings } = await mkTestServices(ctx)
       await invalid(`
         exclude system.backend.api with { }
       `)
-      await invalid(`
+      await valid(`
         include system.backend.* with { }
+      `)
+      await valid(`
+        include system._ with { }
       `)
       await invalid(`
         include system.backend with {
@@ -334,9 +337,6 @@ describe.concurrent('views2', () => {
       `)
       await valid(`
         include -> system.backend.api
-      `)
-      await invalid(`
-        include -> system.backend.api with {},
       `)
       await valid(`
         include -> system.backend.*
@@ -506,7 +506,7 @@ describe.concurrent('views2', () => {
       await onlyWarnings(`
         include * ->,
       `)
-      await invalid(`
+      await onlyWarnings(`
         include * <->,
       `)
       await valid(`

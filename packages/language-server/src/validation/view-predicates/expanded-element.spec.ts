@@ -41,7 +41,31 @@ describe.concurrent('expandElementExprChecks', () => {
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(2)
       expect(diagnostic.message, 'diagnostic message').toBe(
-        'Wrong usage of expanded element in relations predicate'
+        'Redundant usage, expand predicate resolves parent element only when used in relations'
+      )
+    }
+  })
+
+  it('should warn if used in exclude', async ({ expect }) => {
+    const { validate } = createTestServices()
+    const { diagnostics } = await validate(`
+      specification {
+        element component
+      }
+      model {
+        component c1
+      }
+      views {
+        view {
+          exclude c1._
+        }
+      }
+    `)
+    expect(diagnostics).toHaveLength(1)
+    for (const diagnostic of diagnostics) {
+      expect(diagnostic.severity, 'diagnostic severity').toBe(2)
+      expect(diagnostic.message, 'diagnostic message').toBe(
+        'Expand predicate is ignored in exclude'
       )
     }
   })
@@ -66,7 +90,7 @@ describe.concurrent('expandElementExprChecks', () => {
     for (const diagnostic of diagnostics) {
       expect(diagnostic.severity, 'diagnostic severity').toBe(2)
       expect(diagnostic.message, 'diagnostic message').toBe(
-        'Wrong usage of expanded element in relations predicate'
+        'Redundant usage, expand predicate resolves parent element only when used in relations'
       )
     }
   })

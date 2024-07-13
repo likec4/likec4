@@ -1,5 +1,6 @@
 import type { AstNode } from 'langium'
 import { AbstractSemanticTokenProvider, type SemanticTokenAcceptor } from 'langium/lsp'
+import { isTruthy } from 'remeda'
 import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver-protocol'
 import { ast } from '../ast'
 
@@ -40,7 +41,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if ((ast.isDescedantsExpr(node) || ast.isWildcardExpr(node)) && node.$cstNode) {
+    if ((ast.isElementDescedantsExpression(node) || ast.isWildcardExpression(node)) && node.$cstNode) {
       acceptor({
         cst: node.$cstNode,
         type: SemanticTokenTypes.variable,
@@ -51,7 +52,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
       })
       return 'prune'
     }
-    if (ast.isElementKindExpr(node)) {
+    if (ast.isElementKindExpression(node) && isTruthy(node.kind)) {
       acceptor({
         node,
         property: 'kind',
@@ -59,7 +60,7 @@ export class LikeC4SemanticTokenProvider extends AbstractSemanticTokenProvider {
         modifier: [SemanticTokenModifiers.definition]
       })
     }
-    if (ast.isElementTagExpr(node)) {
+    if (ast.isElementTagExpression(node) && isTruthy(node.tag)) {
       acceptor({
         node,
         property: 'tag',

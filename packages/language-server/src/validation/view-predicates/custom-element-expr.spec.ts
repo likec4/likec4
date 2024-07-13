@@ -24,7 +24,7 @@ describe.concurrent('customElementExprChecks', () => {
 
   it('should error if not a element ref', async ({ expect }) => {
     const { validate } = createTestServices()
-    const { errors } = await validate(`
+    const { errors, warnings } = await validate(`
       specification {
         element component
       }
@@ -33,7 +33,7 @@ describe.concurrent('customElementExprChecks', () => {
       }
       views {
         view {
-          include c1._ with {}
+          include * with {}
         }
       }
     `)

@@ -1,34 +1,23 @@
 import { nonexhaustive } from '@likec4/core'
-import type { ValidationCheck } from 'langium'
+import { type AstNode, AstUtils, type ValidationCheck } from 'langium'
 import { ast } from '../../ast'
 import type { LikeC4Services } from '../../module'
 
 export const expandElementExprChecks = (
   _services: LikeC4Services
-): ValidationCheck<ast.ExpandElementExpr> => {
+): ValidationCheck<ast.ExpandElementExpression> => {
   return (el, accept) => {
-    switch (true) {
-      case ast.isIncludePredicate(el.$container):
-      case ast.isDynamicViewRulePredicate(el.$container):
-      case ast.isViewRuleStyle(el.$container):
-        return
-      case ast.isCustomElementExpr(el.$container):
-        return accept('warning', `Custom rules apply only to parent`, {
-          node: el
-        })
-      case ast.isExcludePredicate(el.$container):
-        return accept('warning', `Ignored, as can't be used in exclude`, {
-          node: el
-        })
-      case ast.isInOutExpr(el.$container):
-      case ast.isIncomingExpr(el.$container):
-      case ast.isOutgoingExpr(el.$container):
-      case ast.isRelationExpr(el.$container):
-        return accept('warning', `Wrong usage of expanded element in relations predicate`, {
-          node: el
-        })
-      default:
-        nonexhaustive(el.$container)
+    const isInside = <T extends AstNode>(typePredicate: (n: AstNode) => n is T): boolean =>
+      !!AstUtils.getContainerOfType(el, typePredicate)
+    if (isInside(ast.isRelationExpression)) {
+      accept('warning', `Redundant usage, expand predicate resolves parent element only when used in relations`, {
+        node: el
+      })
+    }
+    if (isInside(ast.isExcludePredicate)) {
+      accept('warning', `Expand predicate is ignored in exclude`, {
+        node: el
+      })
     }
   }
 }

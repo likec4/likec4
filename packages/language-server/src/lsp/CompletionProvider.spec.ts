@@ -253,7 +253,7 @@ describe('LikeC4CompletionProvider', () => {
       expectedItems: ['notunique']
     })
   })
-  it('should suggest nested elements inside view', async () => {
+  it('should suggest nested elements inside view predicates', async () => {
     const text = `
       specification {
         element component
@@ -269,8 +269,8 @@ describe('LikeC4CompletionProvider', () => {
       }
       views {
         view {
-          include -> <|>root.<|>
-          exclude -> b<|>
+          include <|>root.<|> -> *,
+            * -> b<|>2 <|>
         }
       }
     `
@@ -279,7 +279,14 @@ describe('LikeC4CompletionProvider', () => {
     await completion({
       text,
       index: 0,
-      expectedItems: ['root', 'a', 'b1', 'b2', 'element'],
+      expectedItems: [
+        'root',
+        'a',
+        'b1',
+        'b2',
+        'element.tag',
+        'element.kind'
+      ],
       disposeAfterCheck: true
     })
     await completion({
@@ -292,6 +299,18 @@ describe('LikeC4CompletionProvider', () => {
       text,
       index: 2,
       expectedItems: ['b1', 'b2'],
+      disposeAfterCheck: true
+    })
+    await completion({
+      text,
+      index: 3,
+      expectedItems: [
+        'with',
+        'include',
+        'exclude',
+        'style',
+        'autoLayout'
+      ],
       disposeAfterCheck: true
     })
   })

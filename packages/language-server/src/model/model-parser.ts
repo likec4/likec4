@@ -209,39 +209,68 @@ export class LikeC4ModelParser {
     }
   }
 
-  private parseElementExpr(astNode: ast.ElementExpr): c4.ElementExpression {
-    if (ast.isWildcardExpr(astNode)) {
+  // TODO validate view rules
+  private parseViewRulePredicate(astNode: ast.ViewRulePredicate, _isValid: IsValidFn): c4.ViewRulePredicate {
+    const exprs = [] as c4.Expression[]
+    let exprNode: ast.Expressions | undefined = astNode.exprs
+    while (exprNode) {
+      try {
+        exprs.unshift(this.parseExpression(exprNode.value))
+      } catch (e) {
+        logWarnError(e)
+      }
+      exprNode = exprNode.prev
+    }
+    return ast.isIncludePredicate(astNode) ? { include: exprs } : { exclude: exprs }
+  }
+
+  private parseElementExpressionsIterator(astNode: ast.ElementExpressionsIterator): c4.ElementExpression[] {
+    const exprs = [] as c4.ElementExpression[]
+    let iter: ast.ElementExpressionsIterator | undefined = astNode
+    while (iter) {
+      try {
+        exprs.unshift(this.parseElementExpr(iter.value))
+      } catch (e) {
+        logWarnError(e)
+      }
+      iter = iter.prev
+    }
+    return exprs
+  }
+
+  private parseElementExpr(astNode: ast.ElementExpression): c4.ElementExpression {
+    if (ast.isWildcardExpression(astNode)) {
       return {
         wildcard: true
       }
     }
-    if (ast.isElementKindExpr(astNode)) {
-      // invariant(astNode.kind.ref, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
+    if (ast.isElementKindExpression(astNode)) {
+      invariant(astNode.kind, 'ElementKindExpr kind is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementKind: astNode.kind.$refText as c4.ElementKind,
         isEqual: astNode.isEqual
       }
     }
-    if (ast.isElementTagExpr(astNode)) {
+    if (ast.isElementTagExpression(astNode)) {
+      invariant(astNode.tag, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
       let elementTag = astNode.tag.$refText
       if (elementTag.startsWith('#')) {
         elementTag = elementTag.slice(1)
       }
-      // invariant(astNode.tag.ref, 'ElementTagExpr tag is not resolved: ' + astNode.$cstNode?.text)
       return {
         elementTag: elementTag as c4.Tag,
         isEqual: astNode.isEqual
       }
     }
-    if (ast.isExpandElementExpr(astNode)) {
-      const elementNode = elementRef(astNode.parent)
-      invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
+    if (ast.isExpandElementExpression(astNode)) {
+      const elementNode = elementRef(astNode.expand)
+      invariant(elementNode, 'Element not found ' + astNode.expand.$cstNode?.text)
       const expanded = this.resolveFqn(elementNode)
       return {
         expanded
       }
     }
-    if (ast.isDescedantsExpr(astNode)) {
+    if (ast.isElementDescedantsExpression(astNode)) {
       const elementNode = elementRef(astNode.parent)
       invariant(elementNode, 'Element not found ' + astNode.parent.$cstNode?.text)
       const element = this.resolveFqn(elementNode)
@@ -261,20 +290,25 @@ export class LikeC4ModelParser {
     nonexhaustive(astNode)
   }
 
-  private parseCustomElementExpr(astNode: ast.CustomElementExpr): c4.CustomElementExpr {
+  private parseCustomElementExpr(astNode: ast.CustomElementExpression): c4.CustomElementExpr {
     let targetRef
-    if (ast.isElementRef(astNode.target)) {
-      targetRef = astNode.target
-    } else if (ast.isExpandElementExpr(astNode.target)) {
-      targetRef = astNode.target.parent
-    } else {
-      invariant(false, 'ElementRef expected as target of custom element')
+    switch (true) {
+      case ast.isElementRef(astNode.target):
+        targetRef = astNode.target
+        break
+      case ast.isExpandElementExpression(astNode.target):
+        targetRef = astNode.target.expand
+        break
+      case ast.isElementDescedantsExpression(astNode.target):
+        targetRef = astNode.target.parent
+        break
+      default:
+        throw new Error('Unsupported target of custom element')
     }
-    // invariant(ast.isElementRef(astNode.target), 'ElementRef expected as target of custom element')
     const elementNode = elementRef(targetRef)
     invariant(elementNode, 'element not found: ' + astNode.$cstNode?.text)
     const element = this.resolveFqn(elementNode)
-    const props = astNode.body?.props ?? []
+    const props = astNode.custom.props ?? []
     return props.reduce(
       (acc, prop) => {
         if (ast.isNavigateToProperty(prop)) {
@@ -320,40 +354,25 @@ export class LikeC4ModelParser {
     )
   }
 
-  private parsePredicateExpr(astNode: ast.ViewRulePredicateExpr): c4.Expression {
-    if (ast.isCustomRelationExpr(astNode)) {
+  private parseExpression(astNode: ast.Expression): c4.Expression {
+    if (ast.isCustomRelationExpression(astNode)) {
       return this.parseCustomRelationExpr(astNode)
     }
-    if (ast.isRelationExpr(astNode)) {
-      return this.parseRelationExpr(astNode)
-    }
-    if (ast.isInOutExpr(astNode)) {
-      return {
-        inout: this.parseElementExpr(astNode.inout.to)
-      }
-    }
-    if (ast.isOutgoingExpr(astNode)) {
-      return {
-        outgoing: this.parseElementExpr(astNode.from)
-      }
-    }
-    if (ast.isIncomingExpr(astNode)) {
-      return {
-        incoming: this.parseElementExpr(astNode.to)
-      }
-    }
-    if (ast.isCustomElementExpr(astNode)) {
+    if (ast.isCustomElementExpression(astNode)) {
       return this.parseCustomElementExpr(astNode)
     }
-    if (ast.isElementExpr(astNode)) {
+    if (ast.isElementExpression(astNode)) {
       return this.parseElementExpr(astNode)
+    }
+    if (ast.isRelationExpression(astNode)) {
+      return this.parseRelationExpr(astNode)
     }
     nonexhaustive(astNode)
   }
 
-  private parseCustomRelationExpr(astNode: ast.CustomRelationExpr): c4.CustomRelationExpr {
+  private parseCustomRelationExpr(astNode: ast.CustomRelationExpression): c4.CustomRelationExpr {
     const relation = this.parseRelationExpr(astNode.relation)
-    const props = astNode.body?.props ?? []
+    const props = astNode.custom.props ?? []
     return props.reduce(
       (acc, prop) => {
         if (ast.isRelationStringProperty(prop)) {
@@ -385,30 +404,40 @@ export class LikeC4ModelParser {
     )
   }
 
-  private parseRelationExpr(astNode: ast.RelationExpr): c4.RelationExpr {
-    return {
-      source: this.parseElementExpr(astNode.source),
-      target: this.parseElementExpr(astNode.target),
-      isBidirectional: astNode.isBidirectional
+  private parseRelationExpr(astNode: ast.RelationExpression): c4.RelationExpression {
+    if (ast.isDirectedRelationExpression(astNode)) {
+      return {
+        source: this.parseElementExpr(astNode.source.from),
+        target: this.parseElementExpr(astNode.target),
+        isBidirectional: astNode.source.isBidirectional
+      }
     }
+    if (ast.isInOutRelationExpression(astNode)) {
+      return {
+        inout: this.parseElementExpr(astNode.inout.to)
+      }
+    }
+    if (ast.isOutgoingRelationExpression(astNode)) {
+      return {
+        outgoing: this.parseElementExpr(astNode.from)
+      }
+    }
+    if (ast.isIncomingRelationExpression(astNode)) {
+      return {
+        incoming: this.parseElementExpr(astNode.to)
+      }
+    }
+    nonexhaustive(astNode)
   }
 
   private parseViewRule(astRule: ast.ViewRule, isValid: IsValidFn): c4.ViewRule {
-    if (ast.isIncludePredicate(astRule) || ast.isExcludePredicate(astRule)) {
-      const exprs = astRule.expressions.flatMap(n => {
-        try {
-          return isValid(n) ? this.parsePredicateExpr(n) : []
-        } catch (e) {
-          logWarnError(e)
-          return []
-        }
-      })
-      return ast.isIncludePredicate(astRule) ? { include: exprs } : { exclude: exprs }
+    if (ast.isViewRulePredicate(astRule)) {
+      return this.parseViewRulePredicate(astRule, isValid)
     }
     if (ast.isViewRuleStyle(astRule)) {
       const styleProps = toElementStyle(astRule.styleprops)
       return {
-        targets: astRule.targets.map(n => this.parseElementExpr(n)),
+        targets: this.parseElementExpressionsIterator(astRule.target),
         style: {
           ...styleProps
         }
@@ -563,15 +592,24 @@ export class LikeC4ModelParser {
         try {
           if (ast.isDynamicViewRulePredicate(n)) {
             const include = [] as (c4.ElementExpression | c4.CustomElementExpr)[]
-            for (const expr of n.expressions) {
-              if (ast.isElementExpr(expr)) {
-                include.push(this.parseElementExpr(expr))
-                continue
+            let iter: ast.DynamicViewRulePredicateIterator | undefined = n.exprs
+            while (iter) {
+              try {
+                switch (true) {
+                  case ast.isElementExpression(iter.value):
+                    isValid(iter.value) && include.unshift(this.parseElementExpr(iter.value))
+                    break
+
+                  case ast.isCustomElementExpression(iter.value):
+                    isValid(iter.value) && include.unshift(this.parseCustomElementExpr(iter.value))
+                    break
+                  default:
+                    nonexhaustive(iter.value)
+                }
+              } catch (e) {
+                logWarnError(e)
               }
-              if (ast.isCustomElementExpr(expr)) {
-                include.push(this.parseCustomElementExpr(expr))
-                continue
-              }
+              iter = iter.prev
             }
             if (include.length > 0) {
               acc.push({ include })
@@ -580,7 +618,7 @@ export class LikeC4ModelParser {
           }
           if (ast.isViewRuleStyle(n)) {
             const styleProps = toElementStyle(n.styleprops)
-            const targets = n.targets.map(n => this.parseElementExpr(n))
+            const targets = this.parseElementExpressionsIterator(n.target)
             if (targets.length > 0) {
               acc.push({
                 targets,

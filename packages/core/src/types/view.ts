@@ -9,7 +9,7 @@ import type { ThemeColor } from './theme'
 // Full-qualified-name
 export type ViewID = Opaque<string, 'ViewID'>
 
-export type ViewRuleExpression =
+export type ViewRulePredicate =
   | {
     include: Expression[]
     exclude?: never
@@ -18,7 +18,7 @@ export type ViewRuleExpression =
     include?: never
     exclude: Expression[]
   }
-export function isViewRuleExpression(rule: ViewRule): rule is ViewRuleExpression {
+export function isViewRulePredicate(rule: ViewRule): rule is ViewRulePredicate {
   return (
     ('include' in rule && Array.isArray(rule.include))
     || ('exclude' in rule && Array.isArray(rule.exclude))
@@ -45,7 +45,7 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
   return 'autoLayout' in rule
 }
 
-export type ViewRule = ViewRuleExpression | ViewRuleStyle | ViewRuleAutoLayout
+export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleAutoLayout
 
 export interface BasicView<ViewType extends 'element' | 'dynamic'> {
   readonly __?: ViewType

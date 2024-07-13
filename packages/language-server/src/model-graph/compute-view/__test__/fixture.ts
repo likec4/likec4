@@ -16,7 +16,7 @@ import type {
   ThemeColor,
   ViewID,
   ViewRule,
-  ViewRuleExpression,
+  ViewRulePredicate,
   ViewRuleStyle
 } from '@likec4/core'
 import { indexBy, isString, map, prop } from 'remeda'
@@ -418,12 +418,12 @@ export function $expr(expr: Expression | C4Expression): C4Expression {
   }
 }
 
-export function $include(expr: Expression | C4Expression): ViewRuleExpression {
+export function $include(expr: Expression | C4Expression): ViewRulePredicate {
   return {
     include: [$expr(expr)]
   }
 }
-export function $exclude(expr: Expression | C4Expression): ViewRuleExpression {
+export function $exclude(expr: Expression | C4Expression): ViewRulePredicate {
   return {
     exclude: [$expr(expr)]
   }
