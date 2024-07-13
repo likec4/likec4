@@ -33,7 +33,7 @@ export class GraphvizLayouter {
     const diagram = parseGraphvizJson(rawjson, view)
     dot = dot
       .split('\n')
-      .filter(l => !l.includes('margin=50.1')) // see DotPrinter.ts#L175
+      .filter(l => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
       .join('\n') as DotSource
     return { dot, diagram }
   }
@@ -42,7 +42,7 @@ export class GraphvizLayouter {
     let dot = await this.dot(view)
     dot = dot
       .split('\n')
-      .filter(l => !l.includes('margin=50.1')) // see DotPrinter.ts#L175
+      .filter(l => !(l.includes('margin') && l.includes('50.1'))) // see DotPrinter.ts#L175
       .join('\n') as DotSource
     const svg = await this.graphviz.svg(dot)
     return {

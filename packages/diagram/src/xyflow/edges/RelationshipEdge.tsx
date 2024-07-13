@@ -375,7 +375,7 @@ export const RelationshipEdge = /* @__PURE__ */ memo<EdgeProps<XYFlowEdge>>(func
             selected: selected ?? false,
             stepNum: data.stepNum,
             label: data.label,
-            zIndex: edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge,
+            zIndex: (edgeLookup.get(id)!.zIndex ?? ZIndexes.Edge) + 1,
             isHovered,
             isActive,
             isStepEdge

@@ -53,7 +53,7 @@ globalStyle(`:where(${isSelected}) ${container}[data-edge-hovered='true']`, {
 // })
 
 globalStyle(`.react-flow__edges > svg`, {
-  mixBlendMode: 'screen'
+  mixBlendMode: 'plus-lighter'
 })
 
 // globalStyle(`:where([data-mantine-color-scheme="light"]) .react-flow__edges > svg`, {
@@ -63,7 +63,7 @@ globalStyle(`.react-flow__edges > svg`, {
 export const dimmed = style({})
 
 globalStyle(`.react-flow__edges > svg:has(${dimmed})`, {
-  opacity: 0.8,
+  opacity: 0.6,
   transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
   transitionDelay: '200ms',
   filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,
@@ -117,11 +117,11 @@ export const controlPoint = style({
 })
 
 export const controlDragging = style({
-  cursor: 'grabbing'
+  cursor: 'grab'
 })
 
 globalStyle(`${controlDragging} *`, {
-  cursor: 'grabbing'
+  cursor: 'grab'
 })
 
 const strokeKeyframes = keyframes({
@@ -174,7 +174,7 @@ export const edgeLabel = style({
   cursor: 'pointer',
   width: 'fit-content',
   transformOrigin: '50% 50%',
-  mixBlendMode: 'screen',
+  mixBlendMode: 'plus-lighter',
   color: xyvars.edge.labelColor,
   backgroundColor: xyvars.edge.labelBgColor,
   borderRadius: 3,
@@ -188,7 +188,7 @@ export const edgeLabel = style({
       transform: `${varTranslate} scale(1.12)`
     },
     [`&:is(${dimmed})`]: {
-      opacity: 0.6,
+      opacity: 0.3,
       transition: 'opacity 600ms ease-in-out, filter 600ms ease-in-out',
       transitionDelay: '200ms',
       filter: `grayscale(0.85) ${fallbackVar(vars.safariAnimationHook, 'blur(1px)')}`,

@@ -161,8 +161,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       // [_.mclimit]: 5,
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
-      [_.nodesep]: pxToInch(20 + (isVertical ? 100 : 80)),
-      [_.ranksep]: pxToInch(20 + (isVertical ? 100 : 72)),
+      // [_.nodesep]: pxToInch(20 + (isVertical ? 100 : 80)),
+      [_.nodesep]: pxToInch(110),
+      // [_.ranksep]: pxToInch(20 + (isVertical ? 72 : 100)),
+      [_.ranksep]: pxToInch(90),
       [_.pack]: pxToPoints(180),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15)

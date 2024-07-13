@@ -16,12 +16,13 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
   protected override createGraph(): RootGraphModel {
     const G = super.createGraph()
     G.set(_.TBbalance, 'max')
+    G.set(_.packmode, 'node')
     return G
   }
 
   protected override buildGraphvizModel(G: RootGraphModel): void {
     super.buildGraphvizModel(G)
-    this.assignGroups()
+    // this.assignGroups()
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -49,11 +50,11 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
 
     const step = extractStep(edge.id)
     const label = stepEdgeLabel(step, edge.label?.trim())
-    if (hasCompoundEndpoint) {
-      e.attributes.set(_.xlabel, label)
-    } else {
-      e.attributes.set(_.label, label)
-    }
+    // if (hasCompoundEndpoint) {
+    //   e.attributes.set(_.xlabel, label)
+    // } else {
+    e.attributes.set(_.label, label)
+    // }
 
     let weight = 1
     if (!hasCompoundEndpoint) {
@@ -86,10 +87,9 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     // We don't want constraints to be applied
     const sourceIdx = viewNodes.findIndex(n => n.id === sourceFqn)
     const targetIdx = viewNodes.findIndex(n => n.id === targetFqn)
-    if (targetIdx < sourceIdx || targetIdx === sourceIdx) {
+    if (targetIdx < sourceIdx && edge.dir !== 'back') {
       e.attributes.apply({
-        [_.constraint]: false,
-        [_.minlen]: targetIdx === sourceIdx ? 0 : 1
+        [_.constraint]: false
       })
     }
 
@@ -98,12 +98,13 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
     if (edge.dir === 'back') {
       e.attributes.apply({
         [_.arrowtail]: toArrowType(head),
+        [_.minlen]: 0,
         [_.dir]: 'back'
       })
       if (tail !== 'none') {
         e.attributes.apply({
           [_.arrowhead]: toArrowType(tail),
-          [_.constraint]: false,
+          // [_.constraint]: false,
           [_.dir]: 'both'
         })
       }
@@ -114,9 +115,9 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       e.attributes.apply({
         [_.arrowhead]: toArrowType(head),
         [_.arrowtail]: toArrowType(tail),
-        [_.dir]: 'both',
-        [_.constraint]: false,
-        [_.minlen]: 1
+        [_.dir]: 'both'
+        // [_.constraint]: false,
+        // [_.minlen]: 1
       })
       return e
     }
@@ -125,7 +126,7 @@ export class DynamicViewPrinter extends DotPrinter<ComputedDynamicView> {
       e.attributes.delete(_.arrowhead)
       e.attributes.apply({
         [_.arrowtail]: toArrowType(tail),
-        [_.constraint]: false,
+        [_.minlen]: 0,
         [_.dir]: 'back'
       })
       return e
