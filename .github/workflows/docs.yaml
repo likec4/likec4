@@ -2,7 +2,24 @@ name: docs
 
 on:
   workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      preview_url:
+        description: "deployment url for preview"
+        value: ${{ jobs.deploy-docs-preview.outputs.url }}
+      production_url:
+        description: "deployment url for production"
+        value: ${{ jobs.deploy-docs-prod.outputs.url }}
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+        - preview
+        - production
 
 permissions:
   actions: write
@@ -48,17 +65,15 @@ jobs:
     # Deploy to Preview
     # - we are in a workflow_call and the commit message does not contain 'chore: release'
     # - we are in workflow_dispatch not on main branch
-    # if: |
-    #   ( github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') || (
-    #     github.event_name == 'workflow_call' &&
-    #     !contains(github.event.head_commit.message, 'chore: release')
-    #   )
+    if: "github.event_name == 'workflow_dispatch' && inputs.environment == 'preview' || github.event_name == 'workflow_call'"
     name: deploy preview
     runs-on: ubuntu-latest
     needs: build-docs
     timeout-minutes: 10
     environment:
       name: 'docs-preview'
+      url: ${{ steps.cloudflare.outputs.deployment-url }}
+    outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
@@ -91,17 +106,15 @@ jobs:
     # Deploy to Prod
     # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
     # - we are in workflow_dispatch on main branch
-    if: |
-      ( github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' ) || (
-        github.event_name == 'workflow_call' &&
-        contains(github.event.head_commit.message, 'chore: release')
-      )
+    if: "github.event_name == 'workflow_dispatch' && inputs.environment == 'production' || (github.event_name == 'workflow_call' && contains(github.event.head_commit.message, 'chore: release'))"
     name: deploy prod
     runs-on: ubuntu-latest
     needs: build-docs
     timeout-minutes: 10
     environment:
       name: 'docs-prod'
+      url: ${{ steps.cloudflare.outputs.deployment-url }}
+    outputs:
       url: ${{ steps.cloudflare.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
