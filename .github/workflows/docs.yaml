@@ -63,9 +63,7 @@ jobs:
 
   deploy-docs-preview:
     # Deploy to Preview
-    # - we are in a workflow_call and the commit message does not contain 'chore: release'
-    # - we are in workflow_dispatch not on main branch
-    if: "github.event_name == 'workflow_dispatch' && inputs.environment == 'preview' || github.event_name == 'workflow_call'"
+    if: "inputs.environment == 'preview' || github.event_name != 'workflow_dispatch'"
     name: deploy preview
     runs-on: ubuntu-latest
     needs: build-docs
@@ -103,10 +101,7 @@ jobs:
           packageManager: yarn
 
   deploy-docs-prod:
-    # Deploy to Prod
-    # - we are in a workflow_call on main branch and the commit message contains 'chore: release'
-    # - we are in workflow_dispatch on main branch
-    if: "github.event_name == 'workflow_dispatch' && inputs.environment == 'production' || (github.event_name == 'workflow_call' && contains(github.event.head_commit.message, 'chore: release'))"
+    if: "inputs.environment == 'production' || (github.event_name != 'workflow_dispatch' && contains(github.event.head_commit.message, 'chore: release'))"
     name: deploy prod
     runs-on: ubuntu-latest
     needs: build-docs
