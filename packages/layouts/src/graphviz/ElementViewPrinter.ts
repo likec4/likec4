@@ -1,7 +1,7 @@
-import type { ComputedEdge, ComputedElementView, Fqn } from '@likec4/core'
+import type { ComputedEdge, ComputedElementView, ComputedNode, Fqn } from '@likec4/core'
 import { DefaultArrowType, defaultTheme as Theme, nonNullable } from '@likec4/core'
-import { difference, first, isNonNullish, isTruthy, last, unique } from 'remeda'
-import type { EdgeModel, RootGraphModel } from 'ts-graphviz'
+import { chunk, difference, filter, first, intersection, isNonNullish, isTruthy, last, map, pipe, unique } from 'remeda'
+import type { EdgeModel, NodeModel, RootGraphModel } from 'ts-graphviz'
 import { attribute as _ } from 'ts-graphviz'
 import { edgeLabel } from './dot-labels'
 import { DefaultEdgeStyle, DotPrinter } from './DotPrinter'
@@ -16,50 +16,63 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
   protected override buildGraphvizModel(G: RootGraphModel): void {
     super.buildGraphvizModel(G)
 
-    // const compoundIds = new Set<Fqn>()
-    // const compounds = this.view.nodes.reduce((acc, node) => {
-    //   if (isCompound(node)) {
-    //     compoundIds.add(node.id)
-    //     acc.push(node)
-    //   }
-    //   return acc
-    // }, [] as ComputedNode[])
-
-    // for (const compound of compounds) {
-    //   if (compound.depth! > 1 || this.hasInternalEdges(compound.id)) {
-    //     continue
-    //   }
-    //   const subgraph = nonNullable(this.getSubgraph(compound.id), `Subgraph not found for ${compound.id}`)
-    //   let chunkSize = 2
-    //   switch (true) {
-    //     case compound.children.length % 4 === 0 || compound.children.length % 4 >= 2:
-    //       chunkSize = 4
-    //       break
-    //     case compound.children.length % 3 === 0 || compound.children.length % 3 === 2:
-    //       chunkSize = 3
-    //       break
-    //   }
-    //   if (compound.children.length <= chunkSize) {
-    //     subgraph.set(_.rank, 'same')
-    //     continue
-    //   }
-    //   chunk(compound.children, chunkSize).forEach((chunk) => {
-    //     if (chunk.length <= 1) {
-    //       return
-    //     }
-    //     const ranked = subgraph.createSubgraph({
-    //       [_.rank]: 'same'
-    //     })
-    //     for (const child of chunk) {
-    //       const nd = this.getGraphNode(child)
-    //       if (nd) {
-    //         ranked.node(nd.id)
-    //       }
-    //     }
-    //   })
-    // }
-
     this.assignGroups()
+
+    // Below is custom made "tile" layout for compound nodes
+    const compoundIds = new Set<Fqn>()
+    const compounds = this.view.nodes.reduce((acc, node) => {
+      if (isCompound(node)) {
+        compoundIds.add(node.id)
+        acc.push(node)
+      }
+      return acc
+    }, [] as ComputedNode[])
+
+    for (const compound of compounds) {
+      const children = pipe(
+        compound.children,
+        filter(id => !this.compoundIds.has(id)),
+        map(id => this.viewElement(id)),
+        filter(nd => nd.inEdges.length === 0 && nd.outEdges.length === 0)
+      )
+      if (children.length <= 2) {
+        continue
+      }
+
+      let chunkSize = 2
+      switch (true) {
+        case children.length > 4 && children.length % 4 !== 1:
+          chunkSize = 4
+          break
+        case children.length > 3 && children.length % 3 !== 1:
+          chunkSize = 3
+          break
+      }
+      const subgraph = nonNullable(this.getSubgraph(compound.id), `Subgraph not found for ${compound.id}`)
+      let prevChunkHead: NodeModel | null = null
+      chunk(children, chunkSize).forEach((chunk) => {
+        const ranked = chunk.length > 1
+          ? subgraph.createSubgraph({ [_.rank]: 'same' })
+          : null
+        chunk.forEach((child, i) => {
+          const nd = this.getGraphNode(child.id)
+          if (!nd) {
+            return
+          }
+          ranked?.node(nd.id)
+          // Make invisible edges between chunks (link heads)
+          if (i === 0) {
+            if (prevChunkHead) {
+              subgraph.edge([prevChunkHead, nd], {
+                [_.style]: 'invis'
+                // [_.weight]: 0 /
+              })
+            }
+            prevChunkHead = nd
+          }
+        })
+      })
+    }
   }
 
   protected override addEdge(edge: ComputedEdge, G: RootGraphModel): EdgeModel | null {
@@ -83,44 +96,20 @@ export class ElementViewPrinter extends DotPrinter<ComputedElementView> {
 
     const hasCompoundEndpoint = isNonNullish(lhead) || isNonNullish(ltail)
 
-    if (hasCompoundEndpoint) {
-      const sourceId = source.attributes.get(_.likec4_id) as Fqn
-      const targetId = target.attributes.get(_.likec4_id) as Fqn
-      const existingVisibleEdge = viewEdges.find(e => e.source === sourceId && e.target === targetId)
-      if (existingVisibleEdge) {
-        e.attributes.set(_.weight, 0)
-      }
-    }
-
-    let weight = 1
     if (!hasCompoundEndpoint) {
-      const cleanSourceNode = this.withoutCompoundEdges(sourceNode)
-      const cleanTargetNode = this.withoutCompoundEdges(targetNode)
-      // "Strengthen" edges that are single in/out
-      switch (true) {
-        case cleanSourceNode.outEdges.length === 1 && targetNode.inEdges.length === 1:
-          weight = unique([...cleanSourceNode.inEdges, ...targetNode.outEdges]).length + 1
-          break
-        case cleanSourceNode.outEdges.length === 1:
-          weight = difference(unique([...cleanTargetNode.outEdges, ...cleanTargetNode.inEdges]), [
-            ...cleanSourceNode.inEdges,
-            ...cleanSourceNode.outEdges
-          ]).length
-          break
-        case cleanTargetNode.inEdges.length === 1:
-          weight = difference(unique([...cleanSourceNode.inEdges, ...cleanSourceNode.outEdges]), [
-            ...cleanTargetNode.inEdges,
-            ...cleanTargetNode.outEdges
-          ]).length
-          break
-      }
-      if (weight > 1) {
-        e.attributes.set(_.weight, weight)
-      }
+      const connected = new Set([
+        ...sourceNode.inEdges,
+        ...sourceNode.outEdges,
+        ...targetNode.inEdges,
+        ...targetNode.outEdges
+      ].filter(e => !this.edgesWithCompounds.has(e)))
+      e.attributes.set(_.weight, connected.size)
+    } else {
+      e.attributes.set(_.weight, 0.5)
     }
 
-    const label = isTruthy(edge.label) ? edgeLabel(edge.label) : null
-    if (isTruthy(label)) {
+    if (isTruthy(edge.label)) {
+      const label = edgeLabel(edge.label)
       if (hasCompoundEndpoint) {
         e.attributes.set(_.xlabel, label)
       } else {

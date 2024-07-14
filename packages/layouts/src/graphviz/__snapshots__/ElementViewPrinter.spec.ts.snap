@@ -6,12 +6,11 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
-  TBbalance = "max";
+  TBbalance = "min";
   splines = "spline";
-  outputorder = "nodesfirst";
-  nodesep = 1.528;
-  ranksep = 1.25;
-  pack = 180;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 100;
   packmode = "array_3";
   pad = 0.209;
   graph [
@@ -79,6 +78,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   "backend" -> "s3" [
     likec4_id = "cloud.backend:amazon.s3";
     style = "dashed";
+    weight = 1;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">persists artifacts</FONT></TD></TR></TABLE>>;
     arrowhead = "normal";
     arrowtail = "odiamond";
@@ -94,12 +94,11 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
-  TBbalance = "max";
+  TBbalance = "min";
   splines = "spline";
-  outputorder = "nodesfirst";
-  nodesep = 1.528;
-  ranksep = 1.25;
-  pack = 180;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 100;
   packmode = "array_3";
   pad = 0.209;
   graph [
@@ -215,13 +214,13 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     "adminpanel" -> "graphql" [
       likec4_id = "cloud.frontend.adminPanel:cloud.backend.graphql";
       style = "dashed";
-      weight = 2;
+      weight = 4;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><TABLE ALIGN="LEFT" BORDER="0" CELLPADDING="0" CELLSPACING="1"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="14">fetches data in zero trust network with</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="14">sso authentification</FONT></TD></TR></TABLE></TD></TR></TABLE>>;
     ];
     "dashboard" -> "graphql" [
       likec4_id = "cloud.frontend.dashboard:cloud.backend.graphql";
       style = "dashed";
-      weight = 2;
+      weight = 4;
       label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">fetches data</FONT></TD></TR></TABLE>>;
     ];
   }
@@ -256,12 +255,11 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
-  TBbalance = "max";
+  TBbalance = "min";
   splines = "spline";
-  outputorder = "nodesfirst";
-  nodesep = 1.528;
-  ranksep = 1.25;
-  pack = 180;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 100;
   packmode = "array_3";
   pad = 0.209;
   graph [
@@ -348,13 +346,13 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   "customer" -> "frontend" [
     likec4_id = "customer:cloud.frontend";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "support" -> "frontend" [
     likec4_id = "support:cloud.frontend";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "backend" -> "amazon" [
@@ -376,12 +374,11 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   layout = "dot";
   compound = true;
   rankdir = "TB";
-  TBbalance = "max";
+  TBbalance = "min";
   splines = "spline";
-  outputorder = "nodesfirst";
-  nodesep = 1.528;
-  ranksep = 1.25;
-  pack = 180;
+  nodesep = 1.389;
+  ranksep = 1.528;
+  pack = 100;
   packmode = "array_3";
   pad = 0.209;
   graph [
@@ -443,13 +440,13 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   "customer" -> "cloud" [
     likec4_id = "customer:cloud";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">opens in browser</FONT></TD></TR></TABLE>>;
   ];
   "support" -> "cloud" [
     likec4_id = "support:cloud";
     style = "dashed";
-    weight = 2;
+    weight = 3;
     label = <<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" BGCOLOR="#18191bA0"><TR><TD><FONT POINT-SIZE="14">manages</FONT></TD></TR></TABLE>>;
   ];
   "cloud" -> "amazon" [

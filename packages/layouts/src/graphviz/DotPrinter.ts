@@ -155,17 +155,14 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.layout]: 'dot',
       [_.compound]: true,
       [_.rankdir]: this.view.autoLayout,
-      [_.TBbalance]: 'max',
+      [_.TBbalance]: 'min',
       [_.splines]: 'spline',
-      [_.outputorder]: 'nodesfirst',
       // [_.mclimit]: 5,
       // [_.nslimit]: 5,
       // [_.nslimit1]: 5,
-      // [_.nodesep]: pxToInch(20 + (isVertical ? 100 : 80)),
-      [_.nodesep]: pxToInch(110),
-      // [_.ranksep]: pxToInch(20 + (isVertical ? 72 : 100)),
-      [_.ranksep]: pxToInch(90),
-      [_.pack]: pxToPoints(180),
+      [_.nodesep]: pxToInch(100),
+      [_.ranksep]: pxToInch(110),
+      [_.pack]: pxToPoints(100),
       [_.packmode]: 'array_3',
       [_.pad]: pxToInch(15)
     })
@@ -403,11 +400,11 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       map(id => {
         // edges only inside clusters, compound endpoints are not considered
         const edges = this.findInternalEdges(id).filter(e =>
-          e.source !== e.target && !!this.getGraphNode(e.source) && !!this.getGraphNode(e.target)
+          e.source !== e.target && !this.compoundIds.has(e.source) && !this.compoundIds.has(e.target)
         )
         return { id, edges }
       }),
-      filter(({ edges }) => edges.length > 1 && edges.length <= 8),
+      filter(({ edges }) => edges.length > 1 && edges.length < 8),
       // take only first 4 groups, otherwise grahviz eats the memory
       take(4)
     )
