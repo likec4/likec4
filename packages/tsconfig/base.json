@@ -3,13 +3,17 @@
   "display": "Base Strictest",
   "exclude": [
     "node_modules",
+    "${configDir}/node_modules",
     "dist",
+    "${configDir}/dist",
     "build",
+    "${configDir}/build",
   ],
   "compilerOptions": {
     "lib": [
       "es2023"
     ],
+    "outDir": "${configDir}/dist",
     "target": "es2022",
     "moduleResolution": "Bundler",
     "declaration": true,

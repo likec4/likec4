@@ -4,7 +4,6 @@
   "compilerOptions": {
     "noUnusedParameters": false,
     "module": "esnext",
-    "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
     "types": [
