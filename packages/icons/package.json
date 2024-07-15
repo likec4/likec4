@@ -1,0 +1,62 @@
+{
+  "name": "@likec4/icons",
+  "version": "1.5.0",
+  "license": "MIT",
+  "homepage": "https://likec4.dev",
+  "author": "Denis Davydkov <denis@davydkov.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likec4/likec4.git",
+    "directory": "packages/icons"
+  },
+  "bugs": "https://github.com/likec4/likec4/issues",
+  "scripts": {
+    "update-icons": "node scripts/update-icons.mjs"
+  },
+  "files": [
+    "src",
+    "tsconfig.json"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/tech/index.ts",
+      "default": "./src/tech/index.ts"
+    },
+    "./aws": {
+      "types": "./src/aws/index.ts",
+      "default": "./src/aws/index.ts"
+    },
+    "./aws/*": "./src/aws/*.tsx",
+    "./tech": {
+      "types": "./src/tech/index.ts",
+      "default": "./src/tech/index.ts"
+    },
+    "./tech/*": "./src/tech/*.tsx",
+    "./gcp": {
+      "types": "./src/gcp/index.ts",
+      "default": "./src/gcp/index.ts"
+    },
+    "./gcp/*": "./src/gcp/*.tsx",
+    "./*": "./src/tech/*.tsx"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "devDependencies": {
+    "consola": "^3.2.3",
+    "execa": "^9.3.0",
+    "glob": "^11.0.0",
+    "tsx": "~4.9.3",
+    "typescript": "^5.5.3"
+  },
+  "svgr": {
+    "typescript": true,
+    "jsxRuntime":"automatic",
+    "filenameCase": "kebab",
+    "svgo-config": "svgo.config.mjs"
+  },
+  "packageManager": "yarn@4.3.1"
+}
