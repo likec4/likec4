@@ -1,8 +1,9 @@
 import consola from 'consola'
 import { $, execa } from 'execa'
-import { glob } from 'glob'
+import { glob, globSync } from 'glob'
 import { existsSync } from 'node:fs'
-import { mkdir, rm } from 'node:fs/promises'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { basename } from 'node:path'
 
 await rm('.tmp/src', { force: true, recursive: true })
 await mkdir('.tmp/src', { recursive: true })
@@ -53,3 +54,32 @@ await $`npx @svgr/cli ${opts} --out-dir src -- .tmp/src`
 consola.success('generated svg tsx - DONE')
 
 await $`rm -r -f .tmp/src .tmp/aws .tmp/gcp`
+
+function components(dir) {
+  return globSync(`src/${dir}/*.tsx`).map((file) => {
+    return basename(file).replace('.tsx', '')
+  })
+}
+
+const registry = {
+  tech: components('tech'),
+  gcp: components('gcp'),
+  aws: components('aws')
+}
+
+await writeFile(
+  'src/registry.ts',
+  `
+//@ts-nocheck
+const Registry: {
+  tech: string[]
+  gcp: string[]
+  aws: string[]
+} = {
+  tech: ${JSON.stringify(registry.tech, null, 4)},
+  gcp: ${JSON.stringify(registry.gcp, null, 4)},
+  aws: ${JSON.stringify(registry.aws, null, 4)},
+}
+export default Registry
+`
+)

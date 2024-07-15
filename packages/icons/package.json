@@ -12,52 +12,65 @@
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
     "update-icons": "node scripts/update-icons.mjs",
-    "build": "tsc"
+    "prepack": "tsc"
   },
   "files": [
-    "src",
-    "dist",
-    "tsconfig.json"
+    "dist"
   ],
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/tech/index.d.ts",
-      "default": "./dist/tech/index.js"
-    },
-    "./aws": {
-      "types": "./dist/aws/index.d.ts",
-      "default": "./dist/aws/index.js"
-    },
-    "./aws/*": {
-      "types": "./dist/aws/*.d.ts",
-      "default": "./dist/aws/*.jsx"
-    },
-    "./tech": {
-      "types": "./dist/tech/index.d.ts",
-      "default": "./dist/tech/index.js"
-    },
-    "./tech/*": {
-      "types": "./dist/tech/*.d.ts",
-      "default": "./dist/tech/*.jsx"
-    },
-    "./gcp": {
-      "types": "./dist/gcp/index.d.ts",
-      "default": "./dist/gcp/index.js"
-    },
-    "./gcp/*": {
-      "types": "./dist/gcp/*.d.ts",
-      "default": "./dist/gcp/*.jsx"
-    },
-    "./*": {
-      "types": "./dist/tech/*.d.ts",
-      "default": "./dist/tech/*.jsx"
-    }
+    ".": "./src/tech/index.ts",
+    "./registry": "./src/registry.ts",
+    "./aws": "./src/aws/index.ts",
+    "./aws/*": "./src/aws/*.tsx",
+    "./tech": "./src/tech/index.ts",
+    "./tech/*": "./src/tech/*.tsx",
+    "./gcp": "./src/gcp/index.ts",
+    "./gcp/*": "./src/gcp/*.tsx",
+    "./*": "./src/tech/*.tsx"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/tech/index.d.ts",
+        "default": "./dist/tech/index.js"
+      },
+      "./registry": {
+        "types": "./dist/registry.d.ts",
+        "default": "./dist/registry.js"
+      },
+      "./aws": {
+        "types": "./dist/aws/index.d.ts",
+        "default": "./dist/aws/index.js"
+      },
+      "./aws/*": {
+        "types": "./dist/aws/*.d.ts",
+        "default": "./dist/aws/*.jsx"
+      },
+      "./tech": {
+        "types": "./dist/tech/index.d.ts",
+        "default": "./dist/tech/index.js"
+      },
+      "./tech/*": {
+        "types": "./dist/tech/*.d.ts",
+        "default": "./dist/tech/*.jsx"
+      },
+      "./gcp": {
+        "types": "./dist/gcp/index.d.ts",
+        "default": "./dist/gcp/index.js"
+      },
+      "./gcp/*": {
+        "types": "./dist/gcp/*.d.ts",
+        "default": "./dist/gcp/*.jsx"
+      },
+      "./*": {
+        "types": "./dist/tech/*.d.ts",
+        "default": "./dist/tech/*.jsx"
+      }
+    }
   },
   "devDependencies": {
     "consola": "^3.2.3",
