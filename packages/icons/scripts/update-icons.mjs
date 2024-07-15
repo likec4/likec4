@@ -1,53 +1,55 @@
 import consola from 'consola'
 import { $, execa } from 'execa'
 import { glob } from 'glob'
-import { cp, mkdir, rm } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { mkdir, rm } from 'node:fs/promises'
 
-consola.start('Fetching tech-icons...')
-await rm('src/tech/', { force: true, recursive: true })
-await rm('.tech', { force: true, recursive: true })
-await $`curl -o icons.zip  https://icon.icepanel.io/Technology/svg.zip`
-await $`unzip icons.zip -d .tech`
-// await $`npx @svgr/cli --out-dir tech --filename-case kebab --typescript --jsx-runtime automatic -- .tech`
-await $`npx @svgr/cli --out-dir src/tech  -- .tech`
-await rm('.tech', { force: true, recursive: true })
-consola.success('Done')
+await rm('.tmp/src', { force: true, recursive: true })
+await mkdir('.tmp/src', { recursive: true })
 
-// const svgr = 'npx @svgr/cli --filename-case kebab --typescript --jsx-runtime automatic --svgo-config svgo.config.mjs'
+if (!existsSync('.tmp/tech.zip')) {
+  consola.info('Fetching tech-icons...')
+  await $`curl -o .tmp/tech.zip  https://icon.icepanel.io/Technology/svg.zip`
+}
+await $`unzip .tmp/tech.zip -d .tmp/src/tech`
+consola.success('tech-icons - OK')
 
-// const opts = [
-//   '--filename-case', 'kebab',
-//   '--typescript',
-//   '--jsx-runtime', 'automatic',
-//   '--svgo-config', 'svgo.config.json',
-// ]
+if (!existsSync('.tmp/gcp.zip')) {
+  consola.info('Fetching gcp-icons...')
+  await $`curl -o .tmp/gcp.zip  https://icon.icepanel.io/GCP/svg.zip`
+}
+await rm('.tmp/gcp', { force: true, recursive: true })
+await $`unzip .tmp/gcp.zip  -d .tmp/gcp`
+await $`mv .tmp/gcp/svg .tmp/src/gcp`
+consola.success('gcp-icons - OK')
 
-consola.start('Fetching gcp-icons...')
-await rm('src/gcp/', { force: true, recursive: true })
-await rm('.gcp', { force: true, recursive: true })
-await $`curl -o icons.zip  https://icon.icepanel.io/GCP/svg.zip`
-await $`unzip icons.zip -d .gcp`
-await $`npx @svgr/cli --out-dir src/gcp -- .gcp/svg`
-await rm('.gcp', { force: true, recursive: true })
-consola.success('Done')
+if (!existsSync('.tmp/aws.zip')) {
+  consola.info('Fetching aws-icons...')
+  await $`curl -o .tmp/aws.zip https://icon.icepanel.io/AWS/svg.zip`
+}
+await rm('.tmp/aws', { force: true, recursive: true })
+await $`unzip .tmp/aws.zip -d .tmp/aws`
+await mkdir('.tmp/src/aws', { recursive: true })
 
-consola.start('Fetching aws-icons...')
-await rm('src/aws/', { force: true, recursive: true })
-await rm('.aws', { force: true, recursive: true })
-await rm('.aws-flat', { force: true, recursive: true })
-await $`curl -o icons.zip  https://icon.icepanel.io/AWS/svg.zip`
-await $`unzip icons.zip -d .aws`
-await mkdir('.aws-flat', { recursive: true })
-
-const svgs = await glob('.aws/**/*.svg')
+const svgs = await glob('.tmp/aws/**/*.svg')
 for (const svg of svgs) {
   const name = svg.split('/').pop()
-  await cp(svg, `.aws-flat/${name}`)
+  await $`mv ${svg} .tmp/src/aws/${name}`
 }
+consola.success('aws-icons - OK')
 
-await $`npx @svgr/cli --out-dir src/aws -- .aws-flat`
-await rm('.aws', { force: true, recursive: true })
-await rm('.aws-flat', { force: true, recursive: true })
-consola.success('Done')
+await $`rm -r -f src/*`
+const opts = [
+  '--typescript',
+  '--filename-case',
+  'kebab',
+  '--jsx-runtime',
+  'automatic',
+  '--svgo-config',
+  'svgo.config.json'
+]
 
-await rm('icons.zip', { force: true })
+await $`npx @svgr/cli ${opts} --out-dir src -- .tmp/src`
+consola.success('generated svg tsx - DONE')
+
+await $`rm -r -f .tmp/src .tmp/aws .tmp/gcp`

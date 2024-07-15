@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgWorkflows = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path
       fill="#4285f4"
       d="M19.5 20.06h-.7v-1.5h.7a.76.76 0 0 0 .75-.75V13.5a.76.76 0 0 0-.75-.75h-3.61v-1.5h3.61a2.25 2.25 0 0 1 2.25 2.25v4.31a2.25 2.25 0 0 1-2.25 2.25M11.55 20.06h-4.9v-1.5h4.9Z"

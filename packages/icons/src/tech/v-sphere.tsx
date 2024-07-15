@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgVSphere = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={128} height={128} {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <path
       fill="#00C1D5"
       d="M60.3 2.3H20.2s-15.8.8-18 18v86.3s1.1 17.3 19.1 19.1h35.1l5.3-5.3H21.9s-12.6-1.6-14.2-14.2V21.4s-.5-12.8 14-14h33.9z"

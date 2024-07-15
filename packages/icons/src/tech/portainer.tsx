@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgPortainer = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={128} height={128} fill="#3BBCED" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="#3BBCED" viewBox="0 0 128 128" {...props}>
     <path d="M49.32 29.44h-1.88v9.75h1.88zm8.09 0h-1.88v9.75h1.88zm11.06-18.6L66.54 7.5 34.36 26.1l1.93 3.34z" />
     <path d="m68.28 10.84 1.93-3.34 32.18 18.6-1.93 3.34z" />
     <path d="M108.08 29.49v-3.86H19.92v3.86z" />

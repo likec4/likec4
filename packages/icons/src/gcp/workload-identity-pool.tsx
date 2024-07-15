@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgWorkloadIdentityPool = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} data-name="Artwork" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" data-name="Artwork" viewBox="0 0 24 24" {...props}>
     <rect
       width={18}
       height={12}

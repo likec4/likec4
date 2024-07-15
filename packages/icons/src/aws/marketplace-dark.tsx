@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgMarketplaceDark = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={80} height={80} {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" {...props}>
     <g fill="none" fillRule="evenodd">
       <path fill="#FFF" d="M0 0h80v80H0z" />
       <path

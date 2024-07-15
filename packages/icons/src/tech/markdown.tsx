@@ -25,13 +25,10 @@ const SvgMarkdown = (props: SVGProps<SVGSVGElement>) => (
         textTransform: 'none',
         textOrientation: 'mixed',
         whiteSpace: 'normal',
-        shapePadding: 0,
-        shapeMargin: 0,
+
         inlineSize: 0,
         isolation: 'auto',
-        mixBlendMode: 'normal',
-        solidColor: '#000',
-        solidOpacity: 1
+        mixBlendMode: 'normal'
       }}
     />
     <path d="M20.721 84.1V43.9H32.42l11.697 14.78L55.81 43.9h11.696v40.2H55.81V61.044l-11.694 14.78-11.698-14.78V84.1H20.722zm73.104 0L76.28 64.591h11.697V43.9h11.698v20.69h11.698zm0 0" />

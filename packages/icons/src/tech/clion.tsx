@@ -3,7 +3,7 @@ const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="CLion_svg__a"
+        id="a"
         x1={39.01}
         x2={66.51}
         y1={23.27}
@@ -22,7 +22,7 @@ const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#21d789" />
       </linearGradient>
       <linearGradient
-        id="CLion_svg__b"
+        id="b"
         x1={27.99}
         x2={13.87}
         y1={16.68}
@@ -34,7 +34,7 @@ const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.9} stopColor="#009ae5" />
       </linearGradient>
       <linearGradient
-        id="CLion_svg__c"
+        id="c"
         x1={92.05}
         x2={-4.53}
         y1={13.4}
@@ -46,7 +46,7 @@ const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.9} stopColor="#009ae5" />
       </linearGradient>
       <linearGradient
-        id="CLion_svg__d"
+        id="d"
         x1={62.84}
         x2={95.87}
         y1={77.02}
@@ -58,13 +58,13 @@ const SvgCLion = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.9} stopColor="#009ae5" />
       </linearGradient>
     </defs>
-    <path fill="url(#CLion_svg__a)" d="M47.555 51.25 50.09 5.484l26.613 14.75Zm0 0" />
-    <path fill="url(#CLion_svg__b)" d="M47.555 51.25 50.09 5.484 16.297 26.781 5.484 91.527Zm0 0" />
+    <path fill="url(#a)" d="M47.555 51.25 50.09 5.484l26.613 14.75Zm0 0" />
+    <path fill="url(#b)" d="M47.555 51.25 50.09 5.484 16.297 26.781 5.484 91.527Zm0 0" />
     <path
-      fill="url(#CLion_svg__c)"
+      fill="url(#c)"
       d="m120.188 40.559-15.06-30.61-28.425 10.285L47.555 51.25 5.485 91.527l37.949 27.621 47.703-43.02Zm0 0"
     />
-    <path fill="url(#CLion_svg__d)" d="M100.57 72.582v27.988H54.613l20.2 15.63 29.257 6.316 18.446-41.754Zm0 0" />
+    <path fill="url(#d)" d="M100.57 72.582v27.988H54.613l20.2 15.63 29.257 6.316 18.446-41.754Zm0 0" />
     <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />
     <path
       fill="#fff"

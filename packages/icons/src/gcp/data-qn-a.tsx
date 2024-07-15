@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgDataQnA = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} data-name="Artwork" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" data-name="Artwork" viewBox="0 0 24 24" {...props}>
     <path
       fill="#4285f4"
       d="M16.791 6.375a.84.84 0 0 1 .834.846V17.64a.685.685 0 0 1-.75.735H4.688L2.25 20.812V7.221a.84.84 0 0 1 .834-.846Z"

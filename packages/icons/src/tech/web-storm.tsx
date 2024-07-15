@@ -3,7 +3,7 @@ const SvgWebStorm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="WebStorm_svg__a"
+        id="a"
         x1={38.88}
         x2={63.72}
         y1={6.5}
@@ -15,7 +15,7 @@ const SvgWebStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.94} stopColor="#087cfa" />
       </linearGradient>
       <linearGradient
-        id="WebStorm_svg__b"
+        id="b"
         x1={46.63}
         x2={88.66}
         y1={17.85}
@@ -27,7 +27,7 @@ const SvgWebStorm = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.37} stopColor="#07c3f2" />
       </linearGradient>
       <linearGradient
-        id="WebStorm_svg__c"
+        id="c"
         x1={88.27}
         x2={93.79}
         y1={25.47}
@@ -40,14 +40,14 @@ const SvgWebStorm = (props: SVGProps<SVGSVGElement>) => (
       </linearGradient>
     </defs>
     <path
-      fill="url(#WebStorm_svg__a)"
+      fill="url(#a)"
       d="M21.262 111.25 5.484 17.75 34.656 5.645l18.63 11.07 17.066-9.207 35.558 13.656-19.94 101.352Zm0 0"
     />
     <path
-      fill="url(#WebStorm_svg__b)"
+      fill="url(#b)"
       d="M122.516 45.117 107.41 7.813l-27.402-2.33L37.707 46.13 49.09 98.512l21.262 14.91 52.164-30.953-12.801-24.004Zm0 0"
     />
-    <path fill="url(#WebStorm_svg__c)" d="m99.07 39.559 10.645 18.906 12.8-13.348-9.398-23.234Zm0 0" />
+    <path fill="url(#c)" d="m99.07 39.559 10.645 18.906 12.8-13.348-9.398-23.234Zm0 0" />
     <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />
     <path
       fill="#fff"

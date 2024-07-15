@@ -19,10 +19,9 @@ const SvgLabView = (props: SVGProps<SVGSVGElement>) => (
         textTransform: 'none',
         textOrientation: 'mixed',
         whiteSpace: 'normal',
-        shapePadding: 0,
+
         isolation: 'auto',
-        mixBlendMode: 'normal',
-        solidColor: '#000'
+        mixBlendMode: 'normal'
       }}
     />
     <path
@@ -43,10 +42,9 @@ const SvgLabView = (props: SVGProps<SVGSVGElement>) => (
         textTransform: 'none',
         textOrientation: 'mixed',
         whiteSpace: 'normal',
-        shapePadding: 0,
+
         isolation: 'auto',
-        mixBlendMode: 'normal',
-        solidColor: '#000'
+        mixBlendMode: 'normal'
       }}
     />
     <path

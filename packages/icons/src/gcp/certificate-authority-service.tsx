@@ -3,10 +3,9 @@ const SvgCertificateAuthorityService = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
-    width={24}
-    height={24}
     baseProfile="tiny"
     overflow="visible"
+    viewBox="0 0 24 24"
     {...props}
   >
     <path fill="#4285F4" d="M12 0 2.3 4.4v6.5C2.2 17 6.4 22.6 12 24c5.6-1.4 9.7-7 9.7-13.1V4.4z" />

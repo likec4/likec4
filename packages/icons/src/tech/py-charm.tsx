@@ -1,11 +1,11 @@
 import type { SVGProps } from 'react'
 const SvgPyCharm = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
-    <linearGradient id="PyCharm_svg__a" x1={38.78} x2={95.91} y1={41.59} y2={41.59} gradientUnits="userSpaceOnUse">
+    <linearGradient id="a" x1={38.78} x2={95.91} y1={41.59} y2={41.59} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#21d789" />
       <stop offset={1} stopColor="#07c3f2" />
     </linearGradient>
-    <linearGradient id="PyCharm_svg__b" x1={-29.18} x2={88.46} y1={85.52} y2={-1.32} gradientUnits="userSpaceOnUse">
+    <linearGradient id="b" x1={-29.18} x2={88.46} y1={85.52} y2={-1.32} gradientUnits="userSpaceOnUse">
       <stop offset={0.01} stopColor="#fcf84a" />
       <stop offset={0.11} stopColor="#a7eb62" />
       <stop offset={0.21} stopColor="#5fe077" />
@@ -20,7 +20,7 @@ const SvgPyCharm = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.97} stopColor="#0bc6e1" />
       <stop offset={1} stopColor="#07c3f2" />
     </linearGradient>
-    <linearGradient id="PyCharm_svg__c" x1={17.3} x2={36.92} y1={110.99} y2={49.42} gradientUnits="userSpaceOnUse">
+    <linearGradient id="c" x1={17.3} x2={36.92} y1={110.99} y2={49.42} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#21d789" />
       <stop offset={0.16} stopColor="#24d888" />
       <stop offset={0.3} stopColor="#2fd985" />
@@ -31,7 +31,7 @@ const SvgPyCharm = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.9} stopColor="#cff157" />
       <stop offset={1} stopColor="#fcf84a" />
     </linearGradient>
-    <linearGradient id="PyCharm_svg__d" x1={43.28} x2={85.97} y1={57.46} y2={0.06} gradientUnits="userSpaceOnUse">
+    <linearGradient id="d" x1={43.28} x2={85.97} y1={57.46} y2={0.06} gradientUnits="userSpaceOnUse">
       <stop offset={0} stopColor="#21d789" />
       <stop offset={0.09} stopColor="#23d986" />
       <stop offset={0.17} stopColor="#2ade7b" />
@@ -43,22 +43,22 @@ const SvgPyCharm = (props: SVGProps<SVGSVGElement>) => (
       <stop offset={0.92} stopColor="#e0f64d" />
       <stop offset={1} stopColor="#fcf84a" />
     </linearGradient>
-    <linearGradient id="PyCharm_svg__e" x1={108.58} x2={22.55} y1={64.77} y2={63.97} gradientUnits="userSpaceOnUse">
+    <linearGradient id="e" x1={108.58} x2={22.55} y1={64.77} y2={63.97} gradientUnits="userSpaceOnUse">
       <stop offset={0.39} stopColor="#fcf84a" />
       <stop offset={0.46} stopColor="#ecf74c" />
       <stop offset={0.61} stopColor="#c1f451" />
       <stop offset={0.82} stopColor="#7eef5a" />
       <stop offset={1} stopColor="#3bea62" />
     </linearGradient>
-    <path fill="url(#PyCharm_svg__a)" d="m87.54 23.954 34.194 28.44-12.312 25.051-20.614-5.717H70.973z" />
+    <path fill="url(#a)" d="m87.54 23.954 34.194 28.44-12.312 25.051-20.614-5.717H70.973z" />
     <path
-      fill="url(#PyCharm_svg__b)"
+      fill="url(#b)"
       d="m53.09 42.423-6.619 35.023-.634 11.898-16.689 7.229-23.662 2.548 7.18-75.666L55.54 5.486l26.417 17.323z"
     />
-    <path fill="url(#PyCharm_svg__c)" d="m53.09 42.423 3.218 67.486-10.691 12.605L5.486 99.121l32.951-49.103z" />
-    <path fill="url(#PyCharm_svg__d)" d="M97.243 37.498H56.698L92.526 5.486z" />
+    <path fill="url(#c)" d="m53.09 42.423 3.218 67.486-10.691 12.605L5.486 99.121l32.951-49.103z" />
+    <path fill="url(#d)" d="M97.243 37.498H56.698L92.526 5.486z" />
     <path
-      fill="url(#PyCharm_svg__e)"
+      fill="url(#e)"
       d="M122.514 110.178 86.82 122.295 39.289 108.91 53.09 42.423l5.51-4.925 28.94-2.718-2.621 29.062 23.016-8.923z"
     />
     <path d="M27.429 27.429h73.143v73.143H27.429z" />

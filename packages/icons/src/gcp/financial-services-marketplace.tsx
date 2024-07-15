@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgFinancialServicesMarketplace = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
     <path fill="#669df6" d="M4.98 10.96H12v1H4.98z" />
     <path fill="#4285f4" d="M12 10.96h7.02v1H12z" />
     <path fill="#669df6" d="M5 13v9h7v-9Zm2.76 7.78H6.23v-6.56h1.51Zm3.09 0H9.32v-6.56h1.51Z" />

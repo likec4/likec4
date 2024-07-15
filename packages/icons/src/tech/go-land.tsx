@@ -3,7 +3,7 @@ const SvgGoLand = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="GoLand_svg__a"
+        id="a"
         x1={99.03}
         x2={61.54}
         y1={59.18}
@@ -19,7 +19,7 @@ const SvgGoLand = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#b74af7" />
       </linearGradient>
       <linearGradient
-        id="GoLand_svg__b"
+        id="b"
         x1={37.54}
         x2={60.33}
         y1={34.26}
@@ -35,7 +35,7 @@ const SvgGoLand = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#b74af7" />
       </linearGradient>
       <linearGradient
-        id="GoLand_svg__c"
+        id="c"
         x1={17.84}
         x2={87.09}
         y1={88.36}
@@ -52,13 +52,10 @@ const SvgGoLand = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.67} stopColor="#3bea62" />
       </linearGradient>
     </defs>
-    <path fill="url(#GoLand_svg__a)" d="m108.57 50.75 13.946 30.926-23.871 40.84-14.7-35.696Zm0 0" />
+    <path fill="url(#a)" d="m108.57 50.75 13.946 30.926-23.871 40.84-14.7-35.696Zm0 0" />
     <path fill="#b74af7" d="m83.945 86.82 14.7 35.696L61.66 109.8Zm0 0" />
-    <path
-      fill="url(#GoLand_svg__b)"
-      d="m87.93 38.535-7.582-33.05H38.3L5.484 55.687 14.98 78.75 5.484 99.805l67.965-57.82Zm0 0"
-    />
-    <path fill="url(#GoLand_svg__c)" d="M122.516 30.328 73.449 41.984 5.484 99.804l43.84 22.712L83.945 86.82Zm0 0" />
+    <path fill="url(#b)" d="m87.93 38.535-7.582-33.05H38.3L5.484 55.687 14.98 78.75 5.484 99.805l67.965-57.82Zm0 0" />
+    <path fill="url(#c)" d="M122.516 30.328 73.449 41.984 5.484 99.804l43.84 22.712L83.945 86.82Zm0 0" />
     <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />
     <path
       fill="#fff"

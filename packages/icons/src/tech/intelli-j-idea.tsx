@@ -3,7 +3,7 @@ const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="IntelliJ-IDEA_svg__a"
+        id="a"
         x1={11.16}
         x2={58.94}
         y1={59.21}
@@ -18,7 +18,7 @@ const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.59} stopColor="#087cfa" />
       </linearGradient>
       <linearGradient
-        id="IntelliJ-IDEA_svg__b"
+        id="b"
         x1={89.05}
         x2={73.12}
         y1={54.12}
@@ -38,7 +38,7 @@ const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#087cfa" />
       </linearGradient>
       <linearGradient
-        id="IntelliJ-IDEA_svg__c"
+        id="c"
         x1={18.72}
         x2={78.8}
         y1={26.61}
@@ -56,11 +56,11 @@ const SvgIntelliJIdea = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#087cfa" />
       </linearGradient>
     </defs>
-    <path fill="url(#IntelliJ-IDEA_svg__a)" d="M23.492 88.027 6.277 74.434 16.41 55.676l15.223 5.094Zm0 0" />
+    <path fill="url(#a)" d="M23.492 88.027 6.277 74.434 16.41 55.676l15.223 5.094Zm0 0" />
     <path fill="#087cfa" d="m121.988 36.68-2.105 67.78L74.8 122.517l-24.55-15.849Zm0 0" />
-    <path fill="url(#IntelliJ-IDEA_svg__b)" d="M121.988 36.68 99.68 58.44 71.035 23.297l14.14-15.899Zm0 0" />
+    <path fill="url(#b)" d="M121.988 36.68 99.68 58.44 71.035 23.297l14.14-15.899Zm0 0" />
     <path
-      fill="url(#IntelliJ-IDEA_svg__c)"
+      fill="url(#c)"
       d="m50.25 106.668-35.852 12.957 7.508-26.293 9.727-32.562L4.96 51.848 21.906 5.484l38.301 4.524L99.68 58.44Zm0 0"
     />
     <path d="M27.43 27.43h73.14v73.14H27.43Zm0 0" />

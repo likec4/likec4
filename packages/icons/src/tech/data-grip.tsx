@@ -3,7 +3,7 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="DataGrip_svg__a"
+        id="a"
         x1={92.39}
         x2={95.19}
         y1={40.62}
@@ -16,7 +16,7 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#6b57ff" />
       </linearGradient>
       <linearGradient
-        id="DataGrip_svg__b"
+        id="b"
         x1={66.85}
         x2={73.95}
         y1={30.12}
@@ -28,7 +28,7 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.95} stopColor="#21d789" />
       </linearGradient>
       <linearGradient
-        id="DataGrip_svg__c"
+        id="c"
         x1={27.62}
         x2={34.52}
         y1={52.97}
@@ -44,7 +44,7 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.8} stopColor="#21d789" />
       </linearGradient>
       <linearGradient
-        id="DataGrip_svg__d"
+        id="d"
         x1={10.48}
         x2={94.6}
         y1={52.51}
@@ -56,7 +56,7 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.89} stopColor="#6b57ff" />
       </linearGradient>
       <linearGradient
-        id="DataGrip_svg__e"
+        id="e"
         x1={10.99}
         x2={95.54}
         y1={41.31}
@@ -70,11 +70,11 @@ const SvgDataGrip = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={1} stopColor="#ff45ed" />
       </linearGradient>
     </defs>
-    <path fill="url(#DataGrip_svg__a)" d="m115.055 23.676 7.46 47.906-13.788 8.023Zm0 0" />
-    <path fill="url(#DataGrip_svg__b)" d="M115.055 23.676 73.156 5.484l-11.691 9.704Zm0 0" />
-    <path fill="url(#DataGrip_svg__c)" d="M84.566 122.516 19.555 70.719 6.496 109.984Zm0 0" />
-    <path fill="url(#DataGrip_svg__d)" d="M93.621 89.781 5.484 59.5l79.082 63.016Zm0 0" />
-    <path fill="url(#DataGrip_svg__e)" d="M5.484 6.316V59.5l101.559 34.902 8.012-70.726Zm0 0" />
+    <path fill="url(#a)" d="m115.055 23.676 7.46 47.906-13.788 8.023Zm0 0" />
+    <path fill="url(#b)" d="M115.055 23.676 73.156 5.484l-11.691 9.704Zm0 0" />
+    <path fill="url(#c)" d="M84.566 122.516 19.555 70.719 6.496 109.984Zm0 0" />
+    <path fill="url(#d)" d="M93.621 89.781 5.484 59.5l79.082 63.016Zm0 0" />
+    <path fill="url(#e)" d="M5.484 6.316V59.5l101.559 34.902 8.012-70.726Zm0 0" />
     <path d="M27.43 27.281h73.14v73.145H27.43Zm0 0" />
     <path
       fill="#fff"

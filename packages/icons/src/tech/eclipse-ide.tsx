@@ -3,7 +3,7 @@ const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" {...props}>
     <defs>
       <linearGradient
-        id="Eclipse-IDE_svg__a"
+        id="a"
         x1={0.5}
         x2={0.5}
         y1={10.894}
@@ -15,7 +15,7 @@ const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.872} stopColor="#2c2255" />
       </linearGradient>
       <linearGradient
-        id="Eclipse-IDE_svg__b"
+        id="b"
         x1={0.5}
         x2={0.5}
         y1={8.965}
@@ -27,7 +27,7 @@ const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => (
         <stop offset={0.872} stopColor="#2c2255" />
       </linearGradient>
       <linearGradient
-        id="Eclipse-IDE_svg__c"
+        id="c"
         x1={0.5}
         x2={0.5}
         y1={2.152}
@@ -47,16 +47,13 @@ const SvgEclipseIde = (props: SVGProps<SVGSVGElement>) => (
       fill="#f7941e"
       d="M10.875 64.043c0-29.703 22.309-54.383 51.332-58.723-.719-.027-1.445-.058-2.172-.058-32.566.004-58.969 26.32-58.969 58.781 0 32.465 26.403 58.781 58.97 58.781.73 0 1.452-.027 2.175-.054-29.027-4.34-51.336-29.02-51.336-58.727m0 0"
     />
+    <path fill="url(#a)" d="M108.707 60.89a38.4 38.4 0 0 0-1.164-6.78H33.34a38.4 38.4 0 0 0-1.164 6.78Zm0 0" />
     <path
-      fill="url(#Eclipse-IDE_svg__a)"
-      d="M108.707 60.89a38.4 38.4 0 0 0-1.164-6.78H33.34a38.4 38.4 0 0 0-1.164 6.78Zm0 0"
-    />
-    <path
-      fill="url(#Eclipse-IDE_svg__b)"
+      fill="url(#b)"
       d="M108.707 67.191H32.176c.183 2.29.574 4.559 1.164 6.782h74.203a38.5 38.5 0 0 0 1.164-6.782m0 0"
     />
     <path
-      fill="url(#Eclipse-IDE_svg__c)"
+      fill="url(#c)"
       d="M70.441 102.45c15.41 0 28.696-9.083 34.809-22.18H35.633c6.117 13.097 19.398 22.18 34.808 22.18m0 0"
     />
     <path

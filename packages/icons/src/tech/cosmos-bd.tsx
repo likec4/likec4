@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 const SvgCosmosBd = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={128} height={128} fill="none" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128" {...props}>
     <path
       fill="#59B3D8"
       fillRule="evenodd"

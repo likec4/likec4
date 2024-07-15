@@ -23,13 +23,10 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           textTransform: 'none',
           textOrientation: 'mixed',
           whiteSpace: 'normal',
-          shapePadding: 0,
-          shapeMargin: 0,
+
           inlineSize: 0,
           isolation: 'auto',
-          mixBlendMode: 'normal',
-          solidColor: '#000',
-          solidOpacity: 1
+          mixBlendMode: 'normal'
         }}
       />
       <path
@@ -53,13 +50,10 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           textTransform: 'none',
           textOrientation: 'mixed',
           whiteSpace: 'normal',
-          shapePadding: 0,
-          shapeMargin: 0,
+
           inlineSize: 0,
           isolation: 'auto',
-          mixBlendMode: 'normal',
-          solidColor: '#000',
-          solidOpacity: 1
+          mixBlendMode: 'normal'
         }}
       />
       <path
@@ -83,13 +77,10 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           textTransform: 'none',
           textOrientation: 'mixed',
           whiteSpace: 'normal',
-          shapePadding: 0,
-          shapeMargin: 0,
+
           inlineSize: 0,
           isolation: 'auto',
-          mixBlendMode: 'normal',
-          solidColor: '#000',
-          solidOpacity: 1
+          mixBlendMode: 'normal'
         }}
       />
       <path
@@ -113,13 +104,10 @@ const SvgThreejs = (props: SVGProps<SVGSVGElement>) => (
           textTransform: 'none',
           textOrientation: 'mixed',
           whiteSpace: 'normal',
-          shapePadding: 0,
-          shapeMargin: 0,
+
           inlineSize: 0,
           isolation: 'auto',
-          mixBlendMode: 'normal',
-          solidColor: '#000',
-          solidOpacity: 1
+          mixBlendMode: 'normal'
         }}
       />
     </g>

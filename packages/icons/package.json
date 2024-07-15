@@ -11,35 +11,49 @@
   },
   "bugs": "https://github.com/likec4/likec4/issues",
   "scripts": {
-    "update-icons": "node scripts/update-icons.mjs"
+    "update-icons": "node scripts/update-icons.mjs",
+    "build": "tsc"
   },
   "files": [
     "src",
+    "dist",
     "tsconfig.json"
   ],
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./src/tech/index.ts",
-      "default": "./src/tech/index.ts"
+      "types": "./dist/tech/index.d.ts",
+      "default": "./dist/tech/index.js"
     },
     "./aws": {
-      "types": "./src/aws/index.ts",
-      "default": "./src/aws/index.ts"
+      "types": "./dist/aws/index.d.ts",
+      "default": "./dist/aws/index.js"
     },
-    "./aws/*": "./src/aws/*.tsx",
+    "./aws/*": {
+      "types": "./dist/aws/*.d.ts",
+      "default": "./dist/aws/*.jsx"
+    },
     "./tech": {
-      "types": "./src/tech/index.ts",
-      "default": "./src/tech/index.ts"
+      "types": "./dist/tech/index.d.ts",
+      "default": "./dist/tech/index.js"
     },
-    "./tech/*": "./src/tech/*.tsx",
+    "./tech/*": {
+      "types": "./dist/tech/*.d.ts",
+      "default": "./dist/tech/*.jsx"
+    },
     "./gcp": {
-      "types": "./src/gcp/index.ts",
-      "default": "./src/gcp/index.ts"
+      "types": "./dist/gcp/index.d.ts",
+      "default": "./dist/gcp/index.js"
     },
-    "./gcp/*": "./src/gcp/*.tsx",
-    "./*": "./src/tech/*.tsx"
+    "./gcp/*": {
+      "types": "./dist/gcp/*.d.ts",
+      "default": "./dist/gcp/*.jsx"
+    },
+    "./*": {
+      "types": "./dist/tech/*.d.ts",
+      "default": "./dist/tech/*.jsx"
+    }
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -49,14 +63,7 @@
     "consola": "^3.2.3",
     "execa": "^9.3.0",
     "glob": "^11.0.0",
-    "tsx": "~4.9.3",
     "typescript": "^5.5.3"
-  },
-  "svgr": {
-    "typescript": true,
-    "jsxRuntime":"automatic",
-    "filenameCase": "kebab",
-    "svgo-config": "svgo.config.mjs"
   },
   "packageManager": "yarn@4.3.1"
 }

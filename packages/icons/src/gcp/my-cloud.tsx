@@ -1,15 +1,15 @@
 import type { SVGProps } from 'react'
 const SvgMyCloud = (props: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" width={24} height={24} {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlSpace="preserve" viewBox="0 0 24 24" {...props}>
     <path fill="none" d="M0 1h24v24H0z" />
     <g transform="translate(2 8)">
       <defs>
-        <filter id="My-Cloud_svg__a" width={24} height={24} x={-2} y={-7} filterUnits="userSpaceOnUse">
+        <filter id="a" width={24} height={24} x={-2} y={-7} filterUnits="userSpaceOnUse">
           <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" />
         </filter>
       </defs>
-      <mask id="My-Cloud_svg__b" width={24} height={24} x={-2} y={-7} maskUnits="userSpaceOnUse">
-        <g filter="url(#My-Cloud_svg__a)">
+      <mask id="b" width={24} height={24} x={-2} y={-7} maskUnits="userSpaceOnUse">
+        <g filter="url(#a)">
           <path
             fill="#FFF"
             fillRule="evenodd"
@@ -18,7 +18,7 @@ const SvgMyCloud = (props: SVGProps<SVGSVGElement>) => (
           />
         </g>
       </mask>
-      <path fill="#5C85DE" fillRule="evenodd" d="M-2 17h24V-7H-2z" clipRule="evenodd" mask="url(#My-Cloud_svg__b)" />
+      <path fill="#5C85DE" fillRule="evenodd" d="M-2 17h24V-7H-2z" clipRule="evenodd" mask="url(#b)" />
     </g>
   </svg>
 )
