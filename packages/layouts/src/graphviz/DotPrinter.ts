@@ -38,6 +38,8 @@ import { compoundColor, compoundLabelColor, isCompound, pxToInch, pxToPoints } f
 
 export const DefaultEdgeStyle = 'dashed' satisfies RelationshipLineType
 
+const FontName = Theme.font
+
 export abstract class DotPrinter<V extends ComputedView = ComputedView> {
   private ids = new Set<string>()
   private subgraphs = new Map<Fqn, SubgraphModel>()
@@ -164,10 +166,10 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.ranksep]: pxToInch(110),
       [_.pack]: pxToPoints(100),
       [_.packmode]: 'array_3',
-      [_.pad]: pxToInch(15)
+      [_.pad]: pxToInch(15),
+      [_.fontname]: FontName
     })
     G.attributes.graph.apply({
-      [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(15),
       [_.labeljust]: this.view.autoLayout === 'RL' ? 'r' : 'l',
       [_.labelloc]: this.view.autoLayout === 'BT' ? 'b' : 't',
@@ -179,8 +181,8 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
     node.apply({
+      [_.fontname]: FontName,
       [_.nojustify]: true,
-      [_.fontsize]: pxToPoints(20),
       [_.shape]: 'rect',
       [_.width]: pxToInch(320),
       [_.height]: pxToInch(180),
@@ -192,7 +194,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
     edge.apply({
       [_.nojustify]: true,
       [_.arrowsize]: 0.75,
-      [_.fontname]: Theme.font,
+      [_.fontname]: FontName,
       [_.fontsize]: pxToPoints(14),
       [_.penwidth]: pxToPoints(2),
       [_.color]: Theme.relationships[DefaultRelationshipColor].lineColor,

@@ -60,7 +60,7 @@ views {
     style cloud.ui, cloud.ui.* {
       color primary
       border none
-      opacity 15%      
+      opacity 15%
     }
     style cloud {
       opacity 20%

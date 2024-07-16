@@ -63,8 +63,8 @@ export function nodeLabel(node: ComputedNode) {
     lines.push(
       wrapWithFont({
         text: node.technology,
-        fontsize: 14,
-        maxchars: hasIcon ? 40 : 45,
+        fontsize: 12,
+        maxchars: hasIcon ? 35 : 45,
         color: Colors[node.color].loContrast
       })
     )
@@ -74,7 +74,7 @@ export function nodeLabel(node: ComputedNode) {
       wrapWithFont({
         text: node.description,
         fontsize: 14,
-        maxchars: hasIcon ? 40 : 45,
+        maxchars: hasIcon ? 35 : 45,
         color: Colors[node.color].loContrast
       })
     )
@@ -88,7 +88,7 @@ export function nodeLabel(node: ComputedNode) {
       let cell = `<TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD>`
       if (idx === 0) {
         const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
-        let leftwidth = 70 // icon is 60px, plus 10px here and plus 10px padding from node margin
+        let leftwidth = 76 // icon is 60px, plus 10px here and plus 10px padding from node margin
         if (node.shape === 'queue' || node.shape === 'mobile') {
           // add 20px padding more
           leftwidth += 20
@@ -108,8 +108,7 @@ export function compoundLabel(node: ComputedNode, color?: string) {
   const html = wrapWithFont({
     text: node.title.toUpperCase(),
     maxchars: 50,
-    fontsize: 15,
-    bold: true,
+    fontsize: 12,
     color
   })
   if (html.includes('<BR/>')) {

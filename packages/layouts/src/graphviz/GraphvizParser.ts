@@ -117,25 +117,29 @@ function parseLabelBbox(
 //   https://forum.graphviz.org/t/how-to-interpret-graphviz-edge-coordinates-from-xdot-or-json/879/11
 // Example:
 //   https://github.com/hpcc-systems/Visualization/blob/trunk/packages/graph/workers/src/graphviz.ts#L38-L93
-function parseEdgePoints({ _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.Edge): DiagramEdge['points'] {
+function parseEdgePoints(
+  { _draw_, likec4_id = '???' as EdgeId }: GraphvizJson.Edge,
+  viewId: string
+): DiagramEdge['points'] {
   try {
     const bezierOps = _draw_.filter((v): v is GraphvizJson.DrawOps.BSpline => v.op.toLowerCase() === 'b')
-    invariant(hasAtLeast(bezierOps, 1), `edge ${likec4_id} should have at least one bezier draw op`)
+    invariant(hasAtLeast(bezierOps, 1), `view ${viewId} edge ${likec4_id} should have at least one bezier draw op`)
     if (bezierOps.length > 1) {
-      console.warn(`edge ${likec4_id} has more than one bezier draw op, using the first one only`)
+      console.warn(`view ${viewId} edge ${likec4_id} has more than one bezier draw op, using the first one only`)
     }
     const points = bezierOps[0].points.map(p => pointToPx(p))
-    invariant(hasAtLeast(points, 2), `edge ${likec4_id}should have at least two points`)
+    invariant(hasAtLeast(points, 2), `view ${viewId} edge ${likec4_id} should have at least two points`)
     return points
   } catch (e) {
-    console.error(`failed on parsing edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
+    console.error(`failed on parsing view ${viewId} edge ${likec4_id} _draw_:\n${JSON.stringify(_draw_, null, 2)}`)
     throw e
   }
 }
 
 function parseGraphvizEdge(
   graphvizEdge: GraphvizJson.Edge,
-  { id, source, target, dir, label, ...computedEdge }: ComputedEdge
+  { id, source, target, dir, label, ...computedEdge }: ComputedEdge,
+  viewId: string
 ): DiagramEdge {
   const labelBBox = parseLabelBbox(graphvizEdge)
   const isBack = graphvizEdge.dir === 'back' || dir === 'back'
@@ -146,7 +150,7 @@ function parseGraphvizEdge(
     source,
     target,
     label,
-    points: parseEdgePoints(graphvizEdge),
+    points: parseEdgePoints(graphvizEdge, viewId),
     labelBBox,
     ...(isBack ? { dir: 'back' } : {}),
     ...computedEdge
@@ -169,7 +173,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   const graphvizObjects = graphvizJson.objects ?? []
   for (const computed of computedNodes) {
     const obj = graphvizObjects.find(o => o.likec4_id === computed.id)
-    invariant(obj, `Element ${computed.id} not found in graphviz output`)
+    invariant(obj, `View ${view.id} element ${computed.id} not found in graphviz output`)
 
     const { x, y, width, height } = 'bb' in obj ? parseBB(obj.bb) : parseNode(obj)
 
@@ -180,7 +184,7 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
       position,
       width,
       height,
-      labelBBox: nonNullable(parseLabelBbox(obj, position), 'Node label bbox not found')
+      labelBBox: nonNullable(parseLabelBbox(obj, position), `View ${view.id} Node ${computed.id} label bbox not found`)
     })
   }
 
@@ -188,11 +192,11 @@ export function parseGraphvizJson(json: string, computedView: ComputedView): Dia
   for (const computedEdge of computedEdges) {
     const graphvizEdge = graphvizEdges.find(e => e.likec4_id === computedEdge.id)
     if (!graphvizEdge) {
-      console.warn(`Edge ${computedEdge.id} not found in graphviz output, skipping`)
+      console.warn(`View ${view.id} edge ${computedEdge.id} not found in graphviz output, skipping`)
       continue
     }
     diagram.edges.push(
-      parseGraphvizEdge(graphvizEdge, computedEdge)
+      parseGraphvizEdge(graphvizEdge, computedEdge, view.id)
     )
   }
 

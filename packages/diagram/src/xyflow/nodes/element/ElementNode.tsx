@@ -146,6 +146,22 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
           whileTap: dragging ? animate : 'tap'
         })}
       >
+        {
+          /* <svg
+          className={clsx(
+            css.cssShapeSvgMultiple
+          )}
+          viewBox={`0 0 ${w} ${h}`}
+          width={w}
+          height={h}
+        >
+          <ElementShapeSvg
+            shape={element.shape}
+            w={w}
+            h={h}
+          />
+        </svg> */
+        }
         <svg
           className={clsx(
             css.cssShapeSvg

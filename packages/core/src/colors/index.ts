@@ -5,7 +5,7 @@ import { RelationshipColors } from './relationships'
 export const defaultTheme = {
   elements: ElementColors,
   relationships: RelationshipColors,
-  font: 'Helvetica',
+  font: 'Arial',
   shadow: '#0a0a0a'
 } satisfies LikeC4Theme
 

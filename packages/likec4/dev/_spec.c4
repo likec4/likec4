@@ -31,6 +31,7 @@ specification {
   element mobile {
     style {
       shape mobile
+      icon https://icon.icepanel.io/Technology/png-shadow-512/Apple.png
     }
   }
   element database {
@@ -41,14 +42,15 @@ specification {
   element stream {
     style {
       shape queue
+      icon https://icon.icepanel.io/AWS/svg/Analytics/Kinesis.svg
     }
   }
   element queue {
     style {
       shape queue
+      icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg
     }
   }
-
   relationship pull {
     line dotted
     tail onormal

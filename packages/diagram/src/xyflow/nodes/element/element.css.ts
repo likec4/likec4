@@ -10,6 +10,7 @@ export const container = style({
   height: '100%',
   padding: 0,
   margin: 0,
+  flex: '1',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -116,6 +117,7 @@ export const fillMixStroke = style({
 export const hasIcon = style({})
 
 export const elementDataContainer = style({
+  flex: '1',
   height: 'fit-content',
   display: 'flex',
   alignItems: 'flex-start',
@@ -136,9 +138,6 @@ export const elementDataContainer = style({
       paddingTop: 32,
       paddingBottom: 28
     },
-    [`&:not(:is(${hasIcon}))`]: {
-      flex: '1'
-    },
     [`&:is(${hasIcon})`]: {
       paddingRight: 20
     },
@@ -158,28 +157,30 @@ export const title = style({
   textAlign: textAlign,
   fontWeight: 500,
   fontSize: 19,
-  lineHeight: 1.2,
+  lineHeight: 1.15,
   textWrap: 'balance',
   color: vars.element.hiContrast
 })
 
 export const description = style({
-  // flex: '0 1 auto',
-  // flexGrow: 0,
-  // flexShrink: 1,
-  // width: 'fit-content',
+  flex: '0 1 auto',
   fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
   fontSize: 14,
-  lineHeight: 1.25,
+  lineHeight: 1.2,
   textAlign: textAlign,
   textWrap: 'pretty',
   color: vars.element.loContrast,
   whiteSpaceCollapse: 'preserve-breaks',
   textOverflow: 'ellipsis',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  selectors: {
+    [`:where(${hasIcon}) &`]: {
+      textWrap: 'wrap'
+    }
+  }
 })
 
 export const technology = style({
@@ -188,7 +189,7 @@ export const technology = style({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
-  fontSize: rem(12),
+  fontSize: 12,
   lineHeight: 1.125,
   textAlign: textAlign,
   textWrap: 'balance',
@@ -277,9 +278,37 @@ globalStyle(`${elementIcon} img`, {
 
 const filterShadow = createVar('filter-shadow')
 
+export const cssShapeSvgMultiple = style({
+  top: 0,
+  left: 0,
+  position: 'absolute',
+  pointerEvents: 'none',
+  transformOrigin: '50% 50%',
+  fill: vars.element.fill,
+  stroke: 'none',
+  zIndex: -1,
+  transition: 'opacity 500ms ease-out',
+  transform: 'translate(8px,10px)',
+  opacity: 0.5,
+  selectors: {
+    [`:where(.react-flow__node.selected, .react-flow__node:focus-visible, ${container}:focus-visible) &`]: {
+      visibility: 'hidden'
+    },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      transform: 'translate(8px,8px)'
+    },
+    ':where([data-likec4-shape="queue"]) &': {
+      transform: 'translate(-10px,8px)'
+    },
+    ':where([data-hovered="true"]) &': {
+      transition: 'opacity 300ms ease-in',
+      opacity: 0.2
+    }
+  }
+})
 export const cssShapeSvg = style({
-  top: '0px',
-  left: '0px',
+  top: 0,
+  left: 0,
   position: 'absolute',
   pointerEvents: 'none',
   fill: vars.element.fill,

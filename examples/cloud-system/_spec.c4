@@ -34,6 +34,7 @@ specification {
   element mobileApp {
     style {
       shape mobile
+      icon https://icon.icepanel.io/Technology/svg/Swift.svg
     }
   }
 
@@ -41,6 +42,7 @@ specification {
     style {
       shape queue
       color secondary
+      icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg
     }
   }
 
@@ -56,7 +58,11 @@ specification {
   }
   element gqlMutation
   element gqlQuery
-  element lambda
+  element lambda {
+    style {
+      icon https://icon.icepanel.io/AWS/svg/Compute/Lambda.svg
+    }
+  }
 
   relationship uses
   relationship requests

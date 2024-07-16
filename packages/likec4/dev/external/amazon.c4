@@ -60,12 +60,12 @@ model {
       description 'Message queues'
       style {
         shape queue
+        icon https://icon.icepanel.io/AWS/svg/App-Integration/Simple-Queue-Service.svg
       }
 
       hits = queue 'Hits' {
         description '
-          Filtered data from stream of page hits.
-          Ready to be processed.
+          Filtered data from stream of page hits. Ready to be processed.
         '
       }
     }

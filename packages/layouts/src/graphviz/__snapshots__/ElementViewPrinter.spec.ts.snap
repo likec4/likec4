@@ -13,8 +13,8 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  fontname = "Arial";
   graph [
-    fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
@@ -23,15 +23,15 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
   edge [
     nojustify = true;
     arrowsize = 0.75;
-    fontname = "Helvetica";
+    fontname = "Arial";
     fontsize = 14;
     penwidth = 2;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
   node [
+    fontname = "Arial";
     nojustify = true;
-    fontsize = 20;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -46,7 +46,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     color = "#1b3d88";
     style = "filled";
     margin = 32;
-    label = <<FONT POINT-SIZE="15" COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
+    label = <<FONT POINT-SIZE="12" COLOR="#bfdbfeb3">CLOUD</FONT>>;
     "backend" [
       likec4_id = "cloud.backend";
       likec4_level = 1;
@@ -65,7 +65,7 @@ exports[`ElementViewPrinter > computedAmazonView 1`] = `
     color = "#1b3d88";
     style = "filled";
     margin = 32;
-    label = <<FONT POINT-SIZE="15" COLOR="#bfdbfeb3"><B>AMAZON</B></FONT>>;
+    label = <<FONT POINT-SIZE="12" COLOR="#bfdbfeb3">AMAZON</FONT>>;
     "s3" [
       likec4_id = "amazon.s3";
       likec4_level = 1;
@@ -102,8 +102,8 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  fontname = "Arial";
   graph [
-    fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
@@ -112,15 +112,15 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
   edge [
     nojustify = true;
     arrowsize = 0.75;
-    fontname = "Helvetica";
+    fontname = "Arial";
     fontsize = 14;
     penwidth = 2;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
   node [
+    fontname = "Arial";
     nojustify = true;
-    fontsize = 20;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -162,7 +162,7 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
     color = "#1c3979";
     style = "filled";
     margin = 32;
-    label = <<FONT POINT-SIZE="15" COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
+    label = <<FONT POINT-SIZE="12" COLOR="#bfdbfeb3">CLOUD</FONT>>;
     "adminpanel" [
       likec4_id = "cloud.frontend.adminPanel";
       likec4_level = 1;
@@ -191,7 +191,7 @@ exports[`ElementViewPrinter > computedCloud3levels 1`] = `
       color = "#1b3d88";
       style = "filled";
       margin = 32;
-      label = <<FONT POINT-SIZE="15" COLOR="#bfdbfeb3"><B>BACKEND</B></FONT>>;
+      label = <<FONT POINT-SIZE="12" COLOR="#bfdbfeb3">BACKEND</FONT>>;
       "graphql" [
         likec4_id = "cloud.backend.graphql";
         likec4_level = 2;
@@ -273,8 +273,8 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  fontname = "Arial";
   graph [
-    fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
@@ -283,15 +283,15 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
   edge [
     nojustify = true;
     arrowsize = 0.75;
-    fontname = "Helvetica";
+    fontname = "Arial";
     fontsize = 14;
     penwidth = 2;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
   node [
+    fontname = "Arial";
     nojustify = true;
-    fontsize = 20;
     shape = "rect";
     width = 4.445;
     height = 2.5;
@@ -333,7 +333,7 @@ exports[`ElementViewPrinter > computedCloudView 1`] = `
     color = "#1b3d88";
     style = "filled";
     margin = 32;
-    label = <<FONT POINT-SIZE="15" COLOR="#bfdbfeb3"><B>CLOUD</B></FONT>>;
+    label = <<FONT POINT-SIZE="12" COLOR="#bfdbfeb3">CLOUD</FONT>>;
     "frontend" [
       likec4_id = "cloud.frontend";
       likec4_level = 1;
@@ -399,8 +399,8 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   pack = 100;
   packmode = "array_3";
   pad = 0.209;
+  fontname = "Arial";
   graph [
-    fontname = "Helvetica";
     fontsize = 15;
     labeljust = "l";
     labelloc = "t";
@@ -409,15 +409,15 @@ exports[`ElementViewPrinter > computedIndexView 1`] = `
   edge [
     nojustify = true;
     arrowsize = 0.75;
-    fontname = "Helvetica";
+    fontname = "Arial";
     fontsize = 14;
     penwidth = 2;
     color = "#6E6E6E";
     fontcolor = "#C6C6C6";
   ];
   node [
+    fontname = "Arial";
     nojustify = true;
-    fontsize = 20;
     shape = "rect";
     width = 4.445;
     height = 2.5;

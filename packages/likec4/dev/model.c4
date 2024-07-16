@@ -26,6 +26,7 @@ model {
         description 'Web application, that allows customers to interact with the cloud system'
         style {
           shape browser
+          icon https://icon.icepanel.io/Technology/png-shadow-512/Next.js.png
         }
 
         -> amazon.cognito 'authenticate'
@@ -44,6 +45,10 @@ model {
     backend = container 'Backend' {
       description 'The backend services of the cloud system'
       link ./cloud/backend.c4#L3
+
+      style {
+        icon https://icon.icepanel.io/Technology/svg/Node.js.svg
+      }
     }
 
     reporting = service 'Reporting' {
@@ -128,30 +133,31 @@ views {
 
     include
       *,
-      ui -> amazon.*,
       cloud,
-      amazon,
-
+      //ui -> amazon.*,
+      //backend ->
 
     style * {
       color secondary
     }
-    style cloud, amazon {
+    style cloud {
       color muted
     }
-    style ui, ui.* {
+    style ui._ {
       color green
+    }
+    style amazon._ {
+      color amber
     }
   }
 
   view cloud_backend of backend {
     title "[context] Cloud Backend"
     include
-      *,
       cloud,
       amazon,
+      *,
       backend -> amazon.*
-
 
     style * {
       color secondary

@@ -3,10 +3,13 @@ model {
   extend cloud.backend {
 
     graphql = app 'GraphQL' {
+      technology 'nodejs'
       description '
-        The GraphQL API
-        of the cloud system
+        The GraphQL API to access data
       '
+      style {
+        icon https://icon.icepanel.io/Technology/svg/GraphQL.svg
+      }
     }
 
     cms = app 'CMS' {

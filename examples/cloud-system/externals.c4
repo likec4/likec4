@@ -1,9 +1,11 @@
 model {
 
   amazon = externalSystem 'Amazon' {
+    technology 'cloud provider'
     description: 'Cloud and managed services provider'
     style {
       color amber
+      icon https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg
     }
 
     rds = container 'RDS' {
@@ -11,14 +13,19 @@ model {
 
       pg = component 'PostgreSQL' {
         #db
+        style {
+          icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+        }
 
         tblUsers = table 'Users Table' {
           #deprecated
           description: '
-            Table with registered users.
-            Contains references to Identity provider.
+            Table with registered users. Contains references to Identity provider.
             [deprecated, moving to Aurora]
           '
+          style {
+            icon https://icons.terrastruct.com/dev%2Fpostgresql.svg
+          }
         }
       }
 
@@ -37,7 +44,7 @@ model {
           Filtered and preprocessed data
           Ready for further processing
         '
-      }      
+      }
     }
 
     lambdas = container {
@@ -90,7 +97,7 @@ views {
 
   view amazon_lambdas of lambdas {
     title: 'Overview Amazon Lambdas'
-    
+
     include
       *,
       amazon,
@@ -105,7 +112,7 @@ views {
     }
     style lambdas, lambdas.* {
       color green
-    }      
+    }
   }
 
   view amazon_rds of amazon.rds {
@@ -116,7 +123,7 @@ views {
       cloud,
       cloud.* -> amazon.rds.pg.*,
       cloud.* -> amazon.rds.aurora.*,
-      
+
     style * {
       color muted
     }
@@ -126,6 +133,6 @@ views {
     style amazon.rds.* {
       color green
     }
-  }  
+  }
 
 }

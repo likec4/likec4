@@ -39,7 +39,7 @@ export type RelationshipThemeColors = {
 }
 
 export interface LikeC4Theme {
-  font: 'Helvetica' // for now only support Helvetica
+  font: 'Arial'
   shadow: ColorLiteral
   relationships: RelationshipThemeColors
   elements: ElementThemeColors
