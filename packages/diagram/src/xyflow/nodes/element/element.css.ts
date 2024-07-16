@@ -1,6 +1,5 @@
 import { rem } from '@mantine/core'
 import { createVar, fallbackVar, globalStyle, keyframes, style } from '@vanilla-extract/css'
-import { calc } from '@vanilla-extract/css-utils'
 import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
@@ -13,6 +12,7 @@ export const container = style({
   margin: 0,
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   },
@@ -116,7 +116,6 @@ export const fillMixStroke = style({
 export const hasIcon = style({})
 
 export const elementDataContainer = style({
-  flex: '1',
   height: 'fit-content',
   display: 'flex',
   alignItems: 'flex-start',
@@ -137,10 +136,13 @@ export const elementDataContainer = style({
       paddingTop: 32,
       paddingBottom: 28
     },
+    [`&:not(:is(${hasIcon}))`]: {
+      flex: '1'
+    },
     [`&:is(${hasIcon})`]: {
       paddingRight: 20
     },
-    [`${container}:not(:is([data-likec4-shape="queue"])) &:is(${hasIcon})`]: {
+    [`${container}:not(:is([data-likec4-shape="queue"],[data-likec4-shape="mobile"])) &:is(${hasIcon})`]: {
       paddingLeft: 20
     }
   }
@@ -162,7 +164,10 @@ export const title = style({
 })
 
 export const description = style({
-  flex: '0 1 auto',
+  // flex: '0 1 auto',
+  // flexGrow: 0,
+  // flexShrink: 1,
+  // width: 'fit-content',
   fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
@@ -203,6 +208,7 @@ export const elementTextData = style({
   flexDirection: 'column',
   alignItems: 'stretch',
   justifyContent: 'center',
+  flexWrap: 'nowrap',
   overflow: 'hidden',
   gap: rem(8),
   'vars': {
@@ -214,6 +220,7 @@ export const elementTextData = style({
     },
     [`:where(${hasIcon}) &`]: {
       minWidth: 'calc(100% - 160px)',
+      alignItems: 'flex-start',
       'vars': {
         [textAlign]: 'left'
       }
@@ -245,7 +252,7 @@ export const elementTextData = style({
 // })
 
 export const elementIcon = style({
-  flex: '0 0 auto',
+  flex: '0 0 60px',
   height: 60,
   width: 60,
   display: 'flex',
