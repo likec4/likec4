@@ -65,7 +65,7 @@ export const ElementColors = {
     fill: '#A35829',
     stroke: '#7E451D',
     hiContrast: '#FFE0C2',
-    loContrast: '#FFA057'
+    loContrast: '#f9b27c'
   },
   indigo: {
     // fill: colors.indigo[500],

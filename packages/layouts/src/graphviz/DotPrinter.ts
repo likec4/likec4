@@ -18,7 +18,7 @@ import type {
   RelationshipLineType,
   ViewManualLayout
 } from '@likec4/core/types'
-import { entries, filter, first, isNullish, isNumber, map, pipe, reverse, sort, take, values } from 'remeda'
+import { entries, filter, first, isNullish, isNumber, isTruthy, map, pipe, reverse, sort, take, values } from 'remeda'
 import {
   attribute as _,
   type AttributeListModel,
@@ -179,21 +179,18 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   protected applyNodeAttributes(node: AttributeListModel<'Node', NodeAttributeKey>) {
     node.apply({
-      [_.fontname]: Theme.font,
+      [_.nojustify]: true,
       [_.fontsize]: pxToPoints(20),
-      [_.fontcolor]: Theme.elements[DefaultThemeColor].hiContrast,
       [_.shape]: 'rect',
       [_.width]: pxToInch(320),
       [_.height]: pxToInch(180),
-      [_.style]: 'filled,rounded',
-      [_.fillcolor]: Theme.elements[DefaultThemeColor].fill,
-      [_.color]: Theme.elements[DefaultThemeColor].stroke,
-      [_.penwidth]: 0,
-      [_.margin]: pxToInch(26)
+      [_.style]: 'filled',
+      [_.penwidth]: 0
     })
   }
   protected applyEdgeAttributes(edge: AttributeListModel<'Edge', EdgeAttributeKey>) {
     edge.apply({
+      [_.nojustify]: true,
       [_.arrowsize]: 0.75,
       [_.fontname]: Theme.font,
       [_.fontsize]: pxToPoints(14),
@@ -255,7 +252,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
       [_.fillcolor]: compoundColor(Theme.elements[compound.color].fill, compound.depth),
       [_.color]: compoundColor(Theme.elements[compound.color].stroke, compound.depth),
       [_.style]: 'filled',
-      [_.margin]: pxToPoints(30)
+      [_.margin]: pxToPoints(32)
     })
     if (label) {
       subgraph.set(_.label, label)
@@ -265,17 +262,34 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
 
   protected elementToNode(element: ComputedNode, node: NodeModel) {
     invariant(!isCompound(element), 'node should not be compound')
-    let marginOffset = element.icon ? 4 : 0
+    const hasIcon = isTruthy(element.icon)
     node.attributes.apply({
       [_.likec4_id]: element.id,
       [_.likec4_level]: element.level,
       [_.fillcolor]: Theme.elements[element.color].fill,
-      [_.margin]: `${pxToInch(30)},${pxToInch(30 - marginOffset)}`
+      [_.fontcolor]: Theme.elements[element.color].hiContrast,
+      [_.color]: Theme.elements[element.color].stroke,
+      [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(26)}`
     })
     switch (element.shape) {
+      case 'cylinder':
+      case 'storage': {
+        node.attributes.apply({
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 26)},${pxToInch(0)}`,
+          [_.penwidth]: pxToPoints(2),
+          [_.shape]: 'cylinder'
+        })
+        break
+      }
       case 'browser': {
         node.attributes.apply({
-          [_.margin]: `${pxToInch(30)},${pxToInch(32 - marginOffset)}`
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(32)}`
+        })
+        break
+      }
+      case 'mobile': {
+        node.attributes.apply({
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`
         })
         break
       }
@@ -283,17 +297,7 @@ export abstract class DotPrinter<V extends ComputedView = ComputedView> {
         node.attributes.apply({
           [_.width]: pxToInch(320),
           [_.height]: pxToInch(165),
-          [_.margin]: `${pxToInch(30)},${pxToInch(26 - marginOffset)}`
-        })
-        break
-      }
-      case 'cylinder':
-      case 'storage': {
-        node.attributes.apply({
-          [_.margin]: `${pxToInch(26)},${pxToInch(28 - marginOffset)}`,
-          [_.color]: Theme.elements[element.color].stroke,
-          [_.penwidth]: pxToPoints(2),
-          [_.shape]: 'cylinder'
+          [_.margin]: `${pxToInch(hasIcon ? 10 : 30)},${pxToInch(26)}`
         })
         break
       }

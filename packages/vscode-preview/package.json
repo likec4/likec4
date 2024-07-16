@@ -24,6 +24,7 @@
     "@fontsource/ibm-plex-sans": "^5.0.20",
     "@likec4/core": "workspace:*",
     "@likec4/diagram": "workspace:*",
+    "@likec4/icons": "workspace:*",
     "@likec4/tsconfig": "workspace:*",
     "@mantine/core": "7.11.1",
     "@mantine/hooks": "7.11.1",

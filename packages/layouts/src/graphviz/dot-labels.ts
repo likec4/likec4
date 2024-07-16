@@ -20,40 +20,25 @@ export function wrap(text: string, maxChars: number) {
   }).split('\n')
 }
 
-function wrapToHTML({
+function wrapWithFont({
   text,
   maxchars,
   fontsize,
-  lineHeight = 1.25,
   bold,
-  color,
-  align
+  color
 }: {
   text: string
   maxchars: number
   fontsize: number
-  lineHeight?: number
   bold?: boolean
-  color?: string
-  align?: 'left' | 'right' | 'center'
+  color?: string | undefined
 }): string {
-  const Color = color ? ` COLOR="${color}"` : ``
-  let rows = wrap(text, maxchars)
-    .map(text => (isEmpty(text) ? ' ' : text))
-    .map(text => (bold ? `<B>${text}</B>` : text))
-    .map(text => `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${text}</FONT>`)
-
-  if (rows.length === 1) {
-    return rows[0]!
+  let html = wrap(text, maxchars).map(text => (isEmpty(text) ? ' ' : text)).join('<BR/>')
+  if (bold) {
+    html = `<B>${html}</B>`
   }
-  // Change row height if line height is not 1
-  const Gap = Math.max(pxToPoints(Math.floor(fontsize * (lineHeight - 1))), 1)
-  const ALIGN = align ? ` ALIGN="${align.toUpperCase()}"` : ''
-  return [
-    `<TABLE${ALIGN} BORDER="0" CELLPADDING="0" CELLSPACING="${Gap}">`,
-    ...rows.map(rowText => `<TR><TD${ALIGN}>${rowText}</TD></TR>`),
-    `</TABLE>`
-  ].join('')
+  const Color = color ? ` COLOR="${color}"` : ``
+  return `<FONT POINT-SIZE="${pxToPoints(fontsize)}"${Color}>${html}</FONT>`
 }
 
 /**
@@ -61,79 +46,88 @@ function wrapToHTML({
  * to preserve space for real icons.
  * #112233
  */
-export function nodeIcon(_src: string) {
+export function nodeIcon() {
   return `<TABLE FIXEDSIZE="TRUE" BGCOLOR="#112233" WIDTH="${IconSizePoints}" HEIGHT="${IconSizePoints}" BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD> </TD></TR></TABLE>`
 }
 
 export function nodeLabel(node: ComputedNode) {
+  const hasIcon = isTruthy(node.icon)
   const lines = [
-    wrapToHTML({
+    wrapWithFont({
       text: node.title,
-      fontsize: 20,
-      maxchars: 30,
-      lineHeight: 1.2,
-      color: Colors[node.color].hiContrast
+      fontsize: 19,
+      maxchars: 35
     })
   ]
   if (isTruthy(node.technology)) {
     lines.push(
-      wrapToHTML({
+      wrapWithFont({
         text: node.technology,
-        fontsize: 12,
-        lineHeight: 1.125,
-        maxchars: 40,
+        fontsize: 14,
+        maxchars: hasIcon ? 40 : 45,
         color: Colors[node.color].loContrast
       })
     )
   }
   if (isTruthy(node.description)) {
     lines.push(
-      wrapToHTML({
+      wrapWithFont({
         text: node.description,
         fontsize: 14,
-        lineHeight: 1.25,
-        maxchars: 40,
+        maxchars: hasIcon ? 40 : 45,
         color: Colors[node.color].loContrast
       })
     )
   }
-  if (lines.length === 1 && !node.icon) {
+  if (lines.length === 1 && !hasIcon) {
     return `<${lines[0]}>`
   }
-  const rows = lines.map(line => `<TR><TD>${line}</TD></TR>`)
-  if (node.icon) {
-    rows.unshift(
-      `<TR><TD ALIGN="CENTER" HEIGHT="${IconSizePoints}">${nodeIcon(node.icon)}</TD></TR>`
-    )
-  }
-  const joinedRows = rows.join('')
-  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="4">${joinedRows}</TABLE>>`
+
+  const rowMapper = hasIcon
+    ? (line: string, idx: number, all: string[]) => {
+      let cell = `<TD ALIGN="TEXT" BALIGN="LEFT">${line}</TD>`
+      if (idx === 0) {
+        const rowspan = all.length > 1 ? ` ROWSPAN="${all.length}"` : ''
+        let leftwidth = 70 // icon is 60px, plus 10px here and plus 10px padding from node margin
+        if (node.shape === 'queue' || node.shape === 'mobile') {
+          // add 20px padding more
+          leftwidth += 20
+        }
+        cell = `<TD${rowspan} WIDTH="${leftwidth}"> </TD>${cell}<TD${rowspan} WIDTH="16"> </TD>`
+      }
+      return `<TR>${cell}</TR>`
+    }
+    : (line: string) => {
+      return `<TR><TD>${line}</TD></TR>`
+    }
+  const rows = lines.map(rowMapper).join('')
+  return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="6">${rows}</TABLE>>`
 }
 
 export function compoundLabel(node: ComputedNode, color?: string) {
-  const html = wrapToHTML({
+  const html = wrapWithFont({
     text: node.title.toUpperCase(),
-    maxchars: 40,
-    fontsize: 14.5,
-    lineHeight: 1.2,
+    maxchars: 50,
+    fontsize: 15,
     bold: true,
-    color: color ?? Colors[node.color].loContrast
+    color
   })
+  if (html.includes('<BR/>')) {
+    return `<<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0"><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
+  }
   return `<${html}>`
 }
 
-export const EDGE_LABEL_MAX_CHARS = 40
+export const EDGE_LABEL_MAX_CHARS = 35
 
 export function edgeLabel(text: string) {
-  const html = wrapToHTML({
+  const html = wrapWithFont({
     text,
     maxchars: EDGE_LABEL_MAX_CHARS,
     fontsize: 14,
-    lineHeight: 1.1,
-    bold: text === '[...]',
-    align: 'left'
+    bold: text === '[...]'
   })
-  return `<<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" ${BGCOLOR}><TR><TD>${html}</TD></TR></TABLE>>`
+  return `<<TABLE BORDER="0" CELLPADDING="4" CELLSPACING="0" ${BGCOLOR}><TR><TD ALIGN="TEXT" BALIGN="LEFT">${html}</TD></TR></TABLE>>`
 }
 
 const BGCOLOR = `BGCOLOR="${Theme.relationships[DefaultRelationshipColor].labelBgColor}A0"`
@@ -153,12 +147,10 @@ export function stepEdgeLabel(step: number, text?: string | null) {
     `<TR>`,
     `<TD>${num}</TD>`,
     `<TD ${BGCOLOR} CELLPADDING="2">`,
-    wrapToHTML({
+    wrapWithFont({
       text,
       maxchars: EDGE_LABEL_MAX_CHARS,
-      fontsize: 14,
-      lineHeight: 1.1,
-      align: 'left'
+      fontsize: 14
     }),
     `</TD>`,
     `</TR>`,

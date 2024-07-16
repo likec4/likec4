@@ -2,7 +2,7 @@ import { type ElementShape, nonexhaustive } from '@likec4/core'
 import { toDomPrecision } from '../../utils'
 import { fillElementFill, fillMixStroke } from './element.css'
 
-function cylinderSVGPath(diameter: number, height: number, tilt = 0.0725) {
+export function cylinderSVGPath(diameter: number, height: number, tilt = 0.065) {
   const radius = Math.round(diameter / 2)
   // const tiltAdjustedHeight = height * Math.cos((tilt * Math.PI) / 2)
   const rx = radius
@@ -25,7 +25,7 @@ function cylinderSVGPath(diameter: number, height: number, tilt = 0.0725) {
   }
 }
 
-function queueSVGPath(width: number, height: number, tilt = 0.2) {
+function queueSVGPath(width: number, height: number, tilt = 0.185) {
   const diameter = height
   const radius = Math.round(diameter / 2)
   const ry = radius

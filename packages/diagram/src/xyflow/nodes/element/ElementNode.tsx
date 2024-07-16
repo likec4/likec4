@@ -1,18 +1,21 @@
-import { Text } from '@mantine/core'
+import { Text as MantineText } from '@mantine/core'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { deepEqual as eq } from 'fast-equals'
 import { m, type Variants } from 'framer-motion'
 import { memo } from 'react'
-import { isNumber } from 'remeda'
+import { isNumber, isTruthy } from 'remeda'
 import { useDiagramState } from '../../../state/hooks'
 import type { ElementXYFlowNode } from '../../types'
 import { toDomPrecision } from '../../utils'
 import { NavigateToBtn } from '../shared/NavigateToBtn'
 import * as css from './element.css'
-import { ElementIcon } from './ElementIcon'
 import { ElementLink } from './ElementLink'
 import { ElementShapeSvg, SelectedIndicator } from './ElementShapeSvg'
+
+const Text = MantineText.withProps({
+  component: 'div'
+})
 
 type ElementNodeProps = NodeProps<ElementXYFlowNode>
 
@@ -164,27 +167,39 @@ export const ElementNodeMemo = memo<ElementNodeProps>(function ElementNode({
             h={h}
           />
         </svg>
-        <div className={clsx(css.element, 'likec4-element')}>
-          <ElementIcon node={element} />
-          <Text
-            component="div"
-            className={clsx(css.title, 'likec4-element-title')}>
-            {element.title}
-          </Text>
-          {element.technology && (
-            <Text
-              component="div"
-              className={clsx(css.technology, 'likec4-element-technology')}>
-              {element.technology}
-            </Text>
+        <div
+          className={clsx(
+            css.elementDataContainer,
+            isTruthy(element.icon) && css.hasIcon,
+            'likec4-element'
           )}
-          {element.description && (
-            <Text
-              component="div"
-              className={clsx(css.description, 'likec4-element-description')}>
-              {element.description}
-            </Text>
+        >
+          {isTruthy(element.icon) && (
+            <div className={clsx(css.elementIcon, 'likec4-element-icon')}>
+              <img
+                src={element.icon}
+                alt={element.title}
+              />
+            </div>
           )}
+          <div className={clsx(css.elementTextData, 'likec4-element-main-props')}>
+            <Text
+              className={clsx(css.title, 'likec4-element-title')}>
+              {element.title}
+            </Text>
+            {element.technology && (
+              <Text
+                className={clsx(css.technology, 'likec4-element-technology')}>
+                {element.technology}
+              </Text>
+            )}
+            {element.description && (
+              <Text
+                className={clsx(css.description, 'likec4-element-description')}>
+                {element.description}
+              </Text>
+            )}
+          </div>
         </div>
         {isHovercards && element.links && <ElementLink element={element} />}
         {isNavigable && <NavigateToBtn xynodeId={id} className={css.cssNavigateBtn} />}

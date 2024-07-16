@@ -5,8 +5,6 @@ import { mantine } from '../../../mantine.css'
 import { vars } from '../../../theme.css'
 
 export const stokeFillMix = createVar('stroke-fill-mix')
-const elPadding = createVar('el-padding')
-// assignVars
 
 export const container = style({
   width: '100%',
@@ -14,7 +12,7 @@ export const container = style({
   padding: 0,
   margin: 0,
   display: 'flex',
-  alignItems: 'stretch',
+  alignItems: 'center',
   vars: {
     [stokeFillMix]: `color-mix(in srgb, ${vars.element.stroke} 90%, ${vars.element.fill})`
   },
@@ -50,10 +48,10 @@ globalStyle(`.react-flow__node-element:has(${dimmed})`, {
 
 const indicatorKeyframes = keyframes({
   'from': {
-    opacity: 0.6
+    strokeOpacity: 0.8
   },
   'to': {
-    opacity: 0.4
+    strokeOpacity: 0.5
   }
 })
 
@@ -70,10 +68,10 @@ export const indicator = style({
   fill: 'none',
   transformOrigin: 'center center',
   strokeWidth: 6,
-  animationDuration: '800ms',
+  animationDuration: '1s',
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
-  opacity: 0.6,
+  strokeOpacity: 0.8,
   visibility: 'hidden',
   vars: {
     [indicatorStroke]: vars.element.loContrast
@@ -93,7 +91,7 @@ export const indicator = style({
     },
     [`:where([data-mantine-color-scheme='light']) &`]: {
       vars: {
-        [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 60%, ${vars.element.loContrast})`
+        [indicatorStroke]: `color-mix(in srgb, ${vars.element.fill} 50%, #3c3c3c)`
       }
     },
     [`${dimmed} &`]: {
@@ -115,14 +113,49 @@ export const fillMixStroke = style({
   fill: stokeFillMix
 })
 
+export const hasIcon = style({})
+
+export const elementDataContainer = style({
+  flex: '1',
+  height: 'fit-content',
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  flexDirection: 'row',
+  padding: rem(24),
+  overflow: 'hidden',
+  gap: rem(16),
+  selectors: {
+    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
+      paddingLeft: 40,
+      paddingRight: 20
+    },
+    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
+      paddingTop: 30
+    },
+    ':where([data-likec4-shape="browser"]) &': {
+      paddingTop: 32,
+      paddingBottom: 28
+    },
+    [`&:is(${hasIcon})`]: {
+      paddingRight: 20
+    },
+    [`${container}:not(:is([data-likec4-shape="queue"])) &:is(${hasIcon})`]: {
+      paddingLeft: 20
+    }
+  }
+})
+
+const textAlign = createVar('text-align')
+
 export const title = style({
   flex: '0 0 auto',
   fontFamily: vars.element.font,
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
-  textAlign: 'center',
+  textAlign: textAlign,
   fontWeight: 500,
-  fontSize: rem(19.5),
+  fontSize: 19,
   lineHeight: 1.2,
   textWrap: 'balance',
   color: vars.element.hiContrast
@@ -134,9 +167,9 @@ export const description = style({
   fontOpticalSizing: 'auto',
   fontStyle: 'normal',
   fontWeight: 400,
-  fontSize: rem(14),
+  fontSize: 14,
   lineHeight: 1.25,
-  textAlign: 'center',
+  textAlign: textAlign,
   textWrap: 'pretty',
   color: vars.element.loContrast,
   whiteSpaceCollapse: 'preserve-breaks',
@@ -152,7 +185,7 @@ export const technology = style({
   fontWeight: 400,
   fontSize: rem(12),
   lineHeight: 1.125,
-  textAlign: 'center',
+  textAlign: textAlign,
   textWrap: 'balance',
   opacity: 0.92,
   color: vars.element.loContrast,
@@ -163,9 +196,9 @@ export const technology = style({
   }
 })
 
-export const element = style({
-  flex: '1',
-  padding: elPadding,
+export const elementTextData = style({
+  height: 'fit-content',
+  width: 'max-content',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'stretch',
@@ -173,51 +206,66 @@ export const element = style({
   overflow: 'hidden',
   gap: rem(8),
   'vars': {
-    [elPadding]: rem(24)
+    [textAlign]: 'center'
   },
   selectors: {
     [`&:has(${description}):has(${technology})`]: {
       gap: rem(6)
     },
-    ':where([data-likec4-shape="queue"], [data-likec4-shape="mobile"]) &': {
-      paddingLeft: rem(40),
-      paddingRight: rem(20)
-    },
-    ':where([data-likec4-shape="cylinder"], [data-likec4-shape="storage"]) &': {
-      paddingTop: rem(34)
-    },
-    ':where([data-likec4-shape="browser"]) &': {
-      paddingTop: rem(32),
-      paddingBottom: rem(28)
+    [`:where(${hasIcon}) &`]: {
+      minWidth: 'calc(100% - 160px)',
+      'vars': {
+        [textAlign]: 'left'
+      }
     }
   }
 })
 
-export const iconOffsetY = createVar('offset-y')
+// export const elementIcon = style({
+//   flex: `0 1 ${iconMaxH}`,
+//   maxHeight: iconMaxH,
+//   position: 'relative',
+//   userSelect: 'none',
+//   pointerEvents: 'none',
+//   overflow: 'visible',
+//   mixBlendMode: 'hard-light',
+//   'vars': {
+//     [iconMaxH]: calc(iconOffsetY).subtract('12px').toString()
+//   }
+// })
 
-const iconMaxH = createVar('max-h')
+// globalStyle(`${elementIcon} img`, {
+//   position: 'absolute',
+//   left: 0,
+//   bottom: 4,
+//   width: '100%',
+//   height: 'auto',
+//   objectFit: 'contain',
+//   maxHeight: iconOffsetY
+// })
 
 export const elementIcon = style({
-  flex: `0 1 ${iconMaxH}`,
-  maxHeight: iconMaxH,
-  position: 'relative',
-  userSelect: 'none',
-  pointerEvents: 'none',
-  overflow: 'visible',
-  mixBlendMode: 'hard-light',
-  'vars': {
-    [iconMaxH]: calc(iconOffsetY).subtract('12px').toString()
-  }
+  flex: '0 0 auto',
+  height: 60,
+  width: 60,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  mixBlendMode: 'hard-light'
 })
-
-globalStyle(`${elementIcon} img`, {
-  position: 'absolute',
-  left: 0,
-  bottom: 4,
+globalStyle(`${elementIcon} svg, ${elementIcon} img`, {
   width: '100%',
   height: 'auto',
-  objectFit: 'contain',
-  maxHeight: iconOffsetY
+  maxHeight: '100%',
+  pointerEvents: 'none',
+  filter: `
+    drop-shadow(0 0 1px ${vars.element.stroke})
+    drop-shadow(0 0 3px rgb(0 0 0 / 20%))
+    drop-shadow(1px 1px 16px rgb(0 0 0 / 5%))
+  `
+})
+globalStyle(`${elementIcon} img`, {
+  objectFit: 'contain'
 })
 
 const filterShadow = createVar('filter-shadow')
